@@ -35,15 +35,13 @@
 namespace inviwo {
 CLTextureSharingMap LayerCLGL::clImageSharingMap_;
 
-LayerCLGL::LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
-                     std::shared_ptr<Texture2D> data, const SwizzleMask& swizzleMask)
-    : LayerCLBase()
-    , LayerRepresentation(type, format)
-    , texture_(data)
-    , dimensions_(dimensions)
-    , swizzleMask_(swizzleMask) {
-    if (data) {
-        initialize(data.get());
+LayerCLGL::LayerCLGL(std::shared_ptr<Texture2D> data, LayerType type)
+    : LayerCLBase(), LayerRepresentation(type, data->getDataFormat()), texture_(data) {
+
+    IVW_ASSERT(texture_, "Texture should never be nullptr");
+
+    if (texture_) {
+        initialize(texture_.get());
         CLTextureSharingMap::iterator it = LayerCLGL::clImageSharingMap_.find(texture_);
 
         if (it == LayerCLGL::clImageSharingMap_.end()) {
@@ -54,17 +52,12 @@ LayerCLGL::LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* f
         } else {
             clImage_ = it->second;
         }
-
-        texture_->addObserver(this);
     }
 }
 
 LayerCLGL::LayerCLGL(const LayerCLGL& rhs)
-    : LayerCLBase(rhs)
-    , LayerRepresentation(rhs)
-    , texture_(rhs.texture_->clone())
-    , dimensions_(rhs.dimensions_)
-    , swizzleMask_(rhs.swizzleMask_) {
+    : LayerCLBase(rhs), LayerRepresentation(rhs), texture_(rhs.texture_->clone()) {
+
     initialize(texture_.get());
 }
 
@@ -104,18 +97,13 @@ void LayerCLGL::deinitialize() {
 LayerCLGL* LayerCLGL::clone() const { return new LayerCLGL(*this); }
 
 void LayerCLGL::setDimensions(size2_t dimensions) {
-    if (dimensions == dimensions_) {
-        return;
-    }
-    dimensions_ = dimensions;
-
     // Make sure that the OpenCL layer is deleted before resizing the texture
     // By observing the texture we will make sure that the OpenCL layer is
     // deleted and reattached after resizing is done.
     texture_->resize(dimensions);
 }
 
-const size2_t& LayerCLGL::getDimensions() const { return dimensions_; }
+const size2_t& LayerCLGL::getDimensions() const { return texture_->getDimensions(); }
 
 bool LayerCLGL::copyRepresentationsTo(LayerRepresentation* targetRep) const {
     // ivwAssert(false, "Not implemented");
@@ -178,19 +166,19 @@ dvec4 LayerCLGL::readPixel(size2_t pos, LayerType /*layer*/, size_t /*index*/) c
     return getDataFormat()->valueToVec4Double(ptr);
 }
 
-void LayerCLGL::setSwizzleMask(const SwizzleMask& mask) {
-    if (texture_) {
-        texture_->setSwizzleMask(mask);
-    }
-    swizzleMask_ = mask;
+void LayerCLGL::setSwizzleMask(const SwizzleMask& mask) { texture_->setSwizzleMask(mask); }
+
+SwizzleMask LayerCLGL::getSwizzleMask() const { return texture_->getSwizzleMask(); }
+
+void LayerCLGL::setInterpolation(InterpolationType interpolation) {
+    texture_->setInterpolation(interpolation);
 }
 
-SwizzleMask LayerCLGL::getSwizzleMask() const {
-    if (texture_) {
-        return texture_->getSwizzleMask();
-    }
-    return swizzleMask_;
-}
+InterpolationType LayerCLGL::getInterpolation() const { return texture_->getInterpolation(); }
+
+void LayerCLGL::setWrapping(const Wrapping2D& wrapping) { texture_->setWrapping(wrapping); }
+
+Wrapping2D LayerCLGL::getWrapping() const { return texture_->getWrapping(); }
 
 }  // namespace inviwo
 

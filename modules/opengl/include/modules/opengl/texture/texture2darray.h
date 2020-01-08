@@ -40,11 +40,16 @@ namespace inviwo {
 class IVW_MODULE_OPENGL_API Texture2DArray : public Texture {
 public:
     Texture2DArray(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
-                   GLint level = 0);
+                   GLint level = 0, const SwizzleMask& swizzleMask = swizzlemasks::rgba,
+                   const Wrapping2D& wrap = wrapping2d::clampAll);
     Texture2DArray(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
-                   GLenum filtering, GLint level = 0);
+                   GLenum filtering, GLint level = 0,
+                   const SwizzleMask& swizzleMask = swizzlemasks::rgba,
+                   const Wrapping2D& wrap = wrapping2d::clampAll);
     Texture2DArray(const Texture2DArray& other);
+    Texture2DArray(Texture2DArray&& other);
     Texture2DArray& operator=(const Texture2DArray& other);
+    Texture2DArray& operator=(Texture2DArray&& other);
     virtual ~Texture2DArray() = default;
 
     Texture2DArray* clone() const;
@@ -59,8 +64,8 @@ public:
 
     const size3_t& getDimensions() const { return dimensions_; }
 
-protected:
-    static void default2DArrayTextureParameterFunction(Texture*);
+    void setWrapping(const Wrapping2D& wrapping);
+    Wrapping2D getWrapping() const;
 
 private:
     size3_t dimensions_;

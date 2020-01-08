@@ -39,7 +39,8 @@ std::shared_ptr<VolumeRAM> VolumeCLGL2RAMConverter::createFrom(
     std::shared_ptr<const VolumeCLGL> volumeCLGL) const {
     const size3_t dimensions{volumeCLGL->getDimensions()};
     auto destination = createVolumeRAM(dimensions, volumeCLGL->getDataFormat(), nullptr,
-                                       volumeCLGL->getSwizzleMask());
+                                       volumeCLGL->getSwizzleMask(), volumeCLGL->getInterpolation(),
+                                       volumeCLGL->getWrapping());
 
     if (destination) {
         volumeCLGL->getTexture()->download(destination->getData());
@@ -60,20 +61,19 @@ void VolumeCLGL2RAMConverter::update(std::shared_ptr<const VolumeCLGL> volumeSrc
     }
 
     volumeSrc->getTexture()->download(volumeDst->getData());
+    volumeDst->setSwizzleMask(volumeSrc->getSwizzleMask());
+    volumeDst->setInterpolation(volumeSrc->getInterpolation());
+    volumeDst->setWrapping(volumeSrc->getWrapping());
 }
 
 std::shared_ptr<VolumeCLGL> VolumeGL2CLGLConverter::createFrom(
     std::shared_ptr<const VolumeGL> volumeGL) const {
-    return std::make_shared<VolumeCLGL>(volumeGL->getDimensions(), volumeGL->getDataFormat(),
-                                        volumeGL->getTexture());
+    return std::make_shared<VolumeCLGL>(volumeGL->getTexture());
 }
 
 void VolumeGL2CLGLConverter::update(std::shared_ptr<const VolumeGL> volumeSrc,
                                     std::shared_ptr<VolumeCLGL> volumeDst) const {
     // Do nothing since they are sharing data
-    if (volumeSrc->getDimensions() != volumeDst->getDimensions()) {
-        volumeDst->setDimensions(volumeSrc->getDimensions());
-    }
 }
 
 std::shared_ptr<VolumeCL> VolumeCLGL2CLConverter::createFrom(
@@ -81,9 +81,11 @@ std::shared_ptr<VolumeCL> VolumeCLGL2CLConverter::createFrom(
 #ifdef IVW_DEBUG
     LogWarn("Performance warning: Use shared CLGL representation instead of CL ");
 #endif
+
     const size3_t dimensions{volumeCLGL->getDimensions()};
-    auto destination = std::make_shared<VolumeCL>(dimensions, volumeCLGL->getDataFormat(), nullptr,
-                                                  volumeCLGL->getSwizzleMask());
+    auto destination = std::make_shared<VolumeCL>(
+        dimensions, volumeCLGL->getDataFormat(), nullptr, volumeCLGL->getSwizzleMask(),
+        volumeCLGL->getInterpolation(), volumeCLGL->getWrapping());
     {
         SyncCLGL glSync;
         glSync.addToAquireGLObjectList(volumeCLGL.get());
@@ -100,7 +102,9 @@ void VolumeCLGL2CLConverter::update(std::shared_ptr<const VolumeCLGL> volumeSrc,
     if (volumeSrc->getDimensions() != volumeDst->getDimensions()) {
         volumeDst->setDimensions(volumeSrc->getDimensions());
     }
-
+    volumeDst->setSwizzleMask(volumeSrc->getSwizzleMask());
+    volumeDst->setInterpolation(volumeSrc->getInterpolation());
+    volumeDst->setWrapping(volumeSrc->getWrapping());
     {
         SyncCLGL glSync;
         glSync.addToAquireGLObjectList(volumeSrc.get());
@@ -113,7 +117,7 @@ void VolumeCLGL2CLConverter::update(std::shared_ptr<const VolumeCLGL> volumeSrc,
 
 std::shared_ptr<VolumeGL> VolumeCLGL2GLConverter::createFrom(
     std::shared_ptr<const VolumeCLGL> src) const {
-    return std::make_shared<VolumeGL>(src->getTexture(), src->getDataFormat());
+    return std::make_shared<VolumeGL>(src->getTexture());
 }
 
 void VolumeCLGL2GLConverter::update(std::shared_ptr<const VolumeCLGL> source,

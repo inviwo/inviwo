@@ -43,7 +43,7 @@ class DiskRepresentationLoader;
  * \ingroup datastructures
  * Base class for all DiskRepresentations \see Data, DataRepresentation
  */
-template <typename Repr>
+template <typename Repr, typename Self>
 class DiskRepresentation {
 public:
     DiskRepresentation() = default;
@@ -69,41 +69,41 @@ private:
     util::cloneable_ptr<DiskRepresentationLoader<Repr>> loader_;
 };
 
-template <typename Repr>
-DiskRepresentation<Repr>::DiskRepresentation(const std::string& srcFile,
-                                             DiskRepresentationLoader<Repr>* loader)
+template <typename Repr, typename Self>
+DiskRepresentation<Repr, Self>::DiskRepresentation(const std::string& srcFile,
+                                                   DiskRepresentationLoader<Repr>* loader)
     : sourceFile_(srcFile), loader_(loader) {}
 
-template <typename Repr>
-DiskRepresentation<Repr>* DiskRepresentation<Repr>::clone() const {
-    return new DiskRepresentation<Repr>(*this);
+template <typename Repr, typename Self>
+DiskRepresentation<Repr, Self>* DiskRepresentation<Repr, Self>::clone() const {
+    return new DiskRepresentation<Repr, Self>(*this);
 }
 
-template <typename Repr>
-const std::string& DiskRepresentation<Repr>::getSourceFile() const {
+template <typename Repr, typename Self>
+const std::string& DiskRepresentation<Repr, Self>::getSourceFile() const {
     return sourceFile_;
 }
 
-template <typename Repr>
-bool DiskRepresentation<Repr>::hasSourceFile() const {
+template <typename Repr, typename Self>
+bool DiskRepresentation<Repr, Self>::hasSourceFile() const {
     return !sourceFile_.empty();
 }
 
-template <typename Repr>
-void DiskRepresentation<Repr>::setLoader(DiskRepresentationLoader<Repr>* loader) {
+template <typename Repr, typename Self>
+void DiskRepresentation<Repr, Self>::setLoader(DiskRepresentationLoader<Repr>* loader) {
     loader_.reset(loader);
 }
 
-template <typename Repr>
-std::shared_ptr<Repr> DiskRepresentation<Repr>::createRepresentation() const {
+template <typename Repr, typename Self>
+std::shared_ptr<Repr> DiskRepresentation<Repr, Self>::createRepresentation() const {
     if (!loader_) throw Exception("No loader available to create representation", IVW_CONTEXT);
-    return loader_->createRepresentation();
+    return loader_->createRepresentation(*static_cast<const Self*>(this));
 }
 
-template <typename Repr>
-void DiskRepresentation<Repr>::updateRepresentation(std::shared_ptr<Repr> dest) const {
+template <typename Repr, typename Self>
+void DiskRepresentation<Repr, Self>::updateRepresentation(std::shared_ptr<Repr> dest) const {
     if (!loader_) throw Exception("No loader available to update representation", IVW_CONTEXT);
-    loader_->updateRepresentation(dest);
+    loader_->updateRepresentation(dest, *static_cast<const Self*>(this));
 }
 
 template <typename Repr>
@@ -111,8 +111,8 @@ class DiskRepresentationLoader {
 public:
     virtual ~DiskRepresentationLoader() = default;
     virtual DiskRepresentationLoader* clone() const = 0;
-    virtual std::shared_ptr<Repr> createRepresentation() const = 0;
-    virtual void updateRepresentation(std::shared_ptr<Repr> dest) const = 0;
+    virtual std::shared_ptr<Repr> createRepresentation(const Repr&) const = 0;
+    virtual void updateRepresentation(std::shared_ptr<Repr> dest, const Repr&) const = 0;
 };
 
 }  // namespace inviwo

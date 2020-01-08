@@ -66,9 +66,9 @@ public:
     virtual std::unique_ptr<LayerRepresentation> create(
         const typename LayerRepresentation::ReprOwner* layer) {
 
-        auto layerGL =
-            std::make_unique<LayerGL>(layer->getDimensions(), layer->getLayerType(),
-                                      layer->getDataFormat(), nullptr, layer->getSwizzleMask());
+        auto layerGL = std::make_unique<LayerGL>(layer->getDimensions(), layer->getLayerType(),
+                                                 layer->getDataFormat(), layer->getSwizzleMask(),
+                                                 layer->getInterpolation(), layer->getWrapping());
         layerGL->getTexture()->initialize(nullptr);
         return layerGL;
     }
@@ -79,9 +79,10 @@ class VolumeGLFactoryObject
 public:
     virtual std::unique_ptr<VolumeRepresentation> create(
         const typename VolumeRepresentation::ReprOwner* volume) {
-        auto volumeGL =
-            std::make_unique<VolumeGL>(volume->getDimensions(), volume->getDataFormat());
-        volumeGL->getTexture()->initialize(nullptr);
+        auto volumeGL = std::make_unique<VolumeGL>(
+            volume->getDimensions(), volume->getDataFormat(), volume->getSwizzleMask(),
+            volume->getInterpolation(), volume->getWrapping(), true);
+
         return volumeGL;
     }
 };

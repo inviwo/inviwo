@@ -45,39 +45,10 @@ public:
     DatVolumeWriter(const DatVolumeWriter& rhs);
     DatVolumeWriter& operator=(const DatVolumeWriter& that);
     virtual DatVolumeWriter* clone() const;
-    virtual ~DatVolumeWriter(){};
+    virtual ~DatVolumeWriter() = default;
 
     virtual void writeData(const Volume* data, const std::string filePath) const;
-
-private:
-    template <typename T>
-    void writeKeyToString(std::stringstream& ss, const std::string& key,
-                          const glm::tvec2<T, glm::defaultp>& vec) const;
-    template <typename T>
-    void writeKeyToString(std::stringstream& ss, const std::string& key,
-                          const glm::tvec3<T, glm::defaultp>& vec) const;
-    template <typename T>
-    void writeKeyToString(std::stringstream& ss, const std::string& key,
-                          const glm::tvec4<T, glm::defaultp>& vec) const;
-    void writeKeyToString(std::stringstream& ss, const std::string& key,
-                          const std::string& str) const;
 };
-
-template <typename T>
-void inviwo::DatVolumeWriter::writeKeyToString(std::stringstream& ss, const std::string& key,
-                                               const glm::tvec2<T, glm::defaultp>& vec) const {
-    ss << key << ": " << vec.x << " " << vec.y << std::endl;
-}
-template <typename T>
-void inviwo::DatVolumeWriter::writeKeyToString(std::stringstream& ss, const std::string& key,
-                                               const glm::tvec3<T, glm::defaultp>& vec) const {
-    ss << key << ": " << vec.x << " " << vec.y << " " << vec.z << std::endl;
-}
-template <typename T>
-void inviwo::DatVolumeWriter::writeKeyToString(std::stringstream& ss, const std::string& key,
-                                               const glm::tvec4<T, glm::defaultp>& vec) const {
-    ss << key << ": " << vec.x << " " << vec.y << " " << vec.z << " " << vec.w << std::endl;
-}
 
 }  // namespace inviwo
 

@@ -49,7 +49,7 @@ const ProcessorInfo LightVolumeGL::processorInfo_{
 };
 const ProcessorInfo LightVolumeGL::getProcessorInfo() const { return processorInfo_; }
 
-GLfloat borderColor_[4] = {1.f, 1.f, 1.f, 1.f};
+const vec4 LightVolumeGL::borderColor_{1.f, 1.f, 1.f, 1.f};
 
 static const int faceAxis_[6] = {0, 0, 1, 1, 2, 2};
 
@@ -116,12 +116,14 @@ LightVolumeGL::LightVolumeGL()
                          "lighting/lightpropagation.frag", true)
     , mergeShader_("lighting/lightvolumeblend.vert", "lighting/lightvolumeblend.geom",
                    "lighting/lightvolumeblend.frag", true)
-    , mergeFBO_(nullptr)
+    , lightColor_(1.f)
+    , propParams_{{{supportColoredLight_ ? lightColor_ : borderColor_},
+                   {supportColoredLight_ ? lightColor_ : borderColor_}}}
+    , mergeFBO_{}
     , internalVolumesInvalid_(false)
     , volumeDimOut_(0)
     , lightDir_(0.f)
     , lightPos_(0.f)
-    , lightColor_(1.f)
     , calculatedOnes_(false) {
 
     addPort(inport_);
@@ -143,21 +145,7 @@ LightVolumeGL::LightVolumeGL()
     propagationShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     mergeShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    for (auto& elem : propParams_) {
-        elem.fbo = std::make_unique<FrameBufferObject>();
-    }
-
-    mergeFBO_ = std::make_unique<FrameBufferObject>();
     supportColoredLightChanged();
-}
-
-void LightVolumeGL::propagation3DTextureParameterFunction(Texture*) {
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
-    borderColorTextureParameterFunction();
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 void LightVolumeGL::process() {
@@ -181,9 +169,14 @@ void LightVolumeGL::process() {
     const Layer* tfLayer = transferFunction_.get().getData();
     const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
     transferFunctionGL->bindTexture(transFuncUnit.getEnum());
+
     TextureUnit lightVolUnit[2];
-    propParams_[0].vol->bindTexture(lightVolUnit[0].getEnum());
-    propParams_[1].vol->bindTexture(lightVolUnit[1].getEnum());
+    glActiveTexture(lightVolUnit[0].getEnum());
+    propParams_[0].tex.bind();
+    glActiveTexture(lightVolUnit[1].getEnum());
+    propParams_[1].tex.bind();
+    glActiveTexture(GL_TEXTURE0);
+
     propagationShader_.activate();
     propagationShader_.setUniform("volume_", volUnit.getUnitNumber());
     utilgl::setShaderUniforms(propagationShader_, *inport_.getData(), "volumeParameters_");
@@ -198,12 +191,13 @@ void LightVolumeGL::process() {
 
         // Perform propagation passes
         for (int i = 0; i < 2; ++i) {
-            propParams_[i].fbo->activate();
+            propParams_[i].fbo.activate();
             glViewport(0, 0, static_cast<GLsizei>(volumeDimOut_.x),
                        static_cast<GLsizei>(volumeDimOut_.y));
 
-            if (reattach)
-                propParams_[i].fbo->attachColorTexture(propParams_[i].vol->getTexture().get(), 0);
+            if (reattach) {
+                propParams_[i].fbo.attachColorTexture(&propParams_[i].tex, 0);
+            }
 
             propagationShader_.setUniform("lightVolume_", lightVolUnit[i].getUnitNumber());
             propagationShader_.setUniform("permutationMatrix_", propParams_[i].axisPermutation);
@@ -219,14 +213,13 @@ void LightVolumeGL::process() {
 
             for (unsigned int z = 0; z < volumeDimOut_.z; ++z) {
                 glFramebufferTexture3DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
-                                          GL_TEXTURE_3D, propParams_[i].vol->getTexture()->getID(),
-                                          0, z);
+                                          GL_TEXTURE_3D, propParams_[i].tex.getID(), 0, z);
                 propagationShader_.setUniform("sliceNum_", static_cast<GLint>(z));
                 glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
                 glFlush();
             }
 
-            propParams_[i].fbo->deactivate();
+            propParams_[i].fbo.deactivate();
         }
     }
 
@@ -240,14 +233,14 @@ void LightVolumeGL::process() {
     mergeShader_.setUniform("permMatInvSec_", propParams_[1].axisPermutationINV);
     mergeShader_.setUniform("blendingFactor_", blendingFactor_);
     // Perform merge pass
-    mergeFBO_->activate();
+    mergeFBO_.activate();
     glViewport(0, 0, static_cast<GLsizei>(volumeDimOut_.x), static_cast<GLsizei>(volumeDimOut_.y));
 
-    if (reattach) mergeFBO_->attachColorTexture(outVolumeGL->getTexture().get(), 0);
+    if (reattach) mergeFBO_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
 
     utilgl::multiDrawImagePlaneRect(static_cast<int>(volumeDimOut_.z));
     mergeShader_.deactivate();
-    mergeFBO_->deactivate();
+    mergeFBO_.deactivate();
 }
 
 bool LightVolumeGL::lightSourceChanged() {
@@ -345,33 +338,26 @@ bool LightVolumeGL::volumeChanged(bool lightColorChanged) {
         volumeDimOutFRCP_ = vec3(1.0f) / volumeDimOutF_;
         volumeDimInF_ = vec3(inDim);
         volumeDimInFRCP_ = vec3(1.0f) / volumeDimInF_;
-        const DataFormatBase* format;
+        DataFormatId format;
 
-        if (supportColoredLight_.get()) {
-            if (floatPrecision_.get())
-                format = DataVec4Float32::get();
-            else
-                format = DataVec4UInt8::get();
+        if (supportColoredLight_) {
+            format = floatPrecision_ ? DataVec4Float32::id() : DataVec4UInt8::id();
         } else {
-            if (floatPrecision_.get())
-                format = DataFloat32::get();
-            else
-                format = DataUInt8::get();
+            format = floatPrecision_ ? DataFloat32::id() : DataUInt8::id();
         }
 
         for (auto& elem : propParams_) {
-            if (!elem.vol || elem.vol->getDataFormat() != format) {
-                elem.vol.reset(new VolumeGL(volumeDimOut_, format, false));
-                elem.vol->getTexture()->setTextureParameters(
-                    [&](Texture* t) { propagation3DTextureParameterFunction(t); });
-                elem.vol->getTexture()->initialize(nullptr);
+            if (elem.tex.getDataFormat()->getId() != format) {
+                elem.tex = PropagationParameters::makeTex(
+                    volumeDimOut_, format,
+                    supportColoredLight_ ? lightColor_ : borderColor_);
             } else {
-                elem.vol->setDimensions(volumeDimOut_);
+                elem.tex.uploadAndResize(nullptr, volumeDimOut_);
             }
         }
 
         outport_.setData(nullptr);
-        auto volumeGL = std::make_shared<VolumeGL>(volumeDimOut_, format);
+        auto volumeGL = std::make_shared<VolumeGL>(volumeDimOut_, DataFormatBase::get(format));
         volumeGL->getTexture()->initialize(nullptr);
         volume_ = std::make_shared<Volume>(volumeGL);
         outport_.setData(volume_);
@@ -380,9 +366,10 @@ bool LightVolumeGL::volumeChanged(bool lightColorChanged) {
         return true;
     } else if (lightColorChanged) {
         for (auto& elem : propParams_) {
-            elem.vol->getTexture()->bind();
-            borderColorTextureParameterFunction();
-            elem.vol->getTexture()->unbind();
+            elem.tex.bind();
+            glTexParameterfv(GL_TEXTURE_3D, GL_TEXTURE_BORDER_COLOR,
+                             glm::value_ptr(supportColoredLight_ ? lightColor_ : borderColor_));
+            elem.tex.unbind();
         }
     }
 
@@ -399,10 +386,8 @@ void LightVolumeGL::volumeSizeOptionChanged() {
 }
 
 void LightVolumeGL::supportColoredLightChanged() {
-    if (supportColoredLight_.get())
-        propagationShader_.getFragmentShaderObject()->addShaderDefine("SUPPORT_LIGHT_COLOR");
-    else
-        propagationShader_.getFragmentShaderObject()->removeShaderDefine("SUPPORT_LIGHT_COLOR");
+    propagationShader_.getFragmentShaderObject()->setShaderDefine("SUPPORT_LIGHT_COLOR",
+                                                                  supportColoredLight_);
 
     propagationShader_.getFragmentShaderObject()->build();
     propagationShader_.link();
@@ -417,13 +402,6 @@ void LightVolumeGL::supportColoredLightChanged() {
 }
 
 void LightVolumeGL::floatPrecisionChanged() { internalVolumesInvalid_ = true; }
-
-void LightVolumeGL::borderColorTextureParameterFunction() {
-    if (supportColoredLight_.get())
-        glTexParameterfv(GL_TEXTURE_3D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(lightColor_));
-    else
-        glTexParameterfv(GL_TEXTURE_3D, GL_TEXTURE_BORDER_COLOR, borderColor_);
-}
 
 void LightVolumeGL::updatePermuationMatrices(const vec3& lightDir, PropagationParameters* closest,
                                              PropagationParameters* secondClosest) {

@@ -29,53 +29,46 @@
 
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/openglcapabilities.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
 Texture2D::Texture2D(size2_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
-                     GLint level)
-    : Texture(GL_TEXTURE_2D, glFormat, filtering, level), dimensions_(dimensions) {
-    setTextureParameters(&Texture2D::default2DTextureParameterFunction);
-}
+                     GLint level, const SwizzleMask& swizzleMask, const Wrapping2D& wrap)
+    : Texture(GL_TEXTURE_2D, glFormat, filtering, level, swizzleMask, util::span(wrap))
+    , dimensions_(dimensions) {}
 
 Texture2D::Texture2D(size2_t dimensions, GLint format, GLint internalformat, GLenum dataType,
-                     GLenum filtering, GLint level)
-    : Texture(GL_TEXTURE_2D, format, internalformat, dataType, filtering, level)
-    , dimensions_(dimensions) {
-    setTextureParameters(&Texture2D::default2DTextureParameterFunction);
-}
+                     GLenum filtering, GLint level, const SwizzleMask& swizzleMask,
+                     const Wrapping2D& wrap)
+    : Texture(GL_TEXTURE_2D, format, internalformat, dataType, filtering, level, swizzleMask,
+              util::span(wrap))
+    , dimensions_(dimensions) {}
 
 Texture2D::Texture2D(const Texture2D& rhs) : Texture(rhs), dimensions_(rhs.dimensions_) {
-    setTextureParameters(&Texture2D::default2DTextureParameterFunction);
     initialize(nullptr);
-    if (OpenGLCapabilities::getOpenGLVersion() >= 430) {
-        // GPU memcpy
+    if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0, 0,
                            static_cast<GLsizei>(dimensions_.x), static_cast<GLsizei>(dimensions_.y),
                            1);
-    } else {
-        // Copy data through PBO
+    } else {  // Copy data through PBO
         loadFromPBO(&rhs);
     }
 }
 
-Texture2D::Texture2D(Texture2D&& rhs)
-    : Texture(std::move(rhs)), dimensions_(std::move(rhs.dimensions_)) {}
+Texture2D::Texture2D(Texture2D&& rhs) = default;
 
 Texture2D& Texture2D::operator=(const Texture2D& rhs) {
     if (this != &rhs) {
         Texture::operator=(rhs);
         dimensions_ = rhs.dimensions_;
-        setTextureParameters(&Texture2D::default2DTextureParameterFunction);
         initialize(nullptr);
 
-        if (OpenGLCapabilities::getOpenGLVersion() >= 430) {
-            // GPU memcpy
+        if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
             glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0,
                                0, static_cast<GLsizei>(rhs.dimensions_.x),
                                static_cast<GLsizei>(rhs.dimensions_.y), 1);
-        } else {
-            // Copy data through PBO
+        } else {  // Copy data through PBO
             loadFromPBO(&rhs);
         }
     }
@@ -83,13 +76,7 @@ Texture2D& Texture2D::operator=(const Texture2D& rhs) {
     return *this;
 }
 
-Texture2D& Texture2D::operator=(Texture2D&& rhs) {
-    if (this != &rhs) {
-        Texture::operator=(std::move(rhs));
-        dimensions_ = std::move(rhs.dimensions_);
-    }
-    return *this;
-}
+Texture2D& Texture2D::operator=(Texture2D&& rhs) = default;
 
 Texture2D* Texture2D::clone() const { return new Texture2D(*this); }
 
@@ -115,17 +102,22 @@ void Texture2D::upload(const void* data) {
     LGL_ERROR_SUPPRESS;
 }
 
-void Texture2D::resize(size2_t dimensions) {
-    dimensions_ = dimensions;
-    setPBOAsInvalid();
-    initialize(nullptr);
+void Texture2D::setWrapping(const Wrapping2D& wrapping) {
+    Texture::setWrapping(util::span(wrapping));
 }
 
-void Texture2D::default2DTextureParameterFunction(Texture* tex) {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tex->getFiltering());
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tex->getFiltering());
+Wrapping2D Texture2D::getWrapping() const {
+    Wrapping2D wrapping{};
+    Texture::getWrapping(util::span(wrapping));
+    return wrapping;
+}
+
+void Texture2D::resize(size2_t dimensions) {
+    if (dimensions_ != dimensions) {
+        dimensions_ = dimensions;
+        setPBOAsInvalid();
+        initialize(nullptr);
+    }
 }
 
 }  // namespace inviwo

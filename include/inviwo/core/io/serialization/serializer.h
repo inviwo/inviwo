@@ -41,6 +41,8 @@
 #include <type_traits>
 #include <list>
 #include <bitset>
+#include <vector>
+#include <array>
 
 namespace inviwo {
 
@@ -88,6 +90,10 @@ public:
 
     template <typename T>
     void serialize(const std::string& key, const std::list<T>& container,
+                   const std::string& itemKey = "item");
+
+    template <typename T, size_t N>
+    void serialize(const std::string& key, const std::array<T, N>& container,
                    const std::string& itemKey = "item");
 
     template <typename K, typename V, typename C, typename A>
@@ -188,6 +194,20 @@ void Serializer::serialize(const std::string& key, const std::list<T>& container
     rootElement_->LinkEndChild(node.get());
 
     NodeSwitch nodeSwitch(*this, node.get());
+    for (const auto& item : container) {
+        serialize(itemKey, item);
+    }
+}
+
+template <typename T, size_t N>
+void Serializer::serialize(const std::string& key, const std::array<T, N>& container,
+                                  const std::string& itemKey) {
+    if (container.empty()) return;
+
+    auto node = std::make_unique<TxElement>(key);
+    rootElement_->LinkEndChild(node.get());
+    NodeSwitch nodeSwitch(*this, node.get());
+
     for (const auto& item : container) {
         serialize(itemKey, item);
     }

@@ -31,76 +31,69 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/glformats.h>
+#include <modules/opengl/openglutils.h>
 #include <algorithm>
 
 namespace inviwo {
 
-VolumeGL::VolumeGL(size3_t dimensions, const DataFormatBase* format, bool initializeTexture,
-                   const SwizzleMask& swizzleMask)
-    : VolumeRepresentation(format)
-    , dimensions_(dimensions)
-    , volumeTexture_(
-          std::make_shared<Texture3D>(dimensions_, GLFormats::get(format->getId()), GL_LINEAR))
-    , swizzleMask_(swizzleMask) {
+VolumeGL::VolumeGL(size3_t dimensions, const DataFormatBase* format, const SwizzleMask& swizzleMask,
+                   InterpolationType interpolation, const Wrapping3D& wrapping, bool initializeTexture)
+    : VolumeRepresentation{format}
+    , texture_{std::make_shared<Texture3D>(dimensions, GLFormats::get(format->getId()),
+                                           utilgl::convertInterpolationToGL(interpolation), 0,
+                                           swizzleMask, wrapping)} {
     if (initializeTexture) {
-        volumeTexture_->initialize(nullptr);
+        texture_->initialize(nullptr);
     }
-    volumeTexture_->setSwizzleMask(swizzleMask_);
-    volumeTexture_->getSwizzleMask();
 }
 
-VolumeGL::VolumeGL(std::shared_ptr<Texture3D> tex, const DataFormatBase* format)
-    : VolumeRepresentation(format)
-    , dimensions_(tex->getDimensions())
-    , volumeTexture_(tex)
-    , swizzleMask_(tex ? tex->getSwizzleMask() : swizzlemasks::rgba) {}
+VolumeGL::VolumeGL(std::shared_ptr<Texture3D> tex)
+    : VolumeRepresentation(tex->getDataFormat()), texture_(tex) {
+
+    IVW_ASSERT(texture_, "The texture should never be nullptr.");
+}
 
 VolumeGL::VolumeGL(const VolumeGL& rhs)
-    : VolumeRepresentation(rhs)
-    , dimensions_(rhs.dimensions_)
-    , volumeTexture_(rhs.volumeTexture_->clone())
-    , swizzleMask_(rhs.swizzleMask_) {
-    volumeTexture_->setSwizzleMask(swizzleMask_);
-}
+    : VolumeRepresentation(rhs), texture_(rhs.texture_->clone()) {}
 
 VolumeGL& VolumeGL::operator=(const VolumeGL& rhs) {
     if (this != &rhs) {
         VolumeRepresentation::operator=(rhs);
-        dimensions_ = rhs.dimensions_;
-        volumeTexture_ = std::shared_ptr<Texture3D>(rhs.volumeTexture_->clone());
-        swizzleMask_ = rhs.swizzleMask_;
+        texture_ = std::shared_ptr<Texture3D>(rhs.texture_->clone());
     }
     return *this;
 }
 
-VolumeGL::~VolumeGL() {}
+VolumeGL::~VolumeGL() = default;
 
 VolumeGL* VolumeGL::clone() const { return new VolumeGL(*this); }
 
 void VolumeGL::bindTexture(GLenum texUnit) const {
     glActiveTexture(texUnit);
-    volumeTexture_->bind();
+    texture_->bind();
     glActiveTexture(GL_TEXTURE0);
 }
 
-void VolumeGL::unbindTexture() const { volumeTexture_->unbind(); }
+void VolumeGL::unbindTexture() const { texture_->unbind(); }
 
-void VolumeGL::setDimensions(size3_t dimensions) {
-    dimensions_ = dimensions;
-    volumeTexture_->uploadAndResize(nullptr, dimensions_);
-}
+void VolumeGL::setDimensions(size3_t dimensions) { texture_->uploadAndResize(nullptr, dimensions); }
 
-const size3_t& VolumeGL::getDimensions() const { return dimensions_; }
+const size3_t& VolumeGL::getDimensions() const { return texture_->getDimensions(); }
 
 std::type_index VolumeGL::getTypeIndex() const { return std::type_index(typeid(VolumeGL)); }
 
-void VolumeGL::setSwizzleMask(const SwizzleMask& mask) {
-    swizzleMask_ = mask;
-    if (volumeTexture_) {
-        volumeTexture_->setSwizzleMask(mask);
-    }
+void VolumeGL::setSwizzleMask(const SwizzleMask& mask) { texture_->setSwizzleMask(mask); }
+
+SwizzleMask VolumeGL::getSwizzleMask() const { return texture_->getSwizzleMask(); }
+
+void VolumeGL::setInterpolation(InterpolationType interpolation) {
+    texture_->setInterpolation(interpolation);
 }
 
-SwizzleMask VolumeGL::getSwizzleMask() const { return swizzleMask_; }
+InterpolationType VolumeGL::getInterpolation() const { return texture_->getInterpolation(); }
+
+void VolumeGL::setWrapping(const Wrapping3D& wrapping) { texture_->setWrapping(wrapping); }
+
+Wrapping3D VolumeGL::getWrapping() const { return texture_->getWrapping(); }
 
 }  // namespace inviwo

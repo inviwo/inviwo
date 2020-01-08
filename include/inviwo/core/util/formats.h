@@ -52,7 +52,7 @@
 namespace inviwo {
 
 // Do not set enums specifically, as NumberOfFormats is used to count the number of enums
-enum class DataFormatId {
+enum class DataFormatId : char {
     NotSpecialized,
     Float16,
     Float32,
@@ -101,7 +101,7 @@ enum class DataFormatId {
     NumberOfFormats,
 };
 
-enum class NumericType { NotSpecialized, Float, UnsignedInteger, SignedInteger };
+enum class NumericType : char { NotSpecialized, Float, UnsignedInteger, SignedInteger };
 
 namespace util {
 

@@ -68,7 +68,9 @@ class IVW_CORE_API Volume : public Data<Volume, VolumeRepresentation>,
 public:
     explicit Volume(size3_t defaultDimensions = size3_t(128, 128, 128),
                     const DataFormatBase* defaultFormat = DataUInt8::get(),
-                    const SwizzleMask& defaultSwizzleMask = swizzlemasks::rgba);
+                    const SwizzleMask& defaultSwizzleMask = swizzlemasks::rgba,
+                    InterpolationType interpolation = InterpolationType::Linear,
+                    const Wrapping3D& wrapping = wrapping3d::clampAll);
     explicit Volume(std::shared_ptr<VolumeRepresentation>);
     Volume(const Volume&) = default;
     Volume& operator=(const Volume& that) = default;
@@ -103,6 +105,12 @@ public:
      */
     void setSwizzleMask(const SwizzleMask& mask);
     SwizzleMask getSwizzleMask() const;
+
+    void setInterpolation(InterpolationType interpolation);
+    InterpolationType getInterpolation() const;
+
+    void setWrapping(const Wrapping3D& wrapping);
+    Wrapping3D getWrapping() const;
 
     virtual const StructuredCameraCoordinateTransformer<3>& getCoordinateTransformer(
         const Camera& camera) const override;
@@ -153,6 +161,8 @@ protected:
     size3_t defaultDimensions_;
     const DataFormatBase* defaultDataFormat_;
     SwizzleMask defaultSwizzleMask_;
+    InterpolationType defaultInterpolation_;
+    Wrapping3D defaultWrapping_;
 };
 
 template <typename Kind>

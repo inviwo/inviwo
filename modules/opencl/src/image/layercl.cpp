@@ -35,12 +35,15 @@
 namespace inviwo {
 
 LayerCL::LayerCL(size2_t dimensions, LayerType type, const DataFormatBase* format,
-                 const SwizzleMask& swizzleMask, const void* data)
+                 const SwizzleMask& swizzleMask, InterpolationType interpolation,
+                 const Wrapping2D& wrapping, const void* data)
     : LayerCLBase()
     , LayerRepresentation(type, format)
     , dimensions_(dimensions)
     , layerFormat_(dataFormatToCLImageFormat(format->getId()))
-    , swizzleMask_(swizzleMask) {
+    , swizzleMask_(swizzleMask)
+    , interpolation_{interpolation}
+    , wrapping_{wrapping} {
     initialize(data);
 }
 
@@ -49,7 +52,9 @@ LayerCL::LayerCL(const LayerCL& rhs)
     , LayerRepresentation(rhs)
     , dimensions_(rhs.dimensions_)
     , layerFormat_(rhs.layerFormat_)
-    , swizzleMask_(rhs.swizzleMask_) {
+    , swizzleMask_(rhs.swizzleMask_)
+    , interpolation_{rhs.interpolation_}
+    , wrapping_{rhs.wrapping_} {
     initialize(nullptr);
     OpenCL::getPtr()->getQueue().enqueueCopyImage(rhs.get(), *clImage_, glm::size3_t(0),
                                                   glm::size3_t(0), glm::size3_t(dimensions_, 1));
@@ -139,6 +144,14 @@ const size2_t& LayerCL::getDimensions() const { return dimensions_; }
 void LayerCL::setSwizzleMask(const SwizzleMask& mask) { swizzleMask_ = mask; }
 
 SwizzleMask LayerCL::getSwizzleMask() const { return swizzleMask_; }
+
+void LayerCL::setInterpolation(InterpolationType interpolation) { interpolation_ = interpolation; }
+
+InterpolationType LayerCL::getInterpolation() const { return interpolation_; }
+
+void LayerCL::setWrapping(const Wrapping2D& wrapping) { wrapping_ = wrapping; }
+
+Wrapping2D LayerCL::getWrapping() const { return wrapping_; }
 
 }  // namespace inviwo
 

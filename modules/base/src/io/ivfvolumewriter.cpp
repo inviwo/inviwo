@@ -59,7 +59,7 @@ void IvfVolumeWriter::writeData(const Volume* volume, const std::string filePath
         throw DataWriterException("Error: Output file: " + rawPath + " already exists",
                                   IVW_CONTEXT);
 
-    std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
+    const std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
     const VolumeRAM* vr = volume->getRepresentation<VolumeRAM>();
     Serializer s(filePath);
     s.serialize("RawFile", fileName + ".raw");
@@ -72,18 +72,19 @@ void IvfVolumeWriter::writeData(const Volume* volume, const std::string filePath
     s.serialize("ValueRange", volume->dataMap_.valueRange);
     s.serialize("Unit", volume->dataMap_.valueUnit);
 
+    s.serialize("SwizzleMask", vr->getSwizzleMask());
+    s.serialize("Interpolation", vr->getInterpolation());
+    s.serialize("Wrapping", vr->getWrapping());
+
     volume->getMetaDataMap()->serialize(s);
     s.writeFile();
-    std::ofstream fout = filesystem::ofstream(rawPath, std::ios::out | std::ios::binary);
 
-    if (fout.good()) {
-        fout.write((char*)vr->getData(), vr->getDimensions().x * vr->getDimensions().y *
-                                             vr->getDimensions().z *
-                                             vr->getDataFormat()->getSize());
-    } else
+    if (auto fout = filesystem::ofstream(rawPath, std::ios::out | std::ios::binary)) {
+        fout.write(static_cast<const char*>(vr->getData()),
+                   glm::compMul(vr->getDimensions()) * vr->getDataFormat()->getSize());
+    } else {
         throw DataWriterException("Error: Could not write to raw file: " + rawPath, IVW_CONTEXT);
-
-    fout.close();
+    }
 }
 
 }  // namespace inviwo

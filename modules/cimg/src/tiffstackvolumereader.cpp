@@ -35,6 +35,8 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/raiiutils.h>
 
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+
 namespace inviwo {
 
 TIFFStackVolumeReaderException::TIFFStackVolumeReaderException(const std::string& message,
@@ -69,21 +71,25 @@ std::shared_ptr<Volume> TIFFStackVolumeReader::readData(const std::string& fileP
     volume->setBasis(glm::scale(extent));
     volume->setOffset(-extent * 0.5f);
 
-    volumeDisk->setLoader(new TIFFStackVolumeRAMLoader(volumeDisk.get()));
+    volumeDisk->setLoader(new TIFFStackVolumeRAMLoader(filePath));
     volume->addRepresentation(volumeDisk);
 
     return volume;
 }
 
+TIFFStackVolumeRAMLoader::TIFFStackVolumeRAMLoader(const std::string& sourceFile)
+    : sourceFile_{sourceFile} {}
+
 TIFFStackVolumeRAMLoader* TIFFStackVolumeRAMLoader::clone() const {
     return new TIFFStackVolumeRAMLoader(*this);
 }
 
-std::shared_ptr<VolumeRepresentation> TIFFStackVolumeRAMLoader::createRepresentation() const {
-    std::string fileName = volumeDisk_->getSourceFile();
+std::shared_ptr<VolumeRepresentation> TIFFStackVolumeRAMLoader::createRepresentation(
+    const VolumeRepresentation& src) const {
+    std::string fileName = sourceFile_;
 
     if (!filesystem::fileExists(fileName)) {
-        std::string newPath = filesystem::addBasePath(fileName);
+        const auto newPath = filesystem::addBasePath(fileName);
 
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
@@ -93,21 +99,24 @@ std::shared_ptr<VolumeRepresentation> TIFFStackVolumeRAMLoader::createRepresenta
         }
     }
     cimgutil::TIFFHeader header;
-    header.format = volumeDisk_->getDataFormat();
-    header.dimensions = volumeDisk_->getDimensions();
+    header.format = src.getDataFormat();
+    header.dimensions = src.getDimensions();
     auto data = cimgutil::loadTIFFVolumeData(nullptr, fileName, header);
 
-    return dispatching::dispatch<std::shared_ptr<VolumeRepresentation>, dispatching::filter::All>(
-        volumeDisk_->getDataFormat()->getId(), *this, data);
+    auto volumeRAM =
+        createVolumeRAM(src.getDimensions(), src.getDataFormat(), data, src.getSwizzleMask(),
+                        src.getInterpolation(), src.getWrapping());
+
+    return volumeRAM;
 }
 
-void TIFFStackVolumeRAMLoader::updateRepresentation(
-    std::shared_ptr<VolumeRepresentation> dest) const {
+void TIFFStackVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
+                                                    const VolumeRepresentation& src) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
-    std::string fileName = volumeDisk_->getSourceFile();
+    std::string fileName = sourceFile_;
     if (!filesystem::fileExists(fileName)) {
-        std::string newPath = filesystem::addBasePath(fileName);
+        const auto newPath = filesystem::addBasePath(fileName);
 
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
@@ -118,10 +127,9 @@ void TIFFStackVolumeRAMLoader::updateRepresentation(
     }
 
     cimgutil::TIFFHeader header;
-    header.format = volumeDisk_->getDataFormat();
-    header.dimensions = volumeDisk_->getDimensions();
+    header.format = src.getDataFormat();
+    header.dimensions = src.getDimensions();
     cimgutil::loadTIFFVolumeData(volumeDst->getData(), fileName, header);
-    volumeDisk_->setDimensions(header.dimensions);
 }
 
 }  // namespace inviwo

@@ -57,9 +57,8 @@ class IVW_MODULE_OPENCL_API VolumeCLGL : public VolumeCLBase,
                                          public VolumeRepresentation,
                                          public TextureObserver {
 public:
-    VolumeCLGL(const DataFormatBase* format = DataFormatBase::get(), Texture3D* data = nullptr);
-    VolumeCLGL(const size3_t& dimensions, const DataFormatBase* format,
-               std::shared_ptr<Texture3D> data);
+    VolumeCLGL(Texture3D* data);
+    VolumeCLGL(std::shared_ptr<Texture3D> data);
     VolumeCLGL(const VolumeCLGL& rhs);
 
     virtual VolumeCLGL* clone() const override;
@@ -75,6 +74,12 @@ public:
      */
     virtual void setSwizzleMask(const SwizzleMask& mask) override;
     virtual SwizzleMask getSwizzleMask() const override;
+
+    virtual void setInterpolation(InterpolationType interpolation) override;
+    virtual InterpolationType getInterpolation() const override;
+
+    virtual void setWrapping(const Wrapping3D& wrapping) override;
+    virtual Wrapping3D getWrapping() const override;
 
     virtual cl::Image3DGL& getEditable() override;
     virtual const cl::Image3DGL& get() const override;
@@ -103,10 +108,9 @@ protected:
     static CLTexture3DSharingMap clVolumeSharingMap_;
     void initialize();
     void deinitialize();
-    size3_t dimensions_;
     std::shared_ptr<Texture3D> texture_;
     std::shared_ptr<cl::Image3DGL> clImage_;  ///< Potentially shared with other LayerCLGL
-    SwizzleMask swizzleMask_;
+
 };
 
 }  // namespace inviwo

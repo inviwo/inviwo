@@ -29,8 +29,16 @@
 
 #include <modules/base/io/datvolumewriter.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/io/datawriterexception.h>
+
+#include <glm/gtx/range.hpp>
+
+#include <fmt/format.h>
+#include <fmt/ranges.h>
+#include <fmt/ostream.h>
 
 namespace inviwo {
 
@@ -66,27 +74,43 @@ void DatVolumeWriter::writeData(const Volume* data, const std::string filePath) 
     glm::mat3 basis = glm::transpose(data->getBasis());
     glm::vec3 offset = data->getOffset();
     glm::mat4 wtm = glm::transpose(data->getWorldMatrix());
-    writeKeyToString(ss, "RawFile", fileName + ".raw");
-    writeKeyToString(ss, "Resolution", vr->getDimensions());
-    writeKeyToString(ss, "Format", vr->getDataFormatString());
-    writeKeyToString(ss, "ByteOffset", "0");
-    writeKeyToString(ss, "BasisVector1", basis[0]);
-    writeKeyToString(ss, "BasisVector2", basis[1]);
-    writeKeyToString(ss, "BasisVector3", basis[2]);
-    writeKeyToString(ss, "Offset", offset);
-    writeKeyToString(ss, "WorldVector1", wtm[0]);
-    writeKeyToString(ss, "WorldVector2", wtm[1]);
-    writeKeyToString(ss, "WorldVector3", wtm[2]);
-    writeKeyToString(ss, "WorldVector4", wtm[3]);
-    writeKeyToString(ss, "DataRange", data->dataMap_.dataRange);
-    writeKeyToString(ss, "ValueRange", data->dataMap_.valueRange);
-    writeKeyToString(ss, "Unit", data->dataMap_.valueUnit);
 
-    std::vector<std::string> keys = data->getMetaDataMap()->getKeys();
+    auto print = util::overloaded{
+        [&](std::string_view key, const std::string& val) { fmt::print(ss, "{}: {}", key, val); },
+        [&](std::string_view key, InterpolationType val) { fmt::print(ss, "{}: {}", key, val); },
+        [&](std::string_view key, const SwizzleMask& mask) {
+            fmt::print(ss, "{}: {}{}{}{}", key, mask[0], mask[1], mask[2], mask[3]);
+        },
+        [&](std::string_view key, const Wrapping3D& wrapping) {
+            fmt::print(ss, "{}: {} {} {}", key, wrapping[0], wrapping[1], wrapping[2]);
+        },
+        [&](std::string_view key, const auto& vec) {
+            fmt::print(ss, "{}: {}", key, fmt::join(begin(vec), end(vec), " "));
+        }};
 
-    for (auto& key : keys) {
+    print("RawFile", fileName + ".raw");
+    print("Resolution", vr->getDimensions());
+    print("Format", vr->getDataFormatString());
+    print("ByteOffset", std::string("0"));
+    print("BasisVector1", basis[0]);
+    print("BasisVector2", basis[1]);
+    print("BasisVector3", basis[2]);
+    print("Offset", offset);
+    print("WorldVector1", wtm[0]);
+    print("WorldVector2", wtm[1]);
+    print("WorldVector3", wtm[2]);
+    print("WorldVector4", wtm[3]);
+    print("DataRange", data->dataMap_.dataRange);
+    print("ValueRange", data->dataMap_.valueRange);
+    print("Unit", data->dataMap_.valueUnit);
+
+    print("SwizzleMask", vr->getSwizzleMask());
+    print("Interpolation", vr->getInterpolation());
+    print("Wrapping", vr->getWrapping());
+
+    for (auto& key : data->getMetaDataMap()->getKeys()) {
         auto m = data->getMetaDataMap()->get(key);
-        if (auto sm = dynamic_cast<const StringMetaData*>(m)) writeKeyToString(ss, key, sm->get());
+        if (auto sm = dynamic_cast<const StringMetaData*>(m)) print(key, sm->get());
     }
 
     if (auto f = filesystem::ofstream(filePath)) {
@@ -96,15 +120,10 @@ void DatVolumeWriter::writeData(const Volume* data, const std::string filePath) 
     }
 
     if (auto f = filesystem::ofstream(rawPath, std::ios::out | std::ios::binary)) {
-        f.write((char*)vr->getData(), vr->getNumberOfBytes());
+        f.write(static_cast<const char*>(vr->getData()), vr->getNumberOfBytes());
     } else {
         throw DataWriterException("Error: Could not write to raw file: " + rawPath, IVW_CONTEXT);
     }
-}
-
-void DatVolumeWriter::writeKeyToString(std::stringstream& ss, const std::string& key,
-                                       const std::string& str) const {
-    ss << key << ": " << str << std::endl;
 }
 
 }  // namespace inviwo

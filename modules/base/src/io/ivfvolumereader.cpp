@@ -67,7 +67,17 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::string& filePath) {
     format = DataFormatBase::get(formatFlag);
     d.deserialize("Dimension", dimensions);
 
-    auto volume = std::make_shared<Volume>(dimensions, format);
+    SwizzleMask swizzleMask;
+    d.deserialize("SwizzleMask", swizzleMask);
+
+    InterpolationType interpolation;
+    d.deserialize("Interpolation", interpolation);
+
+    Wrapping3D wrapping;
+    d.deserialize("Wrapping", wrapping);
+
+    auto volume =
+        std::make_shared<Volume>(dimensions, format, swizzleMask, interpolation, wrapping);
     mat4 basisAndOffset = volume->getModelMatrix();
     mat4 worldTransform = volume->getWorldMatrix();
     d.deserialize("BasisAndOffset", basisAndOffset);
@@ -81,10 +91,11 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::string& filePath) {
 
     volume->getMetaDataMap()->deserialize(d);
     littleEndian = volume->getMetaData<BoolMetaData>("LittleEndian", littleEndian);
-    auto vd = std::make_shared<VolumeDisk>(filePath, dimensions, format);
+    auto vd = std::make_shared<VolumeDisk>(filePath, dimensions, format, swizzleMask, interpolation,
+                                           wrapping);
 
     auto loader =
-        std::make_unique<RawVolumeRAMLoader>(rawFile, byteOffset, dimensions, littleEndian, format);
+        std::make_unique<RawVolumeRAMLoader>(rawFile, byteOffset, littleEndian);
     vd->setLoader(loader.release());
 
     volume->addRepresentation(vd);

@@ -29,6 +29,8 @@
 
 #include <modules/opengl/openglutils.h>
 
+#include <modules/opengl/openglexception.h>
+
 #include <algorithm>
 
 namespace inviwo {
@@ -56,6 +58,56 @@ std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleMask& mask) {
     std::array<GLint, 4> swizzleMaskGL;
     std::transform(mask.begin(), mask.end(), swizzleMaskGL.begin(), convertToGL);
     return swizzleMaskGL;
+}
+
+GLenum convertWrappingToGL(Wrapping wrap) {
+    switch (wrap) {
+        case Wrapping::Clamp:
+            return GL_CLAMP_TO_EDGE;
+        case Wrapping::Repeat:
+            return GL_REPEAT;
+        case Wrapping::Mirror:
+            return GL_MIRRORED_REPEAT;
+        default:
+            return GL_CLAMP_TO_EDGE;
+    }
+}
+
+Wrapping convertWrappingFromGL(GLenum wrap) {
+    switch (wrap) {
+        case GL_CLAMP_TO_EDGE:
+            return Wrapping::Clamp;
+        case GL_REPEAT:
+            return Wrapping::Repeat;
+        case GL_MIRRORED_REPEAT:
+            return Wrapping::Mirror;
+        default:
+            throw OpenGLException("Unsupported Wrapping mode encountered",
+                                  IVW_CONTEXT_CUSTOM("convertWrappingFromGL"));
+    }
+}
+
+GLenum convertInterpolationToGL(InterpolationType interpolation) {
+    switch (interpolation) {
+        case InterpolationType::Linear:
+            return GL_LINEAR;
+        case InterpolationType::Nearest:
+            return GL_NEAREST;
+        default:
+            return GL_LINEAR;
+    }
+}
+
+InterpolationType convertInterpolationFromGL(GLenum interpolation) {
+    switch (interpolation) {
+        case GL_LINEAR:
+            return InterpolationType::Linear;
+        case GL_NEAREST:
+            return InterpolationType::Nearest;
+        default:
+            throw OpenGLException("Unsupported filtering mode encountered",
+                                  IVW_CONTEXT_CUSTOM("convertInterpolationFromGL"));
+    }
 }
 
 SwizzleMask convertSwizzleMaskFromGL(const std::array<GLint, 4>& maskGL) {

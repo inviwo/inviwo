@@ -59,10 +59,29 @@ public:
      * \brief update the swizzle mask of the channels for sampling color layers
      * Needs to be overloaded by child classes.
      *
-     * @param mask    new swizzle mask
+     * @param mask new swizzle mask
      */
     virtual void setSwizzleMask(const SwizzleMask& mask) = 0;
     virtual SwizzleMask getSwizzleMask() const = 0;
+
+    /**
+     * \brief update the interpolation for sampling layer
+     * Needs to be overloaded by child classes.
+     *
+     * @param interpolation new interpolation type
+     */
+    virtual void setInterpolation(InterpolationType interpolation) = 0;
+    virtual InterpolationType getInterpolation() const = 0;
+
+    /**
+     * \brief Update the wrapping type of the layer
+     * Needs to be overloaded by child classes.
+     *
+     * @param wrapping new wrapping type
+     */
+    virtual void setWrapping(const Wrapping2D& wrapping) = 0;
+    virtual Wrapping2D getWrapping() const = 0;
+
 
     /**
      * Copy and resize the representations of this onto the target.

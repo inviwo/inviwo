@@ -61,6 +61,12 @@ public:
     virtual void setSwizzleMask(const SwizzleMask& mask) = 0;
     virtual SwizzleMask getSwizzleMask() const = 0;
 
+    virtual void setInterpolation(InterpolationType interpolation) = 0;
+    virtual InterpolationType getInterpolation() const = 0;
+
+    virtual void setWrapping(const Wrapping3D& wrapping) = 0;
+    virtual Wrapping3D getWrapping() const = 0;
+
 protected:
     VolumeRepresentation() = default;
     VolumeRepresentation(const DataFormatBase* format);

@@ -40,11 +40,16 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Texture2D : public Texture {
 public:
-    Texture2D(size2_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
+    Texture2D(size2_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0,
+              const SwizzleMask& swizzleMask = swizzlemasks::rgba,
+              const Wrapping2D& wrap = wrapping2d::clampAll);
     Texture2D(size2_t dimensions, GLint format, GLint internalformat, GLenum dataType,
-              GLenum filtering, GLint level = 0);
+              GLenum filtering, GLint level = 0,
+              const SwizzleMask& swizzleMask = swizzlemasks::rgba,
+              const Wrapping2D& wrap = wrapping2d::clampAll);
+
     Texture2D(const Texture2D& other);
-    Texture2D(Texture2D&& other);  // move constructor
+    Texture2D(Texture2D&& other);
     Texture2D& operator=(const Texture2D& other);
     Texture2D& operator=(Texture2D&& other);
     virtual ~Texture2D() = default;
@@ -52,18 +57,18 @@ public:
     Texture2D* clone() const;
 
     void initialize(const void* data);
+    void upload(const void* data);
 
     size_t getNumberOfValues() const;
-
-    void upload(const void* data);
 
     const size2_t& getDimensions() const { return dimensions_; }
     size_t getWidth() const { return dimensions_.x; }
     size_t getHeight() const { return dimensions_.y; }
-    void resize(size2_t dimensions);
 
-protected:
-    static void default2DTextureParameterFunction(Texture*);
+    void setWrapping(const Wrapping2D& wrapping);
+    Wrapping2D getWrapping() const;
+
+    void resize(size2_t dimensions);
 
 private:
     size2_t dimensions_;
