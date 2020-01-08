@@ -558,8 +558,8 @@ bool ShaderObject::isReady() const {
 void ShaderObject::compile() {
     glCompileShader(id_);
     if (!isReady()) {
-        throw OpenGLException(
-            resource_->key() + " " + resolveLog(utilgl::getShaderInfoLog(id_)), IVW_CONTEXT);
+        throw OpenGLException(resource_->key() + " " + resolveLog(utilgl::getShaderInfoLog(id_)),
+                              IVW_CONTEXT);
     }
 
 #ifdef IVW_DEBUG

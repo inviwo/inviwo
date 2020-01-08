@@ -225,7 +225,6 @@ private:
     void parseSource(std::ostringstream& output);
     std::string resolveLog(const std::string& compileLog) const;
 
-
     // state variables
     ShaderType shaderType_;
     GLuint id_;
