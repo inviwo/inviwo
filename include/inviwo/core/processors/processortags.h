@@ -31,7 +31,9 @@
 #define IVW_PROCESSORTAGS_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+
+#include <string>
+#include <vector>
 
 namespace inviwo {
 
@@ -107,8 +109,6 @@ public:
     int getMatches(const Tags&) const;
 
     IVW_CORE_API friend std::ostream& operator<<(std::ostream& os, const inviwo::Tags& obj);
-    IVW_CORE_API friend bool operator==(const Tags& lhs, const Tags& rhs);
-    IVW_CORE_API friend bool operator<(const Tags& lhs, const Tags& rhs);
 
     std::vector<Tag> tags_;
 

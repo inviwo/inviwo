@@ -1,7 +1,6 @@
 #ifndef ENUM_CLASS_FLAGS_HPP
 #define ENUM_CLASS_FLAGS_HPP
 
-
 #include "allow_flags.h"
 #include "iterator.h"
 
@@ -13,7 +12,6 @@
 namespace inviwo {
 
 namespace flags {
-
 
 struct empty_t {
     constexpr empty_t() noexcept {}
@@ -65,7 +63,8 @@ public:
 #ifdef ENUM_CLASS_FLAGS_FORBID_IMPLICT_CONVERSION
     explicit
 #endif
-        constexpr flags(enum_type e) noexcept : val_(static_cast<impl_type>(e)) {
+        constexpr flags(enum_type e) noexcept
+        : val_(static_cast<impl_type>(e)) {
     }
 
     flags &operator=(enum_type e) noexcept {
@@ -153,14 +152,14 @@ public:
         val_ = static_cast<impl_type>(newval);
     }
 
-//  Visual Studio has some issue about bit_size() not beeing constexpr.
-//     constexpr explicit operator std::bitset<bit_size()>() const noexcept {
-//         return to_bitset();
-//     }
-//
-//     constexpr std::bitset<bit_size()> to_bitset() const noexcept {
-//         return {val_};
-//     }
+    //  Visual Studio has some issue about bit_size() not beeing constexpr.
+    //     constexpr explicit operator std::bitset<bit_size()>() const noexcept {
+    //         return to_bitset();
+    //     }
+    //
+    //     constexpr std::bitset<bit_size()> to_bitset() const noexcept {
+    //         return {val_};
+    //     }
 
     constexpr bool empty() const noexcept { return !val_; }
 
@@ -258,24 +257,24 @@ void swap(flags<E> &fl1, flags<E> &fl2) noexcept {
 
 }  // namespace flags
 
-}  // namespace
-
 template <class E>
 constexpr auto operator|(E e1, E e2) noexcept ->
-    typename std::enable_if<inviwo::flags::is_flags<E>::value, inviwo::flags::flags<E>>::type {
-    return inviwo::flags::flags<E>(e1) | e2;
+    typename std::enable_if<flags::is_flags<E>::value, flags::flags<E>>::type {
+    return flags::flags<E>(e1) | e2;
 }
 
 template <class E>
 constexpr auto operator&(E e1, E e2) noexcept ->
-    typename std::enable_if<inviwo::flags::is_flags<E>::value, inviwo::flags::flags<E>>::type {
-    return inviwo::flags::flags<E>(e1) & e2;
+    typename std::enable_if<flags::is_flags<E>::value, flags::flags<E>>::type {
+    return flags::flags<E>(e1) & e2;
 }
 
 template <class E>
 constexpr auto operator^(E e1, E e2) noexcept ->
-    typename std::enable_if<inviwo::flags::is_flags<E>::value, inviwo::flags::flags<E>>::type {
-    return inviwo::flags::flags<E>(e1) ^ e2;
+    typename std::enable_if<flags::is_flags<E>::value, flags::flags<E>>::type {
+    return flags::flags<E>(e1) ^ e2;
 }
 
-#endif // ENUM_CLASS_FLAGS_HPP
+}  // namespace inviwo
+
+#endif  // ENUM_CLASS_FLAGS_HPP
