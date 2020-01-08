@@ -23,9 +23,9 @@ set(WEBBROWSER_HELPER_SOURCES
     ${WEBBROWSER_RESOURCES}
 )
 
-# place helper in separate executable. CEF uses app name + helper by default
+# place helper in separate executable. CEF uses "<app name> + Helper" by default
 set(CEF_HELPER_TARGET "cef_inviwo_helper" CACHE INTERNAL "CEF_HELPER_TARGET")
-set(CEF_HELPER_OUTPUT_NAME "Inviwo CEF Helper")
+set(CEF_HELPER_OUTPUT_NAME "${IVW_APP_INSTALL_NAME} Helper")
 
 if (NOT OS_MACOSX)
     add_executable(${CEF_HELPER_TARGET} WIN32 MACOSX_BUNDLE ${WEBBROWSER_HELPER_SOURCES})
