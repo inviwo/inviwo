@@ -174,7 +174,8 @@ CanvasProcessor::~CanvasProcessor() {
 
 void CanvasProcessor::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
     if (processorWidget && !dynamic_cast<CanvasProcessorWidget*>(processorWidget.get())) {
-        throw Exception("Expected CanvasProcessorWidget in CanvasProcessor::setProcessorWidget", IVW_CONTEXT);
+        throw Exception("Expected CanvasProcessorWidget in CanvasProcessor::setProcessorWidget",
+                        IVW_CONTEXT);
     }
     Processor::setProcessorWidget(std::move(processorWidget));
     // Widget may be set after deserialization

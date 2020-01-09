@@ -594,8 +594,7 @@ std::shared_ptr<Texture2D> TextRenderer::createAtlasTexture(FontCache& fc) {
     while (texSize.y > width) {
         width *= 2;
         if (width > maxTexSize) {
-            throw Exception("Font size too large (max size for font atlas exceeded)",
-                            IVW_CONTEXT);
+            throw Exception("Font size too large (max size for font atlas exceeded)", IVW_CONTEXT);
         }
 
         texSize = calcTexLayout(width, glyphMargin_);

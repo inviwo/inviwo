@@ -100,9 +100,9 @@ void exposeImage(py::module& m) {
         .def("clone", [](Image& self) { return self.clone(); })
         .def_property_readonly("dimensions", &Image::getDimensions)
         .def_property_readonly("depth", [](Image& img) { return img.getDepthLayer(); },
-            py::return_value_policy::reference_internal)
+                               py::return_value_policy::reference_internal)
         .def_property_readonly("picking", [](Image& img) { return img.getPickingLayer(); },
-            py::return_value_policy::reference_internal)
+                               py::return_value_policy::reference_internal)
         .def_property_readonly("colorLayers", getLayers)
         .def("__repr__", [](const Image& self) {
             const auto dims = self.getDimensions();

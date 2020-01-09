@@ -180,9 +180,8 @@ std::unique_ptr<Interpolation> AnimationManager::getDefaultInterpolation(Propert
     if (interpolationIt != propertyToInterpolationMap_.end()) {
         interpolation = interpolationFactory_.create(interpolationIt->second);
         if (!interpolation) {
-            throw Exception(
-                "Default interpolation method for " + property->getClassIdentifier() +
-                " was registered but the interpolation method was not added to the "
+            throw Exception("Default interpolation method for " + property->getClassIdentifier() +
+                                " was registered but the interpolation method was not added to the "
                                 "interpolation factory. @Developer: Please follow examples in "
                                 "animationmodule.cpp",
                             IVW_CONTEXT);

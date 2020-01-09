@@ -80,7 +80,8 @@ std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& perce
     auto nElements = data.size();
     for (auto percentile : percentiles) {
         if (percentile < 0.f || percentile > 1.f) {
-            throw Exception("Percentile must be between 0 and 1", IVW_CONTEXT_CUSTOM("statsutil::percentiles"));
+            throw Exception("Percentile must be between 0 and 1",
+                            IVW_CONTEXT_CUSTOM("statsutil::percentiles"));
         }
         // Take care of percentile == 1 using std::min
         result.push_back(

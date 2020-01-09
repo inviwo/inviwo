@@ -45,7 +45,8 @@ std::string getModulePath(const std::string &identifier, ModulePath pathType) {
                             IVW_CONTEXT_CUSTOM("module::getModulePath"));
         }
     } else {
-        throw Exception("Could not locate module \"" + identifier + "\"", IVW_CONTEXT_CUSTOM("module::getModulePath"));
+        throw Exception("Could not locate module \"" + identifier + "\"",
+                        IVW_CONTEXT_CUSTOM("module::getModulePath"));
     }
     return path;
 }
