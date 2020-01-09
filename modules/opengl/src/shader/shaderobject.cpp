@@ -237,8 +237,7 @@ void utilgl::parseShaderSource(
     std::unordered_map<typename ShaderSegment::Type, std::vector<ShaderSegment>> replacements,
     std::function<std::optional<std::pair<std::string, std::string>>(const std::string&)>
         getSource) {
-    using It = typename std::string::const_iterator;
-
+    
     size_t lines = 0;
     psm::State state{output, lnr, key, replacements, getSource, lines};
     psm::Errors errors;
@@ -473,18 +472,6 @@ void ShaderObject::addStandardVertexInDeclarations() {
 }
 
 void ShaderObject::parseSource(std::ostringstream& output) {
-
-    using It = std::string::const_iterator;
-
-    auto out = [&output, this, num = size_t{0}](It it, It end, size_t count,
-                                                const std::string& key) mutable {
-        for (size_t i = 0; i < count && it != end; ++i, ++it) {
-            output << *it;
-            if (*it == '\n') lnr_.addLine(key, ++num);
-        }
-        return it;
-    };
-
     includeResources_.push_back(resource_);
     resourceCallbacks_.push_back(
         resource_->onChange([this](const ShaderResource*) { callbacks_.invoke(this); }));

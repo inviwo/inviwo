@@ -37,6 +37,10 @@ namespace inviwo {
  * Hold a small text snippet to be inserted into shader code
  */
 struct IVW_MODULE_OPENGL_API ShaderSegment {
+
+    /**
+     * Represents a placeholder in shader code that will be replaced
+     */
     class IVW_MODULE_OPENGL_API Type {
     public:
         Type() = default;
@@ -68,9 +72,12 @@ struct IVW_MODULE_OPENGL_API ShaderSegment {
         std::string value_;
     };
 
-    Type type;
-    std::string name;
-    std::string snippet;
+    Type type;            //!< The placeholder that will be replaced
+    std::string name;     //!< A name of the snippet, used to the LineNumberResolver
+    std::string snippet;  //!< The replacement code
+    /** If there are multiple replacement with the same Type, they will be sorted using priority,
+     * lower goes first.
+     */
     size_t priority = 1000;
 };
 

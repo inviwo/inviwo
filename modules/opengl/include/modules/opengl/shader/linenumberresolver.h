@@ -36,9 +36,20 @@
 
 namespace inviwo {
 
+/**
+ * A class for tracing where each line of code come from after a file has been pre-processed 
+ * @see ShaderObject
+ */
 struct IVW_MODULE_OPENGL_API LineNumberResolver {
     LineNumberResolver() = default;
+    /**
+     * Append a source file and line number
+     */
     void addLine(const std::string& file, size_t line);
+
+    /**
+     * Lookup up the source file and line for the given line.
+     */
     std::pair<std::string, size_t> resolveLine(size_t line) const;
     void clear();
     size_t size() { return lines_.size(); }

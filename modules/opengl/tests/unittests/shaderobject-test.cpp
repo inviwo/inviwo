@@ -107,7 +107,7 @@ TEST(ShaderObject, parseSource) {
     LineNumberResolver lnr;
 
     auto getSource =
-        [this](const std::string& path) -> std::optional<std::pair<std::string, std::string>> {
+        [](const std::string& path) -> std::optional<std::pair<std::string, std::string>> {
         if (path == "inc1") {
             return std::pair<std::string, std::string>{path, "Inc1"};
         }
@@ -143,11 +143,36 @@ TEST(ShaderObject, parseSource) {
 
     std::vector<size_t> lineNum{1,  2,  3,  4,  5,  6,  7,  8, 9, 1, 11, 1,  2,  3,  13,
                                 14, 15, 16, 17, 18, 19, 20, 1, 2, 1, 2,  22, 23, 24, 25};
-    std::vector<std::string> names{
-        "Code1",      "Code1",      "Code1", "Code1", "Code1", "Code1", "Code1",     "Code1",
-        "Code1",      "inc1",       "Code1", "inc2",  "inc2",  "inc2",  "Code1",     "Code1",
-        "Code1",      "Code1",      "Code1", "Code1", "Code1", "Code1", "Repl1:900", "Repl1:900",
-        "Repl2:1100", "Repl2:1100", "Code1", "Code1", "Code1", "Code1"};
+    std::vector<std::string> names{"Code1",
+                                   "Code1",
+                                   "Code1",
+                                   "Code1",
+                                   "Code1",
+                                   "Code1",
+                                   "Code1",
+                                   "Code1",
+                                   "Code1",
+                                   "inc1",
+                                   "Code1",
+                                   "inc2",
+                                   "inc2",
+                                   "inc2",
+                                   "Code1",
+                                   "Code1",
+                                   "Code1",
+                                   "Code1",
+                                   "Code1",
+                                   "Code1",
+                                   "Code1",
+                                   "Code1",
+                                   "Repl1[MAGIC_REPLACEMENT,900]",
+                                   "Repl1[MAGIC_REPLACEMENT,900]",
+                                   "Repl2[MAGIC_REPLACEMENT,1100]",
+                                   "Repl2[MAGIC_REPLACEMENT,1100]",
+                                   "Code1",
+                                   "Code1",
+                                   "Code1",
+                                   "Code1"};
 
     for (const auto& [exp, refname, refline] : util::zip(lnr, names, lineNum)) {
         EXPECT_EQ(exp.first, refname);
