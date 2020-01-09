@@ -124,7 +124,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     auto exeExtension = filesystem::getFileExtension(filesystem::getExecutablePath());
     // Assume that inviwo_web_helper is next to the main executable
     auto exeDirectory = filesystem::getFileDirectory(filesystem::getExecutablePath());
-    
+
     auto locale = app->getUILocale().name();
     if (locale == "C") {
         // Crash when default locale "C" is used. Reproduce with GLFWMinimum application
@@ -166,7 +166,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     CefSettings settings;
     // Non-mac systems uses a single helper executable so here we can specify name
     auto subProcessExecutable = exeDirectory + "/cef_web_helper." + exeExtension;
-        if (!filesystem::fileExists(subProcessExecutable)) {
+    if (!filesystem::fileExists(subProcessExecutable)) {
         throw ModuleInitException("Could not find web helper executable:" + subProcessExecutable);
     }
 
