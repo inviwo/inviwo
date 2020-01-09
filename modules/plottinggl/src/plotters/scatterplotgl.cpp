@@ -132,7 +132,7 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
     , picking_(processor, 1, [this](PickingEvent* p) { objectPicked(p); })
     , processor_(processor)
     , lineSettings_("lineSettings", "Line Settings")
-    , lineRenderer_(&lineSettings_) {
+    , selectionRectRenderer_(&lineSettings_) {
     if (processor_) {
         shader_.onReload([this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
     }
@@ -338,18 +338,8 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
     shader_.deactivate();
     boa_->unbind();
 
-    if (dragRect_) {
-        
-        auto start = vec2((*dragRect_)[0]);
-        auto end = vec2((*dragRect_)[1]);
-        auto scale = vec2((*dragRect_)[1] - (*dragRect_)[0]);
-        mat4 m(vec4(scale.x, 0.f, 0.f, 0.f), vec4(0.f, scale.y, 0.f, 0.f), vec4(0.f, 0.f, 1.f, 0.f),
-               vec4(start.x, start.y, 0.f, 1.f));
-        dragRectMesh_.setModelMatrix(m);
-        OrthographicCamera camera_;
-        camera_.setFrustum(ivec4(0, dims.x, 0, dims.y));
-        lineRenderer_.render(dragRectMesh_, camera_, dims);
-    }
+    // Render selection rectangle
+    selectionRectRenderer_.render(dragRect_, dims);
 
     renderAxis(dims);
 }
