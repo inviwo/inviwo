@@ -40,7 +40,7 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/base/algorithm/dataminmax.h>
-#include <modules/basegl/rendering/linerenderer.h>
+
 #include <modules/basegl/properties/linesettingsproperty.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
@@ -48,6 +48,7 @@
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
 
+#include <modules/plottinggl/rendering/selectionrectanglerenderer.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 
 #include <optional>
@@ -196,15 +197,9 @@ protected:
 
     std::optional<std::array<dvec2, 2>> dragRect_;
 
+
     LineSettingsProperty lineSettings_;
-    algorithm::LineRenderer lineRenderer_;
-    ColoredMesh dragRectMesh_ = ColoredMesh(DrawType::Lines,
-                                 ConnectivityType::Strip,
-                                 {{vec3{0.f, 0.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},
-                                  {vec3{1.f, 0.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},
-                                  {vec3{1.f, 1.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},
-                                  {vec3{0.f, 1.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}}},
-                                 {0, 1, 2, 3, 0});
+    SelectionRectangleRenderer selectionRectRenderer_;
 };
 
 }  // namespace plot
