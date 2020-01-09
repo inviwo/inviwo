@@ -95,7 +95,7 @@ TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suf
 
     int fd = mkstemps(fileTemplate.data(), suffixlen);
     if (fd == -1) {
-        throw Exception("could not create temporary file", IVW_CONTEXT;
+        throw Exception("could not create temporary file", IVW_CONTEXT);
     }
     handle_ = fdopen(fd, "w");
     if (!handle_) {
