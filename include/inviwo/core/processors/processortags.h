@@ -31,9 +31,7 @@
 #define IVW_PROCESSORTAGS_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-
-#include <string>
-#include <vector>
+#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
