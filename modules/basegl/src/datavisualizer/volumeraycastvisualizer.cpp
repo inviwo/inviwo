@@ -35,7 +35,7 @@
 #include <modules/basegl/processors/entryexitpointsprocessor.h>
 #include <modules/basegl/processors/background.h>
 #include <modules/basegl/processors/meshrenderprocessorgl.h>
-#include <modules/basegl/processors/linerenderer.h>
+#include <modules/basegl/processors/linerendererprocessor.h>
 #include <modules/opengl/canvasprocessorgl.h>
 #include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/ports/volumeport.h>
@@ -93,7 +93,7 @@ std::vector<Processor*> VolumeRaycastVisualizer::addVisualizerNetwork(Outport* o
     auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 15}));
 
     auto vbb = net->addProcessor(util::makeProcessor<VolumeBoundingBox>(GP{8, 3}));
-    auto lrp = net->addProcessor(util::makeProcessor<LineRenderer>(GP{8, 6}));
+    auto lrp = net->addProcessor(util::makeProcessor<LineRendererProcessor>(GP{8, 6}));
 
     static_cast<FloatVec4Property*>(bak->getPropertyByIdentifier("bgColor1"))
         ->set(vec4(0.443f, 0.482f, 0.6f, 1.0f));
@@ -103,7 +103,7 @@ std::vector<Processor*> VolumeRaycastVisualizer::addVisualizerNetwork(Outport* o
     // set shading mode in volume raycaster to 'no shading'
     static_cast<OptionPropertyInt*>(vrc->getPropertyByIdentifier("shadingMode", true))->set(0);
 
-    static_cast<FloatProperty*>(lrp->getPropertyByIdentifier("lineWidth"))->set(1.5f);
+    static_cast<FloatProperty*>(lrp->getPropertyByPath({{"lineSettings"}, {"lineWidth"}}))->set(1.5f);
     static_cast<FloatVec3Property*>(vrc->getPropertyByIdentifier("lookFrom", true))
         ->set(vec3(0.0f, 0.0f, 30.0f));
 
