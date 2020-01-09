@@ -62,7 +62,7 @@ TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suf
     std::array<wchar_t, MAX_PATH> tempFile;
     auto retVal = GetTempPath(MAX_PATH, tempPath.data());
     if ((retVal > MAX_PATH) || (retVal == 0)) {
-        throw Exception("could not locate temp folder");
+        throw Exception("could not locate temp folder", IVW_CONTEXT);
     }
     // generate temp file name
     std::wstring prefixW(prefix.begin(), prefix.end());
@@ -71,7 +71,7 @@ TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suf
                                    0,                 // create unique name
                                    tempFile.data());  // buffer for name
     if (uRetVal == 0) {
-        throw Exception("could not create temporary file name");
+        throw Exception("could not create temporary file name", IVW_CONTEXT);
     }
 
     filename_.assign(tempFile.begin(),
@@ -80,7 +80,7 @@ TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suf
 
     handle_ = filesystem::fopen(filename_, "w");
     if (!handle_) {
-        throw Exception("could not open temporary file");
+        throw Exception("could not open temporary file", IVW_CONTEXT);
     }
 #else
     static const std::string unqiue = "XXXXXX";
@@ -95,11 +95,11 @@ TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suf
 
     int fd = mkstemps(fileTemplate.data(), suffixlen);
     if (fd == -1) {
-        throw Exception("could not create temporary file");
+        throw Exception("could not create temporary file", IVW_CONTEXT;
     }
     handle_ = fdopen(fd, "w");
     if (!handle_) {
-        throw Exception("could not open temporary file");
+        throw Exception("could not open temporary file", IVW_CONTEXT);
     }
     filename_.assign(fileTemplate.begin(), fileTemplate.end() - 1);
 #endif

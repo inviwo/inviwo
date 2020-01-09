@@ -50,7 +50,7 @@ TextRenderer::TextRenderer(const std::string& fontPath)
     : fontface_(nullptr), fontSize_(10), lineSpacing_(0.2), glyphMargin_(2), shader_{getShader()} {
 
     if (FT_Init_FreeType(&fontlib_)) {
-        throw Exception("Could not initialize FreeType library");
+        throw Exception("Could not initialize FreeType library", IVW_CONTEXT);
     }
 
     setFont(fontPath);
@@ -69,9 +69,10 @@ void TextRenderer::setFont(const std::string& fontPath) {
 
     int error = FT_New_Face(fontlib_, fontPath.c_str(), 0, &fontface_);
     if (error == FT_Err_Unknown_File_Format) {
-        throw Exception(std::string("Unsupported font format: \"") + fontPath + "\"");
+        throw Exception(std::string("Unsupported font format: \"") + fontPath + "\"", IVW_CONTEXT);
     } else if (error) {
-        throw FileException(std::string("Could not open font file: \"") + fontPath + "\"");
+        throw FileException(std::string("Could not open font file: \"") + fontPath + "\"",
+                            IVW_CONTEXT);
     }
 
     FT_Select_Charmap(fontface_, ft_encoding_unicode);
@@ -479,7 +480,7 @@ TextRenderer::FontCache& TextRenderer::getFontCache() {
         createDefaultGlyphAtlas();
         fontCacheIt = glyphAtlas_.find(font);
         if (fontCacheIt == glyphAtlas_.end()) {
-            throw Exception("Could not create font atlas");
+            throw Exception("Could not create font atlas", IVW_CONTEXT);
         }
     }
     return fontCacheIt->second;
@@ -593,7 +594,8 @@ std::shared_ptr<Texture2D> TextRenderer::createAtlasTexture(FontCache& fc) {
     while (texSize.y > width) {
         width *= 2;
         if (width > maxTexSize) {
-            throw Exception("TextRenderer: font size too large (max size for font atlas exceeded)");
+            throw Exception("Font size too large (max size for font atlas exceeded)",
+                            IVW_CONTEXT);
         }
 
         texSize = calcTexLayout(width, glyphMargin_);

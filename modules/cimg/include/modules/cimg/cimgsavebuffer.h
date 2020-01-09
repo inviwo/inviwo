@@ -87,7 +87,8 @@ std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img,
 
         if (memfile.checkForOverflow()) {
             throw Exception(
-                "saveCImgToBuffer(): could not save image to buffer, exceeding buffer size.");
+                "Failed not save image to buffer, exceeding buffer size.",
+                IVW_CONTEXT_CUSTOM("cimgutil::saveCImgToBuffer"));
         }
     }
 

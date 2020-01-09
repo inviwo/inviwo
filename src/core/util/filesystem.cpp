@@ -145,10 +145,12 @@ std::string getWorkingDirectory() {
     std::array<char, FILENAME_MAX> workingDir;
 #ifdef WIN32
     if (!GetCurrentDirectoryA(static_cast<DWORD>(workingDir.size()), workingDir.data()))
-        throw Exception("Error querying current directory");
+        throw Exception("Error querying current directory",
+                        IVW_CONTEXT_CUSTOM("filesystem::getWorkingDirectory"));
 #else
     if (!getcwd(workingDir.data(), workingDir.size()))
-        throw Exception("Error querying current directory");
+        throw Exception("Error querying current directory",
+                        IVW_CONTEXT_CUSTOM("filesystem::getWorkingDirectory"));
 #endif
     return cleanupPath(std::string(workingDir.data()));
 }
@@ -162,17 +164,22 @@ std::string getExecutablePath() {
 
     auto size = GetModuleFileNameA(nullptr, executablePath.data(),
                                    static_cast<DWORD>(executablePath.size()));
-    if (size == 0) throw Exception("Error retrieving executable path");
+    if (size == 0)
+        throw Exception("Error retrieving executable path",
+                        IVW_CONTEXT_CUSTOM("filesystem::getExecutablePath"));
     while (size == executablePath.size()) {
         // buffer is too small, enlarge
         auto newSize = executablePath.size() * 2;
         if (newSize > maxBufSize) {
-            throw Exception("Insufficient buffer size");
+            throw Exception("Insufficient buffer size",
+                            IVW_CONTEXT_CUSTOM("filesystem::getExecutablePath"));
         }
         executablePath.resize(newSize);
         size = GetModuleFileNameA(nullptr, executablePath.data(),
                                   static_cast<DWORD>(executablePath.size()));
-        if (size == 0) throw Exception("Error retrieving executable path");
+        if (size == 0)
+            throw Exception("Error retrieving executable path",
+                            IVW_CONTEXT_CUSTOM("filesystem::getExecutablePath"));
     }
     retVal = std::string(executablePath.data());
 #elif __APPLE__
@@ -181,7 +188,8 @@ std::string getExecutablePath() {
     auto pid = getpid();
     if (proc_pidpath(pid, executablePath.data(), executablePath.size()) <= 0) {
         // Error retrieving path
-        throw Exception("Error retrieving executable path");
+        throw Exception("Error retrieving executable path",
+                        IVW_CONTEXT_CUSTOM("filesystem::getExecutablePath"));
     }
     retVal = std::string(executablePath.data());
 #else  // Linux
@@ -192,7 +200,8 @@ std::string getExecutablePath() {
         executablePath[size] = '\0';
     } else {
         // Error retrieving path
-        throw Exception("Error retrieving executable path");
+        throw Exception("Error retrieving executable path",
+                        IVW_CONTEXT_CUSTOM("filesystem::getExecutablePath"));
     }
     retVal = std::string(executablePath.data());
 #endif
@@ -541,7 +550,8 @@ std::string findBasePath() {
             directoryExists(IVW_TRUNK + "/modules")) {
             basePath = IVW_TRUNK;
         } else {
-            throw Exception("Could not locate Inviwo base path");
+            throw Exception("Could not locate Inviwo base path",
+                            IVW_CONTEXT_CUSTOM("filesystem::findBasePath"));
         }
     }
     return basePath;

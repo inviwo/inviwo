@@ -120,7 +120,7 @@ private:
 template <typename T>
 std::shared_ptr<Buffer<T>> IntegralLine::createMetaData(const std::string &name) {
     if (hasMetaData(name)) {
-        throw Exception("Meta data with name " + name + " already exists");
+        throw Exception("Meta data with name " + name + " already exists", IVW_CONTEXT);
     }
     auto md = std::make_shared<Buffer<T>>();
     metaData_[name] = md;

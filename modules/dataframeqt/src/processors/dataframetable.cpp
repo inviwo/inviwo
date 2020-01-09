@@ -99,7 +99,8 @@ void DataFrameTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> process
     auto widget = dynamic_cast<DataFrameTableProcessorWidget*>(processorWidget.get());
     if (processorWidget && !widget) {
         throw Exception(
-            "Expected DataFrameTableProcessorWidget in DataFrameTable::setProcessorWidget");
+            "Expected DataFrameTableProcessorWidget in DataFrameTable::setProcessorWidget",
+            IVW_CONTEXT);
     }
 
     if (widget) {

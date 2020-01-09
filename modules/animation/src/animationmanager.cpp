@@ -183,12 +183,15 @@ std::unique_ptr<Interpolation> AnimationManager::getDefaultInterpolation(Propert
             throw Exception(
                 "Default interpolation method for " + property->getClassIdentifier() +
                 " was registered but the interpolation method was not added to the "
-                "interpolation factory. @Developer: Please follow examples in animationmodule.cpp");
+                                "interpolation factory. @Developer: Please follow examples in "
+                                "animationmodule.cpp",
+                            IVW_CONTEXT);
         }
     } else {
         throw Exception(
             "No interpolation method for " + property->getClassIdentifier() +
-            " was registered. @Developer: Please follow examples in animationmodule.cpp");
+                " was registered. @Developer: Please follow examples in animationmodule.cpp",
+            IVW_CONTEXT);
     }
     return interpolation;
 }

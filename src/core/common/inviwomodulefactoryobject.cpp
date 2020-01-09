@@ -43,7 +43,7 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(
     , inviwoCoreVersion(inviwoCoreVersion_)
     , dependencies([&]() {
         if (dependencies_.size() != dependenciesVersion_.size()) {
-            throw Exception("Each module dependency must have a version");
+            throw Exception("Each module dependency must have a version", IVW_CONTEXT);
         }
         std::vector<std::pair<std::string, Version>> deps;
         for (auto&& item : util::zip(dependencies_, dependenciesVersion_)) {

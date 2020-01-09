@@ -301,13 +301,14 @@ void exposeProcessors(pybind11::module &m) {
                               ->getDataWriterFactory()
                               ->getWriterForTypeAndExtension<Layer>(ext);
             if (!writer) {
-                throw Exception("No writer for extension " + ext);
+                throw Exception("No writer for extension " + ext, IVW_CONTEXT_CUSTOM("exposeProcessors"));
             }
 
             if (auto layer = canvas->getVisibleLayer()) {
                 writer->writeData(layer, filepath);
             } else {
-                throw Exception("No image in canvas " + canvas->getIdentifier());
+                throw Exception("No image in canvas " + canvas->getIdentifier(),
+                                IVW_CONTEXT_CUSTOM("exposeProcessors"));
             }
         });
 

@@ -144,7 +144,8 @@ struct OptionWidgetReghelper {
 QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     : InviwoModule(app, "QtWidgets"), tfMenuHelper_(std::make_unique<TFMenuHelper>()) {
     if (!qApp) {
-        throw ModuleInitException("QApplication must be constructed before QtWidgetsModule");
+        throw ModuleInitException("QApplication must be constructed before QtWidgetsModule",
+                                  IVW_CONTEXT);
     }
     registerSettings(std::make_unique<QtWidgetsSettings>());
 
