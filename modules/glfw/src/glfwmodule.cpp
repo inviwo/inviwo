@@ -42,9 +42,10 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
     if (!app->getModuleManager().getModulesByAlias("OpenGLSupplier").empty()) {
         throw ModuleInitException(
             "GLFW could not be initialized because an other OpenGLSupplier is already used for "
-            "OpenGL context.");
+            "OpenGL context.",
+            IVW_CONTEXT);
     }
-    if (!glfwInit()) throw GLFWInitException("GLFW could not be initialized.");
+    if (!glfwInit()) throw GLFWInitException("GLFW could not be initialized.", IVW_CONTEXT);
 
     GLFWSharedCanvas_ = std::make_unique<CanvasGLFW>(app->getDisplayName());
     GLFWSharedCanvas_->activate();

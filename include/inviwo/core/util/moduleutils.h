@@ -65,10 +65,11 @@ std::string getModulePath(ModulePath pathType) {
     if (auto m = InviwoApplication::getPtr()->getModuleByType<T>()) {
         path = m->getPath(pathType);
         if (path.empty() || path == m->getPath()) {
-            throw Exception("Could not locate module path for specified path type");
+            throw Exception("Could not locate module path for specified path type",
+                            IVW_CONTEXT_CUSTOM("module::getModulePath"));
         }
     } else {
-        throw Exception("Could not locate module");
+        throw Exception("Could not locate module", IVW_CONTEXT_CUSTOM("module::getModulePath"));
     }
     return path;
 }

@@ -130,7 +130,8 @@ SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) 
             LocalFree(errorText);
         }
 
-        throw Exception("Failed to load library: " + filePath + "\n Error: " + errorStream.str());
+        throw Exception("Failed to load library: " + filePath + "\n Error: " + errorStream.str(),
+                        IVW_CONTEXT);
     }
 #else
     // RTLD_GLOBAL gives all other loaded libraries access to library
@@ -138,7 +139,7 @@ SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) 
     // explicitly load its dependent libraries as well.
     handle_ = dlopen(filePath.c_str(), RTLD_LAZY | RTLD_GLOBAL);
     if (!handle_) {
-        throw Exception("Failed to load library: " + filePath);
+        throw Exception("Failed to load library: " + filePath, IVW_CONTEXT);
     }
 #endif
 }

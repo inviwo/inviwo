@@ -41,10 +41,12 @@ std::string getModulePath(const std::string &identifier, ModulePath pathType) {
             // if the result of getPath(pathType) is identical with getPath(),
             // i.e. the module path, the specific path does not exist.
             throw Exception("Could not locate module path for specified path type (module \"" +
-                            identifier + "\")");
+                                identifier + "\")",
+                            IVW_CONTEXT_CUSTOM("module::getModulePath"));
         }
     } else {
-        throw Exception("Could not locate module \"" + identifier + "\"");
+        throw Exception("Could not locate module \"" + identifier + "\"",
+                        IVW_CONTEXT_CUSTOM("module::getModulePath"));
     }
     return path;
 }

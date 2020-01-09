@@ -419,7 +419,7 @@ struct CImgLoadVolumeDispatcher {
         if (loadedDataFormat) {
             formatId = loadedDataFormat->getId();
         } else {
-            throw Exception("CImgLoadVolumeDispatcher, could not find proper data type");
+            throw Exception("Could not find proper data type", IVW_CONTEXT);
         }
 
         // Image is up-side-down

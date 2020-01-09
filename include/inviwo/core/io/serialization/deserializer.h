@@ -465,16 +465,16 @@ public:
 
 private:
     std::function<K(const T&)> getID_ = [](const T&) -> K {
-        throw Exception("GetID callback is not set!");
+        throw Exception("GetID callback is not set!", IVW_CONTEXT);
     };
     std::function<T()> makeNewItem_ = []() -> T {
-        throw Exception("MakeNew callback is not set!");
+        throw Exception("MakeNew callback is not set!", IVW_CONTEXT);
     };
     std::function<void(T&, size_t)> onNewItem_ = [](T&, size_t) {
-        throw Exception("OnNew callback is not set!");
+        throw Exception("OnNew callback is not set!", IVW_CONTEXT);
     };
     std::function<void(const K&)> onRemoveItem_ = [](const K&) {
-        throw Exception("OnRemove callback is not set!");
+        throw Exception("OnRemove callback is not set!", IVW_CONTEXT);
     };
 
     std::function<bool(const K& id, size_t ind)> filter_ = [](const K& /*id*/, size_t /*ind*/) {
@@ -543,13 +543,13 @@ public:
 
 private:
     std::function<T()> makeNewItem_ = []() -> T {
-        throw Exception("MakeNew callback is not set!");
+        throw Exception("MakeNew callback is not set!", IVW_CONTEXT_CUSTOM("MapDeserializer"));
     };
     std::function<void(const K&, T&)> onNewItem_ = [](const K&, T&) {
-        throw Exception("OnNew callback is not set!");
+        throw Exception("OnNew callback is not set!", IVW_CONTEXT_CUSTOM("MapDeserializer"));
     };
     std::function<void(const K&)> onRemoveItem_ = [](const K&) {
-        throw Exception("OnRemove callback is not set!");
+        throw Exception("OnRemove callback is not set!", IVW_CONTEXT_CUSTOM("MapDeserializer"));
     };
     std::function<bool(const K& id, size_t ind)> filter_ = [](const K& /*id*/, size_t /*ind*/) {
         return true;

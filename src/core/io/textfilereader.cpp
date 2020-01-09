@@ -50,7 +50,7 @@ std::string TextFileReader::read() {
 
     auto file = filesystem::ifstream(filePath_);
     if (!file.is_open()) {
-        throw FileException("Could not open file: " + filePath_);
+        throw FileException("Could not open file: " + filePath_, IVW_CONTEXT);
     }
     filesystem::skipByteOrderMark(file);
 

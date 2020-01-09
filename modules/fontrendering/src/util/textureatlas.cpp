@@ -80,7 +80,7 @@ void TextureAtlas::fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEnt
         });
 
     if (minArea > static_cast<double>(maxTexSize_ * maxTexSize_)) {
-        throw Exception("Max size for texture atlas exceeded");
+        throw Exception("Max size for texture atlas exceeded", IVW_CONTEXT);
     }
 
     std::vector<size_t> indices(bboxes.size());
@@ -153,7 +153,7 @@ ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices,
             lineHeights.push_back(extent.y);
             conservativeHeight += extent.y;
             if (conservativeHeight > maxTexSize_) {
-                throw Exception("Max size for texture atlas exceeded");
+                throw Exception("Max size for texture atlas exceeded", IVW_CONTEXT);
             }
         }
     }
@@ -172,7 +172,7 @@ ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices,
     }(32);
 
     if (height > maxTexSize_) {
-        throw Exception("Max size for texture atlas exceeded");
+        throw Exception("Max size for texture atlas exceeded", IVW_CONTEXT);
     }
     return {width, height};
 }

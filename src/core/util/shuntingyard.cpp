@@ -132,7 +132,8 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
                         if (!str.compare("-") || !str.compare("+")) {
                             rpnQueue.push(std::make_unique<Token<double>>(0));
                         } else {
-                            throw Exception("Unrecognized unary operator: '" + str + "'.");
+                            throw Exception("Unrecognized unary operator: '" + str + "'",
+                                            IVW_CONTEXT_CUSTOM("shuntingyard::Calculator::toRPN"));
                         }
                     }
 
@@ -176,7 +177,8 @@ double Calculator::calculate(std::string expression, std::map<std::string, doubl
             if (it != vars.end()) {
                 evaluation.push(it->second);
             } else if (evaluation.size() < 2) {
-                throw Exception("Invalid equation.");
+                throw Exception("Invalid equation",
+                                IVW_CONTEXT_CUSTOM("shuntingyard::Calculator::calculate"));
             } else {
                 double right = evaluation.top();
                 evaluation.pop();
@@ -194,13 +196,15 @@ double Calculator::calculate(std::string expression, std::map<std::string, doubl
                     evaluation.push(pow(left, right));
 
                 } else {
-                    throw Exception("Unknown operator: '" + str + "'.");
+                    throw Exception("Unknown operator: '" + str + "'",
+                                    IVW_CONTEXT_CUSTOM("shuntingyard::Calculator::calculate"));
                 }
             }
         } else if (doubleTok) {
             evaluation.push(doubleTok->val);
         } else {
-            throw Exception("Invalid token.");
+            throw Exception("Invalid token",
+                            IVW_CONTEXT_CUSTOM("shuntingyard::Calculator::calculate"));
         }
     }
 
@@ -232,7 +236,8 @@ std::string Calculator::shaderCode(std::string expression, std::map<std::string,
             } else if (it2 != symbols.end()) {
                 evaluation.push(it2->second);
             } else if (evaluation.size() < 2) {
-                throw Exception("Invalid equation.");
+                throw Exception("Invalid equation",
+                                IVW_CONTEXT_CUSTOM("shuntingyard::Calculator::shaderCode"));
             } else {
                 std::string right = evaluation.top();
                 evaluation.pop();
@@ -249,13 +254,15 @@ std::string Calculator::shaderCode(std::string expression, std::map<std::string,
                 } else if (!str.compare("^")) {
                     evaluation.push("pow(" + left + ", " + right + ")");
                 } else {
-                    throw Exception("Unknown operator: '" + str + "'.");
+                    throw Exception("Unknown operator: '" + str + "'",
+                                    IVW_CONTEXT_CUSTOM("shuntingyard::Calculator::shaderCode"));
                 }
             }
         } else if (doubleTok) {
             evaluation.push("vec4(" + toString(doubleTok->val) + ")");
         } else {
-            throw Exception("Invalid token.");
+            throw Exception("Invalid token",
+                            IVW_CONTEXT_CUSTOM("shuntingyard::Calculator::shaderCode"));
         }
     }
 

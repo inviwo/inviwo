@@ -174,7 +174,7 @@ std::vector<T> convexHull(const std::vector<T> & /*points*/) {
     std::ostringstream message;
     message << "util::complexHull() not implemented for nD points with n = "
             << util::extent<T>::value;
-    throw Exception(message.str());
+    throw Exception(message.str(), IVW_CONTEXT_CUSTOM("util::complexHull"));
 }
 
 }  // namespace util

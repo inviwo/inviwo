@@ -145,7 +145,7 @@ std::string TinyDirInterface::getNextEntry(bool includeBasePath) {
             errMsg.append("\": ");
             errMsg.append(strerror(errnum));
 
-            throw FileException(errMsg);
+            throw FileException(errMsg, IVW_CONTEXT);
         }
         // skip current directory ('.') and parent directory ('..')
         bool skip = ((strcmp(file.name, ".") == 0) || (strcmp(file.name, "..") == 0));

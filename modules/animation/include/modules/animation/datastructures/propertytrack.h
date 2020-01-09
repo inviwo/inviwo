@@ -349,7 +349,9 @@ void PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(
     auto prop = dynamic_cast<const Prop*>(property);
     if (!prop) {
         throw Exception("Cannot add key frame from property type " +
-                        property->getClassIdentifier() + " for " + property_->getClassIdentifier());
+                            property->getClassIdentifier() + " for " +
+                            property_->getClassIdentifier(),
+                        IVW_CONTEXT);
     }
     if (this->empty()) {
         // Use provided interpolation if we can
@@ -363,7 +365,8 @@ void PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(
             this->add(std::move(sequence));
         } else {
             throw Exception("Invalid interpolation " + interpolation->getClassIdentifier() +
-                            " for " + getClassIdentifier());
+                                " for " + getClassIdentifier(),
+                            IVW_CONTEXT);
         }
 
     } else {
@@ -391,7 +394,8 @@ void PropertyTrack<Prop, Key>::addSequenceUsingPropertyValue(
 
     } else {
         throw Exception("Invalid interpolation " + interpolation->getClassIdentifier() + " for " +
-                        getClassIdentifier());
+                            getClassIdentifier(),
+                        IVW_CONTEXT);
     }
 }
 

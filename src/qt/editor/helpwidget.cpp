@@ -167,7 +167,7 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
     if (!helpEngine_->setupData()) {
         const std::string error{helpEngine_->error().toUtf8().constData()};
         delete helpEngine_;
-        throw Exception("Failed to setup the help engine:" + error);
+        throw Exception("Failed to setup the help engine:" + error, IVW_CONTEXT);
     }
 
     fileObserver_ = std::make_unique<QCHFileObserver>(helpEngine_);

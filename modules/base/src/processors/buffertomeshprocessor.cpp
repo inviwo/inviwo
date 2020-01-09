@@ -94,28 +94,29 @@ void BufferToMeshProcessor::process() {
                     std::const_pointer_cast<BufferBase>(vertices_.getData()));
     if (textureCoordinates_.isConnected()) {
         if (textureCoordinates_.getData()->getSize() != vertices_.getData()->getSize()) {
-            throw Exception("Number of texture coordinates does not match number of vertices");
+            throw Exception("Number of texture coordinates does not match number of vertices",
+                            IVW_CONTEXT);
         }
         mesh->addBuffer(BufferType::TexcoordAttrib,
                         std::const_pointer_cast<BufferBase>(textureCoordinates_.getData()));
     }
     if (vertexColors_.isConnected()) {
         if (vertexColors_.getData()->getSize() != vertices_.getData()->getSize()) {
-            throw Exception("Number of colors does not match number of vertices");
+            throw Exception("Number of colors does not match number of vertices", IVW_CONTEXT);
         }
         mesh->addBuffer(BufferType::ColorAttrib,
                         std::const_pointer_cast<BufferBase>(vertexColors_.getData()));
     }
     if (normals_.isConnected()) {
         if (normals_.getData()->getSize() != vertices_.getData()->getSize()) {
-            throw Exception("Number of normals does not match number of vertices");
+            throw Exception("Number of normals does not match number of vertices", IVW_CONTEXT);
         }
         mesh->addBuffer(BufferType::NormalAttrib,
                         std::const_pointer_cast<BufferBase>(normals_.getData()));
     }
     if (curvature_.isConnected()) {
         if (curvature_.getData()->getSize() != vertices_.getData()->getSize()) {
-            throw Exception("Number of curvatures does not match number of vertices");
+            throw Exception("Number of curvatures does not match number of vertices", IVW_CONTEXT);
         }
         mesh->addBuffer(BufferType::CurvatureAttrib,
                         std::const_pointer_cast<BufferBase>(curvature_.getData()));
@@ -126,7 +127,8 @@ void BufferToMeshProcessor::process() {
         if (!indexBuffer) {
             throw Exception(
                 "Index buffer must be of IndexBuffer type (Buffer<std::uint32_t, "
-                "BufferTarget::Index>)");
+                "BufferTarget::Index>)",
+                IVW_CONTEXT);
         }
         mesh->addIndices(Mesh::MeshInfo(drawType_.get(), connectivity_.get()),
                          std::const_pointer_cast<IndexBuffer>(indexBuffer));

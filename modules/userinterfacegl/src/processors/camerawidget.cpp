@@ -427,7 +427,7 @@ void CameraWidget::saveInitialCameraState() {
 void CameraWidget::loadMesh() {
     auto module = InviwoApplication::getPtr()->getModuleByIdentifier("UserInterfaceGL");
     if (!module) {
-        throw Exception("Could not locate module 'UserInterfaceGL'");
+        throw Exception("Could not locate module 'UserInterfaceGL'", IVW_CONTEXT);
     }
 
     std::string basePath(module->getPath(ModulePath::Data));

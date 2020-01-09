@@ -459,7 +459,7 @@ QMenu* addMenu(std::string menuName, QMenu* before) {
             return menuBar->addMenu(menuName.c_str());
         }
     }
-    throw Exception("No Qt main window found");
+    throw Exception("No Qt main window found", IVW_CONTEXT_CUSTOM("utilqt::addMenu"));
 }
 
 QMenu* getMenu(std::string menuName, bool createIfNotFound) {
@@ -483,7 +483,7 @@ QMenu* getMenu(std::string menuName, bool createIfNotFound) {
             return nullptr;
         }
     }
-    throw Exception("No Qt main window found");
+    throw Exception("No Qt main window found", IVW_CONTEXT_CUSTOM("utilqt::getMenu"));
 }
 
 QImage layerToQImage(const Layer& layer) {

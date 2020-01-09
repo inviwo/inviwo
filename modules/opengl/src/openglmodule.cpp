@@ -137,7 +137,7 @@ OpenGLCapabilities& OpenGLModule::getOpenGLCapabilities() {
             return *casted;
         }
     }
-    throw Exception("No OpenGLCapabilities has been registered");
+    throw Exception("No OpenGLCapabilities has been registered", IVW_CONTEXT);
 }
 
 }  // namespace inviwo

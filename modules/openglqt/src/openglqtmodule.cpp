@@ -55,12 +55,14 @@ namespace inviwo {
 OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     : InviwoModule(app, "OpenGLQt"), ProcessorNetworkEvaluationObserver() {
     if (!qApp) {
-        throw ModuleInitException("QApplication must be constructed before OpenGLQtModule");
+        throw ModuleInitException("QApplication must be constructed before OpenGLQtModule",
+                                  IVW_CONTEXT);
     }
     if (!app->getModuleManager().getModulesByAlias("OpenGLSupplier").empty()) {
         throw ModuleInitException(
             "OpenGLQt could not be initialized because an other OpenGLSupplier is already used for "
-            "OpenGL context.");
+            "OpenGL context.",
+            IVW_CONTEXT);
     }
 
     // Create GL Context
@@ -68,7 +70,7 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     sharedCanvas_ = util::make_unique<CanvasQt>(size2_t(16, 16), "Default");
 
     if (!glFenceSync) {  // Make sure we have setup the opengl function pointers.
-        throw OpenGLInitException("Unable to initiate opengl", IvwContext);
+        throw OpenGLInitException("Unable to initiate OpenGL", IVW_CONTEXT);
     }
 
     static_cast<CanvasQt*>(sharedCanvas_.get())->defaultGLState();
