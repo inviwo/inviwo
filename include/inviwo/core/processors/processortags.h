@@ -44,7 +44,7 @@ public:
     const std::string& getString() const;
 
     IVW_CORE_API friend std::ostream& operator<<(std::ostream& os, const inviwo::Tag& obj);
-    IVW_CORE_API friend Tags operator|(const Tag& lhs, const Tag& rhs);
+    Tags operator|(const Tag& rhs) const;
 
     friend inline bool operator==(const Tag& lhs, const Tag& rhs) {
         return lhs.getString() == rhs.getString();
@@ -128,9 +128,8 @@ public:
     friend inline bool operator<=(const Tags& lhs, const Tags& rhs) { return !operator>(lhs, rhs); }
     friend inline bool operator>=(const Tags& lhs, const Tags& rhs) { return !operator<(lhs, rhs); }
 
-    friend inline Tags operator|(Tags lhs, const Tag& rhs) { return lhs.addTag(rhs); }
-    friend inline Tags operator|(const Tag& lhs, Tags rhs) { return rhs.addTag(lhs); }
-    friend inline Tags operator|(Tags lhs, const Tags& rhs) { return lhs.addTags(rhs); }
+    Tags operator|(const Tag& rhs) const;
+    Tags operator|(const Tags& rhs) const;
 };
 
 namespace util {

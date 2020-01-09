@@ -35,14 +35,14 @@ namespace inviwo {
 
 Tag::Tag(std::string tag) : tag_(std::move(tag)) {}
 
+Tags Tag::operator|(const Tag& rhs) const { return Tags{std::vector<Tag>{*this, rhs}}; }
+
 const std::string& Tag::getString() const { return tag_; }
 
 std::ostream& operator<<(std::ostream& os, const Tag& obj) {
     os << obj.tag_;
     return os;
 }
-
-Tags operator|(const Tag& lhs, const Tag& rhs) { return Tags{std::vector<Tag>{lhs, rhs}}; }
 
 const Tag Tag::GL("GL");
 const Tag Tag::CL("CL");
@@ -70,6 +70,10 @@ Tags& Tags::operator=(const std::string& that) {
     }
     return *this;
 }
+
+Tags Tags::operator|(const Tag& rhs) const { return Tags{*this}.addTag(rhs); }
+
+Tags Tags::operator|(const Tags& rhs) const { return Tags{*this}.addTags(rhs); }
 
 Tags& Tags::addTag(Tag t) {
     if (!util::contains(tags_, t)) {
