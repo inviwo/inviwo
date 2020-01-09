@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,54 +26,55 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/rendering/meshdrawer.h>
 
-#include <inviwo/core/properties/stipplingproperty.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
+#include <modules/basegl/datastructures/linesettingsinterface.h>
 
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API LineSettingsInterface {
-public:
-    LineSettingsInterface() = default;
-    virtual ~LineSettingsInterface() = default;
-    /*
-     * @return Line width (in pixels)
-     */ 
-    virtual float getWidth() const = 0;
-    /*
-     * @return Width of antialiasing (in pixels)
-     */ 
-    virtual float getAntialiasingWidth() const = 0;
-    /*
-     * Where to crop of sharp corners. 
-     * Occurs when two lines meeting at low angles.
-     * @return distance (in pixels)
-     */ 
-    virtual float getMiterLimit() const = 0;
-    /*
-     * Shound line meeting points points be round?
-     */ 
-    virtual bool getRoundCaps() const = 0;
-    /*
-     * Make lines appear cylinder shaped?
-     */ 
-    virtual bool getPseudoLighting() const = 0;
-    /*
-     * Depth values according to cylinder shape?
-     */ 
-    virtual bool getRoundDepthProfile() const = 0;
-    /*
-     * Dashed line settings, e.g., - - -
-     */ 
-    virtual const StipplingSettingsInterface& getStippling() const = 0;
+class Camera;
+class Mesh;
 
+namespace algorithm {
+
+/**
+ * \class LineRenderer
+ * \brief Helper class for rendering a mesh as lines. 
+ * Only renders Mesh with DrawType::Lines
+ */
+class IVW_MODULE_BASEGL_API LineRenderer {
+public:
+    LineRenderer(const LineSettingsInterface* settings);
+    ~LineRenderer() = default;
+
+    /**
+     * \brief Render lines according to currently set LineSettingsInterface settings
+     * Only meshes with DrawType::Lines will be rendered.
+     *
+     * @param mesh to render as lines, must
+     * @param camera for projection
+     * @param screenDim width, height in pixels
+     */
+    void render(const Mesh& mesh, const Camera& camera, size2_t screenDim);
+
+    void setLineSettings(const LineSettingsInterface* settings);
+
+    // Call whenever Pseudolighting or RoundDepthProfile changes
+    void configureShaders();
+protected:
+    void setUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, size2_t screenDim);
+    void configureShader(Shader& shader);
+    const LineSettingsInterface* settings_;
+    MeshShaderCache lineShaders_;
 };
 
-IVW_MODULE_BASEGL_API bool operator==(const LineSettingsInterface& a, const LineSettingsInterface& b);
-IVW_MODULE_BASEGL_API bool operator!=(const LineSettingsInterface& a, const LineSettingsInterface& b);
+}  // namespace algorithm
 
 }  // namespace inviwo

@@ -26,6 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
 #include <modules/basegl/datastructures/linesettingsinterface.h>
 #include <inviwo/core/properties/compositeproperty.h>
@@ -34,27 +35,45 @@
 #include <inviwo/core/properties/stipplingproperty.h>
 
 namespace inviwo {
-class IVW_MODULE_BASEGL_API LineSettingsProperty:
-    public LineSettingsInterface,
-    public CompositeProperty {
+
+class IVW_MODULE_BASEGL_API LineSettingsProperty : public LineSettingsInterface,
+                                                   public CompositeProperty {
 public:
     LineSettingsProperty(const std::string& identifier, const std::string& displayName,
-                             InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                             PropertySemantics semantics = PropertySemantics::Default);
+                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                         PropertySemantics semantics = PropertySemantics::Default);
     virtual ~LineSettingsProperty() = default;
-        
+
     // Inherited from LineSettingsInterface
-    // Line width in pixels
+    /*
+     * @copydoc LineSettingsInterface::getWidth
+     */
     virtual float getWidth() const;
+    /*
+     * @copydoc LineSettingsInterface::getAntialiasingWidth
+     */
     virtual float getAntialiasingWidth() const;
-    
+    /*
+     * @copydoc LineSettingsInterface::getMiterLimit
+     */
     virtual float getMiterLimit() const;
+    /*
+     * @copydoc LineSettingsInterface::getRoundCaps
+     */
     virtual bool getRoundCaps() const;
+    /*
+     * @copydoc LineSettingsInterface::getPseudoLighting
+     */
     virtual bool getPseudoLighting() const;
+    /*
+     * @copydoc LineSettingsInterface::getRoundDepthProfile
+     */
     virtual bool getRoundDepthProfile() const;
-    
+    /*
+     * @copydoc LineSettingsInterface::getStippling
+     */
     virtual const StipplingSettingsInterface& getStippling() const;
-        
+
     FloatProperty lineWidth_;
     FloatProperty antialiasing_;
     FloatProperty miterLimit_;
@@ -64,7 +83,6 @@ public:
     BoolProperty roundDepthProfile_;
 
     StipplingProperty stippling_;
-    
 };
 
 }  // namespace inviwo

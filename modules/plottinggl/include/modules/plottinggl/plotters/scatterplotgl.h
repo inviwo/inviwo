@@ -40,7 +40,8 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/base/algorithm/dataminmax.h>
-#include <modules/basegl/datastructures/meshshadercache.h>
+#include <modules/basegl/rendering/linerenderer.h>
+#include <modules/basegl/properties/linesettingsproperty.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plotting/properties/marginproperty.h>
@@ -160,8 +161,7 @@ protected:
 
     void invokeEvent(Event* event, const ivec2& start, const size2_t& size, bool useAxisRange);
     void selectionRectChanged(const dvec2& start, const dvec2& end);
-    void configureShader(Shader& shader);
-    
+
     std::shared_ptr<const BufferBase> xAxis_;
     std::shared_ptr<const BufferBase> yAxis_;
     std::shared_ptr<const BufferBase> color_;
@@ -180,11 +180,12 @@ protected:
     PickingMapper picking_;
     std::unordered_set<size_t> selectedIndices_;
     bool selectedIndicesGLDirty_ = true;
-    BufferObject selectedIndicesGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(), BufferUsage::Dynamic, BufferTarget::Index);
+    BufferObject selectedIndicesGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(),
+                                                   BufferUsage::Dynamic, BufferTarget::Index);
     std::optional<uint32_t> hoverIndex_;
     BufferObject hoverIndexGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(),
                                               BufferUsage::Dynamic, BufferTarget::Index);
-    
+
     std::unique_ptr<IndexBuffer> indices_;
     std::unique_ptr<BufferObjectArray> boa_;
 
@@ -194,14 +195,16 @@ protected:
     Dispatcher<SelectionFunc> selectionChangedCallback_;
 
     std::optional<std::array<dvec2, 2>> dragRect_;
-    
-    FloatProperty lineWidth_;
-    FloatProperty antialiasing_;
-    FloatProperty miterLimit_;
-    BoolProperty roundCaps_;
-    
-    StipplingProperty stippling_;
-    MeshShaderCache lineShaders_;
+
+    LineSettingsProperty lineSettings_;
+    algorithm::LineRenderer lineRenderer_;
+    ColoredMesh dragRectMesh_ = ColoredMesh(DrawType::Lines,
+                                 ConnectivityType::Strip,
+                                 {{vec3{0.f, 0.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},
+                                  {vec3{1.f, 0.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},
+                                  {vec3{1.f, 1.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},
+                                  {vec3{0.f, 1.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}}},
+                                 {0, 1, 2, 3, 0});
 };
 
 }  // namespace plot

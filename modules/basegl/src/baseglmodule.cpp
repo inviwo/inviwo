@@ -64,7 +64,7 @@
 #include <modules/basegl/processors/isoraycaster.h>
 #include <modules/basegl/processors/lightingraycaster.h>
 #include <modules/basegl/processors/lightvolumegl.h>
-#include <modules/basegl/processors/linerenderer.h>
+#include <modules/basegl/processors/linerendererprocessor.h>
 #include <modules/basegl/processors/mesh2drenderprocessorgl.h>
 #include <modules/basegl/processors/meshpicking.h>
 #include <modules/basegl/processors/meshrenderprocessorgl.h>
@@ -121,7 +121,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<Jacobian2D>();
     registerProcessor<LightingRaycaster>();
     registerProcessor<LightVolumeGL>();
-    registerProcessor<LineRenderer>();
+    registerProcessor<LineRendererProcessor>();
     registerProcessor<Mesh2DRenderProcessorGL>();
     registerProcessor<MeshPicking>();
     registerProcessor<MeshRenderProcessorGL>();
