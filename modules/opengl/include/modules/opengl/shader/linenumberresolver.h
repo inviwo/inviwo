@@ -37,7 +37,7 @@
 namespace inviwo {
 
 /**
- * A class for tracing where each line of code come from after a file has been pre-processed 
+ * A class for tracing where each line of code come from after a file has been pre-processed
  * @see ShaderObject
  */
 struct IVW_MODULE_OPENGL_API LineNumberResolver {

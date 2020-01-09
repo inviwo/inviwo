@@ -237,7 +237,7 @@ void utilgl::parseShaderSource(
     std::unordered_map<typename ShaderSegment::Type, std::vector<ShaderSegment>> replacements,
     std::function<std::optional<std::pair<std::string, std::string>>(const std::string&)>
         getSource) {
-    
+
     size_t lines = 0;
     psm::State state{output, lnr, key, replacements, getSource, lines};
     psm::Errors errors;
