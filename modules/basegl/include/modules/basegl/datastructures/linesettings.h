@@ -40,6 +40,10 @@ namespace inviwo {
 class IVW_MODULE_BASEGL_API LineSettings : public LineSettingsInterface {
 public:
     LineSettings() = default;
+    /*
+     * Copy settings of other.
+     */
+    LineSettings(const LineSettingsInterface* other);
     virtual ~LineSettings() = default;
 
     float lineWidth = 1.f;

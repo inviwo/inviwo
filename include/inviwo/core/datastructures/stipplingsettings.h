@@ -39,6 +39,7 @@ namespace inviwo {
 class IVW_CORE_API StipplingSettings : public StipplingSettingsInterface {
 public:
     StipplingSettings() = default;
+    StipplingSettings(const StipplingSettingsInterface* other);
     virtual ~StipplingSettings() = default;
 
     Mode mode = Mode::None;

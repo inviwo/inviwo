@@ -34,7 +34,7 @@
 #include <inviwo/core/rendering/meshdrawer.h>
 
 #include <modules/basegl/datastructures/meshshadercache.h>
-#include <modules/basegl/datastructures/linesettingsinterface.h>
+#include <modules/basegl/datastructures/linesettings.h>
 
 namespace inviwo {
 
@@ -61,17 +61,15 @@ public:
      * @param camera for projection
      * @param screenDim width, height in pixels
      */
-    void render(const Mesh& mesh, const Camera& camera, size2_t screenDim);
+    void render(const Mesh& mesh, const Camera& camera, size2_t screenDim, const LineSettingsInterface* settings);
 
-    void setLineSettings(const LineSettingsInterface* settings);
-
-    // Call whenever Pseudolighting or RoundDepthProfile changes
-    void configureShaders();
 
 protected:
+    // Call whenever PseudoLighting or RoundDepthProfile, or Stippling mode change
+    void configureShaders();
     void setUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, size2_t screenDim);
     void configureShader(Shader& shader);
-    const LineSettingsInterface* settings_;
+    LineSettings settings_; //!< Local cache
     MeshShaderCache lineShaders_;
 };
 

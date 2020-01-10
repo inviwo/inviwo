@@ -613,37 +613,36 @@ void ScatterPlotGL::dragRectChanged(const dvec2& start, const dvec2& end) {
     // filtering should end up with elements outside of rect.
     auto isFiltering =
         properties_.dragRectSettings_.getMode() == DragRectangleSettingsInterface::Mode::Filtering;
-    auto filteringCompareOp = [](auto elem, auto tmin, auto tmax) -> bool {
-        return elem >= tmin && elem <= tmax;
-    };
-    auto selectionCompareOp = [](auto elem, auto tmin, auto tmax) -> bool {
+    auto filterOp = [](auto elem, auto tmin, auto tmax) -> bool {
         return elem < tmin || elem > tmax;
+    };
+    auto selectOp = [](auto elem, auto tmin, auto tmax) -> bool {
+        return elem >= tmin && elem <= tmax;
     };
 
     std::unordered_set<size_t> selectedIndices =
         xbuf->dispatch<std::unordered_set<size_t>, dispatching::filter::Scalars>(
-            [min = start[0], max = end[0], isFiltering = isFiltering,
-             selectionCompareOp = selectionCompareOp,
-             filteringCompareOp = filteringCompareOp](auto brprecision) {
+            [min = start[0], max = end[0], isFiltering = isFiltering, selectionCompareOp = selectOp,
+             filteringCompareOp = filterOp](auto brprecision) {
                 using ValueType = util::PrecisionValueType<decltype(brprecision)>;
                 auto tmin = static_cast<ValueType>(min);
                 auto tmax = static_cast<ValueType>(max);
                 std::unordered_set<size_t> selectedIndices;
                 for (auto&& [ind, elem] : util::enumerate(brprecision->getDataContainer())) {
                     if (isFiltering && filteringCompareOp(elem, tmin, tmax)) {
-                        continue;
-                    } else if (!isFiltering && selectionCompareOp(elem, tmin, tmax)) {
-                        continue;
-                    } else {
                         selectedIndices.insert(ind);
+                    } else if (!isFiltering && selectionCompareOp(elem, tmin, tmax)) {
+                        selectedIndices.insert(ind);
+                    } else {
+                        continue;
                     }
                 }
                 return selectedIndices;
             });
     auto ybuf = yAxis_->getRepresentation<BufferRAM>();
     auto filterYOp = [subset = selectedIndices, min = start[1], max = end[1],
-                      isFiltering = isFiltering, selectionCompareOp = selectionCompareOp,
-                      filteringCompareOp = filteringCompareOp](auto brprecision) {
+                      isFiltering = isFiltering, selectionCompareOp = selectOp,
+                      filteringCompareOp = filterOp](auto brprecision) {
         using ValueType = util::PrecisionValueType<decltype(brprecision)>;
         auto tmin = static_cast<ValueType>(min);
         auto tmax = static_cast<ValueType>(max);
@@ -652,11 +651,11 @@ void ScatterPlotGL::dragRectChanged(const dvec2& start, const dvec2& end) {
         for (auto ind : subset) {
             auto elem = data[ind];
             if (isFiltering && filteringCompareOp(elem, tmin, tmax)) {
-                continue;
-            } else if (!isFiltering && selectionCompareOp(elem, tmin, tmax)) {
-                continue;
-            } else {
                 selectedIndices.insert(ind);
+            } else if (!isFiltering && selectionCompareOp(elem, tmin, tmax)) {
+                selectedIndices.insert(ind);
+            } else {
+                continue;
             }
         }
         return selectedIndices;

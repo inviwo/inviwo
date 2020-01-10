@@ -36,6 +36,7 @@ namespace plot {
 DragRectangleRenderer::DragRectangleRenderer(const DragRectangleProperty& settings)
     : settings_(settings), lineRenderer_(&lineSettings_) {
     lineSettings_.stippling.mode = StipplingSettingsInterface::Mode::ScreenSpace;
+    lineSettings_.stippling.length = 5.f;
 }
 
 void DragRectangleRenderer::render(std::optional<std::array<dvec2, 2>> dragRect,
@@ -62,7 +63,7 @@ void DragRectangleRenderer::render(std::optional<std::array<dvec2, 2>> dragRect,
         dragRectMesh_.setModelMatrix(m);
         OrthographicCamera camera_;
         camera_.setFrustum(ivec4(0, screenDim.x, 0, screenDim.y));
-        lineRenderer_.render(dragRectMesh_, camera_, screenDim);
+        lineRenderer_.render(dragRectMesh_, camera_, screenDim, &lineSettings_);
     }
 }
 

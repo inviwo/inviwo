@@ -61,11 +61,22 @@ LineRenderer::LineRenderer(const LineSettingsInterface* settings)
                      }}},
                    [&](Shader& shader) -> void { configureShader(shader); }} {}
 
-void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screenDim) {
+void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
+                          const LineSettingsInterface* settings) {
     if (mesh.getNumberOfBuffers() == 0) return;
+    // Changing these settings require recompilation
+    if (settings_.getPseudoLighting() != settings->getPseudoLighting() ||
+        settings_.getRoundDepthProfile() != settings->getRoundDepthProfile() ||
+        settings_.getStippling().getMode() != settings->getStippling().getMode()) {
+        settings_ = LineSettings(settings);
+        configureShaders();
+    } else {
+        settings_ = LineSettings(settings);
+    }
+
     MeshDrawerGL::DrawObject drawer(mesh.getRepresentation<MeshGL>(), mesh.getDefaultMeshInfo());
     if (mesh.getNumberOfIndicies() > 0) {
-        for (std::size_t i = 0; i < mesh.getNumberOfIndicies(); ++i) {
+        for (size_t i = 0; i < mesh.getNumberOfIndicies(); ++i) {
             if (mesh.getIndexMeshInfo(i).dt != DrawType::Lines) continue;
             auto& shader = lineShaders_.getShader(mesh, mesh.getIndexMeshInfo(i));
             shader.activate();
@@ -84,24 +95,21 @@ void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screen
         shader.deactivate();
     }
 }
-void LineRenderer::setLineSettings(const LineSettingsInterface* settings) {
-    settings_ = settings;
-    configureShaders();
-}
+
 void LineRenderer::setUniforms(Shader& lineShader, const Mesh& mesh, const Camera& camera,
                                size2_t screenDim) {
     lineShader.setUniform("screenDim", vec2(screenDim));
     utilgl::setShaderUniforms(lineShader, camera, "camera");
 
-    lineShader.setUniform("lineWidth", settings_->getWidth());
-    lineShader.setUniform("antialiasing", settings_->getAntialiasingWidth());
-    lineShader.setUniform("miterLimit", settings_->getMiterLimit());
-    lineShader.setUniform("roundCaps", settings_->getRoundCaps());
+    lineShader.setUniform("lineWidth", settings_.getWidth());
+    lineShader.setUniform("antialiasing", settings_.getAntialiasingWidth());
+    lineShader.setUniform("miterLimit", settings_.getMiterLimit());
+    lineShader.setUniform("roundCaps", settings_.getRoundCaps());
     // Stippling settings
-    lineShader.setUniform("stippling.length", settings_->getStippling().getLength());
-    lineShader.setUniform("stippling.spacing", settings_->getStippling().getSpacing());
-    lineShader.setUniform("stippling.offset", settings_->getStippling().getOffset());
-    lineShader.setUniform("stippling.worldScale", settings_->getStippling().getWorldScale());
+    lineShader.setUniform("stippling.length", settings_.getStippling().getLength());
+    lineShader.setUniform("stippling.spacing", settings_.getStippling().getSpacing());
+    lineShader.setUniform("stippling.offset", settings_.getStippling().getOffset());
+    lineShader.setUniform("stippling.worldScale", settings_.getStippling().getWorldScale());
     utilgl::setShaderUniforms(lineShader, mesh, "geometry");
 }
 
@@ -112,11 +120,11 @@ void LineRenderer::configureShaders() {
 }
 void LineRenderer::configureShader(Shader& shader) {
     shader[ShaderType::Fragment]->setShaderDefine("ENABLE_PSEUDO_LIGHTING",
-                                                  settings_->getPseudoLighting());
+                                                  settings_.getPseudoLighting());
     shader[ShaderType::Fragment]->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE",
-                                                  settings_->getRoundDepthProfile());
+                                                  settings_.getRoundDepthProfile());
 
-    utilgl::addShaderDefines(shader, settings_->getStippling().getMode());
+    utilgl::addShaderDefines(shader, settings_.getStippling().getMode());
     shader.build();
 }
 

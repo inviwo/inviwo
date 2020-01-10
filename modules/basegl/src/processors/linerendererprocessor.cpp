@@ -67,8 +67,6 @@ LineRendererProcessor::LineRendererProcessor()
     addProperty(trackball_);
 }
 
-void LineRendererProcessor::initializeResources() { lineRenderer_.configureShaders(); }
-
 void LineRendererProcessor::process() {
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
@@ -84,7 +82,7 @@ void LineRendererProcessor::process() {
 
 void LineRendererProcessor::drawMeshes() {
     for (const auto& mesh : inport_) {
-        lineRenderer_.render(*mesh, camera_.get(), outport_.getDimensions());
+        lineRenderer_.render(*mesh, camera_.get(), outport_.getDimensions(), &lineSettings_);
     }
 }
 
