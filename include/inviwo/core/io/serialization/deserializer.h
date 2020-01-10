@@ -465,16 +465,16 @@ public:
 
 private:
     std::function<K(const T&)> getID_ = [](const T&) -> K {
-        throw Exception("GetID callback is not set!", IVW_CONTEXT);
+        throw Exception("GetID callback is not set!", IVW_CONTEXT_CUSTOM("IdentifiedDeserializer"));
     };
     std::function<T()> makeNewItem_ = []() -> T {
-        throw Exception("MakeNew callback is not set!", IVW_CONTEXT);
+        throw Exception("MakeNew callback is not set!", IVW_CONTEXT_CUSTOM("IdentifiedDeserializer"));
     };
     std::function<void(T&, size_t)> onNewItem_ = [](T&, size_t) {
-        throw Exception("OnNew callback is not set!", IVW_CONTEXT);
+        throw Exception("OnNew callback is not set!", IVW_CONTEXT_CUSTOM("IdentifiedDeserializer"));
     };
     std::function<void(const K&)> onRemoveItem_ = [](const K&) {
-        throw Exception("OnRemove callback is not set!", IVW_CONTEXT);
+        throw Exception("OnRemove callback is not set!", IVW_CONTEXT_CUSTOM("IdentifiedDeserializer"));
     };
 
     std::function<bool(const K& id, size_t ind)> filter_ = [](const K& /*id*/, size_t /*ind*/) {
