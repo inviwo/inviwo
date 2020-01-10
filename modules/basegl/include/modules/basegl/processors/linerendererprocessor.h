@@ -98,7 +98,6 @@ private:
     LineSettingsProperty lineSettings_;
     BoolProperty writeDepth_;
 
-
     CameraProperty camera_;
     CameraTrackball trackball_;
     algorithm::LineRenderer lineRenderer_;

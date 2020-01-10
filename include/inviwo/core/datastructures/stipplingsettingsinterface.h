@@ -31,25 +31,25 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-
 namespace inviwo {
 /*
  * \brief Settings for stippling (Dashed line, e.g., - - -)
- */ 
+ */
 class IVW_CORE_API StipplingSettingsInterface {
 public:
     enum class Mode { None, ScreenSpace, WorldSpace };
     StipplingSettingsInterface() = default;
     virtual ~StipplingSettingsInterface() = default;
-    
+
     virtual Mode getMode() const = 0;
     virtual float getLength() const = 0;
     virtual float getSpacing() const = 0;
     virtual float getOffset() const = 0;
     virtual float getWorldScale() const = 0;
-    
 };
-IVW_CORE_API bool operator==(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b);
-IVW_CORE_API bool operator!=(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b);
-   
+IVW_CORE_API bool operator==(const StipplingSettingsInterface& a,
+                             const StipplingSettingsInterface& b);
+IVW_CORE_API bool operator!=(const StipplingSettingsInterface& a,
+                             const StipplingSettingsInterface& b);
+
 }  // namespace inviwo

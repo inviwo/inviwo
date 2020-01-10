@@ -103,7 +103,8 @@ std::vector<Processor*> VolumeRaycastVisualizer::addVisualizerNetwork(Outport* o
     // set shading mode in volume raycaster to 'no shading'
     static_cast<OptionPropertyInt*>(vrc->getPropertyByIdentifier("shadingMode", true))->set(0);
 
-    static_cast<FloatProperty*>(lrp->getPropertyByPath({{"lineSettings"}, {"lineWidth"}}))->set(1.5f);
+    static_cast<FloatProperty*>(lrp->getPropertyByPath({{"lineSettings"}, {"lineWidth"}}))
+        ->set(1.5f);
     static_cast<FloatVec3Property*>(vrc->getPropertyByIdentifier("lookFrom", true))
         ->set(vec3(0.0f, 0.0f, 30.0f));
 

@@ -35,9 +35,9 @@
 namespace inviwo {
 
 /**
- * \brief Basic implementation of the LineSettingsInterface 
+ * \brief Basic implementation of the LineSettingsInterface
  */
-class IVW_MODULE_BASEGL_API LineSettings: public LineSettingsInterface {
+class IVW_MODULE_BASEGL_API LineSettings : public LineSettingsInterface {
 public:
     LineSettings() = default;
     virtual ~LineSettings() = default;

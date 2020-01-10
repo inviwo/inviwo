@@ -71,9 +71,8 @@ DragRectangleProperty* DragRectangleProperty::clone() const {
 
 DragRectangleSettingsInterface::Mode DragRectangleProperty::getMode() const { return mode_.get(); }
 vec4 DragRectangleProperty::getLineColor() const { return lineColor_.get(); }
-float DragRectangleProperty::getLineWidth() const {
-    return lineWidth_.get(); }
+float DragRectangleProperty::getLineWidth() const { return lineWidth_.get(); }
 
 }  // namespace plot
 
-}  // namespace plot
+}  // namespace inviwo

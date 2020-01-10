@@ -36,7 +36,6 @@
 #include <modules/basegl/datastructures/meshshadercache.h>
 #include <modules/basegl/datastructures/linesettingsinterface.h>
 
-
 namespace inviwo {
 
 class Camera;
@@ -46,7 +45,7 @@ namespace algorithm {
 
 /**
  * \class LineRenderer
- * \brief Helper class for rendering a mesh as lines. 
+ * \brief Helper class for rendering a mesh as lines.
  * Only renders Mesh with DrawType::Lines
  */
 class IVW_MODULE_BASEGL_API LineRenderer {
@@ -68,6 +67,7 @@ public:
 
     // Call whenever Pseudolighting or RoundDepthProfile changes
     void configureShaders();
+
 protected:
     void setUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, size2_t screenDim);
     void configureShader(Shader& shader);

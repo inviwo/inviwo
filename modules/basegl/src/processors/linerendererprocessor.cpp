@@ -67,9 +67,7 @@ LineRendererProcessor::LineRendererProcessor()
     addProperty(trackball_);
 }
 
-void LineRendererProcessor::initializeResources() {
-    lineRenderer_.configureShaders();
-}
+void LineRendererProcessor::initializeResources() { lineRenderer_.configureShaders(); }
 
 void LineRendererProcessor::process() {
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);

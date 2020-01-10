@@ -89,7 +89,7 @@ public:
         FloatVec4Property color_;
         FloatVec4Property hoverColor_;
         FloatVec4Property selectionColor_;
-        DragRectangleProperty dragRectSettings_; ///! Selection/filtering 
+        DragRectangleProperty dragRectSettings_;  ///! Selection/filtering
         MarginProperty margins_;
         FloatProperty axisMargin_;
 
@@ -105,13 +105,13 @@ public:
     private:
         auto props() {
             return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
-                            selectionColor_, dragRectSettings_, margins_, axisMargin_, borderWidth_, borderColor_,
-                            hovering_, axisStyle_, xAxis_, yAxis_);
+                            selectionColor_, dragRectSettings_, margins_, axisMargin_, borderWidth_,
+                            borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
         }
         auto props() const {
             return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
-                            selectionColor_, dragRectSettings_, margins_, axisMargin_, borderWidth_, borderColor_,
-                            hovering_, axisStyle_, xAxis_, yAxis_);
+                            selectionColor_, dragRectSettings_, margins_, axisMargin_, borderWidth_,
+                            borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
         }
     };
 
@@ -200,8 +200,6 @@ protected:
 
     std::optional<std::array<dvec2, 2>> dragRect_;
 
-
-    
     DragRectangleRenderer selectionRectRenderer_;
 };
 

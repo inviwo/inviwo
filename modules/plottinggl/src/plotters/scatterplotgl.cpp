@@ -609,7 +609,7 @@ void ScatterPlotGL::dragRectChanged(const dvec2& start, const dvec2& end) {
         return;
     }
     auto xbuf = xAxis_->getRepresentation<BufferRAM>();
-    // Selection should end up with elements inside of rect while 
+    // Selection should end up with elements inside of rect while
     // filtering should end up with elements outside of rect.
     auto isFiltering =
         properties_.dragRectSettings_.getMode() == DragRectangleSettingsInterface::Mode::Filtering;
@@ -642,9 +642,8 @@ void ScatterPlotGL::dragRectChanged(const dvec2& start, const dvec2& end) {
             });
     auto ybuf = yAxis_->getRepresentation<BufferRAM>();
     auto filterYOp = [subset = selectedIndices, min = start[1], max = end[1],
-                      isFiltering = isFiltering,
-             selectionCompareOp = selectionCompareOp,
-             filteringCompareOp = filteringCompareOp](auto brprecision) {
+                      isFiltering = isFiltering, selectionCompareOp = selectionCompareOp,
+                      filteringCompareOp = filteringCompareOp](auto brprecision) {
         using ValueType = util::PrecisionValueType<decltype(brprecision)>;
         auto tmin = static_cast<ValueType>(min);
         auto tmax = static_cast<ValueType>(max);

@@ -33,10 +33,12 @@ namespace inviwo {
 
 bool operator==(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b) {
     return a.getMode() == b.getMode() && a.getLength() == b.getLength() &&
-    a.getSpacing() == b.getSpacing() && a.getOffset() == b.getOffset() &&
-    a.getWorldScale() == b.getWorldScale();
+           a.getSpacing() == b.getSpacing() && a.getOffset() == b.getOffset() &&
+           a.getWorldScale() == b.getWorldScale();
 }
 
-bool operator!=(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b) { return !(a == b); }
+bool operator!=(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b) {
+    return !(a == b);
+}
 
 }  // namespace inviwo

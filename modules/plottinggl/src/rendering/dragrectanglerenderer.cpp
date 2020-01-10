@@ -36,7 +36,6 @@ namespace plot {
 DragRectangleRenderer::DragRectangleRenderer(const DragRectangleProperty& settings)
     : settings_(settings), lineRenderer_(&lineSettings_) {
     lineSettings_.stippling.mode = StipplingSettingsInterface::Mode::ScreenSpace;
-
 }
 
 void DragRectangleRenderer::render(std::optional<std::array<dvec2, 2>> dragRect,

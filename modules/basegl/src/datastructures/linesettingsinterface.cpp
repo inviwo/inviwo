@@ -34,10 +34,12 @@ namespace inviwo {
 bool operator==(const LineSettingsInterface& a, const LineSettingsInterface& b) {
     return a.getWidth() == b.getWidth() && a.getAntialiasingWidth() == b.getAntialiasingWidth() &&
            a.getMiterLimit() == b.getMiterLimit() && a.getRoundCaps() == b.getRoundCaps() &&
-           a.getPseudoLighting() == b.getPseudoLighting() && a.getRoundDepthProfile() == b.getRoundDepthProfile();
+           a.getPseudoLighting() == b.getPseudoLighting() &&
+           a.getRoundDepthProfile() == b.getRoundDepthProfile();
 }
 
-bool operator!=(const LineSettingsInterface& a, const LineSettingsInterface& b) { return !(a == b); }
-
+bool operator!=(const LineSettingsInterface& a, const LineSettingsInterface& b) {
+    return !(a == b);
+}
 
 }  // namespace inviwo

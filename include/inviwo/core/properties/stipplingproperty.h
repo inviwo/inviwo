@@ -42,7 +42,6 @@ namespace inviwo {
 
 class IVW_CORE_API StipplingProperty : public CompositeProperty, public StipplingSettingsInterface {
 public:
-
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
@@ -52,7 +51,7 @@ public:
     StipplingProperty(const StipplingProperty& rhs);
     virtual StipplingProperty* clone() const override;
     virtual ~StipplingProperty() = default;
-    
+
     // StipplingSettingsInterface
     virtual Mode getMode() const override { return mode_.get(); };
     virtual float getLength() const override { return length_.get(); };

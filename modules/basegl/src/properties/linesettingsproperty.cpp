@@ -31,9 +31,10 @@
 
 namespace inviwo {
 
-LineSettingsProperty::LineSettingsProperty(const std::string& identifier, const std::string& displayName,
-                                               InvalidationLevel invalidationLevel,
-                                               PropertySemantics semantics)
+LineSettingsProperty::LineSettingsProperty(const std::string& identifier,
+                                           const std::string& displayName,
+                                           InvalidationLevel invalidationLevel,
+                                           PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , lineWidth_("lineWidth", "Line Width (pixel)", 1.0f, 0.0f, 50.0f, 0.1f)
     , antialiasing_("antialiasing", "Antialiasing (pixel)", 0.5f, 0.0f, 10.0f, 0.1f)
@@ -43,11 +44,11 @@ LineSettingsProperty::LineSettingsProperty(const std::string& identifier, const 
                       InvalidationLevel::InvalidResources)
     , roundDepthProfile_("roundDepthProfile", "Round Depth Profile", true,
                          InvalidationLevel::InvalidResources)
-    , stippling_("stippling", "Stippling")
-    {
-    addProperties(lineWidth_, antialiasing_, miterLimit_, roundCaps_, pseudoLighting_, roundDepthProfile_, stippling_);
+    , stippling_("stippling", "Stippling") {
+    addProperties(lineWidth_, antialiasing_, miterLimit_, roundCaps_, pseudoLighting_,
+                  roundDepthProfile_, stippling_);
 }
-    
+
 float LineSettingsProperty::getWidth() const { return lineWidth_.get(); }
 float LineSettingsProperty::getAntialiasingWidth() const { return antialiasing_.get(); }
 
