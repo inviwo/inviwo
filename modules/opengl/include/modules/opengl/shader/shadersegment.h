@@ -72,10 +72,15 @@ struct IVW_MODULE_OPENGL_API ShaderSegment {
         std::string value_;
     };
 
-    Type type;            //!< The placeholder that will be replaced
-    std::string name;     //!< A name of the snippet, used to the LineNumberResolver
+    Type type;  //!< The placeholder that will be replaced
+    /**
+     * A name of the snippet, used by the LineNumberResolver and to identify the segment in the
+     * ShaderObject
+     */
+    std::string name;
     std::string snippet;  //!< The replacement code
-    /** If there are multiple replacement with the same Type, they will be sorted using priority,
+    /**
+     * If there are multiple replacement with the same Type, they will be sorted using priority,
      * lower goes first.
      */
     size_t priority = 1000;

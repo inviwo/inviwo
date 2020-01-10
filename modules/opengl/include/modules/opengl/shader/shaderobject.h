@@ -147,8 +147,17 @@ public:
     bool hasShaderExtension(const std::string& extName) const;
     void clearShaderExtensions();
 
+    /**
+     * Add a ShaderSegement to be inserted into the shader
+     */
     void addSegment(ShaderSegment segment);
-    void removeSegments(const std::string& key);
+    /**
+     * Remove a ShaderSegement with name 'segementName'
+     */
+    void removeSegments(const std::string& segementName);
+    /**
+     * Clear all added ShaderSegment
+     */
     void clearSegments();
 
     /**
