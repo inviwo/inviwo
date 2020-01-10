@@ -83,6 +83,14 @@ ScatterPlotProcessor::ScatterPlotProcessor()
                 invalidate(InvalidationLevel::InvalidOutput);
             }
         });
+    filteringChangedCallBack_ =
+        scatterPlot_.addFilteringChangedCallback([this](const std::unordered_set<size_t>& indices) {
+            if (brushingPort_.isConnected()) {
+                brushingPort_.sendFilterEvent(indices);
+            } else {
+                invalidate(InvalidationLevel::InvalidOutput);
+            }
+        });
 
     scatterPlot_.properties_.margins_.setLowerLeftMargin({50.0f, 40.0f});
     scatterPlot_.properties_.xAxis_.captionSettings_.setChecked(true);

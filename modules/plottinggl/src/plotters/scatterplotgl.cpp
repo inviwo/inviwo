@@ -68,6 +68,7 @@ ScatterPlotGL::Properties::Properties(std::string identifier, std::string displa
              InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , hoverColor_("hoverColor", "Hover Color", vec4(1.0f, 0.906f, 0.612f, 1))
     , selectionColor_("selectionColor", "Selection Color", vec4(1.0f, 0.769f, 0.247f, 1))
+    , dragRectSettings_("dragRectSettings", "Drag Rectangle Selection/Filtering")
     , margins_("margins", "Margins", 5, 5, 5, 5)
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f)
 
@@ -104,6 +105,7 @@ ScatterPlotGL::Properties::Properties(const ScatterPlotGL::Properties& rhs)
     , color_(rhs.color_)
     , hoverColor_(rhs.hoverColor_)
     , selectionColor_(rhs.selectionColor_)
+    , dragRectSettings_(rhs.dragRectSettings_)
     , margins_(rhs.margins_)
     , axisMargin_(rhs.axisMargin_)
     , borderWidth_(rhs.borderWidth_)
@@ -131,8 +133,7 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
     , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}})
     , picking_(processor, 1, [this](PickingEvent* p) { objectPicked(p); })
     , processor_(processor)
-    , lineSettings_("lineSettings", "Line Settings")
-    , selectionRectRenderer_(&lineSettings_) {
+    , selectionRectRenderer_(properties_.dragRectSettings_) {
     if (processor_) {
         shader_.onReload([this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
     }
@@ -436,6 +437,11 @@ auto ScatterPlotGL::addSelectionChangedCallback(std::function<SelectionFunc> cal
     return selectionChangedCallback_.add(callback);
 }
 
+auto ScatterPlotGL::addFilteringChangedCallback(std::function<SelectionFunc> callback)
+    -> SelectionCallbackHandle {
+    return filteringChangedCallback_.add(callback);
+}
+
 void ScatterPlotGL::invokeEvent(Event* event, Image& dest, bool useAxisRanges) {
     invokeEvent(event, ivec2(0, 0), dest.getDimensions(), useAxisRanges);
 }
@@ -462,10 +468,19 @@ void ScatterPlotGL::invokeEvent(Event* event, const ivec2& start, const size2_t&
         } else if ((me->button() == MouseButton::Left) && (me->state() == MouseState::Release)) {
             if (dragRect_ && glm::compMax(glm::abs(me->pos() - (*dragRect_)[0])) <= 1) {
                 // Click in empty space
-                selectedIndices_.clear();
-                selectedIndicesGLDirty_ = true;
-                // selection changed, inform processor
-                selectionChangedCallback_.invoke(selectedIndices_);
+                switch (properties_.dragRectSettings_.getMode()) {
+                    case DragRectangleSettingsInterface::Mode::Selection:
+                        selectedIndices_.clear();
+                        selectedIndicesGLDirty_ = true;
+                        // selection changed, inform processor
+                        selectionChangedCallback_.invoke(selectedIndices_);
+                        break;
+                    case DragRectangleSettingsInterface::Mode::Filtering:
+                        filteringChangedCallback_.invoke(std::unordered_set<size_t>{});
+                        break;
+                    case DragRectangleSettingsInterface::Mode::None:
+                        break;
+                }
             } else {
                 if (processor_) {
                     processor_->invalidate(InvalidationLevel::InvalidOutput);
@@ -504,7 +519,7 @@ void ScatterPlotGL::invokeEvent(Event* event, const ivec2& start, const size2_t&
             (*dragRect_)[1] = dvec2{me->pos().x, me->pos().y};
             auto dstart = translatePos((*dragRect_)[0]);
             auto dend = translatePos((*dragRect_)[1]);
-            selectionRectChanged(glm::min(dstart, dend), glm::max(dstart, dend));
+            dragRectChanged(glm::min(dstart, dend), glm::max(dstart, dend));
             me->setUsed(true);
         }
     }
@@ -578,8 +593,7 @@ void ScatterPlotGL::objectPicked(PickingEvent* p) {
             selectedIndices_.insert(id);
         }
         selectedIndicesGLDirty_ = true;
-        // Make drag rect disappear
-        dragRect_ = std::nullopt;
+
         // selection changed, inform processor
         selectionChangedCallback_.invoke(selectedIndices_);
     }
@@ -590,17 +604,35 @@ uint32_t ScatterPlotGL::getGlobalPickId(uint32_t localIndex) const {
     return static_cast<uint32_t>(picking_.getPickingId(localIndex));
 }
 
-void ScatterPlotGL::selectionRectChanged(const dvec2& start, const dvec2& end) {
+void ScatterPlotGL::dragRectChanged(const dvec2& start, const dvec2& end) {
+    if (properties_.dragRectSettings_.getMode() == DragRectangleSettingsInterface::Mode::None) {
+        return;
+    }
     auto xbuf = xAxis_->getRepresentation<BufferRAM>();
+    // Selection should end up with elements inside of rect while 
+    // filtering should end up with elements outside of rect.
+    auto isFiltering =
+        properties_.dragRectSettings_.getMode() == DragRectangleSettingsInterface::Mode::Filtering;
+    auto filteringCompareOp = [](auto elem, auto tmin, auto tmax) -> bool {
+        return elem >= tmin && elem <= tmax;
+    };
+    auto selectionCompareOp = [](auto elem, auto tmin, auto tmax) -> bool {
+        return elem < tmin || elem > tmax;
+    };
+
     std::unordered_set<size_t> selectedIndices =
         xbuf->dispatch<std::unordered_set<size_t>, dispatching::filter::Scalars>(
-            [min = start[0], max = end[0]](auto brprecision) {
+            [min = start[0], max = end[0], isFiltering = isFiltering,
+             selectionCompareOp = selectionCompareOp,
+             filteringCompareOp = filteringCompareOp](auto brprecision) {
                 using ValueType = util::PrecisionValueType<decltype(brprecision)>;
                 auto tmin = static_cast<ValueType>(min);
                 auto tmax = static_cast<ValueType>(max);
                 std::unordered_set<size_t> selectedIndices;
                 for (auto&& [ind, elem] : util::enumerate(brprecision->getDataContainer())) {
-                    if (elem < tmin || elem > tmax) {
+                    if (isFiltering && filteringCompareOp(elem, tmin, tmax)) {
+                        continue;
+                    } else if (!isFiltering && selectionCompareOp(elem, tmin, tmax)) {
                         continue;
                     } else {
                         selectedIndices.insert(ind);
@@ -609,25 +641,43 @@ void ScatterPlotGL::selectionRectChanged(const dvec2& start, const dvec2& end) {
                 return selectedIndices;
             });
     auto ybuf = yAxis_->getRepresentation<BufferRAM>();
-    selectedIndices_ = ybuf->dispatch<std::unordered_set<size_t>, dispatching::filter::Scalars>(
-        [subset = selectedIndices, min = start[1], max = end[1]](auto brprecision) {
-            using ValueType = util::PrecisionValueType<decltype(brprecision)>;
-            auto tmin = static_cast<ValueType>(min);
-            auto tmax = static_cast<ValueType>(max);
-            auto data = brprecision->getDataContainer();
-            std::unordered_set<size_t> selectedIndices;
-            for (auto ind : subset) {
-                auto elem = data[ind];
-                if (elem < tmin || elem > tmax) {
-                    continue;
-                } else {
-                    selectedIndices.insert(ind);
-                }
+    auto filterYOp = [subset = selectedIndices, min = start[1], max = end[1],
+                      isFiltering = isFiltering,
+             selectionCompareOp = selectionCompareOp,
+             filteringCompareOp = filteringCompareOp](auto brprecision) {
+        using ValueType = util::PrecisionValueType<decltype(brprecision)>;
+        auto tmin = static_cast<ValueType>(min);
+        auto tmax = static_cast<ValueType>(max);
+        auto data = brprecision->getDataContainer();
+        std::unordered_set<size_t> selectedIndices;
+        for (auto ind : subset) {
+            auto elem = data[ind];
+            if (isFiltering && filteringCompareOp(elem, tmin, tmax)) {
+                continue;
+            } else if (!isFiltering && selectionCompareOp(elem, tmin, tmax)) {
+                continue;
+            } else {
+                selectedIndices.insert(ind);
             }
-            return selectedIndices;
-        });
-    selectedIndicesGLDirty_ = true;
-    selectionChangedCallback_.invoke(selectedIndices_);
+        }
+        return selectedIndices;
+    };
+    switch (properties_.dragRectSettings_.getMode()) {
+        case DragRectangleSettingsInterface::Mode::Selection:
+            selectedIndices_ =
+                ybuf->dispatch<std::unordered_set<size_t>, dispatching::filter::Scalars>(filterYOp);
+            selectedIndicesGLDirty_ = true;
+            // selection changed, inform processor
+            selectionChangedCallback_.invoke(selectedIndices_);
+            break;
+        case DragRectangleSettingsInterface::Mode::Filtering:
+            filteringChangedCallback_.invoke(
+                ybuf->dispatch<std::unordered_set<size_t>, dispatching::filter::Scalars>(
+                    filterYOp));
+            break;
+        case DragRectangleSettingsInterface::Mode::None:
+            break;
+    }
 }
 
 }  // namespace plot

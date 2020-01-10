@@ -9,6 +9,7 @@ set(HEADER_FILES
     include/modules/basegl/algorithm/imageconvolution.h
     include/modules/basegl/baseglmodule.h
     include/modules/basegl/baseglmoduledefine.h
+    include/modules/basegl/datastructures/linesettings.h
     include/modules/basegl/datastructures/linesettingsinterface.h
     include/modules/basegl/datastructures/meshshadercache.h
     include/modules/basegl/datavisualizer/imagebackgroundvisualizer.h
@@ -86,6 +87,7 @@ set(SOURCE_FILES
     src/algorithm/entryexitpoints.cpp
     src/algorithm/imageconvolution.cpp
     src/baseglmodule.cpp
+    src/datastructures/linesettings.cpp
     src/datastructures/linesettingsinterface.cpp
     src/datastructures/meshshadercache.cpp
     src/datavisualizer/imagebackgroundvisualizer.cpp

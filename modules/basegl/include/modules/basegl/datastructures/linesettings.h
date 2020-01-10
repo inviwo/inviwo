@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,28 +28,56 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-
+#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/datastructures/linesettingsinterface.h>
+#include <inviwo/core/datastructures/stipplingsettings.h>
 
 namespace inviwo {
-/*
- * \brief Settings for stippling (Dashed line, e.g., - - -)
- */ 
-class IVW_CORE_API StipplingSettingsInterface {
+
+/**
+ * \brief Basic implementation of the LineSettingsInterface 
+ */
+class IVW_MODULE_BASEGL_API LineSettings: public LineSettingsInterface {
 public:
-    enum class Mode { None, ScreenSpace, WorldSpace };
-    StipplingSettingsInterface() = default;
-    virtual ~StipplingSettingsInterface() = default;
-    
-    virtual Mode getMode() const = 0;
-    virtual float getLength() const = 0;
-    virtual float getSpacing() const = 0;
-    virtual float getOffset() const = 0;
-    virtual float getWorldScale() const = 0;
-    
+    LineSettings() = default;
+    virtual ~LineSettings() = default;
+
+    float lineWidth = 1.f;
+    float antialiasing = 0.5f;
+    float miterLimit = 0.8f;
+    bool roundCaps = true;
+    bool pseudoLighting = false;
+    bool roundDepthProfile = false;
+    StipplingSettings stippling;
+    // Inherited from LineSettingsInterface
+    /*
+     * @copydoc LineSettingsInterface::getWidth
+     */
+    virtual float getWidth() const override;
+    /*
+     * @copydoc LineSettingsInterface::getAntialiasingWidth
+     */
+    virtual float getAntialiasingWidth() const override;
+    /*
+     * @copydoc LineSettingsInterface::getMiterLimit
+     */
+    virtual float getMiterLimit() const override;
+    /*
+     * @copydoc LineSettingsInterface::getRoundCaps
+     */
+    virtual bool getRoundCaps() const override;
+    /*
+     * @copydoc LineSettingsInterface::getPseudoLighting
+     */
+    virtual bool getPseudoLighting() const override;
+    /*
+     * @copydoc LineSettingsInterface::getRoundDepthProfile
+     */
+    virtual bool getRoundDepthProfile() const override;
+    /*
+     * @copydoc LineSettingsInterface::getStippling
+     */
+    virtual const StipplingSettingsInterface& getStippling() const override;
 };
-IVW_CORE_API bool operator==(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b);
-IVW_CORE_API bool operator!=(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b);
-   
+
 }  // namespace inviwo

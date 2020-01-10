@@ -48,7 +48,7 @@
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
 
-#include <modules/plottinggl/rendering/selectionrectanglerenderer.h>
+#include <modules/plottinggl/rendering/dragrectanglerenderer.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 
 #include <optional>
@@ -89,6 +89,7 @@ public:
         FloatVec4Property color_;
         FloatVec4Property hoverColor_;
         FloatVec4Property selectionColor_;
+        DragRectangleProperty dragRectSettings_; ///! Selection/filtering 
         MarginProperty margins_;
         FloatProperty axisMargin_;
 
@@ -104,12 +105,12 @@ public:
     private:
         auto props() {
             return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
-                            selectionColor_, margins_, axisMargin_, borderWidth_, borderColor_,
+                            selectionColor_, dragRectSettings_, margins_, axisMargin_, borderWidth_, borderColor_,
                             hovering_, axisStyle_, xAxis_, yAxis_);
         }
         auto props() const {
             return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
-                            selectionColor_, margins_, axisMargin_, borderWidth_, borderColor_,
+                            selectionColor_, dragRectSettings_, margins_, axisMargin_, borderWidth_, borderColor_,
                             hovering_, axisStyle_, xAxis_, yAxis_);
         }
     };
@@ -144,6 +145,7 @@ public:
 
     ToolTipCallbackHandle addToolTipCallback(std::function<ToolTipFunc> callback);
     SelectionCallbackHandle addSelectionChangedCallback(std::function<SelectionFunc> callback);
+    SelectionCallbackHandle addFilteringChangedCallback(std::function<SelectionFunc> callback);
 
     void invokeEvent(Event* event, Image& dest, bool useAxisRanges = false);
     void invokeEvent(Event* event, ImageOutport& dest, bool useAxisRanges = false);
@@ -161,7 +163,7 @@ protected:
     uint32_t getGlobalPickId(uint32_t localIndex) const;
 
     void invokeEvent(Event* event, const ivec2& start, const size2_t& size, bool useAxisRange);
-    void selectionRectChanged(const dvec2& start, const dvec2& end);
+    void dragRectChanged(const dvec2& start, const dvec2& end);
 
     std::shared_ptr<const BufferBase> xAxis_;
     std::shared_ptr<const BufferBase> yAxis_;
@@ -194,12 +196,13 @@ protected:
 
     Dispatcher<ToolTipFunc> tooltipCallback_;
     Dispatcher<SelectionFunc> selectionChangedCallback_;
+    Dispatcher<SelectionFunc> filteringChangedCallback_;
 
     std::optional<std::array<dvec2, 2>> dragRect_;
 
 
-    LineSettingsProperty lineSettings_;
-    SelectionRectangleRenderer selectionRectRenderer_;
+    
+    DragRectangleRenderer selectionRectRenderer_;
 };
 
 }  // namespace plot
