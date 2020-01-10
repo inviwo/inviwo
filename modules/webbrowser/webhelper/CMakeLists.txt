@@ -23,12 +23,13 @@ set(WEBBROWSER_HELPER_SOURCES
     ${WEBBROWSER_RESOURCES}
 )
 
-# place helper in separate executable. CEF uses "<app name> + Helper" by default
+# place helper in separate executable. 
 set(CEF_HELPER_TARGET "cef_inviwo_helper" CACHE INTERNAL "CEF_HELPER_TARGET")
-set(CEF_HELPER_OUTPUT_NAME "${IVW_APP_INSTALL_NAME} Helper")
+
 
 if (NOT OS_MACOSX)
     add_executable(${CEF_HELPER_TARGET} WIN32 MACOSX_BUNDLE ${WEBBROWSER_HELPER_SOURCES})
+	set(CEF_HELPER_OUTPUT_NAME "cef_web_helper")
 	set_target_properties(${CEF_HELPER_TARGET} PROPERTIES OUTPUT_NAME ${CEF_HELPER_OUTPUT_NAME})
 
     add_dependencies(${CEF_HELPER_TARGET} libcef_dll_wrapper)
@@ -58,7 +59,9 @@ if (NOT OS_MACOSX)
 endif()
 
 if (OS_MACOSX)
-
+	# Mac: CEF uses 3 different applications according to following structure:
+	# "<app name> + Helper<type>", e.g. Inviwo Helper (GPU)
+	set(CEF_HELPER_OUTPUT_NAME "${IVW_APP_INSTALL_NAME} Helper")
 	set(CEF_TARGET inviwo-module-webbrowser)
     
     if(USE_SANDBOX)

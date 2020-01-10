@@ -124,7 +124,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     auto exeExtension = filesystem::getFileExtension(filesystem::getExecutablePath());
     // Assume that inviwo_web_helper is next to the main executable
     auto exeDirectory = filesystem::getFileDirectory(filesystem::getExecutablePath());
-    auto subProcessExecutable = exeDirectory + "/Inviwo CEF Helper." + exeExtension;
+
     auto locale = app->getUILocale().name();
     if (locale == "C") {
         // Crash when default locale "C" is used. Reproduce with GLFWMinimum application
@@ -161,16 +161,20 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
         locale.erase(startErasePos, locale.find('.') - startErasePos);
     }
 
-    // Web helper executable should be located in Frameworks dir of bundle,
-    // see OS_MACOSX part in CMakeLists.txt
-    if (!filesystem::fileExists(subProcessExecutable)) {
-        subProcessExecutable =
-            cefParentDir +
-            std::string("/Frameworks/Inviwo Helper.app/Contents/MacOS/Inviwo CEF Helper");
-    }
 #else
     CefMainArgs args;
     CefSettings settings;
+    // Non-mac systems uses a single helper executable so here we can specify name
+    // Linux will have empty extension
+    auto subProcessExecutable = fmt::format("{}/{}{}{}", exeDirectory, "cef_web_helper",
+                                            exeExtension.empty() ? "" : ".", exeExtension);
+    if (!filesystem::fileExists(subProcessExecutable)) {
+        throw ModuleInitException("Could not find web helper executable:" + subProcessExecutable);
+    }
+
+    // Necessary to run helpers in separate sub-processes
+    // Needed since we do not want to edit the "main" function
+    CefString(&settings.browser_subprocess_path).FromASCII(subProcessExecutable.c_str());
 #endif
 
 #ifdef WIN32
@@ -203,16 +207,6 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     settings.external_message_pump = true;
 
     CefString(&settings.locale).FromASCII(locale.c_str());
-
-#ifndef __APPLE__  // Three different executables on Mac
-    if (!filesystem::fileExists(subProcessExecutable)) {
-        throw ModuleInitException("Could not find web helper executable:" + subProcessExecutable);
-    }
-
-    // Necessary to run helpers in separate sub-processes on non-mac systems
-    // Needed since we do not want to edit the "main" function
-    CefString(&settings.browser_subprocess_path).FromASCII(subProcessExecutable.c_str());
-#endif
 
     // Optional implementation of the CefApp interface.
     CefRefPtr<WebBrowserApp> browserApp(new WebBrowserApp);
