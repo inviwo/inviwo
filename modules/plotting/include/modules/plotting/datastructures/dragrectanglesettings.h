@@ -28,28 +28,29 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-
 namespace inviwo {
-/*
- * \brief Settings for stippling (Dashed line, e.g., - - -)
- */ 
-class IVW_CORE_API StipplingSettingsInterface {
+
+namespace plot {
+
+class IVW_MODULE_PLOTTING_API DragRectangleSettingsInterface {
 public:
-    enum class Mode { None, ScreenSpace, WorldSpace };
-    StipplingSettingsInterface() = default;
-    virtual ~StipplingSettingsInterface() = default;
-    
+    enum class Mode { Selection, Filtering, None };
+    DragRectangleSettingsInterface() = default;
+    virtual ~DragRectangleSettingsInterface() = default;
+
     virtual Mode getMode() const = 0;
-    virtual float getLength() const = 0;
-    virtual float getSpacing() const = 0;
-    virtual float getOffset() const = 0;
-    virtual float getWorldScale() const = 0;
-    
+    virtual vec4 getLineColor() const = 0;
+    virtual float getLineWidth() const = 0;
 };
-IVW_CORE_API bool operator==(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b);
-IVW_CORE_API bool operator!=(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b);
-   
+
+IVW_MODULE_PLOTTING_API bool operator==(const DragRectangleSettingsInterface& a,
+                                        const DragRectangleSettingsInterface& b);
+IVW_MODULE_PLOTTING_API bool operator!=(const DragRectangleSettingsInterface& a,
+                                        const DragRectangleSettingsInterface& b);
+
+}  // namespace plot
+
 }  // namespace inviwo

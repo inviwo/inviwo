@@ -92,6 +92,7 @@ private:
     using SelectionCallbackHandle =
         std::shared_ptr<std::function<void(const std::unordered_set<size_t>&)>>;
     SelectionCallbackHandle selectionChangedCallBack_;
+    SelectionCallbackHandle filteringChangedCallBack_;
 };
 
 }  // namespace plot

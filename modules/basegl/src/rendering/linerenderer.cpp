@@ -76,7 +76,7 @@ void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screen
     } else {
         auto& shader = lineShaders_.getShader(mesh);
         if (mesh.getDefaultMeshInfo().dt != DrawType::Lines) return;
-        
+
         shader.activate();
         setUniforms(shader, mesh, camera, screenDim);
 
@@ -84,10 +84,12 @@ void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screen
         shader.deactivate();
     }
 }
-void LineRenderer::setLineSettings(const LineSettingsInterface* settings) { settings_ = settings;
+void LineRenderer::setLineSettings(const LineSettingsInterface* settings) {
+    settings_ = settings;
     configureShaders();
 }
-void LineRenderer::setUniforms(Shader& lineShader, const Mesh& mesh, const Camera& camera, size2_t screenDim) {
+void LineRenderer::setUniforms(Shader& lineShader, const Mesh& mesh, const Camera& camera,
+                               size2_t screenDim) {
     lineShader.setUniform("screenDim", vec2(screenDim));
     utilgl::setShaderUniforms(lineShader, camera, "camera");
 

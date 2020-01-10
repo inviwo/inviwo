@@ -20,7 +20,7 @@ set(HEADER_FILES
     include/modules/plottinggl/processors/scatterplotmatrixprocessor.h
     include/modules/plottinggl/processors/scatterplotprocessor.h
     include/modules/plottinggl/processors/volumeaxis.h
-    include/modules/plottinggl/rendering/selectionrectanglerenderer.h
+    include/modules/plottinggl/rendering/dragrectanglerenderer.h
     include/modules/plottinggl/utils/axisrenderer.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -42,7 +42,7 @@ set(SOURCE_FILES
     src/processors/scatterplotmatrixprocessor.cpp
     src/processors/scatterplotprocessor.cpp
     src/processors/volumeaxis.cpp
-    src/rendering/selectionrectanglerenderer.cpp
+    src/rendering/dragrectanglerenderer.cpp
     src/utils/axisrenderer.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

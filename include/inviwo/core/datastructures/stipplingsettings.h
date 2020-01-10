@@ -29,27 +29,43 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-
+#include <inviwo/core/datastructures/stipplingsettingsinterface.h>
 
 namespace inviwo {
-/*
- * \brief Settings for stippling (Dashed line, e.g., - - -)
- */ 
-class IVW_CORE_API StipplingSettingsInterface {
+
+/**
+ * \brief Basic implementation of the StipplingSettingsInterface
+ */
+class IVW_CORE_API StipplingSettings : public StipplingSettingsInterface {
 public:
-    enum class Mode { None, ScreenSpace, WorldSpace };
-    StipplingSettingsInterface() = default;
-    virtual ~StipplingSettingsInterface() = default;
-    
-    virtual Mode getMode() const = 0;
-    virtual float getLength() const = 0;
-    virtual float getSpacing() const = 0;
-    virtual float getOffset() const = 0;
-    virtual float getWorldScale() const = 0;
-    
+    StipplingSettings() = default;
+    virtual ~StipplingSettings() = default;
+
+    Mode mode = Mode::None;
+    float length = 30.f;
+    float spacing = 10.f;
+    float offset = 0.f;
+    float worldScale = 4.f;
+    /*
+     * @copydoc StipplingSettingsInterface::getMode
+     */
+    virtual StipplingSettingsInterface::Mode getMode() const override;
+    /*
+     * @copydoc StipplingSettingsInterface::getLength
+     */
+    virtual float getLength() const override;
+    /*
+     * @copydoc StipplingSettingsInterface::getSpacing
+     */
+    virtual float getSpacing() const override;
+    /*
+     * @copydoc StipplingSettingsInterface::getOffset
+     */
+    virtual float getOffset() const override;
+    /*
+     * @copydoc StipplingSettingsInterface::getWorldScale
+     */
+    virtual float getWorldScale() const override;
 };
-IVW_CORE_API bool operator==(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b);
-IVW_CORE_API bool operator!=(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b);
-   
+
 }  // namespace inviwo

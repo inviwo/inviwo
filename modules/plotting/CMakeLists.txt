@@ -7,6 +7,7 @@ ivw_module(Plotting)
 set(HEADER_FILES
     include/modules/plotting/datastructures/axisdata.h
     include/modules/plotting/datastructures/axissettings.h
+    include/modules/plotting/datastructures/dragrectanglesettings.h
     include/modules/plotting/datastructures/majortickdata.h
     include/modules/plotting/datastructures/majorticksettings.h
     include/modules/plotting/datastructures/minortickdata.h
@@ -19,6 +20,7 @@ set(HEADER_FILES
     include/modules/plotting/properties/axisproperty.h
     include/modules/plotting/properties/axisstyleproperty.h
     include/modules/plotting/properties/categoricalaxisproperty.h
+    include/modules/plotting/properties/dragrectangleproperty.h
     include/modules/plotting/properties/marginproperty.h
     include/modules/plotting/properties/optionconverter.h
     include/modules/plotting/properties/plottextproperty.h
@@ -33,6 +35,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/datastructures/axisdata.cpp
     src/datastructures/axissettings.cpp
+    src/datastructures/dragrectanglesettings.cpp
     src/datastructures/majortickdata.cpp
     src/datastructures/majorticksettings.cpp
     src/datastructures/minortickdata.cpp
@@ -44,6 +47,7 @@ set(SOURCE_FILES
     src/properties/axisproperty.cpp
     src/properties/axisstyleproperty.cpp
     src/properties/categoricalaxisproperty.cpp
+    src/properties/dragrectangleproperty.cpp
     src/properties/marginproperty.cpp
     src/properties/plottextproperty.cpp
     src/properties/tickproperty.cpp

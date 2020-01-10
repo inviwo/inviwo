@@ -30,19 +30,21 @@
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <modules/basegl/datastructures/linesettings.h>
 #include <modules/basegl/rendering/linerenderer.h>
-#include <modules/basegl/datastructures/linesettingsinterface.h>
+#include <modules/plotting/properties/dragrectangleproperty.h>
 
 namespace inviwo {
 
+namespace plot {
 /**
  * \brief Renders a 2D rectangle in screen space.
  *
  */
-class IVW_MODULE_PLOTTINGGL_API SelectionRectangleRenderer {
+class IVW_MODULE_PLOTTINGGL_API DragRectangleRenderer {
 public:
-    SelectionRectangleRenderer(const LineSettingsInterface* lineSettings);
-    virtual ~SelectionRectangleRenderer() = default;
+    DragRectangleRenderer(const DragRectangleProperty& settings);
+    virtual ~DragRectangleRenderer() = default;
     /*
      * \brief Draw rectangle if dragRect exists.
      * 
@@ -52,7 +54,10 @@ public:
     void render(std::optional<std::array<dvec2, 2>> dragRect, size2_t screenDim);
 
 protected:
+    const DragRectangleProperty& settings_;
+    LineSettings lineSettings_;
     algorithm::LineRenderer lineRenderer_;
+    vec4 color_; //!< Dummy color until line color can be set using uniform
     ColoredMesh dragRectMesh_ = ColoredMesh(DrawType::Lines, ConnectivityType::Strip,
                                             {{vec3{0.f, 0.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},
                                              {vec3{1.f, 0.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},
@@ -60,5 +65,7 @@ protected:
                                              {vec3{0.f, 1.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}}},
                                             {0, 1, 2, 3, 0});
 };
+
+}  // namespace plot
 
 }  // namespace inviwo

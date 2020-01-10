@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,30 +26,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-
+#include <modules/basegl/datastructures/linesettings.h>
 
 namespace inviwo {
-/*
- * \brief Settings for stippling (Dashed line, e.g., - - -)
- */ 
-class IVW_CORE_API StipplingSettingsInterface {
-public:
-    enum class Mode { None, ScreenSpace, WorldSpace };
-    StipplingSettingsInterface() = default;
-    virtual ~StipplingSettingsInterface() = default;
-    
-    virtual Mode getMode() const = 0;
-    virtual float getLength() const = 0;
-    virtual float getSpacing() const = 0;
-    virtual float getOffset() const = 0;
-    virtual float getWorldScale() const = 0;
-    
-};
-IVW_CORE_API bool operator==(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b);
-IVW_CORE_API bool operator!=(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b);
-   
+
+float LineSettings::getWidth() const { return lineWidth; }
+
+float LineSettings::getAntialiasingWidth() const { return antialiasing; }
+
+float LineSettings::getMiterLimit() const { return miterLimit; }
+
+bool LineSettings::getRoundCaps() const { return roundCaps; }
+
+bool LineSettings::getPseudoLighting() const { return pseudoLighting; }
+
+bool LineSettings::getRoundDepthProfile() const { return roundDepthProfile; }
+
+const StipplingSettingsInterface& LineSettings::getStippling() const { return stippling; }
+
 }  // namespace inviwo

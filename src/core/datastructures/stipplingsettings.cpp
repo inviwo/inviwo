@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,28 +27,19 @@
  *
  *********************************************************************************/
 
-#include <modules/plottinggl/rendering/selectionrectanglerenderer.h>
+#include <inviwo/core/datastructures/stipplingsettingsinterface.h>
+#include "..\..\..\include\inviwo\core\datastructures\stipplingsettings.h"
 
 namespace inviwo {
 
-SelectionRectangleRenderer::SelectionRectangleRenderer(const LineSettingsInterface* lineSettings): lineRenderer_(lineSettings) {
+StipplingSettingsInterface::Mode StipplingSettings::getMode() const { return mode; }
 
-}
+float StipplingSettings::getLength() const { return length; }
 
-void SelectionRectangleRenderer::render(std::optional<std::array<dvec2, 2>> dragRect,
-                                        size2_t screenDim) {
-   if (dragRect) {
-        
-        auto start = vec2((*dragRect)[0]);
-        auto end = vec2((*dragRect)[1]);
-        auto scale = vec2((*dragRect)[1] - (*dragRect)[0]);
-        mat4 m(vec4(scale.x, 0.f, 0.f, 0.f), vec4(0.f, scale.y, 0.f, 0.f), vec4(0.f, 0.f, 1.f, 0.f),
-               vec4(start.x, start.y, 0.f, 1.f));
-        dragRectMesh_.setModelMatrix(m);
-        OrthographicCamera camera_;
-        camera_.setFrustum(ivec4(0, screenDim.x, 0, screenDim.y));
-        lineRenderer_.render(dragRectMesh_, camera_, screenDim);
-    }
-}
+float StipplingSettings::getSpacing() const { return spacing; }
+
+float StipplingSettings::getOffset() const { return offset; }
+
+float StipplingSettings::getWorldScale() const { return worldScale; }
 
 }  // namespace inviwo
