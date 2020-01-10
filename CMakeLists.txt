@@ -142,6 +142,7 @@ add_subdirectory(ext/half)
 add_subdirectory(ext/utf)
 add_subdirectory(ext/json)
 add_subdirectory(ext/fmt)
+add_subdirectory(ext/span)
 add_subdirectory(ext/sml)
 add_subdirectory(ext/sigar)
 add_subdirectory(ext/stackwalker) # Add stackwalker for windows for stack traces in the log

@@ -711,6 +711,7 @@ target_link_libraries(inviwo-core PUBLIC
     inviwo::tclap
     inviwo::warn
     inviwo::sml
+    inviwo::span
     fmt::fmt
     $<$<BOOL:${IVW_SIGAR}>:inviwo::sigar>
     $<$<BOOL:${WIN32}>:inviwo::stackwalker>
@@ -839,7 +840,7 @@ endif()
 ivw_register_license_file(NAME "JSON for Modern C++" target nlohmann_json MODULE Core
     URL "https://github.com/nlohmann/json"
     TYPE "The MIT License"
-    FILES  ${IVW_EXTENSIONS_DIR}/json/LICENSE.MIT
+    FILES ${IVW_EXTENSIONS_DIR}/json/LICENSE.MIT
 )
 
 ivw_register_license_file(NAME "inja" VERSION 1.0.0 target inja MODULE Core
@@ -853,6 +854,17 @@ ivw_register_license_file(NAME "PEGTL" VERSION 2.7.1 target taocpp::pegtl MODULE
     FILES ${IVW_TOOLS_DIR}/meta/ext/pegtl/LICENSE
 )
 
+ivw_register_license_file(NAME "[Boost].SML" VERSION 1.1.0 target inviwo::sml MODULE Core
+    URL "https://github.com/boost-experimental/sml"
+    TYPE " Boost Software License"
+    FILES ${IVW_EXTENSIONS_DIR}/sml/LICENSE_1_0.txt
+)
+
+ivw_register_license_file(NAME "tcbrindle/span" target inviwo::span MODULE Core
+    URL "https://github.com/tcbrindle/span"
+    TYPE " Boost Software License"
+    FILES ${IVW_EXTENSIONS_DIR}/span/span/LICENSE_1_0.txt
+)
 
 #----------------------------------------------------------------
 # Generate build info - the build info will be updated during every compilation
