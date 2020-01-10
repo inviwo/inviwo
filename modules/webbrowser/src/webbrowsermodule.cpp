@@ -165,7 +165,8 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     CefMainArgs args;
     CefSettings settings;
     // Non-mac systems uses a single helper executable so here we can specify name
-    auto subProcessExecutable = exeDirectory + "/cef_web_helper." + exeExtension;
+    // Linux will have empty extension
+    auto subProcessExecutable = fmt::format("{}/{}{}{}", exeDirectory, "cef_web_helper", exeExtension.empty() ? "": ".", exeExtension);
     if (!filesystem::fileExists(subProcessExecutable)) {
         throw ModuleInitException("Could not find web helper executable:" + subProcessExecutable);
     }
