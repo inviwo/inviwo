@@ -10,7 +10,7 @@ There are three ways to create a new processor in Inviwo:
     Inviwo-meta does all of those things for you automatically. The following describes the files that need to be created or modified:
     1. You need to create the processors source and header files in `<module-dir>/src/processors/`
     2. The processor needs to be registered in its module. To do so, open the `<module-dir>/src/<module-name>module.cpp` and include your processor's header, then add the following line to the module's constructor:
-    ```
+    ```cpp
         registerProcessor<MyNewProcessor>();
     ```
     3. Add your new processor's header and source to the module's `CMakeLists.txt` (`<module-dir>/CMakeLists.txt`)
@@ -28,7 +28,7 @@ This example shows what is generated for the new processor `MyProcessor` in the 
 
 ### myprocessor.h
 
-```
+```cpp
 #pragma once
 
 #include <modules/postprocessing/postprocessingmoduledefine.h>
@@ -60,7 +60,7 @@ private:
 
 ### myprocessor.cpp
 
-```
+```cpp
 #include <modules/postprocessing/processors/myprocessor.h>
 
 namespace inviwo {
@@ -101,7 +101,7 @@ Ports are used as the primary way of sending data between processors. You can ad
 To access data from an inport, you can use the `getData()` method. To output data through an outport, you can use the `setData(...)` method.
 
 **Example**: Let's change `MyProcessor` to receive and produce an image.
-```
+```cpp
 // MyProcessor.h (inside class definition)
 private:
     ImageInport inport_;    // Define ports
@@ -125,7 +125,7 @@ Inside `process()` you can access your inports' data by using `inport_.getData()
 You can also use all your defined properties here. This let's you access all your algorithm's parameters directly from the GUI with automatic updates upon change.
 
 **Example**: Let's have our processor apply gaussian blur to the input image.
-```
+```cpp
 // MyProcessor.h (next to the other includes)
 #include <modules/basegl/algorithm/imageconvolution.h>
 
@@ -168,7 +168,7 @@ In the constructor body itself you have to call `addProperty()` or `addPropertie
 
 **Example**: Let's add a toggle to quickly enable/disable the effect, as well as a dropdown to choose from either gaussian or box blur.
 
-```
+```cpp
 // MyProcessor.h (next to other includes)
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -234,7 +234,7 @@ A good example for this can be found in `MeshRenderProcessorGL::process()` (`mod
 The `utilgl` namespace includes many useful convenience functions for OpenGL, like controlling OpenGL states (see `modules/opengl/openglutils.h`), utilities for working with `Shader`s (see `modules/opengl/shader/shaderutils/h`), drawing full screen quads and more.
 
 The `Shader` class can be used to activate shaders and bind uniforms etc. Similarly you can use the `TextureUnit` class as a wrapper for texture units. An image inport can be bound to an OpenGL texture unit using the following:
-```
+```cpp
 TextureUnit tex_unit;
 utilgl::bindColorTexture(tex_inport, tex_unit.getEnum());
 shader.setUniform("Uniform Name", tex_unit.getUnitNumber()); // shader is initialized in constructor
@@ -243,7 +243,7 @@ Examples for both `Shader` and `TextureUnit` can also be found in `HeightFieldPr
 
 
 Another useful class is the `TextureUnitContainer`, which makes it easier to handle multiple `TextureUnit`s. Essentially this let's you do:
-```
+```cpp
 TextureUnitContainer units;
 utilgl::bindAndSetUniforms(shader, units, texture);
 ```
@@ -251,13 +251,13 @@ where `texture` can be any of `ImageInport`, `ImageOutport`, `Texture`, `Image`,
 
 #### Accessing data in RAM:
 Inviwo has different data representations, depending on where the data is stored (Hard drive, RAM, GPU RAM) and by which API it is used (e.g. OpenGL, OpenCL). You can request each of those representations using `getRepresentation<RepresentationType>()`. For example you could get a volume representation in RAM as follows:
-```
+```cpp
 auto volume_ram_repr = volumeInport.getData()->getRepresentation<VolumeRAM>();
 ```
-This basic `VolumeRAM` representation exposes a `void*` pointer to the raw data (`VolumeRAM::getData()`). To get the underlying concrete type (`int`, `float`, `vec3`) we use a dispatch concept. This allows you to implement an algorithm once, but support mutiple concrete types in one go. 
+This basic `VolumeRAM` representation exposes a `void*` pointer to the raw data (`VolumeRAM::getData()`). To get the underlying concrete type (`int`, `float`, `vec3`) we use a dispatch concept. This allows you to implement an algorithm once, but support mutiple concrete types in one go.
 
 The `dispatch<>()` method takes a lambda as parameter, inside which you get access to the correctly typed data through the lambda's parameter. You can only access your data directly inside `dispatch<>()` lambda. Furthermore, `dispatch<ReturnType>()` has a type parameter as well, which is the return type of the lambda. See the following example:
-```
+```cpp
 volume_ram_repr->dispatch<  std::shared_ptr<Volume>  >([] (auto ram) {
     // ValueType is the concrete type of the volume, e.g. int, float
     using ValueType = util::PrecisionValueType<decltype(ram)>;
@@ -284,7 +284,7 @@ An easy example can be found in `src/core/algorithm/boundingbox.cpp` in `mat4 bo
 #### Accessing OpenGL textures
 If you have a volume and need to access it directly through the OpenGL API, this is how you can get the texture ID from a `Volume`:
 
-```
+```cpp
 auto volume = volumeInport.getData();
 const VolumeGL* volumeGL = volume->getRepresentation<VolumeGL>();
 
