@@ -236,7 +236,7 @@ GLenum Texture::getInternalFormat() const { return internalformat_; }
 
 GLenum Texture::getDataType() const { return dataType_; }
 
-const DataFormatBase* Texture::getDataFormat() const { 
+const DataFormatBase* Texture::getDataFormat() const {
     return DataFormatBase::get(GLFormats::get(dataType_, numChannels_));
 }
 
@@ -300,7 +300,7 @@ void Texture::setWrapping(util::span<const Wrapping> wrapping) {
 
 void Texture::getWrapping(util::span<Wrapping> wrapping) const {
     bind();
-    for (auto&& [i, wrap] : util::enumerate(wrapping)) {  
+    for (auto&& [i, wrap] : util::enumerate(wrapping)) {
         GLenum tmp;
         glGetTexParameterIuiv(target_, wrapNames[i], &tmp);
         wrap = utilgl::convertWrappingFromGL(tmp);

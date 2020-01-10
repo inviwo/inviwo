@@ -65,7 +65,9 @@ void VolumeDisk::setSwizzleMask(const SwizzleMask& mask) { swizzleMask_ = mask; 
 
 SwizzleMask VolumeDisk::getSwizzleMask() const { return swizzleMask_; }
 
-void VolumeDisk::setInterpolation(InterpolationType interpolation) { interpolation_ = interpolation; }
+void VolumeDisk::setInterpolation(InterpolationType interpolation) {
+    interpolation_ = interpolation;
+}
 
 InterpolationType VolumeDisk::getInterpolation() const { return interpolation_; }
 

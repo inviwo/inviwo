@@ -69,7 +69,6 @@ public:
 
 private:
     std::string sourceFile_;
-
 };
 
 }  // namespace inviwo

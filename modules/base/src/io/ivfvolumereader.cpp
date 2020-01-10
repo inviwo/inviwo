@@ -94,8 +94,7 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::string& filePath) {
     auto vd = std::make_shared<VolumeDisk>(filePath, dimensions, format, swizzleMask, interpolation,
                                            wrapping);
 
-    auto loader =
-        std::make_unique<RawVolumeRAMLoader>(rawFile, byteOffset, littleEndian);
+    auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile, byteOffset, littleEndian);
     vd->setLoader(loader.release());
 
     volume->addRepresentation(vd);

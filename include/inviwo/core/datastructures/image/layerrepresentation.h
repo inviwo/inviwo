@@ -82,7 +82,6 @@ public:
     virtual void setWrapping(const Wrapping2D& wrapping) = 0;
     virtual Wrapping2D getWrapping() const = 0;
 
-
     /**
      * Copy and resize the representations of this onto the target.
      */

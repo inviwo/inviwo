@@ -127,8 +127,8 @@ IVW_CORE_API std::shared_ptr<LayerRAM> createLayerRAM(
 
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(size2_t dimensions, LayerType type,
-                                        const SwizzleMask& swizzleMask, InterpolationType interpolation,
-                                        const Wrapping2D& wrapping)
+                                        const SwizzleMask& swizzleMask,
+                                        InterpolationType interpolation, const Wrapping2D& wrapping)
     : LayerRAM(type, DataFormat<T>::get())
     , dimensions_(dimensions)
     , data_(new T[dimensions_.x * dimensions_.y]())
@@ -141,8 +141,8 @@ LayerRAMPrecision<T>::LayerRAMPrecision(size2_t dimensions, LayerType type,
 
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(T* data, size2_t dimensions, LayerType type,
-                                        const SwizzleMask& swizzleMask, InterpolationType interpolation,
-                                        const Wrapping2D& wrapping)
+                                        const SwizzleMask& swizzleMask,
+                                        InterpolationType interpolation, const Wrapping2D& wrapping)
     : LayerRAM(type, DataFormat<T>::get())
     , dimensions_(dimensions)
     , data_(data ? data : new T[dimensions_.x * dimensions_.y]())

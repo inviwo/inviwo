@@ -42,8 +42,8 @@ LayerDisk::LayerDisk(size2_t dimensions, const DataFormatBase* format, LayerType
     , wrapping_{wrapping} {}
 
 LayerDisk::LayerDisk(std::string url, size2_t dimensions, const DataFormatBase* format,
-                     LayerType type, const SwizzleMask& swizzleMask, InterpolationType interpolation,
-                     const Wrapping2D& wrapping)
+                     LayerType type, const SwizzleMask& swizzleMask,
+                     InterpolationType interpolation, const Wrapping2D& wrapping)
     : LayerRepresentation(type, format)
     , DiskRepresentation<LayerRepresentation, LayerDisk>(url)
     , dimensions_(dimensions)
@@ -69,7 +69,9 @@ void LayerDisk::setSwizzleMask(const SwizzleMask& mask) { swizzleMask_ = mask; }
 
 SwizzleMask LayerDisk::getSwizzleMask() const { return swizzleMask_; }
 
-void LayerDisk::setInterpolation(InterpolationType interpolation) { interpolation_ = interpolation; }
+void LayerDisk::setInterpolation(InterpolationType interpolation) {
+    interpolation_ = interpolation;
+}
 
 InterpolationType LayerDisk::getInterpolation() const { return interpolation_; }
 

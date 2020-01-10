@@ -114,7 +114,7 @@ void Volume::setInterpolation(InterpolationType interpolation) {
     }
 }
 
-InterpolationType Volume::getInterpolation() const { 
+InterpolationType Volume::getInterpolation() const {
     if (lastValidRepresentation_) {
         return lastValidRepresentation_->getInterpolation();
     }
@@ -129,8 +129,7 @@ void Volume::setWrapping(const Wrapping3D& wrapping) {
     }
 }
 
-
-Wrapping3D Volume::getWrapping() const { 
+Wrapping3D Volume::getWrapping() const {
     if (lastValidRepresentation_) {
         return lastValidRepresentation_->getWrapping();
     }

@@ -36,7 +36,8 @@ struct VolumeRamCreationDispatcher {
     template <typename Result, typename T>
     std::shared_ptr<VolumeRAM> operator()(void* dataPtr, const size3_t& dimensions,
                                           const SwizzleMask& swizzleMask,
-                                          InterpolationType interpolation, const Wrapping3D& wrapping) {
+                                          InterpolationType interpolation,
+                                          const Wrapping3D& wrapping) {
         using F = typename T::type;
         return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(dataPtr), dimensions,
                                                        swizzleMask, interpolation, wrapping);

@@ -79,15 +79,15 @@ void setShaderUniforms(Shader& shader, const Volume& volume, const std::string& 
     const DataMapper defaultRange(volume.getDataFormat());
 
     const double invRange = 1.0 / (dataRange.y - dataRange.x);
-    const double defaultToDataRange = (defaultRange.dataRange.y - defaultRange.dataRange.x) * invRange;
+    const double defaultToDataRange =
+        (defaultRange.dataRange.y - defaultRange.dataRange.x) * invRange;
     const double defaultToDataOffset = (dataRange.x - defaultRange.dataRange.x) /
-                                 (defaultRange.dataRange.y - defaultRange.dataRange.x);
+                                       (defaultRange.dataRange.y - defaultRange.dataRange.x);
 
     double scalingFactor = 1.0;
     double signedScalingFactor = 1.0;
     double offset = 0.0;
     double signedOffset = 0.0;
-
 
     switch (GLFormats::get(volume.getDataFormat()->getId()).normalization) {
         case GLFormats::Normalization::None:

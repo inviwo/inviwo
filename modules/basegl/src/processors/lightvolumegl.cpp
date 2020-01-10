@@ -349,8 +349,7 @@ bool LightVolumeGL::volumeChanged(bool lightColorChanged) {
         for (auto& elem : propParams_) {
             if (elem.tex.getDataFormat()->getId() != format) {
                 elem.tex = PropagationParameters::makeTex(
-                    volumeDimOut_, format,
-                    supportColoredLight_ ? lightColor_ : borderColor_);
+                    volumeDimOut_, format, supportColoredLight_ ? lightColor_ : borderColor_);
             } else {
                 elem.tex.uploadAndResize(nullptr, volumeDimOut_);
             }

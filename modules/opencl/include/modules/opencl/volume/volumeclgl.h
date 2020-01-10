@@ -110,7 +110,6 @@ protected:
     void deinitialize();
     std::shared_ptr<Texture3D> texture_;
     std::shared_ptr<cl::Image3DGL> clImage_;  ///< Potentially shared with other LayerCLGL
-
 };
 
 }  // namespace inviwo

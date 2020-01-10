@@ -86,7 +86,7 @@ public:
         if (it != formats_.end()) {
             return static_cast<DataFormatId>(it - formats_.begin());
         } else {
-            return DataFormatId::NotSpecialized;   
+            return DataFormatId::NotSpecialized;
         }
     }
 

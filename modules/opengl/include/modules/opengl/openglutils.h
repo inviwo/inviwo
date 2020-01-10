@@ -46,7 +46,7 @@ IVW_MODULE_OPENGL_API std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleM
 IVW_MODULE_OPENGL_API SwizzleMask convertSwizzleMaskFromGL(const std::array<GLint, 4>& maskGL);
 
 IVW_MODULE_OPENGL_API GLenum convertInterpolationToGL(InterpolationType interpolation);
-IVW_MODULE_OPENGL_API InterpolationType  convertInterpolationFromGL(GLenum interpolation);
+IVW_MODULE_OPENGL_API InterpolationType convertInterpolationFromGL(GLenum interpolation);
 
 IVW_MODULE_OPENGL_API GLenum convertWrappingToGL(Wrapping wrap);
 IVW_MODULE_OPENGL_API Wrapping convertWrappingFromGL(GLenum wrap);

@@ -135,7 +135,8 @@ IVW_CORE_API std::shared_ptr<VolumeRAM> createVolumeRAM(
 
 template <typename T>
 VolumeRAMPrecision<T>::VolumeRAMPrecision(size3_t dimensions, const SwizzleMask& swizzleMask,
-                                          InterpolationType interpolation, const Wrapping3D& wrapping)
+                                          InterpolationType interpolation,
+                                          const Wrapping3D& wrapping)
     : VolumeRAM(DataFormat<T>::get())
     , dimensions_(dimensions)
     , ownsDataPtr_(true)
@@ -147,7 +148,8 @@ VolumeRAMPrecision<T>::VolumeRAMPrecision(size3_t dimensions, const SwizzleMask&
 template <typename T>
 VolumeRAMPrecision<T>::VolumeRAMPrecision(T* data, size3_t dimensions,
                                           const SwizzleMask& swizzleMask,
-                                          InterpolationType interpolation, const Wrapping3D& wrapping)
+                                          InterpolationType interpolation,
+                                          const Wrapping3D& wrapping)
     : VolumeRAM(DataFormat<T>::get())
     , dimensions_(dimensions)
     , ownsDataPtr_(true)

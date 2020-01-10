@@ -107,7 +107,7 @@ protected:
     void volumeSizeOptionChanged();
     void supportColoredLightChanged();
     void floatPrecisionChanged();
-    
+
     void updatePermuationMatrices(const vec3&, PropagationParameters*, PropagationParameters*);
 
 private:

@@ -44,8 +44,7 @@ public:
                      const DataFormatBase* format = DataFormatBase::get(),
                      const SwizzleMask& swizzleMask = swizzlemasks::rgba,
                      InterpolationType interpolation = InterpolationType::Linear,
-                     const Wrapping2D& wrapping = wrapping2d::clampAll,
-                     const void* data = nullptr);
+                     const Wrapping2D& wrapping = wrapping2d::clampAll, const void* data = nullptr);
     LayerCL(const LayerCL& other);
     virtual ~LayerCL();
 

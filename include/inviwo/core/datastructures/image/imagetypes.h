@@ -156,7 +156,6 @@ std::basic_istream<Elem, Traits>& operator>>(std::basic_istream<Elem, Traits>& s
     return ss;
 }
 
-
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
                                              SwizzleMask mask) {

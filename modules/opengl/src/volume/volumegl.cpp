@@ -37,7 +37,8 @@
 namespace inviwo {
 
 VolumeGL::VolumeGL(size3_t dimensions, const DataFormatBase* format, const SwizzleMask& swizzleMask,
-                   InterpolationType interpolation, const Wrapping3D& wrapping, bool initializeTexture)
+                   InterpolationType interpolation, const Wrapping3D& wrapping,
+                   bool initializeTexture)
     : VolumeRepresentation{format}
     , texture_{std::make_shared<Texture3D>(dimensions, GLFormats::get(format->getId()),
                                            utilgl::convertInterpolationToGL(interpolation), 0,

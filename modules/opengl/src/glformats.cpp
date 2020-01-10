@@ -29,6 +29,4 @@
 
 #include <modules/opengl/glformats.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -201,7 +201,7 @@ void Serializer::serialize(const std::string& key, const std::list<T>& container
 
 template <typename T, size_t N>
 void Serializer::serialize(const std::string& key, const std::array<T, N>& container,
-                                  const std::string& itemKey) {
+                           const std::string& itemKey) {
     if (container.empty()) return;
 
     auto node = std::make_unique<TxElement>(key);
