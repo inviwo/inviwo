@@ -362,9 +362,10 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
             if (filteredIndices_.empty()) {
                 std::copy(indicesSeq.begin(), indicesSeq.end(), std::back_inserter(inds));
             } else {
-                std::copy_if(
-                indicesSeq.begin(), indicesSeq.end(), std::back_inserter(inds),
-                [this](auto val) { return filteredIndices_.find(val) == filteredIndices_.end(); });
+                std::copy_if(indicesSeq.begin(), indicesSeq.end(), std::back_inserter(inds),
+                             [this](auto val) {
+                                 return filteredIndices_.find(val) == filteredIndices_.end();
+                             });
             }
             indices = indices_.get();
         }
