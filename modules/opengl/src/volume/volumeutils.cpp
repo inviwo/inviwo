@@ -90,19 +90,19 @@ void setShaderUniforms(Shader& shader, const Volume& volume, const std::string& 
     double signedOffset = 0.0;
 
     switch (GLFormats::get(volume.getDataFormat()->getId()).normalization) {
-        case GLFormats::Normalization::None:
+        case utilgl::Normalization::None:
             scalingFactor = invRange;
             offset = -dataRange.x;
             signedScalingFactor = scalingFactor;
             signedOffset = offset;
             break;
-        case GLFormats::Normalization::Normalized:
+        case utilgl::Normalization::Normalized:
             scalingFactor = defaultToDataRange;
             offset = -defaultToDataOffset;
             signedScalingFactor = scalingFactor;
             signedOffset = offset;
             break;
-        case GLFormats::Normalization::SignNormalized:
+        case utilgl::Normalization::SignNormalized:
             scalingFactor = 0.5 * defaultToDataRange;
             offset = 1.0 - 2 * defaultToDataOffset;
             signedScalingFactor = defaultToDataRange;

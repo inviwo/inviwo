@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-Texture::Texture(GLenum target, GLFormats::GLFormat glFormat, GLenum filtering, GLint level,
+Texture::Texture(GLenum target, GLFormat glFormat, GLenum filtering, GLint level,
                  const SwizzleMask& swizzleMask, util::span<const Wrapping> wrapping)
     : Observable<TextureObserver>()
     , target_(target)

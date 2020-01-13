@@ -307,11 +307,11 @@ void flip(char* data, size_t elemSize, size3_t dim, std::array<bool, 3> flipAxis
         std::memcpy(copy, data, size * elemSize);
 
         util::IndexMapper3D mapper(dim);
-        for (auto z = 0; z < dim[2]; ++z) {
+        for (size_t z = 0; z < dim[2]; ++z) {
             const auto idz = flipAxis[2] ? dim[2] - 1 - z : z;
-            for (auto y = 0; y < dim[1]; ++y) {
+            for (size_t y = 0; y < dim[1]; ++y) {
                 const auto idy = flipAxis[1] ? dim[1] - 1 - y : y;
-                for (auto x = 0; x < dim[0]; ++x) {
+                for (size_t x = 0; x < dim[0]; ++x) {
                     const auto idx = flipAxis[0] ? dim[0] - 1 - x : x;
                     const auto from = mapper(x, y, z);
                     const auto to = mapper(idx, idy, idz);

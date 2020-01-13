@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-Texture2DArray::Texture2DArray(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
+Texture2DArray::Texture2DArray(size3_t dimensions, GLFormat glFormat, GLenum filtering,
                                GLint level, const SwizzleMask& swizzleMask, const Wrapping2D& wrap)
     : Texture(GL_TEXTURE_2D_ARRAY, glFormat, filtering, level, swizzleMask, util::span(wrap))
     , dimensions_(dimensions) {}

@@ -39,7 +39,7 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Texture2DArray : public Texture {
 public:
-    Texture2DArray(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
+    Texture2DArray(size3_t dimensions, GLFormat glFormat, GLenum filtering,
                    GLint level = 0, const SwizzleMask& swizzleMask = swizzlemasks::rgba,
                    const Wrapping2D& wrap = wrapping2d::clampAll);
     Texture2DArray(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,

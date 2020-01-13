@@ -69,7 +69,7 @@ public:
     GLenum getTarget() const;
     GLuint getId() const;
 
-    GLFormats::GLFormat getGLFormat() const;
+    GLFormat getGLFormat() const;
     const DataFormatBase* getDataFormat() const;
 
     void bind() const;
@@ -109,12 +109,12 @@ private:
     GLuint id_;
     GLenum usageGL_;
     GLenum target_;
-    GLFormats::GLFormat glFormat_;
+    GLFormat glFormat_;
     GLsizeiptr sizeInBytes_;
     const DataFormatBase* dataFormat_;
 };
 
-inline GLFormats::GLFormat BufferObject::getGLFormat() const { return glFormat_; }
+inline GLFormat BufferObject::getGLFormat() const { return glFormat_; }
 inline const DataFormatBase* BufferObject::getDataFormat() const { return dataFormat_; }
 
 }  // namespace inviwo

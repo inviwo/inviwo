@@ -33,8 +33,8 @@
 
 namespace inviwo {
 
-Texture3D::Texture3D(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
-                     GLint level, const SwizzleMask& swizzleMask, const Wrapping3D& wrap)
+Texture3D::Texture3D(size3_t dimensions, GLFormat glFormat, GLenum filtering, GLint level,
+                     const SwizzleMask& swizzleMask, const Wrapping3D& wrap)
     : Texture(GL_TEXTURE_3D, glFormat, filtering, level, swizzleMask, util::span(wrap))
     , dimensions_(dimensions) {}
 

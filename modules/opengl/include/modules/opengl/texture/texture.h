@@ -43,7 +43,7 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Texture : public Observable<TextureObserver> {
 public:
-    Texture(GLenum target, GLFormats::GLFormat glFormat, GLenum filtering, GLint level,
+    Texture(GLenum target, GLFormat glFormat, GLenum filtering, GLint level,
             const SwizzleMask& swizzleMask, util::span<const Wrapping> wrapping);
     Texture(GLenum target, GLint format, GLint internalformat, GLenum dataType, GLenum filtering,
             GLint level, const SwizzleMask& swizzleMask, util::span<const Wrapping> wrapping);

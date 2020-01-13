@@ -39,7 +39,7 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Texture3D : public Texture {
 public:
-    Texture3D(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0,
+    Texture3D(size3_t dimensions, GLFormat glFormat, GLenum filtering, GLint level = 0,
               const SwizzleMask& swizzleMask = swizzlemasks::rgba,
               const Wrapping3D& wrap = wrapping3d::clampAll);
     Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
