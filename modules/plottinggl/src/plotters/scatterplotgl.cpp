@@ -357,16 +357,14 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
             auto nNotFiltered = xbuf->getSize() - filteredIndices_.size();
             if (!indices_) indices_ = std::make_unique<IndexBuffer>(nNotFiltered);
             auto& inds = indices_->getEditableRAMRepresentation()->getDataContainer();
-            inds.resize(nNotFiltered);
+            auto indicesSeq = util::make_sequence<unsigned int>(0, xbuf->getSize(), 1);
+            inds.reserve(nNotFiltered);
             if (filteredIndices_.empty()) {
-                std::iota(inds.begin(), inds.end(), 0);
+                std::copy(indicesSeq.begin(), indicesSeq.end(), std::back_inserter(inds));
             } else {
-                auto ind = 0;
-                for (auto idx = 0; idx < xbuf->getSize(); idx++) {
-                    if (filteredIndices_.find(idx) == filteredIndices_.end()) {
-                        inds[ind++] = idx;
-                    }
-                }
+                std::copy_if(
+                indicesSeq.begin(), indicesSeq.end(), std::back_inserter(inds),
+                [this](auto val) { return filteredIndices_.find(val) == filteredIndices_.end(); });
             }
             indices = indices_.get();
         }

@@ -44,6 +44,8 @@ public:
                          PropertySemantics semantics = PropertySemantics::Default);
     virtual ~LineSettingsProperty() = default;
 
+    virtual LineSettingsProperty* clone() const override;
+
     // Inherited from LineSettingsInterface
     /*
      * @copydoc LineSettingsInterface::getWidth

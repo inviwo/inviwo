@@ -60,11 +60,7 @@ LineRendererProcessor::LineRendererProcessor()
     addPort(outport_);
     imageInport_.setOptional(true);
 
-    addProperty(lineSettings_);
-    addProperty(writeDepth_);
-
-    addProperty(camera_);
-    addProperty(trackball_);
+    addProperties(lineSettings_, writeDepth_, camera_, trackball_);
 }
 
 void LineRendererProcessor::process() {
