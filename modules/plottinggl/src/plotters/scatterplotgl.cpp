@@ -176,7 +176,7 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
             } else {
                 selectedIndices_ = indices;
             }
-            
+
             selectedIndicesGLDirty_ = true;
             // selection changed, inform processor
             selectionChangedCallback_.invoke(selectedIndices_);

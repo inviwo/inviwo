@@ -36,14 +36,20 @@ namespace inviwo {
 
 namespace plot {
 
-BoxSelectionInteractionHandler::BoxSelectionInteractionHandler(const BoxSelectionProperty& dragRectSettings, std::shared_ptr<const BufferBase> xAxis,
-                     std::shared_ptr<const BufferBase> yAxis, std::function<dvec2(dvec2 p, const size2_t& dims)> screenToData)
-    : InteractionHandler(), dragRectSettings_(dragRectSettings), xAxis_(xAxis), yAxis_(yAxis), screenToData_(screenToData) {}
+BoxSelectionInteractionHandler::BoxSelectionInteractionHandler(
+    const BoxSelectionProperty& dragRectSettings, std::shared_ptr<const BufferBase> xAxis,
+    std::shared_ptr<const BufferBase> yAxis,
+    std::function<dvec2(dvec2 p, const size2_t& dims)> screenToData)
+    : InteractionHandler()
+    , dragRectSettings_(dragRectSettings)
+    , xAxis_(xAxis)
+    , yAxis_(yAxis)
+    , screenToData_(screenToData) {}
 
 void BoxSelectionInteractionHandler::invokeEvent(Event* event) {
-   if (event->hash() == MouseEvent::chash()) {
+    if (event->hash() == MouseEvent::chash()) {
         auto me = event->getAs<MouseEvent>();
-       auto append = me->modifiers().contains(KeyModifier::Control);
+        auto append = me->modifiers().contains(KeyModifier::Control);
         if ((me->button() == MouseButton::Left) && (me->state() == MouseState::Press)) {
             dragRect_ = {dvec2{me->pos().x, me->pos().y}, dvec2{me->pos().x, me->pos().y}};
             me->setUsed(true);
@@ -61,7 +67,7 @@ void BoxSelectionInteractionHandler::invokeEvent(Event* event) {
                     case BoxSelectionSettingsInterface::Mode::None:
                         break;
                 }
-            } 
+            }
             dragRect_ = std::nullopt;
             me->setUsed(true);
         } else if ((me->buttonState() & MouseButton::Left) && (me->state() == MouseState::Move)) {
@@ -73,42 +79,51 @@ void BoxSelectionInteractionHandler::invokeEvent(Event* event) {
             me->setUsed(true);
         }
     }
-
-
 }
 
-std::string BoxSelectionInteractionHandler::getClassIdentifier() const { return "org.inviwo.BoxSelectInteractionHandler"; }
+std::string BoxSelectionInteractionHandler::getClassIdentifier() const {
+    return "org.inviwo.BoxSelectInteractionHandler";
+}
 
-auto BoxSelectionInteractionHandler::addSelectionChangedCallback(std::function<SelectionFunc> callback)
-    -> SelectionCallbackHandle {
+auto BoxSelectionInteractionHandler::addSelectionChangedCallback(
+    std::function<SelectionFunc> callback) -> SelectionCallbackHandle {
     return selectionChangedCallback_.add(callback);
 }
 
-auto BoxSelectionInteractionHandler::addFilteringChangedCallback(std::function<SelectionFunc> callback)
-    -> SelectionCallbackHandle {
+auto BoxSelectionInteractionHandler::addFilteringChangedCallback(
+    std::function<SelectionFunc> callback) -> SelectionCallbackHandle {
     return filteringChangedCallback_.add(callback);
 }
 
-void BoxSelectionInteractionHandler::setXAxisData(std::shared_ptr<const BufferBase> buffer) { xAxis_ = buffer; }
+void BoxSelectionInteractionHandler::setXAxisData(std::shared_ptr<const BufferBase> buffer) {
+    xAxis_ = buffer;
+}
 
-void BoxSelectionInteractionHandler::setYAxisData(std::shared_ptr<const BufferBase> buffer) { yAxis_ = buffer; }
+void BoxSelectionInteractionHandler::setYAxisData(std::shared_ptr<const BufferBase> buffer) {
+    yAxis_ = buffer;
+}
 
-void BoxSelectionInteractionHandler::dragRectChanged(const dvec2& start, const dvec2& end, bool append) {
+void BoxSelectionInteractionHandler::dragRectChanged(const dvec2& start, const dvec2& end,
+                                                     bool append) {
     switch (dragRectSettings_.getMode()) {
         case BoxSelectionSettingsInterface::Mode::Selection:
             // selection changed
-            selectionChangedCallback_.invoke(boxSelect(start, end, xAxis_.get(), yAxis_.get()), append);
+            selectionChangedCallback_.invoke(boxSelect(start, end, xAxis_.get(), yAxis_.get()),
+                                             append);
             break;
         case BoxSelectionSettingsInterface::Mode::Filtering:
-            filteringChangedCallback_.invoke(boxFilter(start, end, xAxis_.get(), yAxis_.get()), append);
+            filteringChangedCallback_.invoke(boxFilter(start, end, xAxis_.get(), yAxis_.get()),
+                                             append);
             break;
         case BoxSelectionSettingsInterface::Mode::None:
             break;
     }
 }
 
-std::unordered_set<size_t> BoxSelectionInteractionHandler::boxSelect(const dvec2& start, const dvec2& end,
-                                                const BufferBase* xAxis, const BufferBase* yAxis) {
+std::unordered_set<size_t> BoxSelectionInteractionHandler::boxSelect(const dvec2& start,
+                                                                     const dvec2& end,
+                                                                     const BufferBase* xAxis,
+                                                                     const BufferBase* yAxis) {
     if (xAxis == nullptr || yAxis == nullptr) {
         return std::unordered_set<size_t>();
     }
@@ -152,8 +167,10 @@ std::unordered_set<size_t> BoxSelectionInteractionHandler::boxSelect(const dvec2
     return selectedIndices;
 }
 
-std::unordered_set<size_t> BoxSelectionInteractionHandler::boxFilter(const dvec2& start, const dvec2& end,
-                                                const BufferBase* xAxis, const BufferBase* yAxis) {
+std::unordered_set<size_t> BoxSelectionInteractionHandler::boxFilter(const dvec2& start,
+                                                                     const dvec2& end,
+                                                                     const BufferBase* xAxis,
+                                                                     const BufferBase* yAxis) {
     if (xAxis == nullptr || yAxis == nullptr) {
         return std::unordered_set<size_t>();
     }

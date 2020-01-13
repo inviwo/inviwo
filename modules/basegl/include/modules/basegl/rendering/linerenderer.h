@@ -61,15 +61,15 @@ public:
      * @param camera for projection
      * @param screenDim width, height in pixels
      */
-    void render(const Mesh& mesh, const Camera& camera, size2_t screenDim, const LineSettingsInterface* settings);
-
+    void render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
+                const LineSettingsInterface* settings);
 
 protected:
     // Call whenever PseudoLighting or RoundDepthProfile, or Stippling mode change
     void configureShaders();
     void setUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, size2_t screenDim);
     void configureShader(Shader& shader);
-    LineSettings settings_; //!< Local cache
+    LineSettings settings_;  //!< Local cache
     MeshShaderCache lineShaders_;
 };
 

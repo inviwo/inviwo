@@ -37,9 +37,9 @@ const std::string BoxSelectionProperty::classIdentifier = "org.inviwo.BoxSelecti
 std::string BoxSelectionProperty::getClassIdentifier() const { return classIdentifier; }
 
 BoxSelectionProperty::BoxSelectionProperty(const std::string& identifier,
-                                             const std::string& displayName,
-                                             InvalidationLevel invalidationLevel,
-                                             PropertySemantics semantics)
+                                           const std::string& displayName,
+                                           InvalidationLevel invalidationLevel,
+                                           PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , mode_("mode", "Mode",
             {{"selection", "Selection", BoxSelectionSettingsInterface::Mode::Selection},

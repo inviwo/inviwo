@@ -107,13 +107,13 @@ public:
     private:
         auto props() {
             return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
-                            selectionColor_, boxSelectionSettings_, margins_, axisMargin_, borderWidth_,
-                            borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
+                            selectionColor_, boxSelectionSettings_, margins_, axisMargin_,
+                            borderWidth_, borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
         }
         auto props() const {
             return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
-                            selectionColor_, boxSelectionSettings_, margins_, axisMargin_, borderWidth_,
-                            borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
+                            selectionColor_, boxSelectionSettings_, margins_, axisMargin_,
+                            borderWidth_, borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
         }
     };
 
@@ -149,7 +149,7 @@ public:
     SelectionCallbackHandle addSelectionChangedCallback(std::function<SelectionFunc> callback);
     SelectionCallbackHandle addFilteringChangedCallback(std::function<SelectionFunc> callback);
 
-    // InteractionHandler 
+    // InteractionHandler
     virtual void invokeEvent(Event* event) override;
     virtual std::string getClassIdentifier() const override { return "org.inviwo.scatterplotgl"; };
 

@@ -39,8 +39,7 @@ BoxSelectionRenderer::BoxSelectionRenderer(const BoxSelectionProperty& settings)
     lineSettings_.stippling.length = 5.f;
 }
 
-void BoxSelectionRenderer::render(std::optional<std::array<dvec2, 2>> dragRect,
-                                   size2_t screenDim) {
+void BoxSelectionRenderer::render(std::optional<std::array<dvec2, 2>> dragRect, size2_t screenDim) {
     if (dragRect && settings_.getMode() != BoxSelectionSettingsInterface::Mode::None) {
         lineSettings_.lineWidth = settings_.getLineWidth();
 

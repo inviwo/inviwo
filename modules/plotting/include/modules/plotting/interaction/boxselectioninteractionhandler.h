@@ -81,7 +81,8 @@ public:
     void setXAxisData(std::shared_ptr<const BufferBase> buffer);
     void setYAxisData(std::shared_ptr<const BufferBase> buffer);
     /**
-     * \brief Returns (lower, upper) screen space coordinates of selection rectangle, null if not active.
+     * \brief Returns (lower, upper) screen space coordinates of selection rectangle, null if not
+     * active.
      */
     std::optional<std::array<dvec2, 2>> getDragRectangle() const { return dragRect_; }
 
