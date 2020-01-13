@@ -68,7 +68,7 @@ ScatterPlotGL::Properties::Properties(std::string identifier, std::string displa
              InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , hoverColor_("hoverColor", "Hover Color", vec4(1.0f, 0.906f, 0.612f, 1))
     , selectionColor_("selectionColor", "Selection Color", vec4(1.0f, 0.769f, 0.247f, 1))
-    , dragRectSettings_("dragRectSettings", "Drag Rectangle Selection/Filtering")
+    , boxSelectionSettings_("dragRectSettings", "Box Selection/Filtering")
     , margins_("margins", "Margins", 5, 5, 5, 5)
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f)
 
@@ -105,7 +105,7 @@ ScatterPlotGL::Properties::Properties(const ScatterPlotGL::Properties& rhs)
     , color_(rhs.color_)
     , hoverColor_(rhs.hoverColor_)
     , selectionColor_(rhs.selectionColor_)
-    , dragRectSettings_(rhs.dragRectSettings_)
+    , boxSelectionSettings_(rhs.boxSelectionSettings_)
     , margins_(rhs.margins_)
     , axisMargin_(rhs.axisMargin_)
     , borderWidth_(rhs.borderWidth_)
@@ -133,7 +133,33 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
     , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}})
     , picking_(processor, 1, [this](PickingEvent* p) { objectPicked(p); })
     , processor_(processor)
-    , selectionRectRenderer_(properties_.dragRectSettings_) {
+    , boxSelectionHandler_(properties_.boxSelectionSettings_, xAxis_, yAxis_,
+                           [&](dvec2 p, const size2_t& dims) {
+                               const dvec4 margins =
+                                   properties_.margins_.getAsVec4() +
+                                   properties_.axisMargin_.get();  // top, right, bottom, left
+
+                               dvec2 bottomLeft{margins.w, margins.z};
+                               dvec2 topRight{static_cast<double>(dims.x) - margins.y,
+                                              static_cast<double>(dims.y) - margins.x};
+                               if (bottomLeft.x > topRight.x) {
+                                   std::swap(bottomLeft.x, topRight.x);
+                               }
+                               if (bottomLeft.y > topRight.y) {
+                                   std::swap(bottomLeft.y, topRight.y);
+                               }
+
+                               // clamp position to plotting area
+                               p = glm::clamp(p, bottomLeft, topRight);
+                               const dvec2 pNormalized = (p - bottomLeft) / (topRight - bottomLeft);
+
+                               const dvec2 rangeX = properties_.xAxis_.range_.get();
+                               const dvec2 rangeY = properties_.yAxis_.range_.get();
+                               const dvec2 extent{rangeX.y - rangeX.x, rangeY.y - rangeY.x};
+
+                               return dvec2{pNormalized * extent + dvec2{rangeX.x, rangeY.x}};
+                           })
+    , selectionRectRenderer_(properties_.boxSelectionSettings_) {
     if (processor_) {
         shader_.onReload([this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
     }
@@ -142,6 +168,31 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
             hoverIndex_ = std::nullopt;
         }
     });
+
+    boxSelectionChangedCallBack_ = boxSelectionHandler_.addSelectionChangedCallback(
+        [this](const std::unordered_set<size_t>& indices, bool append) {
+            if (append) {
+                selectedIndices_.insert(indices.begin(), indices.end());
+            } else {
+                selectedIndices_ = indices;
+            }
+            
+            selectedIndicesGLDirty_ = true;
+            // selection changed, inform processor
+            selectionChangedCallback_.invoke(selectedIndices_);
+        });
+    boxFilteringChangedCallBack_ = boxSelectionHandler_.addFilteringChangedCallback(
+        [this](const std::unordered_set<size_t>& indices, bool append) {
+            if (append) {
+                filteredIndices_.insert(indices.begin(), indices.end());
+            } else {
+                filteredIndices_ = indices;
+            }
+            filteredIndices_ = indices;
+            // May filter selected points
+            selectedIndicesGLDirty_ = true;
+            filteringChangedCallback_.invoke(filteredIndices_);
+        });
 }
 
 void ScatterPlotGL::plot(Image& dest, IndexBuffer* indices, bool useAxisRanges) {
@@ -268,11 +319,21 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
             // copy selected indices
             indices_ = std::unique_ptr<IndexBuffer>(indexBuffer->clone());
         } else {
-            // no indices given, draw all data points
-            if (!indices_) indices_ = std::make_unique<IndexBuffer>(xbuf->getSize());
+            // no indices given, draw all non-filtered data points
+            auto nNotFiltered = xbuf->getSize() - filteredIndices_.size();
+            if (!indices_) indices_ = std::make_unique<IndexBuffer>(nNotFiltered);
             auto& inds = indices_->getEditableRAMRepresentation()->getDataContainer();
-            inds.resize(xbuf->getSize());
-            std::iota(inds.begin(), inds.end(), 0);
+            inds.resize(nNotFiltered);
+            if (filteredIndices_.empty()) {
+                std::iota(inds.begin(), inds.end(), 0);
+            } else {
+                auto ind = 0;
+                for (auto idx = 0; idx < xbuf->getSize(); idx++) {
+                    if (filteredIndices_.find(idx) == filteredIndices_.end()) {
+                        inds[ind++] = idx;
+                    }
+                }
+            }
         }
         indices = indices_.get();
 
@@ -292,10 +353,21 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
             indices = indexBuffer;
         } else {
             // no indices given, draw all data points
-            if (!indices_) indices_ = std::make_unique<IndexBuffer>(xbuf->getSize());
+            // no indices given, draw all non-filtered data points
+            auto nNotFiltered = xbuf->getSize() - filteredIndices_.size();
+            if (!indices_) indices_ = std::make_unique<IndexBuffer>(nNotFiltered);
             auto& inds = indices_->getEditableRAMRepresentation()->getDataContainer();
-            inds.resize(xbuf->getSize());
-            std::iota(inds.begin(), inds.end(), 0);
+            inds.resize(nNotFiltered);
+            if (filteredIndices_.empty()) {
+                std::iota(inds.begin(), inds.end(), 0);
+            } else {
+                auto ind = 0;
+                for (auto idx = 0; idx < xbuf->getSize(); idx++) {
+                    if (filteredIndices_.find(idx) == filteredIndices_.end()) {
+                        inds[ind++] = idx;
+                    }
+                }
+            }
             indices = indices_.get();
         }
     }
@@ -313,17 +385,23 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
         if (selectedIndicesGLDirty_) {
             std::vector<uint32_t> selected;
             selected.reserve(selectedIndices_.size());
-            std::transform(selectedIndices_.begin(), selectedIndices_.end(),
-                           std::back_inserter(selected),
-                           [](size_t i) { return static_cast<uint32_t>(i); });
-            if (selectedIndicesGL_.getSize() < selectedIndices_.size() * sizeof(uint32_t)) {
+#include <warn/push>
+#include <warn/ignore/conversion>  // We need to convert size_t to uint32
+            std::copy_if(
+                selectedIndices_.begin(), selectedIndices_.end(), std::back_inserter(selected),
+                [this](auto val) { return filteredIndices_.find(val) == filteredIndices_.end(); });
+#include <warn/pop>
+
+            if (selectedIndicesGL_.getSize() <
+                static_cast<GLsizeiptr>(selectedIndices_.size() * sizeof(uint32_t))) {
                 selectedIndicesGL_.setSize(selectedIndices_.size() * sizeof(uint32_t));
             }
-            selectedIndicesGL_.upload(selected.data(), selectedIndices_.size() * sizeof(uint32_t));
+            nSelectedButNotFiltered_ = selected.size();
+            selectedIndicesGL_.upload(selected.data(), selected.size() * sizeof(uint32_t));
             selectedIndicesGLDirty_ = false;
         }
         selectedIndicesGL_.bind();
-        glDrawElements(GL_POINTS, static_cast<uint32_t>(selectedIndices_.size()),
+        glDrawElements(GL_POINTS, static_cast<uint32_t>(nSelectedButNotFiltered_),
                        selectedIndicesGL_.getFormatType(), nullptr);
         selectedIndicesGL_.unbind();
     }
@@ -340,7 +418,7 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
     boa_->unbind();
 
     // Render selection rectangle
-    selectionRectRenderer_.render(dragRect_, dims);
+    selectionRectRenderer_.render(boxSelectionHandler_.getDragRectangle(), dims);
 
     renderAxis(dims);
 }
@@ -372,6 +450,7 @@ void ScatterPlotGL::setXAxisData(std::shared_ptr<const BufferBase> buffer) {
 
         properties_.xAxis_.setRange(minmaxX_);
     }
+    boxSelectionHandler_.setXAxisData(buffer);
 }
 
 void ScatterPlotGL::setYAxisData(std::shared_ptr<const BufferBase> buffer) {
@@ -383,6 +462,7 @@ void ScatterPlotGL::setYAxisData(std::shared_ptr<const BufferBase> buffer) {
 
         properties_.yAxis_.setRange(minmaxY_);
     }
+    boxSelectionHandler_.setYAxisData(buffer);
 }
 
 void ScatterPlotGL::setColorData(std::shared_ptr<const BufferBase> buffer) {
@@ -442,85 +522,11 @@ auto ScatterPlotGL::addFilteringChangedCallback(std::function<SelectionFunc> cal
     return filteringChangedCallback_.add(callback);
 }
 
-void ScatterPlotGL::invokeEvent(Event* event, Image& dest, bool useAxisRanges) {
-    invokeEvent(event, ivec2(0, 0), dest.getDimensions(), useAxisRanges);
-}
-
-void ScatterPlotGL::invokeEvent(Event* event, ImageOutport& dest, bool useAxisRanges) {
-    invokeEvent(event, ivec2(0, 0), dest.getDimensions(), useAxisRanges);
-}
-
-void ScatterPlotGL::invokeEvent(Event* event, const ivec2& start, const ivec2& size,
-                                bool useAxisRanges) {
-    invokeEvent(event, start, size2_t{size}, useAxisRanges);
-}
-
-void ScatterPlotGL::invokeEvent(Event* event, const ivec2& start, const size2_t& size,
-                                bool useAxisRanges) {
-    if (event->hash() == MouseEvent::chash()) {
-        auto me = event->getAs<MouseEvent>();
-        if ((me->button() == MouseButton::Left) && (me->state() == MouseState::Press)) {
-            dragRect_ = {dvec2{me->pos().x, me->pos().y}, dvec2{me->pos().x, me->pos().y}};
-            if (processor_) {
-                processor_->invalidate(InvalidationLevel::InvalidOutput);
-            }
-            me->setUsed(true);
-        } else if ((me->button() == MouseButton::Left) && (me->state() == MouseState::Release)) {
-            if (dragRect_ && glm::compMax(glm::abs(me->pos() - (*dragRect_)[0])) <= 1) {
-                // Click in empty space
-                switch (properties_.dragRectSettings_.getMode()) {
-                    case DragRectangleSettingsInterface::Mode::Selection:
-                        selectedIndices_.clear();
-                        selectedIndicesGLDirty_ = true;
-                        // selection changed, inform processor
-                        selectionChangedCallback_.invoke(selectedIndices_);
-                        break;
-                    case DragRectangleSettingsInterface::Mode::Filtering:
-                        filteringChangedCallback_.invoke(std::unordered_set<size_t>{});
-                        break;
-                    case DragRectangleSettingsInterface::Mode::None:
-                        break;
-                }
-            } else {
-                if (processor_) {
-                    processor_->invalidate(InvalidationLevel::InvalidOutput);
-                }
-            }
-
-            dragRect_ = std::nullopt;
-            me->setUsed(true);
-        } else if ((me->buttonState() & MouseButton::Left) && (me->state() == MouseState::Move)) {
-            // convert position from screen coords to data range
-            auto translatePos = [&](dvec2 p) {
-                const dvec4 margins = properties_.margins_.getAsVec4() +
-                                      properties_.axisMargin_.get();  // top, right, bottom, left
-
-                dvec2 bottomLeft{margins.w + start.x, margins.z + start.y};
-                dvec2 topRight{size.x - margins.y, size.y - margins.x};
-                if (bottomLeft.x > topRight.x) {
-                    std::swap(bottomLeft.x, topRight.x);
-                }
-                if (bottomLeft.y > topRight.y) {
-                    std::swap(bottomLeft.y, topRight.y);
-                }
-
-                // clamp position to plotting area
-                p = glm::clamp(p, bottomLeft, topRight);
-                const dvec2 pNormalized = (p - bottomLeft) / (topRight - bottomLeft);
-
-                const dvec2 rangeX =
-                    (useAxisRanges ? properties_.xAxis_.range_.get() : dvec2{minmaxX_});
-                const dvec2 rangeY =
-                    (useAxisRanges ? properties_.yAxis_.range_.get() : dvec2{minmaxY_});
-                const dvec2 extent{rangeX.y - rangeX.x, rangeY.y - rangeY.x};
-
-                return dvec2{pNormalized * extent + dvec2{rangeX.x, rangeY.x}};
-            };
-            (*dragRect_)[1] = dvec2{me->pos().x, me->pos().y};
-            auto dstart = translatePos((*dragRect_)[0]);
-            auto dend = translatePos((*dragRect_)[1]);
-            dragRectChanged(glm::min(dstart, dend), glm::max(dstart, dend));
-            me->setUsed(true);
+void ScatterPlotGL::invokeEvent(Event* event) {
+    boxSelectionHandler_.invokeEvent(event);
+    if (event->hasBeenUsed()) {
+        if (processor_) {
+            processor_->invalidate(InvalidationLevel::InvalidOutput);
         }
     }
 }
@@ -602,80 +608,6 @@ void ScatterPlotGL::objectPicked(PickingEvent* p) {
 
 uint32_t ScatterPlotGL::getGlobalPickId(uint32_t localIndex) const {
     return static_cast<uint32_t>(picking_.getPickingId(localIndex));
-}
-
-void ScatterPlotGL::dragRectChanged(const dvec2& start, const dvec2& end) {
-    if (properties_.dragRectSettings_.getMode() == DragRectangleSettingsInterface::Mode::None) {
-        return;
-    }
-    auto xbuf = xAxis_->getRepresentation<BufferRAM>();
-    // Selection should end up with elements inside of rect while
-    // filtering should end up with elements outside of rect.
-    auto isFiltering =
-        properties_.dragRectSettings_.getMode() == DragRectangleSettingsInterface::Mode::Filtering;
-    auto filterOp = [](auto elem, auto tmin, auto tmax) -> bool {
-        return elem < tmin || elem > tmax;
-    };
-    auto selectOp = [](auto elem, auto tmin, auto tmax) -> bool {
-        return elem >= tmin && elem <= tmax;
-    };
-
-    std::unordered_set<size_t> selectedIndices =
-        xbuf->dispatch<std::unordered_set<size_t>, dispatching::filter::Scalars>(
-            [min = start[0], max = end[0], isFiltering = isFiltering, selectionCompareOp = selectOp,
-             filteringCompareOp = filterOp](auto brprecision) {
-                using ValueType = util::PrecisionValueType<decltype(brprecision)>;
-                auto tmin = static_cast<ValueType>(min);
-                auto tmax = static_cast<ValueType>(max);
-                std::unordered_set<size_t> selectedIndices;
-                for (auto&& [ind, elem] : util::enumerate(brprecision->getDataContainer())) {
-                    if (isFiltering && filteringCompareOp(elem, tmin, tmax)) {
-                        selectedIndices.insert(ind);
-                    } else if (!isFiltering && selectionCompareOp(elem, tmin, tmax)) {
-                        selectedIndices.insert(ind);
-                    } else {
-                        continue;
-                    }
-                }
-                return selectedIndices;
-            });
-    auto ybuf = yAxis_->getRepresentation<BufferRAM>();
-    auto filterYOp = [subset = selectedIndices, min = start[1], max = end[1],
-                      isFiltering = isFiltering, selectionCompareOp = selectOp,
-                      filteringCompareOp = filterOp](auto brprecision) {
-        using ValueType = util::PrecisionValueType<decltype(brprecision)>;
-        auto tmin = static_cast<ValueType>(min);
-        auto tmax = static_cast<ValueType>(max);
-        auto data = brprecision->getDataContainer();
-        std::unordered_set<size_t> selectedIndices;
-        for (auto ind : subset) {
-            auto elem = data[ind];
-            if (isFiltering && filteringCompareOp(elem, tmin, tmax)) {
-                selectedIndices.insert(ind);
-            } else if (!isFiltering && selectionCompareOp(elem, tmin, tmax)) {
-                selectedIndices.insert(ind);
-            } else {
-                continue;
-            }
-        }
-        return selectedIndices;
-    };
-    switch (properties_.dragRectSettings_.getMode()) {
-        case DragRectangleSettingsInterface::Mode::Selection:
-            selectedIndices_ =
-                ybuf->dispatch<std::unordered_set<size_t>, dispatching::filter::Scalars>(filterYOp);
-            selectedIndicesGLDirty_ = true;
-            // selection changed, inform processor
-            selectionChangedCallback_.invoke(selectedIndices_);
-            break;
-        case DragRectangleSettingsInterface::Mode::Filtering:
-            filteringChangedCallback_.invoke(
-                ybuf->dispatch<std::unordered_set<size_t>, dispatching::filter::Scalars>(
-                    filterYOp));
-            break;
-        case DragRectangleSettingsInterface::Mode::None:
-            break;
-    }
 }
 
 }  // namespace plot

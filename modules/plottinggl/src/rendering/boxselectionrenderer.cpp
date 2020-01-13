@@ -27,21 +27,21 @@
  *
  *********************************************************************************/
 
-#include <modules/plottinggl/rendering/dragrectanglerenderer.h>
+#include <modules/plottinggl/rendering/boxselectionrenderer.h>
 
 namespace inviwo {
 
 namespace plot {
 
-DragRectangleRenderer::DragRectangleRenderer(const DragRectangleProperty& settings)
+BoxSelectionRenderer::BoxSelectionRenderer(const BoxSelectionProperty& settings)
     : settings_(settings), lineRenderer_(&lineSettings_) {
     lineSettings_.stippling.mode = StipplingSettingsInterface::Mode::ScreenSpace;
     lineSettings_.stippling.length = 5.f;
 }
 
-void DragRectangleRenderer::render(std::optional<std::array<dvec2, 2>> dragRect,
+void BoxSelectionRenderer::render(std::optional<std::array<dvec2, 2>> dragRect,
                                    size2_t screenDim) {
-    if (dragRect && settings_.getMode() != DragRectangleSettingsInterface::Mode::None) {
+    if (dragRect && settings_.getMode() != BoxSelectionSettingsInterface::Mode::None) {
         lineSettings_.lineWidth = settings_.getLineWidth();
 
         // Hack until we can use a uniform to change line color

@@ -28,49 +28,43 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/plotting/plottingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/plotting/datastructures/dragrectanglesettings.h>
+#include <modules/plottinggl/plottingglmoduledefine.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <modules/basegl/datastructures/linesettings.h>
+#include <modules/basegl/rendering/linerenderer.h>
+#include <modules/plotting/properties/boxselectionproperty.h>
 
 namespace inviwo {
 
 namespace plot {
 /**
- * \brief Settings for selection/filtering rectangle
- * Re
+ * \brief Renders a 2D rectangle in screen space.
+ *
+ * @see BoxSelectionInteractionHandler
  */
-class IVW_MODULE_PLOTTING_API DragRectangleProperty : public DragRectangleSettingsInterface,
-                                                      public CompositeProperty {
+class IVW_MODULE_PLOTTINGGL_API BoxSelectionRenderer {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-
-    DragRectangleProperty(const std::string& identifier, const std::string& displayName,
-                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                          PropertySemantics semantics = PropertySemantics::Default);
-    DragRectangleProperty(const DragRectangleProperty& rhs);
-    virtual DragRectangleProperty* clone() const override;
-    virtual ~DragRectangleProperty() = default;
-
-    TemplateOptionProperty<DragRectangleSettingsInterface::Mode> mode_;
-    FloatVec4Property lineColor_;
-    FloatProperty lineWidth_;  //!< Line width in pixels
-
-    // Inherited via DragRectangleSettingsInterface
+    BoxSelectionRenderer(const BoxSelectionProperty& settings);
+    virtual ~BoxSelectionRenderer() = default;
     /*
-     * @copydoc DragRectangleSettingsInterface::getMode
+     * \brief Draw rectangle if dragRect exists.
+     *
+     * @param dragRect start/end pixel coordinates
+     * @param screenDim size of render surface
      */
-    virtual DragRectangleSettingsInterface::Mode getMode() const override;
-    /*
-     * @copydoc DragRectangleSettingsInterface::getLineColor
-     */
-    virtual vec4 getLineColor() const override;
-    /*
-     * @copydoc DragRectangleSettingsInterface::getLineWidth
-     */
-    virtual float getLineWidth() const override;
+    void render(std::optional<std::array<dvec2, 2>> dragRect, size2_t screenDim);
+
+protected:
+    const BoxSelectionProperty& settings_;
+    LineSettings lineSettings_;
+    algorithm::LineRenderer lineRenderer_;
+    vec4 color_;  //!< Dummy color until line color can be set using uniform
+    ColoredMesh dragRectMesh_ = ColoredMesh(DrawType::Lines, ConnectivityType::Strip,
+                                            {{vec3{0.f, 0.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},
+                                             {vec3{1.f, 0.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},
+                                             {vec3{1.f, 1.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}},
+                                             {vec3{0.f, 1.f, 0.f}, vec4{0.5f, 0.5f, 0.5f, 1.f}}},
+                                            {0, 1, 2, 3, 0});
 };
 
 }  // namespace plot

@@ -35,21 +35,21 @@ namespace inviwo {
 
 namespace plot {
 
-class IVW_MODULE_PLOTTING_API DragRectangleSettingsInterface {
+class IVW_MODULE_PLOTTING_API BoxSelectionSettingsInterface {
 public:
     enum class Mode { Selection, Filtering, None };
-    DragRectangleSettingsInterface() = default;
-    virtual ~DragRectangleSettingsInterface() = default;
+    BoxSelectionSettingsInterface() = default;
+    virtual ~BoxSelectionSettingsInterface() = default;
 
     virtual Mode getMode() const = 0;
     virtual vec4 getLineColor() const = 0;
     virtual float getLineWidth() const = 0;
 };
 
-IVW_MODULE_PLOTTING_API bool operator==(const DragRectangleSettingsInterface& a,
-                                        const DragRectangleSettingsInterface& b);
-IVW_MODULE_PLOTTING_API bool operator!=(const DragRectangleSettingsInterface& a,
-                                        const DragRectangleSettingsInterface& b);
+IVW_MODULE_PLOTTING_API bool operator==(const BoxSelectionSettingsInterface& a,
+                                        const BoxSelectionSettingsInterface& b);
+IVW_MODULE_PLOTTING_API bool operator!=(const BoxSelectionSettingsInterface& a,
+                                        const BoxSelectionSettingsInterface& b);
 
 }  // namespace plot
 

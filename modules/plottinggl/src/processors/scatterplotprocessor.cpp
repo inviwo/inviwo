@@ -91,7 +91,7 @@ ScatterPlotProcessor::ScatterPlotProcessor()
                 invalidate(InvalidationLevel::InvalidOutput);
             }
         });
-
+    addInteractionHandler(&scatterPlot_);
     scatterPlot_.properties_.margins_.setLowerLeftMargin({50.0f, 40.0f});
     scatterPlot_.properties_.xAxis_.captionSettings_.setChecked(true);
     scatterPlot_.properties_.xAxis_.captionSettings_.offset_.set(20.0f);
@@ -159,12 +159,6 @@ void ScatterPlotProcessor::process() {
             scatterPlot_.plot(*outport_.getEditableData(), nullptr, true);
         }
     }
-}
-
-void ScatterPlotProcessor::invokeEvent(Event* event) {
-    Processor::invokeEvent(event);
-    if (event->hasBeenUsed()) return;
-    scatterPlot_.invokeEvent(event, outport_, true);
 }
 
 void ScatterPlotProcessor::onXAxisChange() {

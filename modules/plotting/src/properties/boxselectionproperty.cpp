@@ -27,24 +27,24 @@
  *
  *********************************************************************************/
 
-#include <modules/plotting/properties/dragrectangleproperty.h>
+#include <modules/plotting/properties/boxselectionproperty.h>
 
 namespace inviwo {
 
 namespace plot {
 
-const std::string DragRectangleProperty::classIdentifier = "org.inviwo.DragRectangleProperty";
-std::string DragRectangleProperty::getClassIdentifier() const { return classIdentifier; }
+const std::string BoxSelectionProperty::classIdentifier = "org.inviwo.BoxSelectionProperty";
+std::string BoxSelectionProperty::getClassIdentifier() const { return classIdentifier; }
 
-DragRectangleProperty::DragRectangleProperty(const std::string& identifier,
+BoxSelectionProperty::BoxSelectionProperty(const std::string& identifier,
                                              const std::string& displayName,
                                              InvalidationLevel invalidationLevel,
                                              PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , mode_("mode", "Mode",
-            {{"selection", "Selection", DragRectangleSettingsInterface::Mode::Selection},
-             {"filtering", "Filtering", DragRectangleSettingsInterface::Mode::Filtering},
-             {"none", "None", DragRectangleSettingsInterface::Mode::None}})
+            {{"selection", "Selection", BoxSelectionSettingsInterface::Mode::Selection},
+             {"filtering", "Filtering", BoxSelectionSettingsInterface::Mode::Filtering},
+             {"none", "None", BoxSelectionSettingsInterface::Mode::None}})
     , lineColor_("lineColor", "Line Color", vec4(vec3(0.0f), 1.0f), vec4(0.0f), vec4(1.0f))
     , lineWidth_("lineWidth", "Line Width", 1.0f, 0.0f, 10.0f) {
     lineColor_.setSemantics(PropertySemantics::Color);
@@ -53,7 +53,7 @@ DragRectangleProperty::DragRectangleProperty(const std::string& identifier,
     addProperty(lineWidth_);
 }
 
-DragRectangleProperty::DragRectangleProperty(const DragRectangleProperty& rhs)
+BoxSelectionProperty::BoxSelectionProperty(const BoxSelectionProperty& rhs)
     : CompositeProperty(rhs)
     , mode_(rhs.mode_)
     , lineColor_(rhs.lineColor_)
@@ -65,13 +65,13 @@ DragRectangleProperty::DragRectangleProperty(const DragRectangleProperty& rhs)
     addProperty(lineWidth_);
 }
 
-DragRectangleProperty* DragRectangleProperty::clone() const {
-    return new DragRectangleProperty(*this);
+BoxSelectionProperty* BoxSelectionProperty::clone() const {
+    return new BoxSelectionProperty(*this);
 }
 
-DragRectangleSettingsInterface::Mode DragRectangleProperty::getMode() const { return mode_.get(); }
-vec4 DragRectangleProperty::getLineColor() const { return lineColor_.get(); }
-float DragRectangleProperty::getLineWidth() const { return lineWidth_.get(); }
+BoxSelectionSettingsInterface::Mode BoxSelectionProperty::getMode() const { return mode_.get(); }
+vec4 BoxSelectionProperty::getLineColor() const { return lineColor_.get(); }
+float BoxSelectionProperty::getLineWidth() const { return lineWidth_.get(); }
 
 }  // namespace plot
 
