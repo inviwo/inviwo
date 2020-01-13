@@ -148,9 +148,9 @@ ivw_compile_optimize_on_target(inviwo-qteditor)
 
 #--------------------------------------------------------------------
 # Generate html version of changelog (for the welcome widget), if python is available
-set(BUILD_CHANGELOG ON CACHE BOOL "Generate html version of changelog (for the welcome widget)")
+set(IVW_BUILD_CHANGELOG ON CACHE BOOL "Generate html version of changelog (for the welcome widget)")
 
-if(BUILD_CHANGELOG)
+if(IVW_BUILD_CHANGELOG)
     find_package(PythonInterp QUIET)
     if (PYTHONINTERP_FOUND)
         add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/changelog.html
