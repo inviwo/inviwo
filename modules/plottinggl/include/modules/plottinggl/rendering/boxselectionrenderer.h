@@ -39,7 +39,7 @@ namespace inviwo {
 namespace plot {
 /**
  * \brief Renders a 2D rectangle in screen space.
- *
+ * Use in combination with BoxSelectionInteractionHandler.
  * @see BoxSelectionInteractionHandler
  */
 class IVW_MODULE_PLOTTINGGL_API BoxSelectionRenderer {

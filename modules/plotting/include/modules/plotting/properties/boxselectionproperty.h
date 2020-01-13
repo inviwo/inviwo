@@ -38,18 +38,18 @@ namespace inviwo {
 
 namespace plot {
 /**
- * \brief Settings for rectangle selection/filtering 
- * 
+ * \brief Settings for rectangle selection/filtering
+ *
  */
 class IVW_MODULE_PLOTTING_API BoxSelectionProperty : public BoxSelectionSettingsInterface,
-                                                      public CompositeProperty {
+                                                     public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     BoxSelectionProperty(const std::string& identifier, const std::string& displayName,
-                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                          PropertySemantics semantics = PropertySemantics::Default);
+                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                         PropertySemantics semantics = PropertySemantics::Default);
     BoxSelectionProperty(const BoxSelectionProperty& rhs);
     virtual BoxSelectionProperty* clone() const override;
     virtual ~BoxSelectionProperty() = default;
