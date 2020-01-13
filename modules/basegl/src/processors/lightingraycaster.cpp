@@ -84,16 +84,16 @@ LightingRaycaster::LightingRaycaster()
 
     volumePort_.onChange([this]() {
         if (volumePort_.hasData()) {
-            std::size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
+            size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
 
             if (channels == channel_.size()) return;
 
-            channel_.clearOptions();
-            for (int i = 0; i < static_cast<int>(channels); i++) {
-                std::stringstream ss;
-                ss << "Channel " << i;
-                channel_.addOption(ss.str(), ss.str(), i);
+            std::vector<OptionPropertyIntOption> channelOptions;
+            for (size_t i = 0; i < channels; i++) {
+                channelOptions.emplace_back("Channel " + toString(i + 1),
+                                            "Channel " + toString(i + 1), static_cast<int>(i));
             }
+            channel_.replaceOptions(channelOptions);
             channel_.setCurrentStateAsDefault();
         }
     });
@@ -110,15 +110,9 @@ LightingRaycaster::LightingRaycaster()
 }
 
 void LightingRaycaster::initializeResources() {
-    utilgl::addShaderDefines(shader_, raycasting_);
-    utilgl::addShaderDefines(shader_, camera_);
-    utilgl::addShaderDefines(shader_, lighting_);
+    utilgl::addDefines(shader_, raycasting_, camera_, lighting_);
     utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
-
-    if (enableLightColor_.get())
-        shader_.getFragmentShaderObject()->addShaderDefine("LIGHT_COLOR_ENABLED");
-    else
-        shader_.getFragmentShaderObject()->removeShaderDefine("LIGHT_COLOR_ENABLED");
+    shader_.getFragmentShaderObject()->setShaderDefine("LIGHT_COLOR_ENABLED", enableLightColor_);
 
     shader_.build();
 }
