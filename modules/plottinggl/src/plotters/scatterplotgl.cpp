@@ -413,9 +413,9 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
                 }
             }
 
-            if (selectedIndicesGL_.getSize() <
+            if (selectedIndicesGL_.getSizeInBytes() <
                 static_cast<GLsizeiptr>(selectedIndices.size() * sizeof(uint32_t))) {
-                selectedIndicesGL_.setSize(selectedIndices.size() * sizeof(uint32_t));
+                selectedIndicesGL_.setSizeInBytes(selectedIndices.size() * sizeof(uint32_t));
             }
             nSelectedButNotFiltered_ = selectedIndices.size();
             selectedIndicesGL_.upload(selectedIndices.data(),

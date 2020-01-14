@@ -194,9 +194,9 @@ void BufferObject::bindAndSetAttribPointer(GLuint location, BindingType bindingT
     }
 }
 
-void BufferObject::setSize(GLsizeiptr sizeInBytes) { initialize(nullptr, sizeInBytes); }
+void BufferObject::setSizeInBytes(GLsizeiptr sizeInBytes) { initialize(nullptr, sizeInBytes); }
 
-GLsizeiptr BufferObject::getSize() const { return sizeInBytes_; }
+GLsizeiptr BufferObject::getSizeInBytes() const { return sizeInBytes_; }
 
 void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
     sizeInBytes_ = sizeInBytes;
