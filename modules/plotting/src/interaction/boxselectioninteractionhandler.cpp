@@ -63,11 +63,13 @@ void BoxSelectionInteractionHandler::invokeEvent(Event* event) {
                         std::vector<bool> selected(xAxis_->getSize(), false);
                         selectionChangedCallback_.invoke(selected, append);
                         break;
-                    } case BoxSelectionSettingsInterface::Mode::Filtering: {
+                    }
+                    case BoxSelectionSettingsInterface::Mode::Filtering: {
                         std::vector<bool> filtered(xAxis_->getSize(), false);
                         filteringChangedCallback_.invoke(filtered, append);
                         break;
-                    } case BoxSelectionSettingsInterface::Mode::None:
+                    }
+                    case BoxSelectionSettingsInterface::Mode::None:
                         break;
                 }
             }
@@ -123,10 +125,9 @@ void BoxSelectionInteractionHandler::dragRectChanged(const dvec2& start, const d
     }
 }
 
-std::vector<bool> BoxSelectionInteractionHandler::boxSelect(const dvec2& start,
-                                                                   const dvec2& end,
-                                                                   const BufferBase* xAxis,
-                                                                   const BufferBase* yAxis) {
+std::vector<bool> BoxSelectionInteractionHandler::boxSelect(const dvec2& start, const dvec2& end,
+                                                            const BufferBase* xAxis,
+                                                            const BufferBase* yAxis) {
 
     if (xAxis == nullptr || yAxis == nullptr) {
         return std::vector<bool>();
@@ -158,7 +159,8 @@ std::vector<bool> BoxSelectionInteractionHandler::boxSelect(const dvec2& start,
 
             for (auto&& [ind, elem] : util::enumerate(selectedIndicesX)) {
                 if (elem) {
-                    if (static_cast<double>(data[ind]) < min || static_cast<double>(data[ind]) > max) {
+                    if (static_cast<double>(data[ind]) < min ||
+                        static_cast<double>(data[ind]) > max) {
                         continue;
                     } else {
                         selected[ind] = true;
@@ -170,35 +172,33 @@ std::vector<bool> BoxSelectionInteractionHandler::boxSelect(const dvec2& start,
     return selectedIndices;
 }
 
-std::vector<bool> BoxSelectionInteractionHandler::boxFilter(const dvec2& start,
-                                                                     const dvec2& end,
-                                                                     const BufferBase* xAxis,
-                                                                     const BufferBase* yAxis) {
+std::vector<bool> BoxSelectionInteractionHandler::boxFilter(const dvec2& start, const dvec2& end,
+                                                            const BufferBase* xAxis,
+                                                            const BufferBase* yAxis) {
     if (xAxis == nullptr || yAxis == nullptr) {
         return std::vector<bool>();
     }
     auto xbuf = xAxis->getRepresentation<BufferRAM>();
-    auto filteredIndices =
-        xbuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
-            [start, end, ybuf = yAxis->getRepresentation<BufferRAM>()](auto brprecision) {
-                using ValueType = util::PrecisionValueType<decltype(brprecision)>;
-                return ybuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
-                    [start, end, xData = brprecision->getDataContainer()](auto brprecision) {
-                        std::vector<bool> filtered(brprecision->getSize(), false);
-                        for (auto&& [ind, xVal, yVal] :
-                             util::enumerate(xData, brprecision->getDataContainer())) {
-                            if (static_cast<double>(xVal) < start[0] ||
-                                static_cast<double>(xVal) > end[0] ||
-                                static_cast<double>(yVal) < start[1] ||
-                                static_cast<double>(yVal) > end[1]) {
-                                filtered[ind] = true;
-                            } else {
-                                continue;
-                            }
+    auto filteredIndices = xbuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
+        [start, end, ybuf = yAxis->getRepresentation<BufferRAM>()](auto brprecision) {
+            using ValueType = util::PrecisionValueType<decltype(brprecision)>;
+            return ybuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
+                [start, end, xData = brprecision->getDataContainer()](auto brprecision) {
+                    std::vector<bool> filtered(brprecision->getSize(), false);
+                    for (auto&& [ind, xVal, yVal] :
+                         util::enumerate(xData, brprecision->getDataContainer())) {
+                        if (static_cast<double>(xVal) < start[0] ||
+                            static_cast<double>(xVal) > end[0] ||
+                            static_cast<double>(yVal) < start[1] ||
+                            static_cast<double>(yVal) > end[1]) {
+                            filtered[ind] = true;
+                        } else {
+                            continue;
                         }
-                        return filtered;
-                    });
-            });
+                    }
+                    return filtered;
+                });
+        });
 
     return filteredIndices;
 }
