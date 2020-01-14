@@ -57,8 +57,8 @@ void BoxSelectionRenderer::render(std::optional<std::array<dvec2, 2>> dragRect, 
         const auto start = vec2((*dragRect)[0]);
         const auto scale = vec2((*dragRect)[1] - (*dragRect)[0]);
 
-        const mat4 m(vec4(scale.x, 0.f, 0.f, 0.f), vec4(0.f, scale.y, 0.f, 0.f), vec4(0.f, 0.f, 1.f, 0.f),
-               vec4(start.x, start.y, 0.f, 1.f));
+        const mat4 m(vec4(scale.x, 0.f, 0.f, 0.f), vec4(0.f, scale.y, 0.f, 0.f),
+                     vec4(0.f, 0.f, 1.f, 0.f), vec4(start.x, start.y, 0.f, 1.f));
         dragRectMesh_.setModelMatrix(m);
         OrthographicCamera camera_;
         camera_.setFrustum(ivec4(0, screenDim.x, 0, screenDim.y));
