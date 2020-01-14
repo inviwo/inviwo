@@ -33,6 +33,8 @@
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/util/zip.h>
 
+#include <limits>
+
 namespace inviwo {
 
 namespace plot {
@@ -63,11 +65,13 @@ void BoxSelectionInteractionHandler::invokeEvent(Event* event) {
                         std::vector<bool> selected(xAxis_->getSize(), false);
                         selectionChangedCallback_.invoke(selected, append);
                         break;
-                    } case BoxSelectionSettingsInterface::Mode::Filtering: {
+                    }
+                    case BoxSelectionSettingsInterface::Mode::Filtering: {
                         std::vector<bool> filtered(xAxis_->getSize(), false);
                         filteringChangedCallback_.invoke(filtered, append);
                         break;
-                    } case BoxSelectionSettingsInterface::Mode::None:
+                    }
+                    case BoxSelectionSettingsInterface::Mode::None:
                         break;
                 }
             }
@@ -123,10 +127,9 @@ void BoxSelectionInteractionHandler::dragRectChanged(const dvec2& start, const d
     }
 }
 
-std::vector<bool> BoxSelectionInteractionHandler::boxSelect(const dvec2& start,
-                                                                   const dvec2& end,
-                                                                   const BufferBase* xAxis,
-                                                                   const BufferBase* yAxis) {
+std::vector<bool> BoxSelectionInteractionHandler::boxSelect(const dvec2& start, const dvec2& end,
+                                                            const BufferBase* xAxis,
+                                                            const BufferBase* yAxis) {
 
     if (xAxis == nullptr || yAxis == nullptr) {
         return std::vector<bool>();
@@ -137,11 +140,22 @@ std::vector<bool> BoxSelectionInteractionHandler::boxSelect(const dvec2& start,
     // 2. Determine selection along y-axis using the subset from 1
 
     auto xbuf = xAxis->getRepresentation<BufferRAM>();
+#include <warn/push>
+#include <warn/ignore/conversion>  // Ignore double->float warnings
     auto selectedIndicesX = xbuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
         [min = start[0], max = end[0]](auto brprecision) {
+            using ValueType = util::PrecisionValueType<decltype(brprecision)>;
             std::vector<bool> selected(brprecision->getSize(), false);
+            // Avoid conversions in the loop
+
+            const auto tmin = std::numeric_limits<ValueType>::is_integer
+                                  ? static_cast<ValueType>(std::ceil(min))
+                                  : static_cast<ValueType>(min);
+            const auto tmax = std::numeric_limits<ValueType>::is_integer
+                                  ? static_cast<ValueType>(std::floor(max))
+                                  : static_cast<ValueType>(max);
             for (auto&& [ind, elem] : util::enumerate(brprecision->getDataContainer())) {
-                if (static_cast<double>(elem) < min || static_cast<double>(elem) > max) {
+                if (elem < tmin || elem > tmax) {
                     continue;
                 } else {
                     selected[ind] = true;
@@ -153,12 +167,20 @@ std::vector<bool> BoxSelectionInteractionHandler::boxSelect(const dvec2& start,
     auto ybuf = yAxis->getRepresentation<BufferRAM>();
     auto selectedIndices = ybuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
         [selectedIndicesX, min = start[1], max = end[1]](auto brprecision) {
+            using ValueType = util::PrecisionValueType<decltype(brprecision)>;
             auto data = brprecision->getDataContainer();
             std::vector<bool> selected(brprecision->getSize(), false);
+            // Avoid conversions in the loop
+            const auto tmin = std::numeric_limits<ValueType>::is_integer
+                                  ? static_cast<ValueType>(std::ceil(min))
+                                  : static_cast<ValueType>(min);
+            const auto tmax = std::numeric_limits<ValueType>::is_integer
+                                  ? static_cast<ValueType>(std::floor(max))
+                                  : static_cast<ValueType>(max);
 
             for (auto&& [ind, elem] : util::enumerate(selectedIndicesX)) {
                 if (elem) {
-                    if (static_cast<double>(data[ind]) < min || static_cast<double>(data[ind]) > max) {
+                    if (data[ind] < tmin || data[ind] > tmax) {
                         continue;
                     } else {
                         selected[ind] = true;
@@ -167,38 +189,54 @@ std::vector<bool> BoxSelectionInteractionHandler::boxSelect(const dvec2& start,
             }
             return selected;
         });
+#include <warn/pop>
     return selectedIndices;
 }
 
-std::vector<bool> BoxSelectionInteractionHandler::boxFilter(const dvec2& start,
-                                                                     const dvec2& end,
-                                                                     const BufferBase* xAxis,
-                                                                     const BufferBase* yAxis) {
+std::vector<bool> BoxSelectionInteractionHandler::boxFilter(const dvec2& start, const dvec2& end,
+                                                            const BufferBase* xAxis,
+                                                            const BufferBase* yAxis) {
     if (xAxis == nullptr || yAxis == nullptr) {
         return std::vector<bool>();
     }
     auto xbuf = xAxis->getRepresentation<BufferRAM>();
-    auto filteredIndices =
-        xbuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
-            [start, end, ybuf = yAxis->getRepresentation<BufferRAM>()](auto brprecision) {
-                using ValueType = util::PrecisionValueType<decltype(brprecision)>;
-                return ybuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
-                    [start, end, xData = brprecision->getDataContainer()](auto brprecision) {
-                        std::vector<bool> filtered(brprecision->getSize(), false);
-                        for (auto&& [ind, xVal, yVal] :
-                             util::enumerate(xData, brprecision->getDataContainer())) {
-                            if (static_cast<double>(xVal) < start[0] ||
-                                static_cast<double>(xVal) > end[0] ||
-                                static_cast<double>(yVal) < start[1] ||
-                                static_cast<double>(yVal) > end[1]) {
-                                filtered[ind] = true;
-                            } else {
-                                continue;
-                            }
+#include <warn/push>
+#include <warn/ignore/conversion>               // Ignore double->float warnings
+#include <warn/ignore/signed-unsigned-compare>  // Could not figure out why filter comparison have this warning
+    auto filteredIndices = xbuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
+        [start, end, ybuf = yAxis->getRepresentation<BufferRAM>()](auto brprecision) {
+            using ValueType = util::PrecisionValueType<decltype(brprecision)>;
+            // Avoid conversions in the loop
+            const auto tminX = std::numeric_limits<ValueType>::is_integer
+                                   ? static_cast<ValueType>(std::ceil(start[0]))
+                                   : static_cast<ValueType>(start[0]);
+            const auto tmaxX = std::numeric_limits<ValueType>::is_integer
+                                   ? static_cast<ValueType>(std::floor(end[0]))
+                                   : static_cast<ValueType>(end[0]);
+            auto xData = brprecision->getDataContainer();
+            return ybuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
+                [tminX, tmaxX, start, end, xData](auto brprecision) {
+                    using ValueTypeY = util::PrecisionValueType<decltype(brprecision)>;
+                    std::vector<bool> filtered(brprecision->getSize(), false);
+                    const auto tminY = std::numeric_limits<ValueType>::is_integer
+                                           ? static_cast<ValueType>(std::ceil(start[1]))
+                                           : static_cast<ValueType>(start[1]);
+                    const auto tmaxY = std::numeric_limits<ValueType>::is_integer
+                                           ? static_cast<ValueType>(std::floor(end[1]))
+                                           : static_cast<ValueType>(end[1]);
+
+                    for (auto&& [ind, xVal, yVal] :
+                         util::enumerate(xData, brprecision->getDataContainer())) {
+                        if ((xVal < tminX) || (xVal > tmaxX) || (yVal < tminY) || (yVal > tmaxY)) {
+                            filtered[ind] = true;
+                        } else {
+                            continue;
                         }
-                        return filtered;
-                    });
-            });
+                    }
+                    return filtered;
+                });
+        });
+#include <warn/pop>
 
     return filteredIndices;
 }
