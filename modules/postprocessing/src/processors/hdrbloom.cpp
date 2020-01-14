@@ -33,6 +33,9 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/sharedopenglresources.h>
 #include <modules/opengl/geometry/meshgl.h>
+
+#include <inviwo/core/util/stdextensions.h>
+
 #include <random>
 
 namespace inviwo {
@@ -59,29 +62,32 @@ HdrBloom::HdrBloom()
     , highPass_("fullscreenquad.vert", "bloomhighpass.frag")
     , blur_("fullscreenquad.vert", "bloomblur.frag")
     , compose_("fullscreenquad.vert", "bloomcompose.frag")
-    , width_(0)
-    , height_(0)
-    , texBright_(size2_t(256, 256), GLFormats::get(DataFormatId::Vec4Float16), GL_LINEAR) {
+    , size_{512, 512}
+    , horizontal_{util::make_array<levels_>([this](auto i) {
+        return HdrBloom::FBOTex{
+            {},
+            {size_ / pow(size_t{2}, i + 1), GLFormats::get(DataFormatId::Vec4Float16), GL_LINEAR}};
+    })}
+    , vertical_{util::make_array<levels_>([this](auto i) {
+        return HdrBloom::FBOTex{
+            {},
+            {size_ / pow(size_t{2}, i + 1), GLFormats::get(DataFormatId::Vec4Float16), GL_LINEAR}};
+    })}
+    , bright_{{}, {size_, GLFormats::get(DataFormatId::Vec4Float16), GL_LINEAR}} {
+
     addPort(inport_);
     addPort(outport_);
 
-    addProperty(enable_);
-    addProperty(threshold_);
-    addProperty(strength_);
-    addProperty(radius_);
+    addProperties(enable_, threshold_, strength_, radius_);
 
-    for (int i = 0; i < Levels; i++) {
-        texHorizontal_[i] = std::make_unique<Texture2D>(
-            size2_t(256, 256), GLFormats::get(DataFormatId::Vec4Float16), GL_LINEAR);
-        texVertical_[i] = std::make_unique<Texture2D>(
-            size2_t(256, 256), GLFormats::get(DataFormatId::Vec4Float16), GL_LINEAR);
-        fboHorizontal_[i].activate();
-        fboHorizontal_[i].attachColorTexture(texHorizontal_[i].get());
-        fboVertical_[i].activate();
-        fboVertical_[i].attachColorTexture(texVertical_[i].get());
+    for (int i = 0; i < levels_; i++) {
+        horizontal_[i].fbo.activate();
+        horizontal_[i].fbo.attachColorTexture(&horizontal_[i].tex);
+        vertical_[i].fbo.activate();
+        vertical_[i].fbo.attachColorTexture(&vertical_[i].tex);
     }
-    fboBright_.activate();
-    fboBright_.attachColorTexture(&texBright_);
+    bright_.fbo.activate();
+    bright_.fbo.attachColorTexture(&bright_.tex);
     FrameBufferObject::deactivateFBO();
 
     inport_.onChange([this]() {
@@ -108,11 +114,9 @@ void HdrBloom::process() {
         outport_.setData(inport_.getData());
         return;
     }
-    const int width = static_cast<int>(outport_.getDimensions().x);
-    const int height = static_cast<int>(outport_.getDimensions().y);
 
-    if (width != width_ || height != height_) {
-        resizeTextures(width, height);
+    if (size_ != outport_.getDimensions()) {
+        resizeTextures(outport_.getDimensions());
     }
 
     // Copy color, depth and picking
@@ -123,15 +127,15 @@ void HdrBloom::process() {
     auto colorTex = colorLayer->getTexture()->getID();
 
     // This geometry is actually never used in the shader
-    auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
+    const auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
     utilgl::Enable<MeshGL> enable(rect);
 
     utilgl::GlBoolState depth(GL_DEPTH_TEST, false);
     glActiveTexture(GL_TEXTURE0);
 
     // --- HIGHPASS ---
-    fboBright_.activate();
-    utilgl::ViewportState(ivec4(0, 0, texBright_.getWidth(), texBright_.getHeight()));
+    bright_.fbo.activate();
+    utilgl::ViewportState(ivec4(0, 0, bright_.tex.getWidth(), bright_.tex.getHeight()));
     glBindTexture(GL_TEXTURE_2D, colorTex);
     highPass_.activate();
     highPass_.setUniform("threshold", threshold_.get());
@@ -139,27 +143,27 @@ void HdrBloom::process() {
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     // --- BLUR ---
-    Texture2D* input_tex = &texBright_;
+    Texture2D* input_tex = &bright_.tex;
     blur_.activate();
     blur_.setUniform("texSource", 0);
-    for (int i = 0; i < Levels; i++) {
-        auto inv_res = 1.f / vec2(input_tex->getWidth(), input_tex->getHeight());
-        glViewport(0, 0, static_cast<GLsizei>(texHorizontal_[i]->getWidth()),
-                   static_cast<GLsizei>(texHorizontal_[i]->getHeight()));
+    for (int i = 0; i < levels_; i++) {
+        const auto inv_res = 1.f / vec2(input_tex->getWidth(), input_tex->getHeight());
+        glViewport(0, 0, static_cast<GLsizei>(horizontal_[i].tex.getWidth()),
+                   static_cast<GLsizei>(horizontal_[i].tex.getHeight()));
 
         // --- X-PASS ---
         input_tex->bind();
-        fboHorizontal_[i].activate();
+        horizontal_[i].fbo.activate();
         blur_.setUniform("direction", vec2(1, 0) * inv_res);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // --- Y-PASS ---
-        texHorizontal_[i]->bind();
-        fboVertical_[i].activate();
+        horizontal_[i].tex.bind();
+        vertical_[i].fbo.activate();
         blur_.setUniform("direction", vec2(0, 1) * inv_res);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        input_tex = texVertical_[i].get();
+        input_tex = &vertical_[i].tex;
     }
 
     // --- COMPOSE ---
@@ -167,39 +171,32 @@ void HdrBloom::process() {
     compose_.activate();
 
     // Blend bloom results onto colorchannel of outport.
-    utilgl::GlBoolState blend(GL_BLEND, true);
-    glBlendFunc(GL_ONE, GL_ONE);
-    glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
+    utilgl::BlendModeEquationState blendEqn{GL_ONE, GL_ONE, GL_ONE, GL_ONE, GL_FUNC_ADD, GL_MAX };
 
     compose_.setUniform("bloomStrength", strength_.get());
     compose_.setUniform("bloomRadius", radius_.get());
-    for (int i = 0; i < Levels; i++) {
+    for (int i = 0; i < levels_; i++) {
         glActiveTexture(GL_TEXTURE0 + i);
-        texVertical_[i]->bind();
+        vertical_[i].tex.bind();
         compose_.setUniform("tex" + std::to_string(i), i);
     }
     glDrawArrays(GL_TRIANGLES, 0, 3);
-    glBlendEquation(GL_FUNC_ADD);
 
     compose_.deactivate();
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void HdrBloom::resizeTextures(int width, int height) {
-    int res_x = width / 2;
-    int res_y = height / 2;
+void HdrBloom::resizeTextures(size2_t size) {
+    auto res = size / 2;
 
-    texBright_.resize(size2_t(width, height));
+    bright_.tex.resize(size);
 
-    for (int i = 0; i < Levels; i++) {
-        texHorizontal_[i]->resize(size2_t(res_x, res_y));
-        texVertical_[i]->resize(size2_t(res_x, res_y));
-        res_x /= 2;
-        res_y /= 2;
+    for (int i = 0; i < levels_; i++) {
+        horizontal_[i].tex.resize(res);
+        vertical_[i].tex.resize(res);
+        res /= 2;
     }
-
-    width_ = width;
-    height_ = height;
+    size_ = size;
 }
 
 }  // namespace inviwo

@@ -33,16 +33,17 @@
 
 namespace inviwo {
 
-Texture2D::Texture2D(size2_t dimensions, GLFormat glFormat, GLenum filtering, GLint level,
-                     const SwizzleMask& swizzleMask, const Wrapping2D& wrap)
-    : Texture(GL_TEXTURE_2D, glFormat, filtering, level, swizzleMask, util::span(wrap))
+Texture2D::Texture2D(size2_t dimensions, GLFormat glFormat, GLenum filtering,
+                     const SwizzleMask& swizzleMask, const std::array<GLenum, 2>& wrapping,
+                     GLint level)
+    : Texture(GL_TEXTURE_2D, glFormat, filtering, swizzleMask, util::span(wrapping), level)
     , dimensions_(dimensions) {}
 
 Texture2D::Texture2D(size2_t dimensions, GLint format, GLint internalformat, GLenum dataType,
-                     GLenum filtering, GLint level, const SwizzleMask& swizzleMask,
-                     const Wrapping2D& wrap)
-    : Texture(GL_TEXTURE_2D, format, internalformat, dataType, filtering, level, swizzleMask,
-              util::span(wrap))
+                     GLenum filtering, const SwizzleMask& swizzleMask,
+                     const std::array<GLenum, 2>& wrapping, GLint level)
+    : Texture(GL_TEXTURE_2D, format, internalformat, dataType, filtering, swizzleMask,
+              util::span(wrapping), level)
     , dimensions_(dimensions) {}
 
 Texture2D::Texture2D(const Texture2D& rhs) : Texture(rhs), dimensions_(rhs.dimensions_) {
@@ -102,12 +103,12 @@ void Texture2D::upload(const void* data) {
     LGL_ERROR_SUPPRESS;
 }
 
-void Texture2D::setWrapping(const Wrapping2D& wrapping) {
+void Texture2D::setWrapping(const std::array<GLenum, 2>& wrapping) {
     Texture::setWrapping(util::span(wrapping));
 }
 
-Wrapping2D Texture2D::getWrapping() const {
-    Wrapping2D wrapping{};
+std::array<GLenum, 2> Texture2D::getWrapping() const {
+    std::array<GLenum, 2> wrapping{};
     Texture::getWrapping(util::span(wrapping));
     return wrapping;
 }

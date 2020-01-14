@@ -33,16 +33,17 @@
 
 namespace inviwo {
 
-Texture3D::Texture3D(size3_t dimensions, GLFormat glFormat, GLenum filtering, GLint level,
-                     const SwizzleMask& swizzleMask, const Wrapping3D& wrap)
-    : Texture(GL_TEXTURE_3D, glFormat, filtering, level, swizzleMask, util::span(wrap))
+Texture3D::Texture3D(size3_t dimensions, GLFormat glFormat, GLenum filtering,
+                     const SwizzleMask& swizzleMask, const std::array<GLenum, 3>& wrapping,
+                     GLint level)
+    : Texture(GL_TEXTURE_3D, glFormat, filtering, swizzleMask, util::span(wrapping), level)
     , dimensions_(dimensions) {}
 
 Texture3D::Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
-                     GLenum filtering, GLint level, const SwizzleMask& swizzleMask,
-                     const Wrapping3D& wrap)
-    : Texture(GL_TEXTURE_3D, format, internalformat, dataType, filtering, level, swizzleMask,
-              util::span(wrap))
+                     GLenum filtering, const SwizzleMask& swizzleMask,
+                     const std::array<GLenum, 3>& wrapping, GLint level)
+    : Texture(GL_TEXTURE_3D, format, internalformat, dataType, filtering, swizzleMask,
+              util::span(wrapping), level)
     , dimensions_(dimensions) {}
 
 Texture3D::Texture3D(const Texture3D& rhs) : Texture(rhs), dimensions_(rhs.dimensions_) {
@@ -116,12 +117,12 @@ void Texture3D::uploadAndResize(const void* data, const size3_t& dim) {
     }
 }
 
-void Texture3D::setWrapping(const Wrapping3D& wrapping) {
+void Texture3D::setWrapping(const std::array<GLenum, 3>& wrapping) {
     Texture::setWrapping(util::span(wrapping));
 }
 
-Wrapping3D Texture3D::getWrapping() const {
-    Wrapping3D wrapping{};
+std::array<GLenum, 3> Texture3D::getWrapping() const {
+    std::array<GLenum, 3> wrapping{};
     Texture::getWrapping(util::span(wrapping));
     return wrapping;
 }

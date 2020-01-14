@@ -90,7 +90,7 @@ protected:
         ~PropagationParameters() = default;
 
         static Texture3D makeTex(size3_t dim, DataFormatId format, vec4 borderColor) {
-            Texture3D tex{dim, GLFormats::get(format), GL_LINEAR, 0};
+            Texture3D tex{dim, GLFormats::get(format), GL_LINEAR};
             tex.bind();
             glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
             glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);

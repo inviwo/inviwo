@@ -43,10 +43,10 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Texture : public Observable<TextureObserver> {
 public:
-    Texture(GLenum target, GLFormat glFormat, GLenum filtering, GLint level,
-            const SwizzleMask& swizzleMask, util::span<const Wrapping> wrapping);
+    Texture(GLenum target, GLFormat glFormat, GLenum filtering, const SwizzleMask& swizzleMask,
+            util::span<const GLenum> wrapping, GLint level);
     Texture(GLenum target, GLint format, GLint internalformat, GLenum dataType, GLenum filtering,
-            GLint level, const SwizzleMask& swizzleMask, util::span<const Wrapping> wrapping);
+            const SwizzleMask& swizzleMask, util::span<const GLenum> wrapping, GLint level);
     Texture(const Texture& other);
     Texture(Texture&& other);
     Texture& operator=(const Texture& other);
@@ -82,8 +82,8 @@ public:
     void setInterpolation(InterpolationType interpolation);
     InterpolationType getInterpolation() const;
 
-    void setWrapping(util::span<const Wrapping> wrapping);
-    void getWrapping(util::span<Wrapping> wrapping) const;
+    void setWrapping(util::span<const GLenum> wrapping);
+    void getWrapping(util::span<GLenum> wrapping) const;
 
     void download(void* data) const;
     void downloadToPBO() const;
@@ -98,9 +98,6 @@ protected:
     void setupAsyncReadBackPBO() const;
     void setPBOAsInvalid();
 
-    void setNChannels();
-    void setSizeInBytes();
-
     GLenum target_;
     GLenum format_;
     GLenum internalformat_;
@@ -110,18 +107,20 @@ protected:
     static constexpr std::array<GLenum, 3> wrapNames{GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T,
                                                      GL_TEXTURE_WRAP_R};
 
-    static constexpr std::array<std::pair<int, size_t>, 5> targetToDim{{{GL_TEXTURE_1D, 1},
-                                                                        {GL_TEXTURE_2D, 2},
-                                                                        {GL_TEXTURE_3D, 3},
-                                                                        {GL_TEXTURE_1D_ARRAY, 1},
-                                                                        {GL_TEXTURE_2D_ARRAY, 2}}};
+    static constexpr std::array<std::pair<GLenum, size_t>, 5> targetToDim{
+        {{GL_TEXTURE_1D, 1},
+         {GL_TEXTURE_2D, 2},
+         {GL_TEXTURE_3D, 3},
+         {GL_TEXTURE_1D_ARRAY, 1},
+         {GL_TEXTURE_2D_ARRAY, 2}}};
+
+    static size_t targetDims(GLenum target);
+    static GLuint channels(GLenum format);
+    static size_t dataTypeSize(GLenum dataType);
 
 private:
     GLuint id_;
     GLuint pboBack_;  // For asynchronous readback to CPU
-
-    GLuint numChannels_;
-    GLuint byteSize_;
 
     mutable bool pboBackIsSetup_;
     mutable bool pboBackHasData_;

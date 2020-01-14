@@ -348,75 +348,83 @@ TexEnv::~TexEnv() {
     }
 }
 
-BlendModeState::BlendModeState(GLenum smode, GLenum dmode)
-    : GlBoolState(GL_BLEND, smode != GL_NONE), smode_(smode), dmode_(dmode) {
+BlendModeState::BlendModeState(GLenum srcRGB, GLenum srcAlpha, GLenum dstRGB, GLenum dstAlpha)
+    : GlBoolState(GL_BLEND, srcRGB != GL_NONE || srcAlpha != GL_NONE)
+    , curr_{{static_cast<GLint>(srcRGB), static_cast<GLint>(srcAlpha)},
+            {static_cast<GLint>(dstRGB), static_cast<GLint>(dstAlpha)}}
+    , old_{} {
     if (state_) {
-        glGetIntegerv(GL_BLEND_SRC, &oldsMode_);
-        glGetIntegerv(GL_BLEND_DST, &olddMode_);
-        if (oldsMode_ != smode_ || olddMode_ != dmode_) {
-            glBlendFunc(smode_, dmode_);
+        glGetIntegerv(GL_BLEND_SRC_RGB, &old_.src.rgb);
+        glGetIntegerv(GL_BLEND_DST_RGB, &old_.dst.rgb);
+        glGetIntegerv(GL_BLEND_SRC_RGB, &old_.src.rgb);
+        glGetIntegerv(GL_BLEND_DST_RGB, &old_.dst.rgb);
+        if (old_.src.rgb != curr_.src.rgb || old_.dst.rgb != curr_.dst.rgb ||
+            old_.src.alpha != curr_.src.alpha || old_.dst.alpha != curr_.dst.alpha) {
+            glBlendFuncSeparate(curr_.src.rgb, curr_.dst.rgb, curr_.src.alpha, curr_.src.alpha);
         }
     }
 }
 
+BlendModeState::BlendModeState(GLenum srcMode, GLenum dstMode)
+    : BlendModeState{srcMode, srcMode, dstMode, dstMode} {}
+
 BlendModeState& BlendModeState::operator=(BlendModeState&& that) {
     if (this != &that) {
         GlBoolState::operator=(std::move(that));
-        smode_ = that.smode_;
-        oldsMode_ = that.oldsMode_;
-        that.smode_ = that.oldsMode_;
-
-        dmode_ = that.dmode_;
-        olddMode_ = that.olddMode_;
-        that.dmode_ = that.olddMode_;
+        curr_ = that.curr_;
+        old_ = that.old_;
+        that.curr_ = that.old_;
     }
     return *this;
 }
 
 BlendModeState::BlendModeState(BlendModeState&& rhs)
-    : GlBoolState(std::move(rhs))
-    , smode_(rhs.smode_)
-    , dmode_(rhs.dmode_)
-    , oldsMode_(rhs.oldsMode_)
-    , olddMode_(rhs.olddMode_) {
-    rhs.smode_ = rhs.oldsMode_;
-    rhs.dmode_ = rhs.olddMode_;
+    : GlBoolState(std::move(rhs)), curr_(rhs.curr_), old_(rhs.old_) {
+    rhs.curr_ = rhs.old_;
 }
 
 BlendModeState::~BlendModeState() {
-    if (state_ && (oldsMode_ != smode_ || olddMode_ != dmode_)) {
-        glBlendFunc(oldsMode_, olddMode_);
+    if (state_ && (old_.src.rgb != curr_.src.rgb || old_.dst.rgb != curr_.dst.rgb ||
+                   old_.src.alpha != curr_.src.alpha || old_.dst.alpha != curr_.dst.alpha)) {
+        glBlendFuncSeparate(old_.src.rgb, old_.dst.rgb, old_.src.alpha, old_.src.alpha);
     }
 }
 
-BlendModeEquationState::BlendModeEquationState(GLenum smode, GLenum dmode, GLenum eqn)
-    : BlendModeState(smode, dmode), eqn_(eqn) {
+BlendModeEquationState::BlendModeEquationState(GLenum srcRGB, GLenum srcAlpha, GLenum dstRGB,
+                                               GLenum dstAlpha, GLenum eqnRGB, GLenum eqnAlpha)
+    : BlendModeState(srcRGB, srcAlpha, dstRGB, dstAlpha)
+    , curr_{static_cast<GLint>(eqnRGB), static_cast<GLint>(eqnAlpha)}
+    , old_{} {
     if (state_) {
-        glGetIntegerv(GL_BLEND_EQUATION_RGB, &oldEqn_);
-        if (oldEqn_ != eqn_) {
-            glBlendEquation(eqn_);
-        }
+        glGetIntegerv(GL_BLEND_EQUATION_RGB, &old_.rgb);
+        glGetIntegerv(GL_BLEND_EQUATION_RGB, &old_.alpha);
+    }
+    if (old_.rgb != curr_.rgb || old_.alpha != curr_.alpha) {
+        glBlendEquationSeparate(curr_.rgb, curr_.alpha);
     }
 }
+
+BlendModeEquationState::BlendModeEquationState(GLenum srcMode, GLenum dstMode, GLenum eqn)
+    : BlendModeEquationState{srcMode, srcMode, dstMode, dstMode, eqn, eqn} {}
 
 BlendModeEquationState& BlendModeEquationState::operator=(BlendModeEquationState&& that) {
     if (this != &that) {
         BlendModeState::operator=(std::move(that));
-        eqn_ = that.eqn_;
-        oldEqn_ = that.oldEqn_;
-        that.eqn_ = that.oldEqn_;
+        curr_ = that.curr_;
+        old_ = that.old_;
+        that.curr_ = that.old_;
     }
     return *this;
 }
 
 BlendModeEquationState::BlendModeEquationState(BlendModeEquationState&& rhs)
-    : BlendModeState(std::move(rhs)), eqn_(rhs.eqn_), oldEqn_(rhs.oldEqn_) {
-    rhs.eqn_ = rhs.oldEqn_;
+    : BlendModeState(std::move(rhs)), curr_(rhs.curr_), old_(rhs.old_) {
+    rhs.curr_ = rhs.old_;
 }
 
 BlendModeEquationState::~BlendModeEquationState() {
-    if (state_ && (oldEqn_ != eqn_)) {
-        glBlendEquation(oldEqn_);
+    if (state_ && (old_.rgb != curr_.rgb || old_.alpha != curr_.alpha)) {
+        glBlendEquationSeparate(old_.rgb, old_.alpha);
     }
 }
 

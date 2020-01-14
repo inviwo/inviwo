@@ -41,8 +41,8 @@ VolumeGL::VolumeGL(size3_t dimensions, const DataFormatBase* format, const Swizz
                    bool initializeTexture)
     : VolumeRepresentation{format}
     , texture_{std::make_shared<Texture3D>(dimensions, GLFormats::get(format->getId()),
-                                           utilgl::convertInterpolationToGL(interpolation), 0,
-                                           swizzleMask, wrapping)} {
+                                           utilgl::convertInterpolationToGL(interpolation),
+                                           swizzleMask, utilgl::convertWrappingToGL(wrapping))} {
     if (initializeTexture) {
         texture_->initialize(nullptr);
     }
@@ -93,8 +93,12 @@ void VolumeGL::setInterpolation(InterpolationType interpolation) {
 
 InterpolationType VolumeGL::getInterpolation() const { return texture_->getInterpolation(); }
 
-void VolumeGL::setWrapping(const Wrapping3D& wrapping) { texture_->setWrapping(wrapping); }
+void VolumeGL::setWrapping(const Wrapping3D& wrapping) {
+    texture_->setWrapping(utilgl::convertWrappingToGL(wrapping));
+}
 
-Wrapping3D VolumeGL::getWrapping() const { return texture_->getWrapping(); }
+Wrapping3D VolumeGL::getWrapping() const {
+    return utilgl::convertWrappingFromGL(texture_->getWrapping());
+}
 
 }  // namespace inviwo

@@ -50,12 +50,13 @@ LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* forma
     const auto glFormat = GLFormats::get(getDataFormatId());
     if (getLayerType() == LayerType::Depth) {
         texture_ = std::make_shared<Texture2D>(dimensions, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24,
-                                               glFormat.type, GL_NEAREST, 0, swizzleMask, wrap);
+                                               glFormat.type, GL_NEAREST, swizzleMask,
+                                               utilgl::convertWrappingToGL(wrap));
     } else {
         utilgl::convertInterpolationToGL(interpolation);
         texture_ = std::make_shared<Texture2D>(dimensions, glFormat,
-                                               utilgl::convertInterpolationToGL(interpolation), 0,
-                                               swizzleMask, wrap);
+                                               utilgl::convertInterpolationToGL(interpolation),
+                                               swizzleMask, utilgl::convertWrappingToGL(wrap));
     }
 }
 
@@ -125,8 +126,12 @@ void LayerGL::setInterpolation(InterpolationType interpolation) {
 
 InterpolationType LayerGL::getInterpolation() const { return texture_->getInterpolation(); }
 
-void LayerGL::setWrapping(const Wrapping2D& wrapping) { texture_->setWrapping(wrapping); }
+void LayerGL::setWrapping(const Wrapping2D& wrapping) {
+    texture_->setWrapping(utilgl::convertWrappingToGL(wrapping));
+}
 
-Wrapping2D LayerGL::getWrapping() const { return texture_->getWrapping(); }
+Wrapping2D LayerGL::getWrapping() const {
+    return utilgl::convertWrappingFromGL(texture_->getWrapping());
+}
 
 }  // namespace inviwo

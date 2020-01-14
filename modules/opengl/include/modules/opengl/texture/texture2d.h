@@ -40,13 +40,12 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Texture2D : public Texture {
 public:
-    Texture2D(size2_t dimensions, GLFormat glFormat, GLenum filtering, GLint level = 0,
+    Texture2D(size2_t dimensions, GLFormat glFormat, GLenum filtering,
               const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-              const Wrapping2D& wrap = wrapping2d::clampAll);
+              const std::array<GLenum, 2>& wrapping = {GL_CLAMP, GL_CLAMP}, GLint level = 0);
     Texture2D(size2_t dimensions, GLint format, GLint internalformat, GLenum dataType,
-              GLenum filtering, GLint level = 0,
-              const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-              const Wrapping2D& wrap = wrapping2d::clampAll);
+              GLenum filtering, const SwizzleMask& swizzleMask = swizzlemasks::rgba,
+              const std::array<GLenum, 2>& wrapping = {GL_CLAMP, GL_CLAMP}, GLint level = 0);
 
     Texture2D(const Texture2D& other);
     Texture2D(Texture2D&& other);
@@ -65,8 +64,8 @@ public:
     size_t getWidth() const { return dimensions_.x; }
     size_t getHeight() const { return dimensions_.y; }
 
-    void setWrapping(const Wrapping2D& wrapping);
-    Wrapping2D getWrapping() const;
+    void setWrapping(const std::array<GLenum, 2>& wrapping);
+    std::array<GLenum, 2> getWrapping() const;
 
     void resize(size2_t dimensions);
 

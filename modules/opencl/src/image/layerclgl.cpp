@@ -31,6 +31,7 @@
 #include <inviwo/core/util/assertion.h>
 #include <modules/opencl/image/layerclresizer.h>
 #include <modules/opencl/syncclgl.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 CLTextureSharingMap LayerCLGL::clImageSharingMap_;
@@ -176,9 +177,13 @@ void LayerCLGL::setInterpolation(InterpolationType interpolation) {
 
 InterpolationType LayerCLGL::getInterpolation() const { return texture_->getInterpolation(); }
 
-void LayerCLGL::setWrapping(const Wrapping2D& wrapping) { texture_->setWrapping(wrapping); }
+void LayerCLGL::setWrapping(const Wrapping2D& wrapping) {
+    texture_->setWrapping(utilgl::convertWrappingToGL(wrapping));
+}
 
-Wrapping2D LayerCLGL::getWrapping() const { return texture_->getWrapping(); }
+Wrapping2D LayerCLGL::getWrapping() const {
+    return utilgl::convertWrappingFromGL(texture_->getWrapping());
+}
 
 }  // namespace inviwo
 

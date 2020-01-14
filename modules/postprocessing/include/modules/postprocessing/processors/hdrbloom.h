@@ -75,7 +75,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    void resizeTextures(int width, int height);
+    void resizeTextures(size2_t size);
 
     ImageInport inport_;
     ImageOutport outport_;
@@ -89,18 +89,17 @@ private:
     Shader blur_;
     Shader compose_;
 
-    int width_;
-    int height_;
+    size2_t size_;
 
     // Sync in shader
-    static constexpr int Levels = 5;
-
-    FrameBufferObject fboHorizontal_[Levels];
-    std::array<std::unique_ptr<Texture2D>, Levels> texHorizontal_;
-    FrameBufferObject fboVertical_[Levels];
-    std::array<std::unique_ptr<Texture2D>, Levels> texVertical_;
-    FrameBufferObject fboBright_;
-    Texture2D texBright_;
+    static constexpr int levels_ = 5;
+    struct FBOTex {
+        FrameBufferObject fbo;
+        Texture2D tex;
+    };
+    std::array<FBOTex, levels_> horizontal_;
+    std::array<FBOTex, levels_> vertical_;
+    FBOTex bright_;
 };
 
 }  // namespace inviwo

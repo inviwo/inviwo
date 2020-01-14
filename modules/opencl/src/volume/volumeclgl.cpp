@@ -29,6 +29,7 @@
 
 #include <modules/opencl/volume/volumeclgl.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 CLTexture3DSharingMap VolumeCLGL::clVolumeSharingMap_;
@@ -85,9 +86,13 @@ void VolumeCLGL::setInterpolation(InterpolationType interpolation) {
 
 InterpolationType VolumeCLGL::getInterpolation() const { return texture_->getInterpolation(); }
 
-void VolumeCLGL::setWrapping(const Wrapping3D& wrapping) { texture_->setWrapping(wrapping); }
+void VolumeCLGL::setWrapping(const Wrapping3D& wrapping) {
+    texture_->setWrapping(utilgl::convertWrappingToGL(wrapping));
+}
 
-Wrapping3D VolumeCLGL::getWrapping() const { return texture_->getWrapping(); }
+Wrapping3D VolumeCLGL::getWrapping() const {
+    return utilgl::convertWrappingFromGL(texture_->getWrapping());
+}
 
 VolumeCLGL* VolumeCLGL::clone() const { return new VolumeCLGL(*this); }
 

@@ -87,7 +87,6 @@ public:
     virtual Wrapping3D getWrapping() const override;
 
 private:
-    size3_t dimensions_;
     std::shared_ptr<Texture3D> texture_;
 };
 

@@ -34,16 +34,14 @@
 
 namespace inviwo {
 
-Texture::Texture(GLenum target, GLFormat glFormat, GLenum filtering, GLint level,
-                 const SwizzleMask& swizzleMask, util::span<const Wrapping> wrapping)
+Texture::Texture(GLenum target, GLFormat glFormat, GLenum filtering, const SwizzleMask& swizzleMask,
+                 util::span<const GLenum> wrapping, GLint level)
     : Observable<TextureObserver>()
     , target_(target)
     , format_(glFormat.format)
     , internalformat_(glFormat.internalFormat)
     , dataType_(glFormat.type)
     , level_(level)
-    , numChannels_{glFormat.channels}
-    , byteSize_{numChannels_ * glFormat.typeSize}
     , pboBackIsSetup_(false)
     , pboBackHasData_(false) {
 
@@ -58,15 +56,15 @@ Texture::Texture(GLenum target, GLFormat glFormat, GLenum filtering, GLint level
     glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &filtering);
 
     for (auto [i, wrap] : util::enumerate(wrapping)) {
-        glTexParameteri(target_, wrapNames[i], utilgl::convertWrappingToGL(wrap));
+        glTexParameteri(target_, wrapNames[i], wrap);
     }
 
     glBindTexture(target_, 0);
 }
 
 Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataType,
-                 GLenum filtering, GLint level, const SwizzleMask& swizzleMask,
-                 util::span<const Wrapping> wrapping)
+                 GLenum filtering, const SwizzleMask& swizzleMask,
+                 util::span<const GLenum> wrapping, GLint level)
     : Observable<TextureObserver>()
     , target_(target)
     , format_(format)
@@ -77,8 +75,7 @@ Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataT
     , pboBackHasData_(false) {
 
     glGenTextures(1, &id_);
-    setNChannels();
-    setSizeInBytes();
+
     glGenBuffers(1, &pboBack_);
 
     glBindTexture(target_, id_);
@@ -87,7 +84,7 @@ Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataT
     glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &filtering);
     glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &filtering);
     for (auto [i, wrap] : util::enumerate(wrapping)) {
-        glTexParameteri(target_, wrapNames[i], utilgl::convertWrappingToGL(wrap));
+        glTexParameteri(target_, wrapNames[i], wrap);
     }
     glBindTexture(target_, 0);
 }
@@ -99,8 +96,6 @@ Texture::Texture(const Texture& other)
     , internalformat_(other.internalformat_)
     , dataType_(other.dataType_)
     , level_(other.level_)
-    , numChannels_(other.numChannels_)
-    , byteSize_(other.byteSize_)
     , pboBackIsSetup_(false)
     , pboBackHasData_(false) {
 
@@ -112,9 +107,7 @@ Texture::Texture(const Texture& other)
     GLenum magfiltering;
 
     std::array<GLenum, 3> wrapping;
-    const auto it = std::find_if(targetToDim.begin(), targetToDim.end(),
-                                 [&](auto& item) { return item.first == target_; });
-    const size_t dims = it != targetToDim.end() ? it->second : size_t{0};
+    const auto dims = targetDims(target_);
 
     glBindTexture(other.target_, other.id_);
     glGetTexParameteriv(other.target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
@@ -143,8 +136,6 @@ Texture::Texture(Texture&& other)
     , level_(other.level_)
     , id_(other.id_)  // Steal texture
     , pboBack_(other.pboBack_)
-    , numChannels_(other.numChannels_)
-    , byteSize_(other.byteSize_)
     , pboBackIsSetup_(false)
     , pboBackHasData_(false) {
 
@@ -159,17 +150,13 @@ Texture& Texture::operator=(const Texture& rhs) {
         format_ = rhs.format_;
         internalformat_ = rhs.internalformat_;
         dataType_ = rhs.dataType_;
-        numChannels_ = rhs.numChannels_;
-        byteSize_ = rhs.byteSize_;
 
         std::array<GLint, 4> swizzleMaskGL;
         GLenum minfiltering;
         GLenum magfiltering;
 
         std::array<GLenum, 3> wrapping;
-        const auto it = std::find_if(targetToDim.begin(), targetToDim.end(),
-                                     [&](auto& item) { return item.first == target_; });
-        const size_t dims = it != targetToDim.end() ? it->second : size_t{0};
+        const auto dims = targetDims(target_);
 
         glBindTexture(rhs.target_, rhs.id_);
         glGetTexParameteriv(rhs.target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
@@ -203,8 +190,6 @@ Texture& Texture::operator=(Texture&& rhs) {
         format_ = rhs.format_;
         internalformat_ = rhs.internalformat_;
         dataType_ = rhs.dataType_;
-        numChannels_ = rhs.numChannels_;
-        byteSize_ = rhs.byteSize_;
 
         id_ = rhs.id_;
         pboBack_ = rhs.pboBack_;
@@ -226,6 +211,12 @@ Texture::~Texture() {
     }
 }
 
+size_t Texture::targetDims(GLenum target) {
+    const auto it = std::find_if(targetToDim.begin(), targetToDim.end(),
+                                 [&](auto& item) { return item.first == target; });
+    return it != targetToDim.end() ? it->second : size_t{0};
+}
+
 GLuint Texture::getID() const { return id_; }
 
 GLenum Texture::getTarget() const { return target_; }
@@ -237,7 +228,7 @@ GLenum Texture::getInternalFormat() const { return internalformat_; }
 GLenum Texture::getDataType() const { return dataType_; }
 
 const DataFormatBase* Texture::getDataFormat() const {
-    return DataFormatBase::get(GLFormats::get(dataType_, numChannels_));
+    return DataFormatBase::get(GLFormats::get(dataType_, channels(format_)));
 }
 
 GLenum Texture::getFiltering() const {
@@ -250,9 +241,11 @@ GLenum Texture::getFiltering() const {
 
 GLint Texture::getLevel() const { return level_; }
 
-GLuint Texture::getNChannels() const { return numChannels_; }
+GLuint Texture::getNChannels() const { return channels(format_); }
 
-GLuint Texture::getSizeInBytes() const { return byteSize_; }
+GLuint Texture::getSizeInBytes() const {
+    return static_cast<GLuint>(channels(format_) * dataTypeSize(dataType_));
+}
 
 void Texture::bind() const { glBindTexture(target_, id_); }
 
@@ -290,20 +283,18 @@ InterpolationType Texture::getInterpolation() const {
     return utilgl::convertInterpolationFromGL(filtering);
 }
 
-void Texture::setWrapping(util::span<const Wrapping> wrapping) {
+void Texture::setWrapping(util::span<const GLenum> wrapping) {
     bind();
     for (auto [i, wrap] : util::enumerate(wrapping)) {
-        glTexParameteri(target_, wrapNames[i], utilgl::convertWrappingToGL(wrap));
+        glTexParameteri(target_, wrapNames[i], wrap);
     }
     unbind();
 }
 
-void Texture::getWrapping(util::span<Wrapping> wrapping) const {
+void Texture::getWrapping(util::span<GLenum> wrapping) const {
     bind();
     for (auto&& [i, wrap] : util::enumerate(wrapping)) {
-        GLenum tmp;
-        glGetTexParameterIuiv(target_, wrapNames[i], &tmp);
-        wrap = utilgl::convertWrappingFromGL(tmp);
+        glGetTexParameterIuiv(target_, wrapNames[i], &wrap);
     }
     unbind();
 }
@@ -392,8 +383,8 @@ void Texture::setupAsyncReadBackPBO() const {
 
 void Texture::setPBOAsInvalid() { pboBackIsSetup_ = false; }
 
-void Texture::setNChannels() {
-    switch (format_) {
+GLuint Texture::channels(GLenum format) {
+    switch (format) {
         case GL_STENCIL_INDEX:
         case GL_DEPTH_COMPONENT:
         case GL_DEPTH_STENCIL:
@@ -401,52 +392,37 @@ void Texture::setNChannels() {
         case GL_GREEN:
         case GL_BLUE:
         case GL_ALPHA:
-            numChannels_ = 1;
-            break;
-
+            return 1;
         case GL_RGB:
         case GL_BGR:
-            numChannels_ = 3;
-            break;
-
+            return 3;
         case GL_RGBA:
         case GL_BGRA:
-            numChannels_ = 4;
-            break;
-
+            return 4;
         default:
-            numChannels_ = 0;
-            LogError("Invalid format: " << format_);
+            throw OpenGLException("Invalid format specified", IVW_CONTEXT_CUSTOM("Texture"));
     }
 }
 
-void Texture::setSizeInBytes() {
-    GLuint dataTypeSize;
-
-    switch (dataType_) {
+size_t Texture::dataTypeSize(GLenum dataType) {
+    switch (dataType) {
         case GL_UNSIGNED_BYTE:
         case GL_BYTE:
-            dataTypeSize = 1;
-            break;
+            return 1;
 
         case GL_UNSIGNED_SHORT:
         case GL_SHORT:
         case GL_HALF_FLOAT:
-            dataTypeSize = 2;
-            break;
+            return 2;
 
         case GL_UNSIGNED_INT:
         case GL_INT:
         case GL_FLOAT:
-            dataTypeSize = 4;
-            break;
+            return 4;
 
         default:
-            dataTypeSize = 0;
-            LogError("Invalid data type: " << dataTypeSize);
+            throw OpenGLException("Invalid format specified", IVW_CONTEXT_CUSTOM("Texture"));
     }
-
-    byteSize_ = numChannels_ * dataTypeSize;
 }
 
 }  // namespace inviwo
