@@ -139,7 +139,6 @@ std::vector<bool> BoxSelectionInteractionHandler::boxSelect(const dvec2& start,
     auto xbuf = xAxis->getRepresentation<BufferRAM>();
     auto selectedIndicesX = xbuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
         [min = start[0], max = end[0]](auto brprecision) {
-            using ValueType = util::PrecisionValueType<decltype(brprecision)>;
             std::vector<bool> selected(brprecision->getSize(), false);
             for (auto&& [ind, elem] : util::enumerate(brprecision->getDataContainer())) {
                 if (static_cast<double>(elem) < min || static_cast<double>(elem) > max) {
@@ -154,7 +153,6 @@ std::vector<bool> BoxSelectionInteractionHandler::boxSelect(const dvec2& start,
     auto ybuf = yAxis->getRepresentation<BufferRAM>();
     auto selectedIndices = ybuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
         [selectedIndicesX, min = start[1], max = end[1]](auto brprecision) {
-            using ValueType = util::PrecisionValueType<decltype(brprecision)>;
             auto data = brprecision->getDataContainer();
             std::vector<bool> selected(brprecision->getSize(), false);
 
