@@ -46,7 +46,6 @@ enum class Normalization : char { None, Normalized, SignNormalized };
 
 }  // namespace utilgl
 
-
 struct IVW_MODULE_OPENGL_API GLFormat {
     constexpr GLFormat()
         : format{0}
@@ -109,7 +108,7 @@ public:
         } else {
             return DataFormatId::NotSpecialized;
         }
-    }   
+    }
 
 private:
     static constexpr std::array<GLFormat, size> formats_{{

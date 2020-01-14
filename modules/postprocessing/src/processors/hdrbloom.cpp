@@ -171,7 +171,7 @@ void HdrBloom::process() {
     compose_.activate();
 
     // Blend bloom results onto colorchannel of outport.
-    utilgl::BlendModeEquationState blendEqn{GL_ONE, GL_ONE, GL_ONE, GL_ONE, GL_FUNC_ADD, GL_MAX };
+    utilgl::BlendModeEquationState blendEqn{GL_ONE, GL_ONE, GL_ONE, GL_ONE, GL_FUNC_ADD, GL_MAX};
 
     compose_.setUniform("bloomStrength", strength_.get());
     compose_.setUniform("bloomRadius", radius_.get());

@@ -185,8 +185,8 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     util::for_each_type<ScalarTypes>{}(MinMaxTextWidgetReghelper{}, *this, "Text");
 
     // Register option property widgets
-    using OptionTypes = std::tuple<char, unsigned char, unsigned int, int, size_t,
-                                   float, double, std::string, FileExtension>;
+    using OptionTypes = std::tuple<char, unsigned char, unsigned int, int, size_t, float, double,
+                                   std::string, FileExtension>;
     util::for_each_type<OptionTypes>{}(OptionWidgetReghelper{}, *this, "Default");
 
     // Register string property widgets
