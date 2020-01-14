@@ -49,7 +49,9 @@ LineSettingsProperty::LineSettingsProperty(const std::string& identifier,
                   roundDepthProfile_, stippling_);
 }
 
-LineSettingsProperty* LineSettingsProperty::clone() const { return new LineSettingsProperty(*this); }
+LineSettingsProperty* LineSettingsProperty::clone() const {
+    return new LineSettingsProperty(*this);
+}
 
 float LineSettingsProperty::getWidth() const { return lineWidth_.get(); }
 float LineSettingsProperty::getAntialiasingWidth() const { return antialiasing_.get(); }
