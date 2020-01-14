@@ -41,10 +41,12 @@ class IVW_MODULE_OPENGL_API Texture2DArray : public Texture {
 public:
     Texture2DArray(size3_t dimensions, GLFormat glFormat, GLenum filtering,
                    const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-                   const std::array<GLenum, 2>& wrapping = {GL_CLAMP, GL_CLAMP}, GLint level = 0);
+                   const std::array<GLenum, 2>& wrapping = {GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE},
+                   GLint level = 0);
     Texture2DArray(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
                    GLenum filtering, const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-                   const std::array<GLenum, 2>& wrapping = {GL_CLAMP, GL_CLAMP}, GLint level = 0);
+                   const std::array<GLenum, 2>& wrapping = {GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE},
+                   GLint level = 0);
     Texture2DArray(const Texture2DArray& other);
     Texture2DArray(Texture2DArray&& other);
     Texture2DArray& operator=(const Texture2DArray& other);

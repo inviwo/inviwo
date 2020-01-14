@@ -41,11 +41,13 @@ class IVW_MODULE_OPENGL_API Texture3D : public Texture {
 public:
     Texture3D(size3_t dimensions, GLFormat glFormat, GLenum filtering,
               const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-              const std::array<GLenum, 3>& wrapping = {GL_CLAMP, GL_CLAMP, GL_CLAMP},
+              const std::array<GLenum, 3>& wrapping = {GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE,
+                                                       GL_CLAMP_TO_EDGE},
               GLint level = 0);
     Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
               GLenum filtering, const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-              const std::array<GLenum, 3>& wrapping = {GL_CLAMP, GL_CLAMP, GL_CLAMP},
+              const std::array<GLenum, 3>& wrapping = {GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE,
+                                                       GL_CLAMP_TO_EDGE},
               GLint level = 0);
     Texture3D(const Texture3D& other);
     Texture3D(Texture3D&& other);

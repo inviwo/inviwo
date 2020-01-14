@@ -42,10 +42,12 @@ class IVW_MODULE_OPENGL_API Texture2D : public Texture {
 public:
     Texture2D(size2_t dimensions, GLFormat glFormat, GLenum filtering,
               const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-              const std::array<GLenum, 2>& wrapping = {GL_CLAMP, GL_CLAMP}, GLint level = 0);
+              const std::array<GLenum, 2>& wrapping = {GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE},
+              GLint level = 0);
     Texture2D(size2_t dimensions, GLint format, GLint internalformat, GLenum dataType,
               GLenum filtering, const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-              const std::array<GLenum, 2>& wrapping = {GL_CLAMP, GL_CLAMP}, GLint level = 0);
+              const std::array<GLenum, 2>& wrapping = {GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE},
+              GLint level = 0);
 
     Texture2D(const Texture2D& other);
     Texture2D(Texture2D&& other);
