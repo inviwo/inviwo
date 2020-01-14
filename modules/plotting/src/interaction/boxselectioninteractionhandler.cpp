@@ -236,6 +236,7 @@ std::vector<bool> BoxSelectionInteractionHandler::boxFilter(const dvec2& start, 
                     return filtered;
                 });
         });
+
 #include <warn/pop>
 
     return filteredIndices;

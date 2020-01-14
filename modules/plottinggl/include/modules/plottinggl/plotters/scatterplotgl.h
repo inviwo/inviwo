@@ -191,7 +191,7 @@ protected:
     BufferObject selectedIndicesGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(),
                                                    BufferUsage::Dynamic, BufferTarget::Index);
     std::optional<uint32_t> hoverIndex_;
-    bool hoverIndexDirty_ = true; 
+    bool hoverIndexDirty_ = true;
     BufferObject hoverIndexGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(),
                                               BufferUsage::Dynamic, BufferTarget::Index);
 

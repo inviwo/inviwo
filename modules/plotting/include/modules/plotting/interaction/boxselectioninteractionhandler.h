@@ -96,10 +96,10 @@ protected:
      * \brief React to rectangle drag changes. Input is in data-space of each axis.
      */
     void dragRectChanged(const dvec2& start, const dvec2& end, bool append);
-    std::vector<bool> boxSelect(const dvec2& start, const dvec2& end,
-                                         const BufferBase* xAxis_, const BufferBase* yAxis_);
-    std::vector<bool> boxFilter(const dvec2& start, const dvec2& end,
-                                         const BufferBase* xAxis_, const BufferBase* yAxis_);
+    std::vector<bool> boxSelect(const dvec2& start, const dvec2& end, const BufferBase* xAxis_,
+                                const BufferBase* yAxis_);
+    std::vector<bool> boxFilter(const dvec2& start, const dvec2& end, const BufferBase* xAxis_,
+                                const BufferBase* yAxis_);
 
     Dispatcher<SelectionFunc> selectionChangedCallback_;
     Dispatcher<SelectionFunc> filteringChangedCallback_;
