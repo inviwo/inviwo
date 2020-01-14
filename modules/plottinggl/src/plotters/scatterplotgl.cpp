@@ -328,9 +328,9 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
                 std::iota(inds.begin(), inds.end(), 0);
             } else {
                 auto ind = 0;
-                for (auto idx = 0; idx < xbuf->getSize(); idx++) {
+                for (size_t idx = 0; idx < xbuf->getSize(); idx++) {
                     if (filteredIndices_.find(idx) == filteredIndices_.end()) {
-                        inds[ind++] = idx;
+                        inds[ind++] = static_cast<unsigned int>(idx);
                     }
                 }
             }
