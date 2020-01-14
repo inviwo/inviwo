@@ -68,7 +68,7 @@ class IVW_MODULE_PLOTTINGGL_API ScatterPlotGL : public InteractionHandler {
 public:
     using ToolTipFunc = void(PickingEvent*, size_t);
     using ToolTipCallbackHandle = std::shared_ptr<std::function<ToolTipFunc>>;
-    using SelectionFunc = void(const std::unordered_set<size_t>&);
+    using SelectionFunc = void(const std::vector<bool>&);
     using SelectionCallbackHandle = std::shared_ptr<std::function<SelectionFunc>>;
 
     class Properties : public CompositeProperty {
@@ -162,6 +162,10 @@ protected:
 
     void objectPicked(PickingEvent* p);
     uint32_t getGlobalPickId(uint32_t localIndex) const;
+    /*
+     * Resizes selected_ and filtered_ according to currently set axes buffer size.
+     */
+    void ensureSelectAndFilterSizes();
 
     std::shared_ptr<const BufferBase> xAxis_;
     std::shared_ptr<const BufferBase> yAxis_;
@@ -179,13 +183,15 @@ protected:
     std::array<AxisRenderer, 2> axisRenderers_;
 
     PickingMapper picking_;
-    std::unordered_set<size_t> filteredIndices_;
-    std::unordered_set<size_t> selectedIndices_;
+    std::vector<bool> filtered_;
+    std::vector<bool> selected_;
     size_t nSelectedButNotFiltered_ = 0;
+    bool filteringDirty_ = true;
     bool selectedIndicesGLDirty_ = true;
     BufferObject selectedIndicesGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(),
                                                    BufferUsage::Dynamic, BufferTarget::Index);
     std::optional<uint32_t> hoverIndex_;
+    bool hoverIndexDirty_ = true; 
     BufferObject hoverIndexGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(),
                                               BufferUsage::Dynamic, BufferTarget::Index);
 

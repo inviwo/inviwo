@@ -58,14 +58,16 @@ void BoxSelectionInteractionHandler::invokeEvent(Event* event) {
             if (dragRect_ && glm::compMax(glm::abs(me->pos() - (*dragRect_)[0])) <= 1) {
                 // Click in empty space
                 switch (dragRectSettings_.getMode()) {
-                    case BoxSelectionSettingsInterface::Mode::Selection:
+                    case BoxSelectionSettingsInterface::Mode::Selection: {
                         // selection changed
-                        selectionChangedCallback_.invoke(std::unordered_set<size_t>{}, append);
+                        std::vector<bool> selected(xAxis_->getSize(), false);
+                        selectionChangedCallback_.invoke(selected, append);
                         break;
-                    case BoxSelectionSettingsInterface::Mode::Filtering:
-                        filteringChangedCallback_.invoke(std::unordered_set<size_t>{}, append);
+                    } case BoxSelectionSettingsInterface::Mode::Filtering: {
+                        std::vector<bool> filtered(xAxis_->getSize(), false);
+                        filteringChangedCallback_.invoke(filtered, append);
                         break;
-                    case BoxSelectionSettingsInterface::Mode::None:
+                    } case BoxSelectionSettingsInterface::Mode::None:
                         break;
                 }
             }
@@ -121,80 +123,82 @@ void BoxSelectionInteractionHandler::dragRectChanged(const dvec2& start, const d
     }
 }
 
-std::unordered_set<size_t> BoxSelectionInteractionHandler::boxSelect(const dvec2& start,
-                                                                     const dvec2& end,
-                                                                     const BufferBase* xAxis,
-                                                                     const BufferBase* yAxis) {
+std::vector<bool> BoxSelectionInteractionHandler::boxSelect(const dvec2& start,
+                                                                   const dvec2& end,
+                                                                   const BufferBase* xAxis,
+                                                                   const BufferBase* yAxis) {
+
     if (xAxis == nullptr || yAxis == nullptr) {
-        return std::unordered_set<size_t>();
+        return std::vector<bool>();
     }
+
     // For efficiency:
     // 1. Determine selection along x-axis
     // 2. Determine selection along y-axis using the subset from 1
 
     auto xbuf = xAxis->getRepresentation<BufferRAM>();
-    auto selectedIndicesX = xbuf->dispatch<std::vector<size_t>, dispatching::filter::Scalars>(
+    auto selectedIndicesX = xbuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
         [min = start[0], max = end[0]](auto brprecision) {
             using ValueType = util::PrecisionValueType<decltype(brprecision)>;
-            std::vector<size_t> selectedIndices;
-            selectedIndices.reserve(brprecision->getSize());
+            std::vector<bool> selected(brprecision->getSize(), false);
             for (auto&& [ind, elem] : util::enumerate(brprecision->getDataContainer())) {
                 if (static_cast<double>(elem) < min || static_cast<double>(elem) > max) {
                     continue;
                 } else {
-                    selectedIndices.emplace_back(ind);
+                    selected[ind] = true;
                 }
             }
-            return selectedIndices;
+            return selected;
         });
     // Use indices filted by x-axis as input
     auto ybuf = yAxis->getRepresentation<BufferRAM>();
-    auto selectedIndices = ybuf->dispatch<std::unordered_set<size_t>, dispatching::filter::Scalars>(
+    auto selectedIndices = ybuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
         [selectedIndicesX, min = start[1], max = end[1]](auto brprecision) {
             using ValueType = util::PrecisionValueType<decltype(brprecision)>;
             auto data = brprecision->getDataContainer();
-            std::unordered_set<size_t> selectedIndices;
-            selectedIndices.reserve(selectedIndicesX.size());
+            std::vector<bool> selected(brprecision->getSize(), false);
 
-            std::copy_if(selectedIndicesX.begin(), selectedIndicesX.end(),
-                         std::inserter(selectedIndices, selectedIndices.begin()),
-                         [data, min, max](auto idx) {
-                             return !(static_cast<double>(data[idx]) < min ||
-                                      static_cast<double>(data[idx]) > max);
-                         });
-
-            return selectedIndices;
+            for (auto&& [ind, elem] : util::enumerate(selectedIndicesX)) {
+                if (elem) {
+                    if (static_cast<double>(data[ind]) < min || static_cast<double>(data[ind]) > max) {
+                        continue;
+                    } else {
+                        selected[ind] = true;
+                    }
+                }
+            }
+            return selected;
         });
     return selectedIndices;
 }
 
-std::unordered_set<size_t> BoxSelectionInteractionHandler::boxFilter(const dvec2& start,
+std::vector<bool> BoxSelectionInteractionHandler::boxFilter(const dvec2& start,
                                                                      const dvec2& end,
                                                                      const BufferBase* xAxis,
                                                                      const BufferBase* yAxis) {
     if (xAxis == nullptr || yAxis == nullptr) {
-        return std::unordered_set<size_t>();
+        return std::vector<bool>();
     }
     auto xbuf = xAxis->getRepresentation<BufferRAM>();
-    std::unordered_set<size_t> filteredIndices =
-        xbuf->dispatch<std::unordered_set<size_t>, dispatching::filter::Scalars>(
+    auto filteredIndices =
+        xbuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
             [start, end, ybuf = yAxis->getRepresentation<BufferRAM>()](auto brprecision) {
                 using ValueType = util::PrecisionValueType<decltype(brprecision)>;
-                return ybuf->dispatch<std::unordered_set<size_t>, dispatching::filter::Scalars>(
+                return ybuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
                     [start, end, xData = brprecision->getDataContainer()](auto brprecision) {
-                        std::unordered_set<size_t> selectedIndices;
+                        std::vector<bool> filtered(brprecision->getSize(), false);
                         for (auto&& [ind, xVal, yVal] :
                              util::enumerate(xData, brprecision->getDataContainer())) {
                             if (static_cast<double>(xVal) < start[0] ||
                                 static_cast<double>(xVal) > end[0] ||
                                 static_cast<double>(yVal) < start[1] ||
                                 static_cast<double>(yVal) > end[1]) {
-                                selectedIndices.insert(ind);
+                                filtered[ind] = true;
                             } else {
                                 continue;
                             }
                         }
-                        return selectedIndices;
+                        return filtered;
                     });
             });
 

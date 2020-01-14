@@ -37,14 +37,31 @@ namespace inviwo {
  */
 class IVW_CORE_API StipplingSettingsInterface {
 public:
+    /*
+     * \brief Determines in which space the stippling parameters should be applied.
+     */
     enum class Mode { None, ScreenSpace, WorldSpace };
     StipplingSettingsInterface() = default;
     virtual ~StipplingSettingsInterface() = default;
-
+    /*
+     * Determines which space the other settings should be applied.
+     */
     virtual Mode getMode() const = 0;
+    /*
+     * Return length of dash, in pixels if Mode is ScreenSpace.
+     */
     virtual float getLength() const = 0;
+    /*
+     * Return distance between dashes, in pixels if Mode is ScreenSpace.
+     */
     virtual float getSpacing() const = 0;
+    /*
+     * Return offset of first dash, in pixels if Mode is ScreenSpace.
+     */
     virtual float getOffset() const = 0;
+    /*
+     * Return scaling of parameters. Only applicable if Mode is WorldSpace.
+     */
     virtual float getWorldScale() const = 0;
 };
 IVW_CORE_API bool operator==(const StipplingSettingsInterface& a,

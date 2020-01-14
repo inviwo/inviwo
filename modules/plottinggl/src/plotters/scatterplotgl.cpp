@@ -170,28 +170,34 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
     });
 
     boxSelectionChangedCallBack_ = boxSelectionHandler_.addSelectionChangedCallback(
-        [this](const std::unordered_set<size_t>& indices, bool append) {
-            if (append) {
-                selectedIndices_.insert(indices.begin(), indices.end());
-            } else {
-                selectedIndices_ = indices;
+        [this](const std::vector<bool>& selected, bool append) {
+            ensureSelectAndFilterSizes();
+            for (auto&& [ind, elem] : util::enumerate(selected)) {
+                if (append && elem)
+                    selected_[ind] = elem;
+                else {
+                    selected_[ind] = elem;
+                }
             }
 
             selectedIndicesGLDirty_ = true;
             // selection changed, inform processor
-            selectionChangedCallback_.invoke(selectedIndices_);
+            selectionChangedCallback_.invoke(selected_);
         });
     boxFilteringChangedCallBack_ = boxSelectionHandler_.addFilteringChangedCallback(
-        [this](const std::unordered_set<size_t>& indices, bool append) {
-            if (append) {
-                filteredIndices_.insert(indices.begin(), indices.end());
-            } else {
-                filteredIndices_ = indices;
+        [this](const std::vector<bool>& filtered, bool append) {
+            ensureSelectAndFilterSizes();
+            for (auto&& [ind, elem] : util::enumerate(filtered)) {
+                if (append && elem)
+                    filtered_[ind] = elem;
+                else {
+                    filtered_[ind] = elem;
+                }
             }
-            filteredIndices_ = indices;
+            filteringDirty_ = true;
             // May filter selected points
             selectedIndicesGLDirty_ = true;
-            filteringChangedCallback_.invoke(filteredIndices_);
+            filteringChangedCallback_.invoke(filtered_);
         });
 }
 
@@ -227,6 +233,7 @@ void ScatterPlotGL::plot(const ivec2& start, const ivec2& size, IndexBuffer* ind
 }
 
 void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool useAxisRanges) {
+    ensureSelectAndFilterSizes();
     // adjust all margins by axis margin
     vec4 margins = properties_.margins_.getAsVec4() + properties_.axisMargin_.get();
 
@@ -312,28 +319,47 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
     } else {
         shader_.setUniform("has_radius", 0);
     }
+    // Will be called if no indexBuffer is specified.
+    // (assuming brushing & linking filters, so internal filters should not be applied)
+    auto setupInternalFiltering = [this, xbuf]() {
+        if (!filteringDirty_) return;
 
+        std::vector<uint32_t> selectedIndices;
+
+        // no indices given, draw all non-filtered data points
+        size_t nFiltered = std::count(filtered_.begin(), filtered_.end(), true);
+        // std::reduce<size_t>(filtered_.begin(), filtered_.end(), size_t(0), [);
+        auto nNotFiltered = xbuf->getSize() - nFiltered;
+
+        if (!indices_) indices_ = std::make_unique<IndexBuffer>(nNotFiltered);
+        auto& inds = indices_->getEditableRAMRepresentation()->getDataContainer();
+        inds.clear();
+        inds.reserve(nNotFiltered);
+
+        if (indexColumn_) {
+            auto& indexCol =
+                indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+            for (auto [ind, filtered] : util::enumerate(filtered_)) {
+                if (!filtered) {
+                    inds.push_back(indexCol[ind]);
+                }
+            }
+        } else {
+            auto indicesSeq =
+                util::make_sequence<unsigned int>(0, static_cast<unsigned int>(xbuf->getSize()), 1);
+            std::copy_if(indicesSeq.begin(), indicesSeq.end(), std::back_inserter(inds),
+                         [this](auto val) { return !filtered_[val]; });
+        }
+        filteringDirty_ = false;
+    };
     IndexBuffer* indices;
     if (radius_) {
+
         if (indexBuffer) {
             // copy selected indices
             indices_ = std::unique_ptr<IndexBuffer>(indexBuffer->clone());
         } else {
-            // no indices given, draw all non-filtered data points
-            auto nNotFiltered = xbuf->getSize() - filteredIndices_.size();
-            if (!indices_) indices_ = std::make_unique<IndexBuffer>(nNotFiltered);
-            auto& inds = indices_->getEditableRAMRepresentation()->getDataContainer();
-            inds.resize(nNotFiltered);
-            if (filteredIndices_.empty()) {
-                std::iota(inds.begin(), inds.end(), 0);
-            } else {
-                auto ind = 0;
-                for (auto idx = 0; idx < xbuf->getSize(); idx++) {
-                    if (filteredIndices_.find(idx) == filteredIndices_.end()) {
-                        inds[ind++] = idx;
-                    }
-                }
-            }
+            setupInternalFiltering();
         }
         indices = indices_.get();
 
@@ -352,21 +378,7 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
             // copy selected indices
             indices = indexBuffer;
         } else {
-            // no indices given, draw all data points
-            // no indices given, draw all non-filtered data points
-            auto nNotFiltered = xbuf->getSize() - filteredIndices_.size();
-            if (!indices_) indices_ = std::make_unique<IndexBuffer>(nNotFiltered);
-            auto& inds = indices_->getEditableRAMRepresentation()->getDataContainer();
-            auto indicesSeq = util::make_sequence<unsigned int>(0, xbuf->getSize(), 1);
-            inds.reserve(nNotFiltered);
-            if (filteredIndices_.empty()) {
-                std::copy(indicesSeq.begin(), indicesSeq.end(), std::back_inserter(inds));
-            } else {
-                std::copy_if(indicesSeq.begin(), indicesSeq.end(), std::back_inserter(inds),
-                             [this](auto val) {
-                                 return filteredIndices_.find(val) == filteredIndices_.end();
-                             });
-            }
+            setupInternalFiltering();
             indices = indices_.get();
         }
     }
@@ -378,37 +390,56 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
                    nullptr);
     indicesGL->getBufferObject()->unbind();
     // draw selected and hovered points on top
-    if (!selectedIndices_.empty()) {
+
+    if (selectedIndicesGLDirty_ || nSelectedButNotFiltered_ > 0) {
         shader_.setUniform("has_color", 0);
         shader_.setUniform("default_color", properties_.selectionColor_.get());
         if (selectedIndicesGLDirty_) {
-            std::vector<uint32_t> selected;
-            selected.reserve(selectedIndices_.size());
-#include <warn/push>
-#include <warn/ignore/conversion>  // We need to convert size_t to uint32
-            std::copy_if(
-                selectedIndices_.begin(), selectedIndices_.end(), std::back_inserter(selected),
-                [this](auto val) { return filteredIndices_.find(val) == filteredIndices_.end(); });
-#include <warn/pop>
+            nSelectedButNotFiltered_ = 0;
+            std::vector<uint32_t> selectedIndices;
+            if (indexColumn_) {
+                auto& indexCol =
+                    indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+                for (auto [ind, selected, filtered] : util::enumerate(selected_, filtered_)) {
+                    if (selected && !filtered) {
+                        selectedIndices.push_back(indexCol[ind]);
+                    }
+                }
+            } else {
+                for (auto [ind, selected, filtered] : util::enumerate(selected_, filtered_)) {
+                    if (selected && !filtered) {
+                        selectedIndices.push_back(static_cast<uint32_t>(ind));
+                    }
+                }
+            }
 
             if (selectedIndicesGL_.getSize() <
-                static_cast<GLsizeiptr>(selectedIndices_.size() * sizeof(uint32_t))) {
-                selectedIndicesGL_.setSize(selectedIndices_.size() * sizeof(uint32_t));
+                static_cast<GLsizeiptr>(selectedIndices.size() * sizeof(uint32_t))) {
+                selectedIndicesGL_.setSize(selectedIndices.size() * sizeof(uint32_t));
             }
-            nSelectedButNotFiltered_ = selected.size();
-            selectedIndicesGL_.upload(selected.data(), selected.size() * sizeof(uint32_t));
+            nSelectedButNotFiltered_ = selectedIndices.size();
+            selectedIndicesGL_.upload(selectedIndices.data(),
+                                      selectedIndices.size() * sizeof(uint32_t));
             selectedIndicesGLDirty_ = false;
         }
-        selectedIndicesGL_.bind();
-        glDrawElements(GL_POINTS, static_cast<uint32_t>(nSelectedButNotFiltered_),
-                       selectedIndicesGL_.getFormatType(), nullptr);
-        selectedIndicesGL_.unbind();
+        if (nSelectedButNotFiltered_ > 0) {
+            selectedIndicesGL_.bind();
+            glDrawElements(GL_POINTS, static_cast<uint32_t>(nSelectedButNotFiltered_),
+                           selectedIndicesGL_.getFormatType(), nullptr);
+            selectedIndicesGL_.unbind();
+        }
     }
     if (hoverIndex_) {
         shader_.setUniform("has_color", 0);
         shader_.setUniform("default_color", properties_.hoverColor_.get());
 
-        hoverIndexGL_.bind();
+        if (hoverIndexDirty_) {
+            // Will both bind and upload
+            hoverIndexGL_.upload(static_cast<const void*>(&(*hoverIndex_)), sizeof(uint32_t));
+            hoverIndexDirty_ = false;
+        } else {
+            hoverIndexGL_.bind();
+        }
         glDrawElements(GL_POINTS, 1, hoverIndexGL_.getFormatType(), nullptr);
         hoverIndexGL_.unbind();
     }
@@ -420,7 +451,7 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
     selectionRectRenderer_.render(boxSelectionHandler_.getDragRectangle(), dims);
 
     renderAxis(dims);
-}
+}  // namespace plot
 
 void ScatterPlotGL::setXAxisLabel(const std::string& label) {
     properties_.xAxis_.setCaption(label);
@@ -502,7 +533,11 @@ void ScatterPlotGL::setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t
 }
 
 void ScatterPlotGL::setSelectedIndices(const std::unordered_set<size_t>& indices) {
-    selectedIndices_ = indices;
+    ensureSelectAndFilterSizes();
+    selected_.resize(xAxis_->getSize(), false);
+    for (auto i : indices) {
+        selected_[i] = true;
+    }
     selectedIndicesGLDirty_ = true;
 }
 
@@ -577,7 +612,7 @@ void ScatterPlotGL::objectPicked(PickingEvent* p) {
     if (properties_.hovering_.get()) {
         if (p->getHoverState() == PickingHoverState::Enter) {
             hoverIndex_ = id;
-            hoverIndexGL_.upload(static_cast<const void*>(&id), sizeof(uint32_t));
+            hoverIndexDirty_ = true;
             if (processor_) {
                 processor_->invalidate(InvalidationLevel::InvalidOutput);
             }
@@ -592,21 +627,27 @@ void ScatterPlotGL::objectPicked(PickingEvent* p) {
     if ((p->getPressState() == PickingPressState::Release) &&
         (p->getPressItem() == PickingPressItem::Primary) &&
         (p->getCurrentGlobalPickingId() == p->getPressedGlobalPickingId())) {
-        if (selectedIndices_.count(id)) {
-            selectedIndices_.erase(id);
-        } else {
-            selectedIndices_.insert(id);
-        }
+        ensureSelectAndFilterSizes();
+        selected_[id] = !selected_[id];
         selectedIndicesGLDirty_ = true;
 
         // selection changed, inform processor
-        selectionChangedCallback_.invoke(selectedIndices_);
+        selectionChangedCallback_.invoke(selected_);
     }
     p->setUsed(true);
 }
 
 uint32_t ScatterPlotGL::getGlobalPickId(uint32_t localIndex) const {
     return static_cast<uint32_t>(picking_.getPickingId(localIndex));
+}
+
+void ScatterPlotGL::ensureSelectAndFilterSizes() {
+    if (xAxis_->getSize() != selected_.size() || xAxis_->getSize() != filtered_.size()) {
+        selected_.resize(xAxis_->getSize(), false);
+        filtered_.resize(xAxis_->getSize(), false);
+        selectedIndicesGLDirty_ = true;
+        filteringDirty_ = true;
+    }
 }
 
 }  // namespace plot

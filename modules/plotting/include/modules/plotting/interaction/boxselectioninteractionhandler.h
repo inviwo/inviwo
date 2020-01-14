@@ -50,7 +50,12 @@ namespace plot {
  */
 class IVW_MODULE_PLOTTING_API BoxSelectionInteractionHandler : public InteractionHandler {
 public:
-    using SelectionFunc = void(const std::unordered_set<size_t>&, bool);
+    /**
+     * \brief Selection/filtering-changed callback.
+     * The index of each element is given by its location (0, 1 ... n).
+     * Second argument specifies if the selection/filtering should be appended.
+     */
+    using SelectionFunc = void(const std::vector<bool>&, bool);
     using SelectionCallbackHandle = std::shared_ptr<std::function<SelectionFunc>>;
     /**
      * \brief Handles interaction for 2D rectangle selection/filtering
@@ -91,9 +96,9 @@ protected:
      * \brief React to rectangle drag changes. Input is in data-space of each axis.
      */
     void dragRectChanged(const dvec2& start, const dvec2& end, bool append);
-    std::unordered_set<size_t> boxSelect(const dvec2& start, const dvec2& end,
+    std::vector<bool> boxSelect(const dvec2& start, const dvec2& end,
                                          const BufferBase* xAxis_, const BufferBase* yAxis_);
-    std::unordered_set<size_t> boxFilter(const dvec2& start, const dvec2& end,
+    std::vector<bool> boxFilter(const dvec2& start, const dvec2& end,
                                          const BufferBase* xAxis_, const BufferBase* yAxis_);
 
     Dispatcher<SelectionFunc> selectionChangedCallback_;
