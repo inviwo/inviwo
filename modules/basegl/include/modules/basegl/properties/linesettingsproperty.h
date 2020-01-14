@@ -50,31 +50,31 @@ public:
     /*
      * @copydoc LineSettingsInterface::getWidth
      */
-    virtual float getWidth() const;
+    virtual float getWidth() const override;
     /*
      * @copydoc LineSettingsInterface::getAntialiasingWidth
      */
-    virtual float getAntialiasingWidth() const;
+    virtual float getAntialiasingWidth() const override;
     /*
      * @copydoc LineSettingsInterface::getMiterLimit
      */
-    virtual float getMiterLimit() const;
+    virtual float getMiterLimit() const override;
     /*
      * @copydoc LineSettingsInterface::getRoundCaps
      */
-    virtual bool getRoundCaps() const;
+    virtual bool getRoundCaps() const override;
     /*
      * @copydoc LineSettingsInterface::getPseudoLighting
      */
-    virtual bool getPseudoLighting() const;
+    virtual bool getPseudoLighting() const override;
     /*
      * @copydoc LineSettingsInterface::getRoundDepthProfile
      */
-    virtual bool getRoundDepthProfile() const;
+    virtual bool getRoundDepthProfile() const override;
     /*
      * @copydoc LineSettingsInterface::getStippling
      */
-    virtual const StipplingSettingsInterface& getStippling() const;
+    virtual const StipplingSettingsInterface& getStippling() const override;
 
     FloatProperty lineWidth_;
     FloatProperty antialiasing_;
