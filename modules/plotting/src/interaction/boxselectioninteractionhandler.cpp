@@ -150,7 +150,6 @@ std::unordered_set<size_t> BoxSelectionInteractionHandler::boxSelect(const dvec2
     auto ybuf = yAxis->getRepresentation<BufferRAM>();
     auto selectedIndices = ybuf->dispatch<std::unordered_set<size_t>, dispatching::filter::Scalars>(
         [selectedIndicesX, min = start[1], max = end[1]](auto brprecision) {
-            using ValueType = util::PrecisionValueType<decltype(brprecision)>;
             auto data = brprecision->getDataContainer();
             std::unordered_set<size_t> selectedIndices;
             selectedIndices.reserve(selectedIndicesX.size());
