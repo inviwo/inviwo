@@ -356,11 +356,11 @@ BlendModeState::BlendModeState(GLenum srcRGB, GLenum srcAlpha, GLenum dstRGB, GL
     if (state_) {
         glGetIntegerv(GL_BLEND_SRC_RGB, &old_.src.rgb);
         glGetIntegerv(GL_BLEND_DST_RGB, &old_.dst.rgb);
-        glGetIntegerv(GL_BLEND_SRC_RGB, &old_.src.rgb);
-        glGetIntegerv(GL_BLEND_DST_RGB, &old_.dst.rgb);
+        glGetIntegerv(GL_BLEND_SRC_ALPHA, &old_.src.alpha);
+        glGetIntegerv(GL_BLEND_DST_ALPHA, &old_.dst.alpha);
         if (old_.src.rgb != curr_.src.rgb || old_.dst.rgb != curr_.dst.rgb ||
             old_.src.alpha != curr_.src.alpha || old_.dst.alpha != curr_.dst.alpha) {
-            glBlendFuncSeparate(curr_.src.rgb, curr_.dst.rgb, curr_.src.alpha, curr_.src.alpha);
+            glBlendFuncSeparate(curr_.src.rgb, curr_.dst.rgb, curr_.src.alpha, curr_.dst.alpha);
         }
     }
 }
@@ -386,7 +386,7 @@ BlendModeState::BlendModeState(BlendModeState&& rhs)
 BlendModeState::~BlendModeState() {
     if (state_ && (old_.src.rgb != curr_.src.rgb || old_.dst.rgb != curr_.dst.rgb ||
                    old_.src.alpha != curr_.src.alpha || old_.dst.alpha != curr_.dst.alpha)) {
-        glBlendFuncSeparate(old_.src.rgb, old_.dst.rgb, old_.src.alpha, old_.src.alpha);
+        glBlendFuncSeparate(old_.src.rgb, old_.dst.rgb, old_.src.alpha, old_.dst.alpha);
     }
 }
 
@@ -397,7 +397,7 @@ BlendModeEquationState::BlendModeEquationState(GLenum srcRGB, GLenum srcAlpha, G
     , old_{} {
     if (state_) {
         glGetIntegerv(GL_BLEND_EQUATION_RGB, &old_.rgb);
-        glGetIntegerv(GL_BLEND_EQUATION_RGB, &old_.alpha);
+        glGetIntegerv(GL_BLEND_EQUATION_ALPHA, &old_.alpha);
     }
     if (old_.rgb != curr_.rgb || old_.alpha != curr_.alpha) {
         glBlendEquationSeparate(curr_.rgb, curr_.alpha);

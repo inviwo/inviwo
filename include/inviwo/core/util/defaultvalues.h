@@ -57,7 +57,7 @@ struct InviwoDefaults<char> {
 
 template <>
 struct InviwoDefaults<unsigned char> {
-    static InviwoDefaultData<char> get() { return {"UChar", uvec2(1, 1), 0, 0, 100, 1}; }
+    static InviwoDefaultData<unsigned char> get() { return {"UChar", uvec2(1, 1), 0, 0, 100, 1}; }
 };
 
 template <>
