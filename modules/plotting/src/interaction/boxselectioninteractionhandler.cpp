@@ -31,6 +31,7 @@
 
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 
