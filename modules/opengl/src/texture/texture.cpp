@@ -30,44 +30,63 @@
 #include <modules/opengl/texture/texture.h>
 
 #include <modules/opengl/openglutils.h>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 
-Texture::Texture(GLenum target, GLFormats::GLFormat glFormat, GLenum filtering, GLint level)
+Texture::Texture(GLenum target, GLFormat glFormat, GLenum filtering, const SwizzleMask& swizzleMask,
+                 util::span<const GLenum> wrapping, GLint level)
     : Observable<TextureObserver>()
     , target_(target)
     , format_(glFormat.format)
     , internalformat_(glFormat.internalFormat)
     , dataType_(glFormat.type)
-    , filtering_(filtering)
     , level_(level)
     , pboBackIsSetup_(false)
     , pboBackHasData_(false) {
 
     glGenTextures(1, &id_);
-    numChannels_ = glFormat.channels;
-    byteSize_ = numChannels_ * glFormat.typeSize;
+
     glGenBuffers(1, &pboBack_);
-    LGL_ERROR_SUPPRESS;
+
+    glBindTexture(target_, id_);
+    auto swizzleMaskGL = utilgl::convertSwizzleMaskToGL(swizzleMask);
+    glTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
+    glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &filtering);
+    glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &filtering);
+
+    for (auto [i, wrap] : util::enumerate(wrapping)) {
+        glTexParameteri(target_, wrapNames[i], wrap);
+    }
+
+    glBindTexture(target_, 0);
 }
 
 Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataType,
-                 GLenum filtering, GLint level)
+                 GLenum filtering, const SwizzleMask& swizzleMask,
+                 util::span<const GLenum> wrapping, GLint level)
     : Observable<TextureObserver>()
     , target_(target)
     , format_(format)
     , internalformat_(internalformat)
     , dataType_(dataType)
-    , filtering_(filtering)
     , level_(level)
     , pboBackIsSetup_(false)
     , pboBackHasData_(false) {
 
     glGenTextures(1, &id_);
-    setNChannels();
-    setSizeInBytes();
+
     glGenBuffers(1, &pboBack_);
-    LGL_ERROR_SUPPRESS;
+
+    glBindTexture(target_, id_);
+    auto swizzleMaskGL = utilgl::convertSwizzleMaskToGL(swizzleMask);
+    glTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
+    glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &filtering);
+    glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &filtering);
+    for (auto [i, wrap] : util::enumerate(wrapping)) {
+        glTexParameteri(target_, wrapNames[i], wrap);
+    }
+    glBindTexture(target_, 0);
 }
 
 Texture::Texture(const Texture& other)
@@ -76,16 +95,36 @@ Texture::Texture(const Texture& other)
     , format_(other.format_)
     , internalformat_(other.internalformat_)
     , dataType_(other.dataType_)
-    , filtering_(other.filtering_)
     , level_(other.level_)
-    , byteSize_(other.byteSize_)
-    , numChannels_(other.numChannels_)
     , pboBackIsSetup_(false)
     , pboBackHasData_(false) {
 
     glGenTextures(1, &id_);
     glGenBuffers(1, &pboBack_);
-    LGL_ERROR_SUPPRESS;
+
+    std::array<GLint, 4> swizzleMaskGL;
+    GLenum minfiltering;
+    GLenum magfiltering;
+
+    std::array<GLenum, 3> wrapping;
+    const auto dims = targetDims(target_);
+
+    glBindTexture(other.target_, other.id_);
+    glGetTexParameteriv(other.target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
+    glGetTexParameterIuiv(other.target_, GL_TEXTURE_MIN_FILTER, &minfiltering);
+    glGetTexParameterIuiv(other.target_, GL_TEXTURE_MAG_FILTER, &magfiltering);
+    for (size_t i = 0; i < dims; ++i) {
+        glGetTexParameterIuiv(target_, wrapNames[i], &(wrapping[i]));
+    }
+
+    glBindTexture(target_, id_);
+    glTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
+    glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &minfiltering);
+    glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &minfiltering);
+    for (size_t i = 0; i < dims; ++i) {
+        glTexParameterIuiv(target_, wrapNames[i], &(wrapping[i]));
+    }
+    glBindTexture(target_, 0);
 }
 
 Texture::Texture(Texture&& other)
@@ -94,12 +133,9 @@ Texture::Texture(Texture&& other)
     , format_(other.format_)
     , internalformat_(other.internalformat_)
     , dataType_(other.dataType_)
-    , filtering_(other.filtering_)
     , level_(other.level_)
     , id_(other.id_)  // Steal texture
     , pboBack_(other.pboBack_)
-    , byteSize_(other.byteSize_)
-    , numChannels_(other.numChannels_)
     , pboBackIsSetup_(false)
     , pboBackHasData_(false) {
 
@@ -114,9 +150,29 @@ Texture& Texture::operator=(const Texture& rhs) {
         format_ = rhs.format_;
         internalformat_ = rhs.internalformat_;
         dataType_ = rhs.dataType_;
-        filtering_ = rhs.filtering_;
-        numChannels_ = rhs.numChannels_;
-        byteSize_ = rhs.byteSize_;
+
+        std::array<GLint, 4> swizzleMaskGL;
+        GLenum minfiltering;
+        GLenum magfiltering;
+
+        std::array<GLenum, 3> wrapping;
+        const auto dims = targetDims(target_);
+
+        glBindTexture(rhs.target_, rhs.id_);
+        glGetTexParameteriv(rhs.target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
+        glGetTexParameterIuiv(rhs.target_, GL_TEXTURE_MIN_FILTER, &minfiltering);
+        glGetTexParameterIuiv(rhs.target_, GL_TEXTURE_MAG_FILTER, &magfiltering);
+        for (size_t i = 0; i < dims; ++i) {
+            glGetTexParameterIuiv(target_, wrapNames[i], &(wrapping[i]));
+        }
+        glBindTexture(target_, id_);
+        glTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
+        glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &minfiltering);
+        glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &minfiltering);
+        for (size_t i = 0; i < dims; ++i) {
+            glTexParameterIuiv(target_, wrapNames[i], &(wrapping[i]));
+        }
+        glBindTexture(target_, 0);
     }
 
     return *this;
@@ -134,9 +190,6 @@ Texture& Texture::operator=(Texture&& rhs) {
         format_ = rhs.format_;
         internalformat_ = rhs.internalformat_;
         dataType_ = rhs.dataType_;
-        filtering_ = rhs.filtering_;
-        numChannels_ = rhs.numChannels_;
-        byteSize_ = rhs.byteSize_;
 
         id_ = rhs.id_;
         pboBack_ = rhs.pboBack_;
@@ -158,6 +211,12 @@ Texture::~Texture() {
     }
 }
 
+size_t Texture::targetDims(GLenum target) {
+    const auto it = std::find_if(targetToDim.begin(), targetToDim.end(),
+                                 [&](auto& item) { return item.first == target; });
+    return it != targetToDim.end() ? it->second : size_t{0};
+}
+
 GLuint Texture::getID() const { return id_; }
 
 GLenum Texture::getTarget() const { return target_; }
@@ -168,33 +227,32 @@ GLenum Texture::getInternalFormat() const { return internalformat_; }
 
 GLenum Texture::getDataType() const { return dataType_; }
 
-GLenum Texture::getFiltering() const { return filtering_; }
+const DataFormatBase* Texture::getDataFormat() const {
+    return DataFormatBase::get(GLFormats::get(dataType_, channels(format_)));
+}
+
+GLenum Texture::getFiltering() const {
+    GLenum filtering;
+    bind();
+    glGetTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &filtering);
+    unbind();
+    return filtering;
+}
 
 GLint Texture::getLevel() const { return level_; }
 
-GLuint Texture::getNChannels() const { return numChannels_; }
+GLuint Texture::getNChannels() const { return channels(format_); }
 
-GLuint Texture::getSizeInBytes() const { return byteSize_; }
-
-void Texture::setTextureParameters(std::function<void(Texture*)> fun) {
-    bind();
-    fun(this);
-    unbind();
+GLuint Texture::getSizeInBytes() const {
+    return static_cast<GLuint>(channels(format_) * dataTypeSize(dataType_));
 }
 
-void Texture::bind() const {
-    glBindTexture(target_, id_);
-    LGL_ERROR;
-}
+void Texture::bind() const { glBindTexture(target_, id_); }
 
-void Texture::unbind() const {
-    glBindTexture(target_, 0);
-    LGL_ERROR;
-}
+void Texture::unbind() const { glBindTexture(target_, 0); }
 
 void Texture::setSwizzleMask(SwizzleMask mask) {
     auto swizzleMaskGL = utilgl::convertSwizzleMaskToGL(mask);
-
     bind();
     glTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
     unbind();
@@ -209,25 +267,52 @@ SwizzleMask Texture::getSwizzleMask() const {
     return utilgl::convertSwizzleMaskFromGL(swizzleMaskGL);
 }
 
+void Texture::setInterpolation(InterpolationType interpolation) {
+    auto filtering = utilgl::convertInterpolationToGL(interpolation);
+    bind();
+    glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &filtering);
+    glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &filtering);
+    unbind();
+}
+
+InterpolationType Texture::getInterpolation() const {
+    GLenum filtering;
+    bind();
+    glGetTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &filtering);
+    unbind();
+    return utilgl::convertInterpolationFromGL(filtering);
+}
+
+void Texture::setWrapping(util::span<const GLenum> wrapping) {
+    bind();
+    for (auto [i, wrap] : util::enumerate(wrapping)) {
+        glTexParameteri(target_, wrapNames[i], wrap);
+    }
+    unbind();
+}
+
+void Texture::getWrapping(util::span<GLenum> wrapping) const {
+    bind();
+    for (auto&& [i, wrap] : util::enumerate(wrapping)) {
+        glGetTexParameterIuiv(target_, wrapNames[i], &wrap);
+    }
+    unbind();
+}
+
 void Texture::bindFromPBO() const {
     if (!pboBackHasData_) {
         downloadToPBO();
     }
 
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER_ARB, pboBack_);
-    LGL_ERROR;
 }
 
-void Texture::bindToPBO() const {
-    glBindBuffer(GL_PIXEL_PACK_BUFFER_ARB, pboBack_);
-    LGL_ERROR;
-}
+void Texture::bindToPBO() const { glBindBuffer(GL_PIXEL_PACK_BUFFER_ARB, pboBack_); }
 
 void Texture::unbindFromPBO() const {
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
     // Invalidate PBO, as error might occur in download() otherwise.
     pboBackHasData_ = false;
-    LGL_ERROR;
 }
 
 void Texture::unbindToPBO() const {
@@ -298,61 +383,59 @@ void Texture::setupAsyncReadBackPBO() const {
 
 void Texture::setPBOAsInvalid() { pboBackIsSetup_ = false; }
 
-void Texture::setNChannels() {
-    switch (format_) {
-        case GL_STENCIL_INDEX:
+GLuint Texture::channels(GLenum format) {
+    switch (format) {
         case GL_DEPTH_COMPONENT:
+        case GL_STENCIL_INDEX:
         case GL_DEPTH_STENCIL:
         case GL_RED:
+        case GL_RED_INTEGER:
         case GL_GREEN:
+        case GL_GREEN_INTEGER:
         case GL_BLUE:
+        case GL_BLUE_INTEGER:
         case GL_ALPHA:
-            numChannels_ = 1;
-            break;
+            return 1;
+
+        case GL_RG:
+        case GL_RG_INTEGER:
+            return 2;
 
         case GL_RGB:
         case GL_BGR:
-            numChannels_ = 3;
-            break;
+        case GL_RGB_INTEGER:
+        case GL_BGR_INTEGER:
+            return 3;
 
         case GL_RGBA:
         case GL_BGRA:
-            numChannels_ = 4;
-            break;
-
+        case GL_RGBA_INTEGER:
+        case GL_BGRA_INTEGER:
+            return 4;
         default:
-            numChannels_ = 0;
-            LogError("Invalid format: " << format_);
+            throw OpenGLException("Invalid format specified", IVW_CONTEXT_CUSTOM("Texture"));
     }
 }
 
-void Texture::setSizeInBytes() {
-    GLuint dataTypeSize;
-
-    switch (dataType_) {
+size_t Texture::dataTypeSize(GLenum dataType) {
+    switch (dataType) {
         case GL_UNSIGNED_BYTE:
         case GL_BYTE:
-            dataTypeSize = 1;
-            break;
+            return 1;
 
         case GL_UNSIGNED_SHORT:
         case GL_SHORT:
         case GL_HALF_FLOAT:
-            dataTypeSize = 2;
-            break;
+            return 2;
 
         case GL_UNSIGNED_INT:
         case GL_INT:
         case GL_FLOAT:
-            dataTypeSize = 4;
-            break;
+            return 4;
 
         default:
-            dataTypeSize = 0;
-            LogError("Invalid data type: " << dataTypeSize);
+            throw OpenGLException("Invalid format specified", IVW_CONTEXT_CUSTOM("Texture"));
     }
-
-    byteSize_ = numChannels_ * dataTypeSize;
 }
 
 }  // namespace inviwo

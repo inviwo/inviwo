@@ -44,6 +44,8 @@
 #include <modules/opengl/buffer/framebufferobject.h>
 #include <modules/opengl/shader/shader.h>
 
+#include <array>
+
 namespace inviwo {
 
 /** \docpage{org.inviwo.LightVolumeGL, Light Volume}
@@ -72,21 +74,31 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    void propagation3DTextureParameterFunction(Texture*);
-
 protected:
     void process() override;
 
     struct PropagationParameters {
-        std::unique_ptr<FrameBufferObject> fbo;
-        std::unique_ptr<VolumeGL> vol;
+        FrameBufferObject fbo;
+        Texture3D tex;
         mat4 axisPermutation;
         mat4 axisPermutationINV;
         mat4 axisPermutationLight;
         vec4 permutedLightDirection;
 
-        PropagationParameters() : fbo(), vol() {}
+        PropagationParameters(vec4 borderColor)
+            : fbo{}, tex{makeTex(size3_t{1}, DataUInt8::id(), borderColor)} {}
         ~PropagationParameters() = default;
+
+        static Texture3D makeTex(size3_t dim, DataFormatId format, vec4 borderColor) {
+            Texture3D tex{dim, GLFormats::get(format), GL_LINEAR};
+            tex.bind();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+            glTexParameterfv(GL_TEXTURE_3D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(borderColor));
+            tex.initialize(nullptr);
+            return tex;
+        }
     };
 
     bool lightSourceChanged();
@@ -95,8 +107,6 @@ protected:
     void volumeSizeOptionChanged();
     void supportColoredLightChanged();
     void floatPrecisionChanged();
-
-    void borderColorTextureParameterFunction();
 
     void updatePermuationMatrices(const vec3&, PropagationParameters*, PropagationParameters*);
 
@@ -114,9 +124,12 @@ private:
     Shader propagationShader_;
     Shader mergeShader_;
 
-    PropagationParameters propParams_[2];
+    static const vec4 borderColor_;
+    vec4 lightColor_;
 
-    std::unique_ptr<FrameBufferObject> mergeFBO_;
+    std::array<PropagationParameters, 2> propParams_;
+
+    FrameBufferObject mergeFBO_;
     float blendingFactor_;
 
     bool internalVolumesInvalid_;
@@ -127,7 +140,6 @@ private:
     vec3 volumeDimInFRCP_;
     vec3 lightDir_;
     vec3 lightPos_;
-    vec4 lightColor_;
     LightSourceType lightType_;
     bool calculatedOnes_;
 };

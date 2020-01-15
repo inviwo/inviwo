@@ -57,8 +57,7 @@ class IVW_MODULE_OPENCL_API LayerCLGL : public LayerCLBase,
                                         public LayerRepresentation,
                                         public TextureObserver {
 public:
-    LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
-              std::shared_ptr<Texture2D> data, const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+    LayerCLGL(std::shared_ptr<Texture2D> data, LayerType type);
     virtual ~LayerCLGL();
     LayerCLGL(const LayerCLGL& rhs);
     virtual LayerCLGL* clone() const override;
@@ -113,13 +112,16 @@ public:
     virtual void setSwizzleMask(const SwizzleMask& mask) override;
     virtual SwizzleMask getSwizzleMask() const override;
 
+    virtual void setInterpolation(InterpolationType interpolation) override;
+    virtual InterpolationType getInterpolation() const override;
+
+    virtual void setWrapping(const Wrapping2D& wrapping) override;
+    virtual Wrapping2D getWrapping() const override;
+
 protected:
     static CLTextureSharingMap clImageSharingMap_;
     std::shared_ptr<Texture2D> texture_;      ///< Shared with LayerGL
     std::shared_ptr<cl::Image2DGL> clImage_;  ///< Potentially shared with other LayerCLGL
-
-    size2_t dimensions_;
-    SwizzleMask swizzleMask_;
 };
 
 }  // namespace inviwo

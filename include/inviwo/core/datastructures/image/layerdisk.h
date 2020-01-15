@@ -40,16 +40,20 @@ namespace inviwo {
  * \ingroup datastructures
  */
 class IVW_CORE_API LayerDisk : public LayerRepresentation,
-                               public DiskRepresentation<LayerRepresentation> {
+                               public DiskRepresentation<LayerRepresentation, LayerDisk> {
 public:
     explicit LayerDisk(size2_t dimensions, const DataFormatBase* format,
                        LayerType type = LayerType::Color,
-                       const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+                       const SwizzleMask& swizzleMask = swizzlemasks::rgba,
+                       InterpolationType interpolation = InterpolationType::Linear,
+                       const Wrapping2D& wrap = wrapping2d::clampAll);
     explicit LayerDisk(std::string url, size2_t dimensions, const DataFormatBase* format,
                        LayerType type = LayerType::Color,
-                       const SwizzleMask& swizzleMask = swizzlemasks::rgba);
-    LayerDisk(const LayerDisk& rhs);
-    LayerDisk& operator=(const LayerDisk& that);
+                       const SwizzleMask& swizzleMask = swizzlemasks::rgba,
+                       InterpolationType interpolation = InterpolationType::Linear,
+                       const Wrapping2D& wrap = wrapping2d::clampAll);
+    LayerDisk(const LayerDisk& rhs) = default;
+    LayerDisk& operator=(const LayerDisk& that) = default;
     virtual LayerDisk* clone() const override;
     virtual ~LayerDisk();
 
@@ -78,6 +82,12 @@ public:
     virtual void setSwizzleMask(const SwizzleMask& mask) override;
     virtual SwizzleMask getSwizzleMask() const override;
 
+    virtual void setInterpolation(InterpolationType interpolation) override;
+    virtual InterpolationType getInterpolation() const override;
+
+    virtual void setWrapping(const Wrapping2D& wrapping) override;
+    virtual Wrapping2D getWrapping() const override;
+
 private:
     // clang-format off
     [[deprecated("does not work for DiskRepresentation (deprecated since 2019-06-27)")]]
@@ -86,6 +96,8 @@ private:
 
     size2_t dimensions_;
     SwizzleMask swizzleMask_;
+    InterpolationType interpolation_;
+    Wrapping2D wrapping_;
 };
 
 }  // namespace inviwo

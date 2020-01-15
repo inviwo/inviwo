@@ -29,35 +29,29 @@
 
 #include <modules/opencl/volume/volumeclgl.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 CLTexture3DSharingMap VolumeCLGL::clVolumeSharingMap_;
 
-VolumeCLGL::VolumeCLGL(const DataFormatBase* format, Texture3D* data)
-    : VolumeCLBase()
-    , VolumeRepresentation(format)
-    , dimensions_(data ? data->getDimensions() : size3_t(64))
-    , texture_(data)
-    , swizzleMask_(data ? data->getSwizzleMask() : swizzlemasks::rgba) {
+VolumeCLGL::VolumeCLGL(Texture3D* data)
+    : VolumeCLBase(), VolumeRepresentation(data->getDataFormat()), texture_(data) {
+
+    IVW_ASSERT(texture_, "The texture should never be nullptr.");
+
     initialize();
 }
 
-VolumeCLGL::VolumeCLGL(const size3_t& dimensions, const DataFormatBase* format,
-                       std::shared_ptr<Texture3D> data)
-    : VolumeCLBase()
-    , VolumeRepresentation(format)
-    , dimensions_(dimensions)
-    , texture_(data)
-    , swizzleMask_(data ? data->getSwizzleMask() : swizzlemasks::rgba) {
+VolumeCLGL::VolumeCLGL(std::shared_ptr<Texture3D> data)
+    : VolumeCLBase(), VolumeRepresentation(data->getDataFormat()), texture_(data) {
+
+    IVW_ASSERT(texture_, "The texture should never be nullptr.");
+
     initialize();
 }
 
 VolumeCLGL::VolumeCLGL(const VolumeCLGL& rhs)
-    : VolumeCLBase(rhs)
-    , VolumeRepresentation(rhs)
-    , dimensions_(rhs.dimensions_)
-    , texture_(rhs.texture_->clone())
-    , swizzleMask_(rhs.swizzleMask_) {
+    : VolumeCLBase(rhs), VolumeRepresentation(rhs), texture_(rhs.texture_->clone()) {
     initialize();
 }
 
@@ -80,16 +74,25 @@ void VolumeCLGL::initialize() {
     }
 }
 
-const size3_t& VolumeCLGL::getDimensions() const { return dimensions_; }
+const size3_t& VolumeCLGL::getDimensions() const { return texture_->getDimensions(); }
 
-void VolumeCLGL::setSwizzleMask(const SwizzleMask& mask) {
-    swizzleMask_ = mask;
-    if (texture_) {
-        texture_->setSwizzleMask(mask);
-    }
+void VolumeCLGL::setSwizzleMask(const SwizzleMask& mask) { texture_->setSwizzleMask(mask); }
+
+SwizzleMask VolumeCLGL::getSwizzleMask() const { return texture_->getSwizzleMask(); }
+
+void VolumeCLGL::setInterpolation(InterpolationType interpolation) {
+    texture_->setInterpolation(interpolation);
 }
 
-SwizzleMask VolumeCLGL::getSwizzleMask() const { return swizzleMask_; }
+InterpolationType VolumeCLGL::getInterpolation() const { return texture_->getInterpolation(); }
+
+void VolumeCLGL::setWrapping(const Wrapping3D& wrapping) {
+    texture_->setWrapping(utilgl::convertWrappingToGL(wrapping));
+}
+
+Wrapping3D VolumeCLGL::getWrapping() const {
+    return utilgl::convertWrappingFromGL(texture_->getWrapping());
+}
 
 VolumeCLGL* VolumeCLGL::clone() const { return new VolumeCLGL(*this); }
 
@@ -150,11 +153,6 @@ void VolumeCLGL::releaseGLObject(
 std::type_index VolumeCLGL::getTypeIndex() const { return std::type_index(typeid(VolumeCLGL)); }
 
 void VolumeCLGL::setDimensions(size3_t dimensions) {
-    if (dimensions == dimensions_) {
-        return;
-    }
-    dimensions_ = dimensions;
-
     // Make sure that the OpenCL layer is deleted before resizing the texture
     // By observing the texture we will make sure that the OpenCL layer is
     // deleted and reattached after resizing is done.

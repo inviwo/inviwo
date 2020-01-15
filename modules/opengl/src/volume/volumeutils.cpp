@@ -52,13 +52,13 @@ void setShaderUniforms(Shader& shader, const Volume& volume, const std::string& 
     shader.setUniform(samplerID + ".worldToTexture", ct.getWorldToTextureMatrix());
     shader.setUniform(samplerID + ".textureToWorld", ct.getTextureToWorldMatrix());
 
-    auto textureToWorldNormalMatrix = glm::inverseTranspose(ct.getTextureToWorldMatrix());
+    const auto textureToWorldNormalMatrix = glm::inverseTranspose(ct.getTextureToWorldMatrix());
     shader.setUniform(samplerID + ".textureToWorldNormalMatrix", textureToWorldNormalMatrix);
 
     shader.setUniform(samplerID + ".textureToIndex", ct.getTextureToIndexMatrix());
     shader.setUniform(samplerID + ".indexToTexture", ct.getIndexToTextureMatrix());
 
-    auto gradientSpacing = volume.getWorldSpaceGradientSpacing();
+    const auto gradientSpacing = volume.getWorldSpaceGradientSpacing();
     // Transform the world space gradient spacing to texture space.
     // Wold space gradient spacing is given by:
     // mat3{ gradientSpacing.x         0                     0
@@ -69,42 +69,40 @@ void setShaderUniforms(Shader& shader, const Volume& volume, const std::string& 
     shader.setUniform(samplerID + ".textureSpaceGradientSpacing",
                       mat3(glm::scale(ct.getWorldToTextureMatrix(), gradientSpacing)));
 
-    vec3 dimF = static_cast<vec3>(volume.getDimensions());
+    const vec3 dimF = static_cast<vec3>(volume.getDimensions());
     shader.setUniform(samplerID + ".dimensions", dimF);
     shader.setUniform(samplerID + ".reciprocalDimensions", vec3(1.f) / dimF);
 
     shader.setUniform(samplerID + ".worldSpaceGradientSpacing", gradientSpacing);
 
-    dvec2 dataRange = volume.dataMap_.dataRange;
-    DataMapper defaultRange(volume.getDataFormat());
+    const dvec2 dataRange = volume.dataMap_.dataRange;
+    const DataMapper defaultRange(volume.getDataFormat());
 
-    double typescale = 1.0 - GLFormats::get(volume.getDataFormat()->getId()).scaling;
-    defaultRange.dataRange = defaultRange.dataRange * typescale;
+    const double invRange = 1.0 / (dataRange.y - dataRange.x);
+    const double defaultToDataRange =
+        (defaultRange.dataRange.y - defaultRange.dataRange.x) * invRange;
+    const double defaultToDataOffset = (dataRange.x - defaultRange.dataRange.x) /
+                                       (defaultRange.dataRange.y - defaultRange.dataRange.x);
 
     double scalingFactor = 1.0;
     double signedScalingFactor = 1.0;
     double offset = 0.0;
     double signedOffset = 0.0;
 
-    double invRange = 1.0 / (dataRange.y - dataRange.x);
-    double defaultToDataRange = (defaultRange.dataRange.y - defaultRange.dataRange.x) * invRange;
-    double defaultToDataOffset = (dataRange.x - defaultRange.dataRange.x) /
-                                 (defaultRange.dataRange.y - defaultRange.dataRange.x);
-
     switch (GLFormats::get(volume.getDataFormat()->getId()).normalization) {
-        case GLFormats::Normalization::None:
+        case utilgl::Normalization::None:
             scalingFactor = invRange;
             offset = -dataRange.x;
             signedScalingFactor = scalingFactor;
             signedOffset = offset;
             break;
-        case GLFormats::Normalization::Normalized:
+        case utilgl::Normalization::Normalized:
             scalingFactor = defaultToDataRange;
             offset = -defaultToDataOffset;
             signedScalingFactor = scalingFactor;
             signedOffset = offset;
             break;
-        case GLFormats::Normalization::SignNormalized:
+        case utilgl::Normalization::SignNormalized:
             scalingFactor = 0.5 * defaultToDataRange;
             offset = 1.0 - 2 * defaultToDataOffset;
             signedScalingFactor = defaultToDataRange;

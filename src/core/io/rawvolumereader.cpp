@@ -174,9 +174,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
         volume->setOffset(offset);
         volume->setWorldMatrix(wtm);
         auto vd = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
-
-        auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile_, byteOffset_, dimensions_,
-                                                           littleEndian_, format_);
+        auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile_, byteOffset_, littleEndian_);
         vd->setLoader(loader.release());
         volume->addRepresentation(vd);
 

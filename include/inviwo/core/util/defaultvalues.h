@@ -51,6 +51,16 @@ template <typename T>
 struct InviwoDefaults {};
 
 template <>
+struct InviwoDefaults<char> {
+    static InviwoDefaultData<char> get() { return {"Char", uvec2(1, 1), 0, -100, 100, 1}; }
+};
+
+template <>
+struct InviwoDefaults<unsigned char> {
+    static InviwoDefaultData<unsigned char> get() { return {"UChar", uvec2(1, 1), 0, 0, 100, 1}; }
+};
+
+template <>
 struct InviwoDefaults<int> {
     static InviwoDefaultData<int> get() { return {"Int", uvec2(1, 1), 0, -100, 100, 1}; }
 };

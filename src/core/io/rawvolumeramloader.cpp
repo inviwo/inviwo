@@ -29,33 +29,45 @@
 
 #include <inviwo/core/io/rawvolumeramloader.h>
 
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+
 namespace inviwo {
 
-RawVolumeRAMLoader::RawVolumeRAMLoader(const std::string& rawFile, size_t offset,
-                                       size3_t dimensions, bool littleEndian,
-                                       const DataFormatBase* format)
-    : rawFile_(rawFile)
-    , offset_(offset)
-    , dimensions_(dimensions)
-    , littleEndian_(littleEndian)
-    , format_(format) {}
+RawVolumeRAMLoader::RawVolumeRAMLoader(const std::string& rawFile, size_t offset, bool littleEndian)
+    : rawFile_(rawFile), offset_(offset), littleEndian_(littleEndian) {}
 
 RawVolumeRAMLoader* RawVolumeRAMLoader::clone() const { return new RawVolumeRAMLoader(*this); }
 
-std::shared_ptr<VolumeRepresentation> RawVolumeRAMLoader::createRepresentation() const {
-    return dispatching::dispatch<std::shared_ptr<VolumeRepresentation>, dispatching::filter::All>(
-        format_->getId(), *this);
+std::shared_ptr<VolumeRepresentation> RawVolumeRAMLoader::createRepresentation(
+    const VolumeRepresentation& src) const {
+
+    const auto size = glm::compMul(src.getDimensions()) * src.getDataFormat()->getSize();
+    auto data = std::make_unique<char[]>(size);
+    util::readBytesIntoBuffer(rawFile_, offset_, size, littleEndian_,
+                              src.getDataFormat()->getSize(), data.get());
+
+    auto volumeRAM =
+        createVolumeRAM(src.getDimensions(), src.getDataFormat(), data.get(), src.getSwizzleMask(),
+                        src.getInterpolation(), src.getWrapping());
+    data.release();
+
+    return volumeRAM;
 }
 
-void RawVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const {
+void RawVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
+                                              const VolumeRepresentation& src) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
-    if (dimensions_ != volumeDst->getDimensions()) {
-        throw Exception("Mismatching volume dimensions, can't update", IVW_CONTEXT);
+    if (src.getDimensions() != volumeDst->getDimensions()) {
+        volumeDst->setDimensions(src.getDimensions());
     }
 
-    std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z;
-    util::readBytesIntoBuffer(rawFile_, offset_, size * format_->getSize(), littleEndian_,
-                              format_->getSize(), volumeDst->getData());
+    const auto size = glm::compMul(src.getDimensions());
+    util::readBytesIntoBuffer(rawFile_, offset_, size * src.getDataFormat()->getSize(),
+                              littleEndian_, src.getDataFormat()->getSize(), volumeDst->getData());
+
+    volumeDst->setSwizzleMask(src.getSwizzleMask());
+    volumeDst->setInterpolation(src.getInterpolation());
+    volumeDst->setWrapping(src.getWrapping());
 }
 }  // namespace inviwo

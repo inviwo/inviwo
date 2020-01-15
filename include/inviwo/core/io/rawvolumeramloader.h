@@ -35,7 +35,7 @@
 #include <inviwo/core/io/bytereaderutil.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/datastructures/diskrepresentation.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>
 
 namespace inviwo {
 
@@ -47,40 +47,17 @@ namespace inviwo {
 
 class IVW_CORE_API RawVolumeRAMLoader : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
-    RawVolumeRAMLoader(const std::string& rawFile, size_t offset, size3_t dimensions,
-                       bool littleEndian, const DataFormatBase* format);
+    RawVolumeRAMLoader(const std::string& rawFile, size_t offset, bool littleEndian);
     virtual RawVolumeRAMLoader* clone() const override;
-    virtual std::shared_ptr<VolumeRepresentation> createRepresentation() const override;
-    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const override;
-
-    using type = std::shared_ptr<VolumeRAM>;
-
-    template <typename Result, typename T>
-    std::shared_ptr<VolumeRAM> operator()() const {
-        using F = typename T::type;
-
-        std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z;
-        auto data = std::make_unique<F[]>(size);
-
-        if (!data) {
-            throw DataReaderException(
-                "Error: Could not allocate memory for loading raw file: " + rawFile_, IVW_CONTEXT);
-        }
-
-        util::readBytesIntoBuffer(rawFile_, offset_, size * format_->getSize(), littleEndian_,
-                                  format_->getSize(), data.get());
-
-        auto repr = std::make_shared<VolumeRAMPrecision<F>>(data.get(), dimensions_);
-        data.release();
-        return repr;
-    }
+    virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
+        const VolumeRepresentation& src) const override;
+    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
+                                      const VolumeRepresentation& src) const override;
 
 private:
     std::string rawFile_;
     size_t offset_;
-    size3_t dimensions_;
     bool littleEndian_;
-    const DataFormatBase* format_;
 };
 
 }  // namespace inviwo

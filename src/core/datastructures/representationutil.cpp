@@ -96,7 +96,8 @@ private:
         template <typename Result, typename Format>
         Result operator()(const Layer* layer) {
             return std::make_unique<LayerRAMPrecision<typename Format::type>>(
-                layer->getDimensions(), layer->getLayerType(), layer->getSwizzleMask());
+                layer->getDimensions(), layer->getLayerType(), layer->getSwizzleMask(),
+                layer->getInterpolation(), layer->getWrapping());
         }
     };
 };
@@ -116,7 +117,8 @@ private:
         template <typename Result, typename Format>
         Result operator()(const Volume* volume) {
             return std::make_unique<VolumeRAMPrecision<typename Format::type>>(
-                volume->getDimensions(), volume->getSwizzleMask());
+                volume->getDimensions(), volume->getSwizzleMask(), volume->getInterpolation(),
+                volume->getWrapping());
         }
     };
 };

@@ -51,7 +51,9 @@ public:
     explicit Layer(size2_t defaultDimensions = size2_t(8, 8),
                    const DataFormatBase* defaultFormat = DataVec4UInt8::get(),
                    LayerType type = LayerType::Color,
-                   const SwizzleMask& defaultSwizzleMask = swizzlemasks::rgba);
+                   const SwizzleMask& defaultSwizzleMask = swizzlemasks::rgba,
+                   InterpolationType interpolation = InterpolationType::Linear,
+                   const Wrapping2D& wrapping = wrapping2d::clampAll);
     explicit Layer(std::shared_ptr<LayerRepresentation>);
     Layer(const Layer&) = default;
     Layer& operator=(const Layer& that) = default;
@@ -89,6 +91,12 @@ public:
     void setSwizzleMask(const SwizzleMask& mask);
     SwizzleMask getSwizzleMask() const;
 
+    void setInterpolation(InterpolationType interpolation);
+    InterpolationType getInterpolation() const;
+
+    void setWrapping(const Wrapping2D& wrapping);
+    Wrapping2D getWrapping() const;
+
     /**
      * Copy and resize the representation of this onto the representations of target.
      * Does not change the dimensions of target.
@@ -111,6 +119,8 @@ private:
     size2_t defaultDimensions_;
     const DataFormatBase* defaultDataFormat_;
     SwizzleMask defaultSwizzleMask_;
+    InterpolationType defaultInterpolation_;
+    Wrapping2D defaultWrapping_;
 };
 
 // https://docs.microsoft.com/en-us/cpp/cpp/general-rules-and-limitations?view=vs-2017

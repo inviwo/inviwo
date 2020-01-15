@@ -34,25 +34,28 @@ namespace inviwo {
 
 std::shared_ptr<VolumeGL> VolumeRAM2GLConverter::createFrom(
     std::shared_ptr<const VolumeRAM> volumeRAM) const {
-    auto volume = std::make_shared<VolumeGL>(volumeRAM->getDimensions(), volumeRAM->getDataFormat(),
-                                             false, volumeRAM->getSwizzleMask());
+    auto volume = std::make_shared<VolumeGL>(
+        volumeRAM->getDimensions(), volumeRAM->getDataFormat(), volumeRAM->getSwizzleMask(),
+        volumeRAM->getInterpolation(), volumeRAM->getWrapping(), false);
     volume->getTexture()->initialize(volumeRAM->getData());
     return volume;
 }
 
 void VolumeRAM2GLConverter::update(std::shared_ptr<const VolumeRAM> volumeSrc,
                                    std::shared_ptr<VolumeGL> volumeDst) const {
-    if (volumeSrc->getDimensions() != volumeDst->getDimensions()) {
-        volumeDst->setDimensions(volumeSrc->getDimensions());
-    }
-    volumeDst->getTexture()->upload(volumeSrc->getData());
+    volumeDst->setDimensions(volumeSrc->getDimensions());
     volumeDst->setSwizzleMask(volumeSrc->getSwizzleMask());
+    volumeDst->setInterpolation(volumeSrc->getInterpolation());
+    volumeDst->setWrapping(volumeSrc->getWrapping());
+
+    volumeDst->getTexture()->upload(volumeSrc->getData());
 }
 
 std::shared_ptr<VolumeRAM> VolumeGL2RAMConverter::createFrom(
     std::shared_ptr<const VolumeGL> volumeGL) const {
     auto volume = createVolumeRAM(volumeGL->getDimensions(), volumeGL->getDataFormat(), nullptr,
-                                  volumeGL->getSwizzleMask());
+                                  volumeGL->getSwizzleMask(), volumeGL->getInterpolation(),
+                                  volumeGL->getWrapping());
 
     if (volume) {
         volumeGL->getTexture()->download(volume->getData());
@@ -66,12 +69,12 @@ std::shared_ptr<VolumeRAM> VolumeGL2RAMConverter::createFrom(
 
 void VolumeGL2RAMConverter::update(std::shared_ptr<const VolumeGL> volumeSrc,
                                    std::shared_ptr<VolumeRAM> volumeDst) const {
-    if (volumeSrc->getDimensions() != volumeDst->getDimensions()) {
-        volumeDst->setDimensions(volumeSrc->getDimensions());
-    }
+    volumeDst->setDimensions(volumeSrc->getDimensions());
+    volumeDst->setSwizzleMask(volumeSrc->getSwizzleMask());
+    volumeDst->setInterpolation(volumeSrc->getInterpolation());
+    volumeDst->setWrapping(volumeSrc->getWrapping());
 
     volumeSrc->getTexture()->download(volumeDst->getData());
-    volumeDst->setSwizzleMask(volumeSrc->getSwizzleMask());
 }
 
 }  // namespace inviwo

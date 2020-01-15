@@ -32,36 +32,26 @@
 namespace inviwo {
 
 LayerDisk::LayerDisk(size2_t dimensions, const DataFormatBase* format, LayerType type,
-                     const SwizzleMask& swizzleMask)
+                     const SwizzleMask& swizzleMask, InterpolationType interpolation,
+                     const Wrapping2D& wrapping)
     : LayerRepresentation(type, format)
-    , DiskRepresentation<LayerRepresentation>()
+    , DiskRepresentation<LayerRepresentation, LayerDisk>()
     , dimensions_(dimensions)
-    , swizzleMask_(swizzleMask) {}
+    , swizzleMask_(swizzleMask)
+    , interpolation_{interpolation}
+    , wrapping_{wrapping} {}
 
 LayerDisk::LayerDisk(std::string url, size2_t dimensions, const DataFormatBase* format,
-                     LayerType type, const SwizzleMask& swizzleMask)
+                     LayerType type, const SwizzleMask& swizzleMask,
+                     InterpolationType interpolation, const Wrapping2D& wrapping)
     : LayerRepresentation(type, format)
-    , DiskRepresentation<LayerRepresentation>(url)
+    , DiskRepresentation<LayerRepresentation, LayerDisk>(url)
     , dimensions_(dimensions)
-    , swizzleMask_(swizzleMask) {}
+    , swizzleMask_(swizzleMask)
+    , interpolation_{interpolation}
+    , wrapping_{wrapping} {}
 
-LayerDisk::LayerDisk(const LayerDisk& rhs)
-    : LayerRepresentation(rhs)
-    , DiskRepresentation<LayerRepresentation>(rhs)
-    , dimensions_(rhs.dimensions_)
-    , swizzleMask_(rhs.swizzleMask_) {}
-
-LayerDisk& LayerDisk::operator=(const LayerDisk& that) {
-    if (this != &that) {
-        LayerRepresentation::operator=(that);
-        DiskRepresentation<LayerRepresentation>::operator=(that);
-        dimensions_ = that.dimensions_;
-        swizzleMask_ = that.swizzleMask_;
-    }
-    return *this;
-}
-
-LayerDisk::~LayerDisk() {}
+LayerDisk::~LayerDisk() = default;
 
 LayerDisk* LayerDisk::clone() const { return new LayerDisk(*this); }
 
@@ -78,5 +68,15 @@ std::type_index LayerDisk::getTypeIndex() const { return std::type_index(typeid(
 void LayerDisk::setSwizzleMask(const SwizzleMask& mask) { swizzleMask_ = mask; }
 
 SwizzleMask LayerDisk::getSwizzleMask() const { return swizzleMask_; }
+
+void LayerDisk::setInterpolation(InterpolationType interpolation) {
+    interpolation_ = interpolation;
+}
+
+InterpolationType LayerDisk::getInterpolation() const { return interpolation_; }
+
+void LayerDisk::setWrapping(const Wrapping2D& wrapping) { wrapping_ = wrapping; }
+
+Wrapping2D LayerDisk::getWrapping() const { return wrapping_; }
 
 }  // namespace inviwo

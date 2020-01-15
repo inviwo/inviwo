@@ -86,57 +86,10 @@ public:
     virtual NiftiVolumeRAMLoader* clone() const override;
     virtual ~NiftiVolumeRAMLoader() = default;
 
-    virtual std::shared_ptr<VolumeRepresentation> createRepresentation() const override;
-    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const override;
-
-    using type = std::shared_ptr<VolumeRAM>;
-
-    template <typename Result, typename T>
-    std::shared_ptr<VolumeRAM> operator()() const {
-        using F = typename T::type;
-
-        const std::size_t size = region_size[0] * region_size[1] * region_size[2] * region_size[3] *
-                                 region_size[4] * region_size[5] * region_size[6];
-        auto data = std::make_unique<F[]>(size);
-
-        if (!data) {
-            throw DataReaderException(
-                "Error: Could not allocate memory for loading raw file: " + std::string(nim->fname),
-                IVW_CONTEXT);
-        }
-        auto dataPointer = reinterpret_cast<void*>(data.get());
-        auto readBytes =
-            nifti_read_subregion_image(nim.get(), const_cast<int*>(start_index.data()),
-                                       const_cast<int*>(region_size.data()), &dataPointer);
-        if (readBytes < 0) {
-            throw DataReaderException(
-                "Error: Could not read data from file: " + std::string(nim->fname), IVW_CONTEXT);
-        }
-        // Flip data along axes if necessary
-        if (flipAxis[0] || flipAxis[1] || flipAxis[2]) {
-            auto tmp = std::make_unique<F[]>(size);
-            std::memcpy(tmp.get(), dataPointer, size * sizeof(F));
-            auto dim = size3_t{region_size[0], region_size[1], region_size[2]};
-            util::IndexMapper3D mapper(dim);
-            for (auto z = 0; z < region_size[2]; ++z) {
-                auto idz = flipAxis[2] ? region_size[2] - 1 - z : z;
-                for (auto y = 0; y < region_size[1]; ++y) {
-                    auto idy = flipAxis[1] ? region_size[1] - 1 - y : y;
-                    for (auto x = 0; x < region_size[0]; ++x) {
-                        auto idx = flipAxis[0] ? region_size[0] - 1 - x : x;
-                        auto from = mapper(x, y, z);
-                        auto to = mapper(idx, idy, idz);
-                        data[to] = tmp[from];
-                    }
-                }
-            }
-        }
-
-        auto repr = std::make_shared<VolumeRAMPrecision<F>>(
-            data.get(), size3_t{region_size[0], region_size[1], region_size[2]});
-        data.release();
-        return repr;
-    }
+    virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
+        const VolumeRepresentation& src) const override;
+    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
+                                      const VolumeRepresentation& src) const override;
 
 private:
     std::array<int, 7> start_index;

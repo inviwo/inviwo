@@ -35,12 +35,11 @@
 
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/buffer/framebufferobject.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
+
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
@@ -53,14 +52,12 @@ public:
     static const ProcessorInfo processorInfo_;
 
     virtual void initializeResources() override;
-
-protected:
     virtual void process() override;
 
+protected:
     ImageOutport outport_;
-    std::shared_ptr<Image> image_;
 
-    IntVec2Property size_;
+    IntSize2Property size_;
 
     FloatMinMaxProperty xRange_;
     FloatMinMaxProperty yRange_;
@@ -69,7 +66,6 @@ protected:
     StringProperty yValue_;
 
     Shader shader_;
-    FrameBufferObject fbo_;
 };
 
 }  // namespace inviwo

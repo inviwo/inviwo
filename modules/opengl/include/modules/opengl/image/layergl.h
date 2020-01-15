@@ -46,10 +46,14 @@ class Texture2D;
  */
 class IVW_MODULE_OPENGL_API LayerGL : public LayerRepresentation {
 public:
+    explicit LayerGL(std::shared_ptr<Texture2D> tex, LayerType type = LayerType::Color);
+
     explicit LayerGL(size2_t dimensions = size2_t(256, 256), LayerType type = LayerType::Color,
                      const DataFormatBase* format = DataVec4UInt8::get(),
-                     std::shared_ptr<Texture2D> tex = std::shared_ptr<Texture2D>(nullptr),
-                     const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+                     const SwizzleMask& swizzleMask = swizzlemasks::rgba,
+                     InterpolationType interpolation = InterpolationType::Linear,
+                     const Wrapping2D& wrapping = wrapping2d::clampAll);
+
     LayerGL(const LayerGL& rhs);
     LayerGL& operator=(const LayerGL& rhs);
     virtual ~LayerGL();
@@ -58,14 +62,14 @@ public:
     virtual void setDimensions(size2_t dimensions) override;
     virtual const size2_t& getDimensions() const override;
 
-    /**
-     * \brief update the swizzle mask of the channels for sampling the layer
-     * Needs to be overloaded by child classes.
-     *
-     * @param mask    new swizzle mask
-     */
     virtual void setSwizzleMask(const SwizzleMask& mask) override;
     virtual SwizzleMask getSwizzleMask() const override;
+
+    virtual void setInterpolation(InterpolationType interpolation) override;
+    virtual InterpolationType getInterpolation() const override;
+
+    virtual void setWrapping(const Wrapping2D& wrapping) override;
+    virtual Wrapping2D getWrapping() const override;
 
     void bindTexture(GLenum texUnit) const;
     void bindTexture(const TextureUnit& texUnit) const;
@@ -77,10 +81,8 @@ public:
     virtual std::type_index getTypeIndex() const override final;
 
 private:
-    size2_t dimensions_;
     std::shared_ptr<Texture2D> texture_;  // Can be shared
     mutable GLenum texUnit_;
-    SwizzleMask swizzleMask_;
 };
 
 }  // namespace inviwo

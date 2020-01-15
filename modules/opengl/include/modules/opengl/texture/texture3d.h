@@ -39,11 +39,18 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Texture3D : public Texture {
 public:
-    Texture3D(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
+    Texture3D(size3_t dimensions, GLFormat glFormat, GLenum filtering,
+              const SwizzleMask& swizzleMask = swizzlemasks::rgba,
+              const std::array<GLenum, 3>& wrapping = {GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE,
+                                                       GL_CLAMP_TO_EDGE},
+              GLint level = 0);
     Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
-              GLenum filtering, GLint level = 0);
+              GLenum filtering, const SwizzleMask& swizzleMask = swizzlemasks::rgba,
+              const std::array<GLenum, 3>& wrapping = {GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE,
+                                                       GL_CLAMP_TO_EDGE},
+              GLint level = 0);
     Texture3D(const Texture3D& other);
-    Texture3D(Texture3D&& other);  // move constructor
+    Texture3D(Texture3D&& other);
     Texture3D& operator=(const Texture3D& other);
     Texture3D& operator=(Texture3D&& other);
     virtual ~Texture3D() = default;
@@ -60,8 +67,8 @@ public:
 
     const size3_t& getDimensions() const { return dimensions_; }
 
-protected:
-    static void default3DTextureParameterFunction(Texture*);
+    void setWrapping(const std::array<GLenum, 3>& wrapping);
+    std::array<GLenum, 3> getWrapping() const;
 
 private:
     size3_t dimensions_;

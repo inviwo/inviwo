@@ -37,7 +37,6 @@
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 
 namespace inviwo {
@@ -61,23 +60,17 @@ public:
 class IVW_MODULE_CIMG_API TIFFStackVolumeRAMLoader
     : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
-    TIFFStackVolumeRAMLoader(VolumeDisk* volumeDisk) : volumeDisk_(volumeDisk){};
+    TIFFStackVolumeRAMLoader(const std::string& sourceFile);
     virtual TIFFStackVolumeRAMLoader* clone() const override;
     virtual ~TIFFStackVolumeRAMLoader() = default;
 
-    virtual std::shared_ptr<VolumeRepresentation> createRepresentation() const override;
-    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const override;
-
-    using type = std::shared_ptr<VolumeRAM>;
-    template <typename ReturnType, typename T>
-    std::shared_ptr<VolumeRAM> operator()(void* data) const {
-        using F = typename T::type;
-        return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(data),
-                                                       volumeDisk_->getDimensions());
-    }
+    virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
+        const VolumeRepresentation& src) const override;
+    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
+                                      const VolumeRepresentation& src) const override;
 
 private:
-    VolumeDisk* volumeDisk_;
+    std::string sourceFile_;
 };
 
 }  // namespace inviwo

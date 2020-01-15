@@ -49,7 +49,7 @@ std::shared_ptr<Volume> CImgVolumeReader::readData(const std::string& filePath) 
     }
 
     auto volumeDisk = std::make_shared<VolumeDisk>(filePath);
-    volumeDisk->setLoader(new CImgVolumeRAMLoader(volumeDisk.get()));
+    volumeDisk->setLoader(new CImgVolumeRAMLoader(filePath));
     return std::make_shared<Volume>(volumeDisk);
 }
 
@@ -62,20 +62,20 @@ void CImgVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::st
     }
 }
 
-CImgVolumeRAMLoader::CImgVolumeRAMLoader(VolumeDisk* volumeDisk) : volumeDisk_(volumeDisk) {}
+CImgVolumeRAMLoader::CImgVolumeRAMLoader(const std::string& sourceFile) : sourceFile_{sourceFile} {}
 
 CImgVolumeRAMLoader* CImgVolumeRAMLoader::clone() const { return new CImgVolumeRAMLoader(*this); }
 
-std::shared_ptr<VolumeRepresentation> CImgVolumeRAMLoader::createRepresentation() const {
-    void* data = nullptr;
+std::shared_ptr<VolumeRepresentation> CImgVolumeRAMLoader::createRepresentation(
+    const VolumeRepresentation& src) const {
 
-    size3_t dimensions = volumeDisk_->getDimensions();
+    size3_t dimensions = src.getDimensions();
     DataFormatId formatId = DataFormatId::NotSpecialized;
 
-    std::string fileName = volumeDisk_->getSourceFile();
+    std::string fileName = sourceFile_;
 
     if (!filesystem::fileExists(fileName)) {
-        std::string newPath = filesystem::addBasePath(fileName);
+        const auto newPath = filesystem::addBasePath(fileName);
 
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
@@ -84,23 +84,25 @@ std::shared_ptr<VolumeRepresentation> CImgVolumeRAMLoader::createRepresentation(
         }
     }
 
-    data = cimgutil::loadVolumeData(nullptr, fileName, dimensions, formatId);
-    volumeDisk_->setDimensions(dimensions);
+    void* data = cimgutil::loadVolumeData(nullptr, fileName, dimensions, formatId);
+    auto volumeRAM =
+        createVolumeRAM(dimensions, DataFormatBase::get(formatId), data, src.getSwizzleMask(),
+                        src.getInterpolation(), src.getWrapping());
 
-    return dispatching::dispatch<std::shared_ptr<VolumeRepresentation>, dispatching::filter::All>(
-        volumeDisk_->getDataFormat()->getId(), *this, data);
+    return volumeRAM;
 }
 
-void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const {
+void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
+                                               const VolumeRepresentation& src) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
-    size3_t dimensions = volumeDisk_->getDimensions();
+    size3_t dimensions = src.getDimensions();
     DataFormatId formatId = DataFormatId::NotSpecialized;
 
-    std::string fileName = volumeDisk_->getSourceFile();
+    std::string fileName = sourceFile_;
 
     if (!filesystem::fileExists(fileName)) {
-        std::string newPath = filesystem::addBasePath(fileName);
+        const auto newPath = filesystem::addBasePath(fileName);
 
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
@@ -110,7 +112,6 @@ void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentat
     }
 
     cimgutil::loadVolumeData(volumeDst->getData(), fileName, dimensions, formatId);
-    volumeDisk_->setDimensions(dimensions);
 }
 
 }  // namespace inviwo

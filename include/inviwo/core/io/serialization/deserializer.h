@@ -43,6 +43,8 @@
 #include <list>
 #include <istream>
 #include <bitset>
+#include <array>
+#include <vector>
 
 namespace inviwo {
 
@@ -124,6 +126,10 @@ public:
 
     template <typename T>
     void deserialize(const std::string& key, std::list<T>& sContainer,
+                     const std::string& itemKey = "item");
+
+    template <typename T, size_t N>
+    void deserialize(const std::string& key, std::array<T, N>& sContainer,
                      const std::string& itemKey = "item");
 
     /**
@@ -922,6 +928,34 @@ void Deserializer::deserialize(const std::string& key, std::list<T>& container,
                 container.push_back(item);
             } else {
                 deserialize(itemKey, *std::next(container.begin(), i));
+            }
+        } catch (...) {
+            handleError(IVW_CONTEXT);
+        }
+        i++;
+    }
+}
+
+template <typename T, size_t N>
+void Deserializer::deserialize(const std::string& key, std::array<T, N>& cont,
+                               const std::string& itemKey) {
+
+    NodeSwitch vectorNodeSwitch(*this, key);
+    if (!vectorNodeSwitch) return;
+
+    unsigned int i = 0;
+    TxEIt child(itemKey);
+
+    for (child = child.begin(rootElement_); child != child.end(); ++child) {
+        // In the next deserialization call do net fetch the "child" since we are looping...
+        // hence the "false" as the last arg.
+        NodeSwitch elementNodeSwitch(*this, &(*child), false);
+        try {
+            if (i < cont.size()) {
+                deserialize(itemKey, cont[i]);
+            } else {
+                throw SerializationException("To many elements found for std::array", IVW_CONTEXT,
+                                             key);
             }
         } catch (...) {
             handleError(IVW_CONTEXT);

@@ -46,9 +46,13 @@ public:
 
     explicit LayerRAMPrecision(size2_t dimensions = size2_t(8, 8),
                                LayerType type = LayerType::Color,
-                               const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+                               const SwizzleMask& swizzleMask = swizzlemasks::rgba,
+                               InterpolationType interpolation = InterpolationType::Linear,
+                               const Wrapping2D& wrap = wrapping2d::clampAll);
     LayerRAMPrecision(T* data, size2_t dimensions, LayerType type = LayerType::Color,
-                      const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+                      const SwizzleMask& swizzleMask = swizzlemasks::rgba,
+                      InterpolationType interpolation = InterpolationType::Linear,
+                      const Wrapping2D& wrap = wrapping2d::clampAll);
     LayerRAMPrecision(const LayerRAMPrecision<T>& rhs);
     LayerRAMPrecision<T>& operator=(const LayerRAMPrecision<T>& that);
     virtual LayerRAMPrecision<T>* clone() const override;
@@ -68,14 +72,14 @@ public:
     virtual void setDimensions(size2_t dimensions) override;
     const size2_t& getDimensions() const override;
 
-    /**
-     * \brief update the swizzle mask of the channels for sampling the layer
-     * Needs to be overloaded by child classes.
-     *
-     * @param mask    new swizzle mask
-     */
     virtual void setSwizzleMask(const SwizzleMask& mask) override;
     virtual SwizzleMask getSwizzleMask() const override;
+
+    virtual void setInterpolation(InterpolationType interpolation) override;
+    virtual InterpolationType getInterpolation() const override;
+
+    virtual void setWrapping(const Wrapping2D& wrapping) override;
+    virtual Wrapping2D getWrapping() const override;
 
     virtual double getAsDouble(const size2_t& pos) const override;
     virtual dvec2 getAsDVec2(const size2_t& pos) const override;
@@ -101,6 +105,8 @@ private:
     size2_t dimensions_;
     std::unique_ptr<T[]> data_;
     SwizzleMask swizzleMask_;
+    InterpolationType interpolation_;
+    Wrapping2D wrapping_;
 };
 
 /**
@@ -115,26 +121,34 @@ private:
  */
 IVW_CORE_API std::shared_ptr<LayerRAM> createLayerRAM(
     const size2_t& dimensions, LayerType type, const DataFormatBase* format,
-    const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+    const SwizzleMask& swizzleMask = swizzlemasks::rgba,
+    InterpolationType interpolation = InterpolationType::Linear,
+    const Wrapping2D& wrapping = wrapping2d::clampAll);
 
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(size2_t dimensions, LayerType type,
-                                        const SwizzleMask& swizzleMask)
+                                        const SwizzleMask& swizzleMask,
+                                        InterpolationType interpolation, const Wrapping2D& wrapping)
     : LayerRAM(type, DataFormat<T>::get())
     , dimensions_(dimensions)
     , data_(new T[dimensions_.x * dimensions_.y]())
-    , swizzleMask_(swizzleMask) {
+    , swizzleMask_(swizzleMask)
+    , interpolation_{interpolation}
+    , wrapping_{wrapping} {
     std::fill(data_.get(), data_.get() + glm::compMul(dimensions_),
               (type == LayerType::Depth) ? T{1} : T{0});
 }
 
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(T* data, size2_t dimensions, LayerType type,
-                                        const SwizzleMask& swizzleMask)
+                                        const SwizzleMask& swizzleMask,
+                                        InterpolationType interpolation, const Wrapping2D& wrapping)
     : LayerRAM(type, DataFormat<T>::get())
     , dimensions_(dimensions)
     , data_(data ? data : new T[dimensions_.x * dimensions_.y]())
-    , swizzleMask_(swizzleMask) {
+    , swizzleMask_(swizzleMask)
+    , interpolation_{interpolation}
+    , wrapping_{wrapping} {
     if (!data) {
         std::fill(data_.get(), data_.get() + glm::compMul(dimensions_),
                   (type == LayerType::Depth) ? T{1} : T{0});
@@ -146,7 +160,9 @@ LayerRAMPrecision<T>::LayerRAMPrecision(const LayerRAMPrecision<T>& rhs)
     : LayerRAM(rhs)
     , dimensions_(rhs.dimensions_)
     , data_(new T[dimensions_.x * dimensions_.y])
-    , swizzleMask_(rhs.swizzleMask_) {
+    , swizzleMask_(rhs.swizzleMask_)
+    , interpolation_{rhs.interpolation_}
+    , wrapping_{rhs.wrapping_} {
     std::memcpy(data_.get(), rhs.data_.get(), dimensions_.x * dimensions_.y * sizeof(T));
 }
 
@@ -162,6 +178,8 @@ LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(const LayerRAMPrecision<T>
 
         dimensions_ = that.dimensions_;
         swizzleMask_ = that.swizzleMask_;
+        interpolation_ = that.interpolation_;
+        wrapping_ = that.wrapping_;
     }
     return *this;
 }
@@ -219,6 +237,26 @@ void LayerRAMPrecision<T>::setSwizzleMask(const SwizzleMask& mask) {
 template <typename T>
 SwizzleMask LayerRAMPrecision<T>::getSwizzleMask() const {
     return swizzleMask_;
+}
+
+template <typename T>
+void LayerRAMPrecision<T>::setInterpolation(InterpolationType interpolation) {
+    interpolation_ = interpolation;
+}
+
+template <typename T>
+InterpolationType LayerRAMPrecision<T>::getInterpolation() const {
+    return interpolation_;
+}
+
+template <typename T>
+void LayerRAMPrecision<T>::setWrapping(const Wrapping2D& wrapping) {
+    wrapping_ = wrapping;
+}
+
+template <typename T>
+Wrapping2D LayerRAMPrecision<T>::getWrapping() const {
+    return wrapping_;
 }
 
 template <typename T>

@@ -32,18 +32,24 @@
 namespace inviwo {
 
 VolumeDisk::VolumeDisk(size3_t dimensions, const DataFormatBase* format,
-                       const SwizzleMask& swizzleMask)
+                       const SwizzleMask& swizzleMask, InterpolationType interpolation,
+                       const Wrapping3D& wrapping)
     : VolumeRepresentation(format)
-    , DiskRepresentation<VolumeRepresentation>()
+    , DiskRepresentation<VolumeRepresentation, VolumeDisk>()
     , dimensions_(dimensions)
-    , swizzleMask_(swizzleMask) {}
+    , swizzleMask_(swizzleMask)
+    , interpolation_{interpolation}
+    , wrapping_{wrapping} {}
 
 VolumeDisk::VolumeDisk(std::string srcFile, size3_t dimensions, const DataFormatBase* format,
-                       const SwizzleMask& swizzleMask)
+                       const SwizzleMask& swizzleMask, InterpolationType interpolation,
+                       const Wrapping3D& wrapping)
     : VolumeRepresentation(format)
-    , DiskRepresentation<VolumeRepresentation>(srcFile)
+    , DiskRepresentation<VolumeRepresentation, VolumeDisk>(srcFile)
     , dimensions_(dimensions)
-    , swizzleMask_(swizzleMask) {}
+    , swizzleMask_(swizzleMask)
+    , interpolation_{interpolation}
+    , wrapping_{wrapping} {}
 
 VolumeDisk* VolumeDisk::clone() const { return new VolumeDisk(*this); }
 
@@ -58,5 +64,15 @@ const size3_t& VolumeDisk::getDimensions() const { return dimensions_; }
 void VolumeDisk::setSwizzleMask(const SwizzleMask& mask) { swizzleMask_ = mask; }
 
 SwizzleMask VolumeDisk::getSwizzleMask() const { return swizzleMask_; }
+
+void VolumeDisk::setInterpolation(InterpolationType interpolation) {
+    interpolation_ = interpolation;
+}
+
+InterpolationType VolumeDisk::getInterpolation() const { return interpolation_; }
+
+void VolumeDisk::setWrapping(const Wrapping3D& wrapping) { wrapping_ = wrapping; }
+
+Wrapping3D VolumeDisk::getWrapping() const { return wrapping_; }
 
 }  // namespace inviwo

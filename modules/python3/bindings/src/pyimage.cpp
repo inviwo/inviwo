@@ -94,6 +94,15 @@ void exposeImage(py::module& m) {
         // clang-format on
         .def("__repr__", [](const SwizzleMask& self) { return toString(self); });
 
+    py::enum_<InterpolationType>(m, "InterpolationType")
+        .value("Linear", InterpolationType::Linear)
+        .value("Nearest", InterpolationType::Nearest);
+
+    py::enum_<Wrapping>(m, "Wrapping")
+        .value("Clamp", Wrapping::Clamp)
+        .value("Repeat", Wrapping::Repeat)
+        .value("Mirror", Wrapping::Mirror);
+
     py::class_<Image, std::shared_ptr<Image>>(m, "Image")
         .def(py::init<size2_t, const DataFormatBase*>())
         .def(py::init<std::shared_ptr<Layer>>())
@@ -118,10 +127,14 @@ void exposeImage(py::module& m) {
 
     py::class_<Layer, std::shared_ptr<Layer>>(m, "Layer")
         .def(py::init<size2_t, const DataFormatBase*>())
+        .def(py::init<size2_t, const DataFormatBase*, LayerType, const SwizzleMask&,
+                      InterpolationType, const Wrapping2D&>())
         .def("clone", [](Layer& self) { return self.clone(); })
         .def(py::init([](py::array data) { return pyutil::createLayer(data).release(); }))
         .def_property_readonly("dimensions", &Layer::getDimensions)
         .def_property("swizzlemask", &Layer::getSwizzleMask, &Layer::setSwizzleMask)
+        .def_property("interpolation", &Layer::getInterpolation, &Layer::setInterpolation)
+        .def_property("wrapping", &Layer::getWrapping, &Layer::setWrapping)
         .def("save",
              [](Layer& self, std::string filepath) {
                  auto ext = filesystem::getFileExtension(filepath);

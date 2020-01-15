@@ -39,7 +39,8 @@ std::shared_ptr<LayerRAM> LayerCLGL2RAMConverter::createFrom(
     std::shared_ptr<const LayerCLGL> layerCLGL) const {
     uvec2 dimensions = layerCLGL->getDimensions();
     auto destination = createLayerRAM(dimensions, layerCLGL->getLayerType(),
-                                      layerCLGL->getDataFormat(), layerCLGL->getSwizzleMask());
+                                      layerCLGL->getDataFormat(), layerCLGL->getSwizzleMask(),
+                                      layerCLGL->getInterpolation(), layerCLGL->getWrapping());
 
     if (destination) {
         layerCLGL->getTexture()->download(destination->getData());
@@ -55,17 +56,17 @@ std::shared_ptr<LayerRAM> LayerCLGL2RAMConverter::createFrom(
 
 void LayerCLGL2RAMConverter::update(std::shared_ptr<const LayerCLGL> layerSrc,
                                     std::shared_ptr<LayerRAM> layerDst) const {
-    if (layerSrc->getDimensions() != layerDst->getDimensions()) {
-        layerDst->setDimensions(layerSrc->getDimensions());
-    }
+    layerDst->setDimensions(layerSrc->getDimensions());
+    layerDst->setSwizzleMask(layerSrc->getSwizzleMask());
+    layerDst->setInterpolation(layerSrc->getInterpolation());
+    layerDst->setWrapping(layerSrc->getWrapping());
 
     layerSrc->getTexture()->download(layerDst->getData());
 }
 
 std::shared_ptr<LayerGL> LayerCLGL2GLConverter::createFrom(
     std::shared_ptr<const LayerCLGL> src) const {
-    return std::make_shared<LayerGL>(src->getDimensions(), src->getLayerType(),
-                                     src->getDataFormat(), src->getTexture());
+    return std::make_shared<LayerGL>(src->getTexture(), src->getLayerType());
 }
 
 void LayerCLGL2GLConverter::update(std::shared_ptr<const LayerCLGL> source,
@@ -109,15 +110,12 @@ void LayerCLGL2CLConverter::update(std::shared_ptr<const LayerCLGL> src,
 
 std::shared_ptr<LayerCLGL> LayerGL2CLGLConverter::createFrom(
     std::shared_ptr<const LayerGL> layerGL) const {
-    return std::make_shared<LayerCLGL>(layerGL->getDimensions(), layerGL->getLayerType(),
-                                       layerGL->getDataFormat(), layerGL->getTexture());
+    return std::make_shared<LayerCLGL>(layerGL->getTexture(), layerGL->getLayerType());
 }
 
 void LayerGL2CLGLConverter::update(std::shared_ptr<const LayerGL> layerSrc,
                                    std::shared_ptr<LayerCLGL> layerDst) const {
-    if (layerSrc->getDimensions() != layerDst->getDimensions()) {
-        layerDst->setDimensions(layerSrc->getDimensions());
-    }
+    // Nothing to do since the texture is the same
 }
 
 }  // namespace inviwo

@@ -33,6 +33,7 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <modules/opengl/texture/textureunit.h>
 
 #include <functional>
@@ -42,9 +43,25 @@ namespace inviwo {
 
 namespace utilgl {
 
-std::array<GLint, 4> IVW_MODULE_OPENGL_API convertSwizzleMaskToGL(const SwizzleMask& mask);
+IVW_MODULE_OPENGL_API std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleMask& mask);
+IVW_MODULE_OPENGL_API SwizzleMask convertSwizzleMaskFromGL(const std::array<GLint, 4>& maskGL);
 
-SwizzleMask IVW_MODULE_OPENGL_API convertSwizzleMaskFromGL(const std::array<GLint, 4>& maskGL);
+IVW_MODULE_OPENGL_API GLenum convertInterpolationToGL(InterpolationType interpolation);
+IVW_MODULE_OPENGL_API InterpolationType convertInterpolationFromGL(GLenum interpolation);
+
+IVW_MODULE_OPENGL_API GLenum convertWrappingToGL(Wrapping wrap);
+
+template <size_t N>
+std::array<GLenum, N> convertWrappingToGL(const std::array<Wrapping, N>& wrapping) {
+    return util::make_array<N>([&](auto i) { return convertWrappingToGL(wrapping[i]); });
+}
+
+IVW_MODULE_OPENGL_API Wrapping convertWrappingFromGL(GLenum wrap);
+
+template <size_t N>
+std::array<Wrapping, N> convertWrappingFromGL(const std::array<GLenum, N>& wrapping) {
+    return util::make_array<N>([&](auto i) { return convertWrappingFromGL(wrapping[i]); });
+}
 
 /**
  * \struct TexParameter
@@ -114,7 +131,7 @@ struct IVW_MODULE_OPENGL_API GlBoolState {
 
     operator bool();
 
-    virtual ~GlBoolState();
+    ~GlBoolState();
 
 protected:
     GLenum target_;
@@ -129,7 +146,7 @@ protected:
  *
  * \see glCullFace, GL_CULL_FACE
  */
-struct IVW_MODULE_OPENGL_API CullFaceState : public GlBoolState {
+struct IVW_MODULE_OPENGL_API CullFaceState : protected GlBoolState {
     CullFaceState() = delete;
     CullFaceState(CullFaceState const&) = delete;
     CullFaceState& operator=(CullFaceState const& that) = delete;
@@ -140,7 +157,7 @@ struct IVW_MODULE_OPENGL_API CullFaceState : public GlBoolState {
 
     CullFaceState& operator=(CullFaceState&& that);
 
-    virtual ~CullFaceState();
+    ~CullFaceState();
 
     GLint getMode();
 
@@ -168,7 +185,7 @@ struct IVW_MODULE_OPENGL_API PolygonModeState {
 
     PolygonModeState& operator=(PolygonModeState&& that);
 
-    virtual ~PolygonModeState();
+    ~PolygonModeState();
 
 protected:
     GLint mode_;
@@ -187,22 +204,29 @@ protected:
  *
  * \see glBlendFunc, GL_BLEND
  */
-struct IVW_MODULE_OPENGL_API BlendModeState : public GlBoolState {
+struct IVW_MODULE_OPENGL_API BlendModeState : protected GlBoolState {
     BlendModeState() = delete;
     BlendModeState(BlendModeState const&) = delete;
     BlendModeState& operator=(BlendModeState const& that) = delete;
 
-    BlendModeState(GLenum smode, GLenum dmode);
+    BlendModeState(GLenum srcMode, GLenum dstMode);
+    BlendModeState(GLenum srcRGB, GLenum srcAlpha, GLenum dstRGB, GLenum dstAlpha);
     BlendModeState(BlendModeState&& rhs);
     BlendModeState& operator=(BlendModeState&& that);
 
-    virtual ~BlendModeState();
+    ~BlendModeState();
 
 protected:
-    GLint smode_;
-    GLint dmode_;
-    GLint oldsMode_;
-    GLint olddMode_;
+    struct Mode {
+        GLint rgb;
+        GLint alpha;
+    };
+    struct Config {
+        Mode src;
+        Mode dst;
+    };
+    Config curr_;
+    Config old_;
 };
 
 /**
@@ -211,20 +235,28 @@ protected:
  *
  * \see glBlendEquation, GL_BLEND_EQUATION_RGB
  */
-struct IVW_MODULE_OPENGL_API BlendModeEquationState : public BlendModeState {
+struct IVW_MODULE_OPENGL_API BlendModeEquationState : protected BlendModeState {
     BlendModeEquationState() = delete;
     BlendModeEquationState(BlendModeEquationState const&) = delete;
     BlendModeEquationState& operator=(BlendModeEquationState const& that) = delete;
 
-    BlendModeEquationState(GLenum smode, GLenum dmode, GLenum eqn);
+    BlendModeEquationState(GLenum srcMode, GLenum dstMode, GLenum eqn);
+    BlendModeEquationState(GLenum srcRGB, GLenum srcAlpha, GLenum dstRGB, GLenum dstAlpha,
+                           GLenum eqnRGB, GLenum eqnAlpha);
+
     BlendModeEquationState(BlendModeEquationState&& rhs);
     BlendModeEquationState& operator=(BlendModeEquationState&& that);
 
-    virtual ~BlendModeEquationState();
+    ~BlendModeEquationState();
 
 protected:
-    GLint eqn_;
-    GLint oldEqn_;
+    struct Equation {
+        GLint rgb;
+        GLint alpha;
+    };
+
+    Equation curr_;
+    Equation old_;
 };
 
 /**
@@ -242,7 +274,7 @@ struct IVW_MODULE_OPENGL_API ClearColor {
     ClearColor(ClearColor&& rhs);
     ClearColor& operator=(ClearColor&& that);
 
-    virtual ~ClearColor();
+    ~ClearColor();
 
 protected:
     vec4 color_;
@@ -264,7 +296,7 @@ struct IVW_MODULE_OPENGL_API ClearDepth {
     ClearDepth(ClearDepth&& rhs);
     ClearDepth& operator=(ClearDepth&& that);
 
-    virtual ~ClearDepth();
+    ~ClearDepth();
 
 protected:
     float depth_;

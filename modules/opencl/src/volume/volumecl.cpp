@@ -35,12 +35,16 @@
 namespace inviwo {
 
 VolumeCL::VolumeCL(size3_t dimensions, const DataFormatBase* format, const void* data,
-                   const SwizzleMask& swizzleMask)
+                   const SwizzleMask& swizzleMask, InterpolationType interpolation,
+                   const Wrapping3D& wrapping)
     : VolumeCLBase()
     , VolumeRepresentation(format)
     , dimensions_(dimensions)
     , imageFormat_(dataFormatToCLImageFormat(format->getId()))
-    , swizzleMask_(swizzleMask) {
+    , swizzleMask_(swizzleMask)
+    , interpolation_{interpolation}
+    , wrapping_{wrapping} {
+
     initialize(data);
 }
 
@@ -49,7 +53,10 @@ VolumeCL::VolumeCL(const VolumeCL& rhs)
     , VolumeRepresentation(rhs)
     , dimensions_(rhs.dimensions_)
     , imageFormat_(rhs.imageFormat_)
-    , swizzleMask_(rhs.swizzleMask_) {
+    , swizzleMask_(rhs.swizzleMask_)
+    , interpolation_{rhs.interpolation_}
+    , wrapping_{rhs.wrapping_} {
+
     initialize(nullptr);
     OpenCL::getPtr()->getQueue().enqueueCopyImage(rhs.get(), *clImage_, glm::size3_t(0),
                                                   glm::size3_t(0), glm::size3_t(dimensions_));
@@ -99,6 +106,14 @@ std::type_index VolumeCL::getTypeIndex() const { return std::type_index(typeid(V
 void VolumeCL::setSwizzleMask(const SwizzleMask& mask) { swizzleMask_ = mask; }
 
 SwizzleMask VolumeCL::getSwizzleMask() const { return swizzleMask_; }
+
+void VolumeCL::setInterpolation(InterpolationType interpolation) { interpolation_ = interpolation; }
+
+InterpolationType VolumeCL::getInterpolation() const { return interpolation_; }
+
+void VolumeCL::setWrapping(const Wrapping3D& wrapping) { wrapping_ = wrapping; }
+
+Wrapping3D VolumeCL::getWrapping() const { return wrapping_; }
 
 }  // namespace inviwo
 

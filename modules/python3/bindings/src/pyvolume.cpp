@@ -54,6 +54,8 @@ void exposeVolume(pybind11::module &m) {
     namespace py = pybind11;
     py::class_<Volume, std::shared_ptr<Volume>>(m, "Volume")
         .def(py::init<size3_t, const DataFormatBase *>())
+        .def(py::init<size3_t, const DataFormatBase *, const SwizzleMask &, InterpolationType,
+                      const Wrapping3D &>())
         .def(py::init([](py::array data) { return pyutil::createVolume(data).release(); }))
         .def("clone", [](Volume &self) { return self.clone(); })
         .def_property("modelMatrix", &Volume::getModelMatrix, &Volume::setModelMatrix)
@@ -64,6 +66,8 @@ void exposeVolume(pybind11::module &m) {
         .def("copyMetaDataTo", [](Volume &self, Volume &other) { self.copyMetaDataTo(other); })
         .def_property_readonly("dimensions", &Volume::getDimensions)
         .def_property("swizzlemask", &Volume::getSwizzleMask, &Volume::setSwizzleMask)
+        .def_property("interpolation", &Volume::getInterpolation, &Volume::setInterpolation)
+        .def_property("wrapping", &Volume::getWrapping, &Volume::setWrapping)
         .def_readwrite("dataMap", &Volume::dataMap_)
         .def_property(
             "data",

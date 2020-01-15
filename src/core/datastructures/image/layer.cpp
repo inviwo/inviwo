@@ -38,21 +38,27 @@
 namespace inviwo {
 
 Layer::Layer(size2_t defaultDimensions, const DataFormatBase* defaultFormat, LayerType type,
-             const SwizzleMask& defaultSwizzleMask)
-    : Data<Layer, LayerRepresentation>()
-    , StructuredGridEntity<2>()
-    , defaultLayerType_(type)
-    , defaultDimensions_(defaultDimensions)
-    , defaultDataFormat_(defaultFormat)
-    , defaultSwizzleMask_(defaultSwizzleMask) {}
+             const SwizzleMask& defaultSwizzleMask, InterpolationType interpolation,
+             const Wrapping2D& wrapping)
+    : Data<Layer, LayerRepresentation>{}
+    , StructuredGridEntity<2>{}
+    , defaultLayerType_{type}
+    , defaultDimensions_{defaultDimensions}
+    , defaultDataFormat_{defaultFormat}
+    , defaultSwizzleMask_{defaultSwizzleMask}
+    , defaultInterpolation_{interpolation}
+    , defaultWrapping_{wrapping} {}
 
 Layer::Layer(std::shared_ptr<LayerRepresentation> in)
-    : Data<Layer, LayerRepresentation>()
-    , StructuredGridEntity<2>()
-    , defaultLayerType_(in->getLayerType())
-    , defaultDimensions_(in->getDimensions())
-    , defaultDataFormat_(in->getDataFormat())
-    , defaultSwizzleMask_(in->getSwizzleMask()) {
+    : Data<Layer, LayerRepresentation>{}
+    , StructuredGridEntity<2>{}
+    , defaultLayerType_{in->getLayerType()}
+    , defaultDimensions_{in->getDimensions()}
+    , defaultDataFormat_{in->getDataFormat()}
+    , defaultSwizzleMask_{in->getSwizzleMask()}
+    , defaultInterpolation_{in->getInterpolation()}
+    , defaultWrapping_{in->getWrapping()} {
+
     addRepresentation(in);
 }
 
@@ -95,6 +101,7 @@ void Layer::setSwizzleMask(const SwizzleMask& mask) {
     defaultSwizzleMask_ = mask;
     if (lastValidRepresentation_) {
         lastValidRepresentation_->setSwizzleMask(mask);
+        invalidateAllOther(lastValidRepresentation_.get());
     }
 }
 
@@ -103,6 +110,36 @@ SwizzleMask Layer::getSwizzleMask() const {
         return lastValidRepresentation_->getSwizzleMask();
     }
     return defaultSwizzleMask_;
+}
+
+void Layer::setInterpolation(InterpolationType interpolation) {
+    defaultInterpolation_ = interpolation;
+    if (lastValidRepresentation_) {
+        lastValidRepresentation_->setInterpolation(interpolation);
+        invalidateAllOther(lastValidRepresentation_.get());
+    }
+}
+
+InterpolationType Layer::getInterpolation() const {
+    if (lastValidRepresentation_) {
+        return lastValidRepresentation_->getInterpolation();
+    }
+    return defaultInterpolation_;
+}
+
+void Layer::setWrapping(const Wrapping2D& wrapping) {
+    defaultWrapping_ = wrapping;
+    if (lastValidRepresentation_) {
+        lastValidRepresentation_->setWrapping(wrapping);
+        invalidateAllOther(lastValidRepresentation_.get());
+    }
+}
+
+Wrapping2D Layer::getWrapping() const {
+    if (lastValidRepresentation_) {
+        return lastValidRepresentation_->getWrapping();
+    }
+    return defaultWrapping_;
 }
 
 void Layer::copyRepresentationsTo(Layer* targetLayer) {

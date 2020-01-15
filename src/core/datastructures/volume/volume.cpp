@@ -34,25 +34,31 @@
 namespace inviwo {
 
 Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
-               const SwizzleMask& defaultSwizzleMask)
+               const SwizzleMask& defaultSwizzleMask, InterpolationType interpolation,
+               const Wrapping3D& wrapping)
     : Data<Volume, VolumeRepresentation>{}
     , StructuredGridEntity<3>{}
     , MetaDataOwner{}
     , HistogramSupplier{}
-    , dataMap_(defaultFormat)
-    , defaultDimensions_(defaultDimensions)
-    , defaultDataFormat_(defaultFormat)
-    , defaultSwizzleMask_(defaultSwizzleMask) {}
+    , dataMap_{defaultFormat}
+    , defaultDimensions_{defaultDimensions}
+    , defaultDataFormat_{defaultFormat}
+    , defaultSwizzleMask_{defaultSwizzleMask}
+    , defaultInterpolation_{interpolation}
+    , defaultWrapping_{wrapping} {}
 
 Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     : Data<Volume, VolumeRepresentation>{}
     , StructuredGridEntity<3>{}
     , MetaDataOwner{}
     , HistogramSupplier{}
-    , dataMap_(in->getDataFormat())
-    , defaultDimensions_(in->getDimensions())
-    , defaultDataFormat_(in->getDataFormat())
-    , defaultSwizzleMask_(in->getSwizzleMask()) {
+    , dataMap_{in->getDataFormat()}
+    , defaultDimensions_{in->getDimensions()}
+    , defaultDataFormat_{in->getDataFormat()}
+    , defaultSwizzleMask_{in->getSwizzleMask()}
+    , defaultInterpolation_{in->getInterpolation()}
+    , defaultWrapping_{in->getWrapping()} {
+
     addRepresentation(in);
 }
 
@@ -89,6 +95,7 @@ void Volume::setSwizzleMask(const SwizzleMask& mask) {
     defaultSwizzleMask_ = mask;
     if (lastValidRepresentation_) {
         lastValidRepresentation_->setSwizzleMask(mask);
+        invalidateAllOther(lastValidRepresentation_.get());
     }
 }
 
@@ -97,6 +104,36 @@ SwizzleMask Volume::getSwizzleMask() const {
         return lastValidRepresentation_->getSwizzleMask();
     }
     return defaultSwizzleMask_;
+}
+
+void Volume::setInterpolation(InterpolationType interpolation) {
+    defaultInterpolation_ = interpolation;
+    if (lastValidRepresentation_) {
+        lastValidRepresentation_->setInterpolation(interpolation);
+        invalidateAllOther(lastValidRepresentation_.get());
+    }
+}
+
+InterpolationType Volume::getInterpolation() const {
+    if (lastValidRepresentation_) {
+        return lastValidRepresentation_->getInterpolation();
+    }
+    return defaultInterpolation_;
+}
+
+void Volume::setWrapping(const Wrapping3D& wrapping) {
+    defaultWrapping_ = wrapping;
+    if (lastValidRepresentation_) {
+        lastValidRepresentation_->setWrapping(wrapping);
+        invalidateAllOther(lastValidRepresentation_.get());
+    }
+}
+
+Wrapping3D Volume::getWrapping() const {
+    if (lastValidRepresentation_) {
+        return lastValidRepresentation_->getWrapping();
+    }
+    return defaultWrapping_;
 }
 
 Document Volume::getInfo() const {
@@ -108,6 +145,9 @@ Document Volume::getInfo() const {
 
     tb(H("Format"), getDataFormat()->getString());
     tb(H("Dimension"), getDimensions());
+    tb(H("SwizzleMask"), getSwizzleMask());
+    tb(H("Interpolation"), getInterpolation());
+    tb(H("Wrapping"), getWrapping());
     tb(H("Data Range"), dataMap_.dataRange);
     tb(H("Value Range"), dataMap_.valueRange);
     tb(H("Unit"), dataMap_.valueUnit);

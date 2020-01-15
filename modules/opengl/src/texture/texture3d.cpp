@@ -29,53 +29,47 @@
 
 #include <modules/opengl/texture/texture3d.h>
 #include <modules/opengl/openglcapabilities.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
-Texture3D::Texture3D(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
+Texture3D::Texture3D(size3_t dimensions, GLFormat glFormat, GLenum filtering,
+                     const SwizzleMask& swizzleMask, const std::array<GLenum, 3>& wrapping,
                      GLint level)
-    : Texture(GL_TEXTURE_3D, glFormat, filtering, level), dimensions_(dimensions) {
-    setTextureParameters(&Texture3D::default3DTextureParameterFunction);
-}
+    : Texture(GL_TEXTURE_3D, glFormat, filtering, swizzleMask, util::span(wrapping), level)
+    , dimensions_(dimensions) {}
 
 Texture3D::Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
-                     GLenum filtering, GLint level)
-    : Texture(GL_TEXTURE_3D, format, internalformat, dataType, filtering, level)
-    , dimensions_(dimensions) {
-    setTextureParameters(&Texture3D::default3DTextureParameterFunction);
-}
+                     GLenum filtering, const SwizzleMask& swizzleMask,
+                     const std::array<GLenum, 3>& wrapping, GLint level)
+    : Texture(GL_TEXTURE_3D, format, internalformat, dataType, filtering, swizzleMask,
+              util::span(wrapping), level)
+    , dimensions_(dimensions) {}
 
 Texture3D::Texture3D(const Texture3D& rhs) : Texture(rhs), dimensions_(rhs.dimensions_) {
-    setTextureParameters(&Texture3D::default3DTextureParameterFunction);
     initialize(nullptr);
-    if (OpenGLCapabilities::getOpenGLVersion() >= 430) {
-        // GPU memcpy
+    if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0, 0,
                            static_cast<GLsizei>(dimensions_.x), static_cast<GLsizei>(dimensions_.y),
                            static_cast<GLsizei>(dimensions_.z));
-    } else {
-        // Copy data through PBO
+    } else {  // Copy data through PBO
         loadFromPBO(&rhs);
     }
 }
 
-Texture3D::Texture3D(Texture3D&& rhs)
-    : Texture(std::move(rhs)), dimensions_(std::move(rhs.dimensions_)) {}
+Texture3D::Texture3D(Texture3D&& rhs) = default;
 
 Texture3D& Texture3D::operator=(const Texture3D& rhs) {
     if (this != &rhs) {
         Texture::operator=(rhs);
         dimensions_ = rhs.dimensions_;
-        setTextureParameters(&Texture3D::default3DTextureParameterFunction);
         initialize(nullptr);
-        if (OpenGLCapabilities::getOpenGLVersion() >= 430) {
-            // GPU memcpy
+        if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
             glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0,
                                0, static_cast<GLsizei>(rhs.dimensions_.x),
                                static_cast<GLsizei>(rhs.dimensions_.y),
                                static_cast<GLsizei>(rhs.dimensions_.z));
-        } else {
-            // Copy data through PBO
+        } else {  // Copy data through PBO
             loadFromPBO(&rhs);
         }
     }
@@ -83,13 +77,7 @@ Texture3D& Texture3D::operator=(const Texture3D& rhs) {
     return *this;
 }
 
-Texture3D& Texture3D::operator=(Texture3D&& rhs) {
-    if (this != &rhs) {
-        Texture::operator=(std::move(rhs));
-        dimensions_ = std::move(rhs.dimensions_);
-    }
-    return *this;
-}
+Texture3D& Texture3D::operator=(Texture3D&& rhs) = default;
 
 Texture3D* Texture3D::clone() const { return new Texture3D(*this); }
 
@@ -122,17 +110,21 @@ void Texture3D::upload(const void* data) {
 }
 
 void Texture3D::uploadAndResize(const void* data, const size3_t& dim) {
-    dimensions_ = dim;
-    setPBOAsInvalid();
-    initialize(data);
+    if (dimensions_ != dim) {
+        dimensions_ = dim;
+        setPBOAsInvalid();
+        initialize(data);
+    }
 }
 
-void Texture3D::default3DTextureParameterFunction(Texture* tex) {
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, tex->getFiltering());
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, tex->getFiltering());
+void Texture3D::setWrapping(const std::array<GLenum, 3>& wrapping) {
+    Texture::setWrapping(util::span(wrapping));
+}
+
+std::array<GLenum, 3> Texture3D::getWrapping() const {
+    std::array<GLenum, 3> wrapping{};
+    Texture::getWrapping(util::span(wrapping));
+    return wrapping;
 }
 
 }  // namespace inviwo

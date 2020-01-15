@@ -43,7 +43,8 @@ public:
     explicit LayerCL(size2_t dimensions = size2_t(128, 128), LayerType type = LayerType::Color,
                      const DataFormatBase* format = DataFormatBase::get(),
                      const SwizzleMask& swizzleMask = swizzlemasks::rgba,
-                     const void* data = nullptr);
+                     InterpolationType interpolation = InterpolationType::Linear,
+                     const Wrapping2D& wrapping = wrapping2d::clampAll, const void* data = nullptr);
     LayerCL(const LayerCL& other);
     virtual ~LayerCL();
 
@@ -85,11 +86,19 @@ public:
     virtual void setSwizzleMask(const SwizzleMask& mask) override;
     virtual SwizzleMask getSwizzleMask() const override;
 
+    virtual void setInterpolation(InterpolationType interpolation) override;
+    virtual InterpolationType getInterpolation() const override;
+
+    virtual void setWrapping(const Wrapping2D& wrapping) override;
+    virtual Wrapping2D getWrapping() const override;
+
 protected:
     size2_t dimensions_;
     cl::ImageFormat layerFormat_;
     std::unique_ptr<cl::Image2D> clImage_;
     SwizzleMask swizzleMask_;
+    InterpolationType interpolation_;
+    Wrapping2D wrapping_;
 };
 
 }  // namespace inviwo

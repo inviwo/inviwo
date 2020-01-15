@@ -51,7 +51,7 @@ public:
 
     Image(size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get());
     Image(std::shared_ptr<Layer> layer);
-    Image(const Image&);
+    Image(const Image& rhs);
     Image& operator=(const Image& that);
     virtual Image* clone() const;
     virtual ~Image() = default;
@@ -116,8 +116,7 @@ protected:
     static std::shared_ptr<Layer> createColorLayer(
         size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get());
     static std::shared_ptr<Layer> createDepthLayer(size2_t dimensions = size2_t(8, 8));
-    static std::shared_ptr<Layer> createPickingLayer(
-        size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get());
+    static std::shared_ptr<Layer> createPickingLayer(size2_t dimensions = size2_t(8, 8));
 
     std::vector<std::shared_ptr<Layer>> colorLayers_;
     std::shared_ptr<Layer> depthLayer_;
