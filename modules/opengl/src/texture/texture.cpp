@@ -385,19 +385,32 @@ void Texture::setPBOAsInvalid() { pboBackIsSetup_ = false; }
 
 GLuint Texture::channels(GLenum format) {
     switch (format) {
-        case GL_STENCIL_INDEX:
         case GL_DEPTH_COMPONENT:
+        case GL_STENCIL_INDEX:
         case GL_DEPTH_STENCIL:
         case GL_RED:
+        case GL_RED_INTEGER:
         case GL_GREEN:
+        case GL_GREEN_INTEGER:
         case GL_BLUE:
+        case GL_BLUE_INTEGER:
         case GL_ALPHA:
             return 1;
+
+        case GL_RG:
+        case GL_RG_INTEGER:
+            return 2;
+
         case GL_RGB:
         case GL_BGR:
+        case GL_RGB_INTEGER:
+        case GL_BGR_INTEGER:
             return 3;
+
         case GL_RGBA:
         case GL_BGRA:
+        case GL_RGBA_INTEGER:
+        case GL_BGRA_INTEGER:
             return 4;
         default:
             throw OpenGLException("Invalid format specified", IVW_CONTEXT_CUSTOM("Texture"));
