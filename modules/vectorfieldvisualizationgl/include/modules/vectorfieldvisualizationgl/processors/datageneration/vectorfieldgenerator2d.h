@@ -55,7 +55,6 @@ public:
     virtual void process() override;
 
 protected:
-
     ImageOutport outport_;
 
     IntSize2Property size_;
