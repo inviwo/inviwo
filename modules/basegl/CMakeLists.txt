@@ -9,6 +9,8 @@ set(HEADER_FILES
     include/modules/basegl/algorithm/imageconvolution.h
     include/modules/basegl/baseglmodule.h
     include/modules/basegl/baseglmoduledefine.h
+    include/modules/basegl/datastructures/linesettings.h
+    include/modules/basegl/datastructures/linesettingsinterface.h
     include/modules/basegl/datastructures/meshshadercache.h
     include/modules/basegl/datavisualizer/imagebackgroundvisualizer.h
     include/modules/basegl/datavisualizer/imagevisualizer.h
@@ -50,7 +52,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/isoraycaster.h
     include/modules/basegl/processors/lightingraycaster.h
     include/modules/basegl/processors/lightvolumegl.h
-    include/modules/basegl/processors/linerenderer.h
+    include/modules/basegl/processors/linerendererprocessor.h
     include/modules/basegl/processors/mesh2drenderprocessorgl.h
     include/modules/basegl/processors/meshpicking.h
     include/modules/basegl/processors/meshrenderprocessorgl.h
@@ -73,6 +75,8 @@ set(HEADER_FILES
     include/modules/basegl/processors/volumeprocessing/volumeshader.h
     include/modules/basegl/processors/volumeraycaster.h
     include/modules/basegl/processors/volumeslicegl.h
+    include/modules/basegl/properties/linesettingsproperty.h
+    include/modules/basegl/rendering/linerenderer.h
     include/modules/basegl/viewmanager.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -83,6 +87,8 @@ set(SOURCE_FILES
     src/algorithm/entryexitpoints.cpp
     src/algorithm/imageconvolution.cpp
     src/baseglmodule.cpp
+    src/datastructures/linesettings.cpp
+    src/datastructures/linesettingsinterface.cpp
     src/datastructures/meshshadercache.cpp
     src/datavisualizer/imagebackgroundvisualizer.cpp
     src/datavisualizer/imagevisualizer.cpp
@@ -124,7 +130,7 @@ set(SOURCE_FILES
     src/processors/isoraycaster.cpp
     src/processors/lightingraycaster.cpp
     src/processors/lightvolumegl.cpp
-    src/processors/linerenderer.cpp
+    src/processors/linerendererprocessor.cpp
     src/processors/mesh2drenderprocessorgl.cpp
     src/processors/meshpicking.cpp
     src/processors/meshrenderprocessorgl.cpp
@@ -147,6 +153,8 @@ set(SOURCE_FILES
     src/processors/volumeprocessing/volumeshader.cpp
     src/processors/volumeraycaster.cpp
     src/processors/volumeslicegl.cpp
+    src/properties/linesettingsproperty.cpp
+    src/rendering/linerenderer.cpp
     src/viewmanager.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

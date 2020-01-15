@@ -97,7 +97,11 @@ public:
      * Convenience function for calling initialize(nullptr, sizeInBytes)
      * @param sizeInBytes
      */
-    void setSize(GLsizeiptr sizeInBytes);
+    void setSizeInBytes(GLsizeiptr sizeInBytes);
+    /**
+     * Get the size of the buffer in bytes.
+     */
+    GLsizeiptr getSizeInBytes() const;
 
     void upload(const void* data, GLsizeiptr sizeInBytes);
 

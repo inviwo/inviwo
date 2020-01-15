@@ -76,10 +76,34 @@ ScatterPlotProcessor::ScatterPlotProcessor()
         }
     });
     selectionChangedCallBack_ =
-        scatterPlot_.addSelectionChangedCallback([this](const std::unordered_set<size_t>& indices) {
-            brushingPort_.sendSelectionEvent(indices);
+        scatterPlot_.addSelectionChangedCallback([this](const std::vector<bool>& selected) {
+            if (brushingPort_.isConnected()) {
+                std::unordered_set<size_t> selectedIndices;
+                auto iCol = dataFramePort_.getData()->getIndexColumn();
+                auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+                for (size_t i = 0; i < selected.size(); ++i) {
+                    if (selected[i]) selectedIndices.insert(indexCol[i]);
+                }
+                brushingPort_.sendSelectionEvent(selectedIndices);
+            } else {
+                invalidate(InvalidationLevel::InvalidOutput);
+            }
         });
-
+    filteringChangedCallBack_ =
+        scatterPlot_.addFilteringChangedCallback([this](const std::vector<bool>& filtered) {
+            if (brushingPort_.isConnected()) {
+                std::unordered_set<size_t> filteredIndices;
+                auto iCol = dataFramePort_.getData()->getIndexColumn();
+                auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+                for (size_t i = 0; i < filtered.size(); ++i) {
+                    if (filtered[i]) filteredIndices.insert(indexCol[i]);
+                }
+                brushingPort_.sendFilterEvent(filteredIndices);
+            } else {
+                invalidate(InvalidationLevel::InvalidOutput);
+            }
+        });
+    addInteractionHandler(&scatterPlot_);
     scatterPlot_.properties_.margins_.setLowerLeftMargin({50.0f, 40.0f});
     scatterPlot_.properties_.xAxis_.captionSettings_.setChecked(true);
     scatterPlot_.properties_.xAxis_.captionSettings_.offset_.set(20.0f);

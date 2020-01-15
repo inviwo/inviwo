@@ -7,17 +7,20 @@ ivw_module(Plotting)
 set(HEADER_FILES
     include/modules/plotting/datastructures/axisdata.h
     include/modules/plotting/datastructures/axissettings.h
+    include/modules/plotting/datastructures/boxselectionsettings.h
     include/modules/plotting/datastructures/majortickdata.h
     include/modules/plotting/datastructures/majorticksettings.h
     include/modules/plotting/datastructures/minortickdata.h
     include/modules/plotting/datastructures/minorticksettings.h
     include/modules/plotting/datastructures/plottextdata.h
     include/modules/plotting/datastructures/plottextsettings.h
+    include/modules/plotting/interaction/boxselectioninteractionhandler.h
     include/modules/plotting/plottingmodule.h
     include/modules/plotting/plottingmoduledefine.h
     include/modules/plotting/processors/dataframecolumntocolorvector.h
     include/modules/plotting/properties/axisproperty.h
     include/modules/plotting/properties/axisstyleproperty.h
+    include/modules/plotting/properties/boxselectionproperty.h
     include/modules/plotting/properties/categoricalaxisproperty.h
     include/modules/plotting/properties/marginproperty.h
     include/modules/plotting/properties/optionconverter.h
@@ -33,16 +36,19 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/datastructures/axisdata.cpp
     src/datastructures/axissettings.cpp
+    src/datastructures/boxselectionsettings.cpp
     src/datastructures/majortickdata.cpp
     src/datastructures/majorticksettings.cpp
     src/datastructures/minortickdata.cpp
     src/datastructures/minorticksettings.cpp
     src/datastructures/plottextdata.cpp
     src/datastructures/plottextsettings.cpp
+    src/interaction/boxselectioninteractionhandler.cpp
     src/plottingmodule.cpp
     src/processors/dataframecolumntocolorvector.cpp
     src/properties/axisproperty.cpp
     src/properties/axisstyleproperty.cpp
+    src/properties/boxselectionproperty.cpp
     src/properties/categoricalaxisproperty.cpp
     src/properties/marginproperty.cpp
     src/properties/plottextproperty.cpp

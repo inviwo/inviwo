@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,30 +26,46 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#if !defined(WARN_INCLUDE_PUSH)
-#   error "`warn/ignore/signed-unsigned-compare` used without `warn/push`"
-#endif
+#include <modules/base/basemoduledefine.h>
 
-#if defined(WARN_IGNORE_SIGNED_UNSIGNED_COMPARE)
-#   error "`warn/ignore/signed-unsigned-compare` already included"
-#endif
+namespace inviwo {
+/*
+ * \brief Settings for stippling (Dashed line, e.g., - - -)
+ */
+class IVW_MODULE_BASE_API StipplingSettingsInterface {
+public:
+    /*
+     * \brief Determines in which space the stippling parameters should be applied.
+     */
+    enum class Mode { None, ScreenSpace, WorldSpace };
+    StipplingSettingsInterface() = default;
+    virtual ~StipplingSettingsInterface() = default;
+    /*
+     * Determines which space the other settings should be applied.
+     */
+    virtual Mode getMode() const = 0;
+    /*
+     * Return length of dash, in pixels if Mode is ScreenSpace.
+     */
+    virtual float getLength() const = 0;
+    /*
+     * Return distance between dashes, in pixels if Mode is ScreenSpace.
+     */
+    virtual float getSpacing() const = 0;
+    /*
+     * Return offset of first dash, in pixels if Mode is ScreenSpace.
+     */
+    virtual float getOffset() const = 0;
+    /*
+     * Return scaling of parameters. Only applicable if Mode is WorldSpace.
+     */
+    virtual float getWorldScale() const = 0;
+};
+IVW_MODULE_BASE_API bool operator==(const StipplingSettingsInterface& a,
+                                    const StipplingSettingsInterface& b);
+IVW_MODULE_BASE_API bool operator!=(const StipplingSettingsInterface& a,
+                                    const StipplingSettingsInterface& b);
 
-#define WARN_IGNORE_SIGNED_UNSIGNED_COMPARE
-
-#if defined(__clang__)
-#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ >= 2)
-#       if __has_warning("-Wsign-compare")
-#           pragma clang diagnostic ignored "-Wsign-compare"
-#       endif
-#   endif
-#elif defined(__GNUC__)
-#   if __GNUC__ > 3 || (__GNUC__ == 3  && __GNUC_MINOR__ >= 4)
-#       pragma GCC diagnostic ignored "-Wsign-compare"
-#   endif
-#elif defined(_MSC_VER)
-#   if (_MSC_FULL_VER >= 170000000)
-#       pragma warning(disable: 4388)
-#       pragma warning(disable: 4018)
-#   endif
-#endif
+}  // namespace inviwo

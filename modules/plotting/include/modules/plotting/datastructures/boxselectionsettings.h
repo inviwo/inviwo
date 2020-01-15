@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,30 +26,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#if !defined(WARN_INCLUDE_PUSH)
-#   error "`warn/ignore/signed-unsigned-compare` used without `warn/push`"
-#endif
+#include <modules/plotting/plottingmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-#if defined(WARN_IGNORE_SIGNED_UNSIGNED_COMPARE)
-#   error "`warn/ignore/signed-unsigned-compare` already included"
-#endif
+namespace inviwo {
 
-#define WARN_IGNORE_SIGNED_UNSIGNED_COMPARE
+namespace plot {
 
-#if defined(__clang__)
-#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ >= 2)
-#       if __has_warning("-Wsign-compare")
-#           pragma clang diagnostic ignored "-Wsign-compare"
-#       endif
-#   endif
-#elif defined(__GNUC__)
-#   if __GNUC__ > 3 || (__GNUC__ == 3  && __GNUC_MINOR__ >= 4)
-#       pragma GCC diagnostic ignored "-Wsign-compare"
-#   endif
-#elif defined(_MSC_VER)
-#   if (_MSC_FULL_VER >= 170000000)
-#       pragma warning(disable: 4388)
-#       pragma warning(disable: 4018)
-#   endif
-#endif
+class IVW_MODULE_PLOTTING_API BoxSelectionSettingsInterface {
+public:
+    enum class Mode { Selection, Filtering, None };
+    BoxSelectionSettingsInterface() = default;
+    virtual ~BoxSelectionSettingsInterface() = default;
+
+    virtual Mode getMode() const = 0;
+    virtual vec4 getLineColor() const = 0;
+    virtual float getLineWidth() const = 0;
+};
+
+IVW_MODULE_PLOTTING_API bool operator==(const BoxSelectionSettingsInterface& a,
+                                        const BoxSelectionSettingsInterface& b);
+IVW_MODULE_PLOTTING_API bool operator!=(const BoxSelectionSettingsInterface& a,
+                                        const BoxSelectionSettingsInterface& b);
+
+}  // namespace plot
+
+}  // namespace inviwo

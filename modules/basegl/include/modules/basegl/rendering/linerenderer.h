@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,29 +27,52 @@
  *
  *********************************************************************************/
 
-#if !defined(WARN_INCLUDE_PUSH)
-#   error "`warn/ignore/signed-unsigned-compare` used without `warn/push`"
-#endif
+#pragma once
 
-#if defined(WARN_IGNORE_SIGNED_UNSIGNED_COMPARE)
-#   error "`warn/ignore/signed-unsigned-compare` already included"
-#endif
+#include <modules/basegl/baseglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/rendering/meshdrawer.h>
 
-#define WARN_IGNORE_SIGNED_UNSIGNED_COMPARE
+#include <modules/basegl/datastructures/meshshadercache.h>
+#include <modules/basegl/datastructures/linesettings.h>
 
-#if defined(__clang__)
-#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ >= 2)
-#       if __has_warning("-Wsign-compare")
-#           pragma clang diagnostic ignored "-Wsign-compare"
-#       endif
-#   endif
-#elif defined(__GNUC__)
-#   if __GNUC__ > 3 || (__GNUC__ == 3  && __GNUC_MINOR__ >= 4)
-#       pragma GCC diagnostic ignored "-Wsign-compare"
-#   endif
-#elif defined(_MSC_VER)
-#   if (_MSC_FULL_VER >= 170000000)
-#       pragma warning(disable: 4388)
-#       pragma warning(disable: 4018)
-#   endif
-#endif
+namespace inviwo {
+
+class Camera;
+class Mesh;
+
+namespace algorithm {
+
+/**
+ * \class LineRenderer
+ * \brief Helper class for rendering a mesh as lines.
+ * Only renders Mesh with DrawType::Lines
+ */
+class IVW_MODULE_BASEGL_API LineRenderer {
+public:
+    LineRenderer(const LineSettingsInterface* settings);
+    ~LineRenderer() = default;
+
+    /**
+     * \brief Render lines according to currently set LineSettingsInterface settings
+     * Only meshes with DrawType::Lines will be rendered.
+     *
+     * @param mesh to render as lines, must
+     * @param camera for projection
+     * @param screenDim width, height in pixels
+     */
+    void render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
+                const LineSettingsInterface* settings);
+
+protected:
+    // Call whenever PseudoLighting or RoundDepthProfile, or Stippling mode change
+    void configureShaders();
+    void setUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, size2_t screenDim);
+    void configureShader(Shader& shader);
+    LineSettings settings_;  //!< Local cache
+    MeshShaderCache lineShaders_;
+};
+
+}  // namespace algorithm
+
+}  // namespace inviwo

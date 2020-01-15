@@ -32,6 +32,8 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
+#include <modules/basegl/properties/linesettingsproperty.h>
+#include <modules/basegl/rendering/linerenderer.h>
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
@@ -43,7 +45,6 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/stipplingproperty.h>
 
 #include <vector>
 
@@ -51,7 +52,7 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.LineRenderer, Line Renderer}
  * ![](org.inviwo.LineRenderer.png?classIdentifier=org.inviwo.LineRenderer)
- * This processor a set of meshes with 2D lines using OpenGL.
+ * Render input meshes as lines using OpenGL.
  *
  * ### Inports
  *   * __geometry__ Input meshes
@@ -72,44 +73,31 @@ namespace inviwo {
  */
 
 /**
- * \class LineRenderer
+ * \class LineRendererProcessor
  * \brief Renders input geometry with 2D lines
  */
-class IVW_MODULE_BASEGL_API LineRenderer : public Processor {
+class IVW_MODULE_BASEGL_API LineRendererProcessor : public Processor {
 public:
-    LineRenderer();
-    virtual ~LineRenderer() = default;
+    LineRendererProcessor();
+    virtual ~LineRendererProcessor() = default;
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void initializeResources() override;
-
 private:
-    void configureShader(Shader& shader);
     void drawMeshes();
 
     MeshFlatMultiInport inport_;
     ImageInport imageInport_;
     ImageOutport outport_;
-
-    FloatProperty lineWidth_;
-    FloatProperty antialiasing_;
-    FloatProperty miterLimit_;
-    BoolProperty roundCaps_;
-
-    BoolProperty pseudoLighting_;
-    BoolProperty roundDepthProfile_;
+    LineSettingsProperty lineSettings_;
     BoolProperty writeDepth_;
-
-    StipplingProperty stippling_;
 
     CameraProperty camera_;
     CameraTrackball trackball_;
-
-    MeshShaderCache lineShaders_;
+    algorithm::LineRenderer lineRenderer_;
 };
 
 }  // namespace inviwo

@@ -88,7 +88,6 @@
 #include <inviwo/core/properties/raycastingproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/simpleraycastingproperty.h>
-#include <inviwo/core/properties/stipplingproperty.h>
 #include <inviwo/core/properties/volumeindicatorproperty.h>
 
 #include <inviwo/core/properties/propertyconvertermanager.h>
@@ -333,7 +332,6 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<RaycastingProperty>();
     registerProperty<SimpleLightingProperty>();
     registerProperty<SimpleRaycastingProperty>();
-    registerProperty<StipplingProperty>();
     registerProperty<StringProperty>();
     registerProperty<TransferFunctionProperty>();
     registerProperty<VolumeIndicatorProperty>();

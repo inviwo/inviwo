@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,29 +27,26 @@
  *
  *********************************************************************************/
 
-#if !defined(WARN_INCLUDE_PUSH)
-#   error "`warn/ignore/signed-unsigned-compare` used without `warn/push`"
-#endif
+#include <modules/base/datastructures/stipplingsettingsinterface.h>
+#include <modules/base/datastructures/stipplingsettings.h>
 
-#if defined(WARN_IGNORE_SIGNED_UNSIGNED_COMPARE)
-#   error "`warn/ignore/signed-unsigned-compare` already included"
-#endif
+namespace inviwo {
 
-#define WARN_IGNORE_SIGNED_UNSIGNED_COMPARE
+StipplingSettings::StipplingSettings(const StipplingSettingsInterface* other)
+    : mode(other->getMode())
+    , length(other->getLength())
+    , spacing(other->getSpacing())
+    , offset(other->getOffset())
+    , worldScale(other->getWorldScale()) {}
 
-#if defined(__clang__)
-#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ >= 2)
-#       if __has_warning("-Wsign-compare")
-#           pragma clang diagnostic ignored "-Wsign-compare"
-#       endif
-#   endif
-#elif defined(__GNUC__)
-#   if __GNUC__ > 3 || (__GNUC__ == 3  && __GNUC_MINOR__ >= 4)
-#       pragma GCC diagnostic ignored "-Wsign-compare"
-#   endif
-#elif defined(_MSC_VER)
-#   if (_MSC_FULL_VER >= 170000000)
-#       pragma warning(disable: 4388)
-#       pragma warning(disable: 4018)
-#   endif
-#endif
+StipplingSettingsInterface::Mode StipplingSettings::getMode() const { return mode; }
+
+float StipplingSettings::getLength() const { return length; }
+
+float StipplingSettings::getSpacing() const { return spacing; }
+
+float StipplingSettings::getOffset() const { return offset; }
+
+float StipplingSettings::getWorldScale() const { return worldScale; }
+
+}  // namespace inviwo

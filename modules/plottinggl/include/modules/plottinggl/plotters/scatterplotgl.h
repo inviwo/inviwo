@@ -36,15 +36,22 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/dispatcher.h>
+
+#include <modules/base/algorithm/dataminmax.h>
+#include <modules/base/properties/stipplingproperty.h>
+#include <modules/basegl/properties/linesettingsproperty.h>
+
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
-#include <modules/base/algorithm/dataminmax.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
+
+#include <modules/plotting/interaction/boxselectioninteractionhandler.h>
 #include <modules/plotting/properties/marginproperty.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
 
+#include <modules/plottinggl/rendering/boxselectionrenderer.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 
 #include <optional>
@@ -58,11 +65,11 @@ class BufferObjectArray;
 
 namespace plot {
 
-class IVW_MODULE_PLOTTINGGL_API ScatterPlotGL {
+class IVW_MODULE_PLOTTINGGL_API ScatterPlotGL : public InteractionHandler {
 public:
     using ToolTipFunc = void(PickingEvent*, size_t);
     using ToolTipCallbackHandle = std::shared_ptr<std::function<ToolTipFunc>>;
-    using SelectionFunc = void(const std::unordered_set<size_t>&);
+    using SelectionFunc = void(const std::vector<bool>&);
     using SelectionCallbackHandle = std::shared_ptr<std::function<SelectionFunc>>;
 
     class Properties : public CompositeProperty {
@@ -85,6 +92,7 @@ public:
         FloatVec4Property color_;
         FloatVec4Property hoverColor_;
         FloatVec4Property selectionColor_;
+        BoxSelectionProperty boxSelectionSettings_;  ///! (Mouse) Drag selection/filtering
         MarginProperty margins_;
         FloatProperty axisMargin_;
 
@@ -100,13 +108,13 @@ public:
     private:
         auto props() {
             return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
-                            selectionColor_, margins_, axisMargin_, borderWidth_, borderColor_,
-                            hovering_, axisStyle_, xAxis_, yAxis_);
+                            selectionColor_, boxSelectionSettings_, margins_, axisMargin_,
+                            borderWidth_, borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
         }
         auto props() const {
             return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
-                            selectionColor_, margins_, axisMargin_, borderWidth_, borderColor_,
-                            hovering_, axisStyle_, xAxis_, yAxis_);
+                            selectionColor_, boxSelectionSettings_, margins_, axisMargin_,
+                            borderWidth_, borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
         }
     };
 
@@ -140,6 +148,11 @@ public:
 
     ToolTipCallbackHandle addToolTipCallback(std::function<ToolTipFunc> callback);
     SelectionCallbackHandle addSelectionChangedCallback(std::function<SelectionFunc> callback);
+    SelectionCallbackHandle addFilteringChangedCallback(std::function<SelectionFunc> callback);
+
+    // InteractionHandler
+    virtual void invokeEvent(Event* event) override;
+    virtual std::string getClassIdentifier() const override { return "org.inviwo.scatterplotgl"; };
 
     Properties properties_;
     Shader shader_;
@@ -150,6 +163,10 @@ protected:
 
     void objectPicked(PickingEvent* p);
     uint32_t getGlobalPickId(uint32_t localIndex) const;
+    /*
+     * Resizes selected_ and filtered_ according to currently set axes buffer size.
+     */
+    void ensureSelectAndFilterSizes();
 
     std::shared_ptr<const BufferBase> xAxis_;
     std::shared_ptr<const BufferBase> yAxis_;
@@ -167,8 +184,17 @@ protected:
     std::array<AxisRenderer, 2> axisRenderers_;
 
     PickingMapper picking_;
-    std::unordered_set<size_t> selectedIndices_;
+    std::vector<bool> filtered_;
+    std::vector<bool> selected_;
+    size_t nSelectedButNotFiltered_ = 0;
+    bool filteringDirty_ = true;
+    bool selectedIndicesGLDirty_ = true;
+    BufferObject selectedIndicesGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(),
+                                                   BufferUsage::Dynamic, BufferTarget::Index);
     std::optional<uint32_t> hoverIndex_;
+    bool hoverIndexDirty_ = true;
+    BufferObject hoverIndexGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(),
+                                              BufferUsage::Dynamic, BufferTarget::Index);
 
     std::unique_ptr<IndexBuffer> indices_;
     std::unique_ptr<BufferObjectArray> boa_;
@@ -177,6 +203,13 @@ protected:
 
     Dispatcher<ToolTipFunc> tooltipCallback_;
     Dispatcher<SelectionFunc> selectionChangedCallback_;
+    Dispatcher<SelectionFunc> filteringChangedCallback_;
+
+    BoxSelectionInteractionHandler::SelectionCallbackHandle boxSelectionChangedCallBack_;
+    BoxSelectionInteractionHandler::SelectionCallbackHandle boxFilteringChangedCallBack_;
+
+    BoxSelectionInteractionHandler boxSelectionHandler_;
+    BoxSelectionRenderer selectionRectRenderer_;
 };
 
 }  // namespace plot
