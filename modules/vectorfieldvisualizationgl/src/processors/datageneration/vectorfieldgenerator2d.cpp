@@ -54,16 +54,10 @@ VectorFieldGenerator2D::VectorFieldGenerator2D()
     , yRange_("yRange", "Y Range", -1, 1, -10, 10)
     , xValue_("x", "X", "-x", InvalidationLevel::InvalidResources)
     , yValue_("y", "Y", "y", InvalidationLevel::InvalidResources)
-    , shader_("vectorfieldgenerator2d.frag", false)
-    , fbo_() {
+    , shader_("vectorfieldgenerator2d.frag", false) {
     addPort(outport_);
 
-    addProperty(size_);
-    addProperty(xValue_);
-    addProperty(yValue_);
-
-    addProperty(xRange_);
-    addProperty(yRange_);
+    addProperties(size_, xValue_, yValue_, xRange_, yRange_);
 }
 
 VectorFieldGenerator2D::~VectorFieldGenerator2D() = default;
@@ -77,11 +71,12 @@ void VectorFieldGenerator2D::initializeResources() {
 
 void VectorFieldGenerator2D::process() {
 
-    image_ = std::make_shared<Image>(size_.get(), DataVec2Float32::get());
-    image_->getColorLayer()->setSwizzleMask(
-        {{ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One}});
+    auto layer = std::make_shared<Layer>(
+        size_, DataVec2Float32::get(), LayerType::Color,
+        SwizzleMask{ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One});
+    auto image = std::make_shared<Image>(layer);
 
-    utilgl::activateAndClearTarget(*(image_.get()), ImageType::ColorOnly);
+    utilgl::activateAndClearTarget(*image, ImageType::ColorOnly);
 
     shader_.activate();
     utilgl::setUniforms(shader_, xRange_, yRange_);
@@ -91,7 +86,7 @@ void VectorFieldGenerator2D::process() {
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 
-    outport_.setData(image_);
+    outport_.setData(image);
 }
 
 }  // namespace inviwo

@@ -38,21 +38,20 @@ Image::Image(size2_t dimensions, const DataFormatBase* format)
     : DataGroup<Image, ImageRepresentation>()
     , MetaDataOwner()
     , depthLayer_{createDepthLayer(dimensions)}
-    , pickingLayer_{createPickingLayer(dimensions, format)} {
+    , pickingLayer_{createPickingLayer(dimensions)} {
     colorLayers_.push_back(createColorLayer(dimensions, format));
 }
 
 Image::Image(std::shared_ptr<Layer> layer)
     : DataGroup<Image, ImageRepresentation>(), MetaDataOwner() {
     if (layer) {
-        auto dimensions = layer->getDimensions();
+        const auto dimensions = layer->getDimensions();
 
         switch (layer->getLayerType()) {
             case LayerType::Color: {
-                auto format = layer->getDataFormat();
                 colorLayers_.push_back(layer);
                 depthLayer_ = createDepthLayer(dimensions);
-                pickingLayer_ = createPickingLayer(dimensions, format);
+                pickingLayer_ = createPickingLayer(dimensions);
                 break;
             }
             case LayerType::Depth: {
@@ -120,8 +119,8 @@ std::shared_ptr<Layer> Image::createDepthLayer(size2_t dimensions) {
     return std::make_shared<Layer>(dimensions, DataFloat32::get(), LayerType::Depth,
                                    swizzlemasks::depth);
 }
-std::shared_ptr<Layer> Image::createPickingLayer(size2_t dimensions, const DataFormatBase* format) {
-    return std::make_shared<Layer>(dimensions, format, LayerType::Picking);
+std::shared_ptr<Layer> Image::createPickingLayer(size2_t dimensions) {
+    return std::make_shared<Layer>(dimensions, DataVec4UInt8::get(), LayerType::Picking);
 }
 
 const Layer* Image::getLayer(LayerType type, size_t idx) const {
