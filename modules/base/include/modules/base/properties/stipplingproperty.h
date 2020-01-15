@@ -30,8 +30,7 @@
 #ifndef IVW_STIPPLINGPROPERTY_H
 #define IVW_STIPPLINGPROPERTY_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <modules/base/basemoduledefine.h>
 #include <modules/base/datastructures/stipplingsettingsinterface.h>
 
 #include <inviwo/core/properties/compositeproperty.h>
@@ -40,7 +39,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API StipplingProperty : public CompositeProperty, public StipplingSettingsInterface {
+class IVW_MODULE_BASE_API StipplingProperty : public CompositeProperty, public StipplingSettingsInterface {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;

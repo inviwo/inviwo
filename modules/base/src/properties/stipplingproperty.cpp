@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/stipplingproperty.h>
+#include <modules/base/properties/stipplingproperty.h>
 
 namespace inviwo {
 
