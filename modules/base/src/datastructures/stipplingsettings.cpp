@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <modules/base/datastructures/stipplingsettingsinterface.h>
-#include <inviwo/core/datastructures/stipplingsettings.h>
+#include <modules/base/datastructures/stipplingsettings.h>
 
 namespace inviwo {
 
