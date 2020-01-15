@@ -58,7 +58,7 @@ protected:
 
     ImageOutport outport_;
 
-    IntVec2Property size_;
+    IntSize2Property size_;
 
     FloatMinMaxProperty xRange_;
     FloatMinMaxProperty yRange_;
