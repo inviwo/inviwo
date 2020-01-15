@@ -64,8 +64,8 @@ public:
     virtual float getWorldScale() const = 0;
 };
 IVW_MODULE_BASE_API bool operator==(const StipplingSettingsInterface& a,
-                             const StipplingSettingsInterface& b);
+                                    const StipplingSettingsInterface& b);
 IVW_MODULE_BASE_API bool operator!=(const StipplingSettingsInterface& a,
-                             const StipplingSettingsInterface& b);
+                                    const StipplingSettingsInterface& b);
 
 }  // namespace inviwo

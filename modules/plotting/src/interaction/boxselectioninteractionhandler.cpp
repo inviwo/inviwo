@@ -201,7 +201,7 @@ std::vector<bool> BoxSelectionInteractionHandler::boxFilter(const dvec2& start, 
     }
     auto xbuf = xAxis->getRepresentation<BufferRAM>();
 #include <warn/push>
-#include <warn/ignore/conversion>               // Ignore double->float warnings
+#include <warn/ignore/conversion>  // Ignore double->float warnings
     auto filteredIndices = xbuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
         [start, end, ybuf = yAxis->getRepresentation<BufferRAM>()](auto brprecision) {
             using ValueTypeX = util::PrecisionValueType<decltype(brprecision)>;
