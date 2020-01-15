@@ -29,10 +29,11 @@
 #pragma once
 
 #include <modules/basegl/datastructures/linesettingsinterface.h>
+#include <modules/base/properties/stipplingproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stipplingproperty.h>
+
 
 namespace inviwo {
 

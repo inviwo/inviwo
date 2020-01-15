@@ -75,8 +75,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationtraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/spatialdata.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/stipplingsettings.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/stipplingsettingsinterface.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/tfprimitive.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/tfprimitiveset.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/transferfunction.h
@@ -247,8 +245,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/raycastingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simplelightingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simpleraycastingproperty.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/properties/stipplingproperty.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/properties/stringproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/templateproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/tfpropertyconcept.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/transferfunctionproperty.h
@@ -404,8 +400,6 @@ set(SOURCE_FILES
     datastructures/representationmetafactory.cpp
     datastructures/representationutil.cpp
     datastructures/spatialdata.cpp
-    datastructures/stipplingsettings.cpp
-    datastructures/stipplingsettingsinterface.cpp
     datastructures/tfprimitive.cpp
     datastructures/tfprimitiveset.cpp
     datastructures/transferfunction.cpp
@@ -550,7 +544,6 @@ set(SOURCE_FILES
     properties/raycastingproperty.cpp
     properties/simplelightingproperty.cpp
     properties/simpleraycastingproperty.cpp
-    properties/stipplingproperty.cpp
     properties/stringproperty.cpp
     properties/tfpropertyconcept.cpp
     properties/transferfunctionproperty.cpp

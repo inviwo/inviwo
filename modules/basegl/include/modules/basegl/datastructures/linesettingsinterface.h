@@ -31,7 +31,7 @@
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <inviwo/core/properties/stipplingproperty.h>
+#include <modules/base/properties/stipplingproperty.h>
 
 namespace inviwo {
 /*

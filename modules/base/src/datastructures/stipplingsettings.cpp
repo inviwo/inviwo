@@ -26,47 +26,27 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/stipplingsettingsinterface.h>
+#include <modules/base/datastructures/stipplingsettingsinterface.h>
+#include <inviwo/core/datastructures/stipplingsettings.h>
 
 namespace inviwo {
 
-/**
- * \brief Basic implementation of the StipplingSettingsInterface
- */
-class IVW_CORE_API StipplingSettings : public StipplingSettingsInterface {
-public:
-    StipplingSettings() = default;
-    StipplingSettings(const StipplingSettingsInterface* other);
-    virtual ~StipplingSettings() = default;
+StipplingSettings::StipplingSettings(const StipplingSettingsInterface* other)
+    : mode(other->getMode())
+    , length(other->getLength())
+    , spacing(other->getSpacing())
+    , offset(other->getOffset())
+    , worldScale(other->getWorldScale()) {}
 
-    Mode mode = Mode::None;
-    float length = 30.f;
-    float spacing = 10.f;
-    float offset = 0.f;
-    float worldScale = 4.f;
-    /*
-     * @copydoc StipplingSettingsInterface::getMode
-     */
-    virtual StipplingSettingsInterface::Mode getMode() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getLength
-     */
-    virtual float getLength() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getSpacing
-     */
-    virtual float getSpacing() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getOffset
-     */
-    virtual float getOffset() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getWorldScale
-     */
-    virtual float getWorldScale() const override;
-};
+StipplingSettingsInterface::Mode StipplingSettings::getMode() const { return mode; }
+
+float StipplingSettings::getLength() const { return length; }
+
+float StipplingSettings::getSpacing() const { return spacing; }
+
+float StipplingSettings::getOffset() const { return offset; }
+
+float StipplingSettings::getWorldScale() const { return worldScale; }
 
 }  // namespace inviwo

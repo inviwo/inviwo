@@ -45,7 +45,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/stipplingproperty.h>
+
 
 #include <vector>
 

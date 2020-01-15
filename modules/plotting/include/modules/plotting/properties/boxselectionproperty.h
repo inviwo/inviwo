@@ -29,10 +29,10 @@
 #pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
+#include <modules/plotting/datastructures/boxselectionsettings.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/plotting/datastructures/boxselectionsettings.h>
 #include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {

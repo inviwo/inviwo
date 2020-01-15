@@ -39,9 +39,9 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/properties/stipplingproperty.h>
 #include <inviwo/core/properties/raycastingproperty.h>
 #include <inviwo/core/ports/port.h>
+#include <modules/base/properties/stipplingproperty.h>
 #include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/texture/textureutils.h>
 

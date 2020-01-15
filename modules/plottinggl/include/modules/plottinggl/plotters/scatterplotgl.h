@@ -34,14 +34,15 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/stipplingproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/dispatcher.h>
+
+#include <modules/base/algorithm/dataminmax.h>
+#include <modules/base/properties/stipplingproperty.h>
+#include <modules/basegl/properties/linesettingsproperty.h>
+
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
-#include <modules/base/algorithm/dataminmax.h>
-
-#include <modules/basegl/properties/linesettingsproperty.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 

@@ -32,7 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/stipplingsettingsinterface.h>
+#include <modules/base/datastructures/stipplingsettingsinterface.h>
 
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
