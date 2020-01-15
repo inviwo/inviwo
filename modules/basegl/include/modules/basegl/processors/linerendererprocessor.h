@@ -46,7 +46,6 @@
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 
-
 #include <vector>
 
 namespace inviwo {

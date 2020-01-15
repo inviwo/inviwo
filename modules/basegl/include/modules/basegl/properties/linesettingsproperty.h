@@ -34,7 +34,6 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 
-
 namespace inviwo {
 
 class IVW_MODULE_BASEGL_API LineSettingsProperty : public LineSettingsInterface,
