@@ -202,28 +202,27 @@ std::vector<bool> BoxSelectionInteractionHandler::boxFilter(const dvec2& start, 
     auto xbuf = xAxis->getRepresentation<BufferRAM>();
 #include <warn/push>
 #include <warn/ignore/conversion>               // Ignore double->float warnings
-#include <warn/ignore/signed-unsigned-compare>  // Could not figure out why filter comparison have this warning
     auto filteredIndices = xbuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
         [start, end, ybuf = yAxis->getRepresentation<BufferRAM>()](auto brprecision) {
-            using ValueType = util::PrecisionValueType<decltype(brprecision)>;
+            using ValueTypeX = util::PrecisionValueType<decltype(brprecision)>;
             // Avoid conversions in the loop
-            const auto tminX = std::numeric_limits<ValueType>::is_integer
-                                   ? static_cast<ValueType>(std::ceil(start[0]))
-                                   : static_cast<ValueType>(start[0]);
-            const auto tmaxX = std::numeric_limits<ValueType>::is_integer
-                                   ? static_cast<ValueType>(std::floor(end[0]))
-                                   : static_cast<ValueType>(end[0]);
+            const auto tminX = std::numeric_limits<ValueTypeX>::is_integer
+                                   ? static_cast<ValueTypeX>(std::ceil(start[0]))
+                                   : static_cast<ValueTypeX>(start[0]);
+            const auto tmaxX = std::numeric_limits<ValueTypeX>::is_integer
+                                   ? static_cast<ValueTypeX>(std::floor(end[0]))
+                                   : static_cast<ValueTypeX>(end[0]);
             auto xData = brprecision->getDataContainer();
             return ybuf->dispatch<std::vector<bool>, dispatching::filter::Scalars>(
                 [tminX, tmaxX, start, end, xData](auto brprecision) {
                     using ValueTypeY = util::PrecisionValueType<decltype(brprecision)>;
                     std::vector<bool> filtered(brprecision->getSize(), false);
-                    const auto tminY = std::numeric_limits<ValueType>::is_integer
-                                           ? static_cast<ValueType>(std::ceil(start[1]))
-                                           : static_cast<ValueType>(start[1]);
-                    const auto tmaxY = std::numeric_limits<ValueType>::is_integer
-                                           ? static_cast<ValueType>(std::floor(end[1]))
-                                           : static_cast<ValueType>(end[1]);
+                    const auto tminY = std::numeric_limits<ValueTypeY>::is_integer
+                                           ? static_cast<ValueTypeY>(std::ceil(start[1]))
+                                           : static_cast<ValueTypeY>(start[1]);
+                    const auto tmaxY = std::numeric_limits<ValueTypeY>::is_integer
+                                           ? static_cast<ValueTypeY>(std::floor(end[1]))
+                                           : static_cast<ValueTypeY>(end[1]);
 
                     for (auto&& [ind, xVal, yVal] :
                          util::enumerate(xData, brprecision->getDataContainer())) {
