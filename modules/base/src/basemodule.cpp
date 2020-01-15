@@ -224,7 +224,6 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProperty<transform::ScaleProperty>();
     registerProperty<transform::CustomTransformProperty>();
 
-
     // Register Data readers
     registerDataReader(std::make_unique<DatVolumeSequenceReader>());
     registerDataReader(std::make_unique<IvfVolumeReader>());
