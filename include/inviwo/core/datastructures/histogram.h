@@ -52,6 +52,8 @@ public:
         std::vector<double> percentiles;
     };
 
+    NormalizedHistogram();
+
     NormalizedHistogram(dvec2 dataRange, std::vector<double> counts, double min, double max,
                         double mean, double standardDeviation);
 

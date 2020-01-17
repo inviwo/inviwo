@@ -34,6 +34,8 @@
 
 namespace inviwo {
 
+NormalizedHistogram::NormalizedHistogram() : stats_{0.0, 0.0, 0.0, 0.0, {}}, dataRange_{0.0, 0.0} {}
+
 NormalizedHistogram::NormalizedHistogram(dvec2 dataRange, std::vector<double> counts, double min,
                                          double max, double mean, double standardDeviation)
     : stats_{min, max, mean, standardDeviation, {}}
