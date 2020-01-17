@@ -258,6 +258,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/resourcemanager/resourcemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/resourcemanager/resourcemanagerobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/assertion.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/brickiterator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/bufferutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/buildinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/callback.h
@@ -555,6 +556,7 @@ set(SOURCE_FILES
     resourcemanager/resourcemanager.cpp
     resourcemanager/resourcemanagerobserver.cpp
     util/assertion.cpp
+    util/brickiterator.cpp
     util/bufferutils.cpp
     util/canvas.cpp
     util/capabilities.cpp
@@ -633,6 +635,7 @@ else()
 endif()
 
 set(TEST_FILES
+    tests/unittests/brickiterator-test.cpp
     tests/unittests/colorconversion-test.cpp
     tests/unittests/commandlineparser-test.cpp
     tests/unittests/conversion-test.cpp
