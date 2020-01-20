@@ -23,7 +23,7 @@ set(SOURCE_FILES
     src/processors/calcnormalsprocessor.cpp
     src/processors/fragmentlistrenderer.cpp
     src/processors/fancymeshrenderer.cpp
-    src/fancymeshrenderermodule.cpp
+    src/meshrenderingglmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -34,14 +34,14 @@ set(SHADER_FILES
     glsl/fancymeshrenderer.frag
     glsl/fancymeshrenderer.geom
     glsl/fancymeshrenderer.vert
-    glsl/abuffercommons.hglsl
-    glsl/abufferlinkedList.hglsl
-    glsl/abuffersort.hglsl
+    glsl/abuffercommons.glsl
+    glsl/abufferlinkedList.glsl
+    glsl/abuffersort.glsl
     glsl/clearabufferlinkedlist.frag
     glsl/dispabufferlinkedlist.frag
     glsl/simplequad.vert
     glsl/depthonly.frag
-    glsl/illustrationbuffer.hglsl
+    glsl/illustrationbuffer.glsl
     glsl/sortandfillillustrationbuffer.frag
     glsl/displayIllustrationbuffer.frag
     glsl/resolveneighborsillustrationbuffer.frag

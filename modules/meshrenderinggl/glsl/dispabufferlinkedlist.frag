@@ -61,31 +61,31 @@ void fillFragmentArray(uint idx, out int numFrag);
 
 //Resolve A-Buffer and blend sorted fragments
 void main(void) {
-	ivec2 coords=ivec2(gl_FragCoord.xy);
-	
-	if(coords.x>=0 && coords.y>=0 
-	   && coords.x<AbufferParams.screenWidth 
-	   && coords.y<AbufferParams.screenHeight ){
+    ivec2 coords=ivec2(gl_FragCoord.xy);
+    
+    if(coords.x>=0 && coords.y>=0 
+       && coords.x<AbufferParams.screenWidth 
+       && coords.y<AbufferParams.screenHeight ){
 
-		uint pixelIdx=getPixelLink(coords);
+        uint pixelIdx=getPixelLink(coords);
 
-		if(pixelIdx > 0 ){
+        if(pixelIdx > 0 ){
 
 #if ABUFFER_DISPNUMFRAGMENTS==1
         FragData0=vec4(getFragmentCount(pixelIdx) / float(ABUFFER_SIZE));
 #elif ABUFFER_RESOLVE_USE_SORTING==0	
-		//If we only want the closest fragment
+        //If we only want the closest fragment
         vec4 p = resolveClosest(pixelIdx);
         FragData0 = uncompressPixelData(p).color;
 #else
-		//Copy fragments in local array
+        //Copy fragments in local array
         int numFrag = 0;
-		fillFragmentArray(pixelIdx, numFrag);
-		//Sort fragments in local memory array
-		bubbleSort(numFrag);
+        fillFragmentArray(pixelIdx, numFrag);
+        //Sort fragments in local memory array
+        bubbleSort(numFrag);
 
         //front-to-back shading
-		vec4 color = vec4(0);
+        vec4 color = vec4(0);
         for (int i=0; i<numFrag; ++i) {
             vec4 c = uncompressPixelData(fragmentList[i]).color;
             color.rgb = color.rgb + (1-color.a)*c.a*c.rgb;
@@ -94,15 +94,15 @@ void main(void) {
         FragData0 = color;
 #endif
 
-		}else{ //no pixel found
+        }else{ //no pixel found
 #if ABUFFER_DISPNUMFRAGMENTS==0
-			//If no fragment, write nothing
-			discard;
+            //If no fragment, write nothing
+            discard;
 #else
-			FragData0=vec4(0.0f);
+            FragData0=vec4(0.0f);
 #endif
-		}
-	}
+        }
+    }
 }
 
 
@@ -119,34 +119,34 @@ int getFragmentCount(uint pixelIdx){
 
 vec4 resolveClosest(uint pixelIdx){
 
-	//Search smallest z
-	vec4 minFrag=vec4(0.0f, 1000000.0f, 1.0f, uintBitsToFloat(1024*1023));
-	int ip=0;
+    //Search smallest z
+    vec4 minFrag=vec4(0.0f, 1000000.0f, 1.0f, uintBitsToFloat(1024*1023));
+    int ip=0;
 
-	while(pixelIdx!=0 && ip<ABUFFER_SIZE){
+    while(pixelIdx!=0 && ip<ABUFFER_SIZE){
         vec4 val = readPixelStorage(pixelIdx-1);
 
         if (val.y<minFrag.y) {
             minFrag = val;
         }
 
-		pixelIdx = floatBitsToUint(val.x);
+        pixelIdx = floatBitsToUint(val.x);
 
-		ip++;
-	}
-	//Output final color for the frame buffer
-	return minFrag;
+        ip++;
+    }
+    //Output final color for the frame buffer
+    return minFrag;
 }
 
 void fillFragmentArray(uint pixelIdx, out int numFrag){
-	//Load fragments into a local memory array for sorting
+    //Load fragments into a local memory array for sorting
 
-	int ip=0;
-	while(pixelIdx!=0 && ip<ABUFFER_SIZE){
-		vec4 val = readPixelStorage(pixelIdx-1);
+    int ip=0;
+    while(pixelIdx!=0 && ip<ABUFFER_SIZE){
+        vec4 val = readPixelStorage(pixelIdx-1);
         fragmentList[ip] = val;
         pixelIdx = floatBitsToUint(val.x);
-		ip++;
-	}
+        ip++;
+    }
     numFrag = ip;
 }

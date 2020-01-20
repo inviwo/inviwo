@@ -65,16 +65,8 @@ void calculateMeshNormals(Mesh& mesh, CalculateMeshNormalsMode mode) {
 
     auto vertexLookUp =
         vertices->dispatch<std::function<vec3(size_t)>, dispatching::filter::Floats>([](auto ram) {
-            using T = util::PrecisionValueType<decltype(ram)>;
             return [&v = ram->getDataContainer()](size_t i) -> dvec3 {
-                if constexpr (util::extent<T>::value == 1) {
-                    return dvec3(v[i], 0, 0);
-                }
-                else if constexpr (util::extent<T>::value == 2) {
-                    return dvec3(v[i], 0);
-                } else {  // extent == 3 or extent == 4
-                    return dvec3(v[i]);
-                }
+                return util::glm_convert<dvec3>(v[i]);
             };
         });
 
