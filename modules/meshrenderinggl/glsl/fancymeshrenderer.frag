@@ -59,19 +59,19 @@ in fData
 } frag;
 
 #ifdef USE_FRAGMENT_LIST
-#include "abufferlinkedlist.hglsl"
+#include "abufferlinkedlist.glsl"
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 #endif
 
 //per-face settings
 struct FaceRenderSettings
 {
-	vec4 externalColor;
-	int colorSource;
+    vec4 externalColor;
+    int colorSource;
 
     bool separateUniformAlpha;
     float uniformAlpha;
-	int shadingMode;
+    int shadingMode;
 
     bool showEdges;
     vec4 edgeColor;

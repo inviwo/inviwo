@@ -203,6 +203,21 @@ bool FragmentListRenderer::supportsIllustrationBuffer() {
 
 void FragmentListRenderer::initShaders() {
     displayShader_.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
+
+    displayShader_.getFragmentShaderObject()->addShaderExtension("GL_NV_gpu_shader5", true);
+    displayShader_.getFragmentShaderObject()->addShaderExtension("GL_EXT_shader_image_load_store",
+                                                                 true);
+    displayShader_.getFragmentShaderObject()->addShaderExtension("GL_NV_shader_buffer_load", true);
+    displayShader_.getFragmentShaderObject()->addShaderExtension("GL_NV_shader_buffer_store", true);
+    displayShader_.getFragmentShaderObject()->addShaderExtension("GL_EXT_bindable_uniform", true);
+
+    clearShader_.getFragmentShaderObject()->addShaderExtension("GL_NV_gpu_shader5", true);
+    clearShader_.getFragmentShaderObject()->addShaderExtension("GL_EXT_shader_image_load_store",
+                                                               true);
+    clearShader_.getFragmentShaderObject()->addShaderExtension("GL_NV_shader_buffer_load", true);
+    clearShader_.getFragmentShaderObject()->addShaderExtension("GL_NV_shader_buffer_store", true);
+    clearShader_.getFragmentShaderObject()->addShaderExtension("GL_EXT_bindable_uniform", true);
+
     displayShader_.build();
     clearShader_.build();
     fillIllustrationBufferShader_.getFragmentShaderObject()->addShaderExtension(
@@ -222,13 +237,8 @@ void FragmentListRenderer::initBuffers(const size2_t& screenSize) {
 
         // reallocate screen size texture that holds the pointer to the end of the fragment list at
         // that pixel
-        abufferIdxImg_ = new Texture2D(screenSize, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST, 0);
-        abufferIdxImg_->bind();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, static_cast<GLsizei>(screenSize.x),
-                     static_cast<GLsizei>(screenSize.y), 0, GL_RED, GL_FLOAT, nullptr);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        LGL_ERROR;
+        abufferIdxImg_ = new Texture2D(screenSize, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST);
+        abufferIdxImg_->initialize(nullptr);
 
         LogInfo("fragment-list: screen size buffers allocated of size " << screenSize);
     }
@@ -331,8 +341,9 @@ void FragmentListRenderer::debugFragmentLists(GLuint numFrags) {
         float r = float((c >> 20) & 0x3ff) / 1023.0f;
         float g = float((c >> 10) & 0x3ff) / 1023.0f;
         float b = float(c & 0x3ff) / 1023.0f;
-        oss << fmt::format("%5d: previous=%5d, depth=%6.3f, alpha=%5.3f, r=%5.3f, g=%5.3f, b=%5.3f\n", i,
-               (int)previous, (float)depth, (float)alpha, r, g, b);
+        oss << fmt::format(
+            "%5d: previous=%5d, depth=%6.3f, alpha=%5.3f, r=%5.3f, g=%5.3f, b=%5.3f\n", i,
+            (int)previous, (float)depth, (float)alpha, r, g, b);
     }
 
     oss << std::endl << "\n==================================================" << std::endl;
@@ -349,21 +360,15 @@ void FragmentListRenderer::initIllustrationBuffer() {
         // reallocate screen size texture that holds the pointer to the begin of the block of
         // fragments
         illustrationBufferIdxImg_ =
-            new Texture2D(screenSize_, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST, 0);
-        illustrationBufferIdxImg_->bind();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, static_cast<GLsizei>(screenSize_.x),
-                     static_cast<GLsizei>(screenSize_.y), 0, GL_RED, GL_FLOAT, nullptr);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            new Texture2D(screenSize_, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST);
+        illustrationBufferIdxImg_->initialize(nullptr);
+
         LGL_ERROR;
         // reallocate screen size texture that holds the count of fragments at that pixel
         illustrationBufferCountImg_ =
-            new Texture2D(screenSize_, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST, 0);
+            new Texture2D(screenSize_, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST);
+        illustrationBufferCountImg_->initialize(nullptr);
         illustrationBufferCountImg_->bind();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, static_cast<GLsizei>(screenSize_.x),
-                     static_cast<GLsizei>(screenSize_.y), 0, GL_RED, GL_FLOAT, nullptr);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         LGL_ERROR;
 
         LogInfo("Illustration Buffers: additional screen size buffers allocated of size "

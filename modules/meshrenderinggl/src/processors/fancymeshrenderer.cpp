@@ -96,6 +96,7 @@ FancyMeshRenderer::FancyMeshRenderer()
     , shader_("fancymeshrenderer.vert", "fancymeshrenderer.geom", "fancymeshrenderer.frag", false)
     , depthShader_("geometryrendering.vert", "depthonly.frag", false)
     , needsRecompilation_(true) {
+
     // query OpenGL Capability
     supportsFragmentLists_ = FragmentListRenderer::supportsFragmentLists();
     supportedIllustrationBuffer_ = FragmentListRenderer::supportsIllustrationBuffer();
@@ -109,8 +110,6 @@ FancyMeshRenderer::FancyMeshRenderer()
             "Illustration Buffer not supported by the hardware, screen-space silhouettes not "
             "available");
     }
-
-    // Copied from the standard MeshRenderer
 
     // input and output ports
     addPort(inport_);
@@ -455,30 +454,31 @@ void FancyMeshRenderer::update() {
 void FancyMeshRenderer::compileShader() {
     if (!needsRecompilation_) return;
 
+    auto fso = shader_.getFragmentShaderObject();
+
+    fso->addShaderExtension("GL_NV_gpu_shader5", true);
+    fso->addShaderExtension("GL_EXT_shader_image_load_store", true);
+    fso->addShaderExtension("GL_NV_shader_buffer_load", true);
+    fso->addShaderExtension("GL_NV_shader_buffer_store", true);
+    fso->addShaderExtension("GL_EXT_bindable_uniform", true);
+
+
     // shading defines
     utilgl::addShaderDefines(shader_, lightingProperty_);
 
-    if (colorLayer_.get()) {
-        shader_.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
-    } else {
-        shader_.getFragmentShaderObject()->removeShaderDefine("COLOR_LAYER");
-    }
+    shader_.getFragmentShaderObject()->setShaderDefine("COLOR_LAYER", colorLayer_);
 
     // first two layers (color and picking) are reserved
     int layerID = 2;
-    if (normalsLayer_.get()) {
-        shader_.getFragmentShaderObject()->addShaderDefine("NORMALS_LAYER");
+    shader_.getFragmentShaderObject()->setShaderDefine("NORMALS_LAYER", normalsLayer_);
+    if (normalsLayer_) {
         shader_.getFragmentShaderObject()->addOutDeclaration("normals_out", layerID);
         ++layerID;
-    } else {
-        shader_.getFragmentShaderObject()->removeShaderDefine("NORMALS_LAYER");
     }
-    if (viewNormalsLayer_.get()) {
-        shader_.getFragmentShaderObject()->addShaderDefine("VIEW_NORMALS_LAYER");
+    shader_.getFragmentShaderObject()->setShaderDefine("VIEW_NORMALS_LAYER", viewNormalsLayer_);
+    if (viewNormalsLayer_) {
         shader_.getFragmentShaderObject()->addOutDeclaration("view_normals_out", layerID);
         ++layerID;
-    } else {
-        shader_.getFragmentShaderObject()->removeShaderDefine("VIEW_NORMALS_LAYER");
     }
 
     // Settings
@@ -494,37 +494,30 @@ void FancyMeshRenderer::compileShader() {
     }
 
     // helper function that sets shader defines based on a boolean property
-    auto SendBoolean = [this](bool flag, const std::string& define) {
-        if (flag) {
-            this->shader_.getFragmentShaderObject()->addShaderDefine(define);
-            this->shader_.getGeometryShaderObject()->addShaderDefine(define);
-            this->shader_.getVertexShaderObject()->addShaderDefine(define);
-        } else {
-            this->shader_.getFragmentShaderObject()->removeShaderDefine(define);
-            this->shader_.getGeometryShaderObject()->removeShaderDefine(define);
-            this->shader_.getVertexShaderObject()->removeShaderDefine(define);
-        }
+    auto set = [this](bool flag, const std::string& define) {
+        this->shader_.getFragmentShaderObject()->setShaderDefine(define, flag);
+        this->shader_.getGeometryShaderObject()->setShaderDefine(define, flag);
+        this->shader_.getVertexShaderObject()->setShaderDefine(define, flag);
     };
-    SendBoolean(alphaSettings_.enableUniform_.get(), "ALPHA_UNIFORM");
-    SendBoolean(alphaSettings_.enableAngleBased_.get(), "ALPHA_ANGLE_BASED");
-    SendBoolean(alphaSettings_.enableNormalVariation_.get(), "ALPHA_NORMAL_VARIATION");
-    SendBoolean(alphaSettings_.enableDensity_.get(), "ALPHA_DENSITY");
-    SendBoolean(alphaSettings_.enableShape_.get(), "ALPHA_SHAPE");
-    SendBoolean(faceSettings_[0].showEdges_.get() || faceSettings_[1].showEdges_.get(),
-                "DRAW_EDGES");
-    SendBoolean(edgeSettings_.depthDependent_.get(), "DRAW_EDGES_DEPTH_DEPENDENT");
-    SendBoolean(edgeSettings_.smoothEdges_.get(), "DRAW_EDGES_SMOOTHING");
-    SendBoolean(meshHasAdjacency_, "MESH_HAS_ADJACENCY");
-    SendBoolean(drawSilhouette_, "DRAW_SILHOUETTE");
-    SendBoolean(faceSettings_[0].hatching_.mode_.get() != HatchingMode::Off ||
-                    faceSettings_[1].hatching_.mode_.get() != HatchingMode::Off,
-                "SEND_TEX_COORD");
-    SendBoolean(faceSettings_[0].colorSource_.get() == ColorSource::TransferFunction ||
-                    faceSettings_[1].colorSource_.get() == ColorSource::TransferFunction,
-                "SEND_SCALAR");
-    SendBoolean(faceSettings_[0].colorSource_.get() == ColorSource::VertexColor ||
-                    faceSettings_[1].colorSource_.get() == ColorSource::VertexColor,
-                "SEND_COLOR");
+    set(alphaSettings_.enableUniform_, "ALPHA_UNIFORM");
+    set(alphaSettings_.enableAngleBased_, "ALPHA_ANGLE_BASED");
+    set(alphaSettings_.enableNormalVariation_, "ALPHA_NORMAL_VARIATION");
+    set(alphaSettings_.enableDensity_, "ALPHA_DENSITY");
+    set(alphaSettings_.enableShape_, "ALPHA_SHAPE");
+    set(faceSettings_[0].showEdges_ || faceSettings_[1].showEdges_, "DRAW_EDGES");
+    set(edgeSettings_.depthDependent_, "DRAW_EDGES_DEPTH_DEPENDENT");
+    set(edgeSettings_.smoothEdges_, "DRAW_EDGES_SMOOTHING");
+    set(meshHasAdjacency_, "MESH_HAS_ADJACENCY");
+    set(drawSilhouette_, "DRAW_SILHOUETTE");
+    set(faceSettings_[0].hatching_.mode_ != HatchingMode::Off ||
+            faceSettings_[1].hatching_.mode_ != HatchingMode::Off,
+        "SEND_TEX_COORD");
+    set(faceSettings_[0].colorSource_ == ColorSource::TransferFunction ||
+            faceSettings_[1].colorSource_ == ColorSource::TransferFunction,
+        "SEND_SCALAR");
+    set(faceSettings_[0].colorSource_ == ColorSource::VertexColor ||
+            faceSettings_[1].colorSource_ == ColorSource::VertexColor,
+        "SEND_COLOR");
     shader_.build();
 
     LogProcessorInfo("shader compiled");
@@ -765,7 +758,7 @@ void FancyMeshRenderer::updateDrawers() {
 
         // add new index buffer with adjacency information
         enhancedMesh2->addIndices({DrawType::Triangles, ConnectivityType::Adjacency},
-                                   halfEdges_->createIndexBufferWithAdjacency());
+                                  halfEdges_->createIndexBufferWithAdjacency());
         std::swap(enhancedMesh_, enhancedMesh2);
         LogProcessorInfo("Adjacency information created");
         // done

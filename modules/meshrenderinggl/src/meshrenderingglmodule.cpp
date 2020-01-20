@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/meshrenderinggl/fancymeshrenderermodule.h>
+#include <modules/meshrenderinggl/meshrenderingglmodule.h>
 #include <modules/meshrenderinggl/processors/fancymeshrenderer.h>
 #include <modules/meshrenderinggl/processors/calcnormalsprocessor.h>
 
