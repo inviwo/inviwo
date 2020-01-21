@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
- MeshRenderingGLModule:: MeshRenderingGLModule(InviwoApplication* app)
+MeshRenderingGLModule::MeshRenderingGLModule(InviwoApplication* app)
     : InviwoModule(app, "MeshRenderingGL") {
 
     // Add a directory to the search path of the Shadermanager

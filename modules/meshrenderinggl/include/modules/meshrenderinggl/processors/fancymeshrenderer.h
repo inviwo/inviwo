@@ -142,7 +142,6 @@ public:
     virtual void process() override;
 
 protected:
-
     /**
      * \brief Update the mesh drawer.
      * This is called when the inport is changed or when a property requires preprocessing steps on
