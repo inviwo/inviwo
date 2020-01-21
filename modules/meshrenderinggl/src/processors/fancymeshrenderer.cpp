@@ -462,7 +462,6 @@ void FancyMeshRenderer::compileShader() {
     fso->addShaderExtension("GL_NV_shader_buffer_store", true);
     fso->addShaderExtension("GL_EXT_bindable_uniform", true);
 
-
     // shading defines
     utilgl::addShaderDefines(shader_, lightingProperty_);
 

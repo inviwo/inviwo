@@ -37,7 +37,7 @@ namespace inviwo {
 
 namespace meshutil {
 /**
- * \brief The weighting modes for calculating normals 
+ * \brief The weighting modes for calculating normals
  */
 enum class CalculateMeshNormalsMode {
     /**
