@@ -30,42 +30,51 @@
 #pragma once
 
 #include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/ports/meshport.h>
-#include <modules/meshrenderinggl/algorithm/calcnormals.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <memory>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.CalcNormalsProcessor, Calc Normals Processor}
- * ![](org.inviwo.CalcNormalsProcessor.png?classIdentifier=org.inviwo.CalcNormalsProcessor)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+namespace meshutil {
+/**
+ * \brief The weighting modes for calculating normals
  */
-class IVW_MODULE_MESHRENDERINGGL_API CalcNormalsProcessor : public Processor {
-public:
-    CalcNormalsProcessor();
-    virtual ~CalcNormalsProcessor() = default;
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    MeshFlatMultiInport inport_;
-    MeshOutport outport_;
-    TemplateOptionProperty<meshutil::CalculateMeshNormalsMode> mode_;
+enum class CalculateMeshNormalsMode {
+    /**
+     * \brief Pass through, mesh is not changed
+     */
+    PassThrough,
+    /**
+     * \brief no weighting of the normals, simple average
+     */
+    NoWeighting,
+    /**
+     * \brief Weight = area of the triangle
+     */
+    WeightArea,
+    /**
+     * \brief Weight based on the angle.
+     * As defined in "Computing vertex normals from polygonal facets" by Grit Thürmer and
+     * Charles A. Wüthrich 1998.
+     */
+    WeightAngle,
+    /**
+     * \brief Based on "Weights for Computing Vertex Normals from Facet Normals", N. Max, 1999.
+     * This gives the best results in most cases.
+     */
+    WeightNMax
 };
+
+IVW_MODULE_MESHRENDERINGGL_API void calculateMeshNormals(
+    Mesh& mesh, CalculateMeshNormalsMode mode = CalculateMeshNormalsMode::WeightNMax);
+
+inline std::unique_ptr<Mesh> calculateMeshNormals(
+    const Mesh& mesh, CalculateMeshNormalsMode mode = CalculateMeshNormalsMode::WeightNMax) {
+    auto cloned = std::unique_ptr<Mesh>(mesh.clone());
+    calculateMeshNormals(*cloned, mode);
+    return cloned;
+}
+
+}  // namespace meshutil
 
 }  // namespace inviwo

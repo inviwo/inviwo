@@ -59,7 +59,7 @@ in fData
 } frag;
 
 #ifdef USE_FRAGMENT_LIST
-#include "abufferlinkedlist.glsl"
+#include "oit/abufferlinkedlist.glsl"
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 #endif
 

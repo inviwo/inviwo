@@ -27,7 +27,8 @@
  *
  *********************************************************************************/
 
-#include <modules/meshrenderinggl/halfedges.h>
+#include <modules/meshrenderinggl/datastructures/halfedges.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 
 #include <iostream>
 
@@ -78,41 +79,44 @@ HalfEdges::HalfEdges(const IndexBuffer* const indexBuffer) {
 }
 
 std::shared_ptr<IndexBuffer> HalfEdges::createIndexBuffer() {
-    std::shared_ptr<IndexBuffer> buffer = std::make_shared<IndexBuffer>();
-    auto* indices = buffer->getEditableRAMRepresentation();
-    indices->reserve(edges_.size());
     // walk faces
+    std::vector<std::uint32_t> inds;
+    inds.reserve(edges_.size());
+
     index_t numTris = static_cast<index_t>(edges_.size()) / 3;
     for (index_t tri = 0; tri < numTris; ++tri) {
         for (index_t v = 0; v < 3; ++v) {
             index_t i1 = 3 * tri + v;
-            indices->add(edges_[i1].toVertex_);
+            inds.push_back(edges_[i1].toVertex_);
         }
     }
-    return buffer;
+
+    return std::make_shared<IndexBuffer>(std::make_shared<IndexBufferRAM>(std::move(inds)));
 }
 
 std::shared_ptr<IndexBuffer> HalfEdges::createIndexBufferWithAdjacency() {
-    std::shared_ptr<IndexBuffer> buffer = std::make_shared<IndexBuffer>();
-    auto* indices = buffer->getEditableRAMRepresentation();
-    indices->reserve(edges_.size() * 2);
+    std::vector<std::uint32_t> inds;
+    inds.reserve(edges_.size()*2);
+
     // walk faces
     index_t numTris = static_cast<index_t>(edges_.size()) / 3;
     for (index_t tri = 0; tri < numTris; ++tri) {
         for (index_t v = 0; v < 3; ++v) {
             index_t i1 = 3 * tri + v;
-            indices->add(edges_[i1].toVertex_);
+            inds.push_back(edges_[i1].toVertex_);
             // add adjacency info
             HalfEdge* o = edges_[i1].next_->twin_;
             if (o == nullptr) {
                 // border! Add opposite vertex of own triangle (as if the tris is flipped)
-                indices->add(edges_[3 * tri + ((v + 2) % 3)].toVertex_);
+                inds.push_back(edges_[3 * tri + ((v + 2) % 3)].toVertex_);
             } else {
                 // add opposite vertex
-                indices->add(o->next_->toVertex_);
+                inds.push_back(o->next_->toVertex_);
             }
         }
     }
-    return buffer;
+
+
+    return std::make_shared<IndexBuffer>(std::make_shared<IndexBufferRAM>(std::move(inds)));
 }
 }  // namespace inviwo

@@ -30,7 +30,7 @@
 #pragma once
 
 #include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
-#include <modules/meshrenderinggl/halfedges.h>
+#include <modules/meshrenderinggl/datastructures/halfedges.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -47,8 +47,8 @@
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/shader/shader.h>
 
-#include <modules/meshrenderinggl/processors/fragmentlistrenderer.h>
-#include <modules/meshrenderinggl/calcnormals.h>
+#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
+#include <modules/meshrenderinggl/algorithm/calcnormals.h>
 
 namespace inviwo {
 

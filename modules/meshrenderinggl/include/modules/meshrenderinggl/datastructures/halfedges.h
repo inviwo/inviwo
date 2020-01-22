@@ -31,9 +31,11 @@
 
 #include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
 
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+
 #include <vector>
 #include <map>
-#include <inviwo/core/datastructures/geometry/mesh.h>
 
 namespace inviwo {
 

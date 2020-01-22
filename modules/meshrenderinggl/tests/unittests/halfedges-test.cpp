@@ -32,7 +32,9 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <modules/meshrenderinggl/halfedges.h>
+#include <modules/meshrenderinggl/datastructures/halfedges.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 
 namespace inviwo {
 

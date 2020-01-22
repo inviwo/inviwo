@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/meshrenderinggl/processors/fragmentlistrenderer.h>
+#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/sharedopenglresources.h>
 #include <modules/opengl/openglutils.h>
@@ -48,8 +48,8 @@ FragmentListRenderer::FragmentListRenderer()
     , atomicCounter_(0)
     , pixelBuffer_(0)
     , totalFragmentQuery_(0)
-    , clearShader_("simplequad.vert", "clearabufferlinkedlist.frag", false)
-    , displayShader_("simplequad.vert", "dispabufferlinkedlist.frag", false)
+    , clearShader_("simplequad.vert", "oit/clearabufferlinkedlist.frag", false)
+    , displayShader_("simplequad.vert", "oit/dispabufferlinkedlist.frag", false)
     , illustrationBufferOldScreenSize_(0)
     , illustrationBufferOldFragmentSize_(0)
     , illustrationBufferIdxImg_(nullptr)
