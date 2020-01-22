@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/meshrenderinggl/processors/calcnormalsprocessor.h>
+#include <modules/meshrenderinggl/algorithm/calcnormals.h>
 
 namespace inviwo {
 

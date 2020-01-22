@@ -48,28 +48,18 @@ MeshColorFromNormals::MeshColorFromNormals() : Processor(), inport_("inport"), o
 
 void MeshColorFromNormals::process() {
     auto inMesh = inport_.getData();
-    if (!inMesh->hasBuffer(BufferType::NormalAttrib)) {
+
+    auto mesh = std::shared_ptr<Mesh>(inMesh->clone());
+    while (auto cbuf = mesh->getBuffer(BufferType::ColorAttrib)) {
+        mesh->removeBuffer(cbuf);
+    }
+
+    if (auto normalsBuffer = mesh->getBuffer(BufferType::NormalAttrib)) {
+        mesh->addBuffer(Mesh::BufferInfo{BufferType::ColorAttrib},
+                        std::shared_ptr<BufferBase>(normalsBuffer->clone()));
+    } else {
         throw Exception("Input mesh has no normals", IVW_CONTEXT);
     }
-    auto mesh = std::shared_ptr<Mesh>(inMesh->clone());
-
-    auto [normalsBuffer, _] = mesh->findBuffer(BufferType::NormalAttrib);
-
-    IVW_ASSERT(normalsBuffer, "Normal buffer not found in clone");
-
-    if (mesh->hasBuffer(BufferType::ColorAttrib)) {
-        bool removedBuffer = false;
-        for (size_t i = 0; i < mesh->getNumberOfBuffers(); i++) {
-            if (mesh->getBufferInfo(i).type == BufferType::ColorAttrib) {
-                mesh->removeBuffer(i);
-                removedBuffer = true;
-                break;
-            }
-        }
-        IVW_ASSERT(removedBuffer, "No buffer was removed");
-    }
-
-    mesh->addBuffer(BufferType::ColorAttrib, std::shared_ptr<BufferBase>(normalsBuffer->clone()));
 
     outport_.setData(mesh);
 }

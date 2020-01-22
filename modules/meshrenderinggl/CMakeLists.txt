@@ -5,11 +5,11 @@ ivw_module(MeshRenderingGL)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    include/modules/meshrenderinggl/halfedges.h
-    include/modules/meshrenderinggl/calcnormals.h
+    include/modules/meshrenderinggl/datastructures/halfedges.h
+    include/modules/meshrenderinggl/algorithm/calcnormals.h
     include/modules/meshrenderinggl/processors/calcnormalsprocessor.h
-    include/modules/meshrenderinggl/processors/fragmentlistrenderer.h
     include/modules/meshrenderinggl/processors/fancymeshrenderer.h
+    include/modules/meshrenderinggl/rendering/fragmentlistrenderer.h
     include/modules/meshrenderinggl/meshrenderingglmodule.h
     include/modules/meshrenderinggl/meshrenderingglmoduledefine.h
 )
@@ -18,11 +18,11 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    src/halfedges.cpp
-    src/calcnormals.cpp
+    src/datastructures/halfedges.cpp
+    src/algorithm/calcnormals.cpp
     src/processors/calcnormalsprocessor.cpp
-    src/processors/fragmentlistrenderer.cpp
     src/processors/fancymeshrenderer.cpp
+    src/rendering/fragmentlistrenderer.cpp
     src/meshrenderingglmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
@@ -34,11 +34,11 @@ set(SHADER_FILES
     glsl/fancymeshrenderer.frag
     glsl/fancymeshrenderer.geom
     glsl/fancymeshrenderer.vert
-    glsl/abuffercommons.glsl
-    glsl/abufferlinkedList.glsl
-    glsl/abuffersort.glsl
-    glsl/clearabufferlinkedlist.frag
-    glsl/dispabufferlinkedlist.frag
+    glsl/oit/abuffercommons.glsl
+    glsl/oit/abufferlinkedList.glsl
+    glsl/oit/abuffersort.glsl
+    glsl/oit/clearabufferlinkedlist.frag
+    glsl/oit/dispabufferlinkedlist.frag
     glsl/simplequad.vert
     glsl/depthonly.frag
     glsl/illustrationbuffer.glsl

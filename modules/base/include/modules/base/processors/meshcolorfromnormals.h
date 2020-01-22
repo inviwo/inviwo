@@ -40,7 +40,7 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.MeshColorFromNormals, Mesh Color From Normals}
  * ![](org.inviwo.MeshColorFromNormals.png?classIdentifier=org.inviwo.MeshColorFromNormals)
- * Sets the color of a mesh based on its normal.
+ * Removes all the color buffers and copies the normals into a new color buffer
  */
 class IVW_MODULE_BASE_API MeshColorFromNormals : public Processor {
 public:

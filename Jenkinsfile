@@ -16,7 +16,7 @@ node {
         util.buildStandard(
             state: this,
             modulePaths: [], 
-            onModules: ["DiscreteData", "HDF5", "OpenCL", "BaseCL", "WebBrowser", "Example", "FancyMeshRenderer"],  
+            onModules: ["DiscreteData", "HDF5", "OpenCL", "BaseCL", "WebBrowser", "Example", "MeshRenderingGL"],  
             offModules: ["ABufferGL"],
             opts: [:]
         )

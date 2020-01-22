@@ -36,7 +36,7 @@
 #ifndef ABUFFERLINKEDLIST_HGLSL
 #define ABUFFERLINKEDLIST_HGLSL
 
-#include "abuffercommons.glsl"
+#include "oit/abuffercommons.glsl"
 
 //this is important for the occlusion query
 layout(early_fragment_tests) in;

@@ -32,9 +32,9 @@
  * Load fragments, sort them, store them in linear memory
  */
 
-#include "abufferlinkedlist.glsl"
+#include "oit/abufferlinkedlist.glsl"
 #include "illustrationbuffer.glsl"
-#include "abuffersort.glsl"
+#include "oit/abuffersort.glsl"
 
 //atomic counter to allocate space in the illustration buffer
 //just reuse the counter from the A-Buffer

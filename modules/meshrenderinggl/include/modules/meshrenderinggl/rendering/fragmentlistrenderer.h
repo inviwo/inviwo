@@ -45,25 +45,22 @@ namespace inviwo {
 /**
  * \brief helper class for rendering perfect alpha-blended shapes using fragment lists.
  * Inspiration taken from
- http://blog.icare3d.org/2010/07/opengl-40-abuffer-v20-linked-lists-of.html.
+ * http://blog.icare3d.org/2010/07/opengl-40-abuffer-v20-linked-lists-of.html.
  * It requires OpenGL 4.2.
  *
  * Any objects can be rendered with this framework in the following way:
-  <pre>
-  1. Render opaque objects normally
-  2. Call FragmentListRenderer::prePass(...)
-  3. For each transparent object:
-     a) Include ABufferLinkedList.hglsl in the fragment shader
-     b) Use the following snipped in the fragment shader:
-        abufferRender(ivec2(gl_FragCoord.xy), depth, fragColor);
-        discard;
-     c) Assign additional shader uniforms with FragmentListRenderer::setShaderUniforms(shader)
-     d) Render the object with depth test but without depth write
-  4. Call FragmetnListRenderer::postPass(...)
-     If this returns <code>false</code>, not enough space for all pixels
-     was available. Repeat from step 2.
-  </pre>
- *
+ * 1. Render opaque objects normally
+ * 2. Call FragmentListRenderer::prePass(...)
+ * 3. For each transparent object:
+ *    a) Include oit/abufferlinkedlist.glsl in the fragment shader
+ *    b) Use the following snipped in the fragment shader:
+ *       abufferRender(ivec2(gl_FragCoord.xy), depth, fragColor);
+ *       discard;
+ *    c) Assign additional shader uniforms with FragmentListRenderer::setShaderUniforms(shader)
+ *    d) Render the object with depth test but without depth write
+ * 4. Call FragmetnListRenderer::postPass(...)
+ *    If this returns <code>false</code>, not enough space for all pixels
+ *    was available. Repeat from step 2.
  */
 class IVW_MODULE_MESHRENDERINGGL_API FragmentListRenderer {
 public:
@@ -80,7 +77,7 @@ public:
 
     /**
      * \brief Sets the shader uniforms required by the fragment list renderer.
-     * The uniforms are defined in <code>ABufferLinkedList.hglsl</code>
+     * The uniforms are defined in <code>oit/abufferlinkedlist.glsl</code>
      * \param shader the shader of the object to be rendered
      */
     void setShaderUniforms(Shader& shader) const;

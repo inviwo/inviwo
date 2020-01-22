@@ -35,7 +35,7 @@
 #ifndef ILLUSTRATIONBUFFER_HGLSL
 #define ILLUSTRATIONBUFFER_HGLSL
 
-#include "abuffercommons.glsl"
+#include "oit/abuffercommons.glsl"
 
 //screen size
 uniform ivec2 screenSize;

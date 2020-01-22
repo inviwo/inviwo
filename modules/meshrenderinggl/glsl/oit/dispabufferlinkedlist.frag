@@ -38,8 +38,8 @@
 //#extension GL_NV_shader_buffer_store : enable
 //#extension GL_EXT_bindable_uniform : enable
 
-#include "abufferlinkedlist.glsl"
-#include "abuffersort.glsl"
+#include "oit/abufferlinkedlist.glsl"
+#include "oit/abuffersort.glsl"
 
 // How should the stuff be rendered? (Debugging options)
 #define ABUFFER_DISPNUMFRAGMENTS 0

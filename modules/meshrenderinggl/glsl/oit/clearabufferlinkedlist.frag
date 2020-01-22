@@ -38,7 +38,7 @@
 //#extension GL_EXT_bindable_uniform : enable
 //#extension GL_NV_shader_buffer_store : enable
 
-#include "abufferlinkedlist.glsl"
+#include "oit/abufferlinkedlist.glsl"
 
 //Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;
