@@ -114,6 +114,7 @@ void DataFrameColormapProperty::createOrUpdateProperties(
         }();
         colormaps_.push_back(colormapProp);
         colormapProp->setupForColumn(*c);
+        colormapProp->setCurrentStateAsDefault();
     }
     // Remove properties that were not reused
     for (auto p : oldColormapProperties) {
@@ -121,7 +122,6 @@ void DataFrameColormapProperty::createOrUpdateProperties(
             removeProperty(p);
         }
     }
-    setCurrentStateAsDefault();
     selectedColorAxis.propertyModified();
 }
 
