@@ -123,26 +123,14 @@ GLUIProcessor::GLUIProcessor(InviwoApplication* app)
     hoverColor_.setSemantics(PropertySemantics::Color);
 
     positioning_.setCollapsed(true);
-    positioning_.addProperty(position_);
-    positioning_.addProperty(anchorPos_);
-    positioning_.addProperty(offset_);
+    positioning_.addProperties(position_, anchorPos_, offset_);
 
     uiSettings_.setCollapsed(true);
-    uiSettings_.addProperty(uiVisible_);
-    uiSettings_.addProperty(positioning_);
-    uiSettings_.addProperty(uiScaling_);
-    uiSettings_.addProperty(uiColor_);
-    uiSettings_.addProperty(uiSecondaryColor_);
-    uiSettings_.addProperty(uiBorderColor_);
-    uiSettings_.addProperty(uiTextColor_);
-    uiSettings_.addProperty(hoverColor_);
-    uiSettings_.addProperty(uiDisabledColor_);
-    uiSettings_.addProperty(layoutDirection_);
-    uiSettings_.addProperty(layoutSpacing_);
-    uiSettings_.addProperty(layoutMargins_);
+    uiSettings_.addProperties(uiVisible_, positioning_, uiScaling_, uiColor_, uiSecondaryColor_,
+                              uiBorderColor_, uiTextColor_, hoverColor_, uiDisabledColor_,
+                              layoutDirection_, layoutSpacing_, layoutMargins_);
 
-    addProperty(uiSettings_);
-    addProperty(dynamicProperties_);
+    addProperties(uiSettings_, dynamicProperties_);
 
     // initialize color states
     uiRenderer_.setUIColor(uiColor_.get());
@@ -211,6 +199,7 @@ void GLUIProcessor::onDidAddProperty(Property* property, size_t) {
 
     auto widget = factory.create(property->getClassIdentifier(), *property, *this, uiRenderer_);
     layout_.addElement(*widget.get());
+    layout_.setScalingFactor(uiScaling_);
     propertyWidgetMap_.insert(std::make_pair(property, std::move(widget)));
 
     invalidate(InvalidationLevel::InvalidOutput);
