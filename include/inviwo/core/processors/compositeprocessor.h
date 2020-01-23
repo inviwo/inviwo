@@ -179,6 +179,8 @@ private:
     virtual void onSetReadOnly(Property* property, bool readonly) override;
     virtual void onSetVisible(Property* property, bool visible) override;
     virtual void onSetUsageMode(Property* property, UsageMode usageMode) override;
+    virtual void onSetSerializationMode(Property* property,
+                                     PropertySerializationMode serializationMode) override;
 
     // ProcessorNetworkObserver overrides
     virtual void onProcessorNetworkDidAddProcessor(Processor*) override;

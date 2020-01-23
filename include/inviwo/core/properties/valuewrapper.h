@@ -39,6 +39,23 @@ namespace inviwo {
 
 enum class PropertySerializationMode { Default = 0, All, None };
 
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             PropertySerializationMode mode) {
+    switch (mode) {
+        case PropertySerializationMode::Default:
+            ss << "Default";
+            break;
+        case PropertySerializationMode::All:
+            ss << "All";
+            break;
+        case PropertySerializationMode::None:
+            ss << "None";
+            break;
+    }
+    return ss;
+}
+
 template <typename T>
 struct ValueWrapper {
     ValueWrapper(std::string valname, T val) : value(val), defaultValue(val), name(valname) {}

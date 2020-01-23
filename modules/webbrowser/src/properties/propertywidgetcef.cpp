@@ -175,4 +175,14 @@ void PropertyWidgetCEF::onSetUsageMode(Property* /*property*/, UsageMode usageMo
     frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
 }
 
+void PropertyWidgetCEF::onSetSerializationMode(Property* /*property*/,
+                                            PropertySerializationMode serializationMode) {
+    std::stringstream script;
+    std::stringstream mode;
+    mode << serializationMode;
+    auto p = json{{"serializationMode", mode.str()}};
+    script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
+
 }  // namespace inviwo

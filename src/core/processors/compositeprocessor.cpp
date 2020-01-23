@@ -319,4 +319,11 @@ void CompositeProcessor::onSetUsageMode(Property* orgProp, UsageMode) {
     }
 }
 
+void CompositeProcessor::onSetSerializationMode(Property* orgProp,
+                                             PropertySerializationMode serializationMode) {
+    if (auto superProperty = getSuperProperty(orgProp)) {
+        superProperty->setSerializationMode(serializationMode);
+    }
+}
+
 }  // namespace inviwo

@@ -58,6 +58,12 @@ void PropertyObservable::notifyObserversOnSetUsageMode(Property* property, Usage
     forEachObserver([&](PropertyObserver* o) { o->onSetUsageMode(property, usageMode); });
 }
 
+void PropertyObservable::notifyObserversonSetSerializationMode(
+    Property* property, PropertySerializationMode serializationMode) {
+    forEachObserver(
+        [&](PropertyObserver* o) { o->onSetSerializationMode(property, serializationMode); });
+}
+
 void PropertyObserver::onSetIdentifier(Property*, const std::string&) {}
 
 void PropertyObserver::onSetDisplayName(Property*, const std::string&) {}
@@ -69,5 +75,7 @@ void PropertyObserver::onSetReadOnly(Property*, bool) {}
 void PropertyObserver::onSetVisible(Property*, bool) {}
 
 void PropertyObserver::onSetUsageMode(Property*, UsageMode) {}
+
+void PropertyObserver::onSetSerializationMode(Property*, PropertySerializationMode) {}
 
 }  // namespace inviwo

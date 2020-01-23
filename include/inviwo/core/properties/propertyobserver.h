@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/observer.h>
+#include <inviwo/core/properties/valuewrapper.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/propertyvisibility.h>
 
@@ -51,6 +52,8 @@ public:
     virtual void onSetReadOnly(Property* property, bool readonly);
     virtual void onSetVisible(Property* property, bool visible);
     virtual void onSetUsageMode(Property* property, UsageMode usageMode);
+    virtual void onSetSerializationMode(Property* property,
+                                     PropertySerializationMode serializationMode);
 };
 
 class IVW_CORE_API PropertyObservable : public Observable<PropertyObserver> {
@@ -63,6 +66,8 @@ protected:
     void notifyObserversOnSetReadOnly(Property* property, bool readonly);
     void notifyObserversOnSetVisible(Property* property, bool visible);
     void notifyObserversOnSetUsageMode(Property* property, UsageMode usageMode);
+    void notifyObserversonSetSerializationMode(Property* property,
+                                            PropertySerializationMode serializationMode);
 };
 
 }  // namespace inviwo

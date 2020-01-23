@@ -161,6 +161,14 @@ protected:
      * @see setPropertyObserverCallback
      */
     virtual void onSetUsageMode(Property* property, UsageMode usageMode) override;
+    /**
+     * Calls the currently set propertyObserverCallback function in javascript with the JSON
+     * encoded changed value as parameter.
+     * The propertyObserverCallback javascript function must be in global scope.
+     * @see setPropertyObserverCallback
+     */
+    virtual void onSetSerializationMode(
+        Property* property, PropertySerializationMode serializationMode) override;
     /*
      * Set frame containing html item.
      */
