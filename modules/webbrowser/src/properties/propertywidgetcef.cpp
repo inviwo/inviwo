@@ -176,7 +176,7 @@ void PropertyWidgetCEF::onSetUsageMode(Property* /*property*/, UsageMode usageMo
 }
 
 void PropertyWidgetCEF::onSetSerializationMode(Property* /*property*/,
-                                            PropertySerializationMode serializationMode) {
+                                               PropertySerializationMode serializationMode) {
     std::stringstream script;
     std::stringstream mode;
     mode << serializationMode;

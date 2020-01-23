@@ -53,7 +53,7 @@ public:
     virtual void onSetVisible(Property* property, bool visible);
     virtual void onSetUsageMode(Property* property, UsageMode usageMode);
     virtual void onSetSerializationMode(Property* property,
-                                     PropertySerializationMode serializationMode);
+                                        PropertySerializationMode serializationMode);
 };
 
 class IVW_CORE_API PropertyObservable : public Observable<PropertyObserver> {
@@ -67,7 +67,7 @@ protected:
     void notifyObserversOnSetVisible(Property* property, bool visible);
     void notifyObserversOnSetUsageMode(Property* property, UsageMode usageMode);
     void notifyObserversonSetSerializationMode(Property* property,
-                                            PropertySerializationMode serializationMode);
+                                               PropertySerializationMode serializationMode);
 };
 
 }  // namespace inviwo

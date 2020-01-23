@@ -320,7 +320,7 @@ void CompositeProcessor::onSetUsageMode(Property* orgProp, UsageMode) {
 }
 
 void CompositeProcessor::onSetSerializationMode(Property* orgProp,
-                                             PropertySerializationMode serializationMode) {
+                                                PropertySerializationMode serializationMode) {
     if (auto superProperty = getSuperProperty(orgProp)) {
         superProperty->setSerializationMode(serializationMode);
     }

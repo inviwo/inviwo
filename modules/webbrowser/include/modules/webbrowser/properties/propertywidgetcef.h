@@ -167,8 +167,8 @@ protected:
      * The propertyObserverCallback javascript function must be in global scope.
      * @see setPropertyObserverCallback
      */
-    virtual void onSetSerializationMode(
-        Property* property, PropertySerializationMode serializationMode) override;
+    virtual void onSetSerializationMode(Property* property,
+                                        PropertySerializationMode serializationMode) override;
     /*
      * Set frame containing html item.
      */
