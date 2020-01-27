@@ -167,11 +167,6 @@ protected:
     CameraTrackball trackball_;
     SimpleLightingProperty lightingProperty_;
 
-    CompositeProperty layers_;
-    BoolProperty colorLayer_;
-    BoolProperty normalsLayer_;
-    BoolProperty viewNormalsLayer_;
-
     BoolProperty forceOpaque_;
 
     BoolProperty drawSilhouette_;

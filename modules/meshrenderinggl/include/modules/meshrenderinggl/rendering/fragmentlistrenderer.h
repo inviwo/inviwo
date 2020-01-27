@@ -35,6 +35,7 @@
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/texture2d.h>
+#include <modules/opengl/buffer/bufferobject.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
@@ -80,7 +81,7 @@ public:
      * The uniforms are defined in <code>oit/abufferlinkedlist.glsl</code>
      * \param shader the shader of the object to be rendered
      */
-    void setShaderUniforms(Shader& shader) const;
+    void setShaderUniforms(Shader& shader);
 
     /**
      * \brief Finishes the fragment list pass and renders the final result.
@@ -103,7 +104,7 @@ public:
         float haloSmoothing_;
     };
     void setIllustrationBufferSettings(const IllustrationBufferSettings& settings) {
-        illustrationBufferSettings_ = settings;
+        ill_.settings = settings;
     }
 
     /**
@@ -120,47 +121,59 @@ public:
     static bool supportsIllustrationBuffer();
 
 private:
-    void initShaders();
-    void initBuffers(const size2_t& screenSize);
-    void assignUniforms(Shader& shader) const;
-    void drawQuad() const;
+    void buildShaders();
+    static void drawQuad();
+
+    void setUniforms(Shader& shader, TextureUnit& abuffUnit) const;
+    void resizeBuffers(const size2_t& screenSize);
+
+    void fillIllustration(TextureUnit& abuffUnit, TextureUnit& idxUnit, TextureUnit& countUnit);
+
     void debugFragmentLists(GLuint numFrags);
-    void initIllustrationBuffer();
-    void fillIllustrationBuffer();
-    void processIllustrationBuffer();
-    void drawIllustrationBuffer();
-    void assignIllustrationBufferUniforms(Shader& shader);
     void debugIllustrationBuffer(GLuint numFrags);
 
     size2_t screenSize_;
     size_t fragmentSize_;
-    size_t oldFragmentSize_;
 
     // basic fragment lists
-    Texture2D* abufferIdxImg_;
-    TextureUnit* abufferIdxUnit_;
-    GLuint atomicCounter_;
-    GLuint pixelBuffer_;
-    GLuint totalFragmentQuery_;
-    Shader clearShader_;
-    Shader displayShader_;
+    Texture2D abufferIdxTex_;
+    TextureUnitContainer textureUnits_;
 
-    // illustration buffers
-    size2_t illustrationBufferOldScreenSize_;
-    size_t illustrationBufferOldFragmentSize_;
-    Texture2D* illustrationBufferIdxImg_;
-    TextureUnit* illustrationBufferIdxUnit_;
-    Texture2D* illustrationBufferCountImg_;
-    TextureUnit* illustrationBufferCountUnit_;
-    GLuint illustrationColorBuffer_;
-    GLuint illustrationSurfaceInfoBuffer_;
-    GLuint illustrationSmoothingBuffer_[2];
-    int activeIllustrationSmoothingBuffer_;
-    Shader fillIllustrationBufferShader_;
-    Shader resolveNeighborsIllustrationBufferShader_;
-    Shader drawIllustrationBufferShader_;
-    Shader smoothIllustrationBufferShader_;
-    IllustrationBufferSettings illustrationBufferSettings_;
+    BufferObject atomicCounter_;
+    BufferObject pixelBuffer_;
+
+    GLuint totalFragmentQuery_;
+
+    Shader clear_;
+    Shader display_;
+
+    struct Illustration {
+        Illustration(size2_t screenSize, size_t fragmentSize);
+        void resizeBuffers(size2_t screenSize, size_t fragmentSize);
+        void setUniforms(Shader& shader, TextureUnit& idxUnit, TextureUnit& countUnit);
+
+        void processIllustration(BufferObject& pixelBuffer, TextureUnit& idxUnit,
+                                 TextureUnit& countUnit);
+        void drawIllustration(TextureUnit& idxUnit, TextureUnit& countUnit);
+
+        Texture2D index;
+        Texture2D count;
+
+        BufferObject color;
+        BufferObject surfaceInfo;
+
+        std::array<BufferObject, 2> smoothing;
+        int activeSmoothing;
+
+        Shader fill;
+        Shader resolveNeighbors;
+        Shader draw;
+        Shader smooth;
+
+        IllustrationBufferSettings settings;
+    };
+
+    Illustration ill_;
 };
 
 }  // namespace inviwo

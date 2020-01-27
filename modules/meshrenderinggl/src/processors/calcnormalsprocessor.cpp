@@ -62,18 +62,8 @@ CalcNormalsProcessor::CalcNormalsProcessor()
 }
 
 void CalcNormalsProcessor::process() {
-    auto vd = inport_.getVectorData();
-    if (vd.size() == 1) {
-        outport_.setData(
-            std::shared_ptr<Mesh>(meshutil::calculateMeshNormals(*vd.front(), mode_.get())));
-    } else {
-        std::shared_ptr<Mesh> m = std::make_shared<Mesh>();
-        for (auto i : vd) {
-            auto mesh = meshutil::calculateMeshNormals(*i, mode_.get());
-            m->append(*mesh);
-        }
-        outport_.setData(m);
-    }
+    outport_.setData(
+        std::shared_ptr<Mesh>(meshutil::calculateMeshNormals(*inport_.getData(), mode_)));
 }
 
 }  // namespace inviwo

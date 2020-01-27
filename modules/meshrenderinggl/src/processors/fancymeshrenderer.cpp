@@ -38,9 +38,12 @@
 #include <modules/base/algorithm/dataminmax.h>
 #include <modules/opengl/image/layergl.h>
 #include <modules/opengl/openglcapabilities.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
 
 #include <sstream>
 #include <chrono>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -63,12 +66,6 @@ FancyMeshRenderer::FancyMeshRenderer()
               vec3(0.0f, 1.0f, 0.0f), &inport_)
     , trackball_(&camera_)
     , lightingProperty_("lighting", "Lighting", &camera_)
-    , layers_("layers", "Output Layers")
-    , colorLayer_("colorLayer", "Color", true, InvalidationLevel::InvalidResources)
-    , normalsLayer_("normalsLayer", "Normals (World Space)", false,
-                    InvalidationLevel::InvalidResources)
-    , viewNormalsLayer_("viewNormalsLayer", "Normals (View space)", false,
-                        InvalidationLevel::InvalidResources)
     , forceOpaque_("forceOpaque", "Shade Opaque", false)
     , drawSilhouette_("drawSilhouette", "Draw Silhouette")
     , silhouetteColor_("silhouetteColor", "Silhouette Color", {0.f, 0.f, 0.f, 1.f})
@@ -113,10 +110,9 @@ FancyMeshRenderer::FancyMeshRenderer()
 
     // input and output ports
     addPort(inport_);
-    addPort(imageInport_);
+    addPort(imageInport_).setOptional(true);
     addPort(outport_);
-    imageInport_.setOptional(true);
-    // outport_.addResizeEventListener(&camera_);
+
     inport_.onChange([this]() { updateDrawers(); });
 
     addProperties(camera_, lightingProperty_, trackball_, forceOpaque_, drawSilhouette_,
@@ -134,40 +130,36 @@ FancyMeshRenderer::FancyMeshRenderer()
     lightingProperty_.setCollapsed(true);
     trackball_.setCollapsed(true);
 
-    // New properties
     silhouetteColor_.setSemantics(PropertySemantics::Color);
 
     // Callbacks
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    auto triggerRecompilation = [this]() {
+    const auto triggerRecompilation = [this]() {
         needsRecompilation_ = true;
         update();
     };
 
-    auto triggerMeshUpdate = [this]() {
+    const auto triggerMeshUpdate = [this]() {
         needsRecompilation_ = true;
         update();
         updateDrawers();
     };
-    forceOpaque_.onChange(triggerRecompilation);
+
     drawSilhouette_.onChange(triggerMeshUpdate);
     normalSource_.onChange(triggerMeshUpdate);
     normalComputationMode_.onChange(triggerMeshUpdate);
+
+    forceOpaque_.onChange(triggerRecompilation);
     alphaSettings_.setCallbacks(triggerRecompilation);
     edgeSettings_.setCallbacks(triggerRecompilation);
     faceSettings_[0].setCallbacks(triggerRecompilation);
     faceSettings_[1].setCallbacks(triggerRecompilation);
+
     faceSettings_[1].frontPart_ = &faceSettings_[0];
 
     // DEBUG, in case we need debugging fragment lists at a later point again
     // addProperty(propDebugFragmentLists_);  // DEBUG, to be removed
     // propDebugFragmentLists_.onChange([this]() { debugFragmentLists_ = true; });
-
-    // Will this be used in any scenario?
-    // addProperty(layers_);
-    // layers_.addProperty(colorLayer_);
-    // layers_.addProperty(normalsLayer_);
-    // layers_.addProperty(viewNormalsLayer_);
 
     // update visibility of properties
     update();
@@ -396,37 +388,7 @@ FancyMeshRenderer::IllustrationBufferSettings::IllustrationBufferSettings()
                              edgeSmoothing_, haloSmoothing_);
 }
 
-void FancyMeshRenderer::initializeResources() {
-    // get number of layers, see compileShader()
-    // first two layers (color and picking) are reserved
-    int layerID = 2;
-    if (normalsLayer_.get()) {
-        ++layerID;
-    }
-    if (viewNormalsLayer_.get()) {
-        ++layerID;
-    }
-
-    // get a hold of the current output data
-    auto prevData = outport_.getData();
-    auto numLayers = static_cast<std::size_t>(layerID - 1);  // Don't count picking
-    if (prevData->getNumberOfColorLayers() != numLayers) {
-        // create new image with matching number of layers
-        auto image = std::make_shared<Image>(prevData->getDimensions(), prevData->getDataFormat());
-        // update number of layers
-        for (auto i = image->getNumberOfColorLayers(); i < numLayers; ++i) {
-            image->addColorLayer(std::shared_ptr<Layer>(image->getColorLayer(0)->clone()));
-        }
-
-        outport_.setData(image);
-    }
-
-    if (!colorLayer_.get()) {
-        LogProcessorWarn(
-            "requesting alpha blending, but no color layer attached -> no output will be "
-            "produced");
-    }
-}
+void FancyMeshRenderer::initializeResources() {}
 
 void FancyMeshRenderer::update() {
     // fetch all booleans
@@ -465,61 +427,34 @@ void FancyMeshRenderer::compileShader() {
     // shading defines
     utilgl::addShaderDefines(shader_, lightingProperty_);
 
-    shader_.getFragmentShaderObject()->setShaderDefine("COLOR_LAYER", colorLayer_);
+    const std::array<std::pair<std::string, bool>, 15> defines = {
+        {{"USE_FRAGMENT_LIST", forceOpaque_},
+         {"COLOR_LAYER", true},
+         {"ALPHA_UNIFORM", alphaSettings_.enableUniform_},
+         {"ALPHA_ANGLE_BASED", alphaSettings_.enableAngleBased_},
+         {"ALPHA_NORMAL_VARIATION", alphaSettings_.enableNormalVariation_},
+         {"ALPHA_DENSITY", alphaSettings_.enableDensity_},
+         {"ALPHA_SHAPE", alphaSettings_.enableShape_},
+         {"DRAW_EDGES", faceSettings_[0].showEdges_ || faceSettings_[1].showEdges_},
+         {"DRAW_EDGES_DEPTH_DEPENDENT", edgeSettings_.depthDependent_},
+         {"DRAW_EDGES_SMOOTHING", edgeSettings_.smoothEdges_},
+         {"MESH_HAS_ADJACENCY", meshHasAdjacency_},
+         {"DRAW_SILHOUETTE", drawSilhouette_},
+         {"SEND_TEX_COORD", faceSettings_[0].hatching_.mode_ != HatchingMode::Off ||
+                                faceSettings_[1].hatching_.mode_ != HatchingMode::Off},
+         {"SEND_SCALAR", faceSettings_[0].colorSource_ == ColorSource::TransferFunction ||
+                             faceSettings_[1].colorSource_ == ColorSource::TransferFunction},
+         {"SEND_COLOR", faceSettings_[0].colorSource_ == ColorSource::VertexColor ||
+                            faceSettings_[1].colorSource_ == ColorSource::VertexColor}}};
 
-    // first two layers (color and picking) are reserved
-    int layerID = 2;
-    shader_.getFragmentShaderObject()->setShaderDefine("NORMALS_LAYER", normalsLayer_);
-    if (normalsLayer_) {
-        shader_.getFragmentShaderObject()->addOutDeclaration("normals_out", layerID);
-        ++layerID;
-    }
-    shader_.getFragmentShaderObject()->setShaderDefine("VIEW_NORMALS_LAYER", viewNormalsLayer_);
-    if (viewNormalsLayer_) {
-        shader_.getFragmentShaderObject()->addOutDeclaration("view_normals_out", layerID);
-        ++layerID;
-    }
-
-    // Settings
-    if (forceOpaque_) {
-        shader_.getFragmentShaderObject()->removeShaderDefine("USE_FRAGMENT_LIST");
-    } else {
-        shader_.getFragmentShaderObject()->addShaderDefine("USE_FRAGMENT_LIST");
-        if (!colorLayer_.get()) {
-            LogProcessorWarn(
-                "requesting alpha blending, but no color layer attached -> no output will be "
-                "produced");
+    for (auto&& [key, val] : defines) {
+        for (auto&& so : shader_.getShaderObjects()) {
+            so.setShaderDefine(key, val);
         }
     }
 
-    // helper function that sets shader defines based on a boolean property
-    auto set = [this](bool flag, const std::string& define) {
-        this->shader_.getFragmentShaderObject()->setShaderDefine(define, flag);
-        this->shader_.getGeometryShaderObject()->setShaderDefine(define, flag);
-        this->shader_.getVertexShaderObject()->setShaderDefine(define, flag);
-    };
-    set(alphaSettings_.enableUniform_, "ALPHA_UNIFORM");
-    set(alphaSettings_.enableAngleBased_, "ALPHA_ANGLE_BASED");
-    set(alphaSettings_.enableNormalVariation_, "ALPHA_NORMAL_VARIATION");
-    set(alphaSettings_.enableDensity_, "ALPHA_DENSITY");
-    set(alphaSettings_.enableShape_, "ALPHA_SHAPE");
-    set(faceSettings_[0].showEdges_ || faceSettings_[1].showEdges_, "DRAW_EDGES");
-    set(edgeSettings_.depthDependent_, "DRAW_EDGES_DEPTH_DEPENDENT");
-    set(edgeSettings_.smoothEdges_, "DRAW_EDGES_SMOOTHING");
-    set(meshHasAdjacency_, "MESH_HAS_ADJACENCY");
-    set(drawSilhouette_, "DRAW_SILHOUETTE");
-    set(faceSettings_[0].hatching_.mode_ != HatchingMode::Off ||
-            faceSettings_[1].hatching_.mode_ != HatchingMode::Off,
-        "SEND_TEX_COORD");
-    set(faceSettings_[0].colorSource_ == ColorSource::TransferFunction ||
-            faceSettings_[1].colorSource_ == ColorSource::TransferFunction,
-        "SEND_SCALAR");
-    set(faceSettings_[0].colorSource_ == ColorSource::VertexColor ||
-            faceSettings_[1].colorSource_ == ColorSource::VertexColor,
-        "SEND_COLOR");
     shader_.build();
 
-    LogProcessorInfo("shader compiled");
     needsRecompilation_ = false;
 }
 
@@ -528,22 +463,14 @@ void FancyMeshRenderer::process() {
     // the visibility of the properties is not updated on startup.
     update();
 
-    if (imageInport_.isConnected()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_);
-    } else {
-        utilgl::activateAndClearTarget(outport_);
-    }
+    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
     if (!faceSettings_[0].show_ && !faceSettings_[1].show_) {
         utilgl::deactivateCurrentTarget();
         return;  // everything is culled
     }
-    bool opaque = forceOpaque_.get();
-    bool fragmentLists = !opaque && supportsFragmentLists_;
-    if (fragmentLists && !colorLayer_.get()) {
-        // fragment lists can only render to color layer, but no color layer is available
-        return;
-    }
+    const bool opaque = forceOpaque_.get();
+    const bool fragmentLists = !opaque && supportsFragmentLists_;
 
     compileShader();
 
@@ -552,7 +479,7 @@ void FancyMeshRenderer::process() {
     // auto start = std::chrono::steady_clock::now();
 
     // Loop: fragment list may need another try if not enough space for the pixels was available
-    bool retry;
+    bool retry = false;
     do {
         retry = false;
 
@@ -582,61 +509,44 @@ void FancyMeshRenderer::process() {
         // update face render settings
         TextureUnit transFuncUnit[2];
         for (int j = 0; j < 2; ++j) {
-            int i = j;
-            if (j == 1 && faceSettings_[1].sameAsFrontFace_.get()) {  // use settings from font
-                                                                      // face also for back face
-                i = 0;
-            }
-
-            std::stringstream ss;
-            ss << "renderSettings[" << j << "].";
-            std::string prefix = ss.str();
-            shader_.setUniform(prefix + "externalColor",
-                               vec4(faceSettings_[i].externalColor_.get(), 1.0));
-            shader_.setUniform(prefix + "colorSource",
-                               static_cast<int>(faceSettings_[i].colorSource_.get()));
-            shader_.setUniform(prefix + "separateUniformAlpha",
-                               faceSettings_[i].separateUniformAlpha_.get());
-            shader_.setUniform(prefix + "uniformAlpha", faceSettings_[i].uniformAlpha_.get());
-            shader_.setUniform(prefix + "shadingMode",
-                               static_cast<int>(faceSettings_[i].shadingMode_.get()));
-            shader_.setUniform(prefix + "showEdges", faceSettings_[i].showEdges_.get());
-            shader_.setUniform(prefix + "edgeColor", vec4(faceSettings_[i].edgeColor_.get(),
-                                                          faceSettings_[i].edgeOpacity_.get()));
-            if (faceSettings_[i].hatching_.mode_.get() == HatchingMode::UV) {
-                shader_.setUniform(
-                    prefix + "hatchingMode",
-                    3 + static_cast<int>(faceSettings_[i].hatching_.modulationMode_.get()));
-            } else {
-
+            auto& face = faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : j];
+            const std::string prefix = fmt::format("renderSettings[{}].", j);
+            shader_.setUniform(prefix + "externalColor", vec4(face.externalColor_.get(), 1.0));
+            shader_.setUniform(prefix + "colorSource", static_cast<int>(face.colorSource_.get()));
+            shader_.setUniform(prefix + "separateUniformAlpha", face.separateUniformAlpha_.get());
+            shader_.setUniform(prefix + "uniformAlpha", face.uniformAlpha_.get());
+            shader_.setUniform(prefix + "shadingMode", static_cast<int>(face.shadingMode_.get()));
+            shader_.setUniform(prefix + "showEdges", face.showEdges_.get());
+            shader_.setUniform(prefix + "edgeColor",
+                               vec4(face.edgeColor_.get(), face.edgeOpacity_.get()));
+            if (face.hatching_.mode_.get() == HatchingMode::UV) {
                 shader_.setUniform(prefix + "hatchingMode",
-                                   static_cast<int>(faceSettings_[i].hatching_.mode_.get()));
+                                   3 + static_cast<int>(face.hatching_.modulationMode_.get()));
+            } else {
+                shader_.setUniform(prefix + "hatchingMode",
+                                   static_cast<int>(face.hatching_.mode_.get()));
             }
-            shader_.setUniform(prefix + "hatchingSteepness",
-                               faceSettings_[i].hatching_.steepness_.get());
+            shader_.setUniform(prefix + "hatchingSteepness", face.hatching_.steepness_.get());
             shader_.setUniform(prefix + "hatchingFreqU",
-                               faceSettings_[i].hatching_.baseFrequencyU_.getMaxValue() -
-                                   faceSettings_[i].hatching_.baseFrequencyU_.get());
+                               face.hatching_.baseFrequencyU_.getMaxValue() -
+                                   face.hatching_.baseFrequencyU_.get());
             shader_.setUniform(prefix + "hatchingFreqV",
-                               faceSettings_[i].hatching_.baseFrequencyV_.getMaxValue() -
-                                   faceSettings_[i].hatching_.baseFrequencyV_.get());
+                               face.hatching_.baseFrequencyV_.getMaxValue() -
+                                   face.hatching_.baseFrequencyV_.get());
             shader_.setUniform(prefix + "hatchingModulationAnisotropy",
-                               faceSettings_[i].hatching_.modulationAnisotropy_.get());
+                               face.hatching_.modulationAnisotropy_.get());
             shader_.setUniform(prefix + "hatchingModulationOffset",
-                               faceSettings_[i].hatching_.modulationOffset_.get());
+                               face.hatching_.modulationOffset_.get());
             shader_.setUniform(prefix + "hatchingColor",
-                               vec4(faceSettings_[i].hatching_.color_.get(),
-                                    faceSettings_[i].hatching_.strength_.get()));
+                               vec4(face.hatching_.color_.get(), face.hatching_.strength_.get()));
             shader_.setUniform(prefix + "hatchingBlending",
-                               static_cast<int>(faceSettings_[i].hatching_.blendingMode_.get()));
+                               static_cast<int>(face.hatching_.blendingMode_.get()));
 
-            const auto& tf = faceSettings_[i].transferFunction_.get();
-            const Layer* tfLayer = tf.getData();
+            const Layer* tfLayer = face.transferFunction_->getData();
             const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
             transferFunctionGL->bindTexture(transFuncUnit[j].getEnum());
-            ss = std::stringstream();
-            ss << "transferFunction" << j;
-            shader_.setUniform(ss.str(), transFuncUnit[j].getUnitNumber());
+            shader_.setUniform(fmt::format("transferFunction{}", j),
+                               transFuncUnit[j].getUnitNumber());
         }
 
         // update alpha settings
@@ -657,8 +567,7 @@ void FancyMeshRenderer::process() {
                            normalSource_.get() == NormalSource::GenerateTriangle);
 
         if (fragmentLists) {
-            // set uniforms fragment list rendering
-            flr_.setShaderUniforms(shader_);
+            flr_.setShaderUniforms(shader_);  // set uniforms fragment list rendering
         }
 
         // Finally, draw it
@@ -668,7 +577,7 @@ void FancyMeshRenderer::process() {
 
         if (fragmentLists) {
             // final processing of fragment list rendering
-            bool illustrationBuffer =
+            const bool illustrationBuffer =
                 propUseIllustrationBuffer_.get() && supportedIllustrationBuffer_;
             if (illustrationBuffer) {
                 FragmentListRenderer::IllustrationBufferSettings settings;
@@ -680,11 +589,8 @@ void FancyMeshRenderer::process() {
                 settings.haloSmoothing_ = illustrationBufferSettings_.haloSmoothing_.get();
                 flr_.setIllustrationBufferSettings(settings);
             }
-            bool success = flr_.postPass(illustrationBuffer, debugFragmentLists_);
+            retry = !flr_.postPass(illustrationBuffer, debugFragmentLists_);
             debugFragmentLists_ = false;
-            if (!success) {
-                retry = true;
-            }
         }
     } while (retry);
 
@@ -715,14 +621,11 @@ void FancyMeshRenderer::process() {
     }
 
     utilgl::deactivateCurrentTarget();
-}  // namespace inviwo
+}
 
 void FancyMeshRenderer::updateDrawers() {
-    // sometimes, this is null:
-    if (getNetwork() == nullptr) return;
-    // aquire mesh
-    auto changed = inport_.getChangedOutports();
-    auto factory = getNetwork()->getApplication()->getMeshDrawerFactory();
+    if(!inport_.hasData()) return;
+
     auto mesh = inport_.getData();
     originalMesh_ = mesh;
 
@@ -732,7 +635,6 @@ void FancyMeshRenderer::updateDrawers() {
     // check if we have to compute the normals
     if (normalSource_.get() == NormalSource::GenerateVertex) {
         meshutil::calculateMeshNormals(*enhancedMesh_, normalComputationMode_.get());
-        LogProcessorInfo("normals computed");
     }
 
     // check if we need to create adjacency information
@@ -770,7 +672,7 @@ void FancyMeshRenderer::updateDrawers() {
     }
 
     // create drawer
-    drawer_ = factory->create(enhancedMesh_.get());
+    drawer_ = std::make_unique<MeshDrawerGL>(enhancedMesh_.get());
 
     // trigger shader recompilation
     // Geometry shader needs to know if it has adjacency or not

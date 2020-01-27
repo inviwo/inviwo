@@ -32,8 +32,7 @@
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
-out vData
-{
+out vData {
     vec4 worldPosition;
     vec4 position;
     vec3 normal;
@@ -46,8 +45,9 @@ out vData
 #ifdef SEND_SCALAR
     float scalar;
 #endif
-} vertex;
- 
+}
+vertex;
+
 void main() {
 #ifdef SEND_COLOR
     vertex.color = in_Color;
@@ -56,7 +56,7 @@ void main() {
     vertex.texCoord = in_TexCoord.xy;
 #endif
 #ifdef SEND_SCALAR
-    vertex.scalar = in_TexCoord.x; //TODO: specify source of scalar value
+    vertex.scalar = in_TexCoord.x;  // TODO: specify source of scalar value
 #endif
     vertex.worldPosition = geometry.dataToWorld * in_Vertex;
     vertex.normal = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);

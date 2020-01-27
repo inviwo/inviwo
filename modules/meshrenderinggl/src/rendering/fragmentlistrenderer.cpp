@@ -39,40 +39,47 @@
 #include <fmt/format.h>
 
 namespace inviwo {
-FragmentListRenderer::FragmentListRenderer()
-    : screenSize_(0, 0)
-    , fragmentSize_(1024)
-    , oldFragmentSize_(0)
-    , abufferIdxImg_(nullptr)
-    , abufferIdxUnit_(nullptr)
-    , atomicCounter_(0)
-    , pixelBuffer_(0)
-    , totalFragmentQuery_(0)
-    , clearShader_("simplequad.vert", "oit/clearabufferlinkedlist.frag", false)
-    , displayShader_("simplequad.vert", "oit/dispabufferlinkedlist.frag", false)
-    , illustrationBufferOldScreenSize_(0)
-    , illustrationBufferOldFragmentSize_(0)
-    , illustrationBufferIdxImg_(nullptr)
-    , illustrationBufferIdxUnit_(nullptr)
-    , illustrationBufferCountImg_(nullptr)
-    , illustrationBufferCountUnit_(nullptr)
-    , illustrationColorBuffer_(0)
-    , illustrationSurfaceInfoBuffer_(0)
-    , illustrationSmoothingBuffer_{0, 0}
-    , activeIllustrationSmoothingBuffer_(0)
-    , fillIllustrationBufferShader_("simplequad.vert", "sortandfillillustrationbuffer.frag", false)
-    , resolveNeighborsIllustrationBufferShader_("simplequad.vert",
-                                                "resolveneighborsillustrationbuffer.frag", false)
-    , drawIllustrationBufferShader_("simplequad.vert", "displayillustrationbuffer.frag", false)
-    , smoothIllustrationBufferShader_("simplequad.vert", "smoothillustrationbuffer.frag", false) {
-    initShaders();
 
-    // init atomic counter
-    glGenBuffers(1, &atomicCounter_);
-    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicCounter_);
-    glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-    LGL_ERROR;
+FragmentListRenderer::Illustration::Illustration(size2_t screenSize, size_t fragmentSize)
+    : index{screenSize, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST}
+    , count{screenSize, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST}
+    , color{fragmentSize * 2 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 2),
+            GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER}
+    , surfaceInfo{fragmentSize * 2 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 2),
+                  GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER}
+    , smoothing{{{fragmentSize * 2 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 2),
+                  GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER},
+                 {fragmentSize * 2 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 2),
+                  GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER}}}
+    , activeSmoothing{0}
+    , fill{"simplequad.vert", "sortandfillillustrationbuffer.frag", false}
+    , resolveNeighbors{"simplequad.vert", "resolveneighborsillustrationbuffer.frag", false}
+    , draw{"simplequad.vert", "displayillustrationbuffer.frag", false}
+    , smooth{"simplequad.vert", "smoothillustrationbuffer.frag", false}
+    , settings{} {
+
+    index.initialize(nullptr);
+    count.initialize(nullptr);
+}
+
+FragmentListRenderer::FragmentListRenderer()
+    : screenSize_{0, 0}
+    , fragmentSize_{1024}
+
+    , abufferIdxTex_{screenSize_, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST}
+    , textureUnits_{}
+    , atomicCounter_{sizeof(GLuint), GLFormats::getGLFormat(GL_UNSIGNED_INT, 1), GL_DYNAMIC_DRAW,
+                     GL_ATOMIC_COUNTER_BUFFER}
+    , pixelBuffer_{fragmentSize_ * 4 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 4),
+                   GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER}
+    , totalFragmentQuery_{0}
+    , clear_("simplequad.vert", "oit/clearabufferlinkedlist.frag", false)
+    , display_("simplequad.vert", "oit/dispabufferlinkedlist.frag", false)
+    , ill_{screenSize_, fragmentSize_} {
+
+    buildShaders();
+
+    abufferIdxTex_.initialize(nullptr);
 
     // create fragment query
     glGenQueries(1, &totalFragmentQuery_);
@@ -80,48 +87,59 @@ FragmentListRenderer::FragmentListRenderer()
 }
 
 FragmentListRenderer::~FragmentListRenderer() {
-    if (abufferIdxImg_) delete abufferIdxImg_;
-    if (abufferIdxUnit_) delete abufferIdxUnit_;
-    if (atomicCounter_) glDeleteBuffers(1, &atomicCounter_);
-    if (pixelBuffer_) glDeleteBuffers(1, &pixelBuffer_);
     if (totalFragmentQuery_) glDeleteQueries(1, &totalFragmentQuery_);
-    if (illustrationColorBuffer_) glDeleteBuffers(1, &illustrationColorBuffer_);
-    if (illustrationSurfaceInfoBuffer_) glDeleteBuffers(1, &illustrationSurfaceInfoBuffer_);
-    if (illustrationSmoothingBuffer_[0]) glDeleteBuffers(2, illustrationSmoothingBuffer_);
-    LGL_ERROR;
 }
 
 void FragmentListRenderer::prePass(const size2_t& screenSize) {
-    initBuffers(screenSize);
+    resizeBuffers(screenSize);
 
     // reset counter
-    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicCounter_);
-    LGL_ERROR;
-    GLuint v[1] = {0};
-    glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint), v);
-    LGL_ERROR;
-    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-    LGL_ERROR;
 
-    // create unit index for index texture
-    abufferIdxUnit_ = new TextureUnit();
+    GLuint v[1] = {0};
+    atomicCounter_.upload(v, sizeof(GLuint));
+    atomicCounter_.unbind();
 
     // clear textures
-    clearShader_.activate();
-    assignUniforms(clearShader_);
+    clear_.activate();
+    auto& texUnit = textureUnits_.emplace_back();
+    setUniforms(clear_, texUnit);
     drawQuad();
-    clearShader_.deactivate();
+    clear_.deactivate();
 
     // memory barrier
     glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
-    LGL_ERROR;
 
     // start query
     glBeginQuery(GL_SAMPLES_PASSED, totalFragmentQuery_);
     LGL_ERROR;
 }
 
-void FragmentListRenderer::setShaderUniforms(Shader& shader) const { assignUniforms(shader); }
+void FragmentListRenderer::setShaderUniforms(Shader& shader) {
+    setUniforms(shader, textureUnits_[0]);
+}
+
+void FragmentListRenderer::setUniforms(Shader& shader, TextureUnit& abuffUnit) const {
+    // screen size textures
+
+    abuffUnit.activate();
+
+    abufferIdxTex_.bind();
+    glBindImageTexture(abuffUnit.getUnitNumber(), abufferIdxTex_.getID(), 0, false, 0,
+                       GL_READ_WRITE, GL_R32UI);
+
+    shader.setUniform("abufferIdxImg", abuffUnit.getUnitNumber());
+    glActiveTexture(GL_TEXTURE0);
+
+    // pixel storage
+    atomicCounter_.bindBase(6);
+    pixelBuffer_.bindBase(7);
+    LGL_ERROR;
+
+    // other uniforms
+    shader.setUniform("AbufferParams.screenWidth", static_cast<GLint>(screenSize_.x));
+    shader.setUniform("AbufferParams.screenHeight", static_cast<GLint>(screenSize_.y));
+    shader.setUniform("AbufferParams.storageSize", static_cast<GLuint>(fragmentSize_));
+}
 
 bool FragmentListRenderer::postPass(bool useIllustrationBuffer, bool debug) {
     // memory barrier
@@ -131,7 +149,6 @@ bool FragmentListRenderer::postPass(bool useIllustrationBuffer, bool debug) {
     // get query result
     GLuint numFrags = 0;
     glEndQuery(GL_SAMPLES_PASSED);
-    LGL_ERROR;
     glGetQueryObjectuiv(totalFragmentQuery_, GL_QUERY_RESULT, &numFrags);
     LGL_ERROR;
 
@@ -148,37 +165,35 @@ bool FragmentListRenderer::postPass(bool useIllustrationBuffer, bool debug) {
         fragmentSize_ = static_cast<size_t>(1.1f * numFrags);
 
         // unbind texture
-        delete abufferIdxUnit_;
-        abufferIdxUnit_ = nullptr;
+        textureUnits_.clear();
         return false;
     }
 
     if (!useIllustrationBuffer) {
         // render fragment list
-        displayShader_.activate();
-        assignUniforms(displayShader_);
+        display_.activate();
+        setUniforms(display_, textureUnits_[0]);
         utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         drawQuad();
-        displayShader_.deactivate();
+        display_.deactivate();
     }
 
     // Note: illustration buffers are only called when enough space was available.
     // This allows us to drop the tests for overflow
-    if (useIllustrationBuffer) {
-        // 1. copy to illustration buffer
-        initIllustrationBuffer();
-        fillIllustrationBuffer();
+    TextureUnit idxUnit;
+    TextureUnit countUnit;
+    if (useIllustrationBuffer) {  // 1. copy to illustration buffer
+        ill_.resizeBuffers(screenSize_, fragmentSize_);
+        fillIllustration(textureUnits_[0], idxUnit, countUnit);
     }
 
     // unbind texture with abuffer indices
-    delete abufferIdxUnit_;
-    abufferIdxUnit_ = nullptr;
+    textureUnits_.clear();
 
-    if (useIllustrationBuffer) {
-        // 2. perform all the cracy post-prozessing steps
+    if (useIllustrationBuffer) {  // 2. perform all the crazy post-processing steps
         // TODO: pass operation into this method as an enum plus optional parameters
-        processIllustrationBuffer();
-        drawIllustrationBuffer();
+        ill_.processIllustration(pixelBuffer_, idxUnit, countUnit);
+        ill_.drawIllustration(idxUnit, countUnit);
 
         if (debug) {
             debugIllustrationBuffer(numFrags);
@@ -201,89 +216,58 @@ bool FragmentListRenderer::supportsIllustrationBuffer() {
         return false;
 }
 
-void FragmentListRenderer::initShaders() {
-    displayShader_.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
+void FragmentListRenderer::buildShaders() {
+    auto* dfs = display_.getFragmentShaderObject();
 
-    displayShader_.getFragmentShaderObject()->addShaderExtension("GL_NV_gpu_shader5", true);
-    displayShader_.getFragmentShaderObject()->addShaderExtension("GL_EXT_shader_image_load_store",
-                                                                 true);
-    displayShader_.getFragmentShaderObject()->addShaderExtension("GL_NV_shader_buffer_load", true);
-    displayShader_.getFragmentShaderObject()->addShaderExtension("GL_NV_shader_buffer_store", true);
-    displayShader_.getFragmentShaderObject()->addShaderExtension("GL_EXT_bindable_uniform", true);
+    dfs->addShaderDefine("COLOR_LAYER");
 
-    clearShader_.getFragmentShaderObject()->addShaderExtension("GL_NV_gpu_shader5", true);
-    clearShader_.getFragmentShaderObject()->addShaderExtension("GL_EXT_shader_image_load_store",
-                                                               true);
-    clearShader_.getFragmentShaderObject()->addShaderExtension("GL_NV_shader_buffer_load", true);
-    clearShader_.getFragmentShaderObject()->addShaderExtension("GL_NV_shader_buffer_store", true);
-    clearShader_.getFragmentShaderObject()->addShaderExtension("GL_EXT_bindable_uniform", true);
+    dfs->clearShaderExtensions();
+    dfs->addShaderExtension("GL_NV_gpu_shader5", true);
+    dfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
+    dfs->addShaderExtension("GL_NV_shader_buffer_load", true);
+    dfs->addShaderExtension("GL_NV_shader_buffer_store", true);
+    dfs->addShaderExtension("GL_EXT_bindable_uniform", true);
 
-    displayShader_.build();
-    clearShader_.build();
-    fillIllustrationBufferShader_.getFragmentShaderObject()->addShaderExtension(
-        "GL_ARB_shader_atomic_counter_ops", true);
-    fillIllustrationBufferShader_.build();
-    drawIllustrationBufferShader_.build();
-    resolveNeighborsIllustrationBufferShader_.build();
-    smoothIllustrationBufferShader_.build();
+    auto* cfs = clear_.getFragmentShaderObject();
+    cfs->clearShaderExtensions();
+    cfs->addShaderExtension("GL_NV_gpu_shader5", true);
+    cfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
+    cfs->addShaderExtension("GL_NV_shader_buffer_load", true);
+    cfs->addShaderExtension("GL_NV_shader_buffer_store", true);
+    cfs->addShaderExtension("GL_EXT_bindable_uniform", true);
+
+    auto* ffs = ill_.fill.getFragmentShaderObject();
+    ffs->addShaderExtension("GL_ARB_shader_atomic_counter_ops", true);
+
+    display_.build();
+    clear_.build();
+    ill_.fill.build();
+    ill_.draw.build();
+    ill_.resolveNeighbors.build();
+    ill_.smooth.build();
 }
 
-void FragmentListRenderer::initBuffers(const size2_t& screenSize) {
-    if (screenSize != screenSize_ || abufferIdxImg_ == 0) {
+void FragmentListRenderer::resizeBuffers(const size2_t& screenSize) {
+    if (screenSize != screenSize_) {
         screenSize_ = screenSize;
-        // delete screen size textures
-        if (abufferIdxImg_) delete abufferIdxImg_;
-        abufferIdxImg_ = 0;
-
         // reallocate screen size texture that holds the pointer to the end of the fragment list at
         // that pixel
-        abufferIdxImg_ = new Texture2D(screenSize, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST);
-        abufferIdxImg_->initialize(nullptr);
-
-        LogInfo("fragment-list: screen size buffers allocated of size " << screenSize);
+        abufferIdxTex_.resize(screenSize_);
     }
 
-    if (oldFragmentSize_ != fragmentSize_ || pixelBuffer_ == 0) {
-        oldFragmentSize_ = fragmentSize_;
+    const auto bufferSize = static_cast<GLsizeiptr>(fragmentSize_ * 4 * sizeof(GLfloat));
+    if (pixelBuffer_.getSizeInBytes() != bufferSize) {
         // create new SSBO for the pixel storage
-        if (pixelBuffer_) glDeleteBuffers(1, &pixelBuffer_);
-        pixelBuffer_ = 0;
-        glGenBuffers(1, &pixelBuffer_);
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, pixelBuffer_);
-        glBufferData(GL_SHADER_STORAGE_BUFFER, fragmentSize_ * 4 * sizeof(GLfloat), NULL,
-                     GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-        LGL_ERROR;
+        pixelBuffer_.setSizeInBytes(bufferSize);
+        pixelBuffer_.unbind();
 
         LogInfo("fragment-list: pixel storage for "
-                << fragmentSize_ << " pixels allocated, memory usage: "
-                << (fragmentSize_ * 4 * sizeof(GLfloat) / 1024 / 1024.0f) << " MB");
+                << fragmentSize_
+                << " pixels allocated, memory usage: " << (bufferSize / 1024 / 1024.0f) << " MB");
     }
 }
 
-void FragmentListRenderer::assignUniforms(Shader& shader) const {
-    // screen size textures
-    glActiveTexture(abufferIdxUnit_->getEnum());
-    abufferIdxImg_->bind();
-    glBindImageTexture(abufferIdxUnit_->getUnitNumber(), abufferIdxImg_->getID(), 0, false, 0,
-                       GL_READ_WRITE, GL_R32UI);
-    LGL_ERROR;
-    shader.setUniform("abufferIdxImg", abufferIdxUnit_->getUnitNumber());
-    glActiveTexture(GL_TEXTURE0);
-    LGL_ERROR;
-
-    // pixel storage
-    glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 6, atomicCounter_);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, pixelBuffer_);
-    LGL_ERROR;
-
-    // other uniforms
-    shader.setUniform("AbufferParams.screenWidth", static_cast<GLint>(screenSize_.x));
-    shader.setUniform("AbufferParams.screenHeight", static_cast<GLint>(screenSize_.y));
-    shader.setUniform("AbufferParams.storageSize", static_cast<GLuint>(fragmentSize_));
-}
-
-void FragmentListRenderer::drawQuad() const {
+void FragmentListRenderer::drawQuad() {
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
     utilgl::DepthMaskState depthMask(GL_FALSE);
     utilgl::CullFaceState culling(GL_NONE);
@@ -292,13 +276,139 @@ void FragmentListRenderer::drawQuad() const {
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
+void FragmentListRenderer::Illustration::resizeBuffers(size2_t screenSize, size_t fragmentSize) {
+    // reallocate textures with head and count
+    if (index.getDimensions() != screenSize) {
+        // reallocate screen size texture that holds the pointer to the begin of the block of
+        // fragments
+        index.resize(screenSize);
+    }
+    if (count.getDimensions() != screenSize) {
+        // reallocate screen size texture that holds the count of fragments at that pixel
+        count.resize(screenSize);
+        count.bind();
+
+        LogInfo("Illustration Buffers: additional screen size buffers allocated of size "
+                << screenSize);
+    }
+
+    const auto bufferSize = static_cast<GLsizeiptr>(fragmentSize * 2 * sizeof(GLfloat));
+    if (color.getSizeInBytes() != bufferSize) {
+        // reallocate SSBO for the illustration buffer storage
+        // color: alpha+rgb
+        color.setSizeInBytes(bufferSize);
+        color.unbind();
+
+        // surface info: depth, gradient, compressed normal (not yet)
+        surfaceInfo.setSizeInBytes(bufferSize);
+        surfaceInfo.unbind();
+
+        // smoothing: beta + gamma
+        for (int i = 0; i < 2; ++i) {
+            smoothing[i].setSizeInBytes(bufferSize);
+            smoothing[i].unbind();
+        }
+        // reuse fragment lists as neighborhood storage
+
+        LogInfo("Illustration Buffers: additional pixel storage for "
+                << fragmentSize << " pixels allocated, memory usage: "
+                << (bufferSize * 4 / 1024 / 1024.0f) << " MB");
+    }
+}
+
+void FragmentListRenderer::fillIllustration(TextureUnit& abuffUnit, TextureUnit& idxUnit,
+                                            TextureUnit& countUnit) {
+    // reset counter
+    LGL_ERROR;
+    GLuint v[1] = {0};
+    atomicCounter_.upload(v, sizeof(GLuint));
+    atomicCounter_.unbind();
+    LGL_ERROR;
+
+    // execute sort+fill shader
+    ill_.fill.activate();
+    setUniforms(ill_.fill, abuffUnit);
+    ill_.setUniforms(ill_.fill, idxUnit, countUnit);
+
+    ill_.color.bindBase(0);
+    ill_.surfaceInfo.bindBase(1);
+    atomicCounter_.bindBase(6);
+
+    drawQuad();
+    ill_.fill.deactivate();
+}
+
+void FragmentListRenderer::Illustration::processIllustration(BufferObject& pixelBuffer,
+                                                             TextureUnit& idxUnit,
+                                                             TextureUnit& countUnit) {
+    // resolve neighbors
+    // and set initial conditions for silhouettes+halos
+    resolveNeighbors.activate();
+    setUniforms(resolveNeighbors, idxUnit, countUnit);
+    surfaceInfo.bindBase(0);                     // in: depth+gradient
+    pixelBuffer.bindBase(1);                     // out: neighbors
+    smoothing[1 - activeSmoothing].bindBase(2);  // out: beta+gamma
+    activeSmoothing = 1 - activeSmoothing;
+    drawQuad();
+    resolveNeighbors.deactivate();
+
+    // perform the bluring
+    if (settings.smoothingSteps_ > 0) {
+        smooth.activate();
+        smooth.setUniform("lambdaBeta", 1.0f - settings.edgeSmoothing_);
+        smooth.setUniform("lambdaGamma", 1.0f - settings.haloSmoothing_);
+        for (int i = 0; i < settings.smoothingSteps_; ++i) {
+            setUniforms(smooth, idxUnit, countUnit);
+            pixelBuffer.bindBase(0);                     // in: neighbors
+            smoothing[activeSmoothing].bindBase(1);      // in: beta+gamma
+            smoothing[1 - activeSmoothing].bindBase(2);  // out: beta+gamma
+            activeSmoothing = 1 - activeSmoothing;
+            drawQuad();
+        }
+        smooth.deactivate();
+    }
+}
+
+void FragmentListRenderer::Illustration::drawIllustration(TextureUnit& idxUnit,
+                                                          TextureUnit& countUnit) {
+    // final blending
+    draw.activate();
+    setUniforms(draw, idxUnit, countUnit);
+    color.bindBase(0);
+    smoothing[activeSmoothing].bindBase(1);  // in: beta+gamma
+    vec4 edgeColor = vec4(settings.edgeColor_, settings.edgeStrength_);
+    draw.setUniform("edgeColor", edgeColor);
+    draw.setUniform("haloStrength", settings.haloStrength_);
+    drawQuad();
+    draw.deactivate();
+}
+
+void FragmentListRenderer::Illustration::setUniforms(Shader& shader, TextureUnit& idxUnit,
+                                                     TextureUnit& countUnit) {
+    idxUnit.activate();
+    index.bind();
+    glBindImageTexture(idxUnit.getUnitNumber(), index.getID(), 0, false, 0, GL_READ_WRITE,
+                       GL_R32UI);
+    shader.setUniform("illustrationBufferIdxImg", idxUnit.getUnitNumber());
+    glActiveTexture(GL_TEXTURE0);
+
+    countUnit.activate();
+    count.bind();
+    glBindImageTexture(countUnit.getUnitNumber(), count.getID(), 0, false, 0, GL_READ_WRITE,
+                       GL_R32UI);
+    shader.setUniform("illustrationBufferCountImg", countUnit.getUnitNumber());
+    glActiveTexture(GL_TEXTURE0);
+
+    shader.setUniform("screenSize", static_cast<ivec2>(index.getDimensions()));
+}
+
 void FragmentListRenderer::debugFragmentLists(GLuint numFrags) {
     std::ostringstream oss;
     oss << "========= Fragment List Renderer - DEBUG =========\n\n";
 
     // read global counter
     GLuint counter = 0xffffffff;
-    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicCounter_);
+    atomicCounter_.bind();
     LGL_ERROR;
     glGetBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint), &counter);
     LGL_ERROR;
@@ -312,7 +422,7 @@ void FragmentListRenderer::debugFragmentLists(GLuint numFrags) {
     // read index image
     oss << "Index image:" << std::endl;
     std::vector<GLuint> idxImg(screenSize_.x * screenSize_.y);
-    abufferIdxImg_->download(&idxImg[0]);
+    abufferIdxTex_.download(&idxImg[0]);
     LGL_ERROR;
     for (size_t y = 0; y < screenSize_.y; ++y) {
         oss << "y = " << y;
@@ -323,9 +433,8 @@ void FragmentListRenderer::debugFragmentLists(GLuint numFrags) {
     }
 
     // read pixel storage buffer
-
     oss << std::endl << "Pixel storage: " << std::endl;
-    glBindBuffer(GL_ARRAY_BUFFER, pixelBuffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, pixelBuffer_.getId());
     LGL_ERROR;
     size_t size = std::min((size_t)counter, fragmentSize_);
     std::vector<GLfloat> pixelBuffer(4 * counter);
@@ -349,221 +458,42 @@ void FragmentListRenderer::debugFragmentLists(GLuint numFrags) {
     oss << std::endl << "\n==================================================" << std::endl;
 }
 
-void FragmentListRenderer::initIllustrationBuffer() {
-    if (illustrationBufferOldScreenSize_ != screenSize_) {
-        illustrationBufferOldScreenSize_ = screenSize_;
-        // reallocate textures with head and count
-
-        if (illustrationBufferIdxImg_) delete illustrationBufferIdxImg_;
-        if (illustrationBufferCountImg_) delete illustrationBufferCountImg_;
-
-        // reallocate screen size texture that holds the pointer to the begin of the block of
-        // fragments
-        illustrationBufferIdxImg_ =
-            new Texture2D(screenSize_, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST);
-        illustrationBufferIdxImg_->initialize(nullptr);
-
-        LGL_ERROR;
-        // reallocate screen size texture that holds the count of fragments at that pixel
-        illustrationBufferCountImg_ =
-            new Texture2D(screenSize_, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST);
-        illustrationBufferCountImg_->initialize(nullptr);
-        illustrationBufferCountImg_->bind();
-        LGL_ERROR;
-
-        LogInfo("Illustration Buffers: additional screen size buffers allocated of size "
-                << screenSize_);
-    }
-
-    if (illustrationBufferOldFragmentSize_ != fragmentSize_) {
-        illustrationBufferOldFragmentSize_ = fragmentSize_;
-        // reallocate SSBO for the illustration buffer storage
-        // color: alpha+rgb
-        if (illustrationColorBuffer_) glDeleteBuffers(1, &illustrationColorBuffer_);
-        glGenBuffers(1, &illustrationColorBuffer_);
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, illustrationColorBuffer_);
-        glBufferData(GL_SHADER_STORAGE_BUFFER, fragmentSize_ * 2 * sizeof(GLfloat), NULL,
-                     GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-        LGL_ERROR;
-        // surface info: depth, gradient, compressed normal (not yet)
-        if (illustrationSurfaceInfoBuffer_) glDeleteBuffers(1, &illustrationSurfaceInfoBuffer_);
-        glGenBuffers(1, &illustrationSurfaceInfoBuffer_);
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, illustrationSurfaceInfoBuffer_);
-        glBufferData(GL_SHADER_STORAGE_BUFFER, fragmentSize_ * 2 * sizeof(GLfloat), NULL,
-                     GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-        LGL_ERROR;
-        // smoothing: beta + gamma
-        if (illustrationSmoothingBuffer_[0]) glDeleteBuffers(2, illustrationSmoothingBuffer_);
-        glGenBuffers(2, illustrationSmoothingBuffer_);
-        for (int i = 0; i < 2; ++i) {
-            glBindBuffer(GL_SHADER_STORAGE_BUFFER, illustrationSmoothingBuffer_[i]);
-            glBufferData(GL_SHADER_STORAGE_BUFFER, fragmentSize_ * 2 * sizeof(GLfloat), NULL,
-                         GL_DYNAMIC_DRAW);
-            glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-            LGL_ERROR;
-        }
-        // reuse fragment lists as neighborhood storage
-
-        // log size
-        int sizePerFragment = 6 * sizeof(GLfloat);
-        LogInfo("Illustration Buffers: additional pixel storage for "
-                << fragmentSize_ << " pixels allocated, memory usage: "
-                << (fragmentSize_ * sizePerFragment / 1024 / 1024.0f) << " MB");
-    }
-}
-
-void FragmentListRenderer::fillIllustrationBuffer() {
-    // reset counter
-    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicCounter_);
-    LGL_ERROR;
-    GLuint v[1] = {0};
-    glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint), v);
-    LGL_ERROR;
-    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-    LGL_ERROR;
-
-    // create unit index for index textures
-    illustrationBufferIdxUnit_ = new TextureUnit();
-    illustrationBufferCountUnit_ = new TextureUnit();
-
-    // execute sort+fill shader
-    fillIllustrationBufferShader_.activate();
-    assignUniforms(fillIllustrationBufferShader_);
-    assignIllustrationBufferUniforms(fillIllustrationBufferShader_);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, illustrationColorBuffer_);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, illustrationSurfaceInfoBuffer_);
-    glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 6, atomicCounter_);
-    drawQuad();
-    fillIllustrationBufferShader_.deactivate();
-}
-
-void FragmentListRenderer::processIllustrationBuffer() {
-    // resolve neighbors
-    // and set initial conditions for silhouettes+halos
-    resolveNeighborsIllustrationBufferShader_.activate();
-    assignIllustrationBufferUniforms(resolveNeighborsIllustrationBufferShader_);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0,
-                     illustrationSurfaceInfoBuffer_);             // in: depth+gradient
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, pixelBuffer_);  // out: neighbors
-    glBindBufferBase(
-        GL_SHADER_STORAGE_BUFFER, 2,
-        illustrationSmoothingBuffer_[1 - activeIllustrationSmoothingBuffer_]);  // out: beta+gamma
-    activeIllustrationSmoothingBuffer_ = 1 - activeIllustrationSmoothingBuffer_;
-    drawQuad();
-    resolveNeighborsIllustrationBufferShader_.deactivate();
-
-    // perform the bluring
-    if (illustrationBufferSettings_.smoothingSteps_ > 0) {
-        smoothIllustrationBufferShader_.activate();
-        smoothIllustrationBufferShader_.setUniform(
-            "lambdaBeta", float(1) - illustrationBufferSettings_.edgeSmoothing_);
-        smoothIllustrationBufferShader_.setUniform(
-            "lambdaGamma", float(1) - illustrationBufferSettings_.haloSmoothing_);
-        for (int i = 0; i < illustrationBufferSettings_.smoothingSteps_; ++i) {
-            assignIllustrationBufferUniforms(smoothIllustrationBufferShader_);
-            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, pixelBuffer_);  // in: neighbors
-            glBindBufferBase(
-                GL_SHADER_STORAGE_BUFFER, 1,
-                illustrationSmoothingBuffer_[activeIllustrationSmoothingBuffer_]);  // in:
-                                                                                    // beta+gamma
-            glBindBufferBase(
-                GL_SHADER_STORAGE_BUFFER, 2,
-                illustrationSmoothingBuffer_[1 -
-                                             activeIllustrationSmoothingBuffer_]);  // out:
-                                                                                    // beta+gamma
-            activeIllustrationSmoothingBuffer_ = 1 - activeIllustrationSmoothingBuffer_;
-            drawQuad();
-        }
-        smoothIllustrationBufferShader_.deactivate();
-    }
-}
-
-void FragmentListRenderer::drawIllustrationBuffer() {
-    // final blending
-    drawIllustrationBufferShader_.activate();
-    assignIllustrationBufferUniforms(drawIllustrationBufferShader_);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, illustrationColorBuffer_);
-    glBindBufferBase(
-        GL_SHADER_STORAGE_BUFFER, 1,
-        illustrationSmoothingBuffer_[activeIllustrationSmoothingBuffer_]);  // in: beta+gamma
-    vec4 edgeColor =
-        vec4(illustrationBufferSettings_.edgeColor_, illustrationBufferSettings_.edgeStrength_);
-    drawIllustrationBufferShader_.setUniform("edgeColor", edgeColor);
-    drawIllustrationBufferShader_.setUniform("haloStrength",
-                                             illustrationBufferSettings_.haloStrength_);
-    drawQuad();
-    drawIllustrationBufferShader_.deactivate();
-
-    // free unit for index textures
-    delete illustrationBufferIdxUnit_;
-    illustrationBufferIdxUnit_ = nullptr;
-    delete illustrationBufferCountUnit_;
-    illustrationBufferCountUnit_ = nullptr;
-}
-
-void FragmentListRenderer::assignIllustrationBufferUniforms(Shader& shader) {
-    // screen size textures
-    glActiveTexture(illustrationBufferIdxUnit_->getEnum());
-    illustrationBufferIdxImg_->bind();
-    glBindImageTexture(illustrationBufferIdxUnit_->getUnitNumber(),
-                       illustrationBufferIdxImg_->getID(), 0, false, 0, GL_READ_WRITE, GL_R32UI);
-    LGL_ERROR;
-    shader.setUniform("illustrationBufferIdxImg", illustrationBufferIdxUnit_->getUnitNumber());
-    glActiveTexture(GL_TEXTURE0);
-    LGL_ERROR;
-
-    glActiveTexture(illustrationBufferCountUnit_->getEnum());
-    illustrationBufferCountImg_->bind();
-    glBindImageTexture(illustrationBufferCountUnit_->getUnitNumber(),
-                       illustrationBufferCountImg_->getID(), 0, false, 0, GL_READ_WRITE, GL_R32UI);
-    LGL_ERROR;
-    shader.setUniform("illustrationBufferCountImg", illustrationBufferCountUnit_->getUnitNumber());
-    glActiveTexture(GL_TEXTURE0);
-    LGL_ERROR;
-
-    // other uniforms
-    shader.setUniform("screenSize", ivec2(screenSize_.x, screenSize_.y));
-}
-
 void FragmentListRenderer::debugIllustrationBuffer(GLuint numFrags) {
     printf("========= Fragment List Renderer - DEBUG Illustration Buffers =========\n\n");
 
     // read images
     std::vector<GLuint> idxImg(screenSize_.x * screenSize_.y);
-    illustrationBufferIdxImg_->download(&idxImg[0]);
+    ill_.index.download(&idxImg[0]);
     LGL_ERROR;
     std::vector<GLuint> countImg(screenSize_.x * screenSize_.y);
-    illustrationBufferCountImg_->download(&countImg[0]);
+    ill_.count.download(&countImg[0]);
     LGL_ERROR;
 
     // read pixel storage buffer
     size_t size = std::min((size_t)numFrags, fragmentSize_);
 
-    glBindBuffer(GL_ARRAY_BUFFER, illustrationColorBuffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, ill_.color.getId());
     LGL_ERROR;
     std::vector<glm::tvec2<GLfloat>> colorBuffer(size);
     glGetBufferSubData(GL_ARRAY_BUFFER, 0, 2 * sizeof(GLfloat) * size, &colorBuffer[0]);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     LGL_ERROR;
 
-    glBindBuffer(GL_ARRAY_BUFFER, illustrationSurfaceInfoBuffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, ill_.surfaceInfo.getId());
     LGL_ERROR;
     std::vector<glm::tvec2<GLfloat>> surfaceInfoBuffer(size);
     glGetBufferSubData(GL_ARRAY_BUFFER, 0, 2 * sizeof(GLfloat) * size, &surfaceInfoBuffer[0]);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     LGL_ERROR;
 
-    glBindBuffer(GL_ARRAY_BUFFER, pixelBuffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, pixelBuffer_.getId());
     LGL_ERROR;
     std::vector<glm::tvec4<GLint>> neighborBuffer(size);
     glGetBufferSubData(GL_ARRAY_BUFFER, 0, 4 * sizeof(GLint) * size, &neighborBuffer[0]);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     LGL_ERROR;
 
-    glBindBuffer(GL_ARRAY_BUFFER,
-                 illustrationSmoothingBuffer_[1 - activeIllustrationSmoothingBuffer_]);
+    glBindBuffer(GL_ARRAY_BUFFER, ill_.smoothing[1 - ill_.activeSmoothing].getId());
     LGL_ERROR;
     std::vector<glm::tvec2<GLfloat>> smoothingBuffer(size);
     glGetBufferSubData(GL_ARRAY_BUFFER, 0, 2 * sizeof(GLfloat) * size, &smoothingBuffer[0]);

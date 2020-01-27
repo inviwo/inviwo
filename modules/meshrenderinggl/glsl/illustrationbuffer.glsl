@@ -29,7 +29,8 @@
 
 /**
  * Extension to Fragment Lists to support post-processing effects on the fragments.
- * This follows the ideas of the paper "Smart Transparency for Illustrative Visualization of Complex Flow Surfaces"
+ * This follows the ideas of the paper "Smart Transparency for Illustrative Visualization of Complex
+ * Flow Surfaces"
  */
 
 #ifndef ILLUSTRATIONBUFFER_HGLSL
@@ -37,14 +38,14 @@
 
 #include "oit/abuffercommons.glsl"
 
-//screen size
+// screen size
 uniform ivec2 screenSize;
 
 // Buffers+Images
 
-//Head pointer to the entry in the list
+// Head pointer to the entry in the list
 coherent uniform layout(size1x32) uimage2D illustrationBufferIdxImg;
-//Number of entries in the list
+// Number of entries in the list
 coherent uniform layout(size1x32) uimage2D illustrationBufferCountImg;
 
 /*
@@ -75,11 +76,11 @@ struct FragmentData
 
 layout(std430, binding=4) buffer illustrationBufferStorageIn
 {
-    FragmentData illustrationDataIn[]; 
+    FragmentData illustrationDataIn[];
 };
 layout(std430, binding=5) buffer illustrationBufferStorageOut
 {
-    FragmentData illustrationDataOut[]; 
+    FragmentData illustrationDataOut[];
 };
 
 */
