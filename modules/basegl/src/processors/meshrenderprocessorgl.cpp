@@ -69,7 +69,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
                            InvalidationLevel::InvalidResources)
     , overrideColor_("overrideColor", "Override Color", vec4(0.75f, 0.75f, 0.75f, 1.0f), vec4(0.0f),
                      vec4(1.0f))
-    , geomProperties_("geometry", "Geometry Rendering Properties")
+    , meshProperties_("geometry", "Geometry Rendering Properties")
     , cullFace_("cullFace", "Cull Face",
                 {{"culldisable", "Disable", GL_NONE},
                  {"cullfront", "Front", GL_FRONT},
@@ -88,13 +88,13 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
                         InvalidationLevel::InvalidResources)
     , shader_("meshrendering.vert", "meshrendering.frag", false) {
 
-    addPort(inport_).onChange([this]() { updateDrawers(); });
+    addPort(inport_);
     addPort(imageInport_).setOptional(true);
     addPort(outport_);
 
-    addProperties(camera_, geomProperties_, lightingProperty_, trackball_, layers_);
+    addProperties(camera_, meshProperties_, lightingProperty_, trackball_, layers_);
 
-    geomProperties_.addProperties(cullFace_, enableDepthTest_, overrideColorBuffer_,
+    meshProperties_.addProperties(cullFace_, enableDepthTest_, overrideColorBuffer_,
                                   overrideColor_);
 
     overrideColor_.setSemantics(PropertySemantics::Color)
@@ -152,44 +152,16 @@ void MeshRenderProcessorGL::process() {
     utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     utilgl::setUniforms(shader_, camera_, lightingProperty_, overrideColor_);
-    for (auto& drawer : drawers_) {
-        utilgl::setShaderUniforms(shader_, *(drawer.second->getMesh()), "geometry");
-        shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(drawer.second->getMesh()));
-        drawer.second->draw();
+    for (auto mesh : inport_) {
+        utilgl::setShaderUniforms(shader_, *mesh, "geometry");
+        shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
+        MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
+                                        mesh->getDefaultMeshInfo()};
+        drawer.draw();
     }
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
-}
-
-void MeshRenderProcessorGL::updateDrawers() {
-    auto changed = inport_.getChangedOutports();
-    DrawerMap temp;
-    std::swap(temp, drawers_);
-
-    std::map<const Outport*, std::vector<std::shared_ptr<const Mesh>>> data;
-    for (auto& elem : inport_.getSourceVectorData()) {
-        data[elem.first].push_back(elem.second);
-    }
-
-    for (auto elem : data) {
-        auto ibegin = temp.lower_bound(elem.first);
-        auto iend = temp.upper_bound(elem.first);
-
-        if (util::contains(changed, elem.first) || ibegin == temp.end() ||
-            static_cast<long>(elem.second.size()) !=
-                std::distance(ibegin, iend)) {  // data is changed or new.
-
-            for (auto geo : elem.second) {
-                auto factory = getNetwork()->getApplication()->getMeshDrawerFactory();
-                if (auto renderer = factory->create(geo.get())) {
-                    drawers_.emplace(std::make_pair(elem.first, std::move(renderer)));
-                }
-            }
-        } else {  // reuse the old data.
-            drawers_.insert(std::make_move_iterator(ibegin), std::make_move_iterator(iend));
-        }
-    }
 }
 
 }  // namespace inviwo

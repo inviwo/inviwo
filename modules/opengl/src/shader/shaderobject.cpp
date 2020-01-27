@@ -125,14 +125,14 @@ struct Psm {
             if (pathBegin == c.end) {
                 throw OpenGLException{
                     fmt::format("Invalid include found at {}({})", s.key, s.lines + 1),
-                    SourceContext(s.key, s.key, "", s.lines + 1)};
+                    SourceContext(s.key, s.key, "", static_cast<int>(s.lines + 1))};
             }
 
             auto pathEnd = std::find(pathBegin + 1, c.end, '"');
             if (pathEnd == c.end) {
                 throw OpenGLException{
                     fmt::format("Invalid include found at {}({})", s.key, s.lines + 1),
-                    SourceContext(s.key, s.key, "", s.lines + 1)};
+                    SourceContext(s.key, s.key, "", static_cast<int>(s.lines + 1))};
             }
 
             auto path = std::string{pathBegin + 1, pathEnd};
@@ -146,7 +146,7 @@ struct Psm {
                     s.lnr.addLine(s.key, ++s.lines);
                 }
             } catch (const OpenGLException& e) {
-                throw OpenGLException(e.getMessage(), SourceContext(s.key, s.key, "", s.lines + 1));
+                throw OpenGLException(e.getMessage(), SourceContext(s.key, s.key, "", static_cast<int>(s.lines + 1)));
             }
         };
 

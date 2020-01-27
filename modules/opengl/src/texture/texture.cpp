@@ -228,7 +228,7 @@ GLenum Texture::getInternalFormat() const { return internalformat_; }
 GLenum Texture::getDataType() const { return dataType_; }
 
 const DataFormatBase* Texture::getDataFormat() const {
-    return DataFormatBase::get(GLFormats::get(dataType_, channels(format_)));
+    return DataFormatBase::get(GLFormats::getDataFormat(dataType_, channels(format_)));
 }
 
 GLenum Texture::getFiltering() const {

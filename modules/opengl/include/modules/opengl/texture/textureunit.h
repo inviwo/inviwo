@@ -78,7 +78,10 @@ public:
     TextureUnit& emplace_back();
 
     TextureUnit& operator[](size_t i);
+    const TextureUnit& operator[](size_t i) const;
+    
     size_t size() const;
+    void clear();
 
 private:
     std::vector<TextureUnit> units_;

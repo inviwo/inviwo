@@ -58,6 +58,9 @@ public:
 
     BufferObject(size_t sizeInBytes, const DataFormatBase* format, BufferUsage usage,
                  BufferTarget target = BufferTarget::Data);
+
+    BufferObject(size_t sizeInBytes, GLFormat format, GLenum usage, GLenum target);
+
     BufferObject(const BufferObject& rhs);
     BufferObject(BufferObject&& rhs);
     BufferObject& operator=(const BufferObject& other);
@@ -74,6 +77,11 @@ public:
 
     void bind() const;
     void unbind() const;
+
+    void bindBase(GLuint index) const;
+    void bindRange(GLuint index, GLintptr offset, GLsizeiptr size) const;
+
+
 
     /**
      * \brief bind the buffer object and set the vertex attribute pointer
@@ -115,11 +123,12 @@ private:
     GLenum target_;
     GLFormat glFormat_;
     GLsizeiptr sizeInBytes_;
-    const DataFormatBase* dataFormat_;
 };
 
 inline GLFormat BufferObject::getGLFormat() const { return glFormat_; }
-inline const DataFormatBase* BufferObject::getDataFormat() const { return dataFormat_; }
+inline const DataFormatBase* BufferObject::getDataFormat() const {
+    return DataFormatBase::get(GLFormats::get(glFormat_));
+}
 
 }  // namespace inviwo
 
