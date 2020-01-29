@@ -52,6 +52,9 @@ out vec3 texCoord_;
 Block comment
 */
 
+/*
+**/
+
 #include "inc1"
 #include "incX"
 #include "inc2"
@@ -77,6 +80,9 @@ out vec3 texCoord_;
 /*
 Block comment
 */
+
+/*
+**/
 
 Inc1
 
@@ -139,11 +145,21 @@ TEST(ShaderObject, parseSource) {
     }
     auto pre = ss.str();
 
-    EXPECT_EQ(code1Parsed, parsed);
+    auto expectedLines = splitString(code1Parsed, '\n');
+    auto parsedLines = splitString(parsed, '\n');
 
-    std::vector<size_t> lineNum{1,  2,  3,  4,  5,  6,  7,  8, 9, 1, 11, 1,  2,  3,  13,
-                                14, 15, 16, 17, 18, 19, 20, 1, 2, 1, 2,  22, 23, 24, 25};
+    EXPECT_EQ(expectedLines.size(), parsedLines.size());
+
+    for (const auto& [expectedLine, parsedLine] : util::zip(expectedLines, parsedLines)) {
+        EXPECT_EQ(expectedLine, parsedLine);
+    }
+
+    std::vector<size_t> lineNum{1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 1,  14, 1,  2, 3,
+                                16, 17, 18, 19, 20, 21, 22, 23, 1, 2,  1,  2,  25, 26, 27, 28};
     std::vector<std::string> names{"Code1",
+                                   "Code1",
+                                   "Code1",
+                                   "Code1",
                                    "Code1",
                                    "Code1",
                                    "Code1",
