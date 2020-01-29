@@ -67,20 +67,16 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::string& filePath) {
     format = DataFormatBase::get(formatFlag);
     d.deserialize("Dimension", dimensions);
 
-    auto volume = std::make_shared<Volume>(dimensions, format);
+    SwizzleMask swizzleMask{swizzlemasks::rgba};
+    InterpolationType interpolation{InterpolationType::Linear};
+    Wrapping3D wrapping{wrapping3d::clampAll};
 
-    SwizzleMask swizzleMask = volume->getSwizzleMask();
     d.deserialize("SwizzleMask", swizzleMask);
-    volume->setSwizzleMask(swizzleMask);
-
-    InterpolationType interpolation = volume->getInterpolation();
     d.deserialize("Interpolation", interpolation);
-    volume->setInterpolation(interpolation);
-
-    Wrapping3D wrapping = volume->getWrapping();
     d.deserialize("Wrapping", wrapping);
-    volume->setWrapping(wrapping);
 
+    auto volume =
+        std::make_shared<Volume>(dimensions, format, swizzleMask, interpolation, wrapping);
     mat4 basisAndOffset = volume->getModelMatrix();
     mat4 worldTransform = volume->getWorldMatrix();
     d.deserialize("BasisAndOffset", basisAndOffset);
