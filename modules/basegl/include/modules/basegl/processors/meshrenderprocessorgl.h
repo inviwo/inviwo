@@ -97,8 +97,6 @@ public:
     virtual void process() override;
 
 protected:
-    void updateDrawers();
-
     MeshFlatMultiInport inport_;
     ImageInport imageInport_;
     ImageOutport outport_;
@@ -109,7 +107,7 @@ protected:
     BoolProperty overrideColorBuffer_;
     FloatVec4Property overrideColor_;
 
-    CompositeProperty geomProperties_;
+    CompositeProperty meshProperties_;
     OptionPropertyInt cullFace_;
     BoolProperty enableDepthTest_;
     SimpleLightingProperty lightingProperty_;
@@ -121,9 +119,6 @@ protected:
     BoolProperty viewNormalsLayer_;
 
     Shader shader_;
-
-    using DrawerMap = std::multimap<const Outport*, std::unique_ptr<MeshDrawer>>;
-    DrawerMap drawers_;
 };
 
 }  // namespace inviwo

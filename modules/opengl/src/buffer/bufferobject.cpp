@@ -32,10 +32,8 @@
 namespace inviwo {
 
 BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format, BufferUsage usage,
-                           BufferTarget target /*= BufferTarget::Data*/)
-    : Observable<BufferObjectObserver>()
-    , glFormat_(GLFormats::get(format->getId()))
-    , dataFormat_(format) {
+                           BufferTarget target)
+    : Observable<BufferObjectObserver>(), glFormat_(GLFormats::get(format->getId())) {
     switch (usage) {
         case BufferUsage::Dynamic:
             usageGL_ = GL_DYNAMIC_DRAW;
@@ -59,8 +57,18 @@ BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format, Buf
     glGenBuffers(1, &id_);
 
     initialize(nullptr, sizeInBytes);
+}
 
-    LGL_ERROR_SUPPRESS;
+BufferObject::BufferObject(size_t sizeInBytes, GLFormat format, GLenum usage, GLenum target)
+    : Observable<BufferObjectObserver>()
+    , usageGL_(usage)
+    , target_(target)
+    , glFormat_(format)
+    , sizeInBytes_(0) {
+
+    glGenBuffers(1, &id_);
+
+    initialize(nullptr, sizeInBytes);
 }
 
 BufferObject::BufferObject(const BufferObject& rhs)
@@ -68,8 +76,7 @@ BufferObject::BufferObject(const BufferObject& rhs)
     , usageGL_(rhs.usageGL_)
     , target_(rhs.target_)
     , glFormat_(rhs.glFormat_)
-    , sizeInBytes_(0)
-    , dataFormat_(rhs.dataFormat_) {
+    , sizeInBytes_(0) {
     glGenBuffers(1, &id_);
     *this = rhs;
 }
@@ -80,8 +87,7 @@ BufferObject::BufferObject(BufferObject&& rhs)
     , usageGL_(rhs.usageGL_)
     , target_(rhs.target_)
     , glFormat_(rhs.glFormat_)
-    , sizeInBytes_(rhs.sizeInBytes_)
-    , dataFormat_(rhs.dataFormat_) {
+    , sizeInBytes_(rhs.sizeInBytes_) {
     // Free resources from other
     rhs.id_ = 0;
 }
@@ -100,7 +106,7 @@ BufferObject& BufferObject::operator=(const BufferObject& rhs) {
             // Initialize size of buffer
             initialize(nullptr, rhs.sizeInBytes_);
         }
-        dataFormat_ = rhs.dataFormat_;
+
         // Now bind the second buffer, this buffer is already bound
         glBindBuffer(GL_COPY_READ_BUFFER, rhs.getId());
         // Copy data (OpenGL 3.1 functionality...)
@@ -125,7 +131,6 @@ BufferObject& BufferObject::operator=(BufferObject&& rhs) {
         usageGL_ = rhs.usageGL_;
         glFormat_ = rhs.glFormat_;
         sizeInBytes_ = rhs.sizeInBytes_;
-        dataFormat_ = rhs.dataFormat_;
 
         // Release resources from source object
         rhs.id_ = 0;
@@ -149,6 +154,12 @@ void BufferObject::bind() const { glBindBuffer(target_, id_); }
 
 void BufferObject::unbind() const { glBindBuffer(target_, 0); }
 
+void BufferObject::bindBase(GLuint index) const { glBindBufferBase(target_, index, id_); }
+
+void BufferObject::bindRange(GLuint index, GLintptr offset, GLsizeiptr size) const {
+    glBindBufferRange(target_, index, id_, offset, size);
+}
+
 void BufferObject::bindAndSetAttribPointer(GLuint location, BindingType bindingType) const {
     bind();
     switch (bindingType) {
@@ -156,16 +167,16 @@ void BufferObject::bindAndSetAttribPointer(GLuint location, BindingType bindingT
             if (getDataFormat()->getNumericType() == NumericType::Float) {
                 if (getDataFormat()->getPrecision() == static_cast<size_t>(64)) {
                     // double
-                    glVertexAttribLPointer(location, getGLFormat().channels, GL_DOUBLE, 0,
+                    glVertexAttribLPointer(location, glFormat_.channels, GL_DOUBLE, 0,
                                            (void*)nullptr);
                 } else {
                     // other floating point types
-                    glVertexAttribPointer(location, getGLFormat().channels, getGLFormat().type,
-                                          GL_FALSE, 0, (void*)nullptr);
+                    glVertexAttribPointer(location, glFormat_.channels, glFormat_.type, GL_FALSE, 0,
+                                          (void*)nullptr);
                 }
             } else {
                 // integral types
-                glVertexAttribIPointer(location, getGLFormat().channels, getGLFormat().type, 0,
+                glVertexAttribIPointer(location, glFormat_.channels, glFormat_.type, 0,
                                        (void*)nullptr);
             }
             break;
@@ -173,22 +184,22 @@ void BufferObject::bindAndSetAttribPointer(GLuint location, BindingType bindingT
             if ((getDataFormat()->getNumericType() == NumericType::Float) &&
                 (getDataFormat()->getPrecision() == static_cast<size_t>(64))) {
                 // special case for double precision since it is not part of GLFormats
-                glVertexAttribPointer(location, getGLFormat().channels, GL_DOUBLE, GL_FALSE, 0,
+                glVertexAttribPointer(location, glFormat_.channels, GL_DOUBLE, GL_FALSE, 0,
                                       (void*)nullptr);
             } else {
-                glVertexAttribPointer(location, getGLFormat().channels, getGLFormat().type,
-                                      GL_FALSE, 0, (void*)nullptr);
+                glVertexAttribPointer(location, glFormat_.channels, glFormat_.type, GL_FALSE, 0,
+                                      (void*)nullptr);
             }
             break;
         case BindingType::ForceNormalizedFloat:
             if ((getDataFormat()->getNumericType() == NumericType::Float) &&
                 (getDataFormat()->getPrecision() == static_cast<size_t>(64))) {
                 // special case for double precision since it is not part of GLFormats
-                glVertexAttribPointer(location, getGLFormat().channels, GL_DOUBLE, GL_FALSE, 0,
+                glVertexAttribPointer(location, glFormat_.channels, GL_DOUBLE, GL_FALSE, 0,
                                       (void*)nullptr);
             } else {
-                glVertexAttribPointer(location, getGLFormat().channels, getGLFormat().type, GL_TRUE,
-                                      0, (void*)nullptr);
+                glVertexAttribPointer(location, glFormat_.channels, glFormat_.type, GL_TRUE, 0,
+                                      (void*)nullptr);
             }
             break;
     }

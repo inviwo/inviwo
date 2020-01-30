@@ -36,6 +36,7 @@
 #include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 
+#include <functional>
 #include <memory>
 
 namespace inviwo {
@@ -118,20 +119,43 @@ void forEachTriangle(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback
 
     if (info.ct == ConnectivityType::None) {
         for (size_t i = 0; i < ram.size(); i += 3) {
-            callback(ram[i], ram[i + 1], ram[i + 2]);
+            std::invoke(callback, ram[i], ram[i + 1], ram[i + 2]);
         }
     }
 
     else if (info.ct == ConnectivityType::Strip) {
-        for (size_t i = 0; i < ram.size() - 2; i++) {
-            callback(ram[i], ram[i + 1], ram[i + 2]);
+        for (size_t i = 0; i < ram.size() - 2; ++i) {
+            if (1 % 2 == 0) {
+                std::invoke(callback, ram[i], ram[i + 1], ram[i + 2]);
+            } else {
+                std::invoke(callback, ram[i + 1], ram[i], ram[i + 2]);
+            }
         }
     }
 
     else if (info.ct == ConnectivityType::Fan) {
         uint32_t a = static_cast<uint32_t>(ram.front());
-        for (size_t i = 1; i < ram.size(); i++) {
-            callback(a, ram[i], ram[i + 1]);
+        for (size_t i = 1; i < ram.size(); ++i) {
+            std::invoke(callback, a, ram[i], ram[i + 1]);
+        }
+    }
+
+    else if (info.ct == ConnectivityType::Adjacency) {
+        if (ram.size() < 6) return;
+        for (size_t i = 0; i < ram.size(); i += 6) {
+            std::invoke(callback, ram[i], ram[i + 2], ram[i + 4]);
+        }
+
+    }
+
+    else if (info.ct == ConnectivityType::StripAdjacency) {
+        if (ram.size() < 6) return;
+        for (size_t i = 0; i < ram.size(); i += 2) {
+            if (1 % 2 == 0) {
+                std::invoke(callback, ram[i], ram[i + 2], ram[i + 4]);
+            } else {
+                std::invoke(callback, ram[i + 2], ram[i], ram[i + 4]);
+            }
         }
     }
 
@@ -157,21 +181,35 @@ void forEachLineSegment(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callb
 
     if (info.ct == ConnectivityType::None) {
         for (size_t i = 0; i < ram.size(); i += 2) {
-            callback(ram[i], ram[i + 1]);
+            std::invoke(callback, ram[i], ram[i + 1]);
         }
     }
 
     else if (info.ct == ConnectivityType::Strip) {
-        for (size_t i = 0; i < ram.size() - 1; i++) {
-            callback(ram[i], ram[i + 1]);
+        for (size_t i = 0; i < ram.size() - 1; ++i) {
+            std::invoke(callback, ram[i], ram[i + 1]);
         }
     }
 
     else if (info.ct == ConnectivityType::Loop) {
-        for (size_t i = 0; i < ram.size() - 1; i++) {
-            callback(ram[i], ram[i + 1]);
+        for (size_t i = 0; i < ram.size() - 1; ++i) {
+            std::invoke(callback, ram[i], ram[i + 1]);
         }
-        callback(ram.back(), ram.front());
+        std::invoke(callback, ram.back(), ram.front());
+    }
+
+    if (info.ct == ConnectivityType::Adjacency) {
+        if (ram.size() < 4) return;
+        for (size_t i = 0; i < ram.size(); i += 4) {
+            std::invoke(callback, ram[i + 1], ram[i + 2]);
+        }
+    }
+
+    if (info.ct == ConnectivityType::StripAdjacency) {
+        if (ram.size() < 4) return;
+        for (size_t i = 1; i < ram.size() - 2; ++i) {
+            std::invoke(callback, ram[i], ram[i + 1]);
+        }
     }
 
     else {

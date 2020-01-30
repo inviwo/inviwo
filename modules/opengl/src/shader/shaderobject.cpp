@@ -125,23 +125,29 @@ struct Psm {
             if (pathBegin == c.end) {
                 throw OpenGLException{
                     fmt::format("Invalid include found at {}({})", s.key, s.lines + 1),
-                    IVW_CONTEXT_CUSTOM("ParseShaderSource")};
+                    SourceContext(s.key, s.key, "", static_cast<int>(s.lines + 1))};
             }
 
             auto pathEnd = std::find(pathBegin + 1, c.end, '"');
             if (pathEnd == c.end) {
                 throw OpenGLException{
                     fmt::format("Invalid include found at {}({})", s.key, s.lines + 1),
-                    IVW_CONTEXT_CUSTOM("ParseShaderSource")};
+                    SourceContext(s.key, s.key, "", static_cast<int>(s.lines + 1))};
             }
 
             auto path = std::string{pathBegin + 1, pathEnd};
-            if (auto res = s.getSource(path)) {
-                utilgl::parseShaderSource(res->first, res->second, s.output, s.lnr, s.replacements,
-                                          s.getSource);
-                ++s.lines;
-            } else {
-                s.lnr.addLine(s.key, ++s.lines);
+
+            try {
+                if (auto res = s.getSource(path)) {
+                    utilgl::parseShaderSource(res->first, res->second, s.output, s.lnr,
+                                              s.replacements, s.getSource);
+                    ++s.lines;
+                } else {
+                    s.lnr.addLine(s.key, ++s.lines);
+                }
+            } catch (const OpenGLException& e) {
+                throw OpenGLException(
+                    e.getMessage(), SourceContext(s.key, s.key, "", static_cast<int>(s.lines + 1)));
             }
         };
 
@@ -206,6 +212,7 @@ struct Psm {
             state<BlockCom1> + event<Char> [eol]      / (print, nl) = state<BlockCom1>,
             state<BlockCom1> + event<Char>            / (print)     = state<BlockCom1>,
             state<BlockCom2> + event<Char> [slash]    / (print)     = state<Code>,
+            state<BlockCom2> + event<Char> [star]     / (print)     = state<BlockCom2>,
             state<BlockCom2> + event<Char> [eol]      / (print, nl) = state<BlockCom1>,
             state<BlockCom2> + event<Char>            / (print)     = state<BlockCom1>,
 
@@ -647,8 +654,9 @@ std::pair<std::string, size_t> ShaderObject::resolveLine(size_t line) const {
     return lnr_.resolveLine(line);
 }
 
-std::string ShaderObject::print(bool showSource, bool preprocess) const {
-    if (preprocess) {
+std::string ShaderObject::print(bool showSource, bool showPreprocess) {
+    if (showPreprocess) {
+        preprocess();  // Make sure sourceProcessed_ is set and up to date
         if (showSource) {
             std::string::size_type width = 0;
             for (auto l : lnr_) {

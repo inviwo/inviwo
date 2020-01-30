@@ -97,6 +97,8 @@ void TextureUnitContainer::push_back(TextureUnit&& unit) { units_.push_back(std:
 TextureUnit& TextureUnitContainer::emplace_back() { return units_.emplace_back(); }
 
 TextureUnit& TextureUnitContainer::operator[](size_t i) { return units_[i]; }
+const TextureUnit& TextureUnitContainer::operator[](size_t i) const { return units_[i]; }
 size_t TextureUnitContainer::size() const { return units_.size(); }
+void TextureUnitContainer::clear() { units_.clear(); }
 
 }  // namespace inviwo
