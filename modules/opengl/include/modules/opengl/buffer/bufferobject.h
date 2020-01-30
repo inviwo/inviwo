@@ -75,10 +75,32 @@ public:
     GLFormat getGLFormat() const;
     const DataFormatBase* getDataFormat() const;
 
+    /**
+     * \brief Calls glBindBuffer.
+     */
     void bind() const;
+
+    /**
+     * \brief Calls glBindBuffer with buffer name 0
+     */
     void unbind() const;
 
+    /**
+     * \brief Calls glBindBufferBase.
+     * Binds the buffer at index of the array of targets
+     * specified by the associated target ( @see getTarget )
+     * Targets must be one of GL_ATOMIC_COUNTER_BUFFER,
+     * GL_TRANSFORM_FEEDBACK_BUFFER, GL_UNIFORM_BUFFER or GL_SHADER_STORAGE_BUFFER
+     */
     void bindBase(GLuint index) const;
+
+    /**
+     * \brief Calls glBindBufferRange.
+     * Binds the range (offset, offset + size) of the buffer at index of the array of targets
+     * specified by the associated target ( @see getTarget )
+     * Targets must be one of GL_ATOMIC_COUNTER_BUFFER,
+     * GL_TRANSFORM_FEEDBACK_BUFFER, GL_UNIFORM_BUFFER or GL_SHADER_STORAGE_BUFFER
+     */
     void bindRange(GLuint index, GLintptr offset, GLsizeiptr size) const;
 
     /**
