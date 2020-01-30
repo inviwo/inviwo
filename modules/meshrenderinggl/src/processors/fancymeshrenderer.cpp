@@ -88,7 +88,6 @@ FancyMeshRenderer::FancyMeshRenderer()
     , propUseIllustrationBuffer_("illustrationBuffer", "Use Illustration Buffer")
     , propDebugFragmentLists_("debugFL", "Debug Fragment Lists")
     , debugFragmentLists_(false)
-    , originalMesh_(nullptr)
     , meshHasAdjacency_(false)
     , shader_("fancymeshrenderer.vert", "fancymeshrenderer.geom", "fancymeshrenderer.frag", false)
     , depthShader_("geometryrendering.vert", "depthonly.frag", false)
@@ -113,7 +112,7 @@ FancyMeshRenderer::FancyMeshRenderer()
     addPort(imageInport_).setOptional(true);
     addPort(outport_);
 
-    inport_.onChange([this]() { updateDrawers(); });
+    inport_.onChange([this]() { updateMeshes(); });
 
     addProperties(camera_, lightingProperty_, trackball_, forceOpaque_, drawSilhouette_,
                   silhouetteColor_);
@@ -142,7 +141,7 @@ FancyMeshRenderer::FancyMeshRenderer()
     const auto triggerMeshUpdate = [this]() {
         needsRecompilation_ = true;
         update();
-        updateDrawers();
+        updateMeshes();
     };
 
     drawSilhouette_.onChange(triggerMeshUpdate);
@@ -428,7 +427,7 @@ void FancyMeshRenderer::compileShader() {
     utilgl::addShaderDefines(shader_, lightingProperty_);
 
     const std::array<std::pair<std::string, bool>, 15> defines = {
-        {{"USE_FRAGMENT_LIST", forceOpaque_},
+        {{"USE_FRAGMENT_LIST", !forceOpaque_},
          {"COLOR_LAYER", true},
          {"ALPHA_UNIFORM", alphaSettings_.enableUniform_},
          {"ALPHA_ANGLE_BASED", alphaSettings_.enableAngleBased_},
@@ -502,13 +501,11 @@ void FancyMeshRenderer::process() {
 
         // general settings for camera, lighting, picking, mesh data
         utilgl::setUniforms(shader_, camera_, lightingProperty_);
-        utilgl::setShaderUniforms(shader_, *(drawer_->getMesh()), "geometry");
-        shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(drawer_->getMesh()));
         shader_.setUniform("halfScreenSize", ivec2(outport_.getDimensions()) / ivec2(2));
 
         // update face render settings
-        TextureUnit transFuncUnit[2];
-        for (int j = 0; j < 2; ++j) {
+        std::array<TextureUnit, 2> transFuncUnit;
+        for (int j = 0; j < faceSettings_.size(); ++j) {
             auto& face = faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : j];
             const std::string prefix = fmt::format("renderSettings[{}].", j);
             shader_.setUniform(prefix + "externalColor", vec4(face.externalColor_.get(), 1.0));
@@ -571,7 +568,14 @@ void FancyMeshRenderer::process() {
         }
 
         // Finally, draw it
-        drawer_->draw();
+        for (auto mesh : enhancedMeshes_) {
+            MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
+                                            mesh->getDefaultMeshInfo()};
+            utilgl::setShaderUniforms(shader_, *mesh, "geometry");
+            shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
+
+            drawer.draw();
+        }
 
         shader_.deactivate();
 
@@ -615,64 +619,54 @@ void FancyMeshRenderer::process() {
                 : faceSettings_[0].show_ && !faceSettings_[1].show_ ? GL_BACK : GL_NONE);
         utilgl::BlendModeState blendModeStateGL(GL_ZERO, GL_ZERO);
         utilgl::setUniforms(depthShader_, camera_);
-        utilgl::setShaderUniforms(depthShader_, *(drawer_->getMesh()), "geometry");
-        drawer_->draw();
+
+        for (auto mesh : enhancedMeshes_) {
+            MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
+                                            mesh->getDefaultMeshInfo()};
+            utilgl::setShaderUniforms(depthShader_, *mesh, "geometry");
+            drawer.draw();
+        }
+
         depthShader_.deactivate();
     }
 
     utilgl::deactivateCurrentTarget();
 }
 
-void FancyMeshRenderer::updateDrawers() {
-    if(!inport_.hasData()) return;
+void FancyMeshRenderer::updateMeshes() {
+    enhancedMeshes_.clear();
+    for (auto mesh : inport_) {
+        std::shared_ptr<Mesh> copy = nullptr;
 
-    auto mesh = inport_.getData();
-    originalMesh_ = mesh;
+        if (drawSilhouette_) {
+            copy = std::make_shared<Mesh>();
+            for (auto&& [info, buffer] : mesh->getBuffers()) {
+                copy->addBuffer(info, std::shared_ptr<BufferBase>(buffer->clone()));
+            }
 
-    // copy the mesh
-    enhancedMesh_ = std::unique_ptr<Mesh>(mesh->clone());
+            // create adjacency information
+            const auto halfEdges = HalfEdges{*mesh};
 
-    // check if we have to compute the normals
-    if (normalSource_.get() == NormalSource::GenerateVertex) {
-        meshutil::calculateMeshNormals(*enhancedMesh_, normalComputationMode_.get());
-    }
+            // add new index buffer with adjacency information
+            copy->addIndices(
+                {DrawType::Triangles, ConnectivityType::Adjacency},
+                std::make_shared<IndexBuffer>(halfEdges.createIndexBufferWithAdjacency()));
 
-    // check if we need to create adjacency information
-    if (drawSilhouette_.get()) {
-        if (enhancedMesh_->getNumberOfIndicies() != 1) {
-            LogProcessorWarn(
-                "Only meshes with exactly one index buffer are supported for adjacency "
-                "information");
-        }
-        // create adjacency information
-        halfEdges_ = std::make_unique<HalfEdges>(enhancedMesh_->getIndices(0));
+            meshHasAdjacency_ = true;
 
-        // duplication of mesh->clone() that does not include the index buffer
-        // enhancedMesh_ = std::make_unique<Mesh>(mesh->getDefaultMeshInfo().dt,
-        // mesh->getDefaultMeshInfo().ct);
-        std::unique_ptr<Mesh> enhancedMesh2 = std::make_unique<Mesh>(
-            DrawType::Triangles,
-            ConnectivityType::Adjacency);  // we directly force the new mesh type
-        for (const auto& elem : enhancedMesh_->getBuffers()) {
-            enhancedMesh2->addBuffer(elem.first, std::shared_ptr<BufferBase>(elem.second->clone()));
+            LogProcessorInfo("Adjacency information created");
+            LogProcessorInfo("draw mesh with adjacency information");
+        } else {
+            meshHasAdjacency_ = false;
         }
 
-        // add new index buffer with adjacency information
-        enhancedMesh2->addIndices({DrawType::Triangles, ConnectivityType::Adjacency},
-                                  halfEdges_->createIndexBufferWithAdjacency());
-        std::swap(enhancedMesh_, enhancedMesh2);
-        LogProcessorInfo("Adjacency information created");
-        // done
-        meshHasAdjacency_ = true;
-        LogProcessorInfo("draw mesh with adjacency information");
-    } else {
-        // normal mode
-        meshHasAdjacency_ = false;
-        LogProcessorInfo("draw mesh without adjacency information");
-    }
+        if (normalSource_.get() == NormalSource::GenerateVertex) {
+            if (!copy) copy = std::shared_ptr<Mesh>(mesh->clone());
+            meshutil::calculateMeshNormals(*copy, normalComputationMode_);
+        }
 
-    // create drawer
-    drawer_ = std::make_unique<MeshDrawerGL>(enhancedMesh_.get());
+        enhancedMeshes_.push_back(copy ? copy : mesh);
+    }
 
     // trigger shader recompilation
     // Geometry shader needs to know if it has adjacency or not

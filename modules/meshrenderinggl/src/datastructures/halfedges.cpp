@@ -29,94 +29,127 @@
 
 #include <modules/meshrenderinggl/datastructures/halfedges.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <modules/base/algorithm/meshutils.h>
 
 #include <iostream>
 
 namespace inviwo {
 
-HalfEdges::HalfEdges(const IndexBuffer* const indexBuffer) {
-    // get CPU representation
-    const auto* const indices = indexBuffer->getRAMRepresentation();
-    index_t numTris = static_cast<index_t>(indices->getSize()) / 3;
-
+HalfEdges::HalfEdges(Mesh::MeshInfo info, const IndexBuffer& indexBuffer) {
     // map to fill in the opposite direction
-    //(start_vertex, end_vertex) -> edge_index
-    std::map<std::pair<index_t, index_t>, index_t> edgeMap;
+    // (start_vertex, end_vertex) -> edge_index
+    std::map<std::pair<std::uint32_t, std::uint32_t>, std::uint32_t> edgeMap;
 
-    // allocate memory and set basic properties
-    edges_.resize(3 * numTris);
-    for (index_t tri = 0; tri < numTris; ++tri) {
-        for (index_t v = 0; v < 3; ++v) {
-            index_t i1 = 3 * tri + v;
-            index_t i2 = 3 * tri + ((v + 1) % 3);
-            edges_[i1].toFace_ = tri;
-            edges_[i1].toVertex_ = indices->get(i2);
-            edges_[i1].next_ = &edges_[i2];
-            edgeMap[std::pair<index_t, index_t>(indices->get(i1), indices->get(i2))] = i1;
-            vertexToEdge_[indices->get(i1)] = &edges_[i1];
+    std::uint32_t face = 0;
+    meshutil::forEachTriangle(info, indexBuffer,
+                              [&](std::uint32_t a, std::uint32_t b, std::uint32_t c) {
+                                  // a-b, b-c, c-a
+                                  const auto count = static_cast<std::uint32_t>(edges_.size());
+                                  edges_.push_back(HalfEdge{a, face, count + 1, count + 2});
+                                  edgeMap.try_emplace({a, b}, count + 0);
+                                  vertexToEdge_.try_emplace(a, count + 0);
+
+                                  edges_.push_back(HalfEdge{b, face, count + 2, count + 0});
+                                  edgeMap.try_emplace({b, c}, count + 1);
+                                  vertexToEdge_.try_emplace(b, count + 1);
+
+                                  edges_.push_back(HalfEdge{c, face, count + 0, count + 1});
+                                  edgeMap.try_emplace({c, a}, count + 2);
+                                  vertexToEdge_.try_emplace(c, count + 2);
+
+                                  faceToEdge_.try_emplace(face, count);
+
+                                  ++face;
+                              });
+
+    for (auto& edge : edges_) {
+        const auto a = edge.vertex;
+        const auto b = edges_[edge.next].vertex;
+
+        auto it = edgeMap.find(std::pair{b, a});
+        if (it != edgeMap.end()) {
+            edge.twin = it->second;
         }
     }
-
-    // fill pointers to opposite edges
-    for (index_t tri = 0; tri < numTris; ++tri) {
-        for (index_t v = 0; v < 3; ++v) {
-            index_t i1 = 3 * tri + v;
-            index_t i2 = 3 * tri + ((v + 1) % 3);
-            if (edges_[i1].twin_ != nullptr) continue;
-            auto it = edgeMap.find(std::pair<index_t, index_t>(indices->get(i2), indices->get(i1)));
-            if (it != edgeMap.end()) {
-                edges_[i1].twin_ = &edges_[it->second];
-                edges_[it->second].twin_ = &edges_[i1];
-            } else {
-                std::cout << "Missing twin edge" << std::endl;
-            }
-        }
-    }
-
-    // Walk backwards around the vertices until a border is found (if at all)
-    // This allows the 'walkVertex' to visit all edges from border to border
-    // TODO
 }
 
-std::shared_ptr<IndexBuffer> HalfEdges::createIndexBuffer() {
-    // walk faces
+HalfEdges::HalfEdges(const Mesh& mesh) {
+
+    std::map<std::pair<std::uint32_t, std::uint32_t>, std::uint32_t> edgeMap;
+    std::uint32_t face = 0;
+
+    for (auto [info, indexBuffer] : mesh.getIndexBuffers()) {
+        if (info.dt != DrawType::Triangles) continue;
+        meshutil::forEachTriangle(info, *indexBuffer,
+                                  [&](std::uint32_t a, std::uint32_t b, std::uint32_t c) {
+                                      // a-b, b-c, c-a
+                                      const auto count = static_cast<std::uint32_t>(edges_.size());
+                                      edges_.push_back(HalfEdge{a, face, count + 1, count + 2});
+                                      edgeMap.try_emplace({a, b}, count + 0);
+                                      vertexToEdge_.try_emplace(a, count + 0);
+
+                                      edges_.push_back(HalfEdge{b, face, count + 2, count + 0});
+                                      edgeMap.try_emplace({b, c}, count + 1);
+                                      vertexToEdge_.try_emplace(b, count + 1);
+
+                                      edges_.push_back(HalfEdge{c, face, count + 0, count + 1});
+                                      edgeMap.try_emplace({c, a}, count + 2);
+                                      vertexToEdge_.try_emplace(c, count + 2);
+
+                                      faceToEdge_.try_emplace(face, count);
+
+                                      ++face;
+                                  });
+    }
+
+    for (auto& edge : edges_) {
+        const auto a = edge.vertex;
+        const auto b = edges_[edge.next].vertex;
+
+        auto it = edgeMap.find(std::pair{b, a});
+        if (it != edgeMap.end()) {
+            edge.twin = it->second;
+        }
+    }
+}
+
+IndexBuffer HalfEdges::createIndexBuffer() const {
     std::vector<std::uint32_t> inds;
     inds.reserve(edges_.size());
 
-    index_t numTris = static_cast<index_t>(edges_.size()) / 3;
-    for (index_t tri = 0; tri < numTris; ++tri) {
-        for (index_t v = 0; v < 3; ++v) {
-            index_t i1 = 3 * tri + v;
-            inds.push_back(edges_[i1].toVertex_);
-        }
+    // walk faces
+    for (auto edge : faces()) {
+        auto ei = edge;
+        inds.push_back((ei++).vertex());
+        inds.push_back((ei++).vertex());
+        inds.push_back((ei++).vertex());
+        IVW_ASSERT(ei == edge, "Only triangles are supported");
     }
-
-    return std::make_shared<IndexBuffer>(std::make_shared<IndexBufferRAM>(std::move(inds)));
+    return IndexBuffer(std::make_shared<IndexBufferRAM>(std::move(inds)));
 }
 
-std::shared_ptr<IndexBuffer> HalfEdges::createIndexBufferWithAdjacency() {
+IndexBuffer HalfEdges::createIndexBufferWithAdjacency() const {
     std::vector<std::uint32_t> inds;
-    inds.reserve(edges_.size()*2);
+    inds.reserve(edges_.size() * 2);
 
     // walk faces
-    index_t numTris = static_cast<index_t>(edges_.size()) / 3;
-    for (index_t tri = 0; tri < numTris; ++tri) {
-        for (index_t v = 0; v < 3; ++v) {
-            index_t i1 = 3 * tri + v;
-            inds.push_back(edges_[i1].toVertex_);
-            // add adjacency info
-            HalfEdge* o = edges_[i1].next_->twin_;
-            if (o == nullptr) {
-                // border! Add opposite vertex of own triangle (as if the tris is flipped)
-                inds.push_back(edges_[3 * tri + ((v + 2) % 3)].toVertex_);
-            } else {
+    for (auto edge : faces()) {
+        auto ei = edge;
+        for (std::uint32_t v = 0; v < 3; ++v) {
+            inds.push_back(ei.vertex());
+            if (auto twin = ei.twin()) {
                 // add opposite vertex
-                inds.push_back(o->next_->toVertex_);
+                inds.push_back(twin->prev().vertex());
+            } else {
+                // border! Add opposite vertex of own triangle (as if the tris is flipped)
+                inds.push_back(ei.prev().vertex());
             }
+            ++ei;
         }
+        IVW_ASSERT(ei == edge, "Only triangles are supported");
     }
 
-
-    return std::make_shared<IndexBuffer>(std::make_shared<IndexBufferRAM>(std::move(inds)));
+    return IndexBuffer(std::make_shared<IndexBufferRAM>(std::move(inds)));
 }
+
 }  // namespace inviwo

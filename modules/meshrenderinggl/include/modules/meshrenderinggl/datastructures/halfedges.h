@@ -1,4 +1,4 @@
-/*********************************************************************************
+﻿/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -34,8 +34,12 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 
+#include <inviwo/core/util/transformiterator.h>
+#include <inviwo/core/util/stdextensions.h>
+
 #include <vector>
-#include <map>
+#include <unordered_map>
+#include <optional>
 
 namespace inviwo {
 
@@ -45,64 +49,174 @@ namespace inviwo {
  *
  * Code ideas taken from https://github.com/yig/halfedge and http://prideout.net/blog/?p=54,
  * both are public domain (11/12/2017).
+ *
+ *
+ *             v2────────────────v3  edge │ vertex face  next  twin
+ *            ╱ ╲ ◀────e5─────▲ ╱    ─────┼────────────────────────
+ *           ╱ ▲ ╲ ╲         ╱ ╱      e0  │   v0    f1    e1    -
+ *          ╱ ╱ ╲ ╲ ╲  f1   ╱ ╱       e1  │   v1    f1    e2    e3
+ *         ╱ ╱   ╲ ╲e3    e4 ╱        e2  │   v2    f1    e0    -
+ *        ╱e2    e1 ╲ ╲   ╱ ╱         e3  │   v2    f2    e4    e1
+ *       ╱ ╱  f0   ╲ ╲ ╲ ╱ ╱          e4  │   v1    f2    e5    -
+ *      ╱ ╱         ╲ ╲ ▼ ╱           e5  │   v3    f2    e3    -
+ *     ╱ ▼────e0─────▶ ╲ ╱
+ *   v0────────────────v1
+ *
  */
+
 class IVW_MODULE_MESHRENDERINGGL_API HalfEdges {
 public:
-    typedef int index_t;
+    /**
+     * \brief Construct from MeshInfo and index buffer.
+     */
+    HalfEdges(Mesh::MeshInfo info, const IndexBuffer& indexBuffer);
+
+    /**
+     * \brief Construct from Mesh, only triangles are considered
+     */
+    HalfEdges(const Mesh& mesh);
+
+    /**
+     * \brief Creates a index buffer for triangles with connectivity 'None'
+     */
+    IndexBuffer createIndexBuffer() const;
+
+    /**
+     * \brief Creates a index buffer for triangles with connectivity 'Adjacency'
+     */
+    IndexBuffer createIndexBufferWithAdjacency() const;
+
+    class IVW_MODULE_MESHRENDERINGGL_API EdgeIter {
+    public:
+        EdgeIter() = default;
+        using difference_type = std::uint32_t;
+        using iterator_category = std::bidirectional_iterator_tag;
+        using value_type = EdgeIter;
+        using pointer = const EdgeIter*;
+        using reference = const EdgeIter&;
+
+        std::uint32_t vertex() const;
+        std::uint32_t face() const;
+        EdgeIter next() const;
+        EdgeIter prev() const;
+        std::optional<EdgeIter> twin() const;
+
+        EdgeIter& operator++() {
+            edgeIndex_ = edges_->edges_[edgeIndex_].next;
+            return *this;
+        }
+        EdgeIter operator++(int) {
+            auto it = *this;
+            operator++();
+            return it;
+        }
+
+        reference operator*() const { return *this; }
+        pointer operator->() const { return this; }
+
+        bool operator==(const EdgeIter& rhs) const { return edgeIndex_ == rhs.edgeIndex_; }
+        bool operator!=(const EdgeIter& rhs) const { return edgeIndex_ != rhs.edgeIndex_; }
+
+    private:
+        friend HalfEdges;
+        EdgeIter(const HalfEdges* edges, std::uint32_t edgeIndex)
+            : edges_{edges}, edgeIndex_{edgeIndex} {}
+
+        const HalfEdges* edges_ = nullptr;
+        std::uint32_t edgeIndex_ = 0;
+    };
+
+    EdgeIter faceToEdge(std::uint32_t faceIndex) const;
+    EdgeIter vertexToEdge(std::uint32_t vertexIndex) const;
+
+    auto faces() const;
+    auto vertices() const;
+
+private:
+    friend EdgeIter;
 
     /**
      * \brief A single half edge
      */
-    struct HalfEdge {
+    struct IVW_MODULE_MESHRENDERINGGL_API HalfEdge {
         /**
          * \brief index of the vertex the half edge points to
          */
-        index_t toVertex_ = -1;
+        std::uint32_t vertex;
         /**
          * \brief Index of the adjacent face / triangle
          */
-        index_t toFace_ = -1;
-        /**
-         * \brief Twin half edge, opposite direction.
-         * NULL if border.
-         */
-        HalfEdge* twin_ = nullptr;
+        std::uint32_t face;
         /**
          * \brief Next half edge around the face
          */
-        HalfEdge* next_ = nullptr;
+        std::uint32_t next;
+        /**
+         * \brief Next half edge around the face
+         */
+        std::uint32_t prev;
+
+        /**
+         * \brief Twin half edge, opposite direction.
+         * nullopt if border.
+         */
+        std::optional<std::uint32_t> twin = std::nullopt;
     };
 
-private:
     std::vector<HalfEdge> edges_;
-    std::map<index_t, HalfEdge*> vertexToEdge_;
-
-public:
-    /**
-     * \brief Creates the half edges from the given index buffer.
-     * Must be an index buffer that defines single triangles.
-     * \param indexBuffer the index buffer
-     */
-    HalfEdges(const IndexBuffer* const indexBuffer);
-
-    /**
-     * \brief Creates the index buffer for triangles with connectivity 'None'
-     * \return the index buffer
-     */
-    std::shared_ptr<IndexBuffer> createIndexBuffer();
-
-    /**
-     * \brief Creates the index buffer for triangles with connectivity 'Adjacency'
-     * \return the index buffer
-     */
-    std::shared_ptr<IndexBuffer> createIndexBufferWithAdjacency();
-
-    HalfEdge* faceToEdge(index_t faceIndex) { return &edges_[faceIndex * 3]; }
-    const HalfEdge* faceToEdge(index_t faceIndex) const { return &edges_[faceIndex * 3]; }
-    HalfEdge* vertexToEdge(index_t vertexIndex) { return vertexToEdge_.at(vertexIndex); }
-    const HalfEdge* vertexToEdge(index_t vertexIndex) const {
-        return vertexToEdge_.at(vertexIndex);
-    }
+    std::unordered_map<std::uint32_t, std::uint32_t> vertexToEdge_;
+    std::unordered_map<std::uint32_t, std::uint32_t> faceToEdge_;
 };
+
+inline auto HalfEdges::faceToEdge(std::uint32_t faceIndex) const -> EdgeIter {
+    return {this, faceToEdge_.at(faceIndex)};
+}
+
+inline auto HalfEdges::vertexToEdge(std::uint32_t vertexIndex) const -> EdgeIter {
+    return {this, vertexToEdge_.at(vertexIndex)};
+}
+
+inline auto HalfEdges::faces() const {
+    const auto transform =
+        [this](
+            const std::unordered_map<std::uint32_t, std::uint32_t>::value_type& item) -> EdgeIter {
+        return {this, item.second};
+    };
+
+    return util::as_range(util::makeTransformIterator(transform, faceToEdge_.begin()),
+                          util::makeTransformIterator(transform, faceToEdge_.end()));
+}
+
+inline auto HalfEdges::vertices() const {
+    const auto transform =
+        [this](
+            const std::unordered_map<std::uint32_t, std::uint32_t>::value_type& item) -> EdgeIter {
+        return {this, item.second};
+    };
+
+    return util::as_range(util::makeTransformIterator(transform, vertexToEdge_.begin()),
+                          util::makeTransformIterator(transform, vertexToEdge_.end()));
+}
+
+inline std::uint32_t HalfEdges::EdgeIter::vertex() const {
+    return edges_->edges_[edgeIndex_].vertex;
+}
+inline std::uint32_t HalfEdges::EdgeIter::face() const { return edges_->edges_[edgeIndex_].face; }
+
+inline auto HalfEdges::EdgeIter::next() const -> EdgeIter {
+    return {edges_, edges_->edges_[edgeIndex_].next};
+}
+
+inline auto HalfEdges::EdgeIter::prev() const -> EdgeIter {
+    return {edges_, edges_->edges_[edgeIndex_].prev};
+}
+
+inline auto HalfEdges::EdgeIter::twin() const -> std::optional<EdgeIter> {
+    if (auto twin = edges_->edges_[edgeIndex_].twin) {
+        return EdgeIter{edges_, *twin};
+    } else {
+        return std::nullopt;
+    }
+}
 
 }  // namespace inviwo

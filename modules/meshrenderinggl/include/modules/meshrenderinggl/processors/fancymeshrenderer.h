@@ -147,7 +147,7 @@ protected:
      * This is called when the inport is changed or when a property requires preprocessing steps on
      * the mesh, e.g. for silhouettes or special alpha features.
      */
-    void updateDrawers();
+    void updateMeshes();
 
     /**
      * \brief Update the visibility of the properties.
@@ -159,7 +159,7 @@ protected:
      */
     void compileShader();
 
-    MeshInport inport_;
+    MeshFlatMultiInport inport_;
     ImageInport imageInport_;
     ImageOutport outport_;
 
@@ -301,7 +301,9 @@ protected:
         void setCallbacks(const std::function<void()>& triggerRecompilation);
 
         bool lastOpaque_;
-    } faceSettings_[2];
+    };
+
+    std::array<FaceRenderSettings, 2> faceSettings_;
 
     BoolProperty propUseIllustrationBuffer_;
     struct IllustrationBufferSettings {
@@ -319,14 +321,12 @@ protected:
     ButtonProperty propDebugFragmentLists_;
     bool debugFragmentLists_;
 
-    std::shared_ptr<const Mesh> originalMesh_;
-    std::unique_ptr<Mesh> enhancedMesh_;
+    std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;
     /**
      * \brief This flag is set to true if adjacency information is available in the shader.
      */
     bool meshHasAdjacency_;
-    std::unique_ptr<HalfEdges> halfEdges_;
-    std::unique_ptr<MeshDrawer> drawer_;
+
     FragmentListRenderer flr_;
     bool supportsFragmentLists_;
     bool supportedIllustrationBuffer_;
