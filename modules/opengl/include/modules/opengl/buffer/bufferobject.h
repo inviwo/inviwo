@@ -81,8 +81,6 @@ public:
     void bindBase(GLuint index) const;
     void bindRange(GLuint index, GLintptr offset, GLsizeiptr size) const;
 
-
-
     /**
      * \brief bind the buffer object and set the vertex attribute pointer
      *

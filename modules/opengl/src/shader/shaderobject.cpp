@@ -146,7 +146,8 @@ struct Psm {
                     s.lnr.addLine(s.key, ++s.lines);
                 }
             } catch (const OpenGLException& e) {
-                throw OpenGLException(e.getMessage(), SourceContext(s.key, s.key, "", static_cast<int>(s.lines + 1)));
+                throw OpenGLException(
+                    e.getMessage(), SourceContext(s.key, s.key, "", static_cast<int>(s.lines + 1)));
             }
         };
 
@@ -655,7 +656,7 @@ std::pair<std::string, size_t> ShaderObject::resolveLine(size_t line) const {
 
 std::string ShaderObject::print(bool showSource, bool showPreprocess) {
     if (showPreprocess) {
-        preprocess(); // Make sure sourceProcessed_ is set and up to date
+        preprocess();  // Make sure sourceProcessed_ is set and up to date
         if (showSource) {
             std::string::size_type width = 0;
             for (auto l : lnr_) {

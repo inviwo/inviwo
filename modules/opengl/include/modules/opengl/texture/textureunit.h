@@ -79,7 +79,7 @@ public:
 
     TextureUnit& operator[](size_t i);
     const TextureUnit& operator[](size_t i) const;
-    
+
     size_t size() const;
     void clear();
 
