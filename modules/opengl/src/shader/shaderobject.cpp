@@ -653,8 +653,9 @@ std::pair<std::string, size_t> ShaderObject::resolveLine(size_t line) const {
     return lnr_.resolveLine(line);
 }
 
-std::string ShaderObject::print(bool showSource, bool preprocess) const {
-    if (preprocess) {
+std::string ShaderObject::print(bool showSource, bool showPreprocess) {
+    if (showPreprocess) {
+        preprocess(); // Make sure sourceProcessed_ is set and up to date
         if (showSource) {
             std::string::size_type width = 0;
             for (auto l : lnr_) {

@@ -223,7 +223,7 @@ public:
     void addStandardVertexInDeclarations();
 
     std::pair<std::string, size_t> resolveLine(size_t line) const;
-    std::string print(bool showSource = false, bool preprocess = true) const;
+    std::string print(bool showSource = false, bool preprocess = true);
 
     template <typename T>
     std::shared_ptr<Callback> onChange(T&& callback);
