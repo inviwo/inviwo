@@ -55,6 +55,12 @@ Mesh::Mesh(const Mesh& rhs)
     }
 }
 
+Mesh::Mesh(DontCopyBuffers, const Mesh& rhs)
+    : DataGroup<Mesh, MeshRepresentation>(rhs)
+    , SpatialEntity<3>(rhs)
+    , MetaDataOwner(rhs)
+    , meshInfo_(rhs.meshInfo_) {}
+
 Mesh& Mesh::operator=(const Mesh& that) {
     if (this != &that) {
         DataGroup<Mesh, MeshRepresentation>::operator=(that);
