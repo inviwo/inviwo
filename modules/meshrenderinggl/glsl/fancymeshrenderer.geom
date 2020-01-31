@@ -192,6 +192,7 @@ void main(void) {
     bool orientation = isFront(0, 2, 4);
     bvec3 silhouettes = bvec3(isFront(2, 3, 4) != orientation, isFront(4, 5, 0) != orientation,
                               isFront(0, 1, 2) != orientation);
+
     // silhouettes.x = false;
     // silhouettes.z = false;
     // silhouettes = bvec3(any(silhouettes));

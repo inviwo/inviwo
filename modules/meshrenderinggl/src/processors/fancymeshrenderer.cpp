@@ -32,6 +32,7 @@
 #include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
@@ -42,10 +43,25 @@
 
 #include <sstream>
 #include <chrono>
+#include <variant>
 
 #include <fmt/format.h>
 
 namespace inviwo {
+
+void configComposite(BoolCompositeProperty& comp) {
+
+    auto callback = [&comp]() mutable {
+        comp.setCollapsed(!comp.isChecked());
+        for (auto p : comp) {
+            if (p == comp.getBoolProperty()) continue;
+            p->setReadOnly(!comp.isChecked());
+        }
+    };
+
+    comp.getBoolProperty()->onChange(callback);
+    callback();
+}
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo FancyMeshRenderer::processorInfo_{
@@ -66,8 +82,9 @@ FancyMeshRenderer::FancyMeshRenderer()
               vec3(0.0f, 1.0f, 0.0f), &inport_)
     , trackball_(&camera_)
     , lightingProperty_("lighting", "Lighting", &camera_)
-    , forceOpaque_("forceOpaque", "Shade Opaque", false)
-    , drawSilhouette_("drawSilhouette", "Draw Silhouette")
+    , forceOpaque_("forceOpaque", "Shade Opaque", false, InvalidationLevel::InvalidResources)
+    , drawSilhouette_("drawSilhouette", "Draw Silhouette", false,
+                      InvalidationLevel::InvalidResources)
     , silhouetteColor_("silhouetteColor", "Silhouette Color", {0.f, 0.f, 0.f, 1.f})
     , normalSource_(
           "normalSource", "Normals Source",
@@ -76,54 +93,64 @@ FancyMeshRenderer::FancyMeshRenderer()
               {"generateVertex", "Generate: Vertex Normal", NormalSource::GenerateVertex},
               {"generateTriangle", "Generate: Triangle Normal", NormalSource::GenerateTriangle},
           },
-          0)
+          0, InvalidationLevel::InvalidResources)
     , normalComputationMode_(
           "normalComputationMode", "Normals Computation",
           {{"noWeighting", "No Weighting", meshutil::CalculateMeshNormalsMode::NoWeighting},
            {"area", "Area-weighting", meshutil::CalculateMeshNormalsMode::WeightArea},
            {"angle", "Angle-weighting", meshutil::CalculateMeshNormalsMode::WeightAngle},
            {"nmax", "Based on N.Max", meshutil::CalculateMeshNormalsMode::WeightNMax}},
-          3)
+          3, InvalidationLevel::InvalidResources)
     , faceSettings_{true, false}
-    , propUseIllustrationBuffer_("illustrationBuffer", "Use Illustration Buffer")
     , propDebugFragmentLists_("debugFL", "Debug Fragment Lists")
     , debugFragmentLists_(false)
     , meshHasAdjacency_(false)
     , shader_("fancymeshrenderer.vert", "fancymeshrenderer.geom", "fancymeshrenderer.frag", false)
-    , depthShader_("geometryrendering.vert", "depthonly.frag", false)
-    , needsRecompilation_(true) {
+    , depthShader_("geometryrendering.vert", "depthonly.frag", false) {
 
     // query OpenGL Capability
     supportsFragmentLists_ = FragmentListRenderer::supportsFragmentLists();
-    supportedIllustrationBuffer_ = FragmentListRenderer::supportsIllustrationBuffer();
+    supportesIllustration_ = FragmentListRenderer::supportsIllustration();
     if (!supportsFragmentLists_) {
         LogProcessorWarn(
             "Fragment lists are not supported by the hardware -> use blending without sorting, may "
             "lead to errors");
     }
-    if (!supportedIllustrationBuffer_) {
+    if (!supportesIllustration_) {
         LogProcessorWarn(
             "Illustration Buffer not supported by the hardware, screen-space silhouettes not "
             "available");
     }
 
     // input and output ports
-    addPort(inport_);
+    addPort(inport_).onChange([this]() { updateMeshes(); });
     addPort(imageInport_).setOptional(true);
     addPort(outport_);
 
-    inport_.onChange([this]() { updateMeshes(); });
+    drawSilhouette_.onChange([this]() { updateMeshes(); });
 
     addProperties(camera_, lightingProperty_, trackball_, forceOpaque_, drawSilhouette_,
-                  silhouetteColor_);
+                  silhouetteColor_, illustrationSettings_.enabled_, normalSource_,
+                  normalComputationMode_, alphaSettings_.container_, edgeSettings_.container_,
+                  faceSettings_[0].show_, faceSettings_[1].show_);
 
-    if (supportedIllustrationBuffer_) {
-        addProperties(propUseIllustrationBuffer_, illustrationBufferSettings_.container_);
-    }
+    illustrationSettings_.enabled_.readonlyDependsOn(
+        forceOpaque_, [this](const auto& prop) { return !supportesIllustration_ && prop.get(); });
 
-    addProperties(normalSource_, normalComputationMode_, alphaSettings_.container_,
-                  edgeSettings_.container_, faceSettings_[0].container_,
-                  faceSettings_[1].container_);
+    silhouetteColor_.visibilityDependsOn(drawSilhouette_, [](const auto& p) { return p.get(); });
+    normalComputationMode_.visibilityDependsOn(
+        normalSource_, [](const auto& p) { return p.get() == NormalSource::GenerateVertex; });
+
+    alphaSettings_.container_.visibilityDependsOn(forceOpaque_,
+                                                  [](const auto& p) { return !p.get(); });
+
+    auto edgevis = [this](auto) {
+        return drawSilhouette_.get() || faceSettings_[0].showEdges_.get() ||
+               faceSettings_[1].showEdges_.get();
+    };
+    edgeSettings_.container_.visibilityDependsOn(drawSilhouette_, edgevis);
+    edgeSettings_.container_.visibilityDependsOn(faceSettings_[0].showEdges_, edgevis);
+    edgeSettings_.container_.visibilityDependsOn(faceSettings_[1].showEdges_, edgevis);
 
     camera_.setCollapsed(true);
     lightingProperty_.setCollapsed(true);
@@ -131,290 +158,227 @@ FancyMeshRenderer::FancyMeshRenderer()
 
     silhouetteColor_.setSemantics(PropertySemantics::Color);
 
-    // Callbacks
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    const auto triggerRecompilation = [this]() {
-        needsRecompilation_ = true;
-        update();
-    };
-
-    const auto triggerMeshUpdate = [this]() {
-        needsRecompilation_ = true;
-        update();
-        updateMeshes();
-    };
-
-    drawSilhouette_.onChange(triggerMeshUpdate);
-    normalSource_.onChange(triggerMeshUpdate);
-    normalComputationMode_.onChange(triggerMeshUpdate);
-
-    forceOpaque_.onChange(triggerRecompilation);
-    alphaSettings_.setCallbacks(triggerRecompilation);
-    edgeSettings_.setCallbacks(triggerRecompilation);
-    faceSettings_[0].setCallbacks(triggerRecompilation);
-    faceSettings_[1].setCallbacks(triggerRecompilation);
-
     faceSettings_[1].frontPart_ = &faceSettings_[0];
 
     // DEBUG, in case we need debugging fragment lists at a later point again
     // addProperty(propDebugFragmentLists_);  // DEBUG, to be removed
     // propDebugFragmentLists_.onChange([this]() { debugFragmentLists_ = true; });
 
-    // update visibility of properties
-    update();
-
-    // Compile depth-only shader
-    // Why this is needed, see the end of process()
+    // Compile depth-only shader. Why this is needed, see the end of process()
     depthShader_.build();
 }
 
 FancyMeshRenderer::AlphaSettings::AlphaSettings()
     : container_("alphaContainer", "Alpha")
-    , enableUniform_("alphaUniform", "Uniform", true)
+    , enableUniform_("alphaUniform", "Uniform", true, InvalidationLevel::InvalidResources)
     , uniformScaling_("alphaUniformScaling", "Scaling", 0.5f, 0.f, 1.f, 0.01f)
-    , enableAngleBased_("alphaAngleBased", "Angle-based", false)
+    , enableAngleBased_("alphaAngleBased", "Angle-based", false,
+                        InvalidationLevel::InvalidResources)
     , angleBasedExponent_("alphaAngleBasedExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f)
-    , enableNormalVariation_("alphaNormalVariation", "Normal variation", false)
+    , enableNormalVariation_("alphaNormalVariation", "Normal variation", false,
+                             InvalidationLevel::InvalidResources)
     , normalVariationExponent_("alphaNormalVariationExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f)
-    , enableDensity_("alphaDensity", "Density-based", false)
+    , enableDensity_("alphaDensity", "Density-based", false, InvalidationLevel::InvalidResources)
     , baseDensity_("alphaBaseDensity", "Base density", 1.f, 0.f, 2.f, 0.01f)
     , densityExponent_("alphaDensityExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f)
-    , enableShape_("alphaShape", "Shape-based", false)
+    , enableShape_("alphaShape", "Shape-based", false, InvalidationLevel::InvalidResources)
     , shapeExponent_("alphaShapeExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f) {
     container_.addProperties(enableUniform_, uniformScaling_, enableAngleBased_,
                              angleBasedExponent_, enableNormalVariation_, normalVariationExponent_,
                              enableDensity_, baseDensity_, densityExponent_, enableShape_,
                              shapeExponent_);
+
+    const auto get = [](const auto& p) { return p.get(); };
+
+    uniformScaling_.visibilityDependsOn(enableUniform_, get);
+    angleBasedExponent_.visibilityDependsOn(enableAngleBased_, get);
+    normalVariationExponent_.visibilityDependsOn(enableNormalVariation_, get);
+    baseDensity_.visibilityDependsOn(enableDensity_, get);
+    densityExponent_.visibilityDependsOn(enableDensity_, get);
+    shapeExponent_.visibilityDependsOn(enableShape_, get);
 }
 
-void FancyMeshRenderer::AlphaSettings::setCallbacks(
-    const std::function<void()>& triggerRecompilation) {
-    enableUniform_.onChange(triggerRecompilation);
-    enableAngleBased_.onChange(triggerRecompilation);
-    enableNormalVariation_.onChange(triggerRecompilation);
-    enableDensity_.onChange(triggerRecompilation);
-    enableShape_.onChange(triggerRecompilation);
-}
+void FancyMeshRenderer::AlphaSettings::setUniforms(Shader& shader, std::string_view prefix) const {
+    std::array<std::pair<std::string_view, std::variant<float>>, 6> uniforms{
+        {{"uniformScale", uniformScaling_},
+         {"angleExp", angleBasedExponent_},
+         {"normalExp", normalVariationExponent_},
+         {"baseDensity", baseDensity_},
+         {"densityExp", densityExponent_},
+         {"shapeExp", shapeExponent_}}};
 
-void FancyMeshRenderer::AlphaSettings::update() {
-    uniformScaling_.setVisible(enableUniform_.get());
-    angleBasedExponent_.setVisible(enableAngleBased_.get());
-    normalVariationExponent_.setVisible(enableNormalVariation_.get());
-    baseDensity_.setVisible(enableDensity_.get());
-    densityExponent_.setVisible(enableDensity_.get());
-    shapeExponent_.setVisible(enableShape_.get());
+    for (auto&& [key, val] : uniforms) {
+        std::visit([&](auto aval) { shader.setUniform(fmt::format("{}{}", prefix, key), aval); },
+                   val);
+    }
 }
 
 FancyMeshRenderer::EdgeSettings::EdgeSettings()
     : container_("edges", "Edges")
-    , edgeThickness_("edgesThickness", "Thickness", 2.f, 0.1f, 10.f, 0.1f)
-    , depthDependent_("edgesDepth", "Depth dependent", false)
-    , smoothEdges_("edgesSmooth", "Smooth edges", true) {
+    , edgeThickness_("thickness", "Thickness", 2.f, 0.1f, 10.f, 0.1f)
+    , depthDependent_("depth", "Depth dependent", false, InvalidationLevel::InvalidResources)
+    , smoothEdges_("smooth", "Smooth edges", true, InvalidationLevel::InvalidResources) {
     container_.addProperties(edgeThickness_, depthDependent_, smoothEdges_);
 }
 
-void FancyMeshRenderer::EdgeSettings::setCallbacks(
-    const std::function<void()>& triggerRecompilation) {
-    depthDependent_.onChange(triggerRecompilation);
-    smoothEdges_.onChange(triggerRecompilation);
-}
-
-void FancyMeshRenderer::EdgeSettings::update() {
-    // do nothing
-}
-
-FancyMeshRenderer::HatchingSettings::HatchingSettings(const std::string& prefix)
-    : mode_(prefix + "hatchingMode", "Hatching",
-            {{"off", "Off", HatchingMode::Off},
-             {"u", "U", HatchingMode::U},
+FancyMeshRenderer::HatchingSettings::HatchingSettings()
+    : hatching_("hatching", "Hatching Settings", false)
+    , mode_("hatchingMode", "Hatching",
+            {{"u", "U", HatchingMode::U},
              {"v", "V", HatchingMode::V},
-             {"uv", "UV", HatchingMode::UV}})
-    , container_(prefix + "hatchingContainer", "Hatching Settings")
-    , steepness_(prefix + "hatchingSteepness", "Steepness", 5, 1, 10)
-    , baseFrequencyU_(prefix + "hatchingFrequencyU", "U-Frequency", 3, 1, 10)
-    , baseFrequencyV_(prefix + "hatchingFrequencyV", "V-Frequency", 3, 1, 10)
-    , modulationMode_(prefix + "hatchingModulationMode", "Modulation",
-                      {{"off", "Off", HatchingMode::Off},
-                       {"u", "U", HatchingMode::U},
+             {"uv", "UV", HatchingMode::UV}},
+            0, InvalidationLevel::InvalidResources)
+    , steepness_("steepness", "Steepness", 5, 1, 10)
+    , baseFrequencyU_("frequencyU", "U-Frequency", 3, 1, 10)
+    , baseFrequencyV_("frequencyV", "V-Frequency", 3, 1, 10)
+    , modulation_("modulation", "Modulation", false)
+    , modulationMode_("modulationMode", "Modulation",
+                      {{"u", "U", HatchingMode::U},
                        {"v", "V", HatchingMode::V},
                        {"uv", "UV", HatchingMode::UV}})
-    , modulationAnisotropy_(prefix + "hatchingModulationAnisotropy", "Anisotropy", 0.5f, -1.f, 1.f,
-                            0.01f)
-    , modulationOffset_(prefix + "hatchingModulationOffset", "Offset", 0.f, 0.f, 1.f, 0.01f)
-    , color_(prefix + "hatchingColor", "Color", {0.f, 0.f, 0.f})
-    , strength_(prefix + "hatchingStrength", "Strength", 0.5f, 0.f, 1.f, 0.01f)
-    , blendingMode_(prefix + "hatchingBlending", "Blending",
+    , modulationAnisotropy_("modulationAnisotropy", "Anisotropy", 0.5f, -1.f, 1.f, 0.01f)
+    , modulationOffset_("modulationOffset", "Offset", 0.f, 0.f, 1.f, 0.01f)
+    , color_("color", "Color", {0.f, 0.f, 0.f})
+    , strength_("strength", "Strength", 0.5f, 0.f, 1.f, 0.01f)
+    , blendingMode_("blending", "Blending",
                     {{"mult", "Multiplicative", HatchingBlendingMode::Multiplicative},
                      {"add", "Additive", HatchingBlendingMode::Additive}}) {
+
+    hatching_.getBoolProperty()->setInvalidationLevel(InvalidationLevel::InvalidResources);
+    configComposite(hatching_);
+
     // init properties
     color_.setSemantics(PropertySemantics::Color);
 
     // add to container
-    container_.addProperties(steepness_, baseFrequencyU_, baseFrequencyV_, modulationMode_,
-                             modulationAnisotropy_, modulationOffset_, color_, strength_,
-                             blendingMode_);
-}  // namespace inviwo
+    modulation_.addProperties(modulationMode_, modulationAnisotropy_, modulationOffset_);
+    configComposite(modulation_);
 
-FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
+    hatching_.addProperties(mode_, steepness_, baseFrequencyU_, baseFrequencyV_, modulation_,
+                            color_, strength_, blendingMode_);
+
+    baseFrequencyU_.visibilityDependsOn(
+        mode_, [](const auto& prop) { return prop.get() != HatchingMode::V; });
+    baseFrequencyV_.visibilityDependsOn(
+        mode_, [](const auto& prop) { return prop.get() != HatchingMode::U; });
+
+    modulation_.visibilityDependsOn(
+        mode_, [](const auto& prop) { return prop.get() == HatchingMode::UV; });
+}
+
+FancyMeshRenderer::FaceSettings::FaceSettings(bool frontFace)
     : frontFace_(frontFace)
-    , prefix_(frontFace ? "front" : "back")
-    , container_(prefix_ + "container", frontFace ? "Front Face" : "Back Face")
-    , show_(prefix_ + "show", "Show", true)
-    , sameAsFrontFace_(prefix_ + "same", "Same as Front Face")
-    , copyFrontToBack_(prefix_ + "copy", "Copy Front to Back")
-    , transferFunction_(prefix_ + "tf", "Transfer Function")
-    , externalColor_(prefix_ + "extraColor", "Color", {1.f, 0.3f, 0.01f})
-    , colorSource_(prefix_ + "colorSource", "Color Source",
+    , show_(frontFace ? "frontcontainer" : "backcontainer", frontFace ? "Front Face" : "Back Face",
+            true)
+    , sameAsFrontFace_("same", "Same as Front Face")
+    , copyFrontToBack_("copy", "Copy Front to Back")
+    , transferFunction_("tf", "Transfer Function")
+    , externalColor_("extraColor", "Color", {1.f, 0.3f, 0.01f})
+    , colorSource_("colorSource", "Color Source",
                    {{"vertexColor", "VertexColor", ColorSource::VertexColor},
                     {"tf", "Transfer Function", ColorSource::TransferFunction},
                     {"external", "Constant Color", ColorSource::ExternalColor}},
-                   2)
-    , separateUniformAlpha_(prefix_ + "separateUniformAlpha", "Separate Uniform Alpha")
-    , uniformAlpha_(prefix_ + "uniformAlpha", "Uniform Alpha", 0.5f, 0.f, 1.f, 0.01f)
-    , shadingMode_(prefix_ + "shadingMode", "Shading Mode",
+                   2, InvalidationLevel::InvalidResources)
+    , separateUniformAlpha_("separateUniformAlpha", "Separate Uniform Alpha")
+    , uniformAlpha_("uniformAlpha", "Uniform Alpha", 0.5f, 0.f, 1.f, 0.01f)
+    , shadingMode_("shadingMode", "Shading Mode",
                    {
                        {"off", "Off", ShadingMode::Off},
                        {"phong", "Phong", ShadingMode::Phong},
                        {"pbr", "PBR", ShadingMode::Pbr},
                    })
-    , showEdges_(prefix_ + "showEdges", "Show Edges")
-    , edgeColor_(prefix_ + "edgeColor", "Edge color", {0.f, 0.f, 0.f})
-    , edgeOpacity_(prefix_ + "edgeOpacity", "Edge Opacity", 0.5f, 0.f, 2.f, 0.01f)
-    , hatching_(prefix_) {
-    // initialize combo boxes
+    , showEdges_("showEdges", "Show Edges", false, InvalidationLevel::InvalidResources)
+    , edgeColor_("edgeColor", "Edge color", {0.f, 0.f, 0.f})
+    , edgeOpacity_("edgeOpacity", "Edge Opacity", 0.5f, 0.f, 2.f, 0.01f)
+    , hatching_() {
 
     externalColor_.setSemantics(PropertySemantics::Color);
     edgeColor_.setSemantics(PropertySemantics::Color);
 
-    // layouting, add the properties
-    container_.addProperty(show_);
     if (!frontFace) {
-        container_.addProperties(sameAsFrontFace_, copyFrontToBack_);
+        show_.addProperties(sameAsFrontFace_, copyFrontToBack_);
         copyFrontToBack_.onChange([this]() { copyFrontToBack(); });
     }
-    container_.addProperties(colorSource_, transferFunction_, externalColor_, separateUniformAlpha_,
-                             uniformAlpha_, shadingMode_, showEdges_, edgeColor_, edgeOpacity_,
-                             hatching_.mode_, hatching_.container_);
+    show_.addProperties(colorSource_, transferFunction_, externalColor_, separateUniformAlpha_,
+                        uniformAlpha_, shadingMode_, showEdges_, edgeColor_, edgeOpacity_,
+                        hatching_.hatching_);
 
-    // set callbacks that will trigger update()
-    auto triggerUpdate = [this]() { update(lastOpaque_); };
-    show_.onChange(triggerUpdate);
-    sameAsFrontFace_.onChange(triggerUpdate);
-    colorSource_.onChange(triggerUpdate);
-    separateUniformAlpha_.onChange(triggerUpdate);
-    hatching_.mode_.onChange(triggerUpdate);
-    hatching_.steepness_.onChange(triggerUpdate);
-    hatching_.baseFrequencyU_.onChange(triggerUpdate);
-    hatching_.baseFrequencyV_.onChange(triggerUpdate);
-    hatching_.color_.onChange(triggerUpdate);
-    hatching_.blendingMode_.onChange(triggerUpdate);
-    hatching_.modulationMode_.onChange(triggerUpdate);
+    configComposite(show_);
+
+    const auto get = [](const auto& p) { return p.get(); };
+    edgeColor_.visibilityDependsOn(showEdges_, get);
+    edgeOpacity_.visibilityDependsOn(showEdges_, get);
+
+    uniformAlpha_.visibilityDependsOn(separateUniformAlpha_,
+                                      [](const auto& prop) { return prop.get(); });
+
+    transferFunction_.visibilityDependsOn(
+        colorSource_, [](const auto& prop) { return prop.get() == ColorSource::TransferFunction; });
+
+    externalColor_.visibilityDependsOn(
+        colorSource_, [](const auto& prop) { return prop.get() == ColorSource::ExternalColor; });
 }
 
-void FancyMeshRenderer::FaceRenderSettings::copyFrontToBack() {
-    transferFunction_.set(frontPart_->transferFunction_.get());
-    externalColor_.set(frontPart_->externalColor_.get());
-    externalColor_.set(frontPart_->externalColor_.get());
-    colorSource_.set(frontPart_->colorSource_.get());
-    separateUniformAlpha_.set(frontPart_->separateUniformAlpha_.get());
-    uniformAlpha_.set(frontPart_->uniformAlpha_.get());
-    shadingMode_.set(frontPart_->shadingMode_.get());
-    showEdges_.set(frontPart_->showEdges_.get());
-    edgeColor_.set(frontPart_->edgeColor_.get());
-    edgeOpacity_.set(frontPart_->edgeOpacity_.get());
-    hatching_.mode_.set(frontPart_->hatching_.mode_.get());
-    hatching_.steepness_.set(frontPart_->hatching_.steepness_.get());
-    hatching_.baseFrequencyU_.set(frontPart_->hatching_.baseFrequencyU_.get());
-    hatching_.baseFrequencyV_.set(frontPart_->hatching_.baseFrequencyV_.get());
-    hatching_.modulationMode_.set(frontPart_->hatching_.modulationMode_.get());
-    hatching_.modulationAnisotropy_.set(frontPart_->hatching_.modulationAnisotropy_.get());
-    hatching_.modulationOffset_.set(frontPart_->hatching_.modulationOffset_.get());
-    hatching_.color_.set(frontPart_->hatching_.color_.get());
-    hatching_.blendingMode_.set(frontPart_->hatching_.blendingMode_.get());
+void FancyMeshRenderer::FaceSettings::copyFrontToBack() {
+    for (auto src : frontPart_->show_) {
+        if (auto dst = show_.getPropertyByIdentifier(src->getIdentifier())) {
+            dst->set(src);
+        }
+    }
 }
 
-void FancyMeshRenderer::FaceRenderSettings::update(bool opaque) {
-    lastOpaque_ = opaque;
-    // fetch properties
-    bool show = show_.get();
-    bool show2 = show && !sameAsFrontFace_.get();
-    ColorSource colorSource = colorSource_.get();
-    bool separateUniformAlpha = separateUniformAlpha_.get();
-    bool showEdges = showEdges_.get();
-    bool hatching = hatching_.mode_.get() != HatchingMode::Off;
+void FancyMeshRenderer::FaceSettings::setUniforms(Shader& shader, std::string_view prefix) const {
 
-    // set visibility
-    sameAsFrontFace_.setVisible(show);
-    copyFrontToBack_.setVisible(show);
-    colorSource_.setVisible(show2);
-    transferFunction_.setVisible(show2 && colorSource == ColorSource::TransferFunction);
-    externalColor_.setVisible(show2 && colorSource == ColorSource::ExternalColor);
-    separateUniformAlpha_.setVisible(show2 && !opaque);
-    uniformAlpha_.setVisible(show2 && !opaque && separateUniformAlpha);
-    shadingMode_.setVisible(show2);
-    showEdges_.setVisible(show2);
-    edgeColor_.setVisible(show2 && showEdges);
-    edgeOpacity_.setVisible(show2 && showEdges);
-    hatching_.mode_.setVisible(show2);
-    hatching_.container_.setVisible(show2 && hatching);
-    hatching_.baseFrequencyU_.setVisible(hatching_.mode_.get() != HatchingMode::V);
-    hatching_.baseFrequencyV_.setVisible(hatching_.mode_.get() != HatchingMode::U);
-    hatching_.modulationMode_.setVisible(hatching_.mode_.get() == HatchingMode::UV);
-    hatching_.modulationAnisotropy_.setVisible(hatching_.mode_.get() == HatchingMode::UV &&
-                                               hatching_.modulationMode_.get() !=
-                                                   HatchingMode::Off);
-    hatching_.modulationOffset_.setVisible(hatching_.mode_.get() == HatchingMode::UV &&
-                                           hatching_.modulationMode_.get() != HatchingMode::Off);
+    std::array<std::pair<std::string_view, std::variant<bool, int, float, vec4>>, 15> uniforms{
+        {{"externalColor", vec4{*externalColor_, 1.0f}},
+         {"colorSource", static_cast<int>(*colorSource_)},
+         {"separateUniformAlpha", separateUniformAlpha_},
+         {"uniformAlpha", uniformAlpha_},
+         {"shadingMode", static_cast<int>(*shadingMode_)},
+         {"showEdges", showEdges_},
+         {"edgeColor", vec4{*edgeColor_, *edgeOpacity_}},
+         {"hatchingMode", (hatching_.mode_.get() == HatchingMode::UV)
+                              ? 3 + static_cast<int>(hatching_.modulationMode_.get())
+                              : static_cast<int>(hatching_.mode_.get())},
+         {"hatchingSteepness", hatching_.steepness_.get()},
+         {"hatchingFreqU", hatching_.baseFrequencyU_.getMaxValue() - hatching_.baseFrequencyU_},
+         {"hatchingFreqV", hatching_.baseFrequencyV_.getMaxValue() - hatching_.baseFrequencyV_},
+         {"hatchingModulationAnisotropy", hatching_.modulationAnisotropy_},
+         {"hatchingModulationOffset", hatching_.modulationOffset_},
+         {"hatchingColor", vec4(hatching_.color_.get(), hatching_.strength_.get())},
+         {"hatchingBlending", static_cast<int>(hatching_.blendingMode_.get())}}};
+
+    for (auto&& [key, val] : uniforms) {
+        std::visit([&](auto aval) { shader.setUniform(fmt::format("{}{}", prefix, key), aval); },
+                   val);
+    }
 }
 
-void FancyMeshRenderer::FaceRenderSettings::setCallbacks(
-    const std::function<void()>& triggerRecompilation) {
-    showEdges_.onChange(triggerRecompilation);
-    colorSource_.onChange(triggerRecompilation);
-    hatching_.mode_.onChange(triggerRecompilation);
-}
+FancyMeshRenderer::IllustrationSettings::IllustrationSettings()
+    : enabled_("illustration", "Use Illustration Effects", false)
+    , edgeColor_("edgeColor", "Edge Color", vec3(0.f, 0.f, 0.f))
+    , edgeStrength_("edgeStrength", "Edge Strength", 0.5f, 0.f, 1.f, 0.01f)
+    , haloStrength_("haloStrength", "Halo Strength", 0.5f, 0.f, 1.f, 0.01f)
+    , smoothingSteps_("smoothingSteps", "Smoothing Steps", 3, 0, 50, 1)
+    , edgeSmoothing_("edgeSmoothing", "Edge Smoothing", 0.8f, 0.f, 1.f, 0.01f)
+    , haloSmoothing_("haloSmoothing", "Halo Smoothing", 0.8f, 0.f, 1.f, 0.01f) {
 
-FancyMeshRenderer::IllustrationBufferSettings::IllustrationBufferSettings()
-    : container_("illustrationBufferContainer", "Illustration Buffer Settings")
-    , edgeColor_("illustrationBufferEdgeColor", "Edge Color", vec3(0.f, 0.f, 0.f))
-    , edgeStrength_("illustrationBufferEdgeStrength", "Edge Strength", 0.5f, 0.f, 1.f, 0.01f)
-    , haloStrength_("illustrationBufferHaloStrength", "Halo Strength", 0.5f, 0.f, 1.f, 0.01f)
-    , smoothingSteps_("illustrationBufferSmoothingSteps", "Smoothing Steps", 3, 0, 50, 1)
-    , edgeSmoothing_("illustrationBufferEdgeSmoothing", "Edge Smoothing", 0.8f, 0.f, 1.f, 0.01f)
-    , haloSmoothing_("illustrationBufferHaloSmoothing", "Halo Smoothing", 0.8f, 0.f, 1.f, 0.01f) {
     edgeColor_.setSemantics(PropertySemantics::Color);
-    container_.addProperties(edgeColor_, edgeStrength_, haloStrength_, smoothingSteps_,
-                             edgeSmoothing_, haloSmoothing_);
+    enabled_.addProperties(edgeColor_, edgeStrength_, haloStrength_, smoothingSteps_,
+                           edgeSmoothing_, haloSmoothing_);
+
+    configComposite(enabled_);
 }
 
-void FancyMeshRenderer::initializeResources() {}
-
-void FancyMeshRenderer::update() {
-    // fetch all booleans
-    bool opaque = forceOpaque_.get();
-
-    // set top-level visibility
-    alphaSettings_.container_.setVisible(!opaque);
-    edgeSettings_.container_.setVisible(drawSilhouette_.get() ||
-                                        faceSettings_[0].showEdges_.get() ||
-                                        faceSettings_[1].showEdges_.get());
-
-    // update nested settings
-    alphaSettings_.update();
-    edgeSettings_.update();
-    faceSettings_[0].update(opaque);
-    faceSettings_[1].update(opaque);
-    propUseIllustrationBuffer_.setVisible(!opaque);
-    illustrationBufferSettings_.container_.setVisible(!opaque && propUseIllustrationBuffer_.get());
-
-    // update other
-    silhouetteColor_.setVisible(drawSilhouette_.get());
-    normalComputationMode_.setVisible(normalSource_.get() == NormalSource::GenerateVertex);
+FragmentListRenderer::IllustrationSettings FancyMeshRenderer::IllustrationSettings::getSettings()
+    const {
+    return FragmentListRenderer::IllustrationSettings{
+        edgeColor_.get(),      edgeStrength_.get(),  haloStrength_.get(),
+        smoothingSteps_.get(), edgeSmoothing_.get(), haloSmoothing_.get(),
+    };
 }
 
-void FancyMeshRenderer::compileShader() {
-    if (!needsRecompilation_) return;
-
+void FancyMeshRenderer::initializeResources() {
     auto fso = shader_.getFragmentShaderObject();
 
     fso->addShaderExtension("GL_NV_gpu_shader5", true);
@@ -439,8 +403,8 @@ void FancyMeshRenderer::compileShader() {
          {"DRAW_EDGES_SMOOTHING", edgeSettings_.smoothEdges_},
          {"MESH_HAS_ADJACENCY", meshHasAdjacency_},
          {"DRAW_SILHOUETTE", drawSilhouette_},
-         {"SEND_TEX_COORD", faceSettings_[0].hatching_.mode_ != HatchingMode::Off ||
-                                faceSettings_[1].hatching_.mode_ != HatchingMode::Off},
+         {"SEND_TEX_COORD", faceSettings_[0].hatching_.hatching_.isChecked() ||
+                                faceSettings_[1].hatching_.hatching_.isChecked()},
          {"SEND_SCALAR", faceSettings_[0].colorSource_ == ColorSource::TransferFunction ||
                              faceSettings_[1].colorSource_ == ColorSource::TransferFunction},
          {"SEND_COLOR", faceSettings_[0].colorSource_ == ColorSource::VertexColor ||
@@ -453,15 +417,9 @@ void FancyMeshRenderer::compileShader() {
     }
 
     shader_.build();
-
-    needsRecompilation_ = false;
 }
 
 void FancyMeshRenderer::process() {
-    // I have to call update here, otherwise, when you load a saved workspace,
-    // the visibility of the properties is not updated on startup.
-    update();
-
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
     if (!faceSettings_[0].show_ && !faceSettings_[1].show_) {
@@ -470,12 +428,6 @@ void FancyMeshRenderer::process() {
     }
     const bool opaque = forceOpaque_.get();
     const bool fragmentLists = !opaque && supportsFragmentLists_;
-
-    compileShader();
-
-    // time measures
-    glFinish();
-    // auto start = std::chrono::steady_clock::now();
 
     // Loop: fragment list may need another try if not enough space for the pixels was available
     bool retry = false;
@@ -506,38 +458,9 @@ void FancyMeshRenderer::process() {
         // update face render settings
         std::array<TextureUnit, 2> transFuncUnit;
         for (int j = 0; j < faceSettings_.size(); ++j) {
-            auto& face = faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : j];
             const std::string prefix = fmt::format("renderSettings[{}].", j);
-            shader_.setUniform(prefix + "externalColor", vec4(face.externalColor_.get(), 1.0));
-            shader_.setUniform(prefix + "colorSource", static_cast<int>(face.colorSource_.get()));
-            shader_.setUniform(prefix + "separateUniformAlpha", face.separateUniformAlpha_.get());
-            shader_.setUniform(prefix + "uniformAlpha", face.uniformAlpha_.get());
-            shader_.setUniform(prefix + "shadingMode", static_cast<int>(face.shadingMode_.get()));
-            shader_.setUniform(prefix + "showEdges", face.showEdges_.get());
-            shader_.setUniform(prefix + "edgeColor",
-                               vec4(face.edgeColor_.get(), face.edgeOpacity_.get()));
-            if (face.hatching_.mode_.get() == HatchingMode::UV) {
-                shader_.setUniform(prefix + "hatchingMode",
-                                   3 + static_cast<int>(face.hatching_.modulationMode_.get()));
-            } else {
-                shader_.setUniform(prefix + "hatchingMode",
-                                   static_cast<int>(face.hatching_.mode_.get()));
-            }
-            shader_.setUniform(prefix + "hatchingSteepness", face.hatching_.steepness_.get());
-            shader_.setUniform(prefix + "hatchingFreqU",
-                               face.hatching_.baseFrequencyU_.getMaxValue() -
-                                   face.hatching_.baseFrequencyU_.get());
-            shader_.setUniform(prefix + "hatchingFreqV",
-                               face.hatching_.baseFrequencyV_.getMaxValue() -
-                                   face.hatching_.baseFrequencyV_.get());
-            shader_.setUniform(prefix + "hatchingModulationAnisotropy",
-                               face.hatching_.modulationAnisotropy_.get());
-            shader_.setUniform(prefix + "hatchingModulationOffset",
-                               face.hatching_.modulationOffset_.get());
-            shader_.setUniform(prefix + "hatchingColor",
-                               vec4(face.hatching_.color_.get(), face.hatching_.strength_.get()));
-            shader_.setUniform(prefix + "hatchingBlending",
-                               static_cast<int>(face.hatching_.blendingMode_.get()));
+            auto& face = faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : j];
+            face.setUniforms(shader_, prefix);
 
             const Layer* tfLayer = face.transferFunction_->getData();
             const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
@@ -547,19 +470,13 @@ void FancyMeshRenderer::process() {
         }
 
         // update alpha settings
-        shader_.setUniform("alphaSettings.uniformScale", alphaSettings_.uniformScaling_.get());
-        shader_.setUniform("alphaSettings.angleExp", alphaSettings_.angleBasedExponent_.get());
-        shader_.setUniform("alphaSettings.normalExp",
-                           alphaSettings_.normalVariationExponent_.get());
-        shader_.setUniform("alphaSettings.baseDensity", alphaSettings_.baseDensity_.get());
-        shader_.setUniform("alphaSettings.densityExp", alphaSettings_.densityExponent_.get());
-        shader_.setUniform("alphaSettings.shapeExp", alphaSettings_.shapeExponent_.get());
+        alphaSettings_.setUniforms(shader_, "alphaSettings.");
 
         // update other global fragment shader settings
-        shader_.setUniform("silhouetteColor", silhouetteColor_.get());
+        shader_.setUniform("silhouetteColor", silhouetteColor_);
 
         // update geometry shader settings
-        shader_.setUniform("geomSettings.edgeWidth", edgeSettings_.edgeThickness_.get());
+        shader_.setUniform("geomSettings.edgeWidth", edgeSettings_.edgeThickness_);
         shader_.setUniform("geomSettings.triangleNormal",
                            normalSource_.get() == NormalSource::GenerateTriangle);
 
@@ -582,27 +499,14 @@ void FancyMeshRenderer::process() {
         if (fragmentLists) {
             // final processing of fragment list rendering
             const bool illustrationBuffer =
-                propUseIllustrationBuffer_.get() && supportedIllustrationBuffer_;
+                illustrationSettings_.enabled_.isChecked() && supportesIllustration_;
             if (illustrationBuffer) {
-                FragmentListRenderer::IllustrationBufferSettings settings;
-                settings.edgeColor_ = illustrationBufferSettings_.edgeColor_.get();
-                settings.edgeStrength_ = illustrationBufferSettings_.edgeStrength_.get();
-                settings.haloStrength_ = illustrationBufferSettings_.haloStrength_.get();
-                settings.smoothingSteps_ = illustrationBufferSettings_.smoothingSteps_.get();
-                settings.edgeSmoothing_ = illustrationBufferSettings_.edgeSmoothing_.get();
-                settings.haloSmoothing_ = illustrationBufferSettings_.haloSmoothing_.get();
-                flr_.setIllustrationBufferSettings(settings);
+                flr_.setIllustrationBufferSettings(illustrationSettings_.getSettings());
             }
             retry = !flr_.postPass(illustrationBuffer, debugFragmentLists_);
             debugFragmentLists_ = false;
         }
     } while (retry);
-
-    // report elapsed time
-    glFinish();
-    // auto finish = std::chrono::steady_clock::now();
-    // double elapsed = std::chrono::duration_cast<std::chrono::duration<double> >(finish -
-    // start).count() * 1000; LogProcessorInfo("Time: " << elapsed << "ms");
 
     // Workaround for a problem with the fragment lists:
     // The camera interaction requires the depth buffer for some reason to work,
@@ -639,7 +543,7 @@ void FancyMeshRenderer::updateMeshes() {
         std::shared_ptr<Mesh> copy = nullptr;
 
         if (drawSilhouette_) {
-            copy = std::make_shared<Mesh>();
+            copy = std::make_shared<Mesh>(Mesh::DontCopyBuffers{}, *mesh);
             for (auto&& [info, buffer] : mesh->getBuffers()) {
                 copy->addBuffer(info, std::shared_ptr<BufferBase>(buffer->clone()));
             }
@@ -652,12 +556,15 @@ void FancyMeshRenderer::updateMeshes() {
                 {DrawType::Triangles, ConnectivityType::Adjacency},
                 std::make_shared<IndexBuffer>(halfEdges.createIndexBufferWithAdjacency()));
 
-            meshHasAdjacency_ = true;
-
-            LogProcessorInfo("Adjacency information created");
-            LogProcessorInfo("draw mesh with adjacency information");
+            if (!meshHasAdjacency_) {
+                meshHasAdjacency_ = true;
+                initializeResources();
+            }
         } else {
-            meshHasAdjacency_ = false;
+            if (meshHasAdjacency_) {
+                meshHasAdjacency_ = false;
+                initializeResources();
+            }
         }
 
         if (normalSource_.get() == NormalSource::GenerateVertex) {
@@ -667,10 +574,6 @@ void FancyMeshRenderer::updateMeshes() {
 
         enhancedMeshes_.push_back(copy ? copy : mesh);
     }
-
-    // trigger shader recompilation
-    // Geometry shader needs to know if it has adjacency or not
-    needsRecompilation_ = true;
 }
 
 }  // namespace inviwo

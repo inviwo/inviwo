@@ -207,7 +207,7 @@ bool FragmentListRenderer::supportsFragmentLists() {
     return OpenGLCapabilities::getOpenGLVersion() >= 430;
 }
 
-bool FragmentListRenderer::supportsIllustrationBuffer() {
+bool FragmentListRenderer::supportsIllustration() {
     if (OpenGLCapabilities::getOpenGLVersion() >= 460)
         return true;
     else if (OpenGLCapabilities::getOpenGLVersion() >= 450)

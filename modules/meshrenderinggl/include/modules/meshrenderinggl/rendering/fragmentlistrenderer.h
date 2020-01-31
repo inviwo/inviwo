@@ -95,7 +95,7 @@ public:
      */
     bool postPass(bool useIllustrationBuffer, bool debug = false);
 
-    struct IllustrationBufferSettings {
+    struct IllustrationSettings {
         vec3 edgeColor_;
         float edgeStrength_;
         float haloStrength_;
@@ -103,7 +103,7 @@ public:
         float edgeSmoothing_;
         float haloSmoothing_;
     };
-    void setIllustrationBufferSettings(const IllustrationBufferSettings& settings) {
+    void setIllustrationBufferSettings(const IllustrationSettings& settings) {
         ill_.settings = settings;
     }
 
@@ -118,7 +118,7 @@ public:
      * The Illustration Buffer requires OpenGL 4.6 or OpenGL 4.5 with the extension
      * "GL_ARB_shader_atomic_counter_ops". \return true iff they are supported
      */
-    static bool supportsIllustrationBuffer();
+    static bool supportsIllustration();
 
 private:
     void buildShaders();
@@ -170,7 +170,7 @@ private:
         Shader draw;
         Shader smooth;
 
-        IllustrationBufferSettings settings;
+        IllustrationSettings settings;
     };
 
     Illustration ill_;

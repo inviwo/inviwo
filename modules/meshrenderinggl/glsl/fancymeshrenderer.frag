@@ -170,7 +170,7 @@ vec4 performShading() {
     //==================================================
     vec3 normal = frag.normal;
     normal = normalize(normal);
-    if (!gl_FrontFacing) normal = -normal;  // backface -> invert normal
+    if (!gl_FrontFacing) normal = -normal;  // backface -> invert normal WIPASPDASDPPASD
 
     //==================================================
     // ALPHA

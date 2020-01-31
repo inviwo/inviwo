@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
@@ -49,6 +50,8 @@
 
 #include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
 #include <modules/meshrenderinggl/algorithm/calcnormals.h>
+
+#include <string_view>
 
 namespace inviwo {
 
@@ -149,16 +152,6 @@ protected:
      */
     void updateMeshes();
 
-    /**
-     * \brief Update the visibility of the properties.
-     * Delegates to update() of AlphaSettings and FaceRenderSettings.
-     */
-    void update();
-    /**
-     * \brief (Re)compile the shader: set the shader defines based on the current settings
-     */
-    void compileShader();
-
     MeshFlatMultiInport inport_;
     ImageInport imageInport_;
     ImageOutport outport_;
@@ -181,6 +174,8 @@ protected:
      * All individual factors are clamped to [0,1].
      */
     struct AlphaSettings {
+        AlphaSettings();
+        
         CompositeProperty container_;
         BoolProperty enableUniform_;
         FloatProperty uniformScaling_;
@@ -195,18 +190,8 @@ protected:
         FloatProperty densityExponent_;
         BoolProperty enableShape_;
         FloatProperty shapeExponent_;  // s in the paper
-        // TODO: curvature
-
-        AlphaSettings();
-        /**
-         * \brief Set the callbacks that trigger property update and shader recompilation
-         * \param triggerRecompilation triggers shader recompilation
-         */
-        void setCallbacks(const std::function<void()>& triggerRecompilation);
-        /**
-         * \brief Update the visibility of the properties.
-         */
-        void update();
+       
+        void setUniforms(Shader& shader, std::string_view prefix) const;
     };
     AlphaSettings alphaSettings_;
 
@@ -214,22 +199,11 @@ protected:
      * \brief Settings controlling how edges are highlighted.
      */
     struct EdgeSettings {
+        EdgeSettings();
         CompositeProperty container_;
         FloatProperty edgeThickness_;
         BoolProperty depthDependent_;
         BoolProperty smoothEdges_;
-
-        EdgeSettings();
-        /**
-         * \brief Set the callbacks that trigger property update and shader recompilation
-         * \param triggerUpdate triggers an update of the property visibility
-         * \param triggerRecompilation triggers shader recompilation
-         */
-        void setCallbacks(const std::function<void()>& triggerRecompilation);
-        /**
-         * \brief Update the visibility of the properties.
-         */
-        void update();
     };
     EdgeSettings edgeSettings_;
 
@@ -239,34 +213,37 @@ protected:
         Phong,
         Pbr
     };
-    enum class HatchingMode : int { Off, U, V, UV };
-    enum class HatchingBlendingMode : int { Multiplicative, Additive };
+    enum class HatchingMode : char {U, V, UV };
+    enum class HatchingBlendingMode : char { Multiplicative, Additive };
     /**
      * \brief Hatching settings. These are exactly the parameters from the IRIS-paper
      */
     struct HatchingSettings {
+        HatchingSettings();
+        BoolCompositeProperty hatching_;
+        
         TemplateOptionProperty<HatchingMode> mode_;
-        CompositeProperty container_;
         IntProperty steepness_;
         IntProperty baseFrequencyU_;
         IntProperty baseFrequencyV_;
+
+        BoolCompositeProperty modulation_;
         TemplateOptionProperty<HatchingMode> modulationMode_;
         FloatProperty modulationAnisotropy_;
         FloatProperty modulationOffset_;
         FloatVec3Property color_;
         FloatProperty strength_;
         TemplateOptionProperty<HatchingBlendingMode> blendingMode_;
-        HatchingSettings(const std::string& prefix);
     };
     /**
      * \brief The render settings per face.
      * faceSettings_[0]=front face, faceSettings_[1]=back face
      */
-    struct FaceRenderSettings {
+    struct FaceSettings {
+        FaceSettings(bool frontFace);
+
         bool frontFace_;
-        std::string prefix_;
-        CompositeProperty container_;
-        BoolProperty show_;
+        BoolCompositeProperty show_;
         BoolProperty sameAsFrontFace_;
         ButtonProperty copyFrontToBack_;
 
@@ -285,38 +262,31 @@ protected:
         HatchingSettings hatching_;
 
         // to copy front to back:
-        FaceRenderSettings* frontPart_;
+        FaceSettings* frontPart_;
+        
         void copyFrontToBack();
 
-        FaceRenderSettings(bool frontFace);
-        /**
-         * \brief Update the visibility of the properties.
-         */
-        void update(bool opaque);
-        /**
-         * \brief Set the callbacks that trigger property update and shader recompilation
-         * \param triggerUpdate triggers an update of the property visibility
-         * \param triggerRecompilation triggers shader recompilation
-         */
-        void setCallbacks(const std::function<void()>& triggerRecompilation);
-
+        void setUniforms(Shader& shader, std::string_view prefix) const;
+       
         bool lastOpaque_;
     };
 
-    std::array<FaceRenderSettings, 2> faceSettings_;
+    std::array<FaceSettings, 2> faceSettings_;
 
-    BoolProperty propUseIllustrationBuffer_;
-    struct IllustrationBufferSettings {
-        CompositeProperty container_;
+    struct IllustrationSettings {
+        IllustrationSettings();
+        
+        BoolCompositeProperty enabled_;
         FloatVec3Property edgeColor_;
         FloatProperty edgeStrength_;
         FloatProperty haloStrength_;
         IntProperty smoothingSteps_;
         FloatProperty edgeSmoothing_;
         FloatProperty haloSmoothing_;
-        IllustrationBufferSettings();
+
+        FragmentListRenderer::IllustrationSettings getSettings() const;
     };
-    IllustrationBufferSettings illustrationBufferSettings_;
+    IllustrationSettings illustrationSettings_;
 
     ButtonProperty propDebugFragmentLists_;
     bool debugFragmentLists_;
@@ -329,11 +299,10 @@ protected:
 
     FragmentListRenderer flr_;
     bool supportsFragmentLists_;
-    bool supportedIllustrationBuffer_;
+    bool supportesIllustration_;
 
     Shader shader_;
     Shader depthShader_;
-    bool needsRecompilation_;
 };
 
 }  // namespace inviwo
