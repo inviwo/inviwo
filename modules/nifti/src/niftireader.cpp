@@ -315,7 +315,7 @@ void flip(char* data, size_t elemSize, size3_t dim, std::array<bool, 3> flipAxis
                     const auto idx = flipAxis[0] ? dim[0] - 1 - x : x;
                     const auto from = mapper(x, y, z);
                     const auto to = mapper(idx, idy, idz);
-                    std::memcpy(data + to, copy + from, elemSize);
+                    std::memcpy(data + to * elemSize, copy + from * elemSize, elemSize);
                 }
             }
         }
