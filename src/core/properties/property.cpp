@@ -198,6 +198,7 @@ bool Property::isModified() const { return propertyModified_; }
 void Property::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("identifier", identifier_, SerializationTarget::Attribute);
+    s.serialize("serializationMode", serializationMode_);
     displayName_.serialize(s, serializationMode_);
     semantics_.serialize(s, serializationMode_);
     usageMode_.serialize(s, serializationMode_);
@@ -223,6 +224,8 @@ void Property::deserialize(Deserializer& d) {
             notifyObserversOnSetIdentifier(this, identifier_);
         }
     }
+
+    d.deserialize("serializationMode", serializationMode_);
 
     if (displayName_.deserialize(d, serializationMode_)) {
         notifyObserversOnSetDisplayName(this, displayName_);
