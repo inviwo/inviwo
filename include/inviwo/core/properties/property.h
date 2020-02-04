@@ -378,7 +378,7 @@ protected:
     void notifyAboutChange();
 
     CallBackList onChangeCallback_;
-    PropertySerializationMode serializationMode_;
+    ValueWrapper<PropertySerializationMode> serializationMode_;
 
 private:
     std::string identifier_;

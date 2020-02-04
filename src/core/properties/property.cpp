@@ -40,7 +40,7 @@ Property::Property(const std::string& identifier, const std::string& displayName
                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : PropertyObservable()
     , MetaDataOwner()
-    , serializationMode_(PropertySerializationMode::Default)
+    , serializationMode_("serializationMode", PropertySerializationMode::Default)
     , identifier_(identifier)
     , displayName_("displayName", displayName)
     , readOnly_("readonly", false)
@@ -198,6 +198,7 @@ bool Property::isModified() const { return propertyModified_; }
 void Property::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("identifier", identifier_, SerializationTarget::Attribute);
+    serializationMode_.serialize(s, serializationMode_);
     displayName_.serialize(s, serializationMode_);
     semantics_.serialize(s, serializationMode_);
     usageMode_.serialize(s, serializationMode_);
@@ -223,6 +224,8 @@ void Property::deserialize(Deserializer& d) {
             notifyObserversOnSetIdentifier(this, identifier_);
         }
     }
+
+    serializationMode_.deserialize(d, serializationMode_);
 
     if (displayName_.deserialize(d, serializationMode_)) {
         notifyObserversOnSetDisplayName(this, displayName_);
