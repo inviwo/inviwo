@@ -34,6 +34,9 @@
 #include <inviwo/core/util/inviwosetupinfo.h>
 #include <inviwo/core/util/filesystem.h>
 
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
 namespace inviwo {
 
 class WorkspaceConverter : public VersionConverter {
@@ -107,16 +110,18 @@ struct ErrorHandle {
             if (key == "Processor") {
                 std::string module = info_.getModuleForProcessor(error.getType());
                 if (!module.empty()) {
-                    messages.push_back(error.getMessage() + " Processor was in module: \"" +
-                                       module + "\".");
+                    messages.push_back(fmt::format("{} ({})\nProcessor was in module: \"{}\".",
+                                                   error.getMessage(), error.getContext(), module));
                 } else {
-                    messages.push_back(error.getMessage());
+                    messages.push_back(
+                        fmt::format("{} ({})", error.getMessage(), error.getContext()));
                 }
             } else {
-                messages.push_back(error.getMessage());
+                messages.push_back(fmt::format("{} ({})", error.getMessage(), error.getContext()));
             }
-        } catch (Exception& exception) {
-            messages.push_back("Deserialization error: " + exception.getMessage());
+        } catch (Exception& error) {
+            messages.push_back("" + fmt::format("Deserialization error: {} ({})",
+                                                error.getMessage(), error.getContext()));
         }
     }
 

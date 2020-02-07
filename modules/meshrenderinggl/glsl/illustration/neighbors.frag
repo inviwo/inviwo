@@ -34,7 +34,7 @@
 
 // this is important for the occlusion query
 layout(early_fragment_tests) in;
-#include "illustrationbuffer.glsl"
+#include "illustration/illustrationbuffer.glsl"
 
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;

@@ -36,8 +36,8 @@
 layout(early_fragment_tests) in;
 
 #include "oit/abufferlinkedlist.glsl"
-#include "illustrationbuffer.glsl"
-#include "oit/abuffersort.glsl"
+#include "illustration/illustrationbuffer.glsl"
+#include "oit/sort.glsl"
 
 // atomic counter to allocate space in the illustration buffer
 // just reuse the counter from the A-Buffer

@@ -36,7 +36,7 @@
 #ifndef ABUFFERLINKEDLIST_HGLSL
 #define ABUFFERLINKEDLIST_HGLSL
 
-#include "oit/abuffercommons.glsl"
+#include "oit/commons.glsl"
 
 // Uniforms changed from the C++ side
 struct AbufferParameters {

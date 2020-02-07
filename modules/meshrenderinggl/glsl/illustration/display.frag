@@ -31,7 +31,7 @@
  * Blends the final color of the illustration buffer
  */
 
-#include "illustrationbuffer.glsl"
+#include "illustration/illustrationbuffer.glsl"
 
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;

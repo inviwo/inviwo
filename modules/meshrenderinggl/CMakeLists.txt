@@ -34,17 +34,17 @@ set(SHADER_FILES
     glsl/fancymeshrenderer.frag
     glsl/fancymeshrenderer.geom
     glsl/fancymeshrenderer.vert
-    glsl/oit/abuffercommons.glsl
+    glsl/illustration/display.frag
+    glsl/illustration/illustrationbuffer.glsl
+    glsl/illustration/neighbors.frag
+    glsl/illustration/smooth.frag
+    glsl/illustration/sortandfill.frag
     glsl/oit/abufferlinkedlist.glsl
-    glsl/oit/abuffersort.glsl
-    glsl/oit/clearabufferlinkedlist.frag
-    glsl/oit/dispabufferlinkedlist.frag
-    glsl/simplequad.vert
-    glsl/illustrationbuffer.glsl
-    glsl/sortandfillillustrationbuffer.frag
-    glsl/displayillustrationbuffer.frag
-    glsl/resolveneighborsillustrationbuffer.frag
-    glsl/smoothillustrationbuffer.frag
+    glsl/oit/clear.frag
+    glsl/oit/commons.glsl
+    glsl/oit/display.frag
+    glsl/oit/simplequad.vert
+    glsl/oit/sort.glsl
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

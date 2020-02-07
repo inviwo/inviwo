@@ -52,10 +52,10 @@ FragmentListRenderer::Illustration::Illustration(size2_t screenSize, size_t frag
                  {fragmentSize * 2 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 2),
                   GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER}}}
     , activeSmoothing{0}
-    , fill{"simplequad.vert", "sortandfillillustrationbuffer.frag", false}
-    , resolveNeighbors{"simplequad.vert", "resolveneighborsillustrationbuffer.frag", false}
-    , draw{"simplequad.vert", "displayillustrationbuffer.frag", false}
-    , smooth{"simplequad.vert", "smoothillustrationbuffer.frag", false}
+    , fill{"oit/simplequad.vert", "illustration/sortandfill.frag", false}
+    , neighbors{"oit/simplequad.vert", "illustration/neighbors.frag", false}
+    , draw{"oit/simplequad.vert", "illustration/display.frag", false}
+    , smooth{"oit/simplequad.vert", "illustration/smooth.frag", false}
     , settings{} {
 
     index.initialize(nullptr);
@@ -73,8 +73,8 @@ FragmentListRenderer::FragmentListRenderer()
     , pixelBuffer_{fragmentSize_ * 4 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 4),
                    GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER}
     , totalFragmentQuery_{0}
-    , clear_("simplequad.vert", "oit/clearabufferlinkedlist.frag", false)
-    , display_("simplequad.vert", "oit/dispabufferlinkedlist.frag", false)
+    , clear_("oit/simplequad.vert", "oit/clear.frag", false)
+    , display_("oit/simplequad.vert", "oit/display.frag", false)
     , illustration_{screenSize_, fragmentSize_} {
 
     buildShaders();
@@ -174,8 +174,8 @@ bool FragmentListRenderer::postPass(bool useIllustration, bool debug) {
     textureUnits_.clear();
 
     if (useIllustration) {  // 2. perform all the crazy post-processing steps
-        illustration_.processIllustration(pixelBuffer_, idxUnit, countUnit);
-        illustration_.drawIllustration(idxUnit, countUnit);
+        illustration_.process(pixelBuffer_, idxUnit, countUnit);
+        illustration_.render(idxUnit, countUnit);
 
         if (debug) debugIllustrationBuffer(numFrags);
     }
@@ -250,7 +250,7 @@ void FragmentListRenderer::buildShaders() {
     clear_.build();
     illustration_.fill.build();
     illustration_.draw.build();
-    illustration_.resolveNeighbors.build();
+    illustration_.neighbors.build();
     illustration_.smooth.build();
 }
 
@@ -328,8 +328,8 @@ void FragmentListRenderer::fillIllustration(TextureUnit& abuffUnit, TextureUnit&
     setUniforms(illustration_.fill, abuffUnit);
     illustration_.setUniforms(illustration_.fill, idxUnit, countUnit);
 
-    illustration_.color.bindBase(0);       // out: alpha + color
-    illustration_.surfaceInfo.bindBase(1); // out: depth + gradient
+    illustration_.color.bindBase(0);        // out: alpha + color
+    illustration_.surfaceInfo.bindBase(1);  // out: depth + gradient
     atomicCounter_.bindBase(6);
 
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
@@ -340,13 +340,12 @@ void FragmentListRenderer::fillIllustration(TextureUnit& abuffUnit, TextureUnit&
     illustration_.fill.deactivate();
 }
 
-void FragmentListRenderer::Illustration::processIllustration(BufferObject& pixelBuffer,
-                                                             TextureUnit& idxUnit,
-                                                             TextureUnit& countUnit) {
+void FragmentListRenderer::Illustration::process(BufferObject& pixelBuffer, TextureUnit& idxUnit,
+                                                 TextureUnit& countUnit) {
     // resolve neighbors
     // and set initial conditions for silhouettes+halos
-    resolveNeighbors.activate();
-    setUniforms(resolveNeighbors, idxUnit, countUnit);
+    neighbors.activate();
+    setUniforms(neighbors, idxUnit, countUnit);
     surfaceInfo.bindBase(0);                     // in:  depth + gradient
     pixelBuffer.bindBase(1);                     // out: neighbors
     smoothing[1 - activeSmoothing].bindBase(2);  // out: beta + gamma
@@ -357,7 +356,7 @@ void FragmentListRenderer::Illustration::processIllustration(BufferObject& pixel
     utilgl::CullFaceState culling(GL_NONE);
     utilgl::singleDrawImagePlaneRect();
 
-    resolveNeighbors.deactivate();
+    neighbors.deactivate();
 
     // perform the bluring
     if (settings.smoothingSteps_ > 0) {
@@ -377,8 +376,7 @@ void FragmentListRenderer::Illustration::processIllustration(BufferObject& pixel
     }
 }
 
-void FragmentListRenderer::Illustration::drawIllustration(TextureUnit& idxUnit,
-                                                          TextureUnit& countUnit) {
+void FragmentListRenderer::Illustration::render(TextureUnit& idxUnit, TextureUnit& countUnit) {
     // final blending
     draw.activate();
     setUniforms(draw, idxUnit, countUnit);

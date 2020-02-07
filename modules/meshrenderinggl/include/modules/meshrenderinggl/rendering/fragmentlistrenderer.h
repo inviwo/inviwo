@@ -59,7 +59,7 @@ namespace inviwo {
  *       discard;
  *    c) Assign additional shader uniforms with FragmentListRenderer::setShaderUniforms(shader)
  *    d) Render the object with depth test but without depth write
- * 4. Call FragmetnListRenderer::postPass(...)
+ * 4. Call FragmentListRenderer::postPass(...)
  *    If this returns <code>false</code>, not enough space for all pixels
  *    was available. Repeat from step 2.
  */
@@ -86,14 +86,14 @@ public:
     /**
      * \brief Finishes the fragment list pass and renders the final result.
      * This sorts the fragment lists per pixel and outputs the blended color.
-     * \param useIllustrationBuffer Set to true if the illustration buffer
+     * \param useIllustration Set to true if the illustration buffer
      * should be enabled
      * \param debug If set to true, debug output is printed to <code>cout</code>.
      * Warning: very text heavy, use only for small screen sizes.
      * \return <code>true</code> if successfull, <code>false</code> if not enough
      * space for all fragments was available and the procedure should be repeated.
      */
-    bool postPass(bool useIllustrationBuffer, bool debug = false);
+    bool postPass(bool useIllustration, bool debug = false);
 
     struct IllustrationSettings {
         vec3 edgeColor_;
@@ -151,9 +151,8 @@ private:
         void resizeBuffers(size2_t screenSize, size_t fragmentSize);
         void setUniforms(Shader& shader, TextureUnit& idxUnit, TextureUnit& countUnit);
 
-        void processIllustration(BufferObject& pixelBuffer, TextureUnit& idxUnit,
-                                 TextureUnit& countUnit);
-        void drawIllustration(TextureUnit& idxUnit, TextureUnit& countUnit);
+        void process(BufferObject& pixelBuffer, TextureUnit& idxUnit, TextureUnit& countUnit);
+        void render(TextureUnit& idxUnit, TextureUnit& countUnit);
 
         Texture2D index;
         Texture2D count;
@@ -165,7 +164,7 @@ private:
         int activeSmoothing;
 
         Shader fill;
-        Shader resolveNeighbors;
+        Shader neighbors;
         Shader draw;
         Shader smooth;
 

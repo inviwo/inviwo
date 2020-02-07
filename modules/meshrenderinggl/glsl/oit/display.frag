@@ -37,7 +37,7 @@
 // GL_NV_shader_buffer_store, GL_EXT_bindable_uniform
 
 #include "oit/abufferlinkedlist.glsl"
-#include "oit/abuffersort.glsl"
+#include "oit/sort.glsl"
 
 // How should the stuff be rendered? (Debugging options)
 #define ABUFFER_DISPNUMFRAGMENTS 0
