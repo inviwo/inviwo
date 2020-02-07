@@ -105,8 +105,7 @@ FancyMeshRenderer::FancyMeshRenderer()
     , propDebugFragmentLists_("debugFL", "Debug Fragment Lists")
     , debugFragmentLists_(false)
     , meshHasAdjacency_(false)
-    , shader_("fancymeshrenderer.vert", "fancymeshrenderer.geom", "fancymeshrenderer.frag", false)
-    , depthShader_("geometryrendering.vert", "depthonly.frag", false) {
+    , shader_("fancymeshrenderer.vert", "fancymeshrenderer.geom", "fancymeshrenderer.frag", false) {
 
     // query OpenGL Capability
     supportsFragmentLists_ = FragmentListRenderer::supportsFragmentLists();
@@ -163,9 +162,6 @@ FancyMeshRenderer::FancyMeshRenderer()
     // DEBUG, in case we need debugging fragment lists at a later point again
     // addProperty(propDebugFragmentLists_);  // DEBUG, to be removed
     // propDebugFragmentLists_.onChange([this]() { debugFragmentLists_ = true; });
-
-    // Compile depth-only shader. Why this is needed, see the end of process()
-    depthShader_.build();
 }
 
 FancyMeshRenderer::AlphaSettings::AlphaSettings()
@@ -392,7 +388,6 @@ void FancyMeshRenderer::initializeResources() {
 
     const std::array<std::pair<std::string, bool>, 15> defines = {
         {{"USE_FRAGMENT_LIST", !forceOpaque_},
-         {"COLOR_LAYER", true},
          {"ALPHA_UNIFORM", alphaSettings_.enableUniform_},
          {"ALPHA_ANGLE_BASED", alphaSettings_.enableAngleBased_},
          {"ALPHA_NORMAL_VARIATION", alphaSettings_.enableNormalVariation_},
@@ -441,16 +436,6 @@ void FancyMeshRenderer::process() {
 
         shader_.activate();
 
-        // various OpenGL states: depth, blending, culling
-        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, opaque);
-        utilgl::DepthMaskState depthMask(opaque ? GL_TRUE : GL_FALSE);
-        utilgl::CullFaceState culling(
-            !faceSettings_[0].show_ && faceSettings_[1].show_
-                ? GL_FRONT
-                : faceSettings_[0].show_ && !faceSettings_[1].show_ ? GL_BACK : GL_NONE);
-        utilgl::BlendModeState blendModeStateGL(opaque ? GL_ONE : GL_SRC_ALPHA,
-                                                opaque ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
-
         // general settings for camera, lighting, picking, mesh data
         utilgl::setUniforms(shader_, camera_, lightingProperty_);
         shader_.setUniform("halfScreenSize", ivec2(outport_.getDimensions()) / ivec2(2));
@@ -484,55 +469,42 @@ void FancyMeshRenderer::process() {
             flr_.setShaderUniforms(shader_);  // set uniforms fragment list rendering
         }
 
-        // Finally, draw it
-        for (auto mesh : enhancedMeshes_) {
-            MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
-                                            mesh->getDefaultMeshInfo()};
-            utilgl::setShaderUniforms(shader_, *mesh, "geometry");
-            shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
+        {
+            // various OpenGL states: depth, blending, culling
+            utilgl::GlBoolState depthTest(GL_DEPTH_TEST, opaque);
+            utilgl::DepthMaskState depthMask(opaque ? GL_TRUE : GL_FALSE);
 
-            drawer.draw();
+            utilgl::CullFaceState culling(
+                !faceSettings_[0].show_ && faceSettings_[1].show_
+                    ? GL_FRONT
+                    : faceSettings_[0].show_ && !faceSettings_[1].show_ ? GL_BACK : GL_NONE);
+            utilgl::BlendModeState blendModeState(opaque ? GL_ONE : GL_SRC_ALPHA,
+                                                  opaque ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
+
+            // Finally, draw it
+            for (auto mesh : enhancedMeshes_) {
+                MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
+                                                mesh->getDefaultMeshInfo()};
+                utilgl::setShaderUniforms(shader_, *mesh, "geometry");
+                shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
+
+                drawer.draw();
+            }
         }
 
         shader_.deactivate();
 
         if (fragmentLists) {
             // final processing of fragment list rendering
-            const bool illustrationBuffer =
+            const bool useIllustration =
                 illustrationSettings_.enabled_.isChecked() && supportesIllustration_;
-            if (illustrationBuffer) {
-                flr_.setIllustrationBufferSettings(illustrationSettings_.getSettings());
+            if (useIllustration) {
+                flr_.setIllustrationSettings(illustrationSettings_.getSettings());
             }
-            retry = !flr_.postPass(illustrationBuffer, debugFragmentLists_);
+            retry = !flr_.postPass(useIllustration, debugFragmentLists_);
             debugFragmentLists_ = false;
         }
     } while (retry);
-
-    // Workaround for a problem with the fragment lists:
-    // The camera interaction requires the depth buffer for some reason to work,
-    // otherwise, the rotation does not work.
-    // My first idea was to set the depth in the fragment list's 'dispABufferLinkedList.frag'
-    // using gl_FragDepth, but this don't work (yet).
-    if (fragmentLists) {
-        depthShader_.activate();
-        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-        utilgl::DepthMaskState depthMask(GL_TRUE);
-        utilgl::CullFaceState culling(
-            !faceSettings_[0].show_ && faceSettings_[1].show_
-                ? GL_FRONT
-                : faceSettings_[0].show_ && !faceSettings_[1].show_ ? GL_BACK : GL_NONE);
-        utilgl::BlendModeState blendModeStateGL(GL_ZERO, GL_ZERO);
-        utilgl::setUniforms(depthShader_, camera_);
-
-        for (auto mesh : enhancedMeshes_) {
-            MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
-                                            mesh->getDefaultMeshInfo()};
-            utilgl::setShaderUniforms(depthShader_, *mesh, "geometry");
-            drawer.draw();
-        }
-
-        depthShader_.deactivate();
-    }
 
     utilgl::deactivateCurrentTarget();
 }

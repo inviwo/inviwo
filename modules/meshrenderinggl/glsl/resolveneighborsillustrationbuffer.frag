@@ -31,6 +31,9 @@
  * Resolves the neighborhood of a fragment and sets the initial conditions for the silhouettes+halos
  */
 
+
+// this is important for the occlusion query
+layout(early_fragment_tests) in;
 #include "illustrationbuffer.glsl"
 
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
@@ -39,9 +42,11 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 smooth in vec4 fragPos;
 
 layout(std430, binding = 0) buffer surfaceInfoBufferIn {
-    vec2 surfaceInfoIn[];  // depth+gradient
+    vec2 surfaceInfoIn[];  // depth + gradient
 };
-layout(std430, binding = 1) buffer neighborBufferOut { ivec4 neighborsOut[]; };
+layout(std430, binding = 1) buffer neighborBufferOut { 
+    ivec4 neighborsOut[]; // neighbors
+};
 layout(std430, binding = 2) buffer smoothingBufferOut {
     vec2 smoothingOut[];  // beta + gamma
 };

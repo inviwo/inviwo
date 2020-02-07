@@ -103,8 +103,8 @@ public:
         float edgeSmoothing_;
         float haloSmoothing_;
     };
-    void setIllustrationBufferSettings(const IllustrationSettings& settings) {
-        ill_.settings = settings;
+    void setIllustrationSettings(const IllustrationSettings& settings) {
+        illustration_.settings = settings;
     }
 
     /**
@@ -122,7 +122,6 @@ public:
 
 private:
     void buildShaders();
-    static void drawQuad();
 
     void setUniforms(Shader& shader, TextureUnit& abuffUnit) const;
     void resizeBuffers(const size2_t& screenSize);
@@ -173,7 +172,7 @@ private:
         IllustrationSettings settings;
     };
 
-    Illustration ill_;
+    Illustration illustration_;
 };
 
 }  // namespace inviwo

@@ -60,6 +60,10 @@ frag;
 
 #ifdef USE_FRAGMENT_LIST
 #include "oit/abufferlinkedlist.glsl"
+
+// this is important for the occlusion query
+layout(early_fragment_tests) in;
+
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 #endif
 
@@ -330,20 +334,17 @@ void main() {
     vec4 fragColor = performShading();
 
 #ifdef USE_FRAGMENT_LIST
-
     // fragment list rendering
-    ivec2 coords = ivec2(gl_FragCoord.xy);
-    // float depth = frag.position.z / frag.position.w;
-    float depth = gl_FragCoord.z;
-    abufferRender(coords, depth, fragColor);
+    if (fragColor.a > 0.0) {
+        ivec2 coords = ivec2(gl_FragCoord.xy);
+        float depth = gl_FragCoord.z;
+        abufferRender(coords, depth, fragColor);
+    }
     discard;
 
 #else
     // traditional rendering
-
-#ifdef COLOR_LAYER
     FragData0 = fragColor;
-#endif
-
+    PickingData = vec4(0.0, 0.0, 0.0, 0.0);
 #endif
 }

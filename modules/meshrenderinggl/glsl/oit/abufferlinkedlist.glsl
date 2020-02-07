@@ -32,18 +32,14 @@
  * Copyright Cyril Crassin, July 2010
  *
  * Modified by Sebastian Weiss, 2017
-**/
+ **/
 #ifndef ABUFFERLINKEDLIST_HGLSL
 #define ABUFFERLINKEDLIST_HGLSL
 
 #include "oit/abuffercommons.glsl"
 
-//this is important for the occlusion query
-layout(early_fragment_tests) in;
-
-//Uniforms changed from the C++ side
-struct AbufferParameters
-{
+// Uniforms changed from the C++ side
+struct AbufferParameters {
     int screenWidth;
     int screenHeight;
     vec4 backgroundColor;
@@ -51,41 +47,38 @@ struct AbufferParameters
 };
 uniform AbufferParameters AbufferParams;
 
-//Macros (maybe) changed from the C++ side
+// Macros (maybe) changed from the C++ side
 
 #define ABUFFER_USE_TEXTURES 1
 #define ABUFFER_SHAREDPOOL_USE_TEXTURES 1
 
 #if ABUFFER_USE_TEXTURES
-//A-Buffer fragments storage
-//coherent uniform layout(binding=5, size1x32) uimage2D abufferIdxImg;
+// A-Buffer fragments storage
+// coherent uniform layout(binding=5, size1x32) uimage2D abufferIdxImg;
 coherent uniform layout(size1x32) uimage2D abufferIdxImg;
 #else
 #error Buffer access not supported
-//coherent uniform uint *d_abufferPageIdx;
-//coherent uniform uint *d_abufferFragCount;
-//coherent uniform uint *d_semaphore;
+// coherent uniform uint *d_abufferPageIdx;
+// coherent uniform uint *d_abufferFragCount;
+// coherent uniform uint *d_semaphore;
 #endif
 
-
-//TODO: remove hardcoded binding point
-layout (binding = 6, offset = 0) uniform atomic_uint abufferCounter;
-layout(std430, binding=7) buffer abufferStorage
-{
-    //x: previous chain element, uint, +1
-    //y: depth, float
-    //z: alpha, float
-    //w: color, 10/10/10 rgb
-    vec4 abufferPixelData[]; 
+// TODO: remove hardcoded binding point
+layout(binding = 6, offset = 0) uniform atomic_uint abufferCounter;
+layout(std430, binding = 7) buffer abufferStorage {
+    // x: previous chain element, uint, +1
+    // y: depth, float
+    // z: alpha, float
+    // w: color, 10/10/10 rgb
+    vec4 abufferPixelData[];
 };
-struct abufferPixel
-{
+struct abufferPixel {
     uint previous;
     float depth;
     vec4 color;
 };
 
-//Fragment linked list
+// Fragment linked list
 
 #if ABUFFER_USE_TEXTURES
 
@@ -93,9 +86,7 @@ uint setPixelLink(ivec2 coords, uint val) {
     return imageAtomicExchange(abufferIdxImg, coords, val);
 }
 
-uint getPixelLink(ivec2 coords) {
-    return uint(imageLoad(abufferIdxImg, coords).x);
-}
+uint getPixelLink(ivec2 coords) { return uint(imageLoad(abufferIdxImg, coords).x); }
 
 #else
 
@@ -103,23 +94,15 @@ uint getPixelLink(ivec2 coords) {
 
 #endif
 
-
 // Pixel data storage
 
-uint dataCounterAtomicInc() {
-    return atomicCounterIncrement(abufferCounter);
-}
+uint dataCounterAtomicInc() { return atomicCounterIncrement(abufferCounter); }
 
-vec4 readPixelStorage(uint idx) {
-    return abufferPixelData[int(idx)];
-}
+vec4 readPixelStorage(uint idx) { return abufferPixelData[int(idx)]; }
 
-void writePixelStorage(uint idx, vec4 value) {
-    abufferPixelData[int(idx)] = value;
-}
+void writePixelStorage(uint idx, vec4 value) { abufferPixelData[int(idx)] = value; }
 
-abufferPixel uncompressPixelData(vec4 data)
-{
+abufferPixel uncompressPixelData(vec4 data) {
     abufferPixel p;
     p.previous = floatBitsToUint(data.x);
     p.depth = data.y;
@@ -128,8 +111,7 @@ abufferPixel uncompressPixelData(vec4 data)
     return p;
 }
 
-vec4 compressPixelData(abufferPixel p)
-{
+vec4 compressPixelData(abufferPixel p) {
     vec4 data;
     data.x = uintBitsToFloat(p.previous);
     data.y = p.depth;
@@ -139,22 +121,20 @@ vec4 compressPixelData(abufferPixel p)
     return data;
 }
 
-
 // Rendering function
 
 // The central function for the user-code
-bool abufferRender(ivec2 coords, float depth, vec4 color)
-{
-    //coords.x=0; coords.y=0;
-    //reserve space for pixel
+bool abufferRender(ivec2 coords, float depth, vec4 color) {
+    // coords.x=0; coords.y=0;
+    // reserve space for pixel
     uint pixelIdx = dataCounterAtomicInc();
     if (pixelIdx >= AbufferParams.storageSize) {
-        //we are out of space
+        // we are out of space
         return false;
     }
-    //write index
-    uint prevIdx = setPixelLink(coords, pixelIdx+1);
-    //assemble and write pixel
+    // write index
+    uint prevIdx = setPixelLink(coords, pixelIdx + 1);
+    // assemble and write pixel
     abufferPixel p;
     p.previous = prevIdx;
     p.depth = depth;
@@ -163,4 +143,4 @@ bool abufferRender(ivec2 coords, float depth, vec4 color)
     return true;
 }
 
-#endif	//ABUFFERLINKEDLIST_HGLSL
+#endif  // ABUFFERLINKEDLIST_HGLSL

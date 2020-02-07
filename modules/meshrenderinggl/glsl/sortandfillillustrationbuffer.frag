@@ -32,6 +32,9 @@
  * Load fragments, sort them, store them in linear memory
  */
 
+// this is important for the occlusion query
+layout(early_fragment_tests) in;
+
 #include "oit/abufferlinkedlist.glsl"
 #include "illustrationbuffer.glsl"
 #include "oit/abuffersort.glsl"
@@ -56,9 +59,11 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 // Input interpolated fragment position
 smooth in vec4 fragPos;
 
-layout(std430, binding = 0) buffer colorBufferOut { vec2 colorOut[]; };
+layout(std430, binding = 0) buffer colorBufferOut { 
+    vec2 colorOut[];        // alpha + color
+};
 layout(std430, binding = 1) buffer surfaceInfoBufferOut {
-    vec2 surfaceInfoOut[];  // depth+gradient
+    vec2 surfaceInfoOut[];  // depth + gradient
 };
 
 // Fill local memory array of fragments

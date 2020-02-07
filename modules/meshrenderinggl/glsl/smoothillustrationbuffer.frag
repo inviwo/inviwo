@@ -31,6 +31,9 @@
  * Smoothes the silhouette and halo borders
  */
 
+ 
+// this is important for the occlusion query
+layout(early_fragment_tests) in;
 #include "illustrationbuffer.glsl"
 
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
@@ -38,9 +41,11 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 // Input interpolated fragment position
 smooth in vec4 fragPos;
 
-layout(std430, binding = 0) buffer neighborBufferIn { ivec4 neighborsIn[]; };
+layout(std430, binding = 0) buffer neighborBufferIn { 
+    ivec4 neighborsIn[];  // neighbors
+};
 layout(std430, binding = 1) buffer smoothingBufferIn {
-    vec2 smoothingIn[];  // beta + gamma
+    vec2 smoothingIn[];   // beta + gamma
 };
 layout(std430, binding = 2) buffer smoothingBufferOut {
     vec2 smoothingOut[];  // beta + gamma

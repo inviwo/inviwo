@@ -302,7 +302,6 @@ protected:
     bool supportesIllustration_;
 
     Shader shader_;
-    Shader depthShader_;
 };
 
 }  // namespace inviwo

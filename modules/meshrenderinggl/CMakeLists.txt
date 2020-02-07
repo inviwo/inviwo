@@ -35,15 +35,14 @@ set(SHADER_FILES
     glsl/fancymeshrenderer.geom
     glsl/fancymeshrenderer.vert
     glsl/oit/abuffercommons.glsl
-    glsl/oit/abufferlinkedList.glsl
+    glsl/oit/abufferlinkedlist.glsl
     glsl/oit/abuffersort.glsl
     glsl/oit/clearabufferlinkedlist.frag
     glsl/oit/dispabufferlinkedlist.frag
     glsl/simplequad.vert
-    glsl/depthonly.frag
     glsl/illustrationbuffer.glsl
     glsl/sortandfillillustrationbuffer.frag
-    glsl/displayIllustrationbuffer.frag
+    glsl/displayillustrationbuffer.frag
     glsl/resolveneighborsillustrationbuffer.frag
     glsl/smoothillustrationbuffer.frag
 )
@@ -53,7 +52,7 @@ ivw_group("Shader Files" ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
-	tests/unittests/meshrenderinggl-unittest-main.cpp
+    tests/unittests/meshrenderinggl-unittest-main.cpp
     tests/unittests/halfedges-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})

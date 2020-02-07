@@ -30,7 +30,7 @@
 #ifndef ABUFFERCOMMONS_H
 #define ABUFFERCOMMONS_H
 
-//max depth of the chain, all others are discarded during the final rendering
+// max depth of the chain, all others are discarded during the final rendering
 #define ABUFFER_SIZE 32
 
 // Helpers
@@ -42,8 +42,8 @@ uint compressColor(vec3 color) {
 }
 vec3 uncompressColor(uint c) {
     vec3 color;
-    color.r = float((c>>20) & 0x3ff) / 1023.0f;
-    color.g = float((c>>10) & 0x3ff) / 1023.0f;
+    color.r = float((c >> 20) & 0x3ff) / 1023.0f;
+    color.g = float((c >> 10) & 0x3ff) / 1023.0f;
     color.b = float(c & 0x3ff) / 1023.0f;
     return color;
 }
