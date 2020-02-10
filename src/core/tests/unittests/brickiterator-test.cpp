@@ -46,7 +46,8 @@ TEST(BrickIteratorTest, subBlock) {
     std::vector<int> data(27);
     std::iota(data.begin(), data.end(), 0);
 
-    auto it = util::BrickIterator{data.begin(), size3_t{3, 3, 3}, size3_t{1, 1, 1}, size3_t{2, 2, 2}};
+    auto it =
+        util::BrickIterator{data.begin(), size3_t{3, 3, 3}, size3_t{1, 1, 1}, size3_t{2, 2, 2}};
 
     std::vector<int> block(it, it.end());
 
@@ -59,11 +60,13 @@ TEST(BrickIteratorTest, decrement) {
     std::vector<int> data(27);
     std::iota(data.begin(), data.end(), 0);
 
-    auto it = util::BrickIterator{data.begin(), size3_t{3, 3, 3}, size3_t{0, 0, 0}, size3_t{1, 1, 1}};
+    auto it =
+        util::BrickIterator{data.begin(), size3_t{3, 3, 3}, size3_t{0, 0, 0}, size3_t{1, 1, 1}};
     EXPECT_EQ(*data.begin(), *it);
     EXPECT_EQ(*data.begin(), *--it.end());
 
-    auto it2 = util::BrickIterator{data.begin(), size3_t{3, 3, 3}, size3_t{1, 1, 1}, size3_t{2, 2, 2}};
+    auto it2 =
+        util::BrickIterator{data.begin(), size3_t{3, 3, 3}, size3_t{1, 1, 1}, size3_t{2, 2, 2}};
     EXPECT_EQ(*std::next(it2, 7), *--it2.end());
 }
 
@@ -72,7 +75,8 @@ TEST(BrickIteratorTest, extractVoxel) {
     std::iota(data.begin(), data.end(), 0);
     util::IndexMapper3D im(size3_t{3, 3, 3});
 
-    auto it = util::BrickIterator{data.begin(), size3_t{3, 3, 3}, size3_t{0, 0, 0}, size3_t{1, 1, 1}};
+    auto it =
+        util::BrickIterator{data.begin(), size3_t{3, 3, 3}, size3_t{0, 0, 0}, size3_t{1, 1, 1}};
 
     EXPECT_EQ(*data.begin(), *it);
 
@@ -90,7 +94,8 @@ TEST(BrickIteratorTest, entireBlock) {
     std::vector<int> data(27);
     std::iota(data.begin(), data.end(), 0);
 
-    auto it = util::BrickIterator{data.begin(), size3_t{3, 3, 3}, size3_t{0, 0, 0}, size3_t{3, 3, 3}};
+    auto it =
+        util::BrickIterator{data.begin(), size3_t{3, 3, 3}, size3_t{0, 0, 0}, size3_t{3, 3, 3}};
     std::vector<int> block(it, it.end());
 
     EXPECT_EQ(block, data) << "extracted block is different from source data";
