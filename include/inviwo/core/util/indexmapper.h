@@ -54,7 +54,7 @@ struct IndexMapper<2, IndexType> {
     }
 
 private:
-    const IndexType dimx;
+    IndexType dimx;
 };
 
 template <typename IndexType>
@@ -73,8 +73,8 @@ struct IndexMapper<3, IndexType> {
     }
 
 private:
-    const IndexType dimx;
-    const IndexType dimxy;
+    IndexType dimx;
+    IndexType dimxy;
 };
 
 using IndexMapper2D = IndexMapper<2, size_t>;
