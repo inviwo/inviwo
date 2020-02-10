@@ -65,67 +65,68 @@ void calculateMeshNormals(Mesh& mesh, CalculateMeshNormalsMode mode) {
     for (auto [meshInfo, buffer] : mesh.getIndexBuffers()) {
         if (meshInfo.dt != DrawType::Triangles) continue;
 
-        vertices->dispatch<void, dispatching::filter::Floats>([&, mi = meshInfo, buf = buffer](auto ram) {
-            const auto& vert = ram->getDataContainer();
+        vertices->dispatch<void, dispatching::filter::Floats>(
+            [&, mi = meshInfo, buf = buffer](auto ram) {
+                const auto& vert = ram->getDataContainer();
 
-            meshutil::forEachTriangle(mi, *buf, [&](auto i0, auto i1, auto i2) {
-                const auto v0 = util::glm_convert<dvec3>(vert[i0]);
-                const auto v1 = util::glm_convert<dvec3>(vert[i1]);
-                const auto v2 = util::glm_convert<dvec3>(vert[i2]);
+                meshutil::forEachTriangle(mi, *buf, [&](auto i0, auto i1, auto i2) {
+                    const auto v0 = util::glm_convert<dvec3>(vert[i0]);
+                    const auto v1 = util::glm_convert<dvec3>(vert[i1]);
+                    const auto v2 = util::glm_convert<dvec3>(vert[i2]);
 
-                const dvec3 n = cross(v1 - v0, v2 - v0);
-                double l = glm::length(n);
-                if (l < std::numeric_limits<float>::epsilon()) {
-                    // degenerated triangle
-                    return;
-                }
-                // weighting factor
-                double weightA;
-                double weightB;
-                double weightC;
-                switch (mode) {
-                    case Mode::WeightArea:
-                        // area = norm of cross product
-                        weightA = 1;
-                        weightB = 1;
-                        weightC = 1;
-                        break;
-                    case Mode::WeightAngle: {
-                        // based on the angle between the edges
-                        const dvec3 e0 = glm::normalize(v1 - v2);
-                        const dvec3 e1 = glm::normalize(v2 - v0);
-                        const dvec3 e2 = glm::normalize(v1 - v0);
-                        weightA = acos(dot(e1, e2)) / l;
-                        weightB = acos(dot(e0, e2)) / l;
-                        weightC = acos(dot(e0, e1)) / l;
-                        break;
+                    const dvec3 n = cross(v1 - v0, v2 - v0);
+                    double l = glm::length(n);
+                    if (l < std::numeric_limits<float>::epsilon()) {
+                        // degenerated triangle
+                        return;
                     }
-                    case Mode::WeightNMax: {
-                        const auto edge = [](auto a, auto b) {
-                            auto e = a - b;
-                            auto l = glm::length(e);
-                            return std::make_pair(e / l, l);
-                        };
-                        const auto [e0, l0] = edge(v1, v2);
-                        const auto [e1, l1] = edge(v2, v0);
-                        const auto [e2, l2] = edge(v1, v0);
-                        weightA = sin(acos(dot(e1, e2))) / (l * l1 * l2);
-                        weightB = sin(acos(dot(e0, e2))) / (l * l0 * l2);
-                        weightC = sin(acos(dot(e0, e1))) / (l * l0 * l1);
-                        break;
+                    // weighting factor
+                    double weightA;
+                    double weightB;
+                    double weightC;
+                    switch (mode) {
+                        case Mode::WeightArea:
+                            // area = norm of cross product
+                            weightA = 1;
+                            weightB = 1;
+                            weightC = 1;
+                            break;
+                        case Mode::WeightAngle: {
+                            // based on the angle between the edges
+                            const dvec3 e0 = glm::normalize(v1 - v2);
+                            const dvec3 e1 = glm::normalize(v2 - v0);
+                            const dvec3 e2 = glm::normalize(v1 - v0);
+                            weightA = acos(dot(e1, e2)) / l;
+                            weightB = acos(dot(e0, e2)) / l;
+                            weightC = acos(dot(e0, e1)) / l;
+                            break;
+                        }
+                        case Mode::WeightNMax: {
+                            const auto edge = [](auto a, auto b) {
+                                auto e = a - b;
+                                auto l = glm::length(e);
+                                return std::make_pair(e / l, l);
+                            };
+                            const auto [e0, l0] = edge(v1, v2);
+                            const auto [e1, l1] = edge(v2, v0);
+                            const auto [e2, l2] = edge(v1, v0);
+                            weightA = sin(acos(dot(e1, e2))) / (l * l1 * l2);
+                            weightB = sin(acos(dot(e0, e2))) / (l * l0 * l2);
+                            weightC = sin(acos(dot(e0, e1))) / (l * l0 * l1);
+                            break;
+                        }
+                        case Mode::NoWeighting:
+                        default:
+                            weightA = 1.0 / l;
+                            weightB = 1.0 / l;
+                            weightC = 1.0 / l;
                     }
-                    case Mode::NoWeighting:
-                    default:
-                        weightA = 1.0 / l;
-                        weightB = 1.0 / l;
-                        weightC = 1.0 / l;
-                }
-                // add it to the vertices
-                normals[i0] += vec3(n * weightA);
-                normals[i1] += vec3(n * weightB);
-                normals[i2] += vec3(n * weightC);
+                    // add it to the vertices
+                    normals[i0] += vec3(n * weightA);
+                    normals[i1] += vec3(n * weightB);
+                    normals[i2] += vec3(n * weightC);
+                });
             });
-        });
     }
 
     // normalize normals
