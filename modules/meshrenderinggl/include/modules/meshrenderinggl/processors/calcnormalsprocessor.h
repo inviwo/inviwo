@@ -39,25 +39,25 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.CalcNormalsProcessor, Calculate Normals}
-* ![](org.inviwo.CalcNormalsProcessor.png?classIdentifier=org.inviwo.CalcNormalsProcessor)
-* 
-* Calculates a normal buffer for a mesh
-* 
-* ### Inports
-*   * __inport__ Mesh inport.
-* 
-* ### Outports
-*   * __outport__ Mesh outport.
-* 
-* ### Properties
-*   * __Mode__  The weighting modes for calculating normals
-*       * @copydoc CalculateMeshNormalsMode::PassThrough
-*       * @copydoc CalculateMeshNormalsMode::NoWeighting
-*       * @copydoc CalculateMeshNormalsMode::WeightArea
-*       * @copydoc CalculateMeshNormalsMode::WeightAngle
-*       * @copydoc CalculateMeshNormalsMode::WeightNMax
-* 
-*/
+ * ![](org.inviwo.CalcNormalsProcessor.png?classIdentifier=org.inviwo.CalcNormalsProcessor)
+ *
+ * Calculates a normal buffer for a mesh
+ *
+ * ### Inports
+ *   * __inport__ Mesh inport.
+ *
+ * ### Outports
+ *   * __outport__ Mesh outport.
+ *
+ * ### Properties
+ *   * __Mode__  The weighting modes for calculating normals
+ *       * @copydoc CalculateMeshNormalsMode::PassThrough
+ *       * @copydoc CalculateMeshNormalsMode::NoWeighting
+ *       * @copydoc CalculateMeshNormalsMode::WeightArea
+ *       * @copydoc CalculateMeshNormalsMode::WeightAngle
+ *       * @copydoc CalculateMeshNormalsMode::WeightNMax
+ *
+ */
 class IVW_MODULE_MESHRENDERINGGL_API CalcNormalsProcessor : public Processor {
 public:
     CalcNormalsProcessor();

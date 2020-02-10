@@ -159,6 +159,9 @@ FancyMeshRenderer::FancyMeshRenderer()
 
     faceSettings_[1].frontPart_ = &faceSettings_[0];
 
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+    flrReload_ = flr_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
     // DEBUG, in case we need debugging fragment lists at a later point again
     // addProperty(propDebugFragmentLists_);  // DEBUG, to be removed
     // propDebugFragmentLists_.onChange([this]() { debugFragmentLists_ = true; });
@@ -203,8 +206,9 @@ void FancyMeshRenderer::AlphaSettings::setUniforms(Shader& shader, std::string_v
          {"densityExp", densityExponent_},
          {"shapeExp", shapeExponent_}}};
 
-    for (auto&& [key, val] : uniforms) {
-        std::visit([&](auto aval) { shader.setUniform(fmt::format("{}{}", prefix, key), aval); },
+    for (const auto& [key, val] : uniforms) {
+        std::visit([&, akey = key](
+                       auto& aval) { shader.setUniform(fmt::format("{}{}", prefix, akey), aval); },
                    val);
     }
 }
@@ -344,8 +348,9 @@ void FancyMeshRenderer::FaceSettings::setUniforms(Shader& shader, std::string_vi
          {"hatchingColor", vec4(hatching_.color_.get(), hatching_.strength_.get())},
          {"hatchingBlending", static_cast<int>(hatching_.blendingMode_.get())}}};
 
-    for (auto&& [key, val] : uniforms) {
-        std::visit([&](auto aval) { shader.setUniform(fmt::format("{}{}", prefix, key), aval); },
+    for (const auto& [key, val] : uniforms) {
+        std::visit([&, akey = key](
+                       auto aval) { shader.setUniform(fmt::format("{}{}", prefix, akey), aval); },
                    val);
     }
 }

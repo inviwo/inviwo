@@ -124,13 +124,13 @@ vec4 compressPixelData(abufferPixel p) {
 // Rendering function
 
 // The central function for the user-code
-bool abufferRender(ivec2 coords, float depth, vec4 color) {
+uint abufferRender(ivec2 coords, float depth, vec4 color) {
     // coords.x=0; coords.y=0;
     // reserve space for pixel
     uint pixelIdx = dataCounterAtomicInc();
     if (pixelIdx >= AbufferParams.storageSize) {
         // we are out of space
-        return false;
+        return uint(-1);
     }
     // write index
     uint prevIdx = setPixelLink(coords, pixelIdx + 1);
@@ -140,7 +140,7 @@ bool abufferRender(ivec2 coords, float depth, vec4 color) {
     p.depth = depth;
     p.color = color;
     writePixelStorage(pixelIdx, compressPixelData(p));
-    return true;
+    return pixelIdx;
 }
 
 #endif  // ABUFFERLINKEDLIST_HGLSL

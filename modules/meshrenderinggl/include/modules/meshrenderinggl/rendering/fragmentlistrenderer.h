@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/dispatcher.h>
 
 namespace inviwo {
 
@@ -120,6 +121,8 @@ public:
      */
     static bool supportsIllustration();
 
+    typename Dispatcher<void()>::Handle onReload(std::function<void()> callback);
+
 private:
     void buildShaders();
 
@@ -169,9 +172,14 @@ private:
         Shader smooth;
 
         IllustrationSettings settings;
+
+        Dispatcher<void()> onReload;
     };
 
     Illustration illustration_;
+    typename Dispatcher<void()>::Handle illustrationOnReload_;
+
+    Dispatcher<void()> onReload_;
 };
 
 }  // namespace inviwo

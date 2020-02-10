@@ -298,6 +298,7 @@ protected:
     bool meshHasAdjacency_;
 
     FragmentListRenderer flr_;
+    typename Dispatcher<void()>::Handle flrReload_;
     bool supportsFragmentLists_;
     bool supportesIllustration_;
 

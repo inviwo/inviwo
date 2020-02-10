@@ -31,7 +31,6 @@
  * Smoothes the silhouette and halo borders
  */
 
- 
 // this is important for the occlusion query
 layout(early_fragment_tests) in;
 #include "illustration/illustrationbuffer.glsl"
@@ -41,49 +40,37 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 // Input interpolated fragment position
 smooth in vec4 fragPos;
 
-layout(std430, binding = 0) buffer neighborBufferIn { 
+layout(std430, binding = 0) buffer neighborBufferIn {
     ivec4 neighborsIn[];  // neighbors
 };
 layout(std430, binding = 1) buffer smoothingBufferIn {
-    vec2 smoothingIn[];   // beta + gamma
+    vec2 smoothingIn[];  // beta + gamma
 };
 layout(std430, binding = 2) buffer smoothingBufferOut {
     vec2 smoothingOut[];  // beta + gamma
 };
 
 // diffusion coefficient
-uniform float lambdaBeta = 0.4;
-uniform float lambdaGamma = 0.1;
+uniform float lambdaBeta = 0.4;   // Edge
+uniform float lambdaGamma = 0.1;  // Halo
 
 void main(void) {
     ivec2 coords = ivec2(gl_FragCoord.xy);
 
-    if (coords.x >= 0 && coords.y >= 0 && coords.x < screenSize.x && coords.y < screenSize.y) {
+    const ivec2 index = getStartAndCount(coords);  // start index, fragment count
+    if (index.y == 0) discard;
 
-        int count = int(imageLoad(illustrationBufferCountImg, coords).x);
-        if (count > 0) {
-            int start = int(imageLoad(illustrationBufferIdxImg, coords).x);
-            for (int i = 0; i < count; ++i) {
-                ivec4 neighbors = neighborsIn[start + i];
-                vec2 smoothing = smoothingIn[start + i];
-                // smooth beta;
-                float beta = smoothing.x;
-                for (int j = 0; j < 4; ++j) {
-                    if (neighbors[j] >= 0)
-                        beta = max(beta, smoothingIn[neighbors[j]].x * (1 - lambdaBeta));
-                }
-                smoothing.x = beta;
-                // smooth gamma;
-                float gamma = smoothing.y;
-                for (int j = 0; j < 4; ++j) {
-                    if (neighbors[j] >= 0)
-                        gamma = max(gamma, smoothingIn[neighbors[j]].y * (1 - lambdaGamma));
-                }
-                smoothing.y = gamma;
-                // write back
-                smoothingOut[start + i] = smoothing;
-            }
+    const vec2 lambda = vec2(lambdaBeta, lambdaGamma);
+
+    for (int i = 0; i < index.y; ++i) {
+        const ivec4 neighbors = neighborsIn[index.x + i];
+        vec2 smoothing = smoothingIn[index.x + i];
+
+        for (int j = 0; j < 4; ++j) {
+            if (neighbors[j] >= 0) smoothing = max(smoothing, smoothingIn[neighbors[j]] * (1 - lambda));
         }
+
+        smoothingOut[index.x + i] = smoothing;
     }
     discard;
 }

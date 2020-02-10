@@ -48,6 +48,20 @@ coherent uniform layout(size1x32) uimage2D illustrationBufferIdxImg;
 // Number of entries in the list
 coherent uniform layout(size1x32) uimage2D illustrationBufferCountImg;
 
+// Returns count and start of the lists at the given position
+// Keeps image boundary in mind
+ivec2 getStartAndCount(ivec2 pos) {
+    if (pos.x >= 0 && pos.y >= 0 && pos.x < screenSize.x && pos.y < screenSize.y) {
+        uint count = imageLoad(illustrationBufferCountImg, pos).x;
+        if (count > 0) {
+            uint start = imageLoad(illustrationBufferIdxImg, pos).x;
+            return ivec2(start, count);
+        }
+    }
+    return ivec2(0, 0);
+}
+
+
 /*
 
 //data stored per fragment, 12*4=48 byte

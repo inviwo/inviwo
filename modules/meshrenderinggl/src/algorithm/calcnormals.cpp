@@ -29,6 +29,7 @@
 
 #include <modules/meshrenderinggl/algorithm/calcnormals.h>
 
+#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>

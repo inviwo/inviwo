@@ -52,28 +52,22 @@ uniform vec4 edgeColor = vec4(0, 0, 0, 1);
 uniform float haloStrength = 0.4;
 
 void main(void) {
-    ivec2 coords = ivec2(gl_FragCoord.xy);
+    const ivec2 coords = ivec2(gl_FragCoord.xy);
+    const ivec2 index = getStartAndCount(coords);  // start index, fragment count
 
-    if (coords.x < 0 || coords.y < 0 || coords.x >= screenSize.x || coords.y >= screenSize.y) {
-        discard;
-    }
-
-    uint count = imageLoad(illustrationBufferCountImg, coords).x;
     vec4 color = vec4(0, 0, 0, 0);
     float depth = 1.0;
-    if (count > 0) {
-        uint start = imageLoad(illustrationBufferIdxImg, coords).x;
-        depth = surfaceInfoIn[start].x;
+    if (index.y > 0) {
+        depth = surfaceInfoIn[index.x].x;
 
-        for (int i = 0; i < count; ++i) {
+        for (int i = 0; i < index.y; ++i) {
             // fetch properties from the scalar fields
-            vec3 baseColor = uncompressColor(floatBitsToInt(colorIn[i + start].y));
-            float alpha = colorIn[i + start].x;
+            vec3 baseColor = uncompressColor(floatBitsToInt(colorIn[index.x + i].y));
+            float alpha = colorIn[index.x + i].x;
             alpha = clamp(alpha, 0, 1);
-            float beta = smoothingIn[i + start].x;
-            float gamma = smoothingIn[i + start].y;
+            float beta = smoothingIn[index.x + i].x;
+            float gamma = smoothingIn[index.x + i].y;
             
-
             // blend them together
             float alphaHat = (1 - gamma * haloStrength * (1 - beta)) *
                              (alpha + (1 - alpha) * beta * edgeColor.a);

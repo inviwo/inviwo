@@ -60,6 +60,11 @@ FragmentListRenderer::Illustration::Illustration(size2_t screenSize, size_t frag
 
     index.initialize(nullptr);
     count.initialize(nullptr);
+
+    fill.onReload([this]() { onReload.invoke(); });
+    neighbors.onReload([this]() { onReload.invoke(); });
+    draw.onReload([this]() { onReload.invoke(); });
+    smooth.onReload([this]() { onReload.invoke(); });
 }
 
 FragmentListRenderer::FragmentListRenderer()
@@ -78,6 +83,10 @@ FragmentListRenderer::FragmentListRenderer()
     , illustration_{screenSize_, fragmentSize_} {
 
     buildShaders();
+
+    illustrationOnReload_ = illustration_.onReload.add([this]() { onReload_.invoke(); });
+    clear_.onReload([this]() { onReload_.invoke(); });
+    display_.onReload([this]() { onReload_.invoke(); });
 
     abufferIdxTex_.initialize(nullptr);
 
@@ -223,6 +232,10 @@ bool FragmentListRenderer::supportsIllustration() {
         return false;
 }
 
+typename Dispatcher<void()>::Handle FragmentListRenderer::onReload(std::function<void()> callback) {
+    return onReload_.add(callback);
+}
+
 void FragmentListRenderer::buildShaders() {
     auto* dfs = display_.getFragmentShaderObject();
 
@@ -285,9 +298,6 @@ void FragmentListRenderer::Illustration::resizeBuffers(size2_t screenSize, size_
         // reallocate screen size texture that holds the count of fragments at that pixel
         count.resize(screenSize);
         count.bind();
-
-        LogInfo("Illustration Buffers: additional screen size buffers allocated of size "
-                << screenSize);
     }
 
     const auto bufferSize = static_cast<GLsizeiptr>(fragmentSize * 2 * sizeof(GLfloat));
@@ -355,6 +365,7 @@ void FragmentListRenderer::Illustration::process(BufferObject& pixelBuffer, Text
     utilgl::DepthMaskState depthMask(GL_FALSE);
     utilgl::CullFaceState culling(GL_NONE);
     utilgl::singleDrawImagePlaneRect();
+    glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
     neighbors.deactivate();
 
@@ -371,6 +382,8 @@ void FragmentListRenderer::Illustration::process(BufferObject& pixelBuffer, Text
             activeSmoothing = 1 - activeSmoothing;
 
             utilgl::singleDrawImagePlaneRect();
+
+            glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         }
         smooth.deactivate();
     }
