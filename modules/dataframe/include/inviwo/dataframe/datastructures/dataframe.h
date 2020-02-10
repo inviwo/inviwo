@@ -106,6 +106,15 @@ public:
     std::shared_ptr<TemplateColumn<T>> addColumn(const std::string &header, size_t size = 0);
 
     /**
+     * \brief add column of type T from a std::vector<T>
+     * updateIndexBuffer() needs to be called after all columns have been added before
+     * the DataFrame can be used
+     */
+    template <typename T>
+    std::shared_ptr<TemplateColumn<T>> addColumn(const std::string &header,
+                                                 const std::vector<T> &data);
+
+    /**
      * \brief Drop a column from data frame
      *
      * Drops all columns with the specified header. If the data frame does not have a column with
@@ -208,6 +217,14 @@ std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string &heade
     auto col = std::make_shared<TemplateColumn<T>>(header);
     col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer().resize(size);
     columns_.push_back(col);
+    return col;
+}
+
+template <typename T>
+std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string &header,
+                                                        const std::vector<T> &data) {
+    auto col = std::make_shared<TemplateColumn<T>>(header);
+    col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer() = data;
     return col;
 }
 
