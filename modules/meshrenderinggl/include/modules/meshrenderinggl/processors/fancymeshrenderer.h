@@ -175,7 +175,7 @@ protected:
      */
     struct AlphaSettings {
         AlphaSettings();
-        
+
         CompositeProperty container_;
         BoolProperty enableUniform_;
         FloatProperty uniformScaling_;
@@ -190,7 +190,7 @@ protected:
         FloatProperty densityExponent_;
         BoolProperty enableShape_;
         FloatProperty shapeExponent_;  // s in the paper
-       
+
         void setUniforms(Shader& shader, std::string_view prefix) const;
     };
     AlphaSettings alphaSettings_;
@@ -213,7 +213,7 @@ protected:
         Phong,
         Pbr
     };
-    enum class HatchingMode : char {U, V, UV };
+    enum class HatchingMode : char { U, V, UV };
     enum class HatchingBlendingMode : char { Multiplicative, Additive };
     /**
      * \brief Hatching settings. These are exactly the parameters from the IRIS-paper
@@ -221,7 +221,7 @@ protected:
     struct HatchingSettings {
         HatchingSettings();
         BoolCompositeProperty hatching_;
-        
+
         TemplateOptionProperty<HatchingMode> mode_;
         IntProperty steepness_;
         IntProperty baseFrequencyU_;
@@ -263,11 +263,11 @@ protected:
 
         // to copy front to back:
         FaceSettings* frontPart_;
-        
+
         void copyFrontToBack();
 
         void setUniforms(Shader& shader, std::string_view prefix) const;
-       
+
         bool lastOpaque_;
     };
 
@@ -275,7 +275,7 @@ protected:
 
     struct IllustrationSettings {
         IllustrationSettings();
-        
+
         BoolCompositeProperty enabled_;
         FloatVec3Property edgeColor_;
         FloatProperty edgeStrength_;
