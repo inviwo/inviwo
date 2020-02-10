@@ -40,6 +40,51 @@ namespace inviwo {
 
 namespace util {
 
+/**
+ * \class BrickIterator
+ * \brief An iterator providing access to a subregion, or brick, within linearized 3D data.
+ *
+ * This iterator provides access to and iterates over a subregion within 3D data. The 3D data 
+ * is assumed to be contiguous, i.e. linearized, in x, then y, then z similar to `IndexMapper3D`.
+ * Initially, the iterator points to the first voxel of the brick. Iteration takes place in x 
+ * direction, followed by y and z, respectively.
+ *
+ * `BrickIterator::end()` provides the matching end iterator 
+ *
+ * \see util::IndexMapper3D
+ *
+ * Example: 
+ * \code{.cpp}
+ * std::vector<int> data(27); // linearized data of a 3x3x3 volume
+ * 
+ * // create a brick iterator starting at (1,1,1) with an extent of (2,2,2)
+ * auto it = util::BrickIterator{data.begin(), size3_t{3, 3, 3}, 
+ *                               size3_t{1, 1, 1}, size3_t{2, 2, 2}};
+ * 
+ * // copy the data elements of the brick iterator into a std::vector,
+ * // the vector will contain the corresponding 8 voxels
+ * std::vector<int> block(it, it.end());
+ * \endcode
+ *
+ * Here, a single voxel at position (2,0,0) of a VolumeRAM is extracted.
+ * \code{.cpp}
+ * auto volume = VolumeRAMPrecision<float>(size3_t{3, 3, 3});
+ *
+ * int value = *util::BrickIterator{volume.getDataTyped(), volume.getDimensions(), 
+ *                                  size3_t{2, 0, 0}, size3_t{1, 1, 1}};
+ * \endcode
+ *
+ * Modify a subregion within a volume.
+ * \code{.cpp}
+ * std::vector<int> data(5 * 4 * 6);
+ *
+ * auto it = util::BrickIterator{data.begin(), size3_t{5, 4, 6}, 
+ *                               size3_t{3, 1, 2}, size3_t{2, 3, 3}};
+ * for (auto& elem : it) {
+ *   elem *= 2;
+ * }
+ * \endcode
+ */
 template <typename Iter>
 class BrickIterator {
 public:
@@ -52,6 +97,15 @@ public:
     using reference = typename std::iterator_traits<Iter>::reference;
 
     BrickIterator() = default;
+    /**
+     * Creates an brick iterator given an iterator to an array containing linearized volume data 
+     * and its corresponding volume dimensions.
+     *
+     * @param iterator  iterator pointing to the begin of the linearized source data
+     * @param dims      dimensions of the source volume
+     * @param offset    starting position of the brick
+     * @param extent    extent of the brick, i.e. the region the iterator should iterate over
+     */
     BrickIterator(Iter iterator, size3_t dims, size3_t offset, size3_t extent)
         : current_{0, 0, 0}, start_{offset}, extent_{extent}, im_{dims}, iterator_{iterator} {
 
