@@ -57,15 +57,17 @@ struct DataFrameAddColumnReg {
     auto operator()(py::class_<DataFrame, std::shared_ptr<DataFrame>>& d) {
         auto classname = Defaultvalues<T>::getName();
 
-        d.def(
-            fmt::format("add{}Column", classname).c_str(),
-            [](DataFrame& d, const std::string& header, const size_t size) {d.addColumn<T>(header, size); }, py::arg("header"),
-            py::arg("size") = 0);
+        d.def(fmt::format("add{}Column", classname).c_str(),
+              [](DataFrame& d, const std::string& header, const size_t size) {
+                  d.addColumn<T>(header, size);
+              },
+              py::arg("header"), py::arg("size") = 0);
 
-        d.def(
-            fmt::format("add{}Column", classname).c_str(),
-            [](DataFrame& d, const std::string& header, const std::vector<T>& data) {d.addColumn(header, data); }, py::arg("header"),
-            py::arg("data"));
+        d.def(fmt::format("add{}Column", classname).c_str(),
+              [](DataFrame& d, const std::string& header, const std::vector<T>& data) {
+                  d.addColumn(header, data);
+              },
+              py::arg("header"), py::arg("data"));
     }
 };
 
