@@ -65,10 +65,10 @@ void calculateMeshNormals(Mesh& mesh, CalculateMeshNormalsMode mode) {
     for (auto [meshInfo, buffer] : mesh.getIndexBuffers()) {
         if (meshInfo.dt != DrawType::Triangles) continue;
 
-        vertices->dispatch<void, dispatching::filter::Floats>([&](auto ram) {
+        vertices->dispatch<void, dispatching::filter::Floats>([&, mi = meshInfo](auto ram) {
             const auto& vert = ram->getDataContainer();
 
-            meshutil::forEachTriangle(meshInfo, *buffer, [&](auto i0, auto i1, auto i2) {
+            meshutil::forEachTriangle(mi, *buffer, [&](auto i0, auto i1, auto i2) {
                 const auto v0 = util::glm_convert<dvec3>(vert[i0]);
                 const auto v1 = util::glm_convert<dvec3>(vert[i1]);
                 const auto v2 = util::glm_convert<dvec3>(vert[i2]);
