@@ -239,8 +239,6 @@ typename Dispatcher<void()>::Handle FragmentListRenderer::onReload(std::function
 void FragmentListRenderer::buildShaders() {
     auto* dfs = display_.getFragmentShaderObject();
 
-    dfs->addShaderDefine("COLOR_LAYER");
-
     dfs->clearShaderExtensions();
     dfs->addShaderExtension("GL_NV_gpu_shader5", true);
     dfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
@@ -259,12 +257,17 @@ void FragmentListRenderer::buildShaders() {
     auto* ffs = illustration_.fill.getFragmentShaderObject();
     ffs->addShaderExtension("GL_ARB_shader_atomic_counter_ops", true);
 
-    display_.build();
-    clear_.build();
-    illustration_.fill.build();
-    illustration_.draw.build();
-    illustration_.neighbors.build();
-    illustration_.smooth.build();
+    if (supportsFragmentLists()) {
+        display_.build();
+        clear_.build();
+    }
+
+    if (supportsIllustration()) {
+        illustration_.fill.build();
+        illustration_.draw.build();
+        illustration_.neighbors.build();
+        illustration_.smooth.build();
+    }
 }
 
 void FragmentListRenderer::resizeBuffers(const size2_t& screenSize) {
