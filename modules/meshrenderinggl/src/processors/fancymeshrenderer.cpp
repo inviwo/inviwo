@@ -441,7 +441,7 @@ void FancyMeshRenderer::process() {
 
         // update face render settings
         std::array<TextureUnit, 2> transFuncUnit;
-        for (int j = 0; j < faceSettings_.size(); ++j) {
+        for (size_t j = 0; j < faceSettings_.size(); ++j) {
             const std::string prefix = fmt::format("renderSettings[{}].", j);
             auto& face = faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : j];
             face.setUniforms(shader_, prefix);
