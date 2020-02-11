@@ -41,9 +41,18 @@ const ProcessorInfo MeshColorFromNormals::processorInfo_{
 };
 const ProcessorInfo MeshColorFromNormals::getProcessorInfo() const { return processorInfo_; }
 
-MeshColorFromNormals::MeshColorFromNormals() : Processor(), inport_("inport"), outport_("outport") {
+MeshColorFromNormals::MeshColorFromNormals()
+    : Processor()
+    , inport_("inport")
+    , outport_("outport")
+    , transform_("transform", "Transform to color",
+                 {{"none", "None", Transform::None},
+                  {"abs", "Use Absolute Value", Transform::Abs},
+                  {"shift", "Shift to positive (i.e: (N+1)/2)", Transform::Shift}}) {
     addPort(inport_);
     addPort(outport_);
+
+    addProperties(transform_);
 }
 
 void MeshColorFromNormals::process() {
@@ -55,8 +64,29 @@ void MeshColorFromNormals::process() {
     }
 
     if (auto normalsBuffer = mesh->getBuffer(BufferType::NormalAttrib)) {
-        mesh->addBuffer(Mesh::BufferInfo{BufferType::ColorAttrib},
-                        std::shared_ptr<BufferBase>(normalsBuffer->clone()));
+        auto newBuf = std::shared_ptr<BufferBase>(normalsBuffer->clone());
+        auto transform = transform_.get();
+        if (transform != Transform::None) {
+            newBuf->getEditableRepresentation<BufferRAM>()->dispatch<void>([transform](auto ram) {
+                using T = util::PrecisionValueType<decltype(ram)>;
+                auto& vec = ram->getDataContainer();
+                std::transform(vec.begin(), vec.end(), vec.begin(), [transform](T n) -> T {
+                    switch (transform) {
+                        case Transform::Abs:
+                            return glm::abs(n);
+                        case Transform::Shift:
+                            return (n + T(1.0)) / T(2.0);
+                        case Transform::None:
+                            [[fallthrough]];
+                        default:
+                            return n;
+                            break;
+                    }
+                });
+            });
+        }
+
+        mesh->addBuffer(Mesh::BufferInfo{BufferType::ColorAttrib}, newBuf);
     } else {
         throw Exception("Input mesh has no normals", IVW_CONTEXT);
     }
