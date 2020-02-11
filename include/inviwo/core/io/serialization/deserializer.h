@@ -1104,7 +1104,7 @@ void Deserializer::deserialize(const std::string& key, T*& data) {
             } catch (Exception& e) {
                 NodeDebugger error(keyNode);
                 throw SerializationException(
-                    "Error trying to create " + error.toString(0) + ". Reason: " + e.getMessage(),
+                    "Error trying to create " + error.toString(0) + ". Reason:\n" + e.getMessage(),
                     e.getContext(), key, type_attr, error[0].identifier, keyNode);
             }
             if (!data) {
@@ -1121,7 +1121,7 @@ void Deserializer::deserialize(const std::string& key, T*& data) {
             } catch (Exception& e) {
                 NodeDebugger error(keyNode);
                 throw SerializationException(
-                    "Error trying to create " + error.toString(0) + ". Reason: " + e.getMessage(),
+                    "Error trying to create " + error.toString(0) + ". Reason:\n" + e.getMessage(),
                     e.getContext(), key, type_attr, error[0].identifier, keyNode);
             }
             if (!data) {

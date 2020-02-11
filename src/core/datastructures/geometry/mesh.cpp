@@ -30,6 +30,8 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/util/document.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 Mesh::Mesh(DrawType dt, ConnectivityType ct) : Mesh{MeshInfo{dt, ct}} {}
@@ -52,6 +54,12 @@ Mesh::Mesh(const Mesh& rhs)
         indices_.emplace_back(elem.first, std::shared_ptr<IndexBuffer>(elem.second->clone()));
     }
 }
+
+Mesh::Mesh(DontCopyBuffers, const Mesh& rhs)
+    : DataGroup<Mesh, MeshRepresentation>(rhs)
+    , SpatialEntity<3>(rhs)
+    , MetaDataOwner(rhs)
+    , meshInfo_(rhs.meshInfo_) {}
 
 Mesh& Mesh::operator=(const Mesh& that) {
     if (this != &that) {
@@ -83,22 +91,85 @@ const Mesh::BufferVector& Mesh::getBuffers() const { return buffers_; }
 const Mesh::IndexVector& Mesh::getIndexBuffers() const { return indices_; }
 
 void Mesh::addBuffer(BufferInfo info, std::shared_ptr<BufferBase> att) {
-    buffers_.emplace_back(info, att);
-}
+    auto it = std::find_if(buffers_.begin(), buffers_.end(),
+                           [&](const auto& item) { return item.first.location == info.location; });
 
-void Mesh::addBuffer(BufferType type, std::shared_ptr<BufferBase> att) {
-    buffers_.emplace_back(BufferInfo(type), att);
-}
-
-void Mesh::removeBuffer(size_t idx) {
-    if (idx < buffers_.size()) {
-        buffers_.erase(buffers_.begin() + idx);
+    if (it == buffers_.end()) {
+        buffers_.emplace_back(info, att);
+    } else {
+        throw Exception(fmt::format("Location '{}' already used in Mesh", info.location),
+                        IVW_CONTEXT);
     }
 }
 
-void Mesh::replaceBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att) {
+void Mesh::addBuffer(BufferType type, std::shared_ptr<BufferBase> att) {
+    addBuffer(BufferInfo(type), att);
+}
+
+auto Mesh::removeBuffer(size_t idx) -> std::pair<BufferInfo, std::shared_ptr<BufferBase>> {
     if (idx < buffers_.size()) {
-        buffers_[idx] = std::make_pair(info, att);
+        auto old = buffers_[idx];
+        buffers_.erase(buffers_.begin() + idx);
+        return old;
+    } else {
+        return {};
+    }
+}
+
+auto Mesh::removeBuffer(BufferBase* buffer) -> std::pair<BufferInfo, std::shared_ptr<BufferBase>> {
+    auto it = std::find_if(buffers_.begin(), buffers_.end(),
+                           [&](const auto& item) { return item.second.get() == buffer; });
+    if (it != buffers_.end()) {
+        auto old = *it;
+        buffers_.erase(it);
+        return old;
+    }
+    return {};
+}
+
+auto Mesh::replaceBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> buff)
+    -> std::pair<BufferInfo, std::shared_ptr<BufferBase>> {
+    if (idx < buffers_.size()) {
+        auto old = buffers_[idx];
+        if (old.first.location != info.location) {
+            auto it = std::find_if(buffers_.begin(), buffers_.end(), [&](const auto& item) {
+                return item.first.location == info.location;
+            });
+            if (it != buffers_.end()) {
+                throw Exception(fmt::format("Location '{}' already used in Mesh", info.location),
+                                IVW_CONTEXT);
+            }
+        }
+
+        buffers_[idx] = std::make_pair(info, buff);
+        return old;
+    } else {
+        addBuffer(info, buff);
+        return {};
+    }
+}
+
+auto Mesh::replaceBuffer(BufferBase* oldbuffer, BufferInfo info, std::shared_ptr<BufferBase> buff)
+    -> std::pair<BufferInfo, std::shared_ptr<BufferBase>> {
+    auto it = std::find_if(buffers_.begin(), buffers_.end(),
+                           [&](const auto& item) { return item.second.get() == oldbuffer; });
+    if (it != buffers_.end()) {
+        auto old = *it;
+        if (old.first.location != info.location) {
+            auto locit = std::find_if(buffers_.begin(), buffers_.end(), [&](const auto& item) {
+                return item.first.location == info.location;
+            });
+            if (locit != buffers_.end()) {
+                throw Exception(fmt::format("Location '{}' already used in Mesh", info.location),
+                                IVW_CONTEXT);
+            }
+        }
+
+        *it = std::make_pair(info, buff);
+        return old;
+    } else {
+        addBuffer(info, buff);
+        return {};
     }
 }
 
@@ -111,7 +182,7 @@ void Mesh::addIndices(MeshInfo info, std::shared_ptr<IndexBuffer> ind) {
     indices_.push_back(std::make_pair(info, ind));
 }
 
-std::shared_ptr<inviwo::IndexBufferRAM> Mesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
+std::shared_ptr<IndexBufferRAM> Mesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
     auto indicesRam = std::make_shared<IndexBufferRAM>();
     auto indices = std::make_shared<IndexBuffer>(indicesRam);
     addIndices(Mesh::MeshInfo(dt, ct), indices);
@@ -149,6 +220,16 @@ std::pair<const BufferBase*, int> Mesh::findBuffer(BufferType type) const {
     }
 }
 
+std::pair<BufferBase*, int> Mesh::findBuffer(BufferType type) {
+    auto it = std::find_if(buffers_.begin(), buffers_.end(),
+                           [&](const auto& item) { return item.first.type == type; });
+    if (it != buffers_.end()) {
+        return {it->second.get(), it->first.location};
+    } else {
+        return {nullptr, 0};
+    }
+}
+
 bool Mesh::hasBuffer(BufferType type) const { return findBuffer(type).first != nullptr; }
 
 Mesh::BufferInfo Mesh::getBufferInfo(size_t idx) const {
@@ -156,6 +237,49 @@ Mesh::BufferInfo Mesh::getBufferInfo(size_t idx) const {
         throw RangeException("Index out of range", IVW_CONTEXT);
     }
     return buffers_[idx].first;
+}
+
+Mesh::BufferInfo Mesh::getBufferInfo(BufferBase* buffer) const {
+    auto it = std::find_if(buffers_.begin(), buffers_.end(),
+                           [&](const auto& item) { return item.second.get() == buffer; });
+    if (it != buffers_.end()) {
+        return it->first;
+    } else {
+        throw Exception("Buffer not found in Mesh", IVW_CONTEXT);
+    }
+}
+
+void Mesh::setBufferInfo(size_t idx, BufferInfo info) {
+    if (idx < buffers_.size()) {
+        auto locit = std::find_if(buffers_.begin(), buffers_.end(), [&](const auto& item) {
+            return item.first.location == info.location;
+        });
+        if (&*locit != &buffers_[idx] && locit != buffers_.end()) {
+            throw Exception(fmt::format("Location '{}' already used in Mesh", info.location),
+                            IVW_CONTEXT);
+        }
+
+        buffers_[idx].first = info;
+    } else {
+        throw RangeException("Index out of range", IVW_CONTEXT);
+    }
+}
+
+void Mesh::setBufferInfo(BufferBase* buffer, BufferInfo info) {
+    auto it = std::find_if(buffers_.begin(), buffers_.end(),
+                           [&](const auto& item) { return item.second.get() == buffer; });
+    if (it != buffers_.end()) {
+        auto locit = std::find_if(buffers_.begin(), buffers_.end(), [&](const auto& item) {
+            return item.first.location == info.location;
+        });
+        if (locit != it && locit != buffers_.end()) {
+            throw Exception(fmt::format("Location '{}' already used in Mesh", info.location),
+                            IVW_CONTEXT);
+        }
+        it->first = info;
+    } else {
+        throw Exception("Buffer not found in Mesh", IVW_CONTEXT);
+    }
 }
 
 const IndexBuffer* Mesh::getIndices(size_t idx) const {

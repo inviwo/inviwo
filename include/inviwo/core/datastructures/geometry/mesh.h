@@ -39,9 +39,10 @@
 #include <inviwo/core/datastructures/geometry/meshrepresentation.h>
 #include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/util/document.h>
-#include <utility>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
+
+#include <utility>
 
 namespace inviwo {
 
@@ -73,10 +74,14 @@ public:
     Mesh() = default;
     Mesh(DrawType dt, ConnectivityType ct);
     Mesh(Mesh::MeshInfo meshInfo);
-
     Mesh(const Mesh& rhs);
+
+    struct DontCopyBuffers {};
+    Mesh(DontCopyBuffers, const Mesh& rhs);
+
     Mesh& operator=(const Mesh& that);
     virtual Mesh* clone() const;
+
     virtual ~Mesh() = default;
     virtual Document getInfo() const;
 
@@ -101,18 +106,37 @@ public:
      * Removes buffer at given position, all subsequent buffers will be moved.
      * Does nothing if index is out of range.
      *
-     * @param idx   position of buffer to be removed
+     * @param   idx position of buffer to be removed
+     * @returns the removed buffer
      */
-    void removeBuffer(size_t idx);
+    std::pair<BufferInfo, std::shared_ptr<BufferBase>> removeBuffer(size_t idx);
+
+    /**
+     * Removes  the given buffer.
+     * @param   buffer position of buffer to be removed
+     * @returns the removed buffer
+     */
+    std::pair<BufferInfo, std::shared_ptr<BufferBase>> removeBuffer(BufferBase* buffer);
 
     /**
      * Replaces buffer at index with new buffer
      * Does nothing if index out of range.
-     * @param idx   Index of buffer to replace
+     * @param idx   Index of buffer to replace, if the index is not found the new one is appended.
      * @param info  information about the buffer contents (e.g. buffer type and shader location)
      * @param att   new buffer data used during rendering
      */
-    void replaceBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att);
+    std::pair<BufferInfo, std::shared_ptr<BufferBase>> replaceBuffer(
+        size_t idx, BufferInfo info, std::shared_ptr<BufferBase> att);
+
+    /**
+     * Replaces buffer at index with new buffer
+     * Does nothing if index out of range.
+     * @param old   Old buffer to replace, if the old buffer is not found the new one is appended.
+     * @param info  information about the buffer contents (e.g. buffer type and shader location)
+     * @param att   new buffer data used during rendering
+     */
+    std::pair<BufferInfo, std::shared_ptr<BufferBase>> replaceBuffer(
+        BufferBase* old, BufferInfo info, std::shared_ptr<BufferBase> att);
 
     /**
      * Deprecated: Mesh::setBuffer() has been renamed to Mesh::replaceBuffer()
@@ -174,7 +198,13 @@ public:
     const IndexVector& getIndexBuffers() const;
 
     const BufferBase* getBuffer(size_t idx) const;
+
     BufferInfo getBufferInfo(size_t idx) const;
+    BufferInfo getBufferInfo(BufferBase* buffer) const;
+
+    void setBufferInfo(size_t idx, BufferInfo info);
+    void setBufferInfo(BufferBase* buffer, BufferInfo info);
+
     const IndexBuffer* getIndices(size_t idx) const;
 
     /**
@@ -183,6 +213,12 @@ public:
      * If no buffer is found the buffer will be a nullptr.
      */
     std::pair<const BufferBase*, int> findBuffer(BufferType type) const;
+    /**
+     * Try and find a buffer of the given BufferType.
+     * Returns the buffer and its location.
+     * If no buffer is found the buffer will be a nullptr.
+     */
+    std::pair<BufferBase*, int> findBuffer(BufferType type);
 
     /**
      * Check if there exits a buffer of BufferType type in the mesh.
