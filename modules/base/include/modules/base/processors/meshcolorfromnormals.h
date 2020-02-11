@@ -44,6 +44,8 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API MeshColorFromNormals : public Processor {
 public:
+    enum class Transform { None, Abs, Shift };
+
     MeshColorFromNormals();
     virtual ~MeshColorFromNormals() = default;
 
@@ -55,6 +57,8 @@ public:
 private:
     MeshInport inport_;
     MeshOutport outport_;
+
+    TemplateOptionProperty<Transform> transform_;
 };
 
 }  // namespace inviwo
