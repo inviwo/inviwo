@@ -22,8 +22,8 @@ excludespatterns = ["*/ext/*", "*moc_*", "*/proteindocking/*", "*/proteindocking
 					"*moduledefine.h", "*moduledefine.hpp", "*/config.json", "*.js", "*/CMakeLists.txt"]
 
 copyright_replacements  = {
-	r"(\s*[*#]\s+Copyright \(c\) 201\d-)201[12345678]( Inviwo Foundation\s*)" : r"\g<1>2019\g<2>",
-	r"(\s*[*#]\s+Copyright \(c\) )(201[12345678])( Inviwo Foundation\s*)" : r"\g<1>\g<2>-2019\g<3>"
+	r"(\s*[*#]\s+Copyright \(c\) 201\d-)201[123456789]( Inviwo Foundation\s*)" : r"\g<1>2020\g<2>",
+	r"(\s*[*#]\s+Copyright \(c\) )(201[123456789])( Inviwo Foundation\s*)" : r"\g<1>\g<2>-2020\g<3>"
 }
 
 files = refactoring.find_files(paths, ['*'], excludes=excludespatterns)

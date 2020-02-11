@@ -3,7 +3,7 @@ print("/************************************************************************
 print(" *")
 print(" * Inviwo - Interactive Visualization Workshop")
 print(" *")
-print(" * Copyright (c) 2014-2019 Inviwo Foundation")
+print(" * Copyright (c) 2014-2020 Inviwo Foundation")
 print(" * All rights reserved.")
 print(" *")
 print(" * Redistribution and use in source and binary forms, with or without")
