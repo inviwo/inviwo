@@ -15,7 +15,7 @@ target_link_libraries(inviwo-meta-unittests PUBLIC inviwo::meta)
 target_link_libraries(inviwo-meta-unittests PUBLIC gtest)
 
 if(MSVC)
-    target_compile_options(inviwo-meta-unittests PRIVATE /W4 /utf-8 /permissive- /diagnostics:caret)
+    target_compile_options(inviwo-meta-unittests PRIVATE /W4 /utf-8 /openmp- /permissive- /diagnostics:caret)
 else()
     target_compile_options(inviwo-meta-unittests PRIVATE -pedantic -Wall -Wextra -Wshadow)
 endif()
