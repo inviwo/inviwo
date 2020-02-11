@@ -974,12 +974,17 @@ endfunction()
 # Does nothing on platforms other than Windows. 
 function(ivw_deploy_qt target)
     if(WIN32)
-        find_program(WINDEPLOYQT_EXECUTABLE NAMES windeployqt HINTS ${QTDIR} ENV QTDIR PATH_SUFFIXES bin)
+        get_target_property(target_type ${target} TYPE)
+        # For dll-builds (ie BUILD_SHARED_LIBS == true) we need to run it for both .dll and .exe
+        # For lib-builds (ie BUILD_SHARED_LIBS == false) we need to run it for only .exe (there are no .dll)
+        if (BUILD_SHARED_LIBS OR (target_type STREQUAL "EXECUTABLE")) 
+            find_program(WINDEPLOYQT_EXECUTABLE NAMES windeployqt HINTS ${QTDIR} ENV QTDIR PATH_SUFFIXES bin)
 
-        get_filename_component(qt_bin_dir ${WINDEPLOYQT_EXECUTABLE} DIRECTORY  )
-        add_custom_command(TARGET ${target} POST_BUILD 
-                            COMMAND ${qt_bin_dir}/qtenv2.bat
-                            COMMAND ${WINDEPLOYQT_EXECUTABLE} --no-compiler-runtime --verbose 1 $<TARGET_FILE:${target}>
-            )
+            get_filename_component(qt_bin_dir ${WINDEPLOYQT_EXECUTABLE} DIRECTORY  )
+            add_custom_command(TARGET ${target} POST_BUILD 
+                                COMMAND ${qt_bin_dir}/qtenv2.bat
+                                COMMAND ${WINDEPLOYQT_EXECUTABLE} --no-compiler-runtime --verbose 1 $<TARGET_FILE:${target}>
+                )
+        endif()
     endif()
 endfunction()
