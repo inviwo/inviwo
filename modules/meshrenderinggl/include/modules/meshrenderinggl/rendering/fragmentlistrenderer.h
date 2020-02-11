@@ -94,7 +94,7 @@ public:
      * \return <code>true</code> if successfull, <code>false</code> if not enough
      * space for all fragments was available and the procedure should be repeated.
      */
-    bool postPass(bool useIllustration, bool debug = false);
+    bool postPass(bool useIllustration);
 
     struct IllustrationSettings {
         vec3 edgeColor_;
@@ -123,6 +123,9 @@ public:
 
     typename Dispatcher<void()>::Handle onReload(std::function<void()> callback);
 
+    void debugFragmentLists(std::ostream& oss);
+    void debugIllustrationBuffer(std::ostream& oss);
+
 private:
     void buildShaders();
 
@@ -130,9 +133,6 @@ private:
     void resizeBuffers(const size2_t& screenSize);
 
     void fillIllustration(TextureUnit& abuffUnit, TextureUnit& idxUnit, TextureUnit& countUnit);
-
-    void debugFragmentLists(GLuint numFrags);
-    void debugIllustrationBuffer(GLuint numFrags);
 
     size2_t screenSize_;
     size_t fragmentSize_;

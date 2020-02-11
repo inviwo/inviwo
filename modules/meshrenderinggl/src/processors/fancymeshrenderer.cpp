@@ -102,8 +102,6 @@ FancyMeshRenderer::FancyMeshRenderer()
            {"nmax", "Based on N.Max", meshutil::CalculateMeshNormalsMode::WeightNMax}},
           3, InvalidationLevel::InvalidResources)
     , faceSettings_{true, false}
-    , propDebugFragmentLists_("debugFL", "Debug Fragment Lists")
-    , debugFragmentLists_(false)
     , meshHasAdjacency_(false)
     , shader_("fancymeshrenderer.vert", "fancymeshrenderer.geom", "fancymeshrenderer.frag", false) {
 
@@ -161,10 +159,6 @@ FancyMeshRenderer::FancyMeshRenderer()
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
     flrReload_ = flr_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-
-    // DEBUG, in case we need debugging fragment lists at a later point again
-    // addProperty(propDebugFragmentLists_);  // DEBUG, to be removed
-    // propDebugFragmentLists_.onChange([this]() { debugFragmentLists_ = true; });
 }
 
 FancyMeshRenderer::AlphaSettings::AlphaSettings()
@@ -506,8 +500,7 @@ void FancyMeshRenderer::process() {
             if (useIllustration) {
                 flr_.setIllustrationSettings(illustrationSettings_.getSettings());
             }
-            retry = !flr_.postPass(useIllustration, debugFragmentLists_);
-            debugFragmentLists_ = false;
+            retry = !flr_.postPass(useIllustration);
         }
     } while (retry);
 

@@ -288,10 +288,8 @@ protected:
     };
     IllustrationSettings illustrationSettings_;
 
-    ButtonProperty propDebugFragmentLists_;
-    bool debugFragmentLists_;
-
     std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;
+
     /**
      * \brief This flag is set to true if adjacency information is available in the shader.
      */
