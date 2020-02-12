@@ -62,7 +62,7 @@ function(ivw_define_standard_properties)
             list(APPEND comp_opts "/wd4251") # needs dll-interface   https://msdn.microsoft.com/en-us/library/esew7y1w.aspx
             list(APPEND comp_opts "/wd4505") # unreferenced funtion  https://msdn.microsoft.com/en-us/library/mt694070.aspx
             list(APPEND comp_opts "/w35038") # class member reorder
-            if(NOT OpenMP_ON)
+            if(NOT IVW_OPENMP_ON)
                 list(APPEND comp_opts "/permissive-")
             endif()
             list(APPEND comp_opts "/std:c++latest")
