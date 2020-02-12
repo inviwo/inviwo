@@ -57,12 +57,12 @@ template <typename T, size_t N>
 using ith_T = T;
 
 template <typename V, typename T, std::size_t... I>
-void addInitImpl(py::class_<V> &pyv, std::index_sequence<I...>) {
+void addInitImpl(py::class_<V>& pyv, std::index_sequence<I...>) {
     pyv.def(py::init<ith_T<T, I>...>());
 }
 
 template <typename T, typename V, unsigned C, typename Indices = std::make_index_sequence<C>>
-void addInit(py::class_<V> &pyv) {
+void addInit(py::class_<V>& pyv) {
     addInitImpl<V, T>(pyv, Indices{});
 }
 
@@ -88,28 +88,10 @@ struct dtype<Vec, 4> {
 
 }  // namespace
 
-template <typename T, typename V>
-void floatOnlyVecs(py::module &, std::false_type) {}
-
-template <typename T, typename V>
-void floatOnlyVecs(py::module &m, std::true_type) {
-    m.def("dot", [](V &v, V &v2) { return glm::dot(v, v2); });
-    m.def("distance", [](V &v, V &v2) { return glm::distance(v, v2); });
-    m.def("distance2", [](V &v, V &v2) { return glm::distance2(v, v2); });
-    m.def("length", [](V &v) { return glm::length(v); });
-    m.def("length2", [](V &v) { return glm::length2(v); });
-    m.def("normalize", [](V &v) { return glm::normalize(v); });
-}
-
-template <typename T, typename V>
-void floatOnlyVecs(py::module &m) {
-    floatOnlyVecs<T, V>(m, std::is_floating_point<T>());
-}
-
 template <typename T, int Dim>
-void vecx(py::module &m, const std::string &prefix, const std::string &name,
-          const std::string &postfix) {
-    using Vec = Vector<Dim, T>;
+void vecx(py::module& m, const std::string& prefix, const std::string& name,
+          const std::string& postfix) {
+    using Vec = glm::vec<Dim, T>;
 
     static_assert(std::is_standard_layout<Vec>::value, "has to be standard_layout");
     static_assert(std::is_trivially_copyable<Vec>::value, "has to be trivially_copyable");
@@ -124,6 +106,7 @@ void vecx(py::module &m, const std::string &prefix, const std::string &name,
     py::class_<Vec> pyv(m, classname.c_str(), py::buffer_protocol{});
     addInit<T, Vec, Dim>(pyv);
     pyv.def(py::init<T>())
+        .def(py::init<Vec>())
         .def(py::init<>())
         .def(py::init([](py::array_t<T> arr) {
             if (arr.ndim() != 1) throw std::invalid_argument{"Invalid dimensions"};
@@ -133,34 +116,18 @@ void vecx(py::module &m, const std::string &prefix, const std::string &name,
             std::copy(arr.data(0), arr.data(0) + Dim, glm::value_ptr(res));
             return res;
         }))
-        .def(py::self * py::self)
-        .def(py::self / py::self)
-        .def(py::self *= py::self)
-        .def(py::self /= py::self)
-        .def(py::self + py::self)
-        .def(py::self - py::self)
-        .def(py::self += py::self)
-        .def(py::self -= py::self)
+
         .def(py::self == py::self)
         .def(py::self != py::self)
 
-        .def(py::self + T())
-        .def(py::self - T())
-        .def(py::self * T())
-        .def(py::self / T())
-        .def(py::self += T())
-        .def(py::self -= T())
-        .def(py::self *= T())
-        .def(py::self /= T())
-
-        .def("__getitem__", [](Vec &v, int idx) { return &v[idx]; },
+        .def("__getitem__", [](Vec& v, int idx) { return &v[idx]; },
              py::return_value_policy::reference_internal)
-        .def("__setitem__", [](Vec &v, int idx, T &t) { return v[idx] = t; })
+        .def("__setitem__", [](Vec& v, int idx, T& t) { return v[idx] = t; })
 
         .def_property_readonly("array",
-                               [](Vec &self) { return py::array_t<T>(Dim, glm::value_ptr(self)); })
+                               [](Vec& self) { return py::array_t<T>(Dim, glm::value_ptr(self)); })
         .def("__repr__",
-             [](Vec &v) {
+             [](Vec& v) {
                  std::ostringstream oss;
                  // oss << v; This fails for some reason on GCC 5.4
 
@@ -171,7 +138,7 @@ void vecx(py::module &m, const std::string &prefix, const std::string &name,
                  return std::move(oss).str();
              })
 
-        .def_buffer([](Vec &vec) -> py::buffer_info {
+        .def_buffer([](Vec& vec) -> py::buffer_info {
             return py::buffer_info(
                 glm::value_ptr(vec),                /* Pointer to buffer */
                 sizeof(T),                          /* Size of one scalar */
@@ -182,29 +149,113 @@ void vecx(py::module &m, const std::string &prefix, const std::string &name,
             );
         });
 
-    floatOnlyVecs<T, Vec>(m);
+    if constexpr (Dim == 2) {
+        pyv.def(py::init<glm::vec<3, T>>());
+        pyv.def(py::init<glm::vec<4, T>>());
+    }
+    if constexpr (Dim == 3) {
+        pyv.def(py::init<glm::vec<2, T>, T>());
+        pyv.def(py::init<T, glm::vec<2, T>>());
+
+        pyv.def(py::init<glm::vec<4, T>>());
+    }
+    if constexpr (Dim == 4) {
+        pyv.def(py::init<glm::vec<2, T>, T, T>());
+        pyv.def(py::init<T, glm::vec<2, T>, T>());
+        pyv.def(py::init<T, T, glm::vec<2, T>>());
+        pyv.def(py::init<glm::vec<2, T>, glm::vec<2, T>>());
+
+        pyv.def(py::init<glm::vec<3, T>, T>());
+        pyv.def(py::init<T, glm::vec<3, T>>());
+    }
+
+    if constexpr (std::is_same_v<T, bool>) {
+        m.def("all", [](const Vec& v1) { return glm::all(v1); });
+        m.def("any", [](const Vec& v1) { return glm::any(v1); });
+    } else {
+        pyv.def(py::self * py::self)
+            .def(py::self / py::self)
+            .def(py::self *= py::self)
+            .def(py::self /= py::self)
+            .def(py::self + py::self)
+            .def(py::self - py::self)
+            .def(py::self += py::self)
+            .def(py::self -= py::self)
+            .def(py::self + T())
+            .def(py::self - T())
+            .def(py::self * T())
+            .def(py::self / T())
+            .def(py::self += T())
+            .def(py::self -= T())
+            .def(py::self *= T())
+            .def(py::self /= T());
+
+        m.def("clamp",
+              [](const Vec& v1, const Vec& v2, const Vec& v3) { return glm::clamp(v1, v2, v3); });
+        m.def("clamp", [](const Vec& v1, T& v2, T& v3) { return glm::clamp(v1, v2, v3); });
+        m.def("compAdd", [](const Vec& v1) { return glm::compAdd(v1); });
+        m.def("compMax", [](const Vec& v1) { return glm::compMax(v1); });
+        m.def("compMin", [](const Vec& v1) { return glm::compMin(v1); });
+        m.def("compMul", [](const Vec& v1) { return glm::compMul(v1); });
+        m.def("abs", [](const Vec& v) { return glm::abs(v); });
+
+        m.def("lessThan", [](const Vec& v1, const Vec& v2) { return glm::lessThan(v1, v2); });
+        m.def("lessThanEqual",
+              [](const Vec& v1, const Vec& v2) { return glm::lessThanEqual(v1, v2); });
+        m.def("greaterThan", [](const Vec& v1, const Vec& v2) { return glm::greaterThan(v1, v2); });
+        m.def("greaterThanEqual",
+              [](const Vec& v1, const Vec& v2) { return glm::greaterThanEqual(v1, v2); });
+    }
+
+    if constexpr (std::is_floating_point_v<T>) {
+        m.def("acos", [](const Vec& v1) { return glm::acos(v1); });
+        m.def("asin", [](const Vec& v1) { return glm::asin(v1); });
+        m.def("atan", [](const Vec& v1) { return glm::atan(v1); });
+        m.def("ceil", [](const Vec& v1) { return glm::ceil(v1); });
+        m.def("cos", [](const Vec& v1) { return glm::cos(v1); });
+        m.def("distance", [](const Vec& v1, const Vec& v2) { return glm::distance(v1, v2); });
+        m.def("distance2", [](const Vec& v1, const Vec& v2) { return glm::distance2(v1, v2); });
+        m.def("dot", [](const Vec& v1, const Vec& v2) { return glm::dot(v1, v2); });
+        m.def("exp", [](const Vec& v1) { return glm::exp(v1); });
+        m.def("floor", [](const Vec& v1) { return glm::floor(v1); });
+        m.def("length", [](const Vec& v) { return glm::length(v); });
+        m.def("length2", [](const Vec& v) { return glm::length2(v); });
+        m.def("normalize", [](const Vec& v) { return glm::normalize(v); });
+        m.def("sin", [](const Vec& v1) { return glm::sin(v1); });
+        m.def("tan", [](const Vec& v1) { return glm::tan(v1); });
+
+        if constexpr (Dim == 3) {
+            m.def("cross", [](const Vec& v1, const Vec& v2) { return glm::cross(v1, v2); });
+
+            m.def("rotate", [](const glm::mat<4, 4, T>& m, T angle, Vec& n) {
+                return glm::rotate(m, angle, n);
+            });
+
+            m.def("rotate", [](const Vec& v, T angle, Vec& n) { return glm::rotate(v, angle, n); });
+        }
+    }
 
     dtype<Vec, Dim>::init();
     py::bind_vector<std::vector<Vec>>(m, classname + "Vector", py::buffer_protocol{});
 
     switch (Dim) {
         case 4:
-            pyv.def_property("w", [](Vec &b) { return b[3]; }, [](Vec &b, T t) { b[3] = t; });
-            pyv.def_property("a", [](Vec &b) { return b[3]; }, [](Vec &b, T t) { b[3] = t; });
-            pyv.def_property("q", [](Vec &b) { return b[3]; }, [](Vec &b, T t) { b[3] = t; });
+            pyv.def_property("w", [](Vec& b) { return b[3]; }, [](Vec& b, T t) { b[3] = t; });
+            pyv.def_property("a", [](Vec& b) { return b[3]; }, [](Vec& b, T t) { b[3] = t; });
+            pyv.def_property("q", [](Vec& b) { return b[3]; }, [](Vec& b, T t) { b[3] = t; });
             [[fallthrough]];
         case 3:
-            pyv.def_property("z", [](Vec &b) { return b[2]; }, [](Vec &b, T t) { b[2] = t; });
-            pyv.def_property("b", [](Vec &b) { return b[2]; }, [](Vec &b, T t) { b[2] = t; });
-            pyv.def_property("p", [](Vec &b) { return b[2]; }, [](Vec &b, T t) { b[2] = t; });
+            pyv.def_property("z", [](Vec& b) { return b[2]; }, [](Vec& b, T t) { b[2] = t; });
+            pyv.def_property("b", [](Vec& b) { return b[2]; }, [](Vec& b, T t) { b[2] = t; });
+            pyv.def_property("p", [](Vec& b) { return b[2]; }, [](Vec& b, T t) { b[2] = t; });
             [[fallthrough]];
         case 2:
-            pyv.def_property("y", [](Vec &b) { return b[1]; }, [](Vec &b, T t) { b[1] = t; });
-            pyv.def_property("g", [](Vec &b) { return b[1]; }, [](Vec &b, T t) { b[1] = t; });
-            pyv.def_property("t", [](Vec &b) { return b[1]; }, [](Vec &b, T t) { b[1] = t; });
-            pyv.def_property("x", [](Vec &b) { return b[0]; }, [](Vec &b, T t) { b[0] = t; });
-            pyv.def_property("r", [](Vec &b) { return b[0]; }, [](Vec &b, T t) { b[0] = t; });
-            pyv.def_property("s", [](Vec &b) { return b[0]; }, [](Vec &b, T t) { b[0] = t; });
+            pyv.def_property("y", [](Vec& b) { return b[1]; }, [](Vec& b, T t) { b[1] = t; });
+            pyv.def_property("g", [](Vec& b) { return b[1]; }, [](Vec& b, T t) { b[1] = t; });
+            pyv.def_property("t", [](Vec& b) { return b[1]; }, [](Vec& b, T t) { b[1] = t; });
+            pyv.def_property("x", [](Vec& b) { return b[0]; }, [](Vec& b, T t) { b[0] = t; });
+            pyv.def_property("r", [](Vec& b) { return b[0]; }, [](Vec& b, T t) { b[0] = t; });
+            pyv.def_property("s", [](Vec& b) { return b[0]; }, [](Vec& b, T t) { b[0] = t; });
             [[fallthrough]];
         default:
             break;
@@ -212,15 +263,17 @@ void vecx(py::module &m, const std::string &prefix, const std::string &name,
 }
 
 template <typename T>
-void vec(py::module &m, const std::string &prefix, const std::string &name = "vec",
-         const std::string &postfix = "") {
+void vec(py::module& m, const std::string& prefix, const std::string& name = "vec",
+         const std::string& postfix = "") {
     vecx<T, 2>(m, prefix, name, postfix);
     vecx<T, 3>(m, prefix, name, postfix);
     vecx<T, 4>(m, prefix, name, postfix);
 }
 
-void exposeGLMTypes(py::module &m) {
+void exposeGLMTypes(py::module& m) {
     auto glmModule = m.def_submodule("glm", "Exposing glm vec and mat types");
+
+    vec<bool>(glmModule, "b");
 
     vec<float>(glmModule, "");
     vec<double>(glmModule, "d");
