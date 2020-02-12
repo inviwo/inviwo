@@ -111,8 +111,7 @@ public:
      * the DataFrame can be used
      */
     template <typename T>
-    std::shared_ptr<TemplateColumn<T>> addColumn(const std::string &header,
-                                                 const std::vector<T> &data);
+    auto addColumn(const std::string &header, const std::vector<T> data);
 
     /**
      * \brief Drop a column from data frame
@@ -221,11 +220,9 @@ std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string &heade
 }
 
 template <typename T>
-std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string &header,
-                                                        const std::vector<T> &data) {
-    auto col = std::make_shared<TemplateColumn<T>>(header);
-    col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer() = data;
-    return col;
+auto DataFrame::addColumn(const std::string &header, const std::vector<T> data) {
+    return columns_.emplace_back(
+        std::move(std::make_shared<TemplateColumn<T>>(header, std::move(data))));
 }
 
 template <>
