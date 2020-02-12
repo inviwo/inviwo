@@ -111,7 +111,7 @@ public:
      * the DataFrame can be used
      */
     template <typename T>
-    auto addColumn(const std::string &header, const std::vector<T> data);
+    auto addColumn(const std::string &header, std::vector<T> data);
 
     /**
      * \brief Drop a column from data frame
@@ -220,7 +220,7 @@ std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string &heade
 }
 
 template <typename T>
-auto DataFrame::addColumn(const std::string &header, const std::vector<T> data) {
+auto DataFrame::addColumn(const std::string &header, std::vector<T> data) {
     return columns_.emplace_back(
         std::move(std::make_shared<TemplateColumn<T>>(header, std::move(data))));
 }
