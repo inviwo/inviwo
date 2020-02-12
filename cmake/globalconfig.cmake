@@ -247,12 +247,8 @@ option(IVW_RUNTIME_MODULE_LOADING
 
 # Check if OpenMP is available and set it to use, and include the dll in packs
 find_package(OpenMP QUIET)
-option(OpenMP_ON "Use OpenMP" ${OPENMP_FOUND})
-if(OpenMP_ON AND OPENMP_FOUND)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-elseif(OpenMP_ON)
+option(IVW_OPENMP_ON "Use OpenMP" ${OpenMP_CXX_FOUND})
+if(IVW_OPENMP_ON AND NOT OpenMP_CXX_FOUND)
     message(FATAL_ERROR "OpenMP not available")
 endif()
 

@@ -716,6 +716,7 @@ target_link_libraries(inviwo-core PUBLIC
     $<$<BOOL:${IVW_SIGAR}>:inviwo::sigar>
     $<$<BOOL:${WIN32}>:inviwo::stackwalker>
     $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
+    $<$<BOOL:${IVW_OPENMP_ON}>:OpenMP::OpenMP_CXX>
 )
 
 if(APPLE)
