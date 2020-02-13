@@ -245,6 +245,9 @@ struct DataTraits<DataFrame> {
         // abbreviate list of columns if there are more than 20
         const size_t ncols = (data.getNumberOfColumns() > 20) ? 10 : data.getNumberOfColumns();
 
+        std::string minString{};
+        std::string maxString{};
+
         for (size_t i = 0; i < ncols; i++) {
             auto col = data.getColumn(i);
 
