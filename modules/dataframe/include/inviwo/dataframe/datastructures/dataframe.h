@@ -240,13 +240,40 @@ struct DataTraits<DataFrame> {
         tb(H("Number of Rows: "), data.getNumberOfRows());
 
         utildoc::TableBuilder tb2(doc.handle(), P::end());
-        tb2(H("Col"), H("Format"), H("Rows"), H("Name"));
+        tb2(H("Col"), H("Format"), H("Rows"), H("Name"), H("Min"), H("Max"));
         // abbreviate list of columns if there are more than 20
         const size_t ncols = (data.getNumberOfColumns() > 20) ? 10 : data.getNumberOfColumns();
 
+        std::string minString{};
+        std::string maxString{};
+
         for (size_t i = 0; i < ncols; i++) {
+            auto col = data.getColumn(i);
+            col->getBuffer()
+                ->getRepresentation<BufferRAM>()
+                ->dispatch<void, dispatching::filter::Scalars>(
+                    [&minString, &maxString](auto brprecision) {
+                        const auto &vec = brprecision->getDataContainer();
+
+                        if (vec.empty()) {
+                            minString = maxString = '-';
+                            return;
+                        }
+
+                        auto [min, max] = std::minmax_element(vec.begin(), vec.end());
+                        minString = std::to_string(*min);
+                        maxString = std::to_string(*max);
+
+                        using ValueType = util::PrecisionValueType<decltype(brprecision)>;
+
+                        if constexpr (std::is_floating_point_v<ValueType>) {
+                            minString = minString.substr(0, minString.rfind('.') + 3);
+                            maxString = maxString.substr(0, maxString.rfind('.') + 3);
+                        }
+                    });
+
             tb2(std::to_string(i + 1), data.getColumn(i)->getBuffer()->getDataFormat()->getString(),
-                data.getColumn(i)->getBuffer()->getSize(), data.getHeader(i));
+                data.getColumn(i)->getBuffer()->getSize(), data.getHeader(i), minString, maxString);
         }
         if (ncols != data.getNumberOfColumns()) {
             doc.append("span", "... (" + std::to_string(data.getNumberOfColumns() - ncols) +
