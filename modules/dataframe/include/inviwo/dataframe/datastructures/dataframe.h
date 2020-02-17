@@ -41,6 +41,7 @@
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/util/exception.h>
 #include <unordered_map>
+#include <fmt/format.h>
 
 namespace inviwo {
 class DataPointBase;
