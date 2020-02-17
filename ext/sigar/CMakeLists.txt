@@ -84,7 +84,9 @@ target_compile_definitions(sigar PUBLIC IVW_SIGAR)
 ## linux
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(sys_headers src/os/linux/)
-    target_link_libraries(sigar PRIVATE tirpc)
+    if(${TIRPC_FOUND})
+        target_link_libraries(sigar PRIVATE tirpc)
+    endif()
 endif()
 ## macosx, freebsd
 if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
