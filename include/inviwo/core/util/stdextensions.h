@@ -592,7 +592,7 @@ constexpr size_t index_of() {
     } else {
         return index_of<T, Tuple, count + 1>();
     }
-};
+}
 
 /**
  * Get the index of the first type in the Tuple that is derived from T
@@ -605,7 +605,7 @@ constexpr size_t index_of_derived() {
     } else {
         return index_of_derived<T, Tuple, count + 1>();
     }
-};
+}
 
 namespace hashtuple {
 
