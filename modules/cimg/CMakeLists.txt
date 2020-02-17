@@ -89,7 +89,7 @@ if(IVW_CIMG_USE_OPENEXR)
     ivw_register_license_file(NAME "OpenEXR" TARGET OpenEXR::IlmImf MODULE CImg
         URL "http://www.openexr.com"
         TYPE "Modified BSD License"
-        FILES ext/openexr/openexr/LICENSE
+        FILES ext/openexr/openexr/LICENSE.md
     )
     target_link_libraries(inviwo-module-cimg 
         PRIVATE
