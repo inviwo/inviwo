@@ -623,12 +623,12 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
-# include implementation for build info - the build info will be 
+# include implementation for build info - the build info will be
 # updated during every compilation
 if(IVW_EMBED_BUILDINFO)
     list(APPEND SOURCE_FILES "${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp")
-    ivw_group("Source Files" BASE "${CMAKE_CURRENT_BINARY_DIR}/src/" 
-        "${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp")    
+    ivw_group("Source Files" BASE "${CMAKE_CURRENT_BINARY_DIR}/src/"
+        "${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp")
 else()
     list(APPEND SOURCE_FILES util/buildinfoini.cpp)
     ivw_group("Source Files" util/buildinfoini.cpp)
@@ -689,23 +689,23 @@ ivw_define_standard_properties(inviwo-core)
 
 # Special Core Defines
 target_compile_definitions(inviwo-core PRIVATE
-    -DCMAKE_BUILD_TYPE=\"$<CONFIG>\" 
+    -DCMAKE_BUILD_TYPE=\"$<CONFIG>\"
     -DCMAKE_GENERATOR=\"${CMAKE_GENERATOR}\"
     -DCMAKE_CXX_COMPILER_ID=\"${CMAKE_CXX_COMPILER_ID}\"
-    -DCMAKE_CXX_COMPILER_VERSION=\"${CMAKE_CXX_COMPILER_VERSION}\"   
+    -DCMAKE_CXX_COMPILER_VERSION=\"${CMAKE_CXX_COMPILER_VERSION}\"
 )
 
 #--------------------------------------------------------------------
 # Add core folders to includes, this will also be picked up by all the modules
-target_include_directories(inviwo-core PUBLIC 
+target_include_directories(inviwo-core PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
     $<BUILD_INTERFACE:${IVW_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${IVW_EXTENSIONS_DIR}> #Should we use this one?!?"
 )
 
 # Add core dependencies to this list
-target_link_libraries(inviwo-core PUBLIC 
-    ticpp 
+target_link_libraries(inviwo-core PUBLIC
+    ticpp
     inviwo::glm
     inviwo::tinydir
     inviwo::tclap
@@ -883,7 +883,7 @@ string(REPLACE ";" "\n" build_info_script "${build_info_script_list}")
 file(WRITE "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake" ${build_info_script})
 
 # Custom target for updating the build information (this target is always out-of-date)
-if(IVW_GENERATOR_IS_MULTI_CONFIG) 
+if(IVW_GENERATOR_IS_MULTI_CONFIG)
     set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
 else()
     set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/)
@@ -891,7 +891,7 @@ endif()
 
 add_custom_target(inviwo-buildinfo-header ALL
     BYPRODUCTS  ${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp
-    COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH=\"${buildinfo_output_dir}\" 
+    COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH=\"${buildinfo_output_dir}\"
         -P "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake"
     WORKING_DIRECTORY ${OUTPUT_DIR}
     COMMENT "Generating inviwo build info (buildinfo)"
@@ -904,6 +904,10 @@ if(IVW_EMBED_BUILDINFO)
     target_compile_definitions("inviwo-core" PRIVATE "IVW_EMBED_BUILDINFO")
 else()
     ## ensure that the ini file containing the build info is packaged and installed to the bin folder
+    if(GENERATOR_IS_MULTI_CONFIG)
     install(FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/inviwo_buildinfo.ini DESTINATION ${IVW_RUNTIME_INSTALL_DIR} COMPONENT modules CONFIGURATIONS Release Debug)
+    else()
+        install(FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/inviwo_buildinfo.ini DESTINATION ${IVW_RUNTIME_INSTALL_DIR} COMPONENT modules CONFIGURATIONS Release Debug)
+    endif()
 endif()
 #--------------------------------------------------------------------
