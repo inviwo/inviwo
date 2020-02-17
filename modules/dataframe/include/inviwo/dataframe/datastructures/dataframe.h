@@ -244,33 +244,44 @@ struct DataTraits<DataFrame> {
         // abbreviate list of columns if there are more than 20
         const size_t ncols = (data.getNumberOfColumns() > 20) ? 10 : data.getNumberOfColumns();
 
-        std::string minString{};
-        std::string maxString{};
-
         for (size_t i = 0; i < ncols; i++) {
             auto col = data.getColumn(i);
-            col->getBuffer()
-                ->getRepresentation<BufferRAM>()
-                ->dispatch<void, dispatching::filter::Scalars>(
-                    [&minString, &maxString](auto brprecision) {
-                        const auto &vec = brprecision->getDataContainer();
 
-                        if (vec.empty()) {
-                            minString = maxString = '-';
-                            return;
-                        }
+            auto [minString, maxString] =
+                col->getBuffer()
+                    ->getRepresentation<BufferRAM>()
+                    ->dispatch<std::pair<std::string, std::string>, dispatching::filter::Scalars>(
+                        [](auto brprecision) -> std::pair<std::string, std::string> {
+                            using ValueType = util::PrecisionValueType<decltype(brprecision)>;
 
-                        auto [min, max] = std::minmax_element(vec.begin(), vec.end());
-                        minString = std::to_string(*min);
-                        maxString = std::to_string(*max);
+                            const auto &vec = brprecision->getDataContainer();
 
-                        using ValueType = util::PrecisionValueType<decltype(brprecision)>;
+                            if (vec.empty()) {
+                                return {"-", "-"};
+                            }
 
-                        if constexpr (std::is_floating_point_v<ValueType>) {
-                            minString = minString.substr(0, minString.rfind('.') + 3);
-                            maxString = maxString.substr(0, maxString.rfind('.') + 3);
-                        }
-                    });
+                            if constexpr (std::is_floating_point_v<ValueType>) {
+                                if (std::find_if(vec.begin(), vec.end(), [](const auto a) {
+                                        return std::isnan<ValueType>(a);
+                                    }) != vec.end()) {
+                                    return {"NaN", "NaN"};
+                                }
+
+                                if (std::find_if(vec.begin(), vec.end(), [](const auto a) {
+                                        return std::isinf<ValueType>(a);
+                                    }) != vec.end()) {
+                                    return {"Inf", "Inf"};
+                                }
+                            }
+
+                            auto [min, max] = std::minmax_element(vec.begin(), vec.end());
+
+                            if constexpr (std::is_floating_point_v<ValueType>) {
+                                return {fmt::format("{:.3}", *min), fmt::format("{:.3}", *max)};
+                            } else {
+                                return {std::to_string(*min), std::to_string(*max)};
+                            }
+                        });
 
             tb2(std::to_string(i + 1), data.getColumn(i)->getBuffer()->getDataFormat()->getString(),
                 data.getColumn(i)->getBuffer()->getSize(), data.getHeader(i), minString, maxString);
