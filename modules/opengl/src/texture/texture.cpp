@@ -209,6 +209,9 @@ Texture::~Texture() {
         glDeleteTextures(1, &id_);
         glDeleteBuffers(1, &pboBack_);
     }
+    if (syncObj != 0) {
+        glDeleteSync(syncObj);
+    }
 }
 
 size_t Texture::targetDims(GLenum target) {
@@ -322,6 +325,14 @@ void Texture::unbindToPBO() const {
 
 void Texture::download(void* data) const {
     bool downloadComplete = false;
+
+    {
+        std::scoped_lock lock{syncMutex};
+        if (syncObj != 0) {
+            glWaitSync(syncObj, 0, GL_TIMEOUT_IGNORED);
+        }
+    }
+
     if (pboBackHasData_) {
         // Copy from PBO
         bindToPBO();
@@ -350,6 +361,13 @@ void Texture::downloadToPBO() const {
     if (!pboBackIsSetup_) {
         setupAsyncReadBackPBO();
         pboBackIsSetup_ = true;
+    }
+
+    {
+        std::scoped_lock lock{syncMutex};
+        if (syncObj != 0) {
+            glWaitSync(syncObj, 0, GL_TIMEOUT_IGNORED);
+        }
     }
 
     bind();
