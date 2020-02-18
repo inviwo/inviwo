@@ -38,6 +38,7 @@
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <tcb/span.hpp>
 #include <array>
+#include <mutex>
 
 namespace inviwo {
 
@@ -117,6 +118,10 @@ protected:
     static size_t targetDims(GLenum target);
     static GLuint channels(GLenum format);
     static size_t dataTypeSize(GLenum dataType);
+
+
+    mutable std::mutex syncMutex;
+    mutable GLsync syncObj = 0;
 
 private:
     GLuint id_;
