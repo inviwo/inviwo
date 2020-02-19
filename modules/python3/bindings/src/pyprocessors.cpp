@@ -318,20 +318,26 @@ void exposeProcessors(pybind11::module &m) {
         .def("snapshotAsync", [](CanvasProcessor *canvas, std::string filepath) {
             auto ext = filesystem::getFileExtension(filepath);
 
-            auto writer = std::shared_ptr{canvas->getNetwork()
-                                              ->getApplication()
-                                              ->getDataWriterFactory()
-                                              ->getWriterForTypeAndExtension<Layer>(ext)};
+            auto writer = std::shared_ptr<DataWriterType<Layer>>{
+                canvas->getNetwork()
+                    ->getApplication()
+                    ->getDataWriterFactory()
+                    ->getWriterForTypeAndExtension<Layer>(ext)};
             if (!writer) {
                 throw Exception("No writer for extension " + ext,
                                 IVW_CONTEXT_CUSTOM("exposeProcessors"));
             }
 
             if (auto layer = canvas->getVisibleLayer()) {
-                dispatchPool([layerClone = std::shared_ptr<Layer>{layer->clone()}, writer, filepath]() {
-                    RenderContext::getPtr()->activateLocalRenderContext();
-                    writer->writeData(layerClone.get(), filepath);
-                });
+                /* Unfortunately we need to clone the layer here since in most cases the layer comes
+                 * from an ImageOutport and that will generally render new data into the layer on
+                 * the next evaluation.
+                 */
+                dispatchPool(
+                    [layerClone = std::shared_ptr<Layer>{layer->clone()}, writer, filepath]() {
+                        RenderContext::getPtr()->activateLocalRenderContext();
+                        writer->writeData(layerClone.get(), filepath);
+                    });
             } else {
                 throw Exception("No image in canvas " + canvas->getIdentifier(),
                                 IVW_CONTEXT_CUSTOM("exposeProcessors"));

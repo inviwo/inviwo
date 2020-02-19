@@ -360,9 +360,7 @@ bool operator==(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamer
 }
 
 bool operator!=(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamera& rhs) {
-    return (lhs.equalTo(rhs) || (lhs.fovy_ != rhs.fovy_) ||
-            (lhs.aspectRatio_ != rhs.aspectRatio_) |
-                glm::any(glm::notEqual(lhs.offset_, rhs.offset_)));
+    return !(lhs == rhs);
 }
 
 mat4 SkewedPerspectiveCamera::calculateViewMatrix() const {
