@@ -119,7 +119,6 @@ protected:
     static GLuint channels(GLenum format);
     static size_t dataTypeSize(GLenum dataType);
 
-
     mutable std::mutex syncMutex;
     mutable GLsync syncObj = 0;
 
