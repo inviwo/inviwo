@@ -363,18 +363,22 @@ void InviwoApplication::dispatchFrontAndForget(std::function<void()> fun) {
     if (queue_.postEnqueue) queue_.postEnqueue();
 }
 
-void InviwoApplication::processFront() {
-    NetworkLock netlock(processorNetwork_.get());
-    std::function<void()> task;
-    while (true) {
-        {
-            std::unique_lock<std::mutex> lock{queue_.mutex};
-            if (queue_.tasks.empty()) return;
-            task = std::move(queue_.tasks.front());
-            queue_.tasks.pop();
+size_t InviwoApplication::processFront() {
+    {
+        NetworkLock netlock(processorNetwork_.get());
+        std::function<void()> task;
+        while (true) {
+            {
+                std::unique_lock<std::mutex> lock{queue_.mutex};
+                if (queue_.tasks.empty()) break;
+                task = std::move(queue_.tasks.front());
+                queue_.tasks.pop();
+            }
+            task();
         }
-        task();
     }
+    std::unique_lock<std::mutex> lock{queue_.mutex};
+    return queue_.tasks.size();
 }
 
 void InviwoApplication::setProgressCallback(std::function<void(std::string)> progressCallback) {
@@ -386,7 +390,8 @@ ThreadPool& InviwoApplication::getThreadPool() { return pool_; }
 void InviwoApplication::waitForPool() {
     size_t old_size = pool_.getSize();
     resizePool(0);  // This will wait until all tasks are done;
-    processFront();
+    while (processFront())
+        ;
     resizePool(old_size);
 }
 
