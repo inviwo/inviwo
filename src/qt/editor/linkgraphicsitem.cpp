@@ -272,19 +272,17 @@ void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     tb(A{{{"style", "color:white;"}, {"align", "right"}}, p1->getIdentifier()}, "",
        A{{{"style", "color:white;"}, {"align", "left"}}, p2->getIdentifier()});
 
-    std::unordered_map<std::string, std::string> right = {{"align", "right"}};
-    std::unordered_map<std::string, std::string> left = {{"align", "left"}};
+    const std::unordered_map<std::string, std::string> right = {{"align", "right"}};
+    const std::unordered_map<std::string, std::string> left = {{"align", "left"}};
     for (const auto& link : network->getLinksBetweenProcessors(p1, p2)) {
         auto src = link.getSource();
         auto dst = link.getDestination();
-        if (network->isLinkedBidirectional(src, dst)) {
-            if (src > dst) {
-                tb(A{right, src->getDisplayName()}, imgBi, A{left, dst->getDisplayName()});
-            }
-        } else if (src->getOwner()->getProcessor() == p1) {
+        if (network->isLinkedBidirectional(src, dst) && src < dst) continue;
+
+        if (src->getOwner()->getProcessor() == p1) {
             tb(A{right, src->getDisplayName()}, imgRight, A{left, dst->getDisplayName()});
         } else {
-            tb(A{right, src->getDisplayName()}, imgLeft, A{left, dst->getDisplayName()});
+            tb(A{right, dst->getDisplayName()}, imgLeft, A{left, src->getDisplayName()});
         }
     }
     showToolTipHelper(e, utilqt::toQString(doc));
