@@ -61,14 +61,31 @@ struct BufferRAMHelper {
         std::string className = fmt::format("Buffer{}", DataFormat::str());
         py::class_<Buffer<T, BufferTarget::Data>, BufferBase,
                    std::shared_ptr<Buffer<T, BufferTarget::Data>>>(m, className.c_str())
-            .def(py::init<size_t>())
-            .def(py::init<size_t, BufferUsage>());
+            .def(py::init<size_t>(), py::arg("size"))
+            .def(py::init<size_t, BufferUsage>(), py::arg("size"),
+                 py::arg("usage") = BufferUsage::Static)
+            .def(py::init([](py::array data, BufferUsage usage) {
+                     pyutil::checkDataFormat<1>(DataFormat::get(), data.shape(0), data);
+                     auto ram = std::make_shared<BufferRAMPrecision<T, BufferTarget::Data>>(
+                         data.shape(0), usage);
+                     memcpy(ram->getData(), data.data(0), data.nbytes());
+                     return new Buffer<T, BufferTarget::Data>(ram);
+                 }),
+                 py::arg("data"), py::arg("usage") = BufferUsage::Static);
 
-        className = fmt::format("Index{}", DataFormat::str());
+        className = fmt::format("IndexBuffer{}", DataFormat::str());
         py::class_<Buffer<T, BufferTarget::Index>, BufferBase,
                    std::shared_ptr<Buffer<T, BufferTarget::Index>>>(m, className.c_str())
             .def(py::init<size_t>())
-            .def(py::init<size_t, BufferUsage>());
+            .def(py::init<size_t, BufferUsage>())
+            .def(py::init([](py::array data, BufferUsage usage) {
+                     pyutil::checkDataFormat<1>(DataFormat::get(), data.shape(0), data);
+                     auto ram = std::make_shared<BufferRAMPrecision<T, BufferTarget::Index>>(
+                         data.shape(0), usage);
+                     memcpy(ram->getData(), data.data(0), data.nbytes());
+                     return new Buffer<T, BufferTarget::Index>(ram);
+                 }),
+                 py::arg("data"), py::arg("usage") = BufferUsage::Static);
     }
 };
 
@@ -135,7 +152,7 @@ void exposeBuffer(pybind11::module &m) {
                           memcpy(rep->getData(), data.data(0), data.nbytes());
                       })
         .def("__repr__", [](const BufferBase &self) {
-            return fmt::format("<Buffer:\n  target = {}\n  usage = {}\n  format = {}\n  size = {}>",
+            return fmt::format("<Buffer: target = {} usage = {} format = {} size = {}>",
                                toString(self.getBufferTarget()), toString(self.getBufferUsage()),
                                self.getDataFormat()->getString(), self.getSize());
         });

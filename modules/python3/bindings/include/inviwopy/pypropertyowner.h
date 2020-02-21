@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYPROPERTYOWNER_H
-#define IVW_PYPROPERTYOWNER_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 
@@ -42,5 +41,3 @@ namespace inviwo {
 void exposePropertyOwner(pybind11::module &m);
 
 }  // namespace inviwo
-
-#endif  // IVW_PYPROPERTYOWNER_H

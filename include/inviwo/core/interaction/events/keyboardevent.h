@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_KEYBOARDEVENT_H
-#define IVW_KEYBOARDEVENT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/interaction/events/interactionevent.h>
@@ -95,5 +94,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_KEYBOARDEVENT_H

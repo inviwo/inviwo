@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,10 @@
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
 #include <warn/pop>
 
 namespace inviwo {
 
-void exposeBuffer(pybind11::module &m);
+void exposeCamera(pybind11::module &m);
 
 }  // namespace inviwo
