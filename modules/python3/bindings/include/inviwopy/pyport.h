@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYPORT_H
-#define IVW_PYPORT_H
+#pragma once
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -40,5 +39,3 @@ namespace inviwo {
 void exposePort(pybind11::module& m);
 
 }  // namespace inviwo
-
-#endif  // IVW_PYPORT_H

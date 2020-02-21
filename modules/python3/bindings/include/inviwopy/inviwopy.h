@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOPY_H
-#define IVW_INVIWOPY_H
+#pragma once
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -88,5 +87,3 @@ struct type_caster<std::vector<Layer *>> : ListCasterBase<Layer> {
 };
 }  // namespace detail
 }  // namespace pybind11
-
-#endif  // IVW_PYPROPERTIES_H

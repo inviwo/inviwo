@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYNETWORK_H
-#define IVW_PYNETWORK_H
+#pragma once
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -42,5 +41,3 @@ namespace inviwo {
 void exposeNetwork(pybind11::module &m);
 
 }  // namespace inviwo
-
-#endif  // IVW_PYNETWORK_H

@@ -33,6 +33,10 @@
 #include <inviwo/core/interaction/pickingstate.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/datastructures/camera.h>
+#include <inviwo/core/properties/cameraproperty.h>
+
+#include <inviwopy/pyflags.h>
 
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
@@ -48,6 +52,8 @@ void exposePickingMapper(pybind11::module &m) {
         .value("Updated", PickingState::Updated)
         .value("Finished", PickingState::Finished);
 
+    exposeFlags<PickingState>(m, "PickingStates");
+
     py::enum_<PickingPressState>(m, "PickingPressState")
         .value("DoubleClick", PickingPressState::DoubleClick)
         .value("Move", PickingPressState::Move)
@@ -55,11 +61,15 @@ void exposePickingMapper(pybind11::module &m) {
         .value("Press", PickingPressState::Press)
         .value("Release", PickingPressState::Release);
 
+    exposeFlags<PickingPressState>(m, "PickingPressStates");
+
     py::enum_<PickingPressItem>(m, "PickingPressItem")
         .value("None", PickingPressItem::None)
         .value("Primary", PickingPressItem::Primary)
         .value("Secondary", PickingPressItem::Secondary)
         .value("Tertiary", PickingPressItem::Tertiary);
+
+    exposeFlags<PickingPressItem>(m, "PickingPressItems");
 
     py::enum_<PickingHoverState>(m, "PickingHoverState")
         .value("Enter", PickingHoverState::Enter)
@@ -67,7 +77,16 @@ void exposePickingMapper(pybind11::module &m) {
         .value("Move", PickingHoverState::Move)
         .value("None", PickingHoverState::None);
 
-    py::class_<PickingEvent>(m, "PickingEvent")
+    exposeFlags<PickingHoverState>(m, "PickingHoverStates");
+
+    py::class_<PickingEvent, Event>(m, "PickingEvent")
+        .def(py::init<const PickingAction *, InteractionEvent *, PickingState, PickingPressState,
+                      PickingPressItem, PickingHoverState, PickingPressItems, size_t, size_t,
+                      size_t, size_t, dvec3, dvec3>(),
+             py::arg("pickingAction"), py::arg("event"), py::arg("state"), py::arg("pressState"),
+             py::arg("pressItem"), py::arg("hoverState"), py::arg("pressedState"),
+             py::arg("pickedGlobalId"), py::arg("currentGlobalId"), py::arg("pressedGlobalId"),
+             py::arg("previousGlobalId"), py::arg("pressedNDC"), py::arg("previousNDC"))
         .def_property_readonly("pickedId", &PickingEvent::getPickedId)
         .def_property_readonly("globalPickingId", &PickingEvent::getGlobalPickingId)
         .def_property_readonly("currentGlobalPickingId", &PickingEvent::getCurrentGlobalPickingId)
@@ -89,28 +108,26 @@ void exposePickingMapper(pybind11::module &m) {
         .def_property_readonly("ndc", &PickingEvent::getNDC)
         .def_property_readonly("previousNDC", &PickingEvent::getPreviousNDC)
         .def_property_readonly("pressedNDC", &PickingEvent::getPressedNDC)
+        .def("getWorldSpaceDeltaAtPressDepth", &PickingEvent::getWorldSpaceDeltaAtPressDepth)
         .def_property_readonly("canvasSize", &PickingEvent::getCanvasSize)
         .def_property_readonly("state", &PickingEvent::getState)
         .def_property_readonly("pressState", &PickingEvent::getPressState)
         .def_property_readonly("pressItem", &PickingEvent::getPressItem)
         .def_property_readonly("pressItems", &PickingEvent::getPressItems)
         .def_property_readonly("hoverState", &PickingEvent::getHoverState)
-        .def_property("used", &PickingEvent::hasBeenUsed,
-                      [](PickingEvent *e, bool used) {
-                          if (used) {
-                              e->markAsUsed();
-                          } else {
-                              e->markAsUnused();
-                          }
-                      })
-        .def("markkAsUsed", &PickingEvent::markAsUsed)
-        .def("markkAsUnused", &PickingEvent::markAsUnused)
-        .def("setToolTip", &PickingEvent::setToolTip);
+        .def_property_readonly("modifiers", &PickingEvent::modifiers)
+        .def("getEvent", &PickingEvent::getEvent)
+        .def_property_readonly_static("chash", &PickingEvent::chash);
 
     py::class_<PickingMapper>(m, "PickingMapper")
         .def(py::init([](Processor *p, size_t size, pybind11::function callback) {
-            return new PickingMapper(p, size,
-                                     [callback](PickingEvent *e) { callback(py::cast(e)); });
+            return new PickingMapper(p, size, [callback](PickingEvent *e) {
+                try {
+                    callback(py::cast(e));
+                } catch (const py::error_already_set &e) {
+                    LogErrorCustom("pybind11", e.what());
+                }
+            });
         }))
         .def("resize", &PickingMapper::resize)
         .def_property("enabled", &PickingMapper::isEnabled, &PickingMapper::setEnabled)

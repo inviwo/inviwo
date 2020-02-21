@@ -134,17 +134,18 @@ void exposeProperties(py::module &m) {
              py::arg("semantics") = PropertySemantics::Default)
         .def("setCollapsed", &CompositeProperty::setCollapsed)
         .def("isCollapsed", &CompositeProperty::isCollapsed)
-        .def("__getattr__",
-             [](PropertyOwner &po, const std::string &key) {
-                 if (auto prop = po.getPropertyByIdentifier(key)) {
-                     return prop;
-                 } else {
-                     throw py::attribute_error{
-                         "CompositeProperty (" + joinString(po.getPath(), ".") +
-                         ") does not have a property with identifier: '" + key + "'"};
-                 }
-             },
-             py::return_value_policy::reference);
+        .def(
+            "__getattr__",
+            [](PropertyOwner &po, const std::string &key) {
+                if (auto prop = po.getPropertyByIdentifier(key)) {
+                    return prop;
+                } else {
+                    throw py::attribute_error{
+                        "CompositeProperty (" + joinString(po.getPath(), ".") +
+                        ") does not have a property with identifier: '" + key + "'"};
+                }
+            },
+            py::return_value_policy::reference);
 
     PyPropertyClass<BaseOptionProperty, Property>(m, "BaseOptionProperty")
         .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)
@@ -186,6 +187,8 @@ void exposeProperties(py::module &m) {
              py::arg("inport") = nullptr,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
              py::arg("semantics") = PropertySemantics::Default)
+        .def_property_readonly("camera", static_cast<Camera&(CameraProperty::*)()>(&CameraProperty::get))
+        .def_property_readonly("value",  static_cast<Camera&(CameraProperty::*)()>(&CameraProperty::get))
         .def_property("lookFrom", &CameraProperty::getLookFrom, &CameraProperty::setLookFrom,
                       py::return_value_policy::copy)
         .def_property("lookTo", &CameraProperty::getLookTo, &CameraProperty::setLookTo,

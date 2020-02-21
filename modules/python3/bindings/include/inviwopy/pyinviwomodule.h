@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYINVIWOMODULE_H
-#define IVW_PYINVIWOMODULE_H
+#pragma once
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -40,5 +39,3 @@ namespace inviwo {
 void exposeInviwoModule(pybind11::module &m);
 
 }  // namespace inviwo
-
-#endif  // IVW_PYINVIWOMODULE_H

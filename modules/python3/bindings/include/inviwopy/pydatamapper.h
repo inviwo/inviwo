@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYDATAMAPPER_H
-#define IVW_PYDATAMAPPER_H
+#pragma once
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -40,5 +39,3 @@ namespace inviwo {
 void exposeDataMapper(pybind11::module &m);
 
 }  // namespace inviwo
-
-#endif  // IVW_PYDATAMAPPER_H

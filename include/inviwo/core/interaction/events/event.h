@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EVENT_H
-#define IVW_EVENT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serializable.h>
@@ -143,5 +142,3 @@ inline bool Event::setUsed(bool isUsed) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_EVENT_H

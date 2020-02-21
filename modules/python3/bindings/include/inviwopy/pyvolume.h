@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYVOLUME_H
-#define IVW_PYVOLUME_H
+#pragma once
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -39,5 +38,3 @@ namespace inviwo {
 
 void exposeVolume(pybind11::module &m);
 }
-
-#endif  // IVW_PYVOLUME_H
