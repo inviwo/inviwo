@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MOUSEINTERACTIONEVENT_H
-#define IVW_MOUSEINTERACTIONEVENT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -109,5 +108,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_MOUSEINTERACTIONEVENT_H

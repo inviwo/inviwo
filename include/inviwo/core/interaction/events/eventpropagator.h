@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EVENTPROPAGATOR_H
-#define IVW_EVENTPROPAGATOR_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
@@ -48,5 +47,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EVENTPROPAGATOR_H

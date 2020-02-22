@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_RESIZEEVENT_H
-#define IVW_RESIZEEVENT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -85,5 +84,3 @@ private:
 constexpr uint64_t ResizeEvent::chash() { return util::constexpr_hash("org.inviwo.ResizeEvent"); }
 
 }  // namespace inviwo
-
-#endif  // IVW_RESIZEEVENT_H

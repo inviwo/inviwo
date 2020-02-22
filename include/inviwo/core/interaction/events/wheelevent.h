@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_WHEELEVENT_H
-#define IVW_WHEELEVENT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -64,5 +63,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_WHEELEVENT_H

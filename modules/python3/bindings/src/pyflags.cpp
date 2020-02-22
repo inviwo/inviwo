@@ -29,6 +29,4 @@
 
 #include <inviwopy/pyflags.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

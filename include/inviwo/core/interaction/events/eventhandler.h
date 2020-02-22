@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EVENTHANDLER_H
-#define IVW_EVENTHANDLER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/interaction/events/event.h>
@@ -53,5 +52,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EVENTHANDLER_H
