@@ -44,6 +44,7 @@
 #include <modules/qtwidgets/qtwidgetssettings.h>
 
 #include <modules/python3/python3module.h>
+#include <modules/python3qt/python3qtmodule.h>
 #include <modules/python3/pythoninterpreter.h>
 
 #include <modules/qtwidgets/codeedit.h>
@@ -182,7 +183,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         icon.addFile(":/svgicons/log-clear-on-run.svg", QSize(), QIcon::Normal, QIcon::Off);
 
         appendLog_ = toolBar->addAction(icon, "Append Log");
-        appendLog_->setShortcut(Qt::ControlModifier + Qt::Key_E);
+        appendLog_->setShortcut(Qt::ControlModifier + Qt::Key_A);
         appendLog_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         appendLog_->setCheckable(true);
         appendLog_->setChecked(true);
@@ -202,6 +203,19 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         action->setToolTip("Clear Log Output");
         mainWindow_->addAction(action);
         connect(action, &QAction::triggered, [this]() { clearOutput(); });
+    }
+
+    QWidget* empty = new QWidget();
+    empty->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    toolBar->addWidget(empty);
+
+    {
+        abortAction_ = toolBar->addAction(QIcon(":/svgicons/error-enabled.svg"), "Abort Evaluation");
+        abortAction_->setToolTip(
+            "Abort evaluation (need to call 'inviwopy.qt.update()' periodically)");
+        mainWindow_->addAction(abortAction_);
+        connect(abortAction_, &QAction::triggered, [this]() { abort(); });
+        abortAction_->setEnabled(false);
     }
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -318,8 +332,15 @@ void PythonEditorWidget::open() {
 
 void PythonEditorWidget::run() {
     runAction_->setDisabled(true);
-    util::OnScopeExit reenable([&]() { runAction_->setEnabled(true); });
+    abortAction_->setEnabled(true);
     app_->getModuleByType<Python3Module>()->getPythonInterpreter()->addObserver(this);
+
+    util::OnScopeExit reenable([&]() {
+        runAction_->setEnabled(true);
+        abortAction_->setDisabled(true);
+        app_->getModuleByType<Python3Module>()->getPythonInterpreter()->removeObserver(this);
+    });
+
     if (!appendLog_->isChecked()) {
         clearOutput();
     }
@@ -338,8 +359,10 @@ void PythonEditorWidget::run() {
     ss << (ok ? "Executed Successfully" : "Failed");
     ss << " (" << durationToString(c.getElapsedTime()) << ")";
     mainWindow_->statusBar()->showMessage(utilqt::toQString(ss.str()));
+}
 
-    app_->getModuleByType<Python3Module>()->getPythonInterpreter()->removeObserver(this);
+void PythonEditorWidget::abort() {
+    app_->getModuleByType<Python3QtModule>()->abortPythonEvaluation();
 }
 
 void PythonEditorWidget::show() {
