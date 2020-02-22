@@ -117,6 +117,7 @@ void exposePickingMapper(pybind11::module &m) {
         .def_property_readonly("hoverState", &PickingEvent::getHoverState)
         .def_property_readonly("modifiers", &PickingEvent::modifiers)
         .def("getEvent", &PickingEvent::getEvent)
+        .def("setToolTip", &PickingEvent::setToolTip)
         .def_property_readonly_static("chash", &PickingEvent::chash);
 
     py::class_<PickingMapper>(m, "PickingMapper")

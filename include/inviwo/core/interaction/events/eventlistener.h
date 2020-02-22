@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EVENTLISTENER_H
-#define IVW_EVENTLISTENER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -46,5 +45,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EVENTLISTENER_H

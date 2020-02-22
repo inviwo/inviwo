@@ -41,6 +41,9 @@
 
 namespace inviwo {
 
+#include <warn/push>
+#include <warn/ignore/self-assign-overloaded>
+
 template <typename E>
 void exposeFlags(pybind11::module &m, std::string_view name) {
     namespace py = pybind11;
@@ -91,5 +94,7 @@ void exposeFlags(pybind11::module &m, std::string_view name) {
 
         .def("__iter__", &flags::flags<E>::begin);
 }
+
+#include <warn/pop>
 
 }  // namespace inviwo

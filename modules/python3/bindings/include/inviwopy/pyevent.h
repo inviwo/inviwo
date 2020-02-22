@@ -39,4 +39,3 @@ namespace inviwo {
 void exposeEvents(pybind11::module &m);
 
 }  // namespace inviwo
-

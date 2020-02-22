@@ -336,18 +336,18 @@ void InviwoMainWindow::showWindow() {
 void InviwoMainWindow::saveCanvases(std::string path, std::string fileName) {
     if (path.empty()) path = app_->getPath(PathType::Images);
 
-    app_->waitForPool();
     repaint();
     app_->processEvents();
+    app_->waitForPool();
     util::saveAllCanvases(app_->getProcessorNetwork(), path, fileName);
 }
 
 void InviwoMainWindow::getScreenGrab(std::string path, std::string fileName) {
     if (path.empty()) path = filesystem::getPath(PathType::Images);
 
-    app_->waitForPool();
     repaint();
     app_->processEvents();
+    app_->waitForPool();
     QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(this->winId());
     screenGrab.save(QString::fromStdString(path + "/" + fileName), "png");
 }

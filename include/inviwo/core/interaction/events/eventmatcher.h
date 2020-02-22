@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EVENTMATCHER_H
-#define IVW_EVENTMATCHER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -221,5 +220,3 @@ std::unique_ptr<GeneralEventMatcher> GeneralEventMatcher::create() {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_EVENTMATCHER_H
