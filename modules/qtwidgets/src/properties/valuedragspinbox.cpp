@@ -59,10 +59,18 @@ ValueDragSpinBox::ValueDragSpinBox(QWidget *parent)
 
     connect(spinBox_, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
             this, [&](double value) { emit valueChanged(static_cast<int>(value)); });
+            
+#if QT_VERSION >= QT_VERSION_CHECK(5,14,0)
+    connect(
+        spinBox_,
+        static_cast<void (QDoubleSpinBox::*)(const QString &)>(&QDoubleSpinBox::textChanged), this,
+        static_cast<void (ValueDragSpinBox::*)(const QString &)>(&ValueDragSpinBox::valueChanged));
+#else
     connect(
         spinBox_,
         static_cast<void (QDoubleSpinBox::*)(const QString &)>(&QDoubleSpinBox::valueChanged), this,
         static_cast<void (ValueDragSpinBox::*)(const QString &)>(&ValueDragSpinBox::valueChanged));
+#endif
     connect(spinBox_, &QSpinBox::editingFinished, this, &ValueDragSpinBox::editingFinished);
 }
 

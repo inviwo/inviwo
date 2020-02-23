@@ -38,8 +38,11 @@
 #include <iostream>
 #include <sstream>
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/eval.h>
+#include <warn/pop>
 
 namespace inviwo {
 
