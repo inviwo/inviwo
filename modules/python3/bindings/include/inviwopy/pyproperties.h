@@ -97,8 +97,7 @@ using PropertyPtr = std::unique_ptr<T, detail::PropertyDeleter<T>>;
 
 template <typename T, typename P, typename C>
 void pyTemplateProperty(C &prop) {
-    prop.def_property(
-            "value", [](P &p) { return p.get(); }, [](P &p, T t) { p.set(t); })
+    prop.def_property("value", [](P &p) { return p.get(); }, [](P &p, T t) { p.set(t); })
         .def("__repr__", [](P &v) { return inviwo::toString(v.get()); });
 }
 
@@ -278,8 +277,7 @@ struct OptionPropertyHelper {
             .def("removeOption", py::overload_cast<size_t>(&P::removeOption))
             .def("removeOption", py::overload_cast<const std::string &>(&P::removeOption))
 
-            .def_property(
-                "value", [](P *p) { return p->get(); }, [](P *p, T &t) { p->set(t); })
+            .def_property("value", [](P *p) { return p->get(); }, [](P *p, T &t) { p->set(t); })
             .def_property("selectedValue", &P::getSelectedValue, &P::setSelectedValue)
 
             .def("replaceOptions",

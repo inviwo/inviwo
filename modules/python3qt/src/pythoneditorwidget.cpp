@@ -210,7 +210,8 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     toolBar->addWidget(empty);
 
     {
-        abortAction_ = toolBar->addAction(QIcon(":/svgicons/error-enabled.svg"), "Abort Evaluation");
+        abortAction_ =
+            toolBar->addAction(QIcon(":/svgicons/error-enabled.svg"), "Abort Evaluation");
         abortAction_->setToolTip(
             "Abort evaluation (need to call 'inviwopy.qt.update()' periodically)");
         mainWindow_->addAction(abortAction_);
