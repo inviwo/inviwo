@@ -134,18 +134,17 @@ void exposeProperties(py::module &m) {
              py::arg("semantics") = PropertySemantics::Default)
         .def("setCollapsed", &CompositeProperty::setCollapsed)
         .def("isCollapsed", &CompositeProperty::isCollapsed)
-        .def(
-            "__getattr__",
-            [](PropertyOwner &po, const std::string &key) {
-                if (auto prop = po.getPropertyByIdentifier(key)) {
-                    return prop;
-                } else {
-                    throw py::attribute_error{
-                        "CompositeProperty (" + joinString(po.getPath(), ".") +
-                        ") does not have a property with identifier: '" + key + "'"};
-                }
-            },
-            py::return_value_policy::reference);
+        .def("__getattr__",
+             [](PropertyOwner &po, const std::string &key) {
+                 if (auto prop = po.getPropertyByIdentifier(key)) {
+                     return prop;
+                 } else {
+                     throw py::attribute_error{
+                         "CompositeProperty (" + joinString(po.getPath(), ".") +
+                         ") does not have a property with identifier: '" + key + "'"};
+                 }
+             },
+             py::return_value_policy::reference);
 
     PyPropertyClass<BaseOptionProperty, Property>(m, "BaseOptionProperty")
         .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)

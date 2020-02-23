@@ -102,7 +102,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
     }
 }
 
-Python3QtModule::~Python3QtModule() = default;  
+Python3QtModule::~Python3QtModule() = default;
 
 void Python3QtModule::abortPythonEvaluation() { abortPythonEvaluation_ = true; }
 

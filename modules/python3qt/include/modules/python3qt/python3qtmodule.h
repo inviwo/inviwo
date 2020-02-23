@@ -40,10 +40,10 @@ namespace inviwo {
 
 class IVW_MODULE_PYTHON3QT_API PythonAbortException : public Exception {
 public:
-    PythonAbortException(const std::string& message = "", ExceptionContext context = ExceptionContext());
+    PythonAbortException(const std::string& message = "",
+                         ExceptionContext context = ExceptionContext());
     virtual ~PythonAbortException() noexcept = default;
 };
-
 
 class PyModule;
 class PythonMenu;
