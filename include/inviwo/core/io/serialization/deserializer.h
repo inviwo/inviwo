@@ -461,7 +461,7 @@ public:
                     return {true, *it, [&](T& /*val*/) {}};
                 } else {
                     tmp = makeNewItem_();
-                    return {filter_(id, ind), tmp, [&](T& val) { onNewItem_(val, ind); }};
+                    return {filter_(id, ind), tmp, [this, ind](T& val) { onNewItem_(val, ind); }};
                 }
             });
 
