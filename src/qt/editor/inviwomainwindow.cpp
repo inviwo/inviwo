@@ -73,6 +73,7 @@
 #include <inviwo/qt/editor/fileassociations.h>
 #include <inviwo/qt/editor/dataopener.h>
 #include <inviwo/core/rendering/datavisualizermanager.h>
+#include <inviwo/core/util/timer.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -191,36 +192,37 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     resize(size);
     move(pos);
 
-    app->getCommandLineParser().add(&openData_,
-                                    [this]() {
-                                        auto net = app_->getProcessorNetwork();
-                                        util::insertNetworkForData(openData_.getValue(), net, true);
-                                    },
-                                    900);
+    app->getCommandLineParser().add(
+        &openData_,
+        [this]() {
+            auto net = app_->getProcessorNetwork();
+            util::insertNetworkForData(openData_.getValue(), net, true);
+        },
+        900);
 
-    app->getCommandLineParser().add(&snapshotArg_,
-                                    [this]() {
-                                        saveCanvases(app_->getCommandLineParser().getOutputPath(),
-                                                     snapshotArg_.getValue());
-                                    },
-                                    1000);
+    app->getCommandLineParser().add(
+        &snapshotArg_,
+        [this]() {
+            saveCanvases(app_->getCommandLineParser().getOutputPath(), snapshotArg_.getValue());
+        },
+        1000);
 
-    app->getCommandLineParser().add(&screenGrabArg_,
-                                    [this]() {
-                                        getScreenGrab(app_->getCommandLineParser().getOutputPath(),
-                                                      screenGrabArg_.getValue());
-                                    },
-                                    1000);
+    app->getCommandLineParser().add(
+        &screenGrabArg_,
+        [this]() {
+            getScreenGrab(app_->getCommandLineParser().getOutputPath(), screenGrabArg_.getValue());
+        },
+        1000);
 
     app->getCommandLineParser().add(
         &saveProcessorPreviews_,
         [this]() { utilqt::saveProcessorPreviews(app_, saveProcessorPreviews_.getValue()); }, 1200);
 
-    app->getCommandLineParser().add(&updateWorkspaces_, [this]() { util::updateWorkspaces(app_); },
-                                    1250);
+    app->getCommandLineParser().add(
+        &updateWorkspaces_, [this]() { util::updateWorkspaces(app_); }, 1250);
 
-    app->getCommandLineParser().add(&updateRegressionWorkspaces_,
-                                    [this]() { util::updateRegressionWorkspaces(app_); }, 1250);
+    app->getCommandLineParser().add(
+        &updateRegressionWorkspaces_, [this]() { util::updateRegressionWorkspaces(app_); }, 1250);
 
     app->getCommandLineParser().add(
         &updateWorkspacesInPath_,
@@ -339,6 +341,11 @@ void InviwoMainWindow::saveCanvases(std::string path, std::string fileName) {
     repaint();
     app_->processEvents();
     app_->waitForPool();
+    while (auto delay = app_->getTimerThread().lastDelay()) {
+        while (app_->processFront())
+            ;
+        std::this_thread::sleep_until(*delay);
+    }
     util::saveAllCanvases(app_->getProcessorNetwork(), path, fileName);
 }
 
