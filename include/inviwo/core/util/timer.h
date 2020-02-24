@@ -44,6 +44,7 @@
 #include <memory>
 #include <thread>
 #include <future>
+#include <optional>
 #include <warn/pop>
 
 namespace inviwo {
@@ -64,13 +65,15 @@ public:
     TimerThread();
     ~TimerThread();
 
+    std::optional<clock_t::time_point> lastDelay();
+
 private:
     friend Timer;
     friend Delay;
     struct ControlBlock {
         ControlBlock(std::function<void()> callback, Milliseconds interval);
         std::function<void()> callback_;
-        Milliseconds interval_;
+        Milliseconds interval_;  // a negative value represents a delay
         std::future<void> finished_;
     };
 

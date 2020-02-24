@@ -51,11 +51,40 @@ TimerThread::~TimerThread() {
     thread_->join();
 }
 
+std::optional<TimerThread::clock_t::time_point> TimerThread::lastDelay() {
+    std::scoped_lock lock(mutex_);
+
+    return std::transform_reduce(
+        timers_.begin(), timers_.end(), std::optional<clock_t::time_point>{},
+        [](std::optional<clock_t::time_point> a,
+           std::optional<clock_t::time_point> b) -> std::optional<clock_t::time_point> {
+            if (a && b) {
+                return std::max(*a, *b);
+            } else if (a) {
+                return a;
+            } else if (b) {
+                return b;
+            } else {
+                return std::nullopt;
+            }
+        },
+
+        [](TimerInfo &item) -> std::optional<clock_t::time_point> {
+            if (auto cb = item.controlBlock_.lock()) {
+                if (cb->interval_ < Milliseconds(0)) {
+                    return item.timePoint_;
+                }
+            }
+            return {};
+        });
+}
+
 void TimerThread::add(std::weak_ptr<ControlBlock> controlBlock) {
     if (auto cb = controlBlock.lock()) {
         {
+            const Milliseconds delay = Milliseconds{std::abs(cb->interval_.count())};
             std::unique_lock<std::mutex> lock(mutex_);
-            timers_.emplace_back(clock_t::now() + cb->interval_, std::move(controlBlock));
+            timers_.emplace_back(clock_t::now() + delay, std::move(controlBlock));
             sort_ = true;
         }
         // wake up
@@ -114,18 +143,18 @@ void TimerThread::TimerLoop() {
                 if (!cb->finished_.valid() ||
                     cb->finished_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
                         std::future_status::ready) {
-                    cb->finished_ = dispatchFront([ctrlblk = timers_.back().controlBlock_]() {
-                        if (auto cb2 = ctrlblk.lock()) {
-                            cb2->callback_();
-                        }
-                    });
-                }
-            } else {
-                timers_.pop_back();
+                    cb->finished_ = dispatchFront([ctrlblk = std::weak_ptr<ControlBlock>{cb}]() {
+                    if (auto cb2 = ctrlblk.lock()) {
+                        cb2->callback_();
+                    }
+                });
             }
+        } else {
+            timers_.pop_back();
         }
     }
 }
+}  // namespace inviwo
 
 TimerThread::ControlBlock::ControlBlock(std::function<void()> callback, Milliseconds interval)
     : callback_(std::move(callback)), interval_{interval} {}
@@ -184,7 +213,7 @@ Delay::Delay(Milliseconds defaultDelay, std::function<void()> callback, TimerThr
 Delay::~Delay() { cancel(); }
 
 void Delay::start(Milliseconds delay, std::function<void()> callback) {
-    controlblock_ = std::make_shared<TimerThread::ControlBlock>(callback, delay);
+    controlblock_ = std::make_shared<TimerThread::ControlBlock>(callback, -delay);
     thread_.add(controlblock_);
 }
 void Delay::start(Milliseconds delay) { start(delay, defaultCallback_); }
