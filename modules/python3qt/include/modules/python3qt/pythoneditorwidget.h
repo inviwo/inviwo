@@ -74,8 +74,9 @@ public:
     void save();
     void saveAs();
     void open();
+    void runOrStop(bool run);
     void run();
-    void abort();
+    void stop();
     void show();
     void setDefaultText();
     void clearOutput();
@@ -103,7 +104,6 @@ private:
     QColor errorTextColor_;
 
     QAction* runAction_;
-    QAction* abortAction_;
 
     PythonScript script_;
     std::string scriptFileName_;

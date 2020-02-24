@@ -93,6 +93,7 @@
         <file>svgicons/precompiled-enabled.svg</file>
         <file>svgicons/precompiled-disabled.svg</file>
         <file>svgicons/run-script.svg</file>
+        <file>svgicons/stop-script.svg</file>
 
         <file>svgicons/link-left.svg</file>
         <file>svgicons/link-right.svg</file>
