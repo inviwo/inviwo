@@ -144,16 +144,16 @@ void TimerThread::TimerLoop() {
                     cb->finished_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
                         std::future_status::ready) {
                     cb->finished_ = dispatchFront([ctrlblk = std::weak_ptr<ControlBlock>{cb}]() {
-                    if (auto cb2 = ctrlblk.lock()) {
-                        cb2->callback_();
-                    }
-                });
+                        if (auto cb2 = ctrlblk.lock()) {
+                            cb2->callback_();
+                        }
+                    });
+                }
+            } else {
+                timers_.pop_back();
             }
-        } else {
-            timers_.pop_back();
         }
     }
-}
 }  // namespace inviwo
 
 TimerThread::ControlBlock::ControlBlock(std::function<void()> callback, Milliseconds interval)
