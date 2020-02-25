@@ -29,6 +29,8 @@
 
 #pragma once
 
+#pragma optimize("", off)
+
 #include <inviwo/core/interaction/pickingstate.h>
 #include <flags/flags.h>
 
@@ -45,15 +47,15 @@ namespace inviwo {
 #include <warn/ignore/self-assign-overloaded>
 
 template <typename E>
-void exposeFlags(pybind11::module &m, std::string_view name) {
+void exposeFlags(pybind11::module& m, std::string_view name) {
     namespace py = pybind11;
 
     using Iter = typename flags::flags<E>::iterator;
 
     py::class_<Iter>(m, (std::string(name) + "Iterator").c_str())
         .def(py::init<Iter>())
-        .def("__iter__", [](Iter self) { return Iter{self}; })
-        .def("__next__", [](Iter self) {
+        .def("__iter__", [](Iter& self) { return Iter{self}; })
+        .def("__next__", [](Iter& self) {
             if (self == Iter{}) {
                 throw py::stop_iteration{};
             } else {
@@ -62,11 +64,16 @@ void exposeFlags(pybind11::module &m, std::string_view name) {
         });
 
     py::class_<flags::flags<E>>(m, name.data())
-        .def(py::init<>())
+        .def(py::init([]() { return flags::flags<E>{flags::empty}; }))
         .def(py::init<E>())
         .def(py::init<flags::flags<E>>())
-        .def(py::init(
-            [](py::args args) { return flags::flags<E>{args.cast<std::initializer_list<E>>()}; }))
+        .def(py::init([](py::args args) {
+            auto f = flags::flags<E>{flags::empty};
+            for (auto i : args.cast<std::vector<E>>()) {
+                f.insert(i);
+            }
+            return f;
+        }))
 
         .def(py::self |= py::self)
         .def(py::self &= py::self)
