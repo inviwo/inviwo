@@ -73,6 +73,7 @@
 #include <inviwo/qt/editor/fileassociations.h>
 #include <inviwo/qt/editor/dataopener.h>
 #include <inviwo/core/rendering/datavisualizermanager.h>
+#include <inviwo/core/util/timer.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -338,6 +339,14 @@ void InviwoMainWindow::saveCanvases(std::string path, std::string fileName) {
 
     repaint();
     app_->processEvents();
+    app_->waitForPool();
+    while (auto delay = app_->getTimerThread().lastDelay()) {
+        std::this_thread::sleep_until(*delay);
+        app_->processEvents();
+        while (app_->processFront())
+            ;
+        app_->processEvents();
+    }
     util::saveAllCanvases(app_->getProcessorNetwork(), path, fileName);
 }
 
@@ -346,6 +355,7 @@ void InviwoMainWindow::getScreenGrab(std::string path, std::string fileName) {
 
     repaint();
     app_->processEvents();
+    app_->waitForPool();
     QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(this->winId());
     screenGrab.save(QString::fromStdString(path + "/" + fileName), "png");
 }

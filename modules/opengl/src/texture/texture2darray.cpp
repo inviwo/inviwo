@@ -51,9 +51,17 @@ Texture2DArray::Texture2DArray(const Texture2DArray& rhs)
 
     initialize(nullptr);
     if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
+        std::scoped_lock lock{syncMutex};
+        if (syncObj != 0) {
+            glDeleteSync(syncObj);
+            syncObj = 0;
+        }
+
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0, 0,
                            static_cast<GLsizei>(dimensions_.x), static_cast<GLsizei>(dimensions_.y),
                            static_cast<GLsizei>(dimensions_.z));
+
+        syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     } else {  // Copy data through PBO
         loadFromPBO(&rhs);
     }
@@ -67,10 +75,18 @@ Texture2DArray& Texture2DArray::operator=(const Texture2DArray& rhs) {
         dimensions_ = rhs.dimensions_;
         initialize(nullptr);
         if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
+            std::scoped_lock lock{syncMutex};
+            if (syncObj != 0) {
+                glDeleteSync(syncObj);
+                syncObj = 0;
+            }
+
             glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0,
                                0, static_cast<GLsizei>(rhs.dimensions_.x),
                                static_cast<GLsizei>(rhs.dimensions_.y),
                                static_cast<GLsizei>(rhs.dimensions_.z));
+
+            syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
         } else {  // Copy data through PBO
             loadFromPBO(&rhs);
         }

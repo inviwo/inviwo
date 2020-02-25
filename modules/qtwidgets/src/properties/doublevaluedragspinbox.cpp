@@ -66,12 +66,23 @@ DoubleValueDragSpinBox::DoubleValueDragSpinBox(QWidget *parent)
                 setInvalid(false);
                 emit valueChanged(d);
             });
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    connect(spinBox_,
+            static_cast<void (QDoubleSpinBox::*)(const QString &)>(&QDoubleSpinBox::textChanged),
+            this, [this](const QString &str) {
+                setInvalid(false);
+                emit valueChanged(str);
+            });
+#else
     connect(spinBox_,
             static_cast<void (QDoubleSpinBox::*)(const QString &)>(&QDoubleSpinBox::valueChanged),
             this, [this](const QString &str) {
                 setInvalid(false);
                 emit valueChanged(str);
             });
+#endif
+
     connect(spinBox_, &QSpinBox::editingFinished, this, &DoubleValueDragSpinBox::editingFinished);
 }
 

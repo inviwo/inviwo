@@ -186,6 +186,10 @@ void exposeProperties(py::module &m) {
              py::arg("inport") = nullptr,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
              py::arg("semantics") = PropertySemantics::Default)
+        .def_property_readonly("camera",
+                               static_cast<Camera &(CameraProperty::*)()>(&CameraProperty::get))
+        .def_property_readonly("value",
+                               static_cast<Camera &(CameraProperty::*)()>(&CameraProperty::get))
         .def_property("lookFrom", &CameraProperty::getLookFrom, &CameraProperty::setLookFrom,
                       py::return_value_policy::copy)
         .def_property("lookTo", &CameraProperty::getLookTo, &CameraProperty::setLookTo,

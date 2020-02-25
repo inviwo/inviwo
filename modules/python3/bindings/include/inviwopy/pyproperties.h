@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYPROPERTIES_H
-#define IVW_PYPROPERTIES_H
+#pragma once
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -297,5 +296,3 @@ struct OptionPropertyHelper {
 void exposeProperties(pybind11::module &m);
 
 }  // namespace inviwo
-
-#endif  // IVW_PYPROPERTIES_H

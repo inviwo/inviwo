@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PICKINGEVENT_H
-#define IVW_PICKINGEVENT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -231,5 +230,3 @@ EventType* PickingEvent::getEventAs() const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_PICKINGEVENT_H

@@ -50,6 +50,8 @@
 #include <inviwopy/pytfprimitiveset.h>
 #include <inviwopy/pypickingmapper.h>
 #include <inviwopy/pylogging.h>
+#include <inviwopy/pyevent.h>
+#include <inviwopy/pycamera.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/commandlineparser.h>
@@ -89,6 +91,7 @@ PYBIND11_MODULE(inviwopy, m) {
     exposePort(m);
     exposeProcessors(m);
     exposeNetwork(m);
+    exposeEvents(m);
     exposePickingMapper(m);
 
     exposeDataMapper(dataModule);
@@ -96,6 +99,7 @@ PYBIND11_MODULE(inviwopy, m) {
     exposeVolume(dataModule);
     exposeBuffer(dataModule);
     exposeMesh(dataModule);
+    exposeCamera(dataModule);
     exposeTFPrimitiveSet(dataModule);
     exposeInviwoModule(m);
 

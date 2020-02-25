@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GESTURESTATE_H
-#define IVW_GESTURESTATE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -107,5 +106,3 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_GESTURESTATE_H

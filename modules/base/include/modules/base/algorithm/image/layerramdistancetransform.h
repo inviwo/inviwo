@@ -102,7 +102,6 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
 #endif
 
     using int64 = glm::int64;
-    using i64vec2 = glm::tvec2<int64>;
 
     auto square = [](auto a) { return a * a; };
 

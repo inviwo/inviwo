@@ -102,7 +102,8 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFun
     if (!info_ptr) {
         throw PNGLayerWriterException("Internal PNG Error: Failed to create info struct");
     }
-    cleanup.setAction([&]() { png_destroy_write_struct(&png_ptr, &info_ptr); });
+    util::OnScopeExit cleanup2 = std::move(cleanup);
+    cleanup2.setAction([&]() { png_destroy_write_struct(&png_ptr, &info_ptr); });
 
     png_set_write_fn(png_ptr, ioPtr, writeFunc, flushFunc);
 

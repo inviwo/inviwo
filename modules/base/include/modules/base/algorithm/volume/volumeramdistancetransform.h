@@ -101,7 +101,6 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
 #endif
 
     using int64 = glm::int64;
-    using i64vec3 = glm::tvec3<int64>;
 
     auto square = [](auto a) { return a * a; };
 

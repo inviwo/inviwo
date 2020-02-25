@@ -28,16 +28,17 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <warn/pop>
 #include <modules/python3qt/python3qtmodule.h>
 #include <modules/python3qt/pythoneditorwidget.h>
 #include <modules/python3qt/pythonmenu.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/propertylistwidget.h>
+
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
+#include <warn/pop>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -64,7 +65,9 @@ pybind11::object prompt(std::string title, std::string message, std::string defa
 }  // namespace
 
 Python3QtModule::Python3QtModule(InviwoApplication* app)
-    : InviwoModule(app, "Python3Qt"), menu_(std::make_unique<PythonMenu>(this, app)) {
+    : InviwoModule(app, "Python3Qt")
+    , abortPythonEvaluation_{false}
+    , menu_(std::make_unique<PythonMenu>(this, app)) {
     namespace py = pybind11;
 
     try {
@@ -73,7 +76,13 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
 
         m.def("prompt", &prompt, py::arg("title"), py::arg("message"),
               py::arg("defaultResponse") = "");
-        m.def("update", []() { QCoreApplication::instance()->processEvents(); });
+        m.def("update", [this]() {
+            QCoreApplication::instance()->processEvents();
+            if (abortPythonEvaluation_) {
+                abortPythonEvaluation_ = false;
+                throw PythonAbortException("Evaluation aborted");
+            }
+        });
 
         py::class_<PropertyListWidget>(m, "PropertyListWidget")
             .def(py::init([](InviwoApplication* app) {
@@ -94,5 +103,10 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
 }
 
 Python3QtModule::~Python3QtModule() = default;
+
+void Python3QtModule::abortPythonEvaluation() { abortPythonEvaluation_ = true; }
+
+PythonAbortException::PythonAbortException(const std::string& message, ExceptionContext context)
+    : Exception(message, context) {}
 
 }  // namespace inviwo

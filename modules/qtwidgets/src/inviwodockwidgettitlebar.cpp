@@ -152,8 +152,10 @@ void InviwoDockWidgetTitleBar::setIconSize(double size) {
     iconSize_ = size;
     const auto iconsize = utilqt::emToPx(this, QSizeF(iconSize_, iconSize_));
 
-    for (auto tb : layout()->findChildren<QToolButton *>()) {
-        tb->setIconSize(iconsize);
+    if (auto theLayout = layout()) {
+        for (auto tb : theLayout->findChildren<QToolButton *>()) {
+            tb->setIconSize(iconsize);
+        }
     }
 }
 

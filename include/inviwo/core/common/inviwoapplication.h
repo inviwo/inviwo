@@ -235,7 +235,7 @@ public:
      */
     void dispatchFrontAndForget(std::function<void()> fun);
 
-    virtual void processFront();
+    virtual size_t processFront();
 
     /**
      * Get the current number of worker threads in the thread pool

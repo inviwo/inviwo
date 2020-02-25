@@ -111,7 +111,6 @@ TEST(InterpolationTest, LinerInterpolationUInt32Vec) {
 }
 
 TEST(InterpolationTest, LinerInterpolationUInt64Vec) {
-    using u64vec3 = glm::u64vec3;
     using Inter = Interpolation<u64vec3, double>;
 
     EXPECT_EQ(Inter::linear(u64vec3(0), u64vec3(255), 0.0), u64vec3(0));
