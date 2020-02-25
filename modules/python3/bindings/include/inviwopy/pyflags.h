@@ -29,8 +29,6 @@
 
 #pragma once
 
-#pragma optimize("", off)
-
 #include <inviwo/core/interaction/pickingstate.h>
 #include <flags/flags.h>
 
