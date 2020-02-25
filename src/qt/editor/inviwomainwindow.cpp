@@ -342,9 +342,11 @@ void InviwoMainWindow::saveCanvases(std::string path, std::string fileName) {
     app_->processEvents();
     app_->waitForPool();
     while (auto delay = app_->getTimerThread().lastDelay()) {
+        std::this_thread::sleep_until(*delay);
+        app_->processEvents();
         while (app_->processFront())
             ;
-        std::this_thread::sleep_until(*delay);
+        app_->processEvents();
     }
     util::saveAllCanvases(app_->getProcessorNetwork(), path, fileName);
 }
