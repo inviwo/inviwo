@@ -278,7 +278,13 @@ struct DataTraits<DataFrame> {
                             auto [min, max] = std::minmax_element(vec.begin(), vec.end());
 
                             if constexpr (std::is_floating_point_v<ValueType>) {
-                                return {fmt::format("{:.3}", *min), fmt::format("{:.3}", *max)};
+                                std::stringstream minSS;
+                                std::stringstream maxSS;
+
+                                minSS << std::defaultfloat << *min;
+                                maxSS << std::defaultfloat << *max;
+
+                                return {minSS.str(), maxSS.str()};
                             } else {
                                 return {std::to_string(*min), std::to_string(*max)};
                             }
