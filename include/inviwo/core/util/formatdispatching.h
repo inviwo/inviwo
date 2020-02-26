@@ -111,11 +111,7 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
                 IVW_CONTEXT_CUSTOM("Dispatching"));
 
         if (id == Format::id()) {
-#ifdef _WIN32  // TODO: remove win fix when VS does the right thing...
-            return (obj.operator()<Result, Format>(std::forward<Args>(args)...));
-#else
             return (obj.template operator()<Result, Format>(std::forward<Args>(args)...));
-#endif
         } else if (static_cast<int>(id) < static_cast<int>(Format::id())) {
             return DispatchHelper<Result, B, M - 1, std::tuple<Formats...>>::dispatch(
                 id, std::forward<Callable>(obj), std::forward<Args>(args)...);
