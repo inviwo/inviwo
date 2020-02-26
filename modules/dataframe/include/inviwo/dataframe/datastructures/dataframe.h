@@ -247,7 +247,7 @@ struct DataTraits<DataFrame> {
 
         if (ncols < 2) return doc;
 
-        for (size_t i{ 1 }; i < ncols; i++) {
+        for (size_t i{1}; i < ncols; i++) {
             auto col = data.getColumn(i);
 
             auto [minString, maxString] =
