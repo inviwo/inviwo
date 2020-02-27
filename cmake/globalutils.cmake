@@ -862,6 +862,26 @@ function(ivw_get_target_property_recursive retval target property alsoInterfaceT
     set(${retval} ${res} PARENT_SCOPE)
 endfunction()
 
+
+#--------------------------------------------------------------------
+# Get the list of targets the given target depends on. 
+function(ivw_get_target_depending_on retval target alsoInterfaceTargets)
+    set(res "")
+    get_target_property(target_type ${target} TYPE)
+    if(NOT ${target_type} STREQUAL "INTERFACE_LIBRARY" OR ${alsoInterfaceTargets})
+
+        get_target_property(interface_link_libs ${target} INTERFACE_LINK_LIBRARIES)
+        foreach(linked_target ${interface_link_libs})
+            if(TARGET ${linked_target})
+                ivw_get_target_depending_on(val ${linked_target} ${property} ${alsoInterfaceTargets})
+                list(APPEND res ${linked_target})
+            endif()
+        endforeach()
+    endif()
+    list(REMOVE_DUPLICATES res)
+    set(${retval} ${res} PARENT_SCOPE)
+endfunction()
+
 function(ivw_move_targets_in_dir_to_folder directory folder)
     get_property(targets DIRECTORY ${directory} PROPERTY BUILDSYSTEM_TARGETS)
     foreach(target IN LISTS targets)

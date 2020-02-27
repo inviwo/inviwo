@@ -910,6 +910,7 @@ endif()
 
 
 set(PCH_HEADERS ${HEADER_FILES})
+# Should not include the following file in PCH or we will get multiple definitions of NvOptimusEnablement and AmdPowerXpressRequestHighPerformance
 list(REMOVE_ITEM PCH_HEADERS "${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h")
 ivw_target_pch_headers(inviwo-core ${PCH_HEADERS})
     
