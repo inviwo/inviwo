@@ -244,12 +244,12 @@ Observable<T>::Observable(Observable<T>&& rhs) {
 }
 
 template <typename T>
-Observable<T>& inviwo::Observable<T>::operator=(const Observable<T>&) {
+Observable<T>& Observable<T>::operator=(const Observable<T>&) {
     return *this;
 }
 
 template <typename T>
-Observable<T>& inviwo::Observable<T>::operator=(Observable<T>&& that) {
+Observable<T>& Observable<T>::operator=(Observable<T>&& that) {
     if (this != &that) {
         removeObservers();
         for (auto& elem : that.observers_) addObserver(elem);

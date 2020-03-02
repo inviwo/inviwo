@@ -65,7 +65,7 @@ public:
 
         Element(const Element&) = delete;
         Element& operator=(const Element&) = delete;
-        Element(Element&&) = default;
+        Element(Element&&) noexcept = default;
         Element& operator=(Element&&) = default;
 
         Element(ElementType type, const std::string& content);

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TEMPLATEPROPERTY_H
-#define IVW_TEMPLATEPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -93,10 +92,7 @@ TemplateProperty<T>::TemplateProperty(const std::string& identifier, const std::
 
 template <typename T>
 TemplateProperty<T>& TemplateProperty<T>::operator=(const T& value) {
-    if (value_ != value) {
-        value_ = value;
-        propertyModified();
-    }
+    if (value_.update(value)) propertyModified();
     return *this;
 }
 
@@ -155,9 +151,7 @@ T* TemplateProperty<T>::operator->() {
 
 template <typename T>
 void TemplateProperty<T>::set(const T& value) {
-    if (value == value_) return;
-    value_ = value;
-    propertyModified();
+    if (value_.update(value)) propertyModified();
 }
 
 template <typename T>
@@ -168,10 +162,8 @@ void TemplateProperty<T>::set(const Property* srcProperty) {
 }
 
 template <typename T>
-void inviwo::TemplateProperty<T>::set(const TemplateProperty<T>* srcProperty) {
-    if (this->value_.value == srcProperty->value_.value) return;
-    this->value_.value = srcProperty->value_.value;
-    propertyModified();
+void TemplateProperty<T>::set(const TemplateProperty<T>* srcProperty) {
+    if (value_.update(srcProperty->value_)) propertyModified();
 }
 
 template <typename T>
@@ -189,5 +181,3 @@ void TemplateProperty<T>::deserialize(Deserializer& d) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_TEMPLATEPROPERTY_H

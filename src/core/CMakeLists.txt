@@ -212,6 +212,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/cameraproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/compositeproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/compositepropertyobserver.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/constraintbehaviour.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/directoryproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/eventproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/filepatternproperty.h
@@ -515,6 +516,7 @@ set(SOURCE_FILES
     properties/cameraproperty.cpp
     properties/compositeproperty.cpp
     properties/compositepropertyobserver.cpp
+    properties/constraintbehaviour.cpp
     properties/directoryproperty.cpp
     properties/eventproperty.cpp
     properties/filepatternproperty.cpp

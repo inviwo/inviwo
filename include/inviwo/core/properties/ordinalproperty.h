@@ -27,14 +27,17 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ORDINALPROPERTY_H
-#define IVW_ORDINALPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/util/glm.h>
+#include <inviwo/core/properties/constraintbehaviour.h>
 #include <string>
+
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 
 namespace inviwo {
 
@@ -46,9 +49,19 @@ template <typename T>
 class OrdinalProperty : public TemplateProperty<T> {
 public:
     OrdinalProperty(const std::string& identifier, const std::string& displayName,
-                    const T& value = Defaultvalues<T>::getVal(),
-                    const T& minValue = Defaultvalues<T>::getMin(),
+                    const T& value,
+                    const T& minValue,
                     const T& maxValue = Defaultvalues<T>::getMax(),
+                    const T& increment = Defaultvalues<T>::getInc(),
+                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                    PropertySemantics semantics = PropertySemantics::Default);
+
+    OrdinalProperty(const std::string& identifier, const std::string& displayName,
+                    const T& value = Defaultvalues<T>::getVal(),
+                    const std::pair<T, ConstraintBehaviour>& minValue =
+                        std::pair{Defaultvalues<T>::getMin(), ConstraintBehaviour::Editable},
+                    const std::pair<T, ConstraintBehaviour>& maxValue =
+                        std::pair{Defaultvalues<T>::getMax(), ConstraintBehaviour::Editable},
                     const T& increment = Defaultvalues<T>::getInc(),
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                     PropertySemantics semantics = PropertySemantics::Default);
@@ -61,16 +74,19 @@ public:
     virtual std::string getClassIdentifier() const override;
 
     T getMinValue() const;
-    T getMaxValue() const;
-    T getIncrement() const;
-
-    virtual void set(const T& value) override;
-    virtual void set(const Property* src) override;
-
     void setMinValue(const T& value);
+    ConstraintBehaviour getMinConstraintBehaviour() const;
+
+    T getMaxValue() const;
     void setMaxValue(const T& value);
+    ConstraintBehaviour getMaxConstraintBehaviour() const;
+
+    T getIncrement() const;
     void setIncrement(const T& value);
 
+    virtual void set(const Property* src) override;
+
+    virtual void set(const T& value) override;
     /**
      * \brief set all parameters of the ordinal property at the same time with only a
      * single validation.
@@ -94,11 +110,20 @@ public:
      */
     T clamp(const T& v) const;
 
+    static bool isLinkingBound(ConstraintBehaviour constraint);
+
+    bool isLinkingMinBound() const;
+    bool isLinkingMaxBound() const;
+
+    static bool validRange(const T& min, const T& max);
+
 private:
     using TemplateProperty<T>::value_;
     ValueWrapper<T> minValue_;
     ValueWrapper<T> maxValue_;
     ValueWrapper<T> increment_;
+    ValueWrapper<ConstraintBehaviour> minConstraint_;
+    ValueWrapper<ConstraintBehaviour> maxConstraint_;
 };
 
 // Scalar properties
@@ -146,26 +171,47 @@ struct PropertyTraits<OrdinalProperty<T>> {
 
 template <typename T>
 OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::string& displayName,
-                                    const T& value, const T& minValue, const T& maxValue,
+                                    const T& value,
+                                    const std::pair<T, ConstraintBehaviour>& minValue,
+                                    const std::pair<T, ConstraintBehaviour>& maxValue,
                                     const T& increment, InvalidationLevel invalidationLevel,
                                     PropertySemantics semantics)
     : TemplateProperty<T>(identifier, displayName, value, invalidationLevel, semantics)
-    , minValue_("minvalue", minValue)
-    , maxValue_("maxvalue", maxValue)
-    , increment_("increment", increment) {
+    , minValue_("minvalue", minValue.first)
+    , maxValue_("maxvalue", maxValue.first)
+    , increment_("increment", increment)
+    , minConstraint_{"minConstraint", minValue.second}
+    , maxConstraint_{"maxConstraint", maxValue.second} {
 
-    // Invariant minValue_ < value_ < maxValue_
-    // Assume minValue is correct.
-    value_.value = glm::max(value_.value, minValue_.value);
-    maxValue_.value = glm::max(maxValue_.value, value_.value);
+    if (!validRange(minValue_, maxValue_) || value_ != clamp(value_)) {
+        throw Exception{
+            fmt::format("Invalid range ({} <= {} <= {}) given for \"{}\" ({}Property, {})",
+                        minValue_.value, value_.value, maxValue_.value, this->getDisplayName(),
+                        Defaultvalues<T>::getName(), joinString(this->getPath(), ".")),
+            IVW_CONTEXT};
+    }
 }
+
+template <typename T>
+OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::string& displayName,
+                                    const T& value, const T& minValue, const T& maxValue,
+                                    const T& increment, InvalidationLevel invalidationLevel,
+                                    PropertySemantics semantics)
+    : OrdinalProperty{identifier,
+                      displayName,
+                      value,
+                      std::pair{minValue, ConstraintBehaviour::Editable},
+                      std::pair{maxValue, ConstraintBehaviour::Editable},
+                      increment,
+                      invalidationLevel,
+                      semantics} {}
 
 template <typename T>
 OrdinalProperty<T>::OrdinalProperty(const OrdinalProperty<T>& rhs) = default;
 
 template <typename T>
 OrdinalProperty<T>& OrdinalProperty<T>::operator=(const T& value) {
-    TemplateProperty<T>::operator=(value);
+    if (value_.update(clamp(value))) this->propertyModified();
     return *this;
 }
 
@@ -183,21 +229,14 @@ std::string OrdinalProperty<T>::getClassIdentifier() const {
 }
 
 template <typename T>
-void OrdinalProperty<T>::set(const T& value) {
-    if (value_.update(clamp(value))) this->propertyModified();
-}
-
-template <typename T>
 void OrdinalProperty<T>::set(const Property* srcProperty) {
     if (auto prop = dynamic_cast<const OrdinalProperty<T>*>(srcProperty)) {
         bool modified = false;
-        modified |= minValue_.update(prop->minValue_);
-        modified |= maxValue_.update(prop->maxValue_);
+        if (isLinkingMinBound()) modified |= minValue_.update(prop->minValue_);
+        if (isLinkingMaxBound()) modified |= maxValue_.update(prop->maxValue_);
         modified |= increment_.update(prop->increment_);
-        modified |= value_.update(prop->value_);
-        if (modified) {
-            this->propertyModified();
-        }
+        modified |= value_.update(clamp(prop->value_));
+        if (modified) this->propertyModified();
     } else {
         TemplateProperty<T>::set(prop);
     }
@@ -206,16 +245,6 @@ void OrdinalProperty<T>::set(const Property* srcProperty) {
 template <typename T>
 T OrdinalProperty<T>::getMinValue() const {
     return minValue_;
-}
-
-template <typename T>
-T OrdinalProperty<T>::getMaxValue() const {
-    return maxValue_;
-}
-
-template <typename T>
-T OrdinalProperty<T>::getIncrement() const {
-    return increment_;
 }
 
 template <typename T>
@@ -229,6 +258,16 @@ void OrdinalProperty<T>::setMinValue(const T& newMinValue) {
 }
 
 template <typename T>
+ConstraintBehaviour OrdinalProperty<T>::getMinConstraintBehaviour() const {
+    return minConstraint_;
+}
+
+template <typename T>
+T OrdinalProperty<T>::getMaxValue() const {
+    return maxValue_;
+}
+
+template <typename T>
 void OrdinalProperty<T>::setMaxValue(const T& newMaxValue) {
     bool modified = false;
     modified |= maxValue_.update(newMaxValue);
@@ -239,25 +278,37 @@ void OrdinalProperty<T>::setMaxValue(const T& newMaxValue) {
 }
 
 template <typename T>
+ConstraintBehaviour OrdinalProperty<T>::getMaxConstraintBehaviour() const {
+    return maxConstraint_;
+}
+
+template <typename T>
+T OrdinalProperty<T>::getIncrement() const {
+    return increment_;
+}
+
+template <typename T>
 void OrdinalProperty<T>::setIncrement(const T& newInc) {
     if (increment_.update(newInc)) this->propertyModified();
 }
 
 template <typename T>
-void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, const T& increment) {
-    bool modified = false;
+void OrdinalProperty<T>::set(const T& value) {
+    if (value_.update(clamp(value))) this->propertyModified();
+}
 
-    if ((minVal != minValue_.value) || (maxVal != maxValue_.value)) {
-        if (glm::max(minVal, maxVal) != maxVal) {
-            LogWarn("Invalid range given for \"" << this->getDisplayName() << "\" ("
-                                                 << Defaultvalues<T>::getName() << "Property, "
-                                                 << joinString(this->getPath(), ".")
-                                                 << "). Using min range as reference.");
-        }
-        minValue_.value = minVal;
-        maxValue_.value = glm::max(minVal, maxVal);
-        modified = true;
+template <typename T>
+void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, const T& increment) {
+    if (!validRange(maxVal, minVal)) {
+        throw Exception{
+            fmt::format("Invalid range given for \"{}\" ({}Property, {})", this->getDisplayName(),
+                        Defaultvalues<T>::getName(), joinString(this->getPath(), ".")),
+            IVW_CONTEXT};
     }
+
+    bool modified = false;
+    modified |= minValue_.update(minVal);
+    modified |= maxValue_.update(maxVal);
     modified |= increment_.update(increment);
     modified |= value_.update(clamp(value));
     if (modified) this->propertyModified();
@@ -287,6 +338,8 @@ template <typename T>
 void OrdinalProperty<T>::serialize(Serializer& s) const {
     Property::serialize(s);
 
+    minConstraint_.serialize(s, this->serializationMode_);
+    maxConstraint_.serialize(s, this->serializationMode_);
     minValue_.serialize(s, this->serializationMode_);
     maxValue_.serialize(s, this->serializationMode_);
     increment_.serialize(s, this->serializationMode_);
@@ -298,6 +351,8 @@ void OrdinalProperty<T>::deserialize(Deserializer& d) {
     Property::deserialize(d);
 
     bool modified = false;
+    modified |= minConstraint_.deserialize(d, this->serializationMode_);
+    modified |= maxConstraint_.deserialize(d, this->serializationMode_);
     modified |= minValue_.deserialize(d, this->serializationMode_);
     modified |= maxValue_.deserialize(d, this->serializationMode_);
     modified |= increment_.deserialize(d, this->serializationMode_);
@@ -307,7 +362,42 @@ void OrdinalProperty<T>::deserialize(Deserializer& d) {
 
 template <typename T>
 T OrdinalProperty<T>::clamp(const T& v) const {
-    return glm::clamp(v, minValue_.value, maxValue_.value);
+    if (minConstraint_ != ConstraintBehaviour::Ignore &&
+        maxConstraint_ != ConstraintBehaviour::Ignore) {
+        return glm::clamp(v, minValue_.value, maxValue_.value);
+    } else if (minConstraint_ != ConstraintBehaviour::Ignore) {
+        return glm::max(v, minValue_.value);
+    } else if (maxConstraint_ != ConstraintBehaviour::Ignore) {
+        return glm::min(v, maxValue_.value);
+    } else {
+        return v;
+    }
+}
+
+template <typename T>
+bool OrdinalProperty<T>::isLinkingBound(ConstraintBehaviour constraint) {
+    if (constraint == ConstraintBehaviour::Mutable) return false;
+    if (constraint == ConstraintBehaviour::Immutable) return false;
+    return true;
+}
+
+template <typename T>
+bool OrdinalProperty<T>::isLinkingMinBound() const {
+    return isLinkingBound(minConstraint_);
+}
+
+template <typename T>
+bool OrdinalProperty<T>::isLinkingMaxBound() const {
+    return isLinkingBound(maxConstraint_);
+}
+
+template <typename T>
+bool OrdinalProperty<T>::validRange(const T& min, const T& max) {
+    bool validRange = true;
+    for (size_t i = 0; i < util::flat_extent<T>::value; i++) {
+        validRange &= util::glmcomp(min, i) <= util::glmcomp(max, i);
+    }
+    return validRange;
 }
 
 template <typename T>
@@ -320,11 +410,14 @@ Document OrdinalProperty<T>::getDescription() const {
 
     utildoc::TableBuilder tb(b, P::end());
     tb(H("#"), H("Value"), H("Min"), H("Max"), H("Inc"));
-    size_t size = getDim().x * getDim().y;
-    for (size_t i = 0; i < size; i++) {
+    for (size_t i = 0; i < util::flat_extent<T>::value; i++) {
         tb(H(i), util::glmcomp(value_.value, i), util::glmcomp(minValue_.value, i),
            util::glmcomp(maxValue_.value, i), util::glmcomp(increment_.value, i));
     }
+
+    utildoc::TableBuilder tb2(b, P::end());
+    util::for_each_argument([&tb2](auto p) { tb2(H(camelCaseToHeader(p.name)), p.value); },
+                            minConstraint_, maxConstraint_);
 
     return doc;
 }
@@ -366,5 +459,3 @@ extern template class IVW_CORE_TMPL_EXP OrdinalProperty<glm::dquat>;
 extern template class IVW_CORE_TMPL_EXP OrdinalProperty<glm::fquat>;
 
 }  // namespace inviwo
-
-#endif  // IVW_ORDINALPROPERTY_H
