@@ -122,12 +122,20 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     fileObserver_.setModifiedCallback([this](bool m) { pythonCode_->document()->setModified(m); });
 
     {
-        runAction_ = toolBar->addAction(QIcon(":/svgicons/run-script.svg"), "Compile and Run");
+
+        QIcon icon;
+        icon.addFile(":/svgicons/run-script.svg", QSize(), QIcon::Normal, QIcon::Off);
+        icon.addFile(":/svgicons/stop-script.svg", QSize(), QIcon::Normal, QIcon::On);
+
+        runAction_ = toolBar->addAction(icon, "Compile and Run");
+        runAction_->setCheckable(true);
         runAction_->setShortcut(QKeySequence(tr("F5")));
         runAction_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        runAction_->setToolTip("Compile and Run Script");
+        runAction_->setToolTip(
+            "Compile and Run Script. To abort evaluation 'inviwopy.qt.update()' needs to called "
+            "periodically.");
         mainWindow_->addAction(runAction_);
-        connect(runAction_, &QAction::triggered, [this]() { run(); });
+        connect(runAction_, &QAction::triggered, this, [this](bool run) { runOrStop(run); });
     }
     {
         auto action = toolBar->addAction(QIcon(":/svgicons/newfile.svg"), tr("&New Script"));
@@ -135,7 +143,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("New Script");
         mainWindow_->addAction(action);
-        connect(action, &QAction::triggered, [this]() { setDefaultText(); });
+        connect(action, &QAction::triggered, this, [this]() { setDefaultText(); });
     }
     {
         auto action = toolBar->addAction(QIcon(":/svgicons/open.svg"), tr("&Open Script"));
@@ -143,7 +151,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Open Script");
         mainWindow_->addAction(action);
-        connect(action, &QAction::triggered, [this]() { open(); });
+        connect(action, &QAction::triggered, this, [this]() { open(); });
     }
 
     {
@@ -152,7 +160,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Save Script");
         mainWindow_->addAction(action);
-        connect(action, &QAction::triggered, [this]() { save(); });
+        connect(action, &QAction::triggered, this, [this]() { save(); });
     }
     {
         auto action = toolBar->addAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Script As..."));
@@ -160,7 +168,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Save Script As...");
         mainWindow_->addAction(action);
-        connect(action, &QAction::triggered, [this]() { saveAs(); });
+        connect(action, &QAction::triggered, this, [this]() { saveAs(); });
     }
     {
         toolBar->addSeparator();
@@ -189,7 +197,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         appendLog_->setChecked(true);
         appendLog_->setToolTip("Append Log");
         mainWindow_->addAction(appendLog_);
-        connect(appendLog_, &QAction::toggled, [this](bool toggle) {
+        connect(appendLog_, &QAction::toggled, this, [this](bool toggle) {
             // update tooltip and menu entry
             QString tglstr = (toggle ? "Append Log" : "Clear Log on Run");
             appendLog_->setText(tglstr);
@@ -203,20 +211,6 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         action->setToolTip("Clear Log Output");
         mainWindow_->addAction(action);
         connect(action, &QAction::triggered, [this]() { clearOutput(); });
-    }
-
-    QWidget* empty = new QWidget();
-    empty->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    toolBar->addWidget(empty);
-
-    {
-        abortAction_ =
-            toolBar->addAction(QIcon(":/svgicons/error-enabled.svg"), "Abort Evaluation");
-        abortAction_->setToolTip(
-            "Abort evaluation (need to call 'inviwopy.qt.update()' periodically)");
-        mainWindow_->addAction(abortAction_);
-        connect(abortAction_, &QAction::triggered, [this]() { abort(); });
-        abortAction_->setEnabled(false);
     }
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -331,14 +325,19 @@ void PythonEditorWidget::open() {
     }
 }
 
+void PythonEditorWidget::runOrStop(bool runScript) {
+    if (runScript) {
+        run();
+    } else {
+        stop();
+    }
+}
+
 void PythonEditorWidget::run() {
-    runAction_->setDisabled(true);
-    abortAction_->setEnabled(true);
     app_->getModuleByType<Python3Module>()->getPythonInterpreter()->addObserver(this);
 
     util::OnScopeExit reenable([&]() {
-        runAction_->setEnabled(true);
-        abortAction_->setDisabled(true);
+        runAction_->setChecked(false);
         app_->getModuleByType<Python3Module>()->getPythonInterpreter()->removeObserver(this);
     });
 
@@ -362,7 +361,7 @@ void PythonEditorWidget::run() {
     mainWindow_->statusBar()->showMessage(utilqt::toQString(ss.str()));
 }
 
-void PythonEditorWidget::abort() {
+void PythonEditorWidget::stop() {
     app_->getModuleByType<Python3QtModule>()->abortPythonEvaluation();
 }
 
