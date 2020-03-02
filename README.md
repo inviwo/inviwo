@@ -37,8 +37,8 @@ Below follow some general information about the framework:
  - C++17 Required
 
 #### Documentation
-  - [Manual](https://github.com/inviwo/inviwo/wiki/Manual)
-  - [API](https://inviwo.github.io/inviwo/doc/)
+  - [Manual](https://inviwo.org/manual_index.html)
+  - [API](https://inviwo.org/inviwo/doc)
   - [Changelog](/CHANGELOG.md)
 
 For help and general discussion join us on our [Slack](https://join.slack.com/t/inviwo/shared_invite/enQtNTc2Nzc2NDQwNzIxLTRiMWM1ZWJiYjljZjkwNWE3OTk3MzYxODZlMDUyMzRmZjUzMzBiZjVhNTM3NWUyNzU1MjI4OWJjMzdkODViMzM) server
