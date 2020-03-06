@@ -250,7 +250,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         for (size_t t = 0; t < state.datFiles.size(); ++t) {
             auto datVolReader = std::make_unique<DatVolumeSequenceReader>();
             datVolReader->enableLogOutput_ = false;
-            auto v = datVolReader->readData(state.datFiles[t]);
+            auto v = datVolReader->readData(fileDirectory + "/" +state.datFiles[t]);
 
             std::copy(v->begin(), v->end(), std::back_inserter(*volumes));
         }
