@@ -490,7 +490,7 @@ void addShaderDefinesBGPort(Shader& shader, const ImageInport& port) {
     if (port.isConnected()) {
         shader.getFragmentShaderObject()->addShaderDefine("BACKGROUND_AVAILABLE");
         shader.getFragmentShaderObject()->addShaderDefine(
-            bgKey, "drawBackground(result,t,tIncr, texture(bgColor,texCoords),bgTDepth,tDepth)");
+            bgKey, "drawBackground(result,t,tIncr,color,bgTDepth,tDepth)");
     } else {
         shader.getFragmentShaderObject()->removeShaderDefine("BACKGROUND_AVAILABLE");
         shader.getFragmentShaderObject()->addShaderDefine(bgKey, "result");
