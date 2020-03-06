@@ -105,6 +105,9 @@ TubeRendering::TubeRendering()
 }
 
 void TubeRendering::initializeResources() {
+    for (auto& item : adjacencyShaders_.getShaders()) {
+        configureShader(item.second);
+    }
     for (auto& item : shaders_.getShaders()) {
         configureShader(item.second);
     }
