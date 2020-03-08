@@ -54,37 +54,33 @@ TimerThread::~TimerThread() {
 std::optional<TimerThread::clock_t::time_point> TimerThread::lastDelay() {
     std::scoped_lock lock(mutex_);
 
-    return std::transform_reduce(
-        timers_.begin(), timers_.end(), std::optional<clock_t::time_point>{},
-        [](std::optional<clock_t::time_point> a,
-           std::optional<clock_t::time_point> b) -> std::optional<clock_t::time_point> {
-            if (a && b) {
-                return std::max(*a, *b);
-            } else if (a) {
-                return a;
-            } else if (b) {
-                return b;
-            } else {
-                return std::nullopt;
-            }
-        },
+    return std::accumulate(timers_.begin(), timers_.end(), std::optional<clock_t::time_point>{},
+                           [](std::optional<clock_t::time_point> a,
+                              TimerInfo &item) -> std::optional<clock_t::time_point> {
+                               std::optional<clock_t::time_point> b;
+                               if (auto cb = item.controlBlock_.lock()) {
+                                   if (!cb->repeating_) {
+                                       b = item.timePoint_;
+                                   }
+                               }
 
-        [](TimerInfo &item) -> std::optional<clock_t::time_point> {
-            if (auto cb = item.controlBlock_.lock()) {
-                if (cb->interval_ < Milliseconds(0)) {
-                    return item.timePoint_;
-                }
-            }
-            return {};
-        });
+                               if (a && b) {
+                                   return std::max(*a, *b);
+                               } else if (a) {
+                                   return a;
+                               } else if (b) {
+                                   return b;
+                               } else {
+                                   return std::nullopt;
+                               }
+                           });
 }
 
 void TimerThread::add(std::weak_ptr<ControlBlock> controlBlock) {
     if (auto cb = controlBlock.lock()) {
         {
-            const Milliseconds delay = Milliseconds{std::abs(cb->interval_.count())};
             std::unique_lock<std::mutex> lock(mutex_);
-            timers_.emplace_back(clock_t::now() + delay, std::move(controlBlock));
+            timers_.emplace_back(clock_t::now() + cb->interval_, std::move(controlBlock));
             sort_ = true;
         }
         // wake up
@@ -134,7 +130,7 @@ void TimerThread::TimerLoop() {
 
         if (callTimer) {
             if (auto cb = timers_.back().controlBlock_.lock()) {
-                if (cb->interval_ > Milliseconds(0)) {
+                if (cb->repeating_) {
                     timers_.back().timePoint_ += cb->interval_;
                     sort_ = true;
                 } else {
@@ -156,8 +152,9 @@ void TimerThread::TimerLoop() {
     }
 }  // namespace inviwo
 
-TimerThread::ControlBlock::ControlBlock(std::function<void()> callback, Milliseconds interval)
-    : callback_(std::move(callback)), interval_{interval} {}
+TimerThread::ControlBlock::ControlBlock(std::function<void()> callback, Milliseconds interval,
+                                        bool repeating)
+    : callback_(std::move(callback)), interval_{interval}, repeating_{repeating} {}
 
 TimerThread::TimerInfo::TimerInfo(clock_t::time_point tp, std::weak_ptr<ControlBlock> controlBlock)
     : timePoint_(tp), controlBlock_(std::move(controlBlock)) {}
@@ -170,7 +167,7 @@ Timer::~Timer() { stop(); }
 void Timer::start(Milliseconds interval, std::function<void()> callback) {
     interval_ = interval;
     callback_ = callback;
-    controlblock_ = std::make_shared<TimerThread::ControlBlock>(callback, interval);
+    controlblock_ = std::make_shared<TimerThread::ControlBlock>(callback, interval, true);
     thread_.add(controlblock_);
 }
 void Timer::start(Milliseconds interval) { start(interval, callback_); }
@@ -213,7 +210,7 @@ Delay::Delay(Milliseconds defaultDelay, std::function<void()> callback, TimerThr
 Delay::~Delay() { cancel(); }
 
 void Delay::start(Milliseconds delay, std::function<void()> callback) {
-    controlblock_ = std::make_shared<TimerThread::ControlBlock>(callback, -delay);
+    controlblock_ = std::make_shared<TimerThread::ControlBlock>(callback, delay, false);
     thread_.add(controlblock_);
 }
 void Delay::start(Milliseconds delay) { start(delay, defaultCallback_); }

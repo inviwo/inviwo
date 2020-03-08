@@ -71,9 +71,10 @@ private:
     friend Timer;
     friend Delay;
     struct ControlBlock {
-        ControlBlock(std::function<void()> callback, Milliseconds interval);
+        ControlBlock(std::function<void()> callback, Milliseconds interval, bool repeating);
         std::function<void()> callback_;
-        Milliseconds interval_;  // a negative value represents a delay
+        Milliseconds interval_;
+        bool repeating_;
         std::future<void> finished_;
     };
 
