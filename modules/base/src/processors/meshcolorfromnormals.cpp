@@ -75,7 +75,7 @@ void MeshColorFromNormals::process() {
                         case Transform::Abs:
                             return glm::abs(n);
                         case Transform::Shift:
-                            return (n + T(1.0)) / T(2.0);
+                            return (n + T{1}) / T{2};
                         case Transform::None:
                             [[fallthrough]];
                         default:
