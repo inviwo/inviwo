@@ -53,17 +53,6 @@ const vec4 LightVolumeGL::borderColor_{1.f, 1.f, 1.f, 1.f};
 
 static const int faceAxis_[6] = {0, 0, 1, 1, 2, 2};
 
-/*
-static const vec3 faceCenters_[6] = {
-    vec3(1.f, 0.5f, 0.5f),
-    vec3(0.f, 0.5f, 0.5f),
-    vec3(0.5f, 1.f, 0.5f),
-    vec3(0.5f, 0.f, 0.5f),
-    vec3(0.5f, 0.5f, 1.f),
-    vec3(0.5f, 0.5f, 0.f)
-};
-*/
-
 static const vec3 faceNormals_[6] = {vec3(1.f, 0.f, 0.f), vec3(-1.f, 0.f, 0.f),
                                      vec3(0.f, 1.f, 0.f), vec3(0.f, -1.f, 0.f),
                                      vec3(0.f, 0.f, 1.f), vec3(0.f, 0.f, -1.f)};
@@ -264,10 +253,11 @@ bool LightVolumeGL::lightSourceChanged() {
                     worldToTexture * vec4(-directionLight->getDirection(), 1.f);
                 lightPos_ = vec3(lightPositionTexture);
                 lightDirection = lightPos_ - vec3(0.5f);
-                if (glm::length(lightDirection) == 0)
+                if (glm::length(lightDirection) == 0) {
                     lightDirection = vec3(1, 0, 0);
-                else
+                } else {
                     lightDirection = glm::normalize(lightDirection);
+                }
                 color = directionLight->getIntensity();
             }
 
@@ -288,10 +278,11 @@ bool LightVolumeGL::lightSourceChanged() {
                 vec4 lightPositionTexture = worldToTexture * vec4(pointLight->getPosition(), 1.f);
                 lightPos_ = vec3(lightPositionTexture);
                 lightDirection = lightPos_ - vec3(0.5f);
-                if (glm::length(lightDirection) == 0)
+                if (glm::length(lightDirection) == 0) {
                     lightDirection = vec3(1, 0, 0);
-                else
+                } else {
                     lightDirection = glm::normalize(lightDirection);
+                }
                 color = pointLight->getIntensity();
             }
 
@@ -306,20 +297,10 @@ bool LightVolumeGL::lightSourceChanged() {
     }
 
     updatePermuationMatrices(lightDirection, &propParams_[0], &propParams_[1]);
+
     bool lightColorChanged = false;
-
-    if (color.r != lightColor_.r) {
-        lightColor_.r = color.r;
-        lightColorChanged = true;
-    }
-
-    if (color.g != lightColor_.g) {
-        lightColor_.g = color.g;
-        lightColorChanged = true;
-    }
-
-    if (color.b != lightColor_.b) {
-        lightColor_.b = color.b;
+    if (glm::any(glm::notEqual(color, vec3(lightColor_)))) {
+        lightColor_ = vec4{color, lightColor_.a};
         lightColorChanged = true;
     }
 
@@ -395,8 +376,9 @@ void LightVolumeGL::supportColoredLightChanged() {
         std::size_t components = outport_.getData()->getDataFormat()->getComponents();
 
         if ((components < 3 && supportColoredLight_.get()) ||
-            (components > 1 && !supportColoredLight_.get()))
+            (components > 1 && !supportColoredLight_.get())) {
             internalVolumesInvalid_ = true;
+        }
     }
 }
 
@@ -431,20 +413,17 @@ void LightVolumeGL::updatePermuationMatrices(const vec3& lightDir, PropagationPa
 
     // Perform permutation calculation for closest face
     definePermutationMatrices(closest->axisPermutation, closest->axisPermutationLight, closestFace);
-    // LogInfo("1st Axis Permutation: " << closest->axisPermutation);
     closest->axisPermutationINV = glm::inverse(closest->axisPermutation);
     closest->permutedLightDirection = closest->axisPermutationLight * tmpLightDir;
 
     // Perform permutation calculation for second closest face
     definePermutationMatrices(secondClosest->axisPermutation, secondClosest->axisPermutationLight,
                               secondClosestFace);
-    // LogInfo("2nd Axis Permutation: " << secondClosest->axisPermutation);
     secondClosest->axisPermutationINV = glm::inverse(secondClosest->axisPermutation);
     secondClosest->permutedLightDirection = secondClosest->axisPermutationLight * tmpLightDir;
 
     // Calculate the blending factor
     blendingFactor_ = static_cast<float>(1.f - (2.f * std::acos(closestVal) / M_PI));
-    // LogInfo("Blending Factor: " << blendingFactor_);
 
     calculatedOnes_ = true;
 }
