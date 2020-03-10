@@ -39,10 +39,23 @@ const ProcessorInfo BrushingAndLinkingProcessor::processorInfo_{
     "org.inviwo.BrushingAndLinkingProcessor",  // Class identifier
     "Brushing And Linking Processor",          // Display name
     "Brushing And Linking",                    // Category
-    CodeState::Experimental,                   // Code state
-    Tags::None,                                // Tags
+    CodeState::Stable,                         // Code state
+    "Brushing, Linking",                       // Tags
 };
 const ProcessorInfo BrushingAndLinkingProcessor::getProcessorInfo() const { return processorInfo_; }
+
+BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
+    : Processor()
+    , outport_("outport")
+    , clearSelection_("clearSelection", "Clear Selection", [&]() { manager_->clearSelected(); })
+    , clearFilter_("clearFilter", "Clear Filtering", [&]() { manager_->clearFiltered(); })
+    , clearCols_("clearCols", "Clear Columns", [&]() { manager_->clearColumns(); })
+    , manager_(std::make_shared<BrushingAndLinkingManager>(this)) {
+    addPort(outport_);
+    addProperties(clearSelection_, clearFilter_, clearCols_);
+}
+
+void BrushingAndLinkingProcessor::process() { outport_.setData(manager_); }
 
 void BrushingAndLinkingProcessor::invokeEvent(Event* event) {
     if (auto brushingEvent = dynamic_cast<BrushingAndLinkingEvent*>(event)) {
@@ -59,14 +72,5 @@ void BrushingAndLinkingProcessor::invokeEvent(Event* event) {
     }
     Processor::invokeEvent(event);
 }
-
-BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
-    : Processor()
-    , outport_("outport")
-    , manager_(std::make_shared<BrushingAndLinkingManager>(this)) {
-    addPort(outport_);
-}
-
-void BrushingAndLinkingProcessor::process() { outport_.setData(manager_); }
 
 }  // namespace inviwo
