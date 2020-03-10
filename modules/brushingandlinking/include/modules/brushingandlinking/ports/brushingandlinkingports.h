@@ -99,7 +99,7 @@ struct DataTraits<BrushingAndLinkingManager> {
         using P = Document::PathComponent;
         using H = utildoc::TableBuilder::Header;
         Document doc;
-        doc.append("b", "Brushing And Linking Manager", { { "style", "color:white;" } });
+        doc.append("b", "Brushing And Linking Manager", {{"style", "color:white;"}});
         utildoc::TableBuilder tb(doc.handle(), P::end());
         tb(H("Selected Indices"), data.getNumberOfSelected());
         tb(H("Filtered Indices"), data.getNumberOfFiltered());
