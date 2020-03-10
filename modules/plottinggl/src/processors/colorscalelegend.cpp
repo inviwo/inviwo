@@ -140,7 +140,12 @@ ColorScaleLegend::ColorScaleLegend()
         }
     };
 
-    rotation_.onChange([=]() {
+    legendPlacement_.onChange([this]() {
+        if (legendPlacement_ != 4) rotation_.set(legendPlacement_.get());
+    });
+    if (legendPlacement_ != 4) rotation_.set(legendPlacement_.get());
+
+    auto updatePlacement = [&]() {
         axis_.orientation_.set(getAxisOrientation(rotation_.get()));
         axis_.placement_.set(getAxisPlacement(rotation_.get()));
 
@@ -149,11 +154,10 @@ ColorScaleLegend::ColorScaleLegend()
         } else if (rotation_ == 1 || rotation_ == 2) {  // Right/Bottom
             axis_.flipped_ = true;
         }
-    });
+    };
 
-    legendPlacement_.onChange([this]() {
-        if (legendPlacement_ != 4) rotation_.set(legendPlacement_.get());
-    });
+    rotation_.onChange(updatePlacement);
+    updatePlacement();
 
     checkerBoardSize_.visibilityDependsOn(
         backgroundStyle_, [&](auto p) { return p.get() == BackgroundStyle::CheckerBoard; });
