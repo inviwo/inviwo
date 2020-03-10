@@ -38,8 +38,9 @@ uniform int legendRotation;
 
 uniform int backgroundStyle;
 uniform float checkerBoardSize;
-uniform vec4 checkerColor1 = vec4(0.5, 0.5, 0.5, 1);
-uniform vec4 checkerColor2 = vec4(1, 1, 1, 1);
+uniform vec4 checkerColor1 = vec4(0.5, 0.5, 0.5, 1.0);
+uniform vec4 checkerColor2 = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec4 backgroundColor = vec4(0.0, 0.0, 0.0, 1.0);
 
 uniform vec4 color = vec4(0, 0, 0, 1);
 uniform int borderWidth = 1;
@@ -68,17 +69,26 @@ void main() {
     float tfSamplePos = mix(normPos.x, normPos.y, mod(legendRotation, 2));
     vec4 colorTF = texture(transferFunction, vec2(tfSamplePos, 0.0));
 
-    // increase alpha to allow better visibility by 1 - (1 - a)^4 and then add "backgroundAlpha" to
-    // set alpha to 1 if no background is wanted
-    colorTF.a = mix(1.0 - pow(1.0 - colorTF.a, 4.0), 1.0, float(backgroundStyle));
+    // increase alpha for better visibility by 1 - (1 - a)^4
+    colorTF.a = 1.0 - pow(1.0 - colorTF.a, 4.0);
 
-    // blend in the checkerboard as background to the TF depending on its opacity
-    vec4 finalColor = over(checkerBoard(centeredPos), colorTF);
+    vec4 finalColor;
+    if (backgroundStyle == 0) {
+        finalColor = over(checkerBoard(centeredPos), colorTF);
+    } else if (backgroundStyle == 1) {
+        // solid background
+        colorTF.rgb *= colorTF.a;
+        // pre-multiply background color
+        vec4 bgColor = backgroundColor;
+        bgColor.rgb *= bgColor.a;
+        finalColor = colorTF + (1.0 - colorTF.a) * bgColor;
+    } else {
+        // use regular OpenGL blending with alpha
+        colorTF.rgb *= colorTF.a;
+        finalColor = colorTF;
+    }
 
     // set border flag if the fragment coord is within the border
     bool border = borderWidth > 0 && any(greaterThan(abs(centeredPos), outputDim * 0.5));
     FragData0 =  mix(finalColor, color, bvec4(border));
-
-    // no depth input, reset depth to largest value
-    gl_FragDepth = 1.0;
 }
