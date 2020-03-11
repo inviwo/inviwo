@@ -95,7 +95,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    enum class BackgroundStyle { CheckerBoard, NoBackground };
+    enum class BackgroundStyle { CheckerBoard, SolidColor, NoBackground };
     std::tuple<ivec2, ivec2, ivec2, ivec2> getPositions(ivec2 dim) const;
 
     ImageInport inport_;
@@ -118,6 +118,7 @@ private:
     StringProperty title_;
     TemplateOptionProperty<BackgroundStyle> backgroundStyle_;
     FloatProperty checkerBoardSize_;
+    FloatVec4Property bgColor_;
     IntProperty borderWidth_;
 
     // shader variables

@@ -184,12 +184,12 @@ std::string TextOverlayGL::getString() const {
             // std::stoul will not throw an invalid argument exception since we made sure, it is a
             // number (std::isdigit above)
             std::size_t argNum = std::stoul(numStr, &numDigits) - 1;
-            if (argNum <= numArgs_) {
+            if (argNum < numArgs_) {
                 // make textual replacement ("%" and number of digits)
                 str.replace(offset, numDigits + 1, args[argNum]->get());
                 offset += args[argNum]->get().size();
             } else {
-                if (numDigits > 2) printWarning = true;
+                printWarning = true;
                 offset += 1 + numDigits;
             }
         } else {

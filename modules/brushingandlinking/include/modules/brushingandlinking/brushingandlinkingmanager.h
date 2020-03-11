@@ -65,11 +65,14 @@ public:
     bool isColumnSelected(size_t column) const;
 
     void setSelected(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& idx);
+    void clearSelected();
 
     void setFiltered(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& idx);
+    void clearFiltered();
 
     void setSelectedColumn(const BrushingAndLinkingInport* src,
                            const std::unordered_set<size_t>& columnIndices);
+    void clearColumns();
 
     const std::unordered_set<size_t>& getSelectedIndices() const;
     const std::unordered_set<size_t>& getFilteredIndices() const;

@@ -71,9 +71,13 @@ ColorScaleLegend::ColorScaleLegend()
     , title_("title", "Legend Title", "Legend")
     , backgroundStyle_("backgroundStyle", "Background",
                        {{"noBackground", "No background", BackgroundStyle::NoBackground},
-                        {"checkerBoard", "Checker board", BackgroundStyle::CheckerBoard}},
+                        {"checkerBoard", "Checker board", BackgroundStyle::CheckerBoard},
+                        {"solid", "Solid", BackgroundStyle::SolidColor}},
                        0)
     , checkerBoardSize_("checkerBoardSize", "Checker Board Size", 5, 1, 20)
+    , bgColor_("backgroundColor", "Background Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f),
+               vec4(1.0f), Defaultvalues<vec4>::getInc(), InvalidationLevel::InvalidOutput,
+               PropertySemantics::Color)
     , borderWidth_("borderWidth", "Border Width", 2, 0, 10)
     , shader_("img_texturequad.vert", "legend.frag")
     , axis_("axis", "Scale Axis")
@@ -95,8 +99,9 @@ ColorScaleLegend::ColorScaleLegend()
 
     // legend style
     axisStyle_.insertProperty(0, title_);
-    axisStyle_.addProperties(backgroundStyle_, checkerBoardSize_, borderWidth_);
+    axisStyle_.addProperties(backgroundStyle_, checkerBoardSize_, bgColor_, borderWidth_);
     checkerBoardSize_.setVisible(false);
+    bgColor_.setVisible(false);
 
     axisStyle_.registerProperty(axis_);
 
@@ -140,7 +145,12 @@ ColorScaleLegend::ColorScaleLegend()
         }
     };
 
-    rotation_.onChange([=]() {
+    legendPlacement_.onChange([this]() {
+        if (legendPlacement_ != 4) rotation_.set(legendPlacement_.get());
+    });
+    if (legendPlacement_ != 4) rotation_.set(legendPlacement_.get());
+
+    auto updatePlacement = [&]() {
         axis_.orientation_.set(getAxisOrientation(rotation_.get()));
         axis_.placement_.set(getAxisPlacement(rotation_.get()));
 
@@ -149,14 +159,15 @@ ColorScaleLegend::ColorScaleLegend()
         } else if (rotation_ == 1 || rotation_ == 2) {  // Right/Bottom
             axis_.flipped_ = true;
         }
-    });
+    };
 
-    legendPlacement_.onChange([this]() {
-        if (legendPlacement_ != 4) rotation_.set(legendPlacement_.get());
-    });
+    rotation_.onChange(updatePlacement);
+    updatePlacement();
 
     checkerBoardSize_.visibilityDependsOn(
         backgroundStyle_, [&](auto p) { return p.get() == BackgroundStyle::CheckerBoard; });
+    bgColor_.visibilityDependsOn(backgroundStyle_,
+                                 [&](auto p) { return p.get() == BackgroundStyle::SolidColor; });
 }
 
 // this function handles the legend rotation and updates the axis thereafter
@@ -236,6 +247,12 @@ void ColorScaleLegend::process() {
     utilgl::setUniforms(shader_, axis_.color_, borderWidth_, backgroundStyle_, checkerBoardSize_,
                         rotation_, isotfComposite_);
 
+    if (backgroundStyle_ == BackgroundStyle::NoBackground) {
+        shader_.setUniform("backgroundColor", vec4(0.0f));
+    } else {
+        shader_.setUniform("backgroundColor", bgColor_);
+    }
+
     const ivec4 view{bottomLeft - ivec2{borderWidth_}, legendSize + ivec2{borderWidth_ * 2}};
     shader_.setUniform("viewport", view);
     utilgl::ViewportState viewport(view);
@@ -243,5 +260,7 @@ void ColorScaleLegend::process() {
     utilgl::singleDrawImagePlaneRect();
     utilgl::deactivateCurrentTarget();
 }
+
 }  // namespace plot
+
 }  // namespace inviwo

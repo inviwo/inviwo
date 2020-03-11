@@ -79,6 +79,8 @@ void saveLayer(const Layer& layer) {
     fileDialog->setTitle("Save Layer to File...");
     fileDialog->setAcceptMode(AcceptMode::Save);
     fileDialog->setFileMode(FileMode::AnyFile);
+    fileDialog->setContentType("image");
+    fileDialog->setCurrentDirectory("");
 
     auto writerFactory = InviwoApplication::getPtr()->getDataWriterFactory();
     fileDialog->addExtensions(writerFactory->getExtensionsForType<Layer>());
