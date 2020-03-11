@@ -153,8 +153,6 @@ WebBrowserProcessor::WebBrowserProcessor()
                                                  browserSettings, nullptr, nullptr);
     // Observe when page has loaded
     browserClient_->addLoadHandler(this);
-    // Do not process until frame is loaded
-    isReady_.setUpdate([this]() { return allInportsAreReady() && !isBrowserLoading_; });
     // Inject events into CEF browser_
     cefInteractionHandler_.setHost(browser_->GetHost());
     cefInteractionHandler_.setRenderHandler(renderHandler_);
@@ -196,11 +194,15 @@ void WebBrowserProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bo
                                                bool /*canGoBack*/, bool /*canGoForward*/) {
     if (browser_ && browser->GetIdentifier() == browser_->GetIdentifier()) {
         isBrowserLoading_ = isLoading;
-        isReady_.update();
+        // Render new page (content may have been rendered before the state changed)
+        if (!isLoading) { invalidate(InvalidationLevel::InvalidOutput); }
     }
 }
 
 void WebBrowserProcessor::process() {
+    if (isBrowserLoading_) {
+        return;
+    }
     if (js_.isModified() && !js_.get().empty()) {
         browser_->GetMainFrame()->ExecuteJavaScript(js_.get(), "", 1);
     }
