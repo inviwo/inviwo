@@ -42,17 +42,12 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.BrushingAndLinkingProcessor, Brushing And Linking Processor}
  * ![](org.inviwo.BrushingAndLinkingProcessor.png?classIdentifier=org.inviwo.BrushingAndLinkingProcessor)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
+ * Central point for handling brushing and linking events. Handles selection events, filter events,
+ * and column selection.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __outport__  brushing and linking port for connecting "linked" processors
  *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingProcessor : public Processor {
 public:
@@ -75,6 +70,7 @@ private:
     ButtonProperty clearSelection_;
     ButtonProperty clearFilter_;
     ButtonProperty clearCols_;
+    ButtonProperty clearAll_;
 
     std::shared_ptr<BrushingAndLinkingManager> manager_;
 };
