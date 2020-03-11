@@ -36,6 +36,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/ports/imageport.h>
@@ -51,8 +52,9 @@ namespace plot {
 
 /** \docpage{org.inviwo.ColorScaleLegend, Color Scale Legend}
  * ![](org.inviwo.ColorScaleLegend.png?classIdentifier=org.inviwo.ColorScaleLegend)
- * Displays a color legend axis based o the linked transfer function.
- * The corresponding values of the colors can be displayed next to the colors.
+ * Displays a color legend axis based on a transfer function. If a volume is connected, its data
+ * ranges are considered. The corresponding values of the colors can be displayed next to the
+ * colors.
  *
  * ### Inports
  *   * __<ImageInport>__ Inport image.
@@ -62,6 +64,8 @@ namespace plot {
  *   * __<ImageOutport>__ Outport image.
  *
  * ### Properties
+ *  *  __Enable__   Shows the color legend. Hides it if not enabled and the input image is passed
+ *                  through.
  *   * __TF & Isovalues__ The transfer function to render onto the legend.
  *   * __Positioning & Size__
  *		+ __Legend Placement__ Defines to which side of the canvas the legend should be
@@ -102,6 +106,7 @@ private:
     ImageOutport outport_;
     VolumeInport volumeInport_;
 
+    BoolProperty enabled_;
     IsoTFProperty isotfComposite_;
 
     CompositeProperty positioning_;
