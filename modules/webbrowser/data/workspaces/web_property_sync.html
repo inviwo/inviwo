@@ -43,7 +43,7 @@ var ordinalPropertyValue = document.getElementById("ordinalPropertyValue");
 
 
 slider.oninput = function() {
-	inviwo.setProperty("LineRenderer.lineWidth", {value: Number(this.value)});
+	inviwo.setProperty("LineRenderer.lineSettings.lineWidth", {value: Number(this.value)});
     ordinalPropertyValue.innerHTML = this.value;
 }
 
