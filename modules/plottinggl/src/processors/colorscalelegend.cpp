@@ -221,10 +221,16 @@ std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dime
 }
 
 void ColorScaleLegend::process() {
-    utilgl::activateTargetAndClearOrCopySource(outport_, inport_);
     if (!enabled_) {
+        if (inport_.isReady()) {
+            outport_.setData(inport_.getData());
+        } else {
+            utilgl::activateAndClearTarget(outport_);
+        }
+
         return;
     }
+    utilgl::activateTargetAndClearOrCopySource(outport_, inport_);
 
     // update the legend range if a volume is connected to inport
     if (volumeInport_.isChanged() && volumeInport_.hasData()) {
