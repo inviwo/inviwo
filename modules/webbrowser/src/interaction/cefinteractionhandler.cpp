@@ -109,26 +109,12 @@ void CEFInteractionHandler::handlePickingEvent(PickingEvent* p) {
             return;
         }
         const auto& touchPoints = touchEvent->touchPoints();
-        updateMouseStates(touchEvent);
-        // Only single touch point is currently supported
-        const auto& activeTouchPoint = touchPoints[0];
-        TouchStates moveState = (TouchState::Updated | TouchState::Stationary);
-        TouchStates pressState = (TouchState::Started | TouchState::Finished);
-
-        auto cefEvent = mapTouchEvent(&activeTouchPoint);
-        if (activeTouchPoint.state() & moveState) {
-            bool mouseLeave = false;
-            host_->SendMouseMoveEvent(cefEvent, mouseLeave);
-            p->markAsUsed();
-        } else if (activeTouchPoint.state() & pressState) {
-            // Emulate mouse press
-            CefBrowserHost::MouseButtonType button;
-            button = MBT_LEFT;
-            bool mouseUp = activeTouchPoint.state() & (TouchState::Finished) ? true : false;
-            int clickCount = 1;
-            host_->SendMouseClickEvent(cefEvent, button, mouseUp, clickCount);
-            p->markAsUsed();
+        for (auto touchPoint : touchPoints) {
+            auto cefEvent = mapTouchEvent(&touchPoint, touchEvent->getDevice());
+            host_->SendTouchEvent(cefEvent);
         }
+        p->markAsUsed();
+
     } else if (auto wheelEvent = p->getEventAs<WheelEvent>()) {
         auto cefMouseEvent = mapMouseEvent(wheelEvent);
         host_->SendMouseWheelEvent(cefMouseEvent, static_cast<int>(wheelEvent->delta().x),
@@ -145,10 +131,59 @@ CefMouseEvent CEFInteractionHandler::mapMouseEvent(const MouseInteractionEvent* 
     return cefEvent;
 }
 
-CefMouseEvent CEFInteractionHandler::mapTouchEvent(const TouchPoint* p) {
-    CefMouseEvent cefEvent;
-    cefEvent.x = static_cast<int>(p->pos().x);
-    cefEvent.y = static_cast<int>(p->canvasSize().y) - static_cast<int>(p->pos().y);
+CefTouchEvent CEFInteractionHandler::mapTouchEvent(const TouchPoint* p, const TouchDevice* device) {
+    CefTouchEvent cefEvent;
+    cefEvent.id = p->id();
+    // X coordinate relative to the left side of the view.
+    cefEvent.x = static_cast<float>(p->pos().x);
+    // Y coordinate relative to the top side of the view.
+    cefEvent.y = static_cast<float>(p->canvasSize().y - p->pos().y);
+    // Radius in pixels. Set to 0 if not applicable.
+    cefEvent.radius_x = cefEvent.radius_y = 0;
+    // Radius in pixels. Set to 0 if not applicable.
+    cefEvent.rotation_angle = 0;
+    // The normalized pressure of the pointer input in the range of [0,1].
+    cefEvent.pressure = static_cast<float>(p->pressure());
+    // The state of the touch point. Touches begin with one CEF_TET_PRESSED event
+    // followed by zero or more CEF_TET_MOVED events and finally one
+    // CEF_TET_RELEASED or CEF_TET_CANCELLED event. Events not respecting this
+    // order will be ignored.
+    auto toCefEventType = [](auto state) -> cef_touch_event_type_t {
+        switch (state) {
+            case TouchState::None:
+                return CEF_TET_CANCELLED;
+            case TouchState::Started:
+                return CEF_TET_PRESSED;
+            case TouchState::Updated:
+            case TouchState::Stationary:
+                return CEF_TET_MOVED;
+            case TouchState::Finished:
+                return CEF_TET_RELEASED;
+            default: // Incorrect usage or new state added (warnings if left out)
+                assert(false);  
+                return CEF_TET_CANCELLED;
+        }
+    };
+
+    cefEvent.type = toCefEventType(p->state());
+    auto toCefPointerType = [](auto device) -> cef_pointer_type_t {
+        switch (device.getType()) {
+            case TouchDevice::DeviceType::TouchScreen:
+                return CEF_POINTER_TYPE_TOUCH;
+            case TouchDevice::DeviceType::TouchPad:
+                return CEF_POINTER_TYPE_MOUSE;
+                // No types for these ones yet
+                // case TouchDevice::DeviceType::Pen:
+                //    return CEF_POINTER_TYPE_PEN;
+                // case TouchDevice::DeviceType::Eraser:
+                //    return CEF_POINTER_TYPE_ERASER;
+            default: // Incorrect usage or new state added (warnings if left out)
+                assert(false);  
+                return CEF_POINTER_TYPE_TOUCH;
+        }
+    };
+    cefEvent.pointer_type = toCefPointerType(*device);
+
     cefEvent.modifiers = modifiers_;
     return cefEvent;
 }
