@@ -195,7 +195,9 @@ void WebBrowserProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bo
     if (browser_ && browser->GetIdentifier() == browser_->GetIdentifier()) {
         isBrowserLoading_ = isLoading;
         // Render new page (content may have been rendered before the state changed)
-        if (!isLoading) { invalidate(InvalidationLevel::InvalidOutput); }
+        if (!isLoading) {
+            invalidate(InvalidationLevel::InvalidOutput);
+        }
     }
 }
 
