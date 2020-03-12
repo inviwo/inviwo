@@ -159,8 +159,8 @@ CefTouchEvent CEFInteractionHandler::mapTouchEvent(const TouchPoint* p, const To
                 return CEF_TET_MOVED;
             case TouchState::Finished:
                 return CEF_TET_RELEASED;
-            default: // Incorrect usage or new state added (warnings if left out)
-                assert(false);  
+            default:  // Incorrect usage or new state added (warnings if left out)
+                assert(false);
                 return CEF_TET_CANCELLED;
         }
     };
@@ -177,8 +177,8 @@ CefTouchEvent CEFInteractionHandler::mapTouchEvent(const TouchPoint* p, const To
                 //    return CEF_POINTER_TYPE_PEN;
                 // case TouchDevice::DeviceType::Eraser:
                 //    return CEF_POINTER_TYPE_ERASER;
-            default: // Incorrect usage or new state added (warnings if left out)
-                assert(false);  
+            default:  // Incorrect usage or new state added (warnings if left out)
+                assert(false);
                 return CEF_POINTER_TYPE_TOUCH;
         }
     };
