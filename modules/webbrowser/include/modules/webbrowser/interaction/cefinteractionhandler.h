@@ -44,6 +44,7 @@ namespace inviwo {
 class RenderHandlerGL;
 class TouchPoint;
 class TouchEvent;
+class TouchDevice;
 class PickingEvent;
 /*\class CEFInteractionHandler
  * Translates Inviwo events to CEF events and injects them into provided CefBrowserHost.
@@ -78,7 +79,7 @@ public:
 private:
     CefKeyEvent mapKeyEvent(const KeyboardEvent* e);
     CefMouseEvent mapMouseEvent(const MouseInteractionEvent* e);
-    CefMouseEvent mapTouchEvent(const TouchPoint* p);
+    CefTouchEvent mapTouchEvent(const TouchPoint* p, const TouchDevice* device);
 
     void updateMouseStates(MouseEvent* e);
     void updateMouseStates(TouchEvent* e);
