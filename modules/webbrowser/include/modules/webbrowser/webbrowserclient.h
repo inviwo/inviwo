@@ -36,6 +36,7 @@
 #include <modules/webbrowser/processors/processorcefsynchronizer.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/stdextensions.h>
 
 #include <warn/push>
@@ -67,7 +68,11 @@ class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
                                                    public CefDisplayHandler,
                                                    public CefResourceRequestHandler {
 public:
-    WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler,
+    /**
+     * @param const Processor* parent web browser processor responsible for the browser. Cannot be
+     * null.
+     */
+    WebBrowserClient(const Processor* parent, CefRefPtr<RenderHandlerGL> renderHandler,
                      const PropertyWidgetCEFFactory* widgetFactory);
 
     virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
@@ -195,6 +200,9 @@ protected:
     // Manages the registration and delivery of resources (redirections to
     // modules/app folders).
     CefRefPtr<CefResourceManager> resourceManager_;
+
+    // Owner of the webbrowser client
+    const Processor* parent_;
 
     // Track the number of browsers using this Client.
     int browserCount_ = 0;

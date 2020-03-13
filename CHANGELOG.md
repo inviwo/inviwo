@@ -1,4 +1,6 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
+## 2020-03-13 Webbrowser API - get parent processor
+Added functionality to retrieve which processor is responsible for the browser API-calls. See InviwoAPI.js and web browser property synchronization example workspace.
 
 ## 2019-12-02 PoolProcessor
 Added a processor base class to make background processing easier. Here is a basic example of how the process function might look like:

@@ -79,7 +79,7 @@ WebBrowserProcessor::WebBrowserProcessor()
         invalidate(InvalidationLevel::InvalidOutput);
         //});
     }))
-    , browserClient_(new WebBrowserClient(renderHandler_, InviwoApplication::getPtr()
+    , browserClient_(new WebBrowserClient(this, renderHandler_, InviwoApplication::getPtr()
                                                               ->getModuleByType<WebBrowserModule>()
                                                               ->getPropertyWidgetCEFFactory())) {
     addPort(background_);

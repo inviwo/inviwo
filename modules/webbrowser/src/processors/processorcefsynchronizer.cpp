@@ -32,6 +32,7 @@
 
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/processors/progressbarowner.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -39,6 +40,9 @@
 #include <warn/pop>
 
 namespace inviwo {
+
+ProcessorCefSynchronizer::ProcessorCefSynchronizer(const Processor* webBrowserSource)
+    : parent_(webBrowserSource) {}
 
 void ProcessorCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                          int /*httpStatusCode*/) {
@@ -59,11 +63,12 @@ bool ProcessorCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<
 
     try {
         auto command = j.at("command").get<std::string>();
-        auto subscribeProgress = std::string("processor.progress.subscribe");
-        auto network = InviwoApplication::getPtr()->getProcessorNetwork();
-        if (!command.compare(0, subscribeProgress.size(), subscribeProgress)) {
-            auto p = j.at("path").get<std::string>();
+        auto subscribeProgressCommand = std::string("processor.progress.subscribe");
+        auto parentProcessorCommand = std::string("parentwebbrowserprocessor");
 
+        if (!command.compare(0, subscribeProgressCommand.size(), subscribeProgressCommand)) {
+            auto p = j.at("path").get<std::string>();
+            auto network = parent_->getNetwork();
             auto processor = network->getProcessorByIdentifier(p);
             if (!processor) {
                 callback->Failure(0, "Could not find processor: " + p);
@@ -76,9 +81,14 @@ bool ProcessorCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<
                     ProgressBarObserverCEF(frame, onProgressChange, onVisibleChange);
                 progressOwner->getProgressBar().ProgressBarObservable::addObserver(
                     &progressObservers_[processor]);
+                callback->Success("");
+                return true;
             } else {
                 callback->Failure(0, "Processor " + p + " is not ProgressBarObservable");
             }
+        } else if (!command.compare(0, parentProcessorCommand.size(), parentProcessorCommand)) {
+            callback->Success(json{{"path", joinString(parent_->getPath(), ".")}}.dump());
+            return true;
         }
     } catch (json::exception& ex) {
         LogError(ex.what());
