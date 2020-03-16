@@ -189,6 +189,7 @@ public:
         CefRefPtr<CefRequest> request) override;
 
 protected:
+    const Processor* parent_; /// Owner of the webbrowser client
     const PropertyWidgetCEFFactory* widgetFactory_;  /// Non-owning reference
     CefRefPtr<CefRenderHandler> renderHandler_;
     // Handles the browser side of query routing.
@@ -200,9 +201,6 @@ protected:
     // Manages the registration and delivery of resources (redirections to
     // modules/app folders).
     CefRefPtr<CefResourceManager> resourceManager_;
-
-    // Owner of the webbrowser client
-    const Processor* parent_;
 
     // Track the number of browsers using this Client.
     int browserCount_ = 0;
