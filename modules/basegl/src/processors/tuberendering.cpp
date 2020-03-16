@@ -144,6 +144,12 @@ void TubeRendering::process() {
         return false;
     };
 
+    // The geometry shader generates a six-sided bounding box for each line segment. The fragment
+    // shader does not consider if the current fragment is on a front- or backface. The ray-cylinder
+    // intersection test will thus give the same result for both, hence resulting in z-fighting. To
+    // avoid this we turn on face culling.
+    utilgl::CullFaceState cullstate(GL_BACK);
+
     const auto draw = [this, hasAnyLine](const Mesh& mesh, Shader& shader, auto test) {
         if (!hasAnyLine(mesh, test)) return;
 
