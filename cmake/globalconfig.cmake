@@ -151,6 +151,7 @@ set(IVW_CMAKE_BINARY_MODULE_DIR ${CMAKE_BINARY_DIR}/cmake)
 set(IVW_CMAKE_TEMPLATES         ${IVW_ROOT_DIR}/cmake/templates)
 
 # Add globalmacros
+include(${CMAKE_CURRENT_LIST_DIR}/precompileheaders.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/globalutils.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/compileoptions.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/installutils.cmake)
@@ -252,15 +253,4 @@ if(IVW_OPENMP_ON AND NOT OpenMP_CXX_FOUND)
     message(FATAL_ERROR "OpenMP not available")
 endif()
 
-#--------------------------------------------------------------------
-# Precompile headers
-if(WIN32)
-    option(PRECOMPILED_HEADERS "Create and use precompilied headers" ON)
-else()
-    option(PRECOMPILED_HEADERS "Create and use precompilied headers" OFF)
-endif()
-
 include(${CMAKE_CURRENT_LIST_DIR}/utilities/clean_library_list.cmake)
-if(PRECOMPILED_HEADERS)
-    include(${CMAKE_CURRENT_LIST_DIR}/cotire.cmake)
-endif()
