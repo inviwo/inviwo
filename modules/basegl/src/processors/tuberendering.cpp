@@ -144,6 +144,8 @@ void TubeRendering::process() {
         return false;
     };
 
+    utilgl::CullFaceState cullstate(GL_FRONT);
+
     const auto draw = [this, hasAnyLine](const Mesh& mesh, Shader& shader, auto test) {
         if (!hasAnyLine(mesh, test)) return;
 
