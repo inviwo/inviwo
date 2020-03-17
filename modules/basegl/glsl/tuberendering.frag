@@ -96,23 +96,29 @@ bool cylinderIntersect(vec3 origin, vec3 dir, out float t) {
 void main() {
     if (startPos_ == endPos_) discard;
 
+    // need to cull the back faces since the geometry shader generates a six-sided bounding box for
+    // each line segment. The fragment shader does not consider if the current fragment is on a
+    // front- or backface. The ray-cylinder intersection test will thus give the same result for
+    // both, hence resulting in z-fighting.
+    if (!gl_FrontFacing) discard;
+
+    //FragData0 = vec4(color_.rgb, color_.a);
+    //return;
+
     vec3 camPos = (camera.viewToWorld * vec4(0,0,0,1)).xyz;
     vec3 dir = normalize(camPos - worldPos_);
 
     float d;
     if (!cylinderIntersect(worldPos_, dir, d)){
         discard;
-        return;
     }
 
     vec3 hitPoint = worldPos_ + d * dir;
     if (dot(hitPoint - startPos_, gEndplanes[0]) < 0.0) {
         discard;
-        return;
     }
     if (dot(hitPoint - endPos_, gEndplanes[1]) > 0.0) {
         discard;
-        return;
     }
 
     vec3 x0 = hitPoint;
