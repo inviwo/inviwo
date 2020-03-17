@@ -189,7 +189,7 @@ public:
         CefRefPtr<CefRequest> request) override;
 
 protected:
-    const Processor* parent_; /// Owner of the webbrowser client
+    const Processor* parent_;                        /// Owner of the webbrowser client
     const PropertyWidgetCEFFactory* widgetFactory_;  /// Non-owning reference
     CefRefPtr<CefRenderHandler> renderHandler_;
     // Handles the browser side of query routing.
