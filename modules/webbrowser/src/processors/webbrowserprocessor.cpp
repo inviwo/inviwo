@@ -79,9 +79,10 @@ WebBrowserProcessor::WebBrowserProcessor()
         invalidate(InvalidationLevel::InvalidOutput);
         //});
     }))
-    , browserClient_(new WebBrowserClient(renderHandler_, InviwoApplication::getPtr()
-                                                              ->getModuleByType<WebBrowserModule>()
-                                                              ->getPropertyWidgetCEFFactory())) {
+    , browserClient_(new WebBrowserClient(this, renderHandler_,
+                                          InviwoApplication::getPtr()
+                                              ->getModuleByType<WebBrowserModule>()
+                                              ->getPropertyWidgetCEFFactory())) {
     addPort(background_);
     background_.setOptional(true);
     addPort(outport_);

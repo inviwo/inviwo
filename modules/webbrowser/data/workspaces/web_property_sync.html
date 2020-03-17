@@ -17,6 +17,7 @@ select {
 <body>
 <h3>HTML<->Inviwo synchronization (javascript & JSON)</h3>
 <!-- Examples of ways to send data back and fourth between Inviwo and the webpage -->
+<p>Parent processor identifier: <span id="parentWebBrowserProcessor"></p>
 <div class="slidecontainer">
   <p>Range (line width)<input type="range" min="1" max="100" value="50" class="slider" id="ordinalProperty">
   <span id="ordinalPropertyValue"></span></p>
@@ -28,6 +29,9 @@ select {
   <p>Option property<select id="shadingMode">
   </select>
 <script>
+inviwo.getParentWebBrowserProcessor(function(processor) {
+  document.getElementById("parentWebBrowserProcessor").innerHTML = processor.path;
+});
 
 var slider = document.getElementById("ordinalProperty");
 var ordinalPropertyValue = document.getElementById("ordinalPropertyValue");

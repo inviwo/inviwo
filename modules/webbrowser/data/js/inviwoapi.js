@@ -16,6 +16,32 @@
  */
 class InviwoAPI {
     /*
+     * Get the path/identifier to the WebBrowserProcessor responsible for handling the InviwoAPI
+     * calls. The path will be sent to supplied onSuccess callback.
+     * @param onSuccess Callback with a single (JSON) argument containing processor's path
+     *     (identifier)
+     */
+    async getParentWebBrowserProcessor(
+        onSuccess, onFailure = function(error_code, error_message) {}) {
+        window.cefQuery({
+            request: JSON.stringify({'command': 'parentwebbrowserprocessor'}),
+            onSuccess: function(response) {
+                if (typeof onSuccess === 'function') {
+                    onSuccess(JSON.parse(response));
+                }
+            },
+            onFailure: function(error_code, error_message) {
+                if (typeof onFailure === 'function') {
+                    onFailure(error_code, error_message);
+                } else {
+                    console.log(
+                        'getParentWebBrowserProcessor error (' + error_code +
+                        '): ' + error_message);
+                }
+            }
+        });
+    }
+    /*
      * Subscribe to changes of a property.
      * The supplied onChange callback will be called when the property changes.
      * The callbacks must be declared in global scope.
@@ -98,7 +124,8 @@ class InviwoAPI {
      * @param path - Processor identifier
      * @param onProgressChange callback that will be called when progress changes in inviwo.
      *                 Callback argument will contain new progress as parameter.
-     * @param onVisibleChange callback that will be called when progress bar visibility changes in inviwo.
+     * @param onVisibleChange callback that will be called when progress bar visibility changes in
+     *     inviwo.
      *                 Callback argument will contain new visibility (boolean) as parameter.
      */
     async subscribeProcessorProgress(path, onProgressChange, onVisibleChange) {
@@ -110,7 +137,10 @@ class InviwoAPI {
                 'onVisibleChange': onVisibleChange.name
             }),
             onSuccess: function(response) {},
-            onFailure: function(error_code, error_message) {}
+            onFailure: function(error_code, error_message) {
+                console.log(
+                    'subscribeProcessorProgress error (' + error_code + '): ' + error_message);
+            }
         });
     }
 

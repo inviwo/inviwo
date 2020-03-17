@@ -33,6 +33,7 @@
 #include <modules/webbrowser/processors/progressbarobservercef.h>
 
 #include <inviwo/core/network/processornetworkobserver.h>
+#include <inviwo/core/processors/processor.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -43,7 +44,7 @@
 namespace inviwo {
 
 /** \class ProcessorCefSynchronizer
- * Handles "processor.subscribe.progress" commands sent
+ * Handles "processor.subscribe.progress" and "parentwebbrowserprocessor" commands sent
  * from the Inviwo javascript API (see webbrowser/data/js/inviwoapi.js).
  *
  * @see PropertyCefSynchronizer
@@ -56,7 +57,11 @@ class IVW_MODULE_WEBBROWSER_API ProcessorCefSynchronizer
       public CefLoadHandler,
       public ProcessorNetworkObserver {
 public:
-    explicit ProcessorCefSynchronizer() = default;
+    /**
+     * @param const Processor* parent web browser processor responsible for the browser. Cannot be
+     * null.
+     */
+    explicit ProcessorCefSynchronizer(const Processor* parent);
     virtual ~ProcessorCefSynchronizer() = default;
 
     /**
@@ -69,7 +74,9 @@ public:
      * Called due to cefQuery execution in message_router.html.
      * Expects the request to be a JSON data object, see inviwoapi.js:
      * {command: "processor.subscribe.progress", "path": ProcessorIdentifier,
-     * "onProgressChange":onProgressCallback, "onProgressVisibleChange":onProgressVisibleChange} for
+     * "onProgressChange":onProgressCallback, "onProgressVisibleChange":onProgressVisibleChange}
+     * or
+     * {command: "parentwebbrowserprocessor"}
      */
     virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
                          const CefString& request, bool persistent,
@@ -79,6 +86,7 @@ public:
     virtual void onProcessorNetworkWillRemoveProcessor(Processor*) override;
 
 private:
+    const Processor* parent_;
     std::map<Processor*, ProgressBarObserverCEF> progressObservers_;
     IMPLEMENT_REFCOUNTING(ProcessorCefSynchronizer);
 };

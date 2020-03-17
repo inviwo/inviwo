@@ -63,9 +63,11 @@ void setupResourceManager(CefRefPtr<CefResourceManager> resource_manager) {
 
 }  // namespace detail
 
-WebBrowserClient::WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler,
+WebBrowserClient::WebBrowserClient(const Processor* parent,
+                                   CefRefPtr<RenderHandlerGL> renderHandler,
                                    const PropertyWidgetCEFFactory* widgetFactory)
-    : widgetFactory_(widgetFactory)
+    : parent_(parent)
+    , widgetFactory_(widgetFactory)
     , renderHandler_(renderHandler)
     , resourceManager_(new CefResourceManager()) {
     detail::setupResourceManager(resourceManager_);
@@ -95,7 +97,7 @@ void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
         propertyCefSynchronizer_ = new PropertyCefSynchronizer(widgetFactory_);
         addLoadHandler(propertyCefSynchronizer_);
         messageRouter_->AddHandler(propertyCefSynchronizer_.get(), false);
-        processorCefSynchronizer_ = new ProcessorCefSynchronizer();
+        processorCefSynchronizer_ = new ProcessorCefSynchronizer(parent_);
         addLoadHandler(processorCefSynchronizer_);
         messageRouter_->AddHandler(processorCefSynchronizer_.get(), false);
     }
@@ -227,7 +229,6 @@ void WebBrowserClient::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefF
 bool WebBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level,
                                         const CefString& message, const CefString& source,
                                         int line) {
-
     if (auto lc = LogCentral::getPtr()) {
         std::string src = source.ToString();
 

@@ -80,6 +80,8 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
                     startSynchronize(prop, onChange, propertyObserver);
                     widget = --(widgets_.end());
                     (*widget)->setFrame(frame);
+                    callback->Success("");
+                    return true;
                 }
             } else {
                 callback->Failure(0, "Could not find property: " + p);
