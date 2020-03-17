@@ -49,6 +49,7 @@ ColorScaleLegend::ColorScaleLegend()
     , inport_("inport")
     , outport_("outport")
     , volumeInport_("volumeInport")
+    , enabled_("enabled", "Enabled", true)
     , isotfComposite_("isotfComposite", "TF & Isovalues")
     , positioning_("positioning", "Positioning & Size")
     , legendPlacement_("legendPlacement", "Legend Placement",
@@ -105,7 +106,7 @@ ColorScaleLegend::ColorScaleLegend()
 
     axisStyle_.registerProperty(axis_);
 
-    addProperties(isotfComposite_, positioning_, axisStyle_, axis_);
+    addProperties(enabled_, isotfComposite_, positioning_, axisStyle_, axis_);
 
     // set initial axis parameters
     axis_.width_ = 0;
@@ -220,12 +221,16 @@ std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dime
 }
 
 void ColorScaleLegend::process() {
-    // draw cached overlay on top of the input image
-    if (inport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, inport_);
-    } else {
-        utilgl::activateAndClearTarget(outport_);
+    if (!enabled_) {
+        if (inport_.isReady()) {
+            outport_.setData(inport_.getData());
+        } else {
+            utilgl::activateAndClearTarget(outport_);
+        }
+
+        return;
     }
+    utilgl::activateTargetAndClearOrCopySource(outport_, inport_);
 
     // update the legend range if a volume is connected to inport
     if (volumeInport_.isChanged() && volumeInport_.hasData()) {
