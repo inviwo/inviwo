@@ -13,19 +13,19 @@ set(dll "vld_x64.dll")
 add_custom_target(vld
     ${CMAKE_COMMAND} -E copy_if_different 
         ${CMAKE_CURRENT_SOURCE_DIR}/vld.ini
-        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld.ini
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/vld.ini
 
     COMMAND ${CMAKE_COMMAND} -E copy_if_different 
         ${CMAKE_CURRENT_SOURCE_DIR}/bin/${arch}/${dll}
-        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/${dll} 
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/${dll}
 
     COMMAND ${CMAKE_COMMAND} -E copy_if_different 
         ${CMAKE_CURRENT_SOURCE_DIR}/bin/${arch}/dbghelp.dll
-        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/dbghelp.dll
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/dbghelp.dll
 
     COMMAND ${CMAKE_COMMAND} -E copy_if_different 
         ${CMAKE_CURRENT_SOURCE_DIR}/bin/${arch}/Microsoft.DTfW.DHL.manifest
-        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/Microsoft.DTfW.DHL.manifest
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/Microsoft.DTfW.DHL.manifest
 
     DEPENDS 
         ${CMAKE_CURRENT_SOURCE_DIR}/vld.ini
