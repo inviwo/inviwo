@@ -216,7 +216,11 @@ void FragmentListRenderer::setUniforms(Shader& shader, TextureUnit& abuffUnit) c
 }
 
 bool FragmentListRenderer::supportsFragmentLists() {
-    return OpenGLCapabilities::getOpenGLVersion() >= 430;
+    return OpenGLCapabilities::getOpenGLVersion() >= 430 &&
+           OpenGLCapabilities::isExtensionSupported("GL_NV_gpu_shader5") &&
+           OpenGLCapabilities::isExtensionSupported("GL_EXT_shader_image_load_store") &&
+           OpenGLCapabilities::isExtensionSupported("GL_NV_shader_buffer_load") &&
+           OpenGLCapabilities::isExtensionSupported("GL_EXT_bindable_uniform");
 }
 
 bool FragmentListRenderer::supportsIllustration() {
@@ -234,24 +238,25 @@ typename Dispatcher<void()>::Handle FragmentListRenderer::onReload(std::function
 
 void FragmentListRenderer::buildShaders() {
     auto* dfs = display_.getFragmentShaderObject();
-
     dfs->clearShaderExtensions();
-    dfs->addShaderExtension("GL_NV_gpu_shader5", true);
-    dfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
-    dfs->addShaderExtension("GL_NV_shader_buffer_load", true);
-    dfs->addShaderExtension("GL_NV_shader_buffer_store", true);
-    dfs->addShaderExtension("GL_EXT_bindable_uniform", true);
 
     auto* cfs = clear_.getFragmentShaderObject();
     cfs->clearShaderExtensions();
-    cfs->addShaderExtension("GL_NV_gpu_shader5", true);
-    cfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
-    cfs->addShaderExtension("GL_NV_shader_buffer_load", true);
-    cfs->addShaderExtension("GL_NV_shader_buffer_store", true);
-    cfs->addShaderExtension("GL_EXT_bindable_uniform", true);
+
+    if (supportsFragmentLists()) {
+        dfs->addShaderExtension("GL_NV_gpu_shader5", true);
+        dfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
+        dfs->addShaderExtension("GL_NV_shader_buffer_load", true);
+        dfs->addShaderExtension("GL_EXT_bindable_uniform", true);
+
+        cfs->addShaderExtension("GL_NV_gpu_shader5", true);
+        cfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
+        cfs->addShaderExtension("GL_NV_shader_buffer_load", true);
+        cfs->addShaderExtension("GL_EXT_bindable_uniform", true);
+    }
 
     auto* ffs = illustration_.fill.getFragmentShaderObject();
-    ffs->addShaderExtension("GL_ARB_shader_atomic_counter_ops", true);
+    if (supportsIllustration) ffs->addShaderExtension("GL_ARB_shader_atomic_counter_ops", true);
 
     if (supportsFragmentLists()) {
         display_.build();
