@@ -27,33 +27,40 @@
  *
  *********************************************************************************/
 
-#include <modules/meshrenderinggl/meshrenderingglmodule.h>
-#include <modules/meshrenderinggl/ports/rasterizationport.h>
-#include <modules/meshrenderinggl/processors/fancymeshrenderer.h>
-#include <modules/meshrenderinggl/processors/meshrasterizer.h>
-#include <modules/meshrenderinggl/processors/rasterizationrenderer.h>
-#include <modules/meshrenderinggl/processors/calcnormalsprocessor.h>
-#include <modules/meshrenderinggl/ports/rasterizationport.h>
+#pragma once
 
-#include <modules/opengl/shader/shadermanager.h>
+#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
+#include <modules/opengl/shader/shaderutils.h>
+
+#include <vector>
+#include <unordered_map>
+#include <optional>
 
 namespace inviwo {
 
-MeshRenderingGLModule::MeshRenderingGLModule(InviwoApplication* app)
-    : InviwoModule(app, "MeshRenderingGL") {
+/**
+ * \brief A functor class for rendering geometry into a fragment list
+ * Will be applied by a renderer containing an A-buffer.
+ */
 
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+class IVW_MODULE_MESHRENDERINGGL_API Rasterization {
+public:
+    virtual void rasterize(std::function<void(Shader&)> setUniforms) const = 0;
+    virtual void setImageSize(const ivec2& size) const = 0;
+    virtual bool usesFragmentLists() const = 0;
+};
 
-    // Processors
-    registerProcessor<FancyMeshRenderer>();
-    registerProcessor<MeshRasterizer>();
-    registerProcessor<RasterizationRenderer>();
-    registerProcessor<CalcNormalsProcessor>();
-
-    // Ports
-    registerPort<RasterizationInport>();
-    registerPort<RasterizationOutport>();
-}
-
+template <>
+struct DataTraits<Rasterization> {
+    static std::string classIdentifier() { return "org.inviwo.Rasterization"; }
+    static std::string dataName() { return "Rasterization"; }
+    static uvec3 colorCode() { return uvec3(80, 160, 160); }
+    static Document info(const Rasterization& data) {
+        std::ostringstream oss;
+        oss << "Functor for rasterization.";
+        Document doc;
+        doc.append("p", oss.str());
+        return doc;
+    }
+};
 }  // namespace inviwo
