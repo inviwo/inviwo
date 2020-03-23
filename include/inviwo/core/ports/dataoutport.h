@@ -71,6 +71,20 @@ public:
     virtual void setData(const T* data);  // will assume ownership of data.
     virtual bool hasData() const override;
 
+    /**
+    * Pass data to the port using the Move constructor.
+    * Example: 
+    * ```c++
+    * SomePorcessor::process() {
+    *     std::vector<vec3> points;
+          /// code to fill the points-vector with data
+          myPort_.moveInData(std::move(points));
+    * }
+    * ```
+    */
+    template <typename U = T, typename = std::enable_if_t<std::is_move_constructible_v<U>>>
+    void moveInData(U&& data);
+
 protected:
     std::shared_ptr<const T> data_;
 };
@@ -129,6 +143,12 @@ std::shared_ptr<const T> DataOutport<T>::detachData() {
 template <typename T>
 bool DataOutport<T>::hasData() const {
     return data_.get() != nullptr;
+}
+
+template <typename T>
+template <typename U, typename>
+void DataOutport<T>::moveInData(U&& data) {
+    setData(std::make_shared<T>(std::move(data)));
 }
 
 template <typename T>
