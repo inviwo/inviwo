@@ -73,7 +73,7 @@ public:
 
     /**
     * Pass data to the port using the Move constructor.
-    * Example: 
+    * Example:
     * ```c++
     * SomePorcessor::process() {
     *     std::vector<vec3> points;
