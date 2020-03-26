@@ -81,7 +81,7 @@ public:
      * }
      * ```
      */
-    template <typename U = T, typename = std::enable_if_t<std::is_move_constructible_v<T>>>
+    template <typename U = T, typename = std::enable_if_t<std::is_move_constructible_v<U>>>
     void setData(T&& data);
 
     virtual bool hasData() const override;
@@ -144,7 +144,7 @@ std::shared_ptr<const T> DataOutport<T>::detachData() {
 template <typename T>
 template <typename, typename>
 void DataOutport<T>::setData(T&& data) {
-    setData(std::make_shared<T>(std::move(data)));
+    setData(std::make_shared<T>(data));
 }
 
 template <typename T>
