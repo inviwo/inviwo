@@ -31,6 +31,10 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 namespace inviwo {
 
 // the constructor just launches some amount of workers
@@ -106,7 +110,11 @@ ThreadPool::Worker::Worker(ThreadPool& pool)
             }
         }
         state = State::Done;
-    }} {}
+    }} {
+#ifdef WIN32
+    SetThreadDescription(thread.native_handle(), L"Inviwo Worker Thread");
+#endif
+}
 
 void ThreadPool::enqueueRaw(std::function<void()> task) {
     if (workers.empty()) {
