@@ -132,7 +132,7 @@ void LayerCL::setDimensions(size2_t dimensions) {
     if (dimensions == dimensions_) {
         return;
     }
-
+    dimensions_ = dimensions;
     cl::Image2D* resizedLayer2D = new cl::Image2D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
                                                   getFormat(), dimensions.x, dimensions.y);
     LayerCLResizer::resize(*clImage_, *resizedLayer2D, dimensions);
