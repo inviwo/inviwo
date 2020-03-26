@@ -132,11 +132,24 @@ void LayerCL::setDimensions(size2_t dimensions) {
     if (dimensions == dimensions_) {
         return;
     }
+
+    try {
+        auto resizedLayer2D =
+            std::make_unique<cl::Image2D>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                                          getFormat(), dimensions.x, dimensions.y);
+        LayerCLResizer::resize(*clImage_, *resizedLayer2D, dimensions);
+        clImage_ = std::move(resizedLayer2D);
+    } catch (const cl::Error& err) {
+        if (err.err() == CL_INVALID_IMAGE_DESCRIPTOR) {
+            // OpenCL images with (0,0) sizes throws exception
+            // Most likely during image port disconnection, so we probably want to ignore it.
+            LogError(getCLErrorString(err));
+        } else {
+            throw err;
+        }
+    }
+
     dimensions_ = dimensions;
-    cl::Image2D* resizedLayer2D = new cl::Image2D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                                                  getFormat(), dimensions.x, dimensions.y);
-    LayerCLResizer::resize(*clImage_, *resizedLayer2D, dimensions);
-    clImage_ = std::unique_ptr<cl::Image2D>(resizedLayer2D);
 }
 
 const size2_t& LayerCL::getDimensions() const { return dimensions_; }
