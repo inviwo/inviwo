@@ -267,10 +267,10 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
         //    y = scl_slope  x + scl_inter
         // where x = stored voxel value and y = "true" voxel value
         dm.valueRange.x =
-            static_cast<double>(niftiImage->scl_slope) * volume->dataMap_.dataRange.x +
+            static_cast<double>(niftiImage->scl_slope) * dm.dataRange.x +
             static_cast<double>(niftiImage->scl_inter);
         dm.valueRange.y =
-            static_cast<double>(niftiImage->scl_slope) * volume->dataMap_.dataRange.y +
+            static_cast<double>(niftiImage->scl_slope) * dm.dataRange.y +
             static_cast<double>(niftiImage->scl_inter);
     } else {
         dm.valueRange = dm.dataRange;
