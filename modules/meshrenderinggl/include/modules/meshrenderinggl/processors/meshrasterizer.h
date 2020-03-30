@@ -174,10 +174,9 @@ protected:
      * \brief Settings to assemble the equation for the alpha values.
      * All individual factors are clamped to [0,1].
      */
-    struct AlphaSettings {
+    struct AlphaSettings : public CompositeProperty {
         AlphaSettings();
 
-        CompositeProperty container_;
         BoolProperty enableUniform_;
         FloatProperty uniformScaling_;
         // IRIS
@@ -199,9 +198,8 @@ protected:
     /**
      * \brief Settings controlling how edges are highlighted.
      */
-    struct EdgeSettings {
+    struct EdgeSettings : public CompositeProperty {
         EdgeSettings();
-        CompositeProperty container_;
         FloatProperty edgeThickness_;
         BoolProperty depthDependent_;
         BoolProperty smoothEdges_;
@@ -292,7 +290,7 @@ protected:
         const std::vector<std::shared_ptr<const Mesh>> meshes_;
         std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;
 
-        const CameraProperty camera_;
+        const Camera* camera_;
         const std::string cameraId_;
         SimpleLightingProperty::Space lightSpace_;
         vec3 lightPosition_;
@@ -325,7 +323,8 @@ protected:
          */
     public:
         MeshRasterization(const MeshRasterizer& rasterizerProcessor);
-        void update(const MeshRasterizer& rasterizerProcessor);
+        ~MeshRasterization() { delete camera_; }
+        void update(const MeshRasterizer& rasterizerProcessor) const;
         virtual void rasterize(std::function<void(Shader&)> setUniforms) const override;
         virtual void setImageSize(const ivec2& size) const override { imageSize_ = size; }
         virtual bool usesFragmentLists() const override {

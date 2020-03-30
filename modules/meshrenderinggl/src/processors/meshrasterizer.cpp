@@ -111,24 +111,22 @@ MeshRasterizer::MeshRasterizer()
     drawSilhouette_.onChange([this]() { updateMeshes(); });
 
     addProperties(camera_, lightingProperty_, trackball_, forceOpaque_, drawSilhouette_,
-                  silhouetteColor_, normalSource_, normalComputationMode_,
-                  alphaSettings_.container_, edgeSettings_.container_, faceSettings_[0].show_,
-                  faceSettings_[1].show_);
+                  silhouetteColor_, normalSource_, normalComputationMode_, alphaSettings_,
+                  edgeSettings_, faceSettings_[0].show_, faceSettings_[1].show_);
 
     silhouetteColor_.visibilityDependsOn(drawSilhouette_, [](const auto& p) { return p.get(); });
     normalComputationMode_.visibilityDependsOn(
         normalSource_, [](const auto& p) { return p.get() == NormalSource::GenerateVertex; });
 
-    alphaSettings_.container_.visibilityDependsOn(forceOpaque_,
-                                                  [](const auto& p) { return !p.get(); });
+    alphaSettings_.visibilityDependsOn(forceOpaque_, [](const auto& p) { return !p.get(); });
 
     auto edgevis = [this](auto) {
         return drawSilhouette_.get() || faceSettings_[0].showEdges_.get() ||
                faceSettings_[1].showEdges_.get();
     };
-    edgeSettings_.container_.visibilityDependsOn(drawSilhouette_, edgevis);
-    edgeSettings_.container_.visibilityDependsOn(faceSettings_[0].showEdges_, edgevis);
-    edgeSettings_.container_.visibilityDependsOn(faceSettings_[1].showEdges_, edgevis);
+    edgeSettings_.visibilityDependsOn(drawSilhouette_, edgevis);
+    edgeSettings_.visibilityDependsOn(faceSettings_[0].showEdges_, edgevis);
+    edgeSettings_.visibilityDependsOn(faceSettings_[1].showEdges_, edgevis);
 
     camera_.setCollapsed(true);
     lightingProperty_.setCollapsed(true);
@@ -140,7 +138,7 @@ MeshRasterizer::MeshRasterizer()
 }
 
 MeshRasterizer::AlphaSettings::AlphaSettings()
-    : container_("alphaContainer", "Alpha")
+    : CompositeProperty("alphaContainer", "Alpha")
     , enableUniform_("alphaUniform", "Uniform", true, InvalidationLevel::InvalidResources)
     , uniformScaling_("alphaUniformScaling", "Scaling", 0.5f, 0.f, 1.f, 0.01f)
     , enableAngleBased_("alphaAngleBased", "Angle-based", false,
@@ -154,10 +152,9 @@ MeshRasterizer::AlphaSettings::AlphaSettings()
     , densityExponent_("alphaDensityExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f)
     , enableShape_("alphaShape", "Shape-based", false, InvalidationLevel::InvalidResources)
     , shapeExponent_("alphaShapeExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f) {
-    container_.addProperties(enableUniform_, uniformScaling_, enableAngleBased_,
-                             angleBasedExponent_, enableNormalVariation_, normalVariationExponent_,
-                             enableDensity_, baseDensity_, densityExponent_, enableShape_,
-                             shapeExponent_);
+    addProperties(enableUniform_, uniformScaling_, enableAngleBased_, angleBasedExponent_,
+                  enableNormalVariation_, normalVariationExponent_, enableDensity_, baseDensity_,
+                  densityExponent_, enableShape_, shapeExponent_);
 
     const auto get = [](const auto& p) { return p.get(); };
 
@@ -186,11 +183,11 @@ void MeshRasterizer::AlphaSettings::setUniforms(Shader& shader, std::string_view
 }
 
 MeshRasterizer::EdgeSettings::EdgeSettings()
-    : container_("edges", "Edges")
+    : CompositeProperty("edges", "Edges")
     , edgeThickness_("thickness", "Thickness", 2.f, 0.1f, 10.f, 0.1f)
     , depthDependent_("depth", "Depth dependent", false, InvalidationLevel::InvalidResources)
     , smoothEdges_("smooth", "Smooth edges", true, InvalidationLevel::InvalidResources) {
-    container_.addProperties(edgeThickness_, depthDependent_, smoothEdges_);
+    addProperties(edgeThickness_, depthDependent_, smoothEdges_);
 }
 
 MeshRasterizer::HatchingSettings::HatchingSettings()
@@ -376,7 +373,8 @@ void MeshRasterizer::updateMeshes() {
 }
 
 MeshRasterizer::MeshRasterization::MeshRasterization(const MeshRasterizer& rasterizerProcessor)
-    : camera_(rasterizerProcessor.camera_)
+    : camera_(rasterizerProcessor.camera_.get().clone())
+    , cameraId_(rasterizerProcessor.camera_.getIdentifier())
     , lightPosition_(rasterizerProcessor.lightingProperty_.lightPosition_.get())
     , ambientColor_(rasterizerProcessor.lightingProperty_.ambientColor_.get())
     , diffuseColor_(rasterizerProcessor.lightingProperty_.diffuseColor_.get())
@@ -445,7 +443,7 @@ void MeshRasterizer::MeshRasterization::rasterize(
     if (!shader_->isReady()) return;
 
     // general settings for camera, lighting, picking, mesh data
-    utilgl::setUniforms(*shader_, camera_);
+    utilgl::setShaderUniforms(*shader_, *camera_, cameraId_);
     setLightingUniforms();
     shader_->setUniform("halfScreenSize", imageSize_ / ivec2(2));
 
@@ -505,7 +503,7 @@ void MeshRasterizer::MeshRasterization::setLightingUniforms() const {
     vec3 lightPos;
     switch (lightSpace_) {
         case SimpleLightingProperty::Space::VIEW:
-            lightPos = vec3(camera_.inverseViewMatrix() * vec4(lightPosition_, 1.0f));
+            lightPos = vec3(camera_->getInverseViewMatrix() * vec4(lightPosition_, 1.0f));
             break;
         case SimpleLightingProperty::Space::WORLD:
         default:
@@ -518,7 +516,7 @@ void MeshRasterizer::MeshRasterization::setLightingUniforms() const {
     shader_->setUniform("lighting.specularExponent", specularExponent_);
 }
 
-void MeshRasterizer::MeshRasterization::update(const MeshRasterizer& rasterizerProcessor) {
+void MeshRasterizer::MeshRasterization::update(const MeshRasterizer& rasterizerProcessor) const {
     setLightingUniforms();
 }
 
