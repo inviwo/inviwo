@@ -48,10 +48,8 @@ namespace inviwo {
 template <typename T>
 class OrdinalProperty : public TemplateProperty<T> {
 public:
-    OrdinalProperty(const std::string& identifier, const std::string& displayName,
-                    const T& value,
-                    const T& minValue,
-                    const T& maxValue = Defaultvalues<T>::getMax(),
+    OrdinalProperty(const std::string& identifier, const std::string& displayName, const T& value,
+                    const T& minValue, const T& maxValue = Defaultvalues<T>::getMax(),
                     const T& increment = Defaultvalues<T>::getInc(),
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                     PropertySemantics semantics = PropertySemantics::Default);
@@ -299,7 +297,7 @@ void OrdinalProperty<T>::set(const T& value) {
 
 template <typename T>
 void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, const T& increment) {
-    if (!validRange(maxVal, minVal)) {
+    if (!validRange(minVal, maxVal)) {
         throw Exception{
             fmt::format("Invalid range given for \"{}\" ({}Property, {})", this->getDisplayName(),
                         Defaultvalues<T>::getName(), joinString(this->getPath(), ".")),
@@ -409,15 +407,12 @@ Document OrdinalProperty<T>::getDescription() const {
     auto b = doc.get({P("html"), P("body")});
 
     utildoc::TableBuilder tb(b, P::end());
-    tb(H("#"), H("Value"), H("Min"), H("Max"), H("Inc"));
+    tb(H("#"), H("Value"), H(fmt::format("Min ({})", minConstraint_)),
+       H(fmt::format("Max ({})", maxConstraint_)), H("Inc"));
     for (size_t i = 0; i < util::flat_extent<T>::value; i++) {
         tb(H(i), util::glmcomp(value_.value, i), util::glmcomp(minValue_.value, i),
            util::glmcomp(maxValue_.value, i), util::glmcomp(increment_.value, i));
     }
-
-    utildoc::TableBuilder tb2(b, P::end());
-    util::for_each_argument([&tb2](auto p) { tb2(H(camelCaseToHeader(p.name)), p.value); },
-                            minConstraint_, maxConstraint_);
 
     return doc;
 }

@@ -52,6 +52,7 @@
 #include <QPushButton>
 #include <QKeyEvent>
 #include <QString>
+#include <QCheckBox>
 #include <warn/pop>
 
 namespace inviwo {
@@ -147,9 +148,53 @@ TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(OrdinalPro
         }
     }
 
-    gridLayout->addWidget(btnApply_, count + 1, 0, 1, 1);
-    gridLayout->addWidget(btnOk_, count + 1, 1, 1, 2);
-    gridLayout->addWidget(btnCancel_, count + 1, 3, 1, 2);
+    auto same = new QCheckBox("Same", this);
+    same->setToolTip("Same min/max value for all channels");
+    same->setChecked(true);
+    auto symmetric = new QCheckBox("Symmetric", this);
+    symmetric->setToolTip("Symmetric min and max value ( min = -max )");
+
+    auto updateOthers = [this, same, symmetric](size_t row, bool min) {
+        return [this, same, symmetric, row, min](const QString& newText) {
+            const size_t srcCol = min ? 0 : 2;
+            const size_t dstCol = min ? 2 : 0;
+            if (same->isChecked()) {
+                for (size_t i = 0; i < settings_.size(); i++) {
+                    if (i != row) {
+                        QSignalBlocker block{settings_[i]->additionalFields_[srcCol]};
+                        settings_[i]->additionalFields_[srcCol]->setText(
+                            settings_[row]->additionalFields_[srcCol]->text());
+                    }
+                    if (symmetric->isChecked()) {
+                        QSignalBlocker block{settings_[row]->additionalFields_[dstCol]};
+                        QLocale locale = settings_[row]->additionalFields_[dstCol]->locale();
+                        settings_[row]->additionalFields_[dstCol]->setText(
+                            QStringHelper<BT>::toLocaleString(
+                                locale, -settings_[row]->getFieldAsDouble(srcCol)));
+                    }
+                }
+            } else if (symmetric->isChecked()) {
+                QSignalBlocker block{settings_[row]->additionalFields_[dstCol]};
+                QLocale locale = settings_[row]->additionalFields_[dstCol]->locale();
+                settings_[row]->additionalFields_[dstCol]->setText(
+                    QStringHelper<BT>::toLocaleString(locale,
+                                                      -settings_[row]->getFieldAsDouble(srcCol)));
+            }
+        };
+    };
+
+    for (size_t i = 0; i < settings_.size(); i++) {
+        connect(settings_[i]->additionalFields_[0], &QLineEdit::textChanged, this,
+                updateOthers(i, true));
+        connect(settings_[i]->additionalFields_[2], &QLineEdit::textChanged, this,
+                updateOthers(i, false));
+    }
+
+    gridLayout->addWidget(same, count + 1, 0, 1, 1);
+    gridLayout->addWidget(symmetric, count + 1, 1, 1, 1);
+    gridLayout->addWidget(btnApply_, count + 1, 2, 1, 1);
+    gridLayout->addWidget(btnOk_, count + 1, 3, 1, 1);
+    gridLayout->addWidget(btnCancel_, count + 1, 4, 1, 1);
     gridLayout->setColumnStretch(2, 2);
 
     setLayout(gridLayout);
@@ -159,7 +204,7 @@ TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(OrdinalPro
     connect(btnCancel_, &QPushButton::clicked, this, &TemplatePropertySettingsWidgetQt<T>::cancel);
 
     reload();
-    setWindowTitle(QString::fromStdString(property_->getDisplayName().c_str()));
+    setWindowTitle(utilqt::toQString(property_->getDisplayName()));
 }
 
 template <typename T>
@@ -171,24 +216,16 @@ template <typename T>
 void TemplatePropertySettingsWidgetQt<T>::apply() {
     NetworkLock lock(property_);
 
-    std::array<T, 4> vals{property_->getMinValue(), property_->get(), property_->getMaxValue(),
-                          property_->getIncrement()};
-
-    const std::array<T, 4> orgVals{vals};
-
+    std::array<T, 4> vals{};
     for (size_t i = 0; i < settings_.size(); i++) {
         for (int k = 0; k < 4; ++k) {
             util::glmcomp(vals[k], i) = static_cast<BT>(settings_[i]->getFieldAsDouble(k));
         }
     }
 
-    static const std::array<void (OrdinalProperty<T>::*)(const T&), 4> setters{
-        &OrdinalProperty<T>::setMinValue, &OrdinalProperty<T>::set,
-        &OrdinalProperty<T>::setMaxValue, &OrdinalProperty<T>::setIncrement};
-
     property_->setInitiatingWidget(this);
     for (int k = 0; k < 4; ++k) {
-        if (vals[k] != orgVals[k]) (*property_.*setters[k])(vals[k]);
+        property_->set(vals[1], vals[0], vals[2], vals[3]);
     }
     property_->clearInitiatingWidget();
 }
@@ -204,6 +241,14 @@ void TemplatePropertySettingsWidgetQt<T>::reload() {
             settings_[i]->additionalFields_[k]->setText(
                 QStringHelper<BT>::toLocaleString(locale, util::glmcomp(vals[k], i)));
         }
+
+        settings_[i]->additionalFields_[0]->setEnabled(
+            property_->getMinConstraintBehaviour() == ConstraintBehaviour::Editable ||
+            property_->getMinConstraintBehaviour() == ConstraintBehaviour::Ignore);
+
+        settings_[i]->additionalFields_[2]->setEnabled(
+            property_->getMaxConstraintBehaviour() == ConstraintBehaviour::Editable ||
+            property_->getMaxConstraintBehaviour() == ConstraintBehaviour::Ignore);
     }
 }
 
