@@ -30,7 +30,9 @@ if __name__ == '__main__':
     familiesInCategory = dict();
     getFamiliesForCategoryImpl = "";
 
+    minElementsForFamily = dict();
     maxElementsForFamily = dict();
+    getMinNumberOfColorsForFamilyImpl = "";
     getMaxNumberOfColorsForFamilyImpl = "";
     
     impls = "";
@@ -72,6 +74,10 @@ if __name__ == '__main__':
                     if not a in maxElementsForFamily:
                         maxElementsForFamily[a] = [];
                     maxElementsForFamily[a].append(fam);
+                if i == 0:
+                    if not a in minElementsForFamily:
+                        minElementsForFamily[a] = [];
+                    minElementsForFamily[a].append(fam);
                 i+=1;
                 enumname = fam +"_" + str(a);
                 enum += enumname + ", ";
@@ -134,6 +140,19 @@ if __name__ == '__main__':
             else:
                 getMaxNumberOfColorsForFamilyImpl = getMaxNumberOfColorsForFamilyImpl[:-4];
             getMaxNumberOfColorsForFamilyImpl += ") {\n\t\treturn " + str(a) + ";\n\t}\n";
+        r = 0
+        for a in minElementsForFamily:
+            getMinNumberOfColorsForFamilyImpl += "\tif (";
+            for z in minElementsForFamily[a]:
+                getMinNumberOfColorsForFamilyImpl += "family == Family::" + z + " || "
+                if r % 2:
+                    getMinNumberOfColorsForFamilyImpl += "\n\t\t";
+                r=r+1
+            if not r % 2:
+                getMinNumberOfColorsForFamilyImpl = getMinNumberOfColorsForFamilyImpl[:-7];
+            else:
+                getMinNumberOfColorsForFamilyImpl = getMinNumberOfColorsForFamilyImpl[:-4];
+            getMinNumberOfColorsForFamilyImpl += ") {\n\t\treturn " + str(a) + ";\n\t}\n";
 
     categories += "NumberOfColormapCategories, Undefined };\n";
 
@@ -155,12 +174,15 @@ if __name__ == '__main__':
 
     while getMaxNumberOfColorsForFamilyImpl.endswith("\n"):
         getMaxNumberOfColorsForFamilyImpl = getMaxNumberOfColorsForFamilyImpl[0:-1]
+    while getMinNumberOfColorsForFamilyImpl.endswith("\n"):
+        getMinNumberOfColorsForFamilyImpl = getMinNumberOfColorsForFamilyImpl[0:-1]
 
     
 
     header = header.replace("##PLACEHOLDER##",enum + categories + "\n" + families);
     src = src.replace("##PLACEHOLDER##",impls);
     src = src.replace("##GETFAMILIESIMPL##", getFamiliesForCategoryImpl);
+    src = src.replace("##GETMINIMPL##", getMinNumberOfColorsForFamilyImpl);
     src = src.replace("##GETMAXIMPL##", getMaxNumberOfColorsForFamilyImpl);
     header = header.replace("##PLACEHOLDER_NAMES##",names);
     header = header.replace("##PLACEHOLDER_CATEGORIES##",categories_os);
@@ -170,9 +192,9 @@ if __name__ == '__main__':
     src = src.replace("\t","    ");
     header = header.replace("\t","    ");
 
-    #with open(ivwpath + '/include/inviwo/core/util/colorbrewer-generated.h','w') as header_file:
-    #    print(header, file=header_file, end='')
-    #    header_file.close();
+    with open(ivwpath + '/include/inviwo/core/util/colorbrewer-generated.h','w') as header_file:
+        print(header, file=header_file, end='')
+        header_file.close();
     with open(ivwpath + '/src/core/util/colorbrewer-generated.cpp','w') as source_file:
         print(src, file=source_file, end='')
         source_file.close();

@@ -45,7 +45,7 @@ namespace colorbrewer {
 
 // clang-format off
 enum class Colormap {
-    Accent_3, Accent_4, Accent_5, Accent_6, Accent_7, Accent_8, 
+    Accent_1, Accent_2, Accent_3, Accent_4, Accent_5, Accent_6, Accent_7, Accent_8, 
     Blues_3, Blues_4, Blues_5, Blues_6, Blues_7, Blues_8, Blues_9, 
     BrBG_3, BrBG_4, BrBG_5, BrBG_6, BrBG_7, BrBG_8, BrBG_9, BrBG_10, BrBG_11, 
     BuGn_3, BuGn_4, BuGn_5, BuGn_6, BuGn_7, BuGn_8, BuGn_9, 
@@ -57,7 +57,7 @@ enum class Colormap {
     OrRd_3, OrRd_4, OrRd_5, OrRd_6, OrRd_7, OrRd_8, OrRd_9, 
     Oranges_3, Oranges_4, Oranges_5, Oranges_6, Oranges_7, Oranges_8, Oranges_9, 
     PRGn_3, PRGn_4, PRGn_5, PRGn_6, PRGn_7, PRGn_8, PRGn_9, PRGn_10, PRGn_11, 
-    Paired_3, Paired_4, Paired_5, Paired_6, Paired_7, Paired_8, Paired_9, Paired_10, Paired_11, Paired_12, 
+    Paired_1, Paired_2, Paired_3, Paired_4, Paired_5, Paired_6, Paired_7, Paired_8, Paired_9, Paired_10, Paired_11, Paired_12, 
     Pastel1_3, Pastel1_4, Pastel1_5, Pastel1_6, Pastel1_7, Pastel1_8, Pastel1_9, 
     Pastel2_3, Pastel2_4, Pastel2_5, Pastel2_6, Pastel2_7, Pastel2_8, 
     PiYG_3, PiYG_4, PiYG_5, PiYG_6, PiYG_7, PiYG_8, PiYG_9, PiYG_10, PiYG_11, 
@@ -72,15 +72,15 @@ enum class Colormap {
     RdYlBu_3, RdYlBu_4, RdYlBu_5, RdYlBu_6, RdYlBu_7, RdYlBu_8, RdYlBu_9, RdYlBu_10, RdYlBu_11, 
     RdYlGn_3, RdYlGn_4, RdYlGn_5, RdYlGn_6, RdYlGn_7, RdYlGn_8, RdYlGn_9, RdYlGn_10, RdYlGn_11, 
     Reds_3, Reds_4, Reds_5, Reds_6, Reds_7, Reds_8, Reds_9, 
-    Set1_3, Set1_4, Set1_5, Set1_6, Set1_7, Set1_8, Set1_9, 
-    Set2_3, Set2_4, Set2_5, Set2_6, Set2_7, Set2_8, 
+    Set1_1, Set1_2, Set1_3, Set1_4, Set1_5, Set1_6, Set1_7, Set1_8, Set1_9, 
+    Set2_1, Set2_2, Set2_3, Set2_4, Set2_5, Set2_6, Set2_7, Set2_8, 
     Set3_3, Set3_4, Set3_5, Set3_6, Set3_7, Set3_8, Set3_9, Set3_10, Set3_11, Set3_12, 
     Spectral_3, Spectral_4, Spectral_5, Spectral_6, Spectral_7, Spectral_8, Spectral_9, Spectral_10, Spectral_11, 
     YlGn_3, YlGn_4, YlGn_5, YlGn_6, YlGn_7, YlGn_8, YlGn_9, 
     YlGnBu_3, YlGnBu_4, YlGnBu_5, YlGnBu_6, YlGnBu_7, YlGnBu_8, YlGnBu_9, 
     YlOrBr_3, YlOrBr_4, YlOrBr_5, YlOrBr_6, YlOrBr_7, YlOrBr_8, YlOrBr_9, 
     YlOrRd_3, YlOrRd_4, YlOrRd_5, YlOrRd_6, YlOrRd_7, YlOrRd_8, 
-    FirstMap=Accent_3, LastMap=YlOrRd_8
+    FirstMap=Accent_1, LastMap=YlOrRd_8
 };
 
 enum class Category { Diverging, Qualitative, Sequential, NumberOfColormapCategories, Undefined };
@@ -99,6 +99,8 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
                                              Colormap colormap) {
     switch (colormap) {
         // clang-format off
+        case Colormap::Accent_1: os << "Accent_1"; break;
+        case Colormap::Accent_2: os << "Accent_2"; break;
         case Colormap::Accent_3: os << "Accent_3"; break;
         case Colormap::Accent_4: os << "Accent_4"; break;
         case Colormap::Accent_5: os << "Accent_5"; break;
@@ -185,6 +187,8 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
         case Colormap::PRGn_9: os << "PRGn_9"; break;
         case Colormap::PRGn_10: os << "PRGn_10"; break;
         case Colormap::PRGn_11: os << "PRGn_11"; break;
+        case Colormap::Paired_1: os << "Paired_1"; break;
+        case Colormap::Paired_2: os << "Paired_2"; break;
         case Colormap::Paired_3: os << "Paired_3"; break;
         case Colormap::Paired_4: os << "Paired_4"; break;
         case Colormap::Paired_5: os << "Paired_5"; break;
@@ -304,6 +308,8 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
         case Colormap::Reds_7: os << "Reds_7"; break;
         case Colormap::Reds_8: os << "Reds_8"; break;
         case Colormap::Reds_9: os << "Reds_9"; break;
+        case Colormap::Set1_1: os << "Set1_1"; break;
+        case Colormap::Set1_2: os << "Set1_2"; break;
         case Colormap::Set1_3: os << "Set1_3"; break;
         case Colormap::Set1_4: os << "Set1_4"; break;
         case Colormap::Set1_5: os << "Set1_5"; break;
@@ -311,6 +317,8 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
         case Colormap::Set1_7: os << "Set1_7"; break;
         case Colormap::Set1_8: os << "Set1_8"; break;
         case Colormap::Set1_9: os << "Set1_9"; break;
+        case Colormap::Set2_1: os << "Set2_1"; break;
+        case Colormap::Set2_2: os << "Set2_2"; break;
         case Colormap::Set2_3: os << "Set2_3"; break;
         case Colormap::Set2_4: os << "Set2_4"; break;
         case Colormap::Set2_5: os << "Set2_5"; break;

@@ -40,6 +40,17 @@ namespace colorbrewer {
 const std::vector<dvec4> &getColormap(Colormap colormap) {
     switch (colormap) {
         // clang-format off
+        case Colormap::Accent_1: {
+            static const std::vector<dvec4> accent_1(
+                {dvec4(0.4980392156862745, 0.788235294117647, 0.4980392156862745, 1.0)});
+            return accent_1;
+        }
+        case Colormap::Accent_2: {
+            static const std::vector<dvec4> accent_2(
+                {dvec4(0.4980392156862745, 0.788235294117647, 0.4980392156862745, 1.0),
+                 dvec4(0.7450980392156863, 0.6823529411764706, 0.8313725490196079, 1.0)});
+            return accent_2;
+        }
         case Colormap::Accent_3: {
             static const std::vector<dvec4> accent_3(
                 {dvec4(0.4980392156862745, 0.788235294117647, 0.4980392156862745, 1.0),
@@ -911,6 +922,17 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
                  dvec4(0.10588235294117647, 0.47058823529411764, 0.21568627450980393, 1.0),
                  dvec4(0.0, 0.26666666666666666, 0.10588235294117647, 1.0)});
             return prgn_11;
+        }
+        case Colormap::Paired_1: {
+            static const std::vector<dvec4> paired_1(
+                {dvec4(0.6509803921568628, 0.807843137254902, 0.8901960784313725, 1.0)});
+            return paired_1;
+        }
+        case Colormap::Paired_2: {
+            static const std::vector<dvec4> paired_2(
+                {dvec4(0.6509803921568628, 0.807843137254902, 0.8901960784313725, 1.0),
+                 dvec4(0.6980392156862745, 0.8745098039215686, 0.5411764705882353, 1.0)});
+            return paired_2;
         }
         case Colormap::Paired_3: {
             static const std::vector<dvec4> paired_3(
@@ -2168,6 +2190,17 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
                  dvec4(0.403921568627451, 0.0, 0.050980392156862744, 1.0)});
             return reds_9;
         }
+        case Colormap::Set1_1: {
+            static const std::vector<dvec4> set1_1(
+                {dvec4(0.8941176470588236, 0.10196078431372549, 0.10980392156862745, 1.0)});
+            return set1_1;
+        }
+        case Colormap::Set1_2: {
+            static const std::vector<dvec4> set1_2(
+                {dvec4(0.8941176470588236, 0.10196078431372549, 0.10980392156862745, 1.0),
+                 dvec4(0.30196078431372547, 0.6862745098039216, 0.2901960784313726, 1.0)});
+            return set1_2;
+        }
         case Colormap::Set1_3: {
             static const std::vector<dvec4> set1_3(
                 {dvec4(0.8941176470588236, 0.10196078431372549, 0.10980392156862745, 1.0),
@@ -2237,6 +2270,17 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
                  dvec4(0.9686274509803922, 0.5058823529411764, 0.7490196078431373, 1.0),
                  dvec4(0.6, 0.6, 0.6, 1.0)});
             return set1_9;
+        }
+        case Colormap::Set2_1: {
+            static const std::vector<dvec4> set2_1(
+                {dvec4(0.4, 0.7607843137254902, 0.6470588235294118, 1.0)});
+            return set2_1;
+        }
+        case Colormap::Set2_2: {
+            static const std::vector<dvec4> set2_2(
+                {dvec4(0.4, 0.7607843137254902, 0.6470588235294118, 1.0),
+                 dvec4(0.9882352941176471, 0.5529411764705883, 0.3843137254901961, 1.0)});
+            return set2_2;
         }
         case Colormap::Set2_3: {
             static const std::vector<dvec4> set2_3(
@@ -2777,14 +2821,40 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
             return ylorrd_8;
         }
 
-            // clang-format on
+        // clang-format on
     }
     IVW_ASSERT(false, "Unhandled enum value");
     static const std::vector<dvec4> dummy{};
     return dummy;
 }
 
-glm::uint8 getMinNumberOfColorsForFamily(const Family &) { return 3; }
+glm::uint8 getMinNumberOfColorsForFamily(const Family &family) { 
+        // clang-format off
+    if (family == Family::Accent || family == Family::Paired || 
+        family == Family::Set1 || family == Family::Set2) {
+        return 1;
+    }
+    if (family == Family::Blues || family == Family::BrBG || 
+        family == Family::BuGn || family == Family::BuPu || 
+        family == Family::Dark2 || family == Family::GnBu || 
+        family == Family::Greens || family == Family::Greys || 
+        family == Family::OrRd || family == Family::Oranges || 
+        family == Family::PRGn || family == Family::Pastel1 || 
+        family == Family::Pastel2 || family == Family::PiYG || 
+        family == Family::PuBu || family == Family::PuBuGn || 
+        family == Family::PuOr || family == Family::PuRd || 
+        family == Family::Purples || family == Family::RdBu || 
+        family == Family::RdGy || family == Family::RdPu || 
+        family == Family::RdYlBu || family == Family::RdYlGn || 
+        family == Family::Reds || family == Family::Set3 || 
+        family == Family::Spectral || family == Family::YlGn || 
+        family == Family::YlGnBu || family == Family::YlOrBr || 
+        family == Family::YlOrRd) {
+        return 3;
+    }
+    // clang-format on
+    return 0;
+}
 
 glm::uint8 getMaxNumberOfColorsForFamily(const Family &family) {
     // clang-format off
