@@ -10,7 +10,6 @@ set(HEADER_FILES
     include/modules/meshrenderinggl/algorithm/calcnormals.h
     include/modules/meshrenderinggl/ports/rasterizationport.h
     include/modules/meshrenderinggl/processors/calcnormalsprocessor.h
-    include/modules/meshrenderinggl/processors/fancymeshrenderer.h
     include/modules/meshrenderinggl/processors/meshrasterizer.h
     include/modules/meshrenderinggl/processors/rasterizationrenderer.h
     include/modules/meshrenderinggl/rendering/fragmentlistrenderer.h
@@ -25,7 +24,6 @@ set(SOURCE_FILES
     src/datastructures/halfedges.cpp
     src/algorithm/calcnormals.cpp
     src/processors/calcnormalsprocessor.cpp
-    src/processors/fancymeshrenderer.cpp
     src/processors/meshrasterizer.cpp
     src/processors/rasterizationrenderer.cpp
     src/rendering/fragmentlistrenderer.cpp

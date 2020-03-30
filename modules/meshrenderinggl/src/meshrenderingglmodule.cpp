@@ -29,7 +29,6 @@
 
 #include <modules/meshrenderinggl/meshrenderingglmodule.h>
 #include <modules/meshrenderinggl/ports/rasterizationport.h>
-#include <modules/meshrenderinggl/processors/fancymeshrenderer.h>
 #include <modules/meshrenderinggl/processors/meshrasterizer.h>
 #include <modules/meshrenderinggl/processors/rasterizationrenderer.h>
 #include <modules/meshrenderinggl/processors/calcnormalsprocessor.h>
@@ -46,7 +45,6 @@ MeshRenderingGLModule::MeshRenderingGLModule(InviwoApplication* app)
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Processors
-    registerProcessor<FancyMeshRenderer>();
     registerProcessor<MeshRasterizer>();
     registerProcessor<RasterizationRenderer>();
     registerProcessor<CalcNormalsProcessor>();
