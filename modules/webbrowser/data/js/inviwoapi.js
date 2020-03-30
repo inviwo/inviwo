@@ -143,6 +143,25 @@ class InviwoAPI {
             }
         });
     }
+    /*
+     * Unsubscribe from processor progress changed events.
+     * The supplied onChange callback will be called when the property changes.
+     * The callbacks must be declared in global scope.
+     * @param path - Processor identifier
+     */
+    async unsubscribeProcessorProgress(path) {
+        window.cefQuery({
+            request: JSON.stringify({
+                'command': 'processor.progress.unsubscribe',
+                'path': path
+            }),
+            onSuccess: function(response) {},
+            onFailure: function(error_code, error_message) {
+                console.log(
+                    'unsubscribeProcessorProgress error (' + error_code + '): ' + error_message);
+            }
+        });
+    }
 
     async syncRange(htmlId, prop) {
         var property = document.getElementById(htmlId);

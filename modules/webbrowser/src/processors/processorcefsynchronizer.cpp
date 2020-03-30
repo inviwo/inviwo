@@ -64,6 +64,7 @@ bool ProcessorCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<
     try {
         auto command = j.at("command").get<std::string>();
         auto subscribeProgressCommand = std::string("processor.progress.subscribe");
+        auto unsubscribeProgressCommand = std::string("processor.progress.unsubscribe");
         auto parentProcessorCommand = std::string("parentwebbrowserprocessor");
 
         if (!command.compare(0, subscribeProgressCommand.size(), subscribeProgressCommand)) {
@@ -85,6 +86,19 @@ bool ProcessorCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<
                 return true;
             } else {
                 callback->Failure(0, "Processor " + p + " is not ProgressBarObservable");
+            }
+        } else if (!command.compare(0, unsubscribeProgressCommand.size(),
+                                    unsubscribeProgressCommand)) {
+            auto p = j.at("path").get<std::string>();
+            auto network = parent_->getNetwork();
+            auto processor = network->getProcessorByIdentifier(p);
+            if (!processor) {
+                callback->Failure(0, "Could not find processor: " + p);
+            } else {
+                // Remove observer
+                progressObservers_.erase(processor);
+                callback->Success("");
+                return true;
             }
         } else if (!command.compare(0, parentProcessorCommand.size(), parentProcessorCommand)) {
             callback->Success(json{{"path", joinString(parent_->getPath(), ".")}}.dump());
