@@ -70,7 +70,7 @@ bool ProcessorCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<
         if (command == subscribeProgressCommand) {
             auto p = j.at("path").get<std::string>();
             auto network = parent_->getNetwork();
-           
+
             if (auto processor = network->getProcessorByIdentifier(p)) {
                 if (auto progressOwner = dynamic_cast<ProgressBarOwner*>(processor)) {
                     auto onProgressChange = j.at("onProgressChange").get<std::string>();
