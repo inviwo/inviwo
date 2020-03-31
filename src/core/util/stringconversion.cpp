@@ -59,7 +59,7 @@ std::wstring toWstring(const std::string& str) {
     return result;
 #else
     auto state = std::mbstate_t();
-    auto sptr = str.data(); 
+    auto sptr = str.data();
     size_t len = std::mbsrtowcs(nullptr, &sptr, 0, &state) + 1;
     std::wstring result(len, 0);
     std::mbsrtowcs(result.data(), &sptr, result.size(), &state);
@@ -90,7 +90,7 @@ std::string fromWstring(const std::wstring& str) {
     return result;
 #else
     auto state = std::mbstate_t();
-    auto sptr = str.data(); 
+    auto sptr = str.data();
     size_t len = std::wcsrtombs(nullptr, &sptr, 0, &state) + 1;
     std::string result(len, 0);
     std::wcsrtombs(result.data(), &sptr, result.size(), &state);
