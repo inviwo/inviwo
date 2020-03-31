@@ -153,6 +153,8 @@ void ColorPropertyWidgetQt<T>::createColorDialog() {
         QObject::connect(colorDialog_, &QColorDialog::currentColorChanged, this,
                          &ColorPropertyWidgetQt<T>::setPropertyValue);
 
+        colorDialog_->installEventFilter(new utilqt::WidgetCloseEventFilter(this));
+
         offsetColorDialog();
     }
 }

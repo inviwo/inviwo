@@ -608,6 +608,19 @@ int emToPx(const QFontMetrics& m, double em) {
     return static_cast<int>(std::round(pxPerEm * em));
 }
 
+WidgetCloseEventFilter::WidgetCloseEventFilter(QObject* parent) : QObject(parent) {}
+
+bool WidgetCloseEventFilter::eventFilter(QObject* obj, QEvent* ev) {
+    if (ev->type() == QEvent::Close) {
+        auto dialog = qobject_cast<QWidget*>(obj);
+        dialog->hide();
+        ev->ignore();
+        return true;
+    } else {
+        return false;
+    }
+}
+
 }  // namespace utilqt
 
 }  // namespace inviwo

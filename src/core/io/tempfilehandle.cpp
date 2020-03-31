@@ -29,6 +29,7 @@
 
 #include <inviwo/core/io/tempfilehandle.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #ifdef WIN32
 #define NOMINMAX
@@ -44,16 +45,6 @@
 namespace inviwo {
 
 namespace util {
-
-#ifdef WIN32
-std::wstring get_utf16(const std::string& str, int codepage) {
-    if (str.empty()) return std::wstring();
-    int sz = MultiByteToWideChar(codepage, 0, &str[0], (int)str.size(), 0, 0);
-    std::wstring res(sz, 0);
-    MultiByteToWideChar(codepage, 0, &str[0], (int)str.size(), &res[0], sz);
-    return res;
-}
-#endif
 
 TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suffix) {
 #ifdef WIN32
@@ -74,8 +65,7 @@ TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suf
         throw Exception("could not create temporary file name", IVW_CONTEXT);
     }
 
-    filename_.assign(tempFile.begin(),
-                     tempFile.begin() + std::min<size_t>(wcslen(tempFile.data()), MAX_PATH));
+    filename_ = util::fromWstring(std::wstring(tempFile.data()));
     filename_ += suffix;
 
     handle_ = filesystem::fopen(filename_, "w");

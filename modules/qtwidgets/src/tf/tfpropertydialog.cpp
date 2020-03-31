@@ -331,6 +331,8 @@ void TFPropertyDialog::initializeDialog() {
                 });
         connect(colorDialog_.get(), &QColorDialog::currentColorChanged, tfSelectionWatcher_.get(),
                 &TFSelectionWatcher::setColor);
+
+        colorDialog_->installEventFilter(new utilqt::WidgetCloseEventFilter(this));
     }
 
     // ensure that the TF dialog has its minimal size when showing up for the first time

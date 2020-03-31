@@ -219,16 +219,14 @@ public:
     virtual std::locale getUILocale() const;
 
     template <class F, class... Args>
-    auto dispatchPool(F&& f, Args&&... args)
-        -> std::future<typename std::result_of<F(Args...)>::type>;
+    auto dispatchPool(F&& f, Args&&... args) -> std::future<std::invoke_result_t<F, Args...>>;
 
     /**
      * Enqueue a functor to be run in the GUI thread
      * @returns a future with the result of the functor.
      */
     template <class F, class... Args>
-    auto dispatchFront(F&& f, Args&&... args)
-        -> std::future<typename std::result_of<F(Args...)>::type>;
+    auto dispatchFront(F&& f, Args&&... args) -> std::future<std::invoke_result_t<F, Args...>>;
 
     /**
      * Enqueue a functor to be run in the GUI thread.
@@ -501,8 +499,7 @@ private:
  * @returns a future with the result of the functor.
  */
 template <class F, class... Args>
-auto dispatchFront(F&& f, Args&&... args)
-    -> std::future<typename std::result_of<F(Args...)>::type> {
+auto dispatchFront(F&& f, Args&&... args) -> std::future<std::invoke_result_t<F, Args...>> {
     return InviwoApplication::getPtr()->dispatchFront(std::forward<F>(f),
                                                       std::forward<Args>(args)...);
 }
@@ -515,7 +512,7 @@ inline void dispatchFrontAndForget(std::function<void()> fun) {
 }
 
 template <class F, class... Args>
-auto dispatchPool(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
+auto dispatchPool(F&& f, Args&&... args) -> std::future<std::invoke_result_t<F, Args...>> {
     return InviwoApplication::getPtr()->dispatchPool(std::forward<F>(f),
                                                      std::forward<Args>(args)...);
 }
@@ -562,14 +559,14 @@ T* InviwoApplication::getCapabilitiesByType() {
 
 template <class F, class... Args>
 auto InviwoApplication::dispatchPool(F&& f, Args&&... args)
-    -> std::future<typename std::result_of<F(Args...)>::type> {
+    -> std::future<std::invoke_result_t<F, Args...>> {
     return pool_.enqueue(std::forward<F>(f), std::forward<Args>(args)...);
 }
 
 template <class F, class... Args>
 auto InviwoApplication::dispatchFront(F&& f, Args&&... args)
-    -> std::future<typename std::result_of<F(Args...)>::type> {
-    using return_type = typename std::result_of<F(Args...)>::type;
+    -> std::future<std::invoke_result_t<F, Args...>> {
+    using return_type = std::invoke_result_t<F, Args...>;
 
     auto task = std::make_shared<std::packaged_task<return_type()>>(
         std::bind(std::forward<F>(f), std::forward<Args>(args)...));

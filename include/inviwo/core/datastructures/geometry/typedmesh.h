@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TYPEDMESH_H
-#define IVW_TYPEDMESH_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -599,7 +598,7 @@ template <typename... BufferTraits>
 template <typename... Args>
 uint32_t TypedMesh<BufferTraits...>::addVertex(Args &&... args) {
     detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::addVertexImplVertex(
-        *this, TypedMesh<BufferTraits...>::Vertex{args...});
+        *this, typename TypedMesh<BufferTraits...>::Vertex{args...});
 
     using BT = typename std::tuple_element<0, Traits>::type;
     return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
@@ -609,7 +608,7 @@ template <typename... BufferTraits>
 template <typename... Args>
 void TypedMesh<BufferTraits...>::setVertex(size_t index, Args &&... args) {
     detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::setVertexImplVertex(
-        *this, index, TypedMesh<BufferTraits...>::Vertex{args...});
+        *this, index, typename TypedMesh<BufferTraits...>::Vertex{args...});
 }
 
 /**
@@ -646,5 +645,3 @@ using PosTexColorMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::T
                                   buffertraits::ColorsBuffer>;
 
 }  // namespace inviwo
-
-#endif  // IVW_TYPEDMESH_H

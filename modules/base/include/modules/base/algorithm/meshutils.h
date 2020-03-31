@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MESHUTILS_H
-#define IVW_MESHUTILS_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -222,5 +221,3 @@ void forEachLineSegment(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callb
 }  // namespace meshutil
 
 }  // namespace inviwo
-
-#endif  // IVW_MESHUTILS_H

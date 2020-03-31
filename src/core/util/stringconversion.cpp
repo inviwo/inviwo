@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/exception.h>
 
 #include <random>
 #include <iomanip>
@@ -43,27 +44,59 @@
 #include <windows.h>
 #endif
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 namespace util {
 
-#if defined(_WIN32)
 std::wstring toWstring(const std::string& str) {
+#if defined(_WIN32)
+    if (str.empty()) return std::wstring();
     int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), NULL, 0);
     std::wstring result(size_needed, 0);
     MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), &result[0], size_needed);
     return result;
-}
 #else
-std::wstring toWstring(const std::string& str) {
     auto state = std::mbstate_t();
-    const char* s = str.c_str();
-    size_t len = std::mbsrtowcs(nullptr, &s, 0, &state) + 1;
+    auto sptr = str.data();
+    size_t len = std::mbsrtowcs(nullptr, &sptr, 0, &state) + 1;
     std::wstring result(len, 0);
-    std::mbsrtowcs(&result[0], &s, result.size(), &state);
+    std::mbsrtowcs(result.data(), &sptr, result.size(), &state);
     return result;
-}
 #endif
+}
+
+std::string fromWstring(const std::wstring& str) {
+#if defined(_WIN32)
+    int s_size = static_cast<int>(str.size());
+    if (s_size == 0) {  // WideCharToMultiByte does not support zero length, handle separately.
+        return {};
+    }
+
+    int length = WideCharToMultiByte(CP_UTF8, 0, str.data(), s_size, nullptr, 0, nullptr, nullptr);
+    if (length == 0) {
+        throw Exception(fmt::format("Invalid string conversion Error:{}", GetLastError()),
+                        IVW_CONTEXT_CUSTOM("String Conversion"));
+    }
+
+    std::string result(length, 0);
+    length = WideCharToMultiByte(CP_UTF8, 0, str.data(), s_size, result.data(), length, nullptr,
+                                 nullptr);
+    if (length == 0) {
+        throw Exception(fmt::format("Invalid string conversion Error:{}", GetLastError()),
+                        IVW_CONTEXT_CUSTOM("String Conversion"));
+    }
+    return result;
+#else
+    auto state = std::mbstate_t();
+    auto sptr = str.data();
+    size_t len = std::wcsrtombs(nullptr, &sptr, 0, &state) + 1;
+    std::string result(len, 0);
+    std::wcsrtombs(result.data(), &sptr, result.size(), &state);
+    return result;
+#endif
+}
 
 }  // namespace util
 
