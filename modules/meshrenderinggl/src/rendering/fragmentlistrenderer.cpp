@@ -34,6 +34,7 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/openglcapabilities.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 #include <cstdio>
 #include <fmt/format.h>
@@ -68,7 +69,7 @@ FragmentListRenderer::Illustration::Illustration(size2_t screenSize, size_t frag
     smooth.onReload([this]() { onReload.invoke(); });
 }
 
-FragmentListRenderer::FragmentListRenderer()
+FragmentListRenderer::FragmentListRenderer(std::weak_ptr<ImageInport> background)
     : screenSize_{0, 0}
     , fragmentSize_{1024}
 
@@ -81,6 +82,7 @@ FragmentListRenderer::FragmentListRenderer()
     , totalFragmentQuery_{0}
     , clear_("oit/simplequad.vert", "oit/clear.frag", false)
     , display_("oit/simplequad.vert", "oit/display.frag", false)
+    , backgroundPort_(background)
     , illustration_{screenSize_, fragmentSize_} {
 
     buildShaders();
@@ -102,7 +104,6 @@ FragmentListRenderer::~FragmentListRenderer() {
 
 void FragmentListRenderer::prePass(const size2_t& screenSize) {
     resizeBuffers(screenSize);
-
     // reset counter
 
     GLuint v[1] = {0};
@@ -156,9 +157,21 @@ bool FragmentListRenderer::postPass(bool useIllustration) {
     }
 
     if (!useIllustration) {
+        // Set depth buffer to read from.
+        auto bg = backgroundPort_.lock();
+        bool hasBackground = bg && bg->hasData();
+
+        // Build shader depending on inport state.
+        if (hasBackground != builtWithBackground_) buildShaders();
+
         // render fragment list
         display_.activate();
         setUniforms(display_, textureUnits_[0]);
+        if (builtWithBackground_) {
+            utilgl::bindAndSetUniforms(display_, textureUnits_, *bg->getData(), "bg",
+                                       ImageType::ColorDepth);
+            display_.setUniform("reciprocalDimensions", vec2(1) / vec2(screenSize_));
+        }
         utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
         utilgl::DepthMaskState depthMask(GL_TRUE);
@@ -256,9 +269,17 @@ void FragmentListRenderer::buildShaders() {
     }
 
     auto* ffs = illustration_.fill.getFragmentShaderObject();
-    if (supportsIllustration) ffs->addShaderExtension("GL_ARB_shader_atomic_counter_ops", true);
+    if (supportsIllustration()) ffs->addShaderExtension("GL_ARB_shader_atomic_counter_ops", true);
 
     if (supportsFragmentLists()) {
+        auto bg = backgroundPort_.lock();
+        builtWithBackground_ = (bg && bg->hasData());
+        if (builtWithBackground_) {
+            dfs->addShaderDefine("BACKGROUND_AVAILABLE");
+        } else {
+            dfs->removeShaderDefine("BACKGROUND_AVAILABLE");
+        }
+
         display_.build();
         clear_.build();
     }

@@ -77,9 +77,10 @@ const ProcessorInfo RasterizationRenderer::getProcessorInfo() const { return pro
 RasterizationRenderer::RasterizationRenderer()
     : Processor()
     , rasterizations_("rastarizations")
-    , imageInport_("imageInport")
+    , imageInport_(std::make_shared<ImageInport>("imageInport"))
     , outport_("image")
-    , forceOpaque_("forceOpaque", "Shade Opaque", false, InvalidationLevel::InvalidResources) {
+    , forceOpaque_("forceOpaque", "Shade Opaque", false, InvalidationLevel::InvalidResources)
+    , flr_(imageInport_) {
 
     // query OpenGL Capability
     supportsFragmentLists_ = FragmentListRenderer::supportsFragmentLists();
@@ -96,7 +97,7 @@ RasterizationRenderer::RasterizationRenderer()
     }
 
     // input and output ports
-    addPort(imageInport_).setOptional(true);
+    addPort(*imageInport_).setOptional(true);
     addPort(rasterizations_);
     addPort(outport_);
 
@@ -134,7 +135,7 @@ RasterizationRenderer::IllustrationSettings::getSettings() const {
 
 void RasterizationRenderer::process() {
 
-    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
+    utilgl::activateTargetAndClearOrCopySource(outport_, *imageInport_);
 
     const bool opaque = forceOpaque_.get();
     bool fragmentLists = false;
@@ -146,7 +147,6 @@ void RasterizationRenderer::process() {
             }
         }
     }
-
     // Loop: fragment list may need another try if not enough space for the pixels was available
     bool retry = false;
     do {

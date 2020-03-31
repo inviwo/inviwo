@@ -142,7 +142,7 @@ public:
 protected:
     RasterizationInport rasterizations_;
 
-    ImageInport imageInport_;
+    std::shared_ptr<ImageInport> imageInport_;
     ImageOutport outport_;
 
     BoolProperty forceOpaque_;

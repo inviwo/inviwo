@@ -36,6 +36,7 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/buffer/bufferobject.h>
+#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
@@ -66,7 +67,7 @@ namespace inviwo {
  */
 class IVW_MODULE_MESHRENDERINGGL_API FragmentListRenderer {
 public:
-    FragmentListRenderer();
+    FragmentListRenderer(std::weak_ptr<ImageInport> background = std::weak_ptr<ImageInport>());
     ~FragmentListRenderer();
 
     /**
@@ -140,6 +141,8 @@ private:
     // basic fragment lists
     Texture2D abufferIdxTex_;
     TextureUnitContainer textureUnits_;
+    std::weak_ptr<ImageInport> backgroundPort_;
+    bool builtWithBackground_ = false;
 
     BufferObject atomicCounter_;
     BufferObject pixelBuffer_;
