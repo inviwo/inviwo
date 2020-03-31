@@ -743,8 +743,7 @@ std::string getRelativePath(const std::string& basePath, const std::string& abso
 std::string getCanonicalPath(const std::string& url) {
 #ifdef WIN32
     const DWORD buffSize = 4096;  // MAX_PATH
-    std::wstring urlWStr;
-    urlWStr.assign(url.begin(), url.end());
+    std::wstring urlWStr = util::toWstring(url);
     std::string result{url};
 
     WCHAR buffer[buffSize + 1];
@@ -758,7 +757,7 @@ std::string getCanonicalPath(const std::string& url) {
         return result;
     } else {
         std::wstring resultWStr{buffer};
-        result.assign(resultWStr.begin(), resultWStr.end());
+        result = util::fromWstring(resultWStr);
     }
 
     return result;

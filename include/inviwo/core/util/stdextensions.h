@@ -432,11 +432,11 @@ auto copy_if(const T& cont, P pred) -> std::vector<typename T::value_type> {
 
 template <typename T, typename UnaryOperation>
 auto transform(const T& cont, UnaryOperation op)
-    -> std::vector<typename std::result_of<UnaryOperation(typename T::value_type)>::type> {
+    -> std::vector<std::invoke_result_t<UnaryOperation, typename T::value_type>> {
     using std::begin;
     using std::end;
 
-    std::vector<typename std::result_of<UnaryOperation(typename T::value_type)>::type> res;
+    std::vector<std::invoke_result_t<UnaryOperation, typename T::value_type>> res;
     res.reserve(std::distance(begin(cont), end(cont)));
     std::transform(begin(cont), end(cont), std::back_inserter(res), op);
     return res;
@@ -559,14 +559,15 @@ public:
 };
 
 template <typename F, typename... Args>
-using is_invocable[[deprecated("Use `std::is_invocable` instead")]] = std::is_invocable<F, Args...>;
+using is_invocable [[deprecated("Use `std::is_invocable` instead")]] =
+    std::is_invocable<F, Args...>;
 
 template <typename R, typename F, typename... Args>
-using is_invocable_r[[deprecated("Use `std::is_invocable_r` instead")]] =
+using is_invocable_r [[deprecated("Use `std::is_invocable_r` instead")]] =
     std::is_invocable_r<F, Args...>;
 
 template <typename F, typename... Args>
-using is_callable[[deprecated("Use `std::is_invocable` instead")]] = std::is_invocable<F, Args...>;
+using is_callable [[deprecated("Use `std::is_invocable` instead")]] = std::is_invocable<F, Args...>;
 
 /**
  * A type trait to determine if type "callback" can be called with certain arguments.

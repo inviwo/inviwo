@@ -169,6 +169,11 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     connect(lineEdit_, &QLineEdit::textChanged, this, [this, clearAction](const QString& str) {
         addProcessorsToTree();
         clearAction->setVisible(!str.isEmpty());
+
+        QSettings settings;
+        settings.beginGroup(objectName());
+        settings.setValue("filterText", QVariant(lineEdit_->text()));
+        settings.endGroup();
     });
     vLayout->addWidget(lineEdit_);
     QHBoxLayout* listViewLayout = new QHBoxLayout();
@@ -182,7 +187,14 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     listView_->addItem("Most Used", QVariant::fromValue(Grouping::MostUsed));
     listView_->setCurrentIndex(1);
     connect(listView_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
-            [this]() { addProcessorsToTree(); });
+            [this]() {
+                addProcessorsToTree();
+
+                QSettings settings;
+                settings.beginGroup(objectName());
+                settings.setValue("currentView", QVariant(listView_->currentIndex()));
+                settings.endGroup();
+            });
     listView_->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
     listViewLayout->addWidget(listView_);
     vLayout->addLayout(listViewLayout);

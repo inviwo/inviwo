@@ -69,7 +69,17 @@ namespace util {
  * @param str   multibyte character string
  * @return input converted to std::wstring
  */
-std::wstring toWstring(const std::string& str);
+IVW_CORE_API std::wstring toWstring(const std::string& str);
+
+/**
+ * \brief convert the given std::wstring to std::string.
+ * On Windows, WideCharToMultiByte is used for this conversion assuming utf8 encoding.
+ * Otherwise, std::wcsrtombs is used.
+ *
+ * @param str   std::wstring character string
+ * @return input converted to multibyte std::string
+ */
+IVW_CORE_API std::string fromWstring(const std::wstring& str);
 
 }  // namespace util
 
