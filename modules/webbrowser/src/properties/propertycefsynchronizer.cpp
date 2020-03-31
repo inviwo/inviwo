@@ -63,8 +63,9 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 
     try {
         auto command = j.at("command").get<std::string>();
-        auto propCommand = std::string("property");
-        if (command == "subscribe") {
+        constexpr std::string_view subscribeCommand = "subscribe";
+        constexpr std::string_view propCommand = "property";
+        if (command == subscribeCommand) {
             auto network = InviwoApplication::getPtr()->getProcessorNetwork();
             auto p = j.at("path").get<std::string>();
             auto path = splitString(p, '.');

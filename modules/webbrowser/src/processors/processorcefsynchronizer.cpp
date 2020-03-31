@@ -63,30 +63,43 @@ bool ProcessorCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<
 
     try {
         auto command = j.at("command").get<std::string>();
-        auto subscribeProgressCommand = std::string("processor.progress.subscribe");
-        auto parentProcessorCommand = std::string("parentwebbrowserprocessor");
+        constexpr std::string_view subscribeProgressCommand = "processor.progress.subscribe";
+        constexpr std::string_view unsubscribeProgressCommand = "processor.progress.unsubscribe";
+        constexpr std::string_view parentProcessorCommand = "parentwebbrowserprocessor";
 
-        if (!command.compare(0, subscribeProgressCommand.size(), subscribeProgressCommand)) {
+        if (command == subscribeProgressCommand) {
             auto p = j.at("path").get<std::string>();
             auto network = parent_->getNetwork();
-            auto processor = network->getProcessorByIdentifier(p);
-            if (!processor) {
+
+            if (auto processor = network->getProcessorByIdentifier(p)) {
+                if (auto progressOwner = dynamic_cast<ProgressBarOwner*>(processor)) {
+                    auto onProgressChange = j.at("onProgressChange").get<std::string>();
+                    auto onVisibleChange = j.at("onVisibleChange").get<std::string>();
+
+                    progressObservers_[processor] =
+                        ProgressBarObserverCEF(frame, onProgressChange, onVisibleChange);
+                    progressOwner->getProgressBar().ProgressBarObservable::addObserver(
+                        &progressObservers_[processor]);
+                    callback->Success("");
+                    return true;
+                } else {
+                    callback->Failure(0, "Processor " + p + " is not ProgressBarObservable");
+                }
+            } else {
                 callback->Failure(0, "Could not find processor: " + p);
             }
-            if (auto progressOwner = dynamic_cast<ProgressBarOwner*>(processor)) {
-                auto onProgressChange = j.at("onProgressChange").get<std::string>();
-                auto onVisibleChange = j.at("onVisibleChange").get<std::string>();
-
-                progressObservers_[processor] =
-                    ProgressBarObserverCEF(frame, onProgressChange, onVisibleChange);
-                progressOwner->getProgressBar().ProgressBarObservable::addObserver(
-                    &progressObservers_[processor]);
+        } else if (command == unsubscribeProgressCommand) {
+            auto p = j.at("path").get<std::string>();
+            auto network = parent_->getNetwork();
+            if (auto processor = network->getProcessorByIdentifier(p)) {
+                // Remove observer
+                progressObservers_.erase(processor);
                 callback->Success("");
                 return true;
             } else {
-                callback->Failure(0, "Processor " + p + " is not ProgressBarObservable");
+                callback->Failure(0, "Could not find processor: " + p);
             }
-        } else if (!command.compare(0, parentProcessorCommand.size(), parentProcessorCommand)) {
+        } else if (command == parentProcessorCommand) {
             callback->Success(json{{"path", joinString(parent_->getPath(), ".")}}.dump());
             return true;
         }

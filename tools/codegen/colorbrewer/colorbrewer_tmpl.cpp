@@ -48,7 +48,12 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
     return dummy;
 }
 
-glm::uint8 getMinNumberOfColorsForFamily(const Family &) { return 3; }
+glm::uint8 getMinNumberOfColorsForFamily(const Family &family) { 
+        // clang-format off
+##GETMINIMPL##
+    // clang-format on
+    return 0;
+}
 
 glm::uint8 getMaxNumberOfColorsForFamily(const Family &family) {
     // clang-format off
