@@ -214,7 +214,7 @@ IVW_MODULE_QTWIDGETS_API void addImageActions(QMenu& menu, const Image& image,
  * @return title where "[*]" is replaced with '*' if the widget is modified, or '' otherwise
  * \see QWidget::setWindowTitle
  */
-IVW_MODULE_QTWIDGETS_API QString windowTitleHelper(const QString& title, const QWidget* widget);
+ QString windowTitleHelper(const QString& title, const QWidget* widget);
 
 // In a non high dpi system an 'M' measures 11 px. Hence all our old pixels sizes, can be converted
 // to Em sizes by dividing by 11
@@ -224,6 +224,19 @@ IVW_MODULE_QTWIDGETS_API int refSpacePx(const QWidget* w);
 IVW_MODULE_QTWIDGETS_API QSize emToPx(const QWidget* w, QSizeF);
 IVW_MODULE_QTWIDGETS_API int emToPx(const QWidget* w, double em);
 IVW_MODULE_QTWIDGETS_API int emToPx(const QFontMetrics& m, double em);
+
+
+
+/**
+ * Workaround for closing Widget using the "X" button in the titlebar
+ * This filter intercepts the CloseEvent and ignores it, and then hides the widget
+ */
+struct IVW_MODULE_QTWIDGETS_API WidgetCloseEventFilter : QObject {
+    WidgetCloseEventFilter(QObject* parent);
+    virtual bool eventFilter(QObject* obj, QEvent* ev) override;
+};
+
+
 
 }  // namespace utilqt
 
