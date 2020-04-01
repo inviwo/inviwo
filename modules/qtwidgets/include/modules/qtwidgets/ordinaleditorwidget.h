@@ -27,15 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ORDINALEDITORWIDGET_H
-#define IVW_ORDINALEDITORWIDGET_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <modules/qtwidgets/ordinalbasewidget.h>
-#include <modules/qtwidgets/inviwowidgetsqt.h>
+#include <modules/qtwidgets/numberlineedit.h>
 #include <modules/qtwidgets/qstringhelper.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -50,17 +50,27 @@ class IVW_MODULE_QTWIDGETS_API BaseOrdinalEditorWidget : public QWidget {
     Q_OBJECT
 #include <warn/pop>
 public:
-    BaseOrdinalEditorWidget();
+    BaseOrdinalEditorWidget(bool intMode);
     virtual ~BaseOrdinalEditorWidget();
 
 protected:
-    virtual QString transformValueToEditor() = 0;
-    virtual void newEditorValue(QString) = 0;
+    virtual double transformValueToEditor() = 0;
+    virtual double transformMinValueToEditor() = 0;
+    virtual double transformMaxValueToEditor() = 0;
+    virtual double transformIncrementToEditor() = 0;
+    virtual int transformIncrementToEditorDecimals() = 0;
+
+    virtual void newEditorValue(double) = 0;
 
     void applyInit();
     void applyValue();
+    void applyMinValue();
+    void applyMaxValue();
+    void applyIncrement();
 
-    IvwLineEdit* editor_;
+    NumberLineEdit* editor_;
+    ConstraintBehaviour minCb_;
+    ConstraintBehaviour maxCb_;
 
 signals:
     void valueChanged();
@@ -71,28 +81,26 @@ private:
 };
 
 template <typename T>
-class TemplateOrdinalEditorWidget : public BaseOrdinalEditorWidget, public OrdinalBaseWidget<T> {
+class OrdinalEditorWidget final : public BaseOrdinalEditorWidget, public OrdinalBaseWidget<T> {
 public:
-    TemplateOrdinalEditorWidget()
-        : BaseOrdinalEditorWidget(), value_(0), minValue_(0), maxValue_(0), increment_(0) {}
-    virtual ~TemplateOrdinalEditorWidget() = default;
+    OrdinalEditorWidget();
+    virtual ~OrdinalEditorWidget() = default;
 
-    virtual T getValue();
-    virtual void setValue(T value);
-    virtual void initValue(T value);
-    virtual void setMinValue(T minValue);
-    virtual void setMaxValue(T maxValue);
-    virtual void setRange(T minValue, T maxValue);
-    virtual void setIncrement(T increment);
+    // Implements OrdinalBaseWidget
+    virtual T getValue() const override;
+    virtual void setValue(T value) override;
+    virtual void initValue(T value) override;
+    virtual void setMinValue(T minValue, ConstraintBehaviour cb) override;
+    virtual void setMaxValue(T maxValue, ConstraintBehaviour cb) override;
+    virtual void setIncrement(T increment) override;
 
 protected:
-    // Define the transforms
-    virtual T editorToRepr(QString val) = 0;
-    virtual QString reprToEditor(T val) = 0;
-
-    // Has default implementations using above transformations.
-    virtual QString transformValueToEditor();
-    virtual void newEditorValue(QString);
+    virtual double transformValueToEditor() override;
+    virtual double transformMinValueToEditor() override;
+    virtual double transformMaxValueToEditor() override;
+    virtual double transformIncrementToEditor() override;
+    virtual int transformIncrementToEditorDecimals() override;
+    virtual void newEditorValue(double val) override;
 
     T value_;
     T minValue_;
@@ -100,96 +108,88 @@ protected:
     T increment_;
 };
 
-// Default case for fractional numbers
 template <typename T>
-class OrdinalEditorWidget : public TemplateOrdinalEditorWidget<T> {
-public:
-    OrdinalEditorWidget() : TemplateOrdinalEditorWidget<T>() {
-        this->editor_->setValidator(new QDoubleValidator(this));
-    }
-    virtual ~OrdinalEditorWidget() = default;
-
-protected:
-    // Defines the transform
-    virtual T editorToRepr(QString val) {
-        QLocale locale = BaseOrdinalEditorWidget::editor_->locale();
-        return static_cast<T>(locale.toDouble(val.remove(QChar(' '))));
-    }
-    virtual QString reprToEditor(T val) {
-        QLocale locale = BaseOrdinalEditorWidget::editor_->locale();
-        return QStringHelper<T>::toLocaleString(locale, val);
-    }
-};
-
-// Specialization for integer types
-template <>
-class OrdinalEditorWidget<int> : public TemplateOrdinalEditorWidget<int> {
-public:
-    OrdinalEditorWidget() : TemplateOrdinalEditorWidget<int>() {
-        editor_->setValidator(new QIntValidator(this));
-    }
-    virtual ~OrdinalEditorWidget() = default;
-
-protected:
-    // Defines the transform
-    virtual int editorToRepr(QString val) {
-        QLocale locale = BaseOrdinalEditorWidget::editor_->locale();
-        return locale.toInt(val.remove(QChar(' ')));
-    }
-    virtual QString reprToEditor(int val) {
-        QLocale locale = BaseOrdinalEditorWidget::editor_->locale();
-        return locale.toString(val);
-    }
-};
+inline OrdinalEditorWidget<T>::OrdinalEditorWidget()
+    : BaseOrdinalEditorWidget(!std::is_floating_point_v<T>), value_(0), minValue_(0), maxValue_(0), increment_(0) {}
 
 template <typename T>
-QString TemplateOrdinalEditorWidget<T>::transformValueToEditor() {
-    return reprToEditor(value_);
+double OrdinalEditorWidget<T>::transformValueToEditor() {
+    return static_cast<double>(value_);
 }
 template <typename T>
-void TemplateOrdinalEditorWidget<T>::newEditorValue(QString val) {
-    value_ = editorToRepr(val);
+double OrdinalEditorWidget<T>::transformMinValueToEditor() {
+    return static_cast<double>(minValue_);
 }
 template <typename T>
-T TemplateOrdinalEditorWidget<T>::getValue() {
+double OrdinalEditorWidget<T>::transformMaxValueToEditor() {
+    return static_cast<double>(maxValue_);
+}
+template <typename T>
+double OrdinalEditorWidget<T>::transformIncrementToEditor() {
+    return static_cast<double>(increment_);
+}
+template <typename T>
+int OrdinalEditorWidget<T>::transformIncrementToEditorDecimals() {
+    if constexpr (std::is_floating_point_v<T>) {
+        const static QLocale locale;
+        const double inc = static_cast<double>(increment_);
+        std::ostringstream buff;
+        utilqt::localizeStream(buff);
+        buff << inc;
+        const std::string str(buff.str());
+        const auto periodPosition = str.find(locale.decimalPoint().toLatin1());
+        if (periodPosition == std::string::npos) {
+            return 0;
+        } else {
+            return static_cast<int>(str.length() - periodPosition) - 1;
+        }
+    } else {
+        return 0;
+    }
+}
+template <typename T>
+void OrdinalEditorWidget<T>::newEditorValue(double val) {
+    value_ = static_cast<T>(val);
+}
+
+template <typename T>
+T OrdinalEditorWidget<T>::getValue() const {
     return value_;
 }
 template <typename T>
-void TemplateOrdinalEditorWidget<T>::setValue(T value) {
-    if (value >= minValue_ && value <= maxValue_ && value != value_) {
+void OrdinalEditorWidget<T>::setValue(T value) {
+    if (value != value_) {
         value_ = value;
         applyValue();
     }
 }
 template <typename T>
-void TemplateOrdinalEditorWidget<T>::initValue(T value) {
+void OrdinalEditorWidget<T>::initValue(T value) {
     value_ = value;
     applyInit();
 }
 template <typename T>
-void TemplateOrdinalEditorWidget<T>::setMinValue(T minValue) {
-    if (minValue_ != minValue) {
+void OrdinalEditorWidget<T>::setMinValue(T minValue, ConstraintBehaviour cb) {
+    if (minValue_ != minValue || minCb_ != cb) {
         minValue_ = minValue;
+        minCb_ = cb;
+        applyMinValue();
     }
 }
 template <typename T>
-void TemplateOrdinalEditorWidget<T>::setMaxValue(T maxValue) {
-    if (maxValue_ != maxValue) {
+void OrdinalEditorWidget<T>::setMaxValue(T maxValue, ConstraintBehaviour cb) {
+    if (maxValue_ != maxValue || maxCb_ != cb) {
         maxValue_ = maxValue;
+        maxCb_ = cb;
+        applyMaxValue();
     }
 }
 template <typename T>
-void TemplateOrdinalEditorWidget<T>::setRange(T minValue, T maxValue) {
-    setMinValue(minValue);
-    setMaxValue(maxValue);
-}
-template <typename T>
-void TemplateOrdinalEditorWidget<T>::setIncrement(T increment) {
+void OrdinalEditorWidget<T>::setIncrement(T increment) {
     if (increment_ != increment) {
         increment_ = increment;
+        applyIncrement();
     }
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_ORDINALEDITORWIDGET_H

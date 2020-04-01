@@ -37,7 +37,10 @@
 
 namespace inviwo {
 
-BaseOrdinalEditorWidget::BaseOrdinalEditorWidget() : editor_{new IvwLineEdit(this)} {
+BaseOrdinalEditorWidget::BaseOrdinalEditorWidget(bool intMode)
+    : editor_{new NumberLineEdit(intMode, this)}
+    , minCb_{ConstraintBehaviour::Editable}
+    , maxCb_{ConstraintBehaviour::Editable} {
 
     QHBoxLayout* hLayout = new QHBoxLayout();
 
@@ -51,19 +54,19 @@ BaseOrdinalEditorWidget::BaseOrdinalEditorWidget() : editor_{new IvwLineEdit(thi
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
     setLayout(hLayout);
-    connect(editor_, &IvwLineEdit::editingFinished, this,
-            &BaseOrdinalEditorWidget::updateFromEditor);
+    connect(editor_, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+            this, &BaseOrdinalEditorWidget::updateFromEditor);
 }
 
 BaseOrdinalEditorWidget::~BaseOrdinalEditorWidget() = default;
 
 void BaseOrdinalEditorWidget::updateEditor() {
     QSignalBlocker block{editor_};
-    editor_->setText(transformValueToEditor());
+    editor_->setValue(transformValueToEditor());
 }
 
 void BaseOrdinalEditorWidget::updateFromEditor() {
-    newEditorValue(editor_->text());
+    newEditorValue(editor_->value());
     emit valueChanged();
 }
 
@@ -72,6 +75,33 @@ void BaseOrdinalEditorWidget::applyInit() { updateEditor(); }
 void BaseOrdinalEditorWidget::applyValue() {
     applyInit();
     emit valueChanged();
+}
+
+void BaseOrdinalEditorWidget::applyMinValue() {
+    QSignalBlocker spinBlock(editor_);
+
+    if (minCb_ == ConstraintBehaviour::Ignore) {
+        editor_->setMinimum(std::numeric_limits<double>::lowest());
+    } else {
+        editor_->setMinimum(transformMinValueToEditor());
+    }
+}
+
+void BaseOrdinalEditorWidget::applyMaxValue() {
+    QSignalBlocker spinBlock(editor_);
+
+    if (maxCb_ == ConstraintBehaviour::Ignore) {
+        editor_->setMaximum(std::numeric_limits<double>::max());
+    } else {
+        editor_->setMaximum(transformMaxValueToEditor());
+    }
+}
+
+void BaseOrdinalEditorWidget::applyIncrement() {
+    QSignalBlocker spinBlock(editor_);
+
+    editor_->setSingleStep(transformIncrementToEditor());
+    editor_->setDecimals(transformIncrementToEditorDecimals());
 }
 
 }  // namespace inviwo

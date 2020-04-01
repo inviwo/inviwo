@@ -41,8 +41,8 @@ QLineEdit* SinglePropertySetting::addField() {
     return ext;
 }
 
-double SinglePropertySetting::getFieldAsDouble(int i) {
-    if (i >= 0 && static_cast<size_t>(i) < additionalFields_.size()) {
+double SinglePropertySetting::getFieldAsDouble(size_t i) {
+    if (i < additionalFields_.size()) {
         QLocale locale = additionalFields_[i]->locale();
         return locale.toDouble(
             additionalFields_[i]->text().remove(QChar(' ')).remove(locale.groupSeparator()));

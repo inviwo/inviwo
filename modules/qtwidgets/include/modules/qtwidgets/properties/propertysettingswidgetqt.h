@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYSETTINGSWIDGETQT_H
-#define IVW_PROPERTYSETTINGSWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 // Core
@@ -62,7 +61,7 @@ public:
     SinglePropertySetting(QWidget* widget, std::string label);
 
     QLineEdit* addField();
-    double getFieldAsDouble(int i);
+    double getFieldAsDouble(size_t i);
 
     QLabel* label_;
     QWidget* widget_;
@@ -70,11 +69,11 @@ public:
 };
 
 template <typename T>
-class TemplatePropertySettingsWidgetQt : public QDialog, public PropertyWidget {
+class OrdinalPropertySettingsWidgetQt : public QDialog, public PropertyWidget {
 public:
     using BT = typename util::value_type<T>::type;
-    TemplatePropertySettingsWidgetQt(OrdinalProperty<T>* property, QWidget* widget);
-    virtual ~TemplatePropertySettingsWidgetQt();
+    OrdinalPropertySettingsWidgetQt(OrdinalProperty<T>* property, QWidget* widget);
+    virtual ~OrdinalPropertySettingsWidgetQt();
 
     virtual void updateFromProperty() override;
     /**
@@ -87,8 +86,11 @@ public:
     void hideWidget();
     bool getVisible() const;
 
+    // virtual void reject() override;
+
 protected:
     virtual void keyPressEvent(QKeyEvent* event) override;
+    virtual void closeEvent(QCloseEvent* e) override;
 
 private:
     void save();
@@ -104,8 +106,8 @@ private:
 };
 
 template <typename T>
-TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(OrdinalProperty<T>* property,
-                                                                      QWidget* widget)
+OrdinalPropertySettingsWidgetQt<T>::OrdinalPropertySettingsWidgetQt(OrdinalProperty<T>* property,
+                                                                    QWidget* widget)
     : QDialog(widget)
     , PropertyWidget(property)
     , btnApply_(new QPushButton("Apply", this))
@@ -113,21 +115,37 @@ TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(OrdinalPro
     , btnCancel_(new QPushButton("Cancel", this))
     , property_(property) {
 
-    this->setModal(false);
+    setModal(false);
     // remove help button from title bar
-    Qt::WindowFlags flags = this->windowFlags() ^ Qt::WindowContextHelpButtonHint;
-    // make it a tool window
-    flags |= Qt::Popup;
-    this->setWindowFlags(flags);
+    Qt::WindowFlags flags = windowFlags() ^ Qt::WindowContextHelpButtonHint;
+    // flags |= Qt::Popup;  // make it a tool window
+    // flags |= Qt::Dialog;
+    setWindowFlags(flags);
+
+    // setAttribute(Qt::WA_DeleteOnClose, false);
 
     auto gridLayout = new QGridLayout();
     const auto space = utilqt::refSpacePx(this);
     gridLayout->setContentsMargins(space, space, space, space);
     gridLayout->setSpacing(space);
 
-    const std::array<QString, 5> labels = {"Component", "Min", "Value", "Max", "Increment"};
+    const std::array<QCheckBox*, 4> same = {
+        new QCheckBox(
+            utilqt::toQString(fmt::format("Min ({})", property_->getMinConstraintBehaviour())),
+            this),
+        new QCheckBox("Value", this),
+        new QCheckBox(
+            utilqt::toQString(fmt::format("Max ({})", property_->getMaxConstraintBehaviour())),
+            this),
+        new QCheckBox("Increment", this)};
+    for (auto* s : same) {
+        s->setToolTip("Same for all channels");
+    }
+    const std::array<QWidget*, 5> labels = {new QLabel("Component"), same[0], same[1], same[2],
+                                            same[3]};
+
     for (size_t i = 0; i < labels.size(); ++i) {
-        gridLayout->addWidget(new QLabel(labels[i], this), 0, static_cast<int>(i));
+        gridLayout->addWidget(labels[i], 0, static_cast<int>(i));
     }
     const std::array<char, 4> desc = {'x', 'y', 'z', 'w'};
     const uvec2 components = OrdinalProperty<T>::getDim();
@@ -148,50 +166,49 @@ TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(OrdinalPro
         }
     }
 
-    auto same = new QCheckBox("Same", this);
-    same->setToolTip("Same min/max value for all channels");
-    same->setChecked(true);
     auto symmetric = new QCheckBox("Symmetric", this);
     symmetric->setToolTip("Symmetric min and max value ( min = -max )");
 
-    auto updateOthers = [this, same, symmetric](size_t row, bool min) {
-        return [this, same, symmetric, row, min](const QString& newText) {
-            const size_t srcCol = min ? 0 : 2;
-            const size_t dstCol = min ? 2 : 0;
-            if (same->isChecked()) {
-                for (size_t i = 0; i < settings_.size(); i++) {
-                    if (i != row) {
-                        QSignalBlocker block{settings_[i]->additionalFields_[srcCol]};
-                        settings_[i]->additionalFields_[srcCol]->setText(
-                            settings_[row]->additionalFields_[srcCol]->text());
+    auto updateOthers = [this, same, symmetric](size_t srcRow, size_t srcCol) {
+        return [this, same, symmetric, srcRow, srcCol](const QString&) {
+            if (same[srcCol]->isChecked()) {
+                for (size_t row = 0; row < settings_.size(); row++) {
+                    if (row != srcRow) {
+                        QSignalBlocker block{settings_[row]->additionalFields_[srcCol]};
+                        settings_[row]->additionalFields_[srcCol]->setText(
+                            settings_[srcRow]->additionalFields_[srcCol]->text());
                     }
-                    if (symmetric->isChecked()) {
+                }
+                if (symmetric->isChecked() && (srcCol == 0 || srcCol == 2)) {
+                    const size_t dstCol = srcCol == 0 ? 2 : 0;
+                    for (size_t row = 0; row < settings_.size(); row++) {
                         QSignalBlocker block{settings_[row]->additionalFields_[dstCol]};
                         QLocale locale = settings_[row]->additionalFields_[dstCol]->locale();
                         settings_[row]->additionalFields_[dstCol]->setText(
                             QStringHelper<BT>::toLocaleString(
-                                locale, -settings_[row]->getFieldAsDouble(srcCol)));
+                                locale,
+                                static_cast<BT>(-settings_[row]->getFieldAsDouble(srcCol))));
                     }
                 }
-            } else if (symmetric->isChecked()) {
-                QSignalBlocker block{settings_[row]->additionalFields_[dstCol]};
-                QLocale locale = settings_[row]->additionalFields_[dstCol]->locale();
-                settings_[row]->additionalFields_[dstCol]->setText(
-                    QStringHelper<BT>::toLocaleString(locale,
-                                                      -settings_[row]->getFieldAsDouble(srcCol)));
+            } else if (symmetric->isChecked() && (srcCol == 0 || srcCol == 2)) {
+                const size_t dstCol = srcCol == 0 ? 2 : 0;
+                QSignalBlocker block{settings_[srcRow]->additionalFields_[dstCol]};
+                QLocale locale = settings_[srcRow]->additionalFields_[dstCol]->locale();
+                settings_[srcRow]->additionalFields_[dstCol]->setText(
+                    QStringHelper<BT>::toLocaleString(
+                        locale, static_cast<BT>(-settings_[srcRow]->getFieldAsDouble(srcCol))));
             }
         };
     };
 
-    for (size_t i = 0; i < settings_.size(); i++) {
-        connect(settings_[i]->additionalFields_[0], &QLineEdit::textChanged, this,
-                updateOthers(i, true));
-        connect(settings_[i]->additionalFields_[2], &QLineEdit::textChanged, this,
-                updateOthers(i, false));
+    for (size_t row = 0; row < settings_.size(); row++) {
+        for (size_t col = 0; col < same.size(); col++) {
+            connect(settings_[row]->additionalFields_[col], &QLineEdit::textChanged, this,
+                    updateOthers(row, col));
+        }
     }
 
-    gridLayout->addWidget(same, count + 1, 0, 1, 1);
-    gridLayout->addWidget(symmetric, count + 1, 1, 1, 1);
+    gridLayout->addWidget(symmetric, count + 1, 0, 1, 1);
     gridLayout->addWidget(btnApply_, count + 1, 2, 1, 1);
     gridLayout->addWidget(btnOk_, count + 1, 3, 1, 1);
     gridLayout->addWidget(btnCancel_, count + 1, 4, 1, 1);
@@ -199,26 +216,36 @@ TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(OrdinalPro
 
     setLayout(gridLayout);
 
-    connect(btnApply_, &QPushButton::clicked, this, &TemplatePropertySettingsWidgetQt<T>::apply);
-    connect(btnOk_, &QPushButton::clicked, this, &TemplatePropertySettingsWidgetQt<T>::save);
-    connect(btnCancel_, &QPushButton::clicked, this, &TemplatePropertySettingsWidgetQt<T>::cancel);
+    connect(btnApply_, &QPushButton::clicked, this, &OrdinalPropertySettingsWidgetQt<T>::apply);
+    connect(btnOk_, &QPushButton::clicked, this, &OrdinalPropertySettingsWidgetQt<T>::save);
+    connect(btnCancel_, &QPushButton::clicked, this, &OrdinalPropertySettingsWidgetQt<T>::cancel);
 
     reload();
+
+    for (size_t col = 0; col < same.size(); col++) {
+        const auto val = settings_[0]->getFieldAsDouble(col);
+        bool allSame = true;
+        for (size_t row = 1; row < settings_.size(); row++) {
+            allSame &= val == settings_[row]->getFieldAsDouble(col);
+        }
+        same[col]->setChecked(allSame);
+    }
+
     setWindowTitle(utilqt::toQString(property_->getDisplayName()));
 }
 
 template <typename T>
-TemplatePropertySettingsWidgetQt<T>::~TemplatePropertySettingsWidgetQt() {
+OrdinalPropertySettingsWidgetQt<T>::~OrdinalPropertySettingsWidgetQt() {
     if (property_) property_->deregisterWidget(this);
 }
 
 template <typename T>
-void TemplatePropertySettingsWidgetQt<T>::apply() {
+void OrdinalPropertySettingsWidgetQt<T>::apply() {
     NetworkLock lock(property_);
 
     std::array<T, 4> vals{};
     for (size_t i = 0; i < settings_.size(); i++) {
-        for (int k = 0; k < 4; ++k) {
+        for (size_t k = 0; k < 4; ++k) {
             util::glmcomp(vals[k], i) = static_cast<BT>(settings_[i]->getFieldAsDouble(k));
         }
     }
@@ -231,7 +258,7 @@ void TemplatePropertySettingsWidgetQt<T>::apply() {
 }
 
 template <typename T>
-void TemplatePropertySettingsWidgetQt<T>::reload() {
+void OrdinalPropertySettingsWidgetQt<T>::reload() {
     std::array<T, 4> vals{property_->getMinValue(), property_->get(), property_->getMaxValue(),
                           property_->getIncrement()};
 
@@ -253,42 +280,42 @@ void TemplatePropertySettingsWidgetQt<T>::reload() {
 }
 
 template <typename T>
-void TemplatePropertySettingsWidgetQt<T>::cancel() {
+void OrdinalPropertySettingsWidgetQt<T>::cancel() {
     hideWidget();
     reload();
 }
 
 template <typename T>
-void TemplatePropertySettingsWidgetQt<T>::save() {
+void OrdinalPropertySettingsWidgetQt<T>::save() {
     hideWidget();
     apply();
 }
 
 template <typename T>
-bool TemplatePropertySettingsWidgetQt<T>::getVisible() const {
+bool OrdinalPropertySettingsWidgetQt<T>::getVisible() const {
     return isVisible();
 }
 
 template <typename T>
-void TemplatePropertySettingsWidgetQt<T>::hideWidget() {
+void OrdinalPropertySettingsWidgetQt<T>::hideWidget() {
     property_->deregisterWidget(this);
-    QDialog::setVisible(false);
+    setVisible(false);
 }
 
 template <typename T>
-void TemplatePropertySettingsWidgetQt<T>::showWidget() {
+void OrdinalPropertySettingsWidgetQt<T>::showWidget() {
     property_->registerWidget(this);
     updateFromProperty();
-    QDialog::setVisible(true);
+    setVisible(true);
 }
 
 template <typename T>
-void TemplatePropertySettingsWidgetQt<T>::updateFromProperty() {
+void OrdinalPropertySettingsWidgetQt<T>::updateFromProperty() {
     reload();
 }
 
 template <typename T>
-void TemplatePropertySettingsWidgetQt<T>::keyPressEvent(QKeyEvent* event) {
+void OrdinalPropertySettingsWidgetQt<T>::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Escape) {
         cancel();
     } else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
@@ -296,6 +323,13 @@ void TemplatePropertySettingsWidgetQt<T>::keyPressEvent(QKeyEvent* event) {
     }
     QDialog::keyPressEvent(event);
 }
+
+template <typename T>
+void OrdinalPropertySettingsWidgetQt<T>::closeEvent(QCloseEvent* event) {
+   event->ignore();
+   cancel();
+}
+
 
 template <typename T>
 class TemplateMinMaxPropertySettingsWidgetQt : public QDialog, public PropertyWidget {
@@ -409,7 +443,9 @@ void TemplateMinMaxPropertySettingsWidgetQt<T>::apply() {
 
     // order of values stored in setting_:
     // "Component", "Min Bound", "Start","End", "Max Bound", "MinSeparation", "Increment"
-    auto getVal = [&](int index) { return static_cast<BT>(settings_[0]->getFieldAsDouble(index)); };
+    auto getVal = [&](size_t index) {
+        return static_cast<BT>(settings_[0]->getFieldAsDouble(index));
+    };
 
     range_type newVal(getVal(1), getVal(2));
     range_type newRange(getVal(0), getVal(3));
@@ -497,5 +533,3 @@ void TemplateMinMaxPropertySettingsWidgetQt<T>::keyPressEvent(QKeyEvent* event) 
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYSETTINGSWIDGETQT_H

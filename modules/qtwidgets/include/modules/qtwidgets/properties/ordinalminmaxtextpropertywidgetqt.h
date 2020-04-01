@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ORDINALMINMAXTEXTTROPERTYWIDGETQT_H
-#define IVW_ORDINALMINMAXTEXTTROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -147,8 +146,11 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromProperty() {
     QSignalBlocker minBlock(min_);
     QSignalBlocker maxBlock(max_);
 
-    min_->setRange(range.x, range.y - sep);
-    max_->setRange(range.x + sep, range.y);
+    min_->setMinValue(range.x, ConstraintBehaviour::Editable);
+    min_->setMaxValue(range.y - sep, ConstraintBehaviour::Editable);
+
+    max_->setMinValue(range.x + sep, ConstraintBehaviour::Editable);
+    max_->setMaxValue(range.y, ConstraintBehaviour::Editable);
 
     min_->initValue(val.x);
     max_->initValue(val.y);
@@ -289,5 +291,3 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::showSettings() {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_ORDINALMINMAXTEXTTROPERTYWIDGETQT_H
