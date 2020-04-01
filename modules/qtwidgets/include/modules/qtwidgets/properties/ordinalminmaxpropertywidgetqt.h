@@ -99,7 +99,7 @@ private:
     int transformIncrementToSpinnerDecimals();
     void showSettings();
 
-    TemplateMinMaxPropertySettingsWidgetQt<T>* settingsWidget_;
+    MinMaxPropertySettingsWidgetQt<T>* settingsWidget_;
     RangeSliderQt* slider_;
     NumberLineEdit* spinBoxMin_;
     NumberLineEdit* spinBoxMax_;
@@ -313,7 +313,7 @@ int OrdinalMinMaxPropertyWidgetQt<T>::transformIncrementToSpinnerDecimals() {
 template <typename T>
 void OrdinalMinMaxPropertyWidgetQt<T>::showSettings() {
     if (!settingsWidget_) {
-        settingsWidget_ = new TemplateMinMaxPropertySettingsWidgetQt<T>(minMaxProperty_, this);
+        settingsWidget_ = new MinMaxPropertySettingsWidgetQt<T>(minMaxProperty_, this);
     }
     settingsWidget_->showWidget();
 }

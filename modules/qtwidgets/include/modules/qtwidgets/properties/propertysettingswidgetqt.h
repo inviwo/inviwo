@@ -54,6 +54,8 @@
 #include <QCheckBox>
 #include <warn/pop>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API SinglePropertySetting {
@@ -86,8 +88,6 @@ public:
     void hideWidget();
     bool getVisible() const;
 
-    // virtual void reject() override;
-
 protected:
     virtual void keyPressEvent(QKeyEvent* event) override;
     virtual void closeEvent(QCloseEvent* e) override;
@@ -101,7 +101,7 @@ private:
     QPushButton* btnApply_;
     QPushButton* btnOk_;
     QPushButton* btnCancel_;
-    std::vector<std::unique_ptr<SinglePropertySetting>> settings_;
+    std::vector<SinglePropertySetting> settings_;
     OrdinalProperty<T>* property_;
 };
 
@@ -118,11 +118,7 @@ OrdinalPropertySettingsWidgetQt<T>::OrdinalPropertySettingsWidgetQt(OrdinalPrope
     setModal(false);
     // remove help button from title bar
     Qt::WindowFlags flags = windowFlags() ^ Qt::WindowContextHelpButtonHint;
-    // flags |= Qt::Popup;  // make it a tool window
-    // flags |= Qt::Dialog;
     setWindowFlags(flags);
-
-    // setAttribute(Qt::WA_DeleteOnClose, false);
 
     auto gridLayout = new QGridLayout();
     const auto space = utilqt::refSpacePx(this);
@@ -155,11 +151,11 @@ OrdinalPropertySettingsWidgetQt<T>::OrdinalPropertySettingsWidgetQt(OrdinalPrope
         for (size_t j = 0; j < components.y; j++) {
             std::stringstream ss;
             ss << desc[i] << (components.y == 1 ? "" : (std::string{", "} + desc[j]));
-            settings_.push_back(std::make_unique<SinglePropertySetting>(this, ss.str()));
-            gridLayout->addWidget(settings_[count]->label_, count + 1, 0);
+            settings_.emplace_back(this, ss.str());
+            gridLayout->addWidget(settings_[count].label_, count + 1, 0);
 
             for (int k = 0; k < 4; ++k) {
-                QLineEdit* edit = settings_[count]->addField();
+                QLineEdit* edit = settings_[count].addField();
                 gridLayout->addWidget(edit, count + 1, k + 1);
             }
             count++;
@@ -174,36 +170,36 @@ OrdinalPropertySettingsWidgetQt<T>::OrdinalPropertySettingsWidgetQt(OrdinalPrope
             if (same[srcCol]->isChecked()) {
                 for (size_t row = 0; row < settings_.size(); row++) {
                     if (row != srcRow) {
-                        QSignalBlocker block{settings_[row]->additionalFields_[srcCol]};
-                        settings_[row]->additionalFields_[srcCol]->setText(
-                            settings_[srcRow]->additionalFields_[srcCol]->text());
+                        QSignalBlocker block{settings_[row].additionalFields_[srcCol]};
+                        settings_[row].additionalFields_[srcCol]->setText(
+                            settings_[srcRow].additionalFields_[srcCol]->text());
                     }
                 }
                 if (symmetric->isChecked() && (srcCol == 0 || srcCol == 2)) {
                     const size_t dstCol = srcCol == 0 ? 2 : 0;
                     for (size_t row = 0; row < settings_.size(); row++) {
-                        QSignalBlocker block{settings_[row]->additionalFields_[dstCol]};
-                        QLocale locale = settings_[row]->additionalFields_[dstCol]->locale();
-                        settings_[row]->additionalFields_[dstCol]->setText(
+                        QSignalBlocker block{settings_[row].additionalFields_[dstCol]};
+                        QLocale locale = settings_[row].additionalFields_[dstCol]->locale();
+                        settings_[row].additionalFields_[dstCol]->setText(
                             QStringHelper<BT>::toLocaleString(
                                 locale,
-                                static_cast<BT>(-settings_[row]->getFieldAsDouble(srcCol))));
+                                static_cast<BT>(-settings_[row].getFieldAsDouble(srcCol))));
                     }
                 }
             } else if (symmetric->isChecked() && (srcCol == 0 || srcCol == 2)) {
                 const size_t dstCol = srcCol == 0 ? 2 : 0;
-                QSignalBlocker block{settings_[srcRow]->additionalFields_[dstCol]};
-                QLocale locale = settings_[srcRow]->additionalFields_[dstCol]->locale();
-                settings_[srcRow]->additionalFields_[dstCol]->setText(
+                QSignalBlocker block{settings_[srcRow].additionalFields_[dstCol]};
+                QLocale locale = settings_[srcRow].additionalFields_[dstCol]->locale();
+                settings_[srcRow].additionalFields_[dstCol]->setText(
                     QStringHelper<BT>::toLocaleString(
-                        locale, static_cast<BT>(-settings_[srcRow]->getFieldAsDouble(srcCol))));
+                        locale, static_cast<BT>(-settings_[srcRow].getFieldAsDouble(srcCol))));
             }
         };
     };
 
     for (size_t row = 0; row < settings_.size(); row++) {
         for (size_t col = 0; col < same.size(); col++) {
-            connect(settings_[row]->additionalFields_[col], &QLineEdit::textChanged, this,
+            connect(settings_[row].additionalFields_[col], &QLineEdit::textChanged, this,
                     updateOthers(row, col));
         }
     }
@@ -223,10 +219,10 @@ OrdinalPropertySettingsWidgetQt<T>::OrdinalPropertySettingsWidgetQt(OrdinalPrope
     reload();
 
     for (size_t col = 0; col < same.size(); col++) {
-        const auto val = settings_[0]->getFieldAsDouble(col);
+        const auto val = settings_[0].getFieldAsDouble(col);
         bool allSame = true;
         for (size_t row = 1; row < settings_.size(); row++) {
-            allSame &= val == settings_[row]->getFieldAsDouble(col);
+            allSame &= val == settings_[row].getFieldAsDouble(col);
         }
         same[col]->setChecked(allSame);
     }
@@ -246,7 +242,7 @@ void OrdinalPropertySettingsWidgetQt<T>::apply() {
     std::array<T, 4> vals{};
     for (size_t i = 0; i < settings_.size(); i++) {
         for (size_t k = 0; k < 4; ++k) {
-            util::glmcomp(vals[k], i) = static_cast<BT>(settings_[i]->getFieldAsDouble(k));
+            util::glmcomp(vals[k], i) = static_cast<BT>(settings_[i].getFieldAsDouble(k));
         }
     }
 
@@ -262,18 +258,18 @@ void OrdinalPropertySettingsWidgetQt<T>::reload() {
     std::array<T, 4> vals{property_->getMinValue(), property_->get(), property_->getMaxValue(),
                           property_->getIncrement()};
 
-    QLocale locale = settings_[0]->additionalFields_[0]->locale();
+    QLocale locale = settings_[0].additionalFields_[0]->locale();
     for (size_t i = 0; i < settings_.size(); i++) {
         for (size_t k = 0; k < vals.size(); ++k) {
-            settings_[i]->additionalFields_[k]->setText(
+            settings_[i].additionalFields_[k]->setText(
                 QStringHelper<BT>::toLocaleString(locale, util::glmcomp(vals[k], i)));
         }
 
-        settings_[i]->additionalFields_[0]->setEnabled(
+        settings_[i].additionalFields_[0]->setEnabled(
             property_->getMinConstraintBehaviour() == ConstraintBehaviour::Editable ||
             property_->getMinConstraintBehaviour() == ConstraintBehaviour::Ignore);
 
-        settings_[i]->additionalFields_[2]->setEnabled(
+        settings_[i].additionalFields_[2]->setEnabled(
             property_->getMaxConstraintBehaviour() == ConstraintBehaviour::Editable ||
             property_->getMaxConstraintBehaviour() == ConstraintBehaviour::Ignore);
     }
@@ -326,17 +322,16 @@ void OrdinalPropertySettingsWidgetQt<T>::keyPressEvent(QKeyEvent* event) {
 
 template <typename T>
 void OrdinalPropertySettingsWidgetQt<T>::closeEvent(QCloseEvent* event) {
-   event->ignore();
-   cancel();
+    event->ignore();
+    cancel();
 }
 
-
 template <typename T>
-class TemplateMinMaxPropertySettingsWidgetQt : public QDialog, public PropertyWidget {
+class MinMaxPropertySettingsWidgetQt : public QDialog, public PropertyWidget {
 public:
     using BT = typename util::value_type<T>::type;
-    TemplateMinMaxPropertySettingsWidgetQt(MinMaxProperty<T>* property, QWidget* widget);
-    virtual ~TemplateMinMaxPropertySettingsWidgetQt();
+    MinMaxPropertySettingsWidgetQt(MinMaxProperty<T>* property, QWidget* widget);
+    virtual ~MinMaxPropertySettingsWidgetQt();
 
     using V = glm::tvec2<T, glm::defaultp>;
 
@@ -353,6 +348,7 @@ public:
 
 protected:
     virtual void keyPressEvent(QKeyEvent* event) override;
+    virtual void closeEvent(QCloseEvent* e) override;
 
 private:
     void save();
@@ -363,89 +359,70 @@ private:
     QPushButton* btnApply_;
     QPushButton* btnOk_;
     QPushButton* btnCancel_;
-    std::vector<std::unique_ptr<SinglePropertySetting>> settings_;
+    SinglePropertySetting setting_;
     MinMaxProperty<T>* property_;
 };
 
 template <typename T>
-TemplateMinMaxPropertySettingsWidgetQt<T>::TemplateMinMaxPropertySettingsWidgetQt(
-    MinMaxProperty<T>* property, QWidget* widget)
+MinMaxPropertySettingsWidgetQt<T>::MinMaxPropertySettingsWidgetQt(MinMaxProperty<T>* property,
+                                                                  QWidget* widget)
     : QDialog(widget)
     , PropertyWidget(property)
     , btnApply_(new QPushButton("Apply", this))
     , btnOk_(new QPushButton("Ok", this))
     , btnCancel_(new QPushButton("Cancel", this))
+    , setting_{this, ""}
     , property_(property) {
 
-    this->setModal(false);
+    setModal(false);
     // remove help button from title bar
-    Qt::WindowFlags flags = this->windowFlags() ^ Qt::WindowContextHelpButtonHint;
-    // make it a tool window
-    flags |= Qt::Popup;
-    this->setWindowFlags(flags);
+    Qt::WindowFlags flags = windowFlags() ^ Qt::WindowContextHelpButtonHint;
+    setWindowFlags(flags);
 
     auto gridLayout = new QGridLayout();
     const auto space = utilqt::refSpacePx(this);
     gridLayout->setContentsMargins(space, space, space, space);
     gridLayout->setSpacing(space);
 
-    const std::array<QString, 7> labels = {"Component", "Min Bound",     "Start",    "End",
-                                           "Max Bound", "MinSeparation", "Increment"};
+    const std::array<QString, 6> labels = {"Min", "Start", "End", "Max", "Separation", "Increment"};
     for (size_t i = 0; i < labels.size(); ++i) {
         gridLayout->addWidget(new QLabel(labels[i], this), 0, static_cast<int>(i));
     }
-    const std::array<char, 4> desc = {'x', 'y', 'z', 'w'};
-    const uvec2 components = OrdinalProperty<T>::getDim();
 
-    int count = 0;
-    for (size_t i = 0; i < components.x; i++) {
-        for (size_t j = 0; j < components.y; j++) {
-            std::stringstream ss;
-            ss << desc[i] << (components.y == 1 ? "" : (std::string{", "} + desc[j]));
-            settings_.push_back(std::make_unique<SinglePropertySetting>(this, ss.str()));
-            gridLayout->addWidget(settings_[count]->label_, count + 1, 0);
-
-            for (int k = 0; k < 6; ++k) {
-                QLineEdit* edit = settings_[count]->addField();
-                gridLayout->addWidget(edit, count + 1, k + 1);
-            }
-            count++;
-        }
+    for (int k = 0; k < 6; ++k) {
+        QLineEdit* edit = setting_.addField();
+        gridLayout->addWidget(edit, 1, k);
     }
 
-    gridLayout->addWidget(btnApply_, count + 1, 0, 1, 1);
-    gridLayout->addWidget(btnOk_, count + 1, 1, 1, 2);
-    gridLayout->addWidget(btnCancel_, count + 1, 3, 1, 2);
+    gridLayout->addWidget(btnApply_, 2, 3);
+    gridLayout->addWidget(btnOk_, 2, 4);
+    gridLayout->addWidget(btnCancel_, 2, 5);
     gridLayout->setColumnStretch(2, 2);
 
     setLayout(gridLayout);
 
-    connect(btnApply_, &QPushButton::clicked, this,
-            &TemplateMinMaxPropertySettingsWidgetQt<T>::apply);
-    connect(btnOk_, &QPushButton::clicked, this, &TemplateMinMaxPropertySettingsWidgetQt<T>::save);
-    connect(btnCancel_, &QPushButton::clicked, this,
-            &TemplateMinMaxPropertySettingsWidgetQt<T>::cancel);
+    connect(btnApply_, &QPushButton::clicked, this, &MinMaxPropertySettingsWidgetQt<T>::apply);
+    connect(btnOk_, &QPushButton::clicked, this, &MinMaxPropertySettingsWidgetQt<T>::save);
+    connect(btnCancel_, &QPushButton::clicked, this, &MinMaxPropertySettingsWidgetQt<T>::cancel);
 
     reload();
-    setWindowTitle(QString::fromStdString(property_->getDisplayName().c_str()));
+    setWindowTitle(utilqt::toQString(property_->getDisplayName()));
 }
 
 template <typename T>
-TemplateMinMaxPropertySettingsWidgetQt<T>::~TemplateMinMaxPropertySettingsWidgetQt() {
+MinMaxPropertySettingsWidgetQt<T>::~MinMaxPropertySettingsWidgetQt() {
     if (property_) property_->deregisterWidget(this);
 }
 
 template <typename T>
-void TemplateMinMaxPropertySettingsWidgetQt<T>::apply() {
+void MinMaxPropertySettingsWidgetQt<T>::apply() {
     NetworkLock lock(property_);
 
     using range_type = typename MinMaxProperty<T>::range_type;
 
     // order of values stored in setting_:
     // "Component", "Min Bound", "Start","End", "Max Bound", "MinSeparation", "Increment"
-    auto getVal = [&](size_t index) {
-        return static_cast<BT>(settings_[0]->getFieldAsDouble(index));
-    };
+    auto getVal = [&](size_t index) { return static_cast<BT>(setting_.getFieldAsDouble(index)); };
 
     range_type newVal(getVal(1), getVal(2));
     range_type newRange(getVal(0), getVal(3));
@@ -473,63 +450,66 @@ void TemplateMinMaxPropertySettingsWidgetQt<T>::apply() {
 }
 
 template <typename T>
-void TemplateMinMaxPropertySettingsWidgetQt<T>::reload() {
+void MinMaxPropertySettingsWidgetQt<T>::reload() {
     std::array<T, 6> vals{property_->getRangeMin(),      property_->getStart(),
                           property_->getEnd(),           property_->getRangeMax(),
                           property_->getMinSeparation(), property_->getIncrement()};
 
-    QLocale locale = settings_[0]->additionalFields_[0]->locale();
-    for (size_t i = 0; i < settings_.size(); i++) {
-        for (size_t k = 0; k < vals.size(); ++k) {
-            settings_[i]->additionalFields_[k]->setText(
-                QStringHelper<BT>::toLocaleString(locale, util::glmcomp(vals[k], i)));
-        }
+    QLocale locale = setting_.additionalFields_[0]->locale();
+    for (size_t k = 0; k < vals.size(); ++k) {
+        setting_.additionalFields_[k]->setText(QStringHelper<BT>::toLocaleString(locale, vals[k]));
     }
 }
 
 template <typename T>
-void TemplateMinMaxPropertySettingsWidgetQt<T>::save() {
+void MinMaxPropertySettingsWidgetQt<T>::save() {
     hideWidget();
     apply();
 }
 
 template <typename T>
-void TemplateMinMaxPropertySettingsWidgetQt<T>::cancel() {
+void MinMaxPropertySettingsWidgetQt<T>::cancel() {
     hideWidget();
     reload();
 }
 
 template <typename T>
-bool TemplateMinMaxPropertySettingsWidgetQt<T>::getVisible() const {
+bool MinMaxPropertySettingsWidgetQt<T>::getVisible() const {
     return isVisible();
 }
 
 template <typename T>
-void TemplateMinMaxPropertySettingsWidgetQt<T>::hideWidget() {
+void MinMaxPropertySettingsWidgetQt<T>::hideWidget() {
     property_->deregisterWidget(this);
     QDialog::setVisible(false);
 }
 
 template <typename T>
-void TemplateMinMaxPropertySettingsWidgetQt<T>::showWidget() {
+void MinMaxPropertySettingsWidgetQt<T>::showWidget() {
     property_->registerWidget(this);
     updateFromProperty();
     QDialog::setVisible(true);
 }
 
 template <typename T>
-void TemplateMinMaxPropertySettingsWidgetQt<T>::updateFromProperty() {
+void MinMaxPropertySettingsWidgetQt<T>::updateFromProperty() {
     reload();
 }
 
 template <typename T>
-void TemplateMinMaxPropertySettingsWidgetQt<T>::keyPressEvent(QKeyEvent* event) {
+void MinMaxPropertySettingsWidgetQt<T>::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Escape) {
         cancel();
     } else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
         apply();
     }
     QDialog::keyPressEvent(event);
+}
+
+template <typename T>
+void MinMaxPropertySettingsWidgetQt<T>::closeEvent(QCloseEvent* event) {
+    event->ignore();
+    cancel();
 }
 
 }  // namespace inviwo

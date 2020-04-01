@@ -67,7 +67,7 @@ protected:
     void updateFromMax();
     void showSettings();
 
-    TemplateMinMaxPropertySettingsWidgetQt<T>* settingsWidget_;
+    MinMaxPropertySettingsWidgetQt<T>* settingsWidget_;
     EditableLabelQt* label_;
     MinMaxProperty<T>* minMaxProperty_;
     OrdinalEditorWidget<T>* min_;
@@ -285,7 +285,7 @@ std::unique_ptr<QMenu> OrdinalMinMaxTextPropertyWidgetQt<BT, T>::getContextMenu(
 template <typename BT, typename T>
 void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::showSettings() {
     if (!settingsWidget_) {
-        settingsWidget_ = new TemplateMinMaxPropertySettingsWidgetQt<T>(minMaxProperty_, this);
+        settingsWidget_ = new MinMaxPropertySettingsWidgetQt<T>(minMaxProperty_, this);
     }
     settingsWidget_->showWidget();
 }

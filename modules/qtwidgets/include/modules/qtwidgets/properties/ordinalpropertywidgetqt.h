@@ -219,18 +219,26 @@ void OrdinalPropertyWidgetQt<T, Sem>::updateFromProperty() {
     T inc = ordinal_->getIncrement();
     T val = ordinal_->get();
 
+    constexpr size_t nelem =  util::flat_extent<T>::value;
+    std::array<ConstraintBehaviour, nelem> mincb = {ordinal_->getMinConstraintBehaviour()};
+    std::array<ConstraintBehaviour, nelem> maxcb = {ordinal_->getMaxConstraintBehaviour()};
+
     if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SphericalSpinBox ||
                   Sem == OrdinalPropertyWidgetQtSematics::Spherical) {
         val = util::spherical(val);
         min = T{std::numeric_limits<BT>::epsilon(), 0, -M_PI};
         max = T{3 * glm::length(max), M_PI, M_PI};
         inc = T{glm::length(inc), M_PI / 100.0, 2 * M_PI / 100.0};
+
+        mincb[1] = ConstraintBehaviour::Immutable;
+        mincb[2] = ConstraintBehaviour::Immutable;
+        maxcb[1] = ConstraintBehaviour::Immutable;
+        maxcb[2] = ConstraintBehaviour::Immutable;
     }
 
-    const size_t nelem = ordinal_->getDim().x * ordinal_->getDim().y;
     for (size_t i = 0; i < nelem; i++) {
-        editors_[i]->setMinValue(util::glmcomp(min, i), ordinal_->getMinConstraintBehaviour());
-        editors_[i]->setMaxValue(util::glmcomp(max, i), ordinal_->getMaxConstraintBehaviour());
+        editors_[i]->setMinValue(util::glmcomp(min, i), mincb[i]);
+        editors_[i]->setMaxValue(util::glmcomp(max, i), maxcb[i]);
         editors_[i]->setIncrement(util::glmcomp(inc, i));
         editors_[i]->initValue(util::glmcomp(val, i));
     }
