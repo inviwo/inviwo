@@ -38,6 +38,7 @@ layout(early_fragment_tests) in;
 #include "oit/abufferlinkedlist.glsl"
 #include "illustration/illustrationbuffer.glsl"
 #include "oit/sort.glsl"
+#include "utils/structs.glsl"
 
 // atomic counter to allocate space in the illustration buffer
 // just reuse the counter from the A-Buffer
@@ -53,21 +54,25 @@ layout(early_fragment_tests) in;
     "Sorry, but to fill the Illustration Buffer, I need to be able to add an atomic counter: OpenGL 4.6 or ARB_shader_atomic_counter_ops"
 #endif
 
+#ifdef BACKGROUND_AVAILABLE
+uniform ImageParameters bgParameters;
+uniform sampler2D bgColor;
+uniform sampler2D bgDepth;
+uniform vec2 reciprocalDimensions;
+#endif  // BACKGROUND_AVAILABLE
+
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 
 // Input interpolated fragment position
 smooth in vec4 fragPos;
 
-layout(std430, binding = 0) buffer colorBufferOut { 
-    vec2 colorOut[];        // alpha + color
+layout(std430, binding = 0) buffer colorBufferOut {
+    vec2 colorOut[];  // alpha + color
 };
 layout(std430, binding = 1) buffer surfaceInfoBufferOut {
     vec2 surfaceInfoOut[];  // depth + gradient
 };
-
-// Fill local memory array of fragments
-void fillFragmentArray(uint idx, out int numFrag);
 
 void main(void) {
     ivec2 coords = ivec2(gl_FragCoord.xy);
@@ -77,13 +82,19 @@ void main(void) {
 
         uint pixelIdx = getPixelLink(coords);
         if (pixelIdx > 0) {
+            float backgroundDepth = 1.0;
+#ifdef BACKGROUND_AVAILABLE
+            // Assume the camera used to render the background has the same near and far plane,
+            // so we can directly compare depths.
+            vec2 texCoord = (gl_FragCoord.xy + 0.5) * reciprocalDimensions;
+            backgroundDepth = texture(bgDepth, texCoord).x;
+#endif  // BACKGROUND_AVAILABLE
+
             // we have fragments
-            // 1. load them
+            // 1. load and sort them
             int numFrag = 0;
-            fillFragmentArray(pixelIdx, numFrag);
-            // 2. sort fragments in local memory array
-            bubbleSort(numFrag);
-            // 3. write them back
+            fillFragmentArraySortedUntilDepth(pixelIdx, backgroundDepth, numFrag);
+            // 2. write them back
             uint start = atomicAdd(illustrationBufferCounter, numFrag);
             for (int i = 0; i < numFrag; ++i) {
                 colorOut[start + i] = vec2(fragmentList[i].z, fragmentList[i].w);
@@ -98,17 +109,4 @@ void main(void) {
         }
     }
     discard;
-}
-
-void fillFragmentArray(uint pixelIdx, out int numFrag) {
-    // Load fragments into a local memory array for sorting
-
-    int ip = 0;
-    while (pixelIdx != 0 && ip < ABUFFER_SIZE) {
-        vec4 val = readPixelStorage(pixelIdx - 1);
-        fragmentList[ip] = val;
-        pixelIdx = floatBitsToUint(val.x);
-        ip++;
-    }
-    numFrag = ip;
 }

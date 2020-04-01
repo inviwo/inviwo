@@ -80,9 +80,9 @@ FragmentListRenderer::FragmentListRenderer(std::weak_ptr<ImageInport> background
     , pixelBuffer_{fragmentSize_ * 4 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 4),
                    GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER}
     , totalFragmentQuery_{0}
+    , backgroundPort_(background)
     , clear_("oit/simplequad.vert", "oit/clear.frag", false)
     , display_("oit/simplequad.vert", "oit/display.frag", false)
-    , backgroundPort_(background)
     , illustration_{screenSize_, fragmentSize_} {
 
     buildShaders();
@@ -104,6 +104,7 @@ FragmentListRenderer::~FragmentListRenderer() {
 
 void FragmentListRenderer::prePass(const size2_t& screenSize) {
     resizeBuffers(screenSize);
+
     // reset counter
 
     GLuint v[1] = {0};
@@ -156,14 +157,14 @@ bool FragmentListRenderer::postPass(bool useIllustration) {
         return false;
     }
 
+    // Set depth buffer to read from.
+    auto bg = backgroundPort_.lock();
+    bool hasBackground = bg && bg->hasData();
+
+    // Build shader depending on inport state.
+    if (hasBackground != builtWithBackground_) buildShaders();
+
     if (!useIllustration) {
-        // Set depth buffer to read from.
-        auto bg = backgroundPort_.lock();
-        bool hasBackground = bg && bg->hasData();
-
-        // Build shader depending on inport state.
-        if (hasBackground != builtWithBackground_) buildShaders();
-
         // render fragment list
         display_.activate();
         setUniforms(display_, textureUnits_[0]);
@@ -285,6 +286,12 @@ void FragmentListRenderer::buildShaders() {
     }
 
     if (supportsIllustration()) {
+        if (builtWithBackground_) {
+            illustration_.fill.getFragmentShaderObject()->addShaderDefine("BACKGROUND_AVAILABLE");
+        } else {
+            illustration_.fill.getFragmentShaderObject()->removeShaderDefine(
+                "BACKGROUND_AVAILABLE");
+        }
         illustration_.fill.build();
         illustration_.draw.build();
         illustration_.neighbors.build();
@@ -362,6 +369,12 @@ void FragmentListRenderer::fillIllustration(TextureUnit& abuffUnit, TextureUnit&
     illustration_.fill.activate();
     setUniforms(illustration_.fill, abuffUnit);
     illustration_.setUniforms(illustration_.fill, idxUnit, countUnit);
+    if (builtWithBackground_) {
+        utilgl::bindAndSetUniforms(illustration_.fill, textureUnits_,
+                                   *(backgroundPort_.lock()->getData()), "bg",
+                                   ImageType::ColorDepth);
+        illustration_.fill.setUniform("reciprocalDimensions", vec2(1) / vec2(screenSize_));
+    }
 
     illustration_.color.bindBase(0);        // out: alpha + color
     illustration_.surfaceInfo.bindBase(1);  // out: depth + gradient

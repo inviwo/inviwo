@@ -41,6 +41,12 @@ vec4 fragmentList[ABUFFER_SIZE];
 void bubbleSort(int array_size);
 // Bitonic sort test
 void bitonicSort(int n);
+// Fill local memory array of fragments
+void fillFragmentArray(uint idx, out int numFrag);
+// Fill local memory array with lowest values
+void fillFragmentArraySortedUntilDepth(uint pixelIdx, float maxDepth, out int numFrag);
+// Selection sort, allowing to get the first elements of a larger series
+vec4 selectionSortNext(uint headPtr, float lastDepth);
 
 // Bubble sort used to sort fragments
 void bubbleSort(int array_size) {
@@ -81,6 +87,46 @@ void bitonicSort(int n) {
             }
         }
     }
+}
+
+void fillFragmentArray(uint pixelIdx, out int numFrag) {
+    // Load fragments into a local memory array for sorting
+    int ip = 0;
+    while (pixelIdx != 0 && ip < ABUFFER_SIZE) {
+        vec4 val = readPixelStorage(pixelIdx - 1);
+        fragmentList[ip] = val;
+        pixelIdx = floatBitsToUint(val.x);
+        ip++;
+    }
+    numFrag = ip;
+}
+
+void fillFragmentArraySortedUntilDepth(uint pixelIdx, float maxDepth, out int numFrag) {
+    // Load fragments into a local memory array for sorting
+    numFrag = 0;
+    float depth = 0.0;
+
+    while (numFrag < ABUFFER_SIZE) {
+        vec4 val = selectionSortNext(pixelIdx, depth);
+        depth = val.y;
+        if (depth < 0.0 || depth > maxDepth) return;
+        fragmentList[numFrag] = val;
+        numFrag++;
+    }
+}
+
+vec4 selectionSortNext(uint headPtr, float lastDepth) {
+    vec4 closestVal = vec4(-1.0);
+    float minDepth = 1.0;
+    while (headPtr != 0) {
+        vec4 val = readPixelStorage(headPtr - 1);
+        if (val.y > lastDepth && val.y < minDepth) {
+            minDepth = val.y;
+            closestVal = val;
+        }
+        headPtr = floatBitsToUint(val.x);
+    }
+    return closestVal;
 }
 
 #endif
