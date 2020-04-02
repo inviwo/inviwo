@@ -182,7 +182,8 @@ OrdinalPropertyWidgetQt<T, Sem>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* pro
             if constexpr (util::extent<T, 1>::value > 1 &&
                           Sem != OrdinalPropertyWidgetQtSematics::Default) {
                 std::swap(layoutCol, layoutRow);
-            } else if constexpr (Sem == OrdinalPropertyWidgetQtSematics::Default) {
+            } else if constexpr (Sem == OrdinalPropertyWidgetQtSematics::Default ||
+                                 Sem == OrdinalPropertyWidgetQtSematics::Spherical) {
                 layoutCol = 1;
                 layoutRow = col + util::extent<T, 1>::value * row;
             }
@@ -219,7 +220,7 @@ void OrdinalPropertyWidgetQt<T, Sem>::updateFromProperty() {
     T inc = ordinal_->getIncrement();
     T val = ordinal_->get();
 
-    constexpr size_t nelem =  util::flat_extent<T>::value;
+    constexpr size_t nelem = util::flat_extent<T>::value;
     std::array<ConstraintBehaviour, nelem> mincb = {ordinal_->getMinConstraintBehaviour()};
     std::array<ConstraintBehaviour, nelem> maxcb = {ordinal_->getMaxConstraintBehaviour()};
 
