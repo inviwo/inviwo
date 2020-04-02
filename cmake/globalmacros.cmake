@@ -380,9 +380,16 @@ function(ivw_register_modules retval)
     # Add enabled modules in sorted order
     set(ivw_module_names "")
     foreach(mod IN LISTS enabled_sorted_modules)
+        message(STATUS "create module: ${${mod}_name}")
+        if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.16.0)
+            list(APPEND CMAKE_MESSAGE_INDENT "    ")
+        endif()
         add_subdirectory(${${mod}_path} ${IVW_BINARY_DIR}/modules/${${mod}_dir})
         list(APPEND ivw_module_names ${${mod}_modName})
         ivw_private_generate_module_registration_file(${mod})
+        if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.16.0)
+            list(POP_BACK CMAKE_MESSAGE_INDENT)
+        endif()
     endforeach()
 
     # Save list of modules
@@ -491,7 +498,6 @@ function(ivw_create_module)
     endif()
 
     string(TOLOWER ${PROJECT_NAME} l_project_name)
-    ivw_debug_message(STATUS "create module: ${PROJECT_NAME}")
     ivw_dir_to_mod_dep(mod ${l_project_name})  # opengl -> INVIWOOPENGLMODULE
 
     set(cmake_files "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt")
