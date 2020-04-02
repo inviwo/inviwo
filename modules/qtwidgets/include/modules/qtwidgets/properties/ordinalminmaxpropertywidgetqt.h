@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ORDINALMINMAXPROPERTYWIDGETQT_H
-#define IVW_ORDINALMINMAXPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -41,7 +40,6 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <modules/qtwidgets/ordinalbasewidget.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -297,7 +295,7 @@ std::unique_ptr<QMenu> OrdinalMinMaxPropertyWidgetQt<T>::getContextMenu() {
 
 template <typename T>
 int OrdinalMinMaxPropertyWidgetQt<T>::transformIncrementToSpinnerDecimals() {
-    return OrdinalBaseWidget<T>::decimals(
+    return  utilqt::decimals<T>(
         Transformer<T>::valueToSpinbox(minMaxProperty_, minMaxProperty_->getIncrement()));
 }
 
@@ -311,4 +309,3 @@ void OrdinalMinMaxPropertyWidgetQt<T>::showSettings() {
 
 }  // namespace inviwo
 
-#endif  // IVW_ORDINALMINMAXPROPERTYWIDGETQT_H

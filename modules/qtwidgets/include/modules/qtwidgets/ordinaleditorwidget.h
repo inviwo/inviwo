@@ -69,8 +69,8 @@ protected:
     void applyIncrement();
 
     NumberLineEdit* editor_;
-    ConstraintBehaviour minCb_;
-    ConstraintBehaviour maxCb_;
+    ConstraintBehaviour minCB_;
+    ConstraintBehaviour maxCB_;
 
 signals:
     void valueChanged();
@@ -133,8 +133,8 @@ double OrdinalEditorWidget<T>::transformIncrementToEditor() {
     return static_cast<double>(increment_);
 }
 template <typename T>
-int OrdinalEditorWidget<T>::transformIncrementToEditorecimals() {
-    return decimals(static_cast<double>(increment_));
+int OrdinalEditorWidget<T>::transformIncrementToEditorDecimals() {
+    return utilqt::decimals<T>(static_cast<double>(increment_));
 }
 template <typename T>
 void OrdinalEditorWidget<T>::newEditorValue(double val) {
@@ -159,17 +159,17 @@ void OrdinalEditorWidget<T>::initValue(T value) {
 }
 template <typename T>
 void OrdinalEditorWidget<T>::setMinValue(T minValue, ConstraintBehaviour cb) {
-    if (minValue_ != minValue || minCb_ != cb) {
+    if (minValue_ != minValue || minCB_ != cb) {
         minValue_ = minValue;
-        minCb_ = cb;
+        minCB_ = cb;
         applyMinValue();
     }
 }
 template <typename T>
 void OrdinalEditorWidget<T>::setMaxValue(T maxValue, ConstraintBehaviour cb) {
-    if (maxValue_ != maxValue || maxCb_ != cb) {
+    if (maxValue_ != maxValue || maxCB_ != cb) {
         maxValue_ = maxValue;
-        maxCb_ = cb;
+        maxCB_ = cb;
         applyMaxValue();
     }
 }

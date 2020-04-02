@@ -63,8 +63,8 @@ BaseSliderWidgetQt::BaseSliderWidgetQt(bool intMode)
     , slider_(new Slider())
     , spinnerValue_(0.0)
     , sliderValue_(0)
-    , minCb_{ConstraintBehaviour::Editable}
-    , maxCb_{ConstraintBehaviour::Editable} {
+    , minCB_{ConstraintBehaviour::Editable}
+    , maxCB_{ConstraintBehaviour::Editable} {
 
     QHBoxLayout *hLayout = new QHBoxLayout();
 
@@ -114,7 +114,7 @@ void BaseSliderWidgetQt::applyMinValue() {
     QSignalBlocker spinBlock(spinBox_);
     QSignalBlocker slideBlock(slider_);
 
-    if (minCb_ == ConstraintBehaviour::Ignore) {
+    if (minCB_ == ConstraintBehaviour::Ignore) {
         spinBox_->setMinimum(std::numeric_limits<double>::lowest());
     } else {
         spinBox_->setMinimum(transformMinValueToSpinner());
@@ -126,7 +126,7 @@ void BaseSliderWidgetQt::applyMaxValue() {
     QSignalBlocker spinBlock(spinBox_);
     QSignalBlocker slideBlock(slider_);
 
-    if (maxCb_ == ConstraintBehaviour::Ignore) {
+    if (maxCB_ == ConstraintBehaviour::Ignore) {
         spinBox_->setMaximum(std::numeric_limits<double>::max());
     } else {
         spinBox_->setMaximum(transformMaxValueToSpinner());

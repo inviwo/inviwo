@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SLIDETWIDGETQT_H
-#define IVW_SLIDETWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -109,8 +108,8 @@ private:
     int sliderValue_;
 
 protected:
-    ConstraintBehaviour minCb_;
-    ConstraintBehaviour maxCb_;
+    ConstraintBehaviour minCB_;
+    ConstraintBehaviour maxCB_;
 };
 
 template <typename T>
@@ -235,7 +234,7 @@ int SliderWidgetQt<T>::transformIncrementToSlider() {
 
 template <typename T>
 int SliderWidgetQt<T>::transformIncrementToSpinnerDecimals() {
-    return decimals(reprToSpinner(increment_));
+    return utilqt::decimals<T>(reprToSpinner(increment_));
 }
 
 template <typename T>
@@ -269,18 +268,18 @@ void SliderWidgetQt<T>::initValue(T value) {
 
 template <typename T>
 void SliderWidgetQt<T>::setMinValue(T minValue, ConstraintBehaviour cb) {
-    if (minValue_ != minValue || minCb_ != cb) {
+    if (minValue_ != minValue || minCB_ != cb) {
         minValue_ = minValue;
-        minCb_ = cb;
+        minCB_ = cb;
         applyMinValue();
     }
 }
 
 template <typename T>
 void SliderWidgetQt<T>::setMaxValue(T maxValue, ConstraintBehaviour cb) {
-    if (maxValue_ != maxValue || maxCb_ != cb) {
+    if (maxValue_ != maxValue || maxCB_ != cb) {
         maxValue_ = maxValue;
-        maxCb_ = cb;
+        maxCB_ = cb;
         applyMaxValue();
     }
 }
@@ -294,5 +293,3 @@ void SliderWidgetQt<T>::setIncrement(T increment) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_SLIDETWIDGETQT_H

@@ -39,8 +39,8 @@ namespace inviwo {
 
 BaseOrdinalEditorWidget::BaseOrdinalEditorWidget(bool intMode)
     : editor_{new NumberLineEdit(intMode, this)}
-    , minCb_{ConstraintBehaviour::Editable}
-    , maxCb_{ConstraintBehaviour::Editable} {
+    , minCB_{ConstraintBehaviour::Editable}
+    , maxCB_{ConstraintBehaviour::Editable} {
 
     QHBoxLayout* hLayout = new QHBoxLayout();
 
@@ -80,7 +80,7 @@ void BaseOrdinalEditorWidget::applyValue() {
 void BaseOrdinalEditorWidget::applyMinValue() {
     QSignalBlocker spinBlock(editor_);
 
-    if (minCb_ == ConstraintBehaviour::Ignore) {
+    if (minCB_ == ConstraintBehaviour::Ignore) {
         editor_->setMinimum(std::numeric_limits<double>::lowest());
     } else {
         editor_->setMinimum(transformMinValueToEditor());
@@ -90,7 +90,7 @@ void BaseOrdinalEditorWidget::applyMinValue() {
 void BaseOrdinalEditorWidget::applyMaxValue() {
     QSignalBlocker spinBlock(editor_);
 
-    if (maxCb_ == ConstraintBehaviour::Ignore) {
+    if (maxCB_ == ConstraintBehaviour::Ignore) {
         editor_->setMaximum(std::numeric_limits<double>::max());
     } else {
         editor_->setMaximum(transformMaxValueToEditor());

@@ -73,8 +73,8 @@ protected:
     void applyIncrement();
 
     DoubleValueDragSpinBox* editor_;
-    ConstraintBehaviour minCb_;
-    ConstraintBehaviour maxCb_;
+    ConstraintBehaviour minCB_;
+    ConstraintBehaviour maxCB_;
 
 signals:
     void valueChanged();
@@ -140,7 +140,7 @@ void OrdinalSpinBoxWidget<T>::newEditorValue(double val) {
 }
 template <typename T>
 double OrdinalSpinBoxWidget<T>::minimumValue() {
-    if (minCb_ == ConstraintBehaviour::Ignore) {
+    if (minCB_ == ConstraintBehaviour::Ignore) {
         return std::numeric_limits<double>::lowest();
     } else {
         return static_cast<double>(minValue_);
@@ -148,7 +148,7 @@ double OrdinalSpinBoxWidget<T>::minimumValue() {
 }
 template <typename T>
 double OrdinalSpinBoxWidget<T>::maximumValue() {
-    if (maxCb_ == ConstraintBehaviour::Ignore) {
+    if (maxCB_ == ConstraintBehaviour::Ignore) {
         return std::numeric_limits<double>::max();
     } else {
         return static_cast<double>(maxValue_);
@@ -160,7 +160,7 @@ double OrdinalSpinBoxWidget<T>::increment() {
 }
 template <typename T>
 int OrdinalSpinBoxWidget<T>::spinnerDecimals() {
-    return decimals(increment());
+    return utilqt::decimals<T>(increment());
 }
 template <typename T>
 T OrdinalSpinBoxWidget<T>::getValue() const {
@@ -180,17 +180,17 @@ void OrdinalSpinBoxWidget<T>::initValue(T value) {
 }
 template <typename T>
 void OrdinalSpinBoxWidget<T>::setMinValue(T minValue, ConstraintBehaviour cb) {
-    if (minValue_ != minValue || minCb_ != cb) {
+    if (minValue_ != minValue || minCB_ != cb) {
         minValue_ = minValue;
-        minCb_ = cb;
+        minCB_ = cb;
         applyRange();
     }
 }
 template <typename T>
 void OrdinalSpinBoxWidget<T>::setMaxValue(T maxValue, ConstraintBehaviour cb) {
-    if (maxValue_ != maxValue || maxCb_ != cb) {
+    if (maxValue_ != maxValue || maxCB_ != cb) {
         maxValue_ = maxValue;
-        maxCb_ = cb;
+        maxCB_ = cb;
         applyRange();
     }
 }
