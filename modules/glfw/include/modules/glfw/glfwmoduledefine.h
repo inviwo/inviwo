@@ -1,5 +1,4 @@
-#ifndef _IVW_MODULE_GLFW_DEFINE_H_
-#define _IVW_MODULE_GLFW_DEFINE_H_
+#pragma once
 
 #ifdef INVIWO_ALL_DYN_LINK  // DYNAMIC
 // If we are building DLL files we must declare dllexport/dllimport
@@ -19,5 +18,3 @@
 #else  // STATIC
 #define IVW_MODULE_GLFW_API
 #endif
-
-#endif /* _IVW_MODULE_GLFW_DEFINE_H_ */

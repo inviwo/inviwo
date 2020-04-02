@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GLFWMODULE_H
-#define IVW_GLFWMODULE_H
+#pragma once
 
 #include <modules/glfw/glfwmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -52,4 +51,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_GLFWMODULE_H
