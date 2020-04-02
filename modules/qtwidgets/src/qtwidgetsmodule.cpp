@@ -144,7 +144,7 @@ struct OptionWidgetReghelper {
     }
 };
 
-}
+}  // namespace
 
 QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     : InviwoModule(app, "QtWidgets"), tfMenuHelper_(std::make_unique<TFMenuHelper>()) {

@@ -182,8 +182,7 @@ OrdinalPropertySettingsWidgetQt<T>::OrdinalPropertySettingsWidgetQt(OrdinalPrope
                         QLocale locale = settings_[row].additionalFields_[dstCol]->locale();
                         settings_[row].additionalFields_[dstCol]->setText(
                             QStringHelper<BT>::toLocaleString(
-                                locale,
-                                static_cast<BT>(-settings_[row].getFieldAsDouble(srcCol))));
+                                locale, static_cast<BT>(-settings_[row].getFieldAsDouble(srcCol))));
                     }
                 }
             } else if (symmetric->isChecked() && (srcCol == 0 || srcCol == 2)) {

@@ -29,6 +29,4 @@
 
 #include <inviwo/core/properties/constraintbehaviour.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo
