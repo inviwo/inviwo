@@ -69,6 +69,6 @@ ivw_register_license_file(NAME FreeType MODULE FontRendering
 
 #--------------------------------------------------------------------
 # Add dependency to ext/utf 
-target_link_libraries(inviwo-module-fontrendering PRIVATE utf)
+target_link_libraries(inviwo-module-fontrendering PRIVATE utf8::cpp)
 target_link_libraries(inviwo-module-fontrendering PUBLIC freetype)
 ivw_make_package(InviwoFontRenderingModule inviwo-module-fontrendering)
