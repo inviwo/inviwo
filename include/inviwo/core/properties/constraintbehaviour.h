@@ -36,12 +36,26 @@
 namespace inviwo {
 
 enum class ConstraintBehaviour {
-    Editable,   // Clamp value, boundary editable by user / programmer. Bounds are linked
-    Mutable,    // Clamp value, boundary editable programmer (setMinValue, setMaxValue).  Bounds are
-                // not linked
-    Immutable,  // Clamp value, boundary can not be modified. Bounds are not linked
-    Ignore  // Don't clamp value. boundary editable by user (only for interaction purposes). Bounds
-            // are linked
+    Editable,  // The default behavior. Clamps values and the boundary is editable by the user in
+               // the GUI and by the programmer from code. The bounds are linked to other
+               // properties. Typical use case would when you have a good default value for a bound,
+               // but other values are still valid.
+
+    Mutable,  // Clamps values and the boundary is editable by the programmer (setMinValue,
+              // setMaxValue) and not from the GUI. Bounds are not linked to other properties.
+              // Typical use case would when you have a bound that the user should not be able to
+              // modify but needs to be modified from the programmers side, say for example the
+              // upper bound of the size of a vector when the value is used for indexing.
+
+    Immutable,  // Clamps values and the boundary can not be modified. Bounds are not linked to
+                // other properties. Typical use case would something like a color where there is a
+                // defined range, (0,1) in this case, that should never be modified.
+
+    Ignore  // Don't clamp values and the boundary is editable by the user and by the programmer.
+            // The bounds are only used for interaction purposes. Bounds are linked to other
+            // properties. Typical use case would be for a value of unbounded character, like the
+            // look from in the camera. The any value is usually valid, the bound are only used to
+            // suggest a reasonable value.
 };
 
 template <class Elem, class Traits>

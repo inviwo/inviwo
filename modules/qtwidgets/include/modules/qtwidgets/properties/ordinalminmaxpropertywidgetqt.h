@@ -41,6 +41,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <modules/qtwidgets/ordinalbasewidget.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -296,18 +297,8 @@ std::unique_ptr<QMenu> OrdinalMinMaxPropertyWidgetQt<T>::getContextMenu() {
 
 template <typename T>
 int OrdinalMinMaxPropertyWidgetQt<T>::transformIncrementToSpinnerDecimals() {
-    const static QLocale locale;
-    double inc = Transformer<T>::valueToSpinbox(minMaxProperty_, minMaxProperty_->getIncrement());
-    std::ostringstream buff;
-    utilqt::localizeStream(buff);
-    buff << inc;
-    const std::string str(buff.str());
-    auto periodPosition = str.find(locale.decimalPoint().toLatin1());
-    if (periodPosition == std::string::npos) {
-        return 0;
-    } else {
-        return static_cast<int>(str.length() - periodPosition - 1);
-    }
+    return OrdinalBaseWidget<T>::decimals(
+        Transformer<T>::valueToSpinbox(minMaxProperty_, minMaxProperty_->getIncrement()));
 }
 
 template <typename T>

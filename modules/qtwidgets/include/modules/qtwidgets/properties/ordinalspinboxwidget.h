@@ -160,22 +160,7 @@ double OrdinalSpinBoxWidget<T>::increment() {
 }
 template <typename T>
 int OrdinalSpinBoxWidget<T>::spinnerDecimals() {
-    if constexpr (std::is_floating_point_v<T>) {
-        const static QLocale locale;
-        double inc = increment();
-        std::ostringstream buff;
-        utilqt::localizeStream(buff);
-        buff << inc;
-        const std::string str(buff.str());
-        auto periodPosition = str.find(locale.decimalPoint().toLatin1());
-        if (periodPosition == std::string::npos) {
-            return 0;
-        } else {
-            return static_cast<int>(str.length() - periodPosition) - 1;
-        }
-    } else {
-        return 0;
-    }
+    return decimals(increment());
 }
 template <typename T>
 T OrdinalSpinBoxWidget<T>::getValue() const {

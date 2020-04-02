@@ -46,6 +46,24 @@ public:
     virtual void setMinValue(T minValue, ConstraintBehaviour cb) = 0;
     virtual void setMaxValue(T maxValue, ConstraintBehaviour cb) = 0;
     virtual void setIncrement(T increment) = 0;
+
+    static int decimals(double inc) {
+        if constexpr (std::is_floating_point_v<T>) {
+            const static QLocale locale;
+            std::ostringstream buff;
+            utilqt::localizeStream(buff);
+            buff << inc;
+            const std::string str(buff.str());
+            auto periodPosition = str.find(locale.decimalPoint().toLatin1());
+            if (periodPosition == std::string::npos) {
+                return 0;
+            } else {
+                return static_cast<int>(str.length() - periodPosition) - 1;
+            }
+        } else {
+            return 0;
+        }
+    }
 };
 
 }  // namespace inviwo

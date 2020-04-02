@@ -110,7 +110,11 @@ protected:
 
 template <typename T>
 inline OrdinalEditorWidget<T>::OrdinalEditorWidget()
-    : BaseOrdinalEditorWidget(!std::is_floating_point_v<T>), value_(0), minValue_(0), maxValue_(0), increment_(0) {}
+    : BaseOrdinalEditorWidget(!std::is_floating_point_v<T>)
+    , value_{1}
+    , minValue_{0}
+    , maxValue_{2}
+    , increment_{1} {}
 
 template <typename T>
 double OrdinalEditorWidget<T>::transformValueToEditor() {
@@ -129,23 +133,8 @@ double OrdinalEditorWidget<T>::transformIncrementToEditor() {
     return static_cast<double>(increment_);
 }
 template <typename T>
-int OrdinalEditorWidget<T>::transformIncrementToEditorDecimals() {
-    if constexpr (std::is_floating_point_v<T>) {
-        const static QLocale locale;
-        const double inc = static_cast<double>(increment_);
-        std::ostringstream buff;
-        utilqt::localizeStream(buff);
-        buff << inc;
-        const std::string str(buff.str());
-        const auto periodPosition = str.find(locale.decimalPoint().toLatin1());
-        if (periodPosition == std::string::npos) {
-            return 0;
-        } else {
-            return static_cast<int>(str.length() - periodPosition) - 1;
-        }
-    } else {
-        return 0;
-    }
+int OrdinalEditorWidget<T>::transformIncrementToEditorecimals() {
+    return decimals(static_cast<double>(increment_));
 }
 template <typename T>
 void OrdinalEditorWidget<T>::newEditorValue(double val) {

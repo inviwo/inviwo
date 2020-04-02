@@ -107,6 +107,7 @@ private:
     QSlider* slider_;
     double spinnerValue_;
     int sliderValue_;
+
 protected:
     ConstraintBehaviour minCb_;
     ConstraintBehaviour maxCb_;
@@ -234,22 +235,7 @@ int SliderWidgetQt<T>::transformIncrementToSlider() {
 
 template <typename T>
 int SliderWidgetQt<T>::transformIncrementToSpinnerDecimals() {
-    if constexpr (std::is_floating_point_v<T>) {
-        const static QLocale locale;
-        const double inc = reprToSpinner(increment_);
-        std::ostringstream buff;
-        utilqt::localizeStream(buff);
-        buff << inc;
-        const std::string str(buff.str());
-        const auto periodPosition = str.find(locale.decimalPoint().toLatin1());
-        if (periodPosition == std::string::npos) {
-            return 0;
-        } else {
-            return static_cast<int>(str.length() - periodPosition) - 1;
-        }
-    } else {
-        return 0;
-    }
+    return decimals(reprToSpinner(increment_));
 }
 
 template <typename T>

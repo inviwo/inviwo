@@ -374,9 +374,7 @@ T OrdinalProperty<T>::clamp(const T& v) const {
 
 template <typename T>
 bool OrdinalProperty<T>::isLinkingBound(ConstraintBehaviour constraint) {
-    if (constraint == ConstraintBehaviour::Mutable) return false;
-    if (constraint == ConstraintBehaviour::Immutable) return false;
-    return true;
+    return constraint == ConstraintBehaviour::Editable || constraint == ConstraintBehaviour::Ignore;
 }
 
 template <typename T>
