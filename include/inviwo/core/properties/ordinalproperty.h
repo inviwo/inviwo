@@ -54,15 +54,16 @@ public:
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                     PropertySemantics semantics = PropertySemantics::Default);
 
-    OrdinalProperty(const std::string& identifier, const std::string& displayName,
-                    const T& value = Defaultvalues<T>::getVal(),
-                    const std::pair<T, ConstraintBehavior>& minValue =
-                        std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
-                    const std::pair<T, ConstraintBehavior>& maxValue =
-                        std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
-                    const T& increment = Defaultvalues<T>::getInc(),
-                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                    PropertySemantics semantics = PropertySemantics::Default);
+    OrdinalProperty(
+        const std::string& identifier, const std::string& displayName,
+        const T& value = Defaultvalues<T>::getVal(),
+        const std::pair<T, ConstraintBehavior>& minValue = std::pair{Defaultvalues<T>::getMin(),
+                                                                     ConstraintBehavior::Editable},
+        const std::pair<T, ConstraintBehavior>& maxValue = std::pair{Defaultvalues<T>::getMax(),
+                                                                     ConstraintBehavior::Editable},
+        const T& increment = Defaultvalues<T>::getInc(),
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+        PropertySemantics semantics = PropertySemantics::Default);
 
     OrdinalProperty(const OrdinalProperty<T>& rhs);
     OrdinalProperty<T>& operator=(const T& value);
