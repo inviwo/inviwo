@@ -62,7 +62,8 @@ namespace utilgl {
 
 // TemplateProperty
 template <typename T>
-void setShaderUniforms(Shader& shader, const TemplateProperty<T>& property, const std::string& name) {
+void setShaderUniforms(Shader& shader, const TemplateProperty<T>& property,
+                       const std::string& name) {
     shader.setUniform(name, property.get());
 }
 template <typename T>
@@ -136,7 +137,8 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const StipplingProp
 
 // Ordinal Property
 template <typename T>
-void setShaderUniforms(Shader& shader, const OrdinalProperty<T>& property, const std::string& name) {
+void setShaderUniforms(Shader& shader, const OrdinalProperty<T>& property,
+                       const std::string& name) {
     shader.setUniform(name, property.get());
 }
 

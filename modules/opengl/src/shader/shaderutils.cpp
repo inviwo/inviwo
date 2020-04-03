@@ -93,7 +93,8 @@ void addShaderDefines(Shader& shader, const ShadingMode::Modes& mode) {
     }
 }
 
-void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property, const std::string& name) {
+void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property,
+                       const std::string& name) {
     shader.setUniform(name + ".position", property.getTransformedPosition());
     shader.setUniform(name + ".ambientColor", property.ambientColor_.get());
     shader.setUniform(name + ".diffuseColor", property.diffuseColor_.get());
@@ -288,7 +289,8 @@ void setShaderUniforms(Shader& shader, const RaycastingProperty& property) {
     shader.setUniform("samplingRate_", property.samplingRate_.get());
 }
 
-void setShaderUniforms(Shader& shader, const RaycastingProperty& property, const std::string& name) {
+void setShaderUniforms(Shader& shader, const RaycastingProperty& property,
+                       const std::string& name) {
     shader.setUniform(name + ".samplingRate", property.samplingRate_.get());
 }
 
@@ -439,7 +441,8 @@ void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property)
     shader.setUniform("isoValue_", property.isoValue_.get());
 }
 
-void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property, const std::string& name) {
+void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property,
+                       const std::string& name) {
     shader.setUniform(name + ".samplingRate", property.samplingRate_.get());
     shader.setUniform(name + ".isoValue", property.isoValue_.get());
 }
@@ -518,7 +521,8 @@ void addShaderDefines(Shader& shader, const VolumeIndicatorProperty& indicator) 
     shader.getFragmentShaderObject()->addShaderDefine(key, value);
 }
 
-void setShaderUniforms(Shader& shader, const VolumeIndicatorProperty& indicator, const std::string& name) {
+void setShaderUniforms(Shader& shader, const VolumeIndicatorProperty& indicator,
+                       const std::string& name) {
     if (indicator) {
         if (indicator.plane1_) {
             shader.setUniform(name + ".plane1.position", indicator.plane1_.position_);
