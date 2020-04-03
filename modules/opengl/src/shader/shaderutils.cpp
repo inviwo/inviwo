@@ -93,7 +93,7 @@ void addShaderDefines(Shader& shader, const ShadingMode::Modes& mode) {
     }
 }
 
-void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property, std::string name) {
+void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property, const std::string& name) {
     shader.setUniform(name + ".position", property.getTransformedPosition());
     shader.setUniform(name + ".ambientColor", property.ambientColor_.get());
     shader.setUniform(name + ".diffuseColor", property.diffuseColor_.get());
@@ -103,7 +103,7 @@ void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property, s
 
 void addShaderDefines(Shader& /*shader*/, const CameraProperty& /*property*/) {}
 
-void setShaderUniforms(Shader& shader, const CameraProperty& property, std::string name) {
+void setShaderUniforms(Shader& shader, const CameraProperty& property, const std::string& name) {
     shader.setUniform(name + ".worldToView", property.viewMatrix());
     shader.setUniform(name + ".viewToWorld", property.inverseViewMatrix());
     shader.setUniform(name + ".worldToClip", property.projectionMatrix() * property.viewMatrix());
@@ -116,7 +116,7 @@ void setShaderUniforms(Shader& shader, const CameraProperty& property, std::stri
     shader.setUniform(name + ".farPlane", property.getFarPlaneDist());
 }
 
-void setShaderUniforms(Shader& shader, const Camera& property, std::string name) {
+void setShaderUniforms(Shader& shader, const Camera& property, const std::string& name) {
     shader.setUniform(name + ".worldToView", property.getViewMatrix());
     shader.setUniform(name + ".viewToWorld", property.getInverseViewMatrix());
     shader.setUniform(name + ".worldToClip",
@@ -288,7 +288,7 @@ void setShaderUniforms(Shader& shader, const RaycastingProperty& property) {
     shader.setUniform("samplingRate_", property.samplingRate_.get());
 }
 
-void setShaderUniforms(Shader& shader, const RaycastingProperty& property, std::string name) {
+void setShaderUniforms(Shader& shader, const RaycastingProperty& property, const std::string& name) {
     shader.setUniform(name + ".samplingRate", property.samplingRate_.get());
 }
 
@@ -439,7 +439,7 @@ void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property)
     shader.setUniform("isoValue_", property.isoValue_.get());
 }
 
-void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property, std::string name) {
+void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property, const std::string& name) {
     shader.setUniform(name + ".samplingRate", property.samplingRate_.get());
     shader.setUniform(name + ".isoValue", property.isoValue_.get());
 }
@@ -466,7 +466,7 @@ void setShaderUniforms(Shader& shader, const IsoValueProperty& property) {
     shader.setUniform("isosurfaceColors", data.second.size(), data.second.data());
 }
 
-void setShaderUniforms(Shader& shader, const IsoValueProperty& property, std::string name) {
+void setShaderUniforms(Shader& shader, const IsoValueProperty& property, const std::string& name) {
     auto data = property.get().getVectorsf();
 
     shader.setUniform(name + ".values", data.first.size(), data.first.data());
@@ -478,11 +478,11 @@ void addShaderDefines(Shader& shader, const IsoTFProperty& property) {
 }
 
 void setShaderUniforms(Shader& shader, const IsoTFProperty& property) {
-    setShaderUniforms(shader, property.isovalues_);
+    setShaderUniforms(shader, property.isovalues_, property.isovalues_.getIdentifier());
 }
 
-void setShaderUniforms(Shader& shader, const IsoTFProperty& property, std::string name) {
-    setShaderUniforms(shader, property.isovalues_, property.isovalues_.getIdentifier());
+void setShaderUniforms(Shader& shader, const IsoTFProperty& property, const std::string& name) {
+    setShaderUniforms(shader, property.isovalues_, name);
 }
 
 void addShaderDefinesBGPort(Shader& shader, const ImageInport& port) {
@@ -518,7 +518,7 @@ void addShaderDefines(Shader& shader, const VolumeIndicatorProperty& indicator) 
     shader.getFragmentShaderObject()->addShaderDefine(key, value);
 }
 
-void setShaderUniforms(Shader& shader, const VolumeIndicatorProperty& indicator, std::string name) {
+void setShaderUniforms(Shader& shader, const VolumeIndicatorProperty& indicator, const std::string& name) {
     if (indicator) {
         if (indicator.plane1_) {
             shader.setUniform(name + ".plane1.position", indicator.plane1_.position_);
@@ -565,7 +565,7 @@ void addShaderDefines(Shader& shader, const StipplingProperty::Mode& mode) {
     fragShader->addShaderDefine("STIPPLE_MODE", value);
 }
 
-void setShaderUniforms(Shader& shader, const StipplingProperty& property, std::string name) {
+void setShaderUniforms(Shader& shader, const StipplingProperty& property, const std::string& name) {
     shader.setUniform(name + ".length", property.length_.get());
     shader.setUniform(name + ".spacing", property.spacing_.get());
     shader.setUniform(name + ".offset", property.offset_.get());

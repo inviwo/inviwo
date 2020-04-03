@@ -663,11 +663,11 @@ constexpr auto glmcomp(const T& elem, size_t i) -> const typename T::value_type&
 
 // matrix like access
 template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
-constexpr auto glmcomp(T& elem, size_t i, size_t j) -> T& {
+constexpr auto glmcomp(T& elem, size_t, size_t) -> T& {
     return elem;
 }
 template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
-constexpr auto glmcomp(T& elem, size_t i, size_t j) ->
+constexpr auto glmcomp(T& elem, size_t i, size_t) ->
     typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
                               typename T::value_type&>::type {
     return elem[i];

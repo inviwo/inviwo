@@ -62,7 +62,7 @@ namespace utilgl {
 
 // TemplateProperty
 template <typename T>
-void setShaderUniforms(Shader& shader, const TemplateProperty<T>& property, std::string name) {
+void setShaderUniforms(Shader& shader, const TemplateProperty<T>& property, const std::string& name) {
     shader.setUniform(name, property.get());
 }
 template <typename T>
@@ -74,20 +74,20 @@ void setShaderUniforms(Shader& shader, const TemplateProperty<T>& property) {
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const SimpleLightingProperty& property);
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const ShadingMode::Modes& mode);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property,
-                                             std::string name);
+                                             const std::string& name);
 
 // CameraProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const CameraProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const CameraProperty& property,
-                                             std::string name);
+                                             const std::string& name);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const Camera& property,
-                                             std::string name);
+                                             const std::string& name);
 
 // RaycastingProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const RaycastingProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const RaycastingProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const RaycastingProperty& property,
-                                             std::string name);
+                                             const std::string& name);
 
 IVW_MODULE_OPENGL_API void setShaderDefines(
     Shader& shader, const TemplateOptionProperty<RaycastingProperty::GradientComputation>& property,
@@ -104,19 +104,19 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
                                              const SimpleRaycastingProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
                                              const SimpleRaycastingProperty& property,
-                                             std::string name);
+                                             const std::string& name);
 
 // IsoValueProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const IsoValueProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const IsoValueProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const IsoValueProperty& property,
-                                             std::string name);
+                                             const std::string& name);
 
 // IsoTFProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const IsoTFProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const IsoTFProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const IsoTFProperty& property,
-                                             std::string name);
+                                             const std::string& name);
 
 // Background Image
 IVW_MODULE_OPENGL_API void addShaderDefinesBGPort(Shader& shader, const ImageInport& port);
@@ -126,18 +126,23 @@ IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader,
                                             const VolumeIndicatorProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
                                              const VolumeIndicatorProperty& property,
-                                             std::string name);
+                                             const std::string& name);
 
 // StipplingProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const StipplingProperty& property);
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const StipplingProperty::Mode& mode);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const StipplingProperty& property,
-                                             std::string name);
+                                             const std::string& name);
 
 // Ordinal Property
 template <typename T>
-void setShaderUniforms(Shader& shader, const OrdinalProperty<T>& property, std::string name) {
+void setShaderUniforms(Shader& shader, const OrdinalProperty<T>& property, const std::string& name) {
     shader.setUniform(name, property.get());
+}
+
+template <typename T>
+void setShaderUniforms(Shader& shader, const OrdinalProperty<T>& property) {
+    setShaderUniforms(shader, property, property.getIdentifier());
 }
 
 namespace detail {
@@ -155,13 +160,13 @@ auto getOptionValue(const TemplateOptionProperty<T>& prop) ->
 // Option Property
 template <typename T>
 void setShaderUniforms(Shader& shader, const TemplateOptionProperty<T>& property,
-                       std::string name) {
+                       const std::string& name) {
     shader.setUniform(name, detail::getOptionValue(property));
 }
 
 // MinMax Property
 template <typename T>
-void setShaderUniforms(Shader& shader, const MinMaxProperty<T>& property, std::string name) {
+void setShaderUniforms(Shader& shader, const MinMaxProperty<T>& property, const std::string& name) {
     shader.setUniform(name, property.get());
 }
 

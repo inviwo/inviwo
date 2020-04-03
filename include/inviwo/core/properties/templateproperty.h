@@ -92,7 +92,7 @@ TemplateProperty<T>::TemplateProperty(const std::string& identifier, const std::
 
 template <typename T>
 TemplateProperty<T>& TemplateProperty<T>::operator=(const T& value) {
-    if (value_.update(value)) propertyModified();
+    set(value);
     return *this;
 }
 
