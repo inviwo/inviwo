@@ -87,40 +87,28 @@
 <body >
 <h1>Latest Changes</h1>
 <h2>2020-04-01 Constraint Behavior</h2>
-<p>Extends the behavior of the Ordinal Property's min and max bound with a <code>ConstraintBehaviour</code> mode.<br />
+<p>Extends the behavior of the Ordinal Property's min and max bound with a <code>ConstraintBehavior</code> mode.<br />
 Four settings are available:</p>
 <ul>
-<li><strong>Editable</strong>: The default behavior and the same as we have had before.<br />
-  Clamps values and the boundary is editable by the user in the GUI and by the programmer from code.<br />
-  The bounds are linked to other properties. Typical use case would when you have a good <br />
-  default value for a bound, but other values are still valid.</li>
-<li><strong>Mutable</strong>: Clamps values and the boundary is editable by the programmer (setMinValue, setMaxValue)<br />
-  and not form the GUI. Bounds are not linked to other properties. Typical use case would when <br />
-  you have a bound that the user should not be able to modify but needs to be modified from the <br />
-  programmers side, say for example the upper bound of the size of a vector when the value is used <br />
-  for indexing. </li>
-<li><strong>Immutable</strong>: Clamps values and the boundary can not be modified. Bounds are not linked to other properties.<br />
-  Typical use case would something like a color where there is a defined range, (0,1) in this case, that should<br />
-  never be modified.</li>
-<li><strong>Ignore</strong>: Don't clamp values and the boundary is editable by the user and by the programmer. <br />
-  The bounds are only  used for interaction purposes. Bounds are linked to other properties.<br />
-  Typical use case would be for a value of unbounded character, like the look from in the camera. <br />
-  The any value is usually valid, the bound are only used to suggest a reasonable value. </li>
+<li><strong>Editable</strong>: The default behavior and the same as we have had before. Clamps values and the boundary is editable by the user in the GUI and by the programmer from code. The bounds are linked to other properties. Typical use case would when you have a good default value for a bound, but other values are still valid. </li>
+<li><strong>Mutable</strong>: Clamps values and the boundary is editable by the programmer (setMinValue, setMaxValue) and not form the GUI. Bounds are not linked to other properties. Typical use case would when you have a bound that the user should not be able to modify but needs to be modified from the programmers side, say for example the upper bound of the size of a vector when the value is used for indexing. </li>
+<li><strong>Immutable</strong>: Clamps values and the boundary can not be modified. Bounds are not linked to other properties. Typical use case would something like a color where there is a defined range, (0,1) in this case, that should never be modified.</li>
+<li><strong>Ignore</strong>: Don't clamp values and the boundary is editable by the user and by the programmer. The bounds are only used for interaction purposes. Bounds are linked to other properties. Typical use case would be for a value of unbounded character, like the look from in the camera. The any value is usually valid, the bound are only used to suggest a reasonable value. </li>
 </ul>
 <p>To specify the behavior a new Constructor has been added to the OrdinalProperty:</p>
 <div class="highlight"><pre><span></span>    <span class="n">OrdinalProperty</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">identifier</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">displayName</span><span class="p">,</span>
                     <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span> <span class="o">=</span> <span class="n">Defaultvalues</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">getVal</span><span class="p">(),</span>
-                    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">ConstraintBehaviour</span><span class="o">&gt;&amp;</span> <span class="n">minValue</span> <span class="o">=</span>
-                        <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="p">{</span><span class="n">Defaultvalues</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">getMin</span><span class="p">(),</span> <span class="n">ConstraintBehaviour</span><span class="o">::</span><span class="n">Editable</span><span class="p">},</span>
-                    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">ConstraintBehaviour</span><span class="o">&gt;&amp;</span> <span class="n">maxValue</span> <span class="o">=</span>
-                        <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="p">{</span><span class="n">Defaultvalues</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">getMax</span><span class="p">(),</span> <span class="n">ConstraintBehaviour</span><span class="o">::</span><span class="n">Editable</span><span class="p">},</span>
+                    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">ConstraintBehavior</span><span class="o">&gt;&amp;</span> <span class="n">minValue</span> <span class="o">=</span>
+                        <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="p">{</span><span class="n">Defaultvalues</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">getMin</span><span class="p">(),</span> <span class="n">ConstraintBehavior</span><span class="o">::</span><span class="n">Editable</span><span class="p">},</span>
+                    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">ConstraintBehavior</span><span class="o">&gt;&amp;</span> <span class="n">maxValue</span> <span class="o">=</span>
+                        <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="p">{</span><span class="n">Defaultvalues</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">getMax</span><span class="p">(),</span> <span class="n">ConstraintBehavior</span><span class="o">::</span><span class="n">Editable</span><span class="p">},</span>
                     <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">increment</span> <span class="o">=</span> <span class="n">Defaultvalues</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">getInc</span><span class="p">(),</span>
                     <span class="n">InvalidationLevel</span> <span class="n">invalidationLevel</span> <span class="o">=</span> <span class="n">InvalidationLevel</span><span class="o">::</span><span class="n">InvalidOutput</span><span class="p">,</span>
                     <span class="n">PropertySemantics</span> <span class="n">semantics</span> <span class="o">=</span> <span class="n">PropertySemantics</span><span class="o">::</span><span class="n">Default</span><span class="p">);</span>
 </pre></div>
 
 
-<p>where the <code>ConstraintBehaviour</code> can be specified together with the <code>minValue</code> and <code>maxValue</code>. </p>
+<p>where the <code>ConstraintBehavior</code> can be specified together with the <code>minValue</code> and <code>maxValue</code>. </p>
 <h2>2020-03-13 Webbrowser API - get parent processor</h2>
 <p>Added functionality to retrieve which processor is responsible for the browser API-calls. See InviwoAPI.js and web browser property synchronization example workspace.</p>
 <h2>2019-12-02 PoolProcessor</h2>

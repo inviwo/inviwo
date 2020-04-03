@@ -35,43 +35,57 @@
 
 namespace inviwo {
 
-enum class ConstraintBehaviour {
-    Editable,  // The default behavior. Clamps values and the boundary is editable by the user in
-               // the GUI and by the programmer from code. The bounds are linked to other
-               // properties. Typical use case would when you have a good default value for a bound,
-               // but other values are still valid.
+/**
+ * Controls the behavior of
+ */
+enum class ConstraintBehavior {
+    /**
+     * The default behavior. Clamps values and the boundary is editable by the user in the GUI and
+     * by the programmer from code. The bounds are linked to other properties. Typical use case
+     * would when you have a good default value for a bound, but other values are still valid.
+     */
+    Editable,
 
-    Mutable,  // Clamps values and the boundary is editable by the programmer (setMinValue,
-              // setMaxValue) and not from the GUI. Bounds are not linked to other properties.
-              // Typical use case would when you have a bound that the user should not be able to
-              // modify but needs to be modified from the programmers side, say for example the
-              // upper bound of the size of a vector when the value is used for indexing.
+    /**
+     * Clamps values and the boundary is editable by the programmer (setMinValue, setMaxValue) and
+     * not from the GUI. Bounds are not linked to other properties. Typical use case would when you
+     * have a bound that the user should not be able to modify but needs to be modified from the
+     * programmers side, say for example the upper bound of the size of a vector when the value is
+     * used for indexing.
+     */
+    Mutable,
 
-    Immutable,  // Clamps values and the boundary can not be modified. Bounds are not linked to
-                // other properties. Typical use case would something like a color where there is a
-                // defined range, (0,1) in this case, that should never be modified.
+    /**
+     * Clamps values and the boundary can not be modified. Bounds are not linked to other
+     * properties. Typical use case would something like a color where there is a defined range,
+     * (0,1) in this case, that should never be modified.
+     */
+    Immutable,
 
-    Ignore  // Don't clamp values and the boundary is editable by the user and by the programmer.
-            // The bounds are only used for interaction purposes. Bounds are linked to other
-            // properties. Typical use case would be for a value of unbounded character, like the
-            // look from in the camera. The any value is usually valid, the bound are only used to
-            // suggest a reasonable value.
+    /**
+     * Don't clamp values and the boundary is editable by the user and by the programmer. The bounds
+     * are only used for interaction purposes. Bounds are linked to other properties. Typical use
+     * case would be for a value of unbounded character, like the look from in the camera. The any
+     * value is usually valid, the bound are only used to suggest a reasonable value.
+     */
+    Ignore
+
 };
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             ConstraintBehaviour cb) {
+                                             ConstraintBehavior cb) {
     switch (cb) {
-        case ConstraintBehaviour::Editable:
+        case ConstraintBehavior::Editable:
             ss << "Editable";
             break;
-        case ConstraintBehaviour::Mutable:
+        case ConstraintBehavior::Mutable:
             ss << "Mutable";
             break;
-        case ConstraintBehaviour::Immutable:
+        case ConstraintBehavior::Immutable:
             ss << "Immutable";
             break;
-        case ConstraintBehaviour::Ignore:
+        case ConstraintBehavior::Ignore:
             ss << "Ignore";
             break;
         default:

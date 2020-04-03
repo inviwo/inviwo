@@ -31,7 +31,7 @@
 #define IVW_ORDINALBASEWIDGET_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/properties/constraintbehaviour.h>
+#include <inviwo/core/properties/constraintbehavior.h>
 
 namespace inviwo {
 
@@ -43,8 +43,8 @@ public:
     virtual T getValue() const = 0;
     virtual void setValue(T value) = 0;
     virtual void initValue(T value) = 0;
-    virtual void setMinValue(T minValue, ConstraintBehaviour cb) = 0;
-    virtual void setMaxValue(T maxValue, ConstraintBehaviour cb) = 0;
+    virtual void setMinValue(T minValue, ConstraintBehavior cb) = 0;
+    virtual void setMaxValue(T maxValue, ConstraintBehavior cb) = 0;
     virtual void setIncrement(T increment) = 0;
 };
 

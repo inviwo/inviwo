@@ -33,7 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/util/glm.h>
-#include <inviwo/core/properties/constraintbehaviour.h>
+#include <inviwo/core/properties/constraintbehavior.h>
 #include <string>
 
 #include <fmt/format.h>
@@ -56,10 +56,10 @@ public:
 
     OrdinalProperty(const std::string& identifier, const std::string& displayName,
                     const T& value = Defaultvalues<T>::getVal(),
-                    const std::pair<T, ConstraintBehaviour>& minValue =
-                        std::pair{Defaultvalues<T>::getMin(), ConstraintBehaviour::Editable},
-                    const std::pair<T, ConstraintBehaviour>& maxValue =
-                        std::pair{Defaultvalues<T>::getMax(), ConstraintBehaviour::Editable},
+                    const std::pair<T, ConstraintBehavior>& minValue =
+                        std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
+                    const std::pair<T, ConstraintBehavior>& maxValue =
+                        std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
                     const T& increment = Defaultvalues<T>::getInc(),
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                     PropertySemantics semantics = PropertySemantics::Default);
@@ -73,11 +73,11 @@ public:
 
     T getMinValue() const;
     void setMinValue(const T& value);
-    ConstraintBehaviour getMinConstraintBehaviour() const;
+    ConstraintBehavior getMinConstraintBehaviour() const;
 
     T getMaxValue() const;
     void setMaxValue(const T& value);
-    ConstraintBehaviour getMaxConstraintBehaviour() const;
+    ConstraintBehavior getMaxConstraintBehaviour() const;
 
     T getIncrement() const;
     void setIncrement(const T& value);
@@ -108,7 +108,7 @@ public:
      */
     T clamp(const T& v) const;
 
-    static bool isLinkingBound(ConstraintBehaviour constraint);
+    static bool isLinkingBound(ConstraintBehavior constraint);
 
     bool isLinkingMinBound() const;
     bool isLinkingMaxBound() const;
@@ -120,8 +120,8 @@ private:
     ValueWrapper<T> minValue_;
     ValueWrapper<T> maxValue_;
     ValueWrapper<T> increment_;
-    ValueWrapper<ConstraintBehaviour> minConstraint_;
-    ValueWrapper<ConstraintBehaviour> maxConstraint_;
+    ValueWrapper<ConstraintBehavior> minConstraint_;
+    ValueWrapper<ConstraintBehavior> maxConstraint_;
 };
 
 // Scalar properties
@@ -170,8 +170,8 @@ struct PropertyTraits<OrdinalProperty<T>> {
 template <typename T>
 OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::string& displayName,
                                     const T& value,
-                                    const std::pair<T, ConstraintBehaviour>& minValue,
-                                    const std::pair<T, ConstraintBehaviour>& maxValue,
+                                    const std::pair<T, ConstraintBehavior>& minValue,
+                                    const std::pair<T, ConstraintBehavior>& maxValue,
                                     const T& increment, InvalidationLevel invalidationLevel,
                                     PropertySemantics semantics)
     : TemplateProperty<T>(identifier, displayName, value, invalidationLevel, semantics)
@@ -198,8 +198,8 @@ OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::st
     : OrdinalProperty{identifier,
                       displayName,
                       value,
-                      std::pair{minValue, ConstraintBehaviour::Editable},
-                      std::pair{maxValue, ConstraintBehaviour::Editable},
+                      std::pair{minValue, ConstraintBehavior::Editable},
+                      std::pair{maxValue, ConstraintBehavior::Editable},
                       increment,
                       invalidationLevel,
                       semantics} {}
@@ -256,7 +256,7 @@ void OrdinalProperty<T>::setMinValue(const T& newMinValue) {
 }
 
 template <typename T>
-ConstraintBehaviour OrdinalProperty<T>::getMinConstraintBehaviour() const {
+ConstraintBehavior OrdinalProperty<T>::getMinConstraintBehaviour() const {
     return minConstraint_;
 }
 
@@ -276,7 +276,7 @@ void OrdinalProperty<T>::setMaxValue(const T& newMaxValue) {
 }
 
 template <typename T>
-ConstraintBehaviour OrdinalProperty<T>::getMaxConstraintBehaviour() const {
+ConstraintBehavior OrdinalProperty<T>::getMaxConstraintBehaviour() const {
     return maxConstraint_;
 }
 
@@ -360,12 +360,12 @@ void OrdinalProperty<T>::deserialize(Deserializer& d) {
 
 template <typename T>
 T OrdinalProperty<T>::clamp(const T& v) const {
-    if (minConstraint_ != ConstraintBehaviour::Ignore &&
-        maxConstraint_ != ConstraintBehaviour::Ignore) {
+    if (minConstraint_ != ConstraintBehavior::Ignore &&
+        maxConstraint_ != ConstraintBehavior::Ignore) {
         return glm::clamp(v, minValue_.value, maxValue_.value);
-    } else if (minConstraint_ != ConstraintBehaviour::Ignore) {
+    } else if (minConstraint_ != ConstraintBehavior::Ignore) {
         return glm::max(v, minValue_.value);
-    } else if (maxConstraint_ != ConstraintBehaviour::Ignore) {
+    } else if (maxConstraint_ != ConstraintBehavior::Ignore) {
         return glm::min(v, maxValue_.value);
     } else {
         return v;
@@ -373,8 +373,8 @@ T OrdinalProperty<T>::clamp(const T& v) const {
 }
 
 template <typename T>
-bool OrdinalProperty<T>::isLinkingBound(ConstraintBehaviour constraint) {
-    return constraint == ConstraintBehaviour::Editable || constraint == ConstraintBehaviour::Ignore;
+bool OrdinalProperty<T>::isLinkingBound(ConstraintBehavior constraint) {
+    return constraint == ConstraintBehavior::Editable || constraint == ConstraintBehavior::Ignore;
 }
 
 template <typename T>

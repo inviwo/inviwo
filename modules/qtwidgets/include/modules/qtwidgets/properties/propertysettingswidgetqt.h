@@ -265,12 +265,12 @@ void OrdinalPropertySettingsWidgetQt<T>::reload() {
         }
 
         settings_[i].additionalFields_[0]->setEnabled(
-            property_->getMinConstraintBehaviour() == ConstraintBehaviour::Editable ||
-            property_->getMinConstraintBehaviour() == ConstraintBehaviour::Ignore);
+            property_->getMinConstraintBehaviour() == ConstraintBehavior::Editable ||
+            property_->getMinConstraintBehaviour() == ConstraintBehavior::Ignore);
 
         settings_[i].additionalFields_[2]->setEnabled(
-            property_->getMaxConstraintBehaviour() == ConstraintBehaviour::Editable ||
-            property_->getMaxConstraintBehaviour() == ConstraintBehaviour::Ignore);
+            property_->getMaxConstraintBehaviour() == ConstraintBehavior::Editable ||
+            property_->getMaxConstraintBehaviour() == ConstraintBehavior::Ignore);
     }
 }
 

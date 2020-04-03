@@ -1,39 +1,27 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
 ## 2020-04-01 Constraint Behavior
-Extends the behavior of the Ordinal Property's min and max bound with a `ConstraintBehaviour` mode.
+Extends the behavior of the Ordinal Property's min and max bound with a `ConstraintBehavior` mode.
 Four settings are available:
 
-* __Editable__: The default behavior and the same as we have had before.
-  Clamps values and the boundary is editable by the user in the GUI and by the programmer from code.
-  The bounds are linked to other properties. Typical use case would when you have a good 
-  default value for a bound, but other values are still valid.
-* __Mutable__: Clamps values and the boundary is editable by the programmer (setMinValue, setMaxValue)
-  and not form the GUI. Bounds are not linked to other properties. Typical use case would when 
-  you have a bound that the user should not be able to modify but needs to be modified from the 
-  programmers side, say for example the upper bound of the size of a vector when the value is used 
-  for indexing. 
-* __Immutable__: Clamps values and the boundary can not be modified. Bounds are not linked to other properties.
-  Typical use case would something like a color where there is a defined range, (0,1) in this case, that should
-  never be modified.
-* __Ignore__: Don't clamp values and the boundary is editable by the user and by the programmer. 
-  The bounds are only  used for interaction purposes. Bounds are linked to other properties.
-  Typical use case would be for a value of unbounded character, like the look from in the camera. 
-  The any value is usually valid, the bound are only used to suggest a reasonable value. 
+* __Editable__: The default behavior and the same as we have had before. Clamps values and the boundary is editable by the user in the GUI and by the programmer from code. The bounds are linked to other properties. Typical use case would when you have a good default value for a bound, but other values are still valid. 
+* __Mutable__: Clamps values and the boundary is editable by the programmer (setMinValue, setMaxValue) and not form the GUI. Bounds are not linked to other properties. Typical use case would when you have a bound that the user should not be able to modify but needs to be modified from the programmers side, say for example the upper bound of the size of a vector when the value is used for indexing. 
+* __Immutable__: Clamps values and the boundary can not be modified. Bounds are not linked to other properties. Typical use case would something like a color where there is a defined range, (0,1) in this case, that should never be modified.
+* __Ignore__: Don't clamp values and the boundary is editable by the user and by the programmer. The bounds are only used for interaction purposes. Bounds are linked to other properties. Typical use case would be for a value of unbounded character, like the look from in the camera. The any value is usually valid, the bound are only used to suggest a reasonable value. 
 
 To specify the behavior a new Constructor has been added to the OrdinalProperty:
 ```c++
     OrdinalProperty(const std::string& identifier, const std::string& displayName,
                     const T& value = Defaultvalues<T>::getVal(),
-                    const std::pair<T, ConstraintBehaviour>& minValue =
-                        std::pair{Defaultvalues<T>::getMin(), ConstraintBehaviour::Editable},
-                    const std::pair<T, ConstraintBehaviour>& maxValue =
-                        std::pair{Defaultvalues<T>::getMax(), ConstraintBehaviour::Editable},
+                    const std::pair<T, ConstraintBehavior>& minValue =
+                        std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
+                    const std::pair<T, ConstraintBehavior>& maxValue =
+                        std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
                     const T& increment = Defaultvalues<T>::getInc(),
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                     PropertySemantics semantics = PropertySemantics::Default);
 ```
-where the `ConstraintBehaviour` can be specified together with the `minValue` and `maxValue`. 
+where the `ConstraintBehavior` can be specified together with the `minValue` and `maxValue`. 
 
 ## 2020-03-13 Webbrowser API - get parent processor
 Added functionality to retrieve which processor is responsible for the browser API-calls. See InviwoAPI.js and web browser property synchronization example workspace.

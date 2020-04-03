@@ -39,8 +39,8 @@ namespace inviwo {
 
 BaseOrdinalSpinBoxWidget::BaseOrdinalSpinBoxWidget()
     : editor_{new DoubleValueDragSpinBox(this)}
-    , minCB_{ConstraintBehaviour::Editable}
-    , maxCB_{ConstraintBehaviour::Editable} {
+    , minCB_{ConstraintBehavior::Editable}
+    , maxCB_{ConstraintBehavior::Editable} {
 
     setFocusPolicy(editor_->focusPolicy());
     setFocusProxy(editor_);

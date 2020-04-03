@@ -69,8 +69,8 @@ protected:
     void applyIncrement();
 
     NumberLineEdit* editor_;
-    ConstraintBehaviour minCB_;
-    ConstraintBehaviour maxCB_;
+    ConstraintBehavior minCB_;
+    ConstraintBehavior maxCB_;
 
 signals:
     void valueChanged();
@@ -90,8 +90,8 @@ public:
     virtual T getValue() const override;
     virtual void setValue(T value) override;
     virtual void initValue(T value) override;
-    virtual void setMinValue(T minValue, ConstraintBehaviour cb) override;
-    virtual void setMaxValue(T maxValue, ConstraintBehaviour cb) override;
+    virtual void setMinValue(T minValue, ConstraintBehavior cb) override;
+    virtual void setMaxValue(T maxValue, ConstraintBehavior cb) override;
     virtual void setIncrement(T increment) override;
 
 protected:
@@ -158,7 +158,7 @@ void OrdinalEditorWidget<T>::initValue(T value) {
     applyInit();
 }
 template <typename T>
-void OrdinalEditorWidget<T>::setMinValue(T minValue, ConstraintBehaviour cb) {
+void OrdinalEditorWidget<T>::setMinValue(T minValue, ConstraintBehavior cb) {
     if (minValue_ != minValue || minCB_ != cb) {
         minValue_ = minValue;
         minCB_ = cb;
@@ -166,7 +166,7 @@ void OrdinalEditorWidget<T>::setMinValue(T minValue, ConstraintBehaviour cb) {
     }
 }
 template <typename T>
-void OrdinalEditorWidget<T>::setMaxValue(T maxValue, ConstraintBehaviour cb) {
+void OrdinalEditorWidget<T>::setMaxValue(T maxValue, ConstraintBehavior cb) {
     if (maxValue_ != maxValue || maxCB_ != cb) {
         maxValue_ = maxValue;
         maxCB_ = cb;

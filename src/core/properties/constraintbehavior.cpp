@@ -27,6 +27,6 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/constraintbehaviour.h>
+#include <inviwo/core/properties/constraintbehavior.h>
 
 namespace inviwo {}  // namespace inviwo

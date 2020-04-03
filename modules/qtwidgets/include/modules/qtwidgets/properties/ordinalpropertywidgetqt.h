@@ -221,8 +221,8 @@ void OrdinalPropertyWidgetQt<T, Sem>::updateFromProperty() {
     T val = ordinal_->get();
 
     constexpr size_t nelem = util::flat_extent<T>::value;
-    std::array<ConstraintBehaviour, nelem> mincb = {ordinal_->getMinConstraintBehaviour()};
-    std::array<ConstraintBehaviour, nelem> maxcb = {ordinal_->getMaxConstraintBehaviour()};
+    std::array<ConstraintBehavior, nelem> mincb = {ordinal_->getMinConstraintBehaviour()};
+    std::array<ConstraintBehavior, nelem> maxcb = {ordinal_->getMaxConstraintBehaviour()};
 
     if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SphericalSpinBox ||
                   Sem == OrdinalPropertyWidgetQtSematics::Spherical) {
@@ -231,10 +231,10 @@ void OrdinalPropertyWidgetQt<T, Sem>::updateFromProperty() {
         max = T{3 * glm::length(max), M_PI, M_PI};
         inc = T{glm::length(inc), M_PI / 100.0, 2 * M_PI / 100.0};
 
-        mincb[1] = ConstraintBehaviour::Immutable;
-        mincb[2] = ConstraintBehaviour::Immutable;
-        maxcb[1] = ConstraintBehaviour::Immutable;
-        maxcb[2] = ConstraintBehaviour::Immutable;
+        mincb[1] = ConstraintBehavior::Immutable;
+        mincb[2] = ConstraintBehavior::Immutable;
+        maxcb[1] = ConstraintBehavior::Immutable;
+        maxcb[2] = ConstraintBehavior::Immutable;
     }
 
     for (size_t i = 0; i < nelem; i++) {

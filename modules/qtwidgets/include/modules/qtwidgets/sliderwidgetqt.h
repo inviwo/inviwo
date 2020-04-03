@@ -32,7 +32,7 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/ordinalbasewidget.h>
-#include <inviwo/core/properties/constraintbehaviour.h>
+#include <inviwo/core/properties/constraintbehavior.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -108,8 +108,8 @@ private:
     int sliderValue_;
 
 protected:
-    ConstraintBehaviour minCB_;
-    ConstraintBehaviour maxCB_;
+    ConstraintBehavior minCB_;
+    ConstraintBehavior maxCB_;
 };
 
 template <typename T>
@@ -127,8 +127,8 @@ public:
     virtual T getValue() const override;
     virtual void setValue(T value) override;
     virtual void initValue(T value) override;
-    virtual void setMinValue(T minValue, ConstraintBehaviour cb) override;
-    virtual void setMaxValue(T maxValue, ConstraintBehaviour cb) override;
+    virtual void setMinValue(T minValue, ConstraintBehavior cb) override;
+    virtual void setMaxValue(T maxValue, ConstraintBehavior cb) override;
     virtual void setIncrement(T increment) override;
 
 protected:
@@ -267,7 +267,7 @@ void SliderWidgetQt<T>::initValue(T value) {
 }
 
 template <typename T>
-void SliderWidgetQt<T>::setMinValue(T minValue, ConstraintBehaviour cb) {
+void SliderWidgetQt<T>::setMinValue(T minValue, ConstraintBehavior cb) {
     if (minValue_ != minValue || minCB_ != cb) {
         minValue_ = minValue;
         minCB_ = cb;
@@ -276,7 +276,7 @@ void SliderWidgetQt<T>::setMinValue(T minValue, ConstraintBehaviour cb) {
 }
 
 template <typename T>
-void SliderWidgetQt<T>::setMaxValue(T maxValue, ConstraintBehaviour cb) {
+void SliderWidgetQt<T>::setMaxValue(T maxValue, ConstraintBehavior cb) {
     if (maxValue_ != maxValue || maxCB_ != cb) {
         maxValue_ = maxValue;
         maxCB_ = cb;

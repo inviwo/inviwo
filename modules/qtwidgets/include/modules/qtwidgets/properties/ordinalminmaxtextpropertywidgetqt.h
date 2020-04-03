@@ -146,11 +146,11 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromProperty() {
     QSignalBlocker minBlock(min_);
     QSignalBlocker maxBlock(max_);
 
-    min_->setMinValue(range.x, ConstraintBehaviour::Editable);
-    min_->setMaxValue(range.y - sep, ConstraintBehaviour::Editable);
+    min_->setMinValue(range.x, ConstraintBehavior::Editable);
+    min_->setMaxValue(range.y - sep, ConstraintBehavior::Editable);
 
-    max_->setMinValue(range.x + sep, ConstraintBehaviour::Editable);
-    max_->setMaxValue(range.y, ConstraintBehaviour::Editable);
+    max_->setMinValue(range.x + sep, ConstraintBehavior::Editable);
+    max_->setMaxValue(range.y, ConstraintBehavior::Editable);
 
     min_->initValue(val.x);
     max_->initValue(val.y);
