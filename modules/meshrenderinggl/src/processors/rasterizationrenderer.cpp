@@ -97,8 +97,8 @@ RasterizationRenderer::RasterizationRenderer()
     }
 
     // input and output ports
-    addPort(*imageInport_).setOptional(true);
     addPort(rasterizations_);
+    addPort(*imageInport_).setOptional(true);
     addPort(outport_);
 
     addProperties(forceOpaque_, illustrationSettings_.enabled_);
