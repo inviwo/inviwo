@@ -45,6 +45,7 @@ namespace inviwo {
 
 class IVW_MODULE_MESHRENDERINGGL_API Rasterization {
 public:
+    virtual ~Rasterization() {}
     virtual void rasterize(std::function<void(Shader&)> setUniforms) const = 0;
     virtual void setImageSize(const ivec2& size) const = 0;
     virtual bool usesFragmentLists() const = 0;

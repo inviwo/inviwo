@@ -75,12 +75,12 @@ FragmentListRenderer::FragmentListRenderer(std::weak_ptr<ImageInport> background
 
     , abufferIdxTex_{screenSize_, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST}
     , textureUnits_{}
+    , backgroundPort_{background}
     , atomicCounter_{sizeof(GLuint), GLFormats::getGLFormat(GL_UNSIGNED_INT, 1), GL_DYNAMIC_DRAW,
                      GL_ATOMIC_COUNTER_BUFFER}
     , pixelBuffer_{fragmentSize_ * 4 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 4),
                    GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER}
     , totalFragmentQuery_{0}
-    , backgroundPort_(background)
     , clear_("oit/simplequad.vert", "oit/clear.frag", false)
     , display_("oit/simplequad.vert", "oit/display.frag", false)
     , illustration_{screenSize_, fragmentSize_} {

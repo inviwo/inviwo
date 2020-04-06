@@ -323,7 +323,7 @@ protected:
          */
     public:
         MeshRasterization(const MeshRasterizer& rasterizerProcessor);
-        ~MeshRasterization() { delete camera_; }
+        virtual ~MeshRasterization() override { delete camera_; }
         void update(const MeshRasterizer& rasterizerProcessor) const;
         virtual void rasterize(std::function<void(Shader&)> setUniforms) const override;
         virtual void setImageSize(const ivec2& size) const override { imageSize_ = size; }
