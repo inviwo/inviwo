@@ -89,8 +89,8 @@ CameraWidget::CameraWidget()
     , customColorComposite_("enableCustomColor", "Custom Widget Color", false,
                             InvalidationLevel::InvalidResources)
     , axisColoring_("axisColoring", "RGB Axis Coloring", false, InvalidationLevel::InvalidResources)
-    , userColor_("userColor", "User Color", vec4(vec3(0.7f), 1.0f), vec4(0.0f), vec4(1.0f))
-    , cubeColor_("cubeColor", "Cube Color", vec4(0.11f, 0.42f, 0.63f, 1.0f), vec4(0.0f), vec4(1.0f))
+    , userColor_{"userColor", "User Color", util::ordinalColor(0.7f, 0.7f, 0.7f)}
+    , cubeColor_{"cubeColor", "Cube Color", util::ordinalColor(0.11f, 0.42f, 0.63f)}
 
     , interactions_("interactions", "Interactions")
 
@@ -101,7 +101,11 @@ CameraWidget::CameraWidget()
 
     , outputProps_("outputProperties", "Output")
     , camera_("camera", "Camera")
-    , rotMatrix_("rotMatrix", "Rotation Matrix", mat4(1.0f))
+    , rotMatrix_{"rotMatrix",
+                 "Rotation Matrix",
+                 mat4(1.0f),
+                 {util::filled<mat4>(-10.0f), ConstraintBehavior::Ignore},
+                 {util::filled<mat4>(+10.0f), ConstraintBehavior::Ignore}}
 
     , internalProps_("internalProperties", "Internal Properties")
     , internalCamera_(vec3(0.0f, 0.0f, 14.6f), vec3(0.0f), vec3(0.0f, 1.0f, 0.0f), 1.0f, 30.0f,
@@ -115,41 +119,22 @@ CameraWidget::CameraWidget()
     , isMouseBeingPressedAndHold_(false)
     , mouseWasMoved_(false)
     , currentPickingID_(-1) {
-    addPort(inport_);
+
+    addPort(inport_).setOptional(true);
     addPort(outport_);
 
-    inport_.setOptional(true);
-
-    userColor_.setSemantics(PropertySemantics::Color);
-    userColor_.setCurrentStateAsDefault();
-    cubeColor_.setSemantics(PropertySemantics::Color);
-    cubeColor_.setCurrentStateAsDefault();
-
     settings_.setCollapsed(true);
-    settings_.setCurrentStateAsDefault();
     internalProps_.setCollapsed(true);
-    internalProps_.setCurrentStateAsDefault();
 
     // interaction settings
     enabled_.onChange([this]() { picking_.setEnabled(enabled_); });
-    settings_.addProperty(enabled_);
-    settings_.addProperty(invertDirections_);
-    settings_.addProperty(useObjectRotAxis_);
-    settings_.addProperty(showRollWidget_);
-    settings_.addProperty(showDollyWidget_);
-    settings_.addProperty(speed_);
-    settings_.addProperty(angleIncrement_);
-    settings_.addProperty(minTouchMovement_);
+    settings_.addProperties(enabled_, invertDirections_, useObjectRotAxis_, showRollWidget_,
+                            showDollyWidget_, speed_, angleIncrement_, minTouchMovement_);
 
     // widget appearance
-    customColorComposite_.addProperty(axisColoring_);
-    customColorComposite_.addProperty(userColor_);
-    appearance_.addProperty(position_);
-    appearance_.addProperty(anchorPos_);
-    appearance_.addProperty(scaling_);
-    appearance_.addProperty(showCube_);
-    appearance_.addProperty(cubeColor_);
-    appearance_.addProperty(customColorComposite_);
+    customColorComposite_.addProperties(axisColoring_, userColor_);
+    appearance_.addProperties(position_, anchorPos_, scaling_, showCube_, cubeColor_,
+                              customColorComposite_);
 
     // button interactions
     interactions_.setCollapsed(true);
@@ -161,15 +146,11 @@ CameraWidget::CameraWidget()
     rotateRightBtn_.onChange(
         [&]() { singleStepInteraction(Interaction::HorizontalRotation, false); });
 
-    interactions_.addProperty(rotateUpBtn_);
-    interactions_.addProperty(rotateDownBtn_);
-    interactions_.addProperty(rotateLeftBtn_);
-    interactions_.addProperty(rotateRightBtn_);
+    interactions_.addProperties(rotateUpBtn_, rotateDownBtn_, rotateLeftBtn_, rotateRightBtn_);
 
     // output properties
     camera_.setCollapsed(true);
-    outputProps_.addProperty(camera_);
-    outputProps_.addProperty(rotMatrix_);
+    outputProps_.addProperties(camera_, rotMatrix_);
 
     lightingProperty_.setCollapsed(true);
     internalProps_.addProperty(lightingProperty_);
@@ -187,7 +168,8 @@ CameraWidget::CameraWidget()
     lightingProperty_.ambientColor_ = vec3(0.75f);
     lightingProperty_.diffuseColor_ = vec3(0.6f);
     lightingProperty_.specularColor_ = vec3(0.12f);
-    lightingProperty_.lightPosition_ = vec3(2.5f, 5.6f, 20.0f);
+    lightingProperty_.lightPosition_.set(vec3(2.5f, 5.6f, 20.0f), vec3(-100.0f), vec3(100.0f),
+                                         vec3(1.0f));
     lightingProperty_.setCurrentStateAsDefault();
 
     // update internal picking IDs. The mesh consists of 5 elements, each of them has a clockwise
@@ -233,12 +215,9 @@ void CameraWidget::initializeResources() {
     utilgl::addShaderDefines(shader_, lightingProperty_);
     utilgl::addShaderDefines(cubeShader_, lightingProperty_);
 
-    if (customColorComposite_.isChecked()) {
-        shader_.getVertexShaderObject()->addShaderDefine("CUSTOM_COLOR",
-                                                         axisColoring_.get() ? "1" : "0");
-    } else {
-        shader_.getVertexShaderObject()->removeShaderDefine("CUSTOM_COLOR");
-    }
+    shader_.getVertexShaderObject()->setShaderDefine("CUSTOM_COLOR", customColorComposite_,
+                                                     axisColoring_.get() ? "1" : "0");
+
     shader_.build();
 
     cubeShader_.getVertexShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
@@ -266,7 +245,6 @@ void CameraWidget::initializeResources() {
 }
 
 void CameraWidget::updateWidgetTexture(const ivec2 &widgetSize) {
-
     if (!widgetImage_.get() || (ivec2(widgetImage_->getDimensions()) != widgetSize)) {
         widgetImage_ = std::make_unique<Image>(widgetSize, outport_.getDataFormat());
         widgetImageGL_ = widgetImage_->getEditableRepresentation<ImageGL>();
@@ -287,12 +265,12 @@ void CameraWidget::updateWidgetTexture(const ivec2 &widgetSize) {
     meshDrawer->draw();
 
     // draw zoom buttons
-    if (showDollyWidget_.get()) {
+    if (showDollyWidget_) {
         utilgl::setShaderUniforms(shader_, *meshDrawers_[2]->getMesh(), "geometry");
         meshDrawers_[2]->draw();
     }
 
-    if (showCube_.get()) {
+    if (showCube_) {
         // draw cube behind the widget using the view matrix of the output camera
         cubeShader_.activate();
         utilgl::setShaderUniforms(cubeShader_, internalCamera_, "camera");

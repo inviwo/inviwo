@@ -354,7 +354,7 @@ TEST(AnimationTests, AnimationSerializationTest) {
     trackFactory.registerObject(&dvec3TFO);
 
     FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 1.0f);
-    DoubleVec3Property doubleProperty("double", "Double", dvec3(1.0), dvec3(0.0), dvec3(0.0));
+    DoubleVec3Property doubleProperty("double", "Double", dvec3(1.0), dvec3(0.0), dvec3(10.0));
 
     std::vector<std::unique_ptr<ValueKeyframe<float>>> fseq;
     fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{1.0}, 0.0f));

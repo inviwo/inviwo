@@ -35,6 +35,7 @@
 
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/templateproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 
 #include <modules/animation/datastructures/valuekeyframe.h>
@@ -64,6 +65,15 @@ void setOtherPropertyHelper(TemplateProperty<T>* property, ValueKeyframe<T>* key
  * @see inviwo::animation::BasePropertyTrack::setOtherProperty
  */
 template <typename T>
+void setOtherPropertyHelper(OrdinalProperty<T>* property, ValueKeyframe<T>* keyframe) {
+    property->set(keyframe->getValue());
+}
+
+/**
+ * Helper function for inviwo::animation::PropertyTrack::setOtherProperty
+ * @see inviwo::animation::BasePropertyTrack::setOtherProperty
+ */
+template <typename T>
 void setOtherPropertyHelper(TemplateOptionProperty<T>* property, ValueKeyframe<T>* keyframe) {
     property->setSelectedValue(keyframe->getValue());
 }
@@ -74,6 +84,15 @@ void setOtherPropertyHelper(TemplateOptionProperty<T>* property, ValueKeyframe<T
  */
 template <typename T>
 void updateKeyframeFromPropertyHelper(TemplateProperty<T>* property, ValueKeyframe<T>* keyframe) {
+    keyframe->setValue(property->get());
+}
+
+/**
+ * Helper function for inviwo::animation::PropertyTrack::updateKeyframeFromProperty
+ * @see inviwo::animation::BasePropertyTrack::updateKeyframeFromProperty
+ */
+template <typename T>
+void updateKeyframeFromPropertyHelper(OrdinalProperty<T>* property, ValueKeyframe<T>* keyframe) {
     keyframe->setValue(property->get());
 }
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,29 +27,6 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_QTWIDGETMODULE_H
-#define IVW_QTWIDGETMODULE_H
+#include <inviwo/core/properties/constraintbehavior.h>
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/tfhelpwindow.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwomodule.h>
-
-namespace inviwo {
-
-class IVW_MODULE_QTWIDGETS_API QtWidgetsModule : public InviwoModule {
-public:
-    QtWidgetsModule(InviwoApplication* app);
-    virtual ~QtWidgetsModule();
-
-    TFHelpWindow* getTFHelpWindow() const;
-
-    void showTFHelpWindow() const;
-
-private:
-    std::unique_ptr<TFMenuHelper> tfMenuHelper_;
-};
-
-}  // namespace inviwo
-
-#endif  // IVW_QTWIDGETMODULE_H
+namespace inviwo {}  // namespace inviwo

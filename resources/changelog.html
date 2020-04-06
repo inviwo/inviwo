@@ -86,6 +86,48 @@
 </head>
 <body >
 <h1>Latest Changes</h1>
+<h2>2020-04-03 OrdinalPropertyState</h2>
+<p>Added a OrdinalPropertyState helper for constructing ordinal properties.<br />
+And a factory function <code>util::ordinalColor</code> for OrdinalProperties representing Colors<br />
+When instantiating a Ordinal Property for a color value one would need to write something along<br />
+there lines</p>
+<div class="highlight"><pre><span></span><span class="n">color</span><span class="p">(</span><span class="s">&quot;cubeColor&quot;</span><span class="p">,</span> <span class="s">&quot;Cube Color&quot;</span><span class="p">,</span> <span class="n">vec4</span><span class="p">(</span><span class="mf">0.11f</span><span class="p">,</span> <span class="mf">0.42f</span><span class="p">,</span> <span class="mf">0.63f</span><span class="p">,</span> <span class="mf">1.0f</span><span class="p">),</span>
+     <span class="p">{</span><span class="n">vec4</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">),</span> <span class="n">ConstraintBehavior</span><span class="o">::</span><span class="n">Immutable</span><span class="p">},</span>
+     <span class="p">{</span><span class="n">vec4</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">),</span> <span class="n">ConstraintBehavior</span><span class="o">::</span><span class="n">Immutable</span><span class="p">},</span> <span class="n">vec4</span><span class="p">(</span><span class="mf">0.01f</span><span class="p">),</span>
+     <span class="n">InvalidationLevel</span><span class="o">::</span><span class="n">InvalidOutput</span><span class="p">,</span> <span class="n">PropertySemantics</span><span class="o">::</span><span class="n">Color</span><span class="p">)</span>
+</pre></div>
+
+
+<p>by using the helper function most of the boilerplate can be removed:</p>
+<div class="highlight"><pre><span></span><span class="n">color</span><span class="p">{</span><span class="s">&quot;cubeColor&quot;</span><span class="p">,</span> <span class="s">&quot;Cube Color&quot;</span><span class="p">,</span> <span class="n">util</span><span class="o">::</span><span class="n">ordinalColor</span><span class="p">(</span><span class="mf">0.11f</span><span class="p">,</span> <span class="mf">0.42f</span><span class="p">,</span> <span class="mf">0.63f</span><span class="p">)}</span>
+</pre></div>
+
+
+<h2>2020-04-01 Constraint Behavior</h2>
+<p>Extends the behavior of the Ordinal Property's min and max bound with a <code>ConstraintBehavior</code> mode.<br />
+Four settings are available:</p>
+<ul>
+<li><strong>Editable</strong>: The default behavior and the same as we have had before. Clamps values and the boundary is editable by the user in the GUI and by the programmer from code. The bounds are linked to other properties. Typical use case would be when you have a good default value for a bound, but other values are still valid. </li>
+<li><strong>Mutable</strong>: Clamps values and the boundary is editable by the programmer (setMinValue, setMaxValue) and not from the GUI. Bounds are not linked to other properties. Typical use case would be when you have a bound that the user should not be able to modify but needs to be modified from the programmers side, say for example the upper bound of the size of a vector when the value is used for indexing. </li>
+<li><strong>Immutable</strong>: Clamps values and the boundary can not be modified. Bounds are not linked to other properties. Typical use case would be something like a color where there is a defined range, (0,1) in this case, that should never be modified.</li>
+<li><strong>Ignore</strong>: Don't clamp values and the boundary is editable by the user and by the programmer. The bounds are only used for interaction purposes. Bounds are linked to other properties. Typical use case would be for a value of unbounded character, like the look from in the camera. The any value is usually valid, the bound are only used to suggest a reasonable value. </li>
+</ul>
+<p>To specify the behavior a new Constructor has been added to the OrdinalProperty:</p>
+<div class="highlight"><pre><span></span>    <span class="n">OrdinalProperty</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">identifier</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">displayName</span><span class="p">,</span>
+                    <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span> <span class="o">=</span> <span class="n">Defaultvalues</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">getVal</span><span class="p">(),</span>
+                    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">ConstraintBehavior</span><span class="o">&gt;&amp;</span> <span class="n">minValue</span> <span class="o">=</span>
+                        <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="p">{</span><span class="n">Defaultvalues</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">getMin</span><span class="p">(),</span> <span class="n">ConstraintBehavior</span><span class="o">::</span><span class="n">Editable</span><span class="p">},</span>
+                    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">ConstraintBehavior</span><span class="o">&gt;&amp;</span> <span class="n">maxValue</span> <span class="o">=</span>
+                        <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="p">{</span><span class="n">Defaultvalues</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">getMax</span><span class="p">(),</span> <span class="n">ConstraintBehavior</span><span class="o">::</span><span class="n">Editable</span><span class="p">},</span>
+                    <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">increment</span> <span class="o">=</span> <span class="n">Defaultvalues</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">getInc</span><span class="p">(),</span>
+                    <span class="n">InvalidationLevel</span> <span class="n">invalidationLevel</span> <span class="o">=</span> <span class="n">InvalidationLevel</span><span class="o">::</span><span class="n">InvalidOutput</span><span class="p">,</span>
+                    <span class="n">PropertySemantics</span> <span class="n">semantics</span> <span class="o">=</span> <span class="n">PropertySemantics</span><span class="o">::</span><span class="n">Default</span><span class="p">);</span>
+</pre></div>
+
+
+<p>where the <code>ConstraintBehavior</code> can be specified together with the <code>minValue</code> and <code>maxValue</code>. </p>
+<h2>2020-03-13 Webbrowser API - get parent processor</h2>
+<p>Added functionality to retrieve which processor is responsible for the browser API-calls. See InviwoAPI.js and web browser property synchronization example workspace.</p>
 <h2>2019-12-02 PoolProcessor</h2>
 <p>Added a processor base class to make background processing easier. Here is a basic example of how the process function might look like:</p>
 <div class="highlight"><pre><span></span><span class="k">const</span> <span class="k">auto</span> <span class="n">calc</span> <span class="o">=</span> <span class="p">[</span><span class="n">image</span> <span class="o">=</span> <span class="n">inport_</span><span class="p">.</span><span class="n">getData</span><span class="p">()](</span><span class="n">pool</span><span class="o">::</span><span class="n">Stop</span> <span class="n">stop</span><span class="p">,</span> <span class="n">pool</span><span class="o">::</span><span class="n">Progress</span> <span class="n">progress</span><span class="p">)</span> 
@@ -180,7 +222,7 @@ See web_property_sync.html in the Webbrowser module</p>
 Bellow follows an example of a python processor:</p>
 <div class="highlight"><pre><span></span><span class="c1"># Name: PythonExample </span>
 
-<span class="kn">import</span> <span class="nn">inviwopy</span> <span class="kn">as</span> <span class="nn">ivw</span>
+<span class="kn">import</span> <span class="nn">inviwopy</span> <span class="k">as</span> <span class="nn">ivw</span>
 
 <span class="k">class</span> <span class="nc">PythonExample</span><span class="p">(</span><span class="n">ivw</span><span class="o">.</span><span class="n">Processor</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -207,10 +249,10 @@ Bellow follows an example of a python processor:</p>
         <span class="k">return</span> <span class="n">PythonExample</span><span class="o">.</span><span class="n">processorInfo</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">initializeResources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;init&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;init&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;process: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;process: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outport</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inport</span><span class="o">.</span><span class="n">getData</span><span class="p">())</span>
 </pre></div>
 
@@ -220,8 +262,8 @@ To register an Inviwo python processor one can put in in the <user setttings fol
 <h2>2019-04-30 Python Applications</h2>
 <p>It is now possible to run inviwo directly from python using a new inviwopyapp python package found in <code>apps/inviwopyapp</code>.<br />
 An example of running inviwo can be found in <code>apps/inviwopyapp/inviwo.py</code>. </p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">inviwopy</span> <span class="kn">as</span> <span class="nn">ivw</span>
-<span class="kn">import</span> <span class="nn">inviwopyapp</span> <span class="kn">as</span> <span class="nn">qt</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">inviwopy</span> <span class="k">as</span> <span class="nn">ivw</span>
+<span class="kn">import</span> <span class="nn">inviwopyapp</span> <span class="k">as</span> <span class="nn">qt</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="c1"># Inviwo requires that a logcentral is created.</span>

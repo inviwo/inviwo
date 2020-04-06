@@ -65,7 +65,7 @@ protected:
     // Convenience function
     virtual OrdinalProperty<T>* getProperty() override;
 
-    TemplatePropertySettingsWidgetQt<T>* settingsWidget_;
+    OrdinalPropertySettingsWidgetQt<T>* settingsWidget_;
     EditableLabelQt* displayName_;
     AngleRadiusWidget* angleWidget_;
 };
@@ -131,7 +131,7 @@ OrdinalProperty<T>* AnglePropertyWidgetQt<T>::getProperty() {
 template <typename T>
 void AnglePropertyWidgetQt<T>::showSettings() {
     if (!settingsWidget_) {
-        settingsWidget_ = new TemplatePropertySettingsWidgetQt<T>(getProperty(), this);
+        settingsWidget_ = new OrdinalPropertySettingsWidgetQt<T>(getProperty(), this);
     }
     settingsWidget_->showWidget();
 }

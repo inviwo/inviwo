@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ORDINALSPINBOXWIDGET_H
-#define IVW_ORDINALSPINBOXWIDGET_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -74,6 +73,8 @@ protected:
     void applyIncrement();
 
     DoubleValueDragSpinBox* editor_;
+    ConstraintBehavior minCB_;
+    ConstraintBehavior maxCB_;
 
 signals:
     void valueChanged();
@@ -84,26 +85,38 @@ private:
 };
 
 template <typename T>
-class TemplateOrdinalSpinBoxWidget : public BaseOrdinalSpinBoxWidget, public OrdinalBaseWidget<T> {
+class OrdinalSpinBoxWidget : public BaseOrdinalSpinBoxWidget, public OrdinalBaseWidget<T> {
 public:
-    TemplateOrdinalSpinBoxWidget()
+    OrdinalSpinBoxWidget()
         : BaseOrdinalSpinBoxWidget(), value_(0), minValue_(0), maxValue_(0), increment_(0) {}
-    virtual ~TemplateOrdinalSpinBoxWidget() = default;
+    virtual ~OrdinalSpinBoxWidget() = default;
 
-    virtual T getValue() override;
+    // Implements OrdinalBaseWidget
+    virtual T getValue() const override;
     virtual void setValue(T value) override;
     virtual void initValue(T value) override;
-    virtual void setMinValue(T minValue) override;
-    virtual void setMaxValue(T maxValue) override;
-    virtual void setRange(T minValue, T maxValue) override;
+    virtual void setMinValue(T minValue, ConstraintBehavior cb) override;
+    virtual void setMaxValue(T maxValue, ConstraintBehavior cb) override;
     virtual void setIncrement(T increment) override;
 
 protected:
     // Define the transforms
-    virtual T editorToRepr(double val) = 0;
-    virtual double reprToEditor(T val) = 0;
+    T editorToRepr(double val) {
+        if constexpr (std::is_floating_point_v<T>) {
+            return static_cast<T>(val);
+        } else {
+            return static_cast<int>(val + 0.5);
+        }
+    }
+    double reprToEditor(T val) {
+        if constexpr (std::is_floating_point_v<T>) {
+            return static_cast<double>(val);
+        } else {
+            return static_cast<double>(val);
+        }
+    }
 
-    // Has default implementations using above transformations.
+    // Has implementations using above transformations.
     virtual double transformValueToEditor() override;
     virtual void newEditorValue(double) override;
     virtual double minimumValue() override;
@@ -117,116 +130,72 @@ protected:
     T increment_;
 };
 
-// Default case for fractional numbers
 template <typename T>
-class OrdinalSpinBoxWidget : public TemplateOrdinalSpinBoxWidget<T> {
-public:
-    OrdinalSpinBoxWidget() = default;
-    virtual ~OrdinalSpinBoxWidget() = default;
-
-protected:
-    // Defines the transform
-    virtual T editorToRepr(double val) { return static_cast<T>(val); }
-    virtual double reprToEditor(T val) { return static_cast<double>(val); }
-};
-
-// Specialization for integer types
-template <>
-class OrdinalSpinBoxWidget<int> : public TemplateOrdinalSpinBoxWidget<int> {
-public:
-    OrdinalSpinBoxWidget() : TemplateOrdinalSpinBoxWidget<int>() {}
-    virtual ~OrdinalSpinBoxWidget() = default;
-
-protected:
-    // Defines the transform
-    virtual int editorToRepr(double val) override { return static_cast<int>(val + 0.5); }
-    virtual double reprToEditor(int val) override { return static_cast<double>(val); }
-
-    virtual int spinnerDecimals() override { return 0; }
-};
-
-template <typename T>
-double TemplateOrdinalSpinBoxWidget<T>::transformValueToEditor() {
+double OrdinalSpinBoxWidget<T>::transformValueToEditor() {
     return reprToEditor(value_);
 }
 template <typename T>
-void TemplateOrdinalSpinBoxWidget<T>::newEditorValue(double val) {
+void OrdinalSpinBoxWidget<T>::newEditorValue(double val) {
     value_ = editorToRepr(val);
 }
 template <typename T>
-double TemplateOrdinalSpinBoxWidget<T>::minimumValue() {
-    return static_cast<double>(minValue_);
-}
-template <typename T>
-double TemplateOrdinalSpinBoxWidget<T>::maximumValue() {
-    return static_cast<double>(maxValue_);
-}
-template <typename T>
-double TemplateOrdinalSpinBoxWidget<T>::increment() {
-    return static_cast<double>(increment_);
-}
-template <typename T>
-int TemplateOrdinalSpinBoxWidget<T>::spinnerDecimals() {
-    const static QLocale locale;
-    double inc = increment();
-    std::ostringstream buff;
-    utilqt::localizeStream(buff);
-    buff << inc;
-    const std::string str(buff.str());
-    auto periodPosition = str.find(locale.decimalPoint().toLatin1());
-    if (periodPosition == std::string::npos) {
-        return 0;
+double OrdinalSpinBoxWidget<T>::minimumValue() {
+    if (minCB_ == ConstraintBehavior::Ignore) {
+        return std::numeric_limits<double>::lowest();
     } else {
-        return static_cast<int>(str.length() - periodPosition) - 1;
+        return static_cast<double>(minValue_);
     }
 }
 template <typename T>
-T TemplateOrdinalSpinBoxWidget<T>::getValue() {
+double OrdinalSpinBoxWidget<T>::maximumValue() {
+    if (maxCB_ == ConstraintBehavior::Ignore) {
+        return std::numeric_limits<double>::max();
+    } else {
+        return static_cast<double>(maxValue_);
+    }
+}
+template <typename T>
+double OrdinalSpinBoxWidget<T>::increment() {
+    return static_cast<double>(increment_);
+}
+template <typename T>
+int OrdinalSpinBoxWidget<T>::spinnerDecimals() {
+    return utilqt::decimals<T>(increment());
+}
+template <typename T>
+T OrdinalSpinBoxWidget<T>::getValue() const {
     return value_;
 }
 template <typename T>
-void TemplateOrdinalSpinBoxWidget<T>::setValue(T value) {
-    if (value >= minValue_ && value <= maxValue_ && value != value_) {
+void OrdinalSpinBoxWidget<T>::setValue(T value) {
+    if (value != value_) {
         value_ = value;
         applyValue();
     }
 }
 template <typename T>
-void TemplateOrdinalSpinBoxWidget<T>::initValue(T value) {
+void OrdinalSpinBoxWidget<T>::initValue(T value) {
     value_ = value;
     applyInit();
 }
 template <typename T>
-void TemplateOrdinalSpinBoxWidget<T>::setMinValue(T minValue) {
-    if (minValue_ != minValue) {
+void OrdinalSpinBoxWidget<T>::setMinValue(T minValue, ConstraintBehavior cb) {
+    if (minValue_ != minValue || minCB_ != cb) {
         minValue_ = minValue;
+        minCB_ = cb;
         applyRange();
     }
 }
 template <typename T>
-void TemplateOrdinalSpinBoxWidget<T>::setMaxValue(T maxValue) {
-    if (maxValue_ != maxValue) {
+void OrdinalSpinBoxWidget<T>::setMaxValue(T maxValue, ConstraintBehavior cb) {
+    if (maxValue_ != maxValue || maxCB_ != cb) {
         maxValue_ = maxValue;
+        maxCB_ = cb;
         applyRange();
     }
 }
 template <typename T>
-void TemplateOrdinalSpinBoxWidget<T>::setRange(T minValue, T maxValue) {
-    bool changed = false;
-    if (minValue_ != minValue) {
-        minValue_ = minValue;
-        changed = true;
-    }
-    if (maxValue_ != maxValue) {
-        maxValue_ = maxValue;
-        changed = true;
-    }
-    if (changed) {
-        applyRange();
-    }
-}
-template <typename T>
-void TemplateOrdinalSpinBoxWidget<T>::setIncrement(T increment) {
+void OrdinalSpinBoxWidget<T>::setIncrement(T increment) {
     if (increment_ != increment) {
         increment_ = increment;
         applyIncrement();
@@ -234,5 +203,3 @@ void TemplateOrdinalSpinBoxWidget<T>::setIncrement(T increment) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_ORDINALSPINBOXWIDGET_H

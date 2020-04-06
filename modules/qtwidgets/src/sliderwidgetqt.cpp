@@ -62,7 +62,9 @@ BaseSliderWidgetQt::BaseSliderWidgetQt(bool intMode)
     , spinBox_(new NumberLineEdit(intMode))
     , slider_(new Slider())
     , spinnerValue_(0.0)
-    , sliderValue_(0) {
+    , sliderValue_(0)
+    , minCB_{ConstraintBehavior::Editable}
+    , maxCB_{ConstraintBehavior::Editable} {
 
     QHBoxLayout *hLayout = new QHBoxLayout();
 
@@ -112,7 +114,11 @@ void BaseSliderWidgetQt::applyMinValue() {
     QSignalBlocker spinBlock(spinBox_);
     QSignalBlocker slideBlock(slider_);
 
-    spinBox_->setMinimum(transformMinValueToSpinner());
+    if (minCB_ == ConstraintBehavior::Ignore) {
+        spinBox_->setMinimum(std::numeric_limits<double>::lowest());
+    } else {
+        spinBox_->setMinimum(transformMinValueToSpinner());
+    }
     slider_->setMinimum(transformMinValueToSlider());
     updateSlider();
 }
@@ -120,7 +126,11 @@ void BaseSliderWidgetQt::applyMaxValue() {
     QSignalBlocker spinBlock(spinBox_);
     QSignalBlocker slideBlock(slider_);
 
-    spinBox_->setMaximum(transformMaxValueToSpinner());
+    if (maxCB_ == ConstraintBehavior::Ignore) {
+        spinBox_->setMaximum(std::numeric_limits<double>::max());
+    } else {
+        spinBox_->setMaximum(transformMaxValueToSpinner());
+    }
     slider_->setMaximum(transformMaxValueToSlider());
     updateSlider();
 }
@@ -134,9 +144,10 @@ void BaseSliderWidgetQt::applyIncrement() {
 }
 
 void BaseSliderWidgetQt::updateFromSlider() {
-    int newValue = slider_->value();
+    const int newValue = slider_->value();
     if (newValue != sliderValue_) {
         sliderValue_ = newValue;
+        updateOutOfBounds();
         newSliderValue(sliderValue_);
         updateSpinBox();
         emit valueChanged();
@@ -144,7 +155,7 @@ void BaseSliderWidgetQt::updateFromSlider() {
 }
 
 void BaseSliderWidgetQt::updateFromSpinBox() {
-    double newValue = spinBox_->value();
+    const double newValue = spinBox_->value();
     if (fabs(newValue - spinnerValue_) > std::numeric_limits<double>::epsilon()) {
         spinnerValue_ = newValue;
         newSpinnerValue(spinnerValue_);
@@ -164,14 +175,18 @@ void BaseSliderWidgetQt::updateSlider() {
     QSignalBlocker slideBlock(slider_);
 
     sliderValue_ = transformValueToSlider();
+    updateOutOfBounds();
+
+    slider_->setValue(sliderValue_);
+}
+
+void BaseSliderWidgetQt::updateOutOfBounds() {
     bool isOutOfBounds = (slider_->maximum() < sliderValue_ || slider_->minimum() > sliderValue_);
     if (isOutOfBounds != slider_->property("outOfBounds").toBool()) {
         slider_->setProperty("outOfBounds", isOutOfBounds);
         slider_->style()->unpolish(slider_);
         slider_->style()->polish(slider_);
     }
-
-    slider_->setValue(sliderValue_);
 }
 
 bool BaseSliderWidgetQt::eventFilter(QObject *watched, QEvent *event) {

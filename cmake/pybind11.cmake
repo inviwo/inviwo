@@ -63,3 +63,21 @@ function (ivw_add_py_wrapper target)
         set_target_properties(${target} PROPERTIES CXX_VISIBILITY_PRESET "default")
     endif()
 endfunction()
+
+function(ivw_check_python_module module retval)
+    find_package(PythonInterp QUIET)
+    if (NOT PYTHONINTERP_FOUND)
+        set(${retval} FALSE PARENT_SCOPE)
+        return()
+    endif()
+
+    execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c" 
+        "import sys\ntry:\n\timport ${module}\nexcept ImportError:\n\tsys.exit(1)"
+        RESULT_VARIABLE result 
+        ERROR_QUIET)
+    if(NOT result EQUAL 0)
+        set(${retval} FALSE PARENT_SCOPE)
+    else()
+        set(${retval} TRUE PARENT_SCOPE)
+    endif()
+endfunction()

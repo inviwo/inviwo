@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ORDINALMINMAXTEXTTROPERTYWIDGETQT_H
-#define IVW_ORDINALMINMAXTEXTTROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -68,7 +67,7 @@ protected:
     void updateFromMax();
     void showSettings();
 
-    TemplateMinMaxPropertySettingsWidgetQt<T>* settingsWidget_;
+    MinMaxPropertySettingsWidgetQt<T>* settingsWidget_;
     EditableLabelQt* label_;
     MinMaxProperty<T>* minMaxProperty_;
     OrdinalEditorWidget<T>* min_;
@@ -147,8 +146,11 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromProperty() {
     QSignalBlocker minBlock(min_);
     QSignalBlocker maxBlock(max_);
 
-    min_->setRange(range.x, range.y - sep);
-    max_->setRange(range.x + sep, range.y);
+    min_->setMinValue(range.x, ConstraintBehavior::Editable);
+    min_->setMaxValue(range.y - sep, ConstraintBehavior::Editable);
+
+    max_->setMinValue(range.x + sep, ConstraintBehavior::Editable);
+    max_->setMaxValue(range.y, ConstraintBehavior::Editable);
 
     min_->initValue(val.x);
     max_->initValue(val.y);
@@ -283,11 +285,9 @@ std::unique_ptr<QMenu> OrdinalMinMaxTextPropertyWidgetQt<BT, T>::getContextMenu(
 template <typename BT, typename T>
 void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::showSettings() {
     if (!settingsWidget_) {
-        settingsWidget_ = new TemplateMinMaxPropertySettingsWidgetQt<T>(minMaxProperty_, this);
+        settingsWidget_ = new MinMaxPropertySettingsWidgetQt<T>(minMaxProperty_, this);
     }
     settingsWidget_->showWidget();
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_ORDINALMINMAXTEXTTROPERTYWIDGETQT_H

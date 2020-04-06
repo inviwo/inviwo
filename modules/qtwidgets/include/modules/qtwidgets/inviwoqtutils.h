@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOQTUTILS_H
-#define IVW_INVIWOQTUTILS_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -48,6 +47,7 @@
 #include <QMainWindow>
 #include <QImage>
 #include <QPixmap>
+#include <QLocale>
 #include <warn/pop>
 
 class QFontMetrics;
@@ -234,6 +234,25 @@ struct IVW_MODULE_QTWIDGETS_API WidgetCloseEventFilter : QObject {
     virtual bool eventFilter(QObject* obj, QEvent* ev) override;
 };
 
+template <typename T>
+int decimals([[maybe_unused]] double inc) {
+    if constexpr (std::is_floating_point_v<T>) {
+        const static QLocale locale;
+        std::ostringstream buff;
+        utilqt::localizeStream(buff);
+        buff << inc;
+        const std::string str(buff.str());
+        auto periodPosition = str.find(locale.decimalPoint().toLatin1());
+        if (periodPosition == std::string::npos) {
+            return 0;
+        } else {
+            return static_cast<int>(str.length() - periodPosition) - 1;
+        }
+    } else {
+        return 0;
+    }
+}
+
 }  // namespace utilqt
 
 template <class T>
@@ -255,5 +274,3 @@ T localizedStringTo(const std::string& str) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_INVIWOQTUTILS_H

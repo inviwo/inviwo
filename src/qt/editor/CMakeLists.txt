@@ -148,24 +148,57 @@ ivw_compile_optimize_on_target(inviwo-qteditor)
 
 #--------------------------------------------------------------------
 # Generate html version of changelog (for the welcome widget), if python is available
-set(IVW_BUILD_CHANGELOG ON CACHE BOOL "Generate html version of changelog (for the welcome widget)")
+
+ivw_check_python_module(markdown has_markdown)
+ivw_check_python_module(gfm has_gfm)
+if(${has_markdown} AND ${has_gfm})
+    set(build_changelog_default ON)
+else()
+    set(build_changelog_default OFF)
+endif()
+
+set(IVW_BUILD_CHANGELOG ${build_changelog_default} CACHE BOOL "Generate html version of changelog (for the welcome widget)")
 
 if(IVW_BUILD_CHANGELOG)
-    find_package(PythonInterp QUIET)
+    if(NOT ${has_markdown})
+        message(FATAL_ERROR "Missing python module 'markdown' needed to create changelog."
+            " Either install 'markdown' (python -m pip install markdown<3)"
+            " or disable 'IVW_BUILD_CHANGELOG'")
+    endif()
+    if(NOT ${has_gfm})
+        message(FATAL_ERROR "Missing python module 'py-gfm' needed to create changelog."
+            " Either install 'py-gfm' (python -m pip install py-gfm)"
+            " or disable 'IVW_BUILD_CHANGELOG'")
+    endif()
+
+    find_package(PythonInterp)
     if (PYTHONINTERP_FOUND)
-        add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/changelog.html
-            COMMAND ${PYTHON_EXECUTABLE} ${IVW_ROOT_DIR}/tools/changelog-to-html.py -i ${IVW_ROOT_DIR}/CHANGELOG.md -o ${CMAKE_BINARY_DIR}/changelog.html
+        set(srcFile ${IVW_ROOT_DIR}/CHANGELOG.md)
+        set(buildFile ${CMAKE_CURRENT_BINARY_DIR}/changelog.html)
+        set(destDir ${IVW_RESOURCES_DIR}/)
+        file(GENERATE 
+            OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/CopyIfFound.cmake"
+            CONTENT 
+                "if (EXISTS \"${buildFile}\")
+                    file(COPY \"${buildFile}\" DESTINATION \"${destDir}\")
+                endif()"
+        )
+
+        add_custom_command(OUTPUT ${buildFile}
+            COMMAND ${PYTHON_EXECUTABLE} 
+                 ${IVW_ROOT_DIR}/tools/changelog-to-html.py 
+                -i ${srcFile}
+                -o ${buildFile}
             WORKING_DIRECTORY ${IVW_ROOT_DIR}
-            MAIN_DEPENDENCY ${IVW_ROOT_DIR}/CHANGELOG.md
+            MAIN_DEPENDENCY ${srcFile}
             DEPENDS ${IVW_ROOT_DIR}/tools/changelog-to-html.py
             COMMENT "Generating HTML version of the Inviwo Changelog"
             VERBATIM
         )
         add_custom_target("inviwo-changelog"
-            DEPENDS ${CMAKE_BINARY_DIR}/changelog.html
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${CMAKE_BINARY_DIR}/changelog.html
-                ${IVW_RESOURCES_DIR}/changelog.html
+            DEPENDS ${buildFile}
+            COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/CopyIfFound.cmake"
+            SOURCES ${srcFile}
         )
 
         add_dependencies("inviwo-qteditor" "inviwo-changelog")

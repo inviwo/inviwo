@@ -172,11 +172,8 @@ def main(args):
 		for k,v in missing_modules.items():
 			print_error("    {:20s} {}".format(k,v))
 		print_info("    To install run: 'python -m pip install {}'".format(" ".join(missing_modules.keys())))
-
-		# touch target file to update time stamp even though we could not update it
-		pathlib.Path(args.output).touch()
-
-		exit(0)
+		
+		sys.exit(1)
 
 	if not os.path.exists(args.input):
 		print_error("changelog-to-html.py was unable to locate the input file " + args.input)
