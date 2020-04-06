@@ -373,7 +373,8 @@ void MeshRasterizer::updateMeshes() {
 }
 
 MeshRasterizer::MeshRasterization::MeshRasterization(const MeshRasterizer& rasterizerProcessor)
-    : camera_(rasterizerProcessor.camera_.get().clone())
+    : enhancedMeshes_(rasterizerProcessor.enhancedMeshes_)
+    , camera_(rasterizerProcessor.camera_.get().clone())
     , cameraId_(rasterizerProcessor.camera_.getIdentifier())
     , lightPosition_(rasterizerProcessor.lightingProperty_.lightPosition_.get())
     , ambientColor_(rasterizerProcessor.lightingProperty_.ambientColor_.get())
@@ -388,7 +389,6 @@ MeshRasterizer::MeshRasterization::MeshRasterization(const MeshRasterizer& raste
     , alphaSettings_(rasterizerProcessor.alphaSettings_)
     , edgeSettings_(rasterizerProcessor.edgeSettings_)
     , faceSettings_(rasterizerProcessor.faceSettings_)
-    , enhancedMeshes_(rasterizerProcessor.enhancedMeshes_)
     , meshHasAdjacency_(rasterizerProcessor.meshHasAdjacency_)
     , shader_(rasterizerProcessor.shader_) {
 
