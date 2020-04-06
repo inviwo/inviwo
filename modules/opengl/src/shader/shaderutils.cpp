@@ -481,11 +481,11 @@ void addShaderDefines(Shader& shader, const IsoTFProperty& property) {
 }
 
 void setShaderUniforms(Shader& shader, const IsoTFProperty& property) {
-    setShaderUniforms(shader, property.isovalues_, property.isovalues_.getIdentifier());
+    setShaderUniforms(shader, property.isovalues_);
 }
 
-void setShaderUniforms(Shader& shader, const IsoTFProperty& property, const std::string& name) {
-    setShaderUniforms(shader, property.isovalues_, name);
+void setShaderUniforms(Shader& shader, const IsoTFProperty& property, const std::string&) {
+    setShaderUniforms(shader, property.isovalues_, property.isovalues_.getIdentifier());
 }
 
 void addShaderDefinesBGPort(Shader& shader, const ImageInport& port) {

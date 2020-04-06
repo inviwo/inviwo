@@ -69,7 +69,7 @@ template class IVW_CORE_TMPL_INST OrdinalProperty<glm::fquat>;
 
 OrdinalPropertyState<vec4> util::ordinalColor(float r, float g, float b, float a,
                                               InvalidationLevel invalidationLevel) {
-    return ordinalColor(vec4(r, b, g, a), invalidationLevel);
+    return ordinalColor(vec4(r, g, b, a), invalidationLevel);
 }
 OrdinalPropertyState<vec4> util::ordinalColor(const vec4& value,
                                               InvalidationLevel invalidationLevel) {
