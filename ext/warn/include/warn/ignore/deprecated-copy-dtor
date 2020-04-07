@@ -28,21 +28,21 @@
  *********************************************************************************/
 
 #if !defined(WARN_INCLUDE_PUSH)
-#   error "`warn/ignore/object-layout-change` used without `warn/push`"
+#   error "`warn/ignore/deprecated-copy-dtor` used without `warn/push`"
 #endif
 
-#if defined(WARN_IGNORE_OBJECT_LAYOUT_CHANGE)
-#   error "`warn/ignore/object-layout-change` already included"
+#if defined(WARN_IGNORE_DEPRECATED_COPY_DTOR)
+#   error "`warn/ignore/deprecated-copy-dtor` already included"
 #endif
 
-#define WARN_IGNORE_OBJECT_LAYOUT_CHANGE
+#define WARN_IGNORE_DEPRECATED_COPY_DTOR
 
 #if defined(__clang__)
 //  Not available
 #elif defined(__GNUC__)
-//  Not available
-#elif defined(_MSC_VER)
-#   if (_MSC_FULL_VER >= 160000000)
-#       pragma warning(disable: 4435)
+#   if __GNUC__ > 9 || (__GNUC__ == 9  && __GNUC_MINOR__ >= 0)
+#       pragma GCC diagnostic ignored "-Wdeprecated-copy-dtor"
 #   endif
+#elif defined(_MSC_VER)
+//  Not available
 #endif

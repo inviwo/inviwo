@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2017-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,6 +49,8 @@
 #include <warn/ignore/copy-ctor-could-not-be-generated>
 #include <warn/ignore/covered-switch-default>
 #include <warn/ignore/deprecated>
+#include <warn/ignore/deprecated-copy>
+#include <warn/ignore/deprecated-copy-dtor>
 #include <warn/ignore/deprecated-declarations>
 #include <warn/ignore/deprecated-objc-isa-usage>
 #include <warn/ignore/deprecated-register>
