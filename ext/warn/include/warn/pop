@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2017-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
+/*
+ * This complete file is auto-generated please do not modify. 
+ * See tools/codegen/warn/README.md
+ */
 
 #if !defined(WARN_INCLUDE_PUSH)
 #   error "'warn/push' include not detected or already closed with other 'warn/pop'"
@@ -63,6 +68,8 @@
 #undef WARN_IGNORE_COPY_CTOR_COULD_NOT_BE_GENERATED
 #undef WARN_IGNORE_COVERED_SWITCH_DEFAULT
 #undef WARN_IGNORE_DEPRECATED
+#undef WARN_IGNORE_DEPRECATED_COPY
+#undef WARN_IGNORE_DEPRECATED_COPY_DTOR
 #undef WARN_IGNORE_DEPRECATED_DECLARATIONS
 #undef WARN_IGNORE_DEPRECATED_OBJC_ISA_USAGE
 #undef WARN_IGNORE_DEPRECATED_REGISTER
@@ -121,6 +128,7 @@
 #undef WARN_IGNORE_SIGN_COMPARE
 #undef WARN_IGNORE_SIGN_CONVERSION
 #undef WARN_IGNORE_SIGNED_UNSIGNED_COMPARE
+#undef WARN_IGNORE_SIGNED_UNSIGNED_MISMATCH
 #undef WARN_IGNORE_SIZE_T_CONVERSION
 #undef WARN_IGNORE_SPECIAL_NOEXCEPT
 #undef WARN_IGNORE_STATIC_CTOR_NOT_THREAD_SAFE

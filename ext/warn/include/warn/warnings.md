@@ -22,8 +22,10 @@ conversion-sign-extended          | *no*               | *no*                 | 
 copy-ctor-could-not-be-generated  | *no*               | *no*                 | C4625 (12)        
 covered-switch-default            | *same* (3.2)       | *no*                 | *no*              
 deprecated                        | *same* (3.2)       | *same* (3.4)         | *no*              
+deprecated-copy                   | *no*               | *same* (9)           | *no*              
+deprecated-copy-dtor              | *no*               | *same* (9)           | *no*              
 deprecated-declarations           | *same* (3.2)       | *same* (3.4)         | C4996 (12)        
-deprecated-objc-isa-usage         | *same* (3.3)       | *no*                 | *no*              
+deprecated-objc-isa-usage         | *same* (3.2)       | *no*                 | *no*              
 deprecated-register               | *same* (3.4)       | *no*                 | *no*              
 dflt-ctor-base-inaccessible       | *no*               | *no*                 | C4623 (12)        
 dflt-ctor-could-not-be-generated  | *no*               | *no*                 | C4510 (13)        
@@ -57,17 +59,17 @@ misleading-indentation            | *no*               | *same* (6)           | 
 mismatched-tags                   | *same* (3.2)       | *no*                 | C4099 (13)        
 missing-braces                    | *same* (3.2)       | *same* (3.4)         | *no*              
 missing-field-initializers        | *same* (3.2)       | *same* (4.0)         | *no*              
-missing-noreturn                  | *same* (3.3)       | *same* (3.4)         | *no*              
+missing-noreturn                  | *same* (3.2)       | *same* (3.4)         | *no*              
 name-length-exceeded              | *no*               | *no*                 | C4503 (13)        
 namespace-uses-itself             | *no*               | *no*                 | C4515 (13)        
-newline-eof                       | *same* (3.4)       | *no*                 | *no*              
+newline-eof                       | *same* (3.2)       | *no*                 | *no*              
 no-such-warning                   | *no*               | *no*                 | C4619 (12)        
 no-unnamed-raii-objects           | *no*               | *no*                 | C26444 (15)       
 non-virtual-dtor                  | *same* (3.2)       | *same* (3.4)         | C4265 (12)        
 not-inlined                       | *no*               | *no*                 | C4710 (13)        
 null-pointer-arithmetic           | *same* (6)         | *no*                 | *no*              
 object-layout-change              | *no*               | *no*                 | C4435 (16)        
-old-style-cast                    | *same* (3.5)       | *same* (3.4)         | *no*              
+old-style-cast                    | *same* (3.2)       | *same* (3.4)         | *no*              
 overloaded-virtual                | *same* (3.2)       | *same* (3.4)         | *no*              
 padded                            | *same* (3.2)       | *same* (3.4)         | C4820 (12)        
 parentheses                       | *same* (3.2)       | *same* (3.4)         | *no*              
@@ -80,6 +82,7 @@ shorten-64-to-32                  | *same* (3.2)       | *no*                 | 
 sign-compare                      | *same* (3.2)       | *same* (3.4)         | C4389 (12)        
 sign-conversion                   | *same* (3.2)       | *same* (4.3)         | C4365 (13)        
 signed-unsigned-compare           | sign-compare (3.2) | sign-compare (3.4)   | C4388 (17)        
+signed-unsigned-mismatch          | *no*               | *no*                 | C4018 (13)        
 size_t-conversion                 | *no*               | *no*                 | C4267 (12)        
 special-noexcept                  | *no*               | *no*                 | C26439 (15)       
 static-ctor-not-thread-safe       | *no*               | *no*                 | C4640 (13)        
@@ -90,7 +93,7 @@ this-used-in-init                 | *no*               | *no*                 | 
 undef                             | *no*               | *same* (3.4)         | C4668 (12)        
 uninitialized                     | *same* (3.2)       | *same* (3.4)         | C4701 (12)        
 unknown-pragmas                   | *same* (3.2)       | *same* (3.4)         | *no*              
-unreachable-code                  | *same* (3.5)       | *same* (3.4)         | C4702 (12)        
+unreachable-code                  | *same* (3.2)       | *same* (3.4)         | C4702 (12)        
 unreachable-code-return           | *same* (3.5)       | *no*                 | *no*              
 unreferenced-inline               | *no*               | *no*                 | C4514 (13)        
 unsafe-conversion                 | *no*               | *no*                 | C4191 (13)        

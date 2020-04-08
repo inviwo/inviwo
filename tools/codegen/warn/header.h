@@ -27,3 +27,8 @@
  *
  *********************************************************************************/
 
+/*
+ * This complete file is auto-generated please do not modify. 
+ * See tools/codegen/warn/README.md
+ */
+
