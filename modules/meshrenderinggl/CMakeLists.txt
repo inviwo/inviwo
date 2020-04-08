@@ -22,8 +22,10 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     src/datastructures/halfedges.cpp
+    src/datastructures/rasterization.cpp
     src/algorithm/calcnormals.cpp
     src/processors/calcnormalsprocessor.cpp
+    src/ports/rasterizationport.cpp
     src/processors/meshrasterizer.cpp
     src/processors/rasterizationrenderer.cpp
     src/rendering/fragmentlistrenderer.cpp
