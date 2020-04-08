@@ -155,7 +155,7 @@ std::unique_ptr<Canvas> CanvasQtBase<T>::createHiddenCanvas() {
     auto newContext = res.get();
     RenderContext::getPtr()->setContextThreadId(newContext->contextId(),
                                                 std::this_thread::get_id());
-    return std::move(newContext);
+    return newContext;
 }
 
 template <typename T>
