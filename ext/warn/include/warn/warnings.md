@@ -82,6 +82,7 @@ shorten-64-to-32                  | *same* (3.2)       | *no*                 | 
 sign-compare                      | *same* (3.2)       | *same* (3.4)         | C4389 (12)        
 sign-conversion                   | *same* (3.2)       | *same* (4.3)         | C4365 (13)        
 signed-unsigned-compare           | sign-compare (3.2) | sign-compare (3.4)   | C4388 (17)        
+signed-unsigned-mismatch          | *no*               | *no*                 | C4018 (13)        
 size_t-conversion                 | *no*               | *no*                 | C4267 (12)        
 special-noexcept                  | *no*               | *no*                 | C26439 (15)       
 static-ctor-not-thread-safe       | *no*               | *no*                 | C4640 (13)        

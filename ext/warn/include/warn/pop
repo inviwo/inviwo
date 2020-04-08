@@ -27,6 +27,11 @@
  *
  *********************************************************************************/
 
+/*
+ * This complete file is auto-generated please do not modify. 
+ * See tools/codegen/warn/README.md
+ */
+
 #if !defined(WARN_INCLUDE_PUSH)
 #   error "'warn/push' include not detected or already closed with other 'warn/pop'"
 #endif
@@ -123,6 +128,7 @@
 #undef WARN_IGNORE_SIGN_COMPARE
 #undef WARN_IGNORE_SIGN_CONVERSION
 #undef WARN_IGNORE_SIGNED_UNSIGNED_COMPARE
+#undef WARN_IGNORE_SIGNED_UNSIGNED_MISMATCH
 #undef WARN_IGNORE_SIZE_T_CONVERSION
 #undef WARN_IGNORE_SPECIAL_NOEXCEPT
 #undef WARN_IGNORE_STATIC_CTOR_NOT_THREAD_SAFE

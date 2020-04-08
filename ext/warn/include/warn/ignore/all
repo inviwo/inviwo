@@ -27,6 +27,11 @@
  *
  *********************************************************************************/
 
+/*
+ * This complete file is auto-generated please do not modify. 
+ * See tools/codegen/warn/README.md
+ */
+
 #include <warn/ignore/arithmetic-overflow>
 #include <warn/ignore/assign-base-inaccessible>
 #include <warn/ignore/assign-could-not-be-generated>
@@ -109,6 +114,7 @@
 #include <warn/ignore/sign-compare>
 #include <warn/ignore/sign-conversion>
 #include <warn/ignore/signed-unsigned-compare>
+#include <warn/ignore/signed-unsigned-mismatch>
 #include <warn/ignore/size_t-conversion>
 #include <warn/ignore/special-noexcept>
 #include <warn/ignore/static-ctor-not-thread-safe>

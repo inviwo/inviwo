@@ -27,6 +27,11 @@
  *
  *********************************************************************************/
 
+/*
+ * This complete file is auto-generated please do not modify. 
+ * See tools/codegen/warn/README.md
+ */
+
 #if !defined(WARN_INCLUDE_PUSH)
 #   error "`warn/ignore/switch-enum` used without `warn/push`"
 #endif
