@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GLFWEXCEPTION_H
-#define IVW_GLFWEXCEPTION_H
+#pragma once
 
 #include <modules/glfw/glfwmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -53,5 +52,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_GLFWEXCEPTION_H

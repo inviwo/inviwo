@@ -35,6 +35,7 @@
 #include <modules/glfw/canvasprocessorwidgetglfw.h>
 #include <modules/opengl/openglcapabilities.h>
 #include <modules/glfw/glfwexception.h>
+#include <modules/opengl/sharedopenglresources.h>
 
 namespace inviwo {
 
@@ -52,6 +53,10 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
     OpenGLCapabilities::initializeGLEW();
     GLFWSharedCanvas_->defaultGLState();
 
+    if (!glFenceSync) {  // Make sure we have setup the opengl function pointers.
+        throw GLFWInitException("Unable to initiate OpenGL", IVW_CONTEXT);
+    }
+
     RenderContext::getPtr()->setDefaultRenderContext(GLFWSharedCanvas_.get());
     registerProcessorWidget<CanvasProcessorWidgetGLFW, CanvasProcessorGL>();
 
@@ -59,6 +64,7 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
 }
 
 GLFWModule::~GLFWModule() {
+    SharedOpenGLResources::getPtr()->reset();
     if (GLFWSharedCanvas_.get() == RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
     }
@@ -75,19 +81,23 @@ void GLFWModule::onProcessorNetworkEvaluationEnd() {
     // its work before we continue. This is needed to make sure that we have textures that are upto
     // data when we render the canvases.
     auto syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-    auto res = glClientWaitSync(syncObj, GL_SYNC_FLUSH_COMMANDS_BIT, 100000000);
+
+    const GLuint64 timeoutInNanoSec = 50'000'000;  // 50ms
+
+    auto res = glClientWaitSync(syncObj, GL_SYNC_FLUSH_COMMANDS_BIT, timeoutInNanoSec);
+    while (res == GL_TIMEOUT_EXPIRED) {
+        res = glClientWaitSync(syncObj, GL_SYNC_FLUSH_COMMANDS_BIT, timeoutInNanoSec);
+    }
 
     switch (res) {
-        case GL_ALREADY_SIGNALED:
-            LogWarn("GL_ALREADY_SIGNALED");
+        case GL_ALREADY_SIGNALED:  // No queue to wait for
             break;
-        case GL_TIMEOUT_EXPIRED:
-            LogWarn("GL_TIMEOUT_EXPIRED");
+        case GL_TIMEOUT_EXPIRED:  // Handled above
             break;
         case GL_WAIT_FAILED:
-            LogWarn("GL_WAIT_FAILED");
+            LogError("Error syncing with opengl 'GL_WAIT_FAILED'");
             break;
-        case GL_CONDITION_SATISFIED:
+        case GL_CONDITION_SATISFIED:  // Queue done.
             break;
     }
 

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CANVASGLFW_H
-#define IVW_CANVASGLFW_H
+#pragma once
 
 #include <modules/glfw/glfwmoduledefine.h>
 #include <stdlib.h>
@@ -111,5 +110,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CANVASGLFW_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CANVASPROCESSORWIDGETGLFW_H
-#define IVW_CANVASPROCESSORWIDGETGLFW_H
+#pragma once
 
 #include <modules/glfw/glfwmoduledefine.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
@@ -61,5 +60,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CANVASPROCESSORWIDGETGLFW_H
