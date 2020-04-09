@@ -45,9 +45,25 @@ namespace inviwo {
 
 class IVW_MODULE_MESHRENDERINGGL_API Rasterization {
 public:
-    virtual ~Rasterization() {}
+    virtual ~Rasterization() = default;
+
+    /**
+     * \brief Render the fragments, with all setup and evaluation taken care of.
+     * If opaque is set, a standard render call instead.
+     * @param setUniforms Binds the fragment list buffer and sets required uniforms.
+     */
     virtual void rasterize(std::function<void(Shader&)> setUniforms) const = 0;
+
+    /**
+     * \brief Set the size of the target image.
+     * @param size Size in pixels.
+     */
     virtual void setImageSize(const ivec2& size) const = 0;
+
+    /**
+     * \brief Query whether fragments will be emitted.
+     * @return True for order-independent rendering, false for opaque rasterization.
+     */
     virtual bool usesFragmentLists() const = 0;
 };
 

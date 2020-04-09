@@ -36,7 +36,6 @@
 
 namespace inviwo {
 
-// using RasterizationInport = DataInport<Rasterization>;
 using RasterizationOutport = DataOutport<Rasterization>;
 
 using RasterizationInport = DataInport<Rasterization, 0, true>;
