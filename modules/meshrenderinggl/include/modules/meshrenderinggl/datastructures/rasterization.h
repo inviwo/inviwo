@@ -65,6 +65,12 @@ public:
      * @return True for order-independent rendering, false for opaque rasterization.
      */
     virtual bool usesFragmentLists() const = 0;
+
+    /**
+     * \brief Get data description for the network interface.
+     * @return Specific information about this rasterization type/instance.
+     */
+    virtual std::string getDescription() const { return "Rasteriation functor."; }
 };
 
 template <>
@@ -73,10 +79,8 @@ struct DataTraits<Rasterization> {
     static std::string dataName() { return "Rasterization"; }
     static uvec3 colorCode() { return uvec3(80, 160, 160); }
     static Document info(const Rasterization& data) {
-        std::ostringstream oss;
-        oss << "Functor for rasterization.";
         Document doc;
-        doc.append("p", oss.str());
+        doc.append("p", data.getDescription());
         return doc;
     }
 };

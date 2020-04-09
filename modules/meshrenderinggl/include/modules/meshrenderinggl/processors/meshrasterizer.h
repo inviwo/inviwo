@@ -287,7 +287,6 @@ protected:
      */
     class MeshRasterization : public Rasterization {
     public:
-        const std::vector<std::shared_ptr<const Mesh>> meshes_;
         std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;
 
         const Camera* camera_;
@@ -318,10 +317,11 @@ protected:
         mutable ivec2 imageSize_;
 
         void setLightingUniforms() const;
+
+    public:
         /**
          * \brief Copy all settings and the shader to hand to a renderer.
          */
-    public:
         MeshRasterization(const MeshRasterizer& rasterizerProcessor);
         virtual ~MeshRasterization() override { delete camera_; }
         void update(const MeshRasterizer& rasterizerProcessor) const;
@@ -330,6 +330,7 @@ protected:
         virtual bool usesFragmentLists() const override {
             return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
         }
+        virtual std::string getDescription() const override;
     };
 };
 
