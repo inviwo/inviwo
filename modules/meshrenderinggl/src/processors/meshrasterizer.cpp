@@ -523,7 +523,7 @@ void MeshRasterizer::MeshRasterization::update(const MeshRasterizer& rasterizerP
 std::string MeshRasterizer::MeshRasterization::getDescription() const {
     std::stringstream ss;
     ss << "Mesh rasterization functor with " << enhancedMeshes_.size();
-    ss << (enhancedMeshes_.size() == 1) ? "mesh." : " meshes.";
+    ss << ((enhancedMeshes_.size() == 1) ? " mesh." : " meshes.");
     return ss.str();
 }
 

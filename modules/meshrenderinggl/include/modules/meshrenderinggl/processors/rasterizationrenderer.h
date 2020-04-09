@@ -163,7 +163,7 @@ protected:
     IllustrationSettings illustrationSettings_;
 
     FragmentListRenderer flr_;
-    typename Dispatcher<void()>::Handle flrReload_;
+    using flrReload_ = Dispatcher<void()>::Handle;
     bool supportsFragmentLists_;
     bool supportesIllustration_;
 };

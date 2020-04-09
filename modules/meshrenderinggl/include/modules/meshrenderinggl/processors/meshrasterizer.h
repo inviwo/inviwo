@@ -287,6 +287,20 @@ protected:
      */
     class MeshRasterization : public Rasterization {
     public:
+        /**
+         * \brief Copy all settings and the shader to hand to a renderer.
+         */
+        MeshRasterization(const MeshRasterizer& rasterizerProcessor);
+        virtual ~MeshRasterization() override { delete camera_; }
+        void update(const MeshRasterizer& rasterizerProcessor) const;
+        virtual void rasterize(std::function<void(Shader&)> setUniforms) const override;
+        virtual void setImageSize(const ivec2& size) const override { imageSize_ = size; }
+        virtual bool usesFragmentLists() const override {
+            return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
+        }
+        virtual std::string getDescription() const override;
+
+    public:
         std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;
 
         const Camera* camera_;
@@ -317,20 +331,6 @@ protected:
         mutable ivec2 imageSize_;
 
         void setLightingUniforms() const;
-
-    public:
-        /**
-         * \brief Copy all settings and the shader to hand to a renderer.
-         */
-        MeshRasterization(const MeshRasterizer& rasterizerProcessor);
-        virtual ~MeshRasterization() override { delete camera_; }
-        void update(const MeshRasterizer& rasterizerProcessor) const;
-        virtual void rasterize(std::function<void(Shader&)> setUniforms) const override;
-        virtual void setImageSize(const ivec2& size) const override { imageSize_ = size; }
-        virtual bool usesFragmentLists() const override {
-            return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
-        }
-        virtual std::string getDescription() const override;
     };
 };
 
