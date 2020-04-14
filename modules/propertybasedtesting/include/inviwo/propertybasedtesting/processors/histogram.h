@@ -78,10 +78,12 @@ private:
 	std::vector<IntMinMaxProperty*> props_;
 
 	// Testing stuff
-	void startTesting(const size_t);
+	void startTesting(const size_t index);
 
 	std::optional<size_t> currentPropertyIndex;
-	std::optional<size_t> lastPixelCount;
+	std::queue<IntMinMaxProperty::range_type> rangesToTest;
+	std::vector<std::pair<IntMinMaxProperty::range_type, size_t>> testResults;
+	void checkTestResults();
 };
 
 }  // namespace inviwo

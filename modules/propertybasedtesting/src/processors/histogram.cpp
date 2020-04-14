@@ -86,13 +86,12 @@ Histogram::Histogram(InviwoApplication* app)
 			}
 
 			for(Property* prop : properties) {
-				std::cerr << prop << " : " << prop->getDisplayName() << " : " << prop->getPath() << std::endl;
-				
+				//std::cerr << prop << " : " << prop->getDisplayName() << " : " << prop->getPath() << std::endl;
 				if(auto* _p = dynamic_cast<IntMinMaxProperty*>(prop); _p != nullptr) {
 					auto* p = _p->clone();
 					
 					addProperty(p);
-					p->setReadOnly(true);
+					//p->setReadOnly(true);
 					props_.emplace_back(p);
 
 					app_->getProcessorNetwork()->addLink(p, _p);
@@ -106,32 +105,70 @@ Histogram::Histogram(InviwoApplication* app)
 	addProperty(collectButton_);
 
 	currentPropertyIndex = std::nullopt;
-	lastPixelCount = std::nullopt;
+	testResults.clear();
 }
 
 void Histogram::startTesting(const size_t index) {
-	lastPixelCount = std::nullopt;
+	testResults.clear();
+	assert(rangesToTest.empty());
 
 	if(index >= props_.size()) {
 		currentPropertyIndex = std::nullopt;
 		return;
 	}
+	// TODO: test this property only, if changing it invalidates inport_
+	if(app_->getProcessorNetwork()->getPropertiesLinkedTo(props_[index]).empty()) {
+		return startTesting(index+1);
+	}
 	
 	currentPropertyIndex = {index};
 
 	auto& currentProperty = *(props_[index]);
-	currentProperty.setStart( currentProperty.getRangeMin() );
-	currentProperty.setCurrentStateAsDefault();
+	currentProperty.setCurrentStateAsDefault(); // store current state in order to reset it after testing
+
+	// generate ranges to test
+	for(int lo = currentProperty.getRangeMin();
+		    lo + currentProperty.getMinSeparation() <= currentProperty.getRangeMax();
+			lo++) {
+		rangesToTest.emplace(lo, currentProperty.getRangeMax());
+	}
+	for(int hi = currentProperty.getRangeMin() + currentProperty.getMinSeparation();
+            hi <= currentProperty.getRangeMax();
+			hi++) {
+		rangesToTest.emplace(currentProperty.getRangeMin(), hi);
+	}
+
+    assert(rangesToTest.size() > 1);
+
+    currentProperty.set(rangesToTest.front());
+    rangesToTest.pop();
+
+    // force update, TODO: find better solution
+    app_->getProcessorNetwork()->forEachProcessor([](auto proc) {
+            proc->invalidate(InvalidationLevel::InvalidOutput);
+        });
 }
 
+void Histogram::checkTestResults() {
+    // maybe TODO: can be done with a segment tree in O(n*log(n))
+    for(auto&& [range,count] : testResults) {
+        for(auto&& [otherRange,otherCount] : testResults) {
+            // otherRange lies fully within range
+            if(range.x <= otherRange.x && range.y >= otherRange.y) {
+                assert(count >= otherCount);
+            }
+        }
+    }
+}
 
 void Histogram::process() {
-	// std::cerr << "Histogram::process()" << std::endl;
-
 	auto img = inport_.getData();
 	const auto dim = img->getDimensions();
-	
-	if(currentPropertyIndex) { // count number of background pixels 
+
+	if(currentPropertyIndex) { // if currently testing
+		size_t index = *currentPropertyIndex;
+		auto& currentProperty = *props_[index];
+
 		size_t pixelCount = 0;
 		auto imgRam = img->getRepresentation<ImageRAM>();
 		for(size_t x = 0; x < dim.x; x++) {
@@ -141,25 +178,27 @@ void Histogram::process() {
 					pixelCount++;
 			}
 		}
-		std::cerr << "pixelCount = " << pixelCount << std::endl;
+		std::cerr << currentProperty.getIdentifier() << " "
+                  << currentProperty.get() << " / "
+                  << currentProperty.getRange() << " "
+                  << rangesToTest.size() << " "
+                  << "pixelCount = " << pixelCount << std::endl;
 
-		if(lastPixelCount) { // check change
-			std::cerr << "lastPixelCount = " << *lastPixelCount << std::endl;
-		}
-		lastPixelCount = pixelCount;
-	}
-
-	if(currentPropertyIndex) {
-		size_t index = *currentPropertyIndex;
-		auto& currentProperty = *props_[index];
+		testResults.emplace_back(dim, pixelCount);
 		
-		if(currentProperty.getStart() + currentProperty.getMinSeparation() < currentProperty.getEnd()) {
-			currentProperty.setStart(currentProperty.getStart() + currentProperty.getIncrement());
+		if(!rangesToTest.empty()) {
+            currentProperty.set(rangesToTest.front());
+            rangesToTest.pop();
+            // force update, TODO: find better solution
+            app_->getProcessorNetwork()->forEachProcessor([](auto proc) {
+                    proc->invalidate(InvalidationLevel::InvalidOutput);
+                });
 		} else {
 			currentPropertyIndex = std::nullopt;
-
 			currentProperty.resetToDefaultState();
-			startTesting(++index);
+
+            checkTestResults();
+			startTesting(index+1);
 		}
 	}
 	
