@@ -40,6 +40,9 @@
 
 #include <codecvt>
 
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
 namespace inviwo {
 
 GLFWwindow* CanvasGLFW::sharedContext_ = nullptr;
@@ -118,7 +121,10 @@ void CanvasGLFW::hide() {
 
 void CanvasGLFW::setWindowSize(ivec2 size) { glfwSetWindowSize(glWindow_, size.x, size.y); }
 
-void CanvasGLFW::setWindowPosition(ivec2 pos) { glfwSetWindowPos(glWindow_, pos.x, pos.y); }
+void CanvasGLFW::setWindowPosition(ivec2 pos) {
+    pos = movePointOntoDesktop(pos);
+    glfwSetWindowPos(glWindow_, pos.x, pos.y);
+}
 
 void CanvasGLFW::setFullScreenInternal(bool fullscreen) {
     if (fullscreen) {
@@ -315,5 +321,30 @@ Canvas::ContextID CanvasGLFW::activeContext() const {
 }
 
 Canvas::ContextID CanvasGLFW::contextId() const { return static_cast<ContextID>(glWindow_); }
+
+void CanvasGLFW::provideExternalContext(GLFWwindow* sharedContext) {
+    if (!sharedContext_) {
+        sharedContext_ = sharedContext;
+    } else {
+        throw Exception("Shared context can only be set once!", IVW_CONTEXT_CUSTOM("GLFW"));
+    }
+}
+
+ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos) {
+    int count;
+    GLFWmonitor** monitors = glfwGetMonitors(&count);
+
+    for (int i = 0; i < count; ++i) {
+        GLFWmonitor* monitor = monitors[i];
+        int xpos, ypos, width, height;
+        glfwGetMonitorWorkarea(monitor, &xpos, &ypos, &width, &height);
+
+    }
+    
+    auto monitor = glfwGetPrimaryMonitor();
+    monitor
+
+        glfwSetWindowPos(glWindow_, xpos, ypos);
+}
 
 }  // namespace inviwo

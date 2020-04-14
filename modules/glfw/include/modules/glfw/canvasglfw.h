@@ -37,8 +37,7 @@
 #include <inviwo/core/interaction/events/mousebuttons.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+typedef struct GLFWwindow GLFWwindow;
 
 namespace inviwo {
 
@@ -83,6 +82,10 @@ public:
     virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
     virtual ContextID activeContext() const override;
     virtual ContextID contextId() const override;
+
+    static void provideExternalContext(GLFWwindow* sharedContext);
+
+    static ivec2 movePointOntoDesktop(ivec2);
 
 protected:
     virtual void setFullScreenInternal(bool fullscreen) override;

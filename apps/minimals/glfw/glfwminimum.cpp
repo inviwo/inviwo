@@ -52,10 +52,10 @@
 using namespace inviwo;
 
 int main(int argc, char** argv) {
-    LogCentral::init();
-    inviwo::util::OnScopeExit deleteLogcentral([]() { inviwo::LogCentral::deleteInstance(); });
-    auto logger = std::make_shared<inviwo::ConsoleLogger>();
-    LogCentral::getPtr()->registerLogger(logger);
+    inviwo::LogCentral logger;
+    inviwo::LogCentral::init(&logger);
+    auto consoleLogger = std::make_shared<inviwo::ConsoleLogger>();
+    logger.registerLogger(consoleLogger);
 
     InviwoApplication inviwoApp(argc, argv, "Inviwo-GLFW");
     inviwoApp.printApplicationInfo();
