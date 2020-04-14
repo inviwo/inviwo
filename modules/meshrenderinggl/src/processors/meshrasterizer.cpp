@@ -490,11 +490,11 @@ void MeshRasterization::rasterize(const ivec2& imageSize,
     shader_->deactivate();
 }
 
-std::string MeshRasterizer::MeshRasterization::getDescription() const {
-    std::stringstream ss;
-    ss << "Mesh rasterization functor with " << enhancedMeshes_.size();
-    ss << ((enhancedMeshes_.size() == 1) ? " mesh." : " meshes.");
-    return ss.str();
+Document MeshRasterization::getDescription() const {
+    Document doc;
+    doc.append("p", fmt::format("Mesh rasterization functor with {} {}", enhancedMeshes_.size(),
+                                (enhancedMeshes_.size() == 1) ? " mesh." : " meshes."));
+    return doc;
 }
 
 }  // namespace inviwo
