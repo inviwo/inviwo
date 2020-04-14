@@ -327,9 +327,36 @@ void MeshRasterizer::FaceSettings::setUniforms(Shader& shader, std::string_view 
 void MeshRasterizer::process() {
 
     if (!faceSettings_[0].show_ && !faceSettings_[1].show_) {
-        utilgl::deactivateCurrentTarget();
+        outport_.setData(nullptr);
+        LogWarn("Both sides are disabled, not rendering anything.");
         return;  // everything is culled
     }
+
+    shader_->activate();
+
+    // general settings for camera, lighting, picking, mesh data
+    utilgl::setUniforms(*shader_, camera_, lightingProperty_);
+
+    // update face render settings
+    std::array<TextureUnit, 2> transFuncUnit;
+    for (size_t j = 0; j < faceSettings_.size(); ++j) {
+        const std::string prefix = fmt::format("renderSettings[{}].", j);
+        auto& face = faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : j];
+        face.setUniforms(*shader_, prefix);
+    }
+
+    // update alpha settings
+    alphaSettings_.setUniforms(*shader_, "alphaSettings.");
+
+    // update other global fragment shader settings
+    shader_->setUniform("silhouetteColor", silhouetteColor_);
+
+    // update geometry shader settings
+    shader_->setUniform("geomSettings.edgeWidth", edgeSettings_.edgeThickness_);
+    shader_->setUniform("geomSettings.triangleNormal",
+                        normalSource_ == NormalSource::GenerateTriangle);
+
+    shader_->deactivate();
 
     outport_.setData(new MeshRasterization(*this));
 }
@@ -372,32 +399,16 @@ void MeshRasterizer::updateMeshes() {
     }
 }
 
-MeshRasterizer::MeshRasterization::MeshRasterization(const MeshRasterizer& rasterizerProcessor)
-    : enhancedMeshes_(rasterizerProcessor.enhancedMeshes_)
-    , camera_(rasterizerProcessor.camera_.get().clone())
-    , cameraId_(rasterizerProcessor.camera_.getIdentifier())
-    , lightPosition_(rasterizerProcessor.lightingProperty_.lightPosition_.get())
-    , ambientColor_(rasterizerProcessor.lightingProperty_.ambientColor_.get())
-    , diffuseColor_(rasterizerProcessor.lightingProperty_.diffuseColor_.get())
-    , specularColor_(rasterizerProcessor.lightingProperty_.specularColor_.get())
-    , specularExponent_(rasterizerProcessor.lightingProperty_.specularExponent_.get())
-    , forceOpaque_(rasterizerProcessor.forceOpaque_)
-    , drawSilhouette_(rasterizerProcessor.drawSilhouette_)
-    , silhouetteColor_(rasterizerProcessor.silhouetteColor_)
-    , normalSource_(rasterizerProcessor.normalSource_)
-    , normalComputationMode_(rasterizerProcessor.normalComputationMode_)
-    , alphaSettings_(rasterizerProcessor.alphaSettings_)
-    , edgeSettings_(rasterizerProcessor.edgeSettings_)
-    , faceSettings_(rasterizerProcessor.faceSettings_)
-    , meshHasAdjacency_(rasterizerProcessor.meshHasAdjacency_)
-    , shader_(rasterizerProcessor.shader_) {
-
-    lightSpace_ = static_cast<SimpleLightingProperty::Space>(
-        rasterizerProcessor.lightingProperty_.referenceFrame_.getSelectedValue());
-}
+MeshRasterization::MeshRasterization(const MeshRasterizer& processor)
+    : enhancedMeshes_(processor.enhancedMeshes_)
+    , forceOpaque_(processor.forceOpaque_)
+    , showFace_{processor.faceSettings_[0].show_, processor.faceSettings_[1].show_}
+    , tfTextures_{processor.faceSettings_[0].transferFunction_->getData(),
+                  processor.faceSettings_[processor.faceSettings_[1].sameAsFrontFace_.get() ? 0 : 1]
+                      .transferFunction_->getData()}
+    , shader_(processor.shader_) {}
 
 void MeshRasterizer::initializeResources() {
-    // auto shaderLocked = getShader();
     auto fso = shader_->getFragmentShaderObject();
 
     fso->addShaderExtension("GL_NV_gpu_shader5", true);
@@ -436,40 +447,21 @@ void MeshRasterizer::initializeResources() {
     shader_->build();
 }
 
-void MeshRasterizer::MeshRasterization::rasterize(
-    std::function<void(Shader&)> setUniformsRenderer) const {
+void MeshRasterization::rasterize(const ivec2& imageSize,
+                                  std::function<void(Shader&)> setUniformsRenderer) const {
 
     shader_->activate();
     if (!shader_->isReady()) return;
 
-    // general settings for camera, lighting, picking, mesh data
-    utilgl::setShaderUniforms(*shader_, *camera_, cameraId_);
-    setLightingUniforms();
-    shader_->setUniform("halfScreenSize", imageSize_ / ivec2(2));
-
-    // update face render settings
+    // set transfer function textures
     std::array<TextureUnit, 2> transFuncUnit;
-    for (size_t j = 0; j < faceSettings_.size(); ++j) {
-        const std::string prefix = fmt::format("renderSettings[{}].", j);
-        auto& face = faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : j];
-        face.setUniforms(*shader_, prefix);
-
-        const Layer* tfLayer = face.transferFunction_->getData();
-        const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
+    for (size_t j = 0; j < 2; ++j) {
+        const LayerGL* transferFunctionGL = tfTextures_[j]->getRepresentation<LayerGL>();
         transferFunctionGL->bindTexture(transFuncUnit[j].getEnum());
         shader_->setUniform(fmt::format("transferFunction{}", j), transFuncUnit[j].getUnitNumber());
     }
 
-    // update alpha settings
-    alphaSettings_.setUniforms(*shader_, "alphaSettings.");
-
-    // update other global fragment shader settings
-    shader_->setUniform("silhouetteColor", silhouetteColor_);
-
-    // update geometry shader settings
-    shader_->setUniform("geomSettings.edgeWidth", edgeSettings_.edgeThickness_);
-    shader_->setUniform("geomSettings.triangleNormal",
-                        normalSource_ == NormalSource::GenerateTriangle);
+    shader_->setUniform("halfScreenSize", imageSize / ivec2(2));
 
     // call the callback provided by the renderer calling this function
     setUniformsRenderer(*shader_);
@@ -478,10 +470,9 @@ void MeshRasterizer::MeshRasterization::rasterize(
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, forceOpaque_);
         utilgl::DepthMaskState depthMask(forceOpaque_ ? GL_TRUE : GL_FALSE);
 
-        utilgl::CullFaceState culling(
-            !faceSettings_[0].show_ && faceSettings_[1].show_
-                ? GL_FRONT
-                : faceSettings_[0].show_ && !faceSettings_[1].show_ ? GL_BACK : GL_NONE);
+        utilgl::CullFaceState culling(!showFace_[0] && showFace_[1]
+                                          ? GL_FRONT
+                                          : showFace_[0] && !showFace_[1] ? GL_BACK : GL_NONE);
         utilgl::BlendModeState blendModeState(forceOpaque_ ? GL_ONE : GL_SRC_ALPHA,
                                               forceOpaque_ ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
 
@@ -497,27 +488,6 @@ void MeshRasterizer::MeshRasterization::rasterize(
     }
 
     shader_->deactivate();
-}
-
-void MeshRasterizer::MeshRasterization::setLightingUniforms() const {
-    vec3 lightPos;
-    switch (lightSpace_) {
-        case SimpleLightingProperty::Space::VIEW:
-            lightPos = vec3(camera_->getInverseViewMatrix() * vec4(lightPosition_, 1.0f));
-            break;
-        case SimpleLightingProperty::Space::WORLD:
-        default:
-            lightPos = lightPosition_;
-    }
-    shader_->setUniform("lighting.position", lightPos);
-    shader_->setUniform("lighting.ambientColor", ambientColor_);
-    shader_->setUniform("lighting.diffuseColor", diffuseColor_);
-    shader_->setUniform("lighting.specularColor", specularColor_);
-    shader_->setUniform("lighting.specularExponent", specularExponent_);
-}
-
-void MeshRasterizer::MeshRasterization::update(const MeshRasterizer& rasterizerProcessor) const {
-    setLightingUniforms();
 }
 
 std::string MeshRasterizer::MeshRasterization::getDescription() const {

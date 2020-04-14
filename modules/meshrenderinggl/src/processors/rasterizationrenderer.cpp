@@ -158,8 +158,7 @@ void RasterizationRenderer::process() {
         }
 
         for (auto rasterization : rasterizations_) {
-            rasterization->setImageSize(ivec2(outport_.getDimensions()));
-            rasterization->rasterize([this, fragmentLists](Shader& sh) {
+            rasterization->rasterize(outport_.getDimensions(), [this, fragmentLists](Shader& sh) {
                 if (fragmentLists) this->flr_.setShaderUniforms(sh);
             });
         }

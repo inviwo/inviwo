@@ -50,15 +50,11 @@ public:
     /**
      * \brief Render the fragments, with all setup and evaluation taken care of.
      * If opaque is set, a standard render call instead.
+     * @param imageSize Size in pixels.
      * @param setUniforms Binds the fragment list buffer and sets required uniforms.
      */
-    virtual void rasterize(std::function<void(Shader&)> setUniforms) const = 0;
-
-    /**
-     * \brief Set the size of the target image.
-     * @param size Size in pixels.
-     */
-    virtual void setImageSize(const ivec2& size) const = 0;
+    virtual void rasterize(const ivec2& imageSize,
+                           std::function<void(Shader&)> setUniforms) const = 0;
 
     /**
      * \brief Query whether fragments will be emitted.

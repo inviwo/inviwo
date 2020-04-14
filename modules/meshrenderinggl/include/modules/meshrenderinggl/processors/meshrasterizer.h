@@ -133,6 +133,8 @@ namespace inviwo {
  * even selected individually for the front- and back face.
  */
 class IVW_MODULE_MESHRENDERINGGL_API MeshRasterizer : public Processor {
+    friend class MeshRasterization;
+
 public:
     MeshRasterizer();
     virtual ~MeshRasterizer() = default;
@@ -281,57 +283,33 @@ protected:
      */
     bool meshHasAdjacency_;
     bool supportsFragmentLists_;
+};
 
+/**
+ * \brief Functor object that will render into a fragment list.
+ */
+class MeshRasterization : public Rasterization {
+public:
     /**
-     * \brief Functor object that will render into a fragment list.
+     * \brief Copy all settings and the shader to hand to a renderer.
      */
-    class MeshRasterization : public Rasterization {
-    public:
-        /**
-         * \brief Copy all settings and the shader to hand to a renderer.
-         */
-        MeshRasterization(const MeshRasterizer& rasterizerProcessor);
-        virtual ~MeshRasterization() override { delete camera_; }
-        void update(const MeshRasterizer& rasterizerProcessor) const;
-        virtual void rasterize(std::function<void(Shader&)> setUniforms) const override;
-        virtual void setImageSize(const ivec2& size) const override { imageSize_ = size; }
-        virtual bool usesFragmentLists() const override {
-            return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
-        }
-        virtual std::string getDescription() const override;
+    MeshRasterization(const MeshRasterizer& rasterizerProcessor);
+    void update(const MeshRasterizer& rasterizerProcessor) const;
+    virtual void rasterize(const ivec2& imageSize,
+                           std::function<void(Shader&)> setUniforms) const override;
+    virtual bool usesFragmentLists() const override {
+        return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
+    }
+    virtual std::string getDescription() const override;
 
-    public:
-        std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;
+public:
+    std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;
 
-        const Camera* camera_;
-        const std::string cameraId_;
-        SimpleLightingProperty::Space lightSpace_;
-        vec3 lightPosition_;
-        vec3 ambientColor_;
-        vec3 diffuseColor_;
-        vec3 specularColor_;
-        float specularExponent_;
+    const bool forceOpaque_;
+    const bool showFace_[2];
+    const Layer* tfTextures_[2];
 
-        const bool forceOpaque_;
-
-        const bool drawSilhouette_;
-        const vec4 silhouetteColor_;
-
-        const NormalSource normalSource_;
-        const meshutil::CalculateMeshNormalsMode normalComputationMode_;
-
-        const AlphaSettings alphaSettings_;
-        const EdgeSettings edgeSettings_;
-        const std::array<FaceSettings, 2> faceSettings_;
-
-        bool meshHasAdjacency_;
-
-        std::shared_ptr<Shader> shader_;
-
-        mutable ivec2 imageSize_;
-
-        void setLightingUniforms() const;
-    };
+    std::shared_ptr<Shader> shader_;
 };
 
 }  // namespace inviwo
