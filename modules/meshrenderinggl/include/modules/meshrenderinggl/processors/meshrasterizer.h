@@ -298,7 +298,6 @@ public:
      * \brief Copy all settings and the shader to hand to a renderer.
      */
     MeshRasterization(const MeshRasterizer& rasterizerProcessor);
-    void update(const MeshRasterizer& rasterizerProcessor) const;
     virtual void rasterize(const ivec2& imageSize,
                            std::function<void(Shader&)> setUniforms) const override;
     virtual bool usesFragmentLists() const override {
