@@ -251,11 +251,7 @@ MeshRasterizer::FaceSettings::FaceSettings(bool frontFace)
     , separateUniformAlpha_("separateUniformAlpha", "Separate Uniform Alpha")
     , uniformAlpha_("uniformAlpha", "Uniform Alpha", 0.5f, 0.f, 1.f, 0.01f)
     , shadingMode_("shadingMode", "Shading Mode",
-                   {
-                       {"off", "Off", ShadingMode::Off},
-                       {"phong", "Phong", ShadingMode::Phong},
-                       {"pbr", "PBR", ShadingMode::Pbr},
-                   })
+                   {{"off", "Off", ShadingMode::Off}, {"phong", "Phong", ShadingMode::Phong}})
     , showEdges_("showEdges", "Show Edges", false, InvalidationLevel::InvalidResources)
     , edgeColor_("edgeColor", "Edge color", {0.f, 0.f, 0.f})
     , edgeOpacity_("edgeOpacity", "Edge Opacity", 0.5f, 0.f, 2.f, 0.01f)

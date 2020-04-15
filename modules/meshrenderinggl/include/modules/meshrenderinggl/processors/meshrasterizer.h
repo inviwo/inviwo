@@ -216,8 +216,7 @@ protected:
     enum class ColorSource : int { VertexColor, TransferFunction, ExternalColor };
     enum class ShadingMode : int {
         Off,  // no light, no reflection, just diffuse
-        Phong,
-        Pbr
+        Phong
     };
     enum class HatchingMode : char { U, V, UV };
     enum class HatchingBlendingMode : char { Multiplicative, Additive };
