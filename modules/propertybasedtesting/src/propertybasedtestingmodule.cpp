@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <inviwo/propertybasedtesting/processors/faultycubeproxyprocessor.h>
 #include <inviwo/propertybasedtesting/processors/histogram.h>
 #include <inviwo/propertybasedtesting/propertybasedtestingmodule.h>
 
@@ -40,7 +41,7 @@ PropertyBasedTestingModule::PropertyBasedTestingModule(InviwoApplication* app) :
 
     // Processors
     registerProcessor<Histogram>();
-    // registerProcessor<PropertyBasedTestingProcessor>();
+    registerProcessor<FaultyCubePoxyGeometry>();
 
     // Properties
     // registerProperty<PropertyBasedTestingProperty>();

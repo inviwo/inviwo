@@ -45,16 +45,6 @@ const ProcessorInfo Histogram::processorInfo_{
 };
 const ProcessorInfo Histogram::getProcessorInfo() const { return processorInfo_; }
 
-template<typename T>
-std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
-	out << "{";
-	for(size_t i = 0; i < v.size(); i++) {
-		if(i > 0) out << ", ";
-		out << v[i];
-	}
-	return out << "}";
-}
-
 Histogram::Histogram(InviwoApplication* app)
     : Processor()
 	, app_(app)
@@ -66,29 +56,67 @@ Histogram::Histogram(InviwoApplication* app)
 	std::cerr << "Histogram::Histogram(app = " << app << ")" << std::endl;
 
 	startButton_.onChange([this]() { 
-			std::cout << "startButton_.onChange()" << std::endl;
+			std::cerr << "startButton_.onChange()" << std::endl;
 			startTesting(0);
 			std::cerr << "startButton_.onChange() End" << std::endl;
 		} );
 
 	collectButton_.onChange([this]() {
-			// remove previously collected properties
-			for(auto& property : props_)
+            // Only necessary because there is no actual serializing yet
+            props_.clear();
+            for(Property* _property : getProperties()) {
+                if(IntMinMaxProperty* property = dynamic_cast<IntMinMaxProperty*>(_property); property != nullptr) {
+                    props_.emplace_back(property);
+                }
+            }
+
+            // remove previously collected properties
+            for(auto& property : props_)
 				removeProperty(property);
 			props_.clear();
 
 			std::set<Property*> properties;
-			for(Processor const* const proc : app_->getProcessorNetwork()->getProcessors()) {
-				if(proc == this)
-					continue;
-				const auto& procProperties = proc->getProperties();
-				properties.insert(procProperties.begin(), procProperties.end());
-			}
 
+            std::unordered_set<const Processor*> visited;
+            std::queue<const Processor*> q;
+            q.emplace(this);
+            visited.emplace(this);
+
+            // collect all properties of the processors feeding directly or
+            // indirectly into this
+            while(!q.empty()) {
+                auto processor = q.front();
+                q.pop();
+
+                std::cerr << "visiting processor " << processor << " "
+                          << processor->getIdentifier() << std::endl;
+                
+                if(processor != this) {
+                    const auto& processorProperties = processor->getProperties();
+                    properties.insert(processorProperties.begin(), processorProperties.end());
+                }
+
+                for(const Inport* inport : processor->getInports()) {
+                    for(const Outport* outport : inport->getConnectedOutports()) {
+                        if(const Processor* proc = outport->getProcessor(); visited.insert(proc).second) {
+                            q.emplace(proc);
+                        }
+                    }
+                }
+            }
+
+            std::unordered_set<std::string> usedIdentifiers;
+            // TODO: only insert minimal set S of properties such that all properties
+            // are either in S or directly or indirectly set by a property in S
 			for(Property* prop : properties) {
-				//std::cerr << prop << " : " << prop->getDisplayName() << " : " << prop->getPath() << std::endl;
 				if(auto* _p = dynamic_cast<IntMinMaxProperty*>(prop); _p != nullptr) {
 					auto* p = _p->clone();
+                    if(!usedIdentifiers.insert(p->getIdentifier()).second) {
+                        size_t num = 0;
+                        do {
+                            p->setIdentifier(p->getIdentifier() + "_" + std::to_string(num));
+                        } while(!usedIdentifiers.insert(p->getIdentifier()).second);
+                    }
 					
 					addProperty(p);
 					//p->setReadOnly(true);
@@ -105,7 +133,6 @@ Histogram::Histogram(InviwoApplication* app)
 	addProperty(collectButton_);
 
 	currentPropertyIndex = std::nullopt;
-	testResults.clear();
 }
 
 void Histogram::startTesting(const size_t index) {
@@ -149,15 +176,41 @@ void Histogram::startTesting(const size_t index) {
         });
 }
 
+template<typename A, typename B>
+std::ostream& operator<<(std::ostream& out, const std::pair<A,B>& v) {
+    return out << "[" << v.first << ", " << v.second << "]";
+}
+template<typename T>
+std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
+    out << "{";
+    for(size_t i = 0; i < v.size(); i++) {
+        if(i > 0) out << ", ";
+        out << v[i];
+    }
+    return out << "}";
+}
+
 void Histogram::checkTestResults() {
+    std::cerr << "checking " << testResults.size() << " test results ..." << std::flush;
+    std::vector< std::pair<TestResult, TestResult> > errors;
     // maybe TODO: can be done with a segment tree in O(n*log(n))
-    for(auto&& [range,count] : testResults) {
-        for(auto&& [otherRange,otherCount] : testResults) {
+    for(const auto& [range,count] : testResults) {
+        for(const auto& [otherRange,otherCount] : testResults) {
             // otherRange lies fully within range
-            if(range.x <= otherRange.x && range.y >= otherRange.y) {
-                assert(count >= otherCount);
+            if(range.x <= otherRange.x && range.y >= otherRange.y &&
+                    count > otherCount) {
+                errors.emplace_back( TestResult(range,count), TestResult(otherRange,otherCount) );
             }
         }
+    }
+    std::cerr << " done with " << errors.size() << " errors" << std::endl;
+    if(!errors.empty()) {
+        
+        std::stringstream str;
+        str << "Found " << errors.size() << " errors while testing: ";
+        errors.resize(std::min(size_t(5), errors.size())); // print at most 5 examples
+        str << errors << std::endl;
+        util::log(IVW_CONTEXT, str.str(), LogLevel::Error, LogAudience::User);
     }
 }
 
@@ -184,7 +237,7 @@ void Histogram::process() {
                   << rangesToTest.size() << " "
                   << "pixelCount = " << pixelCount << std::endl;
 
-		testResults.emplace_back(dim, pixelCount);
+		testResults.emplace_back(currentProperty.get(), pixelCount);
 		
 		if(!rangesToTest.empty()) {
             currentProperty.set(rangesToTest.front());
