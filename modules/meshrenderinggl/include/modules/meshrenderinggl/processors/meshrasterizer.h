@@ -93,7 +93,7 @@ namespace inviwo {
  *       + __Shape-based__ based on the shape of the triangle. The more stretched, the more
  * transparent
  *   * __Edges__ Settings for the display of triangle edges
- *       + __Thickness__ The thickness of the edges
+ *       + __Thickness__ The thickness of the edges in pixels
  *       + __Depth dependent__ If checked, the thickness also depends on the depth.
  *           If unchecked, every edge has the same size in screen space regardless of the distance
  * to the camera
