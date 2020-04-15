@@ -73,6 +73,9 @@ IVW_MODULE_OPENGL_API void activateAndClearTarget(ImageOutport& targetOutport,
 
 IVW_MODULE_OPENGL_API void activateTargetAndCopySource(Image& targetImage, const Image& sourceImage,
                                                        ImageType type = ImageType::AllLayers);
+IVW_MODULE_OPENGL_API void activateTargetAndCopySource(ImageOutport& targetOutport,
+                                                       const Image& sourceImage,
+                                                       ImageType type = ImageType::AllLayers);
 
 IVW_MODULE_OPENGL_API void activateTargetAndCopySource(Image& targetImage,
                                                        const ImageInport& sourceInport,

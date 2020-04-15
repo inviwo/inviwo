@@ -69,13 +69,12 @@ FragmentListRenderer::Illustration::Illustration(size2_t screenSize, size_t frag
     smooth.onReload([this]() { onReload.invoke(); });
 }
 
-FragmentListRenderer::FragmentListRenderer(std::weak_ptr<ImageInport> background)
+FragmentListRenderer::FragmentListRenderer()
     : screenSize_{0, 0}
     , fragmentSize_{1024}
 
     , abufferIdxTex_{screenSize_, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST}
     , textureUnits_{}
-    , backgroundPort_{background}
     , atomicCounter_{sizeof(GLuint), GLFormats::getGLFormat(GL_UNSIGNED_INT, 1), GL_DYNAMIC_DRAW,
                      GL_ATOMIC_COUNTER_BUFFER}
     , pixelBuffer_{fragmentSize_ * 4 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 4),
@@ -134,7 +133,7 @@ void FragmentListRenderer::prePass(const size2_t& screenSize) {
     LGL_ERROR;
 }
 
-bool FragmentListRenderer::postPass(bool useIllustration) {
+bool FragmentListRenderer::postPass(bool useIllustration, const Image* background) {
     // memory barrier
     glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
 
@@ -157,19 +156,16 @@ bool FragmentListRenderer::postPass(bool useIllustration) {
         return false;
     }
 
-    // Set depth buffer to read from.
-    auto bg = backgroundPort_.lock();
-    bool hasBackground = bg && bg->hasData();
-
     // Build shader depending on inport state.
-    if (hasBackground != builtWithBackground_) buildShaders();
+    if (static_cast<bool>(background) != builtWithBackground_) buildShaders(background);
 
     if (!useIllustration) {
         // render fragment list
         display_.activate();
         setUniforms(display_, textureUnits_[0]);
         if (builtWithBackground_) {
-            utilgl::bindAndSetUniforms(display_, textureUnits_, *bg->getData(), "bg",
+            // Set depth buffer to read from.
+            utilgl::bindAndSetUniforms(display_, textureUnits_, *background, "bg",
                                        ImageType::ColorDepth);
             display_.setUniform("reciprocalDimensions", vec2(1) / vec2(screenSize_));
         }
@@ -188,7 +184,7 @@ bool FragmentListRenderer::postPass(bool useIllustration) {
     TextureUnit countUnit;
     if (useIllustration) {  // 1. copy to illustration buffer
         illustration_.resizeBuffers(screenSize_, fragmentSize_);
-        fillIllustration(textureUnits_[0], idxUnit, countUnit);
+        fillIllustration(textureUnits_[0], idxUnit, countUnit, background);
     }
 
     // unbind texture with abuffer indices
@@ -250,7 +246,7 @@ typename Dispatcher<void()>::Handle FragmentListRenderer::onReload(std::function
     return onReload_.add(callback);
 }
 
-void FragmentListRenderer::buildShaders() {
+void FragmentListRenderer::buildShaders(bool hasBackground) {
     auto* dfs = display_.getFragmentShaderObject();
     dfs->clearShaderExtensions();
 
@@ -273,8 +269,7 @@ void FragmentListRenderer::buildShaders() {
     if (supportsIllustration()) ffs->addShaderExtension("GL_ARB_shader_atomic_counter_ops", true);
 
     if (supportsFragmentLists()) {
-        auto bg = backgroundPort_.lock();
-        builtWithBackground_ = (bg && bg->hasData());
+        builtWithBackground_ = hasBackground;
         if (builtWithBackground_) {
             dfs->addShaderDefine("BACKGROUND_AVAILABLE");
         } else {
@@ -357,7 +352,7 @@ void FragmentListRenderer::Illustration::resizeBuffers(size2_t screenSize, size_
 }
 
 void FragmentListRenderer::fillIllustration(TextureUnit& abuffUnit, TextureUnit& idxUnit,
-                                            TextureUnit& countUnit) {
+                                            TextureUnit& countUnit, const Image* background) {
     // reset counter
     LGL_ERROR;
     GLuint v[1] = {0};
@@ -370,8 +365,7 @@ void FragmentListRenderer::fillIllustration(TextureUnit& abuffUnit, TextureUnit&
     setUniforms(illustration_.fill, abuffUnit);
     illustration_.setUniforms(illustration_.fill, idxUnit, countUnit);
     if (builtWithBackground_) {
-        utilgl::bindAndSetUniforms(illustration_.fill, textureUnits_,
-                                   *(backgroundPort_.lock()->getData()), "bg",
+        utilgl::bindAndSetUniforms(illustration_.fill, textureUnits_, *background, "bg",
                                    ImageType::ColorDepth);
         illustration_.fill.setUniform("reciprocalDimensions", vec2(1) / vec2(screenSize_));
     }

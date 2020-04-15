@@ -67,7 +67,7 @@ namespace inviwo {
  */
 class IVW_MODULE_MESHRENDERINGGL_API FragmentListRenderer {
 public:
-    FragmentListRenderer(std::weak_ptr<ImageInport> background = std::weak_ptr<ImageInport>());
+    FragmentListRenderer();
     ~FragmentListRenderer();
 
     /**
@@ -95,7 +95,7 @@ public:
      * \return <code>true</code> if successfull, <code>false</code> if not enough
      * space for all fragments was available and the procedure should be repeated.
      */
-    bool postPass(bool useIllustration);
+    bool postPass(bool useIllustration, const Image* background);
 
     struct IllustrationSettings {
         vec3 edgeColor_;
@@ -128,12 +128,13 @@ public:
     void debugIllustrationBuffer(std::ostream& oss);
 
 private:
-    void buildShaders();
+    void buildShaders(bool hasBackground = false);
 
     void setUniforms(Shader& shader, TextureUnit& abuffUnit) const;
     void resizeBuffers(const size2_t& screenSize);
 
-    void fillIllustration(TextureUnit& abuffUnit, TextureUnit& idxUnit, TextureUnit& countUnit);
+    void fillIllustration(TextureUnit& abuffUnit, TextureUnit& idxUnit, TextureUnit& countUnit,
+                          const Image* background);
 
     size2_t screenSize_;
     size_t fragmentSize_;
@@ -141,7 +142,6 @@ private:
     // basic fragment lists
     Texture2D abufferIdxTex_;
     TextureUnitContainer textureUnits_;
-    std::weak_ptr<ImageInport> backgroundPort_;
     bool builtWithBackground_ = false;
 
     BufferObject atomicCounter_;

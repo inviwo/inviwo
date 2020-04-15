@@ -69,7 +69,7 @@ const ProcessorInfo RasterizationRenderer::processorInfo_{
     "org.inviwo.RasterizationRenderer",  // Class identifier
     "Rasterization Renderer",            // Display name
     "Mesh Rendering",                    // Category
-    CodeState::Experimental,             // Code state
+    CodeState::Stable,                   // Code state
     Tags::GL,                            // Tags
 };
 const ProcessorInfo RasterizationRenderer::getProcessorInfo() const { return processorInfo_; }
@@ -79,8 +79,8 @@ RasterizationRenderer::RasterizationRenderer()
     , rasterizations_("rastarizations")
     , imageInport_(std::make_shared<ImageInport>("imageInport"))
     , outport_("image")
-    , forceOpaque_("forceOpaque", "Shade Opaque", false, InvalidationLevel::InvalidResources)
-    , flr_(imageInport_) {
+    , intermediateImage_()
+    , flr_() {
 
     // query OpenGL Capability
     supportsFragmentLists_ = FragmentListRenderer::supportsFragmentLists();
@@ -101,12 +101,14 @@ RasterizationRenderer::RasterizationRenderer()
     addPort(*imageInport_).setOptional(true);
     addPort(outport_);
 
-    addProperties(forceOpaque_, illustrationSettings_.enabled_);
+    addProperties(illustrationSettings_.enabled_);
 
-    illustrationSettings_.enabled_.readonlyDependsOn(
-        forceOpaque_, [this](const auto& prop) { return !supportesIllustration_ && prop.get(); });
+    illustrationSettings_.enabled_.setReadOnly(!supportesIllustration_);
 
     flrReload_ = flr_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
+    imageInport_->onChange(
+        [this]() { intermediateImage_.setDimensions(imageInport_->getData()->getDimensions()); });
 }
 
 RasterizationRenderer::IllustrationSettings::IllustrationSettings()
@@ -134,19 +136,24 @@ RasterizationRenderer::IllustrationSettings::getSettings() const {
 }
 
 void RasterizationRenderer::process() {
-
-    utilgl::activateTargetAndClearOrCopySource(outport_, *imageInport_);
-
-    const bool opaque = forceOpaque_.get();
     bool fragmentLists = false;
-    if (!opaque) {
-        for (auto rasterization : rasterizations_) {
-            if (rasterization->usesFragmentLists()) {
-                fragmentLists = true;
-                break;
-            }
+    bool containsOpaque = false;
+    for (auto rasterization : rasterizations_) {
+        if (rasterization->usesFragmentLists()) {
+            fragmentLists = true;
+        } else {
+            containsOpaque = true;
         }
     }
+
+    // auto inImage = imageInport_->getData();
+    bool useIntermediateTarget = imageInport_->getData() && fragmentLists && containsOpaque;
+    if (useIntermediateTarget) {
+        utilgl::activateTargetAndClearOrCopySource(intermediateImage_, *imageInport_);
+    } else {
+        utilgl::activateTargetAndClearOrCopySource(outport_, *imageInport_);
+    }
+
     // Loop: fragment list may need another try if not enough space for the pixels was available
     bool retry = false;
     do {
@@ -165,12 +172,19 @@ void RasterizationRenderer::process() {
 
         if (fragmentLists) {
             // final processing of fragment list rendering
+            if (useIntermediateTarget) {
+                utilgl::deactivateCurrentTarget();
+                utilgl::activateTargetAndCopySource(outport_, intermediateImage_);
+            }
+
             const bool useIllustration =
                 illustrationSettings_.enabled_.isChecked() && supportesIllustration_;
             if (useIllustration) {
                 flr_.setIllustrationSettings(illustrationSettings_.getSettings());
             }
-            retry = !flr_.postPass(useIllustration);
+            const Image* background =
+                useIntermediateTarget ? &intermediateImage_ : imageInport_->getData().get();
+            retry = !flr_.postPass(useIllustration, background);
         }
     } while (retry);
 

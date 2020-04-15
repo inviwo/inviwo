@@ -144,8 +144,7 @@ protected:
 
     std::shared_ptr<ImageInport> imageInport_;
     ImageOutport outport_;
-
-    BoolProperty forceOpaque_;
+    Image intermediateImage_;
 
     struct IllustrationSettings {
         IllustrationSettings();
