@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-Document Rasterization::getDescription() const {
+Document Rasterization::getInfo() const {
     Document doc;
     doc.append("p", "Rasterization functor.");
     return doc;

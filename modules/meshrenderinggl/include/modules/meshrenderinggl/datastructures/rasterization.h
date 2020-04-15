@@ -66,7 +66,7 @@ public:
      * \brief Get data description for the network interface.
      * @return Specific information about this rasterization type/instance.
      */
-    virtual Document getDescription() const;
+    virtual Document getInfo() const;
 };
 
 template <>
@@ -74,6 +74,6 @@ struct DataTraits<Rasterization> {
     static std::string classIdentifier() { return "org.inviwo.Rasterization"; }
     static std::string dataName() { return "Rasterization"; }
     static uvec3 colorCode() { return uvec3(80, 160, 160); }
-    static Document info(const Rasterization& data) { return data.getDescription(); }
+    static Document info(const Rasterization& data) { return data.getInfo(); }
 };
 }  // namespace inviwo

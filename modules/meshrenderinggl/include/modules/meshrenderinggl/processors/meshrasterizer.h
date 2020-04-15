@@ -300,7 +300,7 @@ public:
     virtual bool usesFragmentLists() const override {
         return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
     }
-    virtual Document getDescription() const override;
+    virtual Document getInfo() const override;
 
 public:
     std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;
