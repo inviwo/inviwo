@@ -451,7 +451,6 @@ void MeshRasterization::rasterize(const ivec2& imageSize,
                                   std::function<void(Shader&)> setUniformsRenderer) const {
 
     shader_->activate();
-    if (!shader_->isReady()) return;
 
     // set transfer function textures
     std::array<TextureUnit, 2> transFuncUnit;

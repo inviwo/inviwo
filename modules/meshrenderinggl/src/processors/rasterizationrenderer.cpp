@@ -113,7 +113,7 @@ RasterizationRenderer::RasterizationRenderer()
 
 RasterizationRenderer::IllustrationSettings::IllustrationSettings()
     : enabled_("illustration", "Use Illustration Effects", false)
-    , edgeColor_("edgeColor", "Edge Color", vec3(0.f, 0.f, 0.f))
+    , edgeColor_("edgeColor", "Edge Color", ordinal::color(vec3(0.0f)))
     , edgeStrength_("edgeStrength", "Edge Strength", 0.5f, 0.f, 1.f, 0.01f)
     , haloStrength_("haloStrength", "Halo Strength", 0.5f, 0.f, 1.f, 0.01f)
     , smoothingSteps_("smoothingSteps", "Smoothing Steps", 3, 0, 50, 1)

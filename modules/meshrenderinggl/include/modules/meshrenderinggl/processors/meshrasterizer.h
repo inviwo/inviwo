@@ -63,6 +63,11 @@ namespace inviwo {
  * Mesh Renderer specialized for rendering highly layered and transparent surfaces.
  * Example usages: stream surfaces, isosurfaces, separatrices.
  *
+ * Encompasses the work from:
+ *   * IRIS: Illustrative Rendering of Integral Surfaces, IEEE TVCG (2010), Hummel et al.
+ *   * Smoke Surfaces: An Interactive Flow Visualization Technique
+ *     Inspired by Real-World Flow Experiments, IEEE TVCG (2008), von Funck et al.
+ *
  * Fragment lists are used to render the transparent pixels with correct alpha blending.
  * Many different alpha modes, shading modes, coloring modes are available.
  *
