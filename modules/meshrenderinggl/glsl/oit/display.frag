@@ -119,7 +119,7 @@ void main() {
         // If no fragment, write nothing
         discard;
 #else
-        FragData0 = vec4(1.0f);
+        FragData0 = vec4(0.0f);
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
 #endif
     }
