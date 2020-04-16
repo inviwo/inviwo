@@ -10,6 +10,7 @@ set(HEADER_FILES
     include/modules/meshrenderinggl/algorithm/calcnormals.h
     include/modules/meshrenderinggl/ports/rasterizationport.h
     include/modules/meshrenderinggl/processors/calcnormalsprocessor.h
+    include/modules/meshrenderinggl/processors/linerasterizer.h
     include/modules/meshrenderinggl/processors/meshrasterizer.h
     include/modules/meshrenderinggl/processors/rasterizationrenderer.h
     include/modules/meshrenderinggl/rendering/fragmentlistrenderer.h
@@ -26,6 +27,7 @@ set(SOURCE_FILES
     src/algorithm/calcnormals.cpp
     src/processors/calcnormalsprocessor.cpp
     src/ports/rasterizationport.cpp
+    src/processors/linerasterizer.cpp
     src/processors/meshrasterizer.cpp
     src/processors/rasterizationrenderer.cpp
     src/rendering/fragmentlistrenderer.cpp
@@ -51,6 +53,9 @@ set(SHADER_FILES
     glsl/oit/display.frag
     glsl/oit/simplequad.vert
     glsl/oit/sort.glsl
+    glsl/linerenderer.vert
+    glsl/linerenderer.geom
+    glsl/linerenderer.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
