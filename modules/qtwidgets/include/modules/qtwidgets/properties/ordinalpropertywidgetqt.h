@@ -119,7 +119,7 @@ OrdinalPropertyWidgetQt<T, Sem>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* pro
     gridLayout->setSpacing(0);
 
     auto factory = [this](size_t row, size_t col) {
-        auto editor = [col]() {
+        auto editor = [&]() {
             if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SpinBox) {
                 return new OrdinalSpinBoxWidget<BT>();
             } else if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SphericalSpinBox) {
