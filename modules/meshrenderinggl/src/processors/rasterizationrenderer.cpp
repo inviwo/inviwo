@@ -146,7 +146,6 @@ void RasterizationRenderer::process() {
         }
     }
 
-    // auto inImage = imageInport_->getData();
     bool useIntermediateTarget = imageInport_->getData() && fragmentLists && containsOpaque;
     if (useIntermediateTarget) {
         utilgl::activateTargetAndClearOrCopySource(intermediateImage_, *imageInport_);
