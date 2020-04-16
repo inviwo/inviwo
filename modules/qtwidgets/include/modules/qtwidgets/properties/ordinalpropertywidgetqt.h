@@ -119,26 +119,25 @@ OrdinalPropertyWidgetQt<T, Sem>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* pro
     gridLayout->setSpacing(0);
 
     auto factory = [this](size_t row, size_t col) {
-        auto editor = []() {
+        auto editor = [col]() {
             if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SpinBox) {
                 return new OrdinalSpinBoxWidget<BT>();
             } else if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SphericalSpinBox) {
-                return new OrdinalSpinBoxWidget<BT>();
+                auto w = new OrdinalSpinBoxWidget<BT>();
+                if (col > 0) w->setWrapping(true);
+                return w;
             } else if constexpr (Sem == OrdinalPropertyWidgetQtSematics::Text) {
                 return new OrdinalEditorWidget<BT>();
             } else if constexpr (Sem == OrdinalPropertyWidgetQtSematics::Spherical) {
-                return new SliderWidgetQt<BT>();
+                auto w = new SliderWidgetQt<BT>();
+                if (col > 0) w->setWrapping(true);
+                return w;
             } else {
                 return new SliderWidgetQt<BT>();
             }
         }();
 
         editors_.push_back(editor);
-
-        if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SphericalSpinBox ||
-                      Sem == OrdinalPropertyWidgetQtSematics::Spherical) {
-            if (col > 0) editor->setWrapping(true);
-        }
 
         connect(editor, &std::remove_reference_t<decltype(*editor)>::valueChanged, this,
                 [this, index = col + row * util::extent<T, 0>::value]() {
@@ -151,8 +150,6 @@ OrdinalPropertyWidgetQt<T, Sem>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* pro
 
         if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SphericalSpinBox ||
                       Sem == OrdinalPropertyWidgetQtSematics::Spherical) {
-            if (col > 0) editor->setWrapping(true);
-
             constexpr std::array<const char*, 3> sphericalLabels{"r", "<html>&theta;</html>",
                                                                  "<html>&phi;</html>"};
             auto widget = new QWidget(this);
