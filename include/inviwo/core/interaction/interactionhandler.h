@@ -27,12 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INTERACTIONHANDLER_H
-#define IVW_INTERACTIONHANDLER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/interaction/events/eventlistener.h>
-#include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/io/serialization/serialization.h>
 
 namespace inviwo {
 
@@ -49,5 +48,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_INTERACTIONHANDLER_H

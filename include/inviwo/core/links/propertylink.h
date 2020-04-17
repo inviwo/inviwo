@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERYLINK_H
-#define IVW_PROPERYLINK_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/util/hashcombine.h>
 
 namespace inviwo {
 
@@ -87,4 +87,3 @@ struct hash<inviwo::PropertyLink> {
 
 }  // namespace std
 
-#endif  // IVW_PROPERYLINK_H

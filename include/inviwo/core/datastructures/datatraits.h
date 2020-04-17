@@ -27,12 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATATRAITS_H
-#define IVW_DATATRAITS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/introspection.h>
 #include <inviwo/core/util/stringconversion.h>
 
@@ -217,4 +216,3 @@ struct DataTraits<std::vector<std::shared_ptr<T>, A>> {
 
 }  // namespace inviwo
 
-#endif  // IVW_DATATRAITS_H

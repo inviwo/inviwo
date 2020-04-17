@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VERSIONHELPER_H
-#define IVW_VERSIONHELPER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
@@ -113,5 +112,3 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_VERSIONHELPER_H

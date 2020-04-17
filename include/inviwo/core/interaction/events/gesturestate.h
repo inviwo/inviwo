@@ -30,7 +30,6 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/ostreamjoiner.h>
 
 #include <flags/flags.h>

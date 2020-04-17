@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGETYPES_H
-#define IVW_IMAGETYPES_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <array>
 #include <ostream>
@@ -312,6 +312,5 @@ inline bool IVW_CORE_API typeContainsPicking(ImageType type) {
     return (type == ImageType::ColorPicking || type == ImageType::ColorDepthPicking);
 }
 #include <warn/pop>
-}  // namespace inviwo
 
-#endif  // IVW_IMAGETYPES_H
+}  // namespace inviwo

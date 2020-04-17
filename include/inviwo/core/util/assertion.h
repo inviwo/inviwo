@@ -31,7 +31,6 @@
 #define IVW_ASSERTION_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <ostream>
 #include <sstream>
 #include <string>
 

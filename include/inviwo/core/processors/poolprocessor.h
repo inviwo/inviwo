@@ -29,13 +29,13 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/activityindicator.h>
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/util/timer.h>
+#include <inviwo/core/util/assertion.h>
 #include <inviwo/core/network/processornetwork.h>
 
 #include <atomic>

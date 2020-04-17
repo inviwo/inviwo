@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGERAM_H
-#define IVW_IMAGERAM_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/imagerepresentation.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 
@@ -81,5 +79,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGERAM_H

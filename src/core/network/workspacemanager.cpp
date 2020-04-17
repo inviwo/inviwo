@@ -31,6 +31,7 @@
 
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/inviwosetupinfo.h>
 #include <inviwo/core/util/filesystem.h>
 

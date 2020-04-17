@@ -116,11 +116,7 @@ int main(int argc, char** argv) {
                   "Incomplete network loading " + workspace + " due to " + exception.getMessage(),
                   LogLevel::Error);
         return 1;
-    } catch (const ticpp::Exception& exception) {
-        LogErrorCustom("glfwminimum", "Unable to load network " + workspace +
-                                          " due to deserialization error: " + exception.what());
-        return 1;
-    }
+    } 
 
     inviwoApp.getProcessorNetwork()->unlock();
 

@@ -27,20 +27,16 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DOCUMENT_H
-#define IVW_DOCUMENT_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
-
-#include <inviwo/core/properties/valuewrapper.h>
 #include <inviwo/core/util/stdextensions.h>
 
-#include <unordered_map>
-#include <memory>
 #include <functional>
+#include <sstream>
+#include <type_traits>
 #include <string>
-#include <algorithm>
+#include <unordered_map>
 
 namespace inviwo {
 
@@ -51,10 +47,7 @@ namespace inviwo {
 
 class IVW_CORE_API Document {
 public:
-    class Element;
     class DocumentHandle;
-
-    using ElemVec = std::vector<std::unique_ptr<Element>>;
 
     enum class ElementType { Node, Text };
 
@@ -95,6 +88,8 @@ public:
         static const std::vector<std::string> emptyTags_;
         static const std::vector<std::string> noIndentTags_;
     };
+
+    using ElemVec = std::vector<std::unique_ptr<Element>>;
 
     class IVW_CORE_API PathComponent {
     public:
@@ -324,5 +319,3 @@ private:
 }  // namespace utildoc
 
 }  // namespace inviwo
-
-#endif  // IVW_DOCUMENT_H

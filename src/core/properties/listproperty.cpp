@@ -31,6 +31,7 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/assertion.h>
 #include <inviwo/core/network/networklock.h>
 
 #include <algorithm>

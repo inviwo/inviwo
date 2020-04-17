@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAREPRESENTATION_H
-#define IVW_DATAREPRESENTATION_H
+#pragma once
 
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/exception.h>
@@ -124,5 +123,3 @@ void DataRepresentation<Owner>::setValid(bool valid) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAREPRESENTATION_H

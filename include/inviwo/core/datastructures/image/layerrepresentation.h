@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LAYERREPRESENTATION_H
-#define IVW_LAYERREPRESENTATION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/datarepresentation.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 
@@ -100,4 +98,3 @@ protected:
 
 }  // namespace inviwo
 
-#endif  // IVW_LAYERREPRESENTATION_H

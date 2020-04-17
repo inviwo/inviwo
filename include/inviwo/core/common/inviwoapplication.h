@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOAPPLICATION_H
-#define IVW_INVIWOAPPLICATION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/common/runtimemoduleregistration.h>
 #include <inviwo/core/processors/processortags.h>
@@ -655,4 +653,3 @@ inline ProcessorWidgetFactory* InviwoApplication::getProcessorWidgetFactory() co
 
 }  // namespace inviwo
 
-#endif  // IVW_INVIWOAPPLICATION_H

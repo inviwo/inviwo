@@ -29,6 +29,8 @@
 
 #include <inviwo/core/interaction/events/mouseinteractionevent.h>
 
+#include <sstream>
+
 namespace inviwo {
 
 MouseInteractionEvent::MouseInteractionEvent(MouseButtons buttonState, KeyModifiers modifiers,

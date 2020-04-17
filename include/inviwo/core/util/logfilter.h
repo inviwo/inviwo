@@ -46,6 +46,11 @@ class IVW_CORE_API LogFilter : public Logger {
 public:
     LogFilter(Logger* logger = LogCentral::getPtr());
     LogFilter(Logger* logger, LogVerbosity verbosity);
+    LogFilter(const LogFilter&) = default;
+    LogFilter(LogFilter&&) noexcept = default;
+    LogFilter& operator=(const LogFilter&) = default;
+    LogFilter& operator=(LogFilter&&) noexcept = default;
+
     virtual ~LogFilter() = default;
 
     void setVerbosity(LogVerbosity verbosity);

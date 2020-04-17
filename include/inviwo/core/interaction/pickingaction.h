@@ -27,11 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PICKINGACTION_H
-#define IVW_PICKINGACTION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+
+#include <functional>
+#include <glm/vec3.hpp>
 
 namespace inviwo {
 
@@ -75,7 +76,7 @@ public:
      *  This is eqvivalent to PickingManager::indexToColor(getPickingId(id))/255.0
      * \param id the local picking index
      */
-    vec3 getColor(size_t id = 0) const;
+    glm::vec3 getColor(size_t id = 0) const;
 
     /**
      *	The number of picking indices in this picking object.
@@ -117,4 +118,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_PICKINGACTION_H

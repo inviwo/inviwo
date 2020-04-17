@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LAYERDISK_H
-#define IVW_LAYERDISK_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/diskrepresentation.h>
@@ -101,5 +100,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LAYERDISK_H

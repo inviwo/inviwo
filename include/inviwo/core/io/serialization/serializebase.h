@@ -27,20 +27,28 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SERIALIZE_BASE_H
-#define IVW_SERIALIZE_BASE_H
+#pragma once
 
-#include <inviwo/core/io/serialization/ticpp.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serializeconstants.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
-#include <inviwo/core/util/factory.h>
-#include <map>
 
-// include glm
-#include <inviwo/core/util/glm.h>
+#include <map>
+#include <string>
+
+namespace ticpp {
+class Element;
+class Document;
+}
 
 namespace inviwo {
+using TxElement = ticpp::Element;
+using TxDocument = ticpp::Document;
+
+namespace detail {
+IVW_CORE_API std::string getNodeAttributeOrDefault(TxElement* node, const std::string& key,
+                                      const std::string& defaultValue);
+}
 
 template <typename T>
 struct ElementIdentifier {
@@ -56,7 +64,9 @@ struct StandardIdentifier : public ElementIdentifier<T> {
     StandardIdentifier(std::string key = "identifier", funcPtr ptr = &T::getIdentifier)
         : ptr_(ptr), key_(key) {}
 
-    virtual void setKey(TxElement* node) { identifier_ = node->GetAttributeOrDefault(key_, ""); }
+    virtual void setKey(TxElement* node) {
+        identifier_ = detail::getNodeAttributeOrDefault(node, key_, "");
+    }
     virtual bool operator()(const T* elem) const { return identifier_ == (*elem.*ptr_)(); }
 
 private:
@@ -109,11 +119,11 @@ public:
     SerializeBase(std::istream& stream, const std::string& path, bool allowReference = true);
 
     SerializeBase(const SerializeBase& rhs) = delete;
-    SerializeBase(SerializeBase&& rhs) = default;
+    SerializeBase(SerializeBase&& rhs);
     SerializeBase& operator=(const SerializeBase&) = delete;
-    SerializeBase& operator=(SerializeBase&&) = default;
+    SerializeBase& operator=(SerializeBase&&);
 
-    virtual ~SerializeBase() = default;
+    virtual ~SerializeBase();
 
     /**
      * \brief gets the xml file name.
@@ -166,7 +176,7 @@ protected:
     friend class NodeSwitch;
 
     std::string fileName_;
-    TxDocument doc_;
+    std::unique_ptr<TxDocument> doc_;
     TxElement* rootElement_;
     bool allowRef_;
     bool retrieveChild_;
@@ -175,6 +185,12 @@ protected:
 
 class IVW_CORE_API NodeSwitch {
 public:
+    NodeSwitch(const NodeSwitch&) = delete;
+    NodeSwitch& operator=(const NodeSwitch&) = delete;
+
+    NodeSwitch(NodeSwitch&&) noexcept;
+    NodeSwitch& operator=(NodeSwitch&&) noexcept;
+
     /**
      * \brief NodeSwitch helps track parent node during recursive/nested function calls.
      *
@@ -201,10 +217,9 @@ public:
     operator bool() const;
 
 private:
-    SerializeBase& serializer_;  // reference to serializer or deserializer
+    SerializeBase* serializer_;  // reference to serializer or deserializer
     TxElement* storedNode_;      // Parent (Ticpp Node) element.
     bool storedRetrieveChild_;
 };
 
 }  // namespace inviwo
-#endif

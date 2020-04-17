@@ -31,8 +31,10 @@
 #define IVW_METADATA_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/formats.h>
+#include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/util/defaultvalues.h>
+#include <inviwo/core/util/glm.h>
+#include <string>
 
 namespace inviwo {
 

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRANSFERFUNCTION_H
-#define IVW_TRANSFERFUNCTION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
@@ -130,5 +129,3 @@ bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
 bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs);
 
 }  // namespace inviwo
-
-#endif  // IVW_TRANSFERFUNCTION_H

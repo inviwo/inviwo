@@ -27,18 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GLM_H
-#define IVW_GLM_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/glmvec.h>
 
 #include <warn/push>
-#include <warn/ignore/shadow>
-#include <warn/ignore/sign-compare>
-#include <warn/ignore/conversion>
-#include <warn/ignore/misleading-indentation>
-#include <warn/ignore/mismatched-tags>
-#include <warn/ignore/uninitialized>
+#include <warn/ignore/all>
 
 #include <glm/glm.hpp>
 
@@ -52,7 +47,6 @@
 #include <glm/gtx/io.hpp>
 #include <glm/gtx/matrix_operation.hpp>
 #include <glm/gtx/rotate_vector.hpp>
-#include <glm/gtx/std_based_type.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/scalar_relational.hpp>
@@ -61,8 +55,6 @@
 #include <glm/ext/scalar_relational.hpp>
 #include <glm/ext/vector_relational.hpp>
 #include <glm/ext/matrix_relational.hpp>
-
-#include <warn/ignore/parentheses>
 
 #include <half/half.hpp>
 
@@ -80,21 +72,6 @@ static_assert(std::is_trivially_default_constructible<half_float::half>::value, 
 static_assert(std::is_trivial<half_float::half>::value, "");
 static_assert(std::is_pod<half_float::half>::value, "");
 
-using ivec2 = glm::ivec2;
-using ivec3 = glm::ivec3;
-using ivec4 = glm::ivec4;
-using vec2 = glm::vec2;
-using vec3 = glm::vec3;
-using vec4 = glm::vec4;
-using dvec2 = glm::dvec2;
-using dvec3 = glm::dvec3;
-using dvec4 = glm::dvec4;
-using bvec2 = glm::bvec2;
-using bvec3 = glm::bvec3;
-using bvec4 = glm::bvec4;
-using uvec2 = glm::uvec2;
-using uvec3 = glm::uvec3;
-using uvec4 = glm::uvec4;
 using mat2 = glm::mat2;
 using mat3 = glm::mat3;
 using mat4 = glm::mat4;
@@ -102,18 +79,6 @@ using dmat2 = glm::dmat2;
 using dmat3 = glm::dmat3;
 using dmat4 = glm::dmat4;
 using quat = glm::quat;
-
-using size2_t = glm::size2_t;
-using size3_t = glm::size3_t;
-using size4_t = glm::size4_t;
-
-using i64vec2 = glm::i64vec2;
-using i64vec3 = glm::i64vec3;
-using i64vec4 = glm::i64vec4;
-
-using u64vec2 = glm::u64vec2;
-using u64vec3 = glm::u64vec3;
-using u64vec4 = glm::u64vec4;
 
 namespace util {
 
@@ -1054,4 +1019,3 @@ struct prefix<size_t> {
 
 }  // namespace glm
 
-#endif  // IVW_GLM_H

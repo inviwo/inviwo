@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MODULEMANAGER_H
-#define IVW_MODULEMANAGER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
@@ -42,6 +40,8 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <set>
+#include <vector>
+#include <memory>
 #include <warn/pop>
 
 namespace inviwo {
@@ -163,5 +163,3 @@ T* ModuleManager::getModuleByType() const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_MODULEMANAGER_H

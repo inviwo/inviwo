@@ -27,13 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMERAM_H
-#define IVW_VOLUMERAM_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 #include <inviwo/core/datastructures/histogram.h>
+#include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/formatdispatching.h>
 
@@ -213,4 +212,3 @@ auto VolumeRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
 
 }  // namespace inviwo
 
-#endif  // IVW_VOLUMERAM_H

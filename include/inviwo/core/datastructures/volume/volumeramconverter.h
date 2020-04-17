@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMERAMCONVERTER_H
-#define IVW_VOLUMERAMCONVERTER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/representationconverter.h>
@@ -49,4 +48,3 @@ public:
 
 }  // namespace inviwo
 
-#endif  // IVW_VOLUMERAMCONVERTER_H

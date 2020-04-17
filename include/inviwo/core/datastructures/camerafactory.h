@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CAMERAFACTORY_H
-#define IVW_CAMERAFACTORY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/datastructures/camerafactoryobject.h>
@@ -48,4 +46,3 @@ public:
 
 }  // namespace inviwo
 
-#endif  // IVW_CAMERAFACTORY_H

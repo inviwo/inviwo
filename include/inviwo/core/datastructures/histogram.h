@@ -27,13 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HISTOGRAM_H
-#define IVW_HISTOGRAM_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glm.h>
 
 #include <iterator>
+#include <vector>
 
 namespace inviwo {
 enum class HistogramMode { Off, All, P99, P95, P90, Log };
@@ -157,5 +157,3 @@ HistogramContainer::HistogramContainer(dvec2 dataRange, size_t bins, FirstIter b
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_HISTOGRAM_H

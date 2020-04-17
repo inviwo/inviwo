@@ -27,20 +27,18 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DIRECTIONAL_LIGHT_H
-#define IVW_DIRECTIONAL_LIGHT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
 
 namespace inviwo {
 
-class DirectionalLight : public LightSource {
+class IVW_CORE_API DirectionalLight : public LightSource {
 public:
     DirectionalLight() = default;
     virtual ~DirectionalLight() = default;
-    virtual DirectionalLight* clone() const override { return new DirectionalLight(*this); }
+    virtual DirectionalLight* clone() const override;
 
     virtual float getArea() const override { return size_.x * size_.y; }
     /**
@@ -49,7 +47,7 @@ public:
      * @return Radiant flux in watt.
      */
     virtual vec3 getPower() const override {
-        return getIntensity() * getArea() * static_cast<float>(M_PI);
+        return getIntensity() * getArea() * glm::two_pi<float>();
     }
 
     LightSourceType getLightSourceType() const override { return LightSourceType::directional; }
@@ -67,9 +65,7 @@ public:
     void setDirection(const vec3& direction) { direction_ = direction; }
 
 protected:
-    vec3 direction_;
+    vec3 direction_{1.0f, 0.0f, 0.0f};
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DIRECTIONAL_LIGHT_H

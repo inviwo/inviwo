@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LAYERRAMPRECISION_H
-#define IVW_LAYERRAMPRECISION_H
+#pragma once
 
 #include <inviwo/core/datastructures/image/layerram.h>
 
@@ -340,5 +339,3 @@ void LayerRAMPrecision<T>::setFromNormalizedDVec4(const size2_t& pos, dvec4 val)
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_LAYERRAMPRECISION_H

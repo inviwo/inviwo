@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_POLYGON_H
-#define IVW_POLYGON_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/geometry/edge.h>
 
 namespace inviwo {
@@ -56,7 +54,7 @@ public:
         for (size_t i = 0; i < size(); ++i) list_[i] = rhs.get(i);
     }
 
-    virtual ~Polygon() { delete[] list_; }
+    ~Polygon() { delete[] list_; }
 
     T& at(size_t i) { return list_[i]; }
 
@@ -74,5 +72,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_POLYGON_H

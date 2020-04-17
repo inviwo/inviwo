@@ -27,12 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PICKINGMAPPER_H
-#define IVW_PICKINGMAPPER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/pickingmanager.h>
+
+#include <functional>
 
 namespace inviwo {
 
@@ -106,4 +106,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_PICKINGMAPPER_H

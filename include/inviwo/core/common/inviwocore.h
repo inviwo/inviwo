@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOCORE_H
-#define IVW_INVIWOCORE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -64,5 +63,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_INVIWOCORE_H

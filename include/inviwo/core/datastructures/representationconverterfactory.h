@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_REPRESENTATIONCONVERTERFACTORY_H
-#define IVW_REPRESENTATIONCONVERTERFACTORY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/util/stdextensions.h>
 
@@ -40,6 +38,7 @@
 #include <memory>
 #include <mutex>
 #include <typeindex>
+#include <unordered_set>
 #include <warn/pop>
 
 namespace inviwo {
@@ -235,4 +234,3 @@ RepresentationConverterFactory<BaseRepr>::createConverterPackage(ConverterID id)
 
 }  // namespace inviwo
 
-#endif  // IVW_REPRESENTATIONCONVERTERFACTORY_H

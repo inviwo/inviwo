@@ -42,6 +42,7 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/util/introspection.h>
+#include <inviwo/core/io/serialization/serialization.h>
 
 #include <functional>
 #include <type_traits>

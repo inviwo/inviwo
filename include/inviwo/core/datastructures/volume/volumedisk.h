@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEDISK_H
-#define IVW_VOLUMEDISK_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/diskrepresentation.h>
@@ -91,4 +90,3 @@ struct representation_traits<Volume, kind::Disk> {
 
 }  // namespace inviwo
 
-#endif  // IVW_VOLUMEDISK_H

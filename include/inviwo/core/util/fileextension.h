@@ -31,9 +31,11 @@
 #define IVW_FILEEXTENSION_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/properties/optionproperty.h>
+
+#include <string>
 
 namespace inviwo {
 

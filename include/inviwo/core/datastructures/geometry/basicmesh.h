@@ -27,7 +27,6 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BASICMESH_H
-#define IVW_BASICMESH_H
+#pragma once
+
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
-#endif  // IVW_BASICMESH_H

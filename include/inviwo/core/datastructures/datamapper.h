@@ -27,13 +27,17 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAMAPPER_H
-#define IVW_DATAMAPPER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glm.h>
+
+#include <string>
 
 namespace inviwo {
+
+class DataFormatBase;
+
 /**
  * \brief Map values into data or value ranges.
  * Data range refer to the range of the data type, i.e. [0 4095] for 12-bit unsigned integer data.
@@ -85,4 +89,3 @@ public:
 
 }  // namespace inviwo
 
-#endif  // IVW_DATAMAPPER_H

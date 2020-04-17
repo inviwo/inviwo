@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EDGE_H
-#define IVW_EDGE_H
+#pragma once
 
 namespace inviwo {
 
@@ -52,5 +51,3 @@ using Edge2D = Edge<DataVec2Float32::type>;
 using Edge3D = Edge<DataVec3Float32::type>;
 
 }  // namespace inviwo
-
-#endif  // IVW_EDGE_H

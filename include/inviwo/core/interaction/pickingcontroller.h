@@ -27,13 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PICKINGCONTROLLER_H
-#define IVW_PICKINGCONTROLLER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/interaction/pickingcontrollermousestate.h>
+
+#include <memory>
+#include <unordered_map>
 
 namespace inviwo {
 
@@ -80,4 +81,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_PICKINGCONTROLLER_H

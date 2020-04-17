@@ -29,7 +29,6 @@
 
 #include <inviwo/core/util/document.h>
 
-#include <sstream>
 
 namespace inviwo {
 

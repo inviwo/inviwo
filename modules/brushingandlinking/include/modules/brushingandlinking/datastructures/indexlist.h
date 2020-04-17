@@ -27,12 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGLIST_H
-#define IVW_BRUSHINGLIST_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/dispatcher.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
+#include <inviwo/core/util/dispatcher.h>
+
+#include <unordered_map>
+#include <unordered_set>
 
 namespace inviwo {
 class BrushingAndLinkingInport;
@@ -64,5 +65,3 @@ private:
 inline bool IndexList::has(size_t idx) const { return indices_.find(idx) != indices_.end(); }
 
 }  // namespace inviwo
-
-#endif  // IVW_BRUSHINGLIST_H

@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOMODULE_H
-#define IVW_INVIWOMODULE_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
@@ -66,6 +64,9 @@
 
 #include <type_traits>
 #include <fmt/format.h>
+
+#include <vector>
+#include <memory>
 
 namespace inviwo {
 
@@ -465,5 +466,3 @@ void InviwoModule::registerRepresentationFactoryObject(
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_INVIWOMODULE_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PICKINGSTATE_H
-#define IVW_PICKINGSTATE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/ostreamjoiner.h>
@@ -180,4 +179,3 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 
 }  // namespace inviwo
 
-#endif  // IVW_PICKINGSTATE_H

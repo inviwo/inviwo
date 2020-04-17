@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VERSIONCONVERTER_H
-#define IVW_VERSIONCONVERTER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/serialization/ticpp.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/ports/port.h>
@@ -248,4 +247,3 @@ IVW_CORE_API bool changeIdentifiers(TxElement* root,
 
 }  // namespace inviwo
 
-#endif  // IVW_VERSIONCONVERTER_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SIMPLEMESHCREATOR_H
-#define IVW_SIMPLEMESHCREATOR_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/geometry/simplemesh.h>
 
 namespace inviwo {
@@ -60,5 +58,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SIMPLEMESHCREATOR_H

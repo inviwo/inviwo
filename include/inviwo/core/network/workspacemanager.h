@@ -31,13 +31,15 @@
 #define IVW_PROCESSORNETWORKMANAGER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/util/exception.h>
 
 #include <flags/flags.h>
 
 #include <iostream>
+#include <string>
+#include <vector>
 
 namespace inviwo {
 

@@ -27,14 +27,19 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOMODULELIBRARYOBSERVER_H
-#define IVW_INVIWOMODULELIBRARYOBSERVER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/fileobserver.h>
 
+#include <string>
+#include <memory>
+#include <unordered_map>
+#include <ctime>
+
 namespace inviwo {
+
+class InviwoApplication;
 
 /**
  * \class InviwoModuleLibraryObserver
@@ -69,4 +74,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_INVIWOMODULELIBRARYOBSERVER_H

@@ -27,12 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TFPRIMITIVESET_H
-#define IVW_TFPRIMITIVESET_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-
+#include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/util/glm.h>
 #include <inviwo/core/datastructures/tfprimitive.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/properties/valuewrapper.h>
@@ -283,5 +282,3 @@ bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
 bool operator!=(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
 
 }  // namespace inviwo
-
-#endif  // IVW_TFPRIMITIVESET_H

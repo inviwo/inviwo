@@ -31,7 +31,7 @@
 #define IVW_PROPERTYSEMANTICS_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/serialization/serialization.h>
 #include <string>
 #include <ostream>
 

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SERIALIZE_CONSTANTS_H
-#define IVW_SERIALIZE_CONSTANTS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <string>
@@ -53,4 +52,3 @@ public:
 };
 
 }  // namespace inviwo
-#endif

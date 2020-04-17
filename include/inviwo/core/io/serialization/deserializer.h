@@ -27,15 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DESERIALIZER_H
-#define IVW_DESERIALIZER_H
+#pragma once
 
 #include <inviwo/core/io/serialization/serializebase.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/logfilter.h>
-#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/serialization/nodedebugger.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/factory.h>
+#include <inviwo/core/util/logfilter.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <flags/flags.h>
 
@@ -290,6 +290,8 @@ private:
 
     void storeReferences(TxElement* node);
 
+    TxElement* retriveChild(const std::string& key);
+
     ExceptionHandler exceptionHandler_;
     std::map<std::string, TxElement*> referenceLookup_;
 
@@ -297,6 +299,24 @@ private:
 
     int inviwoWorkspaceVersion_ = 0;
 };
+
+namespace detail {
+
+IVW_CORE_API std::string getNodeAttribute(TxElement* node, const std::string& key);
+
+template <typename T>
+void getNodeAttribute(TxElement* node, const std::string& key, T& dest) {
+    const auto val = getNodeAttribute(node, key);
+    if (!val.empty()) {
+        std::istringstream stream;
+        stream.str(val);
+        stream >> dest;
+    }
+}
+
+IVW_CORE_API void forEachChild(TxElement* node, const std::string& key, std::function<void(TxElement*)> func);
+
+}  // namespace detail
 
 /**
  * \class ContainerWrapper
@@ -334,9 +354,9 @@ public:
 
 private:
     IdentityGetter idGetter_ = [](TxElement* node) {
-        K key{};
-        node->GetAttribute("identifier", &key, false);
-        return key;
+        K val{};
+        detail::getNodeAttribute(node, "identifier", val);
+        return val;
     };
 
     Getter getItem_;
@@ -537,9 +557,12 @@ public:
             });
 
         cont.setIdentityGetter([&](TxElement* node) {
-            K key{};
-            node->GetAttribute(attribKey_, &key);
-            return identifierTransform_(key);
+            const auto val = inviwo::detail::getNodeAttribute(node, attribKey_);
+            if (!val.empty()) {
+                return identifierTransform_(stringTo<K>(val));
+            } else {
+                return identifierTransform_(K{});
+            }
         });
 
         d.deserialize(key_, cont);
@@ -657,7 +680,7 @@ std::basic_istream<Elem, Traits>& operator>>(std::basic_istream<Elem, Traits>& i
 // integers, strings
 template <typename T, typename std::enable_if<!util::is_floating_point<T>::value, int>::type>
 void Deserializer::getSafeValue(const std::string& key, T& data) {
-    rootElement_->GetAttribute(key, &data, false);
+    detail::getNodeAttribute(rootElement_, key, data);
 }
 
 // reals specialization for reals to handled inf/nan values
@@ -665,7 +688,7 @@ template <typename T, typename std::enable_if<util::is_floating_point<T>::value,
 void Deserializer::getSafeValue(const std::string& key, T& data) {
     ParseWrapper<T> wrapper(data);
     try {
-        rootElement_->GetAttribute(key, &wrapper, false);
+        detail::getNodeAttribute(rootElement_, key, wrapper);
     } catch (SerializationException& e) {
         NodeDebugger nd(rootElement_);
         throw SerializationException(e.getMessage() + ". At " + nd.getDescription(),
@@ -756,12 +779,11 @@ void Deserializer::deserialize(const std::string& key, std::vector<T*>& vector,
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
 
-    unsigned int i = 0;
-    TxEIt child(itemKey);
-    for (child = child.begin(rootElement_); child != child.end(); ++child) {
+    size_t i = 0;
+    detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
         // In the next deserialization call do net fetch the "child" since we are looping...
         // hence the "false" as the last arg.
-        NodeSwitch elementNodeSwitch(*this, &(*child), false);
+        NodeSwitch elementNodeSwitch(*this, child, false);
         if (vector.size() <= i) {
             T* item = nullptr;
             try {
@@ -779,7 +801,7 @@ void Deserializer::deserialize(const std::string& key, std::vector<T*>& vector,
             }
         }
         i++;
-    }
+    });
 }
 
 template <typename T>
@@ -788,35 +810,35 @@ void Deserializer::deserialize(const std::string& key, std::vector<std::unique_p
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
 
-    unsigned int i = 0;
-    TxEIt child(itemKey);
-    for (child = child.begin(rootElement_); child != child.end(); ++child) {
-        // In the next deserialization call do net fetch the "child" since we are looping...
-        // hence the "false" as the last arg.
-        NodeSwitch elementNodeSwitch(*this, &(*child), false);
-        if (vector.size() <= i) {
-            T* item = nullptr;
-            try {
-                deserialize(itemKey, item);
-                vector.emplace_back(item);
-            } catch (...) {
-                delete item;
-                handleError(IVW_CONTEXT);
-            }
-        } else {
-            try {
-                if (auto ptr = vector[i].get()) {
-                    deserialize(itemKey, ptr);
-                } else {
-                    deserialize(itemKey, ptr);
-                    vector[i].reset(ptr);
-                }
-            } catch (...) {
-                handleError(IVW_CONTEXT);
-            }
-        }
-        i++;
-    }
+    size_t i = 0;
+    detail::forEachChild(rootElement_, itemKey,
+                         [&](TxElement* child) {  // In the next deserialization call do net fetch
+                                                  // the "child" since we are looping...
+                             // hence the "false" as the last arg.
+                             NodeSwitch elementNodeSwitch(*this, child, false);
+                             if (vector.size() <= i) {
+                                 T* item = nullptr;
+                                 try {
+                                     deserialize(itemKey, item);
+                                     vector.emplace_back(item);
+                                 } catch (...) {
+                                     delete item;
+                                     handleError(IVW_CONTEXT);
+                                 }
+                             } else {
+                                 try {
+                                     if (auto ptr = vector[i].get()) {
+                                         deserialize(itemKey, ptr);
+                                     } else {
+                                         deserialize(itemKey, ptr);
+                                         vector[i].reset(ptr);
+                                     }
+                                 } catch (...) {
+                                     handleError(IVW_CONTEXT);
+                                 }
+                             }
+                             i++;
+                         });
 }
 
 template <typename T, typename C>
@@ -827,13 +849,12 @@ void Deserializer::deserialize(const std::string& key, std::vector<T*>& vector,
 
     auto lastInsertion = vector.begin();
 
-    TxEIt child(itemKey);
-    for (child = child.begin(rootElement_); child != child.end(); ++child) {
-        identifier.setKey(child.Get());
+    detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
+        identifier.setKey(child);
         auto it = std::find_if(vector.begin(), vector.end(), identifier);
 
         if (it != vector.end()) {  // There is a item in vector with same identifier as on disk
-            NodeSwitch elementNodeSwitch(*this, &(*child), false);
+            NodeSwitch elementNodeSwitch(*this, child, false);
             try {
                 deserialize(itemKey, *it);
                 lastInsertion = it;
@@ -842,7 +863,7 @@ void Deserializer::deserialize(const std::string& key, std::vector<T*>& vector,
             }
         } else {  // No item in vector matches item on disk, create a new one.
             T* item = nullptr;
-            NodeSwitch elementNodeSwitch(*this, &(*child), false);
+            NodeSwitch elementNodeSwitch(*this, child, false);
             try {
                 deserialize(itemKey, item);
                 // Insert new item after the previous item deserialized
@@ -853,7 +874,7 @@ void Deserializer::deserialize(const std::string& key, std::vector<T*>& vector,
                 handleError(IVW_CONTEXT);
             }
         }
-    }
+    });
 }
 
 template <typename T>
@@ -862,13 +883,11 @@ void Deserializer::deserialize(const std::string& key, std::vector<T>& vector,
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
 
-    unsigned int i = 0;
-    TxEIt child(itemKey);
-
-    for (child = child.begin(rootElement_); child != child.end(); ++child) {
+    size_t i = 0;
+    detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
         // In the next deserialization call do net fetch the "child" since we are looping...
         // hence the "false" as the last arg.
-        NodeSwitch elementNodeSwitch(*this, &(*child), false);
+        NodeSwitch elementNodeSwitch(*this, child, false);
         try {
             if (vector.size() <= i) {
                 T item;
@@ -881,7 +900,7 @@ void Deserializer::deserialize(const std::string& key, std::vector<T>& vector,
             handleError(IVW_CONTEXT);
         }
         i++;
-    }
+    });
 }
 
 template <typename T>
@@ -890,12 +909,10 @@ void Deserializer::deserialize(const std::string& key, std::unordered_set<T>& se
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
 
-    TxEIt child(itemKey);
-
-    for (child = child.begin(rootElement_); child != child.end(); ++child) {
+    detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
         // In the next deserialization call do net fetch the "child" since we are looping...
         // hence the "false" as the last arg.
-        NodeSwitch elementNodeSwitch(*this, &(*child), false);
+        NodeSwitch elementNodeSwitch(*this, child, false);
         try {
             T item;
             deserialize(itemKey, item);
@@ -904,7 +921,7 @@ void Deserializer::deserialize(const std::string& key, std::unordered_set<T>& se
         } catch (...) {
             handleError(IVW_CONTEXT);
         }
-    }
+    });
 }
 
 template <typename T>
@@ -912,26 +929,25 @@ void Deserializer::deserialize(const std::string& key, std::list<T>& container,
                                const std::string& itemKey) {
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
-    unsigned int i = 0;
-    TxEIt child(itemKey);
-
-    for (child = child.begin(rootElement_); child != child.end(); ++child) {
-        // In the next deserialization call do net fetch the "child" since we are looping...
-        // hence the "false" as the last arg.
-        NodeSwitch elementNodeSwitch(*this, &(*child), false);
-        try {
-            if (container.size() <= i) {
-                T item;
-                deserialize(itemKey, item);
-                container.push_back(item);
-            } else {
-                deserialize(itemKey, *std::next(container.begin(), i));
-            }
-        } catch (...) {
-            handleError(IVW_CONTEXT);
-        }
-        i++;
-    }
+    size_t i = 0;
+    detail::forEachChild(rootElement_, itemKey,
+                         [&](TxElement* child) {  // In the next deserialization call do net fetch
+                                                  // the "child" since we are looping...
+                             // hence the "false" as the last arg.
+                             NodeSwitch elementNodeSwitch(*this, child, false);
+                             try {
+                                 if (container.size() <= i) {
+                                     T item;
+                                     deserialize(itemKey, item);
+                                     container.push_back(item);
+                                 } else {
+                                     deserialize(itemKey, *std::next(container.begin(), i));
+                                 }
+                             } catch (...) {
+                                 handleError(IVW_CONTEXT);
+                             }
+                             i++;
+                         });
 }
 
 template <typename T, size_t N>
@@ -941,25 +957,24 @@ void Deserializer::deserialize(const std::string& key, std::array<T, N>& cont,
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
 
-    unsigned int i = 0;
-    TxEIt child(itemKey);
-
-    for (child = child.begin(rootElement_); child != child.end(); ++child) {
-        // In the next deserialization call do net fetch the "child" since we are looping...
-        // hence the "false" as the last arg.
-        NodeSwitch elementNodeSwitch(*this, &(*child), false);
-        try {
-            if (i < cont.size()) {
-                deserialize(itemKey, cont[i]);
-            } else {
-                throw SerializationException("To many elements found for std::array", IVW_CONTEXT,
-                                             key);
-            }
-        } catch (...) {
-            handleError(IVW_CONTEXT);
-        }
-        i++;
-    }
+    size_t i = 0;
+    detail::forEachChild(rootElement_, itemKey,
+                         [&](TxElement* child) {  // In the next deserialization call do net fetch
+                                                  // the "child" since we are looping...
+                             // hence the "false" as the last arg.
+                             NodeSwitch elementNodeSwitch(*this, child, false);
+                             try {
+                                 if (i < cont.size()) {
+                                     deserialize(itemKey, cont[i]);
+                                 } else {
+                                     throw SerializationException(
+                                         "To many elements found for std::array", IVW_CONTEXT, key);
+                                 }
+                             } catch (...) {
+                                 handleError(IVW_CONTEXT);
+                             }
+                             i++;
+                         });
 }
 
 template <typename K, typename V, typename C, typename A>
@@ -971,14 +986,13 @@ void Deserializer::deserialize(const std::string& key, std::map<K, V, C, A>& map
 
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
-    TxEIt child(itemKey);
 
-    for (child = child.begin(rootElement_); child != child.end(); ++child) {
+    detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
         // In the next deserialization call do net fetch the "child" since we are looping...
         // hence the "false" as the last arg.
-        NodeSwitch elementNodeSwitch(*this, &(*child), false);
+        NodeSwitch elementNodeSwitch(*this, child, false);
         K childkey;
-        child->GetAttribute(comparisionAttribute, &childkey, false);
+        detail::getNodeAttribute(child, comparisionAttribute, childkey);
 
         V value;
         auto it = map.find(childkey);
@@ -989,7 +1003,7 @@ void Deserializer::deserialize(const std::string& key, std::map<K, V, C, A>& map
         } catch (...) {
             handleError(IVW_CONTEXT);
         }
-    }
+    });
 }
 
 // Pointer specialization
@@ -1002,25 +1016,25 @@ void Deserializer::deserialize(const std::string& key, std::map<K, V*, C, A>& ma
 
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
-    TxEIt child(itemKey);
 
-    for (child = child.begin(rootElement_); child != child.end(); ++child) {
-        // In the next deserialization call do net fetch the "child" since we are looping...
-        // hence the "false" as the last arg.
-        NodeSwitch elementNodeSwitch(*this, &(*child), false);
-        K childkey;
-        child->GetAttribute(comparisionAttribute, &childkey);
+    detail::forEachChild(rootElement_, itemKey,
+                         [&](TxElement* child) {  // In the next deserialization call do net fetch
+                                                  // the "child" since we are looping...
+                             // hence the "false" as the last arg.
+                             NodeSwitch elementNodeSwitch(*this, child, false);
+                             K childkey;
+                             detail::getNodeAttribute(child, comparisionAttribute, childkey);
 
-        auto it = map.find(childkey);
-        V* value = (it != map.end() ? it->second : nullptr);
+                             auto it = map.find(childkey);
+                             V* value = (it != map.end() ? it->second : nullptr);
 
-        try {
-            deserialize(itemKey, value);
-            map[childkey] = value;
-        } catch (...) {
-            handleError(IVW_CONTEXT);
-        }
-    }
+                             try {
+                                 deserialize(itemKey, value);
+                                 map[childkey] = value;
+                             } catch (...) {
+                                 handleError(IVW_CONTEXT);
+                             }
+                         });
 }
 
 // unique_ptr specialization
@@ -1033,14 +1047,13 @@ void Deserializer::deserialize(const std::string& key, std::map<K, std::unique_p
 
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
-    TxEIt child(itemKey);
 
-    for (child = child.begin(rootElement_); child != child.end(); ++child) {
+    detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
         // In the next deserialization call do net fetch the "child" since we are looping...
         // hence the "false" as the last arg.
-        NodeSwitch elementNodeSwitch(*this, &(*child), false);
-        K childkey;
-        child->GetAttribute(comparisionAttribute, &childkey);
+        NodeSwitch elementNodeSwitch(*this, child, false);
+        K childkey{};
+        detail::getNodeAttribute(child, comparisionAttribute, childkey);
 
         auto it = map.find(childkey);
         if (it != map.end()) {
@@ -1064,17 +1077,18 @@ void Deserializer::deserialize(const std::string& key, std::map<K, std::unique_p
                 handleError(IVW_CONTEXT);
             }
         }
-    }
+    });
 }
 
 template <class T>
 void Deserializer::deserialize(const std::string& key, T*& data) {
-    auto keyNode = retrieveChild_ ? rootElement_->FirstChildElement(key, false) : rootElement_;
+    auto keyNode = retriveChild(key);
     if (!keyNode) return;
 
-    const std::string type_attr(keyNode->GetAttribute(SerializeConstants::TypeAttribute));
-    const std::string ref_attr(keyNode->GetAttribute(SerializeConstants::RefAttribute));
-    const std::string id_attr(keyNode->GetAttribute(SerializeConstants::IDAttribute));
+    const std::string type_attr{
+        detail::getNodeAttribute(keyNode, SerializeConstants::TypeAttribute)};
+    const std::string ref_attr{detail::getNodeAttribute(keyNode, SerializeConstants::RefAttribute)};
+    const std::string id_attr{detail::getNodeAttribute(keyNode, SerializeConstants::IDAttribute)};
 
     if (!data) {
         if (allowRef_ && !ref_attr.empty()) {
@@ -1152,16 +1166,15 @@ template <typename T, typename K>
 void Deserializer::deserialize(const std::string& key, ContainerWrapper<T, K>& container) {
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
-    unsigned int i = 0;
-    TxEIt child(container.getItemKey());
+    size_t i = 0;
 
-    for (child = child.begin(rootElement_); child != child.end(); ++child) {
+    detail::forEachChild(rootElement_, container.getItemKey(), [&](TxElement* child) {
         // In the next deserialization call do net fetch the "child" since we are looping...
         // hence the "false" as the last arg.
-        NodeSwitch elementNodeSwitch(*this, &(*child), false);
-        container.deserialize(*this, &(*child), i);
+        NodeSwitch elementNodeSwitch(*this, child, false);
+        container.deserialize(*this, child, i);
         i++;
-    }
+    });
 }
 
 template <class Base, class T>
@@ -1201,4 +1214,3 @@ void Deserializer::deserializeAs(const std::string& key, std::unique_ptr<T, D>& 
 }
 
 }  // namespace inviwo
-#endif

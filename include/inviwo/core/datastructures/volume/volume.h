@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUME_H
-#define IVW_VOLUME_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/histogramtools.h>
@@ -40,6 +38,7 @@
 #include <inviwo/core/datastructures/representationtraits.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 #include <inviwo/core/metadata/metadataowner.h>
+#include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
@@ -185,5 +184,3 @@ extern template class IVW_CORE_TMPL_EXP DataInport<VolumeSequence>;
 extern template class IVW_CORE_TMPL_EXP DataOutport<VolumeSequence>;
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUME_H

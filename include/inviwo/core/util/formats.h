@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FORMATS_H
-#define IVW_FORMATS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glm.h>
@@ -666,5 +665,3 @@ auto DataFormatBase::dispatch(T& obj, Args&&... args) const -> typename T::type 
 }
 
 }  // namespace inviwo
-
-#endif
