@@ -28,11 +28,10 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/util/canvas.h>
-#include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 

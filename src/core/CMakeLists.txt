@@ -342,6 +342,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tinydirinterface.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/typetraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeramutils.h
@@ -619,9 +620,11 @@ set(SOURCE_FILES
     util/stringconversion.cpp
     util/stringlogger.cpp
     util/systemcapabilities.cpp
+    util/stdextensions.cpp
     util/threadpool.cpp
     util/timer.cpp
     util/tinydirinterface.cpp
+    util/typetraits.cpp
     util/utilities.cpp
     util/volumesampler.cpp
     util/volumesequencesampler.cpp
@@ -712,19 +715,21 @@ target_include_directories(inviwo-core PUBLIC
 )
 
 # Add core dependencies to this list
-target_link_libraries(inviwo-core PUBLIC
-    ticpp
-    inviwo::glm
-    inviwo::tinydir
-    inviwo::tclap
-    inviwo::warn
-    inviwo::sml
-    inviwo::span
-    fmt::fmt
-    $<$<BOOL:${IVW_SIGAR}>:inviwo::sigar>
-    $<$<BOOL:${WIN32}>:inviwo::stackwalker>
-    $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
-    $<$<BOOL:${IVW_OPENMP_ON}>:OpenMP::OpenMP_CXX>
+target_link_libraries(inviwo-core 
+    PUBLIC
+        ticpp
+        inviwo::glm
+        inviwo::tclap
+        inviwo::warn
+        inviwo::sml
+        inviwo::span
+        fmt::fmt
+        $<$<BOOL:${IVW_OPENMP_ON}>:OpenMP::OpenMP_CXX>
+    PRIVATE
+        $<$<BOOL:${IVW_SIGAR}>:inviwo::sigar>
+        $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
+        $<$<BOOL:${WIN32}>:inviwo::stackwalker>
+        inviwo::tinydir
 )
 
 if(APPLE)

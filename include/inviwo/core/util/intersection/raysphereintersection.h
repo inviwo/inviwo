@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_RAYSPHEREINTERSECTION_H
-#define IVW_RAYSPHEREINTERSECTION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 
@@ -76,5 +75,3 @@ std::pair<bool, float> raySphereIntersection(const glm::tvec3<T, P>& sphereCente
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_RAYSPHEREINTERSECTION_H

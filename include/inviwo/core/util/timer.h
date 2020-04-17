@@ -29,8 +29,7 @@
 
 // based on ideas from http://thradams.com/timers.htm
 
-#ifndef IVW_TIMER_H
-#define IVW_TIMER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
@@ -170,5 +169,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TIMER_H

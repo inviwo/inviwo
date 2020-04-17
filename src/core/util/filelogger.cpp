@@ -29,6 +29,7 @@
 
 #include <inviwo/core/util/filelogger.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/inviwocommondefines.h>
 
 namespace inviwo {
 
@@ -64,12 +65,9 @@ FileLogger::FileLogger(std::string logPath) : Logger() {
 FileLogger::~FileLogger() = default;
 
 void FileLogger::log(std::string logSource, LogLevel logLevel, LogAudience /*audience*/,
-                     const char* fileName, const char* functionName, int lineNumber,
+                     [[maybe_unused]] const char* fileName,
+                     [[maybe_unused]] const char* functionName, [[maybe_unused]] int lineNumber,
                      std::string logMsg) {
-    IVW_UNUSED_PARAM(fileName);
-    IVW_UNUSED_PARAM(logLevel);
-    IVW_UNUSED_PARAM(functionName);
-    IVW_UNUSED_PARAM(lineNumber);
 
     switch (logLevel) {
         case LogLevel::Info:

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORWIDGETOBSERVER_H
-#define IVW_PROCESSORWIDGETOBSERVER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/observer.h>
@@ -58,5 +57,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORWIDGETOBSERVER_H

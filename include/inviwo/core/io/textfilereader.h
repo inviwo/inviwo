@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TEXTFILEREADER_H
-#define IVW_TEXTFILEREADER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+
 #include <iostream>
 #include <string>
 
@@ -70,5 +69,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TEXTFILEREADER_H

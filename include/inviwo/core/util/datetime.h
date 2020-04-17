@@ -27,23 +27,21 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATETIME_H
-#define IVW_DATETIME_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <iostream>
 #include <string>
-#include <stdio.h>
-#include <time.h>
+#include <cstdio>
+#include <ctime>
 
 namespace inviwo {
 
 #include <warn/push>
 #include <warn/ignore/unused-function>
 
-static const std::string currentDateTime() {
+inline std::string currentDateTime() {
     time_t currentDateTime = time(0);
     struct tm dateTimeStruct;
     char dateTimeBuffer[20];
@@ -54,5 +52,3 @@ static const std::string currentDateTime() {
 #include <warn/pop>
 
 }  // namespace inviwo
-
-#endif  // IVW_DATETIME_H

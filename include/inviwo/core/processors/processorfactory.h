@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORFACTORY_H
-#define IVW_PROCESSORFACTORY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
@@ -59,5 +58,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORFACTORY_H

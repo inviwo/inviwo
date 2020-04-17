@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/glmvec.h>
 
 #include <iterator>
 #include <algorithm>

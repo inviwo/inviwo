@@ -27,14 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORINFO_H
-#define IVW_PROCESSORINFO_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
 
+#include <string>
 #include <utility>
 
 namespace inviwo {
@@ -64,5 +63,3 @@ inline bool operator==(const ProcessorInfo& a, const ProcessorInfo& b) {
 inline bool operator!=(const ProcessorInfo& a, const ProcessorInfo& b) { return !(a == b); }
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORINFO_H

@@ -27,12 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAREADER_H
-#define IVW_DATAREADER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/fileextension.h>
+
+#include <vector>
+#include <memory>
 
 namespace inviwo {
 
@@ -93,5 +94,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAREADER_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VALUEWRAPPER_H
-#define IVW_VALUEWRAPPER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/io/serialization/deserializer.h>
 
@@ -201,4 +199,3 @@ bool operator>=(const T& lhs, const ValueWrapper<T>& rhs) {
 
 }  // namespace inviwo
 
-#endif  // IVW_VALUEWRAPPER_H

@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/cloneableptr.h>
+#include <inviwo/core/util/exception.h>
 
 #include <string>
 #include <memory>

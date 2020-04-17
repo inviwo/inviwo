@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSOROBSERVER_H
-#define IVW_PROCESSOROBSERVER_H
+#pragma once
 
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/ports/port.h>
@@ -158,5 +157,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSOROBSERVER_H

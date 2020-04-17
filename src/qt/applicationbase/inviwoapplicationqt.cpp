@@ -225,8 +225,9 @@ void InviwoApplicationQt::resizePool(size_t newSize) {
     }
 }
 
-void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext& context,
-                                        const QString& msg) {
+void InviwoApplicationQt::logQtMessages([[maybe_unused]] QtMsgType type,
+                                        [[maybe_unused]] const QMessageLogContext& context,
+                                        [[maybe_unused]] const QString& msg) {
 #ifdef IVW_DEBUG
 
 #if defined(__APPLE__)
@@ -287,10 +288,6 @@ void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext
             break;
 #endif
     }
-#else
-    IVW_UNUSED_PARAM(type);
-    IVW_UNUSED_PARAM(context);
-    IVW_UNUSED_PARAM(msg);
 #endif
 }
 

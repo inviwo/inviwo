@@ -27,16 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ISOTFPROPERTY_H
-#define IVW_ISOTFPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
-
 #include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
@@ -111,5 +107,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ISOTFPROPERTY_H

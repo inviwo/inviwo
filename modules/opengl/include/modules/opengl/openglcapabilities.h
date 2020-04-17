@@ -32,6 +32,10 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/util/capabilities.h>
+#include <inviwo/core/util/logcentral.h>
+
+#include <string>
+#include <vector>
 
 namespace inviwo {
 class OpenGLSettings;
@@ -91,8 +95,8 @@ public:
     size_t getNumberOfShaderVersions() const;
     GLSLShaderVersion getShaderVersion(size_t ind) const;
 
-    glm::u64 getCurrentAvailableTextureMem();
-    glm::u64 getTotalAvailableTextureMem();
+    size_t getCurrentAvailableTextureMem();
+    size_t getTotalAvailableTextureMem();
 
     const std::string& getRenderString() const;
     const std::string& getVendorString() const;

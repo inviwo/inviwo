@@ -27,13 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FILEDIALOGSTATE_H
-#define IVW_FILEDIALOGSTATE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 
-#include <ostream>
+#include <iosfwd>
 
 namespace inviwo {
 
@@ -77,5 +75,3 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_FILEDIALOGSTATE_H

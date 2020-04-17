@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYCONVERTERMANAGER_H
-#define IVW_PROPERTYCONVERTERMANAGER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/propertyconverter.h>
 
 #include <unordered_map>
@@ -64,5 +62,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYCONVERTERMANAGER_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PORTCONNECTION_H
-#define IVW_PORTCONNECTION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
@@ -90,5 +88,3 @@ struct hash<inviwo::PortConnection> {
 };
 
 }  // namespace std
-
-#endif  // IVW_PORTCONNECTION_H

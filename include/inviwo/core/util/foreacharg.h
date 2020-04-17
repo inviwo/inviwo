@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FOREACHARG_H
-#define IVW_FOREACHARG_H
+#pragma once
 
 #include <tuple>
 #include <initializer_list>
@@ -180,5 +179,3 @@ public:
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_FOREACHARG_H

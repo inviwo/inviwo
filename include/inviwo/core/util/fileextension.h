@@ -27,15 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FILEEXTENSION_H
-#define IVW_FILEEXTENSION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serialization.h>
-#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/hashcombine.h>
 
 #include <string>
+#include <iosfwd>
 
 namespace inviwo {
 
@@ -129,5 +129,3 @@ struct hash<inviwo::FileExtension> {
     }
 };
 }  // namespace std
-
-#endif  // IVW_FILEEXTENSION_H

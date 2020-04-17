@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_NETWORKLOCK_H
-#define IVW_NETWORKLOCK_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/network/processornetwork.h>
@@ -37,7 +36,7 @@
 
 namespace inviwo {
 
-// A RAII utility for locking and unlocking the network
+/// A RAII utility for locking and unlocking the network
 struct IVW_CORE_API NetworkLock {
     NetworkLock();
     NetworkLock(ProcessorNetwork* network);
@@ -70,5 +69,3 @@ inline NetworkLock::~NetworkLock() {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_NETWORKLOCK_H

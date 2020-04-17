@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_RAIIUTILS_H
-#define IVW_RAIIUTILS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <functional>
@@ -70,7 +69,7 @@ private:
  * The action can be changed at any time by calling setAction() or release().
  */
 struct IVW_CORE_API OnScopeExit {
-    typedef std::function<void(void)> ExitAction;
+    using ExitAction = std::function<void(void)>;
 
     OnScopeExit() = delete;
     OnScopeExit(OnScopeExit const&) = delete;
@@ -116,5 +115,3 @@ OnScopeExit::ExitAction RevertValue(T& t) {
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_RAIIUTILS_H

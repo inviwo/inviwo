@@ -31,7 +31,6 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/representationfactory.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationmetafactory.h>
@@ -168,6 +167,9 @@ private:
 
     static RepresentationMetaFactory* representationMetaFactory_;
     static RepresentationConverterMetaFactory* representationConverterMetaFactory_;
+
+    static RepresentationMetaFactory* getDefaultRepresentationMetaFactory();
+    static RepresentationConverterMetaFactory* getDefaultRepresentationConverterMetaFactory();
 };
 
 /**
@@ -182,7 +184,7 @@ private:
 template <typename BaseRepr>
 inline RepresentationFactory<BaseRepr>* RepresentationFactoryManager::getRepresentationFactory() {
     if (!representationMetaFactory_) {
-        representationMetaFactory_ = InviwoApplication::getPtr()->getRepresentationMetaFactory();
+        representationMetaFactory_ = getDefaultRepresentationMetaFactory();
     }
     return representationMetaFactory_->getRepresentationFactory<BaseRepr>();
 }
@@ -200,8 +202,7 @@ template <typename BaseRepr>
 inline RepresentationConverterFactory<BaseRepr>*
 RepresentationFactoryManager::getRepresentationConverterFactory() {
     if (!representationConverterMetaFactory_) {
-        representationConverterMetaFactory_ =
-            InviwoApplication::getPtr()->getRepresentationConverterMetaFactory();
+        representationConverterMetaFactory_ = getDefaultRepresentationConverterMetaFactory();
     }
     return representationConverterMetaFactory_->getConverterFactory<BaseRepr>();
 }

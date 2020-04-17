@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESAMPLER_H
-#define IVW_VOLUMESAMPLER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/indexmapper.h>
 
 #include <inviwo/core/util/interpolation.h>
@@ -135,5 +133,3 @@ bool VolumeDoubleSampler<DataDims>::withinBoundsDataSpace(const dvec3 &pos) cons
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESAMPLER_H

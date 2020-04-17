@@ -27,13 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORUTILS_H
-#define IVW_PROCESSORUTILS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processortraits.h>
+#include <inviwo/core/util/glmvec.h>
 
 #include <type_traits>
 
@@ -115,5 +114,3 @@ std::unique_ptr<T> makeProcessor(ivec2 pos, Args&&... args) {
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORUTILS_H

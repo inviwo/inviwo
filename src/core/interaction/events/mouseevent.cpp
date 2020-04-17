@@ -29,6 +29,7 @@
 
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/eventutil.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 

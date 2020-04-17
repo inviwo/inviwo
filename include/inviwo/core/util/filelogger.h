@@ -27,12 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FILELOGGER_H
-#define IVW_FILELOGGER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 #include <inviwo/core/util/logcentral.h>
 
 #include <fstream>
@@ -57,5 +54,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FILELOGGER_H

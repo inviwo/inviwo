@@ -27,12 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SPATIAL4DSAMPLER_H
-#define IVW_SPATIAL4DSAMPLER_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
-
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <inviwo/core/datastructures/datatraits.h>
@@ -154,5 +151,3 @@ mat4 Spatial4DSampler<DataDims, T>::getWorldMatrix() const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_SPATIALSAMPLER_H

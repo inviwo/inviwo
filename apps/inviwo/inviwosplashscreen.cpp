@@ -28,6 +28,9 @@
  *********************************************************************************/
 
 #include "inviwosplashscreen.h"
+#include <inviwo/core/inviwocommondefines.h>
+#include <inviwo/core/util/commandlineparser.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QApplication>
@@ -36,8 +39,6 @@
 #include <QTextStream>
 #include <QDesktopWidget>
 #include <warn/pop>
-
-#include <inviwo/core/util/commandlineparser.h>
 
 namespace inviwo {
 

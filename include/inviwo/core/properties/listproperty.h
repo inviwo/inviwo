@@ -27,17 +27,16 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LISTPROPERTY_H
-#define IVW_LISTPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/valuewrapper.h>
 
 #include <flags/flags.h>
 
 #include <set>
+#include <vector>
 
 namespace inviwo {
 
@@ -231,4 +230,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_LISTPROPERTY_H

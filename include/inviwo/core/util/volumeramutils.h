@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMERAMUTILS_H
-#define IVW_VOLUMERAMUTILS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
@@ -99,4 +97,3 @@ void forEachVoxelParallel(const VolumeRAM &v, C callback, size_t jobs = 0) {
 
 }  // namespace inviwo
 
-#endif  // IVW_VOLUMERAMUTILS_H

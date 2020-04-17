@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORNETWORKEVALUATOR_H
-#define IVW_PROCESSORNETWORKEVALUATOR_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/core/network/processornetworkevaluationobserver.h>
@@ -76,5 +74,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORNETWORKEVALUATOR_H

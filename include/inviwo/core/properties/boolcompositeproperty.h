@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BOOLCOMPOSITEPROPERTY_H
-#define IVW_BOOLCOMPOSITEPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 
@@ -68,5 +66,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BOOLCOMPOSITEPROPERTY_H

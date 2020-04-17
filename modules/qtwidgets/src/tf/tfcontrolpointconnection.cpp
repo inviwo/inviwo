@@ -46,12 +46,9 @@ TFControlPointConnection::TFControlPointConnection()
     updateShape();
 }
 
-TFControlPointConnection::~TFControlPointConnection() {}
+TFControlPointConnection::~TFControlPointConnection() = default;
 
-void TFControlPointConnection::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
-                                     QWidget* widget) {
-    IVW_UNUSED_PARAM(options);
-    IVW_UNUSED_PARAM(widget);
+void TFControlPointConnection::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
 
     p->save();
     p->setRenderHint(QPainter::Antialiasing, true);

@@ -27,14 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGEWRITERUTIL_H
-#define IVW_IMAGEWRITERUTIL_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/datastructures/image/layer.h>
+
+#include <string>
 
 namespace inviwo {
 
@@ -47,6 +46,4 @@ IVW_CORE_API void saveLayer(const Layer& layer);
 
 }  // namespace util
 
-}  // namespace inviwo
-
-#endif  // IVW_IMAGEWRITERUTIL_H
+}  // namespace inviwo s

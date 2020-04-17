@@ -29,10 +29,11 @@
 
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/io/serialization/serialization.h>
 
 namespace inviwo {
 
-Port::Port(std::string identifier) : identifier_(identifier), processor_(nullptr) {}
+Port::Port(std::string identifier) : identifier_(std::move(identifier)), processor_(nullptr) {}
 
 Processor* Port::getProcessor() const { return processor_; }
 

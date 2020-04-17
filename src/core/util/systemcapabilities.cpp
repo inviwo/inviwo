@@ -107,7 +107,7 @@ bool SystemCapabilities::lookupCPUInfo() {
             sigar_cpu_info_t cpu_info = cpulinfolist.data[i];
             infoCPUs_[i].vendor = std::string(cpu_info.vendor);
             infoCPUs_[i].model = std::string(cpu_info.model);
-            infoCPUs_[i].mhz = static_cast<glm::u64>(cpu_info.mhz);
+            infoCPUs_[i].mhz = static_cast<size_t>(cpu_info.mhz);
         }
     }
 
@@ -122,8 +122,8 @@ bool SystemCapabilities::lookupMemoryInfo() {
 #ifdef IVW_SIGAR
     sigar_mem_t meminfo;
     if (sigar_mem_get(sigar_, &meminfo) == SIGAR_OK) {
-        infoRAM_.total = util::megabytes_to_bytes(static_cast<glm::u64>(meminfo.ram));
-        infoRAM_.available = static_cast<glm::u64>(meminfo.free);
+        infoRAM_.total = util::megabytes_to_bytes(static_cast<size_t>(meminfo.ram));
+        infoRAM_.available = static_cast<size_t>(meminfo.free);
         return true;
     } else {
         return false;
@@ -155,9 +155,9 @@ bool SystemCapabilities::lookupDiskInfo() {
                 if (currentDiskInfo.diskType == "Local") {
                     currentDiskInfo.diskName = std::string(disk_info.dev_name);
                     currentDiskInfo.total =
-                        util::kilobytes_to_bytes(static_cast<glm::u64>(diskusageinfo.total));
+                        util::kilobytes_to_bytes(static_cast<size_t>(diskusageinfo.total));
                     currentDiskInfo.free =
-                        util::kilobytes_to_bytes(static_cast<glm::u64>(diskusageinfo.free));
+                        util::kilobytes_to_bytes(static_cast<size_t>(diskusageinfo.free));
                     infoDisks_.push_back(currentDiskInfo);
                 }
             }
@@ -176,9 +176,9 @@ bool SystemCapabilities::lookupProcessMemoryInfo() {
     sigar_proc_mem_t meminfo;
 
     if (sigar_proc_mem_get(sigar_, sigar_pid_get(sigar_), &meminfo) == SIGAR_OK) {
-        infoProcRAM_.residentMem = static_cast<glm::u64>(meminfo.resident);
-        infoProcRAM_.sharedMem = static_cast<glm::u64>(meminfo.share);
-        infoProcRAM_.virtualMem = static_cast<glm::u64>(meminfo.size);
+        infoProcRAM_.residentMem = static_cast<size_t>(meminfo.resident);
+        infoProcRAM_.sharedMem = static_cast<size_t>(meminfo.share);
+        infoProcRAM_.virtualMem = static_cast<size_t>(meminfo.size);
         return true;
     } else {
         return false;
@@ -275,7 +275,7 @@ int SystemCapabilities::numberOfCores() const {
     }
 }
 
-glm::u64 SystemCapabilities::getAvailableMemory() {
+size_t SystemCapabilities::getAvailableMemory() {
     successMemoryInfo_ = lookupMemoryInfo();
 
     if (successMemoryInfo_) {
@@ -285,7 +285,7 @@ glm::u64 SystemCapabilities::getAvailableMemory() {
     }
 }
 
-glm::u64 SystemCapabilities::getCurrentResidentMemoryUsage() {
+size_t SystemCapabilities::getCurrentResidentMemoryUsage() {
     successProcessMemoryInfo_ = lookupProcessMemoryInfo();
 
     if (successMemoryInfo_) {

@@ -27,15 +27,17 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PORTFACTORYOBJECT_H
-#define IVW_PORTFACTORYOBJECT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/porttraits.h>
+
+#include <memory>
+#include <string>
+#include <type_traits>
 
 namespace inviwo {
 
@@ -98,5 +100,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PORTFACTORYOBJECT_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORNETWORKEVALUATIONOBSERVER_H
-#define IVW_PROCESSORNETWORKEVALUATIONOBSERVER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/observer.h>
@@ -54,5 +53,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORNETWORKEVALUATIONOBSERVER_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SINGLETON_H
-#define IVW_SINGLETON_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -109,5 +108,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SINGLETON_H

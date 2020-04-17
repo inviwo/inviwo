@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ASSERTION_H
-#define IVW_ASSERTION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <sstream>
@@ -66,5 +65,3 @@ IVW_CORE_API void debugBreak();
 #define ivwAssert(condition, message)
 
 #endif
-
-#endif  // IVW_ASSERTION_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYFACTORY_H
-#define IVW_PROPERTYFACTORY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/factory.h>
@@ -55,5 +54,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYFACTORY_H

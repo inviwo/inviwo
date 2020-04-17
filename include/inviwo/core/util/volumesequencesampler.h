@@ -27,22 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESEQUENCESAMPLER_H
-#define IVW_VOLUMESEQUENCESAMPLER_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/util/spatial4dsampler.h>
 #include <inviwo/core/util/volumesampler.h>
 
 namespace inviwo {
-
-/**
- * \class VolumeSequenceSampler
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
 
 class IVW_CORE_API VolumeSequenceSampler : public Spatial4DSampler<3, double> {
     struct Wrapper {
@@ -78,7 +70,7 @@ public:
     void setAllowedLooping(bool allowed = true) { allowLooping_ = allowed; }
 
 protected:
-    virtual dvec3 sampleDataSpace(const dvec4 &pos) const;  // { return sample(pos).xyz(); }
+    virtual dvec3 sampleDataSpace(const dvec4 &pos) const;
     virtual bool withinBoundsDataSpace(const dvec4 &pos) const;
 
 private:
@@ -90,5 +82,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESEQUENCESAMPLER_H

@@ -27,12 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OUTPORTITERATOR_H
-#define IVW_OUTPORTITERATOR_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/stdextensions.h>
+
+#include <vector>
+#include <memory>
 
 namespace inviwo {
 
@@ -378,5 +379,3 @@ struct OutportIterableImpl<Derived, std::vector<std::unique_ptr<T>, Alloc>>
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_OUTPORTITERATOR_H

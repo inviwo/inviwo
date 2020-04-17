@@ -27,17 +27,17 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PORTINSPECTOR_H
-#define IVW_PORTINSPECTOR_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/processors/canvasprocessor.h>
-#include <string.h>
+
+#include <string>
+#include <vector>
 
 namespace inviwo {
 
@@ -72,5 +72,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PORTINSPECTOR_H

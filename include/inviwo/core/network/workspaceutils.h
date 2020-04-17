@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_WORKSPACEUTILS_H
-#define IVW_WORKSPACEUTILS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+
+#include <string>
 
 namespace inviwo {
 
@@ -49,4 +49,3 @@ void IVW_CORE_API updateWorkspaces(InviwoApplication* app, const std::string& pa
 
 }  // namespace inviwo
 
-#endif  // IVW_WORKSPACEUTILS_H

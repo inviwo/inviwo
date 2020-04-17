@@ -40,6 +40,7 @@
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/moduleregistration.h>
+#include <inviwo/core/util/commandlineparser.h>
 
 using namespace inviwo;
 

@@ -32,6 +32,7 @@
 
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/commandlineparser.h>
 #include <modules/python3/pythonlogger.h>
 #include <modules/python3/pythonprocessorfolderobserver.h>
 #include <modules/python3/pyutils.h>

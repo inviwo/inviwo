@@ -37,6 +37,7 @@
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/capabilities.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/inviwocommondefines.h>
 
 #include <string>
 #include <functional>

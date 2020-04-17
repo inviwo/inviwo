@@ -48,6 +48,7 @@
 #include <inviwo/core/util/logerrorcounter.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/moduleregistration.h>
+#include <inviwo/core/util/commandlineparser.h>
 
 #include <inviwo/testutil/configurablegtesteventlistener.h>
 

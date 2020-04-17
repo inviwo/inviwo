@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <png.h>
 #include <algorithm>

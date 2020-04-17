@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_METADATAOWNER_H
-#define IVW_METADATAOWNER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/metadata/metadatamap.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -148,5 +146,3 @@ bool MetaDataOwner::hasMetaData(const std::string& key) const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_METADATAOWNER_H

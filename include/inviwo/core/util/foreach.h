@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FOREACH_H
-#define IVW_FOREACH_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwoapplication.h>
@@ -145,5 +144,3 @@ void forEachParallel(const Iterable& iterable, Callback&& callback, size_t jobs 
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_UTILITIES_H

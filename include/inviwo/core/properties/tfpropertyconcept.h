@@ -27,12 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TFPROPERTYCONCEPT_H
-#define IVW_TFPROPERTYCONCEPT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 #include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -182,5 +179,3 @@ extern template class IVW_CORE_TMPL_EXP TFPropertyModel<IsoTFProperty*>;
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_TFPROPERTYCONCEPT_H

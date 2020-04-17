@@ -27,15 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BUILDINFO_H
-#define IVW_BUILDINFO_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <vector>
 #include <utility>
 #include <string>
+#include <sstream>
+#include <iomanip>
 
 namespace inviwo {
 
@@ -99,5 +99,3 @@ BuildInfo IVW_CORE_API getBuildInfo();
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_BUILDINFO_H

@@ -50,6 +50,8 @@
 #include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 
+#include <set>
+
 namespace inviwo {
 
 class Processor;

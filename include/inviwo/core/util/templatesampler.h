@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TEMPLATESAMPLER_H
-#define IVW_TEMPLATESAMPLER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/util/indexmapper.h>
 
@@ -40,6 +38,7 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 
 #include <inviwo/core/util/spatialsampler.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 
@@ -143,5 +142,3 @@ Vector<DataDims, T> TemplateVolumeSampler<DataType, P, T, DataDims>::getVoxel(
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_TEMPLATESAMPLER_H

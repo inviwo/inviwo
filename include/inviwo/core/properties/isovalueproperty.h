@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ISOVALUEPROPERTY_H
-#define IVW_ISOVALUEPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
@@ -107,5 +106,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ISOVALUEPROPERTY_H

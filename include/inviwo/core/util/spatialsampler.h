@@ -27,10 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SPATIALSAMPLER_H
-#define IVW_SPATIALSAMPLER_H
-
-#include <inviwo/core/common/inviwo.h>
+#pragma once
 
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/datatraits.h>
@@ -196,5 +193,3 @@ Matrix<SpatialDims, float> SpatialSampler<SpatialDims, DataDims, T>::getBasis() 
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_SPATIALSAMPLER_H

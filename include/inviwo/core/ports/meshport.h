@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GEOMETRYPORT_H
-#define IVW_GEOMETRYPORT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/datainport.h>
@@ -58,5 +57,3 @@ using MeshFlatMultiInport = DataInport<Mesh, 0, true>;
 using MeshOutport = DataOutport<Mesh>;
 
 }  // namespace inviwo
-
-#endif  // IVW_GEOMETRYPORT_H

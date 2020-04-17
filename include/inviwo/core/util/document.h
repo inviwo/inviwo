@@ -30,7 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/typetraits.h>
 
 #include <functional>
 #include <sstream>
@@ -218,11 +218,7 @@ public:
         return ss;
     }
 
-    operator std::string() const {
-        std::stringstream ss;
-        ss << *this;
-        return ss.str();
-    }
+    operator std::string() const;
 
 private:
     std::unique_ptr<Element> root_;

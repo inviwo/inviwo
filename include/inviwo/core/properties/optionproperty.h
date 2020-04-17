@@ -27,15 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BASEOPTIONPROPERTY_H
-#define IVW_BASEOPTIONPROPERTY_H
+#pragma once
 
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/introspection.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/enumtraits.h>
+
 #include <type_traits>
 #include <iterator>
 
@@ -798,5 +797,3 @@ extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<double>;
 extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<std::string>;
 
 }  // namespace inviwo
-
-#endif  // IVW_BASEOPTIONPROPERTY_H

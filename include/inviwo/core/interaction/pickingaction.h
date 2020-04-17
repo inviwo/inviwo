@@ -30,9 +30,10 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/glmvec.h>
 
 #include <functional>
-#include <glm/vec3.hpp>
+
 
 namespace inviwo {
 
@@ -76,7 +77,7 @@ public:
      *  This is eqvivalent to PickingManager::indexToColor(getPickingId(id))/255.0
      * \param id the local picking index
      */
-    glm::vec3 getColor(size_t id = 0) const;
+    vec3 getColor(size_t id = 0) const;
 
     /**
      *	The number of picking indices in this picking object.

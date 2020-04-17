@@ -31,6 +31,8 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stringconversion.h>  // splitString
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/logcentral.h>
 #include <codecvt>
 #include <locale>
 #include <algorithm>

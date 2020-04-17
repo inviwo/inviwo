@@ -27,10 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STATECOORDINATOR_H
-#define IVW_STATECOORDINATOR_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
+#pragma once
 
 #include <functional>
 
@@ -98,4 +95,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_STATECOORDINATOR_H

@@ -27,16 +27,18 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAOUTPORT_H
-#define IVW_DATAOUTPORT_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/ports/porttraits.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/glmvec.h>
+
+#include <memory>
 
 namespace inviwo {
 
@@ -182,5 +184,3 @@ Document DataOutport<T>::getInfo() const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAOUTPORT_H

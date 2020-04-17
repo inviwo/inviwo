@@ -30,6 +30,7 @@
 #include <inviwo/core/io/tempfilehandle.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/exception.h>
 
 #ifdef WIN32
 #define NOMINMAX

@@ -27,14 +27,16 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAWRITERFACTORY_H
-#define IVW_DATAWRITERFACTORY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/util/fileextension.h>
+
+#include <vector>
+#include <string>
+#include <memory>
 
 namespace inviwo {
 
@@ -130,4 +132,3 @@ std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtensi
 
 }  // namespace inviwo
 
-#endif  // IVW_DATAWRITERFACTORY_H

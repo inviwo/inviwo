@@ -37,6 +37,8 @@
 #include <inviwo/core/interaction/pickingaction.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#include <glm/gtx/hash.hpp>
+
 #include <unordered_set>
 
 namespace inviwo {

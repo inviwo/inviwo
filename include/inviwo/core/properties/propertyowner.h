@@ -27,14 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYOWNER_H
-#define IVW_PROPERTYOWNER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/propertyownerobserver.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/interaction/events/eventlistener.h>
+
+#include <vector>
+#include <memory>
 
 namespace inviwo {
 
@@ -189,4 +190,3 @@ void PropertyOwner::addProperties(Ts&... properties) {
 }
 }  // namespace inviwo
 
-#endif  // IVW_PROPERTYOWNER_H

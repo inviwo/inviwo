@@ -31,6 +31,9 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/tinydirinterface.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/inviwocommondefines.h>
 
 // For directory exists
 #include <sys/types.h>

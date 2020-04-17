@@ -47,6 +47,7 @@ namespace inviwo {
 class FileExtension;
 class Volume;
 class InviwoApplication;
+class DataReaderFactory;
 
 /** \docpage{org.inviwo.ImageStackVolumeSource, Image-Stack Volume Source}
  * Converts a stack of 2D images to a 3D volume

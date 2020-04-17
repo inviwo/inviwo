@@ -27,18 +27,18 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PORT_H
-#define IVW_PORT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/document.h>
-#include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/io/serialization/serializable.h>
 
+#include <glm/fwd.hpp>
 #include <string>
 
 namespace inviwo {
 
 class Processor;
+class Document;
 
 /**
  * \defgroup ports Ports
@@ -64,7 +64,7 @@ public:
      * instance used in the NetworkEditor. To distinguish different port types through their color,
      * this method should be overloaded in derived classes.
      */
-    virtual uvec3 getColorCode() const = 0;
+    virtual glm::uvec3 getColorCode() const = 0;
     virtual Document getInfo() const = 0;
 
     virtual bool isConnected() const = 0;
@@ -92,4 +92,3 @@ protected:
 
 }  // namespace inviwo
 
-#endif  // IVW_PORT_H

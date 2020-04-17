@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BYTEREADERUTIL_H
-#define IVW_BYTEREADERUTIL_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <string>
 
 namespace inviwo {
 
@@ -42,5 +41,3 @@ void IVW_CORE_API readBytesIntoBuffer(const std::string& file, size_t offset, si
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_BYTEREADERUTIL_H

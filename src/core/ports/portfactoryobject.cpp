@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/ports/portfactoryobject.h>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 

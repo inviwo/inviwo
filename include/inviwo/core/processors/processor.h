@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSOR_H
-#define IVW_PROCESSOR_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processorobserver.h>
@@ -441,5 +439,3 @@ T& Processor::addPort(T& port, const std::string& portGroup) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSOR_H

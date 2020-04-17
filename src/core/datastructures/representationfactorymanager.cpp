@@ -29,6 +29,8 @@
 
 #include <inviwo/core/datastructures/representationfactorymanager.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+
 namespace inviwo {
 
 RepresentationMetaFactory* RepresentationFactoryManager::representationMetaFactory_ = nullptr;
@@ -63,6 +65,15 @@ void RepresentationFactoryManager::registerRepresentationConverterFactory(
     if (localRepresentationConverterMetaFactory_->registerObject(converterFactory.get())) {
         representationConverterFactories_.push_back(std::move(converterFactory));
     }
+}
+
+RepresentationMetaFactory* RepresentationFactoryManager::getDefaultRepresentationMetaFactory() {
+    return InviwoApplication::getPtr()->getRepresentationMetaFactory();
+}
+
+RepresentationConverterMetaFactory*
+RepresentationFactoryManager::getDefaultRepresentationConverterMetaFactory() {
+    return InviwoApplication::getPtr()->getRepresentationConverterMetaFactory();
 }
 
 }  // namespace inviwo

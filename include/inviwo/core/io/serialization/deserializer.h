@@ -36,6 +36,7 @@
 #include <inviwo/core/util/logfilter.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/glm.h>
 
 #include <flags/flags.h>
 

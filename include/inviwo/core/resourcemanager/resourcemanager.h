@@ -27,19 +27,16 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_RESOURCEMANAGER_H
-#define IVW_RESOURCEMANAGER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 #include <inviwo/core/resourcemanager/resource.h>
 #include <inviwo/core/resourcemanager/resourcemanagerobserver.h>
-
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
 #include <typeindex>
+#include <unordered_map>
 
 namespace inviwo {
 
@@ -215,4 +212,3 @@ std::pair<std::string, std::type_index> ResourceManager::keyTypePair(const std::
 
 }  // namespace inviwo
 
-#endif  // IVW_RESOURCEMANAGER_H

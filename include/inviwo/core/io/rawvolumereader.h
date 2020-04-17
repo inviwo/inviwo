@@ -27,17 +27,18 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_RAWVOLUMEREADER_H
-#define IVW_RAWVOLUMEREADER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/volumedatareaderdialog.h>
+
+#include <memory>
+#include <string>
 
 namespace inviwo {
 class MetaDataOwner;
@@ -75,5 +76,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_RAWVOLUMEREADER_H

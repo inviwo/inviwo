@@ -27,15 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_COMPOSITEPROPERTY_H
-#define IVW_COMPOSITEPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/properties/compositepropertyobserver.h>
+
+#include <vector>
 
 namespace inviwo {
 
@@ -94,4 +94,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_COMPOSITEPROPERTY_H

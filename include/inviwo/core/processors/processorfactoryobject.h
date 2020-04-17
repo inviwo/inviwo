@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORFACTORYOBJECT_H
-#define IVW_PROCESSORFACTORYOBJECT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/processors/processorstate.h>
@@ -99,4 +98,3 @@ public:
 
 }  // namespace inviwo
 
-#endif  // IVW_PROCESSORFACTORYOBJECT_H

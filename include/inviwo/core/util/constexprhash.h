@@ -53,11 +53,9 @@
  * SOFTWARE.
  *********************************************************************************/
 
-#ifndef IVW_CONSTEXPRHASH_H
-#define IVW_CONSTEXPRHASH_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
@@ -156,4 +154,3 @@ constexpr uint64_t constexpr_hash(const std::string_view str) {
 
 }  // namespace inviwo
 
-#endif  // IVW_CONSTEXPRHASH_H

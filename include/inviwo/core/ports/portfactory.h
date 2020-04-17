@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PORTFACTORY_H
-#define IVW_PORTFACTORY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/portfactoryobject.h>
 #include <inviwo/core/util/factory.h>
 
@@ -63,4 +61,3 @@ public:
 
 }  // namespace inviwo
 
-#endif  // IVW_PORTFACTORY_H

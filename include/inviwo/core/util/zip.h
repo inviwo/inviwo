@@ -27,15 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ZIP_H
-#define IVW_ZIP_H
+#pragma once
+
+#include <inviwo/core/util/stdextensions.h>
 
 #include <tuple>
 #include <utility>
 #include <iterator>
 #include <type_traits>
 #include <limits>
-#include <inviwo/core/util/stdextensions.h>
 /**
  * This file contains convenience functions for iterating.
  * Examples:
@@ -586,5 +586,3 @@ struct tuple_element<N, ::inviwo::util::detailzip::proxy<Ts...>> {
         decltype(std::declval<::inviwo::util::detailzip::proxy<Ts...>>().template get<N>());
 };
 }  // namespace std
-
-#endif  // IVW_ZIP_H

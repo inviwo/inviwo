@@ -30,9 +30,9 @@
 #include <inviwo/core/util/colorconversion.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/glm.h>
 
 #include <algorithm>
-#include <string>
 #include <sstream>
 
 namespace inviwo {

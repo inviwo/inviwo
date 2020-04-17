@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVALIDATIONLEVEL_H
-#define IVW_INVALIDATIONLEVEL_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+
+#include <iosfwd>
 
 namespace inviwo {
 
@@ -68,4 +68,3 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 
 }  // namespace inviwo
 
-#endif  // IVW_INVALIDATIONLEVEL_H

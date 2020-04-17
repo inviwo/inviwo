@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTY_H
-#define IVW_PROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/valuewrapper.h>
@@ -416,4 +415,3 @@ Property& Property::autoLinkToProperty(const std::string& propertyPath) {
 
 }  // namespace inviwo
 
-#endif  // IVW_PROPERTY_H

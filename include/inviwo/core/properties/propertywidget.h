@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYWIDGET_H
-#define IVW_PROPERTYWIDGET_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
@@ -70,5 +69,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYWIDGET_H

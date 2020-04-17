@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGEPORT_H
-#define IVW_IMAGEPORT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/datainport.h>
@@ -362,5 +361,3 @@ Document BaseImageInport<N>::getInfo() const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGEPORT_H

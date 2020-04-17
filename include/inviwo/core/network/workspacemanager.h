@@ -27,13 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORNETWORKMANAGER_H
-#define IVW_PROCESSORNETWORKMANAGER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/io/serialization/serializable.h>
 
 #include <flags/flags.h>
 
@@ -44,6 +44,7 @@
 namespace inviwo {
 
 class FactoryBase;
+class InviwoApplication;
 
 enum class WorkspaceSaveMode { Disk = 1 << 0, Undo = 1 << 1 };
 ALLOW_FLAGS_FOR_ENUM(WorkspaceSaveMode)
@@ -163,4 +164,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_PROCESSORNETWORKMANAGER_H

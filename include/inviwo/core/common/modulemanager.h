@@ -35,6 +35,7 @@
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/common/runtimemoduleregistration.h>
 #include <inviwo/core/util/vectoroperations.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwomodulelibraryobserver.h>
 
 #include <warn/push>

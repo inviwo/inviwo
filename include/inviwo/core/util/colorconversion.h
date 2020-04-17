@@ -27,11 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_COLORCONVERSION_H
-#define IVW_COLORCONVERSION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glmvec.h>
+
+#include <string>
 
 namespace inviwo {
 
@@ -302,5 +303,3 @@ IVW_CORE_API vec3 Luv2XYZ(const vec3 &Luv, vec3 whitePointXYZ = getD65WhitePoint
 }  // namespace color
 
 }  // namespace inviwo
-
-#endif  // IVW_COLORCONVERSION_H

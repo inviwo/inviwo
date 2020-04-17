@@ -27,11 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGEEDITORPROPERTY_H
-#define IVW_IMAGEEDITORPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/fileproperty.h>
+
+#include <vector>
 
 namespace inviwo {
 
@@ -87,4 +88,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_IMAGEEDITORPROPERTY_H
