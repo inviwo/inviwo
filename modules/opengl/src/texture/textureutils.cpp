@@ -87,6 +87,16 @@ void activateTargetAndCopySource(Image& targetImage, const Image& sourceImage, I
     outImageGL->activateBuffer(type);
 }
 
+void activateTargetAndCopySource(ImageOutport& targetOutport, const Image& sourceImage,
+                                 ImageType type) {
+    if (!targetOutport.hasEditableData()) {
+        targetOutport.setData(
+            std::make_shared<Image>(targetOutport.getDimensions(), targetOutport.getDataFormat()));
+    }
+    auto outImage = targetOutport.getEditableData();
+    activateTargetAndCopySource(*outImage, sourceImage, type);
+}
+
 void activateTargetAndCopySource(Image& targetImage, const ImageInport& sourceInport,
                                  ImageType type) {
     auto outImageGL = targetImage.getEditableRepresentation<ImageGL>();

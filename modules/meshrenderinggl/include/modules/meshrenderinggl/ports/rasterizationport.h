@@ -27,31 +27,17 @@
  *
  *********************************************************************************/
 
-#include <modules/meshrenderinggl/meshrenderingglmodule.h>
-#include <modules/meshrenderinggl/ports/rasterizationport.h>
-#include <modules/meshrenderinggl/processors/meshrasterizer.h>
-#include <modules/meshrenderinggl/processors/rasterizationrenderer.h>
-#include <modules/meshrenderinggl/processors/calcnormalsprocessor.h>
-#include <modules/meshrenderinggl/ports/rasterizationport.h>
+#pragma once
 
-#include <modules/opengl/shader/shadermanager.h>
+#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
+#include <modules/meshrenderinggl/datastructures/rasterization.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 
 namespace inviwo {
 
-MeshRenderingGLModule::MeshRenderingGLModule(InviwoApplication* app)
-    : InviwoModule(app, "MeshRenderingGL") {
+using RasterizationOutport = DataOutport<Rasterization>;
 
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-
-    // Processors
-    registerProcessor<MeshRasterizer>();
-    registerProcessor<RasterizationRenderer>();
-    registerProcessor<CalcNormalsProcessor>();
-
-    // Ports
-    registerPort<RasterizationInport>();
-    registerPort<RasterizationOutport>();
-}
+using RasterizationInport = DataInport<Rasterization, 0, true>;
 
 }  // namespace inviwo

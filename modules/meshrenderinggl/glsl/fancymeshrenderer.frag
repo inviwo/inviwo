@@ -322,8 +322,6 @@ vec4 performShading() {
         // Phong
         color.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0f),
                                    frag.worldPosition.xyz, normal, toCameraDir);
-    } else if (settings.shadingMode == 2) {
-        // PBR
     }
 
     // done

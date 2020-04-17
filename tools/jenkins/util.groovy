@@ -170,6 +170,7 @@ def format(def state, repo) {
 def touchwarn() {
     if (fileExists('build/warnings.txt')) {
         readFile('build/warnings.txt').tokenize('\n').each{file ->
+            if (file.startsWith("../")) return
             println "touching ${file}"
             touch file
         }

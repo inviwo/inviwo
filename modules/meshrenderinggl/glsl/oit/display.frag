@@ -30,18 +30,28 @@
 /**
  * Fast Single-pass A-Buffer using OpenGL 4.0 V2.0
  * Copyright Cyril Crassin, July 2010
+ *
+ * Edited by the Inviwo Foundation.
  **/
 
-// need extensions are added from C++
+// need extensions added from C++
 // GL_NV_gpu_shader5, GL_EXT_shader_image_load_store, GL_NV_shader_buffer_load,
-// GL_NV_shader_buffer_store, GL_EXT_bindable_uniform
+// GL_EXT_bindable_uniform
 
 #include "oit/abufferlinkedlist.glsl"
 #include "oit/sort.glsl"
+#include "utils/structs.glsl"
 
 // How should the stuff be rendered? (Debugging options)
 #define ABUFFER_DISPNUMFRAGMENTS 0
 #define ABUFFER_RESOLVE_USE_SORTING 1
+
+#ifdef BACKGROUND_AVAILABLE
+uniform ImageParameters bgParameters;
+uniform sampler2D bgColor;
+uniform sampler2D bgDepth;
+uniform vec2 reciprocalDimensions;
+#endif  // BACKGROUND_AVAILABLE
 
 // Whole number pixel offsets (not necessary just to test the layout keyword !)
 layout(pixel_center_integer) in vec4 gl_FragCoord;
@@ -54,9 +64,6 @@ int getFragmentCount(uint pixelIdx);
 
 // Keeps only closest fragment
 vec4 resolveClosest(uint idx);
-
-// Fill local memory array of fragments
-void fillFragmentArray(uint idx, out int numFrag);
 
 // Resolve A-Buffer and blend sorted fragments
 void main() {
@@ -80,24 +87,29 @@ void main() {
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
         gl_FragDepth = p.depth;
 #else
-        // Copy fragments in local array
-        int numFrag = 0;
-        fillFragmentArray(pixelIdx, numFrag);
-        // Sort fragments in local memory array
-        bubbleSort(numFrag);
+        float backgroundDepth = 1.0;
+#ifdef BACKGROUND_AVAILABLE
+        // Assume the camera used to render the background has the same near and far plane,
+        // so we can directly compare depths.
+        vec2 texCoord = (gl_FragCoord.xy + 0.5) * reciprocalDimensions;
+        backgroundDepth = texture(bgDepth, texCoord).x;
+#endif  // BACKGROUND_AVAILABLE
 
         // front-to-back shading
         vec4 color = vec4(0);
-        for (int i = 0; i < numFrag; ++i) {
-            vec4 c = uncompressPixelData(fragmentList[i]).color;
+        vec4 nextFragment = selectionSortNext(pixelIdx, 0.0);
+        abufferPixel unpackedFragment = uncompressPixelData(nextFragment);
+        gl_FragDepth = min(backgroundDepth, unpackedFragment.depth);
+
+        while (unpackedFragment.depth >= 0 && unpackedFragment.depth <= backgroundDepth) {
+            vec4 c = unpackedFragment.color;
             color.rgb = color.rgb + (1 - color.a) * c.a * c.rgb;
             color.a = color.a + (1 - color.a) * c.a;
+
+            nextFragment = selectionSortNext(pixelIdx, unpackedFragment.depth);
+            unpackedFragment = uncompressPixelData(nextFragment);
         }
-        float depth = 1.0;
-        if (numFrag > 0) {
-            depth = uncompressPixelData(fragmentList[0]).depth;
-        }
-        gl_FragDepth = depth;
+
         FragData0 = color;
         PickingData = vec4(0.0, 0.0, 0.0, 1.0);
 #endif
@@ -142,17 +154,4 @@ vec4 resolveClosest(uint pixelIdx) {
     }
     // Output final color for the frame buffer
     return minFrag;
-}
-
-void fillFragmentArray(uint pixelIdx, out int numFrag) {
-    // Load fragments into a local memory array for sorting
-
-    int ip = 0;
-    while (pixelIdx != 0 && ip < ABUFFER_SIZE) {
-        vec4 val = readPixelStorage(pixelIdx - 1);
-        fragmentList[ip] = val;
-        pixelIdx = floatBitsToUint(val.x);
-        ip++;
-    }
-    numFrag = ip;
 }

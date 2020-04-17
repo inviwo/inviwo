@@ -34,6 +34,7 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/openglcapabilities.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 #include <cstdio>
 #include <fmt/format.h>
@@ -132,7 +133,7 @@ void FragmentListRenderer::prePass(const size2_t& screenSize) {
     LGL_ERROR;
 }
 
-bool FragmentListRenderer::postPass(bool useIllustration) {
+bool FragmentListRenderer::postPass(bool useIllustration, const Image* background) {
     // memory barrier
     glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
 
@@ -155,10 +156,19 @@ bool FragmentListRenderer::postPass(bool useIllustration) {
         return false;
     }
 
+    // Build shader depending on inport state.
+    if (static_cast<bool>(background) != builtWithBackground_) buildShaders(background);
+
     if (!useIllustration) {
         // render fragment list
         display_.activate();
         setUniforms(display_, textureUnits_[0]);
+        if (builtWithBackground_) {
+            // Set depth buffer to read from.
+            utilgl::bindAndSetUniforms(display_, textureUnits_, *background, "bg",
+                                       ImageType::ColorDepth);
+            display_.setUniform("reciprocalDimensions", vec2(1) / vec2(screenSize_));
+        }
         utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
         utilgl::DepthMaskState depthMask(GL_TRUE);
@@ -174,7 +184,7 @@ bool FragmentListRenderer::postPass(bool useIllustration) {
     TextureUnit countUnit;
     if (useIllustration) {  // 1. copy to illustration buffer
         illustration_.resizeBuffers(screenSize_, fragmentSize_);
-        fillIllustration(textureUnits_[0], idxUnit, countUnit);
+        fillIllustration(textureUnits_[0], idxUnit, countUnit, background);
     }
 
     // unbind texture with abuffer indices
@@ -216,7 +226,11 @@ void FragmentListRenderer::setUniforms(Shader& shader, TextureUnit& abuffUnit) c
 }
 
 bool FragmentListRenderer::supportsFragmentLists() {
-    return OpenGLCapabilities::getOpenGLVersion() >= 430;
+    return OpenGLCapabilities::getOpenGLVersion() >= 430 &&
+           OpenGLCapabilities::isExtensionSupported("GL_NV_gpu_shader5") &&
+           OpenGLCapabilities::isExtensionSupported("GL_EXT_shader_image_load_store") &&
+           OpenGLCapabilities::isExtensionSupported("GL_NV_shader_buffer_load") &&
+           OpenGLCapabilities::isExtensionSupported("GL_EXT_bindable_uniform");
 }
 
 bool FragmentListRenderer::supportsIllustration() {
@@ -232,33 +246,47 @@ typename Dispatcher<void()>::Handle FragmentListRenderer::onReload(std::function
     return onReload_.add(callback);
 }
 
-void FragmentListRenderer::buildShaders() {
+void FragmentListRenderer::buildShaders(bool hasBackground) {
     auto* dfs = display_.getFragmentShaderObject();
-
     dfs->clearShaderExtensions();
-    dfs->addShaderExtension("GL_NV_gpu_shader5", true);
-    dfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
-    dfs->addShaderExtension("GL_NV_shader_buffer_load", true);
-    dfs->addShaderExtension("GL_NV_shader_buffer_store", true);
-    dfs->addShaderExtension("GL_EXT_bindable_uniform", true);
 
     auto* cfs = clear_.getFragmentShaderObject();
     cfs->clearShaderExtensions();
-    cfs->addShaderExtension("GL_NV_gpu_shader5", true);
-    cfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
-    cfs->addShaderExtension("GL_NV_shader_buffer_load", true);
-    cfs->addShaderExtension("GL_NV_shader_buffer_store", true);
-    cfs->addShaderExtension("GL_EXT_bindable_uniform", true);
-
-    auto* ffs = illustration_.fill.getFragmentShaderObject();
-    ffs->addShaderExtension("GL_ARB_shader_atomic_counter_ops", true);
 
     if (supportsFragmentLists()) {
+        dfs->addShaderExtension("GL_NV_gpu_shader5", true);
+        dfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
+        dfs->addShaderExtension("GL_NV_shader_buffer_load", true);
+        dfs->addShaderExtension("GL_EXT_bindable_uniform", true);
+
+        cfs->addShaderExtension("GL_NV_gpu_shader5", true);
+        cfs->addShaderExtension("GL_EXT_shader_image_load_store", true);
+        cfs->addShaderExtension("GL_NV_shader_buffer_load", true);
+        cfs->addShaderExtension("GL_EXT_bindable_uniform", true);
+    }
+
+    auto* ffs = illustration_.fill.getFragmentShaderObject();
+    if (supportsIllustration()) ffs->addShaderExtension("GL_ARB_shader_atomic_counter_ops", true);
+
+    if (supportsFragmentLists()) {
+        builtWithBackground_ = hasBackground;
+        if (builtWithBackground_) {
+            dfs->addShaderDefine("BACKGROUND_AVAILABLE");
+        } else {
+            dfs->removeShaderDefine("BACKGROUND_AVAILABLE");
+        }
+
         display_.build();
         clear_.build();
     }
 
     if (supportsIllustration()) {
+        if (builtWithBackground_) {
+            illustration_.fill.getFragmentShaderObject()->addShaderDefine("BACKGROUND_AVAILABLE");
+        } else {
+            illustration_.fill.getFragmentShaderObject()->removeShaderDefine(
+                "BACKGROUND_AVAILABLE");
+        }
         illustration_.fill.build();
         illustration_.draw.build();
         illustration_.neighbors.build();
@@ -324,7 +352,7 @@ void FragmentListRenderer::Illustration::resizeBuffers(size2_t screenSize, size_
 }
 
 void FragmentListRenderer::fillIllustration(TextureUnit& abuffUnit, TextureUnit& idxUnit,
-                                            TextureUnit& countUnit) {
+                                            TextureUnit& countUnit, const Image* background) {
     // reset counter
     LGL_ERROR;
     GLuint v[1] = {0};
@@ -336,6 +364,11 @@ void FragmentListRenderer::fillIllustration(TextureUnit& abuffUnit, TextureUnit&
     illustration_.fill.activate();
     setUniforms(illustration_.fill, abuffUnit);
     illustration_.setUniforms(illustration_.fill, idxUnit, countUnit);
+    if (builtWithBackground_) {
+        utilgl::bindAndSetUniforms(illustration_.fill, textureUnits_, *background, "bg",
+                                   ImageType::ColorDepth);
+        illustration_.fill.setUniform("reciprocalDimensions", vec2(1) / vec2(screenSize_));
+    }
 
     illustration_.color.bindBase(0);        // out: alpha + color
     illustration_.surfaceInfo.bindBase(1);  // out: depth + gradient
