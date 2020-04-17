@@ -48,4 +48,3 @@ void IVW_CORE_API updateWorkspaces(InviwoApplication* app, const std::string& pa
 }  // namespace util
 
 }  // namespace inviwo
-

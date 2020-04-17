@@ -39,7 +39,5 @@ DiffuseLight* DiffuseLight::clone() const { return new DiffuseLight(*this); }
  * @return Radiant flux in watt.
  */
 
-vec3 DiffuseLight::getPower() const {
-    return getIntensity() * getArea() * glm::pi<float>();
-}
+vec3 DiffuseLight::getPower() const { return getIntensity() * getArea() * glm::pi<float>(); }
 }  // namespace inviwo

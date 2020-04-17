@@ -233,4 +233,3 @@ RepresentationConverterFactory<BaseRepr>::createConverterPackage(ConverterID id)
 }
 
 }  // namespace inviwo
-

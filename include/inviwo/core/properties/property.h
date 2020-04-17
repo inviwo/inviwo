@@ -414,4 +414,3 @@ Property& Property::autoLinkToProperty(const std::string& propertyPath) {
 }
 
 }  // namespace inviwo
-

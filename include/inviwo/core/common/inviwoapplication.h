@@ -445,7 +445,6 @@ protected:
 
     std::unique_ptr<ResourceManager> resourceManager_;
 
-
     // Factories
     std::unique_ptr<CameraFactory> cameraFactory_;
     std::unique_ptr<DataReaderFactory> dataReaderFactory_;
@@ -648,4 +647,3 @@ inline ProcessorWidgetFactory* InviwoApplication::getProcessorWidgetFactory() co
 }
 
 }  // namespace inviwo
-

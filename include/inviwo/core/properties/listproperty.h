@@ -229,4 +229,3 @@ private:
 };
 
 }  // namespace inviwo
-

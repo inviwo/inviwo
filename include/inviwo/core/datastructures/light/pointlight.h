@@ -41,9 +41,7 @@ public:
     virtual ~PointLight() = default;
     virtual PointLight* clone() const override;
 
-    virtual float getArea() const override {
-        return 4.f * glm::pi<float>() * size_.x * size_.y;
-    }
+    virtual float getArea() const override { return 4.f * glm::pi<float>() * size_.x * size_.y; }
     /**
      * Get radiant flux (color) of light source.
      * @see setPower

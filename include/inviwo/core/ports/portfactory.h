@@ -60,4 +60,3 @@ public:
 };
 
 }  // namespace inviwo
-

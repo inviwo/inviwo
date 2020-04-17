@@ -76,4 +76,3 @@ RepresentationConverterFactory<BaseRepr>* RepresentationConverterMetaFactory::ge
 }
 
 }  // namespace inviwo
-

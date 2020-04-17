@@ -211,4 +211,3 @@ std::pair<std::string, std::type_index> ResourceManager::keyTypePair(const std::
 }
 
 }  // namespace inviwo
-

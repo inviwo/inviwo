@@ -31,7 +31,6 @@
 #include <inviwo/core/interaction/events/eventutil.h>
 #include <inviwo/core/util/glm.h>
 
-
 namespace inviwo {
 
 GestureEvent::GestureEvent(dvec2 deltaPos, double deltaDistance, GestureType type,

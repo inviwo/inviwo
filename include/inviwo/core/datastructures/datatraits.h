@@ -215,4 +215,3 @@ struct DataTraits<std::vector<std::shared_ptr<T>, A>> {
 };
 
 }  // namespace inviwo
-

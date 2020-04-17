@@ -189,4 +189,3 @@ void PropertyOwner::addProperties(Ts&... properties) {
     detail::addPropertyHelper(*this, properties...);
 }
 }  // namespace inviwo
-

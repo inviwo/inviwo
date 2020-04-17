@@ -49,4 +49,3 @@ protected:
 };
 
 }  // namespace inviwo
-

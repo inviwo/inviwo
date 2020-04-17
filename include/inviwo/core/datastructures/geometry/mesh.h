@@ -295,4 +295,3 @@ extern template class IVW_CORE_TMPL_EXP DataReaderType<Mesh>;
 extern template class IVW_CORE_TMPL_EXP DataWriterType<Mesh>;
 
 }  // namespace inviwo
-

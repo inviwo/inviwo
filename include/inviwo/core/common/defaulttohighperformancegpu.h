@@ -55,4 +55,3 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 
 #endif
-

@@ -153,4 +153,3 @@ auto ThreadPool::enqueue(F&& f, Args&&... args) -> std::future<std::invoke_resul
 }
 
 }  // namespace inviwo
-

@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
                   "Incomplete network loading " + workspace + " due to " + exception.getMessage(),
                   LogLevel::Error);
         return 1;
-    } 
+    }
 
     inviwoApp.getProcessorNetwork()->unlock();
 

@@ -360,4 +360,3 @@ IVW_CORE_API std::string cleanupPath(const std::string& path);
 }  // namespace filesystem
 
 }  // namespace inviwo
-

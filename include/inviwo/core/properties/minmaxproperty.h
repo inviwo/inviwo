@@ -418,4 +418,3 @@ Document MinMaxProperty<T>::getDescription() const {
 }
 
 }  // namespace inviwo
-

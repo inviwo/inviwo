@@ -29,5 +29,4 @@
 
 #include <inviwo/core/util/typetraits.h>
 
-namespace inviwo {
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

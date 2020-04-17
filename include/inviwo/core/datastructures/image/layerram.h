@@ -144,7 +144,7 @@ public:
 
 size_t inline LayerRAM::posToIndex(const size2_t& pos, const size2_t& dim) {
     IVW_ASSERT((pos.x < dim.x) && (pos.y < dim.y),
-              "posToIndex: position out of bounds (pos: " << pos << ", dim: " << dim << ")");
+               "posToIndex: position out of bounds (pos: " << pos << ", dim: " << dim << ")");
     return pos.x + (pos.y * dim.x);
 }
 

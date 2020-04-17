@@ -89,4 +89,3 @@ struct representation_traits<Volume, kind::Disk> {
 };
 
 }  // namespace inviwo
-

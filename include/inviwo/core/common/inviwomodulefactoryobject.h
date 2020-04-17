@@ -120,4 +120,3 @@ IVW_CORE_API void topologicalModuleFactoryObjectSort(
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator end);
 
 }  // namespace inviwo
-

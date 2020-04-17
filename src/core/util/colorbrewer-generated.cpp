@@ -2822,15 +2822,15 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
             return ylorrd_8;
         }
 
-        // clang-format on
+            // clang-format on
     }
     IVW_ASSERT(false, "Unhandled enum value");
     static const std::vector<dvec4> dummy{};
     return dummy;
 }
 
-glm::uint8 getMinNumberOfColorsForFamily(const Family &family) { 
-        // clang-format off
+glm::uint8 getMinNumberOfColorsForFamily(const Family &family) {
+    // clang-format off
     if (family == Family::Accent || family == Family::Paired || 
         family == Family::Set1 || family == Family::Set2) {
         return 1;

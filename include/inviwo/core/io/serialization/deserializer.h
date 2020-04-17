@@ -315,7 +315,8 @@ void getNodeAttribute(TxElement* node, const std::string& key, T& dest) {
     }
 }
 
-IVW_CORE_API void forEachChild(TxElement* node, const std::string& key, std::function<void(TxElement*)> func);
+IVW_CORE_API void forEachChild(TxElement* node, const std::string& key,
+                               std::function<void(TxElement*)> func);
 
 }  // namespace detail
 

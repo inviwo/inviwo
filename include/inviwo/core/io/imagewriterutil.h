@@ -46,4 +46,4 @@ IVW_CORE_API void saveLayer(const Layer& layer);
 
 }  // namespace util
 
-}  // namespace inviwo s
+}  // namespace inviwo

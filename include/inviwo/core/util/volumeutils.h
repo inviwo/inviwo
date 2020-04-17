@@ -73,4 +73,3 @@ double IVW_CORE_API voxelVolume(const Volume &volume);
 }  // namespace util
 
 }  // namespace inviwo
-

@@ -39,7 +39,7 @@
 namespace ticpp {
 class Element;
 class Document;
-}
+}  // namespace ticpp
 
 namespace inviwo {
 using TxElement = ticpp::Element;
@@ -47,7 +47,7 @@ using TxDocument = ticpp::Document;
 
 namespace detail {
 IVW_CORE_API std::string getNodeAttributeOrDefault(TxElement* node, const std::string& key,
-                                      const std::string& defaultValue);
+                                                   const std::string& defaultValue);
 }
 
 template <typename T>

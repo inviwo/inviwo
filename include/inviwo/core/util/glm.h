@@ -1018,4 +1018,3 @@ struct prefix<size_t> {
 }  // namespace detail
 
 }  // namespace glm
-

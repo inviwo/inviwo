@@ -346,4 +346,3 @@ using PrecsionValueType[[deprecated("Use `PrecisionValueType` instead")]] =
 }  // namespace util
 
 }  // namespace inviwo
-

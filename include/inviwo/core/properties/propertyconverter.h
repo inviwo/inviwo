@@ -200,4 +200,3 @@ protected:
 };
 
 }  // namespace inviwo
-

@@ -220,4 +220,3 @@ bool IVW_CORE_API operator==(const BufferBase& bufA, const BufferBase& bufB);
 bool IVW_CORE_API operator!=(const BufferBase& bufA, const BufferBase& bufB);
 
 }  // namespace inviwo
-

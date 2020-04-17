@@ -36,7 +36,7 @@
 #include <unordered_set>
 
 namespace inviwo {
-   
+
 class BrushingAndLinkingInport;
 class Processor;
 /**

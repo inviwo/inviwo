@@ -153,4 +153,3 @@ constexpr uint64_t constexpr_hash(const std::string_view str) {
 }  // namespace util
 
 }  // namespace inviwo
-

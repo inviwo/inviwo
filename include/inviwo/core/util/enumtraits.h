@@ -65,4 +65,3 @@ std::string enumName() {
 
 }  // namespace util
 }  // namespace inviwo
-

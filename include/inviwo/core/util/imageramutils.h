@@ -43,7 +43,7 @@ class Image;
 namespace util {
 
 namespace detail {
-    IVW_CORE_API size_t getPoolSize();
+IVW_CORE_API size_t getPoolSize();
 }
 
 template <typename C>

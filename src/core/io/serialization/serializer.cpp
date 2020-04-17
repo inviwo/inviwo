@@ -68,9 +68,7 @@ NodeSwitch Serializer::switchToNewNode(const std::string& key) {
 
 TxElement* Serializer::getLastChild() const { return rootElement_->LastChild()->ToElement(); }
 
-void Serializer::linkEndChild(TxElement* child) {
-    rootElement_->LinkEndChild(child);
-}
+void Serializer::linkEndChild(TxElement* child) { rootElement_->LinkEndChild(child); }
 
 void Serializer::setValue(TxElement* node, const std::string& val) { node->SetValue(val); }
 

@@ -155,4 +155,3 @@ bool DataReaderFactory::hasReaderForTypeAndExtension(const FileExtension& ext) c
 }
 
 }  // namespace inviwo
-

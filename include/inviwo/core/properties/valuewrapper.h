@@ -198,4 +198,3 @@ bool operator>=(const T& lhs, const ValueWrapper<T>& rhs) {
 }
 
 }  // namespace inviwo
-

@@ -122,4 +122,3 @@ protected:
 IVW_CORE_API mat4 getLightTransformationMatrix(vec3 pos, vec3 dir);
 
 }  // namespace inviwo
-

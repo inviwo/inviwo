@@ -42,7 +42,6 @@
 
 namespace inviwo {
 
-    
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine {
 public:
     enum class TerminationReason { StartPoint, Steps, OutOfBounds, ZeroVelocity, Unknown };

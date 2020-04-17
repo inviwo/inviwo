@@ -229,4 +229,3 @@ auto inviwo::CloningFactory<T, K>::getKeys() const -> std::vector<Key> {
 }
 
 }  // namespace inviwo
-

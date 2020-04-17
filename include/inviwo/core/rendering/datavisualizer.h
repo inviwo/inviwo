@@ -129,4 +129,3 @@ public:
 };
 
 }  // namespace inviwo
-

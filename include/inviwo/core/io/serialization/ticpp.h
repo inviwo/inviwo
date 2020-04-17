@@ -51,4 +51,3 @@ using TxEIt = ticpp::Iterator<TxElement>;
 using TxAIt = ticpp::Iterator<TxAttribute>;
 
 }  // namespace inviwo
-

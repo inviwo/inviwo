@@ -246,4 +246,3 @@ IVW_CORE_API bool changeIdentifiers(TxElement* root,
 }  // namespace xml
 
 }  // namespace inviwo
-

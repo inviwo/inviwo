@@ -29,5 +29,4 @@
 
 #include <inviwo/core/util/stdextensions.h>
 
-namespace inviwo {
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

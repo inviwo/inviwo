@@ -131,4 +131,3 @@ std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtensi
 }
 
 }  // namespace inviwo
-

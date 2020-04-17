@@ -35,7 +35,6 @@
 
 #include <initializer_list>
 
-
 namespace inviwo {
 
 /**
@@ -295,4 +294,3 @@ void BufferRAMPrecision<T, Target>::clear() {
 }
 
 }  // namespace inviwo
-

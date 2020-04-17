@@ -86,4 +86,3 @@ struct hash<inviwo::PropertyLink> {
 };
 
 }  // namespace std
-

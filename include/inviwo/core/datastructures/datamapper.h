@@ -88,4 +88,3 @@ public:
 };
 
 }  // namespace inviwo
-

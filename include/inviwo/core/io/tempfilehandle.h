@@ -68,4 +68,4 @@ private:
 
 }  // namespace util
 
-}  // namespace inviwos
+}  // namespace inviwo

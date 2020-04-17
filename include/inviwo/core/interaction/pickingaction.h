@@ -34,7 +34,6 @@
 
 #include <functional>
 
-
 namespace inviwo {
 
 class PickingEvent;
@@ -118,4 +117,3 @@ private:
 };
 
 }  // namespace inviwo
-

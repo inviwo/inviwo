@@ -29,6 +29,4 @@
 
 #include <inviwo/core/util/glmvec.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -373,4 +373,3 @@ void VolumeRAMPrecision<T>::setFromNormalizedDVec4(const size3_t& pos, dvec4 val
 }
 
 }  // namespace inviwo
-

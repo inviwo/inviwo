@@ -161,4 +161,3 @@ struct ProcessorTraits<InputSelector<Inport, Outport>> {
 };
 
 }  // namespace inviwo
-

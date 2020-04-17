@@ -69,4 +69,3 @@ std::pair<bool, T> rayPlaneIntersection(const glm::tvec3<T, P>& planePos,
 }
 
 }  // namespace inviwo
-

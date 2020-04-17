@@ -211,4 +211,3 @@ auto VolumeRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
 }
 
 }  // namespace inviwo
-

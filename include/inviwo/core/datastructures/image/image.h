@@ -127,4 +127,3 @@ extern template class IVW_CORE_TMPL_EXP DataReaderType<Image>;
 extern template class IVW_CORE_TMPL_EXP DataWriterType<Image>;
 
 }  // namespace inviwo
-

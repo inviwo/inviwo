@@ -121,7 +121,6 @@ T* defaultConstructType() {
     return nullptr;
 }
 
-
 /**
 * Helper struct to allow passing multiple lambda expressions to std::visit.
 * Example useage:

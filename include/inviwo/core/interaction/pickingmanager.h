@@ -103,4 +103,3 @@ PickingAction* PickingManager::registerPickingAction(Processor* processor, T* o,
 // clang-format on
 
 }  // namespace inviwo
-

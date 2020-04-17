@@ -74,4 +74,3 @@ void SimpleMesh::addIndices(Args&&... args) {
 }
 
 }  // namespace inviwo
-

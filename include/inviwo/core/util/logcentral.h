@@ -249,4 +249,3 @@ IVW_CORE_API void log(Logger* logger, ExceptionContext context, std::string mess
 }  // namespace util
 
 }  // namespace inviwo
-

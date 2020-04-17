@@ -97,4 +97,3 @@ public:
 #include <warn/pop>
 
 }  // namespace inviwo
-
