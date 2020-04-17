@@ -157,7 +157,8 @@ bool FragmentListRenderer::postPass(bool useIllustration, const Image* backgroun
     }
 
     // Build shader depending on inport state.
-    if (static_cast<bool>(background) != builtWithBackground_) buildShaders(background);
+    if (supportsFragmentLists() && static_cast<bool>(background) != builtWithBackground_)
+        buildShaders(background);
 
     if (!useIllustration) {
         // render fragment list
@@ -247,6 +248,7 @@ typename Dispatcher<void()>::Handle FragmentListRenderer::onReload(std::function
 }
 
 void FragmentListRenderer::buildShaders(bool hasBackground) {
+    builtWithBackground_ = hasBackground;
     auto* dfs = display_.getFragmentShaderObject();
     dfs->clearShaderExtensions();
 
@@ -269,7 +271,6 @@ void FragmentListRenderer::buildShaders(bool hasBackground) {
     if (supportsIllustration()) ffs->addShaderExtension("GL_ARB_shader_atomic_counter_ops", true);
 
     if (supportsFragmentLists()) {
-        builtWithBackground_ = hasBackground;
         if (builtWithBackground_) {
             dfs->addShaderDefine("BACKGROUND_AVAILABLE");
         } else {
