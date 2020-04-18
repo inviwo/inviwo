@@ -44,6 +44,7 @@
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/util/commandlineparser.h>
 
 #include <modules/opengl/shader/shadermanager.h>
 
