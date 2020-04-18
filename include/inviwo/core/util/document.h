@@ -37,6 +37,8 @@
 #include <type_traits>
 #include <string>
 #include <unordered_map>
+#include <memory>
+#include <vector>
 
 namespace inviwo {
 
@@ -50,7 +52,7 @@ public:
     class DocumentHandle;
 
     enum class ElementType { Node, Text };
-
+    
     class IVW_CORE_API Element {
     public:
         friend Document;

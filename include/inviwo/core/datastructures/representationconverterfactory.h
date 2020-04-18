@@ -39,6 +39,7 @@
 #include <mutex>
 #include <typeindex>
 #include <unordered_set>
+#include <unordered_map>
 #include <warn/pop>
 
 namespace inviwo {

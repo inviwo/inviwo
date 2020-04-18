@@ -33,10 +33,7 @@
 #include <inviwo/core/util/capabilities.h>
 #include <modules/opencl/openclmoduledefine.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <modules/opencl/cl.hpp>
-#include <warn/pop>
 
 #include <modules/opencl/glmcl.h>
 #include <inviwo/core/util/logcentral.h>

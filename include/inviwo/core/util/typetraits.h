@@ -34,6 +34,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <type_traits>
+#include <ostream>
 #include <warn/pop>
 
 namespace inviwo {

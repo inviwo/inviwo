@@ -27,18 +27,18 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ANIMATIONEDITORQT_H
-#define IVW_ANIMATIONEDITORQT_H
+#pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <modules/animation/datastructures/animationobserver.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/animationqt/widgets/editorconstants.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGraphicsScene>
 #include <warn/pop>
+
+#include <unordered_map>
 
 class QKeyEvent;
 
@@ -91,5 +91,3 @@ protected:
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_ANIMATIONEDITORQT_H

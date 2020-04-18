@@ -33,10 +33,7 @@
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <modules/opencl/cl.hpp>
-#include <warn/pop>
 
 #include <modules/opencl/clockcl.h>
 #include <modules/opencl/glmcl.h>

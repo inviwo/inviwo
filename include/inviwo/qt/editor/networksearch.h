@@ -34,6 +34,8 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <functional>
+#include <vector>
+#include <unordered_map>
 
 #include <warn/push>
 #include <warn/ignore/all>

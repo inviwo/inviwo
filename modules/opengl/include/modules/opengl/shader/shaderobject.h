@@ -45,6 +45,7 @@
 #include <utility>
 #include <map>
 #include <string>
+#include <unordered_map>
 
 namespace inviwo {
 

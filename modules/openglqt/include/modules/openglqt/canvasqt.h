@@ -33,6 +33,7 @@
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <modules/openglqt/hiddencanvasqt.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
