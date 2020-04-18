@@ -52,7 +52,7 @@ public:
     class DocumentHandle;
 
     enum class ElementType { Node, Text };
-    
+
     class IVW_CORE_API Element {
     public:
         friend Document;
