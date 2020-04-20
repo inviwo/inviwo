@@ -112,7 +112,19 @@ ThreadPool::Worker::Worker(ThreadPool& pool)
         state = State::Done;
     }} {
 #ifdef WIN32
-    SetThreadDescription(thread.native_handle(), L"Inviwo Worker Thread");
+    typedef HRESULT(WINAPI * SetTheadDescriptionFunc)(HANDLE hThread, PCWSTR threadDescription);
+	// SetThreadDescription was introduced with Windows 10, version 1607
+    // For that version and later Windows 10 version, the function should be in kernel32.dll
+    static SetTheadDescriptionFunc setTheadDescription = reinterpret_cast<SetTheadDescriptionFunc>(
+        GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "SetThreadDescription"));
+    // some Windows versions (e.g. 2016 Server) have the function in KernelBase.dll
+    if (!setTheadDescription) {
+        setTheadDescription = reinterpret_cast<SetTheadDescriptionFunc>(
+            GetProcAddress(GetModuleHandle(TEXT("KernelBase.dll")), "SetThreadDescription"));
+    }
+    if (setTheadDescription)
+        setTheadDescription(thread.native_handle(),
+                            util::toWstring(std::string("Inviwo Worker Thread")).c_str());
 #endif
 }
 
