@@ -240,10 +240,10 @@ void LinkDialogPropertyGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     showToolTipHelper(e, utilqt::toLocalQString(item_->getDescription()));
 }
 
-void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
-                                           QWidget* widget) {
-    IVW_UNUSED_PARAM(options);
-    IVW_UNUSED_PARAM(widget);
+void LinkDialogPropertyGraphicsItem::paint(QPainter* p,
+                                           [[maybe_unused]] const QStyleOptionGraphicsItem* options,
+                                           [[maybe_unused]] QWidget* widget) {
+
     p->setPen(Qt::black);
     p->setRenderHint(QPainter::Antialiasing, true);
     p->save();

@@ -1,5 +1,5 @@
-#ifndef @IVW_RESOURCE_DEFINE@
-#define @IVW_RESOURCE_DEFINE@
+#pragma once
+// Automatically generated file do not change!
 
 #include <inviwo/core/common/inviwomodule.h>
 
@@ -12,5 +12,3 @@ void @SHADER_RESOURCES_REGISTER_FUNCTION@(InviwoModule* module) {
     @SHADER_RESOURCES_PATHS@
 }
 }
-
-#endif // @IVW_RESOURCE_DEFINE@

@@ -139,8 +139,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
     for (auto col : first) {
         col->getBuffer()
             ->getRepresentation<BufferRAM>()
-            ->dispatch<void, dispatching::filter::Scalars>([&](auto typedBuf) {
-                IVW_UNUSED_PARAM(typedBuf);
+            ->dispatch<void, dispatching::filter::Scalars>([&]([[maybe_unused]] auto typedBuf) {
                 using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
                 columns[col->getHeader()] = newDataFrame->addColumn<ValueType>(col->getHeader());
             });

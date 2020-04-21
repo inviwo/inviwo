@@ -29,32 +29,9 @@
 
 #pragma once
 
-// Visual studio https://msdn.microsoft.com/en-us/library/23k5d385.aspx
-// List of all warnings messages and id for clang http://fuckingclangwarnings.com
-
-// Define a debug flag for inviwo called IVW_DEBUG
-#if defined(__clang__) || defined(__GNUC__)  // sets NDEBUG when not debugging
-#ifndef NDEBUG
-#ifndef IVW_DEBUG
-#define IVW_DEBUG
-#endif
-#endif
-#endif
-
-#ifdef _MSC_VER
-#ifdef _DEBUG  /// MVS sets _DEBUG when debugging
-#ifndef IVW_DEBUG
-#define IVW_DEBUG
-#endif
-#endif
-#endif
-
-#include <inviwo/core/inviwocommondefines.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/logcentral.h>
-
-#define IVW_UNUSED_PARAM(param) (void)param
 
 #ifdef _MSC_VER
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST

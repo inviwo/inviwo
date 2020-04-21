@@ -1,11 +1,6 @@
-#ifndef @U_MODULE@_SHADER_RESOURCE
-#define @U_MODULE@_SHADER_RESOURCE
+#pragma once
 
 #include <modules/opengl/shader/shadermanager.h>
-
-#ifndef IVW_UNUSED_PARAM
-#define IVW_UNUSED_PARAM(param) (void)param
-#endif
 
 @ADD_INCLUDES@
 
@@ -13,8 +8,7 @@ namespace inviwo {
 
 namespace @L_MODULE@ {
 
-inline void addGeneratedShaderResources(ShaderManager* manager) {
-    IVW_UNUSED_PARAM(manager);
+inline void addGeneratedShaderResources([[maybe_unused]] ShaderManager* manager) {
 @ADD_RESOURCES@
 }
 
@@ -31,5 +25,3 @@ inline void addShaderResources(ShaderManager* manager, std::vector<std::string> 
 }  // namespace
 
 }  // namespace
-
-#endif

@@ -32,8 +32,6 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <inviwo/core/common/inviwo.h>
-
 namespace inviwo {
 
 TEST({{ module/name }}, {{ file/name }}) {

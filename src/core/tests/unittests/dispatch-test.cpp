@@ -64,7 +64,7 @@ res_t test(DataFormatId id) {
         createBufferRAM(10, DataFormatBase::get(id), BufferUsage::Static, BufferTarget::Data);
 
     return dispatch<res_t, Predicate>(buf.get(), [](auto b) -> res_t {
-        IVW_UNUSED_PARAM(b);
+        (void)b;
         using BT = typename std::decay<decltype(*b)>::type;
         using DT = typename BT::type;
         return res_t{DataFormat<DT>::id(), DataFormat<DT>::numericType(),
@@ -104,7 +104,7 @@ TEST(DispatchTests, InstantiationTest1) {
                                BufferTarget::Data);
 
     auto res = dispatch<float, dispatching::filter::Scalars>(buf.get(), [](auto b) {
-        IVW_UNUSED_PARAM(b);
+        (void)b;
         using BT = typename std::decay<decltype(*b)>::type;
         using DT = typename BT::type;
 
@@ -122,7 +122,7 @@ TEST(DispatchTests, InstantiationTest2) {
                                BufferUsage::Static, BufferTarget::Data);
 
     auto res = dispatch<float, dispatching::filter::Vecs>(buf.get(), [](auto b) {
-        IVW_UNUSED_PARAM(b);
+        (void)b;
         using BT = typename std::decay<decltype(*b)>::type;
         using DT = typename BT::type;
 

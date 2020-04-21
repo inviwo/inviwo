@@ -130,10 +130,10 @@ void TFEditorPrimitive::beginMouseDrag() {
 
 void TFEditorPrimitive::stopMouseDrag() { mouseDrag_ = false; }
 
-void TFEditorPrimitive::paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
-                              QWidget* widget) {
-    IVW_UNUSED_PARAM(options);
-    IVW_UNUSED_PARAM(widget);
+void TFEditorPrimitive::paint(QPainter* painter,
+                              [[maybe_unused]] const QStyleOptionGraphicsItem* options,
+                              [[maybe_unused]] QWidget* widget) {
+
     painter->setRenderHint(QPainter::Antialiasing, true);
 
     // set up pen and brush for drawing the primitive

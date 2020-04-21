@@ -290,10 +290,10 @@ void ProcessorGraphicsItem::editIdentifier() {
     identifierLabel_->setSelected(true);
 }
 
-void ProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
-                                  QWidget* widget) {
-    IVW_UNUSED_PARAM(options);
-    IVW_UNUSED_PARAM(widget);
+void ProcessorGraphicsItem::paint(QPainter* p,
+                                  [[maybe_unused]] const QStyleOptionGraphicsItem* options,
+                                  [[maybe_unused]] QWidget* widget) {
+
     const float roundedCorners = 9.0f;
 
     p->save();

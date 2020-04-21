@@ -134,8 +134,9 @@ void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 
 CefRefPtr<CefResourceRequestHandler> WebBrowserClient::GetResourceRequestHandler(
     CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefRequest> request,
-    bool is_navigation, bool is_download, const CefString& request_initiator,
-    bool& disable_default_handling) {
+    [[maybe_unused]] bool is_navigation, [[maybe_unused]] bool is_download,
+    [[maybe_unused]] const CefString& request_initiator,
+    [[maybe_unused]] bool& disable_default_handling) {
     return this;
 }
 
