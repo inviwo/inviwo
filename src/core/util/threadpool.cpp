@@ -113,7 +113,7 @@ ThreadPool::Worker::Worker(ThreadPool& pool)
     }} {
 #ifdef WIN32
     typedef HRESULT(WINAPI * SetTheadDescriptionFunc)(HANDLE hThread, PCWSTR threadDescription);
-	// SetThreadDescription was introduced with Windows 10, version 1607
+    // SetThreadDescription was introduced with Windows 10, version 1607
     // For that version and later Windows 10 version, the function should be in kernel32.dll
     static SetTheadDescriptionFunc setTheadDescription = reinterpret_cast<SetTheadDescriptionFunc>(
         GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "SetThreadDescription"));
