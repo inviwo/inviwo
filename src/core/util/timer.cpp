@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/threadutil.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -43,7 +44,10 @@ namespace inviwo {
 TimerThread::TimerThread()
     : sort_(false)
     , stop_(false)
-    , thread_{std::make_unique<std::thread>([this]() { TimerLoop(); })} {}
+    , thread_{std::make_unique<std::thread>([this]() { TimerLoop(); })} {
+
+    util::setThreadDescription(*thread_, "Inviwo Timer Thread");
+}
 
 TimerThread::~TimerThread() {
     stop_ = true;
