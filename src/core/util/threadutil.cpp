@@ -32,12 +32,12 @@
 
 #ifdef WIN32
 #include <windows.h>
-#else 
+#else
 #include <pthread.h>
 #endif
 
 namespace inviwo {
- 
+
 void util::setThreadDescription(std::thread& thread, const std::string& desc) {
 #ifdef WIN32
     typedef HRESULT(WINAPI * SetTheadDescriptionFunc)(HANDLE hThread, PCWSTR threadDescription);
