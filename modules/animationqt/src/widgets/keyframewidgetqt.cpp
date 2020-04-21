@@ -55,7 +55,8 @@ KeyframeWidgetQt::KeyframeWidgetQt(Keyframe& keyframe, QGraphicsItem* parent)
     setSelected(keyframe_.isSelected());
 }
 
-void KeyframeWidgetQt::paint(QPainter* painter, [[maybe_unused]] const QStyleOptionGraphicsItem* options,
+void KeyframeWidgetQt::paint(QPainter* painter,
+                             [[maybe_unused]] const QStyleOptionGraphicsItem* options,
                              [[maybe_unused]] QWidget* widget) {
     painter->setRenderHint(QPainter::Antialiasing, true);
     QPen pen = QPen();

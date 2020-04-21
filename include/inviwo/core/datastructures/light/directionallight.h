@@ -46,9 +46,7 @@ public:
      * @see setPower
      * @return Radiant flux in watt.
      */
-    virtual vec3 getPower() const override {
-        return getIntensity() * getArea() * glm::pi<float>();
-    }
+    virtual vec3 getPower() const override { return getIntensity() * getArea() * glm::pi<float>(); }
 
     LightSourceType getLightSourceType() const override { return LightSourceType::directional; }
 

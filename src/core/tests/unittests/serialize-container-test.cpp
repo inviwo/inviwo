@@ -135,11 +135,11 @@ TEST(ContainerSerialitionTest, ContainerTest2) {
     Item tmp;
     std::vector<std::string> visited;
     ContainerWrapper<Item> cont(
-        "Item", [&](std::string id, size_t ) -> ContainerWrapper<Item>::Item {
+        "Item", [&](std::string id, size_t) -> ContainerWrapper<Item>::Item {
             visited.push_back(id);
             auto it = util::find_if(vector, [&](const Item& i) { return i.id_ == id; });
             if (it != vector.end()) {
-                return {true, *it, [&](Item& ) {}};
+                return {true, *it, [&](Item&) {}};
             } else {
                 return {true, tmp, [&](Item& val) { vector.push_back(val); }};
             }
@@ -199,11 +199,11 @@ TEST(ContainerSerialitionTest, ContainerTest3) {
     Item* tmp = nullptr;
     std::vector<std::string> visited;
     ContainerWrapper<Item*> cont(
-        "Item", [&](std::string id, size_t ) -> ContainerWrapper<Item*>::Item {
+        "Item", [&](std::string id, size_t) -> ContainerWrapper<Item*>::Item {
             visited.push_back(id);
             auto it = util::find_if(vector, [&](Item*& i) { return i->id_ == id; });
             if (it != vector.end()) {
-                return {true, *it, [&](Item*& ) {}};
+                return {true, *it, [&](Item*&) {}};
             } else {
                 tmp = new Item();
                 return {true, tmp, [&](Item*& val) { vector.push_back(val); }};

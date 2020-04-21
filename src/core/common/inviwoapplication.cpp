@@ -125,8 +125,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
         }
     }()}
     , progressCallback_()
-    , pool_(
-          0, []() {}, []() { RenderContext::getPtr()->clearContext(); })
+    , pool_(0, []() {}, []() { RenderContext::getPtr()->clearContext(); })
     , queue_()
     , clearAllSingeltons_{[]() {
         PickingManager::deleteInstance();

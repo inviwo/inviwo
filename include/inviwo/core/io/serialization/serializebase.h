@@ -173,7 +173,6 @@ public:
     static std::string nodeToString(const TxElement& node);
 
 protected:
-
     friend class NodeSwitch;
 
     std::string fileName_;
@@ -185,24 +184,24 @@ protected:
 };
 
 namespace detail {
-    template <class T>
-    static std::string toStr(T value) {
-        std::ostringstream stream;
-        if constexpr (std::is_same_v<T, double>) {
-            stream.precision(40);
-        } else if constexpr (std::is_same_v<T, float>) {
-            stream.precision(8);
-        }
-        stream << value;
-        return stream.str();
+template <class T>
+static std::string toStr(T value) {
+    std::ostringstream stream;
+    if constexpr (std::is_same_v<T, double>) {
+        stream.precision(40);
+    } else if constexpr (std::is_same_v<T, float>) {
+        stream.precision(8);
     }
-
-    template <class T>
-    static void fromStr(const std::string& value, T& dest) {
-        std::istringstream stream{value};
-        stream >> dest;
-    }
+    stream << value;
+    return stream.str();
 }
+
+template <class T>
+static void fromStr(const std::string& value, T& dest) {
+    std::istringstream stream{value};
+    stream >> dest;
+}
+}  // namespace detail
 
 class IVW_CORE_API NodeSwitch {
 public:
