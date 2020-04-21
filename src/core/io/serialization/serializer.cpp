@@ -53,16 +53,16 @@ Serializer::Serializer(const std::string& fileName, bool allowReference)
 Serializer::~Serializer() { delete rootElement_; }
 
 void Serializer::serialize(const std::string& key, const Serializable& sObj) {
-    auto newNode = std::make_unique<TxElement>(key);
-    rootElement_->LinkEndChild(newNode.get());
-    NodeSwitch nodeSwitch(*this, newNode.get());
+    auto node = std::make_unique<TxElement>(key);
+    rootElement_->LinkEndChild(node.get());
+    NodeSwitch nodeSwitch(*this, std::move(node));
     sObj.serialize(*this);
 }
 
 NodeSwitch Serializer::switchToNewNode(const std::string& key) {
     auto node = std::make_unique<TxElement>(key);
     rootElement_->LinkEndChild(node.get());
-    NodeSwitch nodeSwitch(*this, node.get());
+    NodeSwitch nodeSwitch(*this, std::move(node));
     return nodeSwitch;
 }
 
@@ -107,7 +107,7 @@ void Serializer::writeFile(std::ostream& stream, bool format) {
             doc_->Accept(&printer);
             stream << printer.Str();
         } else {
-            stream << doc_;
+            stream << *doc_;
         }
     } catch (TxException& e) {
         throw SerializationException(e.what(), IVW_CONTEXT);

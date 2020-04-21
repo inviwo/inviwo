@@ -158,13 +158,13 @@ public:
      *
      * key                   = "Properties"
      * itemKey               = "Property"
-     * param comparisionAttribute  = "identifier"
+     * param comparisonAttribute  = "identifier"
      * param sMap["enableMIP"]     = address of a property
      *       sMap["enableShading"] = address of a property
      *         where, "enableMIP" & "enableShading" are keys.
      *         address of a property is a value
      *
-     * Note: If children has attribute "type", then comparisionAttribute becomes meaningless.
+     * Note: If children has attribute "type", then comparisonAttribute becomes meaningless.
      *       Because deserializer always allocates a new instance of type using registered
      *       factories. eg.,
      *           <Processor type="EntryExitPoints" identifier="EntryExitPoints" reference="ref2" />
@@ -172,22 +172,22 @@ public:
      * @param key Map key or parent node of itemKey.
      * @param sMap  map to be deserialized - source / input map.
      * @param itemKey map item key of children nodes.
-     * @param comparisionAttribute forced comparison attribute.
+     * @param comparisonAttribute forced comparison attribute.
      */
     template <typename K, typename V, typename C, typename A>
     void deserialize(const std::string& key, std::map<K, V, C, A>& sMap,
                      const std::string& itemKey = "item",
-                     const std::string& comparisionAttribute = SerializeConstants::KeyAttribute);
+                     const std::string& comparisonAttribute = SerializeConstants::KeyAttribute);
 
     template <typename K, typename V, typename C, typename A>
     void deserialize(const std::string& key, std::map<K, V*, C, A>& sMap,
                      const std::string& itemKey = "item",
-                     const std::string& comparisionAttribute = SerializeConstants::KeyAttribute);
+                     const std::string& comparisonAttribute = SerializeConstants::KeyAttribute);
 
     template <typename K, typename V, typename C, typename A>
     void deserialize(const std::string& key, std::map<K, std::unique_ptr<V>, C, A>& sMap,
                      const std::string& itemKey = "item",
-                     const std::string& comparisionAttribute = SerializeConstants::KeyAttribute);
+                     const std::string& comparisonAttribute = SerializeConstants::KeyAttribute);
 
     template <typename T, typename K>
     void deserialize(const std::string& key, ContainerWrapper<T, K>& container);
@@ -291,7 +291,7 @@ private:
 
     void storeReferences(TxElement* node);
 
-    TxElement* retriveChild(const std::string& key);
+    TxElement* retrieveChild(const std::string& key);
 
     ExceptionHandler exceptionHandler_;
     std::map<std::string, TxElement*> referenceLookup_;
@@ -309,9 +309,7 @@ template <typename T>
 void getNodeAttribute(TxElement* node, const std::string& key, T& dest) {
     const auto val = getNodeAttribute(node, key);
     if (!val.empty()) {
-        std::istringstream stream;
-        stream.str(val);
-        stream >> dest;
+        detail::fromStr(val, dest);
     }
 }
 
@@ -783,7 +781,7 @@ void Deserializer::deserialize(const std::string& key, std::vector<T*>& vector,
 
     size_t i = 0;
     detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
-        // In the next deserialization call do net fetch the "child" since we are looping...
+        // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
         NodeSwitch elementNodeSwitch(*this, child, false);
         if (vector.size() <= i) {
@@ -814,7 +812,7 @@ void Deserializer::deserialize(const std::string& key, std::vector<std::unique_p
 
     size_t i = 0;
     detail::forEachChild(rootElement_, itemKey,
-                         [&](TxElement* child) {  // In the next deserialization call do net fetch
+                         [&](TxElement* child) {  // In the next deserialization call do not fetch
                                                   // the "child" since we are looping...
                              // hence the "false" as the last arg.
                              NodeSwitch elementNodeSwitch(*this, child, false);
@@ -887,7 +885,7 @@ void Deserializer::deserialize(const std::string& key, std::vector<T>& vector,
 
     size_t i = 0;
     detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
-        // In the next deserialization call do net fetch the "child" since we are looping...
+        // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
         NodeSwitch elementNodeSwitch(*this, child, false);
         try {
@@ -912,7 +910,7 @@ void Deserializer::deserialize(const std::string& key, std::unordered_set<T>& se
     if (!vectorNodeSwitch) return;
 
     detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
-        // In the next deserialization call do net fetch the "child" since we are looping...
+        // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
         NodeSwitch elementNodeSwitch(*this, child, false);
         try {
@@ -933,7 +931,7 @@ void Deserializer::deserialize(const std::string& key, std::list<T>& container,
     if (!vectorNodeSwitch) return;
     size_t i = 0;
     detail::forEachChild(rootElement_, itemKey,
-                         [&](TxElement* child) {  // In the next deserialization call do net fetch
+                         [&](TxElement* child) {  // In the next deserialization call do not fetch
                                                   // the "child" since we are looping...
                              // hence the "false" as the last arg.
                              NodeSwitch elementNodeSwitch(*this, child, false);
@@ -961,7 +959,7 @@ void Deserializer::deserialize(const std::string& key, std::array<T, N>& cont,
 
     size_t i = 0;
     detail::forEachChild(rootElement_, itemKey,
-                         [&](TxElement* child) {  // In the next deserialization call do net fetch
+                         [&](TxElement* child) {  // In the next deserialization call do not fetch
                                                   // the "child" since we are looping...
                              // hence the "false" as the last arg.
                              NodeSwitch elementNodeSwitch(*this, child, false);
@@ -981,20 +979,19 @@ void Deserializer::deserialize(const std::string& key, std::array<T, N>& cont,
 
 template <typename K, typename V, typename C, typename A>
 void Deserializer::deserialize(const std::string& key, std::map<K, V, C, A>& map,
-                               const std::string& itemKey,
-                               const std::string& comparisionAttribute) {
-    if (!isPrimitiveType(typeid(K)) || comparisionAttribute.empty())
+                               const std::string& itemKey, const std::string& comparisonAttribute) {
+    if (!isPrimitiveType(typeid(K)) || comparisonAttribute.empty())
         throw SerializationException("Error: map key has to be a primitive type", IVW_CONTEXT);
 
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
 
     detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
-        // In the next deserialization call do net fetch the "child" since we are looping...
+        // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
         NodeSwitch elementNodeSwitch(*this, child, false);
         K childkey;
-        detail::getNodeAttribute(child, comparisionAttribute, childkey);
+        detail::getNodeAttribute(child, comparisonAttribute, childkey);
 
         V value;
         auto it = map.find(childkey);
@@ -1011,21 +1008,20 @@ void Deserializer::deserialize(const std::string& key, std::map<K, V, C, A>& map
 // Pointer specialization
 template <typename K, typename V, typename C, typename A>
 void Deserializer::deserialize(const std::string& key, std::map<K, V*, C, A>& map,
-                               const std::string& itemKey,
-                               const std::string& comparisionAttribute) {
-    if (!isPrimitiveType(typeid(K)) || comparisionAttribute.empty())
+                               const std::string& itemKey, const std::string& comparisonAttribute) {
+    if (!isPrimitiveType(typeid(K)) || comparisonAttribute.empty())
         throw SerializationException("Error: map key has to be a primitive type", IVW_CONTEXT);
 
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
 
     detail::forEachChild(rootElement_, itemKey,
-                         [&](TxElement* child) {  // In the next deserialization call do net fetch
+                         [&](TxElement* child) {  // In the next deserialization call do not fetch
                                                   // the "child" since we are looping...
                              // hence the "false" as the last arg.
                              NodeSwitch elementNodeSwitch(*this, child, false);
                              K childkey;
-                             detail::getNodeAttribute(child, comparisionAttribute, childkey);
+                             detail::getNodeAttribute(child, comparisonAttribute, childkey);
 
                              auto it = map.find(childkey);
                              V* value = (it != map.end() ? it->second : nullptr);
@@ -1042,20 +1038,19 @@ void Deserializer::deserialize(const std::string& key, std::map<K, V*, C, A>& ma
 // unique_ptr specialization
 template <typename K, typename V, typename C, typename A>
 void Deserializer::deserialize(const std::string& key, std::map<K, std::unique_ptr<V>, C, A>& map,
-                               const std::string& itemKey,
-                               const std::string& comparisionAttribute) {
-    if (!isPrimitiveType(typeid(K)) || comparisionAttribute.empty())
+                               const std::string& itemKey, const std::string& comparisonAttribute) {
+    if (!isPrimitiveType(typeid(K)) || comparisonAttribute.empty())
         throw SerializationException("Error: map key has to be a primitive type", IVW_CONTEXT);
 
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
 
     detail::forEachChild(rootElement_, itemKey, [&](TxElement* child) {
-        // In the next deserialization call do net fetch the "child" since we are looping...
+        // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
         NodeSwitch elementNodeSwitch(*this, child, false);
         K childkey{};
-        detail::getNodeAttribute(child, comparisionAttribute, childkey);
+        detail::getNodeAttribute(child, comparisonAttribute, childkey);
 
         auto it = map.find(childkey);
         if (it != map.end()) {
@@ -1084,7 +1079,7 @@ void Deserializer::deserialize(const std::string& key, std::map<K, std::unique_p
 
 template <class T>
 void Deserializer::deserialize(const std::string& key, T*& data) {
-    auto keyNode = retriveChild(key);
+    auto keyNode = retrieveChild(key);
     if (!keyNode) return;
 
     const std::string type_attr{
@@ -1171,7 +1166,7 @@ void Deserializer::deserialize(const std::string& key, ContainerWrapper<T, K>& c
     size_t i = 0;
 
     detail::forEachChild(rootElement_, container.getItemKey(), [&](TxElement* child) {
-        // In the next deserialization call do net fetch the "child" since we are looping...
+        // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
         NodeSwitch elementNodeSwitch(*this, child, false);
         container.deserialize(*this, child, i);

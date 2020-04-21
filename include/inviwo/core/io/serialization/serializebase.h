@@ -173,6 +173,7 @@ public:
     static std::string nodeToString(const TxElement& node);
 
 protected:
+
     friend class NodeSwitch;
 
     std::string fileName_;
@@ -182,6 +183,26 @@ protected:
     bool retrieveChild_;
     ReferenceDataContainer refDataContainer_;
 };
+
+namespace detail {
+    template <class T>
+    static std::string toStr(T value) {
+        std::ostringstream stream;
+        if constexpr (std::is_same_v<T, double>) {
+            stream.precision(40);
+        } else if constexpr (std::is_same_v<T, float>) {
+            stream.precision(8);
+        }
+        stream << value;
+        return stream.str();
+    }
+
+    template <class T>
+    static void fromStr(const std::string& value, T& dest) {
+        std::istringstream stream{value};
+        stream >> dest;
+    }
+}
 
 class IVW_CORE_API NodeSwitch {
 public:
@@ -204,6 +225,16 @@ public:
      * \brief NodeSwitch helps track parent node during recursive/nested function calls.
      *
      * @param serializer reference to serializer or deserializer
+     * @param node //Parent (Ticpp Node) element.
+     * @param retrieveChild whether to retrieve child node or not.
+     */
+    NodeSwitch(SerializeBase& serializer, std::unique_ptr<TxElement> node,
+               bool retrieveChild = true);
+
+    /**
+     * \brief NodeSwitch helps track parent node during recursive/nested function calls.
+     *
+     * @param serializer reference to serializer or deserializer
      * @param key the child to switch to.
      * @param retrieveChild whether to retrieve child node or not.
      */
@@ -217,6 +248,7 @@ public:
     operator bool() const;
 
 private:
+    std::unique_ptr<TxElement> node_;
     SerializeBase* serializer_;  // reference to serializer or deserializer
     TxElement* storedNode_;      // Parent (Ticpp Node) element.
     bool storedRetrieveChild_;

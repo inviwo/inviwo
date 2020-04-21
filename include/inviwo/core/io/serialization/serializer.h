@@ -221,7 +221,7 @@ void Serializer::serialize(const std::string& key, const std::map<K, V, C, A>& m
     auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : map) {
         serialize(itemKey, item.second);
-        setAttribute(getLastChild(), SerializeConstants::KeyAttribute, toString(item.first));
+        setAttribute(getLastChild(), SerializeConstants::KeyAttribute, detail::toStr(item.first));
     }
 }
 
@@ -236,7 +236,7 @@ void Serializer::serialize(const std::string& key, const std::unordered_map<K, V
     auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : map) {
         serialize(itemKey, item.second);
-        setAttribute(getLastChild(), SerializeConstants::KeyAttribute, toString(item.first));
+        setAttribute(getLastChild(), SerializeConstants::KeyAttribute, detail::toStr(item.first));
     }
 }
 
@@ -270,10 +270,10 @@ template <typename T,
 void Serializer::serialize(const std::string& key, const T& data,
                            const SerializationTarget& target) {
     if (target == SerializationTarget::Attribute) {
-        setAttribute(rootElement_, key, toString(data));
+        setAttribute(rootElement_, key, detail::toStr(data));
     } else {
         auto nodeSwitch = switchToNewNode(key);
-        setAttribute(rootElement_, SerializeConstants::ContentAttribute, toString(data));
+        setAttribute(rootElement_, SerializeConstants::ContentAttribute, detail::toStr(data));
     }
 }
 
@@ -298,7 +298,7 @@ template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int
 void Serializer::serialize(const std::string& key, const Vec& data) {
     auto nodeSwitch = switchToNewNode(key);
     for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
-        setAttribute(rootElement_, SerializeConstants::VectorAttributes[i], toString(data[i]));
+        setAttribute(rootElement_, SerializeConstants::VectorAttributes[i], detail::toStr(data[i]));
     }
 }
 
@@ -307,7 +307,7 @@ template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int
 void Serializer::serialize(const std::string& key, const Mat& data) {
     auto nodeSwitch = switchToNewNode(key);
     for (size_t i = 0; i < util::extent<Mat, 0>::value; ++i) {
-        serialize("col" + toString(i), data[i]);
+        serialize(SerializeConstants::MatrixAttributes[i], data[i]);
     }
 }
 

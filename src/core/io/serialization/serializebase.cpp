@@ -161,7 +161,8 @@ std::string SerializeBase::nodeToString(const TxElement& node) {
 }
 
 NodeSwitch::NodeSwitch(NodeSwitch&& rhs) noexcept
-    : serializer_{rhs.serializer_}
+    : node_{std::move(rhs.node_)}
+    , serializer_{rhs.serializer_}
     , storedNode_{nullptr}
     , storedRetrieveChild_{rhs.storedRetrieveChild_} {
 
@@ -174,6 +175,7 @@ NodeSwitch& NodeSwitch::operator=(NodeSwitch&& rhs) noexcept {
             serializer_->rootElement_ = storedNode_;
             serializer_->retrieveChild_ = storedRetrieveChild_;
         }
+        node_ = std::move(rhs.node_);
         serializer_ = rhs.serializer_;
         storedNode_ = rhs.storedNode_;
         storedRetrieveChild_ = rhs.storedRetrieveChild_;
@@ -192,6 +194,16 @@ NodeSwitch::NodeSwitch(SerializeBase& serializer, TxElement* node, bool retrieve
     serializer_->retrieveChild_ = retrieveChild;
 }
 
+NodeSwitch::NodeSwitch(SerializeBase& serializer, std::unique_ptr<TxElement> node,
+                       bool retrieveChild)
+    : node_(std::move(node))
+    , serializer_(&serializer)
+    , storedNode_(serializer_->rootElement_)
+    , storedRetrieveChild_(serializer_->retrieveChild_) {
+
+    serializer_->rootElement_ = node_.get();
+    serializer_->retrieveChild_ = retrieveChild;
+}
 NodeSwitch::NodeSwitch(SerializeBase& serializer, const std::string& key, bool retrieveChild)
     : serializer_(&serializer)
     , storedNode_(serializer_->rootElement_)

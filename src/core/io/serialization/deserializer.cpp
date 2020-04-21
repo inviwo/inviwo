@@ -123,7 +123,7 @@ void Deserializer::storeReferences(TxElement* node) {
     }
 }
 
-TxElement* Deserializer::retriveChild(const std::string& key) {
+TxElement* Deserializer::retrieveChild(const std::string& key) {
     return retrieveChild_ ? rootElement_->FirstChildElement(key, false) : rootElement_;
 }
 

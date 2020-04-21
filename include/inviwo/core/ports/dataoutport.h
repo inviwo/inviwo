@@ -36,7 +36,8 @@
 #include <inviwo/core/ports/porttraits.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/document.h>
-#include <inviwo/core/util/glmvec.h>
+
+#include <glm/fwd.hpp>
 
 #include <memory>
 
@@ -54,7 +55,7 @@ public:
     virtual ~DataOutport() = default;
 
     virtual std::string getClassIdentifier() const override;
-    virtual uvec3 getColorCode() const override;
+    virtual glm::uvec3 getColorCode() const override;
     virtual Document getInfo() const override;
 
     virtual std::shared_ptr<const T> getData() const;
@@ -114,7 +115,7 @@ std::string DataOutport<T>::getClassIdentifier() const {
 }
 
 template <typename T>
-uvec3 DataOutport<T>::getColorCode() const {
+glm::uvec3 DataOutport<T>::getColorCode() const {
     return DataTraits<T>::colorCode();
 }
 

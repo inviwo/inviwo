@@ -74,7 +74,7 @@ namespace inviwo {
 
 struct AppResourceManagerObserver : ResourceManagerObserver {
     AppResourceManagerObserver(SystemSettings* settings, ResourceManager* manager)
-        : settings{settings} {
+        : settings{settings}, manager{manager} {
 
         manager->addObserver(this);
     }
@@ -124,7 +124,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
         }
     }()}
     , progressCallback_()
-    , pool_(0, []() {}, []() { RenderContext::getPtr()->clearContext(); })
+    , pool_(
+          0, []() {}, []() { RenderContext::getPtr()->clearContext(); })
     , queue_()
     , clearAllSingeltons_{[]() {
         PickingManager::deleteInstance();

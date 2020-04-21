@@ -43,5 +43,6 @@ const std::string SerializeConstants::RefAttribute = "reference";
 const std::string SerializeConstants::IDAttribute = "id";
 
 const std::string SerializeConstants::VectorAttributes[] = {"x", "y", "z", "w"};
+const std::string SerializeConstants::MatrixAttributes[] = {"col0", "col1", "col2", "col3"};
 
 }  // namespace inviwo
