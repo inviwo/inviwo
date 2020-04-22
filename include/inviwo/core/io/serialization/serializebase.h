@@ -184,23 +184,33 @@ protected:
 };
 
 namespace detail {
+
 template <class T>
-static std::string toStr(T value) {
-    std::ostringstream stream;
-    if constexpr (std::is_same_v<T, double>) {
-        stream.precision(40);
-    } else if constexpr (std::is_same_v<T, float>) {
-        stream.precision(8);
+decltype(auto) toStr(const T& value) {
+    if constexpr (std::is_same_v<std::string, T>) {
+        return value;
+    } else {
+        std::ostringstream stream;
+        if constexpr (std::is_same_v<T, double>) {
+            stream.precision(40);
+        } else if constexpr (std::is_same_v<T, float>) {
+            stream.precision(8);
+        }
+        stream << value;
+        return std::move(stream).str();
     }
-    stream << value;
-    return stream.str();
 }
 
 template <class T>
-static void fromStr(const std::string& value, T& dest) {
-    std::istringstream stream{value};
-    stream >> dest;
+void fromStr(const std::string& value, T& dest) {
+    if constexpr (std::is_same_v<std::string, T>) {
+        dest = value;
+    } else {
+        std::istringstream stream{value};
+        stream >> dest;
+    }
 }
+
 }  // namespace detail
 
 class IVW_CORE_API NodeSwitch {
