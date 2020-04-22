@@ -611,7 +611,6 @@ set(SOURCE_FILES
     util/spatial4dsampler.cpp
     util/stacktrace.cpp
     util/statecoordinator.cpp
-    util/stdextensions.cpp
     util/stringconversion.cpp
     util/stringlogger.cpp
     util/systemcapabilities.cpp
