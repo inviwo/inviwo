@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PORTINSPECTORFACTORY_H
-#define IVW_PORTINSPECTORFACTORY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/ports/portinspector.h>
 #include <inviwo/core/ports/portinspectorfactoryobject.h>
@@ -46,5 +44,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PORTINSPECTORFACTORY_H

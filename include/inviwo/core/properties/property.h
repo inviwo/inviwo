@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTY_H
-#define IVW_PROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/valuewrapper.h>
@@ -42,6 +41,7 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/util/introspection.h>
+#include <inviwo/core/io/serialization/serialization.h>
 
 #include <functional>
 #include <type_traits>
@@ -414,5 +414,3 @@ Property& Property::autoLinkToProperty(const std::string& propertyPath) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTY_H

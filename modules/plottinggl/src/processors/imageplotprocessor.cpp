@@ -31,6 +31,7 @@
 
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <inviwo/core/util/raiiutils.h>
 
 namespace inviwo {
 

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MINMAXPROPERTY_H
-#define IVW_MINMAXPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <algorithm>
@@ -420,5 +418,3 @@ Document MinMaxProperty<T>::getDescription() const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_MINMAXPROPERTY_H

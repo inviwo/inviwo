@@ -31,7 +31,6 @@
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/util/formatconversion.h>
-#include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -281,8 +280,8 @@ const std::string& OpenGLCapabilities::getGLVersionString() const { return glVer
 const std::string& OpenGLCapabilities::getGLSLVersionString() const { return glslVersionStr_; }
 OpenGLCapabilities::GlVendor OpenGLCapabilities::getVendor() const { return glVendor_; }
 
-glm::u64 OpenGLCapabilities::getCurrentAvailableTextureMem() {
-    glm::u64 currentAvailableTexMeminBytes = 0;
+size_t OpenGLCapabilities::getCurrentAvailableTextureMem() {
+    size_t currentAvailableTexMeminBytes = 0;
 
     if (!OpenGLCapabilities::hasOpenGLVersion()) return currentAvailableTexMeminBytes;
 
@@ -300,7 +299,7 @@ glm::u64 OpenGLCapabilities::getCurrentAvailableTextureMem() {
         }
 
         currentAvailableTexMeminBytes =
-            util::kilobytes_to_bytes(static_cast<glm::u64>(nCurAvailMemoryInKB[0]));
+            util::kilobytes_to_bytes(static_cast<size_t>(nCurAvailMemoryInKB[0]));
     } catch (const Exception& e) {
         LogWarn("Failed to fetch current available texture memory: " << e.what());
     }
@@ -308,8 +307,8 @@ glm::u64 OpenGLCapabilities::getCurrentAvailableTextureMem() {
     return currentAvailableTexMeminBytes;
 }
 
-glm::u64 OpenGLCapabilities::getTotalAvailableTextureMem() {
-    glm::u64 totalAvailableTexMemInBytes = 0;
+size_t OpenGLCapabilities::getTotalAvailableTextureMem() {
+    size_t totalAvailableTexMemInBytes = 0;
 
     try {
         if (glVendor_ == GlVendor::Nvidia) {
@@ -317,7 +316,7 @@ glm::u64 OpenGLCapabilities::getTotalAvailableTextureMem() {
             GLint nTotalAvailMemoryInKB[4] = {0};
             glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, nTotalAvailMemoryInKB);
             totalAvailableTexMemInBytes =
-                util::kilobytes_to_bytes(static_cast<glm::u64>(nTotalAvailMemoryInKB[0]));
+                util::kilobytes_to_bytes(static_cast<size_t>(nTotalAvailMemoryInKB[0]));
 #endif
         } else if (glVendor_ == GlVendor::Amd) {
 #if defined(WGL_AMD_gpu_association)
@@ -328,7 +327,7 @@ glm::u64 OpenGLCapabilities::getTotalAvailableTextureMem() {
             wglGetGPUInfoAMD(ids[0], WGL_GPU_RAM_AMD, GL_UNSIGNED_INT, sizeof(size_t),
                              &total_mem_mb);
             totalAvailableTexMemInBytes =
-                util::megabytes_to_bytes(static_cast<glm::u64>(total_mem_mb));
+                util::megabytes_to_bytes(static_cast<size_t>(total_mem_mb));
 #elif defined(GLX_AMD_gpu_association)
             UINT n = glXGetGPUIDsAMD(0, 0);
             UINT* ids = new UINT[n];
@@ -337,7 +336,7 @@ glm::u64 OpenGLCapabilities::getTotalAvailableTextureMem() {
             glXGetGPUInfoAMD(ids[0], GLX_GPU_RAM_AMD, GL_UNSIGNED_INT, sizeof(size_t),
                              &total_mem_mb);
             totalAvailableTexMemInBytes =
-                util::megabytes_to_bytes(static_cast<glm::u64>(total_mem_mb));
+                util::megabytes_to_bytes(static_cast<size_t>(total_mem_mb));
 #endif
         }
     } catch (const Exception& e) {

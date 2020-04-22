@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SIMPLEMESHRAM_H
-#define IVW_SIMPLEMESHRAM_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -75,5 +74,3 @@ void SimpleMesh::addIndices(Args&&... args) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_SIMPLEMESHRAM_H

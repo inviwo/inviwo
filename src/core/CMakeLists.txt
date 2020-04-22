@@ -296,6 +296,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/glmvec.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/hashcombine.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagecache.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imageramutils.h
@@ -342,6 +343,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tinydirinterface.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/typetraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeramutils.h
@@ -396,6 +398,10 @@ set(SOURCE_FILES
     datastructures/image/layerrepresentation.cpp
     datastructures/isovaluecollection.cpp
     datastructures/light/baselightsource.cpp
+    datastructures/light/diffuselight.cpp
+    datastructures/light/directionallight.cpp
+    datastructures/light/pointlight.cpp
+    datastructures/light/spotlight.cpp
     datastructures/representationconvertermetafactory.cpp
     datastructures/representationfactory.cpp
     datastructures/representationfactorymanager.cpp
@@ -585,6 +591,7 @@ set(SOURCE_FILES
     util/formatdispatching.cpp
     util/formats.cpp
     util/glm.cpp
+    util/glmvec.cpp
     util/hashcombine.cpp
     util/imagecache.cpp
     util/imageramutils.cpp
@@ -614,10 +621,12 @@ set(SOURCE_FILES
     util/stringconversion.cpp
     util/stringlogger.cpp
     util/systemcapabilities.cpp
+    util/stdextensions.cpp
     util/threadpool.cpp
     util/threadutil.cpp
     util/timer.cpp
     util/tinydirinterface.cpp
+    util/typetraits.cpp
     util/utilities.cpp
     util/volumesampler.cpp
     util/volumesequencesampler.cpp
@@ -708,19 +717,21 @@ target_include_directories(inviwo-core PUBLIC
 )
 
 # Add core dependencies to this list
-target_link_libraries(inviwo-core PUBLIC
-    ticpp
-    inviwo::glm
-    inviwo::tinydir
-    inviwo::tclap
-    inviwo::warn
-    inviwo::sml
-    inviwo::span
-    fmt::fmt
-    $<$<BOOL:${IVW_SIGAR}>:inviwo::sigar>
-    $<$<BOOL:${WIN32}>:inviwo::stackwalker>
-    $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
-    $<$<BOOL:${IVW_OPENMP_ON}>:OpenMP::OpenMP_CXX>
+target_link_libraries(inviwo-core 
+    PUBLIC
+        ticpp
+        inviwo::glm
+        inviwo::tclap
+        inviwo::warn
+        inviwo::sml
+        inviwo::span
+        fmt::fmt
+        $<$<BOOL:${IVW_OPENMP_ON}>:OpenMP::OpenMP_CXX>
+    PRIVATE
+        $<$<BOOL:${IVW_SIGAR}>:inviwo::sigar>
+        $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
+        $<$<BOOL:${WIN32}>:inviwo::stackwalker>
+        inviwo::tinydir
 )
 
 if(APPLE)

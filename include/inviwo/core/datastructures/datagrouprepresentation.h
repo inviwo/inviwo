@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAGROUPREPRESENTATION_H
-#define IVW_DATAGROUPREPRESENTATION_H
+#pragma once
 
 #include <typeindex>
 
@@ -67,5 +66,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAGROUPREPRESENTATION_H

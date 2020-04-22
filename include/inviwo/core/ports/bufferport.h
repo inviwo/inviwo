@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BUFFER_PORT_H
-#define IVW_BUFFER_PORT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/datainport.h>
@@ -48,5 +47,3 @@ using BufferInport = DataInport<BufferBase>;
 using BufferOutport = DataOutport<BufferBase>;
 
 }  // namespace inviwo
-
-#endif  // IVW_BUFFER_PORT_H

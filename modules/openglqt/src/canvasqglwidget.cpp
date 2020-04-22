@@ -29,6 +29,7 @@
 
 #include <modules/opengl/openglcapabilities.h>
 #include <modules/openglqt/canvasqglwidget.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PLANE_H
-#define IVW_PLANE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glm.h>
 
 #include <optional>
 #include <string>
@@ -127,5 +126,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PLANE_H

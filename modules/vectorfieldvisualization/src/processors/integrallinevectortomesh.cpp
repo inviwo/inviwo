@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/raiiutils.h>
 
 namespace inviwo {
 

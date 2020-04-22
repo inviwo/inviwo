@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRACKBALL_H
-#define IVW_TRACKBALL_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -41,6 +39,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 
 #include <inviwo/core/util/timer.h>
+#include <inviwo/core/util/glm.h>
 
 #include <glm/gtx/vec_swizzle.hpp>
 #include <glm/gtc/epsilon.hpp>
@@ -258,5 +257,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TRACKBALL_H

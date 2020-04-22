@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FILEDIALOG_H
-#define IVW_FILEDIALOG_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/dialog.h>
 #include <inviwo/core/util/filedialogstate.h>
 #include <inviwo/core/util/fileextension.h>
@@ -84,5 +82,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FILEDIALOG_H

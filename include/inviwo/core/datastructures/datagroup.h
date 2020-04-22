@@ -27,14 +27,16 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAGROUP_H
-#define IVW_DATAGROUP_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/datagrouprepresentation.h>
+#include <inviwo/core/util/exception.h>
+
 #include <type_traits>
 #include <typeindex>
+#include <mutex>
+#include <unordered_map>
 
 namespace inviwo {
 /**
@@ -198,5 +200,3 @@ bool DataGroup<Self, Repr>::hasRepresentation() const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAGROUP_H

@@ -27,11 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_REPRESENTATIONCONVERTER_H
-#define IVW_REPRESENTATIONCONVERTER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/exception.h>
+
+#include <string>
 #include <vector>
 #include <typeindex>
 
@@ -153,5 +154,3 @@ void RepresentationConverterPackage<BaseRepr>::addConverter(
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_REPRESENTATIONCONVERTER_H

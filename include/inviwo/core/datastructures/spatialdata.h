@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SPATIALDATA_H
-#define IVW_SPATIALDATA_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glm.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 
 namespace inviwo {
@@ -349,5 +348,3 @@ inviwo::StructuredGridEntity<N>::getCoordinateTransformer(const CameraND<N>& cam
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_SPATIALDATA_H

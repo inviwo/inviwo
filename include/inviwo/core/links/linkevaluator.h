@@ -27,15 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LIKEVALUATOR_H
-#define IVW_LIKEVALUATOR_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processorpair.h>
 #include <inviwo/core/links/propertylink.h>
 
 #include <unordered_map>
+#include <vector>
 
 namespace inviwo {
 
@@ -119,5 +118,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LIKEVALUATOR_H

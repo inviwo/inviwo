@@ -27,13 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGECACHE_H
-#define IVW_IMAGECACHE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/glmvec.h>
+#include <glm/gtx/hash.hpp>
+
 #include <unordered_map>
+#include <memory>
 
 namespace inviwo {
 
@@ -78,5 +80,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGECACHE_H

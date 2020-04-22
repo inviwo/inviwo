@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGERAMCONVERTER_H
-#define IVW_IMAGERAMCONVERTER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/representationconverter.h>
@@ -48,5 +47,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGERAMCONVERTER_H

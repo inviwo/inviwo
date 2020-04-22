@@ -27,15 +27,16 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LAYERCLGL_H
-#define IVW_LAYERCLGL_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
+#include <modules/opencl/openclmoduledefine.h>
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
 #include <modules/opencl/inviwoopencl.h>
-#include <modules/opencl/openclmoduledefine.h>
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opencl/image/layerclbase.h>
+
+#include <utility>
+#include <map>
 
 namespace inviwo {
 
@@ -134,5 +135,3 @@ template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::LayerCLGL& value);
 
 }  // namespace cl
-
-#endif  // IVW_LAYERCLGL_H

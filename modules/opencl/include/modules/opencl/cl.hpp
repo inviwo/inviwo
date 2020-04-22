@@ -50,6 +50,21 @@
 #ifndef CL_HPP_
 #define CL_HPP_
 
+///////////////////////////// inviwo modifications /////////////////////////////////////////////
+// The following modifications have been made:
+// - Replaced size_t<3> with glm::size3_t
+// - Added constructors for NDRange to handle usage of glm::size2_t and glm::size3_t
+// - Default device, context and command queue is replaced with corresponding inviwo variables
+// - Changed setArg(cl_uint index, T& value)  to setArg(cl_uint index, const T& value)
+// - Changed KernelArgumentHandler:
+//      static T* ptr(T& value) { return &value; } to static const T* ptr(const T& value) { return &value; }
+//      static void* ptr(LocalSpaceArg& value) { return &value; } to static const void* ptr(const LocalSpaceArg& value) { return &value; }
+#include <inviwo/core/util/glm.h>
+#include <warn/push>
+#include <warn/ignore/all>
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
 #ifdef _WIN32
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
@@ -126,18 +141,6 @@
 #endif // linux
 
 #include <cstring>
-///////////////////////////// inviwo modifications /////////////////////////////////////////////
-// The following modifications have been made:
-// - Replaced size_t<3> with glm::size3_t
-// - Added constructors for NDRange to handle usage of glm::size2_t and glm::size3_t
-// - Default device, context and command queue is replaced with corresponding inviwo variables
-// - Changed setArg(cl_uint index, T& value)  to setArg(cl_uint index, const T& value)
-// - Changed KernelArgumentHandler:
-//      static T* ptr(T& value) { return &value; } to static const T* ptr(const T& value) { return &value; }
-//      static void* ptr(LocalSpaceArg& value) { return &value; } to static const void* ptr(const LocalSpaceArg& value) { return &value; }
-#include <inviwo/core/util/glm.h>
-
-///////////////////////////////////////////////////////////////////////////////////////////////
 
 /*! \namespace cl
  *
@@ -12390,6 +12393,8 @@ public:
 #pragma pop_macro("max")
 #endif // _WIN32
 
+#include <warn/pop>
+    
 #endif // CL_HPP_
 
 // clang-format on

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INPORTITERABLE_H
-#define IVW_INPORTITERABLE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/util/stdextensions.h>
 
@@ -299,5 +297,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_INPORTITERABLE_H

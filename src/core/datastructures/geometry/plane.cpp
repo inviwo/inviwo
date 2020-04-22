@@ -30,6 +30,7 @@
 #include <inviwo/core/datastructures/geometry/plane.h>
 
 #include <glm/gtx/perpendicular.hpp>
+#include <array>
 
 namespace inviwo {
 

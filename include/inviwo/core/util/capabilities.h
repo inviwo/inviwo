@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CAPABILITIES_H
-#define IVW_CAPABILITIES_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
@@ -48,5 +46,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CAPABILITIES_H

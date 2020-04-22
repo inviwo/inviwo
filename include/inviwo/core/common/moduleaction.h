@@ -27,11 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MODULE_ACTION_H
-#define IVW_MODULE_ACTION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/modulecallback.h>
+
+#include <string>
 
 namespace inviwo {
 
@@ -63,5 +64,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_MODULE_ACTION_H

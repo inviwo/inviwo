@@ -27,16 +27,19 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAOUTPORT_H
-#define IVW_DATAOUTPORT_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/ports/porttraits.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/document.h>
+
+#include <glm/fwd.hpp>
+
+#include <memory>
 
 namespace inviwo {
 
@@ -52,7 +55,7 @@ public:
     virtual ~DataOutport() = default;
 
     virtual std::string getClassIdentifier() const override;
-    virtual uvec3 getColorCode() const override;
+    virtual glm::uvec3 getColorCode() const override;
     virtual Document getInfo() const override;
 
     virtual std::shared_ptr<const T> getData() const;
@@ -112,7 +115,7 @@ std::string DataOutport<T>::getClassIdentifier() const {
 }
 
 template <typename T>
-uvec3 DataOutport<T>::getColorCode() const {
+glm::uvec3 DataOutport<T>::getColorCode() const {
     return DataTraits<T>::colorCode();
 }
 
@@ -182,5 +185,3 @@ Document DataOutport<T>::getInfo() const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAOUTPORT_H

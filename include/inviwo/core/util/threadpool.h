@@ -54,8 +54,7 @@
 
 // following https://github.com/progschj/ThreadPool
 
-#ifndef IVW_THREADPOOL_H
-#define IVW_THREADPOOL_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
@@ -154,5 +153,3 @@ auto ThreadPool::enqueue(F&& f, Args&&... args) -> std::future<std::invoke_resul
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_THREADPOOL_H

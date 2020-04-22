@@ -31,8 +31,7 @@
 #define IVW_KEYFRAME_H
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/io/serialization/serialization.h>
 #include <modules/animation/datastructures/keyframeobserver.h>
 #include <modules/animation/datastructures/animationtime.h>
 

@@ -27,17 +27,18 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGANDLINKINGMANAGER_H
-#define IVW_BRUSHINGANDLINKINGMANAGER_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/datastructures/indexlist.h>
 #include <inviwo/core/properties/invalidationlevel.h>
 
+#include <unordered_set>
+
 namespace inviwo {
+
 class BrushingAndLinkingInport;
-class BrushingAndLinkingProcessor;
+class Processor;
 /**
  * \class BrushingAndLinkingManager
  * \brief Manages row filtering, row selection and column selection from multiple sources.
@@ -95,5 +96,3 @@ inline bool BrushingAndLinkingManager::isSelected(size_t idx) const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_BRUSHINGANDLINKINGMANAGER_H

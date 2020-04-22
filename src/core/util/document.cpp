@@ -28,8 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/document.h>
-
-#include <sstream>
+#include <algorithm>
 
 namespace inviwo {
 
@@ -45,9 +44,13 @@ std::string& Document::Element::content() { return data_; }
 
 const std::string& Document::Element::content() const { return data_; }
 
-bool Document::Element::emptyTag() const { return util::contains(emptyTags_, data_); }
+bool Document::Element::emptyTag() const {
+    return std::find(emptyTags_.begin(), emptyTags_.end(), data_) != emptyTags_.end();
+}
 
-bool Document::Element::noIndent() const { return util::contains(noIndentTags_, data_); }
+bool Document::Element::noIndent() const {
+    return std::find(noIndentTags_.begin(), noIndentTags_.end(), data_) != noIndentTags_.end();
+}
 
 const std::vector<std::string> Document::Element::noIndentTags_ = {"pre"};
 
@@ -236,6 +239,12 @@ Document::DocumentHandle Document::insert(PathComponent pos, Document doc) {
     return handle().insert(pos, std::move(doc));
 }
 Document::DocumentHandle Document::append(Document doc) { return handle().append(std::move(doc)); }
+
+Document::operator std::string() const {
+    std::stringstream ss;
+    ss << *this;
+    return ss.str();
+}
 
 utildoc::TableBuilder::TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
                                     const std::unordered_map<std::string, std::string>& attributes)

@@ -38,14 +38,10 @@
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/interpolation.h>
 
+#include <map>
+
 namespace inviwo {
-/**
- * \class IntegralLine
- *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- *
- * DESCRIBE_THE_CLASS
- */
+
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine {
 public:
     enum class TerminationReason { StartPoint, Steps, OutOfBounds, ZeroVelocity, Unknown };

@@ -27,12 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEDATAREADERDIALOG_H
-#define IVW_VOLUMEDATAREADERDIALOG_H
+#pragma once
 
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/dialog.h>
 #include <inviwo/core/datastructures/datamapper.h>
+
+#include <string>
 
 namespace inviwo {
 
@@ -60,5 +61,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEDATAREADERDIALOG_H

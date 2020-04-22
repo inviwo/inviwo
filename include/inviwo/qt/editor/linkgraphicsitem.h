@@ -27,11 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LINKGRAPHICSITEM_H
-#define IVW_LINKGRAPHICSITEM_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/editorgrapicsitem.h>
+#include <inviwo/core/util/glmvec.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGraphicsLineItem>
@@ -131,5 +132,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CONNECTIONGRAPHICSITEM_H

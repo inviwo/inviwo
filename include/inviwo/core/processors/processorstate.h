@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORSTATE_H
-#define IVW_PROCESSORSTATE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <ostream>
@@ -59,5 +58,3 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORSTATE_H

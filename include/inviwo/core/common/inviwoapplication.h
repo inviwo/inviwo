@@ -27,22 +27,16 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOAPPLICATION_H
-#define IVW_INVIWOAPPLICATION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/common/runtimemoduleregistration.h>
-#include <inviwo/core/processors/processortags.h>
-#include <inviwo/core/resourcemanager/resourcemanagerobserver.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/threadpool.h>
-#include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/pathtype.h>
-#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/datastructures/representationfactory.h>
 #include <inviwo/core/datastructures/representationmetafactory.h>
@@ -56,7 +50,6 @@
 #include <queue>
 #include <memory>
 #include <mutex>
-#include <condition_variable>
 #include <future>
 #include <locale>
 #include <set>
@@ -66,6 +59,8 @@ namespace inviwo {
 
 class ProcessorNetwork;
 class ProcessorNetworkEvaluator;
+class CommandLineParser;
+struct AppResourceManagerObserver;
 
 class ResourceManager;
 class CameraFactory;
@@ -113,8 +108,7 @@ class TimerThread;
  * All modules should be owned and accessed trough this singleton, as well as the processor network
  *and the evaluator.
  */
-class IVW_CORE_API InviwoApplication : public Singleton<InviwoApplication>,
-                                       public ResourceManagerObserver {
+class IVW_CORE_API InviwoApplication : public Singleton<InviwoApplication> {
 public:
     InviwoApplication();
     InviwoApplication(std::string displayName);
@@ -427,8 +421,6 @@ public:
      */
     void setApplicationUsageMode(UsageMode mode);
 
-    virtual void onResourceManagerEnableStateChanged() override;
-
 protected:
     struct Queue {
         // Task queue
@@ -441,7 +433,7 @@ protected:
     };
 
     std::string displayName_;
-    CommandLineParser commandLineParser_;
+    std::unique_ptr<CommandLineParser> commandLineParser_;
     std::shared_ptr<ConsoleLogger> consoleLogger_;
     std::shared_ptr<FileLogger> filelogger_;
     std::function<void(std::string)> progressCallback_;
@@ -472,6 +464,7 @@ protected:
     std::unique_ptr<RepresentationMetaFactory> representationMetaFactory_;
     std::unique_ptr<RepresentationConverterMetaFactory> representationConverterMetaFactory_;
     std::unique_ptr<SystemSettings> systemSettings_;
+    std::unique_ptr<AppResourceManagerObserver> resourcemanagerobserver_;
     std::unique_ptr<SystemCapabilities> systemCapabilities_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moduleCallbackActions_;
     ModuleManager moduleManager_;
@@ -654,5 +647,3 @@ inline ProcessorWidgetFactory* InviwoApplication::getProcessorWidgetFactory() co
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_INVIWOAPPLICATION_H

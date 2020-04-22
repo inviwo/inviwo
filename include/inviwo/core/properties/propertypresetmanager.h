@@ -27,15 +27,18 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYPRESETMANAGER_H
-#define IVW_PROPERTYPRESETMANAGER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <flags/flags.h>
+
+#include <map>
+#include <string>
+#include <vector>
+#include <algorithm>
 
 namespace inviwo {
 class InviwoApplication;
@@ -133,5 +136,3 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYPRESETMANAGER_H

@@ -28,8 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/io/serialization/serializebase.h>
-#include <inviwo/core/io/serialization/serializable.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/serialization/ticpp.h>
 
 namespace inviwo {
 
@@ -114,15 +113,30 @@ TxElement* SerializeBase::ReferenceDataContainer::nodeCopy(const void* data) {
 }
 
 SerializeBase::SerializeBase(bool allowReference)
-    : allowRef_(allowReference), retrieveChild_(true) {}
+    : doc_{std::make_unique<TxDocument>()}
+    , rootElement_{nullptr}
+    , allowRef_{allowReference}
+    , retrieveChild_{true} {}
 
 SerializeBase::SerializeBase(std::string fileName, bool allowReference)
-    : fileName_(fileName), doc_(fileName), allowRef_(allowReference), retrieveChild_(true) {}
+    : fileName_{fileName}
+    , doc_{std::make_unique<TxDocument>(fileName)}
+    , rootElement_{nullptr}
+    , allowRef_{allowReference}
+    , retrieveChild_{true} {}
 
 SerializeBase::SerializeBase(std::istream& stream, const std::string& path, bool allowReference)
-    : fileName_(path), allowRef_(allowReference), retrieveChild_(true) {
-    stream >> doc_;
+    : fileName_{path}
+    , doc_{std::make_unique<TxDocument>()}
+    , rootElement_{nullptr}
+    , allowRef_{allowReference}
+    , retrieveChild_{true} {
+    stream >> *doc_;
 }
+
+SerializeBase::~SerializeBase() = default;
+SerializeBase::SerializeBase(SerializeBase&&) = default;
+SerializeBase& SerializeBase::operator=(SerializeBase&&) = default;
 
 const std::string& SerializeBase::getFileName() const { return fileName_; }
 
@@ -146,32 +160,74 @@ std::string SerializeBase::nodeToString(const TxElement& node) {
     }
 }
 
-NodeSwitch::NodeSwitch(SerializeBase& serializer, TxElement* node, bool retrieveChild)
-    : serializer_(serializer)
-    , storedNode_(serializer_.rootElement_)
-    , storedRetrieveChild_(serializer_.retrieveChild_) {
+NodeSwitch::NodeSwitch(NodeSwitch&& rhs) noexcept
+    : node_{std::move(rhs.node_)}
+    , serializer_{rhs.serializer_}
+    , storedNode_{nullptr}
+    , storedRetrieveChild_{rhs.storedRetrieveChild_} {
 
-    serializer_.rootElement_ = node;
-    serializer_.retrieveChild_ = retrieveChild;
+    std::swap(storedNode_, rhs.storedNode_);
 }
 
+NodeSwitch& NodeSwitch::operator=(NodeSwitch&& rhs) noexcept {
+    if (this != &rhs) {
+        if (storedNode_) {
+            serializer_->rootElement_ = storedNode_;
+            serializer_->retrieveChild_ = storedRetrieveChild_;
+        }
+        node_ = std::move(rhs.node_);
+        serializer_ = rhs.serializer_;
+        storedNode_ = rhs.storedNode_;
+        storedRetrieveChild_ = rhs.storedRetrieveChild_;
+
+        rhs.storedNode_ = nullptr;
+    }
+    return *this;
+}
+
+NodeSwitch::NodeSwitch(SerializeBase& serializer, TxElement* node, bool retrieveChild)
+    : serializer_(&serializer)
+    , storedNode_(serializer_->rootElement_)
+    , storedRetrieveChild_(serializer_->retrieveChild_) {
+
+    serializer_->rootElement_ = node;
+    serializer_->retrieveChild_ = retrieveChild;
+}
+
+NodeSwitch::NodeSwitch(SerializeBase& serializer, std::unique_ptr<TxElement> node,
+                       bool retrieveChild)
+    : node_(std::move(node))
+    , serializer_(&serializer)
+    , storedNode_(serializer_->rootElement_)
+    , storedRetrieveChild_(serializer_->retrieveChild_) {
+
+    serializer_->rootElement_ = node_.get();
+    serializer_->retrieveChild_ = retrieveChild;
+}
 NodeSwitch::NodeSwitch(SerializeBase& serializer, const std::string& key, bool retrieveChild)
-    : serializer_(serializer)
-    , storedNode_(serializer_.rootElement_)
-    , storedRetrieveChild_(serializer_.retrieveChild_) {
+    : serializer_(&serializer)
+    , storedNode_(serializer_->rootElement_)
+    , storedRetrieveChild_(serializer_->retrieveChild_) {
 
-    serializer_.rootElement_ = serializer_.retrieveChild_
-                                   ? serializer_.rootElement_->FirstChildElement(key, false)
-                                   : serializer_.rootElement_;
+    serializer_->rootElement_ = serializer_->retrieveChild_
+                                    ? serializer_->rootElement_->FirstChildElement(key, false)
+                                    : serializer_->rootElement_;
 
-    serializer_.retrieveChild_ = retrieveChild;
+    serializer_->retrieveChild_ = retrieveChild;
 }
 
 NodeSwitch::~NodeSwitch() {
-    serializer_.rootElement_ = storedNode_;
-    serializer_.retrieveChild_ = storedRetrieveChild_;
+    if (storedNode_) {
+        serializer_->rootElement_ = storedNode_;
+        serializer_->retrieveChild_ = storedRetrieveChild_;
+    }
 }
 
-NodeSwitch::operator bool() const { return serializer_.rootElement_ != nullptr; }
+NodeSwitch::operator bool() const { return serializer_->rootElement_ != nullptr; }
+
+std::string detail::getNodeAttributeOrDefault(TxElement* node, const std::string& key,
+                                              const std::string& defaultValue) {
+    return node->GetAttributeOrDefault(key, defaultValue);
+}
 
 }  // namespace inviwo

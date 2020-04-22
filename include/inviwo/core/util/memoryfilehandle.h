@@ -27,13 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MEMORYFILEHANDLE_H
-#define IVW_MEMORYFILEHANDLE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <cstdio>
+#include <vector>
 
 namespace inviwo {
 
@@ -97,5 +96,3 @@ private:
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_MEMORYFILEHANDLE_H

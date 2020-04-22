@@ -27,13 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FILEPROPERTY_H
-#define IVW_FILEPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/filedialogstate.h>
+
+#include <vector>
 
 namespace inviwo {
 
@@ -129,5 +130,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FILEPROPERTY_H

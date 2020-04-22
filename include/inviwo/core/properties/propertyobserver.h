@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYOBSERVER_H
-#define IVW_PROPERTYOBSERVER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/propertyvisibility.h>
@@ -66,5 +64,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYOBSERVER_H

@@ -27,20 +27,24 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGERAMUTILS_H
-#define IVW_IMAGERAMUTILS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 
-#include <inviwo/core/datastructures/image/imageram.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/util/settings/systemsettings.h>
+#include <memory>
+#include <vector>
+#include <future>
 
 namespace inviwo {
+class Image;
 
 namespace util {
+
+namespace detail {
+IVW_CORE_API size_t getPoolSize();
+}
 
 template <typename C>
 void forEachPixel(const size2_t dims, C callback) {
@@ -60,8 +64,7 @@ void forEachPixel(const LayerRAM &layer, C callback) {
 template <typename C>
 void forEachPixelParallel(const size2_t dims, C callback, size_t jobs = 0) {
     if (jobs == 0) {
-        auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-        jobs = 4 * settings->poolSize_.get();
+        jobs = 4 * detail::getPoolSize();
         if (jobs == 0) {  // if poolsize is zero
             forEachPixel(dims, callback);
             return;
@@ -99,5 +102,3 @@ IVW_CORE_API std::shared_ptr<Image> readImageFromDisk(std::string filename);
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGERAMUTILS_H

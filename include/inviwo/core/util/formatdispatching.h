@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FORMATDISPATCHING_H
-#define IVW_FORMATDISPATCHING_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/formats.h>
@@ -347,5 +346,3 @@ using PrecsionValueType[[deprecated("Use `PrecisionValueType` instead")]] =
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_FORMATDISPATCHING_H

@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/io/serialization/serialization.h>
 
 namespace inviwo {
 

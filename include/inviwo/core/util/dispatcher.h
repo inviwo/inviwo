@@ -27,12 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DISPATCHER_H
-#define IVW_DISPATCHER_H
+#pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/stdextensions.h>
+#include <vector>
+#include <memory>
+#include <functional>
+#include <algorithm>
 
 namespace inviwo {
 
@@ -74,9 +74,11 @@ public:
 
         // Remove all callbacks that are gone, only if we are not dispatching.
         if (0 == concurrent_dispatcher_count) {
-            util::erase_remove_if(callbacks, [](std::weak_ptr<std::function<C>> callback) {
-                return callback.expired();
-            });
+            callbacks.erase(std::remove_if(callbacks.begin(), callbacks.end(),
+                                           [](std::weak_ptr<std::function<C>> callback) {
+                                               return callback.expired();
+                                           }),
+                            callbacks.end());
         }
     }
 
@@ -86,5 +88,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DISPATCHER_H

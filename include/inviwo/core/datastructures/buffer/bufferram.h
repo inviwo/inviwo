@@ -27,13 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BUFFER_RAM_H
-#define IVW_BUFFER_RAM_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 
@@ -220,5 +220,3 @@ bool IVW_CORE_API operator==(const BufferBase& bufA, const BufferBase& bufB);
 bool IVW_CORE_API operator!=(const BufferBase& bufA, const BufferBase& bufB);
 
 }  // namespace inviwo
-
-#endif  // IVW_BUFFER_RAM_H

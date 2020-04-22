@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SETTINGS_H
-#define IVW_SETTINGS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/properties/property.h>
 
@@ -71,5 +69,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SETTINGS_H

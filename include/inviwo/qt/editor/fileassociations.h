@@ -78,6 +78,8 @@
 #include <QAbstractNativeEventFilter>
 #include <string>
 #include <functional>
+#include <unordered_map>
+#include <memory>
 #include <warn/pop>
 
 class QMainWindow;

@@ -27,11 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PICKINGACTION_H
-#define IVW_PICKINGACTION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glmvec.h>
+
+#include <functional>
 
 namespace inviwo {
 
@@ -116,5 +117,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PICKINGACTION_H

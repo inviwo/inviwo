@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LAYER_H
-#define IVW_LAYER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/data.h>
@@ -128,5 +127,3 @@ extern template class IVW_CORE_TMPL_EXP DataReaderType<Layer>;
 extern template class IVW_CORE_TMPL_EXP DataWriterType<Layer>;
 
 }  // namespace inviwo
-
-#endif  // IVW_LAYER_H

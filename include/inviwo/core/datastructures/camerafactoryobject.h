@@ -27,11 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CAMERAFACTORYOBJECT_H
-#define IVW_CAMERAFACTORYOBJECT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+
+#include <memory>
+#include <string>
 
 namespace inviwo {
 
@@ -58,5 +59,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CAMERAFACTORYOBJECT_H

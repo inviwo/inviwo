@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_COMPOSITEPROCESSOR_H
-#define IVW_COMPOSITEPROCESSOR_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertyobserver.h>
@@ -200,5 +198,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_COMPOSITEPROCESSOR_H

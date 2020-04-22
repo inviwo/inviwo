@@ -27,14 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOMODULEFACTORYOBJECT_H
-#define IVW_INVIWOMODULEFACTORYOBJECT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/version.h>
 #include <inviwo/core/util/licenseinfo.h>
 #include <inviwo/core/util/stdextensions.h>
+
+#include <vector>
+#include <string>
 
 namespace inviwo {
 
@@ -119,5 +120,3 @@ IVW_CORE_API void topologicalModuleFactoryObjectSort(
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator end);
 
 }  // namespace inviwo
-
-#endif  // IVW_INVIWOMODULEFACTORYOBJECT_H

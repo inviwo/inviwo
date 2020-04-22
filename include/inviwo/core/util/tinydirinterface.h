@@ -27,10 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TINYDIR_INTERFACE_H
-#define IVW_TINYDIR_INTERFACE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+
 #include <functional>
 #include <string>
 #include <vector>
@@ -164,5 +164,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TINYDIR_INTERFACE_H

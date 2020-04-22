@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROGRESSBAROWNER_H
-#define IVW_PROGRESSBAROWNER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/processors/progressbar.h>
@@ -81,5 +80,3 @@ inline void ProgressBarOwner::updateProgress(float progress) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_PROGRESSBAROWNER_H

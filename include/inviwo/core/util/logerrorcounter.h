@@ -31,9 +31,10 @@
 #define IVW_LOGERRORCOUNTER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/logcentral.h>
+
+#include <map>
+#include <string>
 
 namespace inviwo {
 

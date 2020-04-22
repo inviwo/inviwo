@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CAMERAPROPERTY_H
-#define IVW_CAMERAPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/algorithm/camerautils.h>
 #include <inviwo/core/properties/buttongroupproperty.h>
@@ -42,6 +40,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/interaction/events/eventlistener.h>
 #include <inviwo/core/interaction/trackballobject.h>
+#include <inviwo/core/util/glm.h>
 
 #include <functional>
 #include <optional>
@@ -188,5 +187,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CAMERAPROPERTY_H

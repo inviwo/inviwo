@@ -42,6 +42,7 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/autolinker.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 

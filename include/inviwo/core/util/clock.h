@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CLOCK_H
-#define IVW_CLOCK_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -273,5 +272,3 @@ using ScopedClockCPU = ScopedClock<Clock>;
 #endif
 
 }  // namespace inviwo
-
-#endif  // IVW_CLOCK_H

@@ -27,13 +27,18 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SERIALIZATIONEXCEPTION_H
-#define IVW_SERIALIZATIONEXCEPTION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/serialization/ticpp.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/io/serialization/nodedebugger.h>
+
+#include <string>
+
+namespace ticpp {
+class Element;
+}
+using TxElement = ticpp::Element;
 
 namespace inviwo {
 
@@ -70,5 +75,3 @@ IVW_CORE_API std::string formatSerializationError(const std::string& name, const
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_SERIALIZATIONEXCEPTION_H

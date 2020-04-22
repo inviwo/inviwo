@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LOGGER_H
-#define IVW_LOGGER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/singleton.h>
@@ -250,5 +249,3 @@ IVW_CORE_API void log(Logger* logger, ExceptionContext context, std::string mess
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_LOGGER_H

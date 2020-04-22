@@ -39,6 +39,7 @@
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/processors/processorwidgetfactoryobject.h>
 #include <inviwo/core/metadata/processormetadata.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>

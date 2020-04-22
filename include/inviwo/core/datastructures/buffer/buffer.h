@@ -27,14 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BUFFER_H
-#define IVW_BUFFER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 
@@ -213,5 +213,3 @@ Document Buffer<T, Target>::getInfo() const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_BUFFER_H

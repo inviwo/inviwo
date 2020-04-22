@@ -86,10 +86,8 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
             ":/animation/icons/lock_open_opened_protection_safety_security_unlocked_icon_32.png",
             iconSize, QIcon::Normal, QIcon::On);
         QAction* lock = new QAction(lockTrackIcon, "Lock/Unlock Track", this);
-        connect(lock, &QAction::triggered, this, [this]() {
-            IVW_UNUSED_PARAM(this);  // needed for the LogWarn
-            LogWarn("Locking tracks is not implemented yet.");
-        });
+        connect(lock, &QAction::triggered, this,
+                [=]() { LogWarn("Locking tracks is not implemented yet."); });
         lock->setCheckable(true);
         lock->setChecked(false);
         btnLock_ = new QToolButton(this);

@@ -27,12 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MODULEUTILS_H
-#define IVW_MODULEUTILS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/exception.h>
@@ -77,5 +74,3 @@ std::string getModulePath(ModulePath pathType) {
 }  // namespace module
 
 }  // namespace inviwo
-
-#endif  // IVW_MODULEUTILS_H

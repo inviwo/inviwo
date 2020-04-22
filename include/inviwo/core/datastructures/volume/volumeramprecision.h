@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMERAMPRECISION_H
-#define IVW_VOLUMERAMPRECISION_H
+#pragma once
 
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/glm.h>
@@ -374,5 +373,3 @@ void VolumeRAMPrecision<T>::setFromNormalizedDVec4(const size3_t& pos, dvec4 val
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMERAMPRECISION_H

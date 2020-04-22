@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_METADATA_FACTORY_H
-#define IVW_METADATA_FACTORY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/metadata/metadata.h>
@@ -43,5 +42,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORFACTORY_H

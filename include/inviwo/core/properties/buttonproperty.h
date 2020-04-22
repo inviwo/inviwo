@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BUTTONPROPERTY_H
-#define IVW_BUTTONPROPERTY_H
+#pragma once
 
 #include <inviwo/core/properties/property.h>
 #include <functional>
@@ -93,5 +92,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BUTTONPROPERTY_H

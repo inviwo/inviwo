@@ -83,11 +83,9 @@ QWidget* TextSelectionDelegate::createEditor(QWidget* parent, const QStyleOption
     }
 }
 
-void TextSelectionDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
-                                         const QModelIndex& index) const {
-    IVW_UNUSED_PARAM(editor);
-    IVW_UNUSED_PARAM(model);
-    IVW_UNUSED_PARAM(index);
+void TextSelectionDelegate::setModelData([[maybe_unused]] QWidget* editor,
+                                         [[maybe_unused]] QAbstractItemModel* model,
+                                         [[maybe_unused]] const QModelIndex& index) const {
     // dummy function to prevent changing the model
 }
 

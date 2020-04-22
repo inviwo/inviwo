@@ -27,14 +27,16 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAREADERFACTORY_H
-#define IVW_DATAREADERFACTORY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/datareader.h>
+
+#include <memory>
+#include <unordered_map>
+#include <string>
 
 namespace inviwo {
 
@@ -153,5 +155,3 @@ bool DataReaderFactory::hasReaderForTypeAndExtension(const FileExtension& ext) c
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAREADERFACTORY_H

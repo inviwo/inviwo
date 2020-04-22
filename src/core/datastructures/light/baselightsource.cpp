@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/light/baselightsource.h>
+#include <glm/gtc/constants.hpp>
 
 namespace inviwo {
 
@@ -40,7 +41,7 @@ mat4 getLightTransformationMatrix(vec3 pos, vec3 dir) {
     if (glm::all(glm::lessThan(glm::abs(glm::cross(A, B)), vec3(glm::epsilon<float>())))) {
         // Direction is parallel to z-axis.
         // Apply rotation by 180 degrees if the direction is along negative z-axis
-        float angle = dir.z < 0 ? -static_cast<float>(M_PI) : 0;
+        float angle = dir.z < 0 ? -glm::pi<float>() : 0;
         transformationMatrix = glm::translate(pos) * glm::rotate(angle, vec3(0.f, 1.f, 0.f));
     } else {
         float angle = std::acos(glm::dot(A, B));
@@ -53,7 +54,7 @@ mat4 getLightTransformationMatrix(vec3 pos, vec3 dir) {
     return transformationMatrix;
 }
 
-LightSource::LightSource() : fieldOfView_(static_cast<float>(0.5 * M_PI)) {}
+LightSource::LightSource() : fieldOfView_(0.5f * glm::pi<float>()) {}
 
 const inviwo::vec3 LightSource::getIntensity() const { return intensity_; }
 

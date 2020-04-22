@@ -32,15 +32,15 @@
 
 namespace inviwo {
 
-glm::u64 util::bytes_to_kilobytes(glm::u64 bytes) { return bytes / byte_swap; }
+size_t util::bytes_to_kilobytes(size_t bytes) { return bytes / byte_swap; }
 
-glm::u64 util::bytes_to_megabytes(glm::u64 bytes) { return bytes / (byte_swap * byte_swap); }
+size_t util::bytes_to_megabytes(size_t bytes) { return bytes / (byte_swap * byte_swap); }
 
-glm::u64 util::kilobytes_to_bytes(glm::u64 bytes) { return bytes * byte_swap; }
+size_t util::kilobytes_to_bytes(size_t bytes) { return bytes * byte_swap; }
 
-glm::u64 util::megabytes_to_bytes(glm::u64 bytes) { return bytes * byte_swap * byte_swap; }
+size_t util::megabytes_to_bytes(size_t bytes) { return bytes * byte_swap * byte_swap; }
 
-std::string util::formatBytesToString(glm::u64 bytes) {
+std::string util::formatBytesToString(size_t bytes) {
     std::ostringstream stream;
     stream.precision(2);
     stream.setf(std::ios::fixed, std::ios::floatfield);

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SERIALIZABLE_H
-#define IVW_SERIALIZABLE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
@@ -36,7 +35,6 @@ namespace inviwo {
 
 class Serializer;
 class Deserializer;
-class SerializeBase;
 
 class IVW_CORE_API Serializable {
 public:
@@ -46,4 +44,3 @@ public:
 };
 
 }  // namespace inviwo
-#endif

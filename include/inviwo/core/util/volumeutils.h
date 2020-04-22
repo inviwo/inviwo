@@ -27,13 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEUTILS_H
-#define IVW_VOLUMEUTILS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glmvec.h>
 
 #include <tuple>
+#include <memory>
+#include <utility>
 
 namespace inviwo {
 
@@ -72,5 +73,3 @@ double IVW_CORE_API voxelVolume(const Volume &volume);
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEUTILS_H

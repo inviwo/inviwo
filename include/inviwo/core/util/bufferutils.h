@@ -27,12 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BUFFERUTILS_H
-#define IVW_BUFFERUTILS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 #include <inviwo/core/datastructures/buffer/buffer.h>
 
 namespace inviwo {
@@ -48,5 +45,3 @@ IVW_CORE_API void reverse(BufferBase &b);
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEUTILS_H

@@ -33,6 +33,7 @@ tools/codegen/colorbrewer/colorbrewer.py
 */
 
 #include <inviwo/core/util/colorbrewer-generated.h>
+#include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 namespace colorbrewer {

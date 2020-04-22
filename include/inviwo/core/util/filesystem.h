@@ -27,16 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FILE_SYSTEM_H
-#define IVW_FILE_SYSTEM_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/pathtype.h>
 
 #include <vector>
 #include <fstream>
 #include <cstdio>
+#include <ctime>
 
 namespace inviwo {
 
@@ -361,5 +360,3 @@ IVW_CORE_API std::string cleanupPath(const std::string& path);
 }  // namespace filesystem
 
 }  // namespace inviwo
-
-#endif  // IVW_FILE_SYSTEM_H

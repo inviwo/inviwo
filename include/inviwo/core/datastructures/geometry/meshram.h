@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MESHRAM_H
-#define IVW_MESHRAM_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/datagrouprepresentation.h>
@@ -59,5 +58,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_MESHRAM_H

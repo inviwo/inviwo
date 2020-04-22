@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SIMPLERAYCASTINGPROPERTY_H
-#define IVW_SIMPLERAYCASTINGPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -63,5 +61,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SIMPLERAYCASTINGPROPERTY_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CAMERATRACKBALL_H
-#define IVW_CAMERATRACKBALL_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/interaction/trackball.h>
@@ -54,5 +53,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CAMERATRACKBALL_H

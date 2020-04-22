@@ -27,67 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWO_H
-#define IVW_INVIWO_H
+#pragma once
 
-// Visual studio https://msdn.microsoft.com/en-us/library/23k5d385.aspx
-// List of all warnings messages and id for clang http://fuckingclangwarnings.com
-
-// Define a debug flag for inviwo called IVW_DEBUG
-#if defined(__clang__) || defined(__GNUC__)  // sets NDEBUG when not debugging
-#ifndef NDEBUG
-#ifndef IVW_DEBUG
-#define IVW_DEBUG
-#endif
-#endif
-#endif
-
-#ifdef _MSC_VER
-#ifdef _DEBUG  /// MVS sets _DEBUG when debugging
-#ifndef IVW_DEBUG
-#define IVW_DEBUG
-#endif
-#endif
-#endif
-
-#include <iostream>
-#include <string>
-#include <vector>
-#include <map>
-#include <algorithm>
-#include <fstream>
-#include <stdio.h>
-
-#include <inviwo/core/inviwocommondefines.h>
-
-// include glm
 #include <inviwo/core/util/glm.h>
-
 #include <inviwo/core/util/formats.h>
-
-// error handling
-#include <inviwo/core/util/assertion.h>
-#include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/logcentral.h>
-#define IVW_UNUSED_PARAM(param) (void)param
-
-#include <inviwo/core/io/serialization/serialization.h>
-
-//#define IVW_DEPRECATION_WARNINGS
-
-#if defined(IVW_DEPRECATION_WARNINGS)
-#define ivwDeprecatedMethod(newFunction)                                              \
-    std::cout << __FUNCTION__ << " is deprecated. Use " << newFunction << " instead." \
-              << std::endl;                                                           \
-    std::cout << "(" << __FILE__ << " - Line " << __LINE__ << ")." << std::endl;
-#else
-#define ivwDeprecatedMethod(newFunction)
-#endif
 
 #ifdef _MSC_VER
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
 #include <vld.h>
 #endif
 #endif
-
-#endif  // IVW_INVIWO_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_NETWORKUTILS_H
-#define IVW_NETWORKUTILS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -228,5 +226,3 @@ IVW_CORE_API void replaceProcessor(ProcessorNetwork* network,
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_NETWORKUTILS_H

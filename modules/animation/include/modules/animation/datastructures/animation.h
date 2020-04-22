@@ -31,8 +31,7 @@
 #define IVW_ANIMATION_H
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/util/indirectiterator.h>
 
 #include <modules/animation/datastructures/animationtime.h>
@@ -40,6 +39,9 @@
 #include <modules/animation/datastructures/trackobserver.h>
 #include <modules/animation/datastructures/animationobserver.h>
 #include <modules/animation/datastructures/animationstate.h>
+
+#include <memory>
+#include <vector>
 
 namespace inviwo {
 

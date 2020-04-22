@@ -27,15 +27,17 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INPORT_H
-#define IVW_INPORT_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/util/callback.h>
 #include <inviwo/core/util/statecoordinator.h>
+
+#include <vector>
+#include <string>
+#include <functional>
 
 namespace inviwo {
 
@@ -172,5 +174,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_INPORT_H

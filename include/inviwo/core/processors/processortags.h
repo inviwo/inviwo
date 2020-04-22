@@ -27,11 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORTAGS_H
-#define IVW_PROCESSORTAGS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+
+#include <string>
+#include <vector>
 
 namespace inviwo {
 
@@ -139,5 +140,3 @@ Tags IVW_CORE_API getPlatformTags(const Tags& t);
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORTAGS_H

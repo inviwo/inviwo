@@ -1,5 +1,5 @@
-#ifndef IVW_INVIWO_COMMON_DEFINES_H
-#define IVW_INVIWO_COMMON_DEFINES_H
+#pragma once
+// Automatically generated file do not change!
 
 #define IVW_TRUNK std::string("@IVW_ROOT_DIR@")
 
@@ -9,5 +9,3 @@
 #define IVW_MINOR_VERSION @IVW_MINOR_VERSION@
 #define IVW_PATCH_VERSION @IVW_PATCH_VERSION@
 #define IVW_BUILD_VERSION @IVW_BUILD_VERSION@
-
-#endif // IVW_INVIWO_COMMON_DEFINES_H

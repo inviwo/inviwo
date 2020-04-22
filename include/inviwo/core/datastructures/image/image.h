@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGE_H
-#define IVW_IMAGE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/datagroup.h>
@@ -128,5 +127,3 @@ extern template class IVW_CORE_TMPL_EXP DataReaderType<Image>;
 extern template class IVW_CORE_TMPL_EXP DataWriterType<Image>;
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGE_H

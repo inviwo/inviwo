@@ -28,6 +28,9 @@
  *********************************************************************************/
 
 #include <inviwo/core/algorithm/cubeplaneintersection.h>
+#include <array>
+#include <algorithm>
+#include <numeric>
 
 namespace inviwo::util {
 

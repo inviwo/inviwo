@@ -47,6 +47,7 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/moduleregistration.h>
+#include <inviwo/core/util/commandlineparser.h>
 
 using namespace inviwo;
 
@@ -115,10 +116,6 @@ int main(int argc, char** argv) {
         util::log(exception.getContext(),
                   "Incomplete network loading " + workspace + " due to " + exception.getMessage(),
                   LogLevel::Error);
-        return 1;
-    } catch (const ticpp::Exception& exception) {
-        LogErrorCustom("glfwminimum", "Unable to load network " + workspace +
-                                          " due to deserialization error: " + exception.what());
         return 1;
     }
 

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EVALUATIONERRORHANDLER_H
-#define IVW_EVALUATIONERRORHANDLER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/exception.h>
@@ -48,5 +47,3 @@ struct IVW_CORE_API StandardEvaluationErrorHandler {
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EVALUATIONERRORHANDLER_H

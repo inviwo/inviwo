@@ -40,6 +40,8 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/metadata/processormetadata.h>
 
+#include <fmt/format.h>
+
 #include <algorithm>
 
 namespace inviwo {
@@ -142,8 +144,20 @@ void ProcessorNetwork::addConnection(const PortConnection& connection) {
     addConnection(connection.getOutport(), connection.getInport());
 }
 void ProcessorNetwork::addConnection(Outport* src, Inport* dst) {
-    if (!isPortInNetwork(src)) throw Exception("Outport not found in network", IVW_CONTEXT);
-    if (!isPortInNetwork(dst)) throw Exception("Inport not found in network", IVW_CONTEXT);
+    if (!isPortInNetwork(src)) {
+        throw Exception(
+            fmt::format(
+                "Unable to create connection, Outport '{}' of Processor '{}' not found in network",
+                src->getClassIdentifier(), src->getProcessor()->getIdentifier()),
+            IVW_CONTEXT);
+    }
+    if (!isPortInNetwork(dst)) {
+        throw Exception(
+            fmt::format(
+                "Unable to create connection, Inport '{}' of Processor '{}' not found in network",
+                src->getClassIdentifier(), src->getProcessor()->getIdentifier()),
+            IVW_CONTEXT);
+    }
 
     if (canConnect(src, dst) && !isConnected(src, dst)) {
         NetworkLock lock(this);

@@ -30,7 +30,6 @@
 #ifndef IVW_SHADEROBJECT_H
 #define IVW_SHADEROBJECT_H
 
-#include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/shader/shaderresource.h>
@@ -44,6 +43,9 @@
 #include <string>
 #include <iosfwd>
 #include <utility>
+#include <map>
+#include <string>
+#include <unordered_map>
 
 namespace inviwo {
 

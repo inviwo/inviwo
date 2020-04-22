@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORNETWORK_H
-#define IVW_PROCESSORNETWORK_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorobserver.h>
@@ -322,5 +320,3 @@ inline void ProcessorNetwork::unlock() {
 inline bool ProcessorNetwork::islocked() const { return (locked_ != 0); }
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORNETWORK_H

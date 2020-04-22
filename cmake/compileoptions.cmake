@@ -111,6 +111,7 @@ macro(ivw_define_standard_definitions project_name target)
         $<$<BOOL:${BUILD_SHARED_LIBS}>:INVIWO_ALL_DYN_LINK>
         $<$<BOOL:${IVW_PROFILING}>:IVW_PROFILING>
         $<$<BOOL:${IVW_FORCE_ASSERTIONS}>:IVW_FORCE_ASSERTIONS>
+        $<$<CONFIG:Debug>:IVW_DEBUG>
     )
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         target_compile_definitions(${target} PRIVATE 

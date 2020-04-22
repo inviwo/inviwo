@@ -31,6 +31,8 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/datastructures/image/image.h>
 
 namespace inviwo {
 
@@ -48,6 +50,11 @@ std::shared_ptr<Image> readImageFromDisk(std::string filename) {
         return nullptr;
     }
 }
+
+size_t detail::getPoolSize() {
+    return InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->poolSize_.get();
+}
+
 }  // namespace util
 
 }  // namespace inviwo

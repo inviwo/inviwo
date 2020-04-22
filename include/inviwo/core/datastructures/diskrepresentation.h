@@ -27,12 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DISKREPRESENTATION_H
-#define IVW_DISKREPRESENTATION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/cloneableptr.h>
+#include <inviwo/core/util/exception.h>
+
+#include <string>
+#include <memory>
 
 namespace inviwo {
 
@@ -116,5 +118,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DISKREPRESENTATION_H

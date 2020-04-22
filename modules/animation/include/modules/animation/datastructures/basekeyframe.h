@@ -31,7 +31,6 @@
 #define IVW_BASEKEYFRAME_H
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/animation/datastructures/keyframe.h>
 
 namespace inviwo {

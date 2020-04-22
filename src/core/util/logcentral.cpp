@@ -30,6 +30,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/stacktrace.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/assertion.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/network/processornetwork.h>

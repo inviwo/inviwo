@@ -46,6 +46,7 @@ class QMimeData;
 namespace inviwo {
 
 class Property;
+class InviwoApplication;
 
 class IVW_MODULE_QTWIDGETS_API PropertyWidgetQt : public QWidget,
                                                   public PropertyWidget,

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STACKTRACE_H
-#define IVW_STACKTRACE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <vector>
 #include <string>
@@ -39,5 +37,3 @@
 namespace inviwo {
 IVW_CORE_API std::vector<std::string> getStackTrace();
 }  // namespace inviwo
-
-#endif  // IVW_STACKTRACE_H

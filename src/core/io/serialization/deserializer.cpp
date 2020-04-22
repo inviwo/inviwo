@@ -39,13 +39,15 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#include <inviwo/core/io/serialization/ticpp.h>
+
 namespace inviwo {
 
 Deserializer::Deserializer(std::string fileName, bool allowReference)
     : SerializeBase(fileName, allowReference) {
     try {
-        doc_.LoadFile();
-        rootElement_ = doc_.FirstChildElement();
+        doc_->LoadFile();
+        rootElement_ = doc_->FirstChildElement();
         storeReferences(rootElement_);
         rootElement_->GetAttribute(SerializeConstants::VersionAttribute, &inviwoWorkspaceVersion_,
                                    false);
@@ -58,7 +60,7 @@ Deserializer::Deserializer(std::istream& stream, const std::string& path, bool a
     : SerializeBase(stream, path, allowReference) {
     try {
         // Base streamed in the xml data. Get the first node.
-        rootElement_ = doc_.FirstChildElement();
+        rootElement_ = doc_->FirstChildElement();
         storeReferences(rootElement_);
     } catch (TxException& e) {
         throw AbortException(e.what(), IVW_CONTEXT);
@@ -94,7 +96,7 @@ void Deserializer::convertVersion(VersionConverter* converter) {
     if (converter->convert(rootElement_)) {
         // Re-generate the reference table
         referenceLookup_.clear();
-        storeReferences(doc_.FirstChildElement());
+        storeReferences(doc_->FirstChildElement());
     }
 }
 
@@ -121,10 +123,28 @@ void Deserializer::storeReferences(TxElement* node) {
     }
 }
 
+TxElement* Deserializer::retrieveChild(const std::string& key) {
+    return retrieveChild_ ? rootElement_->FirstChildElement(key, false) : rootElement_;
+}
+
 void Deserializer::registerFactory(FactoryBase* factory) {
     registeredFactories_.push_back(factory);
 }
 
 int Deserializer::getInviwoWorkspaceVersion() const { return inviwoWorkspaceVersion_; }
+
+std::string detail::getNodeAttribute(TxElement* node, const std::string& key) {
+    return node->GetAttribute(key);
+}
+
+void detail::forEachChild(TxElement* node, const std::string& key,
+                          std::function<void(TxElement*)> func) {
+
+    TxEIt child(key);
+
+    for (child = child.begin(node); child != child.end(); ++child) {
+        func(&(*child));
+    }
+}
 
 }  // namespace inviwo

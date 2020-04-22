@@ -30,6 +30,7 @@
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/io/serialization/ticpp.h>
 
 namespace inviwo {
 
@@ -37,12 +38,12 @@ Serializer::Serializer(const std::string& fileName, bool allowReference)
     : SerializeBase(fileName, allowReference) {
     try {
         auto decl = std::make_unique<TxDeclaration>(SerializeConstants::XmlVersion, "", "");
-        doc_.LinkEndChild(decl.get());
+        doc_->LinkEndChild(decl.get());
         rootElement_ = new TxElement(SerializeConstants::InviwoWorkspace);
 
         rootElement_->SetAttribute(SerializeConstants::VersionAttribute,
                                    SerializeConstants::InviwoWorkspaceVersion);
-        doc_.LinkEndChild(rootElement_);
+        doc_->LinkEndChild(rootElement_);
 
     } catch (TxException& e) {
         throw SerializationException(e.what(), IVW_CONTEXT);
@@ -52,10 +53,27 @@ Serializer::Serializer(const std::string& fileName, bool allowReference)
 Serializer::~Serializer() { delete rootElement_; }
 
 void Serializer::serialize(const std::string& key, const Serializable& sObj) {
-    auto newNode = std::make_unique<TxElement>(key);
-    rootElement_->LinkEndChild(newNode.get());
-    NodeSwitch nodeSwitch(*this, newNode.get());
+    auto node = std::make_unique<TxElement>(key);
+    rootElement_->LinkEndChild(node.get());
+    NodeSwitch nodeSwitch(*this, std::move(node));
     sObj.serialize(*this);
+}
+
+NodeSwitch Serializer::switchToNewNode(const std::string& key) {
+    auto node = std::make_unique<TxElement>(key);
+    rootElement_->LinkEndChild(node.get());
+    NodeSwitch nodeSwitch(*this, std::move(node));
+    return nodeSwitch;
+}
+
+TxElement* Serializer::getLastChild() const { return rootElement_->LastChild()->ToElement(); }
+
+void Serializer::linkEndChild(TxElement* child) { rootElement_->LinkEndChild(child); }
+
+void Serializer::setValue(TxElement* node, const std::string& val) { node->SetValue(val); }
+
+void Serializer::setAttribute(TxElement* node, const std::string& key, const std::string& val) {
+    node->SetAttribute(key, val);
 }
 
 void Serializer::serialize(const std::string& key, const signed char& data,
@@ -74,7 +92,7 @@ void Serializer::serialize(const std::string& key, const unsigned char& data,
 void Serializer::writeFile() {
     try {
         refDataContainer_.setReferenceAttributes();
-        doc_.SaveFile(getFileName());
+        doc_->SaveFile(getFileName());
     } catch (TxException& e) {
         throw SerializationException(e.what(), IVW_CONTEXT);
     }
@@ -86,10 +104,10 @@ void Serializer::writeFile(std::ostream& stream, bool format) {
         if (format) {
             TiXmlPrinter printer;
             printer.SetIndent("    ");
-            doc_.Accept(&printer);
+            doc_->Accept(&printer);
             stream << printer.Str();
         } else {
-            stream << doc_;
+            stream << *doc_;
         }
     } catch (TxException& e) {
         throw SerializationException(e.what(), IVW_CONTEXT);

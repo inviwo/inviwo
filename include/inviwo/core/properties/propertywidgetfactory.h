@@ -27,13 +27,16 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYWIDGETFACTORY_H
-#define IVW_PROPERTYWIDGETFACTORY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/propertywidgetfactoryobject.h>
 #include <inviwo/core/util/factory.h>
+
+#include <map>
+#include <vector>
+#include <memory>
 
 namespace inviwo {
 
@@ -57,5 +60,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYWIDGETFACTORY_H

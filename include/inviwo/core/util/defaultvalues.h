@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DEFAULTVALUES_H
-#define IVW_DEFAULTVALUES_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glm.h>
@@ -173,5 +172,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DEFAULTVALUES_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BOOLPROPERTY_H
-#define IVW_BOOLPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/templateproperty.h>
@@ -59,5 +58,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BOOLPROPERTY_H

@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/util/formats.h>
 
 namespace inviwo {
 

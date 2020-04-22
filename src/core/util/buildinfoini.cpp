@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <fstream>
 #include <sstream>

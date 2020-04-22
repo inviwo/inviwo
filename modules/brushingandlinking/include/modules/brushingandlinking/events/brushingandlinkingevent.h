@@ -27,13 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGANDLINKINGEVENT_H
-#define IVW_BRUSHINGANDLINKINGEVENT_H
+#pragma once
 
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/util/constexprhash.h>
+
+#include <unordered_set>
 
 namespace inviwo {
 
@@ -69,5 +69,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BRUSHINGANDLINKINGEVENT_H

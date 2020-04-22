@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_COMPOSITESINK_H
-#define IVW_COMPOSITESINK_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processortraits.h>
@@ -154,5 +152,3 @@ void CompositeSink<InportType, OutportType>::deserialize(Deserializer& d) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_COMPOSITESINK_H

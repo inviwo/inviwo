@@ -27,20 +27,18 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DIFFUSE_LIGHT_H
-#define IVW_DIFFUSE_LIGHT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
 
 namespace inviwo {
 
-class DiffuseLight : public LightSource {
+class IVW_CORE_API DiffuseLight : public LightSource {
 public:
     DiffuseLight() = default;
     virtual ~DiffuseLight() = default;
-    virtual DiffuseLight* clone() const override { return new DiffuseLight(*this); }
+    virtual DiffuseLight* clone() const override;
 
     virtual float getArea() const override { return size_.x * size_.y; }
     /**
@@ -48,9 +46,7 @@ public:
      * @see setPower
      * @return Radiant flux in watt.
      */
-    virtual vec3 getPower() const override {
-        return getIntensity() * getArea() * static_cast<float>(M_PI);
-    }
+    virtual vec3 getPower() const override;
 
     LightSourceType getLightSourceType() const override { return LightSourceType::area; }
 
@@ -67,9 +63,7 @@ public:
     void setNormal(const vec3& normal) { normal_ = normal; }
 
 protected:
-    vec3 normal_;
+    vec3 normal_{1.0f, 0.0f, 0.0f};
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DIFFUSE_LIGHT_H

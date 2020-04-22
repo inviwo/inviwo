@@ -27,10 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FILEOBSERVER_H
-#define IVW_FILEOBSERVER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -98,5 +98,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FILEOBSERVER_H

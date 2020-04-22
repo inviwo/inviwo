@@ -66,11 +66,9 @@ KeyframeSequenceWidgetQt::KeyframeSequenceWidgetQt(KeyframeSequence& keyframeSeq
 
 KeyframeSequenceWidgetQt::~KeyframeSequenceWidgetQt() = default;
 
-void KeyframeSequenceWidgetQt::paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
-                                     QWidget* widget) {
-
-    IVW_UNUSED_PARAM(options);
-    IVW_UNUSED_PARAM(widget);
+void KeyframeSequenceWidgetQt::paint(QPainter* painter,
+                                     [[maybe_unused]] const QStyleOptionGraphicsItem* options,
+                                     [[maybe_unused]] QWidget* widget) {
     painter->setRenderHint(QPainter::Antialiasing, true);
     QPen pen = QPen();
     pen.setWidthF(1);

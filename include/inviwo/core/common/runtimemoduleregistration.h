@@ -26,8 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#ifndef IVW_RUNTIMEMODLEREGISTRTION_H
-#define IVW_RUNTIMEMODLEREGISTRTION_H
+
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
@@ -39,5 +39,3 @@ namespace inviwo {
 struct IVW_CORE_API RuntimeModuleLoading {};
 
 }  // namespace inviwo
-
-#endif  // IVW_RUNTIMEMODLEREGISTRTION_H

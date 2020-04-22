@@ -27,13 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PORTTRAITS_H
-#define IVW_PORTTRAITS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/util/introspection.h>
+
+#include <string>
 
 namespace inviwo {
 
@@ -65,5 +65,3 @@ struct PortTraits {
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PORTTRAITS_H

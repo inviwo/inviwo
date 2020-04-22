@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SYSTEMSETTINGS_H
-#define IVW_SYSTEMSETTINGS_H
+#pragma once
 
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -74,5 +73,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SYSTEMSETTINGS_H

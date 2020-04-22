@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LINKSETTINGS_H
-#define IVW_LINKSETTINGS_H
+#pragma once
 
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/properties/compositeproperty.h>
@@ -58,5 +57,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LINKSETTINGS_H

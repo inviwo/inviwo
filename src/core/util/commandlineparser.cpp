@@ -29,6 +29,7 @@
 
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/inviwocommondefines.h>
 
 namespace inviwo {
 

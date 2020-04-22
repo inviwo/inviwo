@@ -27,14 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_COMMANDLINEPARSER_H
-#define IVW_COMMANDLINEPARSER_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 
 #include <string>
 #include <vector>
 #include <tuple>
+#include <functional>
 
 #if defined(HAVE_CONFIG_H)
 #define HAVE_CONFIG_H_ENABLED
@@ -155,5 +155,3 @@ inline void WildCardArg::addToList(std::list<TCLAP::Arg*>& argList) const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_COMMANDLINEPARSER_H

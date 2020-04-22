@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_UTILITIES_H
-#define IVW_UTILITIES_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/exception.h>
@@ -112,5 +111,3 @@ void hide(Args&&... args) {
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_UTILITIES_H

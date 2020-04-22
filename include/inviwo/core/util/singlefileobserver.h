@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SINGLEFILEOBSERVER_H
-#define IVW_SINGLEFILEOBSERVER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/fileobserver.h>
@@ -82,5 +81,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SIMPLEFILEOBSERVER_H

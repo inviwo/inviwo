@@ -1,4 +1,6 @@
 // Automatically generated file do not change! (see globalmacros.cmake, ivw_private_generate_module_registration_file)
+#pragma once
+
 #ifdef IVW_RUNTIME_MODULE_LOADING
 
 #include <inviwo/core/common/runtimemoduleregistration.h>

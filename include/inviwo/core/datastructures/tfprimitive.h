@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TFPRIMITIVE_H
-#define IVW_TFPRIMITIVE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/observer.h>
 
 namespace inviwo {
@@ -111,5 +111,3 @@ IVW_CORE_API bool operator<=(const TFPrimitive& lhs, const TFPrimitive& rhs);
 IVW_CORE_API bool operator>=(const TFPrimitive& lhs, const TFPrimitive& rhs);
 
 }  // namespace inviwo
-
-#endif  // IVW_TFPRIMITIVE_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DIALOGFACTORY_H
-#define IVW_DIALOGFACTORY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/dialog.h>
 #include <inviwo/core/util/dialogfactoryobject.h>
@@ -46,5 +44,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DIALOGFACTORY_H

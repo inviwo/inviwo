@@ -27,13 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SERIALIZER_H
-#define IVW_SERIALIZER_H
+#pragma once
 
 #include <inviwo/core/io/serialization/serializebase.h>
+#include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/glm.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
 
 #include <flags/flags.h>
@@ -43,10 +43,12 @@
 #include <bitset>
 #include <vector>
 #include <array>
+#include <unordered_set>
+#include <unordered_map>
+#include <map>
+#include <memory>
 
 namespace inviwo {
-
-class Serializable;
 
 class IVW_CORE_API Serializer : public SerializeBase {
 public:
@@ -155,6 +157,12 @@ public:
 
 protected:
     friend class NodeSwitch;
+
+    NodeSwitch switchToNewNode(const std::string& key);
+    TxElement* getLastChild() const;
+    void linkEndChild(TxElement* child);
+    static void setAttribute(TxElement* node, const std::string& key, const std::string& val);
+    static void setValue(TxElement* node, const std::string& val);
 };
 
 template <typename T>
@@ -162,10 +170,7 @@ void Serializer::serialize(const std::string& key, const std::vector<T>& vector,
                            const std::string& itemKey) {
     if (vector.empty()) return;
 
-    auto node = std::make_unique<TxElement>(key);
-    rootElement_->LinkEndChild(node.get());
-    NodeSwitch nodeSwitch(*this, node.get());
-
+    auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : vector) {
         serialize(itemKey, item);
     }
@@ -176,10 +181,7 @@ void Serializer::serialize(const std::string& key, const std::unordered_set<T>& 
                            const std::string& itemKey) {
     if (set.empty()) return;
 
-    auto node = std::make_unique<TxElement>(key);
-    rootElement_->LinkEndChild(node.get());
-    NodeSwitch nodeSwitch(*this, node.get());
-
+    auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : set) {
         serialize(itemKey, item);
     }
@@ -190,10 +192,7 @@ void Serializer::serialize(const std::string& key, const std::list<T>& container
                            const std::string& itemKey) {
     if (container.empty()) return;
 
-    auto node = std::make_unique<TxElement>(key);
-    rootElement_->LinkEndChild(node.get());
-
-    NodeSwitch nodeSwitch(*this, node.get());
+    auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : container) {
         serialize(itemKey, item);
     }
@@ -204,10 +203,7 @@ void Serializer::serialize(const std::string& key, const std::array<T, N>& conta
                            const std::string& itemKey) {
     if (container.empty()) return;
 
-    auto node = std::make_unique<TxElement>(key);
-    rootElement_->LinkEndChild(node.get());
-    NodeSwitch nodeSwitch(*this, node.get());
-
+    auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : container) {
         serialize(itemKey, item);
     }
@@ -221,14 +217,10 @@ void Serializer::serialize(const std::string& key, const std::map<K, V, C, A>& m
 
     if (map.empty()) return;
 
-    auto node = std::make_unique<TxElement>(key);
-    rootElement_->LinkEndChild(node.get());
-    NodeSwitch nodeSwitch(*this, node.get());
-
+    auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : map) {
         serialize(itemKey, item.second);
-        rootElement_->LastChild()->ToElement()->SetAttribute(SerializeConstants::KeyAttribute,
-                                                             item.first);
+        setAttribute(getLastChild(), SerializeConstants::KeyAttribute, detail::toStr(item.first));
     }
 }
 
@@ -240,14 +232,10 @@ void Serializer::serialize(const std::string& key, const std::unordered_map<K, V
 
     if (map.empty()) return;
 
-    auto node = std::make_unique<TxElement>(key);
-    rootElement_->LinkEndChild(node.get());
-    NodeSwitch nodeSwitch(*this, node.get());
-
+    auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : map) {
         serialize(itemKey, item.second);
-        rootElement_->LastChild()->ToElement()->SetAttribute(SerializeConstants::KeyAttribute,
-                                                             item.first);
+        setAttribute(getLastChild(), SerializeConstants::KeyAttribute, detail::toStr(item.first));
     }
 }
 
@@ -257,18 +245,18 @@ void Serializer::serialize(const std::string& key, const std::unique_ptr<T, D>& 
 }
 
 template <class T>
-inline void Serializer::serialize(const std::string& key, const T* const& data) {
+void Serializer::serialize(const std::string& key, const T* const& data) {
     if (!allowRef_) {
         serialize(key, *data);
     } else {
         if (refDataContainer_.find(data)) {
-            TxElement* newNode = refDataContainer_.nodeCopy(data);
-            newNode->SetValue(key);
-            rootElement_->LinkEndChild(newNode);
+            auto newNode = refDataContainer_.nodeCopy(data);
+            setValue(newNode, key);
+            linkEndChild(newNode);
             refDataContainer_.insert(data, newNode);
         } else {
             serialize(key, *data);
-            refDataContainer_.insert(data, rootElement_->LastChild()->ToElement(), false);
+            refDataContainer_.insert(data, getLastChild(), false);
         }
     }
 }
@@ -281,11 +269,10 @@ template <typename T,
 void Serializer::serialize(const std::string& key, const T& data,
                            const SerializationTarget& target) {
     if (target == SerializationTarget::Attribute) {
-        rootElement_->SetAttribute(key, data);
+        setAttribute(rootElement_, key, detail::toStr(data));
     } else {
-        auto node = std::make_unique<TxElement>(key);
-        rootElement_->LinkEndChild(node.get());
-        node->SetAttribute(SerializeConstants::ContentAttribute, data);
+        auto nodeSwitch = switchToNewNode(key);
+        setAttribute(rootElement_, SerializeConstants::ContentAttribute, detail::toStr(data));
     }
 }
 
@@ -308,22 +295,18 @@ void Serializer::serialize(const std::string& key, const flags::flags<T>& data,
 // glm vector types
 template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type>
 void Serializer::serialize(const std::string& key, const Vec& data) {
-    auto node = std::make_unique<TxElement>(key);
-    rootElement_->LinkEndChild(node.get());
+    auto nodeSwitch = switchToNewNode(key);
     for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
-        node->SetAttribute(SerializeConstants::VectorAttributes[i], data[i]);
+        setAttribute(rootElement_, SerializeConstants::VectorAttributes[i], detail::toStr(data[i]));
     }
 }
 
 // glm matrix types
 template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int>::type>
 void Serializer::serialize(const std::string& key, const Mat& data) {
-    auto node = std::make_unique<TxElement>(key);
-    rootElement_->LinkEndChild(node.get());
-
-    NodeSwitch nodeSwitch(*this, node.get());
+    auto nodeSwitch = switchToNewNode(key);
     for (size_t i = 0; i < util::extent<Mat, 0>::value; ++i) {
-        serialize("col" + toString(i), data[i]);
+        serialize(SerializeConstants::MatrixAttributes[i], data[i]);
     }
 }
 
@@ -333,4 +316,3 @@ void Serializer::serialize(const std::string& key, const std::bitset<N>& bits) {
 }
 
 }  // namespace inviwo
-#endif

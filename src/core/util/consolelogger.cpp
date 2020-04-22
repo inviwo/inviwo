@@ -32,6 +32,7 @@
 #include <inviwo/core/util/ostreamjoiner.h>
 
 #include <sstream>
+#include <iomanip>
 
 #ifdef WIN32
 #define NOMINMAX
@@ -48,13 +49,10 @@ namespace inviwo {
 ConsoleLogger::ConsoleLogger() = default;
 ConsoleLogger::~ConsoleLogger() = default;
 
-void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience /*audience*/,
-                        const char* fileName, const char* functionName, int lineNumber,
+void ConsoleLogger::log(std::string logSource, [[maybe_unused]] LogLevel logLevel,
+                        LogAudience /*audience*/, [[maybe_unused]] const char* fileName,
+                        [[maybe_unused]] const char* functionName, [[maybe_unused]] int lineNumber,
                         std::string logMsg) {
-    IVW_UNUSED_PARAM(fileName);
-    IVW_UNUSED_PARAM(logLevel);
-    IVW_UNUSED_PARAM(functionName);
-    IVW_UNUSED_PARAM(lineNumber);
 
     auto& os = logLevel == LogLevel::Error ? std::cerr : std::cout;
 

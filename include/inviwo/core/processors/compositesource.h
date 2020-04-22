@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_COMPOSITESOURCE_H
-#define IVW_COMPOSITESOURCE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processortraits.h>
@@ -167,5 +165,3 @@ void CompositeSource<InportType, OutportType>::propagateEvent(Event* event, Outp
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_COMPOSITESOURCE_H

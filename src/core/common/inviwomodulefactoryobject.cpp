@@ -29,6 +29,9 @@
 
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/exception.h>
+
+#include <unordered_set>
 
 namespace inviwo {
 

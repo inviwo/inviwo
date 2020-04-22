@@ -29,7 +29,6 @@
 #pragma once
 
 #include <{{ module/define_include }}>
-#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 

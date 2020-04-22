@@ -27,13 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CANVAS_H
-#define IVW_CANVAS_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/interaction/pickingcontroller.h>
+#include <inviwo/core/util/glmvec.h>
 
 namespace inviwo {
 
@@ -99,5 +98,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CANVAS_H

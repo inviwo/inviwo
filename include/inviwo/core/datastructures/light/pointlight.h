@@ -27,24 +27,21 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_POINT_LIGHT_H
-#define IVW_POINT_LIGHT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
+#include <glm/gtc/constants.hpp>
 
 namespace inviwo {
 
-class PointLight : public LightSource {
+class IVW_CORE_API PointLight : public LightSource {
 public:
-    PointLight() : LightSource() { setFieldOfView(static_cast<float>(2. * M_PI)); }
+    PointLight() : LightSource() { setFieldOfView(glm::two_pi<float>()); }
     virtual ~PointLight() = default;
-    virtual PointLight* clone() const override { return new PointLight(*this); }
+    virtual PointLight* clone() const override;
 
-    virtual float getArea() const override {
-        return 4.f * static_cast<float>(M_PI) * size_.x * size_.y;
-    }
+    virtual float getArea() const override { return 4.f * glm::pi<float>() * size_.x * size_.y; }
     /**
      * Get radiant flux (color) of light source.
      * @see setPower
@@ -73,9 +70,7 @@ public:
     }
 
 protected:
-    vec3 position_;
+    vec3 position_{0.0f};
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_POINT_LIGHT_H

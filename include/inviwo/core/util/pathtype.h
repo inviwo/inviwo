@@ -27,10 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PATHTYPE_H
-#define IVW_PATHTYPE_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
+#pragma once
 
 namespace inviwo {
 
@@ -52,5 +49,3 @@ enum class PathType {
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PATHTYPE_H

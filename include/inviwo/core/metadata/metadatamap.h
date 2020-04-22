@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_METADATA_MAP_H
-#define IVW_METADATA_MAP_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/metadata/metadata.h>
@@ -78,5 +77,3 @@ bool IVW_CORE_API operator==(const MetaDataMap& lhs, const MetaDataMap& rhs);
 bool IVW_CORE_API operator!=(const MetaDataMap& lhs, const MetaDataMap& rhs);
 
 }  // namespace inviwo
-
-#endif  // IVW_METADATA_MAP_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FILE_PATTERN_PROPERTY_H
-#define IVW_FILE_PATTERN_PROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
@@ -121,5 +120,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FILE_PATTERN_PROPERTY_H

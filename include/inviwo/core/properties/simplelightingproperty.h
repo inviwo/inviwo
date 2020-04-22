@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SIMPLELIGHTINGPROPERTY_H
-#define IVW_SIMPLELIGHTINGPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/templateproperty.h>
@@ -95,5 +93,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SIMPLELIGHTINGPROPERTY_H

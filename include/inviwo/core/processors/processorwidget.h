@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORWIDGET_H
-#define IVW_PROCESSORWIDGET_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processorwidgetobserver.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
 
@@ -79,5 +77,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORWIDGET_H

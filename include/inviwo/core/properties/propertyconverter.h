@@ -27,12 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYCONVERTER_H
-#define IVW_PROPERTYCONVERTER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/directoryproperty.h>
@@ -203,5 +200,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYCONVERTER_H

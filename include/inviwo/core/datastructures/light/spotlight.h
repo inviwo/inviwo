@@ -27,21 +27,20 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SPOT_LIGHT_H
-#define IVW_SPOT_LIGHT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
 #include <cmath>
+#include <glm/gtc/constants.hpp>
 
 namespace inviwo {
 
-class SpotLight : public LightSource {
+class IVW_CORE_API SpotLight : public LightSource {
 public:
     SpotLight() = default;
     virtual ~SpotLight() = default;
-    virtual SpotLight* clone() const override { return new SpotLight(*this); }
+    virtual SpotLight* clone() const override;
 
     virtual float getArea() const override { return size_.x * size_.y; }
     /**
@@ -50,7 +49,7 @@ public:
      * @return Radiant flux in watt.
      */
     virtual vec3 getPower() const override {
-        return getIntensity() * 2.f * static_cast<float>(M_PI) *
+        return getIntensity() * glm::two_pi<float>() *
                (1.f - 5.f * (std::cos(glm::radians(coneRadiusAngle_)) +
                              std::cos(glm::radians(coneFallOffAngle_))));
     }
@@ -136,12 +135,10 @@ public:
     }
 
 protected:
-    vec3 position_;
-    vec3 direction_;
-    float coneRadiusAngle_;
-    float coneFallOffAngle_;
+    vec3 position_{0.0f};
+    vec3 direction_{1.0f, 0.0f, 0.0f};
+    float coneRadiusAngle_{1.0f};
+    float coneFallOffAngle_{1.0f};
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SPOT_LIGHT_H

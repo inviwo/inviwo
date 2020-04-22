@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ACTIVITYINDICATOR_H
-#define IVW_ACTIVITYINDICATOR_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/observer.h>
 
 namespace inviwo {
@@ -65,5 +63,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ACTIVITYINDICATOR_H

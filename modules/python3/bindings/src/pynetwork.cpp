@@ -37,6 +37,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <inviwopy/vectoridentifierwrapper.h>
 

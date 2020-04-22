@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ENUMTRAITS_H
-#define IVW_ENUMTRAITS_H
+#pragma once
 
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/defaultvalues.h>
@@ -48,7 +47,7 @@ template <typename T, class Enable = void>
 struct HasEnumName : std::false_type {};
 
 template <typename T>
-struct HasEnumName<T, void_t<decltype(EnumTraits<T>::name())>> : std::true_type {};
+struct HasEnumName<T, std::void_t<decltype(EnumTraits<T>::name())>> : std::true_type {};
 
 }  // namespace detail
 
@@ -66,5 +65,3 @@ std::string enumName() {
 
 }  // namespace util
 }  // namespace inviwo
-
-#endif  // IVW_ENUMTRAITS_H

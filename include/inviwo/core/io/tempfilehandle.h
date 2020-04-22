@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TEMPFILEHANDLE_H
-#define IVW_TEMPFILEHANDLE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <cstdio>
 #include <string>
@@ -71,5 +69,3 @@ private:
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_TEMPFILEHANDLE_H

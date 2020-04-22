@@ -27,14 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ISOVALUECOLLECTION_H
-#define IVW_ISOVALUECOLLECTION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 #include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <inviwo/core/util/fileextension.h>
+
+#include <string>
 
 namespace inviwo {
 
@@ -69,5 +68,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ISOVALUECOLLECTION_H

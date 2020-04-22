@@ -27,15 +27,18 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_COMPOSITEPROCESSORFACTORYOBJECT_H
-#define IVW_COMPOSITEPROCESSORFACTORYOBJECT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/compositeprocessor.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
 
+#include <string>
+#include <memory>
+
 namespace inviwo {
+
+class InviwoApplication;
 
 /**
  * \class CompositeProcessorFactoryObject
@@ -53,5 +56,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_COMPOSITEPROCESSORFACTORYOBJECT_H

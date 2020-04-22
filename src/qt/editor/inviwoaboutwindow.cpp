@@ -29,6 +29,7 @@
 
 #include <inviwo/qt/editor/inviwoaboutwindow.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
+#include <inviwo/core/inviwocommondefines.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/systemcapabilities.h>

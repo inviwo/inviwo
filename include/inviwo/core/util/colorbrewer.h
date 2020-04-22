@@ -30,7 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <vector>
 #include <ostream>

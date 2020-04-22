@@ -31,6 +31,7 @@
 #include <modules/base/processors/volumesource.h>
 #include <modules/base/processors/cubeproxygeometryprocessor.h>
 #include <modules/base/processors/volumeslice.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

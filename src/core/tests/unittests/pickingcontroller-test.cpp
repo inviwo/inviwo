@@ -48,6 +48,8 @@ namespace sml = boost::sml;
 #include <gtest/gtest.h>
 #include <warn/pop>
 
+#include <array>
+
 namespace inviwo {
 
 namespace test {

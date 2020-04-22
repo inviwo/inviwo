@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SHAREDLIBRARY_H
-#define IVW_SHAREDLIBRARY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <set>
 #include <vector>
@@ -146,5 +144,3 @@ T SharedLibrary::findSymbolTyped(const std::string& name) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_SHAREDLIBRARY_H

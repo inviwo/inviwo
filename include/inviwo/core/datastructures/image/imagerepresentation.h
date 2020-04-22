@@ -27,13 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGEREPRESENTATION_H
-#define IVW_IMAGEREPRESENTATION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/datagrouprepresentation.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 
@@ -82,5 +81,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGEREPRESENTATION_H

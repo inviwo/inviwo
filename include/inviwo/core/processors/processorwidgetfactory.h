@@ -27,13 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORWIDGETFACTORY_H
-#define IVW_PROCESSORWIDGETFACTORY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/processors/processorwidgetfactoryobject.h>
 #include <inviwo/core/util/factory.h>
+
+#include <unordered_map>
+#include <string>
 
 namespace inviwo {
 
@@ -63,5 +65,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORWIDGETFACTORY_H

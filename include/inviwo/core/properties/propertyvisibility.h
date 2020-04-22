@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYVISIBILITYMODE_H
-#define IVW_PROPERTYVISIBILITYMODE_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
+
+#include <iosfwd>
 
 namespace inviwo {
 
@@ -55,5 +55,3 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYVISIBILITYMODE_H

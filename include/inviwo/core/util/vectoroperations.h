@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VECTOROPERATIONS_H
-#define IVW_VECTOROPERATIONS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/introspection.h>
@@ -105,5 +104,3 @@ struct equalPtr {
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VECTOROPERATIONS_H

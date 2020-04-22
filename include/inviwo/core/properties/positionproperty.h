@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_POSITIONPROPERTY_H
-#define IVW_POSITIONPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -97,5 +95,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_POSITIONPROPERTY_H

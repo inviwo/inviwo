@@ -29,6 +29,7 @@
 
 #include <modules/example/processors/simpleraycaster.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/opengl/volume/volumegl.h>

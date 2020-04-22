@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STRINGCONVERSION_H
-#define IVW_STRINGCONVERSION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/ostreamjoiner.h>
+
 #include <algorithm>
 #include <string>
 #include <sstream>
@@ -190,5 +190,3 @@ std::string durationToString(std::chrono::duration<Rep, Period> duration, bool i
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_STRINGCONVERSION_H

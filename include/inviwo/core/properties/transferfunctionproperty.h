@@ -27,13 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRANSFERFUNCTIONPROPERTY_H
-#define IVW_TRANSFERFUNCTIONPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-
 #include <inviwo/core/properties/templateproperty.h>
-
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/histogram.h>
@@ -127,5 +124,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TRANSFERFUNCTIONPROPERTY_H

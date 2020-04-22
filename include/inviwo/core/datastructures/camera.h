@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CAMERA_H
-#define IVW_CAMERA_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 
@@ -397,5 +397,3 @@ inline void SkewedPerspectiveCamera::setOffset(vec2 offset) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_CAMERA_H

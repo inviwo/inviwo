@@ -27,13 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CALLBACK_H
-#define IVW_CALLBACK_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/dispatcher.h>
 
 #include <functional>
+#include <algorithm>
 
 namespace inviwo {
 
@@ -73,10 +72,13 @@ public:
      * @return bool True if removed, false otherwise.
      */
     bool remove(const BaseCallBack* callback) {
-        return util::erase_remove_if(callBackList_,
+        auto it = std::remove_if(callBackList_.begin(), callBackList_.end(),
                                      [&](const std::shared_ptr<std::function<void()>>& ptr) {
                                          return ptr.get() == callback;
-                                     }) > 0;
+                                     });
+        auto nelem = std::distance(it, callBackList_.end());
+        callBackList_.erase(it, callBackList_.end());
+        return nelem > 0;
     }
 
     /**
@@ -94,5 +96,3 @@ private:
 
 // clang-format on
 }  // namespace inviwo
-
-#endif  // IVW_CALLBACK_H

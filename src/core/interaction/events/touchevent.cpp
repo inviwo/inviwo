@@ -30,6 +30,7 @@
 #include <inviwo/core/interaction/events/touchevent.h>
 
 #include <inviwo/core/interaction/events/eventutil.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 

@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAINPORT_H
-#define IVW_DATAINPORT_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
@@ -40,7 +38,12 @@
 #include <inviwo/core/ports/inportiterable.h>
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/document.h>
 #include <inviwo/core/network/networkutils.h>
+
+#include <memory>
+#include <vector>
 
 namespace inviwo {
 
@@ -272,5 +275,3 @@ Document DataInport<T, N, Flat>::getInfo() const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAINPORT_H

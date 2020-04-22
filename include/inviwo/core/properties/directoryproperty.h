@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DIRECTORY_PROPERTY_H
-#define IVW_DIRECTORY_PROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/fileproperty.h>
@@ -60,5 +59,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DIRECTORY_PROPERTY_H

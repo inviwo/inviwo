@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GEOMETRY_DRAWER_FACTORY_H
-#define IVW_GEOMETRY_DRAWER_FACTORY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -53,5 +52,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_GEOMETRY_DRAWER_FACTORY_H

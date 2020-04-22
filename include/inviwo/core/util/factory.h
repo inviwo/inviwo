@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOFACTORYBASE_H
-#define IVW_INVIWOFACTORYBASE_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/typetraits.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/util/logcentral.h>
 
@@ -229,5 +229,3 @@ auto inviwo::CloningFactory<T, K>::getKeys() const -> std::vector<Key> {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_INVIWOFACETORYBASE_H

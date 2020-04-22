@@ -27,15 +27,16 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OUTPORT_H
-#define IVW_OUTPORT_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/util/statecoordinator.h>
 #include <inviwo/core/util/callback.h>
+
+#include <vector>
+#include <functional>
 
 namespace inviwo {
 
@@ -118,5 +119,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_OUTPORT_H

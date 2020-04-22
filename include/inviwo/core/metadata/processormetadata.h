@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORMETADATA_H
-#define IVW_PROCESSORMETADATA_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/metadata/positionmetadata.h>
 #include <inviwo/core/util/observer.h>
@@ -76,5 +74,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORMETADATA_H

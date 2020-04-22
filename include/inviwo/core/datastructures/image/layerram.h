@@ -27,13 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LAYERRAM_H
-#define IVW_LAYERRAM_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
 #include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 
@@ -142,8 +143,8 @@ public:
 };
 
 size_t inline LayerRAM::posToIndex(const size2_t& pos, const size2_t& dim) {
-    ivwAssert((pos.x < dim.x) && (pos.y < dim.y),
-              "posToIndex: position out of bounds (pos: " << pos << ", dim: " << dim << ")");
+    IVW_ASSERT((pos.x < dim.x) && (pos.y < dim.y),
+               "posToIndex: position out of bounds (pos: " << pos << ", dim: " << dim << ")");
     return pos.x + (pos.y * dim.x);
 }
 
@@ -184,5 +185,3 @@ auto LayerRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_LAYERRAM_H

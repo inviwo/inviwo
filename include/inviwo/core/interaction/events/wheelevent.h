@@ -30,7 +30,6 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/events/mouseinteractionevent.h>
 #include <inviwo/core/interaction/events/mousebuttons.h>
 #include <inviwo/core/util/constexprhash.h>

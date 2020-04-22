@@ -26,11 +26,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/util/glm.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 
 #include <atomic>

@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYSEMANTICS_H
-#define IVW_PROPERTYSEMANTICS_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/serialization/serializable.h>
 #include <string>
 #include <ostream>
 
@@ -94,5 +93,3 @@ inline bool operator>=(const PropertySemantics& lhs, const PropertySemantics& rh
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYSEMANTICS_H

@@ -56,8 +56,7 @@ THE SOFTWARE.
 // Author: Jesse Brown
 // Modifications: Brandon Amos
 
-#ifndef IVW_SHUNTINGYARD_H
-#define IVW_SHUNTINGYARD_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
@@ -124,5 +123,3 @@ private:
 
 }  // namespace shuntingyard
 }  // namespace inviwo
-
-#endif  // IVW_SHUNTINGYARD_H

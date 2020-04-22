@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MESH_H
-#define IVW_MESH_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/datagroup.h>
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
@@ -43,6 +41,8 @@
 #include <inviwo/core/io/datawriter.h>
 
 #include <utility>
+#include <memory>
+#include <vector>
 
 namespace inviwo {
 
@@ -295,5 +295,3 @@ extern template class IVW_CORE_TMPL_EXP DataReaderType<Mesh>;
 extern template class IVW_CORE_TMPL_EXP DataWriterType<Mesh>;
 
 }  // namespace inviwo
-
-#endif  // IVW_MESH_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GEOMETRYTYPE_H
-#define IVW_GEOMETRYTYPE_H
+#pragma once
 
 #include <inviwo/core/util/ostreamjoiner.h>
 
@@ -203,5 +202,3 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_GEOMETRYTYPE_H

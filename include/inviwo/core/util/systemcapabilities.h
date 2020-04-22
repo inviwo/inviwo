@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SYSTEMCAPABILITIES_H
-#define IVW_SYSTEMCAPABILITIES_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/capabilities.h>
@@ -53,25 +52,25 @@ public:
     struct CPUInfo {
         std::string vendor;
         std::string model;
-        glm::u64 mhz;
+        size_t mhz;
     };
 
     struct MemoryInfo {
-        glm::u64 total;      // In Bytes
-        glm::u64 available;  // In Bytes
+        size_t total;      // In Bytes
+        size_t available;  // In Bytes
     };
 
     struct DiskInfo {
         std::string diskName;
         std::string diskType;
-        glm::u64 total;  // In Bytes
-        glm::u64 free;   // In Bytes
+        size_t total;  // In Bytes
+        size_t free;   // In Bytes
     };
 
     struct ProcessMemoryInfo {
-        glm::u64 residentMem;  // In Bytes
-        glm::u64 sharedMem;    // In Bytes
-        glm::u64 virtualMem;   // In Bytes
+        size_t residentMem;  // In Bytes
+        size_t sharedMem;    // In Bytes
+        size_t virtualMem;   // In Bytes
     };
 
     SystemCapabilities();
@@ -81,8 +80,8 @@ public:
 
     int numberOfCores() const;
 
-    glm::u64 getAvailableMemory();
-    glm::u64 getCurrentResidentMemoryUsage();
+    size_t getAvailableMemory();
+    size_t getCurrentResidentMemoryUsage();
 
     virtual void retrieveStaticInfo() override;
     virtual void retrieveDynamicInfo() override;
@@ -115,5 +114,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SYSTEMCAPABILITIES_H

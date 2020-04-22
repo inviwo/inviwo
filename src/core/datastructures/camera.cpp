@@ -30,6 +30,7 @@
 #include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/io/serialization/serialization.h>
 
 namespace inviwo {
 
