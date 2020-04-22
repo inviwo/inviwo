@@ -30,10 +30,7 @@
 #include <inviwo/core/util/threadpool.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/stdextensions.h>
-
-#ifdef WIN32
-#include <windows.h>
-#endif
+#include <inviwo/core/util/threadutil.h>
 
 namespace inviwo {
 
@@ -111,9 +108,8 @@ ThreadPool::Worker::Worker(ThreadPool& pool)
         }
         state = State::Done;
     }} {
-#ifdef WIN32
-    SetThreadDescription(thread.native_handle(), L"Inviwo Worker Thread");
-#endif
+
+    util::setThreadDescription(thread, "Inviwo Worker Thread");
 }
 
 void ThreadPool::enqueueRaw(std::function<void()> task) {

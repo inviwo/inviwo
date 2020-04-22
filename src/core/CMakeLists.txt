@@ -338,6 +338,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/templatesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/threadpool.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/threadutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tinydirinterface.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
@@ -614,6 +615,7 @@ set(SOURCE_FILES
     util/stringlogger.cpp
     util/systemcapabilities.cpp
     util/threadpool.cpp
+    util/threadutil.cpp
     util/timer.cpp
     util/tinydirinterface.cpp
     util/utilities.cpp
