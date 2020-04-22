@@ -35,7 +35,6 @@
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/logfilter.h>
 #include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/glm.h>
 
 #include <flags/flags.h>
@@ -557,12 +556,9 @@ public:
             });
 
         cont.setIdentityGetter([&](TxElement* node) {
-            const auto val = inviwo::detail::getNodeAttribute(node, attribKey_);
-            if (!val.empty()) {
-                return identifierTransform_(stringTo<K>(val));
-            } else {
-                return identifierTransform_(K{});
-            }
+            K key{};
+            inviwo::detail::getNodeAttribute(node, attribKey_, key);
+            return identifierTransform_(key);
         });
 
         d.deserialize(key_, cont);

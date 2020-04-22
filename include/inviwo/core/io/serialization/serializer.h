@@ -33,7 +33,6 @@
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
 
