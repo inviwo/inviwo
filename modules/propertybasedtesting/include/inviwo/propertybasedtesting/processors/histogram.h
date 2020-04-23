@@ -66,24 +66,68 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+	enum TestingState {
+		NONE,
+		GATHERING
+	};
+	TestingState testingState;
+
 	InviwoApplication* const app_;
-	std::optional< std::tuple<size2_t, size_t> > lastImage;
 
 	ImageInport inport_;
-    ImageOutport outport_;
 	
 	ButtonProperty startButton_;
 	ButtonProperty collectButton_;
 
 	std::vector<IntMinMaxProperty*> props_;
+	using ValueMap = std::unordered_map<const IntMinMaxProperty*, IntMinMaxProperty::range_type>;
+	ValueMap defaultValues;
+	void resetAllProps() {
+		for(auto prop : props_) {
+			if(defaultValues.find(prop) == defaultValues.end())
+				std::cerr << "resetAllProps() : " << prop << std::endl;
+			prop->set(defaultValues.at(prop));
+		}
+	}
 
 	// Testing stuff
-	void startTesting(const size_t index);
+	void initTesting();
 
-	std::optional<size_t> currentPropertyIndex;
-	std::queue<IntMinMaxProperty::range_type> rangesToTest;
-	using TestResult = std::pair<IntMinMaxProperty::range_type, size_t>;
-	std::vector<TestResult> testResults;
+	using PropertyAssignment = std::pair<IntMinMaxProperty*, IntMinMaxProperty::range_type>;
+	using Test = std::array<PropertyAssignment, 2>;
+	class TestResult {
+	private:
+		const ValueMap values;
+		const ValueMap &defaultValues;
+	public:
+		const IntMinMaxProperty::range_type& getValue(const IntMinMaxProperty* prop) const {
+			auto it = values.find(prop);
+			if(it != values.end())
+				return it->second;
+			return defaultValues.at(prop);
+		}
+		const Test test;
+		const size_t backgroundPixels;
+		TestResult(const ValueMap& defaultValues, const Test& t, size_t val) : 
+			values([&t]() {
+					ValueMap res;
+					for(const auto& [prop,v] : t)
+						res[prop] = v;
+					return res;
+				}()),
+			defaultValues(defaultValues),
+			test(t),
+			backgroundPixels(val) { }
+	};
+
+	bool testIsSetUp(const Test& test);
+	void setupTest(const Test& test);
+
+	std::vector<Test> generateTests(IntMinMaxProperty* p1, IntMinMaxProperty* p2);
+	std::vector<Test> findCoveringArray(std::vector<Test> tests);
+
+	std::queue<Test> remainingTests;
+	std::vector<std::shared_ptr<TestResult>> testResults;
 	void checkTestResults();
 };
 

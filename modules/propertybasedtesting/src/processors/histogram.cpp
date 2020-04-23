@@ -30,8 +30,12 @@
 #include <inviwo/propertybasedtesting/processors/histogram.h>
 
 #include <inviwo/core/datastructures/image/imageram.h>
+#include <inviwo/core/network/networklock.h>
 
 #include <iostream>
+
+#undef NDEBUG
+#include <assert.h>
 
 namespace inviwo {
 
@@ -47,9 +51,9 @@ const ProcessorInfo Histogram::getProcessorInfo() const { return processorInfo_;
 
 Histogram::Histogram(InviwoApplication* app)
     : Processor()
+    , testingState(TestingState::NONE)
 	, app_(app)
 	, inport_("imageInport")
-    , outport_("imageOutport")
 	, startButton_("startButton", "Start")
 	, collectButton_("collectButton", "Collect Properties") {
 
@@ -57,11 +61,12 @@ Histogram::Histogram(InviwoApplication* app)
 
 	startButton_.onChange([this]() { 
 			std::cerr << "startButton_.onChange()" << std::endl;
-			startTesting(0);
+            initTesting();
 			std::cerr << "startButton_.onChange() End" << std::endl;
 		} );
 
 	collectButton_.onChange([this]() {
+			NetworkLock lock(this);
             // Only necessary because there is no actual serializing yet
             props_.clear();
             for(Property* _property : getProperties()) {
@@ -127,58 +132,81 @@ Histogram::Histogram(InviwoApplication* app)
 			}
 		} );
 
+	inport_.setOutportDeterminesSize(true);
 	addPort(inport_);
-    addPort(outport_);
 	addProperty(startButton_);
 	addProperty(collectButton_);
-
-	currentPropertyIndex = std::nullopt;
 }
 
-void Histogram::startTesting(const size_t index) {
+std::vector<Histogram::Test> Histogram::generateTests(IntMinMaxProperty* p1, IntMinMaxProperty* p2) {
+	const static size_t maxStepsPerVal = 4;
+
+    std::vector<std::pair<IntMinMaxProperty*,IntMinMaxProperty::range_type>> v1, v2;
+    for(auto prop : {p1,p2}) {
+        swap(v1,v2);
+        const auto minSeparation = prop->getMinSeparation();
+        const size_t maxSteps = (prop->getRangeMax() - prop->getRangeMin()) / minSeparation;
+        for(size_t stepsFromMin = 0; stepsFromMin < std::min(maxSteps, maxStepsPerVal); stepsFromMin++) {
+            for(size_t stepsFromMax = 0; stepsFromMax + stepsFromMin < std::min(maxSteps, maxStepsPerVal); stepsFromMax++) {
+                v1.emplace_back(prop, IntMinMaxProperty::range_type(
+							prop->getRangeMin() + stepsFromMin * minSeparation,
+							prop->getRangeMax() - stepsFromMax * minSeparation));
+            }
+        }
+    }
+    std::vector<Histogram::Test> res;
+    for(const auto& r1 : v1) {
+        for(const auto& r2 : v2) {
+            res.emplace_back(std::array{r1, r2});
+        }
+    }
+    return res;
+}
+
+std::vector<Histogram::Test> Histogram::findCoveringArray(std::vector<Histogram::Test> tests) {
+    return tests;
+}
+
+void Histogram::initTesting() {
 	testResults.clear();
-	assert(rangesToTest.empty());
+	assert(remainingTests.empty());
 
-	if(index >= props_.size()) {
-		currentPropertyIndex = std::nullopt;
-		return;
-	}
-	// TODO: test this property only, if changing it invalidates inport_
-	if(app_->getProcessorNetwork()->getPropertiesLinkedTo(props_[index]).empty()) {
-		return startTesting(index+1);
-	}
-	
-	currentPropertyIndex = {index};
+    // store current state in order to reset it after testing
+	defaultValues.clear();
+    for(auto* prop : props_) {
+		defaultValues[prop] = prop->get();
+    }
 
-	auto& currentProperty = *(props_[index]);
-	currentProperty.setCurrentStateAsDefault(); // store current state in order to reset it after testing
-
-	// generate ranges to test
-	for(int lo = currentProperty.getRangeMin();
-		    lo + currentProperty.getMinSeparation() <= currentProperty.getRangeMax();
-			lo++) {
-		rangesToTest.emplace(lo, currentProperty.getRangeMax());
-	}
-	for(int hi = currentProperty.getRangeMin() + currentProperty.getMinSeparation();
-            hi <= currentProperty.getRangeMax();
-			hi++) {
-		rangesToTest.emplace(currentProperty.getRangeMin(), hi);
-	}
-
-    assert(rangesToTest.size() > 1);
-
-    currentProperty.set(rangesToTest.front());
-    rangesToTest.pop();
-
-    // force update, TODO: find better solution
-    app_->getProcessorNetwork()->forEachProcessor([](auto proc) {
-            proc->invalidate(InvalidationLevel::InvalidOutput);
+    std::vector<IntMinMaxProperty*> propsToTest;
+    std::copy_if(props_.begin(), props_.end(), std::back_inserter(propsToTest), [this](auto* prop) {
+            return !app_->getProcessorNetwork()->getPropertiesLinkedTo(prop).empty();
         });
+
+    std::vector<Histogram::Test> tests;
+    // iterate over all pairs of properties
+    for(size_t i = 0; i < propsToTest.size(); i++) {
+        for(size_t j = 0; j < i; j++) {
+            auto res = generateTests(propsToTest[i], propsToTest[j]);
+            tests.insert(tests.end(), res.begin(), res.end());
+        }
+    }
+
+	std::cerr << "tests.size() = " << tests.size() << std::endl;
+    for(const auto& test : findCoveringArray(tests))
+        remainingTests.emplace(test);
+    assert(remainingTests.size() > 1);
+
+	app_->dispatchFront([this]() {
+			setupTest(remainingTests.front());
+			testingState = TestingState::GATHERING;
+		});
 }
 
+template<typename T>
+std::ostream& operator<<(std::ostream& out, const std::vector<T>& v);
 template<typename A, typename B>
 std::ostream& operator<<(std::ostream& out, const std::pair<A,B>& v) {
-    return out << "[" << v.first << ", " << v.second << "]";
+    return out << "(" << v.first << ", " << v.second << ")";
 }
 template<typename T>
 std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
@@ -192,74 +220,128 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
 
 void Histogram::checkTestResults() {
     std::cerr << "checking " << testResults.size() << " test results ..." << std::flush;
-    std::vector< std::pair<TestResult, TestResult> > errors;
-    // maybe TODO: can be done with a segment tree in O(n*log(n))
-    for(const auto& [range,count] : testResults) {
-        for(const auto& [otherRange,otherCount] : testResults) {
-            // otherRange lies fully within range
-            if(range.x <= otherRange.x && range.y >= otherRange.y &&
-                    count > otherCount) {
-                errors.emplace_back( TestResult(range,count), TestResult(otherRange,otherCount) );
-            }
+    std::vector< std::pair<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>> > errors;
+
+	for(auto testResult : testResults) {
+		std::unordered_map<const IntMinMaxProperty*, std::unordered_set<std::shared_ptr<TestResult>>> ranges;
+
+		for(auto otherTestResult : testResults) {
+			bool validComparison = true; // check if their values differ in exactly one property
+			const IntMinMaxProperty* prop = nullptr; // said property
+			for(const auto&[p,v] : testResult->test)  {
+				if(otherTestResult->getValue(p) != v) {
+					if(prop != nullptr) validComparison = false;
+					prop = p;
+				}
+			}
+			for(const auto&[p,v] : otherTestResult->test) {
+				if(testResult->getValue(p) != v) {
+					if(prop != nullptr) validComparison = false;
+					prop = p;
+				}
+			}
+			if(validComparison && prop != nullptr) {
+				ranges[prop].insert(testResult);
+				ranges[prop].insert(otherTestResult);
+			}
+		}
+
+		for(const auto& [prop, testResults] : ranges) {
+			for(const auto& testResult : testResults) {
+				const auto& range = testResult->getValue(prop);
+				for(const auto& otherTestResult : testResults) {
+					const auto& otherRange = otherTestResult->getValue(prop);
+					// otherRange lies fully within range
+					if(range.x <= otherRange.x && range.y >= otherRange.y &&
+							testResult->backgroundPixels > otherTestResult->backgroundPixels) {
+						errors.emplace_back( testResult, otherTestResult );
+					}
+				}
+			}
+		}
+	}
+
+	std::cerr << " done with " << errors.size() << " errors" << std::endl;
+	if(!errors.empty()) {
+        std::stringstream str;
+        str << errors.size() << " tests failed: ";
+        errors.resize(std::min(size_t(5), errors.size())); // print at most 5 examples
+        //str << errors << std::endl;
+        util::log(IVW_CONTEXT, str.str(), LogLevel::Warn, LogAudience::User);
+    } else {
+		util::log(IVW_CONTEXT, "All tests passed.", LogLevel::Info, LogAudience::User);
+	}
+}
+
+bool Histogram::testIsSetUp(const Test& test) {
+    for(const auto& [prop,val] : test) {
+        if(prop->get() != val) {
+            return false;
         }
     }
-    std::cerr << " done with " << errors.size() << " errors" << std::endl;
-    if(!errors.empty()) {
-        
-        std::stringstream str;
-        str << "Found " << errors.size() << " errors while testing: ";
-        errors.resize(std::min(size_t(5), errors.size())); // print at most 5 examples
-        str << errors << std::endl;
-        util::log(IVW_CONTEXT, str.str(), LogLevel::Error, LogAudience::User);
+    return true;
+}
+void Histogram::setupTest(const Test& test) {
+	NetworkLock lock(this);
+	resetAllProps();
+
+	std::cerr << "setting up test ... " << std::flush;
+	// then set relevant properties
+    for(const auto& [prop,val] : test) {
+		std::cerr << "(" << prop << ", " << val << ") " << std::flush;
+        prop->set(val);
     }
+	std::cerr << std::endl;
+
+	// TODO: find better solution
+	app_->getProcessorNetwork()->forEachProcessor([](auto proc) {
+			proc->invalidate(InvalidationLevel::InvalidOutput);
+		});
 }
 
 void Histogram::process() {
 	auto img = inport_.getData();
 	const auto dim = img->getDimensions();
 
-	if(currentPropertyIndex) { // if currently testing
-		size_t index = *currentPropertyIndex;
-		auto& currentProperty = *props_[index];
+    switch(testingState) {
+        case TestingState::NONE:
 
-		size_t pixelCount = 0;
-		auto imgRam = img->getRepresentation<ImageRAM>();
-		for(size_t x = 0; x < dim.x; x++) {
-			for(size_t y = 0; y < dim.y; y++) {
-				const auto col = imgRam->readPixel(size2_t(x,y), LayerType::Depth);
-				if(col.x == 1)
-					pixelCount++;
+            break;
+		case TestingState::GATHERING:
+			assert(!remainingTests.empty());
+
+			auto test = remainingTests.front();
+			remainingTests.pop();
+
+			assert(testIsSetUp(test));
+
+			size_t pixelCount = 0;
+			auto imgRam = img->getRepresentation<ImageRAM>();
+			auto depthLayerRAM = imgRam->getDepthLayerRAM();
+			for(size_t x = 0; x < dim.x; x++) {
+				for(size_t y = 0; y < dim.y; y++) {
+					const auto col = depthLayerRAM->getAsDVec4(size2_t(x,y));
+					if(col.x == 1)
+						pixelCount++;
+				}
 			}
-		}
-		std::cerr << currentProperty.getIdentifier() << " "
-                  << currentProperty.get() << " / "
-                  << currentProperty.getRange() << " "
-                  << rangesToTest.size() << " "
-                  << "pixelCount = " << pixelCount << std::endl;
+			std::cerr
+				<< "dim = " << dim << " "
+				<< "pixelCount = " << pixelCount << " "
+				<< "remaining tests : " << remainingTests.size() << " "
+				<< std::endl;
 
-		testResults.emplace_back(currentProperty.get(), pixelCount);
-		
-		if(!rangesToTest.empty()) {
-            currentProperty.set(rangesToTest.front());
-            rangesToTest.pop();
-            // force update, TODO: find better solution
-            app_->getProcessorNetwork()->forEachProcessor([](auto proc) {
-                    proc->invalidate(InvalidationLevel::InvalidOutput);
-                });
-		} else {
-			currentPropertyIndex = std::nullopt;
-			currentProperty.resetToDefaultState();
+			testResults.emplace_back(std::make_shared<TestResult>(defaultValues, test, pixelCount));
 
-            checkTestResults();
-			startTesting(index+1);
-		}
+			if(remainingTests.empty()) { // there are no more tests to do
+				this->checkTestResults();
+				testingState = NONE;
+				app_->dispatchFront([this]() { resetAllProps(); });
+			} else {
+				app_->dispatchFront([this]() { setupTest(remainingTests.front()); });
+			}
+			break;
 	}
-	
-	if(!currentPropertyIndex) {
-		outport_.setData(img);
-		this->invalidate(InvalidationLevel::InvalidOutput);
-	}
-
 }
 
 }  // namespace inviwo
