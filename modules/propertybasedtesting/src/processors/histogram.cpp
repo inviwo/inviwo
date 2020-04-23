@@ -39,6 +39,22 @@
 
 namespace inviwo {
 
+template<typename T>
+std::ostream& operator<<(std::ostream& out, const std::vector<T>& v);
+template<typename A, typename B>
+std::ostream& operator<<(std::ostream& out, const std::pair<A,B>& v) {
+    return out << "(" << v.first << ", " << v.second << ")";
+}
+template<typename T>
+std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
+    out << "{";
+    for(size_t i = 0; i < v.size(); i++) {
+        if(i > 0) out << ", ";
+        out << v[i];
+    }
+    return out << "}";
+}
+
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo Histogram::processorInfo_{
     "org.inviwo.Histogram",      // Class identifier
@@ -138,33 +154,88 @@ Histogram::Histogram(InviwoApplication* app)
 	addProperty(collectButton_);
 }
 
-std::vector<Histogram::Test> Histogram::generateTests(IntMinMaxProperty* p1, IntMinMaxProperty* p2) {
+std::vector<IntMinMaxProperty::range_type> genRanges(const IntMinMaxProperty* prop) {
 	const static size_t maxStepsPerVal = 4;
+	std::vector<IntMinMaxProperty::range_type> res;
 
-    std::vector<std::pair<IntMinMaxProperty*,IntMinMaxProperty::range_type>> v1, v2;
-    for(auto prop : {p1,p2}) {
-        swap(v1,v2);
-        const auto minSeparation = prop->getMinSeparation();
-        const size_t maxSteps = (prop->getRangeMax() - prop->getRangeMin()) / minSeparation;
-        for(size_t stepsFromMin = 0; stepsFromMin < std::min(maxSteps, maxStepsPerVal); stepsFromMin++) {
-            for(size_t stepsFromMax = 0; stepsFromMax + stepsFromMin < std::min(maxSteps, maxStepsPerVal); stepsFromMax++) {
-                v1.emplace_back(prop, IntMinMaxProperty::range_type(
-							prop->getRangeMin() + stepsFromMin * minSeparation,
-							prop->getRangeMax() - stepsFromMax * minSeparation));
-            }
-        }
-    }
+	const auto minSeparation = prop->getMinSeparation();
+	const size_t maxSteps = (prop->getRangeMax() - prop->getRangeMin()) / minSeparation;
+	for(size_t stepsFromMin = 0; stepsFromMin < std::min(maxSteps, maxStepsPerVal); stepsFromMin++) {
+		for(size_t stepsFromMax = 0; stepsFromMax + stepsFromMin < std::min(maxSteps, maxStepsPerVal); stepsFromMax++) {
+			res.emplace_back(
+						prop->getRangeMin() + stepsFromMin * minSeparation,
+						prop->getRangeMax() - stepsFromMax * minSeparation);
+		}
+	}
+
+	return res;
+}
+
+std::vector<Histogram::Test> Histogram::generateTests(IntMinMaxProperty* p1, IntMinMaxProperty* p2) {
     std::vector<Histogram::Test> res;
-    for(const auto& r1 : v1) {
-        for(const auto& r2 : v2) {
-            res.emplace_back(std::array{r1, r2});
+    for(const auto& r1 : genRanges(p1)) {
+        for(const auto& r2 : genRanges(p2)) {
+            res.emplace_back(std::vector{std::make_pair(p1,r1), std::make_pair(p2,r2)});
         }
     }
     return res;
 }
 
-std::vector<Histogram::Test> Histogram::findCoveringArray(std::vector<Histogram::Test> tests) {
-    return tests;
+// 2-coverage, randomized discrete SLJ strategy
+template<typename T>
+std::vector<T> coveringArray(const T& init, const std::vector<std::vector< std::function<void(T&)> >>& vars) {
+	const size_t v = std::transform_reduce(vars.begin(),vars.end(), (size_t)0,
+			[](auto a, auto b) { return std::max(a,b); },
+			[](const auto& x) { return x.size(); });
+
+	std::unordered_set<size_t> uncovered;
+	std::map< std::array<size_t,4>, size_t > idx;
+	for(size_t i = 1; i < vars.size(); i++) {
+		for(size_t j = 0; j < i; j++) {
+			for(size_t ii = 0; ii < vars[i].size(); ii++) {
+				for(size_t ji = 0; ji < vars[j].size(); ji++) {
+					uncovered.insert(idx.size());
+					idx[{i,j,ii,ji}] = idx.size();
+				}
+			}
+		}
+	}
+
+	std::vector<std::vector<size_t>> coveringArray;
+	while(!uncovered.empty()) {
+		size_t expectedCoverage = (uncovered.size() + (v*v-1)) / (v*v); // expectedCoverage > 0
+		std::cerr << "uncovered.size() = " << uncovered.size() << " "
+				  << "expectedCoverage = " << expectedCoverage << std::endl;
+		size_t coverage;
+		std::vector<size_t> row(vars.size());
+		do {
+			for(size_t i = 0; i < row.size(); i++)
+				row[i] = rand() % vars[i].size();
+			coverage = 0; // number of uncovered interactions
+			for(size_t i = 1; i < vars.size(); i++) {
+				for(size_t j = 0; j < i; j++) {
+					size_t id = idx[{i,j,row[i],row[j]}];
+					coverage += uncovered.count(id);
+				}
+			}
+		} while(coverage < expectedCoverage);
+		for(size_t i = 1; i < vars.size(); i++) {
+			for(size_t j = 0; j < i; j++) {
+				size_t id = idx[{i,j,row[i],row[j]}];
+				uncovered.erase(id);
+			}
+		}
+		coveringArray.emplace_back(row);
+	}
+
+	// contruct result
+	std::vector<T> res(coveringArray.size(), init);
+	for(size_t c = 0; c < coveringArray.size(); c++) {
+		for(size_t i = 0; i < vars.size(); i++) {
+			vars[i][coveringArray[c][i]](res[c]);
+		}
+	}
+	return res;
 }
 
 void Histogram::initTesting() {
@@ -182,6 +253,16 @@ void Histogram::initTesting() {
             return !app_->getProcessorNetwork()->getPropertiesLinkedTo(prop).empty();
         });
 
+
+	std::vector<std::vector<std::function<void(Histogram::Test&)>>> ranges(propsToTest.size());
+	for(size_t pi = 0; pi < propsToTest.size(); pi++) {
+		for(const auto& range : genRanges(propsToTest[pi]))
+			ranges[pi].emplace_back([pi,&propsToTest,range](Histogram::Test& test) {
+					test.emplace_back(propsToTest[pi], range);
+				});
+	}
+	std::vector<Histogram::Test> testss = coveringArray(Test(), ranges);
+
     std::vector<Histogram::Test> tests;
     // iterate over all pairs of properties
     for(size_t i = 0; i < propsToTest.size(); i++) {
@@ -191,9 +272,12 @@ void Histogram::initTesting() {
         }
     }
 
-	std::cerr << "tests.size() = " << tests.size() << std::endl;
-    for(const auto& test : findCoveringArray(tests))
-        remainingTests.emplace(test);
+	std::cerr << "tests.size() = " << tests.size() << " testss.size() = " << testss.size() << std::endl;
+
+	for(const auto& test : testss) {
+		remainingTests.emplace(test);
+	}
+
     assert(remainingTests.size() > 1);
 
 	app_->dispatchFront([this]() {
@@ -202,61 +286,27 @@ void Histogram::initTesting() {
 		});
 }
 
-template<typename T>
-std::ostream& operator<<(std::ostream& out, const std::vector<T>& v);
-template<typename A, typename B>
-std::ostream& operator<<(std::ostream& out, const std::pair<A,B>& v) {
-    return out << "(" << v.first << ", " << v.second << ")";
-}
-template<typename T>
-std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
-    out << "{";
-    for(size_t i = 0; i < v.size(); i++) {
-        if(i > 0) out << ", ";
-        out << v[i];
-    }
-    return out << "}";
-}
-
 void Histogram::checkTestResults() {
     std::cerr << "checking " << testResults.size() << " test results ..." << std::flush;
     std::vector< std::pair<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>> > errors;
 
 	for(auto testResult : testResults) {
-		std::unordered_map<const IntMinMaxProperty*, std::unordered_set<std::shared_ptr<TestResult>>> ranges;
-
 		for(auto otherTestResult : testResults) {
-			bool validComparison = true; // check if their values differ in exactly one property
-			const IntMinMaxProperty* prop = nullptr; // said property
-			for(const auto&[p,v] : testResult->test)  {
-				if(otherTestResult->getValue(p) != v) {
-					if(prop != nullptr) validComparison = false;
-					prop = p;
-				}
-			}
-			for(const auto&[p,v] : otherTestResult->test) {
-				if(testResult->getValue(p) != v) {
-					if(prop != nullptr) validComparison = false;
-					prop = p;
-				}
-			}
-			if(validComparison && prop != nullptr) {
-				ranges[prop].insert(testResult);
-				ranges[prop].insert(otherTestResult);
-			}
-		}
+			// only consider pairs of test results where testResult has more
+			// background pixels than otherTestResult
+			if(testResult->backgroundPixels <= otherTestResult->backgroundPixels)
+				continue;
 
-		for(const auto& [prop, testResults] : ranges) {
-			for(const auto& testResult : testResults) {
+			bool validComparison = true; // check if the ranges of testResult lie fully within the ranges of otherTestResult 
+
+			for(const auto& prop : props_) {
 				const auto& range = testResult->getValue(prop);
-				for(const auto& otherTestResult : testResults) {
-					const auto& otherRange = otherTestResult->getValue(prop);
-					// otherRange lies fully within range
-					if(range.x <= otherRange.x && range.y >= otherRange.y &&
-							testResult->backgroundPixels > otherTestResult->backgroundPixels) {
-						errors.emplace_back( testResult, otherTestResult );
-					}
-				}
+				const auto& otherRange = otherTestResult->getValue(prop);
+				validComparison &= range.x <= otherRange.x && range.y >= otherRange.y;
+			}
+
+			if(validComparison) {
+				errors.emplace_back( testResult, otherTestResult );
 			}
 		}
 	}
@@ -266,7 +316,7 @@ void Histogram::checkTestResults() {
         std::stringstream str;
         str << errors.size() << " tests failed: ";
         errors.resize(std::min(size_t(5), errors.size())); // print at most 5 examples
-        //str << errors << std::endl;
+        str << errors << std::endl;
         util::log(IVW_CONTEXT, str.str(), LogLevel::Warn, LogAudience::User);
     } else {
 		util::log(IVW_CONTEXT, "All tests passed.", LogLevel::Info, LogAudience::User);
@@ -285,13 +335,10 @@ void Histogram::setupTest(const Test& test) {
 	NetworkLock lock(this);
 	resetAllProps();
 
-	std::cerr << "setting up test ... " << std::flush;
 	// then set relevant properties
     for(const auto& [prop,val] : test) {
-		std::cerr << "(" << prop << ", " << val << ") " << std::flush;
         prop->set(val);
     }
-	std::cerr << std::endl;
 
 	// TODO: find better solution
 	app_->getProcessorNetwork()->forEachProcessor([](auto proc) {
@@ -325,6 +372,7 @@ void Histogram::process() {
 						pixelCount++;
 				}
 			}
+			if(0)
 			std::cerr
 				<< "dim = " << dim << " "
 				<< "pixelCount = " << pixelCount << " "

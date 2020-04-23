@@ -94,7 +94,7 @@ private:
 	void initTesting();
 
 	using PropertyAssignment = std::pair<IntMinMaxProperty*, IntMinMaxProperty::range_type>;
-	using Test = std::array<PropertyAssignment, 2>;
+	using Test = std::vector<PropertyAssignment>;
 	class TestResult {
 	private:
 		const ValueMap values;
@@ -124,7 +124,6 @@ private:
 	void setupTest(const Test& test);
 
 	std::vector<Test> generateTests(IntMinMaxProperty* p1, IntMinMaxProperty* p2);
-	std::vector<Test> findCoveringArray(std::vector<Test> tests);
 
 	std::queue<Test> remainingTests;
 	std::vector<std::shared_ptr<TestResult>> testResults;
