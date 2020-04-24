@@ -30,12 +30,12 @@
 #pragma once
 
 #include <modules/glfw/glfwmoduledefine.h>
-#include <stdlib.h>
-#include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/canvasgl.h>
 
 #include <inviwo/core/interaction/events/mousebuttons.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
+
+#include <cstdlib>
 
 typedef struct GLFWwindow GLFWwindow;
 
@@ -85,7 +85,7 @@ public:
 
     static void provideExternalContext(GLFWwindow* sharedContext);
 
-    static ivec2 movePointOntoDesktop(ivec2);
+    static ivec2 movePointOntoDesktop(ivec2 pos, ivec2 size);
 
 protected:
     virtual void setFullScreenInternal(bool fullscreen) override;
@@ -104,6 +104,7 @@ private:
     MouseState mouseState_;
     KeyModifiers modifiers_;
 
+    bool isFullScreen_{false};
     ivec2 oldPos_{0};
     ivec2 oldSize_{256};
 

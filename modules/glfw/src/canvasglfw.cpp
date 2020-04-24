@@ -28,14 +28,16 @@
  *********************************************************************************/
 
 #include <modules/glfw/canvasglfw.h>
+#include <modules/glfw/glfwexception.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/glmvec.h>
 
+#include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglcapabilities.h>
 
 #include <codecvt>
@@ -47,7 +49,7 @@ namespace inviwo {
 
 GLFWwindow* CanvasGLFW::sharedContext_ = nullptr;
 int CanvasGLFW::glfwWindowCount_ = 0;
-bool CanvasGLFW::alwaysOnTop_ = true;
+bool CanvasGLFW::alwaysOnTop_ = false;
 
 CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     : CanvasGL(dimensions)
@@ -74,8 +76,7 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
                                  nullptr, sharedContext_);
 
     if (!glWindow_) {
-        glfwTerminate();
-        throw Exception("Could not create GLFW window.", IVW_CONTEXT);
+        throw GLFWException("Could not create GLFW window.", IVW_CONTEXT);
     }
 
     if (!sharedContext_) sharedContext_ = glWindow_;
@@ -122,12 +123,15 @@ void CanvasGLFW::hide() {
 void CanvasGLFW::setWindowSize(ivec2 size) { glfwSetWindowSize(glWindow_, size.x, size.y); }
 
 void CanvasGLFW::setWindowPosition(ivec2 pos) {
-    pos = movePointOntoDesktop(pos);
+    ivec2 size{};
+    glfwGetWindowSize(glWindow_, &size.x, &size.y);
+    pos = movePointOntoDesktop(pos, size);
     glfwSetWindowPos(glWindow_, pos.x, pos.y);
 }
 
 void CanvasGLFW::setFullScreenInternal(bool fullscreen) {
-    if (fullscreen) {
+    if (fullscreen && !isFullScreen_) {
+        isFullScreen_ = true;
         glfwGetWindowPos(glWindow_, &oldPos_[0], &oldPos_[1]);
         glfwGetWindowSize(glWindow_, &oldSize_[0], &oldSize_[1]);
 
@@ -147,7 +151,7 @@ void CanvasGLFW::setFullScreenInternal(bool fullscreen) {
         }
         const GLFWvidmode* mode = glfwGetVideoMode(target);
         glfwSetWindowMonitor(glWindow_, target, 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
-    } else {
+    } else if (!fullscreen && isFullScreen_) {
         glfwSetWindowMonitor(glWindow_, nullptr, oldPos_.x, oldPos_.y, oldSize_.x, oldSize_.y,
                              GLFW_DONT_CARE);
     }
@@ -198,9 +202,7 @@ void CanvasGLFW::releaseContext() {}
 
 void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-        // glfwSetWindowShouldClose(window, GL_TRUE);
-        glfwTerminate();
-        exit(0);
+        getCanvasGLFW(window)->hide();
         return;
     }
 
@@ -330,21 +332,34 @@ void CanvasGLFW::provideExternalContext(GLFWwindow* sharedContext) {
     }
 }
 
-ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos) {
+ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos, ivec2 size) {
     int count;
     GLFWmonitor** monitors = glfwGetMonitors(&count);
 
     for (int i = 0; i < count; ++i) {
         GLFWmonitor* monitor = monitors[i];
-        int xpos, ypos, width, height;
-        glfwGetMonitorWorkarea(monitor, &xpos, &ypos, &width, &height);
+        ivec2 screenPos{};
+        ivec2 screenSize{};
+        glfwGetMonitorWorkarea(monitor, &screenPos.x, &screenPos.y, &screenSize.x, &screenSize.y);
 
+        if (glm::all(glm::greaterThanEqual(pos, screenPos)) &&
+            glm::all(glm::lessThanEqual(pos, screenPos + screenSize))) {
+
+            return pos;
+        }
+
+        if (glm::all(glm::greaterThanEqual(pos + size, screenPos)) &&
+            glm::all(glm::lessThanEqual(pos + size, screenPos + screenSize))) {
+
+            return glm::clamp(pos, screenPos, screenPos + screenSize);
+        }
     }
-    
-    auto monitor = glfwGetPrimaryMonitor();
-    monitor
 
-        glfwSetWindowPos(glWindow_, xpos, ypos);
+    auto monitor = glfwGetPrimaryMonitor();
+    ivec2 screenPos{};
+    ivec2 screenSize{};
+    glfwGetMonitorWorkarea(monitor, &screenPos.x, &screenPos.y, &screenSize.x, &screenSize.y);
+    return glm::clamp(pos, screenPos, screenPos + screenSize);
 }
 
 }  // namespace inviwo

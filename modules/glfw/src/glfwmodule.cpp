@@ -37,6 +37,10 @@
 #include <modules/glfw/glfwexception.h>
 #include <modules/opengl/sharedopenglresources.h>
 
+
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
 namespace inviwo {
 
 GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {

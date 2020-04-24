@@ -49,6 +49,10 @@
 #include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
 
+
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
 using namespace inviwo;
 
 int main(int argc, char** argv) {

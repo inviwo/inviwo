@@ -57,6 +57,10 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
+
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
 using namespace inviwo;
 
 int main(int argc, char** argv) {
