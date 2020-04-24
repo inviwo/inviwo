@@ -163,7 +163,7 @@ void ColormapProperty::setupForColumn(const Column& col, double minVal, double m
     }
     if (minVal < 0 && maxVal > 0) {
         divergenceMidPoint.set(0, minVal, maxVal, 0.01 * (maxVal - minVal));
-        diverging.set(true); 
+        diverging.set(true);
     } else {
         divergenceMidPoint.set(0.5 * (minVal + maxVal), minVal, maxVal, 0.01 * (maxVal - minVal));
     }
