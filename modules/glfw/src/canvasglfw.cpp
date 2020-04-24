@@ -30,17 +30,12 @@
 #include <modules/glfw/canvasglfw.h>
 #include <modules/glfw/glfwexception.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/interaction/events/keyboardevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/glmvec.h>
 
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglcapabilities.h>
-
-#include <codecvt>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -51,14 +46,7 @@ GLFWwindow* CanvasGLFW::sharedContext_ = nullptr;
 int CanvasGLFW::glfwWindowCount_ = 0;
 bool CanvasGLFW::alwaysOnTop_ = false;
 
-CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
-    : CanvasGL(dimensions)
-    , windowTitle_(windowTitle)
-    , glWindow_(nullptr)
-    , mouseButton_(MouseButton::None)
-    , mouseState_(MouseState::Release)
-    , modifiers_(flags::none) {
-
+GLFWwindow* CanvasGLFW::createWindow(const std::string& title, uvec2 dimensions) {
     glfwWindowHint(GLFW_FLOATING, alwaysOnTop_ ? GL_TRUE : GL_FALSE);
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
@@ -71,24 +59,30 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     }
 #endif
 
-    glWindow_ = glfwCreateWindow(static_cast<int>(getCanvasDimensions().x),
-                                 static_cast<int>(getCanvasDimensions().y), windowTitle_.c_str(),
-                                 nullptr, sharedContext_);
+    auto win = glfwCreateWindow(static_cast<int>(dimensions.x), static_cast<int>(dimensions.y),
+                                title.c_str(), nullptr, sharedContext_);
 
-    if (!glWindow_) {
-        throw GLFWException("Could not create GLFW window.", IVW_CONTEXT);
+    if (!win) {
+        throw GLFWException("Could not create GLFW window.", IVW_CONTEXT_CUSTOM("CanvasGLFW"));
     }
+
+    return win;
+}
+
+CanvasGLFW::CanvasGLFW(const std::string& windowTitle, uvec2 dimensions)
+    : CanvasGL(dimensions)
+    , windowTitle_(windowTitle)
+    , glWindow_(createWindow(windowTitle, dimensions))
+    , userdata_{glWindow_}
+    , eventManager_{glWindow_, [this](Event* e) { propagateEvent(e); },
+                    [this](dvec2 pos) -> double { return getDepthValueAtNormalizedCoord(pos); }} {
+
+    userdata_.set(GLFWUserDataId::Window, this);
 
     if (!sharedContext_) sharedContext_ = glWindow_;
 
     // register callbacks
-    glfwSetKeyCallback(glWindow_, keyboard);
-    glfwSetCharCallback(glWindow_, character);
-    glfwSetMouseButtonCallback(glWindow_, mouseButton);
-    glfwSetCursorPosCallback(glWindow_, mouseMotion);
-    glfwSetScrollCallback(glWindow_, scroll);
     glfwSetWindowCloseCallback(glWindow_, closeWindow);
-    glfwSetWindowUserPointer(glWindow_, this);
     glfwSetWindowSizeCallback(glWindow_, reshape);
     glfwSetWindowPosCallback(glWindow_, move);
 
@@ -163,7 +157,10 @@ void CanvasGLFW::setWindowTitle(std::string windowTitle) {
     RenderContext::getPtr()->setContextName(contextId(), windowTitle_);
 }
 
-void CanvasGLFW::closeWindow(GLFWwindow* window) { getCanvasGLFW(window)->hide(); }
+void CanvasGLFW::closeWindow(GLFWwindow* window) { 
+    glfwSetWindowShouldClose(window, GL_FALSE);
+    getCanvasGLFW(window)->hide(); 
+}
 
 int CanvasGLFW::getVisibleWindowCount() { return glfwWindowCount_; }
 
@@ -184,7 +181,7 @@ void CanvasGLFW::move(GLFWwindow* window, int x, int y) {
 void CanvasGLFW::setAlwaysOnTopByDefault(bool alwaysOnTop) { alwaysOnTop_ = alwaysOnTop; }
 
 CanvasGLFW* CanvasGLFW::getCanvasGLFW(GLFWwindow* window) {
-    return static_cast<CanvasGLFW*>(glfwGetWindowUserPointer(window));
+    return GLFWUserData::get<CanvasGLFW>(window, GLFWUserDataId::Window);
 }
 
 CanvasGLFW* CanvasGLFW::getSharedContext() {
@@ -194,123 +191,7 @@ CanvasGLFW* CanvasGLFW::getSharedContext() {
         return nullptr;
 }
 
-dvec2 CanvasGLFW::normalPos(dvec2 pos) const {
-    return util::invertY(pos, this->getCanvasDimensions()) / dvec2(this->getCanvasDimensions());
-}
-
 void CanvasGLFW::releaseContext() {}
-
-void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-        getCanvasGLFW(window)->hide();
-        return;
-    }
-
-    auto thisCanvas = getCanvasGLFW(window);
-    auto keyState = (action == GLFW_PRESS) ? KeyState::Press : KeyState::Release;
-    thisCanvas->modifiers_ = mapModifiers(mods);
-    KeyboardEvent keyEvent(static_cast<IvwKey>(toupper(key)), keyState, thisCanvas->modifiers_,
-                           scancode, "");
-
-    thisCanvas->propagateEvent(&keyEvent);
-}
-
-void CanvasGLFW::character(GLFWwindow* window, unsigned int character) {
-    // Needed for text input
-    auto thisCanvas = getCanvasGLFW(window);
-    // Convert UTF32 character
-
-#if _MSC_VER
-    // Linker error when using char16_t in visual studio
-    // https://social.msdn.microsoft.com/Forums/vstudio/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral
-    auto text = std::wstring_convert<std::codecvt_utf8<uint32_t>, uint32_t>{}.to_bytes(character);
-#else
-    auto text = std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes(character);
-#endif
-
-    KeyboardEvent keyEvent(IvwKey::Unknown, KeyState::Press, thisCanvas->modifiers_, character,
-                           text);
-
-    thisCanvas->propagateEvent(&keyEvent);
-}
-
-void CanvasGLFW::mouseButton(GLFWwindow* window, int button, int action, int mods) {
-    auto thisCanvas = getCanvasGLFW(window);
-    thisCanvas->mouseButton_ = mapMouseButton(button);
-    thisCanvas->mouseState_ = mapMouseState(action);
-    thisCanvas->modifiers_ = mapModifiers(mods);
-
-    dvec2 pos;
-    glfwGetCursorPos(window, &pos.x, &pos.y);
-    pos = thisCanvas->normalPos(pos);
-
-    MouseEvent mouseEvent(thisCanvas->mouseButton_, thisCanvas->mouseState_,
-                          thisCanvas->mouseButton_, thisCanvas->modifiers_, pos,
-                          thisCanvas->getImageDimensions(),
-                          thisCanvas->getDepthValueAtNormalizedCoord(pos));
-
-    thisCanvas->propagateEvent(&mouseEvent);
-}
-
-void CanvasGLFW::mouseMotion(GLFWwindow* window, double x, double y) {
-    auto thisCanvas = getCanvasGLFW(window);
-
-    const auto pos = thisCanvas->normalPos(dvec2(x, y));
-
-    MouseState state =
-        (thisCanvas->mouseState_ == MouseState::Press ? MouseState::Move : thisCanvas->mouseState_);
-    MouseEvent mouseEvent(thisCanvas->mouseButton_, state, thisCanvas->mouseButton_,
-                          thisCanvas->modifiers_, pos, thisCanvas->getImageDimensions(),
-                          thisCanvas->getDepthValueAtNormalizedCoord(pos));
-
-    thisCanvas->propagateEvent(&mouseEvent);
-}
-
-void CanvasGLFW::scroll(GLFWwindow* window, double xoffset, double yoffset) {
-    auto thisCanvas = getCanvasGLFW(window);
-
-    dvec2 pos;
-    glfwGetCursorPos(window, &pos.x, &pos.y);
-    pos = thisCanvas->normalPos(pos);
-
-    WheelEvent wheelEvent(thisCanvas->mouseButton_, thisCanvas->modifiers_, dvec2(xoffset, yoffset),
-                          pos, thisCanvas->getImageDimensions(),
-                          thisCanvas->getDepthValueAtNormalizedCoord(pos));
-
-    thisCanvas->propagateEvent(&wheelEvent);
-}
-
-MouseButton CanvasGLFW::mapMouseButton(int mouseButtonGLFW) {
-    if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_LEFT)
-        return MouseButton::Left;
-    else if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_MIDDLE)
-        return MouseButton::Middle;
-    else if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_RIGHT)
-        return MouseButton::Right;
-    else
-        return MouseButton::None;
-}
-
-MouseState CanvasGLFW::mapMouseState(int mouseStateGLFW) {
-    if (mouseStateGLFW == GLFW_PRESS)
-        return MouseState::Press;
-    else  // (mouseStateGLFW == GLFW_RELEASE)
-        return MouseState::Release;
-}
-
-KeyModifiers CanvasGLFW::mapModifiers(int modifiersGLFW) {
-    KeyModifiers result(flags::none);
-
-    if (modifiersGLFW & GLFW_MOD_ALT) result |= KeyModifier::Alt;
-
-    if (modifiersGLFW & GLFW_MOD_CONTROL) result |= KeyModifier::Control;
-
-    if (modifiersGLFW & GLFW_MOD_SHIFT) result |= KeyModifier::Shift;
-
-    if (modifiersGLFW & GLFW_MOD_SUPER) result |= KeyModifier::Super;
-
-    return result;
-}
 
 std::unique_ptr<Canvas> CanvasGLFW::createHiddenCanvas() {
     auto res = dispatchFront(

@@ -11,9 +11,12 @@ ivw_module(GLFW)
 set(HEADER_FILES
     include/modules/glfw/canvasglfw.h
     include/modules/glfw/canvasprocessorwidgetglfw.h
+    include/modules/glfw/filewatcher.h
     include/modules/glfw/glfwexception.h
     include/modules/glfw/glfwmodule.h
     include/modules/glfw/glfwmoduledefine.h
+    include/modules/glfw/glfwuserdata.h
+    include/modules/glfw/glfwwindoweventmanager.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -22,8 +25,11 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/canvasglfw.cpp
     src/canvasprocessorwidgetglfw.cpp
+    src/filewatcher.cpp
     src/glfwexception.cpp
     src/glfwmodule.cpp
+    src/glfwuserdata.cpp
+    src/glfwwindoweventmanager.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

@@ -31,11 +31,8 @@
 
 #include <modules/glfw/glfwmoduledefine.h>
 #include <modules/opengl/canvasgl.h>
-
-#include <inviwo/core/interaction/events/mousebuttons.h>
-#include <inviwo/core/interaction/events/keyboardkeys.h>
-
-#include <cstdlib>
+#include <modules/glfw/glfwuserdata.h>
+#include <modules/glfw/glfwwindoweventmanager.h>
 
 typedef struct GLFWwindow GLFWwindow;
 
@@ -45,7 +42,7 @@ class IVW_MODULE_GLFW_API CanvasGLFW : public CanvasGL {
     friend class CanvasProcessorWidgetGLFW;
 
 public:
-    CanvasGLFW(std::string title = "", uvec2 dimensions = uvec2(128));
+    CanvasGLFW(const std::string& title = "", uvec2 dimensions = uvec2(128));
     virtual ~CanvasGLFW();
 
     virtual void activate() override;
@@ -67,15 +64,6 @@ public:
     static void reshape(GLFWwindow*, int, int);
     static void move(GLFWwindow*, int, int);
 
-    static void keyboard(GLFWwindow*, int, int, int, int);
-    static void character(GLFWwindow*, unsigned int);  ///< UTF32 encoded text input
-    static void mouseButton(GLFWwindow*, int, int, int);
-    static void mouseMotion(GLFWwindow*, double, double);
-    static void scroll(GLFWwindow*, double, double);
-
-    static MouseButton mapMouseButton(const int mouseButtonGLFW);
-    static MouseState mapMouseState(const int mouseStateGLFW);
-    static KeyModifiers mapModifiers(const int modifiersGLFW);
 
     static void setAlwaysOnTopByDefault(bool);
 
@@ -92,17 +80,15 @@ protected:
     static CanvasGLFW* getCanvasGLFW(GLFWwindow*);
     static CanvasGLFW* getSharedContext();
 
-    dvec2 normalPos(dvec2 pos) const;
-
     virtual void releaseContext() override;
 
 private:
+    static GLFWwindow* createWindow(const std::string& title, uvec2 dimensions);
+
     std::string windowTitle_;
     GLFWwindow* glWindow_;
-
-    MouseButton mouseButton_;
-    MouseState mouseState_;
-    KeyModifiers modifiers_;
+    GLFWUserData userdata_;
+    GLFWWindowEventManager eventManager_;
 
     bool isFullScreen_{false};
     ivec2 oldPos_{0};
