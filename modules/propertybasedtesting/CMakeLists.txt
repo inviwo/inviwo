@@ -9,6 +9,7 @@ set(HEADER_FILES
     include/inviwo/propertybasedtesting/processors/histogram.h
     include/inviwo/propertybasedtesting/propertybasedtestingmodule.h
     include/inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h
+	include/inviwo/propertybasedtesting/algorithm/coveringarray.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 

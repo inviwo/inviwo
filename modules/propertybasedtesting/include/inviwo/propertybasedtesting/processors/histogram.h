@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
@@ -79,6 +80,7 @@ private:
 	ButtonProperty startButton_;
 	ButtonProperty collectButton_;
 
+	std::vector<CompositeProperty*> compositeProperties_;
 	std::vector<IntMinMaxProperty*> props_;
 	using ValueMap = std::unordered_map<const IntMinMaxProperty*, IntMinMaxProperty::range_type>;
 	ValueMap defaultValues;

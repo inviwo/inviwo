@@ -29,6 +29,8 @@
 
 #include <inviwo/propertybasedtesting/processors/histogram.h>
 
+#include <inviwo/propertybasedtesting/algorithm/coveringarray.h>
+
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/network/networklock.h>
 
@@ -84,17 +86,24 @@ Histogram::Histogram(InviwoApplication* app)
 	collectButton_.onChange([this]() {
 			NetworkLock lock(this);
             // Only necessary because there is no actual serializing yet
-            props_.clear();
-            for(Property* _property : getProperties()) {
-                if(IntMinMaxProperty* property = dynamic_cast<IntMinMaxProperty*>(_property); property != nullptr) {
-                    props_.emplace_back(property);
+            compositeProperties_.clear();
+			props_.clear();
+            for(Property* _compProp : getProperties()) {
+                if(auto compProp = dynamic_cast<CompositeProperty*>(_compProp); compProp != nullptr) {
+                    compositeProperties_.emplace_back(compProp);
+					for(Property* _property : compProp->getProperties()) {
+						auto property = dynamic_cast<IntMinMaxProperty*>(_property);
+						assert(property != nullptr);
+						props_.emplace_back(property);
+					}
                 }
             }
 
             // remove previously collected properties
-            for(auto& property : props_)
-				removeProperty(property);
 			props_.clear();
+            for(auto& property : compositeProperties_)
+				removeProperty(property);
+			compositeProperties_.clear();
 
 			std::set<Property*> properties;
 
@@ -126,6 +135,8 @@ Histogram::Histogram(InviwoApplication* app)
                 }
             }
 
+			std::unordered_map<Processor*, CompositeProperty*> composites; // processor to its composite property
+
             std::unordered_set<std::string> usedIdentifiers;
             // TODO: only insert minimal set S of properties such that all properties
             // are either in S or directly or indirectly set by a property in S
@@ -138,8 +149,21 @@ Histogram::Histogram(InviwoApplication* app)
                             p->setIdentifier(p->getIdentifier() + "_" + std::to_string(num));
                         } while(!usedIdentifiers.insert(p->getIdentifier()).second);
                     }
-					
-					addProperty(p);
+
+					auto parentProcessor = dynamic_cast<Processor*>(prop->getOwner());
+					assert(parentProcessor != nullptr);
+					auto& comp = composites[parentProcessor];
+					if(comp == nullptr) {
+						std::string parentIdentifier = parentProcessor->getIdentifier();
+						std::replace(parentIdentifier.begin(), parentIdentifier.end(), ' ', '_');
+						comp = new CompositeProperty(
+								parentIdentifier,
+								parentProcessor->getDisplayName());
+						addProperty(comp);
+						compositeProperties_.emplace_back(comp);
+					}
+
+					comp->addProperty(p);
 					//p->setReadOnly(true);
 					props_.emplace_back(p);
 
@@ -181,63 +205,6 @@ std::vector<Histogram::Test> Histogram::generateTests(IntMinMaxProperty* p1, Int
     return res;
 }
 
-// 2-coverage, randomized discrete SLJ strategy
-template<typename T>
-std::vector<T> coveringArray(const T& init, const std::vector<std::vector< std::function<void(T&)> >>& vars) {
-	const size_t v = std::transform_reduce(vars.begin(),vars.end(), (size_t)0,
-			[](auto a, auto b) { return std::max(a,b); },
-			[](const auto& x) { return x.size(); });
-
-	std::unordered_set<size_t> uncovered;
-	std::map< std::array<size_t,4>, size_t > idx;
-	for(size_t i = 1; i < vars.size(); i++) {
-		for(size_t j = 0; j < i; j++) {
-			for(size_t ii = 0; ii < vars[i].size(); ii++) {
-				for(size_t ji = 0; ji < vars[j].size(); ji++) {
-					uncovered.insert(idx.size());
-					idx[{i,j,ii,ji}] = idx.size();
-				}
-			}
-		}
-	}
-
-	std::vector<std::vector<size_t>> coveringArray;
-	while(!uncovered.empty()) {
-		size_t expectedCoverage = (uncovered.size() + (v*v-1)) / (v*v); // expectedCoverage > 0
-		std::cerr << "uncovered.size() = " << uncovered.size() << " "
-				  << "expectedCoverage = " << expectedCoverage << std::endl;
-		size_t coverage;
-		std::vector<size_t> row(vars.size());
-		do {
-			for(size_t i = 0; i < row.size(); i++)
-				row[i] = rand() % vars[i].size();
-			coverage = 0; // number of uncovered interactions
-			for(size_t i = 1; i < vars.size(); i++) {
-				for(size_t j = 0; j < i; j++) {
-					size_t id = idx[{i,j,row[i],row[j]}];
-					coverage += uncovered.count(id);
-				}
-			}
-		} while(coverage < expectedCoverage);
-		for(size_t i = 1; i < vars.size(); i++) {
-			for(size_t j = 0; j < i; j++) {
-				size_t id = idx[{i,j,row[i],row[j]}];
-				uncovered.erase(id);
-			}
-		}
-		coveringArray.emplace_back(row);
-	}
-
-	// contruct result
-	std::vector<T> res(coveringArray.size(), init);
-	for(size_t c = 0; c < coveringArray.size(); c++) {
-		for(size_t i = 0; i < vars.size(); i++) {
-			vars[i][coveringArray[c][i]](res[c]);
-		}
-	}
-	return res;
-}
-
 void Histogram::initTesting() {
 	testResults.clear();
 	assert(remainingTests.empty());
@@ -261,7 +228,7 @@ void Histogram::initTesting() {
 					test.emplace_back(propsToTest[pi], range);
 				});
 	}
-	std::vector<Histogram::Test> testss = coveringArray(Test(), ranges);
+	std::vector<Histogram::Test> testss = util::coveringArray(Test(), ranges);
 
     std::vector<Histogram::Test> tests;
     // iterate over all pairs of properties
