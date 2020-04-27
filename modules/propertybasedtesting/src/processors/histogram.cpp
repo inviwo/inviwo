@@ -75,8 +75,6 @@ Histogram::Histogram(InviwoApplication* app)
 	, startButton_("startButton", "Start")
 	, collectButton_("collectButton", "Collect Properties") {
 
-	std::cerr << "Histogram::Histogram(app = " << app << ")" << std::endl;
-
 	startButton_.onChange([this]() { 
 			std::cerr << "startButton_.onChange()" << std::endl;
             initTesting();
@@ -266,7 +264,7 @@ void Histogram::checkTestResults() {
 
 			bool validComparison = true; // check if the ranges of testResult lie fully within the ranges of otherTestResult 
 
-			for(const auto& prop : props_) {
+			for(auto prop : props_) {
 				const auto& range = testResult->getValue(prop);
 				const auto& otherRange = otherTestResult->getValue(prop);
 				validComparison &= range.x <= otherRange.x && range.y >= otherRange.y;
