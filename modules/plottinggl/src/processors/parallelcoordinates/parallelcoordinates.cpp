@@ -819,7 +819,7 @@ std::pair<size2_t, size2_t> ParallelCoordinates::axisPos(size_t columnId) const 
 
 std::pair<vec2, vec2> ParallelCoordinates::getDisplayRect(vec2 size) const {
     return {marginsInternal_.first, size - marginsInternal_.second};
-};
+}
 
 void ParallelCoordinates::serialize(Serializer& s) const {
     Processor::serialize(s);
