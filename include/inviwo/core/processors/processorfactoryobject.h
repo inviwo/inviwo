@@ -72,6 +72,7 @@ public:
     virtual ~ProcessorFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<Processor> create(InviwoApplication* app) {
+        (void)app;
         std::unique_ptr<Processor> p;
 
         if constexpr (std::is_constructible_v<T, const std::string&, const std::string&,
