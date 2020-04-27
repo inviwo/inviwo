@@ -238,7 +238,7 @@ void OrthographicCamera::configureProperties(CompositeProperty* comp, Config con
             initialWidth = glm::distance(getLookTo(), getLookFrom()) *
                            std::tan(0.5f * glm::radians(fovProp->get()));
         }
-        widthProp = new FloatProperty("width", "Width", 10.0f, 0.01f, 1000.0f, 0.1f);
+        widthProp = new FloatProperty("width", "Width", initialWidth, 0.01f, 1000.0f, 0.1f);
         comp->insertProperty(comp->size() - 1, widthProp, true);
         widthProp->setSerializationMode(PropertySerializationMode::All);
     }
