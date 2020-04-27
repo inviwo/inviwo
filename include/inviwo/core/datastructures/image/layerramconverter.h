@@ -35,6 +35,8 @@
 #include <inviwo/core/datastructures/image/layerdisk.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
+#include <memory>
+
 namespace inviwo {
 
 class IVW_CORE_API LayerDisk2RAMConverter

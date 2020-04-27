@@ -33,6 +33,8 @@
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/util/glm.h>
 
+#include <memory>
+
 namespace inviwo {
 
 class CompositeProperty;
