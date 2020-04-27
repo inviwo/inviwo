@@ -765,6 +765,9 @@ std::string getCanonicalPath(const std::string& url) {
 
     return result;
 #else
+#ifndef PATH_MAX
+    const int PATH_MAX = 4096;
+#endif
     char buffer[PATH_MAX + 1];
     char* retVal = realpath(url.c_str(), buffer);
     if (retVal == nullptr) {
