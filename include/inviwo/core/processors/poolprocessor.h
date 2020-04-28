@@ -128,7 +128,7 @@ enum class Option {
 
 }  // namespace pool
 
-ALLOW_FLAGS_FOR_ENUM(pool::Option);
+ALLOW_FLAGS_FOR_ENUM(pool::Option)
 namespace pool {
 
 /**
