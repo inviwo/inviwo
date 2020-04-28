@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/exception.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 #include <typeindex>

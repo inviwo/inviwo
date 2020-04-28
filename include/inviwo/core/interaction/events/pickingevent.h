@@ -36,6 +36,8 @@
 #include <inviwo/core/util/constexprhash.h>
 #include <inviwo/core/util/glmvec.h>
 
+#include <memory>
+
 namespace inviwo {
 
 class PickingAction;

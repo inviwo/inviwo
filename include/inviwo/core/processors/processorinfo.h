@@ -33,6 +33,7 @@
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
 
+#include <tuple>
 #include <string>
 #include <utility>
 
