@@ -6,6 +6,7 @@ ivw_module(PropertyBasedTesting)
 # Add header files
 set(HEADER_FILES
     include/inviwo/propertybasedtesting/algorithm/coveringarray.h
+    include/inviwo/propertybasedtesting/algorithm/generatingassignments.h
     include/inviwo/propertybasedtesting/processors/faultycubeproxyprocessor.h
     include/inviwo/propertybasedtesting/processors/histogram.h
     include/inviwo/propertybasedtesting/processors/randomvolumegenerator.h
@@ -17,6 +18,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/algorithm/generatingassignments.cpp
     src/processors/faultycubeproxyprocessor.cpp
     src/processors/histogram.cpp
     src/processors/randomvolumegenerator.cpp

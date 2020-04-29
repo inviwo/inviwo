@@ -49,7 +49,7 @@ RandomVolumeGenerator::RandomVolumeGenerator()
     : Processor()
     , outport_("volume")
 	, seed_("seed", "Seed", 0, 42, INT_MAX)
-	, numSpheres_("numSpheres", "Number of Spheres", 0, 3, 50000) {
+	, numSpheres_("numSpheres", "Number of Spheres", 0, 3, 500) {
 
     addPort(outport_);
     addProperty(seed_);

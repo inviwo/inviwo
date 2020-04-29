@@ -67,6 +67,28 @@ const ProcessorInfo Histogram::processorInfo_{
 };
 const ProcessorInfo Histogram::getProcessorInfo() const { return processorInfo_; }
 
+template<typename... Args>
+struct TestableProperty;
+template<typename T, typename... Args>
+struct TestableProperty<T, Args...> {
+	static std::optional<std::shared_ptr<TestProperty>> _testableProperty(Property* prop) {
+		if(auto tmp = dynamic_cast<T*>(prop); tmp != nullptr)
+			return {std::make_shared<TestPropertyTyped<T>>(tmp->clone())};
+		else
+			return TestableProperty<Args...>::_testableProperty(prop);
+	}
+};
+template<>
+struct TestableProperty<>
+{
+	static std::optional<std::shared_ptr<TestProperty>> _testableProperty(Property*) {
+		return std::nullopt;
+	}
+};
+std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop) {
+	return TestableProperty<OrdinalProperty<int>, IntMinMaxProperty>::_testableProperty(prop);
+}
+
 Histogram::Histogram(InviwoApplication* app)
     : Processor()
     , testingState(TestingState::NONE)
@@ -83,19 +105,6 @@ Histogram::Histogram(InviwoApplication* app)
 
 	collectButton_.onChange([this]() {
 			NetworkLock lock(this);
-            // Only necessary because there is no actual serializing yet
-            compositeProperties_.clear();
-			props_.clear();
-            for(Property* _compProp : getProperties()) {
-                if(auto compProp = dynamic_cast<CompositeProperty*>(_compProp); compProp != nullptr) {
-                    compositeProperties_.emplace_back(compProp);
-					for(Property* _property : compProp->getProperties()) {
-						auto property = dynamic_cast<IntMinMaxProperty*>(_property);
-						assert(property != nullptr);
-						props_.emplace_back(property);
-					}
-                }
-            }
 
             // remove previously collected properties
 			props_.clear();
@@ -139,8 +148,10 @@ Histogram::Histogram(InviwoApplication* app)
             // TODO: only insert minimal set S of properties such that all properties
             // are either in S or directly or indirectly set by a property in S
 			for(Property* prop : properties) {
-				if(auto* _p = dynamic_cast<IntMinMaxProperty*>(prop); _p != nullptr) {
-					auto* p = _p->clone();
+				if(auto _p = testableProperty(prop); _p != std::nullopt) {
+					props_.emplace_back(*_p);
+					auto* p = (*_p)->getProperty();
+
                     if(!usedIdentifiers.insert(p->getIdentifier()).second) {
                         size_t num = 0;
                         do {
@@ -148,6 +159,7 @@ Histogram::Histogram(InviwoApplication* app)
                         } while(!usedIdentifiers.insert(p->getIdentifier()).second);
                     }
 
+					// add to processor
 					auto parentProcessor = dynamic_cast<Processor*>(prop->getOwner());
 					assert(parentProcessor != nullptr);
 					auto& comp = composites[parentProcessor];
@@ -160,12 +172,9 @@ Histogram::Histogram(InviwoApplication* app)
 						addProperty(comp);
 						compositeProperties_.emplace_back(comp);
 					}
-
 					comp->addProperty(p);
-					//p->setReadOnly(true);
-					props_.emplace_back(p);
-
-					app_->getProcessorNetwork()->addLink(p, _p);
+					// add link to original property
+					app_->getProcessorNetwork()->addLink(p, prop);
 				}
 			}
 		} );
@@ -174,80 +183,56 @@ Histogram::Histogram(InviwoApplication* app)
 	addPort(inport_);
 	addProperty(startButton_);
 	addProperty(collectButton_);
+
+	app_->dispatchFrontAndForget([this]() {
+            // Only necessary because there is no actual serializing yet
+            for(Property* _compProp : getProperties()) {
+                if(auto compProp = dynamic_cast<CompositeProperty*>(_compProp); compProp != nullptr) {
+                    compositeProperties_.emplace_back(compProp);
+                }
+            }
+		});
 }
 
-std::vector<IntMinMaxProperty::range_type> genRanges(const IntMinMaxProperty* prop) {
-	const static size_t maxStepsPerVal = 4;
-	std::vector<IntMinMaxProperty::range_type> res;
-
-	const auto minSeparation = prop->getMinSeparation();
-	const size_t maxSteps = (prop->getRangeMax() - prop->getRangeMin()) / minSeparation;
-	for(size_t stepsFromMin = 0; stepsFromMin < std::min(maxSteps, maxStepsPerVal); stepsFromMin++) {
-		for(size_t stepsFromMax = 0; stepsFromMax + stepsFromMin < std::min(maxSteps, maxStepsPerVal); stepsFromMax++) {
-			res.emplace_back(
-						prop->getRangeMin() + stepsFromMin * minSeparation,
-						prop->getRangeMax() - stepsFromMax * minSeparation);
-		}
-	}
-
-	return res;
-}
-
-std::vector<Histogram::Test> Histogram::generateTests(IntMinMaxProperty* p1, IntMinMaxProperty* p2) {
-    std::vector<Histogram::Test> res;
-    for(const auto& r1 : genRanges(p1)) {
-        for(const auto& r2 : genRanges(p2)) {
-            res.emplace_back(std::vector{std::make_pair(p1,r1), std::make_pair(p2,r2)});
-        }
-    }
-    return res;
-}
 
 void Histogram::initTesting() {
 	testResults.clear();
 	assert(remainingTests.empty());
 
     // store current state in order to reset it after testing
-	defaultValues.clear();
-    for(auto* prop : props_) {
-		defaultValues[prop] = prop->get();
+    for(auto prop : props_) {
+		prop->storeDefault();
     }
 
-    std::vector<IntMinMaxProperty*> propsToTest;
-    std::copy_if(props_.begin(), props_.end(), std::back_inserter(propsToTest), [this](auto* prop) {
-            return !app_->getProcessorNetwork()->getPropertiesLinkedTo(prop).empty();
+    std::vector<std::shared_ptr<TestProperty>> propsToTest;
+    std::copy_if(props_.begin(), props_.end(), std::back_inserter(propsToTest), [this](auto prop) {
+            return !app_->getProcessorNetwork()->getPropertiesLinkedTo(prop->getProperty()).empty();
         });
 
+	std::cerr << "propsToTest.size() = " << propsToTest.size() << std::endl;
 
-	std::vector<std::vector<std::function<void(Histogram::Test&)>>> ranges(propsToTest.size());
+	std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> ranges(propsToTest.size());
 	for(size_t pi = 0; pi < propsToTest.size(); pi++) {
-		for(const auto& range : genRanges(propsToTest[pi]))
-			ranges[pi].emplace_back([pi,&propsToTest,range](Histogram::Test& test) {
-					test.emplace_back(propsToTest[pi], range);
-				});
+		for(const auto& assignment : propsToTest[pi]->generateAssignments())
+			ranges[pi].emplace_back(assignment);
 	}
-	std::vector<Histogram::Test> testss = util::coveringArray(Test(), ranges);
+	
+	std::cerr << "ranges: ";
+	for(const auto& x : ranges) std::cerr << " [" << x.size() << "]";
+	std::cerr << std::endl;
 
-    std::vector<Histogram::Test> tests;
-    // iterate over all pairs of properties
-    for(size_t i = 0; i < propsToTest.size(); i++) {
-        for(size_t j = 0; j < i; j++) {
-            auto res = generateTests(propsToTest[i], propsToTest[j]);
-            tests.insert(tests.end(), res.begin(), res.end());
-        }
-    }
-
-	std::cerr << "tests.size() = " << tests.size() << " testss.size() = " << testss.size() << std::endl;
-
-	for(const auto& test : testss) {
+	for(const auto& test : util::coveringArray(Test(),
+				ranges)) {
 		remainingTests.emplace(test);
 	}
+
+	std::cerr << "remainingTests.size() = " << remainingTests.size() << std::endl;
+	util::log(IVW_CONTEXT, std::string("Testing ") + std::to_string(remainingTests.size()) + " configurations...", LogLevel::Info, LogAudience::User);
 
     assert(remainingTests.size() > 1);
 
 	app_->dispatchFront([this]() {
 			setupTest(remainingTests.front());
-			testingState = TestingState::GATHERING;
 		});
 }
 
@@ -256,27 +241,32 @@ void Histogram::checkTestResults() {
     std::vector< std::pair<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>> > errors;
 
 	for(auto testResult : testResults) {
+		std::cerr << testResult->getNumberOfBackgroundPixels() << std::endl;
+	}
+
+	for(auto testResult : testResults) {
 		for(auto otherTestResult : testResults) {
 			// only consider pairs of test results where testResult has more
 			// background pixels than otherTestResult
-			if(testResult->backgroundPixels <= otherTestResult->backgroundPixels)
+			if(testResult->getNumberOfBackgroundPixels() <= otherTestResult->getNumberOfBackgroundPixels())
 				continue;
 
-			bool validComparison = true; // check if the ranges of testResult lie fully within the ranges of otherTestResult 
+			// TODO
+			// bool validComparison = true; // check if the ranges of testResult lie fully within the ranges of otherTestResult 
 
-			for(auto prop : props_) {
-				const auto& range = testResult->getValue(prop);
-				const auto& otherRange = otherTestResult->getValue(prop);
-				validComparison &= range.x <= otherRange.x && range.y >= otherRange.y;
-			}
+			// for(auto prop : props_) {
+			// 	const auto& range = testResult->getValue(prop);
+			// 	const auto& otherRange = otherTestResult->getValue(prop);
+			// 	validComparison &= range.x <= otherRange.x && range.y >= otherRange.y;
+			// }
 
-			if(validComparison) {
-				errors.emplace_back( testResult, otherTestResult );
-			}
+			// if(validComparison) {
+			// 	errors.emplace_back( testResult, otherTestResult );
+			// }
 		}
 	}
 
-	std::cerr << " done with " << errors.size() << " errors" << std::endl;
+	std::cerr << " done with " << errors.size() << " tests failed" << std::endl;
 	if(!errors.empty()) {
         std::stringstream str;
         str << errors.size() << " tests failed: ";
@@ -289,26 +279,27 @@ void Histogram::checkTestResults() {
 }
 
 bool Histogram::testIsSetUp(const Test& test) {
-    for(const auto& [prop,val] : test) {
-        if(prop->get() != val) {
-            return false;
-        }
-    }
+    for(const auto& assignment : test)
+		if(!assignment->isApplied())
+			return false;
     return true;
 }
 void Histogram::setupTest(const Test& test) {
 	NetworkLock lock(this);
+	
 	resetAllProps();
 
 	// then set relevant properties
-    for(const auto& [prop,val] : test) {
-        prop->set(val);
+    for(const auto& assignment : test) {
+		assignment->apply();
     }
 
 	// TODO: find better solution
 	app_->getProcessorNetwork()->forEachProcessor([](auto proc) {
 			proc->invalidate(InvalidationLevel::InvalidOutput);
 		});
+	
+	testingState = TestingState::GATHERING;
 }
 
 void Histogram::process() {
@@ -344,14 +335,17 @@ void Histogram::process() {
 				<< "remaining tests : " << remainingTests.size() << " "
 				<< std::endl;
 
-			testResults.emplace_back(std::make_shared<TestResult>(defaultValues, test, pixelCount));
+			testResults.emplace_back(std::make_shared<TestResult>(props_, test, pixelCount));
 
+			testingState = NONE;
 			if(remainingTests.empty()) { // there are no more tests to do
 				this->checkTestResults();
-				testingState = NONE;
-				app_->dispatchFront([this]() { resetAllProps(); });
+				app_->dispatchFrontAndForget([this]() { resetAllProps(); });
 			} else {
-				app_->dispatchFront([this]() { setupTest(remainingTests.front()); });
+				app_->dispatchPool([this]() {
+						std::this_thread::sleep_for(std::chrono::milliseconds(2)); // just so we can see what's going on, TODO: remove
+						app_->dispatchFrontAndForget([this]() { setupTest(remainingTests.front()); });
+					});
 			}
 			break;
 	}

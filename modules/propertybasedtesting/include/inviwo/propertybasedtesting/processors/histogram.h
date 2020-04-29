@@ -30,6 +30,8 @@
 #pragma once
 
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
+#include <inviwo/propertybasedtesting/algorithm/generatingassignments.h>
+
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 
@@ -40,7 +42,53 @@
 
 #include <inviwo/core/ports/imageport.h>
 
+#include <variant>
+
 namespace inviwo {
+
+class TestProperty {
+private:
+	Property* const prop;
+public:
+	TestProperty(Property* const prop)
+		: prop(prop) {
+	}
+
+	virtual void setToDefault() const = 0;
+	virtual void storeDefault() = 0;
+	virtual std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() = 0;
+	Property* getProperty() const {
+		return prop;
+	}
+	virtual ~TestProperty() = default;
+};
+
+template<typename T>
+class TestPropertyTyped : public TestProperty {
+	T* const typedProperty;
+	typename T::value_type defaultValue;
+public:
+	TestPropertyTyped(T* prop)
+		: TestProperty(prop)
+		, typedProperty(prop)
+		, defaultValue(prop->get()) {
+		}
+	~TestPropertyTyped() = default;
+	T* getTypedProperty() const {
+		return typedProperty;
+	}
+	void setToDefault() const {
+		typedProperty->set(defaultValue);
+	}
+	void storeDefault() {
+		defaultValue = typedProperty->get();
+	}
+	std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() {
+		return _generateAssignments<T>(typedProperty);
+	}
+};
+
+using Test = std::vector<std::shared_ptr<PropertyAssignment>>;
 
 /** \docpage{org.inviwo.Histogram, Histogram}
  * ![](org.inviwo.Histogram.png?classIdentifier=org.inviwo.Histogram)
@@ -81,51 +129,45 @@ private:
 	ButtonProperty collectButton_;
 
 	std::vector<CompositeProperty*> compositeProperties_;
-	std::vector<IntMinMaxProperty*> props_;
-	using ValueMap = std::unordered_map<const IntMinMaxProperty*, IntMinMaxProperty::range_type>;
-	ValueMap defaultValues;
+
+	std::vector<std::shared_ptr<TestProperty>> props_;
 	void resetAllProps() {
 		for(auto prop : props_) {
-			if(defaultValues.find(prop) == defaultValues.end())
-				std::cerr << "resetAllProps() : " << prop << std::endl;
-			prop->set(defaultValues.at(prop));
+			prop->setToDefault();
 		}
 	}
 
 	// Testing stuff
 	void initTesting();
 
-	using PropertyAssignment = std::pair<IntMinMaxProperty*, IntMinMaxProperty::range_type>;
-	using Test = std::vector<PropertyAssignment>;
 	class TestResult {
 	private:
-		const ValueMap values;
-		const ValueMap &defaultValues;
-	public:
-		const IntMinMaxProperty::range_type& getValue(const IntMinMaxProperty* prop) const {
-			auto it = values.find(prop);
-			if(it != values.end())
-				return it->second;
-			return defaultValues.at(prop);
-		}
-		const Test test;
+		const std::vector<std::shared_ptr<TestProperty>>& defaultValues;
+		const Test& test;
 		const size_t backgroundPixels;
-		TestResult(const ValueMap& defaultValues, const Test& t, size_t val) : 
-			values([&t]() {
-					ValueMap res;
-					for(const auto& [prop,v] : t)
-						res[prop] = v;
-					return res;
-				}()),
-			defaultValues(defaultValues),
-			test(t),
-			backgroundPixels(val) { }
+	public:
+		size_t getNumberOfBackgroundPixels() {
+			return backgroundPixels;
+		}
+		template<typename T>
+		const typename T::value_type& getValue(const T* prop) const {
+			for(const auto& t : test)
+				if(auto p = dynamic_cast<std::shared_ptr<PropertyAssignmentTyped<T>>>(t); p != nullptr && p->getProperty() == prop)
+					return p->getValue();
+			for(auto def : defaultValues)
+				if(auto p = dynamic_cast<std::shared_ptr<TestPropertyTyped<T>>>(def); p != nullptr && p->getProperty() == prop)
+					return p->getValue();
+			assert(false);
+		}
+		TestResult(const std::vector<std::shared_ptr<TestProperty>>& defaultValues, const Test& t, size_t val)
+			: defaultValues(defaultValues)
+			, test(t)
+			, backgroundPixels(val) {
+			}
 	};
 
 	bool testIsSetUp(const Test& test);
 	void setupTest(const Test& test);
-
-	std::vector<Test> generateTests(IntMinMaxProperty* p1, IntMinMaxProperty* p2);
 
 	std::queue<Test> remainingTests;
 	std::vector<std::shared_ptr<TestResult>> testResults;

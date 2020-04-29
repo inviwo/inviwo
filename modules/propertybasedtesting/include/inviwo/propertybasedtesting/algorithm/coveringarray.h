@@ -37,11 +37,25 @@ namespace inviwo {
 namespace util {
 
 // 2-coverage, randomized discrete SLJ strategy
-template<typename T>
-std::vector<T> coveringArray(const T& init, const std::vector<std::vector< std::function<void(T&)> >>& vars) {
-	const size_t v = std::transform_reduce(vars.begin(),vars.end(), (size_t)0,
-			[](auto a, auto b) { return std::max(a,b); },
-			[](const auto& x) { return x.size(); });
+std::vector<Test> coveringArray(const Test& init, const std::vector<std::vector< std::shared_ptr<PropertyAssignment> >>& vars) {
+	std::cerr << "coveringArray: vars.size() = " << vars.size() << std::endl;
+	assert(vars.size() > 0);
+
+	// special case
+	if(vars.size() == 1) {
+		std::vector<Test> res(vars[0].size(), init);
+		for(size_t i = 0; i < vars[0].size(); i++) {
+			res[i].emplace_back(vars[0][i]);
+		}
+		std::cerr << "special case : res.size() = " << res.size() << std::endl;
+		return res;
+	}
+
+	const size_t v = [&](){
+			size_t res = 0;
+			for(const auto& v : vars) res = std::max(res, v.size());
+			return res;
+		}();
 
 	std::unordered_set<size_t> uncovered;
 	std::map< std::array<size_t,4>, size_t > idx;
@@ -82,12 +96,18 @@ std::vector<T> coveringArray(const T& init, const std::vector<std::vector< std::
 	}
 
 	// contruct result
-	std::vector<T> res(coveringArray.size(), init);
+	std::vector<Test> res(coveringArray.size(), init);
 	for(size_t c = 0; c < coveringArray.size(); c++) {
 		for(size_t i = 0; i < vars.size(); i++) {
-			vars[i][coveringArray[c][i]](res[c]);
+			res[c].emplace_back( vars[i][coveringArray[c][i]] );
 		}
 	}
+
+	size_t naive = 1;
+	for(const auto& x : vars)
+		naive *= x.size();
+	std::cerr << "size reduction: " << naive << " => " << res.size() << std::endl;
+
 	return res;
 }
 
