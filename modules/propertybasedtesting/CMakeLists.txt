@@ -9,6 +9,7 @@ set(HEADER_FILES
     include/inviwo/propertybasedtesting/algorithm/generatingassignments.h
     include/inviwo/propertybasedtesting/processors/faultycubeproxyprocessor.h
     include/inviwo/propertybasedtesting/processors/histogram.h
+    include/inviwo/propertybasedtesting/processors/imagecomparator.h
     include/inviwo/propertybasedtesting/processors/randomvolumegenerator.h
     include/inviwo/propertybasedtesting/propertybasedtestingmodule.h
     include/inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h
@@ -21,6 +22,7 @@ set(SOURCE_FILES
     src/algorithm/generatingassignments.cpp
     src/processors/faultycubeproxyprocessor.cpp
     src/processors/histogram.cpp
+    src/processors/imagecomparator.cpp
     src/processors/randomvolumegenerator.cpp
     src/propertybasedtestingmodule.cpp
 )

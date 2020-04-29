@@ -103,9 +103,10 @@ std::vector<Test> coveringArray(const Test& init, const std::vector<std::vector<
 		}
 	}
 
-	size_t naive = 1;
-	for(const auto& x : vars)
-		naive *= x.size();
+	size_t naive = 0;
+	for(size_t i = 1; i < vars.size(); i++)
+		for(size_t j = 0; j < i; j++)
+			naive += vars[i].size() * vars[j].size();
 	std::cerr << "size reduction: " << naive << " => " << res.size() << std::endl;
 
 	return res;
