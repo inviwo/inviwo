@@ -109,6 +109,7 @@ public:
     EventProperty saveLayerEvent_;
 
     BoolProperty allowContextMenu_;
+    BoolProperty evaluateWhenHidden_;
 
 private:
     void sizeChanged();
