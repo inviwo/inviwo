@@ -86,24 +86,27 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
               return it == exts.end() ? 0 : std::distance(exts.begin(), it);
           }())
     , saveLayerDirectory_("layerDir", "Output Directory", "", "image")
-    , saveLayerButton_("saveLayer", "Save Image Layer", [this]() { saveImageLayer(); },
-                       InvalidationLevel::Valid)
-    , saveLayerToFileButton_("saveLayerToFile", "Save Image Layer to File...",
-                             [this]() {
-                                 if (auto layer = getVisibleLayer()) {
-                                     util::saveLayer(*layer);
-                                 } else {
-                                     LogError("Could not find visible layer");
-                                 }
-                             },
-                             InvalidationLevel::Valid)
+    , saveLayerButton_(
+          "saveLayer", "Save Image Layer", [this]() { saveImageLayer(); }, InvalidationLevel::Valid)
+    , saveLayerToFileButton_(
+          "saveLayerToFile", "Save Image Layer to File...",
+          [this]() {
+              if (auto layer = getVisibleLayer()) {
+                  util::saveLayer(*layer);
+              } else {
+                  LogError("Could not find visible layer");
+              }
+          },
+          InvalidationLevel::Valid)
     , fullScreen_("fullscreen", "Toggle Full Screen", false)
-    , fullScreenEvent_("fullscreenEvent", "FullScreen",
-                       [this](Event*) { fullScreen_.set(!fullScreen_); }, IvwKey::F,
-                       KeyState::Press, KeyModifier::Shift)
-    , saveLayerEvent_("saveLayerEvent", "Save Image Layer", [this](Event*) { saveImageLayer(); },
-                      IvwKey::Undefined, KeyState::Press)
+    , fullScreenEvent_(
+          "fullscreenEvent", "FullScreen", [this](Event*) { fullScreen_.set(!fullScreen_); },
+          IvwKey::F, KeyState::Press, KeyModifier::Shift)
+    , saveLayerEvent_(
+          "saveLayerEvent", "Save Image Layer", [this](Event*) { saveImageLayer(); },
+          IvwKey::Undefined, KeyState::Press)
     , allowContextMenu_("allowContextMenu", "Allow Context Menu", true)
+    , evaluateWhenHidden_("evaluateWhenHidden", "Evaluate When Hidden", false)
     , previousImageSize_(customInputDimensions_)
     , widgetMetaData_{
           createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::CLASS_IDENTIFIER)} {
@@ -145,6 +148,8 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
         }
     });
 
+    evaluateWhenHidden_.onChange([this]() { setEvaluateWhenHidden(evaluateWhenHidden_.get()); });
+
     imageTypeExt_.setSerializationMode(PropertySerializationMode::None);
 
     inputSize_.addProperties(dimensions_, enableCustomInputDimensions_, customInputDimensions_,
@@ -152,7 +157,7 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
 
     addProperties(inputSize_, position_, visibleLayer_, colorLayer_, saveLayerDirectory_,
                   imageTypeExt_, saveLayerButton_, saveLayerToFileButton_, fullScreen_,
-                  fullScreenEvent_, saveLayerEvent_, allowContextMenu_);
+                  fullScreenEvent_, saveLayerEvent_, allowContextMenu_, evaluateWhenHidden_);
 
     inport_.onChange([&]() {
         int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
