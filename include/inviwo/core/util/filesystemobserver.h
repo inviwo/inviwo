@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,73 +26,28 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
 #include <string>
-#include <unordered_set>
-#include <utility>
-#include <vector>
 
 namespace inviwo {
 
-class InviwoApplication;
-class FileSystemObserver;
+class FileObserver;
 
-/** \class FileObserver
- * Calls fileChanged when an observed file/directory changes.
- * One or multiple files/directories can be observed.
- */
-class IVW_CORE_API FileObserver {
+class IVW_CORE_API FileSystemObserver {
 public:
-    /**
-     * @note Registers as a file observer in InviwoApplication.
-     */
-    FileObserver(InviwoApplication* app);
+    FileSystemObserver() = default;
+    virtual ~FileSystemObserver() = default;
 
-    /**
-     * @note Registers as a file observer in FileSystemObserver.
-     */
-    FileObserver(FileSystemObserver* app);
-      
-    FileObserver(const FileObserver&) = delete;
-    FileObserver& operator=(const FileObserver&) = delete;
-    FileObserver(FileObserver&& rhs);
-    FileObserver& operator=(FileObserver&& that);
-
-    /**
-     * Unregisters file observer in InviwoApplication and stops observing all files.
-     */
-    virtual ~FileObserver();
-
-    /**
-     * \brief Starts observing file if it exists.
-     * @param filePath Full path to file
-     */
-    bool startFileObservation(const std::string& filePath);
-    /**
-     * \brief Stops observing the file if being observed.
-     * @param filePath Full path to file
-     */
-    bool stopFileObservation(const std::string& filePath);
-
-    /**
-     * Stop observation of all observed files
-     */
-    void stopAllObservation();
-
-    const std::unordered_set<std::string>& getFiles() const;
-    bool isObserved(const std::string& fileName) const;
-
-    virtual void fileChanged(const std::string& fileName) = 0;
-
-protected:
-    FileSystemObserver* fileSystemObserver_;
+    virtual void registerFileObserver(FileObserver* fileObserver) = 0;
+    virtual void unRegisterFileObserver(FileObserver* fileObserver) = 0;
 
 private:
-    std::unordered_set<std::string> observedFiles_;
+    friend FileObserver;
+    virtual void startFileObservation(const std::string& fileName) = 0;
+    virtual void stopFileObservation(const std::string& fileName) = 0;
 };
 
 }  // namespace inviwo

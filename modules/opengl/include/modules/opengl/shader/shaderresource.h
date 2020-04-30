@@ -35,6 +35,9 @@
 #include <inviwo/core/util/fileobserver.h>
 #include <inviwo/core/util/dispatcher.h>
 
+#include <string>
+#include <string_view>
+
 namespace inviwo {
 
 /**
@@ -90,7 +93,7 @@ private:
 
 class IVW_MODULE_OPENGL_API StringShaderResource : public ShaderResource {
 public:
-    StringShaderResource(const std::string& key, const std::string& source);
+    StringShaderResource(std::string_view key, std::string_view source);
     virtual ~StringShaderResource() = default;
 
     virtual std::unique_ptr<ShaderResource> clone() override;

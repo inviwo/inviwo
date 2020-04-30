@@ -31,7 +31,28 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 
+#include <string_view>
+
 namespace inviwo {
+
+namespace {
+
+constexpr std::string_view defaultFrag = R"(
+#include "utils/sampler3d.glsl" 
+
+uniform sampler3D volume;
+uniform VolumeParameters volumeParameters;
+
+in vec4 texCoord_;
+
+void main() {
+    vec4 v1 = getVoxel(volume , volumeParameters , texCoord_.xyz);
+    FragData0 = v1;
+}
+
+)";
+
+}
 
 const ProcessorInfo VolumeShader::processorInfo_{
     "org.inviwo.VolumeShader",  // Class identifier
@@ -49,36 +70,18 @@ void VolumeShader::initializeResources() {
 const ProcessorInfo VolumeShader::getProcessorInfo() const { return processorInfo_; }
 
 VolumeShader::VolumeShader()
-    : VolumeShader(std::make_shared<StringShaderResource>("volume_shader.frag",
-                                                          getDefaultFragmentShader())) {}
+    : VolumeShader(std::make_shared<StringShaderResource>("volume_shader.frag", defaultFrag)) {}
 
 VolumeShader::VolumeShader(std::shared_ptr<StringShaderResource> fragmentShader)
     : VolumeGLProcessor(fragmentShader, false)
     , fragmentShader_(fragmentShader)
-    , fragmentSrc_("shader", "Shader", getDefaultFragmentShader(),
+    , fragmentSrc_("shader", "Shader", std::string(defaultFrag),
                    InvalidationLevel::InvalidResources, PropertySemantics::ShaderEditor) {
     addProperty(fragmentSrc_);
 
     fragmentSrc_.onChange([&]() { fragmentShader_->setSource(fragmentSrc_.get()); });
 }
 
-VolumeShader::~VolumeShader() {}
-
-std::string VolumeShader::getDefaultFragmentShader() {
-    std::ostringstream oss;
-
-    oss << "#include \"utils/sampler3d.glsl\"" << std::endl << std::endl;
-    oss << "uniform sampler3D volume;" << std::endl;
-    oss << "uniform VolumeParameters volumeParameters;" << std::endl << std::endl;
-
-    oss << "in vec4 texCoord_;" << std::endl << std::endl;
-
-    oss << "void main() {" << std::endl;
-    oss << "    vec4 v1 = getVoxel(volume , volumeParameters , texCoord_.xyz);" << std::endl;
-    oss << "    FragData0 = v1;" << std::endl;
-    oss << "}" << std::endl;
-    oss << " " << std::endl;
-    return oss.str();
-}
+VolumeShader::~VolumeShader() = default;
 
 }  // namespace inviwo

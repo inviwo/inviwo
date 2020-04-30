@@ -33,15 +33,33 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/opengl/canvasprocessorgl.h>
 #include <modules/glfw/canvasprocessorwidgetglfw.h>
+#include <modules/glfw/canvasglfw.h>
 #include <modules/opengl/openglcapabilities.h>
 #include <modules/glfw/glfwexception.h>
 #include <modules/opengl/sharedopenglresources.h>
 
+#include <memory>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 namespace inviwo {
+
+class GLFWContextHolder : public ContextHolder {
+public:
+    GLFWContextHolder(GLFWwindow* win) : win_{win} {}
+    virtual void activate() override { glfwMakeContextCurrent(win_); }
+    virtual std::unique_ptr<Canvas> createHiddenCanvas() override {
+        auto res =
+            dispatchFront([&]() { return std::make_unique<CanvasGLFW>("Background", uvec2(128)); });
+        return res.get();
+    }
+    virtual Canvas* getCanvas() override { return nullptr; }
+    virtual Canvas::ContextID activeContext() const override {
+        return static_cast<Canvas::ContextID>(glfwGetCurrentContext());
+    }
+    GLFWwindow* win_;
+};
 
 GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
     if (!app->getModuleManager().getModulesByAlias("OpenGLSupplier").empty()) {
@@ -52,16 +70,21 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
     }
     if (!glfwInit()) throw GLFWInitException("GLFW could not be initialized.", IVW_CONTEXT);
 
-    GLFWSharedCanvas_ = std::make_unique<CanvasGLFW>(app->getDisplayName());
-    GLFWSharedCanvas_->activate();
+    if (auto shared = CanvasGLFW::sharedContext()) {
+        RenderContext::getPtr()->setDefaultRenderContext(
+            std::make_unique<GLFWContextHolder>(shared));
+        RenderContext::getPtr()->activateDefaultRenderContext();
+    } else {
+        GLFWSharedCanvas_ = std::make_unique<CanvasGLFW>(app->getDisplayName());
+        GLFWSharedCanvas_->activate();
+        RenderContext::getPtr()->setDefaultRenderContext(GLFWSharedCanvas_.get());
+    }
     OpenGLCapabilities::initializeGLEW();
-    GLFWSharedCanvas_->defaultGLState();
-
     if (!glFenceSync) {  // Make sure we have setup the opengl function pointers.
         throw GLFWInitException("Unable to initiate OpenGL", IVW_CONTEXT);
     }
+    CanvasGL::defaultGLState();
 
-    RenderContext::getPtr()->setDefaultRenderContext(GLFWSharedCanvas_.get());
     registerProcessorWidget<CanvasProcessorWidgetGLFW, CanvasProcessorGL>();
 
     app->getProcessorNetworkEvaluator()->addObserver(this);

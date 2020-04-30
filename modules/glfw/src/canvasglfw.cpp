@@ -213,6 +213,8 @@ void CanvasGLFW::provideExternalContext(GLFWwindow* sharedContext) {
     }
 }
 
+GLFWwindow* CanvasGLFW::sharedContext() { return sharedContext_; }
+
 ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos, ivec2 size) {
     int count;
     GLFWmonitor** monitors = glfwGetMonitors(&count);

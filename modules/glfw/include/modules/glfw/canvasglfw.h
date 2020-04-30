@@ -72,6 +72,7 @@ public:
     virtual ContextID contextId() const override;
 
     static void provideExternalContext(GLFWwindow* sharedContext);
+    static GLFWwindow* sharedContext();
 
     static ivec2 movePointOntoDesktop(ivec2 pos, ivec2 size);
 

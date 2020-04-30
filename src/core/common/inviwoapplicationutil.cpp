@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,59 +27,35 @@
  *
  *********************************************************************************/
 
-#include <modules/opengl/shader/shaderresource.h>
 #include <inviwo/core/common/inviwoapplicationutil.h>
-#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertyowner.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/processor.h>
 
 namespace inviwo {
 
-FileShaderResource::FileShaderResource(const std::string& key, const std::string& fileName)
-    : FileObserver(util::getInviwoApplication()), key_(key), fileName_(fileName) {
-    startFileObservation(fileName_);
+namespace util {
+
+InviwoApplication* getInviwoApplication() { return InviwoApplication::getPtr(); }
+
+InviwoApplication* getInviwoApplication(ProcessorNetwork* network) {
+    return network ? network->getApplication() : nullptr;
 }
 
-std::unique_ptr<ShaderResource> FileShaderResource::clone() {
-    return std::make_unique<FileShaderResource>(key_, fileName_);
+InviwoApplication* getInviwoApplication(Processor* processor) {
+    return processor ? getInviwoApplication(processor->getNetwork()) : nullptr;
 }
 
-std::string FileShaderResource::key() const { return key_; }
-
-std::string FileShaderResource::source() const {
-    if (!cache_.empty()) return cache_;
-    auto stream = filesystem::ifstream(fileName_);
-    std::stringstream buffer;
-    buffer << stream.rdbuf();
-    cache_ = buffer.str();
-    return cache_;
+InviwoApplication* getInviwoApplication(Property* property) {
+    return property ? getInviwoApplication(property->getOwner()) : nullptr;
 }
 
-void FileShaderResource::setSource(const std::string& source) {
-    auto file = filesystem::ofstream(fileName_);
-    file << source;
-    file.close();
+InviwoApplication* getInviwoApplication(PropertyOwner* owner) {
+    return owner ? owner->getInviwoApplication() : nullptr;
 }
 
-std::string FileShaderResource::file() const { return fileName_; }
-
-void FileShaderResource::fileChanged(const std::string& /*fileName*/) {
-    cache_ = "";
-    callbacks_.invoke(this);
-}
-
-StringShaderResource::StringShaderResource(std::string_view key, std::string_view source)
-    : key_(key), source_(source) {}
-
-std::unique_ptr<ShaderResource> StringShaderResource::clone() {
-    return std::make_unique<StringShaderResource>(key_, source_);
-}
-
-std::string StringShaderResource::key() const { return key_; }
-
-std::string StringShaderResource::source() const { return source_; }
-
-void StringShaderResource::setSource(const std::string& source) {
-    source_ = source;
-    callbacks_.invoke(this);
-}
+}  // namespace util
 
 }  // namespace inviwo

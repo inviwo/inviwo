@@ -173,7 +173,9 @@ void GLFWWindowEventManager::scroll(GLFWwindow* window, double xoffset, double y
     self->propagateEvent(&wheelEvent);
 }
 
-void GLFWWindowEventManager::propagateEvent(Event* event) { eventPropagator_(event); }
+void GLFWWindowEventManager::propagateEvent(Event* event) { 
+    eventPropagator_(event); 
+}
 
 dvec2 GLFWWindowEventManager::normalPos(dvec2 pos, ivec2 size) {
     dvec2 dsize{size};

@@ -32,6 +32,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileobserver.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/filesystemobserver.h>
 
 #include <thread>
 
@@ -45,11 +46,10 @@
 #include <QTouchEvent>
 #include <QEvent>
 #include <QMessageBox>
+#include <QFileSystemWatcher>
 #include <warn/pop>
 
 #ifdef WIN32
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif  // WIN32
 
@@ -63,6 +63,74 @@ char** dummyArgs() {
     static char* dummyArgv = new char[7];
     sprintf(dummyArgv, "inviwo");
     return &dummyArgv;
+}
+
+class FileSystemObserverQt : public QObject, public FileSystemObserver {
+public:
+
+    FileSystemObserverQt() : fileWatcher_{new QFileSystemWatcher(this)} {
+
+        connect(fileWatcher_, &QFileSystemWatcher::fileChanged, this,
+                &FileSystemObserverQt::fileChanged);
+        connect(fileWatcher_, &QFileSystemWatcher::directoryChanged, this,
+                &FileSystemObserverQt::fileChanged);
+    }
+
+    virtual void registerFileObserver(FileObserver* fileObserver) override;
+    virtual void unRegisterFileObserver(FileObserver* fileObserver) override;
+private:
+    virtual void startFileObservation(const std::string& fileName) override;
+    virtual void stopFileObservation(const std::string& fileName) override;
+
+    void fileChanged(QString fileName);
+
+    std::vector<FileObserver*> fileObservers_;
+    QFileSystemWatcher* fileWatcher_;
+};
+
+void FileSystemObserverQt::registerFileObserver(FileObserver* fileObserver) {
+    IVW_ASSERT(std::find(fileObservers_.cbegin(), fileObservers_.cend(), fileObserver) ==
+                   fileObservers_.cend(),
+               "File observer already registered.");
+    fileObservers_.push_back(fileObserver);
+}
+
+void FileSystemObserverQt::unRegisterFileObserver(FileObserver* fileObserver) {
+    util::erase_remove(fileObservers_, fileObserver);
+}
+
+void FileSystemObserverQt::startFileObservation(const std::string& fileName) {
+    QString qFileName = QString::fromStdString(fileName);
+    // Will add the path if file exists and is not already being watched.
+    fileWatcher_->addPath(qFileName);
+}
+
+void FileSystemObserverQt::stopFileObservation(const std::string& fileName) {
+    auto it =
+        std::find_if(std::begin(fileObservers_), std::end(fileObservers_),
+                     [fileName](const auto observer) { return observer->isObserved(fileName); });
+    // Make sure that no observer is observing the file
+    if (it == std::end(fileObservers_)) fileWatcher_->removePath(QString::fromStdString(fileName));
+}
+
+void FileSystemObserverQt::fileChanged(QString fileName) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+    if (QFile::exists(fileName)) {
+        std::string fileNameStd = fileName.toLocal8Bit().constData();
+
+        // don't use iterators here, they might be invalidated.
+        size_t size = fileObservers_.size();
+        for (size_t i = 0; i < size && i < fileObservers_.size(); ++i) {
+            if (fileObservers_[i]->isObserved(fileNameStd)) {
+                fileObservers_[i]->fileChanged(fileNameStd);
+            }
+        }
+
+        if (!fileWatcher_->files().contains(fileName)) {
+            fileWatcher_->addPath(fileName);
+        }
+    }
 }
 
 }  // namespace
@@ -80,13 +148,9 @@ InviwoApplicationQt::InviwoApplicationQt(int& argc, char** argv, const std::stri
     QCoreApplication::setOrganizationDomain("inviwo.org");
     QCoreApplication::setApplicationName(displayName.c_str());
 
-    setPostEnqueueFront([this]() { postEvent(this, new InviwoQtEvent(), Qt::LowEventPriority); });
+    setFileSystemObserver(std::make_unique<FileSystemObserverQt>());
 
-    fileWatcher_ = new QFileSystemWatcher(this);
-    connect(fileWatcher_, &QFileSystemWatcher::fileChanged, this,
-            &InviwoApplicationQt::fileChanged);
-    connect(fileWatcher_, &QFileSystemWatcher::directoryChanged, this,
-            &InviwoApplicationQt::fileChanged);
+    setPostEnqueueFront([this]() { postEvent(this, new InviwoQtEvent(), Qt::LowEventPriority); });
 
 #ifdef WIN32
     // set default font since the QApplication font is not properly initialized
@@ -114,60 +178,15 @@ InviwoApplicationQt::InviwoApplicationQt(int& argc, char** argv, const std::stri
 InviwoApplicationQt::InviwoApplicationQt(const std::string& displayName)
     : InviwoApplicationQt(dummyArgc, dummyArgs(), displayName) {}
 
+InviwoApplicationQt::~InviwoApplicationQt() = default;
+
 void InviwoApplicationQt::setMainWindow(QMainWindow* mainWindow) {
     mainWindow_ = mainWindow;
     // Enable widgets to find the main window using the object name
     mainWindow_->setObjectName("InviwoMainWindow");
 }
 
-void InviwoApplicationQt::registerFileObserver(FileObserver* fileObserver) {
-    ivwAssert(std::find(fileObservers_.cbegin(), fileObservers_.cend(), fileObserver) ==
-                  fileObservers_.cend(),
-              "File observer already registered.");
-    fileObservers_.push_back(fileObserver);
-}
-
-void InviwoApplicationQt::unRegisterFileObserver(FileObserver* fileObserver) {
-    util::erase_remove(fileObservers_, fileObserver);
-}
-
-void InviwoApplicationQt::startFileObservation(std::string fileName) {
-    QString qFileName = QString::fromStdString(fileName);
-    // Will add the path if file exists and is not already being watched.
-    fileWatcher_->addPath(qFileName);
-}
-
-void InviwoApplicationQt::stopFileObservation(std::string fileName) {
-    auto it =
-        std::find_if(std::begin(fileObservers_), std::end(fileObservers_),
-                     [fileName](const auto observer) { return observer->isObserved(fileName); });
-    // Make sure that no observer is observing the file
-    if (it == std::end(fileObservers_)) fileWatcher_->removePath(QString::fromStdString(fileName));
-}
-
-void InviwoApplicationQt::fileChanged(QString fileName) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-
-    if (QFile::exists(fileName)) {
-        std::string fileNameStd = fileName.toLocal8Bit().constData();
-
-        // don't use iterators here, they might be invalidated.
-        size_t size = fileObservers_.size();
-        for (size_t i = 0; i < size && i < fileObservers_.size(); ++i) {
-            if (fileObservers_[i]->isObserved(fileNameStd)) {
-                fileObservers_[i]->fileChanged(fileNameStd);
-            }
-        }
-
-        if (!fileWatcher_->files().contains(fileName)) {
-            fileWatcher_->addPath(fileName);
-        }
-    }
-}
-
 void InviwoApplicationQt::closeInviwoApplication() { QCoreApplication::quit(); }
-
-void InviwoApplicationQt::playSound(Message /*message*/) {}
 
 std::locale InviwoApplicationQt::getUILocale() const { return uiLocal_; }
 

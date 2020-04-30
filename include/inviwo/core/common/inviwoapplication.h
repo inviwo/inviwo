@@ -44,6 +44,7 @@
 #include <inviwo/core/datastructures/representationconvertermetafactory.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/properties/propertyvisibility.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -99,6 +100,7 @@ class FileLogger;
 class ConsoleLogger;
 
 class TimerThread;
+class FileSystemObserver;
 
 /**
  * \class InviwoApplication
@@ -397,14 +399,14 @@ public:
 
     ///@}
 
+
+    void setFileSystemObserver(std::unique_ptr<FileSystemObserver> observer);
+    FileSystemObserver* getFileSystemObserver() const;
+
+
     // Methods to be implemented by deriving classes
     virtual void closeInviwoApplication();
-    virtual void registerFileObserver(FileObserver* fileObserver);
-    virtual void unRegisterFileObserver(FileObserver* fileObserver);
-    virtual void startFileObservation(std::string fileName);
-    virtual void stopFileObservation(std::string fileName);
-    enum class Message { Ok, Error };
-    virtual void playSound(Message soundID);
+
 
     TimerThread& getTimerThread();
     const std::string& getDisplayName() const;
@@ -437,6 +439,7 @@ protected:
     std::shared_ptr<ConsoleLogger> consoleLogger_;
     std::shared_ptr<FileLogger> filelogger_;
     std::function<void(std::string)> progressCallback_;
+    std::unique_ptr<FileSystemObserver> fileSystemObserver_{nullptr}; 
 
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
@@ -510,30 +513,7 @@ auto dispatchPool(F&& f, Args&&... args) -> std::future<std::invoke_result_t<F, 
                                                      std::forward<Args>(args)...);
 }
 
-namespace util {
 
-/**
- * Utility function to get the InviwoApplication from a ProcessorNetwork
- */
-IVW_CORE_API InviwoApplication* getInviwoApplication(ProcessorNetwork*);
-/**
- * Utility function to get the InviwoApplication from a Processor
- */
-IVW_CORE_API InviwoApplication* getInviwoApplication(Processor*);
-/**
- * Utility function to get the InviwoApplication from a PropertyOwner
- */
-IVW_CORE_API InviwoApplication* getInviwoApplication(PropertyOwner*);
-/**
- * Utility function to get the InviwoApplication from a Property
- */
-IVW_CORE_API InviwoApplication* getInviwoApplication(Property*);
-/**
- * Utility function to get the InviwoApplication
- */
-IVW_CORE_API InviwoApplication* getInviwoApplication();
-
-}  // namespace util
 
 template <class T>
 T* InviwoApplication::getSettingsByType() {

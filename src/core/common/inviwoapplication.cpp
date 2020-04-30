@@ -58,6 +58,7 @@
 #include <inviwo/core/util/capabilities.h>
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/util/filesystemobserver.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/settings/settings.h>
@@ -125,7 +126,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
         }
     }()}
     , progressCallback_()
-    , pool_(0, []() {}, []() { RenderContext::getPtr()->clearContext(); })
+    , pool_(
+          0, []() {}, []() { RenderContext::getPtr()->clearContext(); })
     , queue_()
     , clearAllSingeltons_{[]() {
         PickingManager::deleteInstance();
@@ -419,41 +421,13 @@ TimerThread& InviwoApplication::getTimerThread() {
     return *timerThread_;
 }
 
-void InviwoApplication::closeInviwoApplication() {
-    LogWarn("this application have not implemented the closeInviwoApplication function");
-}
-void InviwoApplication::registerFileObserver(FileObserver*) {
-    LogWarn("this application have not implemented the registerFileObserver function");
-}
-void InviwoApplication::unRegisterFileObserver(FileObserver*) {}
-void InviwoApplication::startFileObservation(std::string) {
-    LogWarn("this application have not implemented the startFileObservation function");
-}
-void InviwoApplication::stopFileObservation(std::string) {}
-void InviwoApplication::playSound(Message) {
-    LogWarn("this application have not implemented the playSound function");
-}
+void InviwoApplication::closeInviwoApplication() {}
 
-namespace util {
-
-InviwoApplication* getInviwoApplication() { return InviwoApplication::getPtr(); }
-
-InviwoApplication* getInviwoApplication(ProcessorNetwork* network) {
-    return network ? network->getApplication() : nullptr;
+void InviwoApplication::setFileSystemObserver(std::unique_ptr<FileSystemObserver> observer) {
+    fileSystemObserver_ = std::move(observer);
 }
-
-InviwoApplication* getInviwoApplication(Processor* processor) {
-    return processor ? getInviwoApplication(processor->getNetwork()) : nullptr;
+FileSystemObserver* InviwoApplication::getFileSystemObserver() const {
+    return fileSystemObserver_.get();
 }
-
-InviwoApplication* getInviwoApplication(Property* property) {
-    return property ? getInviwoApplication(property->getOwner()) : nullptr;
-}
-
-InviwoApplication* getInviwoApplication(PropertyOwner* owner) {
-    return owner ? owner->getInviwoApplication() : nullptr;
-}
-
-}  // namespace util
 
 }  // namespace inviwo

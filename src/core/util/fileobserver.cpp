@@ -31,16 +31,24 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/filesystemobserver.h>
 
 namespace inviwo {
-FileObserver::FileObserver(InviwoApplication* app) : app_{app} { app_->registerFileObserver(this); }
-FileObserver::FileObserver(const std::string& filePath) : app_{InviwoApplication::getPtr()} {
-    app_->registerFileObserver(this);
-    startFileObservation(filePath);
+FileObserver::FileObserver(InviwoApplication* app) : FileObserver{app->getFileSystemObserver()} {}
+
+FileObserver::FileObserver(FileSystemObserver* fso) : fileSystemObserver_{fso} {
+    if (fileSystemObserver_) {
+        fileSystemObserver_->registerFileObserver(this);
+    }
 }
 
-FileObserver::FileObserver(FileObserver&& other) : observedFiles_(std::move(other.observedFiles_)) {
-    app_->registerFileObserver(this);
+FileObserver::FileObserver(FileObserver&& other)
+    : fileSystemObserver_{other.fileSystemObserver_}
+    , observedFiles_(std::move(other.observedFiles_)) {
+
+    if (fileSystemObserver_) {
+        fileSystemObserver_->registerFileObserver(this);
+    }
 }
 FileObserver& FileObserver::operator=(FileObserver&& that) {
     if (this != &that) {
@@ -50,18 +58,22 @@ FileObserver& FileObserver::operator=(FileObserver&& that) {
 }
 
 FileObserver::~FileObserver() {
-    app_->unRegisterFileObserver(this);
-    for (auto file : observedFiles_) {
-        app_->stopFileObservation(file);
+    if (fileSystemObserver_) {
+        fileSystemObserver_->unRegisterFileObserver(this);
+
+        for (auto file : observedFiles_) {
+            fileSystemObserver_->stopFileObservation(file);
+        }
     }
 }
 
 bool FileObserver::startFileObservation(const std::string& fileName) {
+    if (!fileSystemObserver_) return false;
     auto it = observedFiles_.find(fileName);
     if (it == observedFiles_.end()) {
         if (filesystem::fileExists(fileName)) {
             observedFiles_.insert(fileName);
-            app_->startFileObservation(fileName);
+            fileSystemObserver_->startFileObservation(fileName);
             return true;
         }
     }
@@ -69,18 +81,22 @@ bool FileObserver::startFileObservation(const std::string& fileName) {
 }
 
 bool FileObserver::stopFileObservation(const std::string& fileName) {
+    if (!fileSystemObserver_) return false;
+
     auto it = observedFiles_.find(fileName);
     if (it != observedFiles_.end()) {
         observedFiles_.erase(it);
-        app_->stopFileObservation(fileName);
+        fileSystemObserver_->stopFileObservation(fileName);
         return true;
     }
     return false;
 }
 
 void FileObserver::stopAllObservation() {
+    if (!fileSystemObserver_) return;
+
     for (auto file : observedFiles_) {
-        app_->stopFileObservation(file);
+        fileSystemObserver_->stopFileObservation(file);
     }
     observedFiles_.clear();
 }

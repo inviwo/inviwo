@@ -636,7 +636,7 @@ void ColorMaski::get() {
 
 void ColorMaski::set() { glColorMaski(buf_, red(), green(), blue(), alpha()); }
 
-IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width) {
+GLfloat validateLineWidth(GLfloat width) {
     float s_sizes[2];
     glGetFloatv(GL_SMOOTH_LINE_WIDTH_RANGE, s_sizes);
     width = std::max(width, s_sizes[0]);

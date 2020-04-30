@@ -73,7 +73,8 @@ private:
 
 class QCHFileObserver : public FileObserver {
 public:
-    QCHFileObserver(QHelpEngineCore* engine) : engine_(engine) {}
+    QCHFileObserver(QHelpEngineCore* engine)
+        : FileObserver(util::getInviwoApplication()), engine_(engine) {}
     virtual ~QCHFileObserver() = default;
 
     void addFile(const std::string& fileName) {

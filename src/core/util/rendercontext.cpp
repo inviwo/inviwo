@@ -35,7 +35,12 @@ namespace inviwo {
 RenderContext* RenderContext::instance_ = nullptr;
 
 void RenderContext::setDefaultRenderContext(Canvas* canvas) {
-    defaultContext_ = canvas;
+    defaultContext_ = std::make_unique<DefaultContextHolder>(canvas);
+    mainThread_ = std::this_thread::get_id();
+}
+
+void RenderContext::setDefaultRenderContext(std::unique_ptr<ContextHolder> context) {
+    defaultContext_ = std::move(context);
     mainThread_ = std::this_thread::get_id();
 }
 
@@ -147,6 +152,10 @@ Canvas::ContextID RenderContext::activeContext() const {
     return defaultContext_ ? defaultContext_->activeContext() : nullptr;
 }
 
-Canvas* RenderContext::getDefaultRenderContext() { return defaultContext_; }
+Canvas* RenderContext::getDefaultRenderContext() {
+    return defaultContext_ ? defaultContext_->getCanvas() : nullptr;
+}
+
+bool RenderContext::hasDefaultRenderContext() const { return defaultContext_ != nullptr; }
 
 }  // namespace inviwo

@@ -37,6 +37,7 @@
 
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/glfw/canvasglfw.h>
+#include <modules/glfw/filewatcher.h>
 
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
 #include <inviwo/core/common/inviwo.h>
@@ -48,7 +49,6 @@
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
-
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -71,6 +71,8 @@ int main(int argc, char** argv) {
 
     CanvasGLFW::setAlwaysOnTopByDefault(false);
 
+    inviwoApp.setFileSystemObserver(std::make_unique<inviwo::FileWatcher>(&inviwoApp));
+
     // Initialize all modules
     inviwoApp.registerModules(inviwo::getModuleList());
 
@@ -80,14 +82,14 @@ int main(int argc, char** argv) {
         "Specify default name of each snapshot, or empty string for processor name.", false, "",
         "Snapshot default name: UPN=Use Processor name.");
 
-    cmdparser.add(&snapshotArg,
-                  [&]() {
-                      std::string path = cmdparser.getOutputPath();
-                      if (path.empty()) path = inviwoApp.getPath(PathType::Images);
-                      util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path,
-                                            snapshotArg.getValue());
-                  },
-                  1000);
+    cmdparser.add(
+        &snapshotArg,
+        [&]() {
+            std::string path = cmdparser.getOutputPath();
+            if (path.empty()) path = inviwoApp.getPath(PathType::Images);
+            util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, snapshotArg.getValue());
+        },
+        1000);
 
     // Do this after registerModules if some arguments were added
     cmdparser.parse(inviwo::CommandLineParser::Mode::Normal);
