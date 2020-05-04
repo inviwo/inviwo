@@ -294,6 +294,11 @@ void FileWatcher::stopFileObservation(const std::string& fileName) {
 
 #else
 
+class WatcherThread {
+public:
+     WatcherThread() = default; 
+};
+
 FileWatcher::FileWatcher(InviwoApplication* app) : app_{app} {
 
     LogWarn("FileObserver are currently not supported using GLFW on this platform");
