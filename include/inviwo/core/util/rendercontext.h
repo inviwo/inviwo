@@ -86,7 +86,6 @@ private:
         std::thread::id threadId;
     };
 
-
     std::unordered_map<Canvas::ContextID, ContextInfo> contextRegistry_;
 
     std::unique_ptr<ContextHolder> defaultContext_ = nullptr;

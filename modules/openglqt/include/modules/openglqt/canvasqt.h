@@ -587,4 +587,3 @@ bool CanvasQtBase<T>::showToolTip(QHelpEvent* e) {
 }
 
 }  // namespace inviwo
-

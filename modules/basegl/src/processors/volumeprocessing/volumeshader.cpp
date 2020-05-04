@@ -51,7 +51,6 @@ void main() {
 }
 
 )";
-
 }
 
 const ProcessorInfo VolumeShader::processorInfo_{

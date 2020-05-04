@@ -56,7 +56,7 @@ public:
      * @note Registers as a file observer in FileSystemObserver.
      */
     FileObserver(FileSystemObserver* app);
-      
+
     FileObserver(const FileObserver&) = delete;
     FileObserver& operator=(const FileObserver&) = delete;
     FileObserver(FileObserver&& rhs);

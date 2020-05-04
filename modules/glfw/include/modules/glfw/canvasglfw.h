@@ -64,7 +64,6 @@ public:
     static void reshape(GLFWwindow*, int, int);
     static void move(GLFWwindow*, int, int);
 
-
     static void setAlwaysOnTopByDefault(bool);
 
     virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
@@ -73,7 +72,7 @@ public:
 
     /**
      * Can be used to hand in an initial shared context if GLFW is already setup.
-     * Should be called before the GLFW module is registered. 
+     * Should be called before the GLFW module is registered.
      */
     static void provideExternalContext(GLFWwindow* sharedContext);
     static GLFWwindow* sharedContext();

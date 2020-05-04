@@ -157,9 +157,9 @@ void CanvasGLFW::setWindowTitle(std::string windowTitle) {
     RenderContext::getPtr()->setContextName(contextId(), windowTitle_);
 }
 
-void CanvasGLFW::closeWindow(GLFWwindow* window) { 
+void CanvasGLFW::closeWindow(GLFWwindow* window) {
     glfwSetWindowShouldClose(window, GL_FALSE);
-    getCanvasGLFW(window)->hide(); 
+    getCanvasGLFW(window)->hide();
 }
 
 int CanvasGLFW::getVisibleWindowCount() { return glfwWindowCount_; }

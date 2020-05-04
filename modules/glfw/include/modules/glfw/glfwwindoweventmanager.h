@@ -54,7 +54,6 @@ IVW_MODULE_GLFW_API IvwKey mapGLFWMKey(int keyGLFW);
 
 }  // namespace util
 
-
 /**
  * A helper class to handle GLFW mouse/events
  */

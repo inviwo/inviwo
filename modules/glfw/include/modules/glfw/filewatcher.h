@@ -43,7 +43,6 @@ class WatcherThread;
 class FileObserver;
 class InviwoApplication;
 
-
 /**
  * An implementation for FileSystemObserver using the windows api.
  * Currently does nothing on Mac / Linux
@@ -53,13 +52,13 @@ public:
     FileWatcher(InviwoApplication* app = nullptr);
     virtual ~FileWatcher();
 
-
     virtual void registerFileObserver(FileObserver* fileObserver) override;
     virtual void unRegisterFileObserver(FileObserver* fileObserver) override;
+
 private:
     virtual void startFileObservation(const std::string& fileName) override;
     virtual void stopFileObservation(const std::string& fileName) override;
- 
+
     InviwoApplication* app_;
     std::unique_ptr<WatcherThread> watcher_ = nullptr;
     std::vector<FileObserver*> fileObservers_;

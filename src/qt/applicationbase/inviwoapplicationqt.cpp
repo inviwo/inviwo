@@ -67,7 +67,6 @@ char** dummyArgs() {
 
 class FileSystemObserverQt : public QObject, public FileSystemObserver {
 public:
-
     FileSystemObserverQt() : fileWatcher_{new QFileSystemWatcher(this)} {
 
         connect(fileWatcher_, &QFileSystemWatcher::fileChanged, this,
@@ -78,6 +77,7 @@ public:
 
     virtual void registerFileObserver(FileObserver* fileObserver) override;
     virtual void unRegisterFileObserver(FileObserver* fileObserver) override;
+
 private:
     virtual void startFileObservation(const std::string& fileName) override;
     virtual void stopFileObservation(const std::string& fileName) override;

@@ -296,7 +296,7 @@ void FileWatcher::stopFileObservation(const std::string& fileName) {
 
 class WatcherThread {
 public:
-     WatcherThread() = default; 
+    WatcherThread() = default;
 };
 
 FileWatcher::FileWatcher(InviwoApplication* app) : app_{app} {
