@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SHADERWIDGET_H
-#define IVW_SHADERWIDGET_H
+#pragma once
 
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -79,5 +78,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SHADERWIDGET_H

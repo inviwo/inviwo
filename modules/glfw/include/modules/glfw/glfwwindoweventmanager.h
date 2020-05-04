@@ -54,6 +54,10 @@ IVW_MODULE_GLFW_API IvwKey mapGLFWMKey(int keyGLFW);
 
 }  // namespace util
 
+
+/**
+ * A helper class to handle GLFW mouse/events
+ */
 class IVW_MODULE_GLFW_API GLFWWindowEventManager {
 public:
     GLFWWindowEventManager(GLFWwindow* glWindow, std::function<void(Event*)> ep,

@@ -44,6 +44,10 @@ class FileObserver;
 class InviwoApplication;
 
 
+/**
+ * An implementation for FileSystemObserver using the windows api.
+ * Currently does nothing on Mac / Linux
+ */
 class IVW_MODULE_GLFW_API FileWatcher : public FileSystemObserver {
 public:
     FileWatcher(InviwoApplication* app = nullptr);

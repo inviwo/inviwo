@@ -399,14 +399,20 @@ public:
 
     ///@}
 
-
+    /**
+     * Sets the a FileSystemObserver for the application
+     * The FileObservers will register them self in the FileSystemObserver from the
+     * InviwoApplication By default. Usually one would set the FileSystemObserver in the main
+     * function just after creating the app.
+     * By default the FileSystemObserver is nullptr, and no file observation is provided.
+     * @see FileSystemObserver
+     * @see FileObservers
+     */
     void setFileSystemObserver(std::unique_ptr<FileSystemObserver> observer);
     FileSystemObserver* getFileSystemObserver() const;
 
-
     // Methods to be implemented by deriving classes
     virtual void closeInviwoApplication();
-
 
     TimerThread& getTimerThread();
     const std::string& getDisplayName() const;
@@ -439,7 +445,7 @@ protected:
     std::shared_ptr<ConsoleLogger> consoleLogger_;
     std::shared_ptr<FileLogger> filelogger_;
     std::function<void(std::string)> progressCallback_;
-    std::unique_ptr<FileSystemObserver> fileSystemObserver_{nullptr}; 
+    std::unique_ptr<FileSystemObserver> fileSystemObserver_{nullptr};
 
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
@@ -512,8 +518,6 @@ auto dispatchPool(F&& f, Args&&... args) -> std::future<std::invoke_result_t<F, 
     return InviwoApplication::getPtr()->dispatchPool(std::forward<F>(f),
                                                      std::forward<Args>(args)...);
 }
-
-
 
 template <class T>
 T* InviwoApplication::getSettingsByType() {

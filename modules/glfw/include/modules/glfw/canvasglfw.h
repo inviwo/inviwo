@@ -71,6 +71,10 @@ public:
     virtual ContextID activeContext() const override;
     virtual ContextID contextId() const override;
 
+    /**
+     * Can be used to hand in an initial shared context if GLFW is already setup.
+     * Should be called before the GLFW module is registered. 
+     */
     static void provideExternalContext(GLFWwindow* sharedContext);
     static GLFWwindow* sharedContext();
 

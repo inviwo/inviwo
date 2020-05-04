@@ -39,6 +39,9 @@ namespace inviwo {
 
 enum class GLFWUserDataId { Window, Interaction, Other };
 
+/**
+ * A helper to be able to pass more data around with the glfw user pointer 
+ */
 class IVW_MODULE_GLFW_API GLFWUserData {
 public:
     GLFWUserData(GLFWwindow* win);

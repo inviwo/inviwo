@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CANVASPROCESSORWIDGETQT_H
-#define IVW_CANVASPROCESSORWIDGETQT_H
+#pragma once
 
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
@@ -90,4 +89,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_CANVASPROCESSORWIDGETQT_H

@@ -27,13 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENGLQT_MODULE_H
-#define IVW_OPENGLQT_MODULE_H
+#pragma once
 
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/network/processornetworkevaluationobserver.h>
 #include <inviwo/core/util/canvas.h>
+#include <inviwo/core/util/rendercontext.h>
 
 namespace inviwo {
 
@@ -47,9 +47,9 @@ public:
     virtual void onProcessorNetworkEvaluationEnd() override;
 
 private:
+    ContextHolder* holder_ = nullptr;
     std::unique_ptr<Canvas> sharedCanvas_;
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_OPENGLQT_MODULE_H

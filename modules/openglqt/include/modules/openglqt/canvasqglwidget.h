@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CANVASQGLWIDGET_H
-#define IVW_CANVASQGLWIDGET_H
+#pragma once
 
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -84,4 +83,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_CANVASQGLWIDGET_H

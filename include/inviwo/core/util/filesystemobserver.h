@@ -36,17 +36,42 @@ namespace inviwo {
 
 class FileObserver;
 
+/**
+ * Abstraction around file system events, to allow different implementations to be provided.
+ * A FileSystemObserver can be registered with the inviwo application to be used by the
+ * FileObservers. A FileObserver can also use a FileSystemObserver directly.
+ * @see FileObserver
+ * @see InviwoApplication::setFileSystemObserver
+ */
 class IVW_CORE_API FileSystemObserver {
 public:
     FileSystemObserver() = default;
     virtual ~FileSystemObserver() = default;
 
+    /**
+     * Register a FileObserver to get callback when files changes.
+     */
     virtual void registerFileObserver(FileObserver* fileObserver) = 0;
+    /**
+     * Unregister a FileObserver.
+     */
     virtual void unRegisterFileObserver(FileObserver* fileObserver) = 0;
 
 private:
     friend FileObserver;
+
+    /**
+     * Start observing a file or directory for changes.
+     * The FileSystemObserver will call FileObserver::fileChanged on the registered observers
+     * when changes are detected.
+     * This function is only called by the FileObserver
+     */
     virtual void startFileObservation(const std::string& fileName) = 0;
+
+    /**
+     * Stop observing changes to a file or directory.
+     * This function is only called by the FileObserver
+     */
     virtual void stopFileObservation(const std::string& fileName) = 0;
 };
 

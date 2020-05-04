@@ -88,16 +88,15 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
     , saveLayerDirectory_("layerDir", "Output Directory", "", "image")
     , saveLayerButton_(
           "saveLayer", "Save Image Layer", [this]() { saveImageLayer(); }, InvalidationLevel::Valid)
-    , saveLayerToFileButton_(
-          "saveLayerToFile", "Save Image Layer to File...",
-          [this]() {
-              if (auto layer = getVisibleLayer()) {
-                  util::saveLayer(*layer);
-              } else {
-                  LogError("Could not find visible layer");
-              }
-          },
-          InvalidationLevel::Valid)
+    , saveLayerToFileButton_("saveLayerToFile", "Save Image Layer to File...",
+                             [this]() {
+                                if (auto layer = getVisibleLayer()) {
+                                    util::saveLayer(*layer);
+                                } else {
+                                    LogError("Could not find visible layer");
+                                }
+                            },
+                            InvalidationLevel::Valid)
     , fullScreen_("fullscreen", "Toggle Full Screen", false)
     , fullScreenEvent_(
           "fullscreenEvent", "FullScreen", [this](Event*) { fullScreen_.set(!fullScreen_); },

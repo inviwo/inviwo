@@ -36,12 +36,14 @@
 
 namespace inviwo {
 
+/**
+ * An abstraction for what we need from a "context".
+ */
 class IVW_CORE_API ContextHolder {
 public:
     virtual ~ContextHolder() = default;
     virtual void activate() = 0;
     virtual std::unique_ptr<Canvas> createHiddenCanvas() = 0;
-    virtual Canvas* getCanvas() = 0;
     virtual Canvas::ContextID activeContext() const = 0;
 };
 
@@ -54,10 +56,10 @@ public:
     RenderContext() = default;
     virtual ~RenderContext() = default;
 
-    Canvas* getDefaultRenderContext();
+    ContextHolder* getDefaultRenderContext();
     bool hasDefaultRenderContext() const;
-    void setDefaultRenderContext(Canvas* canvas);
-    void setDefaultRenderContext(std::unique_ptr<ContextHolder> context);
+    ContextHolder* setDefaultRenderContext(Canvas* canvas);
+    ContextHolder* setDefaultRenderContext(std::unique_ptr<ContextHolder> context);
     void activateDefaultRenderContext() const;
 
     void activateLocalRenderContext() const;
@@ -84,21 +86,6 @@ private:
         std::thread::id threadId;
     };
 
-    class DefaultContextHolder : public ContextHolder {
-    public:
-        DefaultContextHolder(Canvas* canvas) : canvas_{canvas} {}
-        virtual void activate() override { return canvas_->activate(); }
-        virtual std::unique_ptr<Canvas> createHiddenCanvas() override {
-            return canvas_->createHiddenCanvas();
-        }
-        virtual Canvas* getCanvas() override { return canvas_; }
-
-        virtual Canvas::ContextID activeContext() const override {
-            return canvas_->activeContext();
-        }
-
-        Canvas* canvas_;
-    };
 
     std::unordered_map<Canvas::ContextID, ContextInfo> contextRegistry_;
 
