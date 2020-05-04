@@ -64,7 +64,7 @@ private:
     virtual void stopFileObservation(const std::string& fileName) override;
 
     InviwoApplication* app_;
-    std::unique_ptr<WatcherThread> watcher_ = nullptr;
+    std::unique_ptr<WatcherThread> watcher_;
     std::vector<FileObserver*> fileObservers_;
     std::unordered_map<std::string, std::unordered_set<std::string>> observed_;
 };
