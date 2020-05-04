@@ -300,7 +300,7 @@ public:
 };
 
 FileWatcher::FileWatcher(InviwoApplication* app) : app_{app} {
-
+    (void) app_;
     LogWarn("FileObserver are currently not supported using GLFW on this platform");
 }
 
