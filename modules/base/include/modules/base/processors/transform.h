@@ -41,6 +41,8 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
+#include <memory>
+
 namespace inviwo {
 
 template <typename T>
@@ -56,6 +58,8 @@ public:
 protected:
     DataInport<T> inport_;
     DataOutport<T> outport_;
+
+    std::shared_ptr<T> data_;
 
     TemplateOptionProperty<CoordinateSpace> space_;
     BoolProperty replace_;
@@ -210,6 +214,7 @@ Transform<T>::Transform()
     : Processor()
     , inport_("inport_")
     , outport_("outport_")
+    , data_(nullptr)
     , space_(
           "space", "Space",
           {{"model", "Model", CoordinateSpace::Model}, {"world", "World", CoordinateSpace::World}},
@@ -253,27 +258,30 @@ Transform<T>::Transform()
 
 template <typename T>
 void Transform<T>::process() {
-    std::shared_ptr<T> data(inport_.getData()->clone());
+    const auto& data_in = inport_.getData();
+    if (inport_.isChanged()) {
+        data_ = std::shared_ptr<T>(data_in->clone());
+    }
 
     switch (*space_) {
         case CoordinateSpace::Model:
             if (replace_) {
-                data->setModelMatrix(*result_);
+                data_->setModelMatrix(*result_);
             } else {
-                data->setModelMatrix(*result_ * data->getModelMatrix());
+                data_->setModelMatrix(*result_ * data_in->getModelMatrix());
             }
             break;
         case CoordinateSpace::World:
         default:
             if (replace_) {
-                data->setWorldMatrix(*result_);
+                data_->setWorldMatrix(*result_);
             } else {
-                data->setWorldMatrix(*result_ * data->getWorldMatrix());
+                data_->setWorldMatrix(*result_ * data_in->getWorldMatrix());
             }
             break;
     }
 
-    outport_.setData(data);
+    outport_.setData(data_);
 }
 
 }  // namespace inviwo
