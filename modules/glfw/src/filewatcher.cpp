@@ -158,6 +158,7 @@ private:
         }
     }
 
+    // Update the time stamps on all files and return the changes ones. 
     std::vector<std::pair<std::string, Action>> getChangedAndUpdateFiles(
         const std::string& path, std::unordered_map<std::string, time_t>& files) {
 
@@ -192,7 +193,7 @@ private:
     }
 
     static constexpr DWORD filter =
-        FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE;
+        FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE;
 
     std::array<HANDLE, MAXIMUM_WAIT_OBJECTS> handles_{};
     std::array<std::pair<std::string, std::unordered_map<std::string, time_t>>,

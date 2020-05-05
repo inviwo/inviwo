@@ -49,7 +49,7 @@ public:
     virtual ~FileSystemObserver() = default;
 
     /**
-     * Register a FileObserver to get callback when files changes.
+     * Register a FileObserver to get callback when files change.
      */
     virtual void registerFileObserver(FileObserver* fileObserver) = 0;
     /**

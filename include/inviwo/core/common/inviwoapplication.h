@@ -401,8 +401,8 @@ public:
 
     /**
      * Sets the a FileSystemObserver for the application
-     * The FileObservers will register them self in the FileSystemObserver from the
-     * InviwoApplication By default. Usually one would set the FileSystemObserver in the main
+     * The FileObservers will register themselves in the FileSystemObserver of the
+     * InviwoApplication by default. Usually one would set the FileSystemObserver in the main
      * function just after creating the app.
      * By default the FileSystemObserver is nullptr, and no file observation is provided.
      * @see FileSystemObserver

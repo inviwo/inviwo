@@ -27,7 +27,7 @@
  #
  #################################################################################
 
-cmake_minimum_required(VERSION 3.12..3.17)
+cmake_minimum_required(VERSION 3.12...3.17)
 cmake_policy(VERSION 3.12.0)
 
 if(POLICY CMP0077)
