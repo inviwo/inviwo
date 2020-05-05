@@ -122,16 +122,19 @@ void main() {
     // correct depth for a round profile, i.e. tube like appearance
     float depth = convertDepthScreenToView(camera, gl_FragCoord.z);
     float maxDist = (linewidthHalf + antialiasing);
+    depth = depth - cos(distance / maxDist) * maxDist / screenDim.x * 0.5;
+    depth = convertDepthViewToScreen(
+        camera, depth);
+#else
+        float depth = gl_FragCoord.z;
 #endif  // ENABLE_ROUND_DEPTH_PROFILE
 
-#if USE_FRAGMENT_LIST
+#if defined(USE_FRAGMENT_LIST)
     // fragment list rendering
     if (color.a > 0.0) {
         ivec2 coords = ivec2(gl_FragCoord.xy);
-#if !defined(ENABLE_ROUND_DEPTH_PROFILE)
-        float depth = gl_FragCoord.z;
-#endif
-        abufferRender(coords, depth, color);
+
+        abufferRender(coords, depth, color * alpha);
     }
     discard;
 
@@ -139,11 +142,9 @@ void main() {
 
 #if defined(ENABLE_ROUND_DEPTH_PROFILE)
     // assume circular profile of line
-    gl_FragDepth = convertDepthViewToScreen(
-        camera, depth - cos(distance / maxDist) * maxDist / screenDim.x * 0.5);
-#else
+    gl_FragDepth = depth;
+#endif  // ENABLE_ROUND_DEPTH_PROFILE
     FragData0 = color * alpha;
     PickingData = pickColor_;
-#endif  // ENABLE_ROUND_DEPTH_PROFILE
-#endif
+#endif // not USE_FRAGMENT_LIST
 }

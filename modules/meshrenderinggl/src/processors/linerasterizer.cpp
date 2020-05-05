@@ -58,7 +58,7 @@ LineRasterizer::LineRasterizer()
     , lineShaders_(new MeshShaderCache(
           {{ShaderType::Vertex, std::string{"linerenderer.vert"}},
            {ShaderType::Geometry, std::string{"linerenderer.geom"}},
-           {ShaderType::Fragment, std::string{"linerenderer.frag"}}},
+           {ShaderType::Fragment, std::string{"oit-linerenderer.frag"}}},
           {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
            {BufferType::ColorAttrib, MeshShaderCache::Mandatory, "vec4"},
            {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
@@ -68,46 +68,57 @@ LineRasterizer::LineRasterizer()
                            ? 1
                            : 0;
             },
-            [](int mode, Shader& shader) {
+            [this](int mode, Shader& shader) {
                 shader[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY", toString(mode));
+                invalidate(InvalidationLevel::InvalidResources);
             }}},
-          [&](Shader& shader) -> void { configureShader(shader); })) {
+          [this](Shader& shader) -> void { invalidate(InvalidationLevel::InvalidResources); })) {
 
     addPort(inport_);
     addPort(outport_);
 
     addProperties(lineSettings_, writeDepth_, forceOpaque_, camera_, trackball_);
-    auto rebuildShaders = [this]() { configureShaders(); };
+    invalidate(InvalidationLevel::InvalidResources);
+}
 
-    forceOpaque_.onChange(rebuildShaders);
-    lineSettings_.pseudoLighting_.onChange(rebuildShaders);
-    lineSettings_.roundDepthProfile_.onChange(rebuildShaders);
-    lineSettings_.stippling_.onChange(rebuildShaders);
+void LineRasterizer::initializeResources() {
+    for (auto& shaderPair : lineShaders_->getShaders()) {
+        Shader& shader = shaderPair.second;
+        configureShader(shader);
+    }
+    invalidate(InvalidationLevel::Valid);
 }
 
 void LineRasterizer::process() {
     if (!inport_.hasData()) return;
+    // configureAllShaders();
+    for (auto& shaderPair : lineShaders_->getShaders()) {
+        Shader& shader = shaderPair.second;
+        if (!shader.isReady()) configureShader(shader);
 
-    for (auto shaderPair : lineShaders_->getShaders()) {
-        auto shader = shaderPair.second;
-        utilgl::setUniforms(shader, camera_);
-
-        LogWarn("Setting Stuff.");
-        shader.setUniform("lineWidth", lineSettings_.getWidth());
-        shader.setUniform("antialiasing", lineSettings_.getAntialiasingWidth());
-        shader.setUniform("miterLimit", lineSettings_.getMiterLimit());
-        shader.setUniform("roundCaps", lineSettings_.getRoundCaps());
-        // Stippling settings
-        shader.setUniform("stippling.length", lineSettings_.getStippling().getLength());
-        shader.setUniform("stippling.spacing", lineSettings_.getStippling().getSpacing());
-        shader.setUniform("stippling.offset", lineSettings_.getStippling().getOffset());
-        shader.setUniform("stippling.worldScale", lineSettings_.getStippling().getWorldScale());
+        shader.activate();
+        setUniforms(shader);
+        shader.deactivate();
     }
 
-    outport_.setData(new LineRasterization(*this));
+    if (!outport_.hasData()) outport_.setData(new LineRasterization(*this));
 }
 
-void LineRasterizer::configureShaders() {
+void LineRasterizer::setUniforms(Shader& shader) const {
+    utilgl::setUniforms(shader, camera_);
+
+    shader.setUniform("lineWidth", lineSettings_.getWidth());
+    shader.setUniform("antialiasing", lineSettings_.getAntialiasingWidth());
+    shader.setUniform("miterLimit", lineSettings_.getMiterLimit());
+    shader.setUniform("roundCaps", lineSettings_.getRoundCaps());
+    // Stippling settings
+    shader.setUniform("stippling.length", lineSettings_.getStippling().getLength());
+    shader.setUniform("stippling.spacing", lineSettings_.getStippling().getSpacing());
+    shader.setUniform("stippling.offset", lineSettings_.getStippling().getOffset());
+    shader.setUniform("stippling.worldScale", lineSettings_.getStippling().getWorldScale());
+}
+
+void LineRasterizer::configureAllShaders() {
     for (auto shaderPair : lineShaders_->getShaders()) {
         configureShader(shaderPair.second);
     }
@@ -121,11 +132,9 @@ void LineRasterizer::configureShader(Shader& shader) {
     fso->addShaderExtension("GL_NV_shader_buffer_load", true);
     fso->addShaderExtension("GL_EXT_bindable_uniform", true);
 
-    shader[ShaderType::Fragment]->setShaderDefine("ENABLE_PSEUDO_LIGHTING",
-                                                  lineSettings_.getPseudoLighting());
-    shader[ShaderType::Fragment]->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE",
-                                                  lineSettings_.getRoundDepthProfile());
-    shader[ShaderType::Fragment]->setShaderDefine("USE_FRAGMENT_LIST", !forceOpaque_.get());
+    fso->setShaderDefine("ENABLE_PSEUDO_LIGHTING", lineSettings_.getPseudoLighting());
+    fso->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", lineSettings_.getRoundDepthProfile());
+    fso->setShaderDefine("USE_FRAGMENT_LIST", !forceOpaque_.get());
 
     utilgl::addShaderDefines(shader, lineSettings_.getStippling().getMode());
     shader.build();
@@ -155,6 +164,11 @@ void LineRasterization::rasterize(const ivec2& imageSize,
             for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
                 if (mesh->getIndexMeshInfo(i).dt != DrawType::Lines) continue;
                 auto& shader = lineShaders_->getShader(*mesh, mesh->getIndexMeshInfo(i));
+                if (!shader.isReady()) {
+                    LogWarn("Shader not ready.");
+                    break;
+                }
+
                 shader.activate();
                 utilgl::setShaderUniforms(shader, *mesh, "geometry");
                 shader.setUniform("screenDim", vec2(imageSize));
@@ -165,6 +179,10 @@ void LineRasterization::rasterize(const ivec2& imageSize,
         } else {
             auto& shader = lineShaders_->getShader(*mesh);
             if (mesh->getDefaultMeshInfo().dt != DrawType::Lines) return;
+            if (!shader.isReady()) {
+                LogWarn("Shader not ready.");
+                break;
+            }
 
             shader.activate();
             utilgl::setShaderUniforms(shader, *mesh, "geometry");

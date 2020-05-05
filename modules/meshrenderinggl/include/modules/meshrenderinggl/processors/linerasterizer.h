@@ -83,6 +83,7 @@ public:
     LineRasterizer();
     virtual ~LineRasterizer() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -91,8 +92,9 @@ public:
 private:
     // void drawMeshes();
     // Call whenever PseudoLighting or RoundDepthProfile, or Stippling mode change
-    void configureShaders();
+    void configureAllShaders();
     void configureShader(Shader& shader);
+    void setUniforms(Shader& shader) const;
 
     MeshFlatMultiInport inport_;
     RasterizationOutport outport_;

@@ -53,9 +53,7 @@ set(SHADER_FILES
     glsl/oit/display.frag
     glsl/oit/simplequad.vert
     glsl/oit/sort.glsl
-    glsl/linerenderer.vert
-    glsl/linerenderer.geom
-    glsl/linerenderer.frag
+    glsl/oit-linerenderer.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
