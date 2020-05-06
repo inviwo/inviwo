@@ -30,6 +30,7 @@
 #include <inviwo/propertybasedtesting/processors/imagecomparator.h>
 
 #include <inviwo/core/datastructures/image/imageram.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
@@ -43,14 +44,33 @@ const ProcessorInfo ImageComparator::processorInfo_{
 };
 const ProcessorInfo ImageComparator::getProcessorInfo() const { return processorInfo_; }
 
-ImageComparator::ImageComparator()
+ImageComparator::ImageComparator(InviwoApplication* app)
     : Processor()
+	, app_(app)
+    , outportDeterminesSize_{"outportDeterminesSize", "Let Outport Determine Size", false}
+    , imageSize_{"imageSize",   "Image Size",        size2_t(1024, 1024),
+                 size2_t(1, 1), size2_t(4096, 4096), size2_t(1, 1)}
     , inport1_("inport1")
-    , inport2_("inport2") {
+    , inport2_("inport2")
+    , prevSize1_{0}
+    , prevSize2_{0} {
+    
+	imageSize_.visibilityDependsOn(outportDeterminesSize_,
+                                [](const auto& p) -> bool { return !p; });
 
-	inport1_.setOutportDeterminesSize(true);
+    outportDeterminesSize_.onChange([this] {
+        this->inport1_.setOutportDeterminesSize(outportDeterminesSize_);
+        this->inport2_.setOutportDeterminesSize(outportDeterminesSize_);
+        sendResizeEvent();
+    });
+
+    this->inport1_.setOutportDeterminesSize(outportDeterminesSize_);
+    this->inport2_.setOutportDeterminesSize(outportDeterminesSize_);
+
+    imageSize_.onChange([this]() { sendResizeEvent(); });
+    addProperties(outportDeterminesSize_, imageSize_);
+
     addPort(inport1_);
-	inport2_.setOutportDeterminesSize(true);
     addPort(inport2_);
 
 	isReady_.setUpdate([&]() {
@@ -61,6 +81,7 @@ ImageComparator::ImageComparator()
 
 			const auto dim1 = img1->getDimensions();
 			const auto dim2 = img2->getDimensions();
+			
 			if(dim1 != dim2) {
 				std::stringstream str;
 				str << getIdentifier() << ": Images do not have same dimensions: " << dim1 << " != " << dim2;
@@ -69,7 +90,30 @@ ImageComparator::ImageComparator()
 			}
 			return true;
 		});
-	}
+}
+
+void ImageComparator::setNetwork(ProcessorNetwork* network) {
+    if (network) network->addObserver(this);
+
+    Processor::setNetwork(network);
+}
+
+void ImageComparator::sendResizeEvent() {
+    const size2_t newSize1 = outportDeterminesSize_ ? size2_t{0} : *imageSize_;
+    const size2_t newSize2 = outportDeterminesSize_ ? size2_t{0} : *imageSize_;
+
+    if (newSize1 != prevSize1_) {
+        ResizeEvent event{newSize1, prevSize1_};
+        this->inport1_.propagateEvent(&event, nullptr);
+        prevSize1_ = newSize1;
+    }
+
+    if (newSize2 != prevSize2_) {
+        ResizeEvent event{newSize2, prevSize2_};
+        this->inport2_.propagateEvent(&event, nullptr);
+        prevSize2_ = newSize2;
+    }
+}
 
 void ImageComparator::process() {
 	auto img1 = inport1_.getData();
@@ -97,6 +141,20 @@ void ImageComparator::process() {
 	std::stringstream str;
 	str << getIdentifier() << ": Image difference: " << diff;
 	util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
+}
+
+void ImageComparator::onProcessorNetworkDidAddConnection(const PortConnection& con) {
+    const auto successors = util::getSuccessors(con.getInport()->getProcessor());
+    if (util::contains(successors, this)) {
+        sendResizeEvent();
+    }
+}
+
+void ImageComparator::onProcessorNetworkDidRemoveConnection(const PortConnection& con) {
+    const auto successors = util::getSuccessors(con.getInport()->getProcessor());
+    if (util::contains(successors, this)) {
+        sendResizeEvent();
+    }
 }
 
 }  // namespace inviwo

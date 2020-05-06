@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2016-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,54 +31,73 @@
 
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/ports/imageport.h>
+
+#include <inviwo/core/properties/optionproperty.h>
+
+#include <inviwo/propertybasedtesting/algorithm/generatingassignments.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageComparator, Image Comparator}
- * ![](org.inviwo.ImageComparator.png?classIdentifier=org.inviwo.ImageComparator)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-class IVW_MODULE_PROPERTYBASEDTESTING_API ImageComparator : public Processor,
-															public ProcessorNetworkObserver {
-public:
-    ImageComparator(InviwoApplication*);
-    virtual ~ImageComparator() = default;
+namespace util {
 
-    virtual void process() override;
-
-    virtual void setNetwork(ProcessorNetwork* network) override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-private:
-	InviwoApplication* const app_;
-
-    ImageInport inport1_;
-    ImageInport inport2_;
-
-    BoolProperty outportDeterminesSize_;
-    IntSize2Property imageSize_;
-    
-	virtual void onProcessorNetworkDidAddConnection(const PortConnection&) override;
-    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection&) override;
-    
-	void sendResizeEvent();
-    size2_t prevSize1_;
-    size2_t prevSize2_;
+// how the number of non-background pixels should change when the value is
+// increased
+enum class PropertyEffect {
+	EQUAL = 0,
+	NOT_EQUAL,
+	LESS,
+	LESS_EQUAL,
+	GREATER,
+	GREATER_EQUAL,
+	ANY,
+	NOT_COMPARABLE,
+	Count
 };
 
-}  // namespace inviwo
+std::ostream& operator<<(std::ostream& out, const PropertyEffect& a);
+
+template<typename T>
+std::ostream& operator<<(std::ostream& out, const std::optional<T>& a) {
+	if(!a) return out << "{}";
+	return out << "{" << *a << "}";
+}
+
+constexpr size_t numPropertyEffects = (size_t)(PropertyEffect::Count);
+
+std::optional<PropertyEffect> combine(const PropertyEffect& a, const PropertyEffect& b);
+
+const PropertyEffect& reverseEffect(const PropertyEffect& pe);
+
+/**
+ * returns the desired effect on the number of non-background pixels,
+ * ANY if no preference
+ */
+template<typename T>
+PropertyEffect propertyEffect(const PropertyEffect& selectedEffect,
+		const T& newVal,
+		const T& oldVal) {
+	if(newVal < oldVal)
+		return selectedEffect;
+	else if(newVal == oldVal)
+		return PropertyEffect::ANY;
+	else
+		return reverseEffect(selectedEffect);
+}
+
+template<typename T, size_t N>
+struct GetComponent {
+	static typename T::value_type get(const T& v, size_t i) {
+		return v[i];
+	}
+};
+template<typename T>
+struct GetComponent<T,1> {
+	static T get(const T& v, size_t i) {
+		assert(i == 0);
+		return v;
+	}
+};
+
+} // util
+
+} // inviwo

@@ -30,7 +30,10 @@
 #pragma once
 
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
+#include <inviwo/propertybasedtesting/algorithm/coveringarray.h>
+#include <inviwo/propertybasedtesting/algorithm/histogramtesting.h>
 #include <inviwo/propertybasedtesting/algorithm/generatingassignments.h>
+
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
@@ -46,6 +49,8 @@
 
 namespace inviwo {
 
+class TestResult;
+
 class TestProperty {
 private:
 	Property* const prop;
@@ -53,6 +58,11 @@ public:
 	TestProperty(Property* const prop)
 		: prop(prop) {
 	}
+	
+	virtual void withOptionProperties(std::function<void(OptionPropertyInt*)>) const = 0;
+	virtual std::optional<util::PropertyEffect> getPropertyEffect(
+			std::shared_ptr<TestResult>, 
+			std::shared_ptr<TestResult>) const = 0;
 
 	virtual void setToDefault() const = 0;
 	virtual void storeDefault() = 0;
@@ -65,13 +75,42 @@ public:
 
 template<typename T>
 class TestPropertyTyped : public TestProperty {
+	using value_type = typename T::value_type;
+	static constexpr size_t numComponents = DataFormat<value_type>::components();
 	T* const typedProperty;
-	typename T::value_type defaultValue;
+	value_type defaultValue;
+	const std::array<OptionPropertyInt*, numComponents> effectOption;
 public:
+	void withOptionProperties(std::function<void(OptionPropertyInt*)> f) const {
+		for(auto& x : effectOption)
+			f(x);
+	}
+	std::optional<util::PropertyEffect> getPropertyEffect(
+			std::shared_ptr<TestResult> newTestResult,
+			std::shared_ptr<TestResult> oldTestResult) const;
+
 	TestPropertyTyped(T* prop)
 		: TestProperty(prop)
 		, typedProperty(prop)
-		, defaultValue(prop->get()) {
+		, defaultValue(prop->get())
+		, effectOption([prop](){
+				std::array<OptionPropertyInt*, numComponents> res;
+				for(size_t i = 0; i < numComponents; i++) {
+					const static std::vector<OptionPropertyOption<int>> options{
+							{"EQUAL",			"EQUAL",			0},
+							{"NOT_EQUAL",		"NOT_EQUAL",		1},
+							{"LESS",			"LESS",				2},
+							{"LESS_EQUAL",		"LESS_EQUAL",		3},
+							{"GREATER",			"GREATER",			4},
+							{"GREATER_EQUAL",	"GREATER_EQUAL",	5},
+							{"ANY",				"ANY",				6},
+							{"NOT_COMPARABLE",	"NOT_COMPARABLE",	7}
+						};
+					std::string identifier = prop->getIdentifier() + "_selector_" + std::to_string(i);
+					res[i] = new OptionPropertyInt(identifier, "Comparator for increasing values", options, options.size() - 1);
+				}
+				return res;
+			}()){
 		}
 	~TestPropertyTyped() = default;
 	T* getTypedProperty() const {
@@ -79,6 +118,9 @@ public:
 	}
 	void setToDefault() const {
 		typedProperty->set(defaultValue);
+	}
+	const value_type& getDefaultValue() {
+		return defaultValue;
 	}
 	void storeDefault() {
 		defaultValue = typedProperty->get();
@@ -88,7 +130,55 @@ public:
 	}
 };
 
-using Test = std::vector<std::shared_ptr<PropertyAssignment>>;
+class TestResult {
+	private:
+		const std::vector<std::shared_ptr<TestProperty>>& defaultValues;
+		const size_t backgroundPixels;
+		const Test test;
+	public:
+		size_t getNumberOfBackgroundPixels() {
+			return backgroundPixels;
+		}
+		template<typename T>
+		const typename T::value_type& getValue(const T* prop) const {
+			for(const auto& t : test)
+				if(auto p = std::dynamic_pointer_cast<PropertyAssignmentTyped<typename T::value_type>>(t);
+						p && reinterpret_cast<T*>(p->getProperty()) == prop)
+					return p->getValue();
+			for(auto def : defaultValues)
+				if(auto p = std::dynamic_pointer_cast<TestPropertyTyped<T>>(def);
+						p && p->getProperty() == prop)
+					return p->getDefaultValue();
+			assert(false);
+		}
+		TestResult(const std::vector<std::shared_ptr<TestProperty>>& defaultValues, const Test& t, size_t val)
+			  : test(t)
+			  , defaultValues(defaultValues)
+			  , backgroundPixels(val) {
+			  }
+};
+	
+template<typename T>
+std::optional<util::PropertyEffect> TestPropertyTyped<T>::getPropertyEffect(
+		std::shared_ptr<TestResult> newTestResult,
+		std::shared_ptr<TestResult> oldTestResult) const {
+	const value_type& valNew = newTestResult->getValue(this->typedProperty); //std::dynamic_pointer_cast<PropertyAssignmentTyped<value_type>>(newVal)->getValue();
+	const value_type& valOld = oldTestResult->getValue(this->typedProperty); //std::dynamic_pointer_cast<PropertyAssignmentTyped<value_type>>(oldVal)->getValue();
+
+	std::array<util::PropertyEffect, numComponents> selectedEffects;
+
+	for(size_t i = 0; i < numComponents; i++)
+		selectedEffects[i] = util::PropertyEffect(effectOption[i]->getSelectedValue());
+
+	std::optional<util::PropertyEffect> res = {util::PropertyEffect::ANY};
+	for(size_t i = 0; res && i < numComponents; i++) {
+		auto compEff = util::propertyEffect(selectedEffects[i],
+				util::GetComponent<value_type, numComponents>::get(valNew, i),
+				util::GetComponent<value_type, numComponents>::get(valOld, i));
+		res = util::combine(*res, compEff);
+	}
+	return res;
+}
 
 /** \docpage{org.inviwo.Histogram, Histogram}
  * ![](org.inviwo.Histogram.png?classIdentifier=org.inviwo.Histogram)
@@ -106,7 +196,7 @@ using Test = std::vector<std::shared_ptr<PropertyAssignment>>;
  */
 class IVW_MODULE_PROPERTYBASEDTESTING_API Histogram : public Processor {
 public:
-    Histogram(InviwoApplication* app);
+    Histogram(InviwoApplication*);
     virtual ~Histogram() = default;
 
     virtual void process() override;
@@ -139,32 +229,6 @@ private:
 
 	// Testing stuff
 	void initTesting();
-
-	class TestResult {
-	private:
-		const std::vector<std::shared_ptr<TestProperty>>& defaultValues;
-		const Test& test;
-		const size_t backgroundPixels;
-	public:
-		size_t getNumberOfBackgroundPixels() {
-			return backgroundPixels;
-		}
-		template<typename T>
-		const typename T::value_type& getValue(const T* prop) const {
-			for(const auto& t : test)
-				if(auto p = dynamic_cast<std::shared_ptr<PropertyAssignmentTyped<T>>>(t); p != nullptr && p->getProperty() == prop)
-					return p->getValue();
-			for(auto def : defaultValues)
-				if(auto p = dynamic_cast<std::shared_ptr<TestPropertyTyped<T>>>(def); p != nullptr && p->getProperty() == prop)
-					return p->getValue();
-			assert(false);
-		}
-		TestResult(const std::vector<std::shared_ptr<TestProperty>>& defaultValues, const Test& t, size_t val)
-			: defaultValues(defaultValues)
-			, test(t)
-			, backgroundPixels(val) {
-			}
-	};
 
 	bool testIsSetUp(const Test& test);
 	void setupTest(const Test& test);

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 
@@ -13,6 +16,7 @@ public:
 	virtual void apply() const = 0;
 	virtual bool isApplied() const = 0;
 };
+
 template<typename T>
 class PropertyAssignmentTyped : public PropertyAssignment {
 	OrdinalProperty<T>* const prop;
@@ -36,6 +40,8 @@ public:
 		return prop->get() == value;
 	}
 };
+
+using Test = std::vector<std::shared_ptr<PropertyAssignment>>;
 
 template<typename T>
 std::vector<std::shared_ptr<PropertyAssignment>> _generateAssignments(T* const);

@@ -29,8 +29,6 @@
 
 #include <inviwo/propertybasedtesting/processors/histogram.h>
 
-#include <inviwo/propertybasedtesting/algorithm/coveringarray.h>
-
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/network/networklock.h>
 
@@ -67,6 +65,7 @@ const ProcessorInfo Histogram::processorInfo_{
 };
 const ProcessorInfo Histogram::getProcessorInfo() const { return processorInfo_; }
 
+// template loop
 template<typename... Args>
 struct TestableProperty;
 template<typename T, typename... Args>
@@ -79,14 +78,13 @@ struct TestableProperty<T, Args...> {
 	}
 };
 template<>
-struct TestableProperty<>
-{
+struct TestableProperty<> {
 	static std::optional<std::shared_ptr<TestProperty>> _testableProperty(Property*) {
 		return std::nullopt;
 	}
 };
 std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop) {
-	return TestableProperty<OrdinalProperty<int>, IntMinMaxProperty>::_testableProperty(prop);
+	return TestableProperty<OrdinalProperty<int>, IntMinMaxProperty>::_testableProperty(prop); // append Property types here
 }
 
 Histogram::Histogram(InviwoApplication* app)
@@ -175,6 +173,10 @@ Histogram::Histogram(InviwoApplication* app)
 					comp->addProperty(p);
 					// add link to original property
 					app_->getProcessorNetwork()->addLink(p, prop);
+
+					(*_p)->withOptionProperties([&comp](auto opt){
+								comp->addProperty(opt);
+							});
 				}
 			}
 		} );
@@ -211,18 +213,17 @@ void Histogram::initTesting() {
 
 	std::cerr << "propsToTest.size() = " << propsToTest.size() << std::endl;
 
-	std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> ranges(propsToTest.size());
+	std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> assignments(propsToTest.size());
 	for(size_t pi = 0; pi < propsToTest.size(); pi++) {
 		for(const auto& assignment : propsToTest[pi]->generateAssignments())
-			ranges[pi].emplace_back(assignment);
+			assignments[pi].push_back(assignment);
 	}
 	
-	std::cerr << "ranges: ";
-	for(const auto& x : ranges) std::cerr << " [" << x.size() << "]";
+	std::cerr << "assignments: ";
+	for(const auto& x : assignments) std::cerr << " [" << x.size() << "]";
 	std::cerr << std::endl;
 
-	for(const auto& test : util::coveringArray(Test(),
-				ranges)) {
+	for(const auto& test : util::coveringArray(Test(), assignments)) {
 		remainingTests.emplace(test);
 	}
 
@@ -240,32 +241,84 @@ void Histogram::checkTestResults() {
     std::cerr << "checking " << testResults.size() << " test results ..." << std::flush;
     std::vector< std::pair<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>> > errors;
 
-	for(auto testResult : testResults) {
-		std::cerr << testResult->getNumberOfBackgroundPixels() << std::endl;
-	}
+	// for(auto testResult : testResults) {
+	// 	std::cerr << testResult->getNumberOfBackgroundPixels() << std::endl;
+	// }
+	
+	size_t numComparable = 0;
+	std::array<size_t,7> cnt;
+	std::fill_n(cnt.begin(), 7, 0);
 
-	for(auto testResult : testResults) {
-		for(auto otherTestResult : testResults) {
-			// only consider pairs of test results where testResult has more
-			// background pixels than otherTestResult
-			if(testResult->getNumberOfBackgroundPixels() <= otherTestResult->getNumberOfBackgroundPixels())
+	for(size_t tRi = 0; tRi < testResults.size(); tRi++) {
+		const auto& testResult = testResults[tRi];
+		for(size_t tRj = 0; tRj < tRi; tRj++) {
+			const auto& otherTestResult = testResults[tRj];
+
+			std::optional<util::PropertyEffect> propEff = { util::PropertyEffect::ANY };
+			for(auto prop : props_) {
+				auto tmp = prop->getPropertyEffect(testResult, otherTestResult);
+				if(!tmp)
+					propEff = std::nullopt;
+				if(!propEff)
+					break;
+				propEff = util::combine(*propEff, *tmp);
+			}
+
+			if(!propEff) // not comparable
 				continue;
 
-			// TODO
-			// bool validComparison = true; // check if the ranges of testResult lie fully within the ranges of otherTestResult 
+			numComparable++;
 
-			// for(auto prop : props_) {
-			// 	const auto& range = testResult->getValue(prop);
-			// 	const auto& otherRange = otherTestResult->getValue(prop);
-			// 	validComparison &= range.x <= otherRange.x && range.y >= otherRange.y;
-			// }
+			const auto num = testResult->getNumberOfBackgroundPixels();
+			const auto otherNum = otherTestResult->getNumberOfBackgroundPixels();
+			bool ok;
 
-			// if(validComparison) {
-			// 	errors.emplace_back( testResult, otherTestResult );
-			// }
+			switch(*propEff) {
+				case util::PropertyEffect::ANY:
+					ok = true;
+					cnt[0]++;
+					break;
+				case util::PropertyEffect::NOT_EQUAL:
+					ok = (num != otherNum);
+					cnt[1]++;
+					break;
+				case util::PropertyEffect::EQUAL:
+					ok = (num == otherNum);
+					cnt[2]++;
+					break;
+				case util::PropertyEffect::LESS:
+					ok = (num < otherNum);
+					cnt[3]++;
+					break;
+				case util::PropertyEffect::LESS_EQUAL:
+					ok = (num <= otherNum);
+					cnt[4]++;
+					break;
+				case util::PropertyEffect::GREATER:
+					ok = (num > otherNum);
+					cnt[5]++;
+					break;
+				case util::PropertyEffect::GREATER_EQUAL:
+					ok = (num >= otherNum);
+					cnt[6]++;
+					break;
+				default:
+					assert(false);
+					break;
+			}
+
+			if(!ok) {
+				errors.emplace_back( testResult, otherTestResult );
+				std::cerr << *propEff << " " << num << " vs. " << otherNum << std::endl;
+				//for(auto prop : props_)
+				//	std::cerr << testResult
+			}
 		}
 	}
 
+	for(auto x : cnt) std::cerr << " " << x;
+	std::cerr << std::endl;
+	std::cerr << " " << numComparable << " comparable test result pairs" << std::endl;
 	std::cerr << " done with " << errors.size() << " tests failed" << std::endl;
 	if(!errors.empty()) {
         std::stringstream str;
@@ -335,7 +388,7 @@ void Histogram::process() {
 				<< "remaining tests : " << remainingTests.size() << " "
 				<< std::endl;
 
-			testResults.emplace_back(std::make_shared<TestResult>(props_, test, pixelCount));
+			testResults.push_back(std::make_shared<TestResult>(props_, test, pixelCount));
 
 			testingState = NONE;
 			if(remainingTests.empty()) { // there are no more tests to do
@@ -343,7 +396,7 @@ void Histogram::process() {
 				app_->dispatchFrontAndForget([this]() { resetAllProps(); });
 			} else {
 				app_->dispatchPool([this]() {
-						std::this_thread::sleep_for(std::chrono::milliseconds(2)); // just so we can see what's going on, TODO: remove
+//						std::this_thread::sleep_for(std::chrono::milliseconds(2)); // just so we can see what's going on, TODO: remove
 						app_->dispatchFrontAndForget([this]() { setupTest(remainingTests.front()); });
 					});
 			}
