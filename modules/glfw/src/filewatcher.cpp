@@ -158,7 +158,7 @@ private:
         }
     }
 
-    // Update the time stamps on all files and return the changes ones. 
+    // Update the time stamps on all files and return the changed ones.
     std::vector<std::pair<std::string, Action>> getChangedAndUpdateFiles(
         const std::string& path, std::unordered_map<std::string, time_t>& files) {
 

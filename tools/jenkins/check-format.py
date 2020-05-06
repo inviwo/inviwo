@@ -132,14 +132,18 @@ def main():
                         f.write(formatted_code)
 
     if args.fix and args.commit:
-        repo.submodule_update()
+        try:
+            repo.submodule_update(force_reset=True, force_remove=True, keep_going=True)
+        except Exception as e:
+            sys.stdout.write("Problem updating submodules: " + str(e) + "\n")
+
         if repo.is_dirty():
             print("There were format fixes, pushing changes")
             repo.git.add(update=True)
             ivwteam = git.Actor("Inviwo Team", "team@inviwo.org")
             repo.index.commit("Jenkins: Format fixes", author=ivwteam, committer=ivwteam)    
             repo.remotes.origin.push()
-            # remove outfile if wha have fixed formatting
+            # remove outfile if we have fixed formatting
             output = pathlib.Path(args.output)
             if output.exists():
                 output.unlink()
