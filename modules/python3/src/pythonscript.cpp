@@ -214,7 +214,8 @@ bool PythonScript::checkRuntimeError() {
     return false;
 }
 
-PythonScriptDisk::PythonScriptDisk(const std::string& filename) : PythonScript() {
+PythonScriptDisk::PythonScriptDisk(const std::string& filename)
+    : PythonScript(), FileObserver(util::getInviwoApplication()) {
     setFilename(filename);
 }
 

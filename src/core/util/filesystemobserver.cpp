@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,22 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/core/util/filesystemobserver.h>
 
-#include <modules/openglqt/openglqtmoduledefine.h>
-#include <inviwo/core/util/capabilities.h>
-#include <modules/opengl/openglcapabilities.h>
-
-namespace inviwo {
-
-class IVW_MODULE_OPENGLQT_API OpenGLQtCapabilities : public Capabilities {
-public:
-    OpenGLQtCapabilities();
-    virtual ~OpenGLQtCapabilities();
-    virtual void printInfo() override;
-    virtual void retrieveStaticInfo() override{};
-    virtual void retrieveDynamicInfo() override{};
-    std::vector<int> getGLVersion();
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

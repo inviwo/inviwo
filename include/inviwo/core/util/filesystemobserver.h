@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,23 +26,53 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>
-#include <inviwo/core/util/capabilities.h>
-#include <modules/opengl/openglcapabilities.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+
+#include <string>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGLQT_API OpenGLQtCapabilities : public Capabilities {
+class FileObserver;
+
+/**
+ * Abstraction around file system events, to allow different implementations to be provided.
+ * A FileSystemObserver can be registered with the inviwo application to be used by the
+ * FileObservers. A FileObserver can also use a FileSystemObserver directly.
+ * @see FileObserver
+ * @see InviwoApplication::setFileSystemObserver
+ */
+class IVW_CORE_API FileSystemObserver {
 public:
-    OpenGLQtCapabilities();
-    virtual ~OpenGLQtCapabilities();
-    virtual void printInfo() override;
-    virtual void retrieveStaticInfo() override{};
-    virtual void retrieveDynamicInfo() override{};
-    std::vector<int> getGLVersion();
+    FileSystemObserver() = default;
+    virtual ~FileSystemObserver() = default;
+
+    /**
+     * Register a FileObserver to get callback when files change.
+     */
+    virtual void registerFileObserver(FileObserver* fileObserver) = 0;
+    /**
+     * Unregister a FileObserver.
+     */
+    virtual void unRegisterFileObserver(FileObserver* fileObserver) = 0;
+
+private:
+    friend FileObserver;
+
+    /**
+     * Start observing a file or directory for changes.
+     * The FileSystemObserver will call FileObserver::fileChanged on the registered observers
+     * when changes are detected.
+     * This function is only called by the FileObserver
+     */
+    virtual void startFileObservation(const std::string& fileName) = 0;
+
+    /**
+     * Stop observing changes to a file or directory.
+     * This function is only called by the FileObserver
+     */
+    virtual void stopFileObservation(const std::string& fileName) = 0;
 };
 
 }  // namespace inviwo

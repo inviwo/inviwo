@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,23 +26,47 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>
-#include <inviwo/core/util/capabilities.h>
-#include <modules/opengl/openglcapabilities.h>
+#include <modules/glfw/glfwmoduledefine.h>
+
+#include <inviwo/core/util/filesystemobserver.h>
+#include <memory>
+#include <vector>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGLQT_API OpenGLQtCapabilities : public Capabilities {
+class WatcherThread;
+class FileObserver;
+class InviwoApplication;
+
+/**
+ * An implementation for FileSystemObserver using the windows api.
+ * Currently does nothing on Mac / Linux
+ */
+class IVW_MODULE_GLFW_API FileWatcher : public FileSystemObserver {
 public:
-    OpenGLQtCapabilities();
-    virtual ~OpenGLQtCapabilities();
-    virtual void printInfo() override;
-    virtual void retrieveStaticInfo() override{};
-    virtual void retrieveDynamicInfo() override{};
-    std::vector<int> getGLVersion();
+    FileWatcher(InviwoApplication* app = nullptr);
+    FileWatcher(const FileWatcher&) = delete;
+    FileWatcher(FileWatcher&&) = delete;
+    FileWatcher& operator=(const FileWatcher&) = delete;
+    FileWatcher& operator=(FileWatcher&&) = delete;
+    virtual ~FileWatcher();
+
+    virtual void registerFileObserver(FileObserver* fileObserver) override;
+    virtual void unRegisterFileObserver(FileObserver* fileObserver) override;
+
+private:
+    virtual void startFileObservation(const std::string& fileName) override;
+    virtual void stopFileObservation(const std::string& fileName) override;
+
+    InviwoApplication* app_;
+    std::unique_ptr<WatcherThread> watcher_;
+    std::vector<FileObserver*> fileObservers_;
+    std::unordered_map<std::string, std::unordered_set<std::string>> observed_;
 };
 
 }  // namespace inviwo

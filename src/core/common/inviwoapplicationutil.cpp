@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,22 +27,35 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/openglqt/openglqtmoduledefine.h>
-#include <inviwo/core/util/capabilities.h>
-#include <modules/opengl/openglcapabilities.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertyowner.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/processor.h>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGLQT_API OpenGLQtCapabilities : public Capabilities {
-public:
-    OpenGLQtCapabilities();
-    virtual ~OpenGLQtCapabilities();
-    virtual void printInfo() override;
-    virtual void retrieveStaticInfo() override{};
-    virtual void retrieveDynamicInfo() override{};
-    std::vector<int> getGLVersion();
-};
+namespace util {
+
+InviwoApplication* getInviwoApplication() { return InviwoApplication::getPtr(); }
+
+InviwoApplication* getInviwoApplication(ProcessorNetwork* network) {
+    return network ? network->getApplication() : nullptr;
+}
+
+InviwoApplication* getInviwoApplication(Processor* processor) {
+    return processor ? getInviwoApplication(processor->getNetwork()) : nullptr;
+}
+
+InviwoApplication* getInviwoApplication(Property* property) {
+    return property ? getInviwoApplication(property->getOwner()) : nullptr;
+}
+
+InviwoApplication* getInviwoApplication(PropertyOwner* owner) {
+    return owner ? owner->getInviwoApplication() : nullptr;
+}
+
+}  // namespace util
 
 }  // namespace inviwo

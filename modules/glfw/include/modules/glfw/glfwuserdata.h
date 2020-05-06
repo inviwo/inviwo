@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,23 +26,49 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>
-#include <inviwo/core/util/capabilities.h>
-#include <modules/opengl/openglcapabilities.h>
+#include <modules/glfw/glfwmoduledefine.h>
+
+#include <unordered_map>
+#include <any>
+
+typedef struct GLFWwindow GLFWwindow;
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGLQT_API OpenGLQtCapabilities : public Capabilities {
+enum class GLFWUserDataId { Window, Interaction, Other };
+
+/**
+ * A helper to be able to pass more data around with the glfw user pointer
+ */
+class IVW_MODULE_GLFW_API GLFWUserData {
 public:
-    OpenGLQtCapabilities();
-    virtual ~OpenGLQtCapabilities();
-    virtual void printInfo() override;
-    virtual void retrieveStaticInfo() override{};
-    virtual void retrieveDynamicInfo() override{};
-    std::vector<int> getGLVersion();
+    GLFWUserData(GLFWwindow* win);
+
+    template <typename T>
+    void set(GLFWUserDataId id, T* ptr) {
+        data_[id] = ptr;
+    }
+    template <typename T>
+    T* get(GLFWUserDataId id) {
+        return std::any_cast<T*>(data_[id]);
+    }
+
+    template <typename T>
+    static T* get(GLFWwindow* win, GLFWUserDataId id) {
+        return self(win)->get<T>(id);
+    }
+
+    template <typename T>
+    static void set(GLFWwindow* win, GLFWUserDataId id, T* ptr) {
+        self(win)->set(id, ptr);
+    }
+
+private:
+    static GLFWUserData* self(GLFWwindow* win);
+
+    std::unordered_map<GLFWUserDataId, std::any> data_;
 };
 
 }  // namespace inviwo

@@ -53,8 +53,6 @@ private:
 
     std::shared_ptr<StringShaderResource> fragmentShader_;
     StringProperty fragmentSrc_;
-
-    static std::string getDefaultFragmentShader();
 };
 
 }  // namespace inviwo

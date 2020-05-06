@@ -30,6 +30,7 @@
 #include <modules/qtwidgets/editorfileobserver.h>
 
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
@@ -48,7 +49,7 @@ namespace utilqt {
 
 EditorFileObserver::EditorFileObserver(QWidget* parent, const QString& title,
                                        const std::string filename)
-    : QObject(parent), parent_(parent), title_(title) {
+    : QObject(parent), FileObserver(util::getInviwoApplication()), parent_(parent), title_(title) {
     if (parent_) {
         parent_->installEventFilter(this);
     }

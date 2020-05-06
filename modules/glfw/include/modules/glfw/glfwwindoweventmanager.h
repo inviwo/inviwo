@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,23 +26,61 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>
-#include <inviwo/core/util/capabilities.h>
-#include <modules/opengl/openglcapabilities.h>
+#include <modules/glfw/glfwmoduledefine.h>
+
+#include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/interaction/events/keyboardkeys.h>
+#include <inviwo/core/util/glmvec.h>
+
+#include <functional>
+
+typedef struct GLFWwindow GLFWwindow;
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGLQT_API OpenGLQtCapabilities : public Capabilities {
+class Event;
+
+namespace util {
+
+IVW_MODULE_GLFW_API MouseButton mapGLFWMouseButton(int mouseButtonGLFW);
+IVW_MODULE_GLFW_API MouseState mapGLFWMouseState(int mouseStateGLFW);
+
+IVW_MODULE_GLFW_API KeyModifiers mapGLFWModifiers(int modifiersGLFW);
+
+IVW_MODULE_GLFW_API KeyState mapGLFWMKeyState(int actionGLFW);
+IVW_MODULE_GLFW_API IvwKey mapGLFWMKey(int keyGLFW);
+
+}  // namespace util
+
+/**
+ * A helper class to handle GLFW mouse/events
+ */
+class IVW_MODULE_GLFW_API GLFWWindowEventManager {
 public:
-    OpenGLQtCapabilities();
-    virtual ~OpenGLQtCapabilities();
-    virtual void printInfo() override;
-    virtual void retrieveStaticInfo() override{};
-    virtual void retrieveDynamicInfo() override{};
-    std::vector<int> getGLVersion();
+    GLFWWindowEventManager(GLFWwindow* glWindow, std::function<void(Event*)> ep,
+                           std::function<double(dvec2)> depth);
+    virtual ~GLFWWindowEventManager() = default;
+
+private:
+    static void keyboard(GLFWwindow*, int, int, int, int);
+    static void character(GLFWwindow*, unsigned int);  ///< UTF32 encoded text input
+    static void mouseButton(GLFWwindow*, int, int, int);
+    static void mouseMotion(GLFWwindow*, double, double);
+    static void scroll(GLFWwindow*, double, double);
+
+    void propagateEvent(Event* event);
+
+    static dvec2 normalPos(dvec2 pos, ivec2 size);
+
+    MouseButton mouseButton_;
+    MouseState mouseState_;
+    KeyModifiers modifiers_;
+
+    GLFWwindow* glWindow_;
+    std::function<void(Event*)> eventPropagator_;
+    std::function<double(dvec2)> depth_;
 };
 
 }  // namespace inviwo

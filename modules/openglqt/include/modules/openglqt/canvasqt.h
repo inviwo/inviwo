@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CANVASQT_H
-#define IVW_CANVASQT_H
+#pragma once
 
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -588,5 +587,3 @@ bool CanvasQtBase<T>::showToolTip(QHelpEvent* e) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_CANVASQT_H

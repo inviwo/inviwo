@@ -35,7 +35,6 @@
 #include <warn/ignore/all>
 #include <QApplication>
 #include <QMainWindow>
-#include <QFileSystemWatcher>
 #include <QEvent>
 #include <warn/pop>
 
@@ -67,14 +66,10 @@ class IVW_QTAPPLICATIONBASE_API InviwoApplicationQt : public QApplication,
 public:
     InviwoApplicationQt(const std::string& displayName = "Inviwo");
     InviwoApplicationQt(int& argc, char** argv, const std::string& displayName);
-    virtual ~InviwoApplicationQt() = default;
+    virtual ~InviwoApplicationQt();
 
-    virtual void registerFileObserver(FileObserver* fileObserver) override;
-    virtual void unRegisterFileObserver(FileObserver* fileObserver) override;
-    virtual void startFileObservation(std::string fileName) override;
-    virtual void stopFileObservation(std::string fileName) override;
     virtual void closeInviwoApplication() override;
-    virtual void playSound(Message soundID) override;
+
     /**
      * \brief Get locale object for determining parsing and formatting of data.
      *
@@ -101,8 +96,6 @@ public:
     void setStyleSheetFile(QString file);
 
 private:
-    void fileChanged(QString fileName);
-
     static void logQtMessages(QtMsgType type, const QMessageLogContext& context,
                               const QString& msg);
     /**
@@ -117,9 +110,6 @@ private:
     static std::locale getCurrentStdLocale();
 
     QMainWindow* mainWindow_;
-    std::vector<FileObserver*> fileObservers_;
-    QFileSystemWatcher* fileWatcher_;
-
     std::locale uiLocal_;
     std::function<void()> undoTrigger_ = []() {};
 };

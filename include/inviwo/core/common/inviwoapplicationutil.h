@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,23 +26,41 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>
-#include <inviwo/core/util/capabilities.h>
-#include <modules/opengl/openglcapabilities.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGLQT_API OpenGLQtCapabilities : public Capabilities {
-public:
-    OpenGLQtCapabilities();
-    virtual ~OpenGLQtCapabilities();
-    virtual void printInfo() override;
-    virtual void retrieveStaticInfo() override{};
-    virtual void retrieveDynamicInfo() override{};
-    std::vector<int> getGLVersion();
-};
+class InviwoApplication;
+class ProcessorNetwork;
+class Processor;
+class PropertyOwner;
+class Property;
+
+namespace util {
+
+/**
+ * Utility function to get the InviwoApplication from a ProcessorNetwork
+ */
+IVW_CORE_API InviwoApplication* getInviwoApplication(ProcessorNetwork*);
+/**
+ * Utility function to get the InviwoApplication from a Processor
+ */
+IVW_CORE_API InviwoApplication* getInviwoApplication(Processor*);
+/**
+ * Utility function to get the InviwoApplication from a PropertyOwner
+ */
+IVW_CORE_API InviwoApplication* getInviwoApplication(PropertyOwner*);
+/**
+ * Utility function to get the InviwoApplication from a Property
+ */
+IVW_CORE_API InviwoApplication* getInviwoApplication(Property*);
+/**
+ * Utility function to get the InviwoApplication
+ */
+IVW_CORE_API InviwoApplication* getInviwoApplication();
+
+}  // namespace util
 
 }  // namespace inviwo

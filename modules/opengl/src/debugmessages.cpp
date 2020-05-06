@@ -93,7 +93,7 @@ void GLAPIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint 
 }
 
 void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity) {
-    if (RenderContext::getPtr()->getDefaultRenderContext()) {
+    if (RenderContext::getPtr()->hasDefaultRenderContext()) {
         RenderContext::getPtr()->forEachContext(
             [mode, severity](Canvas::ContextID id, const std::string& /*name*/, Canvas* canvas,
                              std::thread::id threadId) {
@@ -134,7 +134,7 @@ void setOpenGLDebugMode(debug::Mode mode, debug::Severity severity) {
 }
 
 IVW_MODULE_OPENGL_API void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity) {
-    if (RenderContext::getPtr()->getDefaultRenderContext()) {
+    if (RenderContext::getPtr()->hasDefaultRenderContext()) {
         RenderContext::getPtr()->forEachContext(
             [severity](Canvas::ContextID id, const std::string& /*name*/, Canvas* canvas,
                        std::thread::id threadId) {

@@ -11,6 +11,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwoapplication.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwoapplicationutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwocore.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwocoredefine.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodule.h
@@ -289,6 +290,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filelogger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystem.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystemobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/foreach.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/foreacharg.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatconversion.h
@@ -362,6 +364,7 @@ set(SOURCE_FILES
     algorithm/camerautils.cpp
     algorithm/cubeplaneintersection.cpp
     common/inviwoapplication.cpp
+    common/inviwoapplicationutil.cpp
     common/inviwocore.cpp
     common/inviwomodule.cpp
     common/inviwomodulefactoryobject.cpp
@@ -586,6 +589,7 @@ set(SOURCE_FILES
     util/filelogger.cpp
     util/fileobserver.cpp
     util/filesystem.cpp
+    util/filesystemobserver.cpp
     util/foreacharg.cpp
     util/formatconversion.cpp
     util/formatdispatching.cpp
@@ -618,10 +622,10 @@ set(SOURCE_FILES
     util/spatial4dsampler.cpp
     util/stacktrace.cpp
     util/statecoordinator.cpp
+    util/stdextensions.cpp
     util/stringconversion.cpp
     util/stringlogger.cpp
     util/systemcapabilities.cpp
-    util/stdextensions.cpp
     util/threadpool.cpp
     util/threadutil.cpp
     util/timer.cpp

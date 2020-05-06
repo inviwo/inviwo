@@ -438,6 +438,7 @@ function(ivw_group group_name)
     set(oneValueArgs "BASE")
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    
     ivw_dir_to_mod_dep(mod ${PROJECT_NAME})
     
     if(ARG_BASE AND IS_ABSOLUTE ${ARG_BASE})
@@ -458,21 +459,7 @@ function(ivw_group group_name)
         set(base "${CMAKE_CURRENT_SOURCE_DIR}")
     endif()
 
-    foreach(file ${ARG_UNPARSED_ARGUMENTS})
-        if(NOT IS_ABSOLUTE ${file})
-            set(file ${CMAKE_CURRENT_SOURCE_DIR}/${file})
-        endif()
-        file(RELATIVE_PATH folder ${base} ${file})
-        get_filename_component(folder ${folder} PATH)
-
-        if(NOT folder STREQUAL "")
-            string(REGEX REPLACE "/+$" "" folderlast ${folder})
-            string(REPLACE "/" "\\" folderlast ${folderlast})
-            source_group("${group_name}\\${folderlast}" FILES ${file})
-        else()
-            source_group("${group_name}" FILES ${file})
-        endif(NOT folder STREQUAL "")
-    endforeach(file ${ARGN})
+    source_group(TREE ${base} PREFIX ${group_name} FILES ${ARG_UNPARSED_ARGUMENTS})
 endfunction()
 
 #--------------------------------------------------------------------

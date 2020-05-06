@@ -44,12 +44,6 @@ public:
     virtual void closeInviwoApplication() override {
         PYBIND11_OVERLOAD(void, InviwoApplication, closeInviwoApplication, );
     };
-    virtual void startFileObservation(std::string fileName) override {
-        PYBIND11_OVERLOAD(void, InviwoApplication, startFileObservation, fileName);
-    };
-    virtual void stopFileObservation(std::string fileName) override {
-        PYBIND11_OVERLOAD(void, InviwoApplication, stopFileObservation, fileName);
-    };
 };
 
 void exposeInviwoApplication(pybind11::module &m) {
