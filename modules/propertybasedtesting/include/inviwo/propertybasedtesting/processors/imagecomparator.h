@@ -36,6 +36,8 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/imageport.h>
 
+#include <filesystem>
+
 namespace inviwo {
 
 /** \docpage{org.inviwo.ImageComparator, Image Comparator}
@@ -55,8 +57,11 @@ namespace inviwo {
 class IVW_MODULE_PROPERTYBASEDTESTING_API ImageComparator : public Processor,
 															public ProcessorNetworkObserver {
 public:
-    ImageComparator(InviwoApplication*);
-    virtual ~ImageComparator() = default;
+    ImageComparator();
+
+    virtual ~ImageComparator() {
+      std::filesystem::remove_all(tempDir);
+    }
 
     virtual void process() override;
 
@@ -64,18 +69,22 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-private:
-	InviwoApplication* const app_;
 
+    enum class ComparisonType { Diff, Perceptual, Local, Global };
+private:
     ImageInport inport1_;
     ImageInport inport2_;
 
     BoolProperty outportDeterminesSize_;
     IntSize2Property imageSize_;
-    
+
+	FloatProperty maxDeviation_;
+    TemplateOptionProperty<ComparisonType> comparisonType_;
+    std::filesystem::path tempDir;
+
 	virtual void onProcessorNetworkDidAddConnection(const PortConnection&) override;
     virtual void onProcessorNetworkDidRemoveConnection(const PortConnection&) override;
-    
+
 	void sendResizeEvent();
     size2_t prevSize1_;
     size2_t prevSize2_;
