@@ -60,6 +60,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerramconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerramprecision.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerrepresentation.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/isovaluecollection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/baselightsource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/diffuselight.h
@@ -399,6 +400,7 @@ set(SOURCE_FILES
     datastructures/image/layerramconverter.cpp
     datastructures/image/layerramprecision.cpp
     datastructures/image/layerrepresentation.cpp
+    datastructures/image/layerutil.cpp
     datastructures/isovaluecollection.cpp
     datastructures/light/baselightsource.cpp
     datastructures/light/diffuselight.cpp
