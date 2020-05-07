@@ -29,7 +29,10 @@
 
 #include <modules/base/processors/pixelvalue.h>
 #include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
+#include <inviwo/core/datastructures/image/layerutil.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/util/indexmapper.h>
 
 namespace inviwo {
 
@@ -189,19 +192,34 @@ void PixelValue::mouseMoveEvent(Event* theevent) {
             // This can happen a lot when having a image layout
             return;
         }
-        size2_t pos = static_cast<size2_t>(p * dvec2(dims - size2_t(1)));
+        const size2_t pos{p * dvec2(dims - size2_t(1))};
         coordinates_.set(pos);
         for (size_t i = 0; i < numCh; i++) {
-            auto v = img->getColorLayer(i)->getRepresentation<LayerRAM>()->getAsDVec4(pos);
-            pixelValues_[i].set(v);
-            vec4 vf = static_cast<vec4>(v);
-            auto df = img->getDataFormat();
-            if (df->getNumericType() == NumericType::UnsignedInteger ||
-                df->getNumericType() == NumericType::SignedInteger) {
-                vf /= df->getMax();
-            }
-            pixelValuesNormalized_[i].set(vf);
-            pixelStrValues_[i].set(toString(v));
+            img->getColorLayer(i)
+                ->getRepresentation<LayerRAM>()
+                ->dispatch<void, dispatching::filter::All>([&](const auto layer) {
+                    using ValueType = util::PrecisionValueType<decltype(layer)>;
+                    using Comp = util::value_type<ValueType>::type;
+                    const auto data = layer->getDataTyped();
+                    const auto im = util::IndexMapper2D(dims);
+
+                    auto value = data[im(pos)];
+                    auto v = util::glm_convert<glm::vec<4, Comp>>(value);
+                    v = util::applySwizzleMask(v, img->getColorLayer(i)->getSwizzleMask());
+
+                    if constexpr (std::is_same_v<Comp, unsigned char> ||
+                                  std::is_same_v<Comp, char>) {
+                        pixelStrValues_[i].set(toString(ivec4{v}));
+                    } else {
+                        pixelStrValues_[i].set(toString(v));
+                    }
+
+                    auto vf = util::glm_convert<glm::vec<4, float>>(v);
+                    if constexpr (std::is_integral_v<Comp>) {
+                        vf /= std::numeric_limits<Comp>::max();
+                    }
+                    pixelValuesNormalized_[i].set(vf);
+                });
         }
 
         auto pickV = img->getPickingLayer()->getRepresentation<LayerRAM>()->getAsDVec4(pos);
