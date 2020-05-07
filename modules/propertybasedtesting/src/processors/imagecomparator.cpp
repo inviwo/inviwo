@@ -33,6 +33,7 @@
 #include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/io/imagewriterutil.h>
 #include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/imageramutils.h>
 #include <filesystem>
 
 namespace inviwo {
@@ -54,40 +55,47 @@ ImageComparator::ImageComparator()
                  size2_t(1, 1), size2_t(4096, 4096), size2_t(1, 1)}
     , inport1_("inport1")
     , inport2_("inport2")
-    , maxDeviation_("maxDeviation", "Maximum deviation", 0, 0, std::numeric_limits<float>::max(), 1)
+    , outport1_("outport1")
+    , outport2_("outport2")
+    , maxDeviation_("maxDeviation", "Maximum deviation", 0, 0, std::numeric_limits<float>::max(), 1, InvalidationLevel::Valid, PropertySemantics::Text)
+    , imageCompChoice_("imageCompChoice", "Image Comparsion Choice", 0, 0, imageCompCount_, 1, InvalidationLevel::InvalidOutput, PropertySemantics::Default)
     , comparisonType_("comparisonType", "Comparison Type (dummy)",
                      {{"diff", "Sum of ARGB differences", ComparisonType::Diff},
                       {"perceptual", "Perceptual Difference", ComparisonType::Perceptual},
                       {"global", "Global Difference", ComparisonType::Global},
                       {"local", "Local Difference", ComparisonType::Local}},
                      0, InvalidationLevel::InvalidResources)
-    , tempDir{std::filesystem::temp_directory_path() / ("inviwo_imagecomp_" + std::to_string(rand()))}
+    , tempDir_{std::filesystem::temp_directory_path() / ("inviwo_imagecomp_" + std::to_string(rand()))}
     , prevSize1_{0}
     , prevSize2_{0} {
 
-	imageSize_.visibilityDependsOn(outportDeterminesSize_,
+  imageSize_.visibilityDependsOn(outportDeterminesSize_,
                                 [](const auto& p) -> bool { return !p; });
 
-    outportDeterminesSize_.onChange([this] {
-        this->inport1_.setOutportDeterminesSize(outportDeterminesSize_);
-        this->inport2_.setOutportDeterminesSize(outportDeterminesSize_);
-        sendResizeEvent();
-    });
+  outportDeterminesSize_.onChange([this] {
+      this->inport1_.setOutportDeterminesSize(outportDeterminesSize_);
+      this->inport2_.setOutportDeterminesSize(outportDeterminesSize_);
+      sendResizeEvent();
+  });
 
-    this->inport1_.setOutportDeterminesSize(outportDeterminesSize_);
-    this->inport2_.setOutportDeterminesSize(outportDeterminesSize_);
+  this->inport1_.setOutportDeterminesSize(outportDeterminesSize_);
+  this->inport2_.setOutportDeterminesSize(outportDeterminesSize_);
 
-    imageSize_.onChange([this]() { sendResizeEvent(); });
-    addProperties(outportDeterminesSize_, imageSize_);
+  imageSize_.onChange([this]() { sendResizeEvent(); });
+  addProperties(outportDeterminesSize_, imageSize_);
 
-	addPort(inport1_);
-	addPort(inport2_);
-	maxDeviation_.setSemantics(PropertySemantics::Text);
-	addProperty(maxDeviation_);
-	addProperty(comparisonType_);
+  addPort(inport1_);
+  addPort(inport2_);
+  addPort(outport1_);
+  addPort(outport2_);
+  addProperty(maxDeviation_);
+  addProperty(comparisonType_);
+  addProperty(imageCompChoice_);
 
-	if (std::filesystem::create_directory(tempDir)) {
-		util::log(IVW_CONTEXT, std::string("Using ") + std::string(tempDir) + std::string(" to store broken images."), LogLevel::Info, LogAudience::User);
+  if (std::filesystem::create_directory(tempDir_)) {
+		std::stringstream str;
+		str << getIdentifier() << ": Using: " << tempDir_ << " to store images.";
+		util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
 	}
 
 	isReady_.setUpdate([&]() {
@@ -160,11 +168,26 @@ void ImageComparator::process() {
 		str << getIdentifier() << ": Image difference: " << diff;
 		util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
 
-		const auto bad_uid = std::to_string(rand());
-		const auto img1Path = tempDir / (std::string("img1_") + std::string(bad_uid) + std::string(".png"));
-		const auto img2Path = tempDir / (std::string("img2_") + std::string(bad_uid) + std::string(".png"));
-		inviwo::util::saveLayer(*img1->getColorLayer(), img1Path.string(), inviwo::FileExtension::createFileExtensionFromString(std::string("png")));
-		inviwo::util::saveLayer(*img2->getColorLayer(), img2Path.string(), inviwo::FileExtension::createFileExtensionFromString(std::string("png")));
+		imageCompCount_++;
+		imageCompChoice_.setMaxValue(imageCompCount_);
+		const auto img1Path = tempDir_ / (std::string("img1_") + std::to_string(imageCompCount_) + std::string(".png"));
+		const auto img2Path = tempDir_ / (std::string("img2_") + std::to_string(imageCompCount_) + std::string(".png"));
+		const auto pngExt = inviwo::FileExtension::createFileExtensionFromString(std::string("png"));
+		inviwo::util::saveLayer(*img1->getColorLayer(), img1Path.string(), pngExt);
+		inviwo::util::saveLayer(*img2->getColorLayer(), img2Path.string(), pngExt);
+	}
+
+	if(imageCompChoice_.get() > 0 && imageCompChoice_.get() <= imageCompCount_) {
+		const auto img1Path = tempDir_ / (std::string("img1_") + std::to_string(imageCompChoice_) + std::string(".png"));
+		const auto img2Path = tempDir_ / (std::string("img2_") + std::to_string(imageCompChoice_) + std::string(".png"));
+		const auto img1 = inviwo::util::readImageFromDisk(img1Path);
+		const auto img2 = inviwo::util::readImageFromDisk(img1Path);
+		outport1_.setData(img1);
+		outport2_.setData(img2);
+
+		std::stringstream str;
+		str << getIdentifier() << ": Loading images for output: " << img1Path << " and " << img2Path << ".";
+		util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
 	}
 }
 

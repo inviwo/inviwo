@@ -60,7 +60,7 @@ public:
     ImageComparator();
 
     virtual ~ImageComparator() {
-      std::filesystem::remove_all(tempDir);
+      std::filesystem::remove_all(tempDir_);
     }
 
     virtual void process() override;
@@ -72,20 +72,25 @@ public:
 
     enum class ComparisonType { Diff, Perceptual, Local, Global };
 private:
-    ImageInport inport1_;
-    ImageInport inport2_;
-
     BoolProperty outportDeterminesSize_;
     IntSize2Property imageSize_;
 
-	FloatProperty maxDeviation_;
-    TemplateOptionProperty<ComparisonType> comparisonType_;
-    std::filesystem::path tempDir;
+    ImageInport inport1_;
+    ImageInport inport2_;
+    ImageOutport outport1_;
+    ImageOutport outport2_;
 
-	virtual void onProcessorNetworkDidAddConnection(const PortConnection&) override;
+
+    FloatProperty maxDeviation_;
+    IntProperty imageCompChoice_;
+    TemplateOptionProperty<ComparisonType> comparisonType_;
+    std::filesystem::path tempDir_;
+    int imageCompCount_ = 0;
+
+    virtual void onProcessorNetworkDidAddConnection(const PortConnection&) override;
     virtual void onProcessorNetworkDidRemoveConnection(const PortConnection&) override;
 
-	void sendResizeEvent();
+    void sendResizeEvent();
     size2_t prevSize1_;
     size2_t prevSize2_;
 };
