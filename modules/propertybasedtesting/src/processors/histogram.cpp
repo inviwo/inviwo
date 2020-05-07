@@ -45,6 +45,18 @@ template<typename A, typename B>
 std::ostream& operator<<(std::ostream& out, const std::pair<A,B>& v) {
     return out << "(" << v.first << ", " << v.second << ")";
 }
+
+template<class TupType, size_t... I>
+std::ostream& printTuple(std::ostream& out, const TupType& tup, std::index_sequence<I...>) {
+	out << "(";
+	(..., (out << (I==0 ? "" : ", ") << std::get<I>(tup)));
+	return out << ")";
+}
+template<class... T>
+std::ostream& operator<<(std::ostream& out, const std::tuple<T...>& tup) {
+	return printTuple(out, tup, std::make_index_sequence<sizeof...(T)>());
+}
+
 template<typename T>
 std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
     out << "{";
@@ -92,13 +104,20 @@ Histogram::Histogram(InviwoApplication* app)
     , testingState(TestingState::NONE)
 	, app_(app)
 	, inport_("imageInport")
+	, cntBackgroundPixelsButton_("cntBackgroundPixelsButton", "Count number of background pixels")
 	, startButton_("startButton", "Start")
 	, collectButton_("collectButton", "Collect Properties") {
 
+	cntBackgroundPixelsButton_.onChange([this]() {
+			app_->dispatchFrontAndForget([this]{
+					NetworkLock lock(this);
+					testingState = TestingState::SINGLE_COUNT;
+					this->invalidate(InvalidationLevel::InvalidOutput);
+			});
+		} );
+
 	startButton_.onChange([this]() { 
-			std::cerr << "startButton_.onChange()" << std::endl;
             initTesting();
-			std::cerr << "startButton_.onChange() End" << std::endl;
 		} );
 
 	collectButton_.onChange([this]() {
@@ -183,6 +202,7 @@ Histogram::Histogram(InviwoApplication* app)
 
 	inport_.setOutportDeterminesSize(true);
 	addPort(inport_);
+	addProperty(cntBackgroundPixelsButton_);
 	addProperty(startButton_);
 	addProperty(collectButton_);
 
@@ -239,11 +259,7 @@ void Histogram::initTesting() {
 
 void Histogram::checkTestResults() {
     std::cerr << "checking " << testResults.size() << " test results ..." << std::flush;
-    std::vector< std::pair<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>> > errors;
-
-	// for(auto testResult : testResults) {
-	// 	std::cerr << testResult->getNumberOfBackgroundPixels() << std::endl;
-	// }
+    std::vector< std::tuple<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>, util::PropertyEffect, size_t, size_t> > errors;
 	
 	size_t numComparable = 0;
 	std::array<size_t,7> cnt;
@@ -308,10 +324,7 @@ void Histogram::checkTestResults() {
 			}
 
 			if(!ok) {
-				errors.emplace_back( testResult, otherTestResult );
-				std::cerr << *propEff << " " << num << " vs. " << otherNum << std::endl;
-				//for(auto prop : props_)
-				//	std::cerr << testResult
+				errors.emplace_back( testResult, otherTestResult, *propEff, num, otherNum );
 			}
 		}
 	}
@@ -324,7 +337,11 @@ void Histogram::checkTestResults() {
         std::stringstream str;
         str << errors.size() << " tests failed: ";
         errors.resize(std::min(size_t(5), errors.size())); // print at most 5 examples
-        str << errors << std::endl;
+		for(auto& e : errors) {
+			str << std::endl << e << ": " << std::endl;
+			for(auto prop : props_)
+				prop->ostr(str << " - ", std::get<0>(e), std::get<1>(e)) << std::endl;
+		}
         util::log(IVW_CONTEXT, str.str(), LogLevel::Warn, LogAudience::User);
     } else {
 		util::log(IVW_CONTEXT, "All tests passed.", LogLevel::Info, LogAudience::User);
@@ -352,7 +369,13 @@ void Histogram::setupTest(const Test& test) {
 			proc->invalidate(InvalidationLevel::InvalidOutput);
 		});
 	
-	testingState = TestingState::GATHERING;
+	app_->dispatchPool([this]() {
+			std::this_thread::sleep_for(std::chrono::milliseconds(20)); // just so we can see what's going on, TODO: remove
+			app_->dispatchFrontAndForget([this]() {
+					testingState = TestingState::GATHERING;
+					this->invalidate(InvalidationLevel::InvalidOutput);
+				});
+		});
 }
 
 void Histogram::process() {
@@ -363,6 +386,20 @@ void Histogram::process() {
         case TestingState::NONE:
 
             break;
+		case TestingState::SINGLE_COUNT:
+		{
+			size_t pixelCount = 0;
+			auto imgRam = img->getRepresentation<ImageRAM>();
+			auto depthLayerRAM = imgRam->getDepthLayerRAM();
+			for(size_t x = 0; x < dim.x; x++) {
+				for(size_t y = 0; y < dim.y; y++) {
+					const auto col = depthLayerRAM->getAsDVec4(size2_t(x,y));
+					if(col.x == 1)
+						pixelCount++;
+				}
+			}
+			util::log(IVW_CONTEXT, std::to_string(pixelCount) + " background pixels visible", LogLevel::Info, LogAudience::User);
+		} break;
 		case TestingState::GATHERING:
 			assert(!remainingTests.empty());
 
@@ -381,27 +418,24 @@ void Histogram::process() {
 						pixelCount++;
 				}
 			}
-			if(0)
-			std::cerr
-				<< "dim = " << dim << " "
-				<< "pixelCount = " << pixelCount << " "
-				<< "remaining tests : " << remainingTests.size() << " "
-				<< std::endl;
 
 			testResults.push_back(std::make_shared<TestResult>(props_, test, pixelCount));
+			
+			if(0) {
+				for(auto prop : props_)
+					prop->ostr(std::cerr, testResults.back()) << " ";
+				std::cerr << " : " << pixelCount << ", dim = " << dim << std::endl;
+			}
 
-			testingState = NONE;
 			if(remainingTests.empty()) { // there are no more tests to do
 				this->checkTestResults();
 				app_->dispatchFrontAndForget([this]() { resetAllProps(); });
 			} else {
-				app_->dispatchPool([this]() {
-//						std::this_thread::sleep_for(std::chrono::milliseconds(2)); // just so we can see what's going on, TODO: remove
-						app_->dispatchFrontAndForget([this]() { setupTest(remainingTests.front()); });
-					});
+				app_->dispatchFrontAndForget([this]() { setupTest(remainingTests.front()); });
 			}
 			break;
 	}
+	testingState = NONE;
 }
 
 }  // namespace inviwo

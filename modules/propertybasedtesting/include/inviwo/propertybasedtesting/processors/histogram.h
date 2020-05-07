@@ -64,6 +64,12 @@ public:
 			std::shared_ptr<TestResult>, 
 			std::shared_ptr<TestResult>) const = 0;
 
+	virtual std::ostream& ostr(std::ostream&,
+			std::shared_ptr<TestResult>) const = 0;
+	virtual std::ostream& ostr(std::ostream&,
+			std::shared_ptr<TestResult>,
+			std::shared_ptr<TestResult>) const = 0;
+
 	virtual void setToDefault() const = 0;
 	virtual void storeDefault() = 0;
 	virtual std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() = 0;
@@ -88,6 +94,11 @@ public:
 	std::optional<util::PropertyEffect> getPropertyEffect(
 			std::shared_ptr<TestResult> newTestResult,
 			std::shared_ptr<TestResult> oldTestResult) const;
+	std::ostream& ostr(std::ostream&,
+			std::shared_ptr<TestResult>) const;
+	std::ostream& ostr(std::ostream&,
+			std::shared_ptr<TestResult>,
+			std::shared_ptr<TestResult>) const;
 
 	TestPropertyTyped(T* prop)
 		: TestProperty(prop)
@@ -162,11 +173,10 @@ template<typename T>
 std::optional<util::PropertyEffect> TestPropertyTyped<T>::getPropertyEffect(
 		std::shared_ptr<TestResult> newTestResult,
 		std::shared_ptr<TestResult> oldTestResult) const {
-	const value_type& valNew = newTestResult->getValue(this->typedProperty); //std::dynamic_pointer_cast<PropertyAssignmentTyped<value_type>>(newVal)->getValue();
-	const value_type& valOld = oldTestResult->getValue(this->typedProperty); //std::dynamic_pointer_cast<PropertyAssignmentTyped<value_type>>(oldVal)->getValue();
+	const value_type& valNew = newTestResult->getValue(this->typedProperty);
+	const value_type& valOld = oldTestResult->getValue(this->typedProperty);
 
 	std::array<util::PropertyEffect, numComponents> selectedEffects;
-
 	for(size_t i = 0; i < numComponents; i++)
 		selectedEffects[i] = util::PropertyEffect(effectOption[i]->getSelectedValue());
 
@@ -178,6 +188,30 @@ std::optional<util::PropertyEffect> TestPropertyTyped<T>::getPropertyEffect(
 		res = util::combine(*res, compEff);
 	}
 	return res;
+}
+
+template<typename T>
+std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
+			std::shared_ptr<TestResult> testResult) const {
+	const value_type& val = testResult->getValue(this->typedProperty);
+	
+	std::array<util::PropertyEffect, numComponents> selectedEffects;
+	for(size_t i = 0; i < numComponents; i++)
+		selectedEffects[i] = util::PropertyEffect(effectOption[i]->getSelectedValue());
+	
+	return out << "TPT<" << typeid(T).name() << ">("
+				<< val << ")";
+}
+template<typename T>
+std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
+			std::shared_ptr<TestResult> newTestResult,
+			std::shared_ptr<TestResult> oldTestResult) const {
+	const value_type& valNew = newTestResult->getValue(this->typedProperty);
+	const value_type& valOld = oldTestResult->getValue(this->typedProperty);
+	
+	return out << "TPT<" << typeid(T).name() << ">("
+				<< valNew << ", " << valOld << " : "
+				<< getPropertyEffect(newTestResult, oldTestResult) << ")";
 }
 
 /** \docpage{org.inviwo.Histogram, Histogram}
@@ -207,7 +241,8 @@ public:
 private:
 	enum TestingState {
 		NONE,
-		GATHERING
+		GATHERING,
+		SINGLE_COUNT
 	};
 	TestingState testingState;
 
@@ -215,6 +250,7 @@ private:
 
 	ImageInport inport_;
 	
+	ButtonProperty cntBackgroundPixelsButton_;
 	ButtonProperty startButton_;
 	ButtonProperty collectButton_;
 

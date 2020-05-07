@@ -27,18 +27,18 @@ std::ostream& operator<<(std::ostream& out, const PropertyEffect& a) {
 }
 
 std::optional<PropertyEffect> combine(const PropertyEffect& a, const PropertyEffect& b) {
-	const static std::array<std::array<bool,3>, numPropertyEffects> compatibility{{
-			{false,true ,false}, // EQUAL
-			{true ,false,true }, // NOT_EQUAL
-			{true ,false,false}, // LESS
-			{true ,true ,false}, // LESS_EQUAL
-			{false,false,true }, // GREATER
-			{false,true ,true }, // GREATER_EQUAL
-			{true ,true ,true }, // ANY
-			{false,false,false}  // NOT_COMPARABLE
+	const static std::array<std::array<bool,5>, numPropertyEffects> compatibility {{
+			{false,false,true ,false,false}, // EQUAL
+			{true ,false,false,false,true }, // NOT_EQUAL
+			{true ,false,false,false,false}, // LESS
+			{true ,true ,false,false,false}, // LESS_EQUAL
+			{false,false,false,false,true }, // GREATER
+			{false,false,false,true ,true }, // GREATER_EQUAL
+			{true ,true ,true ,true ,true }, // ANY
+			{false,false,false,false,false}  // NOT_COMPARABLE
 		}};
 	auto resAll = compatibility[(size_t)a];
-	for(size_t i = 0; i < 3; i++)
+	for(size_t i = 0; i < resAll.size(); i++)
 		resAll[i] &= compatibility[(size_t)b][i];
 
 	for(size_t i = 0; i < numPropertyEffects; i++) {

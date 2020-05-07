@@ -80,13 +80,13 @@ ImageComparator::ImageComparator()
     imageSize_.onChange([this]() { sendResizeEvent(); });
     addProperties(outportDeterminesSize_, imageSize_);
 
-    addPort(inport1_);
-    addPort(inport2_);
-  maxDeviation_.setSemantics(PropertySemantics::Text);
-  addProperty(maxDeviation_);
-  addProperty(comparisonType_);
+	addPort(inport1_);
+	addPort(inport2_);
+	maxDeviation_.setSemantics(PropertySemantics::Text);
+	addProperty(maxDeviation_);
+	addProperty(comparisonType_);
 
-  if (std::filesystem::create_directory(tempDir)) {
+	if (std::filesystem::create_directory(tempDir)) {
 		util::log(IVW_CONTEXT, std::string("Using ") + std::string(tempDir) + std::string(" to store broken images."), LogLevel::Info, LogAudience::User);
 	}
 
