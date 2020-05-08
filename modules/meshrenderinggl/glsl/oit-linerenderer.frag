@@ -49,6 +49,9 @@ layout(depth_less) out float gl_FragDepth;
 #if defined(UNIFORM_ALPHA)
 uniform float uniformAlpha;
 #endif
+#if defined(OVERWRITE_COLOR)
+uniform vec4 overwriteColor;
+#endif
 
 uniform vec2 screenDim = vec2(512, 512);
 uniform float antialiasing = 0.5;  // width of antialised edged [pixel]
@@ -70,10 +73,15 @@ in vec4 color_;
 flat in vec4 pickColor_;
 
 void main() {
+#if defined(OVERWRITE_COLOR)
+    vec4 color = overwriteColor;
+
+#else //UNIFORM_ALPHA
     vec4 color = color_;
 #if defined(UNIFORM_ALPHA)
     color.a = uniformAlpha;
-#endif
+#endif // UNIFORM_ALPHA
+#endif // not OVERWRITE_COLOR
 
     if (color.a < 0.01) discard;
     float linewidthHalf = lineWidth * 0.5;

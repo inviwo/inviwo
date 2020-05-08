@@ -53,6 +53,16 @@ LineRasterizer::LineRasterizer()
     , outport_("rasterization")
     , lineSettings_("lineSettings", "Line Settings")
     , forceOpaque_("forceOpaque", "Shade Opaque", false, InvalidationLevel::InvalidResources)
+    , overwriteColor_("overwriteColor", "Overwrite Color", false,
+                      InvalidationLevel::InvalidResources)
+    , constantColor_{"constantColor",
+                     "Constant Color",
+                     vec4(1, 0.565f, 0.004f, 1),
+                     vec4(0.0f),
+                     vec4(1.0f),
+                     vec4(0.01f),
+                     InvalidationLevel::InvalidOutput,
+                     PropertySemantics::Color}
     , useUniformAlpha_("useUniformAlpha", "Uniform Alpha", false,
                        InvalidationLevel::InvalidResources)
     , uniformAlpha_("alphaValue", "Alpha", 0.7f, 0, 1, 0.1f, InvalidationLevel::InvalidOutput)
@@ -80,10 +90,19 @@ LineRasterizer::LineRasterizer()
     addPort(inport_);
     addPort(outport_);
 
-    addProperties(lineSettings_, forceOpaque_, useUniformAlpha_, uniformAlpha_, camera_,
-                  trackball_);
+    addProperties(lineSettings_, forceOpaque_, overwriteColor_, constantColor_, useUniformAlpha_,
+                  uniformAlpha_, camera_, trackball_);
+
+    constantColor_.setVisible(overwriteColor_.get());
+    overwriteColor_.onChange([this]() {
+        constantColor_.setVisible(overwriteColor_.get());
+        uniformAlpha_.setVisible(false);
+    });
     uniformAlpha_.setVisible(useUniformAlpha_.get());
-    useUniformAlpha_.onChange([this]() { uniformAlpha_.setVisible(useUniformAlpha_.get()); });
+    useUniformAlpha_.onChange([this]() {
+        uniformAlpha_.setVisible(useUniformAlpha_.get());
+        constantColor_.setVisible(false);
+    });
     inport_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     invalidate(InvalidationLevel::InvalidResources);
@@ -124,6 +143,7 @@ void LineRasterizer::setUniforms(Shader& shader) const {
     shader.setUniform("stippling.worldScale", lineSettings_.getStippling().getWorldScale());
     // Alpha
     if (useUniformAlpha_.get()) shader.setUniform("uniformAlpha", uniformAlpha_.get());
+    if (overwriteColor_.get()) shader.setUniform("overwriteColor", constantColor_.get());
 }
 
 void LineRasterizer::configureAllShaders() {
@@ -144,8 +164,8 @@ void LineRasterizer::configureShader(Shader& shader) {
     fso->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", lineSettings_.getRoundDepthProfile());
     fso->setShaderDefine("USE_FRAGMENT_LIST",
                          !forceOpaque_.get() && FragmentListRenderer::supportsFragmentLists());
-    fso->setShaderDefine("UNIFORM_ALPHA",
-                         useUniformAlpha_.get() && FragmentListRenderer::supportsFragmentLists());
+    fso->setShaderDefine("UNIFORM_ALPHA", useUniformAlpha_.get());
+    fso->setShaderDefine("OVERWRITE_COLOR", overwriteColor_.get());
 
     utilgl::addShaderDefines(shader, lineSettings_.getStippling().getMode());
 

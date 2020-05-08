@@ -100,6 +100,8 @@ private:
     LineSettingsProperty lineSettings_;
     BoolProperty forceOpaque_;
 
+    BoolProperty overwriteColor_;
+    FloatVec4Property constantColor_;
     BoolProperty useUniformAlpha_;
     FloatProperty uniformAlpha_;
 
