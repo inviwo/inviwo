@@ -37,7 +37,18 @@
 
 namespace inviwo {
 
-class CompositeProperty;
+namespace cameradefaults {
+constexpr vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f);
+constexpr vec3 lookTo = vec3(0.0f);
+constexpr vec3 lookUp = vec3(0.0f, 1.0f, 0.0f);
+constexpr float nearPlane = 0.1f;
+constexpr float farPlane = 1000.0f;
+constexpr float fieldOfView = 38.f;
+constexpr float aspectRatio = 1.f;
+constexpr float width = 10.f;
+}  // namespace cameradefaults
+
+class CameraProperty;
 
 /**
  * \ingroup datastructures
@@ -49,8 +60,6 @@ class CompositeProperty;
  */
 class IVW_CORE_API Camera : public Serializable {
 public:
-    enum class Config { Show, Hide };
-
     /**
      * \brief Default parameters creates a right handed coordinate system
      * with camera looking towards the negative z-axis.
@@ -62,17 +71,16 @@ public:
      * @param nearPlane Camera near clip-plane
      * @param farPlane Camera far clip-plane
      */
-    Camera(vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f), vec3 lookTo = vec3(0.0f),
-           vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), float nearPlane = 0.01f,
-           float farPlane = 10000.0f);
+    Camera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane,
+           float aspectRatio);
     virtual ~Camera() = default;
     Camera(const Camera& other) = default;
     Camera& operator=(const Camera& other) = default;
-
     virtual Camera* clone() const = 0;
+    virtual std::string getClassIdentifier() const = 0;
 
-    virtual bool update(const Camera* source) = 0;
-    virtual void configureProperties(CompositeProperty* comp, Config config) = 0;
+    virtual void updateFrom(const Camera* source);
+    virtual void configureProperties(CameraProperty* comp) = 0;
 
     const vec3& getLookFrom() const;
     virtual void setLookFrom(vec3 val);
@@ -83,8 +91,8 @@ public:
     const vec3& getLookUp() const;
     virtual void setLookUp(vec3 val);
 
-    virtual float getAspectRatio() const = 0;
-    virtual void setAspectRatio(float val) = 0;
+    virtual float getAspectRatio() const;
+    virtual void setAspectRatio(float val);
 
     /**
      * \brief Get unnormalized direction of camera: lookTo - lookFrom
@@ -166,6 +174,8 @@ protected:
     float nearPlaneDist_;  ///< Distance to the near plane from lookFrom.
     float farPlaneDist_;   ///< Distance to the far plane from lookFrom.
 
+    float aspectRatio_;
+
     // Make mutable to allow then to be changed even though they are called from const function.
     // This allows us to perform lazy evaluation.
     mutable bool invalidViewMatrix_;
@@ -178,20 +188,24 @@ protected:
 
 class IVW_CORE_API PerspectiveCamera final : public Camera {
 public:
-    PerspectiveCamera(vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f), vec3 lookTo = vec3(0.0f),
-                      vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), float nearPlane = 0.01f,
-                      float farPlane = 10000.0f, float fieldOfView = 60.f, float aspectRatio = 1.f);
+    PerspectiveCamera(vec3 lookFrom = cameradefaults::lookFrom,
+                      vec3 lookTo = cameradefaults::lookTo, vec3 lookUp = cameradefaults::lookUp,
+                      float nearPlane = cameradefaults::nearPlane,
+                      float farPlane = cameradefaults::farPlane,
+                      float fieldOfView = cameradefaults::fieldOfView,
+                      float aspectRatio = cameradefaults::aspectRatio);
     virtual ~PerspectiveCamera() = default;
     PerspectiveCamera(const PerspectiveCamera& other);
     PerspectiveCamera& operator=(const PerspectiveCamera& other);
     virtual PerspectiveCamera* clone() const override;
-    virtual bool update(const Camera* source) override;
-    virtual void configureProperties(CompositeProperty* comp, Config config) override;
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
+    virtual void updateFrom(const Camera* source) override;
+    virtual void configureProperties(CameraProperty* comp) override;
 
     float getFovy() const;
     void setFovy(float val);
-    virtual float getAspectRatio() const override;
-    virtual void setAspectRatio(float val) override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -201,8 +215,6 @@ protected:
     virtual mat4 calculateProjectionMatrix() const override;
 
     float fovy_;
-    float aspectRatio_;
-    std::shared_ptr<std::function<void()>> fovCallbackHolder_;
 };
 
 /**
@@ -215,20 +227,24 @@ protected:
  */
 class IVW_CORE_API OrthographicCamera final : public Camera {
 public:
-    OrthographicCamera(vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f), vec3 lookTo = vec3(0.0f),
-                       vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), float nearPlane = 0.01f,
-                       float farPlane = 10000.0f, float width = 10.f, float aspectRatio = 1.f);
+    OrthographicCamera(vec3 lookFrom = cameradefaults::lookFrom,
+                       vec3 lookTo = cameradefaults::lookTo, vec3 lookUp = cameradefaults::lookUp,
+                       float nearPlane = cameradefaults::nearPlane,
+                       float farPlane = cameradefaults::farPlane,
+                       float width = cameradefaults::width,
+                       float aspectRatio = cameradefaults::aspectRatio);
     virtual ~OrthographicCamera() = default;
     OrthographicCamera(const OrthographicCamera& other);
     OrthographicCamera& operator=(const OrthographicCamera& other);
     virtual OrthographicCamera* clone() const override;
-    virtual bool update(const Camera* source) override;
-    virtual void configureProperties(CompositeProperty* comp, Config config) override;
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
+    virtual void updateFrom(const Camera* source);
+    virtual void configureProperties(CameraProperty* comp) override;
 
     float getWidth() const;
     void setWidth(float width);
-    virtual float getAspectRatio() const override;
-    virtual void setAspectRatio(float val) override;
 
     virtual vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const override;
 
@@ -239,9 +255,7 @@ protected:
     virtual bool equal(const Camera& other) const override;
     virtual mat4 calculateProjectionMatrix() const override;
 
-    float aspectRatio_;
     float width_;
-    std::shared_ptr<std::function<void()>> widthCallbackHolder_;
 };
 
 /**
@@ -255,43 +269,41 @@ protected:
  */
 class IVW_CORE_API SkewedPerspectiveCamera final : public Camera {
 public:
-    SkewedPerspectiveCamera(vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f), vec3 lookTo = vec3(0.0f),
-                            vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), float nearPlane = 0.01f,
-                            float farPlane = 10000.0f, float fieldOfView = 60.f,
-                            float aspectRatio = 1.f, vec2 frustumOffset = vec2(0.0f, 0.0f));
+    SkewedPerspectiveCamera(
+        vec3 lookFrom = cameradefaults::lookFrom, vec3 lookTo = cameradefaults::lookTo,
+        vec3 lookUp = cameradefaults::lookUp, float nearPlane = cameradefaults::nearPlane,
+        float farPlane = cameradefaults::farPlane, float fieldOfView = cameradefaults::fieldOfView,
+        float aspectRatio = cameradefaults::aspectRatio, vec2 frustumOffset = vec2(0.0f, 0.0f));
     virtual ~SkewedPerspectiveCamera() = default;
     SkewedPerspectiveCamera(const SkewedPerspectiveCamera& other);
     SkewedPerspectiveCamera& operator=(const SkewedPerspectiveCamera& other);
     virtual SkewedPerspectiveCamera* clone() const override;
-    virtual bool update(const Camera* source) override;
-    virtual void configureProperties(CompositeProperty* comp, Config config) override;
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
+    virtual void updateFrom(const Camera* source) override;
+    virtual void configureProperties(CameraProperty* comp) override;
 
     float getFovy() const;
     void setFovy(float val);
 
-    virtual void setLookFrom(vec3 val) override;
-    virtual void setLookTo(vec3 val) override;
-
-    virtual float getAspectRatio() const override;
-    virtual void setAspectRatio(float val) override;
     const vec2& getOffset() const;
     void setOffset(vec2 val);
 
-    virtual mat4 calculateViewMatrix() const override;
+    virtual void setLookFrom(vec3 val) override;
+    virtual void setLookTo(vec3 val) override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
 protected:
     virtual bool equal(const Camera& other) const override;
+    virtual mat4 calculateViewMatrix() const override;
     virtual mat4 calculateProjectionMatrix() const override;
 
     // Left, right, bottom, top view volume
     float fovy_;
-    float aspectRatio_;
     vec2 offset_;
-    std::shared_ptr<std::function<void()>> fovCallbackHolder_;
-    std::shared_ptr<std::function<void()>> offsetCallbackHolder_;
 };
 
 // Implementation details
@@ -300,31 +312,49 @@ inline const vec3& Camera::getLookTo() const { return lookTo_; }
 inline const vec3& Camera::getLookUp() const { return lookUp_; }
 
 inline void Camera::setLookFrom(vec3 val) {
-    lookFrom_ = val;
-    invalidateViewMatrix();
+    if (lookFrom_ != val) {
+        lookFrom_ = val;
+        invalidateViewMatrix();
+    }
 }
 
 inline void Camera::setLookTo(vec3 val) {
-    lookTo_ = val;
-    invalidateViewMatrix();
+    if (lookTo_ != val) {
+        lookTo_ = val;
+        invalidateViewMatrix();
+    }
 }
 
 inline void Camera::setLookUp(vec3 val) {
-    lookUp_ = val;
-    invalidateViewMatrix();
+    if (lookUp_ != val) {
+        lookUp_ = val;
+        invalidateViewMatrix();
+    }
 }
 
 inline vec3 Camera::getDirection() const { return lookTo_ - lookFrom_; }
 
 inline float Camera::getNearPlaneDist() const { return nearPlaneDist_; }
 inline void Camera::setNearPlaneDist(float val) {
-    nearPlaneDist_ = val;
-    invalidateProjectionMatrix();
+    if (nearPlaneDist_ != val) {
+        nearPlaneDist_ = val;
+        invalidateProjectionMatrix();
+    }
 }
 inline float Camera::getFarPlaneDist() const { return farPlaneDist_; }
 inline void Camera::setFarPlaneDist(float val) {
-    farPlaneDist_ = val;
-    invalidateProjectionMatrix();
+    if (farPlaneDist_ != val) {
+        farPlaneDist_ = val;
+        invalidateProjectionMatrix();
+    }
+}
+
+inline float Camera::getAspectRatio() const { return aspectRatio_; }
+inline void Camera::setAspectRatio(float val) {
+    if (aspectRatio_ != val) {
+        aspectRatio_ = val;
+        invalidateProjectionMatrix();
+    }
 }
 
 inline void Camera::invalidateViewMatrix() { invalidViewMatrix_ = true; }
@@ -332,58 +362,49 @@ inline void Camera::invalidateProjectionMatrix() { invalidProjectionMatrix_ = tr
 
 inline float PerspectiveCamera::getFovy() const { return fovy_; }
 inline void PerspectiveCamera::setFovy(float val) {
-    fovy_ = val;
-    invalidateProjectionMatrix();
-}
-inline float PerspectiveCamera::getAspectRatio() const { return aspectRatio_; }
-inline void PerspectiveCamera::setAspectRatio(float val) {
-    aspectRatio_ = val;
-    invalidateProjectionMatrix();
+    if (fovy_ != val) {
+        fovy_ = val;
+        invalidateProjectionMatrix();
+    }
 }
 
 inline mat4 PerspectiveCamera::calculateProjectionMatrix() const {
     return glm::perspective(glm::radians(fovy_), aspectRatio_, nearPlaneDist_, farPlaneDist_);
 }
 
-inline float OrthographicCamera::getAspectRatio() const { return aspectRatio_; }
-
-inline void OrthographicCamera::setAspectRatio(float val) {
-    aspectRatio_ = val;
-    invalidateProjectionMatrix();
-}
-
 inline float OrthographicCamera::getWidth() const { return width_; }
 
 inline void OrthographicCamera::setWidth(float width) {
-    width_ = width;
-    invalidateProjectionMatrix();
+    if (width_ != width) {
+        width_ = width;
+        invalidateProjectionMatrix();
+    }
 }
 
 inline float SkewedPerspectiveCamera::getFovy() const { return fovy_; }
 inline void SkewedPerspectiveCamera::setFovy(float val) {
-    fovy_ = val;
-    invalidateProjectionMatrix();
+    if (fovy_ != val) {
+        fovy_ = val;
+        invalidateProjectionMatrix();
+    }
 }
 inline void SkewedPerspectiveCamera::setLookFrom(vec3 val) {
     Camera::setLookFrom(val);
     invalidateProjectionMatrix();
 }
+
 inline void SkewedPerspectiveCamera::setLookTo(vec3 val) {
     Camera::setLookTo(val);
     invalidateProjectionMatrix();
 }
 
-inline float SkewedPerspectiveCamera::getAspectRatio() const { return aspectRatio_; }
-inline void SkewedPerspectiveCamera::setAspectRatio(float val) {
-    aspectRatio_ = val;
-    invalidateProjectionMatrix();
-}
-
 inline const vec2& SkewedPerspectiveCamera::getOffset() const { return offset_; }
 inline void SkewedPerspectiveCamera::setOffset(vec2 offset) {
-    offset_ = offset;
-    invalidateViewMatrix();
-    invalidateProjectionMatrix();
+    if (offset_ != offset) {
+        offset_ = offset;
+        invalidateViewMatrix();
+        invalidateProjectionMatrix();
+    }
 }
 
 }  // namespace inviwo

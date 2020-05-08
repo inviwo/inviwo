@@ -27,13 +27,14 @@
  *
  *********************************************************************************/
 
+#include <inviwo/core/properties/cameraproperty.h>
+
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/camerafactory.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/viewevent.h>
 #include <inviwo/core/util/foreach.h>
@@ -53,19 +54,45 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
                                vec3 center, vec3 lookUp, InvalidationLevel invalidationLevel,
                                PropertySemantics semantics)
     : CompositeProperty{identifier, displayName, invalidationLevel, semantics}
-    , cameraType_("cameraType", "Camera Type",
-                  InviwoApplication::getPtr()->getCameraFactory()->getKeys(), 0)
+    , factory_{InviwoApplication::getPtr()->getCameraFactory()}
+    , cameraType_("cameraType", "Camera Type", factory_->getKeys(),
+                  [&]() {
+                      auto keys = factory_->getKeys();
+                      auto it = std::find(keys.begin(), keys.end(), "PerspectiveCamera");
+                      return it != keys.end() ? std::distance(keys.begin(), it) : 0;
+                  }())
+    , camera_{factory_->create(cameraType_)}
+    , defaultCamera_{}
     , cameraActions_("actions", "Actions", buttons())
-    , lookFrom_("lookFrom", "Look from", eye, -vec3(100.0f), vec3(100.0f), vec3(0.1f),
-                InvalidationLevel::InvalidOutput, PropertySemantics{"SphericalSpinBox"})
-    , lookTo_("lookTo", "Look to", center, -vec3(100.0f), vec3(100.0f), vec3(0.1f),
-              InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
-    , lookUp_("lookUp", "Look up", lookUp, -vec3(1.f), vec3(1.f), vec3(0.1f),
-              InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
-    , aspectRatio_("aspectRatio", "Aspect Ratio", 1.0f, 0.0f, std::numeric_limits<float>::max(),
-                   0.01f, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , nearPlane_("near", "Near Plane", 0.1f, 0.001f, 10.f, 0.001f)
-    , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f)
+    , lookFrom_(
+          "lookFrom", "Look from", [this]() { return camera_->getLookFrom(); },
+          [this](const vec3& val) { camera_->setLookFrom(val); },
+          {-vec3(100.0f), ConstraintBehavior::Ignore}, {vec3(100.0f), ConstraintBehavior::Ignore},
+          vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics{"SphericalSpinBox"})
+    , lookTo_(
+          "lookTo", "Look to", [this]() { return camera_->getLookTo(); },
+          [this](const vec3& val) { camera_->setLookTo(val); },
+          {-vec3(100.0f), ConstraintBehavior::Ignore}, {vec3(100.0f), ConstraintBehavior::Ignore},
+          vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
+    , lookUp_(
+          "lookUp", "Look up", [this]() { return camera_->getLookUp(); },
+          [this](const vec3& val) { camera_->setLookUp(val); },
+          {-vec3(1.0f), ConstraintBehavior::Immutable}, {vec3(1.0f), ConstraintBehavior::Immutable},
+          vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
+    , aspectRatio_(
+          "aspectRatio", "Aspect Ratio", [this]() { return camera_->getAspectRatio(); },
+          [this](const float& val) { camera_->setAspectRatio(val); },
+          {0.0f, ConstraintBehavior::Immutable},
+          {std::numeric_limits<float>::max(), ConstraintBehavior::Immutable}, 0.01f,
+          InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , nearPlane_(
+          "near", "Near Plane", [this]() { return camera_->getNearPlaneDist(); },
+          [this](const float& val) { camera_->setNearPlaneDist(val); },
+          {0.001f, ConstraintBehavior::Ignore}, {10.0f, ConstraintBehavior::Ignore}, 0.001f)
+    , farPlane_(
+          "far", "Far Plane", [this]() { return camera_->getFarPlaneDist(); },
+          [this](const float& val) { camera_->setFarPlaneDist(val); },
+          {1.0f, ConstraintBehavior::Ignore}, {1000.0f, ConstraintBehavior::Ignore}, 1.0f)
 
     , settings_("settings", "Settings")
     , updateNearFar_("updateNearFar", "Update Near/Far Distances", true)
@@ -76,66 +103,51 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
     , setLookRangesButton_("setLookRangesButton", "Set Look-to/-from Ranges",
                            [this] { setLookRange(); })
 
-    , camera_{}
     , getBoundingBox_{std::move(getBoundingBox)} {
 
-    cameraType_.setSelectedIdentifier("PerspectiveCamera");
-    cameraType_.setCurrentStateAsDefault();
-    cameraType_.onChange([&]() {
-        changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_));
-    });
-
-    // Make sure that the Camera is in sync with the property values.
-    lookFrom_.onChange([&]() { camera_->setLookFrom(lookFrom_); });
-    lookTo_.onChange([&]() { camera_->setLookTo(lookTo_); });
-    lookUp_.onChange([&]() { camera_->setLookUp(lookUp_); });
-    aspectRatio_.onChange([&]() { camera_->setAspectRatio(aspectRatio_); });
-    nearPlane_.onChange([&]() { camera_->setNearPlaneDist(nearPlane_); });
-    farPlane_.onChange([&]() { camera_->setFarPlaneDist(farPlane_); });
-
-    aspectRatio_.setReadOnly(true);
-    aspectRatio_.setCurrentStateAsDefault();
+    aspectRatio_.setReadOnly(true).setCurrentStateAsDefault();
+    settings_.setCollapsed(true).setCurrentStateAsDefault().addProperties(
+        setNearFarButton_, setLookRangesButton_, updateNearFar_, updateLookRanges_, fittingRatio_);
 
     addProperties(cameraType_, cameraActions_, lookFrom_, lookTo_, lookUp_, aspectRatio_,
                   nearPlane_, farPlane_, settings_);
-    settings_.addProperties(setNearFarButton_, setLookRangesButton_, updateNearFar_,
-                            updateLookRanges_, fittingRatio_);
-    settings_.setCollapsed(true);
+    util::for_each_argument([this](auto& arg) { cameraProperties_.push_back(&arg); }, lookFrom_,
+                            lookTo_, lookUp_, aspectRatio_, nearPlane_, farPlane_);
 
-    auto cameraFitVisible = [this]() {
-        util::for_each_argument(
-            [&](auto& p) {
-                p.setVisible(getBoundingBox_ && cameraType_ == "PerspectiveCamera");
-                p.setCurrentStateAsDefault();
-            },
-            cameraActions_, settings_, setNearFarButton_, setLookRangesButton_, updateNearFar_,
-            updateLookRanges_, fittingRatio_);
-    };
+    camera_->configureProperties(this);
+    cameraType_.onChange([this]() {
+        changeCamera(cameraType_);
+        updateFittingVisibility();
+    });
 
-    cameraType_.onChange(cameraFitVisible);
-    cameraFitVisible();
+    updateFittingVisibility();
 
-    changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_));
+    setLook(eye, center, lookUp);
+    defaultCamera_.reset(camera_->clone());
 }
 
 CameraProperty::CameraProperty(const std::string& identifier, const std::string& displayName,
                                vec3 eye, vec3 center, vec3 lookUp, Inport* inport,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CameraProperty(identifier, displayName,
-                     [&]() -> std::function<std::optional<mat4>()> {
-                         if (auto vp = dynamic_cast<VolumeInport*>(inport)) {
-                             return util::boundingBox(*vp);
-                         } else if (auto mp = dynamic_cast<MeshInport*>(inport)) {
-                             return util::boundingBox(*mp);
-                         } else {
-                             return nullptr;
-                         }
-                     }(),
-                     eye, center, lookUp, invalidationLevel, semantics) {}
+    : CameraProperty(
+          identifier, displayName,
+          [&]() -> std::function<std::optional<mat4>()> {
+              if (auto vp = dynamic_cast<VolumeInport*>(inport)) {
+                  return util::boundingBox(*vp);
+              } else if (auto mp = dynamic_cast<MeshInport*>(inport)) {
+                  return util::boundingBox(*mp);
+              } else {
+                  return nullptr;
+              }
+          }(),
+          eye, center, lookUp, invalidationLevel, semantics) {}
 
 CameraProperty::CameraProperty(const CameraProperty& rhs)
     : CompositeProperty(rhs)
+    , factory_{rhs.factory_}
     , cameraType_(rhs.cameraType_)
+    , camera_{factory_->create(cameraType_)}
+    , defaultCamera_{}
     , cameraActions_{rhs.cameraActions_, buttons()}
     , lookFrom_(rhs.lookFrom_)
     , lookTo_(rhs.lookTo_)
@@ -151,89 +163,50 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     , setNearFarButton_{rhs.setNearFarButton_, [this] { setNearFar(); }}
     , setLookRangesButton_{rhs.setLookRangesButton_, [this] { setLookRange(); }}
 
-    , camera_()
     , getBoundingBox_(rhs.getBoundingBox_) {
 
-    // Make sure that the Camera) is
-    // in sync with the property values.
-    cameraType_.onChange([&]() {
-        changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_));
-    });
-    lookFrom_.onChange([&]() { camera_->setLookFrom(lookFrom_); });
-    lookTo_.onChange([&]() { camera_->setLookTo(lookTo_); });
-    lookUp_.onChange([&]() { camera_->setLookUp(lookUp_); });
-    aspectRatio_.onChange([&]() { camera_->setAspectRatio(aspectRatio_); });
-    nearPlane_.onChange([&]() { camera_->setNearPlaneDist(nearPlane_); });
-    farPlane_.onChange([&]() { camera_->setFarPlaneDist(farPlane_); });
-
-    {
-        // Make sure we put these properties before any owned properties, added from the
-        // CompositeProperty base class
-        size_t i = 0;
-        insertProperty(i++, cameraType_);
-        insertProperty(i++, cameraActions_);
-        insertProperty(i++, lookFrom_);
-        insertProperty(i++, lookTo_);
-        insertProperty(i++, lookUp_);
-        insertProperty(i++, aspectRatio_);
-        insertProperty(i++, nearPlane_);
-        insertProperty(i++, farPlane_);
-    }
-    addProperty(settings_);  // We want settings to be last
     settings_.addProperties(setNearFarButton_, setLookRangesButton_, updateNearFar_,
                             updateLookRanges_, fittingRatio_);
+    addProperties(cameraType_, cameraActions_, lookFrom_, lookTo_, lookUp_, aspectRatio_,
+                  nearPlane_, farPlane_, settings_);
+    util::for_each_argument([this](auto& arg) { cameraProperties_.push_back(&arg); }, lookFrom_,
+                            lookTo_, lookUp_, aspectRatio_, nearPlane_, farPlane_);
 
-    auto cameraFitVisible = [this]() {
-        util::for_each_argument(
-            [&](auto& p) {
-                p.setVisible(getBoundingBox_ && cameraType_ == "PerspectiveCamera");
-                p.setCurrentStateAsDefault();
-            },
-            cameraActions_, settings_, setNearFarButton_, setLookRangesButton_, updateNearFar_,
-            updateLookRanges_, fittingRatio_);
-    };
+    camera_->configureProperties(this);
+    cameraType_.onChange([this]() {
+        changeCamera(cameraType_);
+        updateFittingVisibility();
+    });
+    updateFittingVisibility();
 
-    cameraType_.onChange(cameraFitVisible);
-    cameraFitVisible();
-
-    changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_.get()));
+    for (auto dst : cameraProperties_) {
+        if (auto src = rhs.getCameraProperty(dst->getIdentifier())) {
+            dst->set(src);
+        }
+    }
+    defaultCamera_.reset(camera_->clone());
 }
 
 CameraProperty::~CameraProperty() = default;
-
-void CameraProperty::changeCamera(std::unique_ptr<Camera> newCamera) {
-    NetworkLock lock(this);
-    if (camera_) camera_->configureProperties(this, Camera::Config::Hide);
-    camera_ = std::move(newCamera);
-    camera_->setLookFrom(lookFrom_);
-    camera_->setLookTo(lookTo_);
-    camera_->setLookUp(lookUp_);
-    camera_->setAspectRatio(aspectRatio_);
-    camera_->setNearPlaneDist(nearPlane_);
-    camera_->setFarPlaneDist(farPlane_);
-    camera_->configureProperties(this, Camera::Config::Show);
-}
 
 const Camera& CameraProperty::get() const { return *camera_; }
 Camera& CameraProperty::get() { return *camera_; }
 
 void CameraProperty::set(const Property* srcProperty) {
-    if (const auto cameraSrcProp = dynamic_cast<const CameraProperty*>(srcProperty)) {
-        if (!camera_->update(cameraSrcProp->camera_.get())) {
-            // update failed, make a clone
-            changeCamera(std::unique_ptr<Camera>(cameraSrcProp->camera_->clone()));
-        }
+    if (const auto src = dynamic_cast<const CameraProperty*>(srcProperty)) {
+        NetworkLock lock(this);
+        auto aspect = getAspectRatio();
 
-        for (auto dest : getProperties()) {
-            if (!aspectSupplier_ || dest->getIdentifier() != aspectRatio_.getIdentifier()) {
-                if (auto src = cameraSrcProp->getPropertyByIdentifier(dest->getIdentifier())) {
-                    dest->set(src);
-                }
+        cameraType_.set(&src->cameraType_);
+
+        for (auto destp : cameraProperties_) {
+            if (auto srcp = src->getCameraProperty(destp->getIdentifier())) {
+                destp->set(srcp);
             }
         }
 
-        if (aspectSupplier_) {
-            camera_->setAspectRatio(aspectRatio_);
+        if (aspectSupplier_) {  // restore the aspect if we are a supplier.
+            setAspectRatio(aspect);
         }
 
         propertyModified();
@@ -244,20 +217,55 @@ CameraProperty::operator const Camera&() const { return *camera_; }
 
 CameraProperty* CameraProperty::clone() const { return new CameraProperty(*this); }
 
-void CameraProperty::resetCamera() {
-    NetworkLock lock(this);
+bool CameraProperty::changeCamera(const std::string& name) {
+    if (name != camera_->getClassIdentifier()) {
+        NetworkLock lock(this);
+        auto newCamera = factory_->create(name);
+        hideConfiguredProperties();
 
-    lookFrom_.resetToDefaultState();
-    lookTo_.resetToDefaultState();
-    lookUp_.resetToDefaultState();
+        newCamera->updateFrom(camera_.get());
+        camera_ = std::move(newCamera);
+        camera_->configureProperties(this);
 
-    // Update template value
-    camera_->setLookFrom(lookFrom_.get());
-    camera_->setLookTo(lookTo_.get());
-    camera_->setLookUp(lookUp_.get());
+        modifedConfiguredProperties();
+
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void CameraProperty::hideConfiguredProperties() {
+    for (auto& p : ownedCameraProperties_) p->setVisible(false);
+}
+
+void CameraProperty::modifedConfiguredProperties() {
+    for (auto p : cameraProperties_) {
+        p->propertyModified();
+    }
+}
+
+CameraProperty& CameraProperty::setCamera(const std::string& cameraIdentifier) {
+    cameraType_.setSelectedIdentifier(cameraIdentifier);
+    return *this;
+}
+
+CameraProperty& CameraProperty::setCamera(std::unique_ptr<Camera> newCamera) {
+    if (newCamera) {
+        NetworkLock lock(this);
+        hideConfiguredProperties();
+        camera_ = std::move(newCamera);
+        camera_->configureProperties(this);
+
+        modifedConfiguredProperties();
+
+        cameraType_.setSelectedIdentifier(camera_->getClassIdentifier());
+    }
+    return *this;
 }
 
 CameraProperty& CameraProperty::setCurrentStateAsDefault() {
+    defaultCamera_.reset(camera_->clone());
     Property::setCurrentStateAsDefault();
     for (auto& elem : properties_) {
         elem->setCurrentStateAsDefault();
@@ -267,6 +275,7 @@ CameraProperty& CameraProperty::setCurrentStateAsDefault() {
 
 CameraProperty& CameraProperty::resetToDefaultState() {
     NetworkLock lock(this);
+    setCamera(std::unique_ptr<Camera>(defaultCamera_->clone()));
     for (auto& elem : properties_) {
         if (elem != &aspectRatio_) {  // We never want to reset the aspect
             elem->resetToDefaultState();
@@ -275,32 +284,51 @@ CameraProperty& CameraProperty::resetToDefaultState() {
     return *this;
 }
 
-void CameraProperty::setLookFrom(vec3 lookFrom) { lookFrom_.set(lookFrom); }
+CameraProperty& CameraProperty::setLookFrom(vec3 lookFrom) {
+    lookFrom_.set(lookFrom);
+    return *this;
+}
 
-void CameraProperty::setLookTo(vec3 lookTo) { lookTo_.set(lookTo); }
+CameraProperty& CameraProperty::setLookTo(vec3 lookTo) {
+    lookTo_.set(lookTo);
+    return *this;
+}
 
-void CameraProperty::setLookUp(vec3 lookUp) { lookUp_.set(lookUp); }
+CameraProperty& CameraProperty::setLookUp(vec3 lookUp) {
+    lookUp_.set(lookUp);
+    return *this;
+}
 
-void CameraProperty::setAspectRatio(float aspectRatio) { aspectRatio_.set(aspectRatio); }
+CameraProperty& CameraProperty::setAspectRatio(float aspectRatio) {
+    aspectRatio_.set(aspectRatio);
+    return *this;
+}
 float CameraProperty::getAspectRatio() const { return camera_->getAspectRatio(); }
 
-void CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
+CameraProperty& CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
     NetworkLock lock(this);
     setLookFrom(lookFrom);
     setLookTo(lookTo);
     setLookUp(lookUp);
+    return *this;
 }
 
 float CameraProperty::getNearPlaneDist() const { return nearPlane_.get(); }
 
 float CameraProperty::getFarPlaneDist() const { return farPlane_.get(); }
 
-void CameraProperty::setNearPlaneDist(float v) { nearPlane_.set(v); }
+CameraProperty& CameraProperty::setNearPlaneDist(float v) {
+    nearPlane_.set(v);
+    return *this;
+}
 
-void CameraProperty::setFarPlaneDist(float v) { farPlane_.set(v); }
+CameraProperty& CameraProperty::setFarPlaneDist(float v) {
+    farPlane_.set(v);
+    return *this;
+}
 
-void CameraProperty::setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist,
-                                         float minMaxRatio) {
+CameraProperty& CameraProperty::setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist,
+                                                    float minMaxRatio) {
     NetworkLock lock(this);
 
     nearPlane_.set(nearPlaneDist, std::min(nearPlane_.getMinValue(), nearPlaneDist / minMaxRatio),
@@ -310,6 +338,7 @@ void CameraProperty::setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist
     farPlane_.set(farPlaneDist, std::min(farPlane_.getMinValue(), farPlaneDist / minMaxRatio),
                   std::max(farPlane_.getMaxValue(), farPlaneDist * minMaxRatio),
                   farPlane_.getIncrement());
+    return *this;
 }
 
 vec3 CameraProperty::getLookFromMinValue() const { return lookFrom_.getMinValue(); }
@@ -355,6 +384,37 @@ void CameraProperty::invokeEvent(Event* event) {
     }
 }
 
+inline Property* CameraProperty::getCameraProperty(const std::string& identifier) const {
+    const auto it =
+        std::find_if(cameraProperties_.begin(), cameraProperties_.end(),
+                     [&](auto property) { return property->getIdentifier() == identifier; });
+    if (it != cameraProperties_.end()) {
+        return *it;
+    } else {
+        return nullptr;
+    }
+}
+
+inline void CameraProperty::addCamerapProperty(Property* camprop) {
+    cameraProperties_.push_back(camprop);
+    ownedCameraProperties_.emplace_back(camprop);
+    insertProperty(size() - 1, camprop, false);
+}
+
+void CameraProperty::serialize(Serializer& s) const {
+    CompositeProperty::serialize(s);
+    s.serialize("Camera", camera_);
+
+}
+
+void CameraProperty::deserialize(Deserializer& d) {
+    hideConfiguredProperties();
+    d.deserialize("Camera", camera_);
+    camera_->configureProperties(this);
+    CompositeProperty::deserialize(d);
+    modifedConfiguredProperties();
+}
+
 const vec3& CameraProperty::getLookFrom() const { return camera_->getLookFrom(); }
 
 const vec3& CameraProperty::getLookTo() const { return camera_->getLookTo(); }
@@ -392,6 +452,16 @@ std::vector<ButtonGroupProperty::Button> CameraProperty::buttons() {
          {std::nullopt, ":svgicons/view-z-p.svg", "View data from Z+",
           [this] { setView(camerautil::Side::ZPositive); }},
          {std::nullopt, ":svgicons/view-flip.svg", "Flip the up vector", [this] { flipUp(); }}}};
+}
+
+void CameraProperty::updateFittingVisibility() {
+    util::for_each_argument(
+        [&](auto& p) {
+            p.setVisible(getBoundingBox_ && cameraType_ == "PerspectiveCamera");
+            p.setCurrentStateAsDefault();
+        },
+        cameraActions_, settings_, setNearFarButton_, setLookRangesButton_, updateNearFar_,
+        updateLookRanges_, fittingRatio_);
 }
 
 void CameraProperty::setView(camerautil::Side side) {

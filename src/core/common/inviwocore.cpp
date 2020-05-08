@@ -277,9 +277,9 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerMetaData(std::make_unique<StdVectorMetaData<std::string>>());
 
     // Register Cameras
-    registerCamera<PerspectiveCamera>("PerspectiveCamera");
-    registerCamera<OrthographicCamera>("OrthographicCamera");
-    registerCamera<SkewedPerspectiveCamera>("SkewedPerspectiveCamera");
+    registerCamera<PerspectiveCamera>(PerspectiveCamera::classIdentifier);
+    registerCamera<OrthographicCamera>(OrthographicCamera::classIdentifier);
+    registerCamera<SkewedPerspectiveCamera>(SkewedPerspectiveCamera::classIdentifier);
 
     // Register Data readers
     registerDataReader(std::make_unique<RawVolumeReader>());

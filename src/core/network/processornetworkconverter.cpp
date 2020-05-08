@@ -87,6 +87,9 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             [[fallthrough]];
         case 15:
             traverseNodes(root, &ProcessorNetworkConverter::updatePropertyEditorMetadata);
+            [[fallthrough]];
+        case 16:
+            traverseNodes(root, &ProcessorNetworkConverter::updateCameraPropertyToRefs);
             return true;  // Changes has been made.
         default:
             return false;  // No changes
@@ -661,6 +664,47 @@ void ProcessorNetworkConverter::updatePropertyEditorMetadata(TxElement* parent) 
         }
         for (auto item : toRemove) {
             parent->RemoveChild(item);
+        }
+    }
+}
+
+void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* node) {
+
+    std::string key;
+    node->GetValue(&key);
+
+    if (key == "Property") {
+        std::string type = node->GetAttributeOrDefault("type", "");
+        if (type == "org.inviwo.CameraProperty") {
+
+            // create
+            TxElement cam;
+            cam.SetValue("Camera");
+
+            xml::visitMatchingNodes(
+                node, {{"Properties", {}}, {"Property", {}}}, [&](TxElement* subNode) {
+                    auto name = subNode->GetAttribute("identifier");
+
+                    if (name == "lookFrom" || name == "lookTo" || name == "lookUp") {
+                        subNode->SetAttribute("type", "org.inviwo.FloatVec3RefProperty");
+                        if (auto value = subNode->FirstChild(false)) {
+                            auto val = value->Clone();
+                            val->SetValue(name);
+                            cam.InsertEndChild(*val);
+                        }
+                    } else if (name == "fov" || name == "aspectRatio" || name == "near" ||
+                               name == "far" || name == "width") {
+                        subNode->SetAttribute("type", "org.inviwo.FloatRefProperty");
+                        if (auto value = subNode->FirstChild(false)) {
+                            auto val = value->Clone();
+                            val->SetValue(name);
+                            cam.InsertEndChild(*val);
+                        }
+                    }
+                });
+
+            // insert new node
+            node->InsertEndChild(cam);
         }
     }
 }

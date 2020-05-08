@@ -44,11 +44,11 @@ public:
     virtual const vec3& getLookFrom() const = 0;
     virtual const vec3& getLookUp() const = 0;
 
-    virtual void setLookTo(vec3 lookTo) = 0;
-    virtual void setLookFrom(vec3 lookFrom) = 0;
-    virtual void setLookUp(vec3 lookUp) = 0;
+    virtual TrackballObject& setLookTo(vec3 lookTo) = 0;
+    virtual TrackballObject& setLookFrom(vec3 lookFrom) = 0;
+    virtual TrackballObject& setLookUp(vec3 lookUp) = 0;
 
-    virtual void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) = 0;
+    virtual TrackballObject& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) = 0;
 
     virtual vec3 getLookFromMinValue() const = 0;
     virtual vec3 getLookFromMaxValue() const = 0;

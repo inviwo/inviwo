@@ -28,18 +28,22 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/camera.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/io/serialization/serialization.h>
+
+#include <memory>
 
 namespace inviwo {
 
-Camera::Camera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane)
+Camera::Camera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane,
+               float aspectRatio)
     : lookFrom_(lookFrom)
     , lookTo_(lookTo)
     , lookUp_(lookUp)
     , nearPlaneDist_(nearPlane)
     , farPlaneDist_(farPlane)
+    , aspectRatio_{aspectRatio}
     , invalidViewMatrix_(true)
     , invalidProjectionMatrix_(true)
     , viewMatrix_{1.0f}
@@ -99,11 +103,13 @@ vec3 Camera::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
 }
 
 void Camera::serialize(Serializer& s) const {
+    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("lookFrom", lookFrom_);
     s.serialize("lookTo", lookTo_);
     s.serialize("lookUp", lookUp_);
     s.serialize("nearPlaneDist", nearPlaneDist_);
     s.serialize("farPlaneDist", farPlaneDist_);
+    s.serialize("aspectRatio", aspectRatio_);
 }
 void Camera::deserialize(Deserializer& d) {
     d.deserialize("lookFrom", lookFrom_);
@@ -111,75 +117,72 @@ void Camera::deserialize(Deserializer& d) {
     d.deserialize("lookUp", lookUp_);
     d.deserialize("nearPlaneDist", nearPlaneDist_);
     d.deserialize("farPlaneDist", farPlaneDist_);
+    d.deserialize("aspectRatio", aspectRatio_);
     invalidProjectionMatrix_ = true;
     invalidViewMatrix_ = true;
 }
 
+void Camera::updateFrom(const Camera* source) {
+    setLookFrom(source->getLookFrom());
+    setLookTo(source->getLookTo());
+    setLookUp(source->getLookUp());
+
+    setNearPlaneDist(source->getNearPlaneDist());
+    setFarPlaneDist(source->getFarPlaneDist());
+    setAspectRatio(source->getAspectRatio());
+}
+
 bool Camera::equalTo(const Camera& other) const {
-    return !(glm::any(glm::notEqual(lookFrom_, other.lookFrom_)) |
-             glm::any(glm::notEqual(lookTo_, other.lookTo_)) |
-             (nearPlaneDist_ != other.nearPlaneDist_) | (farPlaneDist_ != other.farPlaneDist_));
+    return !(glm::any(glm::notEqual(lookFrom_, other.lookFrom_)) ||
+             glm::any(glm::notEqual(lookTo_, other.lookTo_)) ||
+             (nearPlaneDist_ != other.nearPlaneDist_) || (farPlaneDist_ != other.farPlaneDist_) ||
+             (aspectRatio_ != other.aspectRatio_));
 }
 
 PerspectiveCamera::PerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
                                      float farPlane, float fieldOfView, float aspectRatio)
-    : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane)
-    , fovy_(fieldOfView)
-    , aspectRatio_(aspectRatio) {}
+    : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), fovy_(fieldOfView) {}
 
-PerspectiveCamera::PerspectiveCamera(const PerspectiveCamera& other)
-    : Camera(other), fovy_{other.fovy_}, aspectRatio_{other.aspectRatio_} {}
+PerspectiveCamera::PerspectiveCamera(const PerspectiveCamera& other) = default;
 
-PerspectiveCamera& PerspectiveCamera::operator=(const PerspectiveCamera& other) {
-    if (this != &other) {
-        Camera::operator=(other);
-        fovy_ = other.fovy_;
-        aspectRatio_ = other.aspectRatio_;
-    }
-
-    return *this;
-}
+PerspectiveCamera& PerspectiveCamera::operator=(const PerspectiveCamera& other) = default;
 
 PerspectiveCamera* PerspectiveCamera::clone() const { return new PerspectiveCamera(*this); }
 
-bool PerspectiveCamera::update(const Camera* source) {
-    if (auto perspectiveCamera = dynamic_cast<const PerspectiveCamera*>(source)) {
-        *this = *perspectiveCamera;
+std::string PerspectiveCamera::getClassIdentifier() const { return classIdentifier; }
 
-        return true;
-    } else {
-        return false;
+const std::string PerspectiveCamera::classIdentifier = "PerspectiveCamera";
+
+void PerspectiveCamera::updateFrom(const Camera* source) {
+    Camera::updateFrom(source);
+    if (auto pc = dynamic_cast<const PerspectiveCamera*>(source)) {
+        setFovy(pc->getFovy());
+    } else if (auto oc = dynamic_cast<const OrthographicCamera*>(source)) {
+        setFovy(glm::degrees(
+            2.0f * std::atan(oc->getWidth() / 2.0f / glm::distance(getLookTo(), getLookFrom()))));
     }
 }
 
-void PerspectiveCamera::configureProperties(CompositeProperty* comp, Config config) {
-    auto fovProp = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("fov"));
+void PerspectiveCamera::configureProperties(CameraProperty* comp) {
+    auto fov = dynamic_cast<FloatRefProperty*>(comp->getCameraProperty("fov"));
 
-    if (config == Config::Hide) {
-        if (fovProp) fovProp->setVisible(false);
-        return;
-    }
+    auto getter = [this]() { return getFovy(); };
+    auto setter = [this](const float& val) { setFovy(val); };
 
-    if (fovProp) {
-        setFovy(fovProp->get());
+    if (fov) {
+        fov->setGetAndSet(getter, setter);
     } else {
-        float initialFov = 38.0f;
-        if (auto widthProp = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("width"))) {
-            initialFov = glm::degrees(2.0f * std::atan(widthProp->get() / 2.0f /
-                                                       glm::distance(getLookTo(), getLookFrom())));
-        }
-        fovProp = new FloatProperty("fov", "FOV", initialFov, 10.0f, 180.0f, 0.1f);
-        fovProp->setSerializationMode(PropertySerializationMode::All);
-        fovProp->setCurrentStateAsDefault();
-        comp->insertProperty(comp->size() - 1, fovProp, true);
+        fov = new FloatRefProperty("fov", "FOV", getter, setter,
+                                   {0.0f, ConstraintBehavior::Immutable},
+                                   {180.0f, ConstraintBehavior::Immutable}, 0.1f);
+        comp->addCamerapProperty(fov);
     }
-    fovProp->setVisible(true);
-    fovCallbackHolder_ = fovProp->onChangeScoped([this, fovProp]() { setFovy(fovProp->get()); });
+    fov->setVisible(true);
 }
 
 bool PerspectiveCamera::equal(const Camera& other) const {
     if (auto rhs = dynamic_cast<const PerspectiveCamera*>(&other)) {
-        return equalTo(other) && fovy_ == rhs->fovy_ && aspectRatio_ == rhs->aspectRatio_;
+        return equalTo(other) && fovy_ == rhs->fovy_;
     } else {
         return false;
     }
@@ -188,68 +191,51 @@ bool PerspectiveCamera::equal(const Camera& other) const {
 void PerspectiveCamera::serialize(Serializer& s) const {
     Camera::serialize(s);
     s.serialize("fovy", fovy_);
-    s.serialize("aspectRatio", aspectRatio_);
 }
 void PerspectiveCamera::deserialize(Deserializer& d) {
     d.deserialize("fovy", fovy_);
-    d.deserialize("aspectRatio", aspectRatio_);
     Camera::deserialize(d);
 }
 
 OrthographicCamera::OrthographicCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
                                        float farPlane, float width, float aspectRatio)
-    : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane)
-    , aspectRatio_{aspectRatio}
-    , width_{width} {}
+    : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), width_{width} {}
 
-OrthographicCamera::OrthographicCamera(const OrthographicCamera& other)
-    : Camera(other), aspectRatio_{other.aspectRatio_}, width_{other.width_} {}
+OrthographicCamera::OrthographicCamera(const OrthographicCamera&) = default;
 
-OrthographicCamera& OrthographicCamera::operator=(const OrthographicCamera& other) {
-    if (this != &other) {
-        Camera::operator=(other);
-        aspectRatio_ = other.aspectRatio_;
-        width_ = other.width_;
-    }
-
-    return *this;
-}
+OrthographicCamera& OrthographicCamera::operator=(const OrthographicCamera&) = default;
 
 OrthographicCamera* OrthographicCamera::clone() const { return new OrthographicCamera(*this); }
 
-bool OrthographicCamera::update(const Camera* source) {
-    if (auto orthographicCamera = dynamic_cast<const OrthographicCamera*>(source)) {
-        *this = *orthographicCamera;
-        return true;
-    } else {
-        return false;
+std::string OrthographicCamera::getClassIdentifier() const { return classIdentifier; }
+
+const std::string OrthographicCamera::classIdentifier = "OrthographicCamera";
+
+void OrthographicCamera::updateFrom(const Camera* source) {
+    Camera::updateFrom(source);
+    if (auto oc = dynamic_cast<const OrthographicCamera*>(source)) {
+        setWidth(oc->getWidth());
+    } else if (auto pc = dynamic_cast<const PerspectiveCamera*>(source)) {
+        setWidth(glm::distance(getLookTo(), getLookFrom()) *
+                 std::tan(0.5f * glm::radians(pc->getFovy())));
     }
 }
 
-void OrthographicCamera::configureProperties(CompositeProperty* comp, Config config) {
-    auto widthProp = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("width"));
+void OrthographicCamera::configureProperties(CameraProperty* comp) {
+    auto width = dynamic_cast<FloatRefProperty*>(comp->getCameraProperty("width"));
+    
+    auto getter = [this]() { return getWidth(); };
+    auto setter = [this](const float& val) { setWidth(val); };
 
-    if (config == Config::Hide) {
-        if (widthProp) widthProp->setVisible(false);
-        return;
-    }
-
-    if (widthProp) {
-        setWidth(widthProp->get());
+    if (width) {
+        width->setGetAndSet(getter, setter);
     } else {
-        float initialWidth = 10.0f;
-        if (auto fovProp = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("fov"))) {
-            initialWidth = glm::distance(getLookTo(), getLookFrom()) *
-                           std::tan(0.5f * glm::radians(fovProp->get()));
-        }
-        widthProp = new FloatProperty("width", "Width", initialWidth, 0.01f, 1000.0f, 0.1f);
-        comp->insertProperty(comp->size() - 1, widthProp, true);
-        widthProp->setSerializationMode(PropertySerializationMode::All);
+        width = new FloatRefProperty("width", "Width", getter, setter,
+                                     {0.0f, ConstraintBehavior::Immutable},
+                                     {1000.0f, ConstraintBehavior::Ignore}, 0.1f);
+        comp->addCamerapProperty(width);
     }
-
-    widthProp->setVisible(true);
-    widthCallbackHolder_ =
-        widthProp->onChangeScoped([this, widthProp]() { setWidth(widthProp->get()); });
+    width->setVisible(true);
 }
 
 bool OrthographicCamera::equal(const Camera& other) const {
@@ -273,11 +259,9 @@ vec4 OrthographicCamera::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoo
 
 void OrthographicCamera::serialize(Serializer& s) const {
     Camera::serialize(s);
-    s.serialize("aspectRatio", aspectRatio_);
     s.serialize("width", width_);
 }
 void OrthographicCamera::deserialize(Deserializer& d) {
-    d.deserialize("aspectRatio", aspectRatio_);
     d.deserialize("width", width_);
     Camera::deserialize(d);
 }
@@ -285,78 +269,66 @@ void OrthographicCamera::deserialize(Deserializer& d) {
 SkewedPerspectiveCamera::SkewedPerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp,
                                                  float nearPlane, float farPlane, float fieldOfView,
                                                  float aspectRatio, vec2 offset)
-    : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane)
+    : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio)
     , fovy_(fieldOfView)
-    , aspectRatio_(aspectRatio)
     , offset_(offset) {}
 
-SkewedPerspectiveCamera::SkewedPerspectiveCamera(const SkewedPerspectiveCamera& other)
-    : Camera(other), fovy_{other.fovy_}, aspectRatio_{other.aspectRatio_}, offset_{other.offset_} {}
-
-SkewedPerspectiveCamera& SkewedPerspectiveCamera::operator=(const SkewedPerspectiveCamera& other) {
-    if (this != &other) {
-        Camera::operator=(other);
-        fovy_ = other.fovy_;
-        aspectRatio_ = other.aspectRatio_;
-        offset_ = other.offset_;
-    }
-
-    return *this;
-}
+SkewedPerspectiveCamera::SkewedPerspectiveCamera(const SkewedPerspectiveCamera&) = default;
+SkewedPerspectiveCamera& SkewedPerspectiveCamera::operator=(const SkewedPerspectiveCamera&) =
+    default;
 
 SkewedPerspectiveCamera* SkewedPerspectiveCamera::clone() const {
     return new SkewedPerspectiveCamera(*this);
 }
 
-bool SkewedPerspectiveCamera::update(const Camera* source) {
-    if (auto skewedPerspectiveCamera = dynamic_cast<const SkewedPerspectiveCamera*>(source)) {
-        *this = *skewedPerspectiveCamera;
-        return true;
-    } else {
-        return false;
+std::string SkewedPerspectiveCamera::getClassIdentifier() const { return classIdentifier; }
+
+const std::string SkewedPerspectiveCamera::classIdentifier = "SkewedPerspectiveCamera";
+
+void SkewedPerspectiveCamera::updateFrom(const Camera* source) {
+    Camera::updateFrom(source);
+    if (auto sc = dynamic_cast<const SkewedPerspectiveCamera*>(source)) {
+        setFovy(sc->getFovy());
+        setOffset(sc->getOffset());
+    } else if (auto pc = dynamic_cast<const PerspectiveCamera*>(source)) {
+        setFovy(pc->getFovy());
+    } else if (auto oc = dynamic_cast<const OrthographicCamera*>(source)) {
+        setFovy(glm::degrees(
+            2.0f * std::atan(oc->getWidth() / 2.0f / glm::distance(getLookTo(), getLookFrom()))));
     }
 }
 
-void SkewedPerspectiveCamera::configureProperties(CompositeProperty* comp, Config config) {
-    auto fovProp = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("fov"));
-    auto offsetProp = dynamic_cast<FloatVec2Property*>(comp->getPropertyByIdentifier("separation"));
+void SkewedPerspectiveCamera::configureProperties(CameraProperty* comp) {
+    auto fov = dynamic_cast<FloatRefProperty*>(comp->getCameraProperty("fov"));
+    auto offset = dynamic_cast<FloatVec2RefProperty*>(comp->getCameraProperty("separation"));
 
-    if (config == Config::Hide) {
-        if (fovProp) fovProp->setVisible(false);
-        if (offsetProp) offsetProp->setVisible(false);
-        return;
-    }
+    auto fovGetter = [this]() { return getFovy(); };
+    auto fovSetter = [this](const float& val) { setFovy(val); };
 
-    if (fovProp) {
-        setFovy(fovProp->get());
+    auto offGetter = [this]() { return getOffset(); };
+    auto offSetter = [this](const vec2& val) { setOffset(val); };
+
+    if (fov) {
+        fov->setGetAndSet(fovGetter, fovSetter);
     } else {
-        float initialFov = 38.0f;
-        if (auto widthProp = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("width"))) {
-            initialFov = glm::degrees(2.0f * std::atan(widthProp->get() / 2.0f /
-                                                       glm::distance(getLookTo(), getLookFrom())));
-        }
-        fovProp = new FloatProperty("fov", "FOV", initialFov, 10.0f, 180.0f, 0.1f);
-        fovProp->setSerializationMode(PropertySerializationMode::All);
-        fovProp->setCurrentStateAsDefault();
-        comp->insertProperty(comp->size() - 1, fovProp, true);
+        fov = new FloatRefProperty("fov", "FOV", fovGetter, fovSetter,
+                                   {0.0f, ConstraintBehavior::Immutable},
+                                   {180.0f, ConstraintBehavior::Immutable}, 0.1f);
+        comp->addCamerapProperty(fov);
     }
 
-    fovProp->setVisible(true);
-    fovCallbackHolder_ = fovProp->onChangeScoped([this, fovProp]() { setFovy(fovProp->get()); });
+    fov->setVisible(true);
 
-    if (offsetProp) {
-        setOffset(offsetProp->get());
+    if (offset) {
+        offset->setGetAndSet(offGetter, offSetter);
     } else {
-        offsetProp = new FloatVec2Property("separation", "Separation", vec2(0.0f), vec2(-10.0f),
-                                           vec2(10.0f), vec2(0.01f));
-        offsetProp->setSerializationMode(PropertySerializationMode::All);
-        offsetProp->setCurrentStateAsDefault();
-        comp->insertProperty(comp->size() - 1, offsetProp, true);
+        offset = new FloatVec2RefProperty("separation", "Separation", offGetter, offSetter,
+                                          {vec2(-10.0f), ConstraintBehavior::Ignore},
+                                          {vec2(10.0f), ConstraintBehavior::Ignore}, vec2(0.01f));
+        comp->addCamerapProperty(offset);
     }
 
-    offsetProp->setVisible(true);
-    offsetCallbackHolder_ =
-        offsetProp->onChangeScoped([this, offsetProp]() { setOffset(offsetProp->get()); });
+    offset->setVisible(true);
 }
 
 mat4 SkewedPerspectiveCamera::calculateViewMatrix() const {
@@ -367,8 +339,7 @@ mat4 SkewedPerspectiveCamera::calculateViewMatrix() const {
 
 bool SkewedPerspectiveCamera::equal(const Camera& other) const {
     if (auto rhs = dynamic_cast<const SkewedPerspectiveCamera*>(&other)) {
-        return equalTo(other) && fovy_ == rhs->fovy_ && aspectRatio_ == rhs->aspectRatio_ &&
-               glm::all(glm::equal(offset_, rhs->offset_));
+        return equalTo(other) && fovy_ == rhs->fovy_ && glm::all(glm::equal(offset_, rhs->offset_));
     } else {
         return false;
     }
@@ -393,12 +364,10 @@ mat4 SkewedPerspectiveCamera::calculateProjectionMatrix() const {
 void SkewedPerspectiveCamera::serialize(Serializer& s) const {
     Camera::serialize(s);
     s.serialize("fovy", fovy_);
-    s.serialize("aspectRatio", aspectRatio_);
     s.serialize("offset", offset_);
 }
 void SkewedPerspectiveCamera::deserialize(Deserializer& d) {
     d.deserialize("fovy", fovy_);
-    d.deserialize("aspectRatio", aspectRatio_);
     d.deserialize("offset", offset_);
     Camera::deserialize(d);
 }

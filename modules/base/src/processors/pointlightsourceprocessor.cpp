@@ -170,11 +170,20 @@ const vec3& PointLightInteractionHandler::getLookFrom() const { return lightPosi
 
 const vec3& PointLightInteractionHandler::getLookUp() const { return lookUp_; }
 
-void PointLightInteractionHandler::setLookTo(vec3 lookTo) { lookTo_ = lookTo; }
+PointLightInteractionHandler& PointLightInteractionHandler::setLookTo(vec3 lookTo) {
+    lookTo_ = lookTo;
+    return *this;
+}
 
-void PointLightInteractionHandler::setLookFrom(vec3 lookFrom) { lightPosition_->set(lookFrom); }
+PointLightInteractionHandler& PointLightInteractionHandler::setLookFrom(vec3 lookFrom) {
+    lightPosition_->set(lookFrom);
+    return *this;
+}
 
-void PointLightInteractionHandler::setLookUp(vec3 lookUp) { lookUp_ = lookUp; }
+PointLightInteractionHandler& PointLightInteractionHandler::setLookUp(vec3 lookUp) {
+    lookUp_ = lookUp;
+    return *this;
+}
 
 inviwo::vec3 PointLightInteractionHandler::getLookFromMinValue() const {
     return lightPosition_->position_.getMinValue();
@@ -192,10 +201,12 @@ inviwo::vec3 PointLightInteractionHandler::getLookToMaxValue() const {
     return vec3(std::numeric_limits<float>::max());
 }
 
-void PointLightInteractionHandler::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
+PointLightInteractionHandler& PointLightInteractionHandler::setLook(vec3 lookFrom, vec3 lookTo,
+                                                                    vec3 lookUp) {
     lightPosition_->set(lookFrom);
     lookTo_ = lookTo;
     lookUp_ = lookUp;
+    return *this;
 }
 
 float PointLightInteractionHandler::getNearPlaneDist() const { return camera_->getNearPlaneDist(); }

@@ -41,7 +41,7 @@ void exposeCamera(pybind11::module &m) {
 
     py::class_<Camera>(m, "Camera")
         .def("clone", &Camera::clone)
-        .def("update", &Camera::update)
+        .def("updateFrom", &Camera::updateFrom)
         .def_property("lookFrom", &Camera::getLookFrom, &Camera::setLookFrom)
         .def_property("lookTo", &Camera::getLookTo, &Camera::setLookTo)
         .def_property("lookUp", &Camera::getLookUp, &Camera::setLookUp)
