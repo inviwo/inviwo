@@ -62,6 +62,25 @@ public:
     static const PropertySemantics ShaderEditor;
     static const PropertySemantics PythonEditor;
 
+    friend inline bool operator==(const PropertySemantics& lhs, const PropertySemantics& rhs) {
+        return lhs.getString() == rhs.getString();
+    }
+    friend inline bool operator<(const PropertySemantics& lhs, const PropertySemantics& rhs) {
+        return lhs.getString() < rhs.getString();
+    }
+    friend inline bool operator!=(const PropertySemantics& lhs, const PropertySemantics& rhs) {
+        return !operator==(lhs, rhs);
+    }
+    friend inline bool operator>(const PropertySemantics& lhs, const PropertySemantics& rhs) {
+        return operator<(rhs, lhs);
+    }
+    friend inline bool operator<=(const PropertySemantics& lhs, const PropertySemantics& rhs) {
+        return !operator>(lhs, rhs);
+    }
+    friend inline bool operator>=(const PropertySemantics& lhs, const PropertySemantics& rhs) {
+        return !operator<(lhs, rhs);
+    }
+
 private:
     std::string semantic_;
 };
@@ -71,25 +90,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
                                              const PropertySemantics& obj) {
     ss << obj.getString();
     return ss;
-}
-
-inline bool operator==(const PropertySemantics& lhs, const PropertySemantics& rhs) {
-    return lhs.getString() == rhs.getString();
-}
-inline bool operator<(const PropertySemantics& lhs, const PropertySemantics& rhs) {
-    return lhs.getString() < rhs.getString();
-}
-inline bool operator!=(const PropertySemantics& lhs, const PropertySemantics& rhs) {
-    return !operator==(lhs, rhs);
-}
-inline bool operator>(const PropertySemantics& lhs, const PropertySemantics& rhs) {
-    return operator<(rhs, lhs);
-}
-inline bool operator<=(const PropertySemantics& lhs, const PropertySemantics& rhs) {
-    return !operator>(lhs, rhs);
-}
-inline bool operator>=(const PropertySemantics& lhs, const PropertySemantics& rhs) {
-    return !operator<(lhs, rhs);
 }
 
 }  // namespace inviwo

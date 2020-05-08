@@ -39,7 +39,8 @@ enum class PropertySerializationMode { Default = 0, All, None };
 
 template <typename T>
 struct ValueWrapper {
-    ValueWrapper(std::string valname, T val) : value(val), defaultValue(val), name(valname) {}
+    ValueWrapper(std::string valname, T val)
+        : value(val), defaultValue(val), name(std::move(valname)) {}
     ValueWrapper(const ValueWrapper<T>& rhs) = default;
     ValueWrapper<T>& operator=(const ValueWrapper<T>& that) = default;
 
@@ -47,7 +48,7 @@ struct ValueWrapper {
         value = val;
         return *this;
     }
-    operator T&() { return value; }
+
     operator const T&() const { return value; }
 
     bool isDefault() const { return value == defaultValue; }
@@ -116,85 +117,24 @@ struct ValueWrapper {
             return false;
         }
     }
+    friend bool operator==(const ValueWrapper<T>& lhs, const ValueWrapper<T>& rhs) {
+        return lhs.value == rhs.value;
+    }
+    friend bool operator!=(const ValueWrapper<T>& lhs, const ValueWrapper<T>& rhs) {
+        return !operator==(lhs, rhs);
+    }
+    friend bool operator==(const ValueWrapper<T>& lhs, const T& rhs) { return lhs.value == rhs; }
+    friend bool operator!=(const ValueWrapper<T>& lhs, const T& rhs) {
+        return !operator==(lhs, rhs);
+    }
+    friend bool operator==(const T& lhs, const ValueWrapper<T>& rhs) { return rhs == lhs; }
+    friend bool operator!=(const T& lhs, const ValueWrapper<T>& rhs) {
+        return !operator==(rhs, lhs);
+    }
 
     T value;
     T defaultValue;
     std::string name;
 };
-
-template <typename T>
-bool operator==(const ValueWrapper<T>& lhs, const ValueWrapper<T>& rhs) {
-    return lhs.value == rhs.value;
-}
-template <typename T>
-bool operator<(const ValueWrapper<T>& lhs, const ValueWrapper<T>& rhs) {
-    return lhs.value < rhs.value;
-}
-template <typename T>
-bool operator!=(const ValueWrapper<T>& lhs, const ValueWrapper<T>& rhs) {
-    return !operator==(lhs, rhs);
-}
-template <typename T>
-bool operator>(const ValueWrapper<T>& lhs, const ValueWrapper<T>& rhs) {
-    return operator<(rhs, lhs);
-}
-template <typename T>
-bool operator<=(const ValueWrapper<T>& lhs, const ValueWrapper<T>& rhs) {
-    return !operator>(lhs, rhs);
-}
-template <typename T>
-bool operator>=(const ValueWrapper<T>& lhs, const ValueWrapper<T>& rhs) {
-    return !operator<(lhs, rhs);
-}
-
-template <typename T>
-bool operator==(const ValueWrapper<T>& lhs, const T& rhs) {
-    return lhs.value == rhs;
-}
-template <typename T>
-bool operator<(const ValueWrapper<T>& lhs, const T& rhs) {
-    return lhs.value < rhs;
-}
-template <typename T>
-bool operator!=(const ValueWrapper<T>& lhs, const T& rhs) {
-    return !operator==(lhs, rhs);
-}
-template <typename T>
-bool operator>(const ValueWrapper<T>& lhs, const T& rhs) {
-    return operator<(rhs, lhs);
-}
-template <typename T>
-bool operator<=(const ValueWrapper<T>& lhs, const T& rhs) {
-    return !operator>(lhs, rhs);
-}
-template <typename T>
-bool operator>=(const ValueWrapper<T>& lhs, const T& rhs) {
-    return !operator<(lhs, rhs);
-}
-
-template <typename T>
-bool operator==(const T& lhs, const ValueWrapper<T>& rhs) {
-    return rhs == lhs;
-}
-template <typename T>
-bool operator<(const T& lhs, const ValueWrapper<T>& rhs) {
-    return rhs >= lhs;
-}
-template <typename T>
-bool operator!=(const T& lhs, const ValueWrapper<T>& rhs) {
-    return !operator==(rhs, lhs);
-}
-template <typename T>
-bool operator>(const T& lhs, const ValueWrapper<T>& rhs) {
-    return operator<(rhs, lhs);
-}
-template <typename T>
-bool operator<=(const T& lhs, const ValueWrapper<T>& rhs) {
-    return !operator>(lhs, rhs);
-}
-template <typename T>
-bool operator>=(const T& lhs, const ValueWrapper<T>& rhs) {
-    return !operator<(lhs, rhs);
-}
 
 }  // namespace inviwo

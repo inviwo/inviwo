@@ -54,13 +54,16 @@ public:
     const CodeState codeState;
     const Tags tags;     ///< Searchable tags, platform tags are shown in ProcessorTreeWidget
     const bool visible;  ///< Show in processor list (ProcessorTreeWidget), enabling drag&drop
+
+    friend inline bool operator==(const ProcessorInfo& a, const ProcessorInfo& b) {
+        return std::tie(a.classIdentifier, a.displayName, a.category, a.codeState, a.tags,
+                        a.visible) == std::tie(b.classIdentifier, b.displayName, b.category,
+                                               b.codeState, b.tags, b.visible);
+    }
+
+    friend inline bool operator!=(const ProcessorInfo& a, const ProcessorInfo& b) {
+        return !(a == b);
+    }
 };
-
-inline bool operator==(const ProcessorInfo& a, const ProcessorInfo& b) {
-    return std::tie(a.classIdentifier, a.displayName, a.category, a.codeState, a.tags, a.visible) ==
-           std::tie(b.classIdentifier, b.displayName, b.category, b.codeState, b.tags, b.visible);
-}
-
-inline bool operator!=(const ProcessorInfo& a, const ProcessorInfo& b) { return !(a == b); }
 
 }  // namespace inviwo

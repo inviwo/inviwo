@@ -43,6 +43,7 @@
 #include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/util/fileextension.h>
@@ -112,8 +113,11 @@ struct OrdinalWidgetReghelper {
     auto operator()(QtWidgetsModule& qm, const std::string& semantics) {
         using PropertyType = OrdinalProperty<T>;
         using PropertyWidget = OrdinalPropertyWidgetQt<T, Sem>;
-
         qm.registerPropertyWidget<PropertyWidget, PropertyType>(semantics);
+
+        using RefPropertyType = OrdinalRefProperty<T>;
+        using RefPropertyWidget = OrdinalRefPropertyWidgetQt<T, Sem>;
+        qm.registerPropertyWidget<RefPropertyWidget, RefPropertyType>(semantics);
     }
 };
 

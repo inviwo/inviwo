@@ -60,16 +60,13 @@ public:
     virtual void deserialize(Deserializer& d);
 
     friend bool IVW_CORE_API operator==(const PropertyLink& lhs, const PropertyLink& rhs);
+    friend bool IVW_CORE_API operator!=(const PropertyLink& lhs, const PropertyLink& rhs);
     friend bool IVW_CORE_API operator<(const PropertyLink& lhs, const PropertyLink& rhs);
 
 private:
     Property* src_;
     Property* dst_;
 };
-
-bool IVW_CORE_API operator==(const PropertyLink& lhs, const PropertyLink& rhs);
-bool IVW_CORE_API operator!=(const PropertyLink& lhs, const PropertyLink& rhs);
-bool IVW_CORE_API operator<(const PropertyLink& lhs, const PropertyLink& rhs);
 
 }  // namespace inviwo
 

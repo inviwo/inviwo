@@ -50,10 +50,8 @@ public:
     virtual void deserialize(Deserializer& d) = 0;
     virtual bool equal(const MetaData& rhs) const = 0;
     friend bool IVW_CORE_API operator==(const MetaData& lhs, const MetaData& rhs);
+    friend bool IVW_CORE_API operator!=(const MetaData& lhs, const MetaData& rhs);
 };
-
-bool IVW_CORE_API operator==(const MetaData& lhs, const MetaData& rhs);
-bool IVW_CORE_API operator!=(const MetaData& lhs, const MetaData& rhs);
 
 template <typename T, int N, int M>
 class MetaDataPrimitiveType : public MetaData {};

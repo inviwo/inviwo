@@ -172,7 +172,7 @@ class TransferfunctionToIsoTFConverter
 protected:
     virtual void convertimpl(const TransferFunctionProperty* src,
                              IsoTFProperty* dst) const override {
-        dst->set(*src);
+        dst->set(src);
     }
 };
 
@@ -181,21 +181,21 @@ class IsoTFToTransferfunctionConverter
 protected:
     virtual void convertimpl(const IsoTFProperty* src,
                              TransferFunctionProperty* dst) const override {
-        dst->set(*src);
+        dst->set(src);
     }
 };
 
 class IsovalueToIsoTFConverter : public TemplatePropertyConverter<IsoValueProperty, IsoTFProperty> {
 protected:
     virtual void convertimpl(const IsoValueProperty* src, IsoTFProperty* dst) const override {
-        dst->set(*src);
+        dst->set(src);
     }
 };
 
 class IsoTFToIsovalueConverter : public TemplatePropertyConverter<IsoTFProperty, IsoValueProperty> {
 protected:
     virtual void convertimpl(const IsoTFProperty* src, IsoValueProperty* dst) const override {
-        dst->set(*src);
+        dst->set(src);
     }
 };
 

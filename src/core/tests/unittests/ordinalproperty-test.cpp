@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,53 +27,38 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/core/properties/ordinalrefproperty.h>
+#include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/properties/propertyfactoryobject.h>
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/metadata/metadata.h>
-#include <inviwo/core/metadata/metadatafactory.h>
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
 namespace inviwo {
 
-class IVW_CORE_API MetaDataMap : public Serializable {
-public:
-    MetaDataMap() = default;
-    MetaDataMap(const MetaDataMap&);
-    MetaDataMap& operator=(const MetaDataMap& map);
-    virtual ~MetaDataMap() = default;
+TEST(OrdinalRefProperty, Test1) {
 
-    MetaData* add(const std::string& key, MetaData* metaData);
-    template <typename T>  // T Should derive from MetaData
-    T* add(const std::string& key, std::unique_ptr<T> metaData);
+    float value = 5.0f;
 
-    void remove(const std::string& key);
-    void removeAll();
+    FloatRefProperty prop{"test",
+                          "test",
+                          [&]() { return value; },
+                          [&](const float& val) { value = val; },
+                          {-10.f, ConstraintBehavior::Ignore},
+                          {10.f, ConstraintBehavior::Ignore}};
 
-    void rename(const std::string& newKey, const std::string& oldKey);
+    EXPECT_EQ(prop.get(), 5.0f);
 
-    std::vector<std::string> getKeys() const;
-    MetaData* get(const std::string& key);
-    const MetaData* get(const std::string& key) const;
+    prop.set(6.0f);
 
-    bool empty() const;
+    EXPECT_EQ(value, 6.0f);
 
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
+    value = 7.0f;
 
-    friend bool IVW_CORE_API operator==(const MetaDataMap& lhs, const MetaDataMap& rhs);
-    friend bool IVW_CORE_API operator!=(const MetaDataMap& lhs, const MetaDataMap& rhs);
-
-private:
-    std::map<std::string, std::unique_ptr<MetaData>> metaData_;
-};
-
-template <typename T>
-T* inviwo::MetaDataMap::add(const std::string& key, std::unique_ptr<T> metaData) {
-    auto ptr = metaData.get();
-    metaData_[key] = std::move(metaData);
-    return ptr;
+    EXPECT_EQ(prop.get(), 7.0f);
 }
-
-
 
 }  // namespace inviwo
