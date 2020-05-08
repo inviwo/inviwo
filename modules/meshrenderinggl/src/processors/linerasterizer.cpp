@@ -31,6 +31,7 @@
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/core/algorithm/boundingbox.h>
+#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
 
 #include <fmt/format.h>
 
@@ -51,8 +52,10 @@ LineRasterizer::LineRasterizer()
     , inport_("geometry")
     , outport_("rasterization")
     , lineSettings_("lineSettings", "Line Settings")
-    , writeDepth_("writeDepth", "Write Depth Layer", true)
     , forceOpaque_("forceOpaque", "Shade Opaque", false, InvalidationLevel::InvalidResources)
+    , useUniformAlpha_("useUniformAlpha", "Uniform Alpha", false,
+                       InvalidationLevel::InvalidResources)
+    , uniformAlpha_("alphaValue", "Alpha", 0.7f, 0, 1, 0.1f, InvalidationLevel::InvalidOutput)
     , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , lineShaders_(new MeshShaderCache(
@@ -77,7 +80,12 @@ LineRasterizer::LineRasterizer()
     addPort(inport_);
     addPort(outport_);
 
-    addProperties(lineSettings_, writeDepth_, forceOpaque_, camera_, trackball_);
+    addProperties(lineSettings_, forceOpaque_, useUniformAlpha_, uniformAlpha_, camera_,
+                  trackball_);
+    uniformAlpha_.setVisible(useUniformAlpha_.get());
+    useUniformAlpha_.onChange([this]() { uniformAlpha_.setVisible(useUniformAlpha_.get()); });
+    inport_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
     invalidate(InvalidationLevel::InvalidResources);
 }
 
@@ -86,12 +94,10 @@ void LineRasterizer::initializeResources() {
         Shader& shader = shaderPair.second;
         configureShader(shader);
     }
-    invalidate(InvalidationLevel::Valid);
 }
 
 void LineRasterizer::process() {
     if (!inport_.hasData()) return;
-    // configureAllShaders();
     for (auto& shaderPair : lineShaders_->getShaders()) {
         Shader& shader = shaderPair.second;
         if (!shader.isReady()) configureShader(shader);
@@ -101,7 +107,7 @@ void LineRasterizer::process() {
         shader.deactivate();
     }
 
-    if (!outport_.hasData()) outport_.setData(new LineRasterization(*this));
+    outport_.setData(new LineRasterization(*this));
 }
 
 void LineRasterizer::setUniforms(Shader& shader) const {
@@ -116,6 +122,8 @@ void LineRasterizer::setUniforms(Shader& shader) const {
     shader.setUniform("stippling.spacing", lineSettings_.getStippling().getSpacing());
     shader.setUniform("stippling.offset", lineSettings_.getStippling().getOffset());
     shader.setUniform("stippling.worldScale", lineSettings_.getStippling().getWorldScale());
+    // Alpha
+    if (useUniformAlpha_.get()) shader.setUniform("uniformAlpha", uniformAlpha_.get());
 }
 
 void LineRasterizer::configureAllShaders() {
@@ -134,9 +142,13 @@ void LineRasterizer::configureShader(Shader& shader) {
 
     fso->setShaderDefine("ENABLE_PSEUDO_LIGHTING", lineSettings_.getPseudoLighting());
     fso->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", lineSettings_.getRoundDepthProfile());
-    fso->setShaderDefine("USE_FRAGMENT_LIST", !forceOpaque_.get());
+    fso->setShaderDefine("USE_FRAGMENT_LIST",
+                         !forceOpaque_.get() && FragmentListRenderer::supportsFragmentLists());
+    fso->setShaderDefine("UNIFORM_ALPHA",
+                         useUniformAlpha_.get() && FragmentListRenderer::supportsFragmentLists());
 
     utilgl::addShaderDefines(shader, lineSettings_.getStippling().getMode());
+
     shader.build();
 }
 
@@ -145,14 +157,13 @@ void LineRasterizer::configureShader(Shader& shader) {
 LineRasterization::LineRasterization(const LineRasterizer& processor)
     : lineShaders_(processor.lineShaders_)
     , meshes_(processor.inport_.getVectorData())
-    , forceOpaque_(processor.forceOpaque_)
-    , writeDepth_(processor.writeDepth_.get()) {}
+    , forceOpaque_(processor.forceOpaque_.get()) {}
 
 void LineRasterization::rasterize(const ivec2& imageSize,
                                   std::function<void(Shader&)> setUniformsRenderer) const {
 
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    utilgl::DepthMaskState depthMask(writeDepth_);
+    utilgl::DepthMaskState depthMask(true);
     utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
     for (auto mesh : meshes_) {
@@ -194,10 +205,15 @@ void LineRasterization::rasterize(const ivec2& imageSize,
     }
 }
 
+bool LineRasterization::usesFragmentLists() const {
+    return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
+}
+
 Document LineRasterization::getInfo() const {
     Document doc;
-    doc.append("p", fmt::format("Line rasterization functor with {} line {}", meshes_.size(),
-                                (meshes_.size() == 1) ? " mesh." : " meshes."));
+    doc.append("p", fmt::format("Line rasterization functor with {} line {}. {}.", meshes_.size(),
+                                (meshes_.size() == 1) ? " mesh" : " meshes",
+                                usesFragmentLists() ? "Using A-buffer" : "Rendering opaque"));
     return doc;
 }
 

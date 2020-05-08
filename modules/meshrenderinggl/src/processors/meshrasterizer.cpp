@@ -487,8 +487,9 @@ void MeshRasterization::rasterize(const ivec2& imageSize,
 
 Document MeshRasterization::getInfo() const {
     Document doc;
-    doc.append("p", fmt::format("Mesh rasterization functor with {} {}", enhancedMeshes_.size(),
-                                (enhancedMeshes_.size() == 1) ? " mesh." : " meshes."));
+    doc.append("p", fmt::format("Mesh rasterization functor with {} {}. {}", enhancedMeshes_.size(),
+                                (enhancedMeshes_.size() == 1) ? " mesh" : " meshes",
+                                usesFragmentLists() ? "Using A-buffer" : "Rendering opaque"));
     return doc;
 }
 

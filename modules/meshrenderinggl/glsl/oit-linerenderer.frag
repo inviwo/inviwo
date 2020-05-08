@@ -46,6 +46,10 @@ layout(depth_less) out float gl_FragDepth;
 #endif
 #endif
 
+#if defined(UNIFORM_ALPHA)
+uniform float uniformAlpha;
+#endif
+
 uniform vec2 screenDim = vec2(512, 512);
 uniform float antialiasing = 0.5;  // width of antialised edged [pixel]
 uniform float lineWidth = 2.0;     // line width [pixel]
@@ -67,7 +71,11 @@ flat in vec4 pickColor_;
 
 void main() {
     vec4 color = color_;
+#if defined(UNIFORM_ALPHA)
+    color.a = uniformAlpha;
+#endif
 
+    if (color.a < 0.01) discard;
     float linewidthHalf = lineWidth * 0.5;
 
     // make joins round by using the texture coords
@@ -113,8 +121,6 @@ void main() {
         d /= antialiasing;
         alpha = exp(-d * d);
     }
-    // prevent fragments with low alpha from being rendered
-    if (alpha < 0.05) discard;
 
     color.rgb *= color.a;
 
@@ -123,10 +129,9 @@ void main() {
     float depth = convertDepthScreenToView(camera, gl_FragCoord.z);
     float maxDist = (linewidthHalf + antialiasing);
     depth = depth - cos(distance / maxDist) * maxDist / screenDim.x * 0.5;
-    depth = convertDepthViewToScreen(
-        camera, depth);
+    depth = convertDepthViewToScreen(camera, depth);
 #else
-        float depth = gl_FragCoord.z;
+    float depth = gl_FragCoord.z;
 #endif  // ENABLE_ROUND_DEPTH_PROFILE
 
 #if defined(USE_FRAGMENT_LIST)
@@ -134,17 +139,16 @@ void main() {
     if (color.a > 0.0) {
         ivec2 coords = ivec2(gl_FragCoord.xy);
 
-        abufferRender(coords, depth, color * alpha);
+        abufferRender(coords, depth, vec4(color.xyz, color.a *alpha));
     }
     discard;
 
 #else  // USE_FRAGMENT_LIST
 
 #if defined(ENABLE_ROUND_DEPTH_PROFILE)
-    // assume circular profile of line
     gl_FragDepth = depth;
 #endif  // ENABLE_ROUND_DEPTH_PROFILE
-    FragData0 = color * alpha;
+    FragData0 = vec4(color.xyz, color.a * alpha);
     PickingData = pickColor_;
 #endif // not USE_FRAGMENT_LIST
 }

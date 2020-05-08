@@ -69,7 +69,7 @@ namespace inviwo {
  *   * __Round Caps__  if enabled, round caps are drawn at the end of each line
  *   * __Pseudo Lighting__      enables radial shading as depth cue, i.e. tube like appearance
  *   * __Round Depth Profile__  modify line depth matching a round depth profile
- *   * __Write Depth Layer__    if enabled, line depths are rendered onto the background image
+ *   * __Shade opaque__    use simple depth checks instead of fragment lists
  */
 
 /**
@@ -90,7 +90,6 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    // void drawMeshes();
     // Call whenever PseudoLighting or RoundDepthProfile, or Stippling mode change
     void configureAllShaders();
     void configureShader(Shader& shader);
@@ -99,8 +98,10 @@ private:
     MeshFlatMultiInport inport_;
     RasterizationOutport outport_;
     LineSettingsProperty lineSettings_;
-    BoolProperty writeDepth_;
     BoolProperty forceOpaque_;
+
+    BoolProperty useUniformAlpha_;
+    FloatProperty uniformAlpha_;
 
     CameraProperty camera_;
     CameraTrackball trackball_;
@@ -118,9 +119,7 @@ public:
     LineRasterization(const LineRasterizer& rasterizerProcessor);
     virtual void rasterize(const ivec2& imageSize,
                            std::function<void(Shader&)> setUniforms) const override;
-    virtual bool usesFragmentLists() const override {
-        return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
-    }
+    virtual bool usesFragmentLists() const override;
     virtual Document getInfo() const override;
 
 protected:
@@ -129,7 +128,6 @@ protected:
     std::vector<std::shared_ptr<const Mesh>> meshes_;
 
     const bool forceOpaque_;
-    const bool writeDepth_;
 };
 
 }  // namespace inviwo
