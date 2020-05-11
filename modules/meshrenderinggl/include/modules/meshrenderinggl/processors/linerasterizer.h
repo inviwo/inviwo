@@ -51,7 +51,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.LineRasterizer, Line Rsterizers}
+/** \docpage{org.inviwo.LineRasterizer, Line Rasterizer}
  * ![](org.inviwo.LineRasterizer.png?classIdentifier=org.inviwo.LineRasterizer)
  * Render input meshes as lines, allows for order-independent transparency.
  *
@@ -62,6 +62,7 @@ namespace inviwo {
  *   * __rasterization__ rasterization functor rendering either opaquely or into fragment buffer
  *
  * ### Properties
+ *   * __Mesh Transform__ Additional world/model transform applied to all input lines
  *   * __Line Width__  width of the rendered lines (in pixel)
  *   * __Antialising__ width of the antialiased line edge (in pixel), this determines the
  *                     softness along the edge
@@ -76,7 +77,7 @@ namespace inviwo {
  * \class LineRasterizer
  * \brief Renders input geometry with 2D lines
  */
-class IVW_MODULE_BASEGL_API LineRasterizer : public Processor {
+class IVW_MODULE_MESHRENDERINGGL_API LineRasterizer : public Processor {
     friend class LineRasterization;
 
 public:
@@ -107,6 +108,7 @@ private:
 
     CameraProperty camera_;
     CameraTrackball trackball_;
+    rasterization::TransformSettings transformSetting_;
     std::shared_ptr<MeshShaderCache> lineShaders_;
 };
 
@@ -123,6 +125,7 @@ public:
                            std::function<void(Shader&)> setUniforms) const override;
     virtual bool usesFragmentLists() const override;
     virtual Document getInfo() const override;
+    virtual Rasterization* copy() const override;
 
 protected:
     std::shared_ptr<MeshShaderCache> lineShaders_;

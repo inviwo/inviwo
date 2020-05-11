@@ -90,8 +90,12 @@ LineRasterizer::LineRasterizer()
     addPort(inport_);
     addPort(outport_);
 
-    addProperties(lineSettings_, forceOpaque_, overwriteColor_, constantColor_, useUniformAlpha_,
-                  uniformAlpha_, camera_, trackball_);
+    addProperties(camera_, trackball_, transformSetting_, forceOpaque_, lineSettings_,
+                  overwriteColor_, constantColor_, useUniformAlpha_, uniformAlpha_);
+
+    camera_.setCollapsed(true);
+    trackball_.setCollapsed(true);
+    transformSetting_.setCollapsed(true);
 
     constantColor_.setVisible(overwriteColor_.get());
     overwriteColor_.onChange([this]() {
@@ -175,7 +179,8 @@ void LineRasterizer::configureShader(Shader& shader) {
 // =========== Rasterization =========== //
 
 LineRasterization::LineRasterization(const LineRasterizer& processor)
-    : lineShaders_(processor.lineShaders_)
+    : Rasterization(processor.transformSetting_.getTransform())
+    , lineShaders_(processor.lineShaders_)
     , meshes_(processor.inport_.getVectorData())
     , forceOpaque_(processor.forceOpaque_.get()) {}
 
@@ -195,13 +200,11 @@ void LineRasterization::rasterize(const ivec2& imageSize,
             for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
                 if (mesh->getIndexMeshInfo(i).dt != DrawType::Lines) continue;
                 auto& shader = lineShaders_->getShader(*mesh, mesh->getIndexMeshInfo(i));
-                if (!shader.isReady()) {
-                    LogWarn("Shader not ready.");
-                    break;
-                }
+                if (!shader.isReady()) break;
 
                 shader.activate();
-                utilgl::setShaderUniforms(shader, *mesh, "geometry");
+                auto transform = spatialTransformation_.applyToSpatialEntity(*mesh);
+                utilgl::setShaderUniforms(shader, transform, "geometry");
                 shader.setUniform("screenDim", vec2(imageSize));
                 setUniformsRenderer(shader);
                 drawer.draw(i);
@@ -210,13 +213,11 @@ void LineRasterization::rasterize(const ivec2& imageSize,
         } else {
             auto& shader = lineShaders_->getShader(*mesh);
             if (mesh->getDefaultMeshInfo().dt != DrawType::Lines) return;
-            if (!shader.isReady()) {
-                LogWarn("Shader not ready.");
-                break;
-            }
+            if (!shader.isReady()) break;
 
             shader.activate();
-            utilgl::setShaderUniforms(shader, *mesh, "geometry");
+            auto transform = spatialTransformation_.applyToSpatialEntity(*mesh);
+            utilgl::setShaderUniforms(shader, transform, "geometry");
             shader.setUniform("screenDim", vec2(imageSize));
             setUniformsRenderer(shader);
             drawer.draw();
@@ -236,5 +237,7 @@ Document LineRasterization::getInfo() const {
                                 usesFragmentLists() ? "Using A-buffer" : "Rendering opaque"));
     return doc;
 }
+
+Rasterization* LineRasterization::copy() const { return new LineRasterization(*this); }
 
 }  // namespace inviwo

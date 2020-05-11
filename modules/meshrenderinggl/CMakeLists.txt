@@ -13,6 +13,7 @@ set(HEADER_FILES
     include/modules/meshrenderinggl/processors/linerasterizer.h
     include/modules/meshrenderinggl/processors/meshrasterizer.h
     include/modules/meshrenderinggl/processors/rasterizationrenderer.h
+    include/modules/meshrenderinggl/processors/transformrasterization.h
     include/modules/meshrenderinggl/rendering/fragmentlistrenderer.h
     include/modules/meshrenderinggl/meshrenderingglmodule.h
     include/modules/meshrenderinggl/meshrenderingglmoduledefine.h
@@ -30,6 +31,7 @@ set(SOURCE_FILES
     src/processors/linerasterizer.cpp
     src/processors/meshrasterizer.cpp
     src/processors/rasterizationrenderer.cpp
+    src/processors/transformrasterization.cpp
     src/rendering/fragmentlistrenderer.cpp
     src/meshrenderingglmodule.cpp
 )

@@ -160,4 +160,42 @@ mat4 CustomTransformProperty::getMatrix() const { return matrix; }
 
 }  // namespace transform
 
+TransformListProperty::TransformListProperty(const std::string& identifier,
+                                             const std::string& displayName,
+                                             InvalidationLevel invalidationLevel,
+                                             PropertySemantics semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    , transforms_(
+          "transforms", "Transformations",
+          []() {
+              std::vector<std::unique_ptr<Property>> v;
+              v.emplace_back(
+                  std::make_unique<transform::TranslateProperty>("translation", "Translation"));
+              v.emplace_back(std::make_unique<transform::RotateProperty>("rotation", "Rotation"));
+              v.emplace_back(std::make_unique<transform::ScaleProperty>("scaling", "Scaling"));
+              v.emplace_back(
+                  std::make_unique<transform::CustomTransformProperty>("custom", "Custom Matrix"));
+              return v;
+          }())
+    , result_("result", "Result", mat4(1.0f),
+              util::filled<mat4>(std::numeric_limits<float>::lowest()),
+              util::filled<mat4>(std::numeric_limits<float>::max()), util::filled<mat4>(0.001f),
+              InvalidationLevel::Valid) {
+    result_.setSemantics(PropertySemantics::Text);
+    result_.setReadOnly(true);
+    addProperties(transforms_, result_);
+
+    transforms_.onChange([this]() {
+        mat4 total{1.0f};
+        for (auto p : transforms_) {
+            if (auto prop = dynamic_cast<transform::TransformProperty*>(p)) {
+                total = prop->getMatrix() * total;
+            }
+        }
+        result_.set(total);
+    });
+}
+
+const mat4& TransformListProperty::getMatrix() const { return result_.get(); }
+
 }  // namespace inviwo

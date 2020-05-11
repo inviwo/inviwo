@@ -32,6 +32,7 @@
 #include <modules/meshrenderinggl/processors/linerasterizer.h>
 #include <modules/meshrenderinggl/processors/meshrasterizer.h>
 #include <modules/meshrenderinggl/processors/rasterizationrenderer.h>
+#include <modules/meshrenderinggl/processors/transformrasterization.h>
 #include <modules/meshrenderinggl/processors/calcnormalsprocessor.h>
 #include <modules/meshrenderinggl/ports/rasterizationport.h>
 
@@ -49,6 +50,7 @@ MeshRenderingGLModule::MeshRenderingGLModule(InviwoApplication* app)
     registerProcessor<LineRasterizer>();
     registerProcessor<MeshRasterizer>();
     registerProcessor<RasterizationRenderer>();
+    registerProcessor<TransformRasterization>();
     registerProcessor<CalcNormalsProcessor>();
 
     // Ports

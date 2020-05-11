@@ -43,6 +43,23 @@
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.TransformListProperty, Transform List Proeprty}
+ * ![](org.inviwo.TransformListProperty.png?classIdentifier=org.inviwo.TransformListProperty)
+ * List of transformations being applied on each other.
+ */
+class TransformListProperty : public CompositeProperty {
+public:
+    TransformListProperty(const std::string& identifier, const std::string& displayName,
+                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                          PropertySemantics semantics = PropertySemantics::Default);
+    ~TransformListProperty() = default;
+
+    const mat4& getMatrix() const;
+
+    ListProperty transforms_;
+    FloatMat4Property result_;
+};
+
 template <typename T>
 class Transform : public Processor {
 public:
@@ -59,8 +76,7 @@ protected:
 
     TemplateOptionProperty<CoordinateSpace> space_;
     BoolProperty replace_;
-    ListProperty transforms_;
-    FloatMat4Property result_;
+    TransformListProperty transforms_;
 };
 
 template <typename T>
@@ -215,40 +231,12 @@ Transform<T>::Transform()
           {{"model", "Model", CoordinateSpace::Model}, {"world", "World", CoordinateSpace::World}},
           1)
     , replace_("replace", "Replace Input Transformation", false)
-    , transforms_(
-          "transforms", "Transformations",
-          []() {
-              std::vector<std::unique_ptr<Property>> v;
-              v.emplace_back(
-                  std::make_unique<transform::TranslateProperty>("translation", "Translation"));
-              v.emplace_back(std::make_unique<transform::RotateProperty>("rotation", "Rotation"));
-              v.emplace_back(std::make_unique<transform::ScaleProperty>("scaling", "Scaling"));
-              v.emplace_back(
-                  std::make_unique<transform::CustomTransformProperty>("custom", "Custom Matrix"));
-              return v;
-          }())
-    , result_("result", "Result", mat4(1.0f),
-              util::filled<mat4>(std::numeric_limits<float>::lowest()),
-              util::filled<mat4>(std::numeric_limits<float>::max()), util::filled<mat4>(0.001f),
-              InvalidationLevel::Valid) {
+    , transforms_("transformations", "Transformation stack") {
 
     addPort(inport_);
     addPort(outport_);
 
-    result_.setSemantics(PropertySemantics::Text);
-    result_.setReadOnly(true);
-
-    addProperties(space_, replace_, transforms_, result_);
-
-    transforms_.onChange([this]() {
-        mat4 t{1.0f};
-        for (auto p : transforms_) {
-            if (auto prop = dynamic_cast<transform::TransformProperty*>(p)) {
-                t = prop->getMatrix() * t;
-            }
-        }
-        result_.set(t);
-    });
+    addProperties(space_, replace_, transforms_);
 }
 
 template <typename T>
@@ -258,17 +246,17 @@ void Transform<T>::process() {
     switch (*space_) {
         case CoordinateSpace::Model:
             if (replace_) {
-                data->setModelMatrix(*result_);
+                data->setModelMatrix(transforms_.getMatrix());
             } else {
-                data->setModelMatrix(*result_ * data->getModelMatrix());
+                data->setModelMatrix(transforms_.getMatrix() * data->getModelMatrix());
             }
             break;
         case CoordinateSpace::World:
         default:
             if (replace_) {
-                data->setWorldMatrix(*result_);
+                data->setWorldMatrix(transforms_.getMatrix());
             } else {
-                data->setWorldMatrix(*result_ * data->getWorldMatrix());
+                data->setWorldMatrix(transforms_.getMatrix() * data->getWorldMatrix());
             }
             break;
     }

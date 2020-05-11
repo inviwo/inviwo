@@ -37,4 +37,50 @@ Document Rasterization::getInfo() const {
     return doc;
 }
 
+namespace rasterization {
+
+SimpleSpatialEntity TransformSettings::getTransform() const {
+    SimpleSpatialEntity transformation;
+
+    switch (*space_) {
+        case CoordinateSpace::Model:
+            transformation.setModelMatrix(transform_.getMatrix());
+            break;
+
+        case CoordinateSpace::World:
+        default:
+            transformation.setWorldMatrix(transform_.getMatrix());
+            break;
+    }
+
+    transformation.replaceTransformationOnApply_ = replaceTransform_.get();
+    return transformation;
+}
+
+SimpleSpatialEntity SimpleSpatialEntity::applyToSpatialEntity(const SpatialEntity<3>& data) const {
+    if (replaceTransformationOnApply_) return *this;
+
+    SimpleSpatialEntity result;
+    result.setModelMatrix(getModelMatrix() * data.getModelMatrix());
+    result.setWorldMatrix(getWorldMatrix() * data.getWorldMatrix());
+    return result;
+}
+
+TransformSettings::TransformSettings(const std::string& identifier, const std::string& displayName,
+                                     InvalidationLevel invalidate)
+    : CompositeProperty(identifier, displayName, invalidate)
+    , space_(
+          "space", "Space",
+          {{"model", "Model", CoordinateSpace::Model}, {"world", "World", CoordinateSpace::World}},
+          1)
+    , replaceTransform_("replace", "Replace Input Transformation", false)
+    , transform_("transform", "Transform") {
+    addProperty(space_);
+    addProperty(replaceTransform_);
+    addProperty(transform_.transforms_);
+    addProperty(transform_.result_);
+}
+
+}  // namespace rasterization
+
 }  // namespace inviwo

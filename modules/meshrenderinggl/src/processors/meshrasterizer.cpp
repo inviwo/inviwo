@@ -110,9 +110,9 @@ MeshRasterizer::MeshRasterizer()
 
     drawSilhouette_.onChange([this]() { updateMeshes(); });
 
-    addProperties(camera_, lightingProperty_, trackball_, forceOpaque_, drawSilhouette_,
-                  silhouetteColor_, normalSource_, normalComputationMode_, alphaSettings_,
-                  edgeSettings_, faceSettings_[0].show_, faceSettings_[1].show_);
+    addProperties(camera_, lightingProperty_, trackball_, transformSetting_, forceOpaque_,
+                  drawSilhouette_, silhouetteColor_, normalSource_, normalComputationMode_,
+                  alphaSettings_, edgeSettings_, faceSettings_[0].show_, faceSettings_[1].show_);
 
     silhouetteColor_.visibilityDependsOn(drawSilhouette_, [](const auto& p) { return p.get(); });
     normalComputationMode_.visibilityDependsOn(
@@ -131,6 +131,7 @@ MeshRasterizer::MeshRasterizer()
     camera_.setCollapsed(true);
     lightingProperty_.setCollapsed(true);
     trackball_.setCollapsed(true);
+    transformSetting_.setCollapsed(true);
 
     silhouetteColor_.setSemantics(PropertySemantics::Color);
 
@@ -321,7 +322,6 @@ void MeshRasterizer::FaceSettings::setUniforms(Shader& shader, std::string_view 
 }
 
 void MeshRasterizer::process() {
-
     if (!faceSettings_[0].show_ && !faceSettings_[1].show_) {
         outport_.setData(nullptr);
         LogWarn("Both sides are disabled, not rendering anything.");
@@ -396,7 +396,8 @@ void MeshRasterizer::updateMeshes() {
 }
 
 MeshRasterization::MeshRasterization(const MeshRasterizer& processor)
-    : enhancedMeshes_(processor.enhancedMeshes_)
+    : Rasterization(processor.transformSetting_.getTransform())
+    , enhancedMeshes_(processor.enhancedMeshes_)
     , forceOpaque_(processor.forceOpaque_)
     , showFace_{processor.faceSettings_[0].show_, processor.faceSettings_[1].show_}
     , tfTextures_{processor.faceSettings_[0].transferFunction_->getData(),
@@ -475,7 +476,8 @@ void MeshRasterization::rasterize(const ivec2& imageSize,
         for (auto mesh : enhancedMeshes_) {
             MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
                                             mesh->getDefaultMeshInfo()};
-            utilgl::setShaderUniforms(*shader_, *mesh, "geometry");
+            auto transform = spatialTransformation_.applyToSpatialEntity(*mesh);
+            utilgl::setShaderUniforms(*shader_, transform, "geometry");
             shader_->setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
 
             drawer.draw();
@@ -492,5 +494,7 @@ Document MeshRasterization::getInfo() const {
                                 usesFragmentLists() ? "Using A-buffer" : "Rendering opaque"));
     return doc;
 }
+
+Rasterization* MeshRasterization::copy() const { return new MeshRasterization(*this); }
 
 }  // namespace inviwo

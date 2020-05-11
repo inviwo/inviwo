@@ -49,6 +49,7 @@
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/base/processors/transform.h>
 
 #include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
 #include <modules/meshrenderinggl/algorithm/calcnormals.h>
@@ -80,6 +81,7 @@ namespace inviwo {
  * ### Properties
  *   * __Camera__ Camera used for rendering the mesh
  *   * __Lighting__ Standard lighting settings
+ *   * __Mesh Transform__ Additional world/model transform applied to all input meshes
  *   * __Trackball__ Standard trackball settings
  *   * __Shade Opaque__ Draw the mesh opaquly instead of transparent. Disables all transparency
  * settings
@@ -278,6 +280,8 @@ protected:
 
     std::array<FaceSettings, 2> faceSettings_;
 
+    rasterization::TransformSettings transformSetting_;
+
     std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;
 
     std::shared_ptr<Shader> shader_;
@@ -304,6 +308,7 @@ public:
         return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
     }
     virtual Document getInfo() const override;
+    virtual Rasterization* copy() const override;
 
 public:
     std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;
