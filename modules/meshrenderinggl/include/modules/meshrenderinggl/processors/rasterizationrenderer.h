@@ -148,7 +148,7 @@ protected:
 
     CameraProperty camera_;
     CameraTrackball trackball_;
-    
+
     struct IllustrationSettings {
         IllustrationSettings();
 

@@ -47,7 +47,7 @@ namespace inviwo {
  * ![](org.inviwo.TransformListProperty.png?classIdentifier=org.inviwo.TransformListProperty)
  * List of transformations being applied on each other.
  */
-class TransformListProperty : public CompositeProperty {
+class IVW_MODULE_BASE_API TransformListProperty : public CompositeProperty {
 public:
     TransformListProperty(const std::string& identifier, const std::string& displayName,
                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
