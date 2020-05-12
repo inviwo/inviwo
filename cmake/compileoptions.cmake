@@ -33,6 +33,7 @@
 
 option(IVW_TREAT_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 option(IVW_FORCE_ASSERTIONS "Force use of assertions when not in debug mode" OFF)
+option (FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." FALSE)
 
 function(ivw_define_standard_properties)
     foreach(target ${ARGN})
@@ -74,6 +75,9 @@ function(ivw_define_standard_properties)
         endif()
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
             list(APPEND comp_opts "-fsized-deallocation") # see https://github.com/pybind/pybind11/issues/1604
+            if (${FORCE_COLORED_OUTPUT}) # see https://medium.com/@alasher/colored-c-compiler-output-with-ninja-clang-gcc-10bfe7f2b949
+                add_compile_options (-fcolor-diagnostics)
+            endif()
         endif()
 
         list(REMOVE_DUPLICATES comp_opts)
@@ -96,6 +100,11 @@ function(ivw_define_standard_properties)
                 XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code"
             )
          endif()
+        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+            if (${FORCE_COLORED_OUTPUT})
+                add_compile_options (-fdiagnostics-color=always)
+            endif()
+        endif()
     endforeach()
 endfunction()
 
