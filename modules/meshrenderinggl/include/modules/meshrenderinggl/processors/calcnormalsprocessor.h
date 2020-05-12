@@ -51,11 +51,11 @@ namespace inviwo {
  *
  * ### Properties
  *   * __Mode__  The weighting modes for calculating normals
- *       * @copydoc CalculateMeshNormalsMode::PassThrough
- *       * @copydoc CalculateMeshNormalsMode::NoWeighting
- *       * @copydoc CalculateMeshNormalsMode::WeightArea
- *       * @copydoc CalculateMeshNormalsMode::WeightAngle
- *       * @copydoc CalculateMeshNormalsMode::WeightNMax
+ *       * @copydoc meshutil::CalculateMeshNormalsMode::PassThrough
+ *       * @copydoc meshutil::CalculateMeshNormalsMode::NoWeighting
+ *       * @copydoc meshutil::CalculateMeshNormalsMode::WeightArea
+ *       * @copydoc meshutil::CalculateMeshNormalsMode::WeightAngle
+ *       * @copydoc meshutil::CalculateMeshNormalsMode::WeightNMax
  *
  */
 class IVW_MODULE_MESHRENDERINGGL_API CalcNormalsProcessor : public Processor {
