@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/meshrenderinggl/processors/transformrasterization.h>
+#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>
 
 namespace inviwo {
 
@@ -42,7 +43,10 @@ const ProcessorInfo TransformRasterization::processorInfo_{
 const ProcessorInfo TransformRasterization::getProcessorInfo() const { return processorInfo_; }
 
 TransformRasterization::TransformRasterization()
-    : Processor(), inport_("input"), outport_("output") {
+    : Processor()
+    , inport_("input")
+    , outport_("output")
+    , transformSetting_("transformSettings", "Additional Transform") {
 
     addPort(inport_);
     addPort(outport_);
@@ -58,10 +62,8 @@ void TransformRasterization::process() {
         return;
     }
 
-    std::shared_ptr<Rasterization> copy(inport_.getData()->copy());
-    copy->spatialTransformation_ =
-        transformSetting_.getTransform().applyToSpatialEntity(copy->spatialTransformation_);
-    outport_.setData(copy);
+    outport_.setData(
+        new TransformedRasterization(inport_.getData(), transformSetting_.getMatrix()));
 }
 
 }  // namespace inviwo

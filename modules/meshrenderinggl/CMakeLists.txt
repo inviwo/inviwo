@@ -7,6 +7,7 @@ ivw_module(MeshRenderingGL)
 set(HEADER_FILES
     include/modules/meshrenderinggl/datastructures/halfedges.h
     include/modules/meshrenderinggl/datastructures/rasterization.h
+    include/modules/meshrenderinggl/datastructures/transformedrasterization.h
     include/modules/meshrenderinggl/algorithm/calcnormals.h
     include/modules/meshrenderinggl/ports/rasterizationport.h
     include/modules/meshrenderinggl/processors/calcnormalsprocessor.h
@@ -25,6 +26,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/datastructures/halfedges.cpp
     src/datastructures/rasterization.cpp
+    src/datastructures/transformedrasterization.cpp
     src/algorithm/calcnormals.cpp
     src/processors/calcnormalsprocessor.cpp
     src/ports/rasterizationport.cpp

@@ -27,14 +27,4 @@
  *
  *********************************************************************************/
 
-#include <modules/meshrenderinggl/datastructures/rasterization.h>
-
-namespace inviwo {
-
-Document Rasterization::getInfo() const {
-    Document doc;
-    doc.append("p", "Rasterization functor.");
-    return doc;
-}
-
-}  // namespace inviwo
+#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>

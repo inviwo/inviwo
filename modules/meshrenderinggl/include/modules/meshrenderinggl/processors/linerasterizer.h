@@ -46,6 +46,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <modules/base/processors/transform.h>
 
 #include <vector>
 
@@ -108,24 +109,24 @@ private:
 
     CameraProperty camera_;
     CameraTrackball trackball_;
-    rasterization::TransformSettings transformSetting_;
+    TransformListProperty transformSetting_;
     std::shared_ptr<MeshShaderCache> lineShaders_;
 };
 
 /**
  * \brief Functor object that will render lines into a fragment list.
  */
-class LineRasterization : public Rasterization {
+class IVW_MODULE_MESHRENDERINGGL_API LineRasterization : public Rasterization {
 public:
     /**
      * \brief Copy all settings and the shader to hand to a renderer.
      */
     LineRasterization(const LineRasterizer& rasterizerProcessor);
-    virtual void rasterize(const ivec2& imageSize,
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
                            std::function<void(Shader&)> setUniforms) const override;
     virtual bool usesFragmentLists() const override;
     virtual Document getInfo() const override;
-    virtual Rasterization* copy() const override;
+    virtual Rasterization* clone() const override;
 
 protected:
     std::shared_ptr<MeshShaderCache> lineShaders_;

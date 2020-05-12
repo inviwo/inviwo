@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/meshrenderinggl/processors/meshrasterizer.h>
+#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>
 
 #include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/common/inviwoapplication.h>
@@ -82,6 +83,7 @@ MeshRasterizer::MeshRasterizer()
               vec3(0.0f, 1.0f, 0.0f), &inport_)
     , trackball_(&camera_)
     , lightingProperty_("lighting", "Lighting", &camera_)
+    , transformSetting_("transformSettings", "Additional Transform")
     , forceOpaque_("forceOpaque", "Shade Opaque", false, InvalidationLevel::InvalidResources)
     , drawSilhouette_("drawSilhouette", "Draw Silhouette", false,
                       InvalidationLevel::InvalidResources)
@@ -354,7 +356,15 @@ void MeshRasterizer::process() {
 
     shader_->deactivate();
 
-    outport_.setData(new MeshRasterization(*this));
+    std::shared_ptr<const Rasterization> rasterization =
+        std::make_shared<const MeshRasterization>(*this);
+    // If transform is applied, wrap rasterization.
+    if (transformSetting_.transforms_.size() > 0) {
+        outport_.setData(
+            new TransformedRasterization(rasterization, transformSetting_.getMatrix()));
+    } else {
+        outport_.setData(rasterization);
+    }
 }
 
 void MeshRasterizer::updateMeshes() {
@@ -396,8 +406,7 @@ void MeshRasterizer::updateMeshes() {
 }
 
 MeshRasterization::MeshRasterization(const MeshRasterizer& processor)
-    : Rasterization(processor.transformSetting_.getTransform())
-    , enhancedMeshes_(processor.enhancedMeshes_)
+    : enhancedMeshes_(processor.enhancedMeshes_)
     , forceOpaque_(processor.forceOpaque_)
     , showFace_{processor.faceSettings_[0].show_, processor.faceSettings_[1].show_}
     , tfTextures_{processor.faceSettings_[0].transferFunction_->getData(),
@@ -444,7 +453,7 @@ void MeshRasterizer::initializeResources() {
     shader_->build();
 }
 
-void MeshRasterization::rasterize(const ivec2& imageSize,
+void MeshRasterization::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
                                   std::function<void(Shader&)> setUniformsRenderer) const {
 
     shader_->activate();
@@ -476,7 +485,8 @@ void MeshRasterization::rasterize(const ivec2& imageSize,
         for (auto mesh : enhancedMeshes_) {
             MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
                                             mesh->getDefaultMeshInfo()};
-            auto transform = spatialTransformation_.applyToSpatialEntity(*mesh);
+            auto transform = CompositeTransform(mesh->getModelMatrix(),
+                                                mesh->getWorldMatrix() * worldMatrixTransform);
             utilgl::setShaderUniforms(*shader_, transform, "geometry");
             shader_->setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
 
@@ -495,6 +505,6 @@ Document MeshRasterization::getInfo() const {
     return doc;
 }
 
-Rasterization* MeshRasterization::copy() const { return new MeshRasterization(*this); }
+Rasterization* MeshRasterization::clone() const { return new MeshRasterization(*this); }
 
 }  // namespace inviwo

@@ -31,6 +31,7 @@
 
 #include <modules/meshrenderinggl/datastructures/rasterization.h>
 #include <modules/meshrenderinggl/ports/rasterizationport.h>
+#include <modules/base/processors/transform.h>
 
 namespace inviwo {
 
@@ -39,13 +40,13 @@ namespace inviwo {
  * Add a transformation on a rasterization object.
  *
  * ### Inports
- *   * __input__ input rasterization object to be rendered by a rasterization renderer
+ *   * __input__ Input rasterization object to be rendered by a rasterization renderer
  *
  * ### Outports
- *   * __output__ copy of the input rasterization with the set transform applied to it
+ *   * __output__ Wrapper around the input rasterization with a transform applied on rasterize call
  *
  * ### Properties
- *   * __Mesh Transform__ Additional world/model transform applied to all input meshes
+ *   * __Mesh Transform__ Additional world transform applied to all input meshes
  */
 
 /**
@@ -64,7 +65,7 @@ public:
 
     RasterizationInport inport_;
     RasterizationOutport outport_;
-    rasterization::TransformSettings transformSetting_;
+    TransformListProperty transformSetting_;
 };
 
 }  // namespace inviwo

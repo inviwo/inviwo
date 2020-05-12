@@ -1,0 +1,74 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2019-2020 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+#pragma once
+
+#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
+#include <modules/meshrenderinggl/datastructures/rasterization.h>
+
+namespace inviwo {
+/**
+ * \brief Rasterization wrapper to add an additional transform on the render call.
+ */
+class IVW_MODULE_MESHRENDERINGGL_API TransformedRasterization : public Rasterization {
+public:
+    TransformedRasterization(std::shared_ptr<const Rasterization> rasterization,
+                             const mat4& additionalWorldTransform)
+        : innerRasterization_(rasterization), additionalWorldTransform_(additionalWorldTransform) {}
+
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
+                           std::function<void(Shader&)> setUniforms) const override {
+        innerRasterization_->rasterize(imageSize, additionalWorldTransform_ * worldMatrixTransform,
+                                       setUniforms);
+    }
+    virtual bool usesFragmentLists() const override {
+        return innerRasterization_->usesFragmentLists();
+    }
+
+    virtual Document getInfo() const override { return innerRasterization_->getInfo(); }
+    virtual Rasterization* clone() const override { return new TransformedRasterization(*this); }
+
+protected:
+    std::shared_ptr<const Rasterization> innerRasterization_;
+    const mat4 additionalWorldTransform_;
+};
+
+/**
+ * \brief A very simple SpatialEntity<3> to handle a world and model transform
+ * Used by rasterizations for adding transforms before rendering, without copying the mesh data.
+ */
+struct IVW_MODULE_MESHRENDERINGGL_API CompositeTransform : public SpatialEntity<3> {
+    CompositeTransform() = default;
+    CompositeTransform(const SpatialEntity<3>& rhs) : SpatialEntity(rhs) {}
+    CompositeTransform(const mat4& modelMatrix, const mat4& worldMatrix)
+        : SpatialEntity(modelMatrix, worldMatrix) {}
+    virtual SpatialEntity<3>* clone() const override { return new CompositeTransform(*this); }
+};
+
+}  // namespace inviwo

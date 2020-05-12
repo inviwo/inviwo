@@ -164,9 +164,10 @@ void RasterizationRenderer::process() {
         }
 
         for (auto rasterization : rasterizations_) {
-            rasterization->rasterize(outport_.getDimensions(), [this, fragmentLists](Shader& sh) {
-                if (fragmentLists) this->flr_.setShaderUniforms(sh);
-            });
+            rasterization->rasterize(outport_.getDimensions(), mat4(1.0),
+                                     [this, fragmentLists](Shader& sh) {
+                                         if (fragmentLists) this->flr_.setShaderUniforms(sh);
+                                     });
         }
 
         if (fragmentLists) {

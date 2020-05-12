@@ -31,7 +31,6 @@
 
 #include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
 #include <modules/opengl/shader/shaderutils.h>
-#include <modules/base/processors/transform.h>
 
 #include <vector>
 #include <unordered_map>
@@ -39,50 +38,22 @@
 
 namespace inviwo {
 
-namespace rasterization {
-
-struct SimpleSpatialEntity : public SpatialEntity<3> {
-    SimpleSpatialEntity() = default;
-    SimpleSpatialEntity(const SpatialEntity<3>& rhs) : SpatialEntity(rhs) {}
-    SimpleSpatialEntity(const SimpleSpatialEntity& rhs)
-        : SpatialEntity(rhs), replaceTransformationOnApply_(rhs.replaceTransformationOnApply_) {}
-    virtual SpatialEntity<3>* clone() const override { return new SimpleSpatialEntity(*this); }
-    SimpleSpatialEntity applyToSpatialEntity(const SpatialEntity<3>& data) const;
-
-    bool replaceTransformationOnApply_ = false;
-};
-
-struct TransformSettings : public CompositeProperty {
-    TransformSettings(const std::string& identifier = "transformSettings",
-                      const std::string& displayName = "Mesh Transforms",
-                      InvalidationLevel invalidate = InvalidationLevel::InvalidOutput);
-    TemplateOptionProperty<CoordinateSpace> space_;
-    BoolProperty replaceTransform_;
-    TransformListProperty transform_;
-
-    SimpleSpatialEntity getTransform() const;
-};
-
-}  // namespace rasterization
-
 /**
  * \brief A functor class for rendering geometry into a fragment list
  * Will be applied by a renderer containing an A-buffer.
  */
 class IVW_MODULE_MESHRENDERINGGL_API Rasterization {
 public:
-    Rasterization(
-        const rasterization::SimpleSpatialEntity& transform = rasterization::SimpleSpatialEntity())
-        : spatialTransformation_(transform) {}
     virtual ~Rasterization() = default;
 
     /**
      * \brief Render the fragments, with all setup and evaluation taken care of.
      * If opaque is set, a standard render call instead.
      * @param imageSize Size in pixels.
+     * @param worldMatrixTransform Additional transform to be applied before rendering.
      * @param setUniforms Binds the fragment list buffer and sets required uniforms.
      */
-    virtual void rasterize(const ivec2& imageSize,
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
                            std::function<void(Shader&)> setUniforms) const = 0;
 
     /**
@@ -101,13 +72,7 @@ public:
      * \brief Get a copy of the object. Ownership goes to the caller.
      * @return A copy with the same data and type as the original.
      */
-    virtual Rasterization* copy() const = 0;
-
-    /**
-     * \brief Mot simple spatial 3D data object, hosting a model and world matrix.
-     * Should be applied to geometry, and then set as a uniform.
-     */
-    rasterization::SimpleSpatialEntity spatialTransformation_;
+    virtual Rasterization* clone() const = 0;
 };
 
 template <>

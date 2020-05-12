@@ -177,10 +177,11 @@ TransformListProperty::TransformListProperty(const std::string& identifier,
                   std::make_unique<transform::CustomTransformProperty>("custom", "Custom Matrix"));
               return v;
           }())
-    , result_("result", "Result", mat4(1.0f),
-              util::filled<mat4>(std::numeric_limits<float>::lowest()),
-              util::filled<mat4>(std::numeric_limits<float>::max()), util::filled<mat4>(0.001f),
-              InvalidationLevel::Valid) {
+    , result_(
+          "result", "Result", mat4(1.0f),
+          {util::filled<mat4>(std::numeric_limits<float>::lowest()), ConstraintBehavior::Ignore},
+          {util::filled<mat4>(std::numeric_limits<float>::max()), ConstraintBehavior::Ignore},
+          util::filled<mat4>(0.001f), InvalidationLevel::Valid) {
     result_.setSemantics(PropertySemantics::Text);
     result_.setReadOnly(true);
     addProperties(transforms_, result_);

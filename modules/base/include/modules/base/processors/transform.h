@@ -43,7 +43,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TransformListProperty, Transform List Proeprty}
+/** \docpage{org.inviwo.TransformListProperty, Transform List Property}
  * ![](org.inviwo.TransformListProperty.png?classIdentifier=org.inviwo.TransformListProperty)
  * List of transformations being applied on each other.
  */

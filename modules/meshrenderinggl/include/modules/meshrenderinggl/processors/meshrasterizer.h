@@ -169,6 +169,7 @@ protected:
     CameraProperty camera_;
     CameraTrackball trackball_;
     SimpleLightingProperty lightingProperty_;
+    TransformListProperty transformSetting_;
 
     BoolProperty forceOpaque_;
 
@@ -280,10 +281,7 @@ protected:
 
     std::array<FaceSettings, 2> faceSettings_;
 
-    rasterization::TransformSettings transformSetting_;
-
     std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;
-
     std::shared_ptr<Shader> shader_;
 
     /**
@@ -296,19 +294,19 @@ protected:
 /**
  * \brief Functor object that will render into a fragment list.
  */
-class MeshRasterization : public Rasterization {
+class IVW_MODULE_MESHRENDERINGGL_API MeshRasterization : public Rasterization {
 public:
     /**
      * \brief Copy all settings and the shader to hand to a renderer.
      */
     MeshRasterization(const MeshRasterizer& rasterizerProcessor);
-    virtual void rasterize(const ivec2& imageSize,
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
                            std::function<void(Shader&)> setUniforms) const override;
     virtual bool usesFragmentLists() const override {
         return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
     }
     virtual Document getInfo() const override;
-    virtual Rasterization* copy() const override;
+    virtual Rasterization* clone() const override;
 
 public:
     std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;
