@@ -107,8 +107,6 @@ private:
     BoolProperty useUniformAlpha_;
     FloatProperty uniformAlpha_;
 
-    CameraProperty camera_;
-    CameraTrackball trackball_;
     TransformListProperty transformSetting_;
     std::shared_ptr<MeshShaderCache> lineShaders_;
 };

@@ -68,8 +68,6 @@ LineRasterizer::LineRasterizer()
     , useUniformAlpha_("useUniformAlpha", "Uniform Alpha", false,
                        InvalidationLevel::InvalidResources)
     , uniformAlpha_("alphaValue", "Alpha", 0.7f, 0, 1, 0.1f, InvalidationLevel::InvalidOutput)
-    , camera_("camera", "Camera", util::boundingBox(inport_))
-    , trackball_(&camera_)
     , transformSetting_("transformSettings", "Additional Transform")
     , lineShaders_(new MeshShaderCache(
           {{ShaderType::Vertex, std::string{"linerenderer.vert"}},
@@ -93,11 +91,9 @@ LineRasterizer::LineRasterizer()
     addPort(inport_);
     addPort(outport_);
 
-    addProperties(camera_, trackball_, transformSetting_, forceOpaque_, lineSettings_,
-                  overwriteColor_, constantColor_, useUniformAlpha_, uniformAlpha_);
+    addProperties(transformSetting_, forceOpaque_, lineSettings_, overwriteColor_, constantColor_,
+                  useUniformAlpha_, uniformAlpha_);
 
-    camera_.setCollapsed(true);
-    trackball_.setCollapsed(true);
     transformSetting_.setCollapsed(true);
 
     constantColor_.setVisible(overwriteColor_.get());
@@ -145,7 +141,6 @@ void LineRasterizer::process() {
 }
 
 void LineRasterizer::setUniforms(Shader& shader) const {
-    utilgl::setUniforms(shader, camera_);
 
     shader.setUniform("lineWidth", lineSettings_.getWidth());
     shader.setUniform("antialiasing", lineSettings_.getAntialiasingWidth());

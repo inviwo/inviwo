@@ -79,10 +79,7 @@ MeshRasterizer::MeshRasterizer()
     : Processor()
     , inport_("geometry")
     , outport_("image")
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f), &inport_)
-    , trackball_(&camera_)
-    , lightingProperty_("lighting", "Lighting", &camera_)
+    , lightingProperty_("lighting", "Lighting")
     , transformSetting_("transformSettings", "Additional Transform")
     , forceOpaque_("forceOpaque", "Shade Opaque", false, InvalidationLevel::InvalidResources)
     , drawSilhouette_("drawSilhouette", "Draw Silhouette", false,
@@ -112,9 +109,9 @@ MeshRasterizer::MeshRasterizer()
 
     drawSilhouette_.onChange([this]() { updateMeshes(); });
 
-    addProperties(camera_, lightingProperty_, trackball_, transformSetting_, forceOpaque_,
-                  drawSilhouette_, silhouetteColor_, normalSource_, normalComputationMode_,
-                  alphaSettings_, edgeSettings_, faceSettings_[0].show_, faceSettings_[1].show_);
+    addProperties(lightingProperty_, transformSetting_, forceOpaque_, drawSilhouette_,
+                  silhouetteColor_, normalSource_, normalComputationMode_, alphaSettings_,
+                  edgeSettings_, faceSettings_[0].show_, faceSettings_[1].show_);
 
     silhouetteColor_.visibilityDependsOn(drawSilhouette_, [](const auto& p) { return p.get(); });
     normalComputationMode_.visibilityDependsOn(
@@ -130,9 +127,7 @@ MeshRasterizer::MeshRasterizer()
     edgeSettings_.visibilityDependsOn(faceSettings_[0].showEdges_, edgevis);
     edgeSettings_.visibilityDependsOn(faceSettings_[1].showEdges_, edgevis);
 
-    camera_.setCollapsed(true);
     lightingProperty_.setCollapsed(true);
-    trackball_.setCollapsed(true);
     transformSetting_.setCollapsed(true);
 
     silhouetteColor_.setSemantics(PropertySemantics::Color);
@@ -333,7 +328,7 @@ void MeshRasterizer::process() {
     shader_->activate();
 
     // general settings for camera, lighting, picking, mesh data
-    utilgl::setUniforms(*shader_, camera_, lightingProperty_);
+    utilgl::setUniforms(*shader_, lightingProperty_);
 
     // update face render settings
     std::array<TextureUnit, 2> transFuncUnit;

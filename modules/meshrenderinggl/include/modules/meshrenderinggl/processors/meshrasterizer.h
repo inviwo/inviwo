@@ -79,10 +79,8 @@ namespace inviwo {
  *   * __image__ Rasterization functir to facilitate rendering in a rendering processor
  *
  * ### Properties
- *   * __Camera__ Camera used for rendering the mesh
  *   * __Lighting__ Standard lighting settings
- *   * __Mesh Transform__ Additional world/model transform applied to all input meshes
- *   * __Trackball__ Standard trackball settings
+ *   * __Additional Transform__ Additional world/model transform applied to all input meshes
  *   * __Shade Opaque__ Draw the mesh opaquly instead of transparent. Disables all transparency
  * settings
  *   * __Alpha__ Assemble construction of the alpha value out of many factors (which are summed up)
@@ -166,8 +164,6 @@ protected:
     MeshFlatMultiInport inport_;
     RasterizationOutport outport_;
 
-    CameraProperty camera_;
-    CameraTrackball trackball_;
     SimpleLightingProperty lightingProperty_;
     TransformListProperty transformSetting_;
 
