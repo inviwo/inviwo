@@ -101,6 +101,7 @@ Histogram::Histogram(InviwoApplication* app)
     , color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(0.0f))
 	, countPixelsButton_("cntPixelsButton", "Count number of pixels with set color")
 	, startButton_("startButton", "Start")
+	, numTests_("numTests", "Maximum number of tests", 200, 1, 10000)
 	, collectButton_("collectButton", "Collect Properties") {
 
 	countPixelsButton_.onChange([this]() {
@@ -212,6 +213,7 @@ Histogram::Histogram(InviwoApplication* app)
     addProperty(color_);
 
 	addProperty(countPixelsButton_);
+	addProperty(numTests_);
 	addProperty(startButton_);
 	addProperty(collectButton_);
 
@@ -252,7 +254,12 @@ void Histogram::initTesting() {
 	for(const auto& x : assignments) std::cerr << " [" << x.size() << "]";
 	std::cerr << std::endl;
 
-	for(const auto& test : util::coveringArray(Test(), assignments)) {
+	auto allTests = util::coveringArray(Test(), assignments);
+	// TODO: find set of tests with size <= numTests_ and maximum number of testable pairs
+	if(numTests_.get() < allTests.size()) {
+		allTests.resize(numTests_.get());
+	}
+	for(const auto& test : allTests) {
 		remainingTests.emplace(test);
 	}
 
@@ -401,7 +408,6 @@ size_t countPixels(std::shared_ptr<const Image> img, const dvec4& col, const boo
 				if(pixelCol.x == 1)
 					res++;
 			} else {
-				std::cerr << glm::length(pixelCol - col) << std::endl;
 				if(glm::length(pixelCol - col) < 1e-3)
 					res++;
 			}

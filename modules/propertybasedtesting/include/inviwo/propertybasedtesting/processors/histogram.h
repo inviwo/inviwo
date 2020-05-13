@@ -255,6 +255,7 @@ private:
     FloatVec4Property color_;
 	ButtonProperty countPixelsButton_;
 	ButtonProperty startButton_;
+	IntSizeTProperty numTests_;
 	ButtonProperty collectButton_;
 
 	std::vector<CompositeProperty*> compositeProperties_;
