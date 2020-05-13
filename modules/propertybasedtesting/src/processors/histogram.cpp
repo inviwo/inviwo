@@ -114,7 +114,6 @@ Histogram::Histogram(InviwoApplication* app)
 		} );
 
 	useDepth_.onChange([this]() {
-			color_.setVisible(!useDepth_);
 			if(useDepth_) {
 				countPixelsButton_.setDisplayName("Count number of pixels with depth value 1");
 			} else {
@@ -137,35 +136,18 @@ Histogram::Histogram(InviwoApplication* app)
 
 			std::set<Property*> properties;
 
-            std::unordered_set<const Processor*> visited;
-            std::queue<const Processor*> q;
-            q.emplace(this);
-            visited.emplace(this);
-
             // collect all properties of the processors feeding directly or
             // indirectly into this
-            while(!q.empty()) {
-                auto processor = q.front();
-                q.pop();
-
+			for(Processor* processor : util::getPredecessors(this)) {
                 std::cerr << "visiting processor " << processor << " "
                           << processor->getIdentifier() << std::endl;
 
-                if(processor != this) {
-                    const auto& processorProperties = processor->getProperties();
-                    properties.insert(processorProperties.begin(), processorProperties.end());
-                }
-
-                for(const Inport* inport : processor->getInports()) {
-                    for(const Outport* outport : inport->getConnectedOutports()) {
-                        if(const Processor* proc = outport->getProcessor(); visited.insert(proc).second) {
-                            q.emplace(proc);
-                        }
-                    }
-                }
+				const auto& processorProperties = processor->getProperties();
+				properties.insert(processorProperties.begin(), processorProperties.end());
             }
 
-			std::unordered_map<Processor*, CompositeProperty*> composites; // processor to its composite property
+			// maps processor to its associated composite property
+			std::unordered_map<Processor*, CompositeProperty*> composites;
 
             std::unordered_set<std::string> usedIdentifiers;
             // TODO: only insert minimal set S of properties such that all properties
@@ -211,6 +193,7 @@ Histogram::Histogram(InviwoApplication* app)
 
 	addProperty(useDepth_);
 	color_.setSemantics(PropertySemantics::Color);
+	color_.visibilityDependsOn(useDepth_, [](const auto& d) -> bool { return !d; });
     addProperty(color_);
 
 	addProperty(countPixelsButton_);
@@ -245,8 +228,13 @@ void Histogram::initTesting() {
     }
 
     std::vector<std::shared_ptr<TestProperty>> propsToTest;
+	// only use those properties that have influence on this processor
     std::copy_if(props_.begin(), props_.end(), std::back_inserter(propsToTest), [this](auto prop) {
-            return !app_->getProcessorNetwork()->getPropertiesLinkedTo(prop->getProperty()).empty();
+			for(auto linkedProperty : app_->getProcessorNetwork()->getPropertiesLinkedTo(prop->getProperty()))
+				if(auto parentProcessor = util::getOwningProcessor(linkedProperty))
+					if(util::getSuccessors(*parentProcessor).count(this) > 0)
+						return true;
+			return false;
         });
 
 	std::cerr << "propsToTest.size() = " << propsToTest.size() << std::endl;
@@ -273,7 +261,7 @@ void Histogram::initTesting() {
 	std::cerr << "remainingTests.size() = " << remainingTests.size() << std::endl;
 	util::log(IVW_CONTEXT, std::string("Testing ") + std::to_string(remainingTests.size()) + " configurations...", LogLevel::Info, LogAudience::User);
 
-    assert(remainingTests.size() > 1);
+    assert(remainingTests.size() > 0);
 
 	app_->dispatchFront([this]() {
 			setupTest(remainingTests.front());
@@ -409,7 +397,7 @@ void Histogram::setupTest(const Test& test) {
 		});
 
 	app_->dispatchPool([this]() {
-			std::this_thread::sleep_for(std::chrono::milliseconds(20)); // just so we can see what's going on, TODO: remove
+			std::this_thread::sleep_for(std::chrono::milliseconds(20)); // necessary because of synchronicity issues, TODO: find better solution
 			app_->dispatchFrontAndForget([this]() {
 					testingState = TestingState::GATHERING;
 					this->invalidate(InvalidationLevel::InvalidOutput);

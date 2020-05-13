@@ -67,6 +67,17 @@ const PropertyEffect& reverseEffect(const PropertyEffect& pe) {
 	return reverseEffects[(size_t)pe];
 }
 
+std::optional<Processor*> getOwningProcessor(Property* const prop) {
+	PropertyOwner* const owner = prop->getOwner();
+	if(Processor* const proc = dynamic_cast<Processor*>(owner); proc != nullptr) {
+		return {proc};
+	} else if(Property* const owningProp = dynamic_cast<Property*>(owner); owningProp != nullptr) {
+		return getOwningProcessor(owningProp);
+	} else {
+		return std::nullopt;
+	}
+}
+
 } // namespace util
 	
 } // namespace inviwo

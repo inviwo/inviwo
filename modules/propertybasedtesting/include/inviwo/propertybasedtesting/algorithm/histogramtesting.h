@@ -32,6 +32,8 @@
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/optionproperty.h>
 
 #include <inviwo/propertybasedtesting/algorithm/generatingassignments.h>
@@ -97,6 +99,8 @@ struct GetComponent<T,1> {
 		return v;
 	}
 };
+
+std::optional<Processor*> getOwningProcessor(Property* const prop);
 
 } // util
 

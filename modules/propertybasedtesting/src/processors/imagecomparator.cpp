@@ -172,7 +172,7 @@ void ImageComparator::process() {
 		imageCompChoice_.setMaxValue(imageCompCount_);
 		const auto img1Path = tempDir_ / (std::string("img1_") + std::to_string(imageCompCount_) + std::string(".png"));
 		const auto img2Path = tempDir_ / (std::string("img2_") + std::to_string(imageCompCount_) + std::string(".png"));
-		const auto pngExt = inviwo::FileExtension::createFileExtensionFromString(std::string("png"));
+		static const auto pngExt = inviwo::FileExtension::createFileExtensionFromString(std::string("png"));
 		inviwo::util::saveLayer(*img1->getColorLayer(), img1Path.string(), pngExt);
 		inviwo::util::saveLayer(*img2->getColorLayer(), img2Path.string(), pngExt);
 	}
