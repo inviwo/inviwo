@@ -38,6 +38,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
@@ -144,11 +145,11 @@ public:
 class TestResult {
 	private:
 		const std::vector<std::shared_ptr<TestProperty>>& defaultValues;
-		const size_t backgroundPixels;
 		const Test test;
+		const size_t pixels;
 	public:
-		size_t getNumberOfBackgroundPixels() {
-			return backgroundPixels;
+		size_t getNumberOfPixels() {
+			return pixels;
 		}
 		template<typename T>
 		const typename T::value_type& getValue(const T* prop) const {
@@ -163,9 +164,9 @@ class TestResult {
 			assert(false);
 		}
 		TestResult(const std::vector<std::shared_ptr<TestProperty>>& defaultValues, const Test& t, size_t val)
-			  : test(t)
-			  , defaultValues(defaultValues)
-			  , backgroundPixels(val) {
+			  : defaultValues(defaultValues)
+			  , test(t)
+			  , pixels(val) {
 			  }
 };
 	
@@ -250,7 +251,9 @@ private:
 
 	ImageInport inport_;
 	
-	ButtonProperty cntBackgroundPixelsButton_;
+	BoolProperty useDepth_;
+    FloatVec4Property color_;
+	ButtonProperty countPixelsButton_;
 	ButtonProperty startButton_;
 	ButtonProperty collectButton_;
 

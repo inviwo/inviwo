@@ -77,26 +77,19 @@ const ProcessorInfo Histogram::processorInfo_{
 };
 const ProcessorInfo Histogram::getProcessorInfo() const { return processorInfo_; }
 
-// template loop
-template<typename... Args>
-struct TestableProperty;
-template<typename T, typename... Args>
-struct TestableProperty<T, Args...> {
-	static std::optional<std::shared_ptr<TestProperty>> _testableProperty(Property* prop) {
-		if(auto tmp = dynamic_cast<T*>(prop); tmp != nullptr)
-			return {std::make_shared<TestPropertyTyped<T>>(tmp->clone())};
-		else
-			return TestableProperty<Args...>::_testableProperty(prop);
-	}
-};
-template<>
-struct TestableProperty<> {
-	static std::optional<std::shared_ptr<TestProperty>> _testableProperty(Property*) {
-		return std::nullopt;
+using PropertyTypes = std::tuple<OrdinalProperty<int>, IntMinMaxProperty>;
+
+struct TestablePropertyHelper {
+	template<typename T>
+	auto operator()(std::optional<std::shared_ptr<TestProperty>>& res, Property* prop) {
+		 if(auto tmp = dynamic_cast<T*>(prop); tmp != nullptr)
+			 res = {std::make_shared<TestPropertyTyped<T>>(tmp->clone())};
 	}
 };
 std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop) {
-	return TestableProperty<OrdinalProperty<int>, IntMinMaxProperty>::_testableProperty(prop); // append Property types here
+	std::optional<std::shared_ptr<TestProperty>> res = std::nullopt;
+	util::for_each_type<PropertyTypes>{}(TestablePropertyHelper{}, res, prop);
+	return res;
 }
 
 Histogram::Histogram(InviwoApplication* app)
@@ -104,16 +97,27 @@ Histogram::Histogram(InviwoApplication* app)
     , testingState(TestingState::NONE)
 	, app_(app)
 	, inport_("imageInport")
-	, cntBackgroundPixelsButton_("cntBackgroundPixelsButton", "Count number of background pixels")
+	, useDepth_("useDepth", "Use Depth", false, InvalidationLevel::Valid)
+    , color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(0.0f))
+	, countPixelsButton_("cntPixelsButton", "Count number of pixels with set color")
 	, startButton_("startButton", "Start")
 	, collectButton_("collectButton", "Collect Properties") {
 
-	cntBackgroundPixelsButton_.onChange([this]() {
+	countPixelsButton_.onChange([this]() {
 			app_->dispatchFrontAndForget([this]{
 					NetworkLock lock(this);
 					testingState = TestingState::SINGLE_COUNT;
 					this->invalidate(InvalidationLevel::InvalidOutput);
 			});
+		} );
+
+	useDepth_.onChange([this]() {
+			color_.setVisible(!useDepth_);
+			if(useDepth_) {
+				countPixelsButton_.setDisplayName("Count number of pixels with depth value 1");
+			} else {
+				countPixelsButton_.setDisplayName("Count number of pixels with set color");
+			}
 		} );
 
 	startButton_.onChange([this]() { 
@@ -202,7 +206,12 @@ Histogram::Histogram(InviwoApplication* app)
 
 	inport_.setOutportDeterminesSize(true);
 	addPort(inport_);
-	addProperty(cntBackgroundPixelsButton_);
+    
+	addProperty(useDepth_);
+	color_.setSemantics(PropertySemantics::Color);
+    addProperty(color_);
+
+	addProperty(countPixelsButton_);
 	addProperty(startButton_);
 	addProperty(collectButton_);
 
@@ -285,8 +294,8 @@ void Histogram::checkTestResults() {
 
 			numComparable++;
 
-			const auto num = testResult->getNumberOfBackgroundPixels();
-			const auto otherNum = otherTestResult->getNumberOfBackgroundPixels();
+			const auto num = testResult->getNumberOfPixels();
+			const auto otherNum = otherTestResult->getNumberOfPixels();
 			bool ok;
 
 			switch(*propEff) {
@@ -378,9 +387,31 @@ void Histogram::setupTest(const Test& test) {
 		});
 }
 
+size_t countPixels(std::shared_ptr<const Image> img, const dvec4& col, const bool useDepth) {
+	auto imgRam = img->getRepresentation<ImageRAM>();
+	auto layer = useDepth
+		? imgRam->getDepthLayerRAM()
+		: imgRam->getColorLayerRAM();
+	const auto dim = layer->getDimensions();
+	size_t res = 0;
+	for(size_t x = 0; x < dim.x; x++) {
+		for(size_t y = 0; y < dim.y; y++) {
+			const auto pixelCol = layer->getAsNormalizedDVec4(size2_t(x,y));
+			if(useDepth) {
+				if(pixelCol.x == 1)
+					res++;
+			} else {
+				std::cerr << glm::length(pixelCol - col) << std::endl;
+				if(glm::length(pixelCol - col) < 1e-3)
+					res++;
+			}
+		}
+	}
+	return res;
+}
+
 void Histogram::process() {
 	auto img = inport_.getData();
-	const auto dim = img->getDimensions();
 
     switch(testingState) {
         case TestingState::NONE:
@@ -388,17 +419,8 @@ void Histogram::process() {
             break;
 		case TestingState::SINGLE_COUNT:
 		{
-			size_t pixelCount = 0;
-			auto imgRam = img->getRepresentation<ImageRAM>();
-			auto depthLayerRAM = imgRam->getDepthLayerRAM();
-			for(size_t x = 0; x < dim.x; x++) {
-				for(size_t y = 0; y < dim.y; y++) {
-					const auto col = depthLayerRAM->getAsDVec4(size2_t(x,y));
-					if(col.x == 1)
-						pixelCount++;
-				}
-			}
-			util::log(IVW_CONTEXT, std::to_string(pixelCount) + " background pixels visible", LogLevel::Info, LogAudience::User);
+			const size_t pixelCount = countPixels(img, color_.get(), useDepth_);
+			util::log(IVW_CONTEXT, std::to_string(pixelCount) + " pixels", LogLevel::Info, LogAudience::User);
 		} break;
 		case TestingState::GATHERING:
 			assert(!remainingTests.empty());
@@ -408,25 +430,10 @@ void Histogram::process() {
 
 			assert(testIsSetUp(test));
 
-			size_t pixelCount = 0;
-			auto imgRam = img->getRepresentation<ImageRAM>();
-			auto depthLayerRAM = imgRam->getDepthLayerRAM();
-			for(size_t x = 0; x < dim.x; x++) {
-				for(size_t y = 0; y < dim.y; y++) {
-					const auto col = depthLayerRAM->getAsDVec4(size2_t(x,y));
-					if(col.x == 1)
-						pixelCount++;
-				}
-			}
+			const size_t pixelCount = countPixels(img, color_.get(), useDepth_);
 
 			testResults.push_back(std::make_shared<TestResult>(props_, test, pixelCount));
 			
-			if(0) {
-				for(auto prop : props_)
-					prop->ostr(std::cerr, testResults.back()) << " ";
-				std::cerr << " : " << pixelCount << ", dim = " << dim << std::endl;
-			}
-
 			if(remainingTests.empty()) { // there are no more tests to do
 				this->checkTestResults();
 				app_->dispatchFrontAndForget([this]() { resetAllProps(); });
