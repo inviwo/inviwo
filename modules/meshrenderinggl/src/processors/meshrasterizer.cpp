@@ -356,8 +356,8 @@ void MeshRasterizer::process() {
         std::make_shared<const MeshRasterization>(*this);
     // If transform is applied, wrap rasterization.
     if (transformSetting_.transforms_.size() > 0) {
-        outport_.setData(
-            std::make_shared<TransformedRasterization>(rasterization, transformSetting_.getMatrix()));
+        outport_.setData(std::make_shared<TransformedRasterization>(rasterization,
+                                                                    transformSetting_.getMatrix()));
     } else {
         outport_.setData(rasterization);
     }

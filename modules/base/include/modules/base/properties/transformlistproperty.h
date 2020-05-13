@@ -49,7 +49,7 @@ public:
                           PropertySemantics semantics = PropertySemantics::Default);
     ~TransformListProperty() = default;
 
-     virtual std::string getClassIdentifier() const override;
+    virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     const mat4& getMatrix() const;

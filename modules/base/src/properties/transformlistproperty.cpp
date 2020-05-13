@@ -52,8 +52,8 @@ TransformListProperty::TransformListProperty(const std::string& identifier,
           "result", "Result", mat4(1.0f),
           {util::filled<mat4>(std::numeric_limits<float>::lowest()), ConstraintBehavior::Ignore},
           {util::filled<mat4>(std::numeric_limits<float>::max()), ConstraintBehavior::Ignore},
-          util::filled<mat4>(0.001f), InvalidationLevel::Valid, PropertySemantics::Text)) {
-              
+          util::filled<mat4>(0.001f), InvalidationLevel::Valid, PropertySemantics::Text) {
+
     result_.setReadOnly(true);
     result_.setCurrentStateAsDefault();
     addProperties(transforms_, result_);
