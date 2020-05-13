@@ -95,6 +95,7 @@ LineRasterizer::LineRasterizer()
                   useUniformAlpha_, uniformAlpha_);
 
     transformSetting_.setCollapsed(true);
+    transformSetting_.setCurrentStateAsDefault();
 
     constantColor_.setVisible(overwriteColor_.get());
     overwriteColor_.onChange([this]() {
@@ -134,7 +135,7 @@ void LineRasterizer::process() {
     // If transform is applied, wrap rasterization.
     if (transformSetting_.transforms_.size() > 0) {
         outport_.setData(
-            new TransformedRasterization(rasterization, transformSetting_.getMatrix()));
+            std::make_shared<TransformedRasterization>(rasterization, transformSetting_.getMatrix()));
     } else {
         outport_.setData(rasterization);
     }

@@ -129,6 +129,7 @@ MeshRasterizer::MeshRasterizer()
 
     lightingProperty_.setCollapsed(true);
     transformSetting_.setCollapsed(true);
+    transformSetting_.setCurrentStateAsDefault();
 
     silhouetteColor_.setSemantics(PropertySemantics::Color);
 
@@ -356,7 +357,7 @@ void MeshRasterizer::process() {
     // If transform is applied, wrap rasterization.
     if (transformSetting_.transforms_.size() > 0) {
         outport_.setData(
-            new TransformedRasterization(rasterization, transformSetting_.getMatrix()));
+            std::make_shared<TransformedRasterization>(rasterization, transformSetting_.getMatrix()));
     } else {
         outport_.setData(rasterization);
     }
