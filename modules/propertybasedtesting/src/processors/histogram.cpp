@@ -96,6 +96,7 @@ Histogram::Histogram(InviwoApplication* app)
     : Processor()
     , testingState(TestingState::NONE)
 	, app_(app)
+    , tempDir_{std::filesystem::temp_directory_path() / ("inviwo_histogram_" + std::to_string(rand()))}
 	, inport_("imageInport")
 	, useDepth_("useDepth", "Use Depth", false, InvalidationLevel::Valid)
     , color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(0.0f))
@@ -121,7 +122,7 @@ Histogram::Histogram(InviwoApplication* app)
 			}
 		} );
 
-	startButton_.onChange([this]() { 
+	startButton_.onChange([this]() {
             initTesting();
 		} );
 
@@ -149,7 +150,7 @@ Histogram::Histogram(InviwoApplication* app)
 
                 std::cerr << "visiting processor " << processor << " "
                           << processor->getIdentifier() << std::endl;
-                
+
                 if(processor != this) {
                     const auto& processorProperties = processor->getProperties();
                     properties.insert(processorProperties.begin(), processorProperties.end());
@@ -207,7 +208,7 @@ Histogram::Histogram(InviwoApplication* app)
 
 	inport_.setOutportDeterminesSize(true);
 	addPort(inport_);
-    
+
 	addProperty(useDepth_);
 	color_.setSemantics(PropertySemantics::Color);
     addProperty(color_);
@@ -225,6 +226,12 @@ Histogram::Histogram(InviwoApplication* app)
                 }
             }
 		});
+
+	if (std::filesystem::create_directory(tempDir_)) {
+		std::stringstream str;
+		str << "Using " << tempDir_ << " to store failed tests.";
+		util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
+	}
 }
 
 
@@ -249,7 +256,7 @@ void Histogram::initTesting() {
 		for(const auto& assignment : propsToTest[pi]->generateAssignments())
 			assignments[pi].push_back(assignment);
 	}
-	
+
 	std::cerr << "assignments: ";
 	for(const auto& x : assignments) std::cerr << " [" << x.size() << "]";
 	std::cerr << std::endl;
@@ -273,10 +280,21 @@ void Histogram::initTesting() {
 		});
 }
 
+using TestingError = std::tuple<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>, util::PropertyEffect, size_t, size_t>;
+std::ostream& printError(std::ostream& out, const std::vector<std::shared_ptr<TestProperty>> props, const TestingError& err) {
+	const auto&[testResult1, testResult2, effect, res1, res2] = err;
+	out << "Tests with values" << std::endl;
+	for(auto prop : props)
+		prop->ostr(out << " - ", testResult1, testResult2) << std::endl;
+	out << "Got " << res1 << " and " << res2 << " pixels, respectively."
+		<< " These numbers should be " << effect
+		<< std::endl;
+	return out;
+}
+
 void Histogram::checkTestResults() {
-    std::cerr << "checking " << testResults.size() << " test results ..." << std::flush;
-    std::vector< std::tuple<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>, util::PropertyEffect, size_t, size_t> > errors;
-	
+    std::vector< TestingError > errors;
+
 	size_t numComparable = 0;
 	std::array<size_t,7> cnt;
 	std::fill_n(cnt.begin(), 7, 0);
@@ -345,20 +363,25 @@ void Histogram::checkTestResults() {
 		}
 	}
 
-	for(auto x : cnt) std::cerr << " " << x;
-	std::cerr << std::endl;
-	std::cerr << " " << numComparable << " comparable test result pairs" << std::endl;
-	std::cerr << " done with " << errors.size() << " tests failed" << std::endl;
+	util::log(IVW_CONTEXT,
+			"Found " + std::to_string(numComparable) + " comparable pairs of test results",
+			LogLevel::Info, LogAudience::User);
 	if(!errors.empty()) {
         std::stringstream str;
         str << errors.size() << " tests failed: ";
-        errors.resize(std::min(size_t(5), errors.size())); // print at most 5 examples
-		for(auto& e : errors) {
-			str << std::endl << e << ": " << std::endl;
-			for(auto prop : props_)
-				prop->ostr(str << " - ", std::get<0>(e), std::get<1>(e)) << std::endl;
+		for(size_t i = 0; i < std::min(size_t(5), errors.size()); i++) {
+			printError(str, props_, errors[i]) << std::endl;
 		}
         util::log(IVW_CONTEXT, str.str(), LogLevel::Warn, LogAudience::User);
+
+		// writing errors to file
+		const auto errFilePath = tempDir_ / (std::string("err_") + std::to_string(rand()) + std::string(".txt"));
+		std::ofstream errFile(errFilePath, std::ios::out);
+		for(const auto& e : errors) {
+			printError(errFile, props_, e) << std::endl;
+		}
+		errFile.close();
+        util::log(IVW_CONTEXT, "Wrote errors to " + errFilePath.string(), LogLevel::Info, LogAudience::User);
     } else {
 		util::log(IVW_CONTEXT, "All tests passed.", LogLevel::Info, LogAudience::User);
 	}
@@ -372,7 +395,7 @@ bool Histogram::testIsSetUp(const Test& test) {
 }
 void Histogram::setupTest(const Test& test) {
 	NetworkLock lock(this);
-	
+
 	resetAllProps();
 
 	// then set relevant properties
@@ -384,7 +407,7 @@ void Histogram::setupTest(const Test& test) {
 	app_->getProcessorNetwork()->forEachProcessor([](auto proc) {
 			proc->invalidate(InvalidationLevel::InvalidOutput);
 		});
-	
+
 	app_->dispatchPool([this]() {
 			std::this_thread::sleep_for(std::chrono::milliseconds(20)); // just so we can see what's going on, TODO: remove
 			app_->dispatchFrontAndForget([this]() {
@@ -439,7 +462,7 @@ void Histogram::process() {
 			const size_t pixelCount = countPixels(img, color_.get(), useDepth_);
 
 			testResults.push_back(std::make_shared<TestResult>(props_, test, pixelCount));
-			
+
 			if(remainingTests.empty()) { // there are no more tests to do
 				this->checkTestResults();
 				app_->dispatchFrontAndForget([this]() { resetAllProps(); });

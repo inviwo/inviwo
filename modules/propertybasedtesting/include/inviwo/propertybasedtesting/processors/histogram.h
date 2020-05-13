@@ -46,7 +46,7 @@
 
 #include <inviwo/core/ports/imageport.h>
 
-#include <variant>
+#include <filesystem>
 
 namespace inviwo {
 
@@ -200,8 +200,8 @@ std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 	for(size_t i = 0; i < numComponents; i++)
 		selectedEffects[i] = util::PropertyEffect(effectOption[i]->getSelectedValue());
 	
-	return out << "TPT<" << typeid(T).name() << ">("
-				<< val << ")";
+	return out << '\"' << getProperty()->getDisplayName() << "\" with identifier \"" << getProperty()->getIdentifier() << "\": "
+				<< val;
 }
 template<typename T>
 std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
@@ -210,9 +210,9 @@ std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 	const value_type& valNew = newTestResult->getValue(this->typedProperty);
 	const value_type& valOld = oldTestResult->getValue(this->typedProperty);
 	
-	return out << "TPT<" << typeid(T).name() << ">("
-				<< valNew << ", " << valOld << " : "
-				<< getPropertyEffect(newTestResult, oldTestResult) << ")";
+	return out << '\"' << getProperty()->getDisplayName() << "\" with identifier \"" << getProperty()->getIdentifier() << "\": "
+				<< valNew << ", " << valOld << " ; comparator set to  "
+				<< getPropertyEffect(newTestResult, oldTestResult);
 }
 
 /** \docpage{org.inviwo.Histogram, Histogram}
@@ -232,7 +232,9 @@ std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 class IVW_MODULE_PROPERTYBASEDTESTING_API Histogram : public Processor {
 public:
     Histogram(InviwoApplication*);
-    virtual ~Histogram() = default;
+    virtual ~Histogram() {
+		std::filesystem::remove_all(tempDir_);
+	}
 
     virtual void process() override;
 
@@ -248,6 +250,7 @@ private:
 	TestingState testingState;
 
 	InviwoApplication* const app_;
+    std::filesystem::path tempDir_;
 
 	ImageInport inport_;
 	
