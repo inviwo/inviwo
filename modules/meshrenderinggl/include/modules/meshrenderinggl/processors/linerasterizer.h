@@ -46,7 +46,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <modules/base/processors/transform.h>
+#include <modules/base/properties/transformlistproperty.h>
 
 #include <vector>
 

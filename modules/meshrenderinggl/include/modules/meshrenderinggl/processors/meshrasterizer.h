@@ -49,7 +49,7 @@
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/shader/shader.h>
-#include <modules/base/processors/transform.h>
+#include <modules/base/properties/transformlistproperty.h>
 
 #include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
 #include <modules/meshrenderinggl/algorithm/calcnormals.h>
