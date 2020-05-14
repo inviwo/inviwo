@@ -41,12 +41,17 @@
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <pybind11/stl_bind.h>
 #include <warn/pop>
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/ports/volumeport.h>
+
+
+PYBIND11_MAKE_OPAQUE(VolumeSequence);
+
 
 namespace inviwo {
 
@@ -104,7 +109,10 @@ void exposeVolume(pybind11::module &m) {
             return oss.str();
         });
 
+    py::bind_vector<VolumeSequence>(m, "VolumeSequence", py::module_local(false));
+
     exposeStandardDataPorts<Volume>(m, "Volume");
+    exposeStandardDataPorts<VolumeSequence>(m, "VolumeSequence");
 }
 
 }  // namespace inviwo
