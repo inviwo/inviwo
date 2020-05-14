@@ -47,10 +47,13 @@ public:
     TransformListProperty(const std::string& identifier, const std::string& displayName,
                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                           PropertySemantics semantics = PropertySemantics::Default);
+    TransformListProperty(const TransformListProperty& other);
     ~TransformListProperty() = default;
 
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
+
+    virtual TransformListProperty* clone() const override;
 
     const mat4& getMatrix() const;
 

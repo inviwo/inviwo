@@ -37,7 +37,7 @@ TransformListProperty::TransformListProperty(const std::string& identifier,
                                              PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , transforms_(
-          "transforms", "Transformations",
+          "internalTransforms", "Transformations",
           []() {
               std::vector<std::unique_ptr<Property>> v;
               v.emplace_back(
@@ -69,8 +69,29 @@ TransformListProperty::TransformListProperty(const std::string& identifier,
     });
 }
 
+TransformListProperty::TransformListProperty(const TransformListProperty& other)
+    : CompositeProperty(other), transforms_(other.transforms_), result_(other.result_) {
+    result_.setReadOnly(true);
+    result_.setCurrentStateAsDefault();
+    addProperties(transforms_, result_);
+
+    transforms_.onChange([this]() {
+        mat4 total{1.0f};
+        for (auto p : transforms_) {
+            if (auto prop = dynamic_cast<transform::TransformProperty*>(p)) {
+                total = prop->getMatrix() * total;
+            }
+        }
+        result_.set(total);
+    });
+}
+
 const std::string TransformListProperty::classIdentifier = "org.inviwo.TransformListProperty";
 std::string TransformListProperty::getClassIdentifier() const { return classIdentifier; }
+
+TransformListProperty* TransformListProperty::clone() const {
+    return new TransformListProperty(*this);
+}
 
 const mat4& TransformListProperty::getMatrix() const { return result_.get(); }
 
