@@ -49,9 +49,7 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/ports/volumeport.h>
 
-
 PYBIND11_MAKE_OPAQUE(VolumeSequence);
-
 
 namespace inviwo {
 
