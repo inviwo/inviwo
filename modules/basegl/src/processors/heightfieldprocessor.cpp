@@ -51,7 +51,7 @@ const ProcessorInfo HeightFieldProcessor::processorInfo_{
     "org.inviwo.HeightFieldRenderGL",  // Class identifier
     "Height Field Renderer",           // Display name
     "Heightfield",                     // Category
-    CodeState::Experimental,           // Code state
+    CodeState::Stable,                 // Code state
     Tags::GL,                          // Tags
 };
 const ProcessorInfo HeightFieldProcessor::getProcessorInfo() const { return processorInfo_; }
@@ -72,33 +72,18 @@ HeightFieldProcessor::HeightFieldProcessor()
            {"shadingHeightField", "Heightfield Texture", HeightFieldShading::HeightField}},
           0)
     , camera_("camera", "Camera", util::boundingBox(inport_))
-    , resetViewParams_("resetView", "Reset Camera")
     , trackball_(&camera_)
     , lightingProperty_("lighting", "Lighting", &camera_)
     , shader_("heightfield.vert", "heightfield.frag", false) {
 
     addPort(inport_);
-    addPort(inportHeightfield_);
-    addPort(inportTexture_);
-    addPort(inportNormalMap_);
-    addPort(imageInport_);
+    addPort(inportHeightfield_).setOptional(true);
+    addPort(inportTexture_).setOptional(true);
+    addPort(inportNormalMap_).setOptional(true);
+    addPort(imageInport_).setOptional(true);
     addPort(outport_);
 
-    inportHeightfield_.setOptional(true);
-    inportTexture_.setOptional(true);
-    inportNormalMap_.setOptional(true);
-    imageInport_.setOptional(true);
-
-    addProperty(heightScale_);
-    addProperty(terrainShadingMode_);
-
-    addProperty(camera_);
-    resetViewParams_.onChange([this]() { camera_.resetCamera(); });
-    addProperty(resetViewParams_);
-    inport_.onChange([this]() { updateDrawers(); });
-
-    addProperty(lightingProperty_);
-    addProperty(trackball_);
+    addProperties(heightScale_, terrainShadingMode_, camera_, lightingProperty_, trackball_);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
@@ -106,17 +91,12 @@ HeightFieldProcessor::HeightFieldProcessor()
 HeightFieldProcessor::~HeightFieldProcessor() = default;
 
 void HeightFieldProcessor::initializeResources() {
-    // shading defines
     utilgl::addShaderDefines(shader_, lightingProperty_);
     shader_.build();
 }
 
 void HeightFieldProcessor::process() {
-    if (imageInport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_);
-    } else {
-        utilgl::activateAndClearTarget(outport_);
-    }
+    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
     shader_.activate();
 
@@ -138,7 +118,7 @@ void HeightFieldProcessor::process() {
         terrainShadingMode = HeightFieldShading::ConstantColor;
     }
 
-    bool normalMapping = inportNormalMap_.isReady();
+    const bool normalMapping = inportNormalMap_.isReady();
     if (normalMapping) {
         utilgl::bindColorTexture(inportNormalMap_, normalTexUnit.getEnum());
     }
@@ -150,44 +130,17 @@ void HeightFieldProcessor::process() {
     shader_.setUniform("normalMapping", (normalMapping ? 1 : 0));
 
     utilgl::setUniforms(shader_, camera_, lightingProperty_, heightScale_);
-    for (auto& drawer : drawers_) {
-        utilgl::setShaderUniforms(shader_, *(drawer.second->getMesh()), "geometry");
-        drawer.second->draw();
+
+    for (auto mesh : inport_) {
+        utilgl::setShaderUniforms(shader_, *mesh, "geometry");
+        MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
+                                        mesh->getDefaultMeshInfo()};
+        drawer.draw();
     }
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
     TextureUnit::setZeroUnit();
-}
-
-void HeightFieldProcessor::updateDrawers() {
-    auto changed = inport_.getChangedOutports();
-    DrawerMap temp;
-    std::swap(temp, drawers_);
-
-    std::map<const Outport*, std::vector<std::shared_ptr<const Mesh>>> data;
-    for (auto& elem : inport_.getSourceVectorData()) {
-        data[elem.first].push_back(elem.second);
-    }
-
-    for (auto elem : data) {
-        auto ibegin = temp.lower_bound(elem.first);
-        auto iend = temp.upper_bound(elem.first);
-
-        if (util::contains(changed, elem.first) || ibegin == temp.end() ||
-            static_cast<long>(elem.second.size()) !=
-                std::distance(ibegin, iend)) {  // data is changed or new.
-
-            for (auto geo : elem.second) {
-                auto factory = getNetwork()->getApplication()->getMeshDrawerFactory();
-                if (auto renderer = factory->create(geo.get())) {
-                    drawers_.emplace(std::make_pair(elem.first, std::move(renderer)));
-                }
-            }
-        } else {  // reuse the old data.
-            drawers_.insert(std::make_move_iterator(ibegin), std::make_move_iterator(iend));
-        }
-    }
 }
 
 }  // namespace inviwo

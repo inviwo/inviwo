@@ -41,13 +41,17 @@ BaseOptionProperty::BaseOptionProperty(const BaseOptionProperty& rhs) = default;
 
 BaseOptionProperty::~BaseOptionProperty() = default;
 
+void BaseOptionProperty::set(const BaseOptionProperty* srcProperty) {
+    size_t option = std::min(srcProperty->getSelectedIndex(), size() - 1);
+    if (option != getSelectedIndex()) {
+        setSelectedIndex(option);
+        propertyModified();
+    }
+}
+
 void BaseOptionProperty::set(const Property* srcProperty) {
     if (auto optionSrcProp = dynamic_cast<const BaseOptionProperty*>(srcProperty)) {
-        size_t option = std::min(optionSrcProp->getSelectedIndex(), size() - 1);
-        if (option != getSelectedIndex()) {
-            setSelectedIndex(option);
-            propertyModified();
-        }
+        set(optionSrcProp);
     }
 }
 

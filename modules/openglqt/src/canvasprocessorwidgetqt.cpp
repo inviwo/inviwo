@@ -114,6 +114,8 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
         QWidget::setVisible(ProcessorWidget::isVisible());
     }
     RenderContext::getPtr()->activateDefaultRenderContext();
+
+    installEventFilter(new utilqt::WidgetCloseEventFilter(this));
 }
 
 CanvasProcessorWidgetQt::~CanvasProcessorWidgetQt() {}

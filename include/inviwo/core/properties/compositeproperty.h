@@ -62,7 +62,7 @@ public:
     virtual std::string getClassIdentifierForWidget() const override;
 
     virtual bool isCollapsed() const;
-    virtual void setCollapsed(bool value);
+    virtual CompositeProperty& setCollapsed(bool value);
 
     // Override original functions in Property
     virtual void setOwner(PropertyOwner* owner) override;
@@ -88,7 +88,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    bool collapsed_;
+    ValueWrapper<bool> collapsed_;
     InvalidationLevel subPropertyInvalidationLevel_;
 };
 

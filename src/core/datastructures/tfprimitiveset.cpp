@@ -502,15 +502,8 @@ std::string TFPrimitiveSet::serializationKey() const { return "TFPrimitives"; }
 std::string TFPrimitiveSet::serializationItemKey() const { return "TFPrimitive"; }
 
 bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs) {
-    if (lhs.sorted_.size() != rhs.sorted_.size()) {
-        return false;
-    }
-    for (auto&& i : util::zip(lhs.sorted_, rhs.sorted_)) {
-        if (get<0>(i) != get<1>(i)) {
-            return false;
-        }
-    }
-    return true;
+    return std::equal(rhs.sorted_.begin(), rhs.sorted_.end(), lhs.sorted_.begin(),
+                      lhs.sorted_.end(), [](TFPrimitive* a, TFPrimitive* b) { return *a == *b; });
 }
 
 bool operator!=(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs) {

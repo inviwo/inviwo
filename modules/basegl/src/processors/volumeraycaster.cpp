@@ -58,7 +58,7 @@ VolumeRaycaster::VolumeRaycaster()
     , exitPort_("exit")
     , backgroundPort_("bg")
     , outport_("outport")
-    , channel_("channel", "Render Channel")
+    , channel_("channel", "Render Channel", {{"Channel 1", "Channel 1", 0}}, 0)
     , raycasting_("raycaster", "Raycasting")
     , isotfComposite_("isotfComposite", "TF & Isovalues", &volumePort_,
                       InvalidationLevel::InvalidResources)
@@ -78,9 +78,7 @@ VolumeRaycaster::VolumeRaycaster()
 
     backgroundPort_.setOptional(true);
 
-    channel_.addOption("Channel 1", "Channel 1", 0);
     channel_.setSerializationMode(PropertySerializationMode::All);
-    channel_.setCurrentStateAsDefault();
 
     volumePort_.onChange([this]() {
         if (volumePort_.hasData()) {

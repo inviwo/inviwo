@@ -52,6 +52,7 @@ VolumeIndicatorProperty::VolumeIndicatorProperty(std::string identifier, std::st
     addProperty(plane3_);
 
     setCollapsed(true);
+    setCurrentStateAsDefault();
 }
 
 VolumeIndicatorProperty::VolumeIndicatorProperty(const VolumeIndicatorProperty& rhs)

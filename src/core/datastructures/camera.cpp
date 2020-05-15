@@ -41,7 +41,11 @@ Camera::Camera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float f
     , nearPlaneDist_(nearPlane)
     , farPlaneDist_(farPlane)
     , invalidViewMatrix_(true)
-    , invalidProjectionMatrix_(true) {}
+    , invalidProjectionMatrix_(true)
+    , viewMatrix_{1.0f}
+    , projectionMatrix_{1.0f}
+    , inverseViewMatrix_{1.0f}
+    , inverseProjectionMatrix_{1.0f} {}
 
 const mat4& Camera::getViewMatrix() const {
     if (invalidViewMatrix_) {
@@ -173,12 +177,12 @@ void PerspectiveCamera::configureProperties(CompositeProperty* comp, Config conf
     fovCallbackHolder_ = fovProp->onChangeScoped([this, fovProp]() { setFovy(fovProp->get()); });
 }
 
-bool operator==(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs) {
-    return lhs.equalTo(rhs) && lhs.fovy_ == rhs.fovy_ && lhs.aspectRatio_ == rhs.aspectRatio_;
-}
-
-bool operator!=(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs) {
-    return !(lhs == rhs);
+bool PerspectiveCamera::equal(const Camera& other) const {
+    if (auto rhs = dynamic_cast<const PerspectiveCamera*>(&other)) {
+        return equalTo(other) && fovy_ == rhs->fovy_ && aspectRatio_ == rhs->aspectRatio_;
+    } else {
+        return false;
+    }
 }
 
 void PerspectiveCamera::serialize(Serializer& s) const {
@@ -248,12 +252,12 @@ void OrthographicCamera::configureProperties(CompositeProperty* comp, Config con
         widthProp->onChangeScoped([this, widthProp]() { setWidth(widthProp->get()); });
 }
 
-bool operator==(const OrthographicCamera& lhs, const OrthographicCamera& rhs) {
-    return lhs.equalTo(rhs) && lhs.width_ == rhs.width_;
-}
-
-bool operator!=(const OrthographicCamera& lhs, const OrthographicCamera& rhs) {
-    return !(rhs == lhs);
+bool OrthographicCamera::equal(const Camera& other) const {
+    if (auto rhs = dynamic_cast<const OrthographicCamera*>(&other)) {
+        return equalTo(other) && width_ == rhs->width_;
+    } else {
+        return false;
+    }
 }
 
 mat4 OrthographicCamera::calculateProjectionMatrix() const {
@@ -355,19 +359,19 @@ void SkewedPerspectiveCamera::configureProperties(CompositeProperty* comp, Confi
         offsetProp->onChangeScoped([this, offsetProp]() { setOffset(offsetProp->get()); });
 }
 
-bool operator==(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamera& rhs) {
-    return lhs.equalTo(rhs) && lhs.fovy_ == rhs.fovy_ && lhs.aspectRatio_ == rhs.aspectRatio_ &&
-           glm::all(glm::equal(lhs.offset_, rhs.offset_));
-}
-
-bool operator!=(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamera& rhs) {
-    return !(lhs == rhs);
-}
-
 mat4 SkewedPerspectiveCamera::calculateViewMatrix() const {
     const vec3 xoffset{offset_.x * glm::normalize(glm::cross(lookTo_ - lookFrom_, lookUp_))};
     const vec3 yoffset{offset_.y * lookUp_};
     return glm::lookAt(lookFrom_ + xoffset + yoffset, lookTo_ + xoffset + yoffset, lookUp_);
+}
+
+bool SkewedPerspectiveCamera::equal(const Camera& other) const {
+    if (auto rhs = dynamic_cast<const SkewedPerspectiveCamera*>(&other)) {
+        return equalTo(other) && fovy_ == rhs->fovy_ && aspectRatio_ == rhs->aspectRatio_ &&
+               glm::all(glm::equal(offset_, rhs->offset_));
+    } else {
+        return false;
+    }
 }
 
 mat4 SkewedPerspectiveCamera::calculateProjectionMatrix() const {

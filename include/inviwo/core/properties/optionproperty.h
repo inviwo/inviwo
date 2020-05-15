@@ -75,6 +75,7 @@ public:
     virtual bool isSelectedIdentifier(const std::string& identifier) const = 0;
     virtual bool isSelectedDisplayName(const std::string& name) const = 0;
 
+    void set(const BaseOptionProperty* srcProperty);
     virtual void set(const Property* srcProperty) override;
 };
 
@@ -200,6 +201,7 @@ public:
     const T& operator*() const;
     const T* operator->() const;
     void set(const T& value);
+    void set(const TemplateOptionProperty* srcProperty);
     virtual void set(const Property* srcProperty) override;
 
     /**
@@ -675,6 +677,11 @@ const T* TemplateOptionProperty<T>::operator->() const {
 template <typename T>
 void TemplateOptionProperty<T>::set(const T& value) {
     setSelectedValue(value);
+}
+
+template <typename T>
+void TemplateOptionProperty<T>::set(const TemplateOptionProperty* srcProperty) {
+    BaseOptionProperty::set(srcProperty);
 }
 
 template <typename T>
