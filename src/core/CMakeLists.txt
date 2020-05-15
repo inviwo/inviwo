@@ -277,6 +277,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/constexprhash.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/datetime.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/defaultvalues.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/detected.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactoryobject.h
@@ -581,6 +582,7 @@ set(SOURCE_FILES
     util/commandlineparser.cpp
     util/consolelogger.cpp
     util/defaultvalues.cpp
+    util/detected.cpp
     util/dialogfactory.cpp
     util/dialogfactoryobject.cpp
     util/document.cpp
@@ -603,6 +605,7 @@ set(SOURCE_FILES
     util/imageramutils.cpp
     util/imagesampler.cpp
     util/indirectiterator.cpp
+    util/introspection.cpp
     util/inviwosetupinfo.cpp
     util/licenseinfo.cpp
     util/logcentral.cpp
