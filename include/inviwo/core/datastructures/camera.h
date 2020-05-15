@@ -341,8 +341,6 @@ inline void PerspectiveCamera::setAspectRatio(float val) {
     invalidateProjectionMatrix();
 }
 
-
-
 inline mat4 PerspectiveCamera::calculateProjectionMatrix() const {
     return glm::perspective(glm::radians(fovy_), aspectRatio_, nearPlaneDist_, farPlaneDist_);
 }
