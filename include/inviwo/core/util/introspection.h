@@ -155,4 +155,3 @@ Document info(const T& data) {
 }  // namespace util
 
 }  // namespace inviwo
-

@@ -49,26 +49,18 @@ const std::string ClassWithClassIdentifierUpper::CLASS_IDENTIFIER = "id";
 
 struct Empty {};
 
-
 struct ClassWithClassIdentifierLowerStringView {
     static constexpr std::string_view classIdentifier = "id";
 };
 
-
-
 template <typename T>
-class PrintResult {
-
-};
+class PrintResult {};
 template <typename T>
 using print = typename PrintResult<T>::type_is_between_the_braces;
 
-
-
-
 }  // namespace
 
-//print<util::detail::lowerClassIdentifierType<ClassWithClassIdentifierLower>>;
+// print<util::detail::lowerClassIdentifierType<ClassWithClassIdentifierLower>>;
 
 static_assert(util::HasClassIdentifierLower<ClassWithClassIdentifierLower>::value);
 static_assert(util::HasClassIdentifierUpper<ClassWithClassIdentifierUpper>::value);
@@ -76,6 +68,5 @@ static_assert(util::HasClassIdentifier<ClassWithClassIdentifierLower>::value);
 static_assert(util::HasClassIdentifier<ClassWithClassIdentifierUpper>::value);
 static_assert(!util::HasClassIdentifierLower<Empty>::value);
 static_assert(!util::HasClassIdentifier<Empty>::value);
-
 
 }  // namespace inviwo

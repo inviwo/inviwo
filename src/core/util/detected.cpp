@@ -29,7 +29,4 @@
 
 #include <inviwo/core/util/detected.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo
