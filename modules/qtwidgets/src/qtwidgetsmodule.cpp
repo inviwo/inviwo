@@ -241,6 +241,19 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
         OrdinalPropertyWidgetQt<dvec3, OrdinalPropertyWidgetQtSematics::SphericalSpinBox>,
         DoubleVec3Property>("SphericalSpinBox");
 
+    registerPropertyWidget<
+        OrdinalRefPropertyWidgetQt<vec3, OrdinalPropertyWidgetQtSematics::Spherical>,
+        FloatVec3RefProperty>("Spherical");
+    registerPropertyWidget<
+        OrdinalRefPropertyWidgetQt<dvec3, OrdinalPropertyWidgetQtSematics::Spherical>,
+        DoubleVec3RefProperty>("Spherical");
+    registerPropertyWidget<
+        OrdinalRefPropertyWidgetQt<vec3, OrdinalPropertyWidgetQtSematics::SphericalSpinBox>,
+        FloatVec3RefProperty>("SphericalSpinBox");
+    registerPropertyWidget<
+        OrdinalRefPropertyWidgetQt<dvec3, OrdinalPropertyWidgetQtSematics::SphericalSpinBox>,
+        DoubleVec3RefProperty>("SphericalSpinBox");
+
     registerPropertyWidget<LightPropertyWidgetQt, FloatVec3Property>("LightPosition");
 
     // Register dialogs
