@@ -62,7 +62,7 @@ public:
     virtual void deserialize(Deserializer& d);
 
     friend bool IVW_CORE_API operator==(const PortConnection& lhs, const PortConnection& rhs);
-    friend bool IVW_CORE_API operator!=(const PortConnection& lhs, const PortConnection& rhs); 
+    friend bool IVW_CORE_API operator!=(const PortConnection& lhs, const PortConnection& rhs);
     friend bool IVW_CORE_API operator<(const PortConnection& lhs, const PortConnection& rhs);
 
 private:

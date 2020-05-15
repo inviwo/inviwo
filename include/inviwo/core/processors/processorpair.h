@@ -47,7 +47,6 @@ public:
     friend IVW_CORE_API bool operator<(const ProcessorPair& p1, const ProcessorPair& p2);
 };
 
-
 }  // namespace inviwo
 
 namespace std {

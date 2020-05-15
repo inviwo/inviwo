@@ -59,7 +59,7 @@ public:
     const T& get() const;
     const T& operator*() const;
     const T* operator->() const;
- 
+
     virtual void set(const T& value);
     void set(const TemplateProperty<T>* srcProperty);
     virtual void set(const Property* srcProperty) override;

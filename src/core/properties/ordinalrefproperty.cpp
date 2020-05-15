@@ -47,7 +47,6 @@ template class IVW_CORE_TMPL_INST OrdinalRefProperty<dvec2>;
 template class IVW_CORE_TMPL_INST OrdinalRefProperty<dvec3>;
 template class IVW_CORE_TMPL_INST OrdinalRefProperty<dvec4>;
 
-
 template class IVW_CORE_TMPL_INST OrdinalRefProperty<ivec2>;
 template class IVW_CORE_TMPL_INST OrdinalRefProperty<ivec3>;
 template class IVW_CORE_TMPL_INST OrdinalRefProperty<ivec4>;

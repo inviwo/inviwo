@@ -73,12 +73,12 @@ public:
     IsoValueCollection& get();
     const IsoValueCollection& get() const;
     void set(const IsoValueCollection& iso);
-    
+
     const IsoValueCollection& operator*() const;
     IsoValueCollection& operator*();
     const IsoValueCollection* operator->() const;
     IsoValueCollection* operator->();
-    
+
     void setZoomH(double zoomHMin, double zoomHMax);
     const dvec2& getZoomH() const;
 

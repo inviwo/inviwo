@@ -87,7 +87,7 @@ public:
     TransferFunction& get();
     const TransferFunction& get() const;
     void set(const TransferFunction& tf);
-    
+
     const TransferFunction& operator*() const;
     TransferFunction& operator*();
     const TransferFunction* operator->() const;

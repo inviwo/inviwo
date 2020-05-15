@@ -74,6 +74,4 @@ T* inviwo::MetaDataMap::add(const std::string& key, std::unique_ptr<T> metaData)
     return ptr;
 }
 
-
-
 }  // namespace inviwo
