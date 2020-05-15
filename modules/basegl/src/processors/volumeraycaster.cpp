@@ -58,15 +58,15 @@ VolumeRaycaster::VolumeRaycaster()
     , exitPort_("exit")
     , backgroundPort_("bg")
     , outport_("outport")
-    , channel_("channel", "Render Channel")
+    , channel_("channel", "Render Channel", {{"Channel 1", "Channel 1", 0}}, 0)
     , raycasting_("raycaster", "Raycasting")
     , isotfComposite_("isotfComposite", "TF & Isovalues", &volumePort_,
                       InvalidationLevel::InvalidResources)
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , lighting_("lighting", "Lighting", &camera_)
     , positionIndicator_("positionindicator", "Position Indicator")
-    , toggleShading_("toggleShading", "Toggle Shading", [this](Event* e) { toggleShading(e); },
-                     IvwKey::L) {
+    , toggleShading_(
+          "toggleShading", "Toggle Shading", [this](Event* e) { toggleShading(e); }, IvwKey::L) {
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
@@ -78,9 +78,7 @@ VolumeRaycaster::VolumeRaycaster()
 
     backgroundPort_.setOptional(true);
 
-    channel_.addOption("Channel 1", "Channel 1", 0);
     channel_.setSerializationMode(PropertySerializationMode::All);
-    channel_.setCurrentStateAsDefault();
 
     volumePort_.onChange([this]() {
         if (volumePort_.hasData()) {
