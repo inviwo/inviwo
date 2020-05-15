@@ -99,8 +99,6 @@ protected:
     virtual void process() override;
 
 private:
-    void updateDrawers();
-
     MeshFlatMultiInport inport_;
     ImageInport inportHeightfield_;  //!< inport for the 2D heightfield texture
     ImageInport inportTexture_;      //!< inport for the 2D color texture (optional)
@@ -112,15 +110,11 @@ private:
     OptionPropertyInt terrainShadingMode_;  //!< shading mode for coloring the heightfield
 
     CameraProperty camera_;
-    ButtonProperty resetViewParams_;
     CameraTrackball trackball_;
 
     SimpleLightingProperty lightingProperty_;
 
     Shader shader_;
-
-    using DrawerMap = std::multimap<const Outport*, std::unique_ptr<MeshDrawer>>;
-    DrawerMap drawers_;
 };
 
 }  // namespace inviwo
