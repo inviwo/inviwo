@@ -46,12 +46,13 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <modules/base/properties/transformlistproperty.h>
 
 #include <vector>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.LineRasterizer, Line Rsterizers}
+/** \docpage{org.inviwo.LineRasterizer, Line Rasterizer}
  * ![](org.inviwo.LineRasterizer.png?classIdentifier=org.inviwo.LineRasterizer)
  * Render input meshes as lines, allows for order-independent transparency.
  *
@@ -62,6 +63,7 @@ namespace inviwo {
  *   * __rasterization__ rasterization functor rendering either opaquely or into fragment buffer
  *
  * ### Properties
+ *   * __Mesh Transform__ Additional world/model transform applied to all input lines
  *   * __Line Width__  width of the rendered lines (in pixel)
  *   * __Antialising__ width of the antialiased line edge (in pixel), this determines the
  *                     softness along the edge
@@ -76,7 +78,7 @@ namespace inviwo {
  * \class LineRasterizer
  * \brief Renders input geometry with 2D lines
  */
-class IVW_MODULE_BASEGL_API LineRasterizer : public Processor {
+class IVW_MODULE_MESHRENDERINGGL_API LineRasterizer : public Processor {
     friend class LineRasterization;
 
 public:
@@ -105,24 +107,24 @@ private:
     BoolProperty useUniformAlpha_;
     FloatProperty uniformAlpha_;
 
-    CameraProperty camera_;
-    CameraTrackball trackball_;
+    TransformListProperty transformSetting_;
     std::shared_ptr<MeshShaderCache> lineShaders_;
 };
 
 /**
  * \brief Functor object that will render lines into a fragment list.
  */
-class LineRasterization : public Rasterization {
+class IVW_MODULE_MESHRENDERINGGL_API LineRasterization : public Rasterization {
 public:
     /**
      * \brief Copy all settings and the shader to hand to a renderer.
      */
     LineRasterization(const LineRasterizer& rasterizerProcessor);
-    virtual void rasterize(const ivec2& imageSize,
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
                            std::function<void(Shader&)> setUniforms) const override;
     virtual bool usesFragmentLists() const override;
     virtual Document getInfo() const override;
+    virtual Rasterization* clone() const override;
 
 protected:
     std::shared_ptr<MeshShaderCache> lineShaders_;

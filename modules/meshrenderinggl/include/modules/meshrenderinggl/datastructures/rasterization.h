@@ -42,7 +42,6 @@ namespace inviwo {
  * \brief A functor class for rendering geometry into a fragment list
  * Will be applied by a renderer containing an A-buffer.
  */
-
 class IVW_MODULE_MESHRENDERINGGL_API Rasterization {
 public:
     virtual ~Rasterization() = default;
@@ -51,9 +50,10 @@ public:
      * \brief Render the fragments, with all setup and evaluation taken care of.
      * If opaque is set, a standard render call instead.
      * @param imageSize Size in pixels.
+     * @param worldMatrixTransform Additional transform to be applied before rendering.
      * @param setUniforms Binds the fragment list buffer and sets required uniforms.
      */
-    virtual void rasterize(const ivec2& imageSize,
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
                            std::function<void(Shader&)> setUniforms) const = 0;
 
     /**
@@ -67,6 +67,12 @@ public:
      * @return Specific information about this rasterization type/instance.
      */
     virtual Document getInfo() const;
+
+    /**
+     * \brief Get a copy of the object. Ownership goes to the caller.
+     * @return A copy with the same data and type as the original.
+     */
+    virtual Rasterization* clone() const = 0;
 };
 
 template <>

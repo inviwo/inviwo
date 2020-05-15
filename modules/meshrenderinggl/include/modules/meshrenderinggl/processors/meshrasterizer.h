@@ -49,6 +49,7 @@
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/base/properties/transformlistproperty.h>
 
 #include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
 #include <modules/meshrenderinggl/algorithm/calcnormals.h>
@@ -78,9 +79,8 @@ namespace inviwo {
  *   * __image__ Rasterization functir to facilitate rendering in a rendering processor
  *
  * ### Properties
- *   * __Camera__ Camera used for rendering the mesh
  *   * __Lighting__ Standard lighting settings
- *   * __Trackball__ Standard trackball settings
+ *   * __Additional Transform__ Additional world/model transform applied to all input meshes
  *   * __Shade Opaque__ Draw the mesh opaquly instead of transparent. Disables all transparency
  * settings
  *   * __Alpha__ Assemble construction of the alpha value out of many factors (which are summed up)
@@ -164,9 +164,8 @@ protected:
     MeshFlatMultiInport inport_;
     RasterizationOutport outport_;
 
-    CameraProperty camera_;
-    CameraTrackball trackball_;
     SimpleLightingProperty lightingProperty_;
+    TransformListProperty transformSetting_;
 
     BoolProperty forceOpaque_;
 
@@ -279,7 +278,6 @@ protected:
     std::array<FaceSettings, 2> faceSettings_;
 
     std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;
-
     std::shared_ptr<Shader> shader_;
 
     /**
@@ -292,18 +290,19 @@ protected:
 /**
  * \brief Functor object that will render into a fragment list.
  */
-class MeshRasterization : public Rasterization {
+class IVW_MODULE_MESHRENDERINGGL_API MeshRasterization : public Rasterization {
 public:
     /**
      * \brief Copy all settings and the shader to hand to a renderer.
      */
     MeshRasterization(const MeshRasterizer& rasterizerProcessor);
-    virtual void rasterize(const ivec2& imageSize,
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
                            std::function<void(Shader&)> setUniforms) const override;
     virtual bool usesFragmentLists() const override {
         return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
     }
     virtual Document getInfo() const override;
+    virtual Rasterization* clone() const override;
 
 public:
     std::vector<std::shared_ptr<const Mesh>> enhancedMeshes_;

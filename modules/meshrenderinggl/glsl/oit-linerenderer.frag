@@ -130,8 +130,6 @@ void main() {
         alpha = exp(-d * d);
     }
 
-    color.rgb *= color.a;
-
 #if defined(ENABLE_ROUND_DEPTH_PROFILE)
     // correct depth for a round profile, i.e. tube like appearance
     float depth = convertDepthScreenToView(camera, gl_FragCoord.z);

@@ -28,10 +28,12 @@
  *********************************************************************************/
 
 #include <modules/meshrenderinggl/processors/linerasterizer.h>
+#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
+#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>
+
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/core/algorithm/boundingbox.h>
-#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
 
 #include <fmt/format.h>
 
@@ -66,8 +68,7 @@ LineRasterizer::LineRasterizer()
     , useUniformAlpha_("useUniformAlpha", "Uniform Alpha", false,
                        InvalidationLevel::InvalidResources)
     , uniformAlpha_("alphaValue", "Alpha", 0.7f, 0, 1, 0.1f, InvalidationLevel::InvalidOutput)
-    , camera_("camera", "Camera", util::boundingBox(inport_))
-    , trackball_(&camera_)
+    , transformSetting_("transformSettings", "Additional Transform")
     , lineShaders_(new MeshShaderCache(
           {{ShaderType::Vertex, std::string{"linerenderer.vert"}},
            {ShaderType::Geometry, std::string{"linerenderer.geom"}},
@@ -90,8 +91,11 @@ LineRasterizer::LineRasterizer()
     addPort(inport_);
     addPort(outport_);
 
-    addProperties(lineSettings_, forceOpaque_, overwriteColor_, constantColor_, useUniformAlpha_,
-                  uniformAlpha_, camera_, trackball_);
+    addProperties(transformSetting_, forceOpaque_, lineSettings_, overwriteColor_, constantColor_,
+                  useUniformAlpha_, uniformAlpha_);
+
+    transformSetting_.setCollapsed(true);
+    transformSetting_.setCurrentStateAsDefault();
 
     constantColor_.setVisible(overwriteColor_.get());
     overwriteColor_.onChange([this]() {
@@ -126,11 +130,18 @@ void LineRasterizer::process() {
         shader.deactivate();
     }
 
-    outport_.setData(new LineRasterization(*this));
+    std::shared_ptr<const Rasterization> rasterization = std::make_shared<LineRasterization>(*this);
+
+    // If transform is applied, wrap rasterization.
+    if (transformSetting_.transforms_.size() > 0) {
+        outport_.setData(std::make_shared<TransformedRasterization>(rasterization,
+                                                                    transformSetting_.getMatrix()));
+    } else {
+        outport_.setData(rasterization);
+    }
 }
 
 void LineRasterizer::setUniforms(Shader& shader) const {
-    utilgl::setUniforms(shader, camera_);
 
     shader.setUniform("lineWidth", lineSettings_.getWidth());
     shader.setUniform("antialiasing", lineSettings_.getAntialiasingWidth());
@@ -179,7 +190,7 @@ LineRasterization::LineRasterization(const LineRasterizer& processor)
     , meshes_(processor.inport_.getVectorData())
     , forceOpaque_(processor.forceOpaque_.get()) {}
 
-void LineRasterization::rasterize(const ivec2& imageSize,
+void LineRasterization::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
                                   std::function<void(Shader&)> setUniformsRenderer) const {
 
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -195,13 +206,12 @@ void LineRasterization::rasterize(const ivec2& imageSize,
             for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
                 if (mesh->getIndexMeshInfo(i).dt != DrawType::Lines) continue;
                 auto& shader = lineShaders_->getShader(*mesh, mesh->getIndexMeshInfo(i));
-                if (!shader.isReady()) {
-                    LogWarn("Shader not ready.");
-                    break;
-                }
+                if (!shader.isReady()) break;
 
                 shader.activate();
-                utilgl::setShaderUniforms(shader, *mesh, "geometry");
+                auto transform = CompositeTransform(mesh->getModelMatrix(),
+                                                    mesh->getWorldMatrix() * worldMatrixTransform);
+                utilgl::setShaderUniforms(shader, transform, "geometry");
                 shader.setUniform("screenDim", vec2(imageSize));
                 setUniformsRenderer(shader);
                 drawer.draw(i);
@@ -210,13 +220,12 @@ void LineRasterization::rasterize(const ivec2& imageSize,
         } else {
             auto& shader = lineShaders_->getShader(*mesh);
             if (mesh->getDefaultMeshInfo().dt != DrawType::Lines) return;
-            if (!shader.isReady()) {
-                LogWarn("Shader not ready.");
-                break;
-            }
+            if (!shader.isReady()) break;
 
             shader.activate();
-            utilgl::setShaderUniforms(shader, *mesh, "geometry");
+            auto transform = CompositeTransform(mesh->getModelMatrix(),
+                                                mesh->getWorldMatrix() * worldMatrixTransform);
+            utilgl::setShaderUniforms(shader, transform, "geometry");
             shader.setUniform("screenDim", vec2(imageSize));
             setUniformsRenderer(shader);
             drawer.draw();
@@ -236,5 +245,7 @@ Document LineRasterization::getInfo() const {
                                 usesFragmentLists() ? "Using A-buffer" : "Rendering opaque"));
     return doc;
 }
+
+Rasterization* LineRasterization::clone() const { return new LineRasterization(*this); }
 
 }  // namespace inviwo

@@ -30,13 +30,11 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
+#include <modules/base/properties/transformlistproperty.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
@@ -59,8 +57,7 @@ protected:
 
     TemplateOptionProperty<CoordinateSpace> space_;
     BoolProperty replace_;
-    ListProperty transforms_;
-    FloatMat4Property result_;
+    TransformListProperty transforms_;
 };
 
 template <typename T>
@@ -104,107 +101,6 @@ struct ProcessorTraits<Transform<Volume>> {
     }
 };
 
-namespace transform {
-
-class IVW_MODULE_BASE_API TransformProperty : public CompositeProperty {
-public:
-    TransformProperty(const std::string& identifier, const std::string& displayName,
-                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                      PropertySemantics semantics = PropertySemantics::Default);
-    virtual ~TransformProperty() = default;
-
-    virtual mat4 getMatrix() const = 0;
-};
-
-class IVW_MODULE_BASE_API TranslateProperty : public TransformProperty {
-public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-
-    TranslateProperty(const std::string& identifier, const std::string& displayName,
-                      const vec3& value = vec3{0.0f}, const vec3& minValue = vec3{-1.e6f},
-                      const vec3& maxValue = vec3{1.e6f},
-                      const vec3& increment = Defaultvalues<vec3>::getInc(),
-                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                      PropertySemantics semantics = PropertySemantics::Default);
-    TranslateProperty(const TranslateProperty& rhs);
-    virtual TranslateProperty* clone() const override;
-    virtual ~TranslateProperty() = default;
-
-    virtual mat4 getMatrix() const override;
-
-    FloatVec3Property translate;
-};
-
-class IVW_MODULE_BASE_API RotateProperty : public TransformProperty {
-public:
-    enum class AngleMeasure { Radians, Degrees };
-
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-
-    RotateProperty(const std::string& identifier, const std::string& displayName,
-                   const vec3& axis = vec3{1.0f, 0.0f, 0.0f}, const float angle = 0.0f,
-                   const float minAngle = -glm::pi<float>(),
-                   const float maxAngle = glm::pi<float>(),
-                   const float increment = Defaultvalues<float>::getInc(),
-                   AngleMeasure angleMeasure = AngleMeasure::Radians,
-                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                   PropertySemantics semantics = PropertySemantics::Default);
-    RotateProperty(const RotateProperty& rhs);
-    virtual RotateProperty* clone() const override;
-    virtual ~RotateProperty() = default;
-
-    virtual mat4 getMatrix() const override;
-
-    TemplateOptionProperty<AngleMeasure> mode;
-    FloatVec3Property axis;
-    FloatProperty angle;
-};
-
-class IVW_MODULE_BASE_API ScaleProperty : public TransformProperty {
-public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-
-    ScaleProperty(const std::string& identifier, const std::string& displayName,
-                  const vec3& value = vec3{1.0f}, const vec3& minValue = vec3{-1.e3f},
-                  const vec3& maxValue = vec3{1.e3f},
-                  const vec3& increment = Defaultvalues<vec3>::getInc(),
-                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                  PropertySemantics semantics = PropertySemantics::Default);
-    ScaleProperty(const ScaleProperty& rhs);
-    virtual ScaleProperty* clone() const override;
-    virtual ~ScaleProperty() = default;
-
-    virtual mat4 getMatrix() const override;
-
-    FloatVec3Property scale;
-};
-
-class IVW_MODULE_BASE_API CustomTransformProperty : public TransformProperty {
-public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-
-    CustomTransformProperty(
-        const std::string& identifier, const std::string& displayName,
-        const mat4& value = mat4{1.0f}, const mat4& minValue = util::filled<mat4>(-1.e6f),
-        const mat4& maxValue = util::filled<mat4>(1.e6f),
-        const mat4& increment = Defaultvalues<mat4>::getInc(),
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-        PropertySemantics semantics = PropertySemantics::Default);
-    CustomTransformProperty(const CustomTransformProperty& rhs);
-    virtual CustomTransformProperty* clone() const override;
-    virtual ~CustomTransformProperty() = default;
-
-    virtual mat4 getMatrix() const override;
-
-    FloatMat4Property matrix;
-};
-
-}  // namespace transform
-
 template <typename T>
 Transform<T>::Transform()
     : Processor()
@@ -215,40 +111,12 @@ Transform<T>::Transform()
           {{"model", "Model", CoordinateSpace::Model}, {"world", "World", CoordinateSpace::World}},
           1)
     , replace_("replace", "Replace Input Transformation", false)
-    , transforms_(
-          "transforms", "Transformations",
-          []() {
-              std::vector<std::unique_ptr<Property>> v;
-              v.emplace_back(
-                  std::make_unique<transform::TranslateProperty>("translation", "Translation"));
-              v.emplace_back(std::make_unique<transform::RotateProperty>("rotation", "Rotation"));
-              v.emplace_back(std::make_unique<transform::ScaleProperty>("scaling", "Scaling"));
-              v.emplace_back(
-                  std::make_unique<transform::CustomTransformProperty>("custom", "Custom Matrix"));
-              return v;
-          }())
-    , result_("result", "Result", mat4(1.0f),
-              util::filled<mat4>(std::numeric_limits<float>::lowest()),
-              util::filled<mat4>(std::numeric_limits<float>::max()), util::filled<mat4>(0.001f),
-              InvalidationLevel::Valid) {
+    , transforms_("transformations", "Transformation stack") {
 
     addPort(inport_);
     addPort(outport_);
 
-    result_.setSemantics(PropertySemantics::Text);
-    result_.setReadOnly(true);
-
-    addProperties(space_, replace_, transforms_, result_);
-
-    transforms_.onChange([this]() {
-        mat4 t{1.0f};
-        for (auto p : transforms_) {
-            if (auto prop = dynamic_cast<transform::TransformProperty*>(p)) {
-                t = prop->getMatrix() * t;
-            }
-        }
-        result_.set(t);
-    });
+    addProperties(space_, replace_, transforms_);
 }
 
 template <typename T>
@@ -258,17 +126,17 @@ void Transform<T>::process() {
     switch (*space_) {
         case CoordinateSpace::Model:
             if (replace_) {
-                data->setModelMatrix(*result_);
+                data->setModelMatrix(transforms_.getMatrix());
             } else {
-                data->setModelMatrix(*result_ * data->getModelMatrix());
+                data->setModelMatrix(transforms_.getMatrix() * data->getModelMatrix());
             }
             break;
         case CoordinateSpace::World:
         default:
             if (replace_) {
-                data->setWorldMatrix(*result_);
+                data->setWorldMatrix(transforms_.getMatrix());
             } else {
-                data->setWorldMatrix(*result_ * data->getWorldMatrix());
+                data->setWorldMatrix(transforms_.getMatrix() * data->getWorldMatrix());
             }
             break;
     }

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2016-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,4 +27,45 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/transform.h>
+#pragma once
+
+#include <modules/meshrenderinggl/datastructures/rasterization.h>
+#include <modules/meshrenderinggl/ports/rasterizationport.h>
+#include <modules/base/properties/transformlistproperty.h>
+
+namespace inviwo {
+
+/** \docpage{org.inviwo.TransformRasterization, Transform Rasterization}
+ * ![](org.inviwo.TransformRasterization.png?classIdentifier=org.inviwo.TransformRasterization)
+ * Add a transformation on a rasterization object.
+ *
+ * ### Inports
+ *   * __input__ Input rasterization object to be rendered by a rasterization renderer
+ *
+ * ### Outports
+ *   * __output__ Wrapper around the input rasterization with a transform applied on rasterize call
+ *
+ * ### Properties
+ *   * __Mesh Transform__ Additional world transform applied to all input meshes
+ */
+
+/**
+ * \class TransformRasterization
+ * \brief Applies an additional transform on a given rasterization object.
+ */
+class IVW_MODULE_MESHRENDERINGGL_API TransformRasterization : public Processor {
+public:
+    TransformRasterization();
+    virtual ~TransformRasterization() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+    RasterizationInport inport_;
+    RasterizationOutport outport_;
+    TransformListProperty transformSetting_;
+};
+
+}  // namespace inviwo

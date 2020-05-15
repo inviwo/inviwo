@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/meshrenderinggl/processors/meshrasterizer.h>
+#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>
 
 #include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/common/inviwoapplication.h>
@@ -78,10 +79,8 @@ MeshRasterizer::MeshRasterizer()
     : Processor()
     , inport_("geometry")
     , outport_("image")
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f), &inport_)
-    , trackball_(&camera_)
-    , lightingProperty_("lighting", "Lighting", &camera_)
+    , lightingProperty_("lighting", "Lighting")
+    , transformSetting_("transformSettings", "Additional Transform")
     , forceOpaque_("forceOpaque", "Shade Opaque", false, InvalidationLevel::InvalidResources)
     , drawSilhouette_("drawSilhouette", "Draw Silhouette", false,
                       InvalidationLevel::InvalidResources)
@@ -110,7 +109,7 @@ MeshRasterizer::MeshRasterizer()
 
     drawSilhouette_.onChange([this]() { updateMeshes(); });
 
-    addProperties(camera_, lightingProperty_, trackball_, forceOpaque_, drawSilhouette_,
+    addProperties(lightingProperty_, transformSetting_, forceOpaque_, drawSilhouette_,
                   silhouetteColor_, normalSource_, normalComputationMode_, alphaSettings_,
                   edgeSettings_, faceSettings_[0].show_, faceSettings_[1].show_);
 
@@ -128,9 +127,9 @@ MeshRasterizer::MeshRasterizer()
     edgeSettings_.visibilityDependsOn(faceSettings_[0].showEdges_, edgevis);
     edgeSettings_.visibilityDependsOn(faceSettings_[1].showEdges_, edgevis);
 
-    camera_.setCollapsed(true);
     lightingProperty_.setCollapsed(true);
-    trackball_.setCollapsed(true);
+    transformSetting_.setCollapsed(true);
+    transformSetting_.setCurrentStateAsDefault();
 
     silhouetteColor_.setSemantics(PropertySemantics::Color);
 
@@ -321,7 +320,6 @@ void MeshRasterizer::FaceSettings::setUniforms(Shader& shader, std::string_view 
 }
 
 void MeshRasterizer::process() {
-
     if (!faceSettings_[0].show_ && !faceSettings_[1].show_) {
         outport_.setData(nullptr);
         LogWarn("Both sides are disabled, not rendering anything.");
@@ -331,7 +329,7 @@ void MeshRasterizer::process() {
     shader_->activate();
 
     // general settings for camera, lighting, picking, mesh data
-    utilgl::setUniforms(*shader_, camera_, lightingProperty_);
+    utilgl::setUniforms(*shader_, lightingProperty_);
 
     // update face render settings
     std::array<TextureUnit, 2> transFuncUnit;
@@ -354,7 +352,15 @@ void MeshRasterizer::process() {
 
     shader_->deactivate();
 
-    outport_.setData(new MeshRasterization(*this));
+    std::shared_ptr<const Rasterization> rasterization =
+        std::make_shared<const MeshRasterization>(*this);
+    // If transform is applied, wrap rasterization.
+    if (transformSetting_.transforms_.size() > 0) {
+        outport_.setData(std::make_shared<TransformedRasterization>(rasterization,
+                                                                    transformSetting_.getMatrix()));
+    } else {
+        outport_.setData(rasterization);
+    }
 }
 
 void MeshRasterizer::updateMeshes() {
@@ -443,7 +449,7 @@ void MeshRasterizer::initializeResources() {
     shader_->build();
 }
 
-void MeshRasterization::rasterize(const ivec2& imageSize,
+void MeshRasterization::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
                                   std::function<void(Shader&)> setUniformsRenderer) const {
 
     shader_->activate();
@@ -475,7 +481,9 @@ void MeshRasterization::rasterize(const ivec2& imageSize,
         for (auto mesh : enhancedMeshes_) {
             MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
                                             mesh->getDefaultMeshInfo()};
-            utilgl::setShaderUniforms(*shader_, *mesh, "geometry");
+            auto transform = CompositeTransform(mesh->getModelMatrix(),
+                                                mesh->getWorldMatrix() * worldMatrixTransform);
+            utilgl::setShaderUniforms(*shader_, transform, "geometry");
             shader_->setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
 
             drawer.draw();
@@ -492,5 +500,7 @@ Document MeshRasterization::getInfo() const {
                                 usesFragmentLists() ? "Using A-buffer" : "Rendering opaque"));
     return doc;
 }
+
+Rasterization* MeshRasterization::clone() const { return new MeshRasterization(*this); }
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2016-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,4 +27,43 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/transform.h>
+#include <modules/meshrenderinggl/processors/transformrasterization.h>
+#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>
+
+namespace inviwo {
+
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo TransformRasterization::processorInfo_{
+    "org.inviwo.TransformRasterization",  // Class identifier
+    "Transform Rasterization",            // Display name
+    "Mesh Rendering",                     // Category
+    CodeState::Stable,                    // Code state
+    Tags::GL,                             // Tags
+};
+const ProcessorInfo TransformRasterization::getProcessorInfo() const { return processorInfo_; }
+
+TransformRasterization::TransformRasterization()
+    : Processor()
+    , inport_("input")
+    , outport_("output")
+    , transformSetting_("transformSettings", "Additional Transform") {
+
+    addPort(inport_);
+    addPort(outport_);
+
+    addProperties(transformSetting_);
+
+    transformSetting_.setCollapsed(false);
+}
+
+void TransformRasterization::process() {
+    if (!inport_.hasData()) {
+        outport_.setData(nullptr);
+        return;
+    }
+
+    outport_.setData(
+        new TransformedRasterization(inport_.getData(), transformSetting_.getMatrix()));
+}
+
+}  // namespace inviwo
