@@ -667,7 +667,6 @@ set(TEST_FILES
     tests/unittests/dispatch-test.cpp
     tests/unittests/document-test.cpp
     tests/unittests/enumoptionproperty-test.cpp
-    tests/unittests/ordinalproperty-test.cpp
     tests/unittests/filesystem-test.cpp
     tests/unittests/glm-test.cpp
     tests/unittests/indirectiterator-tests.cpp
@@ -675,11 +674,13 @@ set(TEST_FILES
     tests/unittests/inviwo-core-unittest-main.cpp
     tests/unittests/metadata-test.cpp
     tests/unittests/network-evaluator-test.cpp
+    tests/unittests/ordinalproperty-test.cpp
     tests/unittests/picking-test.cpp
     tests/unittests/pickingcontroller-test.cpp
     tests/unittests/port-tests.cpp
     tests/unittests/resize-test.cpp
     tests/unittests/serialize-container-test.cpp
+    tests/unittests/serializer-polymorphic-test.cpp
     tests/unittests/serializer-test.cpp
     tests/unittests/tfprimitiveset-test.cpp
     tests/unittests/typedmesh-test.cpp
