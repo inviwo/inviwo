@@ -143,11 +143,9 @@ struct OrdinalPropertyIterator {
 };
 
 template <typename T, typename P, typename M, typename PC>
-void addOrdinalPropertyIterator(M &m, PC &pc, std::true_type) {
-    auto itclassname = Defaultvalues<T>::getName() + "PropertyIterator";
-
+void addOrdinalPropertyIterator(M &m, PC &pc, const std::string &suffix) {
+    const auto itclassname = Defaultvalues<T>::getName() + suffix;
     using IT = OrdinalPropertyIterator<P, T>;
-
     pybind11::class_<IT>(m, itclassname.c_str())
         .def(pybind11::init<P *>())
         .def("__next__", &IT::next)
@@ -156,17 +154,6 @@ void addOrdinalPropertyIterator(M &m, PC &pc, std::true_type) {
     pc.def("__iter__", [&](P *p) { return IT(p); });
     pc.def("foreach", [&](P *p, T begin, T end) { return IT(p, begin, end); });
     pc.def("foreach", [&](P *p, T begin, T end, T inc) { return IT(p, begin, end, inc); });
-}
-
-template <typename T, typename P, typename M, typename PC>
-void addOrdinalPropertyIterator(M &, PC &, std::false_type) {}
-
-template <typename T, typename P, typename M, typename PC>
-void addOrdinalPropertyIterator(M &m, PC &pc) {
-    addOrdinalPropertyIterator<T, P>(
-        m, pc,
-        typename std::conditional<util::rank<T>::value == 0, std::true_type,
-                                  std::false_type>::type());
 }
 
 struct OrdinalPropertyHelper {
@@ -213,7 +200,9 @@ struct OrdinalPropertyHelper {
             .def_property("increment", &P::getIncrement, &P::setIncrement)
             .def("__repr__", [](P &v) { return inviwo::toString(v.get()); });
 
-        addOrdinalPropertyIterator<T, P>(m, prop);
+        if constexpr (util::rank<T>::value == 0) {
+            addOrdinalPropertyIterator<T, P>(m, prop, "PropertyIterator");
+        }
 
         return prop;
     }
@@ -252,7 +241,9 @@ struct OrdinalRefPropertyHelper {
             .def("setGetAndSet", &P::setGetAndSet)
             .def("__repr__", [](P &v) { return inviwo::toString(v.get()); });
 
-        addOrdinalPropertyIterator<T, P>(m, prop);
+        if constexpr (util::rank<T>::value == 0) {
+            addOrdinalPropertyIterator<T, P>(m, prop, "RefPropertyIterator");
+        }
 
         return prop;
     }
