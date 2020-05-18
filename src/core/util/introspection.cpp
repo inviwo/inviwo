@@ -50,7 +50,7 @@ const std::string ClassWithClassIdentifierUpper::CLASS_IDENTIFIER = "id";
 struct Empty {};
 
 template <typename T>
-struct [[deprecated("Type in warning")]] printType{};
+struct [[deprecated("Type in warning")]] printType {};
 
 }  // namespace
 
