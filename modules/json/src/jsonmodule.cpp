@@ -52,7 +52,7 @@ struct OrdinalReghelper {
 struct OrdinalRefReghelper {
     template <typename T>
     auto operator()(JSONModule& m) {
-        using PropertyType = OrdinalProperty<T>;
+        using PropertyType = OrdinalRefProperty<T>;
         m.registerPropertyJSONConverter<PropertyType>();
     }
 };
