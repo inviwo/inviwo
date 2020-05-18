@@ -66,7 +66,7 @@ struct OrdinalPropertyState {
 
 /**
  * \ingroup properties
- * A property representing a Ordinal value, for example int, floats.
+ * A property representing an Ordinal value, for example int, floats.
  */
 template <typename T>
 class OrdinalProperty : public Property {

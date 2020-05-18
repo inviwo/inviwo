@@ -66,7 +66,9 @@ struct OrdinalRefPropertyState {
 
 /**
  * \ingroup properties
- * A property representing a Ordinal value, for example int, floats.
+ * A property representing a reference to an Ordinal value, for example a int, float, or vec3.
+ * The property does not hold or own the value it self. It only contain a set and get callback
+ * function. It does handle min/max/increment for the value.
  */
 template <typename T>
 class OrdinalRefProperty : public Property {
