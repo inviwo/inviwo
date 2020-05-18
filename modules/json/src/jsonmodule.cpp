@@ -57,7 +57,6 @@ struct OrdinalRefReghelper {
     }
 };
 
-
 struct MinMaxReghelper {
     template <typename T>
     auto operator()(JSONModule& m) {

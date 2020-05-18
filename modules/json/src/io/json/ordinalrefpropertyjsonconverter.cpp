@@ -29,6 +29,4 @@
 
 #include <modules/json/io/json/ordinalrefpropertyjsonconverter.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo
