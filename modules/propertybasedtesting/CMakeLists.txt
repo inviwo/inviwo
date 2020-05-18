@@ -12,6 +12,7 @@ set(HEADER_FILES
     include/inviwo/propertybasedtesting/processors/histogram.h
     include/inviwo/propertybasedtesting/processors/imagecomparator.h
     include/inviwo/propertybasedtesting/processors/randomvolumegenerator.h
+    include/inviwo/propertybasedtesting/testproperty.h
     include/inviwo/propertybasedtesting/propertybasedtestingmodule.h
     include/inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h
 )
@@ -27,6 +28,7 @@ set(SOURCE_FILES
     src/processors/histogram.cpp
     src/processors/imagecomparator.cpp
     src/processors/randomvolumegenerator.cpp
+    src/testproperty.cpp
     src/propertybasedtestingmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
