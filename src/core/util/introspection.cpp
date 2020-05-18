@@ -49,18 +49,12 @@ const std::string ClassWithClassIdentifierUpper::CLASS_IDENTIFIER = "id";
 
 struct Empty {};
 
-struct ClassWithClassIdentifierLowerStringView {
-    static constexpr std::string_view classIdentifier = "id";
-};
-
 template <typename T>
-class PrintResult {};
-template <typename T>
-using print = typename PrintResult<T>::type_is_between_the_braces;
+struct [[deprecated("Type in warning")]] printType{};
 
 }  // namespace
 
-// print<util::detail::lowerClassIdentifierType<ClassWithClassIdentifierLower>>;
+// printType<util::detail::lowerClassIdentifierType<ClassWithClassIdentifierLower>> tmp{};
 
 static_assert(util::HasClassIdentifierLower<ClassWithClassIdentifierLower>::value);
 static_assert(util::HasClassIdentifierUpper<ClassWithClassIdentifierUpper>::value);
