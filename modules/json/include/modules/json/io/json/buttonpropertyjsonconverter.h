@@ -33,9 +33,9 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <nlohmann/json.hpp>
 
-using json = nlohmann::json;
-
 namespace inviwo {
+
+using json = ::nlohmann::json;
 
 /**
  * Converts an ButtonProperty to a JSON object.

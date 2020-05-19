@@ -31,7 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
-#include <inviwo/core/properties/templateproperty.h>
+#include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 
 #include <inviwo/core/datastructures/isovaluecollection.h>
@@ -48,7 +48,7 @@ class IsoTFProperty;
  * \class IsoValueProperty
  * \brief property managing a collection of isovalues
  */
-class IVW_CORE_API IsoValueProperty : public TemplateProperty<IsoValueCollection>,
+class IVW_CORE_API IsoValueProperty : public Property,
                                       public TFPrimitiveSetObserver,
                                       public TFPropertyObservable {
 public:
@@ -70,6 +70,15 @@ public:
 
     virtual IsoValueProperty* clone() const override;
 
+    IsoValueCollection& get();
+    const IsoValueCollection& get() const;
+    void set(const IsoValueCollection& iso);
+
+    const IsoValueCollection& operator*() const;
+    IsoValueCollection& operator*();
+    const IsoValueCollection* operator->() const;
+    IsoValueCollection* operator->();
+
     void setZoomH(double zoomHMin, double zoomHMax);
     const dvec2& getZoomH() const;
 
@@ -87,10 +96,9 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    // Overrides
-    virtual void set(const IsoValueCollection& c) override;
-    void set(const IsoTFProperty& p);
     virtual void set(const Property* property) override;
+    void set(const IsoValueProperty* p);
+    void set(const IsoTFProperty* p);
 
     // Overrides TFPrimitiveSetObserver
     virtual void onTFPrimitiveAdded(TFPrimitive& p) override;
@@ -98,6 +106,7 @@ public:
     virtual void onTFPrimitiveChanged(const TFPrimitive& p) override;
 
 private:
+    ValueWrapper<IsoValueCollection> iso_;
     ValueWrapper<dvec2> zoomH_;
     ValueWrapper<dvec2> zoomV_;
     ValueWrapper<HistogramMode> histogramMode_;

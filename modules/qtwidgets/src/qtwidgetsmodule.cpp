@@ -43,6 +43,7 @@
 #include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/util/fileextension.h>
@@ -112,8 +113,11 @@ struct OrdinalWidgetReghelper {
     auto operator()(QtWidgetsModule& qm, const std::string& semantics) {
         using PropertyType = OrdinalProperty<T>;
         using PropertyWidget = OrdinalPropertyWidgetQt<T, Sem>;
-
         qm.registerPropertyWidget<PropertyWidget, PropertyType>(semantics);
+
+        using RefPropertyType = OrdinalRefProperty<T>;
+        using RefPropertyWidget = OrdinalRefPropertyWidgetQt<T, Sem>;
+        qm.registerPropertyWidget<RefPropertyWidget, RefPropertyType>(semantics);
     }
 };
 
@@ -236,6 +240,19 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     registerPropertyWidget<
         OrdinalPropertyWidgetQt<dvec3, OrdinalPropertyWidgetQtSematics::SphericalSpinBox>,
         DoubleVec3Property>("SphericalSpinBox");
+
+    registerPropertyWidget<
+        OrdinalRefPropertyWidgetQt<vec3, OrdinalPropertyWidgetQtSematics::Spherical>,
+        FloatVec3RefProperty>("Spherical");
+    registerPropertyWidget<
+        OrdinalRefPropertyWidgetQt<dvec3, OrdinalPropertyWidgetQtSematics::Spherical>,
+        DoubleVec3RefProperty>("Spherical");
+    registerPropertyWidget<
+        OrdinalRefPropertyWidgetQt<vec3, OrdinalPropertyWidgetQtSematics::SphericalSpinBox>,
+        FloatVec3RefProperty>("SphericalSpinBox");
+    registerPropertyWidget<
+        OrdinalRefPropertyWidgetQt<dvec3, OrdinalPropertyWidgetQtSematics::SphericalSpinBox>,
+        DoubleVec3RefProperty>("SphericalSpinBox");
 
     registerPropertyWidget<LightPropertyWidgetQt, FloatVec3Property>("LightPosition");
 

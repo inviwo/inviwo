@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@
 #include <inviwo/core/util/glm.h>
 
 #include <string>
+#include <functional>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -42,11 +43,10 @@
 namespace inviwo {
 
 /**
- * A helper struct to construct ordinal properties @see OrdinalProperty
+ * A helper struct to construct ordinal properties @see OrdinalRefProperty
  */
 template <typename T>
-struct OrdinalPropertyState {
-    T value{};
+struct OrdinalRefPropertyState {
     std::pair<T, ConstraintBehavior> minValue =
         std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable};
     std::pair<T, ConstraintBehavior> maxValue =
@@ -66,47 +66,43 @@ struct OrdinalPropertyState {
 
 /**
  * \ingroup properties
- * A property representing an Ordinal value, for example int, floats.
+ * A property representing a reference to an Ordinal value, for example a int, float, or vec3.
+ * The property does not hold or own the value it self. It only contain a set and get callback
+ * function. It does handle min/max/increment for the value.
  */
 template <typename T>
-class OrdinalProperty : public Property {
+class OrdinalRefProperty : public Property {
 public:
     using value_type = T;
     using component_type = typename util::value_type<T>::type;
 
-    OrdinalProperty(const std::string& identifier, const std::string& displayName, const T& value,
-                    const T& minValue, const T& maxValue = Defaultvalues<T>::getMax(),
-                    const T& increment = Defaultvalues<T>::getInc(),
-                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                    PropertySemantics semantics = OrdinalPropertyState<T>::defaltSemantics());
-
-    OrdinalProperty(
-        const std::string& identifier, const std::string& displayName,
-        const T& value = Defaultvalues<T>::getVal(),
+    OrdinalRefProperty(
+        const std::string& identifier, const std::string& displayName, std::function<T()> get,
+        std::function<void(const T&)> set,
         const std::pair<T, ConstraintBehavior>& minValue = std::pair{Defaultvalues<T>::getMin(),
                                                                      ConstraintBehavior::Editable},
         const std::pair<T, ConstraintBehavior>& maxValue = std::pair{Defaultvalues<T>::getMax(),
                                                                      ConstraintBehavior::Editable},
         const T& increment = Defaultvalues<T>::getInc(),
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = OrdinalPropertyState<T>::defaltSemantics());
+        PropertySemantics semantics = OrdinalRefPropertyState<T>::defaltSemantics());
 
-    OrdinalProperty(const std::string& identifier, const std::string& displayName,
-                    OrdinalPropertyState<T> state);
+    OrdinalRefProperty(const std::string& identifier, const std::string& displayName,
+                       std::function<const T&()> get, std::function<void(const T&)> set,
+                       OrdinalRefPropertyState<T> state);
 
-    OrdinalProperty(const OrdinalProperty<T>& rhs);
-    OrdinalProperty<T>& operator=(const T& value);
-    virtual OrdinalProperty<T>* clone() const override;
-    virtual ~OrdinalProperty();
+    OrdinalRefProperty(const OrdinalRefProperty<T>& rhs);
+    OrdinalRefProperty<T>& operator=(const T& value);
+    virtual OrdinalRefProperty<T>* clone() const override;
+    virtual ~OrdinalRefProperty();
 
-    operator const T&() const;
-    const T& operator*() const;
-    const T* operator->() const;
+    operator T() const;
+    T operator*() const;
 
     /**
      * Get the value
      */
-    const T& get() const;
+    T get() const;
 
     /**
      * Get component 'index' of the value
@@ -153,11 +149,11 @@ public:
     const T& getIncrement() const;
     void setIncrement(const T& value);
 
-    void set(const OrdinalProperty* srcProperty);
+    void set(const OrdinalRefProperty* srcProperty);
     virtual void set(const Property* src) override;
 
-    virtual OrdinalProperty<T>& setCurrentStateAsDefault() override;
-    virtual OrdinalProperty<T>& resetToDefaultState() override;
+    virtual OrdinalRefProperty<T>& setCurrentStateAsDefault() override;
+    virtual OrdinalRefProperty<T>& resetToDefaultState() override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -182,8 +178,18 @@ public:
 
     static bool validRange(const T& min, const T& max);
 
+    void setGetAndSet(std::function<T()> get, std::function<void(const T&)> set) {
+        auto val = get_();
+        get_ = std::move(get);
+        set_ = std::move(set);
+        if (val != get_()) {
+            propertyModified();
+        }
+    }
+
 private:
-    ValueWrapper<T> value_;
+    std::function<T()> get_;
+    std::function<void(const T&)> set_;
     ValueWrapper<T> minValue_;
     ValueWrapper<T> maxValue_;
     ValueWrapper<T> increment_;
@@ -205,191 +211,163 @@ namespace util {
  * ```
  * by using the helper function most of the boilerplate can be removed:
  * ```{.cpp}
- * color{"cubeColor", "Cube Color", util::ordinalColor(0.11f, 0.42f, 0.63f)}
+ * color{"cubeColor", "Cube Color", util::ordinalColor()}
  * ```
  */
-IVW_CORE_API OrdinalPropertyState<vec4> ordinalColor(
-    float r, float g, float b, float a = 1.0f,
+IVW_CORE_API OrdinalRefPropertyState<vec4> ordinalRefColor(
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
-IVW_CORE_API OrdinalPropertyState<vec4> ordinalColor(
-    const vec4& value, InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
-IVW_CORE_API OrdinalPropertyState<vec3> ordinalColor(
-    const vec3& value, InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
-
 }  // namespace util
 
-// Scalar properties
-using FloatProperty = OrdinalProperty<float>;
-using IntProperty = OrdinalProperty<int>;
-using IntSizeTProperty = OrdinalProperty<size_t>;
-using Int64Property = OrdinalProperty<glm::i64>;
-using DoubleProperty = OrdinalProperty<double>;
+using FloatRefProperty = OrdinalRefProperty<float>;
+using FloatVec2RefProperty = OrdinalRefProperty<vec2>;
+using FloatVec3RefProperty = OrdinalRefProperty<vec3>;
+using FloatVec4RefProperty = OrdinalRefProperty<vec4>;
 
-// Vector properties
-using FloatVec2Property = OrdinalProperty<vec2>;
-using FloatVec3Property = OrdinalProperty<vec3>;
-using FloatVec4Property = OrdinalProperty<vec4>;
+using DoubleRefProperty = OrdinalRefProperty<double>;
+using DoubleVec2RefProperty = OrdinalRefProperty<dvec2>;
+using DoubleVec3RefProperty = OrdinalRefProperty<dvec3>;
+using DoubleVec4RefProperty = OrdinalRefProperty<dvec4>;
 
-using DoubleVec2Property = OrdinalProperty<dvec2>;
-using DoubleVec3Property = OrdinalProperty<dvec3>;
-using DoubleVec4Property = OrdinalProperty<dvec4>;
+using IntRefProperty = OrdinalRefProperty<int>;
+using IntVec2RefProperty = OrdinalRefProperty<ivec2>;
+using IntVec3RefProperty = OrdinalRefProperty<ivec3>;
+using IntVec4RefProperty = OrdinalRefProperty<ivec4>;
 
-using IntVec2Property = OrdinalProperty<ivec2>;
-using IntVec3Property = OrdinalProperty<ivec3>;
-using IntVec4Property = OrdinalProperty<ivec4>;
-
-using IntSize2Property = OrdinalProperty<size2_t>;
-using IntSize3Property = OrdinalProperty<size3_t>;
-using IntSize4Property = OrdinalProperty<size4_t>;
-
-// Matrix properties
-using FloatMat2Property = OrdinalProperty<mat2>;
-using FloatMat3Property = OrdinalProperty<mat3>;
-using FloatMat4Property = OrdinalProperty<mat4>;
-
-using DoubleMat2Property = OrdinalProperty<dmat2>;
-using DoubleMat3Property = OrdinalProperty<dmat3>;
-using DoubleMat4Property = OrdinalProperty<dmat4>;
-
-using DoubleQuaternionProperty = OrdinalProperty<glm::dquat>;
-using FloatQuaternionProperty = OrdinalProperty<glm::fquat>;
+using IntSizeTRefProperty = OrdinalRefProperty<size_t>;
+using IntSize2RefProperty = OrdinalRefProperty<size2_t>;
+using IntSize3RefProperty = OrdinalRefProperty<size3_t>;
+using IntSize4RefProperty = OrdinalRefProperty<size4_t>;
 
 template <typename T>
-struct PropertyTraits<OrdinalProperty<T>> {
+struct PropertyTraits<OrdinalRefProperty<T>> {
     static std::string classIdentifier() {
-        return "org.inviwo." + Defaultvalues<T>::getName() + "Property";
+        return "org.inviwo." + Defaultvalues<T>::getName() + "RefProperty";
     }
 };
 
 template <typename CTy, typename CTr, typename T>
 std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
-                                         const OrdinalProperty<T>& prop) {
+                                         const OrdinalRefProperty<T>& prop) {
     return os << prop.get();
 }
 
 template <typename T>
-OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::string& displayName,
-                                    const T& value,
-                                    const std::pair<T, ConstraintBehavior>& minValue,
-                                    const std::pair<T, ConstraintBehavior>& maxValue,
-                                    const T& increment, InvalidationLevel invalidationLevel,
-                                    PropertySemantics semantics)
+OrdinalRefProperty<T>::OrdinalRefProperty(const std::string& identifier,
+                                          const std::string& displayName, std::function<T()> get,
+                                          std::function<void(const T&)> set,
+                                          const std::pair<T, ConstraintBehavior>& minValue,
+                                          const std::pair<T, ConstraintBehavior>& maxValue,
+                                          const T& increment, InvalidationLevel invalidationLevel,
+                                          PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics)
-    , value_("value", value)
+    , get_{std::move(get)}
+    , set_{std::move(set)}
     , minValue_("minvalue", minValue.first)
     , maxValue_("maxvalue", maxValue.first)
     , increment_("increment", increment)
     , minConstraint_{"minConstraint", minValue.second}
     , maxConstraint_{"maxConstraint", maxValue.second} {
 
-    if (!validRange(minValue_, maxValue_) || value_ != clamp(value_)) {
+    if (!validRange(minValue_, maxValue_) || get_() != clamp(get_())) {
         throw Exception{
             fmt::format("Invalid range ({} <= {} <= {}) given for \"{}\" ({}Property, {})",
-                        minValue_.value, value_.value, maxValue_.value, this->getDisplayName(),
+                        minValue_.value, get_(), maxValue_.value, this->getDisplayName(),
                         Defaultvalues<T>::getName(), joinString(this->getPath(), ".")),
             IVW_CONTEXT};
     }
 }
 
 template <typename T>
-OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::string& displayName,
-                                    OrdinalPropertyState<T> state)
-    : OrdinalProperty{identifier,
-                      displayName,
-                      state.value,
-                      state.minValue,
-                      state.maxValue,
-                      state.increment,
-                      state.invalidationLevel,
-                      state.semantics} {}
+OrdinalRefProperty<T>::OrdinalRefProperty(const std::string& identifier,
+                                          const std::string& displayName,
+                                          std::function<const T&()> get,
+                                          std::function<void(const T&)> set,
+                                          OrdinalRefPropertyState<T> state)
+    : OrdinalRefProperty{identifier,
+                         displayName,
+                         get,
+                         set,
+                         state.minValue,
+                         state.maxValue,
+                         state.increment,
+                         state.invalidationLevel,
+                         state.semantics} {}
 
 template <typename T>
-OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::string& displayName,
-                                    const T& value, const T& minValue, const T& maxValue,
-                                    const T& increment, InvalidationLevel invalidationLevel,
-                                    PropertySemantics semantics)
-    : OrdinalProperty{identifier,
-                      displayName,
-                      value,
-                      std::pair{minValue, ConstraintBehavior::Editable},
-                      std::pair{maxValue, ConstraintBehavior::Editable},
-                      increment,
-                      invalidationLevel,
-                      semantics} {}
+OrdinalRefProperty<T>::OrdinalRefProperty(const OrdinalRefProperty<T>& rhs) = default;
 
 template <typename T>
-OrdinalProperty<T>::OrdinalProperty(const OrdinalProperty<T>& rhs) = default;
-
-template <typename T>
-OrdinalProperty<T>& OrdinalProperty<T>::operator=(const T& value) {
+OrdinalRefProperty<T>& OrdinalRefProperty<T>::operator=(const T& value) {
     set(value);
     return *this;
 }
 
 template <typename T>
-OrdinalProperty<T>* OrdinalProperty<T>::clone() const {
-    return new OrdinalProperty<T>(*this);
+OrdinalRefProperty<T>* OrdinalRefProperty<T>::clone() const {
+    return new OrdinalRefProperty<T>(*this);
 }
 
 template <typename T>
-OrdinalProperty<T>::~OrdinalProperty() = default;
+OrdinalRefProperty<T>::~OrdinalRefProperty() = default;
 
 template <typename T>
-std::string OrdinalProperty<T>::getClassIdentifier() const {
-    return PropertyTraits<OrdinalProperty<T>>::classIdentifier();
+std::string OrdinalRefProperty<T>::getClassIdentifier() const {
+    return PropertyTraits<OrdinalRefProperty<T>>::classIdentifier();
 }
 
 template <typename T>
-OrdinalProperty<T>::operator const T&() const {
-    return value_.value;
+OrdinalRefProperty<T>::operator T() const {
+    return get_();
 }
 
 template <typename T>
-const T& OrdinalProperty<T>::operator*() const {
-    return value_.value;
+auto OrdinalRefProperty<T>::operator*() const -> T {
+    return get_();
 }
 
 template <typename T>
-const T* OrdinalProperty<T>::operator->() const {
-    return &value_.value;
+auto OrdinalRefProperty<T>::get() const -> T {
+    return get_();
 }
 
 template <typename T>
-const T& OrdinalProperty<T>::get() const {
-    return value_.value;
+auto OrdinalRefProperty<T>::get(size_t index) const -> component_type {
+    const auto val = get_();
+    return util::glmcomp(val, index);
 }
 
 template <typename T>
-auto OrdinalProperty<T>::get(size_t index) const -> component_type {
-    return util::glmcomp(value_.value, index);
+auto OrdinalRefProperty<T>::get(size_t i, size_t j) const -> component_type {
+    const auto val = get_();
+    return util::glmcomp(val, i, j);
 }
 
 template <typename T>
-auto OrdinalProperty<T>::get(size_t i, size_t j) const -> component_type {
-    return util::glmcomp(value_.value, i, j);
+void OrdinalRefProperty<T>::set(const T& value) {
+    const auto val = clamp(value);
+    if (val != get_()) {
+        set_(val);
+        this->propertyModified();
+    }
 }
 
 template <typename T>
-void OrdinalProperty<T>::set(const T& value) {
-    if (value_.update(clamp(value))) this->propertyModified();
-}
-
-template <typename T>
-void OrdinalProperty<T>::set(component_type val, size_t index) {
-    auto tmp = value_.value;
+void OrdinalRefProperty<T>::set(component_type val, size_t index) {
+    auto tmp = get_();
     util::glmcomp(tmp, index) = val;
-    if (value_.update(clamp(tmp))) this->propertyModified();
+    set(tmp);
 }
 
 template <typename T>
-void OrdinalProperty<T>::set(component_type val, size_t i, size_t j) {
-    auto tmp = value_.value;
+void OrdinalRefProperty<T>::set(component_type val, size_t i, size_t j) {
+    auto tmp = get_();
     util::glmcomp(tmp, i, j) = val;
-    if (value_.update(clamp(tmp))) this->propertyModified();
+    set(tmp);
 }
 
 template <typename T>
-void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, const T& increment) {
+void OrdinalRefProperty<T>::set(const T& value, const T& minVal, const T& maxVal,
+                                const T& increment) {
     if (!validRange(minVal, maxVal)) {
         throw Exception{
             fmt::format("Invalid range given for \"{}\" ({}Property, {})", this->getDisplayName(),
@@ -401,92 +379,113 @@ void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, c
     modified |= minValue_.update(minVal);
     modified |= maxValue_.update(maxVal);
     modified |= increment_.update(increment);
-    modified |= value_.update(clamp(value));
+
+    auto val = clamp(value);  // make sure we clamp after we update min/max
+    if (val != get_()) {
+        set_(val);
+        modified = true;
+    }
+
     if (modified) this->propertyModified();
 }
 
 template <typename T>
-void OrdinalProperty<T>::set(const OrdinalProperty* srcProperty) {
+void OrdinalRefProperty<T>::set(const OrdinalRefProperty* srcProperty) {
     bool modified = false;
     if (isLinkingMinBound()) modified |= minValue_.update(srcProperty->minValue_);
     if (isLinkingMaxBound()) modified |= maxValue_.update(srcProperty->maxValue_);
     modified |= increment_.update(srcProperty->increment_);
-    modified |= value_.update(clamp(srcProperty->value_));
+
+    auto val = clamp(srcProperty->get_());  // make sure we clamp after we update min/max
+    if (val != get_()) {
+        set_(val);
+        modified = true;
+    }
+
     if (modified) this->propertyModified();
 }
 
 template <typename T>
-void OrdinalProperty<T>::set(const Property* srcProperty) {
-    if (auto prop = dynamic_cast<const OrdinalProperty<T>*>(srcProperty)) {
+void OrdinalRefProperty<T>::set(const Property* srcProperty) {
+    if (auto prop = dynamic_cast<const OrdinalRefProperty<T>*>(srcProperty)) {
         set(prop);
     }
 }
 
 template <typename T>
-const T& OrdinalProperty<T>::getMinValue() const {
+auto OrdinalRefProperty<T>::getMinValue() const -> const T& {
     return minValue_;
 }
 
 template <typename T>
-void OrdinalProperty<T>::setMinValue(const T& newMinValue) {
+void OrdinalRefProperty<T>::setMinValue(const T& newMinValue) {
     bool modified = false;
     modified |= minValue_.update(newMinValue);
     // Make sure min < max
     modified |= maxValue_.update(glm::max(maxValue_.value, minValue_.value));
-    modified |= value_.update(clamp(value_.value));
+
+    auto val = clamp(get_());  // make sure we clamp after we update min/max
+    if (val != get_()) {
+        set_(val);
+        modified = true;
+    }
     if (modified) this->propertyModified();
 }
 
 template <typename T>
-ConstraintBehavior OrdinalProperty<T>::getMinConstraintBehaviour() const {
+ConstraintBehavior OrdinalRefProperty<T>::getMinConstraintBehaviour() const {
     return minConstraint_;
 }
 
 template <typename T>
-const T& OrdinalProperty<T>::getMaxValue() const {
+auto OrdinalRefProperty<T>::getMaxValue() const -> const T& {
     return maxValue_;
 }
 
 template <typename T>
-void OrdinalProperty<T>::setMaxValue(const T& newMaxValue) {
+void OrdinalRefProperty<T>::setMaxValue(const T& newMaxValue) {
     bool modified = false;
     modified |= maxValue_.update(newMaxValue);
     // Make sure min < max
     modified |= minValue_.update(glm::min(minValue_.value, maxValue_.value));
-    modified |= value_.update(clamp(value_.value));
+
+    auto val = clamp(get_());  // make sure we clamp after we update min/max
+    if (val != get_()) {
+        set_(val);
+        modified = true;
+    }
+
     if (modified) this->propertyModified();
 }
 
 template <typename T>
-ConstraintBehavior OrdinalProperty<T>::getMaxConstraintBehaviour() const {
+ConstraintBehavior OrdinalRefProperty<T>::getMaxConstraintBehaviour() const {
     return maxConstraint_;
 }
 
 template <typename T>
-const T& OrdinalProperty<T>::getIncrement() const {
+auto OrdinalRefProperty<T>::getIncrement() const -> const T& {
     return increment_;
 }
 
 template <typename T>
-void OrdinalProperty<T>::setIncrement(const T& newInc) {
+void OrdinalRefProperty<T>::setIncrement(const T& newInc) {
     if (increment_.update(newInc)) this->propertyModified();
 }
 
 template <typename T>
-OrdinalProperty<T>& OrdinalProperty<T>::resetToDefaultState() {
+OrdinalRefProperty<T>& OrdinalRefProperty<T>::resetToDefaultState() {
     bool modified = false;
     modified |= minValue_.reset();
     modified |= maxValue_.reset();
     modified |= increment_.reset();
-    modified |= value_.reset();
     if (modified) this->propertyModified();
     return *this;
 }
 
 template <typename T>
-OrdinalProperty<T>& OrdinalProperty<T>::setCurrentStateAsDefault() {
+OrdinalRefProperty<T>& OrdinalRefProperty<T>::setCurrentStateAsDefault() {
     Property::setCurrentStateAsDefault();
-    value_.setAsDefault();
     minValue_.setAsDefault();
     maxValue_.setAsDefault();
     increment_.setAsDefault();
@@ -494,7 +493,7 @@ OrdinalProperty<T>& OrdinalProperty<T>::setCurrentStateAsDefault() {
 }
 
 template <typename T>
-void OrdinalProperty<T>::serialize(Serializer& s) const {
+void OrdinalRefProperty<T>::serialize(Serializer& s) const {
     Property::serialize(s);
 
     minConstraint_.serialize(s, this->serializationMode_);
@@ -502,11 +501,10 @@ void OrdinalProperty<T>::serialize(Serializer& s) const {
     minValue_.serialize(s, this->serializationMode_);
     maxValue_.serialize(s, this->serializationMode_);
     increment_.serialize(s, this->serializationMode_);
-    value_.serialize(s, this->serializationMode_);
 }
 
 template <typename T>
-void OrdinalProperty<T>::deserialize(Deserializer& d) {
+void OrdinalRefProperty<T>::deserialize(Deserializer& d) {
     Property::deserialize(d);
 
     bool modified = false;
@@ -515,12 +513,11 @@ void OrdinalProperty<T>::deserialize(Deserializer& d) {
     modified |= minValue_.deserialize(d, this->serializationMode_);
     modified |= maxValue_.deserialize(d, this->serializationMode_);
     modified |= increment_.deserialize(d, this->serializationMode_);
-    modified |= value_.deserialize(d, this->serializationMode_);
     if (modified) this->propertyModified();
 }
 
 template <typename T>
-T OrdinalProperty<T>::clamp(const T& v) const {
+auto OrdinalRefProperty<T>::clamp(const T& v) const -> T {
     if (minConstraint_ != ConstraintBehavior::Ignore &&
         maxConstraint_ != ConstraintBehavior::Ignore) {
         return glm::clamp(v, minValue_.value, maxValue_.value);
@@ -534,22 +531,22 @@ T OrdinalProperty<T>::clamp(const T& v) const {
 }
 
 template <typename T>
-bool OrdinalProperty<T>::isLinkingBound(ConstraintBehavior constraint) {
+bool OrdinalRefProperty<T>::isLinkingBound(ConstraintBehavior constraint) {
     return constraint == ConstraintBehavior::Editable || constraint == ConstraintBehavior::Ignore;
 }
 
 template <typename T>
-bool OrdinalProperty<T>::isLinkingMinBound() const {
+bool OrdinalRefProperty<T>::isLinkingMinBound() const {
     return isLinkingBound(minConstraint_);
 }
 
 template <typename T>
-bool OrdinalProperty<T>::isLinkingMaxBound() const {
+bool OrdinalRefProperty<T>::isLinkingMaxBound() const {
     return isLinkingBound(maxConstraint_);
 }
 
 template <typename T>
-bool OrdinalProperty<T>::validRange(const T& min, const T& max) {
+bool OrdinalRefProperty<T>::validRange(const T& min, const T& max) {
     bool validRange = true;
     for (size_t i = 0; i < util::flat_extent<T>::value; i++) {
         validRange &= util::glmcomp(min, i) <= util::glmcomp(max, i);
@@ -558,7 +555,7 @@ bool OrdinalProperty<T>::validRange(const T& min, const T& max) {
 }
 
 template <typename T>
-Document OrdinalProperty<T>::getDescription() const {
+Document OrdinalRefProperty<T>::getDescription() const {
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
 
@@ -568,8 +565,9 @@ Document OrdinalProperty<T>::getDescription() const {
     utildoc::TableBuilder tb(b, P::end());
     tb(H("#"), H("Value"), H(fmt::format("Min ({})", minConstraint_)),
        H(fmt::format("Max ({})", maxConstraint_)), H("Inc"));
+    const auto val = get_();
     for (size_t i = 0; i < util::flat_extent<T>::value; i++) {
-        tb(H(i), util::glmcomp(value_.value, i), util::glmcomp(minValue_.value, i),
+        tb(H(i), util::glmcomp(val, i), util::glmcomp(minValue_.value, i),
            util::glmcomp(maxValue_.value, i), util::glmcomp(increment_.value, i));
     }
 
@@ -577,39 +575,39 @@ Document OrdinalProperty<T>::getDescription() const {
 }
 
 // Scalar properties
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<float>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<int>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<size_t>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<glm::i64>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<double>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<float>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<int>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<size_t>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<glm::i64>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<double>;
 
 // Vector properties
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<vec2>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<vec3>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<vec4>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<vec2>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<vec3>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<vec4>;
 
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dvec2>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dvec3>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dvec4>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<dvec2>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<dvec3>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<dvec4>;
 
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<ivec2>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<ivec3>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<ivec4>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<ivec2>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<ivec3>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<ivec4>;
 
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<size2_t>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<size3_t>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<size4_t>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<size2_t>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<size3_t>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<size4_t>;
 
 // Matrix properties
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<mat2>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<mat3>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<mat4>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<mat2>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<mat3>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<mat4>;
 
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dmat2>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dmat3>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dmat4>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<dmat2>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<dmat3>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<dmat4>;
 
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<glm::dquat>;
-extern template class IVW_CORE_TMPL_EXP OrdinalProperty<glm::fquat>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<glm::dquat>;
+extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<glm::fquat>;
 
 }  // namespace inviwo

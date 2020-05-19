@@ -5,33 +5,35 @@ ivw_module(JSON)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    include/modules/json/jsonmodule.h
-    include/modules/json/jsonmoduledefine.h
     include/modules/json/io/json/boolpropertyjsonconverter.h
     include/modules/json/io/json/buttonpropertyjsonconverter.h
     include/modules/json/io/json/directorypropertyjsonconverter.h
     include/modules/json/io/json/filepropertyjsonconverter.h
     include/modules/json/io/json/glmjsonconverter.h
-    include/modules/json/io/json/optionpropertyjsonconverter.h
     include/modules/json/io/json/minmaxpropertyjsonconverter.h
+    include/modules/json/io/json/optionpropertyjsonconverter.h
     include/modules/json/io/json/ordinalpropertyjsonconverter.h
-    include/modules/json/io/json/templatepropertyjsonconverter.h
+    include/modules/json/io/json/ordinalrefpropertyjsonconverter.h
     include/modules/json/io/json/propertyjsonconverter.h
     include/modules/json/io/json/propertyjsonconverterfactory.h
     include/modules/json/io/json/propertyjsonconverterfactoryobject.h
+    include/modules/json/io/json/templatepropertyjsonconverter.h
+    include/modules/json/jsonmodule.h
+    include/modules/json/jsonmoduledefine.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    src/jsonmodule.cpp
     src/io/json/boolpropertyjsonconverter.cpp
     src/io/json/buttonpropertyjsonconverter.cpp
     src/io/json/directorypropertyjsonconverter.cpp
     src/io/json/filepropertyjsonconverter.cpp
+    src/io/json/ordinalrefpropertyjsonconverter.cpp
     src/io/json/propertyjsonconverterfactory.cpp
     src/io/json/propertyjsonconverterfactoryobject.cpp
+    src/jsonmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

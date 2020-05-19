@@ -145,13 +145,12 @@ template <AxisAlignedCutPlane::Axis axis>
 void AxisAlignedCutPlane::SliceProperty<axis>::createDrawer(std::shared_ptr<const Volume> vol) {
     mesh_ = std::make_unique<SimpleMesh>(DrawType::Triangles, ConnectivityType::Strip);
 
-    double z =
-        (static_cast<double>(slice_.get()) - 0.5) / static_cast<double>(slice_.getMaxValue());
+    const double z = (static_cast<double>(slice_.get()) - 0.5) / slice_.getMaxValue();
 
-    auto v0 = forSlice(static_cast<int>(axis), 0, 0, z);
-    auto v1 = forSlice(static_cast<int>(axis), 0, 1, z);
-    auto v2 = forSlice(static_cast<int>(axis), 1, 0, z);
-    auto v3 = forSlice(static_cast<int>(axis), 1, 1, z);
+    const auto v0 = forSlice(static_cast<int>(axis), 0, 0, z);
+    const auto v1 = forSlice(static_cast<int>(axis), 0, 1, z);
+    const auto v2 = forSlice(static_cast<int>(axis), 1, 0, z);
+    const auto v3 = forSlice(static_cast<int>(axis), 1, 1, z);
 
     mesh_->addVertex(v0, v0, vec4(v0, 1.0));
     mesh_->addVertex(v1, v1, vec4(v1, 1.0));

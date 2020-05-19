@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,49 +26,62 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <modules/json/io/json/glmjsonconverter.h>
-#include <inviwo/core/properties/templateproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
 #include <nlohmann/json.hpp>
 
 namespace inviwo {
 
-using json = nlohmann::json;
+using json = ::nlohmann::json;
 
 /**
- * Converts an TemplateProperty to a JSON object.
- * Produces layout according to the members of TemplateProperty:
- * { {"value": val} }
- * @see TemplateProperty
+ * Converts an OrdinalRefProperty to a JSON object.
+ * Produces layout according to the members of OrdinalRefProperty:
+ * { {"value": val}, {"increment": increment},
+ *   {"minValue": minVal}, {"maxValue": maxVal}
+ * }
+ * @see OrdinalRefProperty
  *
  * Usage example:
  * \code{.cpp}
- * TemplateProperty<double> p;
+ * OrdinalRefProperty<double> p;
  * json j = p;
  * \endcode
  */
 template <typename T>
-void to_json(json& j, const TemplateProperty<T>& p) {
-    j = json{{"value", p.get()}};
+void to_json(json& j, const OrdinalRefProperty<T>& p) {
+    j = json{{"value", p.get()},
+             {"minValue", p.getMinValue()},
+             {"maxValue", p.getMaxValue()},
+             {"increment", p.getIncrement()}};
 }
 
 /**
- * Converts a JSON object to an TemplateProperty.
- * Expects object layout according to the members of TemplateProperty:
- * { {"value": val} }
- * @see TemplateProperty
+ * Converts a JSON object to an OrdinalRefProperty.
+ * Expects object layout according to the members of OrdinalRefProperty:
+ * { {"value": val}, {"increment": increment},
+ *   {"minValue": minVal}, {"maxValue": maxVal}
+ * }
+ * @see OrdinalRefProperty
  *
  * Usage example:
  * \code{.cpp}
- * auto p = j.get<TemplateProperty<double>>();
+ * auto p = j.get<OrdinalRefProperty<double>>();
  * \endcode
  */
 template <typename T>
-void from_json(const json& j, TemplateProperty<T>& p) {
+void from_json(const json& j, OrdinalRefProperty<T>& p) {
+
     auto value = j.value("value", p.get());
-    p.set(value);
+
+    // Optional parameters
+    auto minVal = j.value("minValue", p.getMinValue());
+    auto maxVal = j.value("maxValue", p.getMaxValue());
+    auto increment = j.value("increment", p.getIncrement());
+
+    p.set(value, minVal, maxVal, increment);
 }
 
 }  // namespace inviwo

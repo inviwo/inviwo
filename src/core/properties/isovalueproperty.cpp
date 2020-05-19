@@ -39,16 +39,14 @@ std::string IsoValueProperty::getClassIdentifier() const { return classIdentifie
 IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::string& displayName,
                                    const IsoValueCollection& value, VolumeInport* volumeInport,
                                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : TemplateProperty<IsoValueCollection>(identifier, displayName, value, invalidationLevel,
-                                           semantics)
+    : Property(identifier, displayName, invalidationLevel, semantics)
+    , iso_("IsoValues", value)
     , zoomH_("zoomH_", dvec2(0.0, 1.0))
     , zoomV_("zoomV_", dvec2(0.0, 1.0))
     , histogramMode_("showHistogram_", HistogramMode::All)
     , volumeInport_(volumeInport) {
 
-    // rename the "value" to make the serialized file easier to understand.
-    value_.name = "IsoValues";
-    value_.value.addObserver(this);
+    iso_.value.addObserver(this);
 }
 
 IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::string& displayName,
@@ -57,13 +55,14 @@ IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::str
     : IsoValueProperty(identifier, displayName, {}, volumeInport, invalidationLevel, semantics) {}
 
 IsoValueProperty::IsoValueProperty(const IsoValueProperty& rhs)
-    : TemplateProperty<IsoValueCollection>(rhs)
+    : Property(rhs)
+    , iso_{rhs.iso_}
     , zoomH_(rhs.zoomH_)
     , zoomV_(rhs.zoomV_)
     , histogramMode_(rhs.histogramMode_)
     , volumeInport_(rhs.volumeInport_) {
 
-    value_.value.addObserver(this);
+    iso_.value.addObserver(this);
 }
 IsoValueProperty::~IsoValueProperty() = default;
 
@@ -109,7 +108,8 @@ HistogramMode IsoValueProperty::getHistogramMode() { return histogramMode_; }
 VolumeInport* IsoValueProperty::getVolumeInport() { return volumeInport_; }
 
 IsoValueProperty& IsoValueProperty::setCurrentStateAsDefault() {
-    TemplateProperty<IsoValueCollection>::setCurrentStateAsDefault();
+    Property::setCurrentStateAsDefault();
+    iso_.setAsDefault();
     zoomH_.setAsDefault();
     zoomV_.setAsDefault();
     histogramMode_.setAsDefault();
@@ -118,49 +118,62 @@ IsoValueProperty& IsoValueProperty::setCurrentStateAsDefault() {
 
 IsoValueProperty& IsoValueProperty::resetToDefaultState() {
     NetworkLock lock(this);
-    zoomH_.reset();
-    zoomV_.reset();
-    histogramMode_.reset();
-    TemplateProperty<IsoValueCollection>::resetToDefaultState();
+
+    bool modified = false;
+    modified |= iso_.reset();
+    modified |= zoomH_.reset();
+    modified |= zoomV_.reset();
+    modified |= histogramMode_.reset();
+    if (modified) this->propertyModified();
     return *this;
 }
 
 void IsoValueProperty::serialize(Serializer& s) const {
     Property::serialize(s);
 
+    iso_.serialize(s, this->serializationMode_);
     zoomH_.serialize(s, this->serializationMode_);
     zoomV_.serialize(s, this->serializationMode_);
     histogramMode_.serialize(s, this->serializationMode_);
-    value_.serialize(s, this->serializationMode_);
 }
 
 void IsoValueProperty::deserialize(Deserializer& d) {
     Property::deserialize(d);
 
     bool modified = false;
+    modified |= iso_.deserialize(d, this->serializationMode_);
     modified |= zoomH_.deserialize(d, this->serializationMode_);
     modified |= zoomV_.deserialize(d, this->serializationMode_);
     modified |= histogramMode_.deserialize(d, this->serializationMode_);
-    modified |= value_.deserialize(d, this->serializationMode_);
     if (modified) propertyModified();
 }
 
-// Overrides
-void IsoValueProperty::set(const IsoValueCollection& c) {
-    this->value_.value.removeObserver(this);
-    TemplateProperty<IsoValueCollection>::set(c);
-    this->value_.value.addObserver(this);
+IsoValueCollection& IsoValueProperty::get() { return iso_.value; }
+
+const IsoValueCollection& IsoValueProperty::get() const { return iso_.value; }
+
+void IsoValueProperty::set(const IsoValueCollection& iso) {
+    iso_.value.removeObserver(this);
+    if (iso_.update(iso)) propertyModified();
+    iso_.value.addObserver(this);
 }
 
-void IsoValueProperty::set(const IsoTFProperty& p) { set(p.isovalues_.get()); }
+const IsoValueCollection& IsoValueProperty::operator*() const { return iso_.value; }
+IsoValueCollection& IsoValueProperty::operator*() { return iso_.value; }
+const IsoValueCollection* IsoValueProperty::operator->() const { return &iso_.value; }
+IsoValueCollection* IsoValueProperty::operator->() { return &iso_.value; }
 
 void IsoValueProperty::set(const Property* property) {
-    if (auto isoprop = dynamic_cast<const IsoValueProperty*>(property)) {
-        TemplateProperty<IsoValueCollection>::set(isoprop);
-    } else if (auto isotfprop = dynamic_cast<const IsoTFProperty*>(property)) {
-        TemplateProperty<IsoValueCollection>::set(&isotfprop->isovalues_);
+    if (auto iso = dynamic_cast<const IsoValueProperty*>(property)) {
+        set(iso);
+    } else if (auto isotf = dynamic_cast<const IsoTFProperty*>(property)) {
+        set(isotf);
     }
 }
+
+void IsoValueProperty::set(const IsoTFProperty* p) { set(p->isovalues_.get()); }
+
+void IsoValueProperty::set(const IsoValueProperty* p) { set(p->iso_.value); }
 
 void IsoValueProperty::onTFPrimitiveAdded(TFPrimitive&) {
     setInvalidationLevel(InvalidationLevel::InvalidResources);

@@ -31,6 +31,7 @@
 #include <inviwo/core/properties/propertyfactory.h>
 
 #include <inviwopy/inviwopy.h>
+#include <inviwo/core/properties/constraintbehavior.h>
 
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
@@ -62,6 +63,12 @@ template <typename P, typename... Extra>
 using PyPropertyClass = py::class_<P, Extra..., PropertyPtr<P>>;
 
 void exposeProperties(py::module &m) {
+
+    py::enum_<ConstraintBehavior>(m, "ConstraintBehavior")
+        .value("Editable", ConstraintBehavior::Editable)
+        .value("Mutable", ConstraintBehavior::Mutable)
+        .value("Immutable", ConstraintBehavior::Immutable)
+        .value("Ignore", ConstraintBehavior::Ignore);
 
     py::enum_<InvalidationLevel>(m, "InvalidationLevel")
         .value("Valid", InvalidationLevel::Valid)
@@ -171,6 +178,7 @@ void exposeProperties(py::module &m) {
                                            size3_t, size4_t, mat2, mat3, mat4, dmat2, dmat3, dmat4>;
 
     util::for_each_type<OrdinalPropetyTypes>{}(OrdinalPropertyHelper{}, m);
+    util::for_each_type<OrdinalPropetyTypes>{}(OrdinalRefPropertyHelper{}, m);
     util::for_each_type<OptionPropetyTypes>{}(OptionPropertyHelper{}, m);
     util::for_each_type<MinMaxPropertyTypes>{}(MinMaxHelper{}, m);
 

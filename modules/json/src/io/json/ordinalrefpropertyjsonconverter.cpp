@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,48 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/json/io/json/ordinalrefpropertyjsonconverter.h>
 
-#include <modules/json/io/json/glmjsonconverter.h>
-#include <inviwo/core/properties/templateproperty.h>
-#include <nlohmann/json.hpp>
-
-namespace inviwo {
-
-using json = nlohmann::json;
-
-/**
- * Converts an TemplateProperty to a JSON object.
- * Produces layout according to the members of TemplateProperty:
- * { {"value": val} }
- * @see TemplateProperty
- *
- * Usage example:
- * \code{.cpp}
- * TemplateProperty<double> p;
- * json j = p;
- * \endcode
- */
-template <typename T>
-void to_json(json& j, const TemplateProperty<T>& p) {
-    j = json{{"value", p.get()}};
-}
-
-/**
- * Converts a JSON object to an TemplateProperty.
- * Expects object layout according to the members of TemplateProperty:
- * { {"value": val} }
- * @see TemplateProperty
- *
- * Usage example:
- * \code{.cpp}
- * auto p = j.get<TemplateProperty<double>>();
- * \endcode
- */
-template <typename T>
-void from_json(const json& j, TemplateProperty<T>& p) {
-    auto value = j.value("value", p.get());
-    p.set(value);
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

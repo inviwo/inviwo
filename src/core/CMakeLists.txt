@@ -228,6 +228,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/multifileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/optionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/ordinalproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/ordinalrefproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/planeproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/positionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/property.h
@@ -540,6 +541,7 @@ set(SOURCE_FILES
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
     properties/ordinalproperty.cpp
+    properties/ordinalrefproperty.cpp
     properties/planeproperty.cpp
     properties/positionproperty.cpp
     properties/property.cpp
@@ -662,6 +664,7 @@ set(TEST_FILES
     tests/unittests/dispatch-test.cpp
     tests/unittests/document-test.cpp
     tests/unittests/enumoptionproperty-test.cpp
+    tests/unittests/ordinalproperty-test.cpp
     tests/unittests/filesystem-test.cpp
     tests/unittests/glm-test.cpp
     tests/unittests/indirectiterator-tests.cpp

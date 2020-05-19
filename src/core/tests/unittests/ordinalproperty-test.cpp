@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,48 +27,38 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/core/properties/ordinalrefproperty.h>
+#include <inviwo/core/io/serialization/serialization.h>
+#include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/properties/propertyfactoryobject.h>
 
-#include <modules/json/io/json/glmjsonconverter.h>
-#include <inviwo/core/properties/templateproperty.h>
-#include <nlohmann/json.hpp>
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
 namespace inviwo {
 
-using json = nlohmann::json;
+TEST(OrdinalRefProperty, Test1) {
 
-/**
- * Converts an TemplateProperty to a JSON object.
- * Produces layout according to the members of TemplateProperty:
- * { {"value": val} }
- * @see TemplateProperty
- *
- * Usage example:
- * \code{.cpp}
- * TemplateProperty<double> p;
- * json j = p;
- * \endcode
- */
-template <typename T>
-void to_json(json& j, const TemplateProperty<T>& p) {
-    j = json{{"value", p.get()}};
-}
+    float value = 5.0f;
 
-/**
- * Converts a JSON object to an TemplateProperty.
- * Expects object layout according to the members of TemplateProperty:
- * { {"value": val} }
- * @see TemplateProperty
- *
- * Usage example:
- * \code{.cpp}
- * auto p = j.get<TemplateProperty<double>>();
- * \endcode
- */
-template <typename T>
-void from_json(const json& j, TemplateProperty<T>& p) {
-    auto value = j.value("value", p.get());
-    p.set(value);
+    FloatRefProperty prop{"test",
+                          "test",
+                          [&]() { return value; },
+                          [&](const float& val) { value = val; },
+                          {-10.f, ConstraintBehavior::Ignore},
+                          {10.f, ConstraintBehavior::Ignore}};
+
+    EXPECT_EQ(prop.get(), 5.0f);
+
+    prop.set(6.0f);
+
+    EXPECT_EQ(value, 6.0f);
+
+    value = 7.0f;
+
+    EXPECT_EQ(prop.get(), 7.0f);
 }
 
 }  // namespace inviwo

@@ -61,6 +61,7 @@ public:
     virtual void deserialize(Deserializer& d);
 
     friend bool IVW_CORE_API operator==(const MetaDataMap& lhs, const MetaDataMap& rhs);
+    friend bool IVW_CORE_API operator!=(const MetaDataMap& lhs, const MetaDataMap& rhs);
 
 private:
     std::map<std::string, std::unique_ptr<MetaData>> metaData_;
@@ -72,8 +73,5 @@ T* inviwo::MetaDataMap::add(const std::string& key, std::unique_ptr<T> metaData)
     metaData_[key] = std::move(metaData);
     return ptr;
 }
-
-bool IVW_CORE_API operator==(const MetaDataMap& lhs, const MetaDataMap& rhs);
-bool IVW_CORE_API operator!=(const MetaDataMap& lhs, const MetaDataMap& rhs);
 
 }  // namespace inviwo
