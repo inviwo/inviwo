@@ -137,11 +137,21 @@ struct OptionReghelper {
 struct ConverterRegFunctor {
     template <typename T, typename U>
     auto operator()(InviwoModule& m) {
-        if (!std::is_same<T, U>::value) {
+        if constexpr (!std::is_same<T, U>::value) {
             m.registerPropertyConverter(
                 std::make_unique<
                     OrdinalPropertyConverter<OrdinalProperty<T>, OrdinalProperty<U>>>());
+
+            m.registerPropertyConverter(
+                std::make_unique<
+                    OrdinalPropertyConverter<OrdinalRefProperty<T>, OrdinalRefProperty<U>>>());
         }
+        m.registerPropertyConverter(
+            std::make_unique<
+                OrdinalPropertyConverter<OrdinalRefProperty<T>, OrdinalProperty<U>>>());
+        m.registerPropertyConverter(
+            std::make_unique<
+                OrdinalPropertyConverter<OrdinalProperty<T>, OrdinalRefProperty<U>>>());
     }
 };
 struct ScalarStringConverterRegFunctor {
@@ -149,6 +159,8 @@ struct ScalarStringConverterRegFunctor {
     auto operator()(InviwoModule& m) {
         m.registerPropertyConverter(
             std::make_unique<ScalarToStringConverter<OrdinalProperty<T>>>());
+        m.registerPropertyConverter(
+            std::make_unique<ScalarToStringConverter<OrdinalRefProperty<T>>>());
     }
 };
 struct VectorStringConverterRegFunctor {
@@ -156,6 +168,8 @@ struct VectorStringConverterRegFunctor {
     auto operator()(InviwoModule& m) {
         m.registerPropertyConverter(
             std::make_unique<VectorToStringConverter<OrdinalProperty<T>>>());
+        m.registerPropertyConverter(
+            std::make_unique<VectorToStringConverter<OrdinalRefProperty<T>>>());
     }
 };
 
