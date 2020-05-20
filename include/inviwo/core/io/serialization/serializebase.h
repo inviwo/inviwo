@@ -192,7 +192,7 @@ decltype(auto) toStr(const T& value) {
     } else {
         std::ostringstream stream;
         if constexpr (std::is_same_v<T, double>) {
-            stream.precision(40);
+            stream.precision(17);
         } else if constexpr (std::is_same_v<T, float>) {
             stream.precision(8);
         }
