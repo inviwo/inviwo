@@ -132,8 +132,17 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    friend IVW_CORE_API bool operator==(const Camera& lhs, const Camera& rhs) {
+        return lhs.equal(rhs);
+    }
+    friend IVW_CORE_API bool operator!=(const Camera& lhs, const Camera& rhs) {
+        return !(lhs == rhs);
+    }
+
 protected:
+    virtual bool equal(const Camera& other) const = 0;
     bool equalTo(const Camera& other) const;
+
     /**
      * \brief Calculate and return the projection matrix for the camera.
      *
@@ -179,9 +188,6 @@ public:
     virtual bool update(const Camera* source) override;
     virtual void configureProperties(CompositeProperty* comp, Config config) override;
 
-    friend IVW_CORE_API bool operator==(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs);
-    friend IVW_CORE_API bool operator!=(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs);
-
     float getFovy() const;
     void setFovy(float val);
     virtual float getAspectRatio() const override;
@@ -191,15 +197,13 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 protected:
+    virtual bool equal(const Camera& other) const override;
     virtual mat4 calculateProjectionMatrix() const override;
 
     float fovy_;
     float aspectRatio_;
     std::shared_ptr<std::function<void()>> fovCallbackHolder_;
 };
-
-IVW_CORE_API bool operator==(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs);
-IVW_CORE_API bool operator!=(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs);
 
 /**
  * \class OrthographicCamera
@@ -221,11 +225,6 @@ public:
     virtual bool update(const Camera* source) override;
     virtual void configureProperties(CompositeProperty* comp, Config config) override;
 
-    friend IVW_CORE_API bool operator==(const OrthographicCamera& lhs,
-                                        const OrthographicCamera& rhs);
-    friend IVW_CORE_API bool operator!=(const OrthographicCamera& lhs,
-                                        const OrthographicCamera& rhs);
-
     float getWidth() const;
     void setWidth(float width);
     virtual float getAspectRatio() const override;
@@ -237,15 +236,13 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 protected:
+    virtual bool equal(const Camera& other) const override;
     virtual mat4 calculateProjectionMatrix() const override;
 
     float aspectRatio_;
     float width_;
     std::shared_ptr<std::function<void()>> widthCallbackHolder_;
 };
-
-IVW_CORE_API bool operator==(const OrthographicCamera& lhs, const OrthographicCamera& rhs);
-IVW_CORE_API bool operator!=(const OrthographicCamera& lhs, const OrthographicCamera& rhs);
 
 /**
  * \brief Camera with off axis perspective projection.
@@ -269,11 +266,6 @@ public:
     virtual bool update(const Camera* source) override;
     virtual void configureProperties(CompositeProperty* comp, Config config) override;
 
-    friend IVW_CORE_API bool operator==(const SkewedPerspectiveCamera& lhs,
-                                        const SkewedPerspectiveCamera& rhs);
-    friend IVW_CORE_API bool operator!=(const SkewedPerspectiveCamera& lhs,
-                                        const SkewedPerspectiveCamera& rhs);
-
     float getFovy() const;
     void setFovy(float val);
 
@@ -291,6 +283,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 protected:
+    virtual bool equal(const Camera& other) const override;
     virtual mat4 calculateProjectionMatrix() const override;
 
     // Left, right, bottom, top view volume
@@ -300,11 +293,6 @@ protected:
     std::shared_ptr<std::function<void()>> fovCallbackHolder_;
     std::shared_ptr<std::function<void()>> offsetCallbackHolder_;
 };
-
-IVW_CORE_API bool operator==(const SkewedPerspectiveCamera& lhs,
-                             const SkewedPerspectiveCamera& rhs);
-IVW_CORE_API bool operator!=(const SkewedPerspectiveCamera& lhs,
-                             const SkewedPerspectiveCamera& rhs);
 
 // Implementation details
 inline const vec3& Camera::getLookFrom() const { return lookFrom_; }

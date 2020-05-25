@@ -27,187 +27,131 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INTROSPECTION_H
-#define IVW_INTROSPECTION_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/document.h>
 
+#include <inviwo/core/util/detected.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <type_traits>
 #include <iostream>
+#include <string>
 #include <warn/pop>
 
 namespace inviwo {
 
 namespace util {
 
+namespace detail {
+
+template <typename T>
+using upperClassIdentifierType = decltype(T::CLASS_IDENTIFIER);
+
+template <typename T>
+using lowerClassIdentifierType = decltype(T::classIdentifier);
+
+template <typename T>
+using dataNameType = decltype(T::dataName);
+
+template <typename T>
+using colorCodeUpperType = decltype(T::COLOR_CODE);
+
+template <typename T>
+using colorCodeLowerType = decltype(T::colorCode);
+
+template <typename T>
+using dataInfoType = decltype(std::declval<T>().getDataInfo());
+
+template <typename T>
+using infoType = decltype(std::declval<T>().getInfo());
+
+}  // namespace detail
+
 template <class T>
-class HasClassIdentifierUpper {
-    template <class U, class = typename std::enable_if<
-                           !std::is_member_pointer<decltype(&U::CLASS_IDENTIFIER)>::value>::type>
-    static std::true_type check(int);
-    template <class>
-    static std::false_type check(...);
-
-public:
-    static const bool value = decltype(check<T>(0))::value;
-};
+using HasClassIdentifierUpper =
+    is_detected_exact<const std::string, detail::upperClassIdentifierType, T>;
+template <class T>
+using HasClassIdentifierLower =
+    is_detected_exact<const std::string, detail::lowerClassIdentifierType, T>;
 
 template <class T>
-class HasClassIdentifierLower {
-    template <class U, class = typename std::enable_if<
-                           !std::is_member_pointer<decltype(&U::classIdentifier)>::value>::type>
-    static std::true_type check(int);
-    template <class>
-    static std::false_type check(...);
+using HasClassIdentifier = std::disjunction<HasClassIdentifierUpper<T>, HasClassIdentifierLower<T>>;
 
-public:
-    static const bool value = decltype(check<T>(0))::value;
-};
-
-template <class T>
-class HasClassIdentifier {
-public:
-    static const bool value =
-        HasClassIdentifierLower<T>::value || HasClassIdentifierUpper<T>::value;
-};
-
-template <typename T,
-          typename std::enable_if<HasClassIdentifierUpper<T>::value, std::size_t>::type = 0>
+template <typename T>
 std::string classIdentifier() {
-    return T::CLASS_IDENTIFIER;
-}
-template <typename T,
-          typename std::enable_if<HasClassIdentifierLower<T>::value, std::size_t>::type = 0>
-std::string classIdentifier() {
-    return T::classIdentifier;
-}
-template <typename T, typename std::enable_if<!HasClassIdentifier<T>::value, std::size_t>::type = 0>
-std::string classIdentifier() {
-    return {};
+    if constexpr (HasClassIdentifierUpper<T>::value) {
+        return T::CLASS_IDENTIFIER;
+    } else if constexpr (HasClassIdentifierLower<T>::value) {
+        return T::classIdentifier;
+    } else {
+        return {};
+    }
 }
 
 template <class T>
-class HasDataName {
-    template <class U, class = typename std::enable_if<
-                           !std::is_member_pointer<decltype(&U::dataName)>::value>::type>
-    static std::true_type check(int);
-    template <class>
-    static std::false_type check(...);
+using HasDataName = is_detected_exact<const std::string, detail::dataNameType, T>;
 
-public:
-    static const bool value = decltype(check<T>(0))::value;
-};
-
-template <typename T, typename std::enable_if<HasDataName<T>::value, std::size_t>::type = 0>
+template <typename T>
 std::string dataName() {
-    return T::dataName;
-}
-template <typename T, typename std::enable_if<!HasDataName<T>::value, std::size_t>::type = 0>
-std::string dataName() {
-    return classIdentifier<T>();
+    if constexpr (HasDataName<T>::value) {
+        return T::dataName;
+    } else {
+        return classIdentifier<T>();
+    }
 }
 
 template <class T>
-class HasColorCodeUpper {
-    template <class U, class = typename std::enable_if<
-                           !std::is_member_pointer<decltype(&U::COLOR_CODE)>::value>::type>
-    static std::true_type check(int);
-    template <class>
-    static std::false_type check(...);
-
-public:
-    static const bool value = decltype(check<T>(0))::value;
-};
+using HasColorCodeUpper = is_detected_exact<uvec3, detail::colorCodeUpperType, T>;
 template <class T>
-class HasColorCodeLower {
-    template <class U, class = typename std::enable_if<
-                           !std::is_member_pointer<decltype(&U::colorCode)>::value>::type>
-    static std::true_type check(int);
-    template <class>
-    static std::false_type check(...);
-
-public:
-    static const bool value = decltype(check<T>(0))::value;
-};
+using HasColorCodeLower = is_detected_exact<uvec3, detail::colorCodeLowerType, T>;
 template <class T>
-class HasColorCode {
-public:
-    static const bool value = HasColorCodeLower<T>::value || HasColorCodeUpper<T>::value;
-};
-template <typename T, typename std::enable_if<HasColorCodeUpper<T>::value, std::size_t>::type = 0>
+using HasColorCode = std::disjunction<HasColorCodeUpper<T>, HasColorCodeLower<T>>;
+
+template <typename T>
 uvec3 colorCode() {
-    return T::COLOR_CODE;
-}
-template <typename T, typename std::enable_if<HasColorCodeLower<T>::value, std::size_t>::type = 0>
-uvec3 colorCode() {
-    return T::colorCode;
-}
-template <typename T, typename std::enable_if<!HasColorCode<T>::value, std::size_t>::type = 0>
-uvec3 colorCode() {
-    return uvec3(0);
+    if constexpr (HasColorCodeUpper<T>::value) {
+        return T::COLOR_CODE;
+    } else if constexpr (HasColorCodeLower<T>::value) {
+        return T::colorCode;
+    } else {
+        return uvec3(0);
+    }
 }
 
-template <typename C>
-class HasDataInfo {
-    template <typename T>
-    static auto check(int) ->
-        typename std::is_same<decltype(std::declval<T>().getDataInfo()), std::string>::type;
+template <typename T>
+using HasDataInfo = is_detected_exact<std::string, detail::dataInfoType, T>;
 
-    template <typename T>
-    static std::false_type check(...);
+template <typename T>
+using HasInfo = is_detected_exact<Document, detail::infoType, T>;
 
-public:
-    static const bool value = decltype(check<C>(0))::value;
-};
-
-template <typename C>
-class HasInfo {
-    template <typename T>
-    static auto check(int) ->
-        typename std::is_same<decltype(std::declval<T>().getInfo()), Document>::type;
-
-    template <typename T>
-    static std::false_type check(...);
-
-public:
-    static const bool value = decltype(check<C>(0))::value;
-};
-
-template <typename T, typename std::enable_if<HasDataInfo<T>::value, std::size_t>::type = 0>
+template <typename T>
 std::string data_info(const T* data) {
-    return data->getDataInfo();
-}
-template <typename T, typename std::enable_if<!HasDataInfo<T>::value, std::size_t>::type = 0>
-std::string data_info(const T*) {
-    return "";
+    if constexpr (HasDataInfo<T>::value) {
+        return data->getDataInfo();
+    } else {
+        return {};
+    }
 }
 
-template <typename T, typename std::enable_if<!HasInfo<T>::value && HasDataInfo<T>::value,
-                                              std::size_t>::type = 0>
+template <typename T>
 Document info(const T& data) {
-    Document doc;
-    doc.append("p", data.getDataInfo());
-    return doc;
-}
-template <typename T, typename std::enable_if<HasInfo<T>::value && !HasDataInfo<T>::value,
-                                              std::size_t>::type = 0>
-Document info(const T& data) {
-    return data.getInfo();
-}
-template <typename T, typename std::enable_if<!HasInfo<T>::value && !HasDataInfo<T>::value,
-                                              std::size_t>::type = 0>
-Document info(const T&) {
-    Document doc;
-    doc.append("p", dataName<T>());
-    return doc;
+    if constexpr (HasInfo<T>::value) {
+        return data.getInfo();
+    } else if constexpr (HasDataInfo<T>::value) {
+        Document doc;
+        doc.append("p", data.getDataInfo());
+        return doc;
+    } else {
+        Document doc;
+        doc.append("p", dataName<T>());
+        return doc;
+    }
 }
 
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_INTROSPECTION_H

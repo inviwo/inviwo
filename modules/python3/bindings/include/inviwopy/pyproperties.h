@@ -37,6 +37,7 @@
 #include <inviwopy/inviwopy.h>
 
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
@@ -142,11 +143,9 @@ struct OrdinalPropertyIterator {
 };
 
 template <typename T, typename P, typename M, typename PC>
-void addOrdinalPropertyIterator(M &m, PC &pc, std::true_type) {
-    auto itclassname = Defaultvalues<T>::getName() + "PropertyIterator";
-
+void addOrdinalPropertyIterator(M &m, PC &pc, const std::string &suffix) {
+    const auto itclassname = Defaultvalues<T>::getName() + suffix;
     using IT = OrdinalPropertyIterator<P, T>;
-
     pybind11::class_<IT>(m, itclassname.c_str())
         .def(pybind11::init<P *>())
         .def("__next__", &IT::next)
@@ -155,17 +154,6 @@ void addOrdinalPropertyIterator(M &m, PC &pc, std::true_type) {
     pc.def("__iter__", [&](P *p) { return IT(p); });
     pc.def("foreach", [&](P *p, T begin, T end) { return IT(p, begin, end); });
     pc.def("foreach", [&](P *p, T begin, T end, T inc) { return IT(p, begin, end, inc); });
-}
-
-template <typename T, typename P, typename M, typename PC>
-void addOrdinalPropertyIterator(M &, PC &, std::false_type) {}
-
-template <typename T, typename P, typename M, typename PC>
-void addOrdinalPropertyIterator(M &m, PC &pc) {
-    addOrdinalPropertyIterator<T, P>(
-        m, pc,
-        typename std::conditional<util::rank<T>::value == 0, std::true_type,
-                                  std::false_type>::type());
 }
 
 struct OrdinalPropertyHelper {
@@ -190,13 +178,72 @@ struct OrdinalPropertyHelper {
                  py::arg("increment") = Defaultvalues<T>::getInc(),
                  py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
                  py::arg("semantics") = PropertySemantics::Default)
-
+            .def(py::init([](const std::string &identifier, const std::string &name, const T &value,
+                             const std::pair<T, ConstraintBehavior> &min,
+                             const std::pair<T, ConstraintBehavior> &max, const T &increment,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                     return new P(identifier, name, value, min, max, increment, invalidationLevel,
+                                  semantics);
+                 }),
+                 py::arg("identifier"), py::arg("name"),
+                 py::arg("value") = Defaultvalues<T>::getVal(),
+                 py::arg("min") =
+                     std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
+                 py::arg("max") =
+                     std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
+                 py::arg("increment") = Defaultvalues<T>::getInc(),
+                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+                 py::arg("semantics") = PropertySemantics::Default)
+            .def_property("value", [](P &p) { return p.get(); }, [](P &p, T t) { p.set(t); })
             .def_property("minValue", &P::getMinValue, &P::setMinValue)
             .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
-            .def_property("increment", &P::getIncrement, &P::setIncrement);
+            .def_property("increment", &P::getIncrement, &P::setIncrement)
+            .def("__repr__", [](P &v) { return inviwo::toString(v.get()); });
 
-        pyTemplateProperty<T, P>(prop);
-        addOrdinalPropertyIterator<T, P>(m, prop);
+        if constexpr (util::rank<T>::value == 0) {
+            addOrdinalPropertyIterator<T, P>(m, prop, "PropertyIterator");
+        }
+
+        return prop;
+    }
+};
+
+struct OrdinalRefPropertyHelper {
+    template <typename T>
+    auto operator()(pybind11::module &m) {
+        namespace py = pybind11;
+        using P = OrdinalRefProperty<T>;
+
+        auto classname = Defaultvalues<T>::getName() + "RefProperty";
+
+        py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
+        prop.def(py::init([](const std::string &identifier, const std::string &name,
+                             std::function<T()> get, std::function<void(const T &)> set,
+                             const std::pair<T, ConstraintBehavior> &min,
+                             const std::pair<T, ConstraintBehavior> &max, const T &increment,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                     return new P(identifier, name, std::move(get), std::move(set), min, max,
+                                  increment, invalidationLevel, semantics);
+                 }),
+                 py::arg("identifier"), py::arg("name"), py::arg("get"), py::arg("set"),
+                 py::arg("min") =
+                     std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
+                 py::arg("max") =
+                     std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
+                 py::arg("increment") = Defaultvalues<T>::getInc(),
+                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+                 py::arg("semantics") = PropertySemantics::Default)
+
+            .def_property("value", [](P &p) { return p.get(); }, [](P &p, T t) { p.set(t); })
+            .def_property("minValue", &P::getMinValue, &P::setMinValue)
+            .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
+            .def_property("increment", &P::getIncrement, &P::setIncrement)
+            .def("setGetAndSet", &P::setGetAndSet)
+            .def("__repr__", [](P &v) { return inviwo::toString(v.get()); });
+
+        if constexpr (util::rank<T>::value == 0) {
+            addOrdinalPropertyIterator<T, P>(m, prop, "RefPropertyIterator");
+        }
 
         return prop;
     }

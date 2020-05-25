@@ -35,6 +35,7 @@
 #include <modules/json/io/json/minmaxpropertyjsonconverter.h>
 #include <modules/json/io/json/optionpropertyjsonconverter.h>
 #include <modules/json/io/json/ordinalpropertyjsonconverter.h>
+#include <modules/json/io/json/ordinalrefpropertyjsonconverter.h>
 #include <modules/json/io/json/templatepropertyjsonconverter.h>
 
 #include <inviwo/core/properties/stringproperty.h>
@@ -44,6 +45,14 @@ struct OrdinalReghelper {
     template <typename T>
     auto operator()(JSONModule& m) {
         using PropertyType = OrdinalProperty<T>;
+        m.registerPropertyJSONConverter<PropertyType>();
+    }
+};
+
+struct OrdinalRefReghelper {
+    template <typename T>
+    auto operator()(JSONModule& m) {
+        using PropertyType = OrdinalRefProperty<T>;
         m.registerPropertyJSONConverter<PropertyType>();
     }
 };
@@ -83,6 +92,7 @@ JSONModule::JSONModule(InviwoApplication* app) : InviwoModule(app, "JSON") {
 
     using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;
     util::for_each_type<OrdinalTypes>{}(OrdinalReghelper{}, *this);
+    util::for_each_type<OrdinalTypes>{}(OrdinalRefReghelper{}, *this);
 
     // Register MinMaxProperty widgets
     util::for_each_type<ScalarTypes>{}(MinMaxReghelper{}, *this);
@@ -90,42 +100,6 @@ JSONModule::JSONModule(InviwoApplication* app) : InviwoModule(app, "JSON") {
     // Register option property widgets
     using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
     util::for_each_type<OptionTypes>{}(OptionReghelper{}, *this);
-
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-
-    // Register objects that can be shared with the rest of inviwo here:
-
-    // Processors
-    // registerProcessor<jsonProcessor>();
-
-    // Properties
-    // registerProperty<jsonProperty>();
-
-    // Readers and writes
-    // registerDataReader(std::make_unique<jsonReader>());
-    // registerDataWriter(std::make_unique<jsonWriter>());
-
-    // Data converters
-    // registerRepresentationConverter(std::make_unique<jsonDisk2RAMConverter>());
-
-    // Ports
-    // registerPort<jsonOutport>();
-    // registerPort<jsonInport>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<jsonPropertyWidget, jsonProperty>("Default");
-
-    // Dialogs
-    // registerDialog<jsonDialog>(jsonOutport);
-
-    // Other things
-    // registerCapabilities(std::make_unique<jsonCapabilities>());
-    // registerSettings(std::make_unique<jsonSettings>());
-    // registerMetaData(std::make_unique<jsonMetaData>());
-    // registerPortInspector("jsonOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
-    // processorWidget); registerDrawer(util::make_unique_ptr<jsonDrawer>());
 }
 
 void JSONModule::registerPropertyJSONConverter(

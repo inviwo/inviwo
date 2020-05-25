@@ -277,9 +277,11 @@ void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     for (const auto& link : network->getLinksBetweenProcessors(p1, p2)) {
         auto src = link.getSource();
         auto dst = link.getDestination();
-        if (network->isLinkedBidirectional(src, dst) && src < dst) continue;
-
-        if (src->getOwner()->getProcessor() == p1) {
+        if (network->isLinkedBidirectional(src, dst)) {
+            if (src < dst) {
+                tb(A{right, src->getDisplayName()}, imgBi, A{left, dst->getDisplayName()});
+            }
+        } else if (src->getOwner()->getProcessor() == p1) {
             tb(A{right, src->getDisplayName()}, imgRight, A{left, dst->getDisplayName()});
         } else {
             tb(A{right, dst->getDisplayName()}, imgLeft, A{left, src->getDisplayName()});

@@ -11,6 +11,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwoapplication.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwoapplicationutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwocore.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwocoredefine.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodule.h
@@ -59,6 +60,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerramconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerramprecision.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerrepresentation.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/isovaluecollection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/baselightsource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/diffuselight.h
@@ -226,6 +228,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/multifileproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/optionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/ordinalproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/ordinalrefproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/planeproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/positionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/property.h
@@ -275,6 +278,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/constexprhash.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/datetime.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/defaultvalues.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/detected.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dialogfactoryobject.h
@@ -289,6 +293,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filelogger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystem.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystemobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/foreach.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/foreacharg.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatconversion.h
@@ -362,6 +367,7 @@ set(SOURCE_FILES
     algorithm/camerautils.cpp
     algorithm/cubeplaneintersection.cpp
     common/inviwoapplication.cpp
+    common/inviwoapplicationutil.cpp
     common/inviwocore.cpp
     common/inviwomodule.cpp
     common/inviwomodulefactoryobject.cpp
@@ -396,6 +402,7 @@ set(SOURCE_FILES
     datastructures/image/layerramconverter.cpp
     datastructures/image/layerramprecision.cpp
     datastructures/image/layerrepresentation.cpp
+    datastructures/image/layerutil.cpp
     datastructures/isovaluecollection.cpp
     datastructures/light/baselightsource.cpp
     datastructures/light/diffuselight.cpp
@@ -535,6 +542,7 @@ set(SOURCE_FILES
     properties/multifileproperty.cpp
     properties/optionproperty.cpp
     properties/ordinalproperty.cpp
+    properties/ordinalrefproperty.cpp
     properties/planeproperty.cpp
     properties/positionproperty.cpp
     properties/property.cpp
@@ -576,6 +584,7 @@ set(SOURCE_FILES
     util/commandlineparser.cpp
     util/consolelogger.cpp
     util/defaultvalues.cpp
+    util/detected.cpp
     util/dialogfactory.cpp
     util/dialogfactoryobject.cpp
     util/document.cpp
@@ -586,6 +595,7 @@ set(SOURCE_FILES
     util/filelogger.cpp
     util/fileobserver.cpp
     util/filesystem.cpp
+    util/filesystemobserver.cpp
     util/foreacharg.cpp
     util/formatconversion.cpp
     util/formatdispatching.cpp
@@ -597,6 +607,7 @@ set(SOURCE_FILES
     util/imageramutils.cpp
     util/imagesampler.cpp
     util/indirectiterator.cpp
+    util/introspection.cpp
     util/inviwosetupinfo.cpp
     util/licenseinfo.cpp
     util/logcentral.cpp
@@ -618,10 +629,10 @@ set(SOURCE_FILES
     util/spatial4dsampler.cpp
     util/stacktrace.cpp
     util/statecoordinator.cpp
+    util/stdextensions.cpp
     util/stringconversion.cpp
     util/stringlogger.cpp
     util/systemcapabilities.cpp
-    util/stdextensions.cpp
     util/threadpool.cpp
     util/threadutil.cpp
     util/timer.cpp
@@ -663,11 +674,13 @@ set(TEST_FILES
     tests/unittests/inviwo-core-unittest-main.cpp
     tests/unittests/metadata-test.cpp
     tests/unittests/network-evaluator-test.cpp
+    tests/unittests/ordinalproperty-test.cpp
     tests/unittests/picking-test.cpp
     tests/unittests/pickingcontroller-test.cpp
     tests/unittests/port-tests.cpp
     tests/unittests/resize-test.cpp
     tests/unittests/serialize-container-test.cpp
+    tests/unittests/serializer-polymorphic-test.cpp
     tests/unittests/serializer-test.cpp
     tests/unittests/tfprimitiveset-test.cpp
     tests/unittests/typedmesh-test.cpp

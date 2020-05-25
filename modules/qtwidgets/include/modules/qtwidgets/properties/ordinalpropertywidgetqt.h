@@ -39,6 +39,7 @@
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/properties/ordinalspinboxwidget.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/properties/propertyowner.h>
 
@@ -74,13 +75,14 @@ T euclidean(T val) {
 
 enum class OrdinalPropertyWidgetQtSematics { Default, Spherical, SpinBox, SphericalSpinBox, Text };
 
-template <typename T, OrdinalPropertyWidgetQtSematics Sem>
-class OrdinalPropertyWidgetQt final : public PropertyWidgetQt {
+template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>
+class OrdinalLikePropertyWidgetQt final : public PropertyWidgetQt {
 public:
+    using T = typename Prop::value_type;
     using BT = typename util::value_type<T>::type;
 
-    OrdinalPropertyWidgetQt(OrdinalProperty<T>* property);
-    virtual ~OrdinalPropertyWidgetQt() = default;
+    OrdinalLikePropertyWidgetQt(Prop* property);
+    virtual ~OrdinalLikePropertyWidgetQt() = default;
     virtual void updateFromProperty() override;
     virtual std::unique_ptr<QMenu> getContextMenu() override;
 
@@ -89,15 +91,21 @@ private:
     void setPropertyValue(size_t);
     void showSettings();
 
-    OrdinalProperty<T>* ordinal_;
+    Prop* ordinal_;
     EditableLabelQt* label_;
-    OrdinalPropertySettingsWidgetQt<T>* settingsWidget_;
+    OrdinalLikePropertySettingsWidgetQt<Prop>* settingsWidget_;
 
     std::vector<OrdinalBaseWidget<BT>*> editors_;
 };
 
 template <typename T, OrdinalPropertyWidgetQtSematics Sem>
-OrdinalPropertyWidgetQt<T, Sem>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property)
+using OrdinalPropertyWidgetQt = OrdinalLikePropertyWidgetQt<OrdinalProperty<T>, Sem>;
+
+template <typename T, OrdinalPropertyWidgetQtSematics Sem>
+using OrdinalRefPropertyWidgetQt = OrdinalLikePropertyWidgetQt<OrdinalRefProperty<T>, Sem>;
+
+template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>
+OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* property)
     : PropertyWidgetQt(property)
     , ordinal_(property)
     , label_{new EditableLabelQt(this, property)}
@@ -210,8 +218,8 @@ OrdinalPropertyWidgetQt<T, Sem>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* pro
     updateFromProperty();
 }
 
-template <typename T, OrdinalPropertyWidgetQtSematics Sem>
-void OrdinalPropertyWidgetQt<T, Sem>::updateFromProperty() {
+template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>
+void OrdinalLikePropertyWidgetQt<Prop, Sem>::updateFromProperty() {
     T min = ordinal_->getMinValue();
     T max = ordinal_->getMaxValue();
     T inc = ordinal_->getIncrement();
@@ -242,8 +250,8 @@ void OrdinalPropertyWidgetQt<T, Sem>::updateFromProperty() {
     }
 }
 
-template <typename T, OrdinalPropertyWidgetQtSematics Sem>
-void OrdinalPropertyWidgetQt<T, Sem>::setPropertyValue(size_t editorId) {
+template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>
+void OrdinalLikePropertyWidgetQt<Prop, Sem>::setPropertyValue(size_t editorId) {
     T val = ordinal_->get();
 
     if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SphericalSpinBox ||
@@ -263,16 +271,16 @@ void OrdinalPropertyWidgetQt<T, Sem>::setPropertyValue(size_t editorId) {
     ordinal_->clearInitiatingWidget();
 }
 
-template <typename T, OrdinalPropertyWidgetQtSematics Sem>
-void OrdinalPropertyWidgetQt<T, Sem>::showSettings() {
+template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>
+void OrdinalLikePropertyWidgetQt<Prop, Sem>::showSettings() {
     if (!settingsWidget_) {
-        settingsWidget_ = new OrdinalPropertySettingsWidgetQt<T>(ordinal_, this);
+        settingsWidget_ = new OrdinalLikePropertySettingsWidgetQt<Prop>(ordinal_, this);
     }
     settingsWidget_->showWidget();
 }
 
-template <typename T, OrdinalPropertyWidgetQtSematics Sem>
-std::unique_ptr<QMenu> OrdinalPropertyWidgetQt<T, Sem>::getContextMenu() {
+template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>
+std::unique_ptr<QMenu> OrdinalLikePropertyWidgetQt<Prop, Sem>::getContextMenu() {
     auto menu = PropertyWidgetQt::getContextMenu();
 
     auto settingsAction = menu->addAction(tr("&Property settings..."));
@@ -280,7 +288,7 @@ std::unique_ptr<QMenu> OrdinalPropertyWidgetQt<T, Sem>::getContextMenu() {
         tr("&Open the property settings dialog to adjust min, max, and increment values"));
 
     connect(settingsAction, &QAction::triggered, this,
-            &OrdinalPropertyWidgetQt<T, Sem>::showSettings);
+            &OrdinalLikePropertyWidgetQt<Prop, Sem>::showSettings);
 
     settingsAction->setEnabled(!property_->getReadOnly());
     settingsAction->setVisible(getApplicationUsageMode() == UsageMode::Development);

@@ -125,6 +125,7 @@ set(HEADER_FILES
     include/modules/base/properties/meshinformationproperty.h
     include/modules/base/properties/sequencetimerproperty.h
     include/modules/base/properties/stipplingproperty.h
+    include/modules/base/properties/transformlistproperty.h
     include/modules/base/properties/volumeinformationproperty.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -244,6 +245,7 @@ set(SOURCE_FILES
     src/properties/meshinformationproperty.cpp
     src/properties/sequencetimerproperty.cpp
     src/properties/stipplingproperty.cpp
+    src/properties/transformlistproperty.cpp
     src/properties/volumeinformationproperty.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

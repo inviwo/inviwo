@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/qtwidgets/qstringhelper.h>
@@ -70,12 +71,13 @@ public:
     std::vector<QLineEdit*> additionalFields_;
 };
 
-template <typename T>
-class OrdinalPropertySettingsWidgetQt : public QDialog, public PropertyWidget {
+template <typename Prop>
+class OrdinalLikePropertySettingsWidgetQt : public QDialog, public PropertyWidget {
 public:
+    using T = typename Prop::value_type;
     using BT = typename util::value_type<T>::type;
-    OrdinalPropertySettingsWidgetQt(OrdinalProperty<T>* property, QWidget* widget);
-    virtual ~OrdinalPropertySettingsWidgetQt();
+    OrdinalLikePropertySettingsWidgetQt(Prop* property, QWidget* widget);
+    virtual ~OrdinalLikePropertySettingsWidgetQt();
 
     virtual void updateFromProperty() override;
     /**
@@ -102,12 +104,19 @@ private:
     QPushButton* btnOk_;
     QPushButton* btnCancel_;
     std::vector<SinglePropertySetting> settings_;
-    OrdinalProperty<T>* property_;
+    Prop* property_;
 };
 
 template <typename T>
-OrdinalPropertySettingsWidgetQt<T>::OrdinalPropertySettingsWidgetQt(OrdinalProperty<T>* property,
-                                                                    QWidget* widget)
+using OrdinalPropertySettingsWidgetQt = OrdinalLikePropertySettingsWidgetQt<OrdinalProperty<T>>;
+
+template <typename T>
+using OrdinalRefPropertySettingsWidgetQt =
+    OrdinalLikePropertySettingsWidgetQt<OrdinalRefProperty<T>>;
+
+template <typename Prop>
+OrdinalLikePropertySettingsWidgetQt<Prop>::OrdinalLikePropertySettingsWidgetQt(Prop* property,
+                                                                               QWidget* widget)
     : QDialog(widget)
     , PropertyWidget(property)
     , btnApply_(new QPushButton("Apply", this))
@@ -144,7 +153,7 @@ OrdinalPropertySettingsWidgetQt<T>::OrdinalPropertySettingsWidgetQt(OrdinalPrope
         gridLayout->addWidget(labels[i], 0, static_cast<int>(i));
     }
     const std::array<char, 4> desc = {'x', 'y', 'z', 'w'};
-    const uvec2 components = OrdinalProperty<T>::getDim();
+    const uvec2 components = Prop::getDim();
 
     int count = 0;
     for (size_t i = 0; i < components.x; i++) {
@@ -211,9 +220,11 @@ OrdinalPropertySettingsWidgetQt<T>::OrdinalPropertySettingsWidgetQt(OrdinalPrope
 
     setLayout(gridLayout);
 
-    connect(btnApply_, &QPushButton::clicked, this, &OrdinalPropertySettingsWidgetQt<T>::apply);
-    connect(btnOk_, &QPushButton::clicked, this, &OrdinalPropertySettingsWidgetQt<T>::save);
-    connect(btnCancel_, &QPushButton::clicked, this, &OrdinalPropertySettingsWidgetQt<T>::cancel);
+    connect(btnApply_, &QPushButton::clicked, this,
+            &OrdinalLikePropertySettingsWidgetQt<Prop>::apply);
+    connect(btnOk_, &QPushButton::clicked, this, &OrdinalLikePropertySettingsWidgetQt<Prop>::save);
+    connect(btnCancel_, &QPushButton::clicked, this,
+            &OrdinalLikePropertySettingsWidgetQt<Prop>::cancel);
 
     reload();
 
@@ -229,13 +240,13 @@ OrdinalPropertySettingsWidgetQt<T>::OrdinalPropertySettingsWidgetQt(OrdinalPrope
     setWindowTitle(utilqt::toQString(property_->getDisplayName()));
 }
 
-template <typename T>
-OrdinalPropertySettingsWidgetQt<T>::~OrdinalPropertySettingsWidgetQt() {
+template <typename Prop>
+OrdinalLikePropertySettingsWidgetQt<Prop>::~OrdinalLikePropertySettingsWidgetQt() {
     if (property_) property_->deregisterWidget(this);
 }
 
-template <typename T>
-void OrdinalPropertySettingsWidgetQt<T>::apply() {
+template <typename Prop>
+void OrdinalLikePropertySettingsWidgetQt<Prop>::apply() {
     NetworkLock lock(property_);
 
     std::array<T, 4> vals{};
@@ -252,8 +263,8 @@ void OrdinalPropertySettingsWidgetQt<T>::apply() {
     property_->clearInitiatingWidget();
 }
 
-template <typename T>
-void OrdinalPropertySettingsWidgetQt<T>::reload() {
+template <typename Prop>
+void OrdinalLikePropertySettingsWidgetQt<Prop>::reload() {
     std::array<T, 4> vals{property_->getMinValue(), property_->get(), property_->getMaxValue(),
                           property_->getIncrement()};
 
@@ -274,43 +285,43 @@ void OrdinalPropertySettingsWidgetQt<T>::reload() {
     }
 }
 
-template <typename T>
-void OrdinalPropertySettingsWidgetQt<T>::cancel() {
+template <typename Prop>
+void OrdinalLikePropertySettingsWidgetQt<Prop>::cancel() {
     hideWidget();
     reload();
 }
 
-template <typename T>
-void OrdinalPropertySettingsWidgetQt<T>::save() {
+template <typename Prop>
+void OrdinalLikePropertySettingsWidgetQt<Prop>::save() {
     hideWidget();
     apply();
 }
 
-template <typename T>
-bool OrdinalPropertySettingsWidgetQt<T>::getVisible() const {
+template <typename Prop>
+bool OrdinalLikePropertySettingsWidgetQt<Prop>::getVisible() const {
     return isVisible();
 }
 
-template <typename T>
-void OrdinalPropertySettingsWidgetQt<T>::hideWidget() {
+template <typename Prop>
+void OrdinalLikePropertySettingsWidgetQt<Prop>::hideWidget() {
     property_->deregisterWidget(this);
     setVisible(false);
 }
 
-template <typename T>
-void OrdinalPropertySettingsWidgetQt<T>::showWidget() {
+template <typename Prop>
+void OrdinalLikePropertySettingsWidgetQt<Prop>::showWidget() {
     property_->registerWidget(this);
     updateFromProperty();
     setVisible(true);
 }
 
-template <typename T>
-void OrdinalPropertySettingsWidgetQt<T>::updateFromProperty() {
+template <typename Prop>
+void OrdinalLikePropertySettingsWidgetQt<Prop>::updateFromProperty() {
     reload();
 }
 
-template <typename T>
-void OrdinalPropertySettingsWidgetQt<T>::keyPressEvent(QKeyEvent* event) {
+template <typename Prop>
+void OrdinalLikePropertySettingsWidgetQt<Prop>::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Escape) {
         cancel();
     } else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
@@ -319,8 +330,8 @@ void OrdinalPropertySettingsWidgetQt<T>::keyPressEvent(QKeyEvent* event) {
     QDialog::keyPressEvent(event);
 }
 
-template <typename T>
-void OrdinalPropertySettingsWidgetQt<T>::closeEvent(QCloseEvent* event) {
+template <typename Prop>
+void OrdinalLikePropertySettingsWidgetQt<Prop>::closeEvent(QCloseEvent* event) {
     event->ignore();
     cancel();
 }

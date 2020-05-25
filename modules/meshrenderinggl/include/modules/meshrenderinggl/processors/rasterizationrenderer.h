@@ -146,6 +146,9 @@ protected:
     ImageOutport outport_;
     Image intermediateImage_;
 
+    CameraProperty camera_;
+    CameraTrackball trackball_;
+
     struct IllustrationSettings {
         IllustrationSettings();
 

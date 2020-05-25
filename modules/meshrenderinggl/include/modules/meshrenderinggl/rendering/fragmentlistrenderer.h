@@ -90,8 +90,7 @@ public:
      * This sorts the fragment lists per pixel and outputs the blended color.
      * \param useIllustration Set to true if the illustration buffer
      * should be enabled
-     * \param debug If set to true, debug output is printed to <code>cout</code>.
-     * Warning: very text heavy, use only for small screen sizes.
+     * \param background The background to render on and use depth information from.
      * \return <code>true</code> if successfull, <code>false</code> if not enough
      * space for all fragments was available and the procedure should be repeated.
      */

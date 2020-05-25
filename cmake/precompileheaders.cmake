@@ -89,7 +89,7 @@ function(ivw_get_drive file retval)
     set(${retval} ${tmp1} PARENT_SCOPE)
 endfunction()
 
-if(WIN32 AND MSVC)
+if(WIN32 AND MSVC AND PRECOMPILED_HEADERS)
     ivw_get_header_path("windows.h" ivw_private_windows_path)
 endif()
 

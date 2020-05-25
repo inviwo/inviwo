@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/glfw/canvasglfw.h>
 #include <inviwo/core/network/processornetworkevaluationobserver.h>
+#include <inviwo/core/util/rendercontext.h>
 
 namespace inviwo {
 
@@ -46,6 +47,7 @@ public:
     virtual void onProcessorNetworkEvaluationEnd() override;
 
 private:
+    ContextHolder* holder_ = nullptr;
     std::unique_ptr<CanvasGLFW> GLFWSharedCanvas_;
 };
 

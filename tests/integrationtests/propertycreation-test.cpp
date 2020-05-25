@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (clonedProperty) 2014-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,23 +74,23 @@ protected:
 
 TEST_P(PropertyCreationTests, Create) {
     LogErrorCheck checklog;
-    auto s = factory_->create(GetParam(), "identifier", "displayname");
-    ASSERT_NE(s, nullptr);
+    auto originalProperty = factory_->create(GetParam(), "identifier", "displayname");
+    ASSERT_NE(originalProperty, nullptr);
 
-    auto c = std::unique_ptr<Property>(s->clone());
-    ASSERT_NE(c, nullptr);
-    EXPECT_EQ(s->getIdentifier(), c->getIdentifier());
-    EXPECT_EQ(s->getPath(), c->getPath());
-    EXPECT_EQ(s->getDisplayName(), c->getDisplayName());
-    EXPECT_EQ(s->getClassIdentifier(), c->getClassIdentifier());
-    EXPECT_EQ(s->getSemantics(), c->getSemantics());
+    auto clonedProperty = std::unique_ptr<Property>(originalProperty->clone());
+    ASSERT_NE(clonedProperty, nullptr);
+    EXPECT_EQ(originalProperty->getIdentifier(), clonedProperty->getIdentifier());
+    EXPECT_EQ(originalProperty->getPath(), clonedProperty->getPath());
+    EXPECT_EQ(originalProperty->getDisplayName(), clonedProperty->getDisplayName());
+    EXPECT_EQ(originalProperty->getClassIdentifier(), clonedProperty->getClassIdentifier());
+    EXPECT_EQ(originalProperty->getSemantics(), clonedProperty->getSemantics());
 
     // Try linking
-    c->set(s.get());
-    s->set(c.get());
+    clonedProperty->set(originalProperty.get());
+    originalProperty->set(clonedProperty.get());
 
-    if (auto sComp = dynamic_cast<CompositeProperty*>(s.get())) {
-        auto cComp = dynamic_cast<CompositeProperty*>(c.get());
+    if (auto sComp = dynamic_cast<CompositeProperty*>(originalProperty.get())) {
+        auto cComp = dynamic_cast<CompositeProperty*>(clonedProperty.get());
         ASSERT_NE(cComp, nullptr);
 
         EXPECT_EQ(sComp->isCollapsed(), cComp->isCollapsed())

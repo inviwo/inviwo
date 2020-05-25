@@ -282,7 +282,7 @@ std::string TransferFunction::serializationItemKey() const { return "Point"; }
 
 bool operator==(const TransferFunction& lhs, const TransferFunction& rhs) {
     if (lhs.maskMin_ != rhs.maskMin_) return false;
-    if (lhs.maskMax_ == rhs.maskMax_) return false;
+    if (lhs.maskMax_ != rhs.maskMax_) return false;
 
     return static_cast<const TFPrimitiveSet&>(lhs) == static_cast<const TFPrimitiveSet&>(rhs);
 }

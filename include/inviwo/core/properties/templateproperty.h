@@ -53,17 +53,13 @@ public:
     TemplateProperty<T>& operator=(const T& value);
 
     virtual TemplateProperty<T>* clone() const override = 0;
-    virtual operator T&();
-    virtual operator const T&() const;
-
     virtual ~TemplateProperty() = default;
 
-    virtual T& get();
-    virtual const T& get() const;
+    operator const T&() const;
+    const T& get() const;
     const T& operator*() const;
-    T& operator*();
     const T* operator->() const;
-    T* operator->();
+
     virtual void set(const T& value);
     void set(const TemplateProperty<T>* srcProperty);
     virtual void set(const Property* srcProperty) override;
@@ -98,11 +94,6 @@ TemplateProperty<T>& TemplateProperty<T>::operator=(const T& value) {
 }
 
 template <typename T>
-TemplateProperty<T>::operator T&() {
-    return value_;
-}
-
-template <typename T>
 TemplateProperty<T>::operator const T&() const {
     return value_;
 }
@@ -121,11 +112,6 @@ TemplateProperty<T>& TemplateProperty<T>::setCurrentStateAsDefault() {
 }
 
 template <typename T>
-T& TemplateProperty<T>::get() {
-    return value_;
-}
-
-template <typename T>
 const T& TemplateProperty<T>::get() const {
     return value_;
 }
@@ -136,17 +122,7 @@ const T& TemplateProperty<T>::operator*() const {
 }
 
 template <typename T>
-T& TemplateProperty<T>::operator*() {
-    return value_;
-}
-
-template <typename T>
 const T* TemplateProperty<T>::operator->() const {
-    return &value_.value;
-}
-
-template <typename T>
-T* TemplateProperty<T>::operator->() {
     return &value_.value;
 }
 

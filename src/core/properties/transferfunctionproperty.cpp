@@ -64,16 +64,14 @@ void TFPropertyObservable::notifyHistogramModeChange(HistogramMode mode) {
 TransferFunctionProperty::TransferFunctionProperty(
     const std::string& identifier, const std::string& displayName, const TransferFunction& value,
     VolumeInport* volumeInport, InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : TemplateProperty<TransferFunction>(identifier, displayName, value, invalidationLevel,
-                                         semantics)
+    : Property(identifier, displayName, invalidationLevel, semantics)
+    , tf_{"TransferFunction", value}
     , zoomH_("zoomH_", dvec2(0.0, 1.0))
     , zoomV_("zoomV_", dvec2(0.0, 1.0))
     , histogramMode_("showHistogram_", HistogramMode::All)
     , volumeInport_(volumeInport) {
 
-    // rename the "value" to make the serialized file easier to understand.
-    this->value_.name = "TransferFunction";
-    this->value_.value.addObserver(this);
+    tf_.value.addObserver(this);
 }
 
 TransferFunctionProperty::TransferFunctionProperty(const std::string& identifier,
@@ -87,13 +85,14 @@ TransferFunctionProperty::TransferFunctionProperty(const std::string& identifier
                                volumeInport, invalidationLevel, semantics) {}
 
 TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionProperty& rhs)
-    : TemplateProperty<TransferFunction>(rhs)
+    : Property(rhs)
+    , tf_{rhs.tf_}
     , zoomH_(rhs.zoomH_)
     , zoomV_(rhs.zoomV_)
     , histogramMode_(rhs.histogramMode_)
     , volumeInport_(rhs.volumeInport_) {
 
-    this->value_.value.addObserver(this);
+    tf_.value.addObserver(this);
 }
 
 TransferFunctionProperty* TransferFunctionProperty::clone() const {
@@ -101,6 +100,10 @@ TransferFunctionProperty* TransferFunctionProperty::clone() const {
 }
 
 TransferFunctionProperty::~TransferFunctionProperty() { volumeInport_ = nullptr; }
+
+TransferFunction& TransferFunctionProperty::get() { return tf_.value; }
+
+const TransferFunction& TransferFunctionProperty::get() const { return tf_.value; }
 
 TransferFunctionProperty& TransferFunctionProperty::setHistogramMode(HistogramMode mode) {
     if (histogramMode_ != mode) {
@@ -116,15 +119,19 @@ VolumeInport* TransferFunctionProperty::getVolumeInport() { return volumeInport_
 
 TransferFunctionProperty& TransferFunctionProperty::resetToDefaultState() {
     NetworkLock lock(this);
-    zoomH_.reset();
-    zoomV_.reset();
-    histogramMode_.reset();
-    TemplateProperty<TransferFunction>::resetToDefaultState();
+
+    bool modified = false;
+    modified |= tf_.reset();
+    modified |= zoomH_.reset();
+    modified |= zoomV_.reset();
+    modified |= histogramMode_.reset();
+    if (modified) this->propertyModified();
     return *this;
 }
 
 TransferFunctionProperty& TransferFunctionProperty::setCurrentStateAsDefault() {
-    TemplateProperty<TransferFunction>::setCurrentStateAsDefault();
+    Property::setCurrentStateAsDefault();
+    tf_.setAsDefault();
     zoomH_.setAsDefault();
     zoomV_.setAsDefault();
     histogramMode_.setAsDefault();
@@ -134,20 +141,20 @@ TransferFunctionProperty& TransferFunctionProperty::setCurrentStateAsDefault() {
 void TransferFunctionProperty::serialize(Serializer& s) const {
     Property::serialize(s);
 
+    tf_.serialize(s, this->serializationMode_);
     zoomH_.serialize(s, this->serializationMode_);
     zoomV_.serialize(s, this->serializationMode_);
     histogramMode_.serialize(s, this->serializationMode_);
-    value_.serialize(s, this->serializationMode_);
 }
 
 void TransferFunctionProperty::deserialize(Deserializer& d) {
     Property::deserialize(d);
 
     bool modified = false;
+    modified |= tf_.deserialize(d, this->serializationMode_);
     modified |= zoomH_.deserialize(d, this->serializationMode_);
     modified |= zoomV_.deserialize(d, this->serializationMode_);
     modified |= histogramMode_.deserialize(d, this->serializationMode_);
-    modified |= value_.deserialize(d, this->serializationMode_);
     if (modified) propertyModified();
 }
 
@@ -156,12 +163,10 @@ TransferFunctionProperty& TransferFunctionProperty::setMask(double maskMin, doub
         maskMax = maskMin;
     }
 
-    if (this->value_.value.getMaskMin() != maskMax || this->value_.value.getMaskMax() != maskMax) {
-        this->value_.value.setMaskMin(maskMin);
-        this->value_.value.setMaskMax(maskMax);
-
+    if (tf_.value.getMaskMin() != maskMax || tf_.value.getMaskMax() != maskMax) {
+        tf_.value.setMaskMin(maskMin);
+        tf_.value.setMaskMax(maskMax);
         notifyMaskChange(dvec2(maskMin, maskMax));
-
         propertyModified();
     }
     return *this;
@@ -170,7 +175,7 @@ TransferFunctionProperty& TransferFunctionProperty::setMask(double maskMin, doub
 TransferFunctionProperty& TransferFunctionProperty::clearMask() {
     auto prevMask = getMask();
 
-    this->value_.value.clearMask();
+    tf_.value.clearMask();
     if (getMask() != prevMask) {
         notifyMaskChange(getMask());
     }
@@ -179,7 +184,7 @@ TransferFunctionProperty& TransferFunctionProperty::clearMask() {
 }
 
 const dvec2 TransferFunctionProperty::getMask() const {
-    return dvec2(this->value_.value.getMaskMin(), this->value_.value.getMaskMax());
+    return dvec2(tf_.value.getMaskMin(), tf_.value.getMaskMax());
 }
 
 const dvec2& TransferFunctionProperty::getZoomH() const { return zoomH_; }
@@ -213,20 +218,27 @@ TransferFunctionProperty& TransferFunctionProperty::setZoomV(double zoomVMin, do
 }
 
 void TransferFunctionProperty::set(const TransferFunction& value) {
-    this->value_.value.removeObserver(this);
-    TemplateProperty<TransferFunction>::set(value);
-    this->value_.value.addObserver(this);
+    tf_.value.removeObserver(this);
+    if (tf_.update(value)) propertyModified();
+    tf_.value.addObserver(this);
 }
 
-void TransferFunctionProperty::set(const IsoTFProperty& p) { set(p.tf_.get()); }
+const TransferFunction& TransferFunctionProperty::operator*() const { return tf_.value; }
+TransferFunction& TransferFunctionProperty::operator*() { return tf_.value; }
+const TransferFunction* TransferFunctionProperty::operator->() const { return &tf_.value; }
+TransferFunction* TransferFunctionProperty::operator->() { return &tf_.value; }
 
 void TransferFunctionProperty::set(const Property* property) {
     if (auto tfp = dynamic_cast<const TransferFunctionProperty*>(property)) {
-        TemplateProperty<TransferFunction>::set(tfp);
-    } else if (auto isotfprop = dynamic_cast<const IsoTFProperty*>(property)) {
-        TemplateProperty<TransferFunction>::set(&isotfprop->tf_);
+        set(tfp);
+    } else if (auto isotf = dynamic_cast<const IsoTFProperty*>(property)) {
+        set(isotf);
     }
 }
+
+void TransferFunctionProperty::set(const TransferFunctionProperty* p) { set(p->tf_.value); }
+
+void TransferFunctionProperty::set(const IsoTFProperty* p) { set(p->tf_.get()); }
 
 void TransferFunctionProperty::onTFPrimitiveAdded(TFPrimitive&) { propertyModified(); }
 

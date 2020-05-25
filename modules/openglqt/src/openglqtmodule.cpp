@@ -74,7 +74,7 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     }
 
     static_cast<CanvasQt*>(sharedCanvas_.get())->defaultGLState();
-    RenderContext::getPtr()->setDefaultRenderContext(sharedCanvas_.get());
+    holder_ = RenderContext::getPtr()->setDefaultRenderContext(sharedCanvas_.get());
 
     registerProcessorWidget<CanvasProcessorWidgetQt, CanvasProcessorGL>();
     registerCapabilities(util::make_unique<OpenGLQtCapabilities>());
@@ -90,7 +90,7 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
 
 OpenGLQtModule::~OpenGLQtModule() {
     SharedOpenGLResources::getPtr()->reset();
-    if (sharedCanvas_.get() == RenderContext::getPtr()->getDefaultRenderContext()) {
+    if (holder_ == RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
     }
 }

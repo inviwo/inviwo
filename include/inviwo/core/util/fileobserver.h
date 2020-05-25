@@ -39,6 +39,7 @@
 namespace inviwo {
 
 class InviwoApplication;
+class FileSystemObserver;
 
 /** \class FileObserver
  * Calls fileChanged when an observed file/directory changes.
@@ -50,17 +51,14 @@ public:
      * @note Registers as a file observer in InviwoApplication.
      */
     FileObserver(InviwoApplication* app);
+
     /**
-     * \brief Starts observing file if existing.
-     * @note Registers as a file observer in InviwoApplication.
-     * @param filePath Full path to file to observe
+     * @note Registers as a file observer in FileSystemObserver.
      */
-    FileObserver(const std::string& filePath = "");
+    FileObserver(FileSystemObserver* app);
+
     FileObserver(const FileObserver&) = delete;
     FileObserver& operator=(const FileObserver&) = delete;
-    /**
-     * Moves observed files from other
-     */
     FileObserver(FileObserver&& rhs);
     FileObserver& operator=(FileObserver&& that);
 
@@ -91,7 +89,7 @@ public:
     virtual void fileChanged(const std::string& fileName) = 0;
 
 protected:
-    InviwoApplication* app_;
+    FileSystemObserver* fileSystemObserver_;
 
 private:
     std::unordered_set<std::string> observedFiles_;

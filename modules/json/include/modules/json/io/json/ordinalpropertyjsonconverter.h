@@ -33,9 +33,9 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <nlohmann/json.hpp>
 
-using json = nlohmann::json;
-
 namespace inviwo {
+
+using json = ::nlohmann::json;
 
 /**
  * Converts an OrdinalProperty to a JSON object.

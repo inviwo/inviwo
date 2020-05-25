@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
+#include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/processors/processorutils.h>
-#include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/linksettings.h>
 #include <inviwo/core/util/stdextensions.h>

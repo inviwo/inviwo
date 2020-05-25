@@ -372,7 +372,7 @@ HDF5ToVolume::DimSelection::DimSelection(std::string identifier, std::string dis
 
 void HDF5ToVolume::DimSelection::update(int newMax) {
     range.setRangeMax(newMax);
-    range.get().y = newMax;
+    range.setEnd(newMax);
     stride.set(std::min(stride.get(), newMax));
     stride.setMaxValue(std::max(10, newMax));
 }

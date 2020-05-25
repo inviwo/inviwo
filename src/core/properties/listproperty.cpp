@@ -168,7 +168,7 @@ Property* ListProperty::constructProperty(size_t prefabIndex) {
                              IVW_CONTEXT);
     }
 
-    if ((maxNumElements_ == 0) || (size() + 1 < maxNumElements_)) {
+    if ((maxNumElements_ == size_t{0}) || (size() + 1 < maxNumElements_)) {
         auto property = prefabs_[prefabIndex]->clone();
         IVW_ASSERT(property->getClassIdentifier() == prefabs_[prefabIndex]->getClassIdentifier(),
                    "Class identifer missmatch after cloning, does your property implement clone?");
@@ -222,7 +222,7 @@ void ListProperty::insertProperty(size_t index, Property* property, bool owner) 
                         IVW_CONTEXT);
     }
 
-    if ((maxNumElements_ == 0) || (size() + 1 < maxNumElements_)) {
+    if ((maxNumElements_ == size_t{0}) || (size() + 1 < maxNumElements_)) {
         property->setSerializationMode(PropertySerializationMode::All);
         CompositeProperty::insertProperty(index, property, owner);
         propertyModified();

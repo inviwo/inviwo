@@ -27,15 +27,16 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/stdextensions.h>
 #include <modules/opengl/shader/shaderresource.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
 #include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 
 FileShaderResource::FileShaderResource(const std::string& key, const std::string& fileName)
-    : FileObserver(fileName), key_(key), fileName_(fileName) {}
+    : FileObserver(util::getInviwoApplication()), key_(key), fileName_(fileName) {
+    startFileObservation(fileName_);
+}
 
 std::unique_ptr<ShaderResource> FileShaderResource::clone() {
     return std::make_unique<FileShaderResource>(key_, fileName_);
@@ -65,7 +66,7 @@ void FileShaderResource::fileChanged(const std::string& /*fileName*/) {
     callbacks_.invoke(this);
 }
 
-StringShaderResource::StringShaderResource(const std::string& key, const std::string& source)
+StringShaderResource::StringShaderResource(std::string_view key, std::string_view source)
     : key_(key), source_(source) {}
 
 std::unique_ptr<ShaderResource> StringShaderResource::clone() {

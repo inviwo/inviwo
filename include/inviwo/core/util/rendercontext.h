@@ -37,6 +37,17 @@
 namespace inviwo {
 
 /**
+ * An abstraction for what we need from a "context".
+ */
+class IVW_CORE_API ContextHolder {
+public:
+    virtual ~ContextHolder() = default;
+    virtual void activate() = 0;
+    virtual std::unique_ptr<Canvas> createHiddenCanvas() = 0;
+    virtual Canvas::ContextID activeContext() const = 0;
+};
+
+/**
  * \class RenderContext
  * \brief Keeper of the default render context.
  */
@@ -45,8 +56,10 @@ public:
     RenderContext() = default;
     virtual ~RenderContext() = default;
 
-    Canvas* getDefaultRenderContext();
-    void setDefaultRenderContext(Canvas* canvas);
+    ContextHolder* getDefaultRenderContext();
+    bool hasDefaultRenderContext() const;
+    ContextHolder* setDefaultRenderContext(Canvas* canvas);
+    ContextHolder* setDefaultRenderContext(std::unique_ptr<ContextHolder> context);
     void activateDefaultRenderContext() const;
 
     void activateLocalRenderContext() const;
@@ -75,7 +88,7 @@ private:
 
     std::unordered_map<Canvas::ContextID, ContextInfo> contextRegistry_;
 
-    Canvas* defaultContext_ = nullptr;
+    std::unique_ptr<ContextHolder> defaultContext_ = nullptr;
     std::thread::id mainThread_;
     mutable std::mutex mutex_;
     mutable std::unordered_map<std::thread::id, std::unique_ptr<Canvas>> contextMap_;

@@ -35,6 +35,7 @@
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/logfilter.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/detected.h>
 #include <inviwo/core/util/glm.h>
 
 #include <flags/flags.h>
@@ -242,11 +243,11 @@ public:
     template <class Base, class T>
     void deserializeAs(const std::string& key, T*& data);
 
-    template <class T, class D>
-    void deserialize(const std::string& key, std::unique_ptr<T, D>& data);
+    template <class T>
+    void deserialize(const std::string& key, std::unique_ptr<T>& data);
 
-    template <class Base, class T, class D>
-    void deserializeAs(const std::string& key, std::unique_ptr<T, D>& data);
+    template <class Base, class T>
+    void deserializeAs(const std::string& key, std::unique_ptr<T>& data);
 
     void setExceptionHandler(ExceptionHandler handler);
     void handleError(const ExceptionContext& context);
@@ -363,6 +364,12 @@ private:
 };
 
 namespace util {
+
+template <typename T>
+using classIdentifierType = decltype(std::declval<T>().getClassIdentifier());
+
+template <class T>
+using HasGetClassIdentifier = is_detected_exact<std::string, classIdentifierType, T>;
 
 /**
  * A helper class for more advanced deserialization. useful when one has to call observer
@@ -812,26 +819,16 @@ void Deserializer::deserialize(const std::string& key, std::vector<std::unique_p
                                                   // the "child" since we are looping...
                              // hence the "false" as the last arg.
                              NodeSwitch elementNodeSwitch(*this, child, false);
-                             if (vector.size() <= i) {
-                                 T* item = nullptr;
-                                 try {
+                             try {
+                                 if (i < vector.size()) {
+                                     deserialize(itemKey, vector[i]);
+                                 } else {
+                                     std::unique_ptr<T> item;
                                      deserialize(itemKey, item);
-                                     vector.emplace_back(item);
-                                 } catch (...) {
-                                     delete item;
-                                     handleError(IVW_CONTEXT);
+                                     vector.emplace_back(std::move(item));
                                  }
-                             } else {
-                                 try {
-                                     if (auto ptr = vector[i].get()) {
-                                         deserialize(itemKey, ptr);
-                                     } else {
-                                         deserialize(itemKey, ptr);
-                                         vector[i].reset(ptr);
-                                     }
-                                 } catch (...) {
-                                     handleError(IVW_CONTEXT);
-                                 }
+                             } catch (...) {
+                                 handleError(IVW_CONTEXT);
                              }
                              i++;
                          });
@@ -1048,27 +1045,17 @@ void Deserializer::deserialize(const std::string& key, std::map<K, std::unique_p
         K childkey{};
         detail::getNodeAttribute(child, comparisonAttribute, childkey);
 
-        auto it = map.find(childkey);
-        if (it != map.end()) {
-            try {
-                if (auto ptr = it->second.get()) {
-                    deserialize(itemKey, ptr);
-                } else {
-                    deserialize(itemKey, ptr);
-                    it->second.reset(ptr);
-                }
-            } catch (...) {
-                handleError(IVW_CONTEXT);
+        const auto it = map.find(childkey);
+        try {
+            if (it != map.end()) {
+                deserialize(itemKey, it->second);
+            } else {
+                std::unique_ptr<V> item;
+                deserialize(itemKey, item);
+                map.emplace(childkey, std::move(item));
             }
-        } else {
-            V* ptr = nullptr;
-            try {
-                deserialize(itemKey, ptr);
-                map.emplace(childkey, std::unique_ptr<V>(ptr));
-            } catch (...) {
-                delete ptr;
-                handleError(IVW_CONTEXT);
-            }
+        } catch (...) {
+            handleError(IVW_CONTEXT);
         }
     });
 }
@@ -1145,14 +1132,25 @@ void Deserializer::deserialize(const std::string& key, T*& data) {
     }
 }
 
-template <class T, class D>
-void Deserializer::deserialize(const std::string& key, std::unique_ptr<T, D>& data) {
-    if (auto ptr = data.get()) {
-        deserialize(key, ptr);
-    } else {
-        deserialize(key, ptr);
-        data.reset(ptr);
+template <class T>
+void Deserializer::deserialize(const std::string& key, std::unique_ptr<T>& data) {
+    auto ptr = data.release();
+
+    if constexpr (util::HasGetClassIdentifier<T>::value) {
+        auto keyNode = retrieveChild(key);
+        if (!keyNode) return;
+
+        const std::string type_attr{
+            detail::getNodeAttribute(keyNode, SerializeConstants::TypeAttribute)};
+
+        if (ptr && !type_attr.empty() && type_attr != ptr->getClassIdentifier()) {
+            delete ptr;
+            ptr = nullptr;
+        }
     }
+
+    deserialize(key, ptr);
+    data.reset(ptr);
 }
 
 template <typename T, typename K>
@@ -1188,8 +1186,8 @@ void Deserializer::deserializeAs(const std::string& key, T*& data) {
     }
 }
 
-template <class Base, class T, class D>
-void Deserializer::deserializeAs(const std::string& key, std::unique_ptr<T, D>& data) {
+template <class Base, class T>
+void Deserializer::deserializeAs(const std::string& key, std::unique_ptr<T>& data) {
     static_assert(std::is_base_of<Base, T>::value, "T should be derived from Base");
 
     if (Base* ptr = data.get()) {

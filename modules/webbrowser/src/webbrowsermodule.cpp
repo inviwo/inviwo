@@ -38,6 +38,7 @@
 #include <modules/json/io/json/minmaxpropertyjsonconverter.h>
 #include <modules/json/io/json/optionpropertyjsonconverter.h>
 #include <modules/json/io/json/ordinalpropertyjsonconverter.h>
+#include <modules/json/io/json/ordinalrefpropertyjsonconverter.h>
 #include <modules/json/io/json/templatepropertyjsonconverter.h>
 
 #include <inviwo/dataframe/io/json/dataframepropertyjsonconverter.h>
@@ -64,6 +65,14 @@ struct OrdinalCEFWidgetReghelper {
     template <typename T>
     auto operator()(WebBrowserModule& m) {
         using PropertyType = OrdinalProperty<T>;
+        m.registerPropertyWidgetCEF<PropertyWidgetCEF, PropertyType>();
+    }
+};
+
+struct OrdinalRefCEFWidgetReghelper {
+    template <typename T>
+    auto operator()(WebBrowserModule& m) {
+        using PropertyType = OrdinalRefProperty<T>;
         m.registerPropertyWidgetCEF<PropertyWidgetCEF, PropertyType>();
     }
 };
@@ -104,10 +113,11 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
                    dmat3, dmat4, int, ivec2, ivec3, ivec4, glm::i64, unsigned int, uvec2, uvec3,
                    uvec4, size_t, size2_t, size3_t, size4_t, glm::fquat, glm::dquat>;
 
-    using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;
     util::for_each_type<OrdinalTypes>{}(OrdinalCEFWidgetReghelper{}, *this);
+    util::for_each_type<OrdinalTypes>{}(OrdinalRefCEFWidgetReghelper{}, *this);
 
     // Register MinMaxProperty widgets
+    using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;
     util::for_each_type<ScalarTypes>{}(MinMaxCEFWidgetReghelper{}, *this);
 
     // Register option property widgets

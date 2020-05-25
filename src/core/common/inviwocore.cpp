@@ -80,6 +80,7 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/planeproperty.h>
 #include <inviwo/core/properties/positionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
@@ -106,6 +107,30 @@ namespace inviwo {
 
 namespace {
 
+struct OrdinalReghelper {
+    template <typename T>
+    auto operator()(InviwoModule& qm) {
+        using PropertyType = OrdinalProperty<T>;
+        qm.registerProperty<PropertyType>();
+    }
+};
+
+struct MinMaxReghelper {
+    template <typename T>
+    auto operator()(InviwoModule& qm) {
+        using PropertyType = MinMaxProperty<T>;
+        qm.registerProperty<PropertyType>();
+    }
+};
+
+struct OptionReghelper {
+    template <typename T>
+    auto operator()(InviwoModule& qm) {
+        using PropertyType = TemplateOptionProperty<T>;
+        qm.registerProperty<PropertyType>();
+    }
+};
+
 // Functors for registration of property converters
 // Can't use a regular lambda since we need the explicit template arguments.
 // We take a std::function to register the created converter since the registration function is
@@ -113,11 +138,21 @@ namespace {
 struct ConverterRegFunctor {
     template <typename T, typename U>
     auto operator()(InviwoModule& m) {
-        if (!std::is_same<T, U>::value) {
+        if constexpr (!std::is_same<T, U>::value) {
             m.registerPropertyConverter(
                 std::make_unique<
                     OrdinalPropertyConverter<OrdinalProperty<T>, OrdinalProperty<U>>>());
+
+            m.registerPropertyConverter(
+                std::make_unique<
+                    OrdinalPropertyConverter<OrdinalRefProperty<T>, OrdinalRefProperty<U>>>());
         }
+        m.registerPropertyConverter(
+            std::make_unique<
+                OrdinalPropertyConverter<OrdinalRefProperty<T>, OrdinalProperty<U>>>());
+        m.registerPropertyConverter(
+            std::make_unique<
+                OrdinalPropertyConverter<OrdinalProperty<T>, OrdinalRefProperty<U>>>());
     }
 };
 struct ScalarStringConverterRegFunctor {
@@ -125,6 +160,8 @@ struct ScalarStringConverterRegFunctor {
     auto operator()(InviwoModule& m) {
         m.registerPropertyConverter(
             std::make_unique<ScalarToStringConverter<OrdinalProperty<T>>>());
+        m.registerPropertyConverter(
+            std::make_unique<ScalarToStringConverter<OrdinalRefProperty<T>>>());
     }
 };
 struct VectorStringConverterRegFunctor {
@@ -132,6 +169,8 @@ struct VectorStringConverterRegFunctor {
     auto operator()(InviwoModule& m) {
         m.registerPropertyConverter(
             std::make_unique<VectorToStringConverter<OrdinalProperty<T>>>());
+        m.registerPropertyConverter(
+            std::make_unique<VectorToStringConverter<OrdinalRefProperty<T>>>());
     }
 };
 
@@ -281,61 +320,49 @@ InviwoCore::InviwoCore(InviwoApplication* app)
                           app->getPath(PathType::PortInspectors, "/geometryportinspector.inv"));
 
     registerProperty<CompositeProperty>();
-    registerProperty<AdvancedMaterialProperty>();
+    registerProperty<BoolCompositeProperty>();
     registerProperty<BoolProperty>();
     registerProperty<ButtonGroupProperty>();
     registerProperty<ButtonProperty>();
     registerProperty<CameraProperty>();
-    registerProperty<DirectoryProperty>();
-    registerProperty<DoubleMat2Property>();
-    registerProperty<DoubleMat3Property>();
-    registerProperty<DoubleMat4Property>();
-    registerProperty<DoubleProperty>();
-    registerProperty<DoubleVec2Property>();
-    registerProperty<DoubleVec3Property>();
-    registerProperty<DoubleVec4Property>();
-    registerProperty<DoubleMinMaxProperty>();
-    registerProperty<FileProperty>();
-    registerProperty<FilePatternProperty>();
-    registerProperty<MultiFileProperty>();
-    registerProperty<FloatMat2Property>();
-    registerProperty<FloatMat3Property>();
-    registerProperty<FloatMat4Property>();
-    registerProperty<FloatMinMaxProperty>();
-    registerProperty<FloatProperty>();
-    registerProperty<FloatVec2Property>();
-    registerProperty<FloatVec3Property>();
-    registerProperty<FloatVec4Property>();
+    registerProperty<StringProperty>();
+
     registerProperty<ImageEditorProperty>();
-    registerProperty<IntSizeTMinMaxProperty>();
-    registerProperty<Int64MinMaxProperty>();
-    registerProperty<IntMinMaxProperty>();
-    registerProperty<IntProperty>();
-    registerProperty<IntVec2Property>();
-    registerProperty<IntVec3Property>();
-    registerProperty<IntVec4Property>();
-    registerProperty<IntSizeTProperty>();
-    registerProperty<IntSize2Property>();
-    registerProperty<IntSize3Property>();
-    registerProperty<IntSize4Property>();
-    registerProperty<FloatQuaternionProperty>();
-    registerProperty<DoubleQuaternionProperty>();
+
+    registerProperty<FileProperty>();
+    registerProperty<MultiFileProperty>();
+    registerProperty<FilePatternProperty>();
+    registerProperty<DirectoryProperty>();
+
+    // Register ordinal property
+    using OrdinalTypes =
+        std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4, dmat2,
+                   dmat3, dmat4, int, ivec2, ivec3, ivec4, glm::i64, unsigned int, uvec2, uvec3,
+                   uvec4, size_t, size2_t, size3_t, size4_t, glm::fquat, glm::dquat>;
+    util::for_each_type<OrdinalTypes>{}(OrdinalReghelper{}, *this);
+
+    // Register MinMaxProperty widgets
+    using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;
+    util::for_each_type<ScalarTypes>{}(MinMaxReghelper{}, *this);
+
+    // Register option property widgets
+    using OptionTypes = std::tuple<char, unsigned char, unsigned int, int, size_t, float, double,
+                                   std::string, FileExtension>;
+    util::for_each_type<OptionTypes>{}(OptionReghelper{}, *this);
+
     registerProperty<IsoValueProperty>();
     registerProperty<IsoTFProperty>();
+    registerProperty<TransferFunctionProperty>();
+
     registerProperty<ListProperty>();
-    registerProperty<OptionPropertyDouble>();
-    registerProperty<OptionPropertyFloat>();
-    registerProperty<OptionPropertyInt>();
-    registerProperty<OptionPropertyString>();
+
     registerProperty<PlaneProperty>();
     registerProperty<PositionProperty>();
+    registerProperty<AdvancedMaterialProperty>();
     registerProperty<RaycastingProperty>();
     registerProperty<SimpleLightingProperty>();
     registerProperty<SimpleRaycastingProperty>();
-    registerProperty<StringProperty>();
-    registerProperty<TransferFunctionProperty>();
     registerProperty<VolumeIndicatorProperty>();
-    registerProperty<BoolCompositeProperty>();
 
     using Scalars = std::tuple<float, double, int, glm::i64, size_t>;
     using Vec2s = std::tuple<vec2, dvec2, ivec2, size2_t>;
@@ -365,7 +392,6 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     util::for_each_type<Vec3s>{}(VectorStringConverterRegFunctor{}, *this);
     util::for_each_type<Vec4s>{}(VectorStringConverterRegFunctor{}, *this);
 
-    using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
     util::for_each_type<OptionTypes>{}(OptionStringConverterRegFunctor{}, *this);
     util::for_each_type<OptionTypes>{}(OptionIntConverterRegFunctor{}, *this);
     util::for_each_type<OptionTypes>{}(IntOptionConverterRegFunctor{}, *this);

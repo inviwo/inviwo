@@ -33,9 +33,10 @@
 #include <inviwo/core/properties/property.h>
 #include <nlohmann/json.hpp>
 
-using json = nlohmann::json;
-
 namespace inviwo {
+
+using json = ::nlohmann::json;
+
 /**
  * Interface for converting between JSON and Property.
  */

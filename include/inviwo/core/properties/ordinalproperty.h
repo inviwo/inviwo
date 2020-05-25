@@ -46,7 +46,7 @@ namespace inviwo {
  */
 template <typename T>
 struct OrdinalPropertyState {
-    T value = Defaultvalues<T>::getVal();
+    T value{};
     std::pair<T, ConstraintBehavior> minValue =
         std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable};
     std::pair<T, ConstraintBehavior> maxValue =
@@ -66,7 +66,7 @@ struct OrdinalPropertyState {
 
 /**
  * \ingroup properties
- * A property representing a Ordinal value, for example int, floats.
+ * A property representing an Ordinal value, for example int, floats.
  */
 template <typename T>
 class OrdinalProperty : public Property {
@@ -142,15 +142,15 @@ public:
 
     virtual std::string getClassIdentifier() const override;
 
-    T getMinValue() const;
+    const T& getMinValue() const;
     void setMinValue(const T& value);
     ConstraintBehavior getMinConstraintBehaviour() const;
 
-    T getMaxValue() const;
+    const T& getMaxValue() const;
     void setMaxValue(const T& value);
     ConstraintBehavior getMaxConstraintBehaviour() const;
 
-    T getIncrement() const;
+    const T& getIncrement() const;
     void setIncrement(const T& value);
 
     void set(const OrdinalProperty* srcProperty);
@@ -423,7 +423,7 @@ void OrdinalProperty<T>::set(const Property* srcProperty) {
 }
 
 template <typename T>
-T OrdinalProperty<T>::getMinValue() const {
+const T& OrdinalProperty<T>::getMinValue() const {
     return minValue_;
 }
 
@@ -443,7 +443,7 @@ ConstraintBehavior OrdinalProperty<T>::getMinConstraintBehaviour() const {
 }
 
 template <typename T>
-T OrdinalProperty<T>::getMaxValue() const {
+const T& OrdinalProperty<T>::getMaxValue() const {
     return maxValue_;
 }
 
@@ -463,7 +463,7 @@ ConstraintBehavior OrdinalProperty<T>::getMaxConstraintBehaviour() const {
 }
 
 template <typename T>
-T OrdinalProperty<T>::getIncrement() const {
+const T& OrdinalProperty<T>::getIncrement() const {
     return increment_;
 }
 

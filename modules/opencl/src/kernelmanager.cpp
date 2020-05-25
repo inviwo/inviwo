@@ -38,7 +38,7 @@ namespace inviwo {
 
 KernelManager* KernelManager::instance_ = nullptr;
 
-KernelManager::KernelManager() {}
+KernelManager::KernelManager() : FileObserver{InviwoApplication::getPtr()} {}
 
 KernelManager::~KernelManager() { clear(); }
 
@@ -190,12 +190,9 @@ void KernelManager::fileChanged(const std::string& fileName) {
                 }
             }
 
-            InviwoApplication::getPtr()->playSound(InviwoApplication::Message::Ok);
-
         } catch (cl::Error& err) {
             LogError(fileName << " Failed to create kernels, error:" << err.what() << "("
                               << err.err() << "), " << errorCodeToString(err.err()) << std::endl);
-            InviwoApplication::getPtr()->playSound(InviwoApplication::Message::Error);
         }
     }
 }
@@ -203,7 +200,7 @@ void KernelManager::fileChanged(const std::string& fileName) {
 void KernelManager::clear() {
     for (ProgramMap::iterator programIt = programs_.begin(); programIt != programs_.end();
          ++programIt) {
-        InviwoApplication::getPtr()->stopFileObservation(programIt->first);
+        stopFileObservation(programIt->first);
     }
 
     for (KernelMap::iterator kernelIt = kernels_.begin(); kernelIt != kernels_.end(); ++kernelIt) {

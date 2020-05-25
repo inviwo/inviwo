@@ -42,9 +42,10 @@ public:
     ProcessorPair(Processor* p1, Processor* p2);
     const Processor* processor1_;
     const Processor* processor2_;
+
+    friend IVW_CORE_API bool operator==(const ProcessorPair& p1, const ProcessorPair& p2);
+    friend IVW_CORE_API bool operator<(const ProcessorPair& p1, const ProcessorPair& p2);
 };
-IVW_CORE_API bool operator==(const ProcessorPair& p1, const ProcessorPair& p2);
-IVW_CORE_API bool operator<(const ProcessorPair& p1, const ProcessorPair& p2);
 
 }  // namespace inviwo
 

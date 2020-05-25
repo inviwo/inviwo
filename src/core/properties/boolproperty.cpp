@@ -47,6 +47,6 @@ BoolProperty& BoolProperty::operator=(const bool& value) {
 
 BoolProperty* BoolProperty::clone() const { return new BoolProperty(*this); }
 
-BoolProperty::~BoolProperty() {}
+BoolProperty::~BoolProperty() = default;
 
 }  // namespace inviwo

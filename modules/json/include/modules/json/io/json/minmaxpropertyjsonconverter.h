@@ -33,9 +33,9 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <nlohmann/json.hpp>
 
-using json = nlohmann::json;
-
 namespace inviwo {
+
+using json = nlohmann::json;
 
 /**
  * Converts an MinMaxProperty to a JSON object.
