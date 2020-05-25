@@ -136,7 +136,7 @@ void Transform<T>::process() {
             if (replace_) {
                 data_->setModelMatrix(transforms_.getMatrix());
             } else {
-                data_->setModelMatrix(transforms_.getMatrix() * data->getModelMatrix());
+                data_->setModelMatrix(transforms_.getMatrix() * data_in->getModelMatrix());
             }
             break;
         case CoordinateSpace::World:
@@ -144,7 +144,7 @@ void Transform<T>::process() {
             if (replace_) {
                 data_->setWorldMatrix(transforms_.getMatrix());
             } else {
-                data_->setWorldMatrix(transforms_.getMatrix() * data->getWorldMatrix());
+                data_->setWorldMatrix(transforms_.getMatrix() * data_in->getWorldMatrix());
             }
             break;
     }
