@@ -75,7 +75,8 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-
+    
+    virtual void deserialize(Deserializer& d) override;
 private:
 	enum TestingState {
 		NONE,

@@ -28,11 +28,14 @@
  *********************************************************************************/
 
 #include <inviwo/propertybasedtesting/processors/histogram.h>
+#include <inviwo/propertybasedtesting/html/report.h>
 
 #include <inviwo/core/datastructures/image/imageram.h>
+#include <inviwo/core/io/imagewriterutil.h>
 #include <inviwo/core/network/networklock.h>
 
 #include <iostream>
+#include <filesystem>
 
 #undef NDEBUG
 #include <assert.h>
@@ -115,16 +118,17 @@ void Histogram::collectProperties() {
 			props_.emplace_back(*_p);
 			auto* p = (*_p)->getProperty();
 
+			// find unused identifier
 			if(!usedIdentifiers.insert(p->getIdentifier()).second) {
 				size_t num = 0;
 				do {
 					p->setIdentifier(p->getIdentifier() + "_" + std::to_string(num));
+					num++;
 				} while(!usedIdentifiers.insert(p->getIdentifier()).second);
 			}
 
 			// add to processor
-			auto parentProcessor = dynamic_cast<Processor*>(prop->getOwner());
-			assert(parentProcessor != nullptr);
+			auto parentProcessor = *util::getOwningProcessor(prop);
 			auto& comp = composites[parentProcessor];
 			if(comp == nullptr) {
 				std::string parentIdentifier = parentProcessor->getIdentifier();
@@ -141,7 +145,7 @@ void Histogram::collectProperties() {
 
 			(*_p)->withOptionProperties([&comp](auto opt){
 					comp->addProperty(opt);
-					});
+				});
 		}
 	}
 }
@@ -149,65 +153,78 @@ void Histogram::collectProperties() {
 Histogram::Histogram(InviwoApplication* app)
 	: Processor()
 	, testingState(TestingState::NONE)
-	  , app_(app)
-	  , tempDir_{std::filesystem::temp_directory_path() / ("inviwo_histogram_" + std::to_string(rand()))}
-	  , inport_("imageInport")
-	  , useDepth_("useDepth", "Use Depth", false, InvalidationLevel::Valid)
-	  , color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(0.0f))
-	  , countPixelsButton_("cntPixelsButton", "Count number of pixels with set color")
-	  , startButton_("startButton", "Start")
-	  , numTests_("numTests", "Maximum number of tests", 200, 1, 10000)
-	  , collectButton_("collectButton", "Collect Properties") {
+	, app_(app)
+	, tempDir_{std::filesystem::temp_directory_path() / ("inviwo_histogram_" + std::to_string(rand()))}
+	, inport_("imageInport")
+	, useDepth_("useDepth", "Use Depth", false, InvalidationLevel::Valid)
+	, color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(0.0f))
+	, countPixelsButton_("cntPixelsButton", "Count number of pixels with set color")
+	, startButton_("startButton", "Start")
+	, numTests_("numTests", "Maximum number of tests", 200, 1, 10000)
+	, collectButton_("collectButton", "Collect Properties") {
 
-		  countPixelsButton_.onChange([this]() {
-				  app_->dispatchFrontAndForget([this]{
-						  NetworkLock lock(this);
-						  testingState = TestingState::SINGLE_COUNT;
-						  this->invalidate(InvalidationLevel::InvalidOutput);
-						  });
-				  } );
+	countPixelsButton_.onChange([this]() {
+			NetworkLock lock(this);
+			testingState = TestingState::SINGLE_COUNT;
+			this->invalidate(InvalidationLevel::InvalidOutput);
+		} );
 
-		  useDepth_.onChange([this]() {
-				  if(useDepth_) {
-				  countPixelsButton_.setDisplayName("Count number of pixels with depth value 1");
-				  } else {
-				  countPixelsButton_.setDisplayName("Count number of pixels with set color");
-				  }
-				  } );
+	useDepth_.onChange([this]() {
+			if(useDepth_) {
+				countPixelsButton_.setDisplayName("Count number of pixels with depth value 1");
+			} else {
+				countPixelsButton_.setDisplayName("Count number of pixels with set color");
+			}
+		} );
 
-		  startButton_.onChange([this]() { this->initTesting(); } );
+	startButton_.onChange([this]() { this->initTesting(); } );
 
-		  collectButton_.onChange([this]() { this->collectProperties(); } );
+	collectButton_.onChange([this]() { this->collectProperties(); } );
 
-		  inport_.setOutportDeterminesSize(true);
-		  addPort(inport_);
+	inport_.setOutportDeterminesSize(true);
+	addPort(inport_);
 
-		  addProperty(useDepth_);
-		  color_.setSemantics(PropertySemantics::Color);
-		  color_.visibilityDependsOn(useDepth_, [](const auto& d) -> bool { return !d; });
-		  addProperty(color_);
+	addProperty(useDepth_);
+	color_.setSemantics(PropertySemantics::Color);
+	color_.visibilityDependsOn(useDepth_, [](const auto& d) -> bool { return !d; });
+	addProperty(color_);
 
-		  addProperty(countPixelsButton_);
-		  addProperty(numTests_);
-		  addProperty(startButton_);
-		  addProperty(collectButton_);
+	addProperty(countPixelsButton_);
+	addProperty(numTests_);
+	addProperty(startButton_);
+	addProperty(collectButton_);
 
-		  app_->dispatchFrontAndForget([this]() {
-				  // Only necessary because there is no actual serializing yet
-				  for(Property* _compProp : getProperties()) {
-				  if(auto compProp = dynamic_cast<CompositeProperty*>(_compProp); compProp != nullptr) {
-				  compositeProperties_.emplace_back(compProp);
-				  }
-				  }
-				  });
+	if (std::filesystem::create_directory(tempDir_)) {
+		std::stringstream str;
+		str << "Using " << tempDir_ << " to store failed tests.";
+		util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
+	}
+}
 
-		  if (std::filesystem::create_directory(tempDir_)) {
-			  std::stringstream str;
-			  str << "Using " << tempDir_ << " to store failed tests.";
-			  util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
-		  }
-	  }
+void Histogram::deserialize(Deserializer& d) {
+	Processor::deserialize(d);
 
+	// collect compositeProperties_
+	compositeProperties_.clear();
+	for(auto prop : getProperties()) {
+		if(auto compProp = dynamic_cast<CompositeProperty*>(prop); compProp != nullptr) {
+			compositeProperties_.emplace_back(compProp);
+		}
+	}
+	std::cerr << "deserialized " << compositeProperties_.size() << " composite props" << std::endl;
+	
+	// collect props_
+	props_.clear();
+	for(auto comp : compositeProperties_) {
+		for(auto prop : comp->getProperties()) {
+			if(auto _p = testableProperty(prop); _p != std::nullopt) {
+				props_.emplace_back(*_p);
+				// TODO: handle option properties
+			}
+		}
+	}
+	std::cerr << "deserialized " << props_.size() << " props" << std::endl;
+}
 
 void Histogram::initTesting() {
 	testResults.clear();
@@ -222,11 +239,11 @@ void Histogram::initTesting() {
 	// only use those properties that have influence on this processor
 	std::copy_if(props_.begin(), props_.end(), std::back_inserter(propsToTest), [this](auto prop) {
 			for(auto linkedProperty : app_->getProcessorNetwork()->getPropertiesLinkedTo(prop->getProperty()))
-			if(auto parentProcessor = util::getOwningProcessor(linkedProperty))
-			if(util::getSuccessors(*parentProcessor).count(this) > 0)
-			return true;
+				if(auto parentProcessor = util::getOwningProcessor(linkedProperty))
+					if(util::getSuccessors(*parentProcessor).count(this) > 0)
+						return true;
 			return false;
-			});
+		});
 
 	std::cerr << "propsToTest.size() = " << propsToTest.size() << std::endl;
 
@@ -259,7 +276,6 @@ void Histogram::initTesting() {
 			});
 }
 
-using TestingError = std::tuple<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>, util::PropertyEffect, size_t, size_t>;
 std::ostream& printError(std::ostream& out, const std::vector<std::shared_ptr<TestProperty>> props, const TestingError& err) {
 	const auto&[testResult1, testResult2, effect, res1, res2] = err;
 	out << "Tests with values" << std::endl;
@@ -361,6 +377,8 @@ void Histogram::checkTestResults() {
 		}
 		errFile.close();
 		util::log(IVW_CONTEXT, "Wrote errors to " + errFilePath.string(), LogLevel::Info, LogAudience::User);
+
+		PropertyBasedTestingReport report(errors, props_);
 	} else {
 		util::log(IVW_CONTEXT, "All tests passed.", LogLevel::Info, LogAudience::User);
 	}
@@ -439,8 +457,13 @@ void Histogram::process() {
 			assert(testIsSetUp(test));
 
 			const size_t pixelCount = countPixels(img, color_.get(), useDepth_);
+		
+			static size_t num = 0;
+			const auto imagePath = tempDir_ / (std::string("img_") + std::to_string(num++) + std::string(".png"));
+			static const auto pngExt = inviwo::FileExtension::createFileExtensionFromString("png");
+			inviwo::util::saveLayer(*img->getColorLayer(), imagePath.string(), pngExt);
 
-			testResults.push_back(std::make_shared<TestResult>(props_, test, pixelCount));
+			testResults.push_back(std::make_shared<TestResult>(props_, test, pixelCount, imagePath));
 
 			if(remainingTests.empty()) { // there are no more tests to do
 				this->checkTestResults();

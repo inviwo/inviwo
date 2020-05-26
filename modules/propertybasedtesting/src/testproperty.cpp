@@ -53,6 +53,13 @@ std::optional<util::PropertyEffect> TestPropertyTyped<T>::getPropertyEffect(
 }
 
 template<typename T>
+std::string TestPropertyTyped<T>::getValueString(std::shared_ptr<TestResult> testResult) const {
+	std::stringstream str;
+	str << testResult->getValue(this->typedProperty);
+	return str.str();
+}
+
+template<typename T>
 std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 			std::shared_ptr<TestResult> testResult) const {
 	const value_type& val = testResult->getValue(this->typedProperty);

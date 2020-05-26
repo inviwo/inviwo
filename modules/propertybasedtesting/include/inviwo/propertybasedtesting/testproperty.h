@@ -34,6 +34,8 @@
 
 #include <inviwo/core/properties/ordinalproperty.h>
 
+#include <filesystem>
+
 namespace inviwo {
 
 class TestResult;
@@ -47,12 +49,16 @@ public:
 	}
 	
 	virtual void withOptionProperties(std::function<void(OptionPropertyInt*)>) const = 0;
+
+	virtual std::string getValueString(std::shared_ptr<TestResult>) const = 0;
+
 	virtual std::optional<util::PropertyEffect> getPropertyEffect(
 			std::shared_ptr<TestResult>, 
 			std::shared_ptr<TestResult>) const = 0;
 
 	virtual std::ostream& ostr(std::ostream&,
 			std::shared_ptr<TestResult>) const = 0;
+
 	virtual std::ostream& ostr(std::ostream&,
 			std::shared_ptr<TestResult>,
 			std::shared_ptr<TestResult>) const = 0;
@@ -78,14 +84,19 @@ public:
 		for(auto& x : effectOption)
 			f(x);
 	}
+
+	std::string getValueString(std::shared_ptr<TestResult>) const override;
+
 	std::optional<util::PropertyEffect> getPropertyEffect(
 			std::shared_ptr<TestResult> newTestResult,
-			std::shared_ptr<TestResult> oldTestResult) const;
+			std::shared_ptr<TestResult> oldTestResult) const override;
+
 	std::ostream& ostr(std::ostream&,
-			std::shared_ptr<TestResult>) const;
+			std::shared_ptr<TestResult>) const override;
+
 	std::ostream& ostr(std::ostream&,
 			std::shared_ptr<TestResult>,
-			std::shared_ptr<TestResult>) const;
+			std::shared_ptr<TestResult>) const override;
 
 	TestPropertyTyped(T* prop)
 		: TestProperty(prop)
@@ -137,16 +148,24 @@ class TestResult {
 		const std::vector<std::shared_ptr<TestProperty>>& defaultValues;
 		const Test test;
 		const size_t pixels;
+		const std::filesystem::path imgPath;
 	public:
 		size_t getNumberOfPixels() {
 			return pixels;
 		}
+		const std::filesystem::path& getImagePath() {
+			return imgPath;
+		}
 		template<typename T>
 		const typename T::value_type& getValue(const T* prop) const;
-		TestResult(const std::vector<std::shared_ptr<TestProperty>>& defaultValues, const Test& t, size_t val)
+		TestResult(const std::vector<std::shared_ptr<TestProperty>>& defaultValues
+				, const Test& t
+				, size_t val
+				, const std::filesystem::path& imgPath)
 			  : defaultValues(defaultValues)
 			  , test(t)
-			  , pixels(val) {
+			  , pixels(val)
+			  , imgPath(imgPath) {
 			  }
 };
 		
@@ -166,5 +185,7 @@ const typename T::value_type& TestResult::getValue(const T* prop) const {
 using PropertyTypes = std::tuple<OrdinalProperty<int>, IntMinMaxProperty>;
 
 std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop);
+
+using TestingError = std::tuple<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>, util::PropertyEffect, size_t, size_t>;
 
 } // namespace inviwo
