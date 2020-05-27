@@ -50,20 +50,20 @@ PropertyBasedTestingReport::PropertyBasedTestingReport
 		, const std::vector< TestingError >& errors
 		, const std::vector<std::shared_ptr<TestProperty>>& props) {
 	HTML::Table errorTable;
-	errorTable << (HTML::Row()
-			<< HTML::TableHeadCell(HTML::Text("Test1"))
-			<< HTML::TableHeadCell(HTML::Text("Test1 background pixels") )
-			<< HTML::TableHeadCell(HTML::Text("Expected relation"))
-			<< HTML::TableHeadCell(HTML::Text("Test2 background pixels"))
-			<< HTML::TableHeadCell(HTML::Text("Test2"))
-			<< HTML::TableHeadCell(HTML::Text("Equal Properties")));
+	errorTable << (HTML::HeadRow()
+			<< HTML::Text("Test1")
+			<< HTML::Text("Test1 background pixels")
+			<< HTML::Text("Expected relation")
+			<< HTML::Text("Test2 background pixels")
+			<< HTML::Text("Test2")
+			<< HTML::Text("Equal Properties"));
 	for(const auto& err : errors)
 		for(const auto& row : generateHTML(err, props))
 			errorTable << row;
 
 	out << "<!DOCTYPE html>\n";
 	out << (HTML::HTML()
-			<< (HTML::Head() << HTML::Style(cssFile) << HTML::Text("<meta charset=\"utf-8\">")) //.stylesheet("report.css"))
+			<< (HTML::Head() << HTML::Style(cssFile) << HTML::Meta().addAttribute("charset","utf-8")) //.stylesheet("report.css"))
 			<< (HTML::Body() << errorTable));
 }
 
@@ -88,30 +88,30 @@ std::vector<HTML::Row> PropertyBasedTestingReport::generateHTML
 	}
 
 	HTML::Row row1;
-	row1 << HTML::TableCell(HTML::Details(HTML::Text("Property Values"), generateHTML(testResult1, differentProperties)));
-	row1 << HTML::TableCell(HTML::Text(std::to_string(num1)));
-	row1 << HTML::TableCell(HTML::Text(expectedEffectString));
-	row1 << HTML::TableCell(HTML::Text(std::to_string(num2)));
-	row1 << HTML::TableCell(HTML::Details(HTML::Text("Property Values"), generateHTML(testResult2, differentProperties)));
-	row1 << HTML::TableCell(HTML::Details(HTML::Text("Equal Properties"), generateHTML(testResult1, sameProperties)));
+	row1 << HTML::Details(HTML::Text("Property Values"), generateHTML(testResult1, differentProperties));
+	row1 << HTML::Text(std::to_string(num1));
+	row1 << HTML::Text(expectedEffectString);
+	row1 << HTML::Text(std::to_string(num2));
+	row1 << HTML::Details(HTML::Text("Property Values"), generateHTML(testResult2, differentProperties));
+	row1 << HTML::Details(HTML::Text("Equal Properties"), generateHTML(testResult1, sameProperties));
 	HTML::Row row2;
-	row2 << HTML::TableCell(HTML::Details(HTML::Text("Image1"), HTML::Image(testResult1->getImagePath()))).addAttribute("colspan","3");
-	row2 << HTML::TableCell(HTML::Details(HTML::Text("Image2"), HTML::Image(testResult2->getImagePath()))).addAttribute("colspan","3");
+	row2 << HTML::Details(HTML::Text("Image1"), HTML::Image(testResult1->getImagePath())).addAttribute("colspan","3");
+	row2 << HTML::Details(HTML::Text("Image2"), HTML::Image(testResult2->getImagePath())).addAttribute("colspan","3");
 	return {row1, row2};
 }
-HTML::Element PropertyBasedTestingReport::generateHTML
+HTML::BaseElement PropertyBasedTestingReport::generateHTML
 		( std::shared_ptr<TestResult> testResult
 		, const std::vector<std::shared_ptr<TestProperty>>& props) {
 	HTML::Table res;
-	res << (HTML::Row()
-			<< HTML::TableHeadCell(HTML::Text("DisplayName"))
-			<< HTML::TableHeadCell(HTML::Text("Identifier"))
-			<< HTML::TableHeadCell(HTML::Text("Value")));
+	res << (HTML::HeadRow()
+			<< HTML::Text("DisplayName")
+			<< HTML::Text("Identifier")
+			<< HTML::Text("Value"));
 	for(auto prop : props) {
 		res << (HTML::Row()
-				<< HTML::TableCell(HTML::Text(prop->getProperty()->getDisplayName()))
-				<< HTML::TableCell(HTML::Text(prop->getProperty()->getIdentifier()))
-				<< HTML::TableCell(HTML::Text(prop->getValueString(testResult))));
+				<< HTML::Text(prop->getProperty()->getDisplayName())
+				<< HTML::Text(prop->getProperty()->getIdentifier())
+				<< HTML::Text(prop->getValueString(testResult)));
 	}
 	return res;
 }

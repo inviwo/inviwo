@@ -36,7 +36,8 @@
 
 namespace inviwo {
 namespace HTML {
-class Element {
+
+class BaseElement {
 	struct Attribute {
 		std::string name;
 		std::string value;
@@ -49,37 +50,53 @@ protected:
 	std::string name;
 	std::string content;
 	std::vector<Attribute> attributes;
-	std::vector<Element> children;
+	std::vector<BaseElement> children;
 
 	bool printClosing = true;
 
 	virtual void print(std::ostream& out, const size_t indent) const;
 public:
-	Element(const std::string& name, const std::string& content = "");
-	virtual ~Element();
-	Element& addAttribute(const std::string& aName, const std::string& aValue = "");
-
-	friend std::ostream& operator<<(std::ostream& out, const Element& element);
-
-	// add child
-	virtual Element& operator<<(const Element& child);
+	BaseElement(const std::string& name, const std::string& content = "");
+	virtual ~BaseElement() = default;
+	
+	friend std::ostream& operator<<(std::ostream& out, const BaseElement& element);
 };
 
-class HTML : public Element {
+template<class Derived>
+class Element : public BaseElement	 {
+public:
+	Element(const std::string& name, const std::string& content = "")
+			: BaseElement(name, content) {
+	}
+
+	// add child
+	virtual Element<Derived>& operator<<(const BaseElement& child) {
+		children.emplace_back(child);
+		return *this;
+	}
+	Element<Derived>& addAttribute(const std::string& aName, const std::string& aValue) {
+		attributes.push_back({aName, aValue});
+		return *this;
+	}
+	
+	virtual ~Element() = default;
+};
+
+class HTML : public Element<HTML> {
 public:
 	HTML()
 			: Element("html") {
 	}
 };
 
-class Body : public Element {
+class Body : public Element<Body> {
 public:
 	Body()
 			: Element("body") {
 	}
 };
 
-class Head : public Element {
+class Head : public Element<Head> {
 public:
 	Head()
 		: Element("head") {
@@ -89,66 +106,102 @@ public:
 		return *this;
 	}
 };
-class Style : public Element {
+class Style : public Element<Style> {
 public:
 	Style(const std::string& content)
 		: Element("style", content) {
 	}
 };
+class Meta : public Element<Meta> {
+public:
+	Meta()
+		: Element("meta") {
+		Element::printClosing = false;
+	}
+};
 
-class Text : public Element {
+class Text : public Element<Text> {
 public:
 	Text(const std::string& text)
 			: Element("", text) {
 	}
 };
 
-class TableCell : public Element {
-public:
-	TableCell(const Element& el)
-			: Element("td") {
-		*this << el;
-	}
-};
-class TableHeadCell : public Element {
-public:
-	TableHeadCell(const Element& el)
-			: Element("th") {
-		*this << el;
-	}
-};
-class Row : public Element {
+class Row : public Element<Row> {
+	class TableCell : public Element<TableCell> {
+		public:
+			TableCell(const BaseElement& el)
+				: Element("td") {
+					*this << el;
+				}
+	};
 public:
 	Row()
 			: Element("tr") {
 	}
+	virtual Element<Row>& operator<<(const BaseElement& child) override {
+		Element::operator<<(static_cast<const BaseElement&>(TableCell(child)));
+		return *this;
+	}
+	virtual Row& operator<<(const TableCell& child) {
+		Element::operator<<(child);
+		return *this;
+	}
 };
-class Table : public Element {
+class HeadRow : public Element<HeadRow> {
+	class TableHeadCell : public Element<TableHeadCell> {
+		public:
+			TableHeadCell(const BaseElement& el)
+				: Element("th") {
+					*this << el;
+				}
+	};
+public:
+	HeadRow()
+			: Element("tr") {
+	}
+	virtual Element<HeadRow>& operator<<(const BaseElement& child) override {
+		Element::operator<<(static_cast<const BaseElement&>(TableHeadCell(child)));
+		return *this;
+	}
+	virtual HeadRow& operator<<(const TableHeadCell& child) {
+		Element::operator<<(child);
+		return *this;
+	}
+};
+
+class Table : public Element<Table> {
 public:
 	Table()
 			: Element("table") {
 	}
 };
 
-class Image : public Element {
+class Image : public Element<Image> {
 public:
 	Image(const std::string& path, const std::string& alt = "")
 			: Element("img") {
-		Element::printClosing = false;
+		BaseElement::printClosing = false;
 		addAttribute("src", path);
 		addAttribute("alt", alt);
 	}
 };
 
-class Details : public Element {
+class Details : public Element<Details> {
+	class Summary : public Element<Summary> {
+	public:
+		Summary()
+			: Element("summary") {
+		}
+	};
 public:
-	Details(const Element& summary, const Element& content) 
+	Details(const BaseElement& summary, const BaseElement& content) 
 			: Element("details") {
-		*this << (Element("summary") << summary) << content;
+		*this << (Summary() << summary) << content;
 	}
 };
 
-class Paragraph : public Element {
+class Paragraph : public Element<Paragraph> {
 public:
 	Paragraph(const std::string& content)
 			: Element("p", content) {

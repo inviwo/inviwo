@@ -32,7 +32,7 @@
 namespace inviwo {
 
 namespace HTML {
-void Element::printOpen(std::ostream& out, const size_t indent) const {
+void BaseElement::printOpen(std::ostream& out, const size_t indent) const {
 	std::fill_n(std::ostream_iterator<char>(out), indent, ' ');
 	out << '<' << name;
 	for(const auto&[aname, avalue] : attributes) {
@@ -45,7 +45,7 @@ void Element::printOpen(std::ostream& out, const size_t indent) const {
 		out << '/';
 	out << ">\n";
 }
-void Element::printContent(std::ostream& out, const size_t indent) const {
+void BaseElement::printContent(std::ostream& out, const size_t indent) const {
 	if(!content.empty()) {
 		std::fill_n(std::ostream_iterator<char>(out), indent, ' ');
 		out << content << '\n';
@@ -53,14 +53,14 @@ void Element::printContent(std::ostream& out, const size_t indent) const {
 	for(const auto& child : children)
 		child.print(out, indent+2);
 }
-void Element::printClose(std::ostream& out, const size_t indent) const {
+void BaseElement::printClose(std::ostream& out, const size_t indent) const {
 	if(content.empty() && children.empty())
 		return;
 
 	std::fill_n(std::ostream_iterator<char>(out), indent, ' ');
 	out << "</" << name << ">\n";
 }
-void Element::print(std::ostream& out, const size_t indent) const {
+void BaseElement::print(std::ostream& out, const size_t indent) const {
 	if(name.empty()) {
 		printContent(out, indent);
 	} else {
@@ -69,25 +69,13 @@ void Element::print(std::ostream& out, const size_t indent) const {
 		printClose(out, indent);
 	}
 }
-Element::Element(const std::string& name, const std::string& content)
+BaseElement::BaseElement(const std::string& name, const std::string& content)
 		: name(name)
 		, content(content) {
 }
-Element::~Element() {}
-Element& Element::addAttribute(const std::string& aName, const std::string& aValue) {
-	attributes.push_back({aName, aValue});
-	return *this;
-}
-
-// add child
-Element& Element::operator<<(const Element& child) {
-	children.emplace_back(child);
-	return *this;
-}
-std::ostream& operator<<(std::ostream& out, const Element& element) {
+std::ostream& operator<<(std::ostream& out, const BaseElement& element) {
 	element.print(out, 0);
 	return out;
 }
-
 } // namespace HTML
 }  // namespace inviwo
