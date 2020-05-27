@@ -90,6 +90,7 @@ option(IVW_QT_APPLICATION        "Build Inviwo Qt network editor application" ON
 option(IVW_INTEGRATION_TESTS     "Build inviwo integration test" ON)
 option(IVW_TINY_GLFW_APPLICATION "Build Inviwo Tiny GLFW Application" OFF)
 option(IVW_TINY_QT_APPLICATION   "Build Inviwo Tiny QT Application" OFF)
+option(IVW_CONFIGURABLE_QT_APPLICATION   "Build Inviwo Configurable QT Application" OFF)
 
 if(IVW_QT_APPLICATION AND NOT IVW_QT_APPLICATION_BASE)
     set(IVW_QT_APPLICATION_BASE ON CACHE BOOL "Build base for qt applications. \
