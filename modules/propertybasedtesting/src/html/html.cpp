@@ -89,15 +89,5 @@ std::ostream& operator<<(std::ostream& out, const Element& element) {
 	return out;
 }
 
-Row& Row::operator<<(const Element& tableElement) {
-	Element::operator<<(Element("td") << tableElement);
-	return *this;
-}
-
-HeadRow& HeadRow::operator<<(const Element& tableElement) {
-	Element::operator<<(Element("th") << tableElement);
-	return *this;
-}
-
 } // namespace HTML
 }  // namespace inviwo

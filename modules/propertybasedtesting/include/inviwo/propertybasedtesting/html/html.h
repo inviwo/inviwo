@@ -89,6 +89,12 @@ public:
 		return *this;
 	}
 };
+class Style : public Element {
+public:
+	Style(const std::string& content)
+		: Element("style", content) {
+	}
+};
 
 class Text : public Element {
 public:
@@ -97,19 +103,25 @@ public:
 	}
 };
 
-class HeadRow : public Element {
+class TableCell : public Element {
 public:
-	HeadRow()
-			: Element("tr") {
+	TableCell(const Element& el)
+			: Element("td") {
+		*this << el;
 	}
-	virtual HeadRow& operator<<(const Element& tableElement) override;
+};
+class TableHeadCell : public Element {
+public:
+	TableHeadCell(const Element& el)
+			: Element("th") {
+		*this << el;
+	}
 };
 class Row : public Element {
 public:
 	Row()
 			: Element("tr") {
 	}
-	virtual Row& operator<<(const Element& tableElement) override;
 };
 class Table : public Element {
 public:
@@ -117,6 +129,7 @@ public:
 			: Element("table") {
 	}
 };
+
 class Image : public Element {
 public:
 	Image(const std::string& path, const std::string& alt = "")

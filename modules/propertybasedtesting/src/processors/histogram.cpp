@@ -378,7 +378,11 @@ void Histogram::checkTestResults() {
 		errFile.close();
 		util::log(IVW_CONTEXT, "Wrote errors to " + errFilePath.string(), LogLevel::Info, LogAudience::User);
 
-		PropertyBasedTestingReport report(errors, props_);
+		const auto reportFilePath = tempDir_ / (std::string("report_") + std::to_string(rand()) + std::string(".html"));
+		std::ofstream reportFile(reportFilePath, std::ios::out);
+		PropertyBasedTestingReport report(reportFile, errors, props_);
+		reportFile.close();
+		util::log(IVW_CONTEXT, "Wrote report to " + reportFilePath.string(), LogLevel::Info, LogAudience::User);
 	} else {
 		util::log(IVW_CONTEXT, "All tests passed.", LogLevel::Info, LogAudience::User);
 	}

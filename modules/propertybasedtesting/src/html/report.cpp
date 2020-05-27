@@ -30,31 +30,44 @@
 #include <inviwo/propertybasedtesting/html/report.h>
 
 namespace inviwo {
+const std::string& cssFile = 
+R""""(
+td, th {
+  border: 1px solid #999;
+  text-align: left;
+}
+th {
+  background: lightblue;
+  border-color: white;
+}
+body {
+  padding: 1rem;
+}
+)"""";
 
 PropertyBasedTestingReport::PropertyBasedTestingReport
-		( const std::vector< TestingError >& errors
+		( std::ostream& out
+		, const std::vector< TestingError >& errors
 		, const std::vector<std::shared_ptr<TestProperty>>& props) {
-	std::ostream& out = std::cerr;
-
 	HTML::Table errorTable;
-	errorTable << (HTML::HeadRow()
-			<< HTML::Text("Test1")
-			<< HTML::Text("Test1 background pixels") 
-			<< HTML::Text("Expected relation")
-			<< HTML::Text("Test2 background pixels")
-			<< HTML::Text("Test2")
-			<< HTML::Text("Equal Properties"));
+	errorTable << (HTML::Row()
+			<< HTML::TableHeadCell(HTML::Text("Test1"))
+			<< HTML::TableHeadCell(HTML::Text("Test1 background pixels") )
+			<< HTML::TableHeadCell(HTML::Text("Expected relation"))
+			<< HTML::TableHeadCell(HTML::Text("Test2 background pixels"))
+			<< HTML::TableHeadCell(HTML::Text("Test2"))
+			<< HTML::TableHeadCell(HTML::Text("Equal Properties")));
 	for(const auto& err : errors)
-		errorTable << generateHTML(err, props);
+		for(const auto& row : generateHTML(err, props))
+			errorTable << row;
 
-	out << "<!DOCTYPE html>\n"
-		<< "<meta charset=\"utf-8\"/>\n";
+	out << "<!DOCTYPE html>\n";
 	out << (HTML::HTML()
-			<< (HTML::Head().stylesheet("report.css"))
+			<< (HTML::Head() << HTML::Style(cssFile) << HTML::Text("<meta charset=\"utf-8\">")) //.stylesheet("report.css"))
 			<< (HTML::Body() << errorTable));
 }
 
-HTML::Row PropertyBasedTestingReport::generateHTML
+std::vector<HTML::Row> PropertyBasedTestingReport::generateHTML
 		( const TestingError& e
 		, const std::vector<std::shared_ptr<TestProperty>>& props) {
 	const auto&[testResult1, testResult2, expectedEffect, num1, num2] = e;
@@ -74,27 +87,31 @@ HTML::Row PropertyBasedTestingReport::generateHTML
 			differentProperties.emplace_back(prop);
 	}
 
-	HTML::Row res;
-	res << HTML::Details(HTML::Text("Image1"), HTML::Image(testResult1->getImagePath())),
-	res << HTML::Details(HTML::Text("Property Values"), generateHTML(testResult1, differentProperties));
-	res << HTML::Text(std::to_string(num1));
-	res << HTML::Text(expectedEffectString);
-	res << HTML::Text(std::to_string(num2));
-	res << HTML::Details(HTML::Text("Property Values"), generateHTML(testResult2, differentProperties));
-	res << HTML::Details(HTML::Text("Image2"), HTML::Image(testResult2->getImagePath())),
-	res << HTML::Details(HTML::Text("Equal Properties"), generateHTML(testResult1, sameProperties));
-	return res;
+	HTML::Row row1;
+	row1 << HTML::TableCell(HTML::Details(HTML::Text("Property Values"), generateHTML(testResult1, differentProperties)));
+	row1 << HTML::TableCell(HTML::Text(std::to_string(num1)));
+	row1 << HTML::TableCell(HTML::Text(expectedEffectString));
+	row1 << HTML::TableCell(HTML::Text(std::to_string(num2)));
+	row1 << HTML::TableCell(HTML::Details(HTML::Text("Property Values"), generateHTML(testResult2, differentProperties)));
+	row1 << HTML::TableCell(HTML::Details(HTML::Text("Equal Properties"), generateHTML(testResult1, sameProperties)));
+	HTML::Row row2;
+	row2 << HTML::TableCell(HTML::Details(HTML::Text("Image1"), HTML::Image(testResult1->getImagePath()))).addAttribute("colspan","3");
+	row2 << HTML::TableCell(HTML::Details(HTML::Text("Image2"), HTML::Image(testResult2->getImagePath()))).addAttribute("colspan","3");
+	return {row1, row2};
 }
 HTML::Element PropertyBasedTestingReport::generateHTML
 		( std::shared_ptr<TestResult> testResult
 		, const std::vector<std::shared_ptr<TestProperty>>& props) {
 	HTML::Table res;
-	res << (HTML::HeadRow() << HTML::Text("DisplayName") << HTML::Text("Identifier") << HTML::Text("Value"));
+	res << (HTML::Row()
+			<< HTML::TableHeadCell(HTML::Text("DisplayName"))
+			<< HTML::TableHeadCell(HTML::Text("Identifier"))
+			<< HTML::TableHeadCell(HTML::Text("Value")));
 	for(auto prop : props) {
 		res << (HTML::Row()
-				<< HTML::Text(prop->getProperty()->getDisplayName())
-				<< HTML::Text(prop->getProperty()->getIdentifier())
-				<< HTML::Text(prop->getValueString(testResult)));
+				<< HTML::TableCell(HTML::Text(prop->getProperty()->getDisplayName()))
+				<< HTML::TableCell(HTML::Text(prop->getProperty()->getIdentifier()))
+				<< HTML::TableCell(HTML::Text(prop->getValueString(testResult))));
 	}
 	return res;
 }

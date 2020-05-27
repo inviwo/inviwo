@@ -39,10 +39,10 @@ namespace inviwo {
 
 class PropertyBasedTestingReport {
 private:
-	HTML::Row generateHTML(const TestingError&, const std::vector<std::shared_ptr<TestProperty>>&);
+	std::vector<HTML::Row> generateHTML(const TestingError&, const std::vector<std::shared_ptr<TestProperty>>&);
 	HTML::Element generateHTML(std::shared_ptr<TestResult>, const std::vector<std::shared_ptr<TestProperty>>& props);
 public:
-	PropertyBasedTestingReport(const std::vector< TestingError >&,
+	PropertyBasedTestingReport(std::ostream&, const std::vector< TestingError >&,
 			const std::vector<std::shared_ptr<TestProperty>>&);
 };
 
