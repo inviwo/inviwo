@@ -152,7 +152,7 @@ public:
     void invokeEvent(Event* event) override;
 
     Property* getCameraProperty(const std::string& identifier) const;
-    void addCamerapProperty(Property* camprop);
+    void addCamerapProperty(std::unique_ptr<Property> camprop);
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

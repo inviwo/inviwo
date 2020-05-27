@@ -30,7 +30,7 @@
 #include <inviwo/core/properties/cameraproperty.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/datastructures/camerafactory.h>
+#include <inviwo/core/datastructures/camera/camerafactory.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/ports/inport.h>
@@ -384,7 +384,7 @@ void CameraProperty::invokeEvent(Event* event) {
     }
 }
 
-inline Property* CameraProperty::getCameraProperty(const std::string& identifier) const {
+Property* CameraProperty::getCameraProperty(const std::string& identifier) const {
     const auto it =
         std::find_if(cameraProperties_.begin(), cameraProperties_.end(),
                      [&](auto property) { return property->getIdentifier() == identifier; });
@@ -395,10 +395,10 @@ inline Property* CameraProperty::getCameraProperty(const std::string& identifier
     }
 }
 
-inline void CameraProperty::addCamerapProperty(Property* camprop) {
-    cameraProperties_.push_back(camprop);
-    ownedCameraProperties_.emplace_back(camprop);
-    insertProperty(size() - 1, camprop, false);
+void CameraProperty::addCamerapProperty(std::unique_ptr<Property> camprop) {
+    cameraProperties_.push_back(camprop.get());
+    insertProperty(size() - 1, camprop.get(), false);
+    ownedCameraProperties_.emplace_back(std::move(camprop));
 }
 
 void CameraProperty::serialize(Serializer& s) const {

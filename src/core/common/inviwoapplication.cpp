@@ -31,7 +31,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/moduleaction.h>
 #include <inviwo/core/inviwocommondefines.h>
-#include <inviwo/core/datastructures/camerafactory.h>
+#include <inviwo/core/datastructures/camera/camerafactory.h>
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/datawriterfactory.h>

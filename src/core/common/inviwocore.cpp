@@ -38,7 +38,10 @@
 #include <warn/pop>
 
 // Cameras
-#include <inviwo/core/datastructures/camera.h>
+#include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/datastructures/camera/orthographiccamera.h>
+#include <inviwo/core/datastructures/camera/perspectivecamera.h>
+#include <inviwo/core/datastructures/camera/skewedperspectivecamera.h>
 
 // Meta Data
 #include <inviwo/core/metadata/metadata.h>

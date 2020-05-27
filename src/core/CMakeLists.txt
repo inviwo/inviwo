@@ -27,8 +27,13 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/bufferramprecision.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/bufferrepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camera.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camerafactory.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camerafactoryobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camera/camera.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camera/camerafactory.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camera/camerafactoryobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camera/cameratools.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camera/orthographiccamera.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camera/perspectivecamera.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camera/skewedperspectivecamera.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/coordinatetransformer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/data.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datagroup.h
@@ -378,8 +383,12 @@ set(SOURCE_FILES
     datastructures/buffer/buffer.cpp
     datastructures/buffer/bufferram.cpp
     datastructures/buffer/bufferrepresentation.cpp
-    datastructures/camera.cpp
-    datastructures/camerafactoryobject.cpp
+    datastructures/camera/camera.cpp
+    datastructures/camera/camerafactoryobject.cpp
+    datastructures/camera/cameratools.cpp
+    datastructures/camera/orthographiccamera.cpp
+    datastructures/camera/perspectivecamera.cpp
+    datastructures/camera/skewedperspectivecamera.cpp
     datastructures/coordinatetransformer.cpp
     datastructures/datamapper.cpp
     datastructures/datarepresentation.cpp

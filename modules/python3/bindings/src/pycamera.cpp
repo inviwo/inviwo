@@ -29,7 +29,10 @@
 
 #include <inviwopy/pypickingmapper.h>
 
-#include <inviwo/core/datastructures/camera.h>
+#include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/datastructures/camera/orthographiccamera.h>
+#include <inviwo/core/datastructures/camera/perspectivecamera.h>
+#include <inviwo/core/datastructures/camera/skewedperspectivecamera.h>
 
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>

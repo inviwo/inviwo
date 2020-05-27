@@ -32,8 +32,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
-#include <inviwo/core/datastructures/camerafactory.h>
-#include <inviwo/core/datastructures/camerafactoryobject.h>
+#include <inviwo/core/datastructures/camera/camerafactory.h>
+#include <inviwo/core/datastructures/camera/camerafactoryobject.h>
 
 #include <inviwo/core/datastructures/representationfactory.h>
 #include <inviwo/core/datastructures/representationfactoryobject.h>

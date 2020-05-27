@@ -29,6 +29,7 @@
 
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/datastructures/camera/perspectivecamera.h>
 
 namespace inviwo {
 
