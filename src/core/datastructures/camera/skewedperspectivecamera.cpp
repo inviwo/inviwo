@@ -74,11 +74,11 @@ void SkewedPerspectiveCamera::updateFrom(const Camera* source) {
 }
 
 void SkewedPerspectiveCamera::configureProperties(CameraProperty* comp) {
-    util::updateOrCreateCameraFovProperty(
-        comp, [this]() { return getFovy(); }, [this](const float& val) { setFovy(val); });
+    util::updateOrCreateCameraFovProperty(comp, [this]() { return getFovy(); },
+                                          [this](const float& val) { setFovy(val); });
 
-    util::updateOrCreateCameraEyeOffsetProperty(
-        comp, [this]() { return getOffset(); }, [this](const vec2& val) { setOffset(val); });
+    util::updateOrCreateCameraEyeOffsetProperty(comp, [this]() { return getOffset(); },
+                                                [this](const vec2& val) { setOffset(val); });
 }
 
 mat4 SkewedPerspectiveCamera::calculateViewMatrix() const {

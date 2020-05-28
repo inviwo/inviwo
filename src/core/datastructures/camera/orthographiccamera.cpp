@@ -66,8 +66,8 @@ void OrthographicCamera::updateFrom(const Camera* source) {
 }
 
 void OrthographicCamera::configureProperties(CameraProperty* comp) {
-    util::updateOrCreateCameraWidthProperty(
-        comp, [this]() { return getWidth(); }, [this](const float& val) { setWidth(val); });
+    util::updateOrCreateCameraWidthProperty(comp, [this]() { return getWidth(); },
+                                            [this](const float& val) { setWidth(val); });
 }
 
 bool OrthographicCamera::equal(const Camera& other) const {

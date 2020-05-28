@@ -44,23 +44,23 @@ namespace util {
  * @param cameraProperty
  * @return the fov property if found, nullptr otherwise
  * @see PerspectiveCamera
- * @see SkewedPerspectiveCamera 
+ * @see SkewedPerspectiveCamera
  */
 IVW_CORE_API FloatRefProperty* getCameraFovProperty(CameraProperty* cameraProperty);
 
 /**
  * @brief Create a vertical fov property for use in a camera property
  * @see PerspectiveCamera
- * @see SkewedPerspectiveCamera 
+ * @see SkewedPerspectiveCamera
  */
 IVW_CORE_API std::unique_ptr<FloatRefProperty> createCameraFovProperty(
     std::function<float()> get, std::function<void(const float&)> set);
 
 /**
- * @brief Either return an existing vertical fov property updated with the provided get and set functions or
- * create a new one. The new one will automatically be added to the camera property
+ * @brief Either return an existing vertical fov property updated with the provided get and set
+ * functions or create a new one. The new one will automatically be added to the camera property
  * @see PerspectiveCamera
- * @see SkewedPerspectiveCamera 
+ * @see SkewedPerspectiveCamera
  */
 IVW_CORE_API FloatRefProperty* updateOrCreateCameraFovProperty(
     CameraProperty* cameraProperty, std::function<float()> get,
@@ -70,7 +70,7 @@ IVW_CORE_API FloatRefProperty* updateOrCreateCameraFovProperty(
  * @brief Find the width property in the cameraProperty
  * @param cameraProperty
  * @return the width property if found, nullptr otherwise
- * @see OrthographicCamera 
+ * @see OrthographicCamera
  */
 IVW_CORE_API FloatRefProperty* getCameraWidthProperty(CameraProperty* cameraProperty);
 
@@ -94,13 +94,13 @@ IVW_CORE_API FloatRefProperty* updateOrCreateCameraWidthProperty(
  * @brief Find the eye offset property in the cameraProperty
  * @param cameraProperty
  * @return the eye offset property if found, nullptr otherwise
- * @see SkewedPerspectiveCamera 
+ * @see SkewedPerspectiveCamera
  */
 IVW_CORE_API FloatVec2RefProperty* getCameraEyeOffsetProperty(CameraProperty* cameraProperty);
 
 /**
  * @brief Create an eye offset property for use in a camera property
- * @see SkewedPerspectiveCamera 
+ * @see SkewedPerspectiveCamera
  */
 IVW_CORE_API std::unique_ptr<FloatVec2RefProperty> createCameraEyeOffsetProperty(
     std::function<vec2()> get, std::function<void(const vec2&)> set);
@@ -108,7 +108,7 @@ IVW_CORE_API std::unique_ptr<FloatVec2RefProperty> createCameraEyeOffsetProperty
 /**
  * @brief Either return an existing eye offset property updated with the provided get and set
  * functions or create a new one. The new one will automatically be added to the camera property
- * @see SkewedPerspectiveCamera 
+ * @see SkewedPerspectiveCamera
  */
 IVW_CORE_API FloatVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(
     CameraProperty* cameraProperty, std::function<vec2()> get,

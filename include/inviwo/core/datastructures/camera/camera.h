@@ -237,6 +237,4 @@ inline void Camera::setAspectRatio(float val) {
 inline void Camera::invalidateViewMatrix() { invalidViewMatrix_ = true; }
 inline void Camera::invalidateProjectionMatrix() { invalidProjectionMatrix_ = true; }
 
-
-
 }  // namespace inviwo

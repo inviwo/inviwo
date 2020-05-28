@@ -95,8 +95,9 @@ std::unique_ptr<FloatVec2RefProperty> createCameraEyeOffsetProperty(
         std::pair<vec2, ConstraintBehavior>{vec2(10.0f), ConstraintBehavior::Ignore}, vec2(0.01f));
 }
 
-FloatVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(
-    CameraProperty* comp, std::function<vec2()> get, std::function<void(const vec2&)> set) {
+FloatVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(CameraProperty* comp,
+                                                            std::function<vec2()> get,
+                                                            std::function<void(const vec2&)> set) {
 
     auto offset = getCameraEyeOffsetProperty(comp);
     if (offset) {

@@ -69,8 +69,8 @@ void PerspectiveCamera::updateFrom(const Camera* source) {
 }
 
 void PerspectiveCamera::configureProperties(CameraProperty* comp) {
-    util::updateOrCreateCameraFovProperty(
-        comp, [this]() { return getFovy(); }, [this](const float& val) { setFovy(val); });
+    util::updateOrCreateCameraFovProperty(comp, [this]() { return getFovy(); },
+                                          [this](const float& val) { setFovy(val); });
 }
 
 bool PerspectiveCamera::equal(const Camera& other) const {
