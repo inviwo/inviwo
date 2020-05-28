@@ -83,10 +83,10 @@ bool PerspectiveCamera::equal(const Camera& other) const {
 
 void PerspectiveCamera::serialize(Serializer& s) const {
     Camera::serialize(s);
-    s.serialize("fovy", fovy_);
+    s.serialize("fov", fovy_);
 }
 void PerspectiveCamera::deserialize(Deserializer& d) {
-    d.deserialize("fovy", fovy_);
+    d.deserialize("fov", fovy_);
     Camera::deserialize(d);
 }
 

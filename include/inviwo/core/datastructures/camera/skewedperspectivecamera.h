@@ -41,7 +41,6 @@ namespace inviwo {
  * Kooima, Robert. "Generalized perspective projection." School of Elect. Eng. and Computer Science
  * (2008): 1-7.
  * @see Camera
- * @see SkewedPerspectiveCamera
  */
 class IVW_CORE_API SkewedPerspectiveCamera final : public Camera {
 public:

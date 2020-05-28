@@ -57,7 +57,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    virtual void updateFrom(const Camera* source);
+    virtual void updateFrom(const Camera* source) override;
     virtual void configureProperties(CameraProperty* comp) override;
 
     float getWidth() const;

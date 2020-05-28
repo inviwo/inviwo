@@ -83,27 +83,26 @@ FloatRefProperty* updateOrCreateCameraWidthProperty(CameraProperty* comp,
     return width;
 }
 
-FloatVec2RefProperty* getCameraSeperationProperty(CameraProperty* comp) {
-    return dynamic_cast<FloatVec2RefProperty*>(comp->getCameraProperty("separation"));
+FloatVec2RefProperty* getCameraEyeOffsetProperty(CameraProperty* comp) {
+    return dynamic_cast<FloatVec2RefProperty*>(comp->getCameraProperty("offset"));
 }
 
-std::unique_ptr<FloatVec2RefProperty> createCameraSeperationProperty(
+std::unique_ptr<FloatVec2RefProperty> createCameraEyeOffsetProperty(
     std::function<vec2()> get, std::function<void(const vec2&)> set) {
     return std::make_unique<FloatVec2RefProperty>(
-        "separation", "Separation", get, set,
+        "offset", "Eye Offset", get, set,
         std::pair<vec2, ConstraintBehavior>{vec2(-10.0f), ConstraintBehavior::Ignore},
         std::pair<vec2, ConstraintBehavior>{vec2(10.0f), ConstraintBehavior::Ignore}, vec2(0.01f));
 }
 
-FloatVec2RefProperty* updateOrCreateCameraSeperationProperty(CameraProperty* comp,
-                                                             std::function<vec2()> get,
-                                                             std::function<void(const vec2&)> set) {
+FloatVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(
+    CameraProperty* comp, std::function<vec2()> get, std::function<void(const vec2&)> set) {
 
-    auto offset = getCameraSeperationProperty(comp);
+    auto offset = getCameraEyeOffsetProperty(comp);
     if (offset) {
         offset->setGetAndSet(get, set);
     } else {
-        auto newOffset = createCameraSeperationProperty(get, set);
+        auto newOffset = createCameraEyeOffsetProperty(get, set);
         offset = newOffset.get();
         comp->addCamerapProperty(std::move(newOffset));
     }

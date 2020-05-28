@@ -404,7 +404,6 @@ void CameraProperty::addCamerapProperty(std::unique_ptr<Property> camprop) {
 void CameraProperty::serialize(Serializer& s) const {
     CompositeProperty::serialize(s);
     s.serialize("Camera", camera_);
-
 }
 
 void CameraProperty::deserialize(Deserializer& d) {

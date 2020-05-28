@@ -687,7 +687,7 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* node) {
 
                     if (name == "lookFrom" || name == "lookTo" || name == "lookUp") {
                         subNode->SetAttribute("type", "org.inviwo.FloatVec3RefProperty");
-                        if (auto value = subNode->FirstChild(false)) {
+                        if (auto value = subNode->FirstChild("value", false)) {
                             auto val = value->Clone();
                             val->SetValue(name);
                             cam.InsertEndChild(*val);
@@ -695,7 +695,14 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* node) {
                     } else if (name == "fov" || name == "aspectRatio" || name == "near" ||
                                name == "far" || name == "width") {
                         subNode->SetAttribute("type", "org.inviwo.FloatRefProperty");
-                        if (auto value = subNode->FirstChild(false)) {
+                        if (auto value = subNode->FirstChild("value", false)) {
+                            auto val = value->Clone();
+                            val->SetValue(name);
+                            cam.InsertEndChild(*val);
+                        }
+                    } else if (name == "offset") {
+                        subNode->SetAttribute("type", "org.inviwo.FloatVec2RefProperty");
+                        if (auto value = subNode->FirstChild("value", false)) {
                             auto val = value->Clone();
                             val->SetValue(name);
                             cam.InsertEndChild(*val);

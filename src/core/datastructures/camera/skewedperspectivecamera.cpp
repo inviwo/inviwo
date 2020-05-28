@@ -77,7 +77,7 @@ void SkewedPerspectiveCamera::configureProperties(CameraProperty* comp) {
     util::updateOrCreateCameraFovProperty(
         comp, [this]() { return getFovy(); }, [this](const float& val) { setFovy(val); });
 
-    util::updateOrCreateCameraSeperationProperty(
+    util::updateOrCreateCameraEyeOffsetProperty(
         comp, [this]() { return getOffset(); }, [this](const vec2& val) { setOffset(val); });
 }
 
