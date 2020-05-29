@@ -82,7 +82,7 @@ void SkewedPerspectiveCamera::setFovy(float val) {
     }
 }
 
-inline void SkewedPerspectiveCamera::setOffset(vec2 offset) {
+void SkewedPerspectiveCamera::setOffset(vec2 offset) {
     if (offset_ != offset) {
         offset_ = offset;
         invalidateViewMatrix();

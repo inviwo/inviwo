@@ -119,7 +119,7 @@ IVW_CORE_API float fovyToWidth(float fovy, float distance, float aspect);
 IVW_CORE_API float widthToFovy(float width, float distance, float aspect);
 
 template <typename CamType>
-vec3 perspectiveZoom(CamType& cam, float factor, std::optional<mat4> boundingBox) {
+vec3 perspectiveZoom(CamType& cam, float factor, std::optional<mat4>) {
     const auto direction = cam.getLookFrom() - cam.getLookTo();
     return cam.getLookFrom() - direction * factor;
 }

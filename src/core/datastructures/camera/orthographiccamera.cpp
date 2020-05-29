@@ -64,7 +64,7 @@ void OrthographicCamera::setWidth(float width) {
     }
 }
 
-void OrthographicCamera::zoom(float factor, std::optional<mat4> boundingBox) {
+void OrthographicCamera::zoom(float factor, std::optional<mat4>) {
     setWidth(width_ * (1.0f - factor));
 }
 
