@@ -32,6 +32,8 @@
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/util/glm.h>
 
+#include <optional>
+
 namespace inviwo {
 
 namespace cameradefaults {
@@ -90,6 +92,8 @@ public:
 
     virtual float getAspectRatio() const;
     virtual void setAspectRatio(float val);
+
+    virtual void zoom(float factor, std::optional<mat4> boundingBox) = 0;
 
     /**
      * \brief Get unnormalized direction of camera: lookTo - lookFrom

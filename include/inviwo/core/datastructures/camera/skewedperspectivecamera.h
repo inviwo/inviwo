@@ -64,6 +64,7 @@ public:
 
     const vec2& getOffset() const;
     void setOffset(vec2 val);
+    virtual void zoom(float factor, std::optional<mat4> boundingBox) override;
 
     virtual void setLookFrom(vec3 val) override;
     virtual void setLookTo(vec3 val) override;
@@ -83,6 +84,5 @@ protected:
 
 inline float SkewedPerspectiveCamera::getFovy() const { return fovy_; }
 inline const vec2& SkewedPerspectiveCamera::getOffset() const { return offset_; }
-
 
 }  // namespace inviwo

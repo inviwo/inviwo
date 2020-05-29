@@ -95,6 +95,10 @@ inline void SkewedPerspectiveCamera::setOffset(vec2 offset) {
     }
 }
 
+void SkewedPerspectiveCamera::zoom(float factor, std::optional<mat4> boundingBox) {
+    setLookFrom(util::perspectiveZoom(*this, factor, boundingBox));
+}
+
 void SkewedPerspectiveCamera::updateFrom(const Camera& source) {
     Camera::updateFrom(source);
     if (auto sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {

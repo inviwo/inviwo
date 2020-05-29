@@ -126,6 +126,8 @@ public:
     virtual vec3 getLookToMinValue() const override;
     virtual vec3 getLookToMaxValue() const override;
 
+    virtual void zoom(float factor, Bounded bounded) override;
+
     /**
      * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
      * @param ndcCoords Coordinates in [-1 1]

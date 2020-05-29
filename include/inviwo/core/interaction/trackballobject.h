@@ -62,6 +62,9 @@ public:
     virtual vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const = 0;
     virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
         const vec2& normalizedScreenCoord) const = 0;
+
+    enum class Bounded {Yes, No};
+    virtual void zoom(float factor, Bounded bounded) = 0;
 };
 
 }  // namespace inviwo

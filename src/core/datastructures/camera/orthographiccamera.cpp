@@ -64,6 +64,10 @@ void OrthographicCamera::setWidth(float width) {
     }
 }
 
+void OrthographicCamera::zoom(float factor, std::optional<mat4> boundingBox) {
+    setWidth(width_ * (1.0f - factor));
+}
+
 void OrthographicCamera::updateFrom(const Camera& source) {
     Camera::updateFrom(source);
     if (auto oc = dynamic_cast<const OrthographicCamera*>(&source)) {

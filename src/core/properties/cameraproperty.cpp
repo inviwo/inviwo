@@ -54,7 +54,7 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
                                vec3 center, vec3 lookUp, InvalidationLevel invalidationLevel,
                                PropertySemantics semantics)
     : CompositeProperty{identifier, displayName, invalidationLevel, semantics}
-        , factory_{InviwoApplication::getPtr()->getCameraFactory()}
+    , factory_{InviwoApplication::getPtr()->getCameraFactory()}
     , cameraType_("cameraType", "Camera Type", factory_->getKeys(),
                   [&]() {
                       auto keys = factory_->getKeys();
@@ -321,6 +321,11 @@ vec3 CameraProperty::getLookFromMaxValue() const { return lookFrom_.getMaxValue(
 vec3 CameraProperty::getLookToMinValue() const { return lookTo_.getMinValue(); }
 
 vec3 CameraProperty::getLookToMaxValue() const { return lookTo_.getMaxValue(); }
+
+void CameraProperty::zoom(float factor, Bounded bounded) {
+    camera_->zoom(factor,
+                  bounded == Bounded::Yes && getBoundingBox_ ? getBoundingBox_() : std::nullopt);
+}
 
 // XYZ between -1 -> 1
 vec3 CameraProperty::getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {

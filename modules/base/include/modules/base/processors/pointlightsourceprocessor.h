@@ -115,6 +115,8 @@ public:
     virtual float getNearPlaneDist() const override;
     virtual float getFarPlaneDist() const override;
 
+    virtual void zoom(float factor, Bounded bounded) override;
+
     virtual vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const override;
     virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
         const vec2& normalizedScreenCoord) const override;

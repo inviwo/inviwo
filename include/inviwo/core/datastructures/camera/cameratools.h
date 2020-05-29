@@ -30,6 +30,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
+#include <inviwo/core/datastructures/camera/camera.h>
 
 #include <memory>
 
@@ -114,12 +115,14 @@ IVW_CORE_API FloatVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(
     CameraProperty& cameraProperty, std::function<vec2()> get,
     std::function<void(const vec2&)> set);
 
-
 IVW_CORE_API float fovyToWidth(float fovy, float distance, float aspect);
 IVW_CORE_API float widthToFovy(float width, float distance, float aspect);
 
-
-
+template <typename CamType>
+vec3 perspectiveZoom(CamType& cam, float factor, std::optional<mat4> boundingBox) {
+    const auto direction = cam.getLookFrom() - cam.getLookTo();
+    return cam.getLookFrom() - direction * factor;
+}
 
 }  // namespace util
 

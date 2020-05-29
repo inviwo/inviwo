@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/light/pointlight.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/datastructures/camera/cameratools.h>
 
 namespace inviwo {
 
@@ -212,6 +213,10 @@ PointLightInteractionHandler& PointLightInteractionHandler::setLook(vec3 lookFro
 float PointLightInteractionHandler::getNearPlaneDist() const { return camera_->getNearPlaneDist(); }
 
 float PointLightInteractionHandler::getFarPlaneDist() const { return camera_->getFarPlaneDist(); }
+
+void PointLightInteractionHandler::zoom(float factor, Bounded) {
+    setLookFrom(util::perspectiveZoom(*this, factor, std::nullopt));
+}
 
 vec3 PointLightInteractionHandler::getWorldPosFromNormalizedDeviceCoords(
     const vec3& ndcCoords) const {

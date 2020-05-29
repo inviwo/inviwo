@@ -62,6 +62,7 @@ public:
 
     float getWidth() const;
     void setWidth(float width);
+    virtual void zoom(float factor, std::optional<mat4> boundingBox) override;
 
     virtual vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const override;
 

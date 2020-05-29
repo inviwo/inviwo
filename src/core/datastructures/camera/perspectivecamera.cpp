@@ -79,6 +79,10 @@ void PerspectiveCamera::setFovy(float val) {
     }
 }
 
+void PerspectiveCamera::zoom(float factor, std::optional<mat4> boundingBox) {
+    setLookFrom(util::perspectiveZoom(*this, factor, boundingBox));
+}
+
 void PerspectiveCamera::configureProperties(CameraProperty& cp, bool attach) {
     Camera::configureProperties(cp, attach);
     if (attach) {
