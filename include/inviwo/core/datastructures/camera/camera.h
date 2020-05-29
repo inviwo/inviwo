@@ -42,7 +42,7 @@ constexpr vec3 lookTo = vec3(0.0f);
 constexpr vec3 lookUp = vec3(0.0f, 1.0f, 0.0f);
 constexpr float nearPlane = 0.1f;
 constexpr float farPlane = 1000.0f;
-constexpr float fieldOfView = 60.f;
+constexpr float fieldOfView = 38.f;
 constexpr float aspectRatio = 1.f;
 constexpr float width = 10.f;
 }  // namespace cameradefaults

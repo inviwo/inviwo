@@ -724,6 +724,10 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* node) {
 
             // insert new node
             node->InsertEndChild(cam);
+
+            if (auto owned = node->FirstChild("OwnedPropertyIdentifiers", false)) {
+                node->RemoveChild(owned);
+            }
         }
     }
 }
