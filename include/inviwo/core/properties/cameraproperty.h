@@ -118,7 +118,8 @@ public:
      * Adjusts the min/max ranges of the properties to e.g. 0.1/10 times the given value.
      * Locks and unlocks processor network before and after changing property values.
      */
-    CameraProperty& setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist, float minMaxRatio = 10.f);
+    CameraProperty& setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist,
+                                        float minMaxRatio = 10.f);
 
     virtual vec3 getLookFromMinValue() const override;
     virtual vec3 getLookFromMaxValue() const override;
@@ -184,7 +185,7 @@ public:
 private:
     bool changeCamera(const std::string& name);
     void hideConfiguredProperties();
-  
+
     std::vector<ButtonGroupProperty::Button> buttons();
     void updateFittingVisibility();
     void setView(::inviwo::camerautil::Side side);

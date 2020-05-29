@@ -63,7 +63,7 @@ public:
     virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
         const vec2& normalizedScreenCoord) const = 0;
 
-    enum class Bounded {Yes, No};
+    enum class Bounded { Yes, No };
     virtual void zoom(float factor, Bounded bounded) = 0;
 };
 

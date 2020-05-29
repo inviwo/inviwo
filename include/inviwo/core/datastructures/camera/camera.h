@@ -185,7 +185,7 @@ protected:
     mutable mat4 projectionMatrix_;
     mutable mat4 inverseViewMatrix_;
     mutable mat4 inverseProjectionMatrix_;
-    CameraProperty* camprop_ = nullptr;    
+    CameraProperty* camprop_ = nullptr;
 };
 
 // Implementation details
