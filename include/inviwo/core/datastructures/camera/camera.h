@@ -76,8 +76,8 @@ public:
     virtual Camera* clone() const = 0;
     virtual std::string getClassIdentifier() const = 0;
 
-    virtual void updateFrom(const Camera* source);
-    virtual void configureProperties(CameraProperty* comp) = 0;
+    virtual void updateFrom(const Camera& source);
+    virtual void configureProperties(CameraProperty& cameraProperty, bool attach);
 
     const vec3& getLookFrom() const;
     virtual void setLookFrom(vec3 val);
@@ -181,60 +181,16 @@ protected:
     mutable mat4 projectionMatrix_;
     mutable mat4 inverseViewMatrix_;
     mutable mat4 inverseProjectionMatrix_;
+    CameraProperty* camprop_ = nullptr;    
 };
 
 // Implementation details
 inline const vec3& Camera::getLookFrom() const { return lookFrom_; }
 inline const vec3& Camera::getLookTo() const { return lookTo_; }
 inline const vec3& Camera::getLookUp() const { return lookUp_; }
-
-inline void Camera::setLookFrom(vec3 val) {
-    if (lookFrom_ != val) {
-        lookFrom_ = val;
-        invalidateViewMatrix();
-    }
-}
-
-inline void Camera::setLookTo(vec3 val) {
-    if (lookTo_ != val) {
-        lookTo_ = val;
-        invalidateViewMatrix();
-    }
-}
-
-inline void Camera::setLookUp(vec3 val) {
-    if (lookUp_ != val) {
-        lookUp_ = val;
-        invalidateViewMatrix();
-    }
-}
-
 inline vec3 Camera::getDirection() const { return lookTo_ - lookFrom_; }
-
 inline float Camera::getNearPlaneDist() const { return nearPlaneDist_; }
-inline void Camera::setNearPlaneDist(float val) {
-    if (nearPlaneDist_ != val) {
-        nearPlaneDist_ = val;
-        invalidateProjectionMatrix();
-    }
-}
 inline float Camera::getFarPlaneDist() const { return farPlaneDist_; }
-inline void Camera::setFarPlaneDist(float val) {
-    if (farPlaneDist_ != val) {
-        farPlaneDist_ = val;
-        invalidateProjectionMatrix();
-    }
-}
-
 inline float Camera::getAspectRatio() const { return aspectRatio_; }
-inline void Camera::setAspectRatio(float val) {
-    if (aspectRatio_ != val) {
-        aspectRatio_ = val;
-        invalidateProjectionMatrix();
-    }
-}
-
-inline void Camera::invalidateViewMatrix() { invalidViewMatrix_ = true; }
-inline void Camera::invalidateProjectionMatrix() { invalidProjectionMatrix_ = true; }
 
 }  // namespace inviwo

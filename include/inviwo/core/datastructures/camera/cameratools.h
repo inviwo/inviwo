@@ -46,7 +46,7 @@ namespace util {
  * @see PerspectiveCamera
  * @see SkewedPerspectiveCamera
  */
-IVW_CORE_API FloatRefProperty* getCameraFovProperty(CameraProperty* cameraProperty);
+IVW_CORE_API FloatRefProperty* getCameraFovProperty(CameraProperty& cameraProperty);
 
 /**
  * @brief Create a vertical fov property for use in a camera property
@@ -63,7 +63,7 @@ IVW_CORE_API std::unique_ptr<FloatRefProperty> createCameraFovProperty(
  * @see SkewedPerspectiveCamera
  */
 IVW_CORE_API FloatRefProperty* updateOrCreateCameraFovProperty(
-    CameraProperty* cameraProperty, std::function<float()> get,
+    CameraProperty& cameraProperty, std::function<float()> get,
     std::function<void(const float&)> set);
 
 /**
@@ -72,7 +72,7 @@ IVW_CORE_API FloatRefProperty* updateOrCreateCameraFovProperty(
  * @return the width property if found, nullptr otherwise
  * @see OrthographicCamera
  */
-IVW_CORE_API FloatRefProperty* getCameraWidthProperty(CameraProperty* cameraProperty);
+IVW_CORE_API FloatRefProperty* getCameraWidthProperty(CameraProperty& cameraProperty);
 
 /**
  * @brief Create a width property for use in a CameraProperty
@@ -87,7 +87,7 @@ IVW_CORE_API std::unique_ptr<FloatRefProperty> createCameraWidthProperty(
  * @see OrthographicCamera
  */
 IVW_CORE_API FloatRefProperty* updateOrCreateCameraWidthProperty(
-    CameraProperty* cameraProperty, std::function<float()> get,
+    CameraProperty& cameraProperty, std::function<float()> get,
     std::function<void(const float&)> set);
 
 /**
@@ -96,7 +96,7 @@ IVW_CORE_API FloatRefProperty* updateOrCreateCameraWidthProperty(
  * @return the eye offset property if found, nullptr otherwise
  * @see SkewedPerspectiveCamera
  */
-IVW_CORE_API FloatVec2RefProperty* getCameraEyeOffsetProperty(CameraProperty* cameraProperty);
+IVW_CORE_API FloatVec2RefProperty* getCameraEyeOffsetProperty(CameraProperty& cameraProperty);
 
 /**
  * @brief Create an eye offset property for use in a camera property
@@ -111,8 +111,15 @@ IVW_CORE_API std::unique_ptr<FloatVec2RefProperty> createCameraEyeOffsetProperty
  * @see SkewedPerspectiveCamera
  */
 IVW_CORE_API FloatVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(
-    CameraProperty* cameraProperty, std::function<vec2()> get,
+    CameraProperty& cameraProperty, std::function<vec2()> get,
     std::function<void(const vec2&)> set);
+
+
+IVW_CORE_API float fovyToWidth(float fovy, float distance, float aspect);
+IVW_CORE_API float widthToFovy(float width, float distance, float aspect);
+
+
+
 
 }  // namespace util
 

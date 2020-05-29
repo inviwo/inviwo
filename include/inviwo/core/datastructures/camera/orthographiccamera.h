@@ -57,8 +57,8 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    virtual void updateFrom(const Camera* source) override;
-    virtual void configureProperties(CameraProperty* comp) override;
+    virtual void updateFrom(const Camera& source) override;
+    virtual void configureProperties(CameraProperty& cameraProperty, bool attach) override;
 
     float getWidth() const;
     void setWidth(float width);
@@ -76,12 +76,5 @@ protected:
 };
 
 inline float OrthographicCamera::getWidth() const { return width_; }
-
-inline void OrthographicCamera::setWidth(float width) {
-    if (width_ != width) {
-        width_ = width;
-        invalidateProjectionMatrix();
-    }
-}
 
 }  // namespace inviwo

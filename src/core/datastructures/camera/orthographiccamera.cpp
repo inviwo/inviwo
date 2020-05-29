@@ -52,22 +52,39 @@ std::string OrthographicCamera::getClassIdentifier() const { return classIdentif
 
 const std::string OrthographicCamera::classIdentifier = "OrthographicCamera";
 
-void OrthographicCamera::updateFrom(const Camera* source) {
-    Camera::updateFrom(source);
-    if (auto oc = dynamic_cast<const OrthographicCamera*>(source)) {
-        setWidth(oc->getWidth());
-    } else if (auto pc = dynamic_cast<const PerspectiveCamera*>(source)) {
-        setWidth(glm::distance(getLookTo(), getLookFrom()) *
-                 std::tan(0.5f * glm::radians(pc->getFovy())));
-    } else if (auto sc = dynamic_cast<const SkewedPerspectiveCamera*>(source)) {
-        setWidth(glm::distance(getLookTo(), getLookFrom()) *
-                 std::tan(0.5f * glm::radians(sc->getFovy())));
+void OrthographicCamera::setWidth(float width) {
+    if (width_ != width) {
+        width_ = width;
+        invalidateProjectionMatrix();
+        if (camprop_) {
+            if (auto p = util::getCameraWidthProperty(*camprop_)) {
+                p->propertyModified();
+            }
+        }
     }
 }
 
-void OrthographicCamera::configureProperties(CameraProperty* comp) {
-    util::updateOrCreateCameraWidthProperty(comp, [this]() { return getWidth(); },
-                                            [this](const float& val) { setWidth(val); });
+void OrthographicCamera::updateFrom(const Camera& source) {
+    Camera::updateFrom(source);
+    if (auto oc = dynamic_cast<const OrthographicCamera*>(&source)) {
+        setWidth(oc->getWidth());
+    } else if (auto pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
+        setWidth(util::fovyToWidth(pc->getFovy(), glm::distance(getLookTo(), getLookFrom()),
+                                   getAspectRatio()));
+    } else if (auto sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
+        setWidth(util::fovyToWidth(sc->getFovy(), glm::distance(getLookTo(), getLookFrom()),
+                                   getAspectRatio()));
+    }
+}
+
+void OrthographicCamera::configureProperties(CameraProperty& cp, bool attach) {
+    Camera::configureProperties(cp, attach);
+    if (attach) {
+        util::updateOrCreateCameraWidthProperty(
+            cp, [this]() { return getWidth(); }, [this](const float& val) { setWidth(val); });
+    } else if (auto width = util::getCameraWidthProperty(cp)) {
+        width->setGetAndSet([val = width->get()]() { return val; }, [](const float&) {});
+    }
 }
 
 bool OrthographicCamera::equal(const Camera& other) const {

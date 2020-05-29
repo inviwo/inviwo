@@ -56,8 +56,8 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    virtual void updateFrom(const Camera* source) override;
-    virtual void configureProperties(CameraProperty* comp) override;
+    virtual void updateFrom(const Camera& source) override;
+    virtual void configureProperties(CameraProperty& cameraProperty, bool attach) override;
 
     float getFovy() const;
     void setFovy(float val);
@@ -82,29 +82,7 @@ protected:
 };
 
 inline float SkewedPerspectiveCamera::getFovy() const { return fovy_; }
-inline void SkewedPerspectiveCamera::setFovy(float val) {
-    if (fovy_ != val) {
-        fovy_ = val;
-        invalidateProjectionMatrix();
-    }
-}
-inline void SkewedPerspectiveCamera::setLookFrom(vec3 val) {
-    Camera::setLookFrom(val);
-    invalidateProjectionMatrix();
-}
-
-inline void SkewedPerspectiveCamera::setLookTo(vec3 val) {
-    Camera::setLookTo(val);
-    invalidateProjectionMatrix();
-}
-
 inline const vec2& SkewedPerspectiveCamera::getOffset() const { return offset_; }
-inline void SkewedPerspectiveCamera::setOffset(vec2 offset) {
-    if (offset_ != offset) {
-        offset_ = offset;
-        invalidateViewMatrix();
-        invalidateProjectionMatrix();
-    }
-}
+
 
 }  // namespace inviwo

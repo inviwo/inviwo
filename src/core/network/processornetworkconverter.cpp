@@ -708,6 +708,18 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* node) {
                             cam.InsertEndChild(*val);
                         }
                     }
+
+                    // Fix min and max of aspectRatio. some networks have a max of 1 which breaks
+                    // a lot of stuff
+                    if (name == "aspectRatio") {
+                        if (auto max = subNode->FirstChild("maxvalue", false)) {
+                            max->ToElement()->SetAttribute(
+                                "content", detail::toStr(std::numeric_limits<float>::max()));
+                        }
+                        if (auto min = subNode->FirstChild("minvalue", false)) {
+                            min->ToElement()->SetAttribute("content", detail::toStr(0.0f));
+                        }
+                    }
                 });
 
             // insert new node

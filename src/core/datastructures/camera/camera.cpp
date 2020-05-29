@@ -32,6 +32,9 @@
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/io/serialization/serialization.h>
 
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
+
 #include <memory>
 
 namespace inviwo {
@@ -50,6 +53,56 @@ Camera::Camera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float f
     , projectionMatrix_{1.0f}
     , inverseViewMatrix_{1.0f}
     , inverseProjectionMatrix_{1.0f} {}
+
+void Camera::setLookFrom(vec3 val) {
+    if (lookFrom_ != val) {
+        lookFrom_ = val;
+        invalidateViewMatrix();
+        if (camprop_) camprop_->lookFrom_.propertyModified();
+    }
+}
+
+void Camera::setLookTo(vec3 val) {
+    if (lookTo_ != val) {
+        lookTo_ = val;
+        invalidateViewMatrix();
+        if (camprop_) camprop_->lookTo_.propertyModified();
+    }
+}
+
+void Camera::setLookUp(vec3 val) {
+    if (lookUp_ != val) {
+        lookUp_ = val;
+        invalidateViewMatrix();
+        if (camprop_) camprop_->lookUp_.propertyModified();
+    }
+}
+
+void Camera::setNearPlaneDist(float val) {
+    if (nearPlaneDist_ != val) {
+        nearPlaneDist_ = val;
+        invalidateProjectionMatrix();
+        if (camprop_) camprop_->nearPlane_.propertyModified();
+    }
+}
+void Camera::setFarPlaneDist(float val) {
+    if (farPlaneDist_ != val) {
+        farPlaneDist_ = val;
+        invalidateProjectionMatrix();
+        if (camprop_) camprop_->farPlane_.propertyModified();
+    }
+}
+
+void Camera::setAspectRatio(float val) {
+    if (aspectRatio_ != val) {
+        aspectRatio_ = val;
+        invalidateProjectionMatrix();
+        if (camprop_) camprop_->aspectRatio_.propertyModified();
+    }
+}
+
+void Camera::invalidateViewMatrix() { invalidViewMatrix_ = true; }
+void Camera::invalidateProjectionMatrix() { invalidProjectionMatrix_ = true; }
 
 const mat4& Camera::getViewMatrix() const {
     if (invalidViewMatrix_) {
@@ -122,14 +175,44 @@ void Camera::deserialize(Deserializer& d) {
     invalidViewMatrix_ = true;
 }
 
-void Camera::updateFrom(const Camera* source) {
-    setLookFrom(source->getLookFrom());
-    setLookTo(source->getLookTo());
-    setLookUp(source->getLookUp());
+void Camera::updateFrom(const Camera& source) {
+    setLookFrom(source.getLookFrom());
+    setLookTo(source.getLookTo());
+    setLookUp(source.getLookUp());
 
-    setNearPlaneDist(source->getNearPlaneDist());
-    setFarPlaneDist(source->getFarPlaneDist());
-    setAspectRatio(source->getAspectRatio());
+    setNearPlaneDist(source.getNearPlaneDist());
+    setFarPlaneDist(source.getFarPlaneDist());
+    setAspectRatio(source.getAspectRatio());
+}
+
+void Camera::configureProperties(CameraProperty& cp, bool attach) {
+    if (attach) {
+        camprop_ = &cp;
+        cp.lookFrom_.setGetAndSet([this]() { return getLookFrom(); },
+                                  [this](const vec3& val) { setLookFrom(val); });
+        cp.lookTo_.setGetAndSet([this]() { return getLookTo(); },
+                                [this](const vec3& val) { setLookTo(val); });
+        cp.lookUp_.setGetAndSet([this]() { return getLookUp(); },
+                                [this](const vec3& val) { setLookUp(val); });
+        cp.aspectRatio_.setGetAndSet([this]() { return getAspectRatio(); },
+                                     [this](const float& val) { setAspectRatio(val); });
+        cp.nearPlane_.setGetAndSet([this]() { return getNearPlaneDist(); },
+                                   [this](const float& val) { setNearPlaneDist(val); });
+        cp.farPlane_.setGetAndSet([this]() { return getFarPlaneDist(); },
+                                  [this](const float& val) { setFarPlaneDist(val); });
+
+    } else {
+        camprop_ = nullptr;
+        cp.lookFrom_.setGetAndSet([val = cp.lookFrom_.get()]() { return val; }, [](const vec3&) {});
+        cp.lookTo_.setGetAndSet([val = cp.lookTo_.get()]() { return val; }, [](const vec3&) {});
+        cp.lookUp_.setGetAndSet([val = cp.lookUp_.get()]() { return val; }, [](const vec3&) {});
+        cp.aspectRatio_.setGetAndSet([val = cp.aspectRatio_.get()]() { return val; },
+                                     [](const float&) {});
+        cp.nearPlane_.setGetAndSet([val = cp.nearPlane_.get()]() { return val; },
+                                   [](const float&) {});
+        cp.farPlane_.setGetAndSet([val = cp.farPlane_.get()]() { return val; },
+                                  [](const float&) {});
+    }
 }
 
 bool Camera::equalTo(const Camera& other) const {

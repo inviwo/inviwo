@@ -60,25 +60,72 @@ std::string SkewedPerspectiveCamera::getClassIdentifier() const { return classId
 
 const std::string SkewedPerspectiveCamera::classIdentifier = "SkewedPerspectiveCamera";
 
-void SkewedPerspectiveCamera::updateFrom(const Camera* source) {
-    Camera::updateFrom(source);
-    if (auto sc = dynamic_cast<const SkewedPerspectiveCamera*>(source)) {
-        setFovy(sc->getFovy());
-        setOffset(sc->getOffset());
-    } else if (auto pc = dynamic_cast<const PerspectiveCamera*>(source)) {
-        setFovy(pc->getFovy());
-    } else if (auto oc = dynamic_cast<const OrthographicCamera*>(source)) {
-        setFovy(glm::degrees(
-            2.0f * std::atan(oc->getWidth() / 2.0f / glm::distance(getLookTo(), getLookFrom()))));
+void SkewedPerspectiveCamera::setLookFrom(vec3 val) {
+    Camera::setLookFrom(val);
+    invalidateProjectionMatrix();
+}
+
+void SkewedPerspectiveCamera::setLookTo(vec3 val) {
+    Camera::setLookTo(val);
+    invalidateProjectionMatrix();
+}
+
+void SkewedPerspectiveCamera::setFovy(float val) {
+    if (fovy_ != val) {
+        fovy_ = val;
+        invalidateProjectionMatrix();
+        if (camprop_) {
+            if (auto p = util::getCameraFovProperty(*camprop_)) {
+                p->propertyModified();
+            }
+        }
     }
 }
 
-void SkewedPerspectiveCamera::configureProperties(CameraProperty* comp) {
-    util::updateOrCreateCameraFovProperty(comp, [this]() { return getFovy(); },
-                                          [this](const float& val) { setFovy(val); });
+inline void SkewedPerspectiveCamera::setOffset(vec2 offset) {
+    if (offset_ != offset) {
+        offset_ = offset;
+        invalidateViewMatrix();
+        invalidateProjectionMatrix();
+        if (camprop_) {
+            if (auto p = util::getCameraEyeOffsetProperty(*camprop_)) {
+                p->propertyModified();
+            }
+        }
+    }
+}
 
-    util::updateOrCreateCameraEyeOffsetProperty(comp, [this]() { return getOffset(); },
-                                                [this](const vec2& val) { setOffset(val); });
+void SkewedPerspectiveCamera::updateFrom(const Camera& source) {
+    Camera::updateFrom(source);
+    if (auto sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
+        setFovy(sc->getFovy());
+        setOffset(sc->getOffset());
+    } else if (auto pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
+        setFovy(pc->getFovy());
+    } else if (auto oc = dynamic_cast<const OrthographicCamera*>(&source)) {
+        setFovy(util::widthToFovy(oc->getWidth(), glm::distance(getLookTo(), getLookFrom()),
+                                  getAspectRatio()));
+    }
+}
+
+void SkewedPerspectiveCamera::configureProperties(CameraProperty& cp, bool attach) {
+    Camera::configureProperties(cp, attach);
+
+    if (attach) {
+        util::updateOrCreateCameraFovProperty(
+            cp, [this]() { return getFovy(); }, [this](const float& val) { setFovy(val); });
+
+        util::updateOrCreateCameraEyeOffsetProperty(
+            cp, [this]() { return getOffset(); }, [this](const vec2& val) { setOffset(val); });
+
+    } else {
+        if (auto fov = util::getCameraFovProperty(cp)) {
+            fov->setGetAndSet([val = fov->get()]() { return val; }, [](const float&) {});
+        }
+        if (auto offset = util::getCameraEyeOffsetProperty(cp)) {
+            offset->setGetAndSet([val = offset->get()]() { return val; }, [](const vec2&) {});
+        }
+    }
 }
 
 mat4 SkewedPerspectiveCamera::calculateViewMatrix() const {
@@ -113,11 +160,11 @@ mat4 SkewedPerspectiveCamera::calculateProjectionMatrix() const {
 
 void SkewedPerspectiveCamera::serialize(Serializer& s) const {
     Camera::serialize(s);
-    s.serialize("fovy", fovy_);
+    s.serialize("fov", fovy_);
     s.serialize("offset", offset_);
 }
 void SkewedPerspectiveCamera::deserialize(Deserializer& d) {
-    d.deserialize("fovy", fovy_);
+    d.deserialize("fov", fovy_);
     d.deserialize("offset", offset_);
     Camera::deserialize(d);
 }

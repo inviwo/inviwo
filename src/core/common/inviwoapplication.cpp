@@ -195,6 +195,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     workspaceManager_->registerFactory(getPropertyFactory());
     workspaceManager_->registerFactory(getInportFactory());
     workspaceManager_->registerFactory(getOutportFactory());
+    workspaceManager_->registerFactory(getCameraFactory());
 
     networkClearHandle_ = workspaceManager_->onClear([&]() {
         portInspectorManager_->clear();

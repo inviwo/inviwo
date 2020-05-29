@@ -49,8 +49,8 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    virtual void updateFrom(const Camera* source) override;
-    virtual void configureProperties(CameraProperty* comp) override;
+    virtual void updateFrom(const Camera& source) override;
+    virtual void configureProperties(CameraProperty& cameraProperty, bool attach) override;
 
     float getFovy() const;
     void setFovy(float val);
@@ -66,12 +66,6 @@ protected:
 };
 
 inline float PerspectiveCamera::getFovy() const { return fovy_; }
-inline void PerspectiveCamera::setFovy(float val) {
-    if (fovy_ != val) {
-        fovy_ = val;
-        invalidateProjectionMatrix();
-    }
-}
 
 inline mat4 PerspectiveCamera::calculateProjectionMatrix() const {
     return glm::perspective(glm::radians(fovy_), aspectRatio_, nearPlaneDist_, farPlaneDist_);

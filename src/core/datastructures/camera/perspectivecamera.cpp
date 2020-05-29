@@ -55,22 +55,39 @@ std::string PerspectiveCamera::getClassIdentifier() const { return classIdentifi
 
 const std::string PerspectiveCamera::classIdentifier = "PerspectiveCamera";
 
-void PerspectiveCamera::updateFrom(const Camera* source) {
+void PerspectiveCamera::updateFrom(const Camera& source) {
     Camera::updateFrom(source);
-    if (auto pc = dynamic_cast<const PerspectiveCamera*>(source)) {
+    if (auto pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
         setFovy(pc->getFovy());
-    } else if (auto oc = dynamic_cast<const OrthographicCamera*>(source)) {
-        setFovy(glm::degrees(
-            2.0f * std::atan(oc->getWidth() / 2.0f / glm::distance(getLookTo(), getLookFrom()))));
-    } else if (auto sc = dynamic_cast<const SkewedPerspectiveCamera*>(source)) {
-        setFovy(glm::degrees(
-            2.0f * std::atan(sc->getFovy() / 2.0f / glm::distance(getLookTo(), getLookFrom()))));
+    } else if (auto oc = dynamic_cast<const OrthographicCamera*>(&source)) {
+        setFovy(util::widthToFovy(oc->getWidth(), glm::distance(getLookTo(), getLookFrom()),
+                                  getAspectRatio()));
+    } else if (auto sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
+        setFovy(sc->getFovy());
     }
 }
 
-void PerspectiveCamera::configureProperties(CameraProperty* comp) {
-    util::updateOrCreateCameraFovProperty(comp, [this]() { return getFovy(); },
-                                          [this](const float& val) { setFovy(val); });
+void PerspectiveCamera::setFovy(float val) {
+    if (fovy_ != val) {
+        fovy_ = val;
+        invalidateProjectionMatrix();
+        if (camprop_) {
+            if (auto p = util::getCameraFovProperty(*camprop_)) {
+                p->propertyModified();
+            }
+        }
+    }
+}
+
+void PerspectiveCamera::configureProperties(CameraProperty& cp, bool attach) {
+    Camera::configureProperties(cp, attach);
+    if (attach) {
+        util::updateOrCreateCameraFovProperty(
+            cp, [this]() { return getFovy(); }, [this](const float& val) { setFovy(val); });
+
+    } else if (auto fov = util::getCameraFovProperty(cp)) {
+        fov->setGetAndSet([val = fov->get()]() { return val; }, [](const float&) {});
+    }
 }
 
 bool PerspectiveCamera::equal(const Camera& other) const {

@@ -30,9 +30,11 @@
 #include <inviwo/core/datastructures/camera/cameratools.h>
 #include <inviwo/core/properties/cameraproperty.h>
 
+#include <inviwo/core/util/glm.h>
+
 namespace inviwo::util {
-FloatRefProperty* getCameraFovProperty(CameraProperty* comp) {
-    return dynamic_cast<FloatRefProperty*>(comp->getCameraProperty("fov"));
+FloatRefProperty* getCameraFovProperty(CameraProperty& comp) {
+    return dynamic_cast<FloatRefProperty*>(comp.getCameraProperty("fov"));
 }
 std::unique_ptr<FloatRefProperty> createCameraFovProperty(std::function<float()> get,
                                                           std::function<void(const float&)> set) {
@@ -42,7 +44,7 @@ std::unique_ptr<FloatRefProperty> createCameraFovProperty(std::function<float()>
         std::pair<float, ConstraintBehavior>{180.0f, ConstraintBehavior::Immutable}, 0.1f);
 }
 
-FloatRefProperty* updateOrCreateCameraFovProperty(CameraProperty* comp, std::function<float()> get,
+FloatRefProperty* updateOrCreateCameraFovProperty(CameraProperty& comp, std::function<float()> get,
                                                   std::function<void(const float&)> set) {
     auto fov = getCameraFovProperty(comp);
     if (fov) {
@@ -50,14 +52,14 @@ FloatRefProperty* updateOrCreateCameraFovProperty(CameraProperty* comp, std::fun
     } else {
         auto newFov = util::createCameraFovProperty(get, set);
         fov = newFov.get();
-        comp->addCamerapProperty(std::move(newFov));
+        comp.addCamerapProperty(std::move(newFov));
     }
     fov->setVisible(true);
     return fov;
 }
 
-FloatRefProperty* getCameraWidthProperty(CameraProperty* comp) {
-    return dynamic_cast<FloatRefProperty*>(comp->getCameraProperty("width"));
+FloatRefProperty* getCameraWidthProperty(CameraProperty& comp) {
+    return dynamic_cast<FloatRefProperty*>(comp.getCameraProperty("width"));
 }
 
 std::unique_ptr<FloatRefProperty> createCameraWidthProperty(std::function<float()> get,
@@ -68,7 +70,7 @@ std::unique_ptr<FloatRefProperty> createCameraWidthProperty(std::function<float(
         std::pair<float, ConstraintBehavior>{1000.0f, ConstraintBehavior::Ignore}, 0.1f);
 }
 
-FloatRefProperty* updateOrCreateCameraWidthProperty(CameraProperty* comp,
+FloatRefProperty* updateOrCreateCameraWidthProperty(CameraProperty& comp,
                                                     std::function<float()> get,
                                                     std::function<void(const float&)> set) {
     auto width = getCameraWidthProperty(comp);
@@ -77,14 +79,14 @@ FloatRefProperty* updateOrCreateCameraWidthProperty(CameraProperty* comp,
     } else {
         auto newWidth = createCameraWidthProperty(get, set);
         width = newWidth.get();
-        comp->addCamerapProperty(std::move(newWidth));
+        comp.addCamerapProperty(std::move(newWidth));
     }
     width->setVisible(true);
     return width;
 }
 
-FloatVec2RefProperty* getCameraEyeOffsetProperty(CameraProperty* comp) {
-    return dynamic_cast<FloatVec2RefProperty*>(comp->getCameraProperty("offset"));
+FloatVec2RefProperty* getCameraEyeOffsetProperty(CameraProperty& comp) {
+    return dynamic_cast<FloatVec2RefProperty*>(comp.getCameraProperty("offset"));
 }
 
 std::unique_ptr<FloatVec2RefProperty> createCameraEyeOffsetProperty(
@@ -95,7 +97,7 @@ std::unique_ptr<FloatVec2RefProperty> createCameraEyeOffsetProperty(
         std::pair<vec2, ConstraintBehavior>{vec2(10.0f), ConstraintBehavior::Ignore}, vec2(0.01f));
 }
 
-FloatVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(CameraProperty* comp,
+FloatVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(CameraProperty& comp,
                                                             std::function<vec2()> get,
                                                             std::function<void(const vec2&)> set) {
 
@@ -105,10 +107,18 @@ FloatVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(CameraProperty* comp
     } else {
         auto newOffset = createCameraEyeOffsetProperty(get, set);
         offset = newOffset.get();
-        comp->addCamerapProperty(std::move(newOffset));
+        comp.addCamerapProperty(std::move(newOffset));
     }
     offset->setVisible(true);
     return offset;
+}
+
+float fovyToWidth(float fovy, float distance, float aspect) {
+    return 2.0f * distance * std::tan(0.5f * glm::radians(fovy)) * aspect;
+}
+
+float widthToFovy(float width, float distance, float aspect) {
+    return glm::degrees(2.0f * std::atan(width / aspect / 2.0f / distance));
 }
 
 }  // namespace inviwo::util
