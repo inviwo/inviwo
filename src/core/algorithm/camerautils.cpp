@@ -79,9 +79,9 @@ vec3 getLookUp(Side side) {
 }  // namespace detail
 
 template <typename CamType>
-std::tuple<vec3, vec3, vec3> fitPerspectiveCameraView(const CamType& cam,
-                                                      const mat4& boundingBox, vec3 inViewDir,
-                                                      vec3 inLookUp, float fitRatio) {
+std::tuple<vec3, vec3, vec3> fitPerspectiveCameraView(const CamType& cam, const mat4& boundingBox,
+                                                      vec3 inViewDir, vec3 inLookUp,
+                                                      float fitRatio) {
 
     const auto offset = vec3{.5f};
     const auto lookTo = vec3(boundingBox * vec4(offset, 1.f));
@@ -134,8 +134,8 @@ void setCameraView(CameraProperty& cam, const mat4& boundingBox, vec3 inViewDir,
         cam.setLook(lookFrom, lookTo, lookUp);
     } else if (auto skewedPerspectiveCamera = dynamic_cast<SkewedPerspectiveCamera*>(&cam.get())) {
 
-        auto [lookFrom, lookTo, lookUp] = fitPerspectiveCameraView(*skewedPerspectiveCamera, boundingBox,
-                                                                   inViewDir, inLookUp, fitRatio);
+        auto [lookFrom, lookTo, lookUp] = fitPerspectiveCameraView(
+            *skewedPerspectiveCamera, boundingBox, inViewDir, inLookUp, fitRatio);
         cam.setLook(lookFrom, lookTo, lookUp);
     } else {
         LogWarnCustom("camerautil::setCameraView",
