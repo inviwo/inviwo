@@ -122,7 +122,7 @@ float widthToFovy(float width, float distance, float aspect) {
 }
 
 float widthToViewDist(float width, float fov, float aspect) {
-    return width / (2.0f * aspect * std::tan(0.5f*glm::radians(fov)));
+    return width / (2.0f * aspect * std::tan(0.5f * glm::radians(fov)));
 }
 
 }  // namespace inviwo::util
