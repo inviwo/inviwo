@@ -107,8 +107,8 @@ void SkewedPerspectiveCamera::updateFrom(const Camera& source) {
     } else if (auto pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
         setFovy(pc->getFovy());
     } else if (auto oc = dynamic_cast<const OrthographicCamera*>(&source)) {
-        setFovy(util::widthToFovy(oc->getWidth(), glm::distance(getLookTo(), getLookFrom()),
-                                  getAspectRatio()));
+        const auto dist = util::widthToViewDist(oc->getWidth(), getFovy(), getAspectRatio());
+        setLookFrom(getLookTo() + dist * glm::normalize(getLookFrom() - getLookTo()));
     }
 }
 
@@ -116,11 +116,11 @@ void SkewedPerspectiveCamera::configureProperties(CameraProperty& cp, bool attac
     Camera::configureProperties(cp, attach);
 
     if (attach) {
-        util::updateOrCreateCameraFovProperty(cp, [this]() { return getFovy(); },
-                                              [this](const float& val) { setFovy(val); });
+        util::updateOrCreateCameraFovProperty(
+            cp, [this]() { return getFovy(); }, [this](const float& val) { setFovy(val); });
 
-        util::updateOrCreateCameraEyeOffsetProperty(cp, [this]() { return getOffset(); },
-                                                    [this](const vec2& val) { setOffset(val); });
+        util::updateOrCreateCameraEyeOffsetProperty(
+            cp, [this]() { return getOffset(); }, [this](const vec2& val) { setOffset(val); });
 
     } else {
         if (auto fov = util::getCameraFovProperty(cp)) {

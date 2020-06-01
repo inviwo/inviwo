@@ -60,8 +60,8 @@ void PerspectiveCamera::updateFrom(const Camera& source) {
     if (auto pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
         setFovy(pc->getFovy());
     } else if (auto oc = dynamic_cast<const OrthographicCamera*>(&source)) {
-        setFovy(util::widthToFovy(oc->getWidth(), glm::distance(getLookTo(), getLookFrom()),
-                                  getAspectRatio()));
+        const auto dist = util::widthToViewDist(oc->getWidth(), getFovy(), getAspectRatio());
+        setLookFrom(getLookTo() + dist * glm::normalize(getLookFrom() - getLookTo()));
     } else if (auto sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
         setFovy(sc->getFovy());
     }
@@ -86,8 +86,8 @@ void PerspectiveCamera::zoom(float factor, std::optional<mat4> boundingBox) {
 void PerspectiveCamera::configureProperties(CameraProperty& cp, bool attach) {
     Camera::configureProperties(cp, attach);
     if (attach) {
-        util::updateOrCreateCameraFovProperty(cp, [this]() { return getFovy(); },
-                                              [this](const float& val) { setFovy(val); });
+        util::updateOrCreateCameraFovProperty(
+            cp, [this]() { return getFovy(); }, [this](const float& val) { setFovy(val); });
 
     } else if (auto fov = util::getCameraFovProperty(cp)) {
         fov->setGetAndSet([val = fov->get()]() { return val; }, [](const float&) {});

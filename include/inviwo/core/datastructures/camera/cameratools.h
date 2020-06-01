@@ -117,6 +117,7 @@ IVW_CORE_API FloatVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(
 
 IVW_CORE_API float fovyToWidth(float fovy, float distance, float aspect);
 IVW_CORE_API float widthToFovy(float width, float distance, float aspect);
+IVW_CORE_API float widthToViewDist(float width, float fov, float aspect);
 
 template <typename CamType>
 vec3 perspectiveZoom(CamType& cam, float factor, std::optional<mat4>) {

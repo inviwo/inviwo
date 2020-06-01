@@ -160,16 +160,16 @@ void Camera::serialize(Serializer& s) const {
     s.serialize("lookFrom", lookFrom_);
     s.serialize("lookTo", lookTo_);
     s.serialize("lookUp", lookUp_);
-    s.serialize("nearPlaneDist", nearPlaneDist_);
-    s.serialize("farPlaneDist", farPlaneDist_);
+    s.serialize("near", nearPlaneDist_);
+    s.serialize("far", farPlaneDist_);
     s.serialize("aspectRatio", aspectRatio_);
 }
 void Camera::deserialize(Deserializer& d) {
     d.deserialize("lookFrom", lookFrom_);
     d.deserialize("lookTo", lookTo_);
     d.deserialize("lookUp", lookUp_);
-    d.deserialize("nearPlaneDist", nearPlaneDist_);
-    d.deserialize("farPlaneDist", farPlaneDist_);
+    d.deserialize("near", nearPlaneDist_);
+    d.deserialize("far", farPlaneDist_);
     d.deserialize("aspectRatio", aspectRatio_);
     invalidProjectionMatrix_ = true;
     invalidViewMatrix_ = true;
