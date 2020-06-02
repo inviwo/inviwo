@@ -46,6 +46,7 @@ class Event;
 class InteractionHandler;
 class ProcessorWidget;
 class ProcessorNetwork;
+class NetworkVisitor;
 
 /**
  * \defgroup processors Processors
@@ -376,6 +377,8 @@ public:
      * @see InputSelector for an example
      */
     virtual bool isConnectionActive(Inport*, Outport*) const { return true; }
+
+    virtual void accept(NetworkVisitor& visitor) override;
 
 protected:
     std::unique_ptr<ProcessorWidget> processorWidget_;
