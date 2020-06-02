@@ -39,6 +39,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/network/networkvisitor.h>
 
 namespace inviwo {
 
@@ -150,6 +151,14 @@ Outport* Processor::removePort(Outport* port) {
     isSink_.update();
     isReady_.update();
     return port;
+}
+
+void Processor::accept(NetworkVisitor& visitor) {
+    if (visitor.visit(*this)) {
+        for (auto* elem : properties_) {
+            elem->accept(visitor);
+        }
+    }
 }
 
 void Processor::addPortToGroup(Port* port, const std::string& portGroup) {

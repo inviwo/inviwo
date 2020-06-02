@@ -48,6 +48,8 @@
 
 namespace inviwo {
 
+class NetworkVisitor;
+
 /**
  * \class PropertyTraits
  * \brief A traits class for getting the class identifier from a Property.
@@ -342,6 +344,8 @@ public:
     template <typename P>
     Property& autoLinkToProperty(const std::string& propertyPath);
     const std::vector<std::pair<std::string, std::string>>& getAutoLinkToProperty() const;
+
+    virtual void accept(NetworkVisitor& visitor);
 
     class IVW_CORE_API OnChangeBlocker {
     public:

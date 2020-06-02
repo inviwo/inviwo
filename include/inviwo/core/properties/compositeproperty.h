@@ -84,6 +84,8 @@ public:
     virtual const Processor* getProcessor() const override;
     virtual std::vector<std::string> getPath() const override;
 
+    virtual void accept(NetworkVisitor& visitor) override;
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
