@@ -55,10 +55,7 @@ ImageComparator::ImageComparator()
                  size2_t(1, 1), size2_t(4096, 4096), size2_t(1, 1)}
     , inport1_("inport1")
     , inport2_("inport2")
-    , outport1_("outport1")
-    , outport2_("outport2")
     , maxDeviation_("maxDeviation", "Maximum deviation", 0, 0, std::numeric_limits<float>::max(), 1, InvalidationLevel::Valid, PropertySemantics::Text)
-    , imageCompChoice_("imageCompChoice", "Image Comparsion Choice", 0, 0, imageCompCount_, 1, InvalidationLevel::InvalidOutput, PropertySemantics::Default)
     , comparisonType_("comparisonType", "Comparison Type (dummy)",
                      {{"diff", "Sum of ARGB differences", ComparisonType::Diff},
                       {"perceptual", "Perceptual Difference", ComparisonType::Perceptual},
@@ -86,11 +83,8 @@ ImageComparator::ImageComparator()
 
   addPort(inport1_);
   addPort(inport2_);
-  addPort(outport1_);
-  addPort(outport2_);
   addProperty(maxDeviation_);
   addProperty(comparisonType_);
-  addProperty(imageCompChoice_);
 
   if (std::filesystem::create_directory(tempDir_)) {
 		std::stringstream str;
@@ -168,26 +162,11 @@ void ImageComparator::process() {
 		str << getIdentifier() << ": Image difference: " << diff;
 		util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
 
-		imageCompCount_++;
-		imageCompChoice_.setMaxValue(imageCompCount_);
 		const auto img1Path = tempDir_ / (std::string("img1_") + std::to_string(imageCompCount_) + std::string(".png"));
 		const auto img2Path = tempDir_ / (std::string("img2_") + std::to_string(imageCompCount_) + std::string(".png"));
 		static const auto pngExt = inviwo::FileExtension::createFileExtensionFromString(std::string("png"));
 		inviwo::util::saveLayer(*img1->getColorLayer(), img1Path.string(), pngExt);
 		inviwo::util::saveLayer(*img2->getColorLayer(), img2Path.string(), pngExt);
-	}
-
-	if(imageCompChoice_.get() > 0 && imageCompChoice_.get() <= imageCompCount_) {
-		const auto img1Path = tempDir_ / (std::string("img1_") + std::to_string(imageCompChoice_) + std::string(".png"));
-		const auto img2Path = tempDir_ / (std::string("img2_") + std::to_string(imageCompChoice_) + std::string(".png"));
-		const auto img1 = inviwo::util::readImageFromDisk(img1Path);
-		const auto img2 = inviwo::util::readImageFromDisk(img1Path);
-		outport1_.setData(img1);
-		outport2_.setData(img2);
-
-		std::stringstream str;
-		str << getIdentifier() << ": Loading images for output: " << img1Path << " and " << img2Path << ".";
-		util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
 	}
 }
 

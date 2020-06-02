@@ -77,12 +77,8 @@ private:
 
     ImageInport inport1_;
     ImageInport inport2_;
-    ImageOutport outport1_;
-    ImageOutport outport2_;
-
 
     FloatProperty maxDeviation_;
-    IntProperty imageCompChoice_;
     TemplateOptionProperty<ComparisonType> comparisonType_;
     std::filesystem::path tempDir_;
     int imageCompCount_ = 0;
