@@ -90,8 +90,8 @@ FaultyCubePoxyGeometry::~FaultyCubePoxyGeometry() {}
 void FaultyCubePoxyGeometry::process() {
     std::shared_ptr<Mesh> mesh;
     if (clippingEnabled_.get()) {
-        const size3_t clipMin(clipX_->x, clipY_->x, clipZ_->y);
-        const size3_t clipMax(clipX_->y, clipY_->y, clipZ_->x);
+        const size3_t clipMin(std::min(clipX_->x, clipY_->x), clipY_->x, clipZ_->x);
+        const size3_t clipMax(clipX_->y, clipY_->y, std::min(clipY_->y, clipZ_->y));
         mesh = algorithm::createCubeProxyGeometry(inport_.getData(), clipMin, clipMax);
     } else {
         mesh = algorithm::createCubeProxyGeometry(inport_.getData());
