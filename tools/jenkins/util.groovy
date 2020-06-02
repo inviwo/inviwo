@@ -65,10 +65,8 @@ def defaultProperties() {
 
 def log(env = [], fun) {
     withEnv(['TERM=xterm'] + env) {
-        ansiColor {
-            timestamps {
-                fun()
-            }
+        timestamps {
+            fun()
         }
     }
 }

@@ -27,21 +27,13 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/factory.h>
-#include <inviwo/core/datastructures/camera.h>
-#include <inviwo/core/datastructures/camerafactoryobject.h>
+#include <inviwo/core/datastructures/camera/camerafactoryobject.h>
 
 namespace inviwo {
 
-/**
- * \class CameraFactory
- */
-class IVW_CORE_API CameraFactory : public StandardFactory<Camera, CameraFactoryObject> {
-public:
-    CameraFactory() = default;
-};
+CameraFactoryObject::CameraFactoryObject(const std::string& classIdentifier)
+    : classIdentifier_(classIdentifier) {}
+
+std::string CameraFactoryObject::getClassIdentifier() const { return classIdentifier_; }
 
 }  // namespace inviwo

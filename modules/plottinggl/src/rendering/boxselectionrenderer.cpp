@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/plottinggl/rendering/boxselectionrenderer.h>
+#include <inviwo/core/datastructures/camera/orthographiccamera.h>
 
 namespace inviwo {
 

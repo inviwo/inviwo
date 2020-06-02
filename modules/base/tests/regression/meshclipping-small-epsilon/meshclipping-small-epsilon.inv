@@ -425,7 +425,7 @@
                                 <minvalue content="10" />
                                 <maxvalue content="180" />
                                 <increment content="0.1" />
-                                <value content="38" />
+                                <value content="60" />
                             </Property>
                             <Property type="org.inviwo.CompositeProperty" identifier="settings">
                                 <Properties>
@@ -504,7 +504,7 @@
                                 <minvalue content="10" />
                                 <maxvalue content="180" />
                                 <increment content="0.1" />
-                                <value content="38" />
+                                <value content="60" />
                             </Property>
                             <Property type="org.inviwo.CompositeProperty" identifier="settings">
                                 <Properties>

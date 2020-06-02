@@ -64,6 +64,7 @@ private:
     void updateTransferfunctions(TxElement* node);
     void updateProcessorIdentifiersStriped(TxElement* node);
     void updatePropertyEditorMetadata(TxElement* node);
+    void updateCameraPropertyToRefs(TxElement* node);
 
     void traverseNodes(TxElement* node, updateType update);
 
