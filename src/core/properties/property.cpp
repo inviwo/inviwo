@@ -33,6 +33,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/network/networkvisitor.h>
 
 namespace inviwo {
 
@@ -285,6 +286,10 @@ Document Property::getDescription() const {
 
 const std::vector<std::pair<std::string, std::string>>& Property::getAutoLinkToProperty() const {
     return autoLinkTo_;
+}
+
+void Property::accept(NetworkVisitor& visitor) {
+    visitor.visit(*this);
 }
 
 // Call this when a property has changed in a way not related to it's "value"

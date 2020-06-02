@@ -36,6 +36,7 @@
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/network/networkvisitor.h>
 
 #include <iterator>
 
@@ -295,6 +296,14 @@ void PropertyOwner::invokeEvent(Event* event) {
 
 InviwoApplication* PropertyOwner::getInviwoApplication() {
     return util::getInviwoApplication(getProcessor());
+}
+
+void PropertyOwner::accept(NetworkVisitor& visitor) {
+    if (visitor.visit(*this)) {
+        for (auto* elem : properties_) {
+            elem->accept(visitor);
+        }
+    }
 }
 
 }  // namespace inviwo

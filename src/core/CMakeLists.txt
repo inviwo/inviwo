@@ -159,6 +159,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/network/evaluationerrorhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networklock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/networkutils.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/network/networkvisitor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/portconnection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetwork.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkconverter.h
@@ -490,6 +491,7 @@ set(SOURCE_FILES
     network/evaluationerrorhandler.cpp
     network/networklock.cpp
     network/networkutils.cpp
+    network/networkvisitor.cpp
     network/portconnection.cpp
     network/processornetwork.cpp
     network/processornetworkconverter.cpp

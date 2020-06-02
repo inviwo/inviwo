@@ -44,6 +44,7 @@
 namespace inviwo {
 
 class InviwoApplication;
+class NetworkVisitor;
 
 /**
  * This class manages the current processor network. It can be thought of as a container of
@@ -248,6 +249,8 @@ public:
      * Clears the network objects processors, port connections, property links etc.,
      */
     void clear();
+
+    void accept(NetworkVisitor& visor);
 
 private:
     // PropertyOwnerObserver overrides

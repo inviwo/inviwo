@@ -44,6 +44,7 @@ class Event;
 class EventProperty;
 class CompositeProperty;
 class InviwoApplication;
+class NetworkVisitor;
 
 class IVW_CORE_API PropertyOwner : public PropertyOwnerObservable,
                                    public virtual Serializable,
@@ -133,6 +134,8 @@ public:
     virtual void invokeEvent(Event* event) override;
 
     virtual InviwoApplication* getInviwoApplication();
+
+    virtual void accept(NetworkVisitor& visitor);
 
 protected:
     PropertyOwner();
