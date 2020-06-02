@@ -65,7 +65,9 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_PROPERTYBASEDTESTING_API Histogram : public Processor {
+class IVW_MODULE_PROPERTYBASEDTESTING_API Histogram
+		: public Processor
+		, protected ProcessorNetworkObserver {
 public:
     Histogram(InviwoApplication*);
     virtual ~Histogram() {
@@ -97,12 +99,17 @@ private:
 	ButtonProperty countPixelsButton_;
 	ButtonProperty startButton_;
 	IntSizeTProperty numTests_;
-	ButtonProperty collectButton_;
 
 	void collectProperties();
+
+	void onProcessorNetworkDidAddConnection(const PortConnection&) override;
+	void onProcessorNetworkDidRemoveConnection(const PortConnection&) override;
+
+	void updateProcessors();
+	std::unordered_map<Processor*, std::pair<CompositeProperty*, std::vector<std::shared_ptr<TestProperty>>>> processors_;
 	std::vector<CompositeProperty*> compositeProperties_;
 
-	std::vector<std::shared_ptr<TestProperty>> props_;
+	std::vector<std::shared_ptr<TestProperty>> props_; // Properties to test
 	void resetAllProps();
 
 	// Testing stuff

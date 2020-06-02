@@ -87,7 +87,7 @@ struct TestablePropertyHelper {
 	template<typename T>
 	auto operator()(std::optional<std::shared_ptr<TestProperty>>& res, Property* prop) {
 		 if(auto tmp = dynamic_cast<T*>(prop); tmp != nullptr)
-			 res = {std::make_shared<TestPropertyTyped<T>>(tmp->clone())};
+			 res = {std::make_shared<TestPropertyTyped<T>>(tmp, tmp->clone())};
 	}
 };
 std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop) {

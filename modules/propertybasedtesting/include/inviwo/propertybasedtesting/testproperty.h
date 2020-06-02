@@ -43,9 +43,11 @@ class TestResult;
 class TestProperty {
 private:
 	Property* const prop;
+	Property* const original;
 public:
-	TestProperty(Property* const prop)
-		: prop(prop) {
+	TestProperty(Property* const original, Property* const prop)
+		: prop(prop)
+		, original(original) {
 	}
 	
 	virtual void withOptionProperties(std::function<void(OptionPropertyInt*)>) const = 0;
@@ -68,6 +70,9 @@ public:
 	virtual std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() = 0;
 	Property* getProperty() const {
 		return prop;
+	}
+	Property* getOriginalProperty() const {
+		return original;
 	}
 	virtual ~TestProperty() = default;
 };
@@ -98,8 +103,8 @@ public:
 			std::shared_ptr<TestResult>,
 			std::shared_ptr<TestResult>) const override;
 
-	TestPropertyTyped(T* prop)
-		: TestProperty(prop)
+	TestPropertyTyped(T* original, T* prop)
+		: TestProperty(original, prop)
 		, typedProperty(prop)
 		, defaultValue(prop->get())
 		, effectOption([prop](){

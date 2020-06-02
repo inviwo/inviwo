@@ -88,68 +88,77 @@ void Histogram::resetAllProps() {
 	}
 }
 
-void Histogram::collectProperties() {
+void Histogram::onProcessorNetworkDidAddConnection(const PortConnection& conn) {
+	ProcessorNetworkObserver::onProcessorNetworkDidAddConnection(conn);
+	app_->dispatchFrontAndForget([this](){ updateProcessors(); });
+}
+void Histogram::onProcessorNetworkDidRemoveConnection(const PortConnection& conn) {
+	ProcessorNetworkObserver::onProcessorNetworkDidRemoveConnection(conn);
+	app_->dispatchFrontAndForget([this](){ updateProcessors(); });
+}
+void Histogram::updateProcessors() {
 	NetworkLock lock(this);
 
-	// remove previously collected properties
-	props_.clear();
-	for(auto& property : compositeProperties_)
-		removeProperty(property);
-	compositeProperties_.clear();
-
-	std::set<Property*> properties;
-
-	// collect all properties of the processors feeding directly or
-	// indirectly into this
-	for(Processor* processor : util::getPredecessors(this)) {
+	std::unordered_set<Processor*> visitedProcessors;
+	for(Processor* const processor : util::getPredecessors(this)) {
+		if(processor == this) continue;
 		std::cerr << "visiting processor " << processor << " "
 			<< processor->getIdentifier() << std::endl;
-
-		const auto& processorProperties = processor->getProperties();
-		properties.insert(processorProperties.begin(), processorProperties.end());
+		visitedProcessors.insert(processor);
 	}
 
-	// maps processor to its associated composite property
-	std::unordered_map<Processor*, CompositeProperty*> composites;
-
-	std::unordered_set<std::string> usedIdentifiers;
-	// TODO: only insert minimal set S of properties such that all properties
-	// are either in S or directly or indirectly set by a property in S
-	for(Property* prop : properties) {
-		if(auto _p = testableProperty(prop); _p != std::nullopt) {
-			props_.emplace_back(*_p);
-			auto* p = (*_p)->getProperty();
-
-			// find unused identifier
-			if(!usedIdentifiers.insert(p->getIdentifier()).second) {
-				size_t num = 0;
-				do {
-					p->setIdentifier(p->getIdentifier() + "_" + std::to_string(num));
-					num++;
-				} while(!usedIdentifiers.insert(p->getIdentifier()).second);
-			}
-
-			// add to processor
-			auto parentProcessor = *util::getOwningProcessor(prop);
-			auto& comp = composites[parentProcessor];
-			if(comp == nullptr) {
-				std::string parentIdentifier = parentProcessor->getIdentifier();
-				std::replace(parentIdentifier.begin(), parentIdentifier.end(), ' ', '_');
-				comp = new CompositeProperty(
-						parentIdentifier,
-						parentProcessor->getDisplayName());
-				addProperty(comp);
-				compositeProperties_.emplace_back(comp);
-			}
-			comp->addProperty(p);
-			// add link to original property
-			app_->getProcessorNetwork()->addLink(p, prop);
-
-			(*_p)->withOptionProperties([&comp](auto opt){
-					comp->addProperty(opt);
-				});
+	// remove no longer connected processors
+	std::unordered_set<Processor*> processorsToRemove;
+	for(const auto& [processor,_] : processors_) {
+		if(!visitedProcessors.count(processor)) { // processor no longer visited
+			processorsToRemove.insert(processor);
 		}
 	}
+	for(const auto& processor : processorsToRemove) {
+		const auto& [comp, testProps] = processors_.at(processor);
+		this->removeProperty(comp);
+		processors_.erase(processor);
+	}
+	
+	// add newly connected processors
+	for(const auto& processor : visitedProcessors) {
+		std::cerr << processor << " " << processor->getIdentifier() << ": " << processors_.count(processor) << std::endl;
+		if(!processors_.count(processor)) {
+			std::string ident = processor->getIdentifier();
+			std::replace(ident.begin(), ident.end(), ' ', '_');
+			CompositeProperty* comp = new CompositeProperty(
+					ident,
+					processor->getDisplayName());
+			ButtonProperty* connectButton = new ButtonProperty("connectAll", "Connect All");
+			comp->addProperty(connectButton);
+			std::vector<std::shared_ptr<TestProperty>> props;
+			for(Property* prop : processor->getProperties()) {
+				if(auto p = testableProperty(prop); p != std::nullopt) {
+					props_.emplace_back(*p);
+			
+					comp->addProperty((*p)->getProperty());
+
+					(*p)->withOptionProperties([&comp](auto opt){ comp->addProperty(opt); });
+				}
+			}
+			processors_.emplace(processor, std::make_pair(comp, props));
+
+			connectButton->onChange([this,processor](){
+					const auto& [comp, props] = processors_.at(processor);
+					for(const auto& prop : props) {
+						Property* const original = prop->getOriginalProperty();
+						Property* const cloned = prop->getProperty();
+						if(!app_->getProcessorNetwork()->isLinked(cloned, original)) {
+							app_->getProcessorNetwork()->addLink(cloned, original);
+						}
+					}
+				});
+
+			this->addProperty(comp);
+		}
+	}
+
+	std::cerr << std::endl;
 }
 
 Histogram::Histogram(InviwoApplication* app)
@@ -163,8 +172,7 @@ Histogram::Histogram(InviwoApplication* app)
 	, color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(0.0f))
 	, countPixelsButton_("cntPixelsButton", "Count number of pixels with set color")
 	, startButton_("startButton", "Start")
-	, numTests_("numTests", "Maximum number of tests", 200, 1, 10000)
-	, collectButton_("collectButton", "Collect Properties") {
+	, numTests_("numTests", "Maximum number of tests", 200, 1, 10000) {
 
 	countPixelsButton_.onChange([this]() {
 			NetworkLock lock(this);
@@ -182,8 +190,6 @@ Histogram::Histogram(InviwoApplication* app)
 
 	startButton_.onChange([this]() { this->initTesting(); } );
 
-	collectButton_.onChange([this]() { this->collectProperties(); } );
-
 	inport_.setOutportDeterminesSize(true);
 	addPort(inport_);
 
@@ -197,64 +203,45 @@ Histogram::Histogram(InviwoApplication* app)
 	addProperty(countPixelsButton_);
 	addProperty(numTests_);
 	addProperty(startButton_);
-	addProperty(collectButton_);
 
 	if (std::filesystem::create_directory(tempDir_.string())) {
 		std::stringstream str;
 		str << "Using " << tempDir_ << " to store failed tests.";
 		util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
 	}
+
+
+	// make this observe the processor network
+	app_->getProcessorNetwork()->addObserver(this);
 }
 
 void Histogram::deserialize(Deserializer& d) {
 	Processor::deserialize(d);
 
-	// collect compositeProperties_
-	compositeProperties_.clear();
-	for(auto prop : getProperties()) {
-		if(auto compProp = dynamic_cast<CompositeProperty*>(prop); compProp != nullptr) {
-			compositeProperties_.emplace_back(compProp);
-		}
-	}
-	std::cerr << "deserialized " << compositeProperties_.size() << " composite props" << std::endl;
-	
-	// collect props_
-	props_.clear();
-	for(auto comp : compositeProperties_) {
-		for(auto prop : comp->getProperties()) {
-			if(auto _p = testableProperty(prop); _p != std::nullopt) {
-				props_.emplace_back(*_p);
-				// TODO: handle option properties
-			}
-		}
-	}
-	std::cerr << "deserialized " << props_.size() << " props" << std::endl;
+	// TODO
 }
 
 void Histogram::initTesting() {
 	testResults.clear();
 	assert(remainingTests.empty());
 
+	props_.clear();
+
+	for(auto&[processor,procData] : processors_) {
+		auto&[comp,props] = procData;
+		std::copy_if(props.begin(), props.end(), std::back_inserter(props), [this](auto& prop) {
+				return app_->getProcessorNetwork()->isLinked(prop->getProperty(), prop->getOriginalProperty());
+			});
+	}
+
 	// store current state in order to reset it after testing
 	for(auto prop : props_) {
 		prop->storeDefault();
 	}
 
-	std::vector<std::shared_ptr<TestProperty>> propsToTest;
-	// only use those properties that have influence on this processor
-	std::copy_if(props_.begin(), props_.end(), std::back_inserter(propsToTest), [this](auto prop) {
-			for(auto linkedProperty : app_->getProcessorNetwork()->getPropertiesLinkedTo(prop->getProperty()))
-				if(auto parentProcessor = util::getOwningProcessor(linkedProperty))
-					if(util::getSuccessors(*parentProcessor).count(this) > 0)
-						return true;
-			return false;
-		});
-
-	std::cerr << "propsToTest.size() = " << propsToTest.size() << std::endl;
-
-	std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> assignments(propsToTest.size());
-	for(size_t pi = 0; pi < propsToTest.size(); pi++) {
-		for(const auto& assignment : propsToTest[pi]->generateAssignments())
+	std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> assignments(props_.size());
+	for(size_t pi = 0; pi < props_.size(); pi++) {
+		for(const auto& assignment : props_[pi]->generateAssignments())
 			assignments[pi].push_back(assignment);
 	}
 
