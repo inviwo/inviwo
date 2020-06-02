@@ -34,6 +34,8 @@
 #include <inviwo/core/io/imagewriterutil.h>
 #include <inviwo/core/network/networklock.h>
 
+#include <inviwo/core/util/datetime.h>
+
 #include <iostream>
 #include <filesystem>
 
@@ -156,6 +158,7 @@ Histogram::Histogram(InviwoApplication* app)
 	, app_(app)
 	, tempDir_{std::filesystem::temp_directory_path() / ("inviwo_histogram_" + std::to_string(rand()))}
 	, inport_("imageInport")
+	, reportDirectory_("reportDirectory", "Report Directory", tempDir_.string())
 	, useDepth_("useDepth", "Use Depth", false, InvalidationLevel::Valid)
 	, color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(0.0f))
 	, countPixelsButton_("cntPixelsButton", "Count number of pixels with set color")
@@ -184,6 +187,8 @@ Histogram::Histogram(InviwoApplication* app)
 	inport_.setOutportDeterminesSize(true);
 	addPort(inport_);
 
+	addProperty(reportDirectory_);
+
 	addProperty(useDepth_);
 	color_.setSemantics(PropertySemantics::Color);
 	color_.visibilityDependsOn(useDepth_, [](const auto& d) -> bool { return !d; });
@@ -194,7 +199,7 @@ Histogram::Histogram(InviwoApplication* app)
 	addProperty(startButton_);
 	addProperty(collectButton_);
 
-	if (std::filesystem::create_directory(tempDir_)) {
+	if (std::filesystem::create_directory(tempDir_.string())) {
 		std::stringstream str;
 		str << "Using " << tempDir_ << " to store failed tests.";
 		util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
@@ -370,7 +375,9 @@ void Histogram::checkTestResults() {
 		util::log(IVW_CONTEXT, str.str(), LogLevel::Warn, LogAudience::User);
 
 		// writing errors to file
-		const auto errFilePath = tempDir_ / (std::string("err_") + std::to_string(rand()) + std::string(".txt"));
+		const auto errFileDir = std::filesystem::path(reportDirectory_.get());
+
+		const auto errFilePath = errFileDir / (std::string("err_") + currentDateTime() + std::string(".txt"));
 		std::ofstream errFile(errFilePath, std::ios::out);
 		for(const auto& e : errors) {
 			printError(errFile, props_, e) << std::endl;
@@ -378,8 +385,9 @@ void Histogram::checkTestResults() {
 		errFile.close();
 		util::log(IVW_CONTEXT, "Wrote errors to " + errFilePath.string(), LogLevel::Info, LogAudience::User);
 
-		const auto reportFilePath = tempDir_ / (std::string("report_") + std::to_string(rand()) + std::string(".html"));
-		std::ofstream reportFile(reportFilePath, std::ios::out);
+		// write report
+		const auto reportFilePath = errFileDir / std::string("report.html");
+		std::ofstream reportFile(reportFilePath.string(), std::ios::out);
 		PropertyBasedTestingReport report(reportFile, errors, props_);
 		reportFile.close();
 		util::log(IVW_CONTEXT, "Wrote report to " + reportFilePath.string(), LogLevel::Info, LogAudience::User);

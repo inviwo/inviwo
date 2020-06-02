@@ -43,6 +43,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/directoryproperty.h>
 
 #include <inviwo/core/ports/imageport.h>
 
@@ -90,6 +91,7 @@ private:
 
 	ImageInport inport_;
 	
+	DirectoryProperty reportDirectory_;
 	BoolProperty useDepth_;
     FloatVec4Property color_;
 	ButtonProperty countPixelsButton_;
