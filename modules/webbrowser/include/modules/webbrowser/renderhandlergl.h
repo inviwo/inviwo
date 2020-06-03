@@ -33,6 +33,8 @@
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/texture/texture2d.h>
 
+#include <map>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <include/cef_render_handler.h>
@@ -86,7 +88,7 @@ public:
      *   |        |
      * (0,1) -- (1,1)
      */
-    Texture2D &getTexture2D(CefRefPtr<CefBrowser> browser);
+    Texture2D& getTexture2D(CefRefPtr<CefBrowser> browser);
 
     void ClearPopupRects(CefRefPtr<CefBrowser> browser);
 
@@ -98,7 +100,7 @@ private:
     };
     CefRect GetPopupRectInWebView(CefRefPtr<CefBrowser> browser, const CefRect &original_rect);
 
-    std::unordered_map<int, BrowserData> browserData_;  /// Per browser data
+    std::map<int, BrowserData> browserData_; /// Per browser data
 
     OnWebPageCopiedCallback
         onWebPageCopiedCallback;  /// Called after web page has been copied in OnPaint
@@ -107,3 +109,4 @@ private:
 };
 #include <warn/pop>
 };  // namespace inviwo
+

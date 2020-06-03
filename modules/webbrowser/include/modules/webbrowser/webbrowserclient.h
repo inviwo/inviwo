@@ -38,6 +38,8 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#include <map>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <include/cef_client.h>
@@ -67,6 +69,7 @@ class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
                                                    public CefDisplayHandler,
                                                    public CefResourceRequestHandler {
 public:
+
     WebBrowserClient(const PropertyWidgetCEFFactory* widgetFactory);
 
     virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
@@ -75,7 +78,7 @@ public:
     virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override { return this; }
 
     /**
-     * Enable invalidation when the web page repaints and allow the Inviwo javascript API
+     * Enable invalidation when the web page repaints and allow the Inviwo javascript API 
      * to access the parent processor.
      * @param const Processor* parent web browser processor responsible for the browser. Cannot be
      * null.
@@ -194,8 +197,8 @@ protected:
         Processor* processor;
         CefRefPtr<ProcessorCefSynchronizer> processorCefSynchronizer;
     };
-    std::unordered_map<int, BrowserData> browserParents_;  /// Owner of each browser
-    const PropertyWidgetCEFFactory* widgetFactory_;        /// Non-owning reference
+    std::map<int, BrowserData> browserParents_; /// Owner of each browser
+    const PropertyWidgetCEFFactory* widgetFactory_;  /// Non-owning reference
     CefRefPtr<RenderHandlerGL> renderHandler_;
     // Handles the browser side of query routing.
     CefRefPtr<CefMessageRouterBrowserSide> messageRouter_;
@@ -214,3 +217,4 @@ private:
 };
 #include <warn/pop>
 }  // namespace inviwo
+
