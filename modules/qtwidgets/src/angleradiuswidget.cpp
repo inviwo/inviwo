@@ -34,9 +34,10 @@
 #include <sstream>
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QStylePainter>
-#include <QPointF>
 #include <QMouseEvent>
+#include <QPainterPath>
+#include <QPointF>
+#include <QStylePainter>
 #include <warn/pop>
 
 namespace inviwo {
