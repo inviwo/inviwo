@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 
 #include <modules/animation/interpolation/constantinterpolation.h>
@@ -82,6 +83,10 @@ struct OrdinalReghelper {
         trackRegHelper<PropertyType>(am);
         interpolationRegHelper<PropertyType, LinearInterpolation>(am);
         interpolationRegHelper<PropertyType, ConstantInterpolation>(am);
+        using PropertyRefType = OrdinalRefProperty<T>;
+        trackRegHelper<PropertyRefType>(am);
+        interpolationRegHelper<PropertyRefType, LinearInterpolation>(am);
+        interpolationRegHelper<PropertyRefType, ConstantInterpolation>(am);
     }
 };
 
