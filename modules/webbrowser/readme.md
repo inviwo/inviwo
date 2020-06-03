@@ -7,7 +7,7 @@ Insert a WebBrowser processor in your network and point it to your html-page.
 In the html-page:
 Include the Inviwo API for communication using:
 ```
-<script src="https://inviwo/modules/webbrowser/data/js/inviwoapi.js"></script>
+<script src="api://inviwo/modules/webbrowser/data/js/inviwoapi.js"></script>
 ```
 Initialize Inviwo API so that we can use it to synchronize properties
 ```

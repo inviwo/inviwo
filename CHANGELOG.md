@@ -1,17 +1,15 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
 ## 2020-06-09 Remove use of deprecated QGLWidget
-If you have built a custom application your main file need be updated to enable OpenGL context sharing
-```c++
-    // Must be set before constructing QApplication
-    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-    // Setup default context format
-    QSurfaceFormat surfaceFormat;
-    surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
-    surfaceFormat.setMajorVersion(10);  // We want latest OpenGL version
-    QSurfaceFormat::setDefaultFormat(surfaceFormat);
-```
+In case you have built a custom Qt application your main file need be updated to enable shared OpenGL context, see apps/inviwo/inviwo.cpp.
+We now also use QOffScreenSurface for default OpenGL context and threaded rendering instead of a custom hidden window. 
 
+## 2020-06-03 WebBrowser Javascript API
+Changed redirection of `https://inviwo` to `inviwo://` to avoid confusion with the https scheme.
+Your html-files will need to update from 
+'https://inviwo/modules/yourmodule' 
+to 
+'inviwo://yourmodule' 
 
 ## 2020-04-03 OrdinalPropertyState
 Added a OrdinalPropertyState helper for constructing ordinal properties.
