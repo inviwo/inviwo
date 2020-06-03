@@ -90,15 +90,13 @@ void Histogram::resetAllProps() {
 
 void Histogram::onProcessorNetworkDidAddConnection(const PortConnection& conn) {
 	ProcessorNetworkObserver::onProcessorNetworkDidAddConnection(conn);
-	app_->dispatchFrontAndForget([this](){ updateProcessors(); });
+	updateProcessors();
 }
 void Histogram::onProcessorNetworkDidRemoveConnection(const PortConnection& conn) {
 	ProcessorNetworkObserver::onProcessorNetworkDidRemoveConnection(conn);
-	app_->dispatchFrontAndForget([this](){ updateProcessors(); });
+	updateProcessors();
 }
 void Histogram::updateProcessors() {
-	NetworkLock lock(this);
-
 	std::unordered_set<Processor*> visitedProcessors;
 	for(Processor* const processor : util::getPredecessors(this)) {
 		if(processor == this) continue;
@@ -126,7 +124,7 @@ void Histogram::updateProcessors() {
 		if(!processors_.count(processor)) {
 			std::vector<std::shared_ptr<TestProperty>> props;
 			for(Property* prop : processor->getProperties()) {
-				if(auto p = testableProperty(prop); p != std::nullopt) {
+				if(std::optional<std::shared_ptr<TestProperty>> p = testableProperty(prop); p != std::nullopt) {
 					props.emplace_back(*p);
 				}
 			}
