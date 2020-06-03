@@ -128,4 +128,3 @@ private:
 #include <warn/pop>
 
 }  // namespace inviwo
-
