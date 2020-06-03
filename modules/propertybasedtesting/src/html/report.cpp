@@ -63,7 +63,8 @@ PropertyBasedTestingReport::PropertyBasedTestingReport
 
 	out << "<!DOCTYPE html>\n";
 	out << (HTML::HTML()
-			<< (HTML::Head() << HTML::Style(cssFile) << HTML::Meta().addAttribute("charset","utf-8")) //.stylesheet("report.css"))
+			<< (HTML::Head() << HTML::Style(cssFile)
+				<< HTML::Meta().addAttribute("charset","utf-8")) //.stylesheet("report.css"))
 			<< (HTML::Body() << errorTable));
 }
 
@@ -88,15 +89,20 @@ std::vector<HTML::Row> PropertyBasedTestingReport::generateHTML
 	}
 
 	HTML::Row row1;
-	row1 << HTML::Details(HTML::Text("Property Values"), generateHTML(testResult1, differentProperties));
+	row1 << HTML::Details(HTML::Text("Property Values"),
+			generateHTML(testResult1, differentProperties));
 	row1 << HTML::Text(std::to_string(num1));
 	row1 << HTML::Text(expectedEffectString);
 	row1 << HTML::Text(std::to_string(num2));
-	row1 << HTML::Details(HTML::Text("Property Values"), generateHTML(testResult2, differentProperties));
-	row1 << HTML::Details(HTML::Text("Equal Properties"), generateHTML(testResult1, sameProperties));
+	row1 << HTML::Details(HTML::Text("Property Values"),
+			generateHTML(testResult2, differentProperties));
+	row1 << HTML::Details(HTML::Text("Equal Properties"),
+			generateHTML(testResult1, sameProperties));
 	HTML::Row row2;
-	row2 << HTML::Details(HTML::Text("Image1"), HTML::Image(testResult1->getImagePath())).addAttribute("colspan","3");
-	row2 << HTML::Details(HTML::Text("Image2"), HTML::Image(testResult2->getImagePath())).addAttribute("colspan","3");
+	row2 << HTML::TableCell(HTML::Details(HTML::Text("Image1"),
+				HTML::Image(testResult1->getImagePath()))).addAttribute("colspan","3");
+	row2 << HTML::TableCell(HTML::Details(HTML::Text("Image2"),
+				HTML::Image(testResult2->getImagePath()))).addAttribute("colspan","3");
 	return {row1, row2};
 }
 HTML::BaseElement PropertyBasedTestingReport::generateHTML

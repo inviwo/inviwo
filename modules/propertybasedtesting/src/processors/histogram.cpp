@@ -124,40 +124,39 @@ void Histogram::updateProcessors() {
 	for(const auto& processor : visitedProcessors) {
 		std::cerr << processor << " " << processor->getIdentifier() << ": " << processors_.count(processor) << std::endl;
 		if(!processors_.count(processor)) {
+			std::vector<std::shared_ptr<TestProperty>> props;
+			for(Property* prop : processor->getProperties()) {
+				if(auto p = testableProperty(prop); p != std::nullopt) {
+					props.emplace_back(*p);
+				}
+			}
+
+			if(props.empty())
+				continue;
+
 			std::string ident = processor->getIdentifier();
 			std::replace(ident.begin(), ident.end(), ' ', '_');
 			CompositeProperty* comp = new CompositeProperty(
 					ident,
 					processor->getDisplayName());
-			std::vector<std::shared_ptr<TestProperty>> props;
-			for(Property* prop : processor->getProperties()) {
-				if(auto p = testableProperty(prop); p != std::nullopt) {
-					props.emplace_back(*p);
-			
-					comp->addProperty((*p)->getProperty());
+			for(const auto& p : props) {
+				comp->addProperty(p->getProperty());
 
-					(*p)->withOptionProperties([&comp](auto opt){ comp->addProperty(opt); });
-				}
+				p->withOptionProperties([&comp](auto opt){ comp->addProperty(opt); });
 			}
 			processors_.emplace(processor, std::make_pair(comp, props));
 			std::cerr << processor->getDisplayName() << ": " << props.size() << std::endl;
 
 			ButtonProperty* connectButton = new ButtonProperty("connectAll", "Connect All");
 			connectButton->onChange([this,processor](){
-					std::cerr << "connect Button begin()" << std::endl;
 					const auto& [comp, props] = processors_.at(processor);
-					std::cerr << "props.size() = " << props.size() << " comp=" << comp << std::endl;
 					for(const auto& prop : props) {
 						Property* const original = prop->getOriginalProperty();
 						Property* const cloned = prop->getProperty();
 						if(!app_->getProcessorNetwork()->isLinked(cloned, original)) {
-							std::cerr << "can link " << cloned->getDisplayName()
-									<< " to " << original->getDisplayName() << " : "
-									<< app_->getProcessorNetwork()->canLink(cloned, original);
 							app_->getProcessorNetwork()->addLink(cloned, original);
 						}
 					}
-					std::cerr << "connect Button end()" << std::endl;
 				});
 			comp->addProperty(connectButton);
 

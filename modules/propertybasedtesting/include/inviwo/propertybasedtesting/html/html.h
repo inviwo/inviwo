@@ -70,13 +70,13 @@ public:
 	}
 
 	// add child
-	virtual Element<Derived>& operator<<(const BaseElement& child) {
+	virtual Derived& operator<<(const BaseElement& child) {
 		children.emplace_back(child);
-		return *this;
+		return *static_cast<Derived*>(this);
 	}
-	Element<Derived>& addAttribute(const std::string& aName, const std::string& aValue) {
+	Derived& addAttribute(const std::string& aName, const std::string& aValue) {
 		attributes.push_back({aName, aValue});
-		return *this;
+		return *static_cast<Derived*>(this);
 	}
 	
 	virtual ~Element() = default;
@@ -127,19 +127,19 @@ public:
 	}
 };
 
+class TableCell : public Element<TableCell> {
+	public:
+		TableCell(const BaseElement& el)
+			: Element("td") {
+				*this << el;
+			}
+};
 class Row : public Element<Row> {
-	class TableCell : public Element<TableCell> {
-		public:
-			TableCell(const BaseElement& el)
-				: Element("td") {
-					*this << el;
-				}
-	};
 public:
 	Row()
 			: Element("tr") {
 	}
-	virtual Element<Row>& operator<<(const BaseElement& child) override {
+	virtual Row& operator<<(const BaseElement& child) override {
 		Element::operator<<(static_cast<const BaseElement&>(TableCell(child)));
 		return *this;
 	}
@@ -148,19 +148,19 @@ public:
 		return *this;
 	}
 };
+class TableHeadCell : public Element<TableHeadCell> {
+	public:
+		TableHeadCell(const BaseElement& el)
+			: Element("th") {
+				*this << el;
+			}
+};
 class HeadRow : public Element<HeadRow> {
-	class TableHeadCell : public Element<TableHeadCell> {
-		public:
-			TableHeadCell(const BaseElement& el)
-				: Element("th") {
-					*this << el;
-				}
-	};
 public:
 	HeadRow()
 			: Element("tr") {
 	}
-	virtual Element<HeadRow>& operator<<(const BaseElement& child) override {
+	virtual HeadRow& operator<<(const BaseElement& child) override {
 		Element::operator<<(static_cast<const BaseElement&>(TableHeadCell(child)));
 		return *this;
 	}
