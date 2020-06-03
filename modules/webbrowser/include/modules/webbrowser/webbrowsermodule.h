@@ -100,4 +100,3 @@ inline const PropertyWidgetCEFFactory* WebBrowserModule::getPropertyWidgetCEFFac
 }
 
 }  // namespace inviwo
-

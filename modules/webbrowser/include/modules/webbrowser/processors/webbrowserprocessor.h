@@ -151,4 +151,3 @@ protected:
 };
 #include <warn/pop>
 }  // namespace inviwo
-

@@ -173,4 +173,3 @@ protected:
 };
 
 }  // namespace inviwo
-

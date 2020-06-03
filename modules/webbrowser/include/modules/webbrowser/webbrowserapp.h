@@ -75,5 +75,4 @@ private:
 };
 #include <warn/pop>
 
-};      // namespace inviwo
-
+};  // namespace inviwo

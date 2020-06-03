@@ -88,7 +88,7 @@ public:
      *   |        |
      * (0,1) -- (1,1)
      */
-    Texture2D& getTexture2D(CefRefPtr<CefBrowser> browser);
+    Texture2D &getTexture2D(CefRefPtr<CefBrowser> browser);
 
     void ClearPopupRects(CefRefPtr<CefBrowser> browser);
 
@@ -100,7 +100,7 @@ private:
     };
     CefRect GetPopupRectInWebView(CefRefPtr<CefBrowser> browser, const CefRect &original_rect);
 
-    std::map<int, BrowserData> browserData_; /// Per browser data
+    std::map<int, BrowserData> browserData_;  /// Per browser data
 
     OnWebPageCopiedCallback
         onWebPageCopiedCallback;  /// Called after web page has been copied in OnPaint
@@ -109,4 +109,3 @@ private:
 };
 #include <warn/pop>
 };  // namespace inviwo
-

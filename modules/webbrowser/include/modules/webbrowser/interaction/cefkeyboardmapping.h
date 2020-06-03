@@ -49,4 +49,3 @@ unsigned int IVW_MODULE_WEBBROWSER_API keyModifiers(KeyModifiers modifiers, IvwK
 };  // namespace cef
 
 };  // namespace inviwo
-
