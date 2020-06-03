@@ -38,6 +38,8 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#include <map>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <include/cef_client.h>
@@ -195,7 +197,7 @@ protected:
         Processor* processor;
         CefRefPtr<ProcessorCefSynchronizer> processorCefSynchronizer;
     };
-    std::unordered_map<int, BrowserData> browserParents_; /// Owner of each browser
+    std::map<int, BrowserData> browserParents_; /// Owner of each browser
     const PropertyWidgetCEFFactory* widgetFactory_;  /// Non-owning reference
     CefRefPtr<RenderHandlerGL> renderHandler_;
     // Handles the browser side of query routing.

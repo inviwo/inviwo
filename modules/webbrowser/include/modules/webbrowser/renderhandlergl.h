@@ -33,7 +33,7 @@
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/texture/texture2d.h>
 
-
+#include <map>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -100,7 +100,7 @@ private:
     };
     CefRect GetPopupRectInWebView(CefRefPtr<CefBrowser> browser, const CefRect &original_rect);
 
-    std::unordered_map<int, BrowserData> browserData_; /// Per browser data
+    std::map<int, BrowserData> browserData_; /// Per browser data
 
     OnWebPageCopiedCallback
         onWebPageCopiedCallback;  /// Called after web page has been copied in OnPaint
