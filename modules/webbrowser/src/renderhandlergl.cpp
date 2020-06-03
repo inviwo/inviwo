@@ -58,8 +58,7 @@ void RenderHandlerGL::OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& 
     if (rect.width <= 0 || rect.height <= 0) return;
     auto& browserData = browserData_[browser->GetIdentifier()];
     browserData.originalPopupRect = rect;
-    browserData.popupRect =
-        GetPopupRectInWebView(browser, browserData.originalPopupRect);
+    browserData.popupRect = GetPopupRectInWebView(browser, browserData.originalPopupRect);
 }
 
 CefRect RenderHandlerGL::GetPopupRectInWebView(CefRefPtr<CefBrowser> browser,

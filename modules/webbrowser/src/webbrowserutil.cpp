@@ -47,7 +47,6 @@ std::tuple<CefWindowInfo, CefBrowserSettings> getDefaultBrowserSettings() {
     browserSettings.file_access_from_file_urls = STATE_ENABLED;
 
     return std::tuple<CefWindowInfo, CefBrowserSettings>{windowInfo, browserSettings};
-
 }
 
 }  // namespace cefutil
