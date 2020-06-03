@@ -129,12 +129,10 @@ void Histogram::updateProcessors() {
 			CompositeProperty* comp = new CompositeProperty(
 					ident,
 					processor->getDisplayName());
-			ButtonProperty* connectButton = new ButtonProperty("connectAll", "Connect All");
-			comp->addProperty(connectButton);
 			std::vector<std::shared_ptr<TestProperty>> props;
 			for(Property* prop : processor->getProperties()) {
 				if(auto p = testableProperty(prop); p != std::nullopt) {
-					props_.emplace_back(*p);
+					props.emplace_back(*p);
 			
 					comp->addProperty((*p)->getProperty());
 
@@ -142,17 +140,26 @@ void Histogram::updateProcessors() {
 				}
 			}
 			processors_.emplace(processor, std::make_pair(comp, props));
+			std::cerr << processor->getDisplayName() << ": " << props.size() << std::endl;
 
+			ButtonProperty* connectButton = new ButtonProperty("connectAll", "Connect All");
 			connectButton->onChange([this,processor](){
+					std::cerr << "connect Button begin()" << std::endl;
 					const auto& [comp, props] = processors_.at(processor);
+					std::cerr << "props.size() = " << props.size() << " comp=" << comp << std::endl;
 					for(const auto& prop : props) {
 						Property* const original = prop->getOriginalProperty();
 						Property* const cloned = prop->getProperty();
 						if(!app_->getProcessorNetwork()->isLinked(cloned, original)) {
+							std::cerr << "can link " << cloned->getDisplayName()
+									<< " to " << original->getDisplayName() << " : "
+									<< app_->getProcessorNetwork()->canLink(cloned, original);
 							app_->getProcessorNetwork()->addLink(cloned, original);
 						}
 					}
+					std::cerr << "connect Button end()" << std::endl;
 				});
+			comp->addProperty(connectButton);
 
 			this->addProperty(comp);
 		}
@@ -227,9 +234,9 @@ void Histogram::initTesting() {
 
 	props_.clear();
 
-	for(auto&[processor,procData] : processors_) {
-		auto&[comp,props] = procData;
-		std::copy_if(props.begin(), props.end(), std::back_inserter(props), [this](auto& prop) {
+	for(const auto&[processor,procData] : processors_) {
+		const auto&[comp,props] = procData;
+		std::copy_if(props.begin(), props.end(), std::back_inserter(props_), [this](auto& prop) {
 				return app_->getProcessorNetwork()->isLinked(prop->getProperty(), prop->getOriginalProperty());
 			});
 	}
