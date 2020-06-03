@@ -43,6 +43,7 @@
 #include <QResizeEvent>
 #include <QStyleOption>
 #include <QtCore/qmath.h>
+#include <QPainterPath>
 #include <warn/pop>
 
 #include <algorithm>
