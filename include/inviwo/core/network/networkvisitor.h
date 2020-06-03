@@ -38,27 +38,66 @@ class Processor;
 class PropertyOwner;
 class Property;
 class CompositeProperty;
+class CanvasProcessor;
 
 /**
- * \brief A vistor base for visiting an inviwo network
+ * @brief Visitor pattern base for visiting an Inviwo ProcessorNetwork
  */
 class IVW_CORE_API NetworkVisitor {
 public:
     virtual ~NetworkVisitor() = default;
 
+    /**
+     * @brief Visit a Processor
+     * Adding and removing processors while visiting are not supported
+     * @return visit all child properties if true else go to next processor
+     */
     virtual bool visit(Processor&) { return true; }
-    virtual bool visit(PropertyOwner&) { return true; }
-    virtual bool visit(Property&) { return true; }
+
+    /**
+     * @brief Visit a CanvasProcessor
+     * Adding and removing processors while visiting are not supported
+     * @return visit all child properties if true else go to next processor
+     */
+    virtual bool visit(CanvasProcessor&) { return true; }
+
+    /**
+     * @brief Visit a CompositeProperty
+     * Adding and removing properties while visiting are not supported
+     * @return visit all child properties if true else go to next CompositeProperty
+     */
     virtual bool visit(CompositeProperty&) { return true; }
+
+    /**
+     * @brief Visit a Property
+     * Adding and removing properties while visiting are not supported
+     * @return not used for Properties
+     */
+    virtual bool visit(Property&) { return true; }
 };
 
+/**
+ * @brief A Helper class to construct a NetworkVisitor from a set of lambda functions
+ *
+ * ```{.cpp}
+ * LambdaNetworkVisitor visitor{[](Property& property) {
+ *                                  // Do something for a properties
+ *                                  return true;
+ *                              },
+ *                              [](Processor&) {
+ *                                  // Do something for a processor
+ *                                  return true;
+ *                              }};
+ * processorNetwork->accept(visitor);
+ * ```
+ */
 template <typename... Funcs>
 struct LambdaNetworkVisitor : NetworkVisitor, Funcs... {
     LambdaNetworkVisitor(Funcs&&... args) : NetworkVisitor{}, Funcs{std::forward<Funcs>(args)}... {}
     using Funcs::operator()...;
 
     virtual bool visit(Processor& processor) override { return operator()(processor); }
-    virtual bool visit(PropertyOwner& propertyOwner) override { return operator()(propertyOwner); }
+    virtual bool visit(CanvasProcessor& processor) override { return operator()(processor); }
     virtual bool visit(Property& property) override { return operator()(property); }
     virtual bool visit(CompositeProperty& compositeProperty) override {
         return operator()(compositeProperty);

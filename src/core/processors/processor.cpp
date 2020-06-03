@@ -104,9 +104,11 @@ void Processor::addPortInternal(Outport* port, const std::string& portGroup) {
 }
 
 Port* Processor::removePort(const std::string& identifier) {
-    if (auto port = getPort(identifier)) {
-        if (auto inport = dynamic_cast<Inport*>(port)) return removePort(inport);
-        if (auto outport = dynamic_cast<Outport*>(port)) return removePort(outport);
+    if (auto inport = getInport(identifier)) {
+        return removePort(inport);
+    }
+    if (auto outport = getOutport(identifier)) {
+        return removePort(outport);
     }
     return nullptr;
 }

@@ -135,8 +135,6 @@ public:
 
     virtual InviwoApplication* getInviwoApplication();
 
-    virtual void accept(NetworkVisitor& visitor);
-
 protected:
     PropertyOwner();
     PropertyOwner(const PropertyOwner& rhs);
@@ -163,18 +161,22 @@ private:
 };
 
 template <class T>
-std::vector<T*> PropertyOwner::getPropertiesByType(bool recursiveSearch /* = false */) const {
+std::vector<T*> PropertyOwner::getPropertiesByType(bool recursiveSearch) const {
     std::vector<T*> foundProperties;
-    for (size_t i = 0; i < properties_.size(); i++) {
-        if (dynamic_cast<T*>(properties_[i])) {
-            foundProperties.push_back(static_cast<T*>(properties_[i]));
-        } else if (recursiveSearch && dynamic_cast<PropertyOwner*>(properties_[i])) {
-            std::vector<T*> subProperties =
-                dynamic_cast<PropertyOwner*>(properties_[i])->getPropertiesByType<T>(true);
-            foundProperties.insert(foundProperties.end(), subProperties.begin(),
-                                   subProperties.end());
+
+    for (auto* property : properties_) {
+        if (auto p = dynamic_cast<T*>(property)) {
+            foundProperties.push_back(p);
         }
     }
+
+    if (recursiveSearch) {
+        for (auto* copy : compositeProperties_) {
+            auto sub = copy->getPropertiesByType<T>(true);
+            foundProperties.insert(foundProperties.end(), sub.begin(), sub.end());
+        }
+    }
+
     return foundProperties;
 }
 
