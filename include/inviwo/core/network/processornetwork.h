@@ -250,6 +250,10 @@ public:
      */
     void clear();
 
+    /**
+     * @brief Accept a NetworkVisitor, the visitor will visit each Processor of the Network in an
+     * undefined order. The Visitor will then visit each processors Properties and so on.
+     */
     void accept(NetworkVisitor& visor);
 
 private:

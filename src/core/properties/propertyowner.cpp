@@ -171,35 +171,33 @@ std::vector<Property*> PropertyOwner::getPropertiesRecursive() const {
 
 Property* PropertyOwner::getPropertyByIdentifier(const std::string& identifier,
                                                  bool recursiveSearch) const {
-    for (Property* property : properties_) {
+    for (auto* property : properties_) {
         if (property->getIdentifier() == identifier) return property;
     }
     if (recursiveSearch) {
-        for (CompositeProperty* compositeProperty : compositeProperties_) {
-            Property* p = compositeProperty->getPropertyByIdentifier(identifier, true);
-            if (p) return p;
+        for (auto* compositeProperty : compositeProperties_) {
+            if (auto* p = compositeProperty->getPropertyByIdentifier(identifier, true)) return p;
         }
     }
     return nullptr;
 }
 
 Property* PropertyOwner::getPropertyByPath(const std::vector<std::string>& path) const {
-    Property* property = getPropertyByIdentifier(path[0]);
-    if (property) {
-        size_t i = 1;
-        while (path.size() > i) {
-            CompositeProperty* comp = dynamic_cast<CompositeProperty*>(property);
-            if (comp) {
-                property = comp->getPropertyByIdentifier(path[i]);
-                if (!property) return nullptr;
-            } else {
-                return nullptr;
-            }
-            ++i;
+    if (path.empty()) return nullptr;
+
+    auto last = --path.end();
+    auto* curr = this;
+    for (auto pathIt = path.begin(); pathIt != last; ++pathIt) {
+        auto compIt =
+            std::find_if(curr->compositeProperties_.begin(), curr->compositeProperties_.end(),
+                         [&](auto* comp) { return comp->getIdentifier() == *pathIt; });
+        if (compIt != curr->compositeProperties_.end()) {
+            curr = *compIt;
+        } else {
+            return nullptr;
         }
-        return property;
     }
-    return nullptr;
+    return curr->getPropertyByIdentifier(*last);
 }
 
 size_t PropertyOwner::size() const { return properties_.size(); }
@@ -296,14 +294,6 @@ void PropertyOwner::invokeEvent(Event* event) {
 
 InviwoApplication* PropertyOwner::getInviwoApplication() {
     return util::getInviwoApplication(getProcessor());
-}
-
-void PropertyOwner::accept(NetworkVisitor& visitor) {
-    if (visitor.visit(*this)) {
-        for (auto* elem : properties_) {
-            elem->accept(visitor);
-        }
-    }
 }
 
 }  // namespace inviwo
