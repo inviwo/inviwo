@@ -50,11 +50,10 @@ const ProcessorInfo ImageComparator::getProcessorInfo() const { return processor
 
 ImageComparator::ImageComparator()
     : Processor()
-    , outportDeterminesSize_{"outportDeterminesSize", "Let Outport Determine Size", false}
-    , imageSize_{"imageSize",   "Image Size",        size2_t(1024, 1024),
-                 size2_t(1, 1), size2_t(4096, 4096), size2_t(1, 1)}
     , inport1_("inport1")
     , inport2_("inport2")
+    , differencePort_("difference")
+    , maskPort_("mask")
     , maxDeviation_("maxDeviation", "Maximum deviation", 0, 0, std::numeric_limits<float>::max(), 1, InvalidationLevel::Valid, PropertySemantics::Text)
     , comparisonType_("comparisonType", "Comparison Type (dummy)",
                      {{"diff", "Sum of ARGB differences", ComparisonType::Diff},
@@ -62,53 +61,35 @@ ImageComparator::ImageComparator()
                       {"global", "Global Difference", ComparisonType::Global},
                       {"local", "Local Difference", ComparisonType::Local}},
                      0, InvalidationLevel::InvalidResources)
-    , tempDir_{std::filesystem::temp_directory_path() / ("inviwo_imagecomp_" + std::to_string(rand()))}
-    , prevSize1_{0}
-    , prevSize2_{0} {
-
-  imageSize_.visibilityDependsOn(outportDeterminesSize_,
-                                [](const auto& p) -> bool { return !p; });
-
-  outportDeterminesSize_.onChange([this] {
-      this->inport1_.setOutportDeterminesSize(outportDeterminesSize_);
-      this->inport2_.setOutportDeterminesSize(outportDeterminesSize_);
-      sendResizeEvent();
-  });
-
-  this->inport1_.setOutportDeterminesSize(outportDeterminesSize_);
-  this->inport2_.setOutportDeterminesSize(outportDeterminesSize_);
-
-  imageSize_.onChange([this]() { sendResizeEvent(); });
-  addProperties(outportDeterminesSize_, imageSize_);
+    , reportDir_("reportDir",
+                 "Report Directory",
+                 "")
+    {
 
   addPort(inport1_);
   addPort(inport2_);
+  addPort(differencePort_);
+  addPort(maskPort_);
+  addProperty(reportDir_);
   addProperty(maxDeviation_);
   addProperty(comparisonType_);
 
-  if (std::filesystem::create_directory(tempDir_)) {
-		std::stringstream str;
-		str << getIdentifier() << ": Using: " << tempDir_ << " to store images.";
-		util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
-	}
+  isReady_.setUpdate([&]() {
+      if(!allInportsAreReady())
+        return false;
+      auto img1 = inport1_.getData();
+      auto img2 = inport2_.getData();
 
-	isReady_.setUpdate([&]() {
-			if(!allInportsAreReady())
-				return false;
-			auto img1 = inport1_.getData();
-			auto img2 = inport2_.getData();
-
-			const auto dim1 = img1->getDimensions();
-			const auto dim2 = img2->getDimensions();
-
-			if(dim1 != dim2) {
-				std::stringstream str;
-				str << getIdentifier() << ": Images do not have same dimensions: " << dim1 << " != " << dim2;
-				util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
-				return false;
-			}
-			return true;
-		});
+      const auto dim1 = img1->getDimensions();
+      const auto dim2 = img2->getDimensions();
+      if(dim1 != dim2) {
+        std::stringstream str;
+        str << getIdentifier() << ": Images do not have same dimensions: " << dim1 << " != " << dim2;
+        util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
+        return false;
+      }
+      return true;
+    });
 }
 
 void ImageComparator::setNetwork(ProcessorNetwork* network) {
@@ -117,71 +98,155 @@ void ImageComparator::setNetwork(ProcessorNetwork* network) {
     Processor::setNetwork(network);
 }
 
-void ImageComparator::sendResizeEvent() {
-    const size2_t newSize1 = outportDeterminesSize_ ? size2_t{0} : *imageSize_;
-    const size2_t newSize2 = outportDeterminesSize_ ? size2_t{0} : *imageSize_;
-
-    if (newSize1 != prevSize1_) {
-        ResizeEvent event{newSize1, prevSize1_};
-        this->inport1_.propagateEvent(&event, nullptr);
-        prevSize1_ = newSize1;
-    }
-
-    if (newSize2 != prevSize2_) {
-        ResizeEvent event{newSize2, prevSize2_};
-        this->inport2_.propagateEvent(&event, nullptr);
-        prevSize2_ = newSize2;
-    }
-}
-
 void ImageComparator::process() {
-	auto img1 = inport1_.getData();
-	auto img2 = inport2_.getData();
+  if(reportDir_.get() != "") {
+    if (! std::filesystem::exists(reportDir_.get())) {
+      if (std::filesystem::create_directories(reportDir_.get())) {
+        std::stringstream str;
+        str << getIdentifier() << ": Using: " << reportDir_ << " to store images.";
+        util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
+      }
+    }
+  }
 
-	const auto dim1 = img1->getDimensions();
-	const auto dim2 = img2->getDimensions();
+  const auto img1 = inport1_.getData();
+  const auto img2 = inport2_.getData();
 
-	assert(dim1 == dim2);
-	auto imgRam1 = img1->getRepresentation<ImageRAM>();
-	auto imgRam2 = img2->getRepresentation<ImageRAM>();
+  const auto dim1 = img1->getDimensions();
+  const auto dim2 = img2->getDimensions();
 
-	auto colorLayerRAM1 = imgRam1->getColorLayerRAM();
-	auto colorLayerRAM2 = imgRam2->getColorLayerRAM();
+  if(dim1 != dim2) {
+    std::stringstream str;
+    str << getIdentifier() << ": Error: Image dimensions do not agree: " << dim1 << " != " << dim2;
+    util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
+    return;
+  }
 
-	double diff = 0;
-	for(size_t x = 0; x < dim1.x; x++) {
-		for(size_t y = 0; y < dim1.y; y++) {
-			const auto col1 = colorLayerRAM1->getAsDVec4(size2_t(x,y));
-			const auto col2 = colorLayerRAM2->getAsDVec4(size2_t(x,y));
-			diff += glm::length(col1 - col2);
-		}
-	}
+  auto diffImg = std::make_shared<Image>(dim1, DataVec3UInt8::get());
+  auto maskImg = std::make_shared<Image>(dim1, DataVec3UInt8::get());
 
-	if(diff > maxDeviation_.get()) {
-		std::stringstream str;
-		str << getIdentifier() << ": Image difference: " << diff;
-		util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
+  auto imgRAM1 = img1->getRepresentation<ImageRAM>();
+  auto imgRAM2 = img2->getRepresentation<ImageRAM>();
+  auto diffRAM = diffImg->getEditableRepresentation<ImageRAM>();
+  auto maskRAM = maskImg->getEditableRepresentation<ImageRAM>();
 
-		const auto img1Path = tempDir_ / (std::string("img1_") + std::to_string(imageCompCount_) + std::string(".png"));
-		const auto img2Path = tempDir_ / (std::string("img2_") + std::to_string(imageCompCount_) + std::string(".png"));
-		static const auto pngExt = inviwo::FileExtension::createFileExtensionFromString(std::string("png"));
-		inviwo::util::saveLayer(*img1->getColorLayer(), img1Path.string(), pngExt);
-		inviwo::util::saveLayer(*img2->getColorLayer(), img2Path.string(), pngExt);
-	}
+  auto colorLayerRAM1 = imgRAM1->getColorLayerRAM();
+  auto colorLayerRAM2 = imgRAM2->getColorLayerRAM();
+  auto colorLayerDiff = diffRAM->getColorLayerRAM();
+  auto colorLayerMask = maskRAM->getColorLayerRAM();
+
+  double diffSum = 0;
+  double diffPixels = 0;
+  for(size_t x = 0; x < dim1.x; x++) {
+    for(size_t y = 0; y < dim1.y; y++) {
+      const auto col1 = colorLayerRAM1->getAsDVec3(size2_t(x,y));
+      const auto col2 = colorLayerRAM2->getAsDVec3(size2_t(x,y));
+      const double diff = glm::length(col1 - col2);
+      diffSum += diff;
+      colorLayerDiff->setFromDVec3(size2_t(x, y), 128.0 + (col1 - col2) / 2.0);
+      double c = col1 == col2 ? 255.0 : 0.0;
+      colorLayerMask->setFromDVec3(size2_t(x, y), dvec3(c, c, c));
+      if(col1 != col2) {
+        diffPixels++;
+      }
+    }
+  }
+  differencePort_.setData(diffImg);
+  maskPort_.setData(maskImg);
+
+  if(diffSum > maxDeviation_.get()) {
+    if(reportDir_.get() != "" && std::filesystem::exists(reportDir_.get())) {
+
+      imageCompCount_++;
+      const auto dir = std::filesystem::path(reportDir_.get());
+      const auto suffix = std::to_string(imageCompCount_) + std::string(".png");
+      const auto img1Path = dir / (std::string("img1_") + suffix);
+      const auto img2Path = dir / (std::string("img2_") + suffix);
+      const auto diffPath = dir / (std::string("diff_") + suffix);
+      const auto maskPath = dir / (std::string("mask_") + suffix);
+      static const auto pngExt = inviwo::FileExtension::createFileExtensionFromString(std::string("png"));
+      inviwo::util::saveLayer(*img1->getColorLayer(), img1Path.string(), pngExt);
+      inviwo::util::saveLayer(*img2->getColorLayer(), img2Path.string(), pngExt);
+      inviwo::util::saveLayer(*diffImg->getColorLayer(), diffPath.string(), pngExt);
+      inviwo::util::saveLayer(*maskImg->getColorLayer(), maskPath.string(), pngExt);
+
+      comparisons_.push_back(
+        { time(0)
+        , diffSum
+        , diffPixels
+        , (double) dim1.x * (double) dim1.y
+        , img1Path
+        , img2Path
+        , diffPath
+        , maskPath});
+    }
+  }
+  createReport();
 }
 
-void ImageComparator::onProcessorNetworkDidAddConnection(const PortConnection& con) {
-    const auto successors = util::getSuccessors(con.getInport()->getProcessor());
-    if (util::contains(successors, this)) {
-        sendResizeEvent();
-    }
-}
-
-void ImageComparator::onProcessorNetworkDidRemoveConnection(const PortConnection& con) {
-    const auto successors = util::getSuccessors(con.getInport()->getProcessor());
-    if (util::contains(successors, this)) {
-        sendResizeEvent();
-    }
+void ImageComparator::createReport() {
+  std::ofstream report;
+  report.open(reportDir_.get() + "/report.html");
+  report << "<html>" << std::endl;
+  report << "<head>" << std::endl;
+  report << "<meta charset=\"utf8\"/>" << std::endl;
+  report << "<style>" << std::endl;
+    report << ".comparison { background: #f2f2f2; padding: 1em; margin-bottom: 3em; width: 80% }" << std::endl;
+    report << ".data td:nth-child(1) { width: 10em; }" << std::endl;
+    report << ".data tr:nth-child(even) { background: #e2e2e2; }" << std::endl;
+    report << ".data { border-collapse: collapse; width: 100%; }" << std::endl;
+    report << ".data td { border-top: 1px solid black; border-bottom: 1px solid black;}" << std::endl;
+    report << ".images { width: 100%; padding-top: 1em;}" << std::endl;
+    report << "img { width: 100%; border: 1px solid black;}" << std::endl;
+    report << "th { font-weight: normal; width: 25%}" << std::endl;
+  report << "</style>" << std::endl;
+  report << "</head>" << std::endl;
+  report << "<body>" << std::endl;
+  for(auto &comp : comparisons_) {
+    report << "<div class=\"comparison\">" << std::endl;
+      report << "<table class=\"data\">" << std::endl;
+        report << "<tr>" << std::endl;
+          report << "<td>Date</td>" << std::endl;
+          char timeBuffer[sizeof "2012-12-24 12:34:56"];
+          strftime(timeBuffer, sizeof timeBuffer, "%F %T", localtime(&comp.timestamp));
+          report << "<td>" << timeBuffer << "</td>" << std::endl;
+        report << "</tr>" << std::endl;
+        report << "<tr>" << std::endl;
+          report << "<td>Difference sum</td>" << std::endl;
+          report << "<td>" << comp.diffSum << "</td>" << std::endl;
+        report << "</tr>" << std::endl;
+        report << "<tr>" << std::endl;
+          report << "<td>Pixel count</td>" << std::endl;
+          report << "<td>" << comp.pixelCount << "</td>" << std::endl;
+        report << "</tr>" << std::endl;
+        report << "<tr>" << std::endl;
+          report << "<td>Different pixels</td>" << std::endl;
+          report << "<td>" << comp.differentPixels << "</td>" << std::endl;
+        report << "</tr>" << std::endl;
+        report << "<tr>" << std::endl;
+          report << "<td>Percent difference</td>" << std::endl;
+          report << "<td>" << (100 * comp.differentPixels / comp.pixelCount) << "</td>" << std::endl;
+        report << "</tr>" << std::endl;
+      report << "</table>" << std::endl;
+      report << "<table class=\"images\">" << std::endl;
+        report << "<tr>" << std::endl;
+          report << "<th>diff</th>" << std::endl;
+          report << "<th>mask</th>" << std::endl;
+          report << "<th>img1</th>" << std::endl;
+          report << "<th>img2</th>" << std::endl;
+        report << "</tr>" << std::endl;
+        report << "<tr>" << std::endl;
+          report << "<td><img src=\"" << comp.diff << "\" title=\"" << comp.diff << "\"/></td>" << std::endl;
+          report << "<td><img src=\"" << comp.mask << "\" title=\"" << comp.mask << "\"/></td>" << std::endl;
+          report << "<td><img src=\"" << comp.img1 << "\" title=\"" << comp.img1 << "\"/></td>" << std::endl;
+          report << "<td><img src=\"" << comp.img2 << "\" title=\"" << comp.img2 << "\"/></td>" << std::endl;
+        report << "</tr>" << std::endl;
+      report << "</table>" << std::endl;
+    report << "</div>" << std::endl;
+  }
+  report << "</body>" << std::endl;
+  report << "</html>" << std::endl;
+  report.close();
 }
 
 }  // namespace inviwo

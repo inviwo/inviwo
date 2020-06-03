@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/ports/imageport.h>
 
 #include <filesystem>
@@ -59,36 +60,37 @@ class IVW_MODULE_PROPERTYBASEDTESTING_API ImageComparator : public Processor,
 public:
     ImageComparator();
 
-    virtual ~ImageComparator() {
-      std::filesystem::remove_all(tempDir_);
-    }
-
     virtual void process() override;
 
     virtual void setNetwork(ProcessorNetwork* network) override;
+    virtual void createReport();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     enum class ComparisonType { Diff, Perceptual, Local, Global };
 private:
-    BoolProperty outportDeterminesSize_;
-    IntSize2Property imageSize_;
-
     ImageInport inport1_;
     ImageInport inport2_;
+    ImageOutport differencePort_;
+    ImageOutport maskPort_;
 
     FloatProperty maxDeviation_;
     TemplateOptionProperty<ComparisonType> comparisonType_;
-    std::filesystem::path tempDir_;
+    DirectoryProperty reportDir_;
     int imageCompCount_ = 0;
 
-    virtual void onProcessorNetworkDidAddConnection(const PortConnection&) override;
-    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection&) override;
-
-    void sendResizeEvent();
-    size2_t prevSize1_;
-    size2_t prevSize2_;
+    struct Comparison {
+        time_t timestamp;
+        double diffSum;
+        double differentPixels;
+        double pixelCount;
+        std::string img1;
+        std::string img2;
+        std::string diff;
+        std::string mask;
+    };
+    std::vector<Comparison> comparisons_;
 };
 
 }  // namespace inviwo
