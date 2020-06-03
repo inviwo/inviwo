@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_WEBBROWSERAPP_H
-#define IVW_WEBBROWSERAPP_H
+#pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 
@@ -77,4 +76,4 @@ private:
 #include <warn/pop>
 
 };      // namespace inviwo
-#endif  // IVW_WEBBROWSERAPP_H
+
