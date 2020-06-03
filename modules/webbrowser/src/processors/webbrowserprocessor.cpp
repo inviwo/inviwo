@@ -30,6 +30,7 @@
 #include <modules/webbrowser/processors/webbrowserprocessor.h>
 #include <modules/webbrowser/interaction/cefinteractionhandler.h>
 #include <modules/webbrowser/webbrowsermodule.h>
+#include <modules/webbrowser/webbrowserutil.h>
 #include <modules/opengl/image/layergl.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
@@ -54,7 +55,7 @@ const ProcessorInfo WebBrowserProcessor::processorInfo_{
 };
 const ProcessorInfo WebBrowserProcessor::getProcessorInfo() const { return processorInfo_; }
 
-WebBrowserProcessor::WebBrowserProcessor()
+WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
     : Processor()
     // Output from CEF is 8-bits per channel
     , background_("background")
@@ -70,19 +71,8 @@ WebBrowserProcessor::WebBrowserProcessor()
                    {"webAddress", "Web Address", SourceType::WebAddress}})
     , picking_(this, 1, [&](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); })
     , cefToInviwoImageConverter_(picking_.getColor())
-    , renderHandler_(new RenderHandlerGL([&]() {
-        // Called as soon as new content is available
-        // Queue an invalidation
-        // Note: no need to queue invalidation using dispathFront since
-        // RenderHandler calls will be made from the same thread.
-        // dispatchFront([&] {
-        invalidate(InvalidationLevel::InvalidOutput);
-        //});
-    }))
-    , browserClient_(new WebBrowserClient(this, renderHandler_,
-                                          InviwoApplication::getPtr()
-                                              ->getModuleByType<WebBrowserModule>()
-                                              ->getPropertyWidgetCEFFactory())) {
+    , renderHandler_{static_cast<RenderHandlerGL*>(
+          app->getModuleByType<WebBrowserModule>()->getBrowserClient()->GetRenderHandler().get())} {
     addPort(background_);
     background_.setOptional(true);
     addPort(outport_);
@@ -133,27 +123,16 @@ WebBrowserProcessor::WebBrowserProcessor()
     });
 
     // Setup CEF browser
-    CefWindowInfo window_info;
-
-    CefBrowserSettings browserSettings;
-
-    // Enable loading files from other locations than where the .html file is
-    browserSettings.file_access_from_file_urls = STATE_ENABLED;
-
-    browserSettings.windowless_frame_rate = 30;  // Must be between 1-60, 30 is default
-
-    // in linux set a gtk widget, in windows a hwnd. If not available set nullptr
-    // - may cause
-    // some render errors, in context-menu and plugins.
-    window_info.SetAsWindowless(nullptr);  // nullptr means no transparency (site background colour)
-
+    auto [windowInfo, browserSettings] = cefutil::getDefaultBrowserSettings();
+    auto browserClient = app->getModuleByType<WebBrowserModule>()->getBrowserClient();
     // Note that browserClient_ outlives this class so make sure to remove
     // renderHandler_ in
     // destructor
-    browser_ = CefBrowserHost::CreateBrowserSync(window_info, browserClient_, getSource(),
+    browser_ = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient, getSource(),
                                                  browserSettings, nullptr, nullptr);
+    browserClient->setBrowserParent(browser_, this);
     // Observe when page has loaded
-    browserClient_->addLoadHandler(this);
+    browserClient->addLoadHandler(this);
     // Inject events into CEF browser_
     cefInteractionHandler_.setHost(browser_->GetHost());
     cefInteractionHandler_.setRenderHandler(renderHandler_);
@@ -177,12 +156,9 @@ std::string WebBrowserProcessor::getSource() {
 }
 
 WebBrowserProcessor::~WebBrowserProcessor() {
-    browserClient_->removeLoadHandler(this);
+    static_cast<WebBrowserClient*>(browser_->GetHost()->GetClient().get())->removeLoadHandler(this);
     // Force close browser
     browser_->GetHost()->CloseBrowser(true);
-    // Remove render handler since browserClient_ might not be destroyed until CefShutdown() is
-    // called
-    browserClient_->SetRenderHandler(NULL);
 }
 
 void WebBrowserProcessor::deserialize(Deserializer& d) {
@@ -211,7 +187,8 @@ void WebBrowserProcessor::process() {
     }
 
     // Vertical flip of CEF output image
-    cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(), outport_, &background_);
+    cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(browser_), outport_,
+                                       &background_);
 }
 
 }  // namespace inviwo

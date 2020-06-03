@@ -48,7 +48,7 @@ void CEFInteractionHandler::invokeEvent(Event* event) {
     switch (event->hash()) {
         case ResizeEvent::chash(): {
             auto resizeEvent = static_cast<ResizeEvent*>(event);
-            renderHandler_->updateCanvasSize(resizeEvent->size());
+            renderHandler_->updateCanvasSize(host_->GetBrowser(), resizeEvent->size());
             host_->WasResized();
             break;
         }
