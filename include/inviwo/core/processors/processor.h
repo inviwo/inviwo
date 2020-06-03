@@ -378,7 +378,12 @@ public:
      */
     virtual bool isConnectionActive(Inport*, Outport*) const { return true; }
 
-    virtual void accept(NetworkVisitor& visitor) override;
+    /**
+     * @brief Accept a NetworkVisitor, the visitor will visit this and then each Property of the
+     * Processor in an undefined order. The Visitor will then visit each Properties's properties and
+     * so on.
+     */
+    virtual void accept(NetworkVisitor& visitor);
 
 protected:
     std::unique_ptr<ProcessorWidget> processorWidget_;
