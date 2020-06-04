@@ -1,9 +1,11 @@
 # Adapted settings from openexr/CMakeLists.txt and others, such as /openexr/OpenEXR/config/OpenEXRSetup.cmake
 
-set(PYILMBASE_ENABLE             OFF CACHE INTERNAL "Enables configuration of the PyIlmBase module")
-set(OPENEXR_VIEWERS_ENABLE       OFF CACHE INTERNAL "Enables configuration of the viewers module")
-set(BUILD_TESTING          	     OFF CACHE INTERNAL "Enable the tests")
-set(OPENEXR_BUILD_UTILS          OFF CACHE INTERNAL "Enables building of utility programs")
+set(PYILMBASE_ENABLE             OFF CACHE INTERNAL "Enables configuration of the PyIlmBase module" FORCE)
+set(OPENEXR_VIEWERS_ENABLE       OFF CACHE INTERNAL "Enables configuration of the viewers module" FORCE)
+set(BUILD_TESTING          	     OFF CACHE INTERNAL "Enable the tests" FORCE)
+set(OPENEXR_BUILD_UTILS          OFF CACHE INTERNAL "Enables building of utility programs" FORCE)
+set(INSTALL_OPENEXR_EXAMPLES     OFF CACHE INTERNAL "Install OpenEXR examples" FORCE)
+set(INSTALL_OPENEXR_DOCS         OFF CACHE INTERNAL "Install OpenEXR documentation" FORCE)
 
 add_subdirectory(openexr)
 
