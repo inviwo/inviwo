@@ -1,4 +1,4 @@
-if(IVW_QT_APPLICATION OR IVW_QT_APPLICATION_BASE)
+if(IVW_APP_INVIWO OR IVW_APP_QTBASE)
     find_package(Qt5Core QUIET)
     if(NOT Qt5Core_FOUND) 
         message(FATAL_ERROR 
@@ -20,11 +20,11 @@ if(IVW_QT_APPLICATION OR IVW_QT_APPLICATION_BASE)
         install(DIRECTORY ${QT_BINARY_DIR} DESTINATION bin/../ COMPONENT qt_widgets FILES_MATCHING PATTERN "icuuc5*")
     endif()
 
-    if(IVW_QT_APPLICATION_BASE)
+    if(IVW_APP_QTBASE)
         add_subdirectory(applicationbase)
     endif()
 
-    if(IVW_QT_APPLICATION)
+    if(IVW_APP_INVIWO)
         add_subdirectory(editor)
     endif()
 endif()

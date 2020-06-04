@@ -1,7 +1,3 @@
-if(NOT(IVW_INTEGRATION_TESTS OR IVW_UNITTESTS))
-    return()
-endif()
-
 project(inviwo-testutil)
 
 # Add source files

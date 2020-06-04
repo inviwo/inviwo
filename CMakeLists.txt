@@ -33,7 +33,6 @@ cmake_policy(VERSION 3.12.0)
 if(POLICY CMP0077)
      cmake_policy(SET CMP0077 NEW)
 endif()
-
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
 #--------------------------------------------------------------------
@@ -54,8 +53,8 @@ set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 # option for setting the project/solution name of the Inviwo project
-set(IVW_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
-project(${IVW_PROJECT_NAME})
+set(IVW_CFG_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
+project(${IVW_CFG_PROJECT_NAME})
 
 #Verify that git submodules has been cloned
 include(cmake/verifysubmodules.cmake)
@@ -84,21 +83,25 @@ include(cmake/globalconfig.cmake)
 
 #--------------------------------------------------------------------
 # Application setup
-option(IVW_QT_APPLICATION_BASE
-    "Build base for Qt apps. Used by the Qt network editor and the Tiny Qt app" ON)
-option(IVW_QT_APPLICATION        "Build Inviwo Qt network editor application" ON)
-option(IVW_INTEGRATION_TESTS     "Build inviwo integration test" ON)
-option(IVW_TINY_GLFW_APPLICATION "Build Inviwo Tiny GLFW Application" OFF)
-option(IVW_TINY_QT_APPLICATION   "Build Inviwo Tiny QT Application" OFF)
+option(IVW_APP_QTBASE       "Build base for Qt apps. Used by the Qt network editor and the Tiny Qt app" ON)
+option(IVW_APP_INVIWO       "Build Inviwo Qt network editor application" ON)
+option(IVW_APP_MINIMAL_GLFW "Build Inviwo Tiny GLFW Application" OFF)
+option(IVW_APP_MINIMAL_QT   "Build Inviwo Tiny QT Application" OFF)
+option(IVW_APP_PYTHON       "Build Inviwo Python Application" ON)
 
-if(IVW_QT_APPLICATION AND NOT IVW_QT_APPLICATION_BASE)
-    set(IVW_QT_APPLICATION_BASE ON CACHE BOOL "Build base for qt applications. \
-            Used by Qt network editor and Qt minimal application" FORCE)
-    message(STATUS "IVW_QT_APPLICATION_BASE was set to build, due to dependency towards IVW_QT_APPLICATION")
+if((IVW_APP_INVIWO OR IVW_APP_MINIMAL_QT OR IVW_APP_PYTHON) AND NOT IVW_APP_QTBASE)
+    set(IVW_APP_QTBASE ON CACHE BOOL "Build base for qt applications. \
+    message(STATUS "IVW_APP_QTBASE was set to build, due to dependencies")
 endif()
-ivw_enable_modules_if(IVW_QT_APPLICATION QtWidgets)
-ivw_enable_modules_if(IVW_INTEGRATION_TESTS GLFW Base)
-ivw_enable_modules_if(IVW_TINY_GLFW_APPLICATION GLFW)
+
+ivw_enable_modules_if(IVW_APP_INVIWO QtWidgets)
+ivw_enable_modules_if(IVW_APP_MINIMAL_QT QtWidgets)
+ivw_enable_modules_if(IVW_APP_MINIMAL_GLFW GLFW)
+ivw_enable_modules_if(IVW_APP_INVIWO_DOME SGCT)
+ivw_enable_modules_if(IVW_APP_PYTHON Python3 Python3Qt QtWidgets)
+
+option(IVW_TEST_INTEGRATION_TESTS "Build inviwo integration test" ON)
+ivw_enable_modules_if(IVW_TEST_INTEGRATION_TESTS GLFW Base)
 
 # Try to find qt and add it if it is not already in CMAKE_PREFIX_PATH
 if(NOT "${CMAKE_PREFIX_PATH}" MATCHES "[Qq][Tt]")
@@ -112,52 +115,19 @@ endif()
 
 add_custom_target(uninstall COMMENT "Dummy target to prevent other uninstalls")
 
-#--------------------------------------------------------------------
-# Add external libraries.
-#
-#
-# Dependencies between libraries are solved using the given order
-# Note: We prefer building dependencies our self to using find_library,
-# since it does not necessarily give you the dll for packaging.
-# It also ensures that we are in control of the used version
-# and is built using the same, Inviwo, settings.
-
-option (IVW_USE_EXTERNAL_IMG "Link with external image libraries (zlib, png, jpeg, tiff) instead of building them." OFF)
-if (NOT IVW_USE_EXTERNAL_IMG)
-  add_subdirectory(ext/zlib-1.2.11) # Defines target ZLIB::ZLIB
-  add_subdirectory(ext/libpng)      # Defines target PNG::PNG
-  add_subdirectory(ext/libjpeg)     # Defines target JPEG::JPEG
-  add_subdirectory(ext/tiff)        # Defines target TIFF::TIFF
+add_subdirectory(ext)                        # Add external libraries.
+if(IVW_TEST_INTEGRATION_TESTS OR IVW_TEST_UNIT_TESTS)
+    add_subdirectory(tests/testutil)         # Add test utils
+endif()                    
+ivw_register_modules(all_modules)            # Add modules
+add_subdirectory(tools/meta)                 # Add Inviwo meta
+add_subdirectory(src/qt)                     # Add Qt
+add_subdirectory(apps)                       # Add applications
+ivw_add_external_projects()                  # Add external projects
+if(IVW_TEST_INTEGRATION_TESTS)
+    add_subdirectory(tests/integrationtests) # Add integration tests project
 endif()
-
-add_subdirectory(ext/flags)
-add_subdirectory(ext/glm)
-add_subdirectory(ext/ticpp)
-add_subdirectory(ext/gtest)
-add_subdirectory(ext/benchmark)
-add_subdirectory(ext/warn)
-add_subdirectory(ext/tclap)
-add_subdirectory(ext/tinydir)
-add_subdirectory(ext/half)
-add_subdirectory(ext/utf)
-add_subdirectory(ext/json)
-add_subdirectory(ext/fmt)
-add_subdirectory(ext/span)
-add_subdirectory(ext/sml)
-add_subdirectory(ext/sigar)
-add_subdirectory(ext/stackwalker) # Add stackwalker for windows for stack traces in the log
-add_subdirectory(tests/testutil)
-
-ivw_register_modules(all_modules)        # Add modules
-
-add_subdirectory(tools/meta)             # Add Inviwo meta
-add_subdirectory(src/qt)                 # Add Qt
-add_subdirectory(apps)                   # Add applications
-ivw_add_external_projects()              # Add external projects
-add_subdirectory(tests/integrationtests) # Add integration tests project
-
-# Generate Doxygen setup.
-add_subdirectory(docs)
+add_subdirectory(docs)                       # Generate Doxygen setup.
 
 string(TIMESTAMP time "%Y-%m-%d %H:%M:%S")
 message(STATUS "Configure started at ${timeStart} and ended at ${time}")

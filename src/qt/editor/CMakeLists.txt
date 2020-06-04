@@ -157,18 +157,18 @@ else()
     set(build_changelog_default OFF)
 endif()
 
-set(IVW_BUILD_CHANGELOG ${build_changelog_default} CACHE BOOL "Generate html version of changelog (for the welcome widget)")
+set(IVW_CFG_BUILD_CHANGELOG ${build_changelog_default} CACHE BOOL "Generate html version of changelog (for the welcome widget)")
 
-if(IVW_BUILD_CHANGELOG)
+if(IVW_CFG_BUILD_CHANGELOG)
     if(NOT ${has_markdown})
         message(FATAL_ERROR "Missing python module 'markdown' needed to create changelog."
             " Either install 'markdown' (python -m pip install markdown<3)"
-            " or disable 'IVW_BUILD_CHANGELOG'")
+            " or disable 'IVW_CFG_BUILD_CHANGELOG'")
     endif()
     if(NOT ${has_gfm})
         message(FATAL_ERROR "Missing python module 'py-gfm' needed to create changelog."
             " Either install 'py-gfm' (python -m pip install py-gfm)"
-            " or disable 'IVW_BUILD_CHANGELOG'")
+            " or disable 'IVW_CFG_BUILD_CHANGELOG'")
     endif()
 
     find_package(PythonInterp)

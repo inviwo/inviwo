@@ -90,8 +90,8 @@ target_link_libraries(inviwo-meta-cli
 )
 
 # Add testing
-option(IVW_META_BUILD_TESTS "Build meta tests" ON)
-if(IVW_META_BUILD_TESTS) 
+option(IVW_TEST_META_BUILD_TESTS "Build meta tests" ON)
+if(IVW_TESTS_META_BUILD_TESTS) 
 	add_subdirectory(tests)
 endif()
 
