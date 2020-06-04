@@ -79,7 +79,6 @@ void setOtherPropertyHelper(OrdinalRefProperty<T>* property, ValueKeyframe<T>* k
     property->set(keyframe->getValue());
 }
 
-
 /**
  * Helper function for inviwo::animation::PropertyTrack::setOtherProperty
  * @see inviwo::animation::BasePropertyTrack::setOtherProperty
