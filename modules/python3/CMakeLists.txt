@@ -109,7 +109,7 @@ option(IVW_PACKAGE_EMBED_PYTHON "Embed a python dist in the installer.\
  Otherwise a existing python installation is needed to run inviwo" ON)
 if(BUILD_SHARED_LIBS AND IVW_PACKAGE_EMBED_PYTHON)
     if(WIN32)
-        if(IVW_CMAKE_DEBUG)
+        if(IVW_CFG_CMAKE_DEBUG)
             set(show SHOW_PROGRESS)
         else()
             set(show "")

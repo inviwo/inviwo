@@ -48,7 +48,7 @@ endfunction()
 # Example: ivw_configure_application_module_dependencies(inviwo ${list_of_modules})
 # The list of modules is usually fetched from ivw_retrieve_all_modules
 function(ivw_configure_application_module_dependencies target)
-    if(IVW_RUNTIME_MODULE_LOADING)
+    if(IVW_CFG_RUNTIME_MODULE_LOADING)
         # Specify which modules to load at runtime (all will be loaded if the file does not exist)
         ivw_create_enabled_modules_file(${target} ${ARGN})
         target_compile_definitions(${target} PUBLIC IVW_RUNTIME_MODULE_LOADING)

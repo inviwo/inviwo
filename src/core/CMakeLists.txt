@@ -662,7 +662,9 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # include implementation for build info - the build info will be
 # updated during every compilation
-if(IVW_EMBED_BUILDINFO)
+
+option(IVW_CFG_EMBED_BUILDINFO "Embed buildinfo into the binary file instead of using a ini file, will force inviwo-core to recompile every build" OFF)
+if(IVW_CFG_EMBED_BUILDINFO)
     list(APPEND SOURCE_FILES "${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp")
     ivw_group("Source Files" BASE "${CMAKE_CURRENT_BINARY_DIR}/src/"
         "${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp")
@@ -945,14 +947,13 @@ add_custom_target(inviwo-buildinfo-header ALL
     VERBATIM
 )
 
-option(IVW_EMBED_BUILDINFO "Embed buildinfo into the binary file instead of using a ini file, will force inviwo-core to recompile every build" OFF)
-if(IVW_EMBED_BUILDINFO)
+if(IVW_CFG_EMBED_BUILDINFO)
     add_dependencies("inviwo-core" "inviwo-buildinfo-header")
-    target_compile_definitions("inviwo-core" PRIVATE "IVW_EMBED_BUILDINFO")
+    target_compile_definitions("inviwo-core" PRIVATE "IVW_CFG_EMBED_BUILDINFO")
 else()
     ## ensure that the ini file containing the build info is packaged and installed to the bin folder
     if(GENERATOR_IS_MULTI_CONFIG)
-    install(FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/inviwo_buildinfo.ini DESTINATION ${IVW_RUNTIME_INSTALL_DIR} COMPONENT modules CONFIGURATIONS Release Debug)
+        install(FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/inviwo_buildinfo.ini DESTINATION ${IVW_RUNTIME_INSTALL_DIR} COMPONENT modules CONFIGURATIONS Release Debug)
     else()
         install(FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/inviwo_buildinfo.ini DESTINATION ${IVW_RUNTIME_INSTALL_DIR} COMPONENT modules CONFIGURATIONS Release Debug)
     endif()

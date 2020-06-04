@@ -1,8 +1,6 @@
-#--------------------------------------------------------------------
 # Inviwo Base Module
 ivw_module(Base)
 
-#--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     include/modules/base/algorithm/algorithmoptions.h
@@ -128,8 +126,6 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-
-#--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
     src/algorithm/algorithmoptions.cpp
@@ -246,7 +242,6 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
 # Unit tests
 set(TEST_FILES
     tests/unittests/base-unittest-main.cpp
@@ -257,9 +252,9 @@ set(TEST_FILES
 )
 ivw_add_unittest(${TEST_FILES})
 
-#--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
-if(IVW_BENCHMARKS)
+
+if(IVW_TEST_BENCHMARKS)
     add_subdirectory(tests/benchmarks)
 endif()
