@@ -46,16 +46,16 @@ void setupResourceManager(CefRefPtr<CefResourceManager> resource_manager) {
         CefPostTask(TID_IO, base::Bind(setupResourceManager, resource_manager));
         return;
     }
-    std::string origin = "api://inviwo";
+    std::string origin = "inviwo://";
     // Redirect paths to corresponding app/module directories.
     // Enables resource loading from these directories directory (js-files and so on).
-    auto appOrigin = origin + "/app";
+    auto appOrigin = origin + "app";
     resource_manager->AddDirectoryProvider(appOrigin, InviwoApplication::getPtr()->getBasePath(),
                                            99, std::string());
 
-    auto moduleOrigin = origin + "/modules";
+    auto moduleOrigin = origin;
     for (const auto& m : InviwoApplication::getPtr()->getModules()) {
-        auto mOrigin = moduleOrigin + "/" + toLower(m->getIdentifier());
+        auto mOrigin = moduleOrigin + toLower(m->getIdentifier());
         auto moduleDir = m->getPath();
         resource_manager->AddDirectoryProvider(mOrigin, moduleDir, 100, std::string());
     }
