@@ -491,6 +491,7 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
                                 return static_cast<T>(buffer[index]) * weight;
                             }));
                     };
+                    (void)mix;
 
                     auto outRam =
                         std::make_shared<BufferRAMPrecision<ValueType, PB::target>>(*inRam);

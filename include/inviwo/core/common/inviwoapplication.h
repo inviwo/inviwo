@@ -445,7 +445,7 @@ protected:
     std::shared_ptr<ConsoleLogger> consoleLogger_;
     std::shared_ptr<FileLogger> filelogger_;
     std::function<void(std::string)> progressCallback_;
-    std::unique_ptr<FileSystemObserver> fileSystemObserver_{nullptr};
+    std::unique_ptr<FileSystemObserver> fileSystemObserver_;
 
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue

@@ -39,6 +39,7 @@
 #include <warn/ignore/all>
 #include <QWidget>
 #include <warn/pop>
+#include <memory>
 
 class QMenu;
 class QMimeData;
