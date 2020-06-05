@@ -54,9 +54,9 @@ namespace inviwo {
 
 /* \class WebBrowserClient
  * CefClient with custom render handler and call redirections.
- * Calls to 'api://inviwo/modules/yourmodule' will be redirected to yourmodule
+ * Calls to 'inviwo://yourmodule' will be redirected to yourmodule
  * directory, i.e. InviwoModule::getPath().
- * Calls to 'api://inviwo/app' will be redirected to the InviwoApplication
+ * Calls to 'inviwo://app' will be redirected to the InviwoApplication
  * (executable) directory, i.e. InviwoApplication::getBasePath().
  */
 #include <warn/push>
