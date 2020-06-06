@@ -211,7 +211,7 @@ def integrationtest(def state) {
     if(state.env.disableIntegration) return
     cmd('Integration Tests', 'build/bin', ['DISPLAY=:' + state.cfg.display]) {
         checked(state, 'Integration Test', false) {
-            sh './inviwo-integrationtests'
+            sh 'ulimit -c unlimited && ./inviwo-integrationtests'
         }
     }
 }
