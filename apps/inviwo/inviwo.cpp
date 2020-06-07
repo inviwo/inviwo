@@ -63,6 +63,8 @@ int main(int argc, char** argv) {
      */
     qputenv("QT_STYLE_OVERRIDE", "");
 #endif
+    // Must be set before constructing QApplication
+    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     inviwo::InviwoApplicationQt inviwoApp(argc, argv, "Inviwo");
     inviwoApp.setStyleSheetFile(":/stylesheets/inviwo.qss");
 

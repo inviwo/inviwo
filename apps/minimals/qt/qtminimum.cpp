@@ -50,6 +50,8 @@ int main(int argc, char** argv) {
     auto logger = std::make_shared<inviwo::ConsoleLogger>();
     LogCentral::getPtr()->registerLogger(logger);
 
+    // Must be set before constructing QApplication
+    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     InviwoApplicationQt inviwoApp(argc, argv, "Inviwo-Qt");
     inviwoApp.printApplicationInfo();
     inviwoApp.setProgressCallback([](std::string m) {

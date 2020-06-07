@@ -16,6 +16,7 @@ set(MOC_FILES
 # Add header files
 set(HEADER_FILES
     include/modules/openglqt/canvasqglwidget.h
+    include/modules/openglqt/canvasqopenglwidget.h
     include/modules/openglqt/canvasqt.h
     #include/modules/openglqt/canvasqwindow.h
     include/modules/openglqt/hiddencanvasqt.h
@@ -32,6 +33,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/canvasprocessorwidgetqt.cpp
     src/canvasqglwidget.cpp
+    src/canvasqopenglwidget.cpp
     #src/canvasqwindow.cpp
     src/openglqtcapabilities.cpp
     src/openglqtmenu.cpp
