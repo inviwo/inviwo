@@ -39,6 +39,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QOpenGLContext>
 #include <QOpenGLWidget>
 #include <QSurfaceFormat>
 #include <warn/pop>
@@ -53,28 +54,25 @@ class IVW_MODULE_OPENGLQT_API CanvasQOpenGLWidget : public QOpenGLWidget, public
 public:
     using QtBase = QOpenGLWidget;
 
-    explicit CanvasQOpenGLWidget(QWidget* parent = nullptr, uvec2 dim = uvec2(256, 256));
-    virtual ~CanvasQOpenGLWidget();
+    explicit CanvasQOpenGLWidget(QWidget* parent = nullptr, size2_t dim = size2_t(256, 256));
+    virtual ~CanvasQOpenGLWidget() = default;
 
     static void defineDefaultContextFormat();
 
     virtual void activate() override;
     virtual void glSwapBuffers() override;
     virtual void update() override;
-    void repaint();
 
-    virtual void resize(uvec2 size) override;
+    virtual void resize(size2_t size) override;
+    virtual ContextID activeContext() const override;
+    virtual ContextID contextId() const override;
 
 protected:
     virtual void initializeGL() override;
     virtual void paintGL() override;
     virtual void resizeEvent(QResizeEvent* event) override;
 
-    static CanvasQOpenGLWidget* sharedCanvas_;  // For rendering-context sharing
-
-private:
-    static QSurfaceFormat sharedFormat_;
-    bool swapBuffersAllowed_;
+    virtual void releaseContext() override;
 };
 
 }  // namespace inviwo

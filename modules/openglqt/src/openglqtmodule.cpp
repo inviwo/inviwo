@@ -67,7 +67,9 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
 
     // Create GL Context
     CanvasQt::defineDefaultContextFormat();
-    sharedCanvas_ = util::make_unique<CanvasQt>(size2_t(16, 16), "Default");
+    
+    sharedCanvas_ =
+        util::make_unique<CanvasQt>(nullptr, size2_t(16, 16), "Default");
 
     if (!glFenceSync) {  // Make sure we have setup the opengl function pointers.
         throw OpenGLInitException("Unable to initiate OpenGL", IVW_CONTEXT);

@@ -41,6 +41,7 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shadermanager.h>
 #include <inviwo/core/util/rendercontext.h>
 
 namespace inviwo {
@@ -95,7 +96,12 @@ void CanvasGL::renderLayer(size_t idx) {
 bool CanvasGL::ready() {
     if (ready_) {
         return true;
-    } else if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+    } else if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE &&
+               // Capabilities might not have been registered yet in (OpenGLQt) module constructor
+               ShaderManager::getPtr()
+                       ->getOpenGLCapabilities()
+                       ->getCurrentShaderVersion()
+                       .getVersion() > 0) {
         ready_ = true;
 
         // Setup the GL state for the canvas, only need to do this once, since this
