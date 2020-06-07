@@ -76,7 +76,8 @@ class CanvasQtBase : public T {
 public:
     using QtBase = typename T::QtBase;
 
-    explicit CanvasQtBase(QWidget* parent, size2_t dim = size2_t(256, 256), const std::string& name = "Canvas");
+    explicit CanvasQtBase(QWidget* parent, size2_t dim = size2_t(256, 256),
+                          const std::string& name = "Canvas");
     virtual ~CanvasQtBase();
 
     virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
@@ -124,7 +125,7 @@ private:
     std::string toolTipText_;
 };
 
-//using CanvasQt = CanvasQtBase<CanvasQGLWidget>;
+// using CanvasQt = CanvasQtBase<CanvasQGLWidget>;
 // using CanvasQt = CanvasQtBase<CanvasQWindow>;
 using CanvasQt = CanvasQtBase<CanvasQOpenGLWidget>;
 
@@ -147,8 +148,7 @@ std::unique_ptr<Canvas> CanvasQtBase<T>::createHiddenCanvas() {
     auto thread = QThread::currentThread();
     // The context has to be created on the main thread.
     auto res = dispatchFront([&thread]() {
-        auto canvas =
-            std::make_unique<HiddenCanvasQt<CanvasQtBase<T>>>(nullptr);
+        auto canvas = std::make_unique<HiddenCanvasQt<CanvasQtBase<T>>>(nullptr);
         canvas->doneCurrent();
         canvas->context()->moveToThread(thread);
         return canvas;
