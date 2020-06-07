@@ -232,33 +232,38 @@ ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos, ivec2 size) {
         check_error();
 
         for (int i = 0; i < count; ++i) {
-            GLFWmonitor* monitor = monitors[i];
+            if (GLFWmonitor* monitor = monitors[i]) {
+                ivec2 screenPos{};
+                ivec2 screenSize{};
+                glfwGetMonitorWorkarea(monitor, &screenPos.x, &screenPos.y, &screenSize.x,
+                                       &screenSize.y);
+                check_error();
+
+                if (glm::all(glm::greaterThanEqual(pos, screenPos)) &&
+                    glm::all(glm::lessThanEqual(pos, screenPos + screenSize))) {
+
+                    return pos;
+                }
+
+                if (glm::all(glm::greaterThanEqual(pos + size, screenPos)) &&
+                    glm::all(glm::lessThanEqual(pos + size, screenPos + screenSize))) {
+
+                    return glm::clamp(pos, screenPos, screenPos + screenSize);
+                }
+            }
+        }
+
+        if (auto monitor = glfwGetPrimaryMonitor()) {
+            check_error();
             ivec2 screenPos{};
             ivec2 screenSize{};
             glfwGetMonitorWorkarea(monitor, &screenPos.x, &screenPos.y, &screenSize.x,
                                    &screenSize.y);
             check_error();
-
-            if (glm::all(glm::greaterThanEqual(pos, screenPos)) &&
-                glm::all(glm::lessThanEqual(pos, screenPos + screenSize))) {
-
-                return pos;
-            }
-
-            if (glm::all(glm::greaterThanEqual(pos + size, screenPos)) &&
-                glm::all(glm::lessThanEqual(pos + size, screenPos + screenSize))) {
-
-                return glm::clamp(pos, screenPos, screenPos + screenSize);
-            }
+            return glm::clamp(pos, screenPos, screenPos + screenSize);
+        } else {
+            return pos;
         }
-
-        auto monitor = glfwGetPrimaryMonitor();
-        check_error();
-        ivec2 screenPos{};
-        ivec2 screenSize{};
-        glfwGetMonitorWorkarea(monitor, &screenPos.x, &screenPos.y, &screenSize.x, &screenSize.y);
-        check_error();
-        return glm::clamp(pos, screenPos, screenPos + screenSize);
     } catch (const Exception& e) {
         LogErrorCustom("CanvasGLFW", e.getMessage());
         return pos;
