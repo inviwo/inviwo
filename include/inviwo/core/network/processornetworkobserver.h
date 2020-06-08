@@ -67,10 +67,9 @@ public:
     virtual void onProcessorNetworkDidAddLink(const PropertyLink&) {}
     virtual void onProcessorNetworkWillRemoveLink(const PropertyLink&) {}
     virtual void onProcessorNetworkDidRemoveLink(const PropertyLink&) {}
-   
+
     virtual void onProcessorBackgroundJobsChanged(Processor*, int /*diff*/, int /*total*/) {}
 };
-
 
 class IVW_CORE_API ProcessorNetworkObservable : public Observable<ProcessorNetworkObserver> {
 public:
@@ -95,7 +94,7 @@ public:
     void notifyObserversProcessorNetworkDidAddLink(const PropertyLink& propertyLink);
     void notifyObserversProcessorNetworkWillRemoveLink(const PropertyLink& propertyLink);
     void notifyObserversProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink);
-    
+
     void notifyObserversProcessorBackgroundJobsChanged(Processor* p, int diff, int total);
 };
 

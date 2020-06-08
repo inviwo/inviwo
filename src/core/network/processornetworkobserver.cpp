@@ -46,9 +46,8 @@ void ProcessorNetworkObservable::notifyObserversProcessorNetworkUnlocked() {
 void ProcessorNetworkObservable::notifyObserversProcessorBackgroundJobsChanged(Processor* p,
                                                                                int diff,
                                                                                int total) {
-    forEachObserver([&](ProcessorNetworkObserver* o) {
-        o->onProcessorBackgroundJobsChanged(p, diff, total);
-    });
+    forEachObserver(
+        [&](ProcessorNetworkObserver* o) { o->onProcessorBackgroundJobsChanged(p, diff, total); });
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkWillAddProcessor(
