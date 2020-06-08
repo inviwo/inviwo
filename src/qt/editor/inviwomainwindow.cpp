@@ -328,10 +328,11 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 InviwoMainWindow::~InviwoMainWindow() = default;
 
 void InviwoMainWindow::showWindow() {
-    if (maximized_)
+    if (maximized_) {
         showMaximized();
-    else
+    } else {
         show();
+    }
 }
 
 void InviwoMainWindow::saveCanvases(std::string path, std::string fileName) {
@@ -340,13 +341,12 @@ void InviwoMainWindow::saveCanvases(std::string path, std::string fileName) {
     repaint();
     app_->processEvents();
     app_->waitForPool();
-    while (auto delay = app_->getTimerThread().lastDelay()) {
-        std::this_thread::sleep_until(*delay);
+
+    while (app_->getProcessorNetwork()->runningBackgroundJobs() > 0) {
         app_->processEvents();
-        while (app_->processFront())
-            ;
-        app_->processEvents();
+        app_->processFront();
     }
+
     util::saveAllCanvases(app_->getProcessorNetwork(), path, fileName);
 }
 

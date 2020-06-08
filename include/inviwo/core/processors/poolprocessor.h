@@ -307,10 +307,12 @@ private:
                          std::shared_ptr<pool::detail::StateTemplate<Result, Done>> state);
 
     pool::Options options_;
-    std::shared_ptr<pool::detail::Wrapper> wrapper_;
     std::vector<std::shared_ptr<pool::detail::State>> states_;
+    util::OnScopeExit notifyRemainingJobsFinish_;
+    std::shared_ptr<pool::detail::Wrapper> wrapper_;
     std::vector<Submission> queue_;
     Delay delay_;
+    util::OnScopeExit delayBackgoundJobReset_;
 };
 
 namespace pool::detail {
@@ -321,13 +323,14 @@ struct IVW_CORE_API Wrapper {
 
 struct IVW_CORE_API State {
     State(std::weak_ptr<Wrapper> processor, size_t count)
-        : processor(processor), count{count}, stop{false}, progress(count) {}
+        : processor(processor), count{count}, stop{false}, progress(count), nJobs{count} {}
 
     std::weak_ptr<Wrapper> processor;
     std::atomic<size_t> count;
     std::atomic<bool> stop;
     std::vector<std::atomic<float>> progress;
     std::future<void> progressUpdate;
+    size_t nJobs;
 
     Stop getStop() { return Stop(stop); }
 
@@ -402,6 +405,8 @@ inline void PoolProcessor::callDone(
                     return;
                 }
 
+                p.notifyObserversFinishBackgroundWork(&p, state->nJobs);
+
                 if (state->stop) return;
 
                 if (isLast || p.keepOldJobs()) {
@@ -437,6 +442,12 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
     if (delayDispatch()) {
         queue_.clear();
         queue_.push_back(std::move(sub));
+
+        if (!delayBackgoundJobReset_) {
+            notifyObserversStartBackgroundWork(this, 1);
+            delayBackgoundJobReset_.setAction(
+                [this]() { notifyObserversFinishBackgroundWork(this, 1); });
+        }
         delay_.start();
 
     } else if (queuedDispatch() && !states_.empty()) {
@@ -471,6 +482,11 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
     if (delayDispatch()) {
         queue_.clear();
         queue_.push_back(std::move(sub));
+        if (!delayBackgoundJobReset_) {
+            notifyObserversStartBackgroundWork(this, 1);
+            delayBackgoundJobReset_.setAction(
+                [this]() { notifyObserversFinishBackgroundWork(this, 1); });
+        }
         delay_.start();
 
     } else if (queuedDispatch() && !states_.empty()) {

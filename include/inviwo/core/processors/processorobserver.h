@@ -75,25 +75,30 @@ public:
 
     /**
      * Called after the processor has changed its source state.
-     * The processor argument is the modified processor
      */
     virtual void onProcessorSourceChanged(Processor*){};
     /**
      * Called after the processor has changed its sink state.
-     * The processor argument is the modified processor
      */
     virtual void onProcessorSinkChanged(Processor*){};
     /**
      * Called after the processor has changed its ready state.
-     * The processor argument is the modified processor
      */
     virtual void onProcessorReadyChanged(Processor*){};
     /**
      * Called after a processor inport and its connected outport(s) changed active state.
-     * The processor argument is the modified processor
      * @see Processor::isConnectionActive
      */
     virtual void onProcessorActiveConnectionsChanged(Processor*){};
+
+    /**
+     * @brief Called when a processor initiates a background computation
+     */
+    virtual void onProcessorStartBackgroundWork(Processor*, size_t /*jobs*/){};
+    /**
+     * @brief Called when a processor finishes a background computation
+     */
+    virtual void onProcessorFinishBackgroundWork(Processor*, size_t /*jobs*/){};
 };
 
 /** \class ProcessorObservable
@@ -153,6 +158,13 @@ protected:
     }
     void notifyObserversActiveConnectionsChange(Processor* p) {
         forEachObserver([&](ProcessorObserver* o) { o->onProcessorActiveConnectionsChanged(p); });
+    }
+
+    void notifyObserversStartBackgroundWork(Processor* p, size_t jobs = 1) {
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorStartBackgroundWork(p, jobs); });
+    }
+    void notifyObserversFinishBackgroundWork(Processor* p, size_t jobs = 1) {
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorFinishBackgroundWork(p, jobs); });
     }
 };
 
