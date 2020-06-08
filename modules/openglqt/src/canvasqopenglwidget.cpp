@@ -60,6 +60,8 @@ void CanvasQOpenGLWidget::defineDefaultContextFormat() {
     if (QOpenGLContext::globalShareContext()) {
         std::string preferProfile = OpenGLCapabilities::getPreferredProfile();
         auto gsc = QOpenGLContext::globalShareContext();
+        // We want the latest possible version
+        gsc->format().setMajorVersion(10);
         if (preferProfile == "core") {
             gsc->format().setProfile(QSurfaceFormat::CoreProfile);
         } else if (preferProfile == "compatibility") {
