@@ -49,12 +49,11 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, size2_t dim)
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
 
-    // Needed in order for initializeGL to be called and we rely on 
+    // Needed in order for initializeGL to be called and we rely on
     // the context being initialized after construction.
     QResizeEvent event(QSize(dim.x, dim.y), QSize(width(), height()));
     QOpenGLWidget::resizeEvent(&event);
 }
-
 
 void CanvasQOpenGLWidget::defineDefaultContextFormat() {
     if (QOpenGLContext::globalShareContext()) {
@@ -81,27 +80,24 @@ void CanvasQOpenGLWidget::initializeGL() {
     // so do not issue draw calls from here.
     // Defer such calls to paintGL() instead.
     QOpenGLWidget::initializeGL();
-
-    
 }
 
 void CanvasQOpenGLWidget::glSwapBuffers() {
-    // Do nothing: 
+    // Do nothing:
     // QOpenGLWidget will swap buffers after paintGL and we are calling this from CanvasGL::update()
     // QOpenGLWidget docs:
-    // triggering a buffer swap just for the QOpenGLWidget is not possible since there is no real, 
-    // onscreen native surface for it. 
-    // Instead, it is up to the widget stack to manage composition and buffer swaps on the gui thread. 
-    // When a thread is done updating the framebuffer, call update() on the GUI/main thread to schedule composition.
+    // triggering a buffer swap just for the QOpenGLWidget is not possible since there is no real,
+    // onscreen native surface for it.
+    // Instead, it is up to the widget stack to manage composition and buffer swaps on the gui
+    // thread. When a thread is done updating the framebuffer, call update() on the GUI/main thread
+    // to schedule composition.
 }
 
-void CanvasQOpenGLWidget::update() { 
-    QOpenGLWidget::update(); // this will trigger a paint event.
+void CanvasQOpenGLWidget::update() {
+    QOpenGLWidget::update();  // this will trigger a paint event.
 }
 
-void CanvasQOpenGLWidget::paintGL() {
-    CanvasGL::update();
-}
+void CanvasQOpenGLWidget::paintGL() { CanvasGL::update(); }
 
 void CanvasQOpenGLWidget::resize(size2_t size) {
     // this should trigger a resize event.

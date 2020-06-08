@@ -46,7 +46,8 @@ namespace inviwo {
 template <typename Base>
 class HiddenCanvasQt : public Base {
 public:
-    explicit HiddenCanvasQt(QWidget *parent, uvec2 dim = uvec2(256, 256)) : Base(parent, dim, "Background") {
+    explicit HiddenCanvasQt(QWidget *parent, uvec2 dim = uvec2(256, 256))
+        : Base(parent, dim, "Background") {
         this->setVisible(false);
         this->doneCurrent();
     }
