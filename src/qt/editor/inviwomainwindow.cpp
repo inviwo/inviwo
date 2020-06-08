@@ -342,9 +342,9 @@ void InviwoMainWindow::saveCanvases(std::string path, std::string fileName) {
     app_->processEvents();
     app_->waitForPool();
 
-    while(app_->getProcessorNetwork()->runningBackgroundJobs() > 0) {
+    while (app_->getProcessorNetwork()->runningBackgroundJobs() > 0) {
         app_->processEvents();
-        app_->processFront();    
+        app_->processFront();
     }
 
     util::saveAllCanvases(app_->getProcessorNetwork(), path, fileName);
