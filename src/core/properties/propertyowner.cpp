@@ -185,9 +185,9 @@ Property* PropertyOwner::getPropertyByIdentifier(const std::string& identifier,
 Property* PropertyOwner::getPropertyByPath(const std::vector<std::string>& path) const {
     if (path.empty()) return nullptr;
 
-    auto last = --path.end();
+    auto lastIt = --path.end();
     auto* curr = this;
-    for (auto pathIt = path.begin(); pathIt != last; ++pathIt) {
+    for (auto pathIt = path.begin(); pathIt != lastIt; ++pathIt) {
         auto compIt =
             std::find_if(curr->compositeProperties_.begin(), curr->compositeProperties_.end(),
                          [&](auto* comp) { return comp->getIdentifier() == *pathIt; });
@@ -197,7 +197,7 @@ Property* PropertyOwner::getPropertyByPath(const std::vector<std::string>& path)
             return nullptr;
         }
     }
-    return curr->getPropertyByIdentifier(*last);
+    return curr->getPropertyByIdentifier(*lastIt);
 }
 
 size_t PropertyOwner::size() const { return properties_.size(); }
