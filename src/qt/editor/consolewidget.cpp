@@ -66,6 +66,9 @@
 #include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/qt/editor/inviwoeditmenu.h>
 
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/processornetworkobserver.h>
+
 namespace inviwo {
 
 TextSelectionDelegate::TextSelectionDelegate(QWidget* parent) : QItemDelegate(parent) {}
@@ -88,6 +91,19 @@ void TextSelectionDelegate::setModelData([[maybe_unused]] QWidget* editor,
                                          [[maybe_unused]] const QModelIndex& index) const {
     // dummy function to prevent changing the model
 }
+
+struct BackgroundJobs : QLabel, ProcessorNetworkObserver {
+    BackgroundJobs(QWidget* parent, ProcessorNetwork* net) : QLabel(parent) {
+        net->addObserver(this);
+        update(0);
+    }
+
+    void update(int jobs) { setText(QString("Backgrund Jobs: %1").arg(jobs)); }
+
+    virtual void onProcessorBackgroundJobsChanged(Processor*, int, int total) override {
+        update(total);
+    }
+};
 
 ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     : InviwoDockWidget(tr("Console"), parent, "ConsoleWidget")
@@ -253,6 +269,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     });
     timer->start(1000);
 
+    statusBar->addWidget(new BackgroundJobs(this, mainwindow_->getInviwoApplication()->getProcessorNetwork()));
+
     statusBar->addSpacing(20);
     statusBar->addWidget(new QLabel("Filter", this));
     filterPattern_->setMinimumWidth(200);
@@ -264,12 +282,13 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     connect(filterPattern_, &QLineEdit::textChanged,
             [this, updateRowsHeights, clearFilter](const QString& text) {
-                filter_->setFilterRegExp(text);
-                updateRowsHeights();
-                clearFilter->setEnabled(!text.isEmpty());
+        filter_->setFilterRegExp(text);
+        updateRowsHeights();
+        clearFilter->setEnabled(!text.isEmpty());
             });
 
-    connect(clearFilter, &QAction::triggered, [this]() { filterPattern_->setText(""); });
+    connect(clearFilter, &QAction::triggered, [this]() {
+        filterPattern_->setText(""); });
 
     auto filterAction = new QAction(makeIcon("find"), "&Filter", this);
     filterAction->setShortcut(Qt::ControlModifier + Qt::AltModifier + Qt::Key_F);
@@ -349,36 +368,36 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     settings.endGroup();
 
     auto editmenu = mainwindow_->getInviwoEditMenu();
-    editActionsHandle_ = editmenu->registerItem(
-        std::make_shared<MenuItem>(this,
-                                   [this](MenuItemType t) -> bool {
-                                       switch (t) {
-                                           case MenuItemType::copy:
-                                               return tableView_->selectionModel()->hasSelection();
-                                           case MenuItemType::cut:
-                                           case MenuItemType::paste:
-                                           case MenuItemType::del:
-                                           case MenuItemType::select:
-                                           default:
-                                               return false;
-                                       }
-                                   },
-                                   [this](MenuItemType t) -> void {
-                                       switch (t) {
-                                           case MenuItemType::copy: {
-                                               if (tableView_->selectionModel()->hasSelection()) {
-                                                   copy();
-                                               }
-                                               break;
-                                           }
-                                           case MenuItemType::cut:
-                                           case MenuItemType::paste:
-                                           case MenuItemType::del:
-                                           case MenuItemType::select:
-                                           default:
-                                               break;
-                                       }
-                                   }));
+    editActionsHandle_ = editmenu->registerItem(std::make_shared<MenuItem>(
+        this,
+        [this](MenuItemType t) -> bool {
+        switch (t) {
+            case MenuItemType::copy:
+                return tableView_->selectionModel()->hasSelection();
+            case MenuItemType::cut:
+            case MenuItemType::paste:
+            case MenuItemType::del:
+            case MenuItemType::select:
+            default:
+                return false;
+        }
+        },
+        [this](MenuItemType t) -> void {
+        switch (t) {
+            case MenuItemType::copy: {
+                if (tableView_->selectionModel()->hasSelection()) {
+                    copy();
+                }
+                break;
+            }
+            case MenuItemType::cut:
+            case MenuItemType::paste:
+            case MenuItemType::del:
+            case MenuItemType::select:
+            default:
+                break;
+        }
+        }));
 }
 
 ConsoleWidget::~ConsoleWidget() = default;

@@ -249,7 +249,11 @@ public:
      */
     void clear();
 
+    int runningBackgroundJobs() const { return backgoundJobs_; }
+
 private:
+    void removeProcessorHelper(Processor* processor);
+
     // PropertyOwnerObserver overrides
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
@@ -260,6 +264,9 @@ private:
     virtual void onProcessorIdentifierChanged(Processor*,
                                               const std::string& oldIdentifier) override;
     virtual void onProcessorPortRemoved(Processor*, Port* port) override;
+
+    virtual void onProcessorStartBackgroundWork(Processor*, size_t jobs) override;
+    virtual void onProcessorFinishBackgroundWork(Processor*, size_t jobs) override;
 
     // ProcessorMeteDataObserver overrides
     virtual void onProcessorMetaDataPositionChange() override;
@@ -273,6 +280,7 @@ private:
 
     unsigned int locked_ = 0;
     bool deserializing_ = false;
+    int backgoundJobs_ = 0;
 
     InviwoApplication* application_;
 

@@ -94,6 +94,11 @@ struct IVW_CORE_API OnScopeExit {
 
     void setAction(ExitAction action = nullptr) { action_ = action; }
     void release() { setAction(); }
+    void call() {
+        if (action_) action_();
+        action_ = nullptr;
+    }
+    operator bool() const { return static_cast<bool>(action_); }
 
 private:
 #include <warn/push>
