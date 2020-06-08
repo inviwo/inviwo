@@ -172,7 +172,7 @@ std::vector<T*> PropertyOwner::getPropertiesByType(bool recursiveSearch) const {
 
     if (recursiveSearch) {
         for (auto* comp : compositeProperties_) {
-            auto sub = comp->getPropertiesByType<T>(true);
+            auto sub = static_cast<PropertyOwner*>(comp)->getPropertiesByType<T>(true);
             foundProperties.insert(foundProperties.end(), sub.begin(), sub.end());
         }
     }
