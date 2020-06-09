@@ -114,6 +114,7 @@ private:
     GLboolean prevDepthMask_;
 
     utilgl::Viewport prevViewport_;
+    std::vector<GLenum> drawBuffers_;
 };
 
 }  // namespace inviwo
