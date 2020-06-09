@@ -26,54 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/network/lambdanetworkvisitor.h>
 
-#include <utility>
-
-namespace inviwo {
-
-class Processor;
-class PropertyOwner;
-class Property;
-class CompositeProperty;
-class CanvasProcessor;
-
-/**
- * @brief Visitor pattern base for visiting an Inviwo ProcessorNetwork
- */
-class IVW_CORE_API NetworkVisitor {
-public:
-    virtual ~NetworkVisitor() = default;
-
-    /**
-     * @brief Visit a Processor
-     * Adding and removing processors while visiting are not supported
-     * @return visit all child properties if true else go to next processor
-     */
-    virtual bool visit(Processor&) { return true; }
-
-    /**
-     * @brief Visit a CanvasProcessor
-     * Adding and removing processors while visiting are not supported
-     * @return visit all child properties if true else go to next processor
-     */
-    virtual bool visit(CanvasProcessor&) { return true; }
-
-    /**
-     * @brief Visit a CompositeProperty
-     * Adding and removing properties while visiting are not supported
-     * @return visit all child properties if true else go to next CompositeProperty
-     */
-    virtual bool visit(CompositeProperty&) { return true; }
-
-    /**
-     * @brief Visit a Property
-     * Adding and removing properties while visiting are not supported
-     * @return not used for Properties
-     */
-    virtual bool visit(Property&) { return true; }
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

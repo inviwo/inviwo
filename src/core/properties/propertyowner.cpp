@@ -37,6 +37,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/network/networkvisitor.h>
+#include <inviwo/core/network/lambdanetworkvisitor.h>
 
 #include <iterator>
 
@@ -122,6 +123,17 @@ Property* PropertyOwner::removeProperty(size_t index) {
                              IVW_CONTEXT);
     }
     return removeProperty(begin() + index);
+}
+
+void PropertyOwner::forEachProperty(std::function<void(Property&)> callback,
+                                    bool recursiveSearch) const {
+    LambdaNetworkVisitor visitor{[&](Property& property) {
+                                     callback(property);
+                                     return recursiveSearch;
+                                 }};
+    for (auto* elem : properties_) {
+        elem->accept(visitor);
+    }
 }
 
 Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {

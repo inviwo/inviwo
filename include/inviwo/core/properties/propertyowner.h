@@ -154,6 +154,9 @@ protected:
     // allocated on the heap.
     std::vector<std::unique_ptr<Property>> ownedProperties_;
 
+    void forEachProperty(std::function<void(Property&)> callback,
+                         bool recursiveSearch = false) const;
+
 private:
     Property* removeProperty(std::vector<Property*>::iterator it);
     bool findPropsForComposites(TxElement*);
@@ -163,34 +166,19 @@ private:
 template <class T>
 std::vector<T*> PropertyOwner::getPropertiesByType(bool recursiveSearch) const {
     std::vector<T*> foundProperties;
-
-    for (auto* property : properties_) {
-        if (auto p = dynamic_cast<T*>(property)) {
-            foundProperties.push_back(p);
-        }
-    }
-
-    if (recursiveSearch) {
-        for (auto* comp : compositeProperties_) {
-            auto sub = static_cast<PropertyOwner*>(comp)->getPropertiesByType<T>(true);
-            foundProperties.insert(foundProperties.end(), sub.begin(), sub.end());
-        }
-    }
+    forEachProperty(
+        [&](Property& property) {
+            if (auto p = dynamic_cast<T*>(&property)) {
+                foundProperties.push_back(p);
+            }
+        },
+        recursiveSearch);
 
     return foundProperties;
 }
 
-namespace detail {
-inline void addPropertyHelper(PropertyOwner&) {}
-template <typename... Ts>
-void addPropertyHelper(PropertyOwner& owner, Property& p, Ts&... props) {
-    owner.addProperty(p);
-    addPropertyHelper(owner, props...);
-}
-}  // namespace detail
-
 template <typename... Ts>
 void PropertyOwner::addProperties(Ts&... properties) {
-    detail::addPropertyHelper(*this, properties...);
+    (addProperty(properties), ...);
 }
 }  // namespace inviwo
