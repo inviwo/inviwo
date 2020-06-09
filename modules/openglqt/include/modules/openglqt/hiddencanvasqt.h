@@ -44,9 +44,9 @@ namespace inviwo {
 
 /*
  * Convenience class for creating an QOffscreenSurface with an QOpenGLContext.
- * 
+ *
  * This class can be used for concurrent OpenGL operations in background threads.
- * The class must be created in the main thread. 
+ * The class must be created in the main thread.
  * initializeGL must be called before use, but can be called in a different thread.
  *
  * @note Most Canvas overriden functions are non-functional except HiddenCanvasQt::activate()
@@ -54,12 +54,12 @@ namespace inviwo {
 class IVW_MODULE_OPENGLQT_API HiddenCanvasQt : public Canvas {
 public:
     /*
-     * Must be created in the main thread. 
-     * Must call initializeGL before using it for 
+     * Must be created in the main thread.
+     * Must call initializeGL before using it for
      */
     HiddenCanvasQt(QSurfaceFormat format = QSurfaceFormat::defaultFormat());
     virtual ~HiddenCanvasQt() = default;
-    /* 
+    /*
      * Initialize context and OpenGL functions. Only call this function once.
      */
     void initializeGL();

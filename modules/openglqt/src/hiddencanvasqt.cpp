@@ -27,7 +27,6 @@
  *
  *********************************************************************************/
 
-
 #include <modules/openglqt/hiddencanvasqt.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/openglcapabilities.h>
@@ -39,7 +38,6 @@
 #include <warn/pop>
 
 namespace inviwo {
-
 
 HiddenCanvasQt::HiddenCanvasQt(QSurfaceFormat format) : Canvas(size2_t{0}) {
     context_.setFormat(format);
