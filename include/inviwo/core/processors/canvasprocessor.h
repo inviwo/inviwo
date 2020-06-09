@@ -82,7 +82,6 @@ public:
      */
     void setEvaluateWhenHidden(bool option);
 
-
     /**
      * @brief Accept a NetworkVisitor, the visitor will visit this and then each Property of the
      * Processor in an undefined order. The Visitor will then visit each Properties's properties and

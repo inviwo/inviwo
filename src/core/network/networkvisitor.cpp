@@ -29,6 +29,4 @@
 
 #include <inviwo/core/network/networkvisitor.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -288,9 +288,7 @@ const std::vector<std::pair<std::string, std::string>>& Property::getAutoLinkToP
     return autoLinkTo_;
 }
 
-void Property::accept(NetworkVisitor& visitor) {
-    visitor.visit(*this);
-}
+void Property::accept(NetworkVisitor& visitor) { visitor.visit(*this); }
 
 // Call this when a property has changed in a way not related to it's "value"
 // When for example semantics have changed, i.e. for stuff where property
