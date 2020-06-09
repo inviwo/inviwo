@@ -48,11 +48,6 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, size2_t dim)
 
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
-
-    // Needed in order for initializeGL to be called and we rely on
-    // the context being initialized after construction.
-    QResizeEvent event(QSize(dim.x, dim.y), QSize(width(), height()));
-    QOpenGLWidget::resizeEvent(&event);
 }
 
 void CanvasQOpenGLWidget::activate() { makeCurrent(); }
