@@ -55,7 +55,6 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, size2_t dim)
     QOpenGLWidget::resizeEvent(&event);
 }
 
-
 void CanvasQOpenGLWidget::activate() { makeCurrent(); }
 
 void CanvasQOpenGLWidget::initializeGL() {
