@@ -48,6 +48,7 @@
 #include <warn/ignore/all>
 #include <QFile>
 #include <QMessageBox>
+#include <QSurfaceFormat>
 #include <warn/pop>
 
 int main(int argc, char** argv) {
@@ -65,6 +66,12 @@ int main(int argc, char** argv) {
 #endif
     // Must be set before constructing QApplication
     QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+    // Setup default context format
+    QSurfaceFormat surfaceFormat;
+    surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
+    surfaceFormat.setMajorVersion(10);  // We want latest OpenGL version
+    QSurfaceFormat::setDefaultFormat(surfaceFormat);
+
     inviwo::InviwoApplicationQt inviwoApp(argc, argv, "Inviwo");
     inviwoApp.setStyleSheetFile(":/stylesheets/inviwo.qss");
 

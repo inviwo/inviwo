@@ -55,19 +55,6 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, size2_t dim)
     QOpenGLWidget::resizeEvent(&event);
 }
 
-void CanvasQOpenGLWidget::defineDefaultContextFormat() {
-    if (QOpenGLContext::globalShareContext()) {
-        std::string preferProfile = OpenGLCapabilities::getPreferredProfile();
-        auto gsc = QOpenGLContext::globalShareContext();
-        // We want the latest possible version
-        gsc->format().setMajorVersion(10);
-        if (preferProfile == "core") {
-            gsc->format().setProfile(QSurfaceFormat::CoreProfile);
-        } else if (preferProfile == "compatibility") {
-            gsc->format().setProfile(QSurfaceFormat::CompatibilityProfile);
-        }
-    }
-}
 
 void CanvasQOpenGLWidget::activate() { makeCurrent(); }
 
@@ -101,7 +88,7 @@ void CanvasQOpenGLWidget::paintGL() { CanvasGL::update(); }
 
 void CanvasQOpenGLWidget::resize(size2_t size) {
     // this should trigger a resize event.
-    QOpenGLWidget::resize(size.x, size.y);
+    QOpenGLWidget::resize(static_cast<int>(size.x), static_cast<int>(size.y));
 }
 
 Canvas::ContextID CanvasQOpenGLWidget::activeContext() const {
@@ -124,7 +111,6 @@ void CanvasQOpenGLWidget::resizeEvent(QResizeEvent* event) {
 
 void CanvasQOpenGLWidget::releaseContext() {
     doneCurrent();
-    context()->create();
     context()->moveToThread(QApplication::instance()->thread());
 }
 

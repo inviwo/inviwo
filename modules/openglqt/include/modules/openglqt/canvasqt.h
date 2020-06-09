@@ -47,7 +47,6 @@
 
 #include <modules/opengl/canvasgl.h>
 #include <modules/opengl/debugmessages.h>
-#include <modules/openglqt/canvasqglwidget.h>
 #include <modules/openglqt/canvasqopenglwidget.h>
 
 #include <warn/push>
@@ -145,19 +144,7 @@ CanvasQtBase<T>::~CanvasQtBase() {
 
 template <typename T>
 std::unique_ptr<Canvas> CanvasQtBase<T>::createHiddenCanvas() {
-    auto thread = QThread::currentThread();
-    // The context has to be created on the main thread.
-    auto res = dispatchFront([&thread]() {
-        auto canvas = std::make_unique<HiddenCanvasQt<CanvasQtBase<T>>>(nullptr);
-        canvas->doneCurrent();
-        canvas->context()->moveToThread(thread);
-        return canvas;
-    });
-
-    auto newContext = res.get();
-    RenderContext::getPtr()->setContextThreadId(newContext->contextId(),
-                                                std::this_thread::get_id());
-    return std::move(newContext);
+    return HiddenCanvasQt::createHiddenQtCanvas();
 }
 
 template <typename T>

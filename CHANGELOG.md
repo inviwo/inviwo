@@ -1,5 +1,17 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2020-06-09 Remove use of deprecated QGLWidget
+Your main file need be updated to enable shared OpenGL context
+```c++
+    // Must be set before constructing QApplication
+    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+    // Setup default context format
+    QSurfaceFormat surfaceFormat;
+    surfaceFormat.setMajorVersion(10);  // We want latest OpenGL version
+    QSurfaceFormat::setDefaultFormat(surfaceFormat);
+```
+
+
 ## 2020-04-03 OrdinalPropertyState
 Added a OrdinalPropertyState helper for constructing ordinal properties.
 And a factory function `util::ordinalColor` for OrdinalProperties representing Colors
