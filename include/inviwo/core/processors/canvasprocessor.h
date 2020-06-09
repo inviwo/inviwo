@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
 #include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/network/networkvisitor.h>
 
 namespace inviwo {
 
@@ -80,6 +81,13 @@ public:
      * By setting setEvaluateWhenHidden to true, it will be evaluated regardless.
      */
     void setEvaluateWhenHidden(bool option);
+
+    /**
+     * @brief Accept a NetworkVisitor, the visitor will visit this and then each Property of the
+     * Processor in an undefined order. The Visitor will then visit each Properties's properties and
+     * so on.
+     */
+    virtual void accept(NetworkVisitor& visitor) override;
 
 protected:
     virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;

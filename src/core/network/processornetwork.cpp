@@ -39,6 +39,7 @@
 #include <inviwo/core/network/processornetworkconverter.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/metadata/processormetadata.h>
+#include <inviwo/core/network/networkvisitor.h>
 
 #include <fmt/format.h>
 
@@ -317,6 +318,12 @@ void ProcessorNetwork::clear() {
     auto processors = getProcessors();
     for (auto processor : processors) {
         removeAndDeleteProcessor(processor);
+    }
+}
+
+void ProcessorNetwork::accept(NetworkVisitor& visitor) {
+    for (auto& p : processors_) {
+        p.second->accept(visitor);
     }
 }
 

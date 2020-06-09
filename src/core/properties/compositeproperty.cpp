@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/network/networkvisitor.h>
 
 namespace inviwo {
 
@@ -140,6 +141,14 @@ std::vector<std::string> CompositeProperty::getPath() const {
     }
     path.push_back(getIdentifier());
     return path;
+}
+
+void CompositeProperty::accept(NetworkVisitor& visitor) {
+    if (visitor.visit(*this)) {
+        for (auto* elem : properties_) {
+            elem->accept(visitor);
+        }
+    }
 }
 
 Processor* CompositeProperty::getProcessor() {
