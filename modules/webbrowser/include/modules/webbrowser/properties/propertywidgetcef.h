@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYWIDGETCEF_H
-#define IVW_PROPERTYWIDGETCEF_H
+#pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/json/io/json/propertyjsonconverter.h>
@@ -174,5 +173,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYWIDGETCEF_H

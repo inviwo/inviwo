@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CEFINTERACTIONHANDLER_H
-#define IVW_CEFINTERACTIONHANDLER_H
+#pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <inviwo/core/interaction/interactionhandler.h>
@@ -89,5 +88,3 @@ private:
 };
 
 };  // namespace inviwo
-
-#endif  // IVW_CEFINTERACTIONHANDLER_H

@@ -46,16 +46,16 @@ void setupResourceManager(CefRefPtr<CefResourceManager> resource_manager) {
         CefPostTask(TID_IO, base::Bind(setupResourceManager, resource_manager));
         return;
     }
-    std::string origin = "https://inviwo";
+    std::string origin = "inviwo://";
     // Redirect paths to corresponding app/module directories.
     // Enables resource loading from these directories directory (js-files and so on).
-    auto appOrigin = origin + "/app";
+    auto appOrigin = origin + "app";
     resource_manager->AddDirectoryProvider(appOrigin, InviwoApplication::getPtr()->getBasePath(),
                                            99, std::string());
 
-    auto moduleOrigin = origin + "/modules";
+    auto moduleOrigin = origin;
     for (const auto& m : InviwoApplication::getPtr()->getModules()) {
-        auto mOrigin = moduleOrigin + "/" + toLower(m->getIdentifier());
+        auto mOrigin = moduleOrigin + toLower(m->getIdentifier());
         auto moduleDir = m->getPath();
         resource_manager->AddDirectoryProvider(mOrigin, moduleDir, 100, std::string());
     }
@@ -63,18 +63,24 @@ void setupResourceManager(CefRefPtr<CefResourceManager> resource_manager) {
 
 }  // namespace detail
 
-WebBrowserClient::WebBrowserClient(const Processor* parent,
-                                   CefRefPtr<RenderHandlerGL> renderHandler,
-                                   const PropertyWidgetCEFFactory* widgetFactory)
-    : parent_(parent)
-    , widgetFactory_(widgetFactory)
-    , renderHandler_(renderHandler)
+WebBrowserClient::WebBrowserClient(const PropertyWidgetCEFFactory* widgetFactory)
+    : widgetFactory_(widgetFactory)
+    , renderHandler_(new RenderHandlerGL([&](CefRefPtr<CefBrowser> browser) {
+        auto bdIt = browserParents_.find(browser->GetIdentifier());
+        if (bdIt != browserParents_.end()) {
+            bdIt->second.processor->invalidate(InvalidationLevel::InvalidOutput);
+        }
+    }))
     , resourceManager_(new CefResourceManager()) {
     detail::setupResourceManager(resourceManager_);
 }
 
-void WebBrowserClient::SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler) {
-    renderHandler_ = renderHandler;
+void WebBrowserClient::setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent) {
+    CEF_REQUIRE_UI_THREAD();
+    BrowserData bd{parent, new ProcessorCefSynchronizer(parent)};
+    browserParents_[browser->GetIdentifier()] = bd;
+    addLoadHandler(bd.processorCefSynchronizer);
+    messageRouter_->AddHandler(bd.processorCefSynchronizer.get(), false);
 }
 
 bool WebBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
@@ -97,9 +103,6 @@ void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
         propertyCefSynchronizer_ = new PropertyCefSynchronizer(widgetFactory_);
         addLoadHandler(propertyCefSynchronizer_);
         messageRouter_->AddHandler(propertyCefSynchronizer_.get(), false);
-        processorCefSynchronizer_ = new ProcessorCefSynchronizer(parent_);
-        addLoadHandler(processorCefSynchronizer_);
-        messageRouter_->AddHandler(processorCefSynchronizer_.get(), false);
     }
 
     browserCount_++;
@@ -115,15 +118,18 @@ bool WebBrowserClient::DoClose(CefRefPtr<CefBrowser> browser) {
 
 void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     CEF_REQUIRE_UI_THREAD();
+    auto bdIt = browserParents_.find(browser->GetIdentifier());
+    if (bdIt != browserParents_.end()) {
+        messageRouter_->RemoveHandler(bdIt->second.processorCefSynchronizer.get());
+        removeLoadHandler(bdIt->second.processorCefSynchronizer);
+        browserParents_.erase(bdIt);
+    }
 
     if (--browserCount_ == 0) {
         // Free the router when the last browser is closed.
         messageRouter_->RemoveHandler(propertyCefSynchronizer_.get());
         removeLoadHandler(propertyCefSynchronizer_);
         propertyCefSynchronizer_ = nullptr;
-        messageRouter_->RemoveHandler(processorCefSynchronizer_.get());
-        removeLoadHandler(processorCefSynchronizer_);
-        processorCefSynchronizer_ = nullptr;
 
         messageRouter_ = NULL;
     }

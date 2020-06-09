@@ -27,11 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_RENDERHANDLERGL_H
-#define IVW_RENDERHANDLERGL_H
+#pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/texture/texture2d.h>
+
+#include <map>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -49,10 +51,11 @@ namespace inviwo {
 #include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
 class IVW_MODULE_WEBBROWSER_API RenderHandlerGL : public CefRenderHandler {
 public:
-    typedef std::function<void()> OnWebPageCopiedCallback;
+    typedef std::function<void(CefRefPtr<CefBrowser>)> OnWebPageCopiedCallback;
 
     RenderHandlerGL(OnWebPageCopiedCallback onWebPageCopiedCallback);
-    void updateCanvasSize(size2_t newSize);
+    void updateCanvasSize(CefRefPtr<CefBrowser> browser, size2_t newSize);
+
     ///
     // Called to retrieve the view rectangle which is relative to screen
     // coordinates. Return true if the rectangle was provided.
@@ -85,33 +88,24 @@ public:
      *   |        |
      * (0,1) -- (1,1)
      */
-    Texture2D &getTexture2D() { return texture2D_; }
+    Texture2D &getTexture2D(CefRefPtr<CefBrowser> browser);
 
-    /*
-     * Get RGBA color of pixel given top-left as pixel origin.
-     * The coordinate system looks like this:
-     *     (0,0)     --     (width-1,0)
-     *       |                   |
-     * (0,height -1) -- (width-1,height -1)
-     */
-    uvec4 getPixel(int x, int y);
-
-    void ClearPopupRects();
+    void ClearPopupRects(CefRefPtr<CefBrowser> browser);
 
 private:
-    CefRect GetPopupRectInWebView(const CefRect &original_rect);
+    struct BrowserData {
+        Texture2D texture2D{size2_t{1, 1}, GL_BGRA, GL_RGBA, GL_UNSIGNED_BYTE, GL_NEAREST};
+        CefRect popupRect;
+        CefRect originalPopupRect;
+    };
+    CefRect GetPopupRectInWebView(CefRefPtr<CefBrowser> browser, const CefRect &original_rect);
 
-    Texture2D texture2D_;
+    std::map<int, BrowserData> browserData_;  /// Per browser data
+
     OnWebPageCopiedCallback
         onWebPageCopiedCallback;  /// Called after web page has been copied in OnPaint
 
-    CefRect popupRect_;
-    CefRect originalPopupRect_;
-
-public:
     IMPLEMENT_REFCOUNTING(RenderHandlerGL);
 };
 #include <warn/pop>
 };  // namespace inviwo
-
-#endif  // IVW_RENDERHANDLERGL_H

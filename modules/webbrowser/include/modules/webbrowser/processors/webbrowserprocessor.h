@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_WEBBROWSERPROCESSOR_H
-#define IVW_WEBBROWSERPROCESSOR_H
+#pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/webbrowser/webbrowserclient.h>
@@ -106,7 +105,7 @@ namespace inviwo {
 #include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
 class IVW_MODULE_WEBBROWSER_API WebBrowserProcessor : public Processor, public CefLoadHandler {
 public:
-    WebBrowserProcessor();
+    WebBrowserProcessor(InviwoApplication* app);
     virtual ~WebBrowserProcessor();
 
     virtual void process() override;
@@ -143,7 +142,6 @@ protected:
     CefImageConverter cefToInviwoImageConverter_;
     // create browser-window
     CefRefPtr<RenderHandlerGL> renderHandler_;
-    CefRefPtr<WebBrowserClient> browserClient_;
     CefRefPtr<CefBrowser> browser_;
     bool isBrowserLoading_ = true;
 
@@ -153,5 +151,3 @@ protected:
 };
 #include <warn/pop>
 }  // namespace inviwo
-
-#endif  // IVW_WEBBROWSERPROCESSOR_H

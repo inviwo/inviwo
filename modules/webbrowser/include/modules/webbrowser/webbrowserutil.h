@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,32 +26,29 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/renderhandlergl.h>
 
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/shader/shader.h>
-
-#include <inviwo/core/ports/imageport.h>
+#include <warn/push>
+#include <warn/ignore/all>
+#include <include/cef_base.h>
+#include <warn/pop>
 
 namespace inviwo {
 
-/* \class CefImageConverter
- * Flips vertical component of Cef output image and write to picking layer on non-transparent areas.
- * @see RenderHandlerGL
+namespace cefutil {
+
+/**
+ * Get default settings for CefBrowserHost::CreateBrowserSync
+ *
+ * Enable loading files from other locations than where the .html file is
+ * browserSettings.file_access_from_file_urls = STATE_ENABLED;
+ *
+ * window_info.SetAsWindowless(nullptr);  // nullptr means no transparency (site background colour)
  */
-class IVW_MODULE_WEBBROWSER_API CefImageConverter {
-public:
-    CefImageConverter(vec3 pickingColor);
+IVW_MODULE_WEBBROWSER_API std::tuple<CefWindowInfo, CefBrowserSettings> getDefaultBrowserSettings();
 
-    void convert(const Texture2D& fromCefOutput, ImageOutport& toInviwOutput,
-                 const ImageInport* optionalBackground = nullptr);
-
-protected:
-    Shader shader_{"img_convert_cef.frag", true};  ///< Flip image y compoenent
-};
+}  // namespace cefutil
 
 }  // namespace inviwo

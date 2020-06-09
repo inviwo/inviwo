@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYCEFSYNCHRONIZER_H
-#define IVW_PROPERTYCEFSYNCHRONIZER_H
+#pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/webbrowser/properties/propertywidgetcef.h>
@@ -129,5 +128,3 @@ private:
 #include <warn/pop>
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYCEFSYNCHRONIZER_H

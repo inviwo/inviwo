@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CEFKEYBOARDMAPPING_H
-#define IVW_CEFKEYBOARDMAPPING_H
+#pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
@@ -50,5 +49,3 @@ unsigned int IVW_MODULE_WEBBROWSER_API keyModifiers(KeyModifiers modifiers, IvwK
 };  // namespace cef
 
 };  // namespace inviwo
-
-#endif  // IVW_CEFKEYBOARDMAPPING_H

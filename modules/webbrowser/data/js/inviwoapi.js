@@ -3,7 +3,7 @@
  * API/Object for communicating with Inviwo through Javascript.
  * Include the API using:
  * ```
- * <script src="https://inviwo/modules/webbrowser/data/js/inviwoapi.js"></script>
+ * <script src="inviwo://webbrowser/data/js/inviwoapi.js"></script>
  * ```
  * If you only need one-way synchronization, e.g. always changing values from the
  * webpage:

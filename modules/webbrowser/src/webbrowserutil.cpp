@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,31 +27,28 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/renderhandlergl.h>
-
-#include <modules/opengl/texture/texture2d.h>
-#include <modules/opengl/shader/shader.h>
-
-#include <inviwo/core/ports/imageport.h>
+#include <modules/webbrowser/webbrowserutil.h>
+#include <tuple>
 
 namespace inviwo {
 
-/* \class CefImageConverter
- * Flips vertical component of Cef output image and write to picking layer on non-transparent areas.
- * @see RenderHandlerGL
- */
-class IVW_MODULE_WEBBROWSER_API CefImageConverter {
-public:
-    CefImageConverter(vec3 pickingColor);
+namespace cefutil {
 
-    void convert(const Texture2D& fromCefOutput, ImageOutport& toInviwOutput,
-                 const ImageInport* optionalBackground = nullptr);
+std::tuple<CefWindowInfo, CefBrowserSettings> getDefaultBrowserSettings() {
+    CefWindowInfo windowInfo;
+    // in linux set a gtk widget, in windows a hwnd. If not available set nullptr
+    // - may cause
+    // some render errors, in context-menu and plugins.
+    windowInfo.SetAsWindowless(nullptr);  // nullptr means no transparency (site background colour)
 
-protected:
-    Shader shader_{"img_convert_cef.frag", true};  ///< Flip image y compoenent
-};
+    CefBrowserSettings browserSettings;
+
+    // Enable loading files from other locations than where the .html file is
+    browserSettings.file_access_from_file_urls = STATE_ENABLED;
+
+    return std::tuple<CefWindowInfo, CefBrowserSettings>{windowInfo, browserSettings};
+}
+
+}  // namespace cefutil
 
 }  // namespace inviwo
