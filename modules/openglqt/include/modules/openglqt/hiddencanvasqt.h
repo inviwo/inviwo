@@ -71,7 +71,7 @@ public:
                         [[maybe_unused]] LayerType layerType = LayerType::Color,
                         [[maybe_unused]] size_t idx = 0) override{};
 
-    virtual size2_t getImageDimensions() const { return size2_t{0}; }
+    virtual size2_t getImageDimensions() const override { return size2_t{0}; }
     virtual void update() override;
     virtual void activate() override;
 

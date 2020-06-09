@@ -42,6 +42,11 @@
 #include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QSurfaceFormat>
+#include <warn/pop>
+
 using namespace inviwo;
 
 int main(int argc, char** argv) {
