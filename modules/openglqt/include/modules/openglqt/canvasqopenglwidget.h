@@ -39,9 +39,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QOpenGLContext>
 #include <QOpenGLWidget>
-#include <QSurfaceFormat>
 #include <warn/pop>
 
 class QResizeEvent;
@@ -56,8 +54,6 @@ public:
 
     explicit CanvasQOpenGLWidget(QWidget* parent = nullptr, size2_t dim = size2_t(256, 256));
     virtual ~CanvasQOpenGLWidget() = default;
-
-    static void defineDefaultContextFormat();
 
     virtual void activate() override;
     virtual void glSwapBuffers() override;
