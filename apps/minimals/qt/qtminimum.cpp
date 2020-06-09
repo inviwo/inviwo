@@ -52,6 +52,12 @@ int main(int argc, char** argv) {
 
     // Must be set before constructing QApplication
     QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+    // Setup default context format
+    QSurfaceFormat surfaceFormat;
+    surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
+    surfaceFormat.setMajorVersion(10);  // We want latest OpenGL version
+    QSurfaceFormat::setDefaultFormat(surfaceFormat);
+
     InviwoApplicationQt inviwoApp(argc, argv, "Inviwo-Qt");
     inviwoApp.printApplicationInfo();
     inviwoApp.setProgressCallback([](std::string m) {

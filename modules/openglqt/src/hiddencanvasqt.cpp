@@ -27,58 +27,63 @@
  *
  *********************************************************************************/
 
-#pragma once
 
-#include <modules/openglqt/openglqtmoduledefine.h>
+#include <modules/openglqt/hiddencanvasqt.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/opengl/canvasgl.h>
-
-#define QT_NO_OPENGL_ES_2
-#define GLEXT_64_TYPES_DEFINED
+#include <modules/opengl/openglcapabilities.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGLWidget>
-#include <QGLFormat>
+#include <QThread>
+#include <QApplication>
 #include <warn/pop>
-
-class QResizeEvent;
 
 namespace inviwo {
 
-/**
- * \class CanvasQGLWidget
- */
-class IVW_MODULE_OPENGLQT_API CanvasQGLWidget : public QGLWidget, public CanvasGL {
-    friend class CanvasProcessorWidgetQt;
 
-public:
-    using QtBase = QGLWidget;
+HiddenCanvasQt::HiddenCanvasQt(QSurfaceFormat format) : Canvas(size2_t{0}) {
+    context_.setFormat(format);
+    offScreenSurface_.setFormat(format);
+    offScreenSurface_.create();
+    context_.setShareContext(QOpenGLContext::globalShareContext());
+}
 
-    explicit CanvasQGLWidget(QGLWidget* parent = nullptr, size2_t dim = size2_t(256, 256));
-    ~CanvasQGLWidget();
+void HiddenCanvasQt::initializeGL() {
+    context_.create();
+    activate();
+    OpenGLCapabilities::initializeGLEW();
+}
 
-    static void defineDefaultContextFormat();
+void HiddenCanvasQt::update() {}
+void HiddenCanvasQt::activate() { context_.makeCurrent(&offScreenSurface_); }
 
-    virtual void activate() override;
-    virtual void glSwapBuffers() override;
-    virtual void update() override;
+std::unique_ptr<Canvas> HiddenCanvasQt::createHiddenCanvas() { return createHiddenQtCanvas(); }
 
-    virtual void resize(size2_t size) override;
-    virtual ContextID activeContext() const override;
-    virtual ContextID contextId() const override;
+std::unique_ptr<Canvas> HiddenCanvasQt::createHiddenQtCanvas() {
+    auto thread = QThread::currentThread();
+    // The context has to be created on the main thread.
+    auto res = dispatchFront([&thread]() {
+        auto canvas = std::make_unique<HiddenCanvasQt>();
+        canvas->getContext()->moveToThread(thread);
+        return canvas;
+    });
 
-protected:
-    void initializeGL() override;
-    void paintGL() override;
-    virtual void resizeEvent(QResizeEvent* event) override;
+    auto newContext = res.get();
+    // OpenGL can be initialized in this thread
+    newContext->initializeGL();
+    RenderContext::getPtr()->setContextThreadId(newContext->contextId(),
+                                                std::this_thread::get_id());
+    return std::move(newContext);
+}
 
-    virtual void releaseContext() override;
+Canvas::ContextID HiddenCanvasQt::activeContext() const {
+    return static_cast<ContextID>(QOpenGLContext::currentContext());
+}
+Canvas::ContextID HiddenCanvasQt::contextId() const { return static_cast<ContextID>(&context_); }
 
-    static CanvasQGLWidget* sharedCanvas_;
-
-private:
-    static QGLFormat sharedFormat_;
-};
+void HiddenCanvasQt::releaseContext() {
+    context_.doneCurrent();
+    context_.moveToThread(QApplication::instance()->thread());
+}
 
 }  // namespace inviwo
