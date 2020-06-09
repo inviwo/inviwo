@@ -32,6 +32,7 @@
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/canvas.h>
+#include <modules/opengl/inviwoopengl.h> // Make sure GLEW is included before QOpenGL stuff
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -68,7 +69,7 @@ public:
      */
     virtual void render([[maybe_unused]] std::shared_ptr<const Image>,
                         [[maybe_unused]] LayerType layerType = LayerType::Color,
-                        [[maybe_unused]] size_t idx = 0) override{};
+                        [[maybe_unused]] size_t idx = 0) override {};
 
     virtual size2_t getImageDimensions() const { return size2_t{0}; }
     virtual void update() override;
@@ -90,7 +91,7 @@ protected:
     /**
      * Derived classes should override to implement actual window state.
      */
-    virtual void setFullScreenInternal(bool fullscreen) override{};
+    virtual void setFullScreenInternal([[maybe_unused]] bool fullscreen) override {};
     QOpenGLContext context_;
     QOffscreenSurface offScreenSurface_;
 };
