@@ -128,9 +128,9 @@ Property* PropertyOwner::removeProperty(size_t index) {
 void PropertyOwner::forEachProperty(std::function<void(Property&)> callback,
                                     bool recursiveSearch) const {
     LambdaNetworkVisitor visitor{[&](Property& property) {
-                                     callback(property);
-                                     return recursiveSearch;
-                                 }};
+        callback(property);
+        return recursiveSearch;
+    }};
     for (auto* elem : properties_) {
         elem->accept(visitor);
     }
