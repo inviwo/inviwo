@@ -67,6 +67,10 @@ int main(int argc, char** argv) {
     // Must be set before constructing QApplication
     QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+    QSurfaceFormat defaultFormat;
+    defaultFormat.setMajorVersion(10);
+    defaultFormat.setProfile(QSurfaceFormat::CoreProfile);
+    QSurfaceFormat::setDefaultFormat(defaultFormat);
 
     inviwo::InviwoApplicationQt inviwoApp(argc, argv, "Inviwo");
     inviwoApp.setStyleSheetFile(":/stylesheets/inviwo.qss");
