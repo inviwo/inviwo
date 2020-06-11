@@ -45,10 +45,10 @@ HiddenCanvasQt::HiddenCanvasQt(QSurfaceFormat format) : Canvas(size2_t{0}) {
     offScreenSurface_.setFormat(format);
     offScreenSurface_.create();
     context_.setShareContext(QOpenGLContext::globalShareContext());
+    context_.create();
 }
 
 void HiddenCanvasQt::initializeGL() {
-    context_.create();
     activate();
     OpenGLCapabilities::initializeGLEW();
 }
