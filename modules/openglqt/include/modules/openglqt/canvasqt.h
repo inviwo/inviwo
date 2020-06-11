@@ -356,9 +356,11 @@ bool CanvasQtBase<T>::mapWheelEvent(QWheelEvent* e) {
     } else if (!numDegrees.isNull()) {
         numSteps = utilqt::toGLM(numDegrees);
     }
-
+    #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
     const auto pos{normalPos(utilqt::toGLM(QPointF(e->position())))};
-
+    #else
+    const auto pos{normalPos(utilqt::toGLM(QPointF(e->pos())))};
+    #endif
     WheelEvent wheelEvent(utilqt::getMouseWheelButtons(e), utilqt::getModifiers(e), numSteps, pos,
                           this->getImageDimensions(), this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
