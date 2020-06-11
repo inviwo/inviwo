@@ -73,7 +73,7 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     }
 
     CanvasGL::defaultGLState();
-    holder_ = RenderContext::getPtr()->setDefaultRenderContext(&sharedCanvas_);
+    //holder_ = RenderContext::getPtr()->setDefaultRenderContext(&sharedCanvas_);
 
     registerProcessorWidget<CanvasProcessorWidgetQt, CanvasProcessorGL>();
     registerCapabilities(util::make_unique<OpenGLQtCapabilities>());
