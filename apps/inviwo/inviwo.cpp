@@ -69,7 +69,8 @@ int main(int argc, char** argv) {
     // Setup default context format
     QSurfaceFormat surfaceFormat;
     surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
-    surfaceFormat.setMajorVersion(10);  // We want latest OpenGL version
+    // Prevent Compability (OpenGL 2.1 on built-in Intel graphics cards)
+    surfaceFormat.setProfile(QSurfaceFormat::CoreProfile); 
     QSurfaceFormat::setDefaultFormat(surfaceFormat);
 
     inviwo::InviwoApplicationQt inviwoApp(argc, argv, "Inviwo");
