@@ -98,9 +98,9 @@ void CanvasQOpenGLWidget::resizeEvent(QResizeEvent* event) {
     }
     setUpdatesEnabled(false);
     util::OnScopeExit enable([&]() { setUpdatesEnabled(true); });
-
-    CanvasGL::resize(uvec2(event->size().width(), event->size().height()));
     QOpenGLWidget::resizeEvent(event);
+    // CanvasGL::resize may switch to default context so call this last
+    CanvasGL::resize(uvec2(event->size().width(), event->size().height()));
 }
 
 void CanvasQOpenGLWidget::releaseContext() {
