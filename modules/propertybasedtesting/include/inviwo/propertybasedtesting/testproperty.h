@@ -40,15 +40,16 @@ namespace inviwo {
 
 class TestResult;
 
-class TestProperty {
+class TestProperty : public Serializable {
 private:
-	Property* const prop;
 	Property* const original;
 public:
-	TestProperty(Property* const original, Property* const prop)
-		: prop(prop)
-		, original(original) {
+	TestProperty(Property* const original)
+		: original(original) {
 	}
+
+	virtual void serialize(Serializer&) const override = 0;
+	virtual void deserialize(Deserializer&) override = 0;
 	
 	virtual void withOptionProperties(std::function<void(OptionPropertyInt*)>) const = 0;
 
@@ -69,11 +70,11 @@ public:
 	virtual void storeDefault() = 0;
 	virtual std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() = 0;
 	Property* getProperty() const {
-		return prop;
-	}
-	Property* getOriginalProperty() const {
 		return original;
 	}
+	// Property* getOriginalProperty() const {
+	// 	return original;
+	// }
 	virtual ~TestProperty() = default;
 };
 
@@ -85,6 +86,13 @@ class TestPropertyTyped : public TestProperty {
 	value_type defaultValue;
 	const std::array<OptionPropertyInt*, numComponents> effectOption;
 public:
+	void serialize(Serializer& s) const override {
+		// TODO
+	}
+	void deserialize(Deserializer& d) override {
+		// TODO
+	}
+
 	void withOptionProperties(std::function<void(OptionPropertyInt*)> f) const {
 		for(auto& x : effectOption)
 			f(x);
@@ -103,11 +111,11 @@ public:
 			std::shared_ptr<TestResult>,
 			std::shared_ptr<TestResult>) const override;
 
-	TestPropertyTyped(T* original, T* prop)
-		: TestProperty(original, prop)
-		, typedProperty(prop)
-		, defaultValue(prop->get())
-		, effectOption([prop](){
+	TestPropertyTyped(T* original)
+		: TestProperty(original)
+		, typedProperty(original)
+		, defaultValue(original->get())
+		, effectOption([original](){
 				std::array<OptionPropertyInt*, numComponents> res;
 				for(size_t i = 0; i < numComponents; i++) {
 					const static std::vector<OptionPropertyOption<int>> options{
@@ -120,7 +128,7 @@ public:
 							{"ANY",				"ANY",				6},
 							{"NOT_COMPARABLE",	"NOT_COMPARABLE",	7}
 						};
-					std::string identifier = prop->getIdentifier() + "_selector_" + std::to_string(i);
+					std::string identifier = original->getIdentifier() + "_selector_" + std::to_string(i);
 					res[i] = new OptionPropertyInt(
 						identifier,
 						"Comparator for increasing values",

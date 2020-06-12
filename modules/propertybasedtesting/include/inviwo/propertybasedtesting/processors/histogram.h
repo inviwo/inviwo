@@ -40,6 +40,7 @@
 
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
@@ -79,6 +80,7 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     
+    virtual void serialize(Serializer& d) const override;
     virtual void deserialize(Deserializer& d) override;
 private:
 	enum TestingState {
@@ -106,8 +108,13 @@ private:
 	void onProcessorNetworkDidRemoveConnection(const PortConnection&) override;
 
 	void updateProcessors();
-	std::unordered_map<Processor*, std::pair<CompositeProperty*, std::vector<std::shared_ptr<TestProperty>>>> processors_;
-	std::vector<CompositeProperty*> compositeProperties_;
+	std::unordered_map<Processor*,
+			std::pair<CompositeProperty*,
+				std::vector<
+					std::pair<BoolCompositeProperty*, std::shared_ptr<TestProperty>>
+				>
+			>
+		> processors_;
 
 	std::vector<std::shared_ptr<TestProperty>> props_; // Properties to test
 	void resetAllProps();

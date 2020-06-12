@@ -122,13 +122,14 @@ void Histogram::updateProcessors() {
 	for(const auto& processor : visitedProcessors) {
 		std::cerr << processor << " " << processor->getIdentifier() << ": " << processors_.count(processor) << std::endl;
 		if(!processors_.count(processor)) {
-			std::vector<std::shared_ptr<TestProperty>> props;
+			std::vector<std::pair<BoolCompositeProperty*, std::shared_ptr<TestProperty>>> props;
 			for(Property* prop : processor->getProperties()) {
 				if(std::optional<std::shared_ptr<TestProperty>> p = testableProperty(prop); p != std::nullopt) {
-					props.emplace_back(*p);
+					props.emplace_back(nullptr, *p);
 				}
 			}
 
+			// Skip processors with no testable property
 			if(props.empty())
 				continue;
 
@@ -137,26 +138,17 @@ void Histogram::updateProcessors() {
 			CompositeProperty* comp = new CompositeProperty(
 					ident,
 					processor->getDisplayName());
-			for(const auto& p : props) {
-				comp->addProperty(p->getProperty());
+			for(auto&[propComp,p] : props) {
+				propComp = new BoolCompositeProperty(
+						p->getProperty()->getIdentifier() + "Comp",
+						p->getProperty()->getDisplayName(),
+						false);
+				p->withOptionProperties([&propComp](auto opt){ propComp->addProperty(opt); });
 
-				p->withOptionProperties([&comp](auto opt){ comp->addProperty(opt); });
+				comp->addProperty(propComp);
 			}
 			processors_.emplace(processor, std::make_pair(comp, props));
 			std::cerr << processor->getDisplayName() << ": " << props.size() << std::endl;
-
-			ButtonProperty* connectButton = new ButtonProperty("connectAll", "Connect All");
-			connectButton->onChange([this,processor](){
-					const auto& [comp, props] = processors_.at(processor);
-					for(const auto& prop : props) {
-						Property* const original = prop->getOriginalProperty();
-						Property* const cloned = prop->getProperty();
-						if(!app_->getProcessorNetwork()->isLinked(cloned, original)) {
-							app_->getProcessorNetwork()->addLink(cloned, original);
-						}
-					}
-				});
-			comp->addProperty(connectButton);
 
 			this->addProperty(comp);
 		}
@@ -177,6 +169,8 @@ Histogram::Histogram(InviwoApplication* app)
 	, countPixelsButton_("cntPixelsButton", "Count number of pixels with set color")
 	, startButton_("startButton", "Start")
 	, numTests_("numTests", "Maximum number of tests", 200, 1, 10000) {
+
+	std::cerr << "Histogram(app=" << app << ")" << std::endl;
 
 	countPixelsButton_.onChange([this]() {
 			NetworkLock lock(this);
@@ -219,10 +213,16 @@ Histogram::Histogram(InviwoApplication* app)
 	app_->getProcessorNetwork()->addObserver(this);
 }
 
-void Histogram::deserialize(Deserializer& d) {
-	Processor::deserialize(d);
+void Histogram::serialize(Serializer& s) const {
 
+	Processor::serialize(s);
+}
+
+void Histogram::deserialize(Deserializer& d) {
+	std::cerr << "Histogram::deserialize()" << std::endl;
 	// TODO
+	
+	Processor::deserialize(d);
 }
 
 void Histogram::initTesting() {
@@ -233,9 +233,9 @@ void Histogram::initTesting() {
 
 	for(const auto&[processor,procData] : processors_) {
 		const auto&[comp,props] = procData;
-		std::copy_if(props.begin(), props.end(), std::back_inserter(props_), [this](auto& prop) {
-				return app_->getProcessorNetwork()->isLinked(prop->getProperty(), prop->getOriginalProperty());
-			});
+		for(const auto&[propComp, prop] : props)
+			if(propComp->isChecked())
+				props_.emplace_back(prop);
 	}
 
 	// store current state in order to reset it after testing
