@@ -87,7 +87,8 @@ private:
     algorithm::EntryExitPointsHelper entryExitHelper_;
 
     ImageGL* entryImg_ = nullptr;
-    ImageGL* exitImg_ = nullptr;;
+    ImageGL* exitImg_ = nullptr;
+    ;
 };
 
 }  // namespace inviwo

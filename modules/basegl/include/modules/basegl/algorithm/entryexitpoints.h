@@ -85,8 +85,8 @@ public:
      * @param capNearClip  if true and the near clip plane of the camera is inside the volume, an
      *                     additional plane will be used to close the volume in front of the camera
      */
-    void operator()(ImageGL& entryPoints, ImageGL& exitPoints, const Camera& camera, const Mesh& mesh,
-                    bool capNearClip);
+    void operator()(ImageGL& entryPoints, ImageGL& exitPoints, const Camera& camera,
+                    const Mesh& mesh, bool capNearClip);
 
     /**
      * \brief computes entry and exit points for raycasting using the given \p camera and bounding
@@ -126,8 +126,9 @@ private:
     void createEntryExitPoints(ImageGL& entryPoints, ImageGL& exitPoints, const Camera& camera,
                                const Mesh& mesh, bool applyTrafo = false,
                                const mat4& meshDataToVolumeData = mat4(1.0f));
-    void createCappedEntryExitPoints(ImageGL& entryPoints, ImageGL& exitPoints, const Camera& camera,
-                                     const Mesh& mesh, bool applyTrafo = false,
+    void createCappedEntryExitPoints(ImageGL& entryPoints, ImageGL& exitPoints,
+                                     const Camera& camera, const Mesh& mesh,
+                                     bool applyTrafo = false,
                                      const mat4& meshDataToVolumeData = mat4(1.0f));
 
     Shader entryExitShader_;
