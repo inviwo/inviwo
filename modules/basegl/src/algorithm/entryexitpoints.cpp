@@ -37,6 +37,7 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/image/imagegl.h>
 
 namespace inviwo {
 
@@ -50,6 +51,17 @@ EntryExitPointsHelper::EntryExitPointsHelper()
 void EntryExitPointsHelper::operator()(Image& entryPoints, Image& exitPoints, const Camera& camera,
                                        const Mesh& mesh, bool capNearClip) {
     if (capNearClip) {
+        createCappedEntryExitPoints(*entryPoints.getEditableRepresentation<ImageGL>(),
+                                    *exitPoints.getEditableRepresentation<ImageGL>(), camera, mesh);
+    } else {
+        createEntryExitPoints(*entryPoints.getEditableRepresentation<ImageGL>(),
+                              *exitPoints.getEditableRepresentation<ImageGL>(), camera, mesh);
+    }
+}
+
+void EntryExitPointsHelper::operator()(ImageGL& entryPoints, ImageGL& exitPoints,
+                                       const Camera& camera, const Mesh& mesh, bool capNearClip) {
+    if (capNearClip) {
         createCappedEntryExitPoints(entryPoints, exitPoints, camera, mesh);
     } else {
         createEntryExitPoints(entryPoints, exitPoints, camera, mesh);
@@ -58,6 +70,25 @@ void EntryExitPointsHelper::operator()(Image& entryPoints, Image& exitPoints, co
 
 void EntryExitPointsHelper::operator()(Image& entryPoints, Image& exitPoints, const Camera& camera,
                                        const Volume& volume, const Mesh& mesh, bool capNearClip) {
+    const mat4 meshDataToVolumeData =
+        volume.getCoordinateTransformer(camera).getWorldToDataMatrix() *
+        mesh.getCoordinateTransformer().getDataToWorldMatrix();
+
+    if (capNearClip) {
+        createCappedEntryExitPoints(*entryPoints.getEditableRepresentation<ImageGL>(),
+                                    *exitPoints.getEditableRepresentation<ImageGL>(), camera, mesh,
+                                    true, meshDataToVolumeData);
+    } else {
+        createEntryExitPoints(*entryPoints.getEditableRepresentation<ImageGL>(),
+                              *exitPoints.getEditableRepresentation<ImageGL>(), camera, mesh, true,
+                              meshDataToVolumeData);
+    }
+}
+
+void EntryExitPointsHelper::operator()(ImageGL& entryPoints, ImageGL& exitPoints,
+                                       const Camera& camera, const Volume& volume, const Mesh& mesh,
+                                       bool capNearClip) {
+
     const mat4 meshDataToVolumeData =
         volume.getCoordinateTransformer(camera).getWorldToDataMatrix() *
         mesh.getCoordinateTransformer().getDataToWorldMatrix();
@@ -74,11 +105,10 @@ std::vector<std::reference_wrapper<Shader>> EntryExitPointsHelper::getShaders() 
     return {entryExitShader_, meshEntryExitShader_, nearClipShader_};
 }
 
-void EntryExitPointsHelper::createEntryExitPoints(Image& entryPoints, Image& exitPoints,
+void EntryExitPointsHelper::createEntryExitPoints(ImageGL& entryPoints, ImageGL& exitPoints,
                                                   const Camera& camera, const Mesh& mesh,
                                                   bool applyTrafo,
                                                   const mat4& meshDataToVolumeData) {
-    utilgl::PointSizeState pointsize(1.0f);
 
     Shader& shader = applyTrafo ? meshEntryExitShader_ : entryExitShader_;
 
@@ -93,7 +123,8 @@ void EntryExitPointsHelper::createEntryExitPoints(Image& entryPoints, Image& exi
         // generate exit points
         utilgl::DepthFuncState depthfunc(GL_GREATER);
         utilgl::ClearDepth clearDepth(0.0f);
-        utilgl::activateAndClearTarget(exitPoints, ImageType::ColorDepth);
+        exitPoints.activateBuffer(ImageType::ColorDepth);
+        utilgl::clearCurrentTarget();
         utilgl::CullFaceState cull(GL_FRONT);
         drawer.draw();
         utilgl::deactivateCurrentTarget();
@@ -102,7 +133,8 @@ void EntryExitPointsHelper::createEntryExitPoints(Image& entryPoints, Image& exi
     {
         // generate entry points
         utilgl::DepthFuncState depthfunc(GL_LESS);
-        utilgl::activateAndClearTarget(entryPoints, ImageType::ColorDepth);
+        entryPoints.activateBuffer(ImageType::ColorDepth);
+        utilgl::clearCurrentTarget();
 
         utilgl::CullFaceState cull(GL_BACK);
         drawer.draw();
@@ -111,11 +143,10 @@ void EntryExitPointsHelper::createEntryExitPoints(Image& entryPoints, Image& exi
     shader.deactivate();
 }
 
-void EntryExitPointsHelper::createCappedEntryExitPoints(Image& entryPoints, Image& exitPoints,
+void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, ImageGL& exitPoints,
                                                         const Camera& camera, const Mesh& mesh,
                                                         bool applyTrafo,
                                                         const mat4& meshDataToVolumeData) {
-    utilgl::PointSizeState pointsize(1.0f);
 
     Shader& shader = applyTrafo ? meshEntryExitShader_ : entryExitShader_;
 
@@ -130,7 +161,8 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(Image& entryPoints, Imag
         // generate exit points
         utilgl::DepthFuncState depthfunc(GL_GREATER);
         utilgl::ClearDepth clearDepth(0.0f);
-        utilgl::activateAndClearTarget(exitPoints, ImageType::ColorDepth);
+        exitPoints.activateBuffer(ImageType::ColorDepth);
+        utilgl::clearCurrentTarget();
         utilgl::CullFaceState cull(GL_FRONT);
         drawer.draw();
         utilgl::deactivateCurrentTarget();
@@ -140,10 +172,13 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(Image& entryPoints, Imag
         // generate entry points
         utilgl::DepthFuncState depthfunc(GL_LESS);
         if (!tmpEntry_ || tmpEntry_->getDimensions() != entryPoints.getDimensions() ||
-            tmpEntry_->getDataFormat() != entryPoints.getDataFormat()) {
-            tmpEntry_.reset(new Image(entryPoints.getDimensions(), entryPoints.getDataFormat()));
+            tmpEntry_->getDataFormat() != entryPoints.getColorLayerGL()->getDataFormat()) {
+            tmpEntry_.reset(new Image(entryPoints.getDimensions(),
+                                      entryPoints.getColorLayerGL()->getDataFormat()));
+            tmpEntryGL_ = tmpEntry_->getEditableRepresentation<ImageGL>();
         }
-        utilgl::activateAndClearTarget(*tmpEntry_);
+        tmpEntryGL_->activateBuffer(ImageType::AllLayers);
+        utilgl::clearCurrentTarget();
 
         utilgl::CullFaceState cull(GL_BACK);
         drawer.draw();
@@ -151,12 +186,22 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(Image& entryPoints, Imag
     }
 
     // render an image plane aligned quad to cap the proxy geometry
-    utilgl::activateAndClearTarget(entryPoints, ImageType::ColorDepth);
+    entryPoints.activateBuffer(ImageType::ColorDepth);
+    utilgl::clearCurrentTarget();
+
     nearClipShader_.activate();
 
-    TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(nearClipShader_, units, *tmpEntry_, "entry", ImageType::ColorDepth);
-    utilgl::bindAndSetUniforms(nearClipShader_, units, exitPoints, "exit", ImageType::ColorDepth);
+    TextureUnit entryColorUnit, entryDepthUnit;
+    tmpEntryGL_->getColorLayerGL()->bindTexture(entryColorUnit);
+    tmpEntryGL_->getDepthLayerGL()->bindTexture(entryDepthUnit);
+    nearClipShader_.setUniform("entryColor", entryColorUnit);
+    nearClipShader_.setUniform("entryDepth", entryDepthUnit);
+
+    TextureUnit exitColorUnit, exitDepthUnit;
+    exitPoints.getColorLayerGL()->bindTexture(exitColorUnit);
+    exitPoints.getDepthLayerGL()->bindTexture(exitDepthUnit);
+    nearClipShader_.setUniform("exitColor", exitColorUnit);
+    nearClipShader_.setUniform("exitDepth", exitDepthUnit);
 
     // the rendered plane is specified in camera coordinates
     // thus we must transform from camera to world to texture coordinates

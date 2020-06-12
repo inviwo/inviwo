@@ -304,14 +304,18 @@ Canvas* CanvasProcessor::getCanvas() const {
 }
 
 void CanvasProcessor::process() {
-    if (auto c = getCanvas()) {
-        c->render(inport_.getData(), visibleLayer_, colorLayer_);
+    if (processorWidget_->isVisible()) {
+        if (auto c = getCanvas()) {
+            c->render(inport_.getData(), visibleLayer_, colorLayer_);
+        }
     }
 }
 
 void CanvasProcessor::doIfNotReady() {
-    if (auto c = getCanvas()) {
-        c->render(nullptr, visibleLayer_, colorLayer_);
+    if (processorWidget_->isVisible()) {
+        if (auto c = getCanvas()) {
+            c->render(nullptr, visibleLayer_, colorLayer_);
+        }
     }
 }
 

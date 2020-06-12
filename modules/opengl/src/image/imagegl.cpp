@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
+#include <modules/opengl/image/imagegl.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/datastructures/image/image.h>
-#include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/canvasgl.h>
@@ -82,18 +82,18 @@ void ImageGL::reAttachAllLayers(ImageType type) {
 void ImageGL::activateBuffer(ImageType type) {
     frameBufferObject_.activate();
 
-    std::vector<GLenum> drawBuffers{frameBufferObject_.getDrawBuffers()};
-    if (!drawBuffers.empty()) {
-        GLsizei numBuffersToDrawTo = static_cast<GLsizei>(drawBuffers.size());
+    drawBuffers_ = frameBufferObject_.getDrawBuffers();
+    if (!drawBuffers_.empty()) {
+        GLsizei numBuffersToDrawTo = static_cast<GLsizei>(drawBuffers_.size());
 
         // remove second render target (location = 1) when picking is disabled
         if (!typeContainsPicking(type) && (numBuffersToDrawTo > 1) &&
-            (drawBuffers[1] == GL_COLOR_ATTACHMENT7)) {
-            drawBuffers.erase(drawBuffers.begin() + 1);
+            (drawBuffers_[1] == GL_COLOR_ATTACHMENT7)) {
+            drawBuffers_.erase(drawBuffers_.begin() + 1);
             --numBuffersToDrawTo;
         }
 
-        glDrawBuffers(numBuffersToDrawTo, drawBuffers.data());
+        glDrawBuffers(numBuffersToDrawTo, drawBuffers_.data());
         LGL_ERROR;
     }
 

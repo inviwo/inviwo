@@ -44,6 +44,8 @@
 
 namespace inviwo {
 
+class ImageGL;
+
 /** \docpage{org.inviwo.EntryExitPoints, Entry exit points}
  * ![](org.inviwo.EntryExitPoints.png?classIdentifier=org.inviwo.EntryExitPoints)
  * Computes the entry and exit points of a triangle mesh from the camera position in texture space.
@@ -83,6 +85,9 @@ private:
     CameraTrackball trackball_;
 
     algorithm::EntryExitPointsHelper entryExitHelper_;
+
+    ImageGL* entryImg_ = nullptr;
+    ImageGL* exitImg_ = nullptr;
 };
 
 }  // namespace inviwo

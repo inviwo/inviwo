@@ -30,6 +30,7 @@
 #include <modules/basegl/processors/entryexitpointsprocessor.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/algorithm/boundingbox.h>
+#include <modules/opengl/image/imagegl.h>
 
 namespace inviwo {
 
@@ -62,11 +63,17 @@ EntryExitPoints::EntryExitPoints()
     }
 }
 
-EntryExitPoints::~EntryExitPoints() {}
+EntryExitPoints::~EntryExitPoints() = default;
 
 void EntryExitPoints::process() {
-    entryExitHelper_(*entryPort_.getEditableData().get(), *exitPort_.getEditableData().get(),
-                     camera_.get(), *inport_.getData().get(), capNearClipping_.get());
+    if (!entryImg_ || !entryImg_->isValid()) {
+        entryImg_ = entryPort_.getEditableData()->getEditableRepresentation<ImageGL>();
+    }
+    if (!exitImg_ || !exitImg_->isValid()) {
+        exitImg_ = exitPort_.getEditableData()->getEditableRepresentation<ImageGL>();
+    }
+
+    entryExitHelper_(*entryImg_, *exitImg_, camera_.get(), *inport_.getData(), capNearClipping_);
 }
 
 void EntryExitPoints::deserialize(Deserializer& d) {

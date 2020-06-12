@@ -710,7 +710,9 @@ set(GEN_FILES
 source_group("Header Files\\common" FILES ${CMAKE_CURRENT_BINARY_DIR}/include/inviwo/core/common/coremodulesharedlibrary.h)
 source_group("Source Files\\common" FILES ${CMAKE_CURRENT_BINARY_DIR}/src/common/coremodulesharedlibrary.cpp)
 
-set(cmake_files "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt")
+set(cmake_files 
+    "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt"
+)
 source_group("CMake Files" FILES ${cmake_files})
 
 # Special Core Defines
@@ -718,7 +720,11 @@ remove_definitions(-DHAVE_CONFIG_H)
 
 #--------------------------------------------------------------------
 # Create library
-add_library(inviwo-core ${SOURCE_FILES} ${HEADER_FILES} ${GEN_FILES})
+add_library(inviwo-core 
+    ${SOURCE_FILES} ${HEADER_FILES} ${GEN_FILES}
+    $<$<BOOL:${WIN32}>:${IVW_ROOT_DIR}/tools/natvis/inviwo.natvis>
+    $<$<BOOL:${WIN32}>:${IVW_ROOT_DIR}/tools/natvis/glm.natvis>
+)
 add_library(inviwo::core ALIAS inviwo-core)
 
 #--------------------------------------------------------------------
