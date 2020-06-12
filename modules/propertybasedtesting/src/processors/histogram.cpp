@@ -214,15 +214,64 @@ Histogram::Histogram(InviwoApplication* app)
 }
 
 void Histogram::serialize(Serializer& s) const {
-
 	Processor::serialize(s);
+
+	std::cerr << "Histogram::serialize()" << std::endl;
+
+	std::vector<Processor*> procs;
+	std::vector<CompositeProperty*> comps;
+	std::vector<std::vector<BoolCompositeProperty*>> boolComps;
+	std::vector<std::vector<Property*>> testProps;
+
+	for(const auto&[processor,procData] : processors_) {
+		std::vector<BoolCompositeProperty*> boolComp;
+		std::vector<Property*> testProp;
+
+		const auto&[comp,props] = procData;
+		for(const auto&[propComp, prop] : props) {
+			boolComp.emplace_back(propComp);
+			testProp.emplace_back(prop->getProperty());
+		}
+
+		procs.emplace_back(processor);
+		comps.emplace_back(comp);
+		boolComps.emplace_back(boolComp);
+		testProps.emplace_back(testProp);
+	}
+
+	s.serialize("TestProcessors", procs);
+	s.serialize("CompositeProps", comps);
+	s.serialize("BoolComps", boolComps);
+	s.serialize("TestProps", testProps);
 }
 
 void Histogram::deserialize(Deserializer& d) {
-	std::cerr << "Histogram::deserialize()" << std::endl;
-	// TODO
-	
 	Processor::deserialize(d);
+
+	std::cerr << "Histogram::deserialize()" << std::endl;
+	
+	std::vector<Processor*> procs;
+	std::vector<CompositeProperty*> comps;
+	std::vector<std::vector<BoolCompositeProperty*>> boolComps;
+	std::vector<std::vector<Property*>> testProps;
+
+	d.deserialize("TestProcessors", procs);
+	d.deserialize("CompositeProps", comps);
+	d.deserialize("BoolComps", boolComps);
+	d.deserialize("TestProps", testProps);
+
+	assert(procs.size() == comps.size() &&
+			procs.size() == boolComps.size() &&
+			procs.size() == testProps.size());
+
+	for(size_t i = 0; i < procs.size(); i++) {
+		assert(boolComps[i].size() == testProps[i].size());
+		std::vector<std::pair<BoolCompositeProperty*, std::shared_ptr<TestProperty>>> props;
+		for(size_t j = 0; j < boolComps[i].size(); j++)
+			props.emplace_back(boolComps[i][j], *testableProperty(testProps[i][j]));
+
+		processors_[procs[i]] = std::make_pair(comps[i], props);
+	}
 }
 
 void Histogram::initTesting() {
@@ -265,11 +314,11 @@ void Histogram::initTesting() {
 	std::cerr << "remainingTests.size() = " << remainingTests.size() << std::endl;
 	util::log(IVW_CONTEXT, std::string("Testing ") + std::to_string(remainingTests.size()) + " configurations...", LogLevel::Info, LogAudience::User);
 
-	assert(remainingTests.size() > 0);
-
-	app_->dispatchFront([this]() {
-			setupTest(remainingTests.front());
+	if(remainingTests.size() > 0) {
+		app_->dispatchFront([this]() {
+				setupTest(remainingTests.front());
 			});
+	}
 }
 
 std::ostream& printError(std::ostream& out, const std::vector<std::shared_ptr<TestProperty>> props, const TestingError& err) {

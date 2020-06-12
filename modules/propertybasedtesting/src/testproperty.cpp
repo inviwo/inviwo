@@ -35,8 +35,8 @@ template<typename T>
 std::optional<util::PropertyEffect> TestPropertyTyped<T>::getPropertyEffect(
 		std::shared_ptr<TestResult> newTestResult,
 		std::shared_ptr<TestResult> oldTestResult) const {
-	const value_type& valNew = newTestResult->getValue(this->typedProperty);
-	const value_type& valOld = oldTestResult->getValue(this->typedProperty);
+	const val_type& valNew = newTestResult->getValue(this->typedProperty);
+	const val_type& valOld = oldTestResult->getValue(this->typedProperty);
 
 	std::array<util::PropertyEffect, numComponents> selectedEffects;
 	for(size_t i = 0; i < numComponents; i++)
@@ -45,8 +45,8 @@ std::optional<util::PropertyEffect> TestPropertyTyped<T>::getPropertyEffect(
 	std::optional<util::PropertyEffect> res = {util::PropertyEffect::ANY};
 	for(size_t i = 0; res && i < numComponents; i++) {
 		auto compEff = util::propertyEffect(selectedEffects[i],
-				util::GetComponent<value_type, numComponents>::get(valNew, i),
-				util::GetComponent<value_type, numComponents>::get(valOld, i));
+				util::GetComponent<val_type, numComponents>::get(valNew, i),
+				util::GetComponent<val_type, numComponents>::get(valOld, i));
 		res = util::combine(*res, compEff);
 	}
 	return res;
@@ -62,7 +62,7 @@ std::string TestPropertyTyped<T>::getValueString(std::shared_ptr<TestResult> tes
 template<typename T>
 std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 			std::shared_ptr<TestResult> testResult) const {
-	const value_type& val = testResult->getValue(this->typedProperty);
+	const val_type& val = testResult->getValue(this->typedProperty);
 	
 	std::array<util::PropertyEffect, numComponents> selectedEffects;
 	for(size_t i = 0; i < numComponents; i++)
@@ -75,8 +75,8 @@ template<typename T>
 std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 			std::shared_ptr<TestResult> newTestResult,
 			std::shared_ptr<TestResult> oldTestResult) const {
-	const value_type& valNew = newTestResult->getValue(this->typedProperty);
-	const value_type& valOld = oldTestResult->getValue(this->typedProperty);
+	const val_type& valNew = newTestResult->getValue(this->typedProperty);
+	const val_type& valOld = oldTestResult->getValue(this->typedProperty);
 	
 	return out << '\"' << getProperty()->getDisplayName() << "\" with identifier \"" << getProperty()->getIdentifier() << "\": "
 				<< valNew << ", " << valOld << " ; comparator set to  "

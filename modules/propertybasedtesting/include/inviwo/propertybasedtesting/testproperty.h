@@ -40,17 +40,8 @@ namespace inviwo {
 
 class TestResult;
 
-class TestProperty : public Serializable {
-private:
-	Property* const original;
+class TestProperty {
 public:
-	TestProperty(Property* const original)
-		: original(original) {
-	}
-
-	virtual void serialize(Serializer&) const override = 0;
-	virtual void deserialize(Deserializer&) override = 0;
-	
 	virtual void withOptionProperties(std::function<void(OptionPropertyInt*)>) const = 0;
 
 	virtual std::string getValueString(std::shared_ptr<TestResult>) const = 0;
@@ -69,30 +60,19 @@ public:
 	virtual void setToDefault() const = 0;
 	virtual void storeDefault() = 0;
 	virtual std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() = 0;
-	Property* getProperty() const {
-		return original;
-	}
-	// Property* getOriginalProperty() const {
-	// 	return original;
-	// }
+	virtual Property* getProperty() const = 0;
 	virtual ~TestProperty() = default;
 };
 
 template<typename T>
 class TestPropertyTyped : public TestProperty {
-	using value_type = typename T::value_type;
-	static constexpr size_t numComponents = DataFormat<value_type>::components();
-	T* const typedProperty;
-	value_type defaultValue;
-	const std::array<OptionPropertyInt*, numComponents> effectOption;
-public:
-	void serialize(Serializer& s) const override {
-		// TODO
-	}
-	void deserialize(Deserializer& d) override {
-		// TODO
-	}
+	using val_type = typename T::value_type;
+	static constexpr size_t numComponents = DataFormat<val_type>::components();
 
+	T* typedProperty;
+	val_type defaultValue;
+	std::array<OptionPropertyInt*, numComponents> effectOption;
+public:
 	void withOptionProperties(std::function<void(OptionPropertyInt*)> f) const {
 		for(auto& x : effectOption)
 			f(x);
@@ -112,7 +92,7 @@ public:
 			std::shared_ptr<TestResult>) const override;
 
 	TestPropertyTyped(T* original)
-		: TestProperty(original)
+		: TestProperty()
 		, typedProperty(original)
 		, defaultValue(original->get())
 		, effectOption([original](){
@@ -142,10 +122,13 @@ public:
 	T* getTypedProperty() const {
 		return typedProperty;
 	}
+	Property* getProperty() const override {
+		return getTypedProperty();
+	}
 	void setToDefault() const {
 		typedProperty->set(defaultValue);
 	}
-	const value_type& getDefaultValue() {
+	const val_type& getDefaultValue() {
 		return defaultValue;
 	}
 	void storeDefault() {
