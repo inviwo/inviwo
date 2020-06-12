@@ -30,12 +30,43 @@
     </Expand>
   </Type>
 
+  <Type Name="inviwo::BufferBase">
+    <DisplayString>BufferBase</DisplayString>
+    <Expand>
+      <Item Name="Usage">usage_</Item>
+      <Item Name="Target">target_</Item>
+      <Synthetic Name="Representations"><DisplayString>{representations_._List._Mypair._Myval2._Mysize}</DisplayString>
+        <Expand>
+          <LinkedListItems>
+            <Size>representations_._List._Mypair._Myval2._Mysize</Size>
+            <HeadPointer>representations_._List._Mypair._Myval2._Myhead-&gt;_Next</HeadPointer>
+            <NextPointer>_Next</NextPointer>
+            <ValueNode>*_Myval.second</ValueNode>
+          </LinkedListItems>
+        </Expand>
+      </Synthetic>
+
+    </Expand>
+  </Type>
+
   <Type Name="inviwo::Buffer&lt;*&gt;">
-    <DisplayString>Buffer Size={size_} Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
+    <DisplayString>Buffer {"$T1"} Size={size_} Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
     <Expand>
       <Item Name="Size">size_</Item>
       <Item Name="Format">*dataFormatBase_</Item>
-      <Item Name="Representations">representations_</Item>
+      <Item Name="Usage">usage_</Item>
+      <Item Name="Target">target_</Item>
+      <Synthetic Name="Representations"><DisplayString>{representations_._List._Mypair._Myval2._Mysize}</DisplayString>
+        <Expand>
+          <LinkedListItems>
+            <Size>representations_._List._Mypair._Myval2._Mysize</Size>
+            <HeadPointer>representations_._List._Mypair._Myval2._Myhead-&gt;_Next</HeadPointer>
+            <NextPointer>_Next</NextPointer>
+            <ValueNode>*_Myval.second</ValueNode>
+          </LinkedListItems>
+        </Expand>
+      </Synthetic>
+
     </Expand>
   </Type>
 
@@ -59,7 +90,7 @@
 
 
   <Type Name="inviwo::BufferRAMPrecision&lt;*&gt;">
-    <DisplayString>BufferRAMPrecision Valid={isValid_} Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
+    <DisplayString>BufferRAMPrecision {"$T1"} Valid={isValid_} Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
     <Expand>
       <Item Name="Owner">*owner_</Item>
       <Item Name="Valid">isValid_</Item>
@@ -74,19 +105,37 @@
       <Item Name="Owner">*owner_</Item>
       <Item Name="Valid">isValid_</Item>
       <Item Name="Format">*dataFormatBase_</Item>
+      <Item Name="Size">size_</Item>
+      <Item Name="Usage">usage_</Item>
+      <Item Name="Target">target_</Item>
+      <Item Name="BufferObect">buffer_</Item>
+      <Item Name="BufferObectArray">bufferArray_</Item>
     </Expand>
   </Type>
-  
-  <Type Name="inviwo::VolumeRepresentation">
-    <DisplayString>{VolumeRepresentation, Format={dataFormatBase_-&gt;formatStr_}}</DisplayString>
+
+  <Type Name="inviwo::Mesh">
+    <DisplayString>Mesh buffers {buffers_.size()} indices {indices.size()}</DisplayString>
     <Expand>
-      <Item Name="Owner">*owner_</Item>
-      <Item Name="Format">*dataFormatBase_</Item>
+      <Item Name="Buffers">buffers_</Item>
+      <Item Name="Indices">indices_</Item>
+      <Item Name="ModelMatrix">modelMatrix_</Item>
+      <Item Name="WorldMatrix">worldMatrix_</Item>
+      <Synthetic Name="Representations"><DisplayString>{representations_._List._Mypair._Myval2._Mysize}</DisplayString>
+        <Expand>
+          <LinkedListItems>
+            <Size>representations_._List._Mypair._Myval2._Mysize</Size>
+            <HeadPointer>representations_._List._Mypair._Myval2._Myhead-&gt;_Next</HeadPointer>
+            <NextPointer>_Next</NextPointer>
+            <ValueNode>*_Myval.second</ValueNode>
+          </LinkedListItems>
+        </Expand>
+      </Synthetic>
+      <Item Name="MetaData">metaData_</Item>
     </Expand>
   </Type>
-  
+    
   <Type Name="inviwo::VolumeDisk">
-    <DisplayString>{{VolumeDisk, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <DisplayString>VolumeDisk, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
     <Expand>
       <Item Name="Dimension">dimensions_</Item>
       <Item Name="Owner">*owner_</Item>
@@ -96,26 +145,39 @@
   </Type>
 
   <Type Name="inviwo::VolumeRAMPrecision&lt;*&gt;">
-    <DisplayString>{{VolumeRAM, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <DisplayString>VolumeRAMPrecision {"$T1"}, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
     <Expand>
       <Item Name="Dimension">dimensions_</Item>
-      <Item Name="DataOwner">ownsDataPtr_</Item>
-      <Item Name="Owner">*owner_</Item>
       <Item Name="Format">*dataFormatBase_</Item>
+      <Item Name="SwizzleMask">swizzleMask_</Item>
+      <Item Name="Interpolation">interpolation_</Item>
+      <Item Name="Wrapping">wrapping_</Item>
+      <Item Name="Owns data">ownsDataPtr_</Item>
+      <Item Name="Owner">*owner_</Item>
+      <Synthetic Name="Data"><DisplayString>{dimensions_}</DisplayString>
+        <Expand>
+          <ArrayItems Condition="data_._Mypair._Myval2 != nullptr">
+            <Direction>Forward</Direction>
+            <Rank>3</Rank>
+            <Size>((size_t*)(&amp;dimensions_))[$i]</Size>
+            <ValuePointer>data_._Mypair._Myval2</ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
     </Expand>
   </Type>
 
   <Type Name="inviwo::VolumeGL">
-    <DisplayString>{{VolumeGL, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <DisplayString>VolumeGL, Dim={texture_-&gt;dimensions_}, Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
     <Expand>
-      <Item Name="Dimension">dimensions_</Item>
-      <Item Name="Owner">*owner_</Item>
+      <Item Name="Texture">*texture_</Item>
       <Item Name="Format">*dataFormatBase_</Item>
+      <Item Name="Owner">*owner_</Item>
     </Expand>
   </Type>
 
   <Type Name="inviwo::SpatialEntity&lt;*&gt;">
-    <DisplayString>{modelMatrix_}</DisplayString>
+    <DisplayString>SpatialEntity</DisplayString>
     <Expand>
       <Item Name="ModelMatrix">modelMatrix_</Item>
       <Item Name="WorldMatrix">worldMatrix_</Item>
@@ -123,68 +185,145 @@
   </Type>
   
   <Type Name="inviwo::StructuredGridEntity&lt;*&gt;">
-    <DisplayString>{modelMatrix_}</DisplayString>
+    <DisplayString>StructuredGridEntity</DisplayString>
     <Expand>
       <Item Name="ModelMatrix">modelMatrix_</Item>
       <Item Name="WorldMatrix">worldMatrix_</Item>
-      <Item Name="Dimension">dimensions_</Item>
     </Expand>
   </Type>
 
 
   <Type Name="inviwo::Volume">
-    <DisplayString>{{Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <DisplayString>Volume Dim={defaultDimensions_}, Format={defaultDataFormat_-&gt;formatStr_}</DisplayString>
     <Expand>
-      <Item Name="Dimension">dimensions_</Item>
-      <Item Name="Format">*dataFormatBase_</Item>
+      <Item Name="Dimension">defaultDimensions_</Item>
+      <Item Name="Format">*defaultDataFormat_</Item>
+      <Item Name="Swizzle">defaultSwizzleMask_</Item>
+      <Item Name="Interpolation">defaultInterpolation_</Item>
       <Item Name="ModelMatrix">modelMatrix_</Item>
       <Item Name="WorldMatrix">worldMatrix_</Item>
-      <Item Name="Representations">representations_</Item>
+      <Item Name="Last Representation">*lastValidRepresentation_</Item>
       <Item Name="MetaData">metaData_</Item>
+      <Synthetic Name="Representations"><DisplayString>{representations_._List._Mypair._Myval2._Mysize}</DisplayString>
+        <Expand>
+          <LinkedListItems>
+            <Size>representations_._List._Mypair._Myval2._Mysize</Size>
+            <HeadPointer>representations_._List._Mypair._Myval2._Myhead-&gt;_Next</HeadPointer>
+            <NextPointer>_Next</NextPointer>
+            <ValueNode>*_Myval.second</ValueNode>
+          </LinkedListItems>
+        </Expand>
+      </Synthetic>    
     </Expand>
   </Type>
 
   <Type Name="inviwo::Image">
-    <DisplayString>{colorLayers_[0]}</DisplayString>
+    <DisplayString>Image</DisplayString>
     <Expand>
-      <Item Name="Color Layers">colorLayers_</Item>
-      <Item Name="Depth Layer">depthLayer_</Item>
-      <Item Name="Picking Layer">pickingLayer_</Item>
-      <Item Name="Representations">representations_</Item>
+      <Synthetic Name="Color Layers"><DisplayString>{colorLayers_.size()}</DisplayString></Synthetic>
+      <IndexListItems>
+        <Size>colorLayers_._Mypair._Myval2._Mylast -  colorLayers_._Mypair._Myval2._Myfirst</Size>
+        <ValueNode>*(colorLayers_._Mypair._Myval2._Myfirst[$i])</ValueNode>
+      </IndexListItems>
+      <Item Name="Depth Layer">*depthLayer_</Item>
+      <Item Name="Picking Layer">*pickingLayer_</Item>
+      <Synthetic Name="Representations"><DisplayString>{representations_._List._Mypair._Myval2._Mysize}</DisplayString>
+        <Expand>
+          <LinkedListItems>
+            <Size>representations_._List._Mypair._Myval2._Mysize</Size>
+            <HeadPointer>representations_._List._Mypair._Myval2._Myhead-&gt;_Next</HeadPointer>
+            <NextPointer>_Next</NextPointer>
+            <ValueNode>*_Myval.second</ValueNode>
+          </LinkedListItems>
+        </Expand>
+      </Synthetic>
       <Item Name="MetaData">metaData_</Item>
     </Expand>
   </Type>
-
-
+    
+    
+  <Type Name="inviwo::ImageGL">
+    <DisplayString>ImageGL</DisplayString>
+    <Expand>
+      <Synthetic Name="Color Layers"><DisplayString></DisplayString></Synthetic>
+      <IndexListItems>
+        <Size>colorLayersGL_._Mypair._Myval2._Mylast -  colorLayersGL_._Mypair._Myval2._Myfirst</Size>
+        <ValueNode>*(colorLayersGL_._Mypair._Myval2._Myfirst[$i])</ValueNode>
+      </IndexListItems>
+      <Item Name="Depth Layer">*depthLayerGL_</Item>
+      <Item Name="Picking Layer">*pickingLayerGL_</Item> 
+      <Item Name="FrameBuffer">frameBufferObject_</Item>
+    </Expand>
+  </Type>
+        
 
   <Type Name="inviwo::Layer">
-    <DisplayString>{{Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <DisplayString>Layer Type={defaultLayerType_}, Dim={defaultDimensions_}, Format={defaultDataFormat_-&gt;formatStr_}</DisplayString>
     <Expand>
-      <Item Name="Dimension">dimensions_</Item>
-      <Item Name="Format">*dataFormatBase_</Item>
-      <Item Name="Representations">representations_</Item>
-      <Item Name="MetaData">metaData_</Item>
+      <Item Name="Type">defaultLayerType_</Item>
+      <Item Name="DefaultDimension">defaultDimensions_</Item>
+      <Item Name="DefaultFormat">*defaultDataFormat_</Item>
+      <Item Name="DefaultSwizzleMask">defaultSwizzleMask_</Item>
+      <Item Name="DefaultInterpolation">defaultInterpolation_</Item>
+      <Item Name="DefaultWrapping">defaultWrapping_</Item>
+      <Item Name="Last Representation">*lastValidRepresentation_</Item>
+      <Synthetic Name="Representations"><DisplayString>{representations_._List._Mypair._Myval2._Mysize}</DisplayString>
+        <Expand>
+          <LinkedListItems>
+            <Size>representations_._List._Mypair._Myval2._Mysize</Size>
+            <HeadPointer>representations_._List._Mypair._Myval2._Myhead-&gt;_Next</HeadPointer>
+            <NextPointer>_Next</NextPointer>
+            <ValueNode>*_Myval.second</ValueNode>
+          </LinkedListItems>
+        </Expand>
+      </Synthetic>
     </Expand>
   </Type>
 
   <Type Name="inviwo::LayerDisk">
-    <DisplayString>{{LayerDisk, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <DisplayString>LayerDisk, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
     <Expand>
-      <Item Name="Dimension">dimensions_</Item>
-      <Item Name="Owner">*owner_</Item>
-      <Item Name="Format">*dataFormatBase_</Item>
       <Item Name="LayerType">layerType_</Item>
+      <Item Name="Dimension">dimensions_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+      <Item Name="SwizzleMask">swizzleMask_</Item>
+      <Item Name="Interpolation">interpolation_</Item>
+      <Item Name="Wrapping">wrapping_</Item>
       <Item Name="File">sourceFile_</Item>
+      <Item Name="Owner">*owner_</Item>
     </Expand>
   </Type>
 
-  <Type Name="inviwo::LayerGL">
-    <DisplayString>{{LayerGL, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+  <Type Name="inviwo::Texture3D">
+    <DisplayString>Texture3D Dim={dimensions_}</DisplayString>
     <Expand>
+      <Item Name="Id">id_</Item>
       <Item Name="Dimension">dimensions_</Item>
-      <Item Name="Owner">*owner_</Item>
+      <Item Name="Target">target_</Item>
+      <Item Name="Format">format_</Item>
+    </Expand>
+  </Type>
+   
+        
+  <Type Name="inviwo::Texture2D">
+    <DisplayString>Texture2D Dim={dimensions_}</DisplayString>
+    <Expand>
+      <Item Name="Id">id_</Item>
+      <Item Name="Dimension">dimensions_</Item>
+      <Item Name="Target">target_</Item>
+      <Item Name="Format">format_</Item>
+    </Expand>
+  </Type>
+        
+        
+  <Type Name="inviwo::LayerGL">
+    <DisplayString>LayerGL, Dim={texture_-&gt;dimensions_}, Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
+    <Expand>
+      <Item Name="Layer Type">layerType_</Item>
+      <Item Name="Texture">*texture_</Item>
       <Item Name="Format">*dataFormatBase_</Item>
-      <Item Name="LayerType">layerType_</Item>
+      <Item Name="Texture Unit">texUnit_</Item>
+      <Item Name="Owner">*owner_</Item>
     </Expand>
   </Type>
 
@@ -192,29 +331,42 @@
   <Type Name="inviwo::LayerRAMPrecision&lt;*&gt;">
     <UIVisualizer ServiceId="{A452AFEA-3DF6-46BB-9177-C0B08F318025}" Id="1" />
   </Type>
+  -->
    
   <Type Name="inviwo::LayerRAMPrecision&lt;*&gt;">
-    <DisplayString>{{LayerRAM, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <DisplayString>LayerRAMPrecision {"$T1"}, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}</DisplayString>
     <Expand>
+      <Item Name="LayerType">layerType_</Item>
+      <Item Name="Dimension">dimensions_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+      <Item Name="SwizzleMask">swizzleMask_</Item>
+      <Item Name="Interpolation">interpolation_</Item>
+      <Item Name="Wrapping">wrapping_</Item>
+      <Item Name="Owner">*owner_</Item>
+      <Synthetic Name="Data"><DisplayString>{dimensions_}</DisplayString>
+        <Expand>
+          <ArrayItems Condition="data_._Mypair._Myval2 != nullptr">
+            <Direction>Forward</Direction>
+            <Rank>2</Rank>
+            <Size>((size_t*)(&amp;dimensions_))[$i]</Size>
+            <ValuePointer>data_._Mypair._Myval2</ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
+        
+       <!-- for UI visualizer 
       <Item Name="[width]">dimensions_.x</Item>
       <Item Name="[height]">dimensions_.y</Item>
-      <Item Name="[channels]">dataFormatBase_->components_</Item>
-
-      <Item Name="Owner">*owner_</Item>
-      <Item Name="Format">*dataFormatBase_</Item>
-      <Item Name="LayerType">layerType_</Item>
-      
-      <Synthetic Name="[type]">
-        <DisplayString>UINT8</DisplayString>
-      </Synthetic>
+      <Item Name="[channels]">dataFormatBase_->components_</Item>      
+      <Synthetic Name="[type]"><DisplayString>UINT8</DisplayString></Synthetic>
       <Item Name="[data]">data_._Mypair._Myval2</Item>
       <Item Name="[stride]">dimensions_.x*dataFormatBase_->components_</Item>
- 
+      -->
     </Expand>
   </Type>
 
 
-
+  <!--
   <Type Name="QImage">
     <UIVisualizer ServiceId="{A452AFEA-3DF6-46BB-9177-C0B08F318025}" Id="1" />
   </Type>
@@ -246,25 +398,29 @@
 -->
 
   <Type Name="inviwo::DataInport&lt;*,*,*&gt;">
-    <DisplayString>{identifier_}</DisplayString>
+    <DisplayString>Inport {"$T1"} {identifier_} Connections {connectedOutports_.size()}</DisplayString>
     <Expand>
       <Item Name="Identifier">identifier_</Item>
-      <Item Name="Owner">processor_-&gt;identifier_</Item>
+      <Item Name="Ready">isReady_.value_</Item>
+      <Item Name="Optional">isOptional_.value_</Item>
       <Item Name="Changed">changed_</Item>
-      <Item Name="Connected Outports">connectedOutports_</Item>
+      <Item Name="Connected Outports">connectedOutports_,view(simple)</Item>
+      <Item Name="Owner">processor_-&gt;identifier_</Item>  
     </Expand>
   </Type>
   <Type Name="inviwo::DataOutport&lt;*&gt;">
-    <DisplayString>{identifier_}</DisplayString>
+    <DisplayString>Outport {"$T1"} {identifier_} Connections {connectedInports_.size()}</DisplayString>
     <Expand>
       <Item Name="Identifier">identifier_</Item>
+      <Item Name="Ready">isReady_.value_</Item>
+      <Item Condition="data_._Ptr != nullptr" Name="Data">*data_</Item>
+      <Item Name="Connected Inports">connectedInports_,view(simple)</Item>
       <Item Name="Owner">processor_-&gt;identifier_</Item>
-      <Item Name="Connected Inports">connectedInports_</Item>
-      <Item Name="Data">data_</Item>
     </Expand>
   </Type>
-  
-  <Type Name="inviwo::PropertyOwner" Inheritable="false">
+
+
+    <Type Name="inviwo::PropertyOwner" Inheritable="false">
     <DisplayString>PropertyOwner</DisplayString>
     <Expand>
       <Item Name="Properties">properties_</Item>
@@ -276,7 +432,7 @@
   </Type>
 
   <Type Name="inviwo::Property">
-    <DisplayString>{identifier_}</DisplayString>
+    <DisplayString>Property {identifier_}</DisplayString>
     <Expand>
       <Item Name="Identifier">identifier_</Item>
       <Item Name="Display Name">displayName_.value</Item>
@@ -291,8 +447,9 @@
     </Expand>
   </Type>
 
+
   <Type Name="inviwo::TemplateProperty&lt;*&gt;">
-    <DisplayString>{identifier_} = {value_.value}</DisplayString>
+    <DisplayString>TemplateProperty {identifier_} = {value_.value}</DisplayString>
     <Expand>
       <Item Name="Identifier">identifier_</Item>
       <Item Name="Display Name">displayName_.value</Item>
@@ -308,9 +465,41 @@
       <Item Name="Property Widgets">propertyWidgets_</Item>
     </Expand>
   </Type>
+    
+  <Type Name="inviwo::OptionPropertyOption&lt;*&gt;">
+    <DisplayString>OptionPropertyOption; {id_}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">id_</Item>
+      <Item Name="Name">name_</Item>
+      <Item Name="Value">value_</Item>
+    </Expand>
+  </Type>    
+       
+        
+  <Type Name="inviwo::TemplateOptionProperty&lt;*&gt;">
+    <DisplayString>Option {identifier_} = {(options_._Mypair._Myval2._Myfirst + selectedIndex_)->value_}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">identifier_</Item>
+      <Item Name="Display Name">displayName_.value</Item>
+      <Item Name="Value">*(options_._Mypair._Myval2._Myfirst + selectedIndex_)</Item>
+      <Item Name="Selected">selectedIndex_</Item>  
+      <Item Name="Deafult">defaultSelectedIndex_</Item>  
+      <Item Name="Options">options_</Item>
+      <Item Name="Deafult Options">defaultOptions_</Item>
+      <Item Name="Read only">readOnly_.value</Item>
+      <Item Name="Semantics">semantics_.value</Item>
+      <Item Name="Usage mode">usageMode_.value</Item>
+      <Item Name="Visible">visible_.value</Item>
+      <Item Name="Property Modified">propertyModified_</Item>
+      <Item Name="Invalidation level">invalidationLevel_</Item>
+      <Item Name="Owner">owner_</Item>
+      <Item Name="Property Widgets">propertyWidgets_</Item>
+    </Expand>
+  </Type>  
+  
 
   <Type Name="inviwo::OrdinalProperty&lt;*&gt;">
-    <DisplayString>{identifier_} = {value_.value}</DisplayString>
+    <DisplayString>Ordinal {identifier_} = {value_.value}</DisplayString>
     <Expand>
       <Item Name="Identifier">identifier_</Item>
       <Item Name="Display Name">displayName_.value</Item>
@@ -329,30 +518,112 @@
       <Item Name="Property Widgets">propertyWidgets_</Item>
     </Expand>
   </Type>
-
-  <Type Name="inviwo::CompositeProperty">
-    <DisplayString>{identifier_}</DisplayString>
+    
+  <Type Name="inviwo::OrdinalRefProperty&lt;*&gt;">
+    <DisplayString>OrdinalRef {identifier_}</DisplayString>
     <Expand>
       <Item Name="Identifier">identifier_</Item>
       <Item Name="Display Name">displayName_.value</Item>
-      <Item Name="Collapsed">collapsed_</Item>
-      <Item Name="Properties">properties_</Item>
-      <Item Name="Owned Properties">ownedProperties_</Item>
-      <Item Name="Event Properties">eventProperties_</Item>
-      <Item Name="Composite Properties">compositeProperties_</Item>
+      <Item Name="Get">get_</Item>
+      <Item Name="Set">set_</Item>
+      <Item Name="Min">minValue_.value</Item>
+      <Item Name="Max">maxValue_.value</Item>
+      <Item Name="Inc">increment_.value</Item>
       <Item Name="Read only">readOnly_.value</Item>
       <Item Name="Semantics">semantics_.value</Item>
       <Item Name="Usage mode">usageMode_.value</Item>
       <Item Name="Visible">visible_.value</Item>
       <Item Name="Property Modified">propertyModified_</Item>
       <Item Name="Invalidation level">invalidationLevel_</Item>
-      <Item Name="Sub Invalidation level">subPropertyInvalidationLevel_</Item>
       <Item Name="Owner">owner_</Item>
       <Item Name="Property Widgets">propertyWidgets_</Item>
     </Expand>
   </Type>
 
-  
+  <Type Name="inviwo::CompositeProperty">
+    <DisplayString>Composite {identifier_} size = {properties_._Mypair._Myval2._Mylast -  properties_._Mypair._Myval2._Myfirst}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">identifier_</Item>
+      <Item Name="Display Name">displayName_.value</Item>
+      <IndexListItems>
+        <Size>properties_._Mypair._Myval2._Mylast -  properties_._Mypair._Myval2._Myfirst</Size>
+        <ValueNode>*(properties_._Mypair._Myval2._Myfirst[$i])</ValueNode>
+      </IndexListItems>
+      <Item Name="Owned Properties">ownedProperties_</Item>
+      <Item Name="Event Properties">eventProperties_</Item>
+      <Item Name="Composite Properties">compositeProperties_</Item>
+      <Item Name="Owner">*owner_</Item>
+      <Item Name="Read only">readOnly_.value</Item>
+      <Item Name="Semantics">semantics_.value</Item>
+      <Item Name="Visible">visible_.value</Item>
+      <Item Name="Collapsed">collapsed_</Item>
+      <Item Name="Property Modified">propertyModified_</Item>
+      <Item Name="Property Invalidation level">Property::invalidationLevel_</Item>
+      <Item Name="PropertyOwner Invalidation level">PropertyOwner::invalidationLevel_</Item>
+      <Item Name="Sub Invalidation level">subPropertyInvalidationLevel_</Item>
+      <Item Name="Property Widgets">propertyWidgets_</Item>
+    </Expand>
+  </Type>
+ 
+    
+  <Type Name="inviwo::Camera">
+    <DisplayString>Camera from = {lookFrom_} to = {lookTo_}</DisplayString>
+    <Expand>
+      <Item Name="From">lookFrom_</Item>
+      <Item Name="To">lookTo_</Item>
+      <Item Name="Up">lookUp_</Item>
+      <Item Name="Near">nearPlaneDist_</Item>
+      <Item Name="Far">farPlaneDist_</Item>
+      <Item Name="Aspect">aspectRatio_</Item>
+    </Expand>
+  </Type>
+    
+  <Type Name="inviwo::PerspectiveCamera">
+    <DisplayString>PerspectiveCamera from = {lookFrom_} to = {lookTo_}</DisplayString>
+    <Expand>
+      <Item Name="From">lookFrom_</Item>
+      <Item Name="To">lookTo_</Item>
+      <Item Name="Up">lookUp_</Item>
+      <Item Name="Near">nearPlaneDist_</Item>
+      <Item Name="Far">farPlaneDist_</Item>
+      <Item Name="Aspect">aspectRatio_</Item>
+      <Item Name="Fovy">fovy_</Item>
+    </Expand>
+  </Type>
+    
+   <Type Name="inviwo::OrthographicCamera">
+    <DisplayString>OrthographicCamera from = {lookFrom_} to = {lookTo_}</DisplayString>
+    <Expand>
+      <Item Name="From">lookFrom_</Item>
+      <Item Name="To">lookTo_</Item>
+      <Item Name="Up">lookUp_</Item>
+      <Item Name="Near">nearPlaneDist_</Item>
+      <Item Name="Far">farPlaneDist_</Item>
+      <Item Name="Aspect">aspectRatio_</Item>
+      <Item Name="Width">width_</Item>
+    </Expand>
+  </Type>
+        
+            
+  <Type Name="inviwo::CameraProperty">
+    <DisplayString>CameraProperty {identifier_} from = {camera_-&gt;lookFrom_} to = {camera_-&gt;lookTo_}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">identifier_</Item>
+      <Item Name="Display Name">displayName_.value</Item>
+      <Item Name="CameraType">cameraType_</Item>
+      <ExpandedItem>*camera_</ExpandedItem>
+      <Item Name="From">lookFrom_</Item>
+      <Item Name="To">lookTo_</Item>
+      <Item Name="Up">lookUp_</Item>
+      <Item Name="Near">nearPlane_</Item>
+      <Item Name="Far">farPlane_</Item>
+      <Item Name="Aspect">aspectRatio_</Item>
+      <Item Name="Camera Properties">ownedCameraProperties_</Item>
+      <Item Name="Owner">*owner_</Item>
+    </Expand>
+    </Type>
+        
+        
   <Type Name="inviwo::Processor" Inheritable="false">
     <DisplayString>{identifier_}</DisplayString>
     <Expand>
@@ -366,7 +637,7 @@
       <Item Name="Invalidation level">invalidationLevel_</Item>
       <Item Name="Processor Widget">processorWidget_</Item>
       <Item Name="Interaction Handlers">interactionHandlers_</Item>
-      <Item Name="Port Dependency Sets">portDependencySets_</Item>
+      <Item Name="Port Dependency Sets">portGroups_</Item>
       <Item Name="Processor Network">network_</Item>
     </Expand>
   </Type>
