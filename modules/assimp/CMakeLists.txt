@@ -1,11 +1,6 @@
-add_subdirectory(ext/assimp)
-
-#--------------------------------------------------------------------
 # Inviwo assimp Module
 ivw_module(Assimp)
 
-#--------------------------------------------------------------------
-# Add header files
 set(HEADER_FILES
     include/modules/assimp/assimpmodule.h
     include/modules/assimp/assimpmoduledefine.h
@@ -13,24 +8,31 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
-# Add source files
 set(SOURCE_FILES
     src/assimpmodule.cpp
     src/assimpreader.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
-target_link_libraries(inviwo-module-assimp PUBLIC assimp::assimp)
-target_include_directories(inviwo-module-assimp PUBLIC 
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext/assimp/include>
-    #$<INSTALL_INTERFACE:???>
-)
+
+option(IVW_USE_EXTERNAL_ASSIMP "Assimp is provided externaly" OFF)
+if(NOT IVW_USE_EXTERNAL_ASSIMP)
+	add_subdirectory(ext/assimp)
+	target_include_directories(inviwo-module-assimp PUBLIC 
+    	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext/assimp/include>
+	)
+    set(copyright ${CMAKE_CURRENT_SOURCE_DIR}/ext/assimp/assimp/LICENSE)
+else()
+    find_package(assimp CONFIG REQUIRED)
+    ivw_vcpkg_install(assimp COPYRIGHT copyright)
+endif()
+
 ivw_register_license_file(NAME Assimp VERSION 4.1 MODULE Assimp 
     URL http://assimp.sf.net
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/assimp/assimp/LICENSE
+    FILES ${copyright}
 )
+target_link_libraries(inviwo-module-assimp PUBLIC assimp::assimp)
+
 ivw_make_package(InviwoAssimpModule inviwo-module-assimp)

@@ -35,23 +35,36 @@ ivw_create_module(NO_PCH ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 set_target_properties(inviwo-module-eigenutils PROPERTIES COTIRE_PREFIX_HEADER_PUBLIC_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ext/Eigen")
 ivw_compile_optimize_on_target(inviwo-module-eigenutils)
 
-target_include_directories(inviwo-module-eigenutils PUBLIC 
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen>
-)
+option(IVW_USE_EXTERNAL_EIGEN "Eigen is provided externaly" OFF)
+if(NOT IVW_USE_EXTERNAL_EIGEN)
+    target_include_directories(inviwo-module-eigenutils PUBLIC 
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen>
+    )
+    #  HACK: have the files showing in the IDE, under the name 'eigen'
+    file(GLOB_RECURSE EIGEN_SOURCES "ext/eigen/Eigen/*")
+    ivw_group("Header Files" BASE "${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen/Eigen" ${EIGEN_SOURCES})
+    add_custom_target(eigen_dummy SOURCES ${EIGEN_SOURCES})
 
-ivw_register_license_file(NAME Eigen VERSION 3.3.90 MODULE EigenUtils
-    URL http://eigen.tuxfamily.org/
-    TYPE "Mozilla Public License Version 2.0"
-    FILES 
+    # Creates VS folder structure
+    ivw_folder(eigen_dummy ext)
+    set(copyright 
         ${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen/COPYING.README
         ${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen/COPYING.MPL2
-)
+    )
+    set(version 3.3.90)
+else()
+    find_package(Eigen3 REQUIRED)
+    target_link_libraries(inviwo-module-eigenutils PUBLIC Eigen3::Eigen)
+    ivw_vcpkg_install(eigen3 COPYRIGHT copyright)
+    set(version ${EIGEN3_VERSION_STRING})
+endif()
+
+ivw_register_license_file(NAME Eigen VERSION ${version} MODULE EigenUtils
+    URL http://eigen.tuxfamily.org/
+    TYPE "Mozilla Public License Version 2.0"
+    FILES ${copyright}
+) 
+
 ivw_make_package(InviwoEigenUtilsModule inviwo-module-eigenutils)
 
-#  HACK: have the files showing in the IDE, under the name 'eigen'
-file(GLOB_RECURSE EIGEN_SOURCES "ext/eigen/Eigen/*")
-ivw_group("Header Files" BASE "${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen/Eigen" ${EIGEN_SOURCES})
-add_custom_target(eigen_dummy SOURCES ${EIGEN_SOURCES})
 
-# Creates VS folder structure
-ivw_folder(eigen_dummy ext)

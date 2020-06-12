@@ -33,18 +33,43 @@
 # It also ensures that we are in control of the used version
 # and is built using the same, Inviwo, settings.
 
-option(IVW_USE_EXTERNAL_IMG "Link with external image libraries (zlib, png, jpeg, tiff) instead of building them." OFF)
 option(IVW_TEST_BENCHMARKS "Generate benchmark targets" OFF)
 option(IVW_USE_SIGAR "Use sigar to detect system capabilities" ON)
 
+option(IVW_USE_EXTERNAL_FMT "Fmt is provided externaly" OFF)
+
+
+# Img foramts
+option(IVW_USE_EXTERNAL_IMG "Link with external image libraries (zlib, png, jpeg, tiff) instead of building them." OFF)
 if (NOT IVW_USE_EXTERNAL_IMG)
   add_subdirectory(zlib-1.2.11) # Defines target ZLIB::ZLIB
   add_subdirectory(libpng)      # Defines target PNG::PNG
   add_subdirectory(libjpeg)     # Defines target JPEG::JPEG
   add_subdirectory(tiff)        # Defines target TIFF::TIFF
 endif()
+
+# Flags
 add_subdirectory(flags)
-add_subdirectory(glm)
+
+# GLM
+option(IVW_USE_EXTERNAL_GLM "GLM is provided externaly" OFF)
+if(NOT IVW_USE_EXTERNAL_GLM)
+	add_subdirectory(glm)
+	set(glmCopyright ${IVW_EXTENSIONS_DIR}/glm/LICENSE)
+	set(glmVersion 0.9.9.3)
+else()	
+	find_package(glm REQUIRED)
+	ivw_vcpkg_install(glm COPYRIGHT glmCopyright VERSION glmVersion)
+endif()
+ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" 
+	VERSION ${glmVersion} 
+	MODULE Core EXT
+    URL "https://glm.g-truc.net"
+    TYPE "The MIT License"
+    FILES ${glmCopyright}
+)
+
+
 add_subdirectory(ticpp)
 if(IVW_TEST_UNIT_TESTS OR IVW_TEST_INTEGRATION_TESTS)
 	add_subdirectory(gtest)
@@ -58,7 +83,23 @@ add_subdirectory(tinydir)
 add_subdirectory(half)
 add_subdirectory(utf)
 add_subdirectory(json)
-add_subdirectory(fmt)
+
+# Fmt
+if(NOT IVW_USE_EXTERNAL_FMT)
+	add_subdirectory(fmt)
+	set(fmtCopyright ${IVW_EXTENSIONS_DIR}/fmt/fmt/LICENSE.rst)
+else()
+	find_package(fmt REQUIRED)
+	ivw_vcpkg_install(fmt COPYRIGHT fmtCopyright)
+endif()
+message("LIc: ${fmtCopyright}")
+ivw_register_license_file(NAME "{fmt}" TARGET fmt::fmt MODULE Core EXT
+    URL "https://github.com/fmtlib/fmt"
+    TYPE "TBSD 2-Clause"
+    FILES ${fmtCopyright}
+)
+
+
 add_subdirectory(span)
 add_subdirectory(sml)
 if(IVW_USE_SIGAR)

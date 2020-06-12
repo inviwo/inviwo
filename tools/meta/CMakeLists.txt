@@ -63,6 +63,8 @@ set_target_properties(inviwo-meta PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIR
 ivw_define_standard_properties(inviwo-meta)
 ivw_define_standard_definitions(${PROJECT_NAME} inviwo-meta)
 
+find_package(fmt REQUIRED)
+
 target_link_libraries(inviwo-meta PUBLIC
 	std::filesystem 
 	inviwo::warn

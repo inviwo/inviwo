@@ -31,9 +31,14 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
+#include <inviwo/core/util/exception.h>
+
 #include <string>
 #include <ostream>
 #include <tuple>
+#include <array>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -60,15 +65,13 @@ namespace inviwo {
 class IVW_CORE_API Version {
 public:
     /**
-     * \brief Parses the version. Defaults to version 1.0.0.0
-     *
-     * @param versionString Dot separated version string "Major.Minor.Patch.Build"
+     * \brief Parses the version.
+     * @param version Dot separated version string "Major.Minor.Patch.Build"
      */
-    Version(std::string versionString);
-    Version(const char* versionString);
-    Version(unsigned int major = 1, unsigned int minor = 0, unsigned int patch = 0,
-            unsigned int build = 0);
-    ~Version() = default;
+    constexpr Version(std::string_view version);
+    constexpr Version(const char* version);
+    constexpr Version(unsigned int major = 1, unsigned int minor = 0, unsigned int patch = 0,
+                      unsigned int build = 0);
 
     /**
      * Major version >= 1: Return true if major and minor versions are equal, false otherwise.
@@ -78,37 +81,87 @@ public:
      * Patch and build versions are ignored since API should not have changed in those cases.
      * @return bool true if major and minor versions are equal, false otherwise.
      */
-    bool semanticVersionEqual(const Version& other) const;
+    constexpr bool semanticVersionEqual(const Version& other) const;
 
-    unsigned int major = 1;  ///< Increases when you make incompatible API changes
+    /**
+     * \brief Compares major, minor, patch and build versions in order.
+     * @return bool true if lhs is less than rhs, false otherwise.
+     */
+    friend constexpr bool operator<(const Version& lhs, const Version& rhs) {
+        // Keep ordering using lexicographical comparison provided by std::tie:
+        return std::tie(lhs.major, lhs.minor, lhs.patch, lhs.build) <
+               std::tie(rhs.major, rhs.minor, rhs.patch, rhs.build);
+    }
+    /**
+     * \brief Compares major, minor, patch and build versions in order.
+     * @return bool true if lhs is exactly the same as rhs, false otherwise.
+     */
+    friend constexpr bool operator==(const Version& lhs, const Version& rhs) {
+        // Keep ordering using lexicographical comparison provided by std::tie:
+        return std::tie(lhs.major, lhs.minor, lhs.patch, lhs.build) ==
+               std::tie(rhs.major, rhs.minor, rhs.patch, rhs.build);
+    }
+    friend constexpr bool operator!=(const Version& lhs, const Version& rhs) {
+        return !(lhs == rhs);
+    }
+    friend constexpr bool operator>(const Version& lhs, const Version& rhs) {
+        return !(lhs <= rhs);
+    }
+    friend constexpr bool operator>=(const Version& lhs, const Version& rhs) {
+        return !(lhs < rhs);
+    }
+    friend constexpr bool operator<=(const Version& lhs, const Version& rhs) {
+        return (lhs < rhs) || (lhs == rhs);
+    }
+
+    template <class Elem, class Traits>
+    friend std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                                        const Version& v) {
+        ss << v.major << "." << v.minor << "." << v.patch << "." << v.build;
+        return ss;
+    }
+
+    unsigned int major = 0;  ///< Increases when you make incompatible API changes
     unsigned int minor =
         0;  ///< Increases when you add functionality in a backwards-compatible manner
     unsigned int patch = 0;  ///< Increases when you make backwards-compatible bug fixes
     unsigned int build = 0;  ///< Version metadata
 };
 
-/**
- * \brief Compares major, minor, patch and build versions in order.
- * @return bool true if lhs is less than rhs, false otherwise.
- */
-IVW_CORE_API bool operator<(const Version& lhs, const Version& rhs);
+constexpr Version::Version(const char* version) : Version(std::string_view{version}) {}
 
-/**
- * \brief Compares major, minor, patch and build versions in order.
- * @return bool true if lhs is exactly the same as rhs, false otherwise.
- */
-IVW_CORE_API bool operator==(const Version& lhs, const Version& rhs);
+constexpr Version::Version(std::string_view version) {
+    const std::array<unsigned int*, 4> v{&major, &minor, &patch, &build};
 
-IVW_CORE_API bool operator!=(const Version& lhs, const Version& rhs);
-IVW_CORE_API bool operator>(const Version& lhs, const Version& rhs);
-IVW_CORE_API bool operator<=(const Version& lhs, const Version& rhs);
-IVW_CORE_API bool operator>=(const Version& lhs, const Version& rhs);
+    size_t begin = 0;
+    size_t end = version.find('.', 0);
+    for (auto e : v) {
+        const auto num = version.substr(begin, end - begin);
+        for (auto c : num) {
+            if (c < '0' || c > '9') {
+                throw Exception(fmt::format("Invalid character found: '{}' in version string '{}'",
+                                            c, version));
+            }
+            *e = *e * 10 + (c - '0');
+        }
+        if (end == std::string_view::npos) break;
+        begin = end + 1;
+        end = version.find('.', begin);
+    }
+}
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const Version& v) {
-    ss << v.major << "." << v.minor << "." << v.patch << "." << v.build;
-    return ss;
+constexpr Version::Version(unsigned int major, unsigned int minor, unsigned int patch,
+                           unsigned int build)
+    : major{major}, minor{minor}, patch{patch}, build{build} {}
+
+constexpr bool Version::semanticVersionEqual(const Version& other) const {
+    if (major < 1 || other.major < 1) {
+        // Each version increment is a breaking change
+        // when major version is 0
+        return std::tie(major, minor, patch) == std::tie(other.major, other.minor, other.patch);
+    } else {
+        return std::tie(major, minor) == std::tie(other.major, other.minor);
+    }
 }
 
 }  // namespace inviwo

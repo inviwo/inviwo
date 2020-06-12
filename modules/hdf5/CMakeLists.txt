@@ -106,18 +106,25 @@ if (NOT IVW_USE_EXTERNAL_HDF5)
     remove_duplicates(hdf_unique_inc_dirs ${hdf_inc_dirs})
     target_include_directories(inviwo-module-hdf5 PUBLIC ${hdf_unique_inc_dirs})
 
-    ivw_register_license_file(NAME HDF5 VERSION 1.10.0.1 MODULE HDF5
-        URL http://www.hdfgroup.org/HDF5/
-        TYPE "BSD-style"
-        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/hdf5/COPYING
-    )
+    set(copyright ${CMAKE_CURRENT_SOURCE_DIR}/ext/hdf5/COPYING)
+    set(version 1.10.0.1)
 else()
-    if(NOT BUILD_SHARED_LIBS)
-        set(HDF5_USE_STATIC_LIBRARIES ON)
-    endif()
-    find_package(HDF5 COMPONENTS C HL CXX REQUIRED)
-    target_include_directories(inviwo-module-hdf5 PUBLIC ${HDF5_INCLUDE_DIR})
-    target_link_libraries(inviwo-module-hdf5 PUBLIC ${HDF5_LIBRARIES})
+    find_package(hdf5 REQUIRED)
+    target_link_libraries(inviwo-module-hdf5 
+        PUBLIC 
+            hdf5::hdf5-shared 
+            hdf5::hdf5_hl-shared 
+            hdf5::hdf5_cpp-shared 
+            hdf5::hdf5_hl_cpp-shared
+    )
+    ivw_vcpkg_install(hdf5 COPYRIGHT copyright)
+    set(version ${HDF5_VERSION_STRING})
 endif()
+
+ivw_register_license_file(NAME hdf5 VERSION ${version} MODULE HDF5
+    URL http://www.hdfgroup.org/HDF5/
+    TYPE "BSD-style"
+    FILES ${copyright}
+)
 
 ivw_make_package(InviwoHDF5Module inviwo-module-hdf5)

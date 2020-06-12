@@ -287,7 +287,7 @@ const CommandLineParser& InviwoApplication::getCommandLineParser() const {
 CommandLineParser& InviwoApplication::getCommandLineParser() { return *commandLineParser_; }
 
 void InviwoApplication::printApplicationInfo() {
-    LogInfoCustom("InviwoInfo", "Inviwo Version: " << IVW_VERSION);
+    LogInfoCustom("InviwoInfo", "Inviwo Version: " << build::version);
     if (systemCapabilities_->getBuildInfo().year != 0) {
         LogInfoCustom("InviwoInfo",
                       "Build Date: " << systemCapabilities_->getBuildInfo().getDate());

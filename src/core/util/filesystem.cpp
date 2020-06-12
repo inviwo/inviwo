@@ -70,6 +70,8 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 #include <algorithm>
 #include <string_view>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 namespace detail {
@@ -547,9 +549,9 @@ std::string findBasePath() {
 
     if (basePath.empty()) {
         // could not locate base path relative to executable, try CMake source path
-        if (directoryExists(IVW_TRUNK + "/data/workspaces") &&
-            directoryExists(IVW_TRUNK + "/modules")) {
-            basePath = IVW_TRUNK;
+        if (directoryExists(fmt::format("{}/{}", build::sourceDirectory, "data/workspaces")) &&
+            directoryExists(fmt::format("{}/{}", build::sourceDirectory, "modules"))) {
+            basePath = build::sourceDirectory;
         } else {
             throw Exception("Could not locate Inviwo base path",
                             IVW_CONTEXT_CUSTOM("filesystem::findBasePath"));
