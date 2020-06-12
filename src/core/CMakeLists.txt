@@ -751,10 +751,19 @@ target_include_directories(inviwo-core PUBLIC
 )
 
 # Add core dependencies to this list
+find_package(fmt REQUIRED)
+find_package(glm REQUIRED)
+target_compile_definitions(glm INTERFACE
+    GLM_FORCE_SIZE_T_LENGTH
+    GLM_ENABLE_EXPERIMENTAL
+    GLM_FORCE_UNRESTRICTED_GENTYPE
+    GLM_FORCE_SILENT_WARNINGS
+)
+
 target_link_libraries(inviwo-core 
     PUBLIC
         ticpp
-        inviwo::glm
+        glm
         inviwo::tclap
         inviwo::warn
         inviwo::sml
@@ -793,23 +802,12 @@ ivw_register_license_file(NAME "Inviwo" MODULE Core
     TYPE "The MIT License"
     FILES ${IVW_ROOT_DIR}/LICENSE
 )
+set(INVIWOCOREMODULE_licenses "${INVIWOCOREMODULE_licenses};${ivw_ext_licences}" CACHE INTERNAL "License ids")
 
 ivw_register_license_file(NAME "Flags" MODULE Core
     URL "http://grisumbras.github.io/enum-flags/"
     TYPE "The MIT License"
     FILES ${IVW_EXTENSIONS_DIR}/flags/LICENSE
-)
-
-ivw_register_license_file(NAME "{fmt}" target fmt MODULE Core
-    URL "https://github.com/fmtlib/fmt"
-    TYPE "TBSD 2-Clause"
-    FILES  ${IVW_EXTENSIONS_DIR}/fmt/fmt/LICENSE.rst
-)
-
-ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" VERSION 0.9.9.3 MODULE Core
-    URL "https://glm.g-truc.net"
-    TYPE "The MIT License"
-    FILES  ${IVW_EXTENSIONS_DIR}/glm/LICENSE
 )
 
 ivw_register_license_file(NAME "half" TARGET half MODULE Core
@@ -953,9 +951,18 @@ if(IVW_CFG_EMBED_BUILDINFO)
 else()
     ## ensure that the ini file containing the build info is packaged and installed to the bin folder
     if(GENERATOR_IS_MULTI_CONFIG)
-        install(FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/inviwo_buildinfo.ini DESTINATION ${IVW_RUNTIME_INSTALL_DIR} COMPONENT modules CONFIGURATIONS Release Debug)
+        install(
+            FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/inviwo_buildinfo.ini 
+            DESTINATION ${IVW_RUNTIME_INSTALL_DIR} 
+            COMPONENT modules 
+            CONFIGURATIONS Release Debug
+        )
     else()
-        install(FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/inviwo_buildinfo.ini DESTINATION ${IVW_RUNTIME_INSTALL_DIR} COMPONENT modules CONFIGURATIONS Release Debug)
+        install(
+            FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/inviwo_buildinfo.ini 
+            DESTINATION ${IVW_RUNTIME_INSTALL_DIR} 
+            COMPONENT modules 
+            CONFIGURATIONS Release Debug)
     endif()
 endif()
 #--------------------------------------------------------------------

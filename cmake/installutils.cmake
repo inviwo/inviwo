@@ -158,12 +158,14 @@ function(ivw_register_package name)
         get_target_property(dirs ${target} INTERFACE_INCLUDE_DIRECTORIES)
         set(incdirs "${incdirs} ${dirs}")
     endforeach()
-    file(WRITE "${CMAKE_BINARY_DIR}/pkg/Find${name}.cmake" 
-         "# Fake Find file for ${name}\n"
-         "set(${name}_FOUND ON)\n"
-         "set(${name}_LIBRARIES ${ARGN})\n"
-         "set(${name}_INCLUDE_DIRS ${incdirs})\n"
-         )
+    string(TOLOWER "${name}" lowercase_name)
+    set(${name}_DIR "${CMAKE_BINARY_DIR}/pkg/${lowercase_name}" CACHE PATH "" FORCE)
+    file(WRITE "${CMAKE_BINARY_DIR}/pkg/${lowercase_name}/${name}Config.cmake" 
+        "# Fake Config file for ${name}\n"
+        "set(${name}_FOUND ON)\n"
+        "set(${name}_LIBRARIES ${ARGN})\n"
+        "set(${name}_INCLUDE_DIRS ${incdirs})\n"
+    )
  endfunction()
 
 

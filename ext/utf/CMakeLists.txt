@@ -26,4 +26,4 @@ set_target_properties(utfcpp PROPERTIES VERSION 3.1.0 SOVERSION 3.1)
 ivw_folder(utfcpp ext)
 
 ivw_default_install_comp_targets(core utf8cpp)
-ivw_make_package(utf8cpp utf8cpp)
+ivw_register_package(utfcpp utf8cpp)

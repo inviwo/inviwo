@@ -27,12 +27,7 @@
  #
  #################################################################################
 
-cmake_minimum_required(VERSION 3.12...3.17)
-cmake_policy(VERSION 3.12.0)
-
-if(POLICY CMP0077)
-     cmake_policy(SET CMP0077 NEW)
-endif()
+cmake_minimum_required(VERSION 3.12...3.17 FATAL_ERROR)
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
 #--------------------------------------------------------------------
@@ -52,6 +47,10 @@ endwhile()
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
+if(IVW_CFG_DEFAULTS)
+    include(${IVW_CFG_DEFAULTS})
+endif()
+
 # option for setting the project/solution name of the Inviwo project
 set(IVW_CFG_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
 project(${IVW_CFG_PROJECT_NAME})
@@ -62,8 +61,13 @@ verify_submodules("${CMAKE_CURRENT_LIST_DIR}/.gitmodules")
 
 option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 
-# Needed for find_package(PythonLibsNew 3), which is an improved version of CMake shipped find_pythonLibs
-set(CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}/pkg/;${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}/ext/pybind11/tools")
+file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/pkg)
+set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
+
+list(APPEND CMAKE_MODULE_PATH 
+    ${PROJECT_SOURCE_DIR}/support/cmake/modules
+    ${CMAKE_SOURCE_DIR}/ext/pybind11/tools
+)
 
 # Make sure we do look for python 3 here, before it is done in any subdirectory or external library.
 # If we do not specify version number on our first call to find_package(PythonLibs) it returns the

@@ -52,7 +52,7 @@ FileLogger::FileLogger(std::string logPath) : Logger() {
                 << "}" << std::endl
                 << "</style>" << std::endl;
 
-    fileStream_ << "<div class ='info'>Inviwo (V " << IVW_VERSION << ") Log File</div>"
+    fileStream_ << "<div class ='info'>Inviwo (V " << build::version << ") Log File</div>"
                 << std::endl;
 
     auto t = std::time(nullptr);

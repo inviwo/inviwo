@@ -50,7 +50,7 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(
         }
         std::vector<std::pair<std::string, Version>> deps;
         for (auto&& item : util::zip(dependencies_, dependenciesVersion_)) {
-            deps.emplace_back(get<0>(item), Version(get<0>(item)));
+            deps.emplace_back(get<0>(item), get<1>(item));
         }
         return deps;
     }())

@@ -306,15 +306,15 @@ Map defaultCMakeOptions(String buildType) {
     return [
         "CMAKE_EXPORT_COMPILE_COMMANDS" : "ON",
         "CMAKE_BUILD_TYPE" : buildType,
-        "IVW_CMAKE_DEBUG" : "ON",
-        "IVW_DOXYGEN_PROJECT" : "ON",
         "BUILD_SHARED_LIBS" : "ON",
-        "IVW_TINY_GLFW_APPLICATION" : "ON",
-        "IVW_TINY_QT_APPLICATION" : "ON",
-        "IVW_UNITTESTS" : "ON",
-        "IVW_UNITTESTS_RUN_ON_BUILD" : "OFF",
-        "IVW_INTEGRATION_TESTS" : "ON",
-        "IVW_RUNTIME_MODULE_LOADING" : "OFF"
+        "IVW_CFG_CMAKE_DEBUG" : "ON",
+        "IVW_CFG_RUNTIME_MODULE_LOADING" : "OFF"
+        "IVW_DOXYGEN_PROJECT" : "ON",
+        "IVW_APP_MINIMAL_GLFW" : "ON",
+        "IVW_APP_MINIMAL_QT" : "ON",
+        "IVW_TEST_UNIT_TESTS" : "ON",
+        "IVW_TEST_UNIT_TESTS_RUN_ON_BUILD" : "OFF",
+        "IVW_TEST_INTEGRATION_TESTS" : "ON",
     ]
 }
 Map ccacheOption() {

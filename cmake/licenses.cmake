@@ -55,8 +55,10 @@ include(CMakeParseArguments)
 #        TYPE "The zlib/libpng License"
 #        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/COPYING.txt
 #    )
+
+set("ivw_ext_licences" "" CACHE INTERNAL "External License ids")
 function(ivw_register_license_file)
-    set(options "")
+    set(options EXT)
     set(oneValueArgs TARGET ID NAME VERSION URL MODULE TYPE)
     set(multiValueArgs FILES)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -81,12 +83,16 @@ function(ivw_register_license_file)
         set(ARG_VERSION "0.0.0")
     endif()
 
-    ivw_dir_to_mod_dep(mod ${ARG_MODULE})
-    if(NOT ${mod}_name)
-         message(FATAL_ERROR "ivw_register_license_file should be called from a module CMakeLists.txt")
+    if(ARG_EXT)
+        message("Add est lic: ${ivw_ext_licences}")
+        set(ivw_ext_licences "${ivw_ext_licences};${ARG_ID}" CACHE INTERNAL "External License ids")
+    else()
+        ivw_dir_to_mod_dep(mod ${ARG_MODULE})
+        if(NOT ${mod}_name)
+            message(FATAL_ERROR "ivw_register_license_file should be called from a module CMakeLists.txt")
+        endif()
+        set("${mod}_licenses" "${${mod}_licenses};${ARG_ID}" CACHE INTERNAL "License ids")
     endif()
-
-    set("${mod}_licenses" "${${mod}_licenses};${ARG_ID}" CACHE INTERNAL "License ids")
 
     set(files "")
     foreach(file ${ARG_FILES})

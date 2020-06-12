@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/inviwocommondefines.h>
 
@@ -53,11 +54,11 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
     , cmdQuiet_(
           "Inviwo, Interactive Visualization Workshop, a rapid prototyping environment for "
           "interactive visualizations",
-          ' ', IVW_VERSION, false)
+          ' ', toString(build::version), false)
     , cmd_(
           "Inviwo, Interactive Visualization Workshop, a rapid prototyping environment for "
           "interactive visualizations",
-          ' ', IVW_VERSION)
+          ' ', toString(build::version))
     , workspace_("w", "workspace", "Specify workspace to open", false, "", "workspace file")
     , outputPath_("o", "output", "Specify output path", false, "", "output path")
     , logfile_("l", "logfile", "Write log messages to file.", false, "", "logfile")
