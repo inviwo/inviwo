@@ -88,7 +88,6 @@ private:
 
     ImageGL* entryImg_ = nullptr;
     ImageGL* exitImg_ = nullptr;
-    ;
 };
 
 }  // namespace inviwo
