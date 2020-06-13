@@ -111,8 +111,13 @@ RasterizationRenderer::RasterizationRenderer()
 
     flrReload_ = flr_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    imageInport_->onChange(
-        [this]() { intermediateImage_.setDimensions(imageInport_->getData()->getDimensions()); });
+    imageInport_->onChange([this]() {
+        if (imageInport_->hasData()) {
+            intermediateImage_.setDimensions(imageInport_->getData()->getDimensions());
+        } else {
+            intermediateImage_.setDimensions(outport_.getData()->getDimensions());
+        }
+    });
 }
 
 RasterizationRenderer::IllustrationSettings::IllustrationSettings()
