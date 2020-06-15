@@ -32,7 +32,6 @@
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/canvas.h>
-#include <modules/opengl/inviwoopengl.h>  // Make sure GLEW is included before QOpenGL stuff
 
 #include <warn/push>
 #include <warn/ignore/all>
