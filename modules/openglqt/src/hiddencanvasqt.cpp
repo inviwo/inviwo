@@ -34,27 +34,36 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QThread>
 #include <QApplication>
+#include <QOffscreenSurface>
+#include <QOpenGLContext>
+#include <QThread>
 #include <warn/pop>
 
 namespace inviwo {
 
-HiddenCanvasQt::HiddenCanvasQt(QSurfaceFormat format) : Canvas(size2_t{0}) {
-    context_.setFormat(format);
-    offScreenSurface_.setFormat(format);
-    offScreenSurface_.create();
-    context_.setShareContext(QOpenGLContext::globalShareContext());
+HiddenCanvasQt::HiddenCanvasQt(QSurfaceFormat format)
+    : Canvas(size2_t{0})
+    , context_{new QOpenGLContext()}
+    , offScreenSurface_{new QOffscreenSurface()} {
+    context_->setFormat(format);
+    offScreenSurface_->setFormat(format);
+    offScreenSurface_->create();
+    context_->setShareContext(QOpenGLContext::globalShareContext());
+}
+HiddenCanvasQt::~HiddenCanvasQt() {
+    delete context_;
+    delete offScreenSurface_;
 }
 
 void HiddenCanvasQt::initializeGL() {
-    context_.create();
+    context_->create();
     activate();
     OpenGLCapabilities::initializeGLEW();
 }
 
 void HiddenCanvasQt::update() {}
-void HiddenCanvasQt::activate() { context_.makeCurrent(&offScreenSurface_); }
+void HiddenCanvasQt::activate() { context_->makeCurrent(offScreenSurface_); }
 
 std::unique_ptr<Canvas> HiddenCanvasQt::createHiddenCanvas() { return createHiddenQtCanvas(); }
 
@@ -81,8 +90,8 @@ Canvas::ContextID HiddenCanvasQt::activeContext() const {
 Canvas::ContextID HiddenCanvasQt::contextId() const { return static_cast<ContextID>(&context_); }
 
 void HiddenCanvasQt::releaseContext() {
-    context_.doneCurrent();
-    context_.moveToThread(QApplication::instance()->thread());
+    context_->doneCurrent();
+    context_->moveToThread(QApplication::instance()->thread());
 }
 
 }  // namespace inviwo
