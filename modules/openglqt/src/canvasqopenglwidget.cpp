@@ -34,9 +34,9 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QApplication>
 #include <QOpenGLContext>
 #include <QResizeEvent>
-#include <QApplication>
 #include <warn/pop>
 
 namespace inviwo {

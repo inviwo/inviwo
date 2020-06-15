@@ -36,11 +36,11 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QOffscreenSurface>
-#include <QOpenGLContext>
 #include <QSurfaceFormat>
 #include <warn/pop>
-
+class QOffscreenSurface;
+class QOpenGLContext; // Include causes: warning qopenglfunctions.h is not compatible with GLEW, GLEW defines will be undefined
+    
 namespace inviwo {
 
 /*
@@ -59,7 +59,7 @@ public:
      * Must call initializeGL before using it for
      */
     HiddenCanvasQt(QSurfaceFormat format = QSurfaceFormat::defaultFormat());
-    virtual ~HiddenCanvasQt() = default;
+    virtual ~HiddenCanvasQt();
     /*
      * Initialize context and OpenGL functions. Only call this function once.
      */
@@ -85,15 +85,15 @@ public:
 
     virtual void releaseContext() override;
 
-    QOpenGLContext* getContext() { return &context_; };
+    QOpenGLContext* getContext() { return context_; };
 
 protected:
     /**
      * Derived classes should override to implement actual window state.
      */
     virtual void setFullScreenInternal([[maybe_unused]] bool fullscreen) override{};
-    QOpenGLContext context_;
-    QOffscreenSurface offScreenSurface_;
+    QOpenGLContext* context_;
+    QOffscreenSurface* offScreenSurface_;
 };
 
 }  // namespace inviwo
