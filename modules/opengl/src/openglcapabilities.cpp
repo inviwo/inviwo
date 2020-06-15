@@ -74,13 +74,15 @@ bool OpenGLCapabilities::GLSLShaderVersion::sortHighestFirst(GLSLShaderVersion i
 }
 
 OpenGLCapabilities::OpenGLCapabilities(OpenGLSettings* settings)
-    : shadersAreSupported_(false)
+    : glVendor_(GlVendor::Unknown)
+    , shadersAreSupported_(false)
     , shadersAreSupportedARB_(false)
     , geometryShadersAreSupported_(false)
     , maxProgramLoopCount_(-1)
     , geometryShadersMaxVertices_(-1)
     , geometryShadersMaxOutputComponents_(-1)
     , geometryShadersMaxTotalOutputComponents_(-1)
+    , currentGlobalGLSLVersionIdx_(0)
     , texSupported_(false)
     , tex3DSupported_(false)
     , texArraySupported_(false)
