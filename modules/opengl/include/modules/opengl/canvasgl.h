@@ -30,9 +30,8 @@
 #ifndef IVW_CANVASGL_H
 #define IVW_CANVASGL_H
 
-#include <inviwo/core/util/canvas.h>
-#include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglmoduledefine.h>
+#include <inviwo/core/util/canvas.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 
 namespace inviwo {
