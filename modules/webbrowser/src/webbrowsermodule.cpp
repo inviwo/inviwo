@@ -239,7 +239,10 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 
     doChromiumWork_.start();
 
-    browserClient_ = new WebBrowserClient(getPropertyWidgetCEFFactory());
+    app->getModuleManager().onModulesDidRegister([&]() {
+        // Ensure that all module resources have been registered before creating the client
+        browserClient_ = new WebBrowserClient(getPropertyWidgetCEFFactory());
+    });
 }
 
 WebBrowserModule::~WebBrowserModule() {
