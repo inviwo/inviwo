@@ -39,8 +39,9 @@
 #include <QSurfaceFormat>
 #include <warn/pop>
 class QOffscreenSurface;
-class QOpenGLContext; // Include causes: warning qopenglfunctions.h is not compatible with GLEW, GLEW defines will be undefined
-    
+class QOpenGLContext;  // Include causes: warning qopenglfunctions.h is not compatible with GLEW,
+                       // GLEW defines will be undefined
+
 namespace inviwo {
 
 /*
