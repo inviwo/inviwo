@@ -82,7 +82,7 @@ public:
 private:
     struct ContextInfo {
         std::string name;
-        Canvas* canvas;
+        Canvas* canvas = nullptr;
         std::thread::id threadId;
     };
 
