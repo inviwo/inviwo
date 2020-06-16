@@ -1,6 +1,6 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
-## 2020-07-03 Remove use of deprecated QGLWidget
+## 2020-06-09 Remove use of deprecated QGLWidget and OpenGL compatibility mode
 In case you have built a custom Qt application your main file need be updated to enable shared OpenGL context, see apps/inviwo/inviwo.cpp.
 We now also use QOffScreenSurface for default OpenGL context and threaded rendering instead of a custom hidden window. 
 

@@ -194,7 +194,7 @@ public:
 
 protected:
     struct BrowserData {
-        Processor* processor;
+        Processor* processor = nullptr;
         CefRefPtr<ProcessorCefSynchronizer> processorCefSynchronizer;
     };
 
