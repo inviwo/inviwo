@@ -330,7 +330,6 @@ size_t OpenGLCapabilities::getTotalAvailableTextureMem() {
     return totalAvailableTexMemInBytes;
 }
 
-
 void OpenGLCapabilities::retrieveStaticInfo() {
     if (!OpenGLCapabilities::hasOpenGLVersion()) return;
 
