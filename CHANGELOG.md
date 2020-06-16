@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2020-06-16 StipplingProperty now in BaseGL
+Moved StipplingProperty and associated settings from Base module to BaseGL.
+
 ## 2020-06-03 WebBrowser Javascript API
 Changed redirection of `https://inviwo` to `inviwo://` to avoid confusion with the https scheme.
 Your html-files will need to update from 

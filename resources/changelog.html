@@ -86,6 +86,14 @@
 </head>
 <body >
 <h1>Latest Changes</h1>
+<h2>2020-06-16 StipplingProperty now in BaseGL</h2>
+<p>Moved StipplingProperty and associated settings from Base module to BaseGL.</p>
+<h2>2020-06-03 WebBrowser Javascript API</h2>
+<p>Changed redirection of <code>https://inviwo</code> to <code>inviwo://</code> to avoid confusion with the https scheme.<br />
+Your html-files will need to update from <br />
+'<a href="https://inviwo/modules/yourmodule">https://inviwo/modules/yourmodule</a>' <br />
+to <br />
+'inviwo://yourmodule' </p>
 <h2>2020-04-03 OrdinalPropertyState</h2>
 <p>Added a OrdinalPropertyState helper for constructing ordinal properties.<br />
 And a factory function <code>util::ordinalColor</code> for OrdinalProperties representing Colors<br />
@@ -222,7 +230,7 @@ See web_property_sync.html in the Webbrowser module</p>
 Bellow follows an example of a python processor:</p>
 <div class="highlight"><pre><span></span><span class="c1"># Name: PythonExample </span>
 
-<span class="kn">import</span> <span class="nn">inviwopy</span> <span class="k">as</span> <span class="nn">ivw</span>
+<span class="kn">import</span> <span class="nn">inviwopy</span> <span class="kn">as</span> <span class="nn">ivw</span>
 
 <span class="k">class</span> <span class="nc">PythonExample</span><span class="p">(</span><span class="n">ivw</span><span class="o">.</span><span class="n">Processor</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -249,10 +257,10 @@ Bellow follows an example of a python processor:</p>
         <span class="k">return</span> <span class="n">PythonExample</span><span class="o">.</span><span class="n">processorInfo</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">initializeResources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;init&quot;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;init&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;process: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;process: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outport</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inport</span><span class="o">.</span><span class="n">getData</span><span class="p">())</span>
 </pre></div>
 
@@ -262,8 +270,8 @@ To register an Inviwo python processor one can put in in the <user setttings fol
 <h2>2019-04-30 Python Applications</h2>
 <p>It is now possible to run inviwo directly from python using a new inviwopyapp python package found in <code>apps/inviwopyapp</code>.<br />
 An example of running inviwo can be found in <code>apps/inviwopyapp/inviwo.py</code>. </p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">inviwopy</span> <span class="k">as</span> <span class="nn">ivw</span>
-<span class="kn">import</span> <span class="nn">inviwopyapp</span> <span class="k">as</span> <span class="nn">qt</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">inviwopy</span> <span class="kn">as</span> <span class="nn">ivw</span>
+<span class="kn">import</span> <span class="nn">inviwopyapp</span> <span class="kn">as</span> <span class="nn">qt</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="c1"># Inviwo requires that a logcentral is created.</span>
