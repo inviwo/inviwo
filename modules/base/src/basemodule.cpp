@@ -102,7 +102,6 @@
 #include <modules/base/properties/bufferinformationproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
 #include <modules/base/properties/sequencetimerproperty.h>
-#include <modules/base/properties/stipplingproperty.h>
 
 // Io
 #include <modules/base/io/binarystlwriter.h>
@@ -219,7 +218,6 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
 
     registerProperty<Gaussian1DProperty>();
     registerProperty<Gaussian2DProperty>();
-    registerProperty<StipplingProperty>();
 
     registerProperty<transform::TranslateProperty>();
     registerProperty<transform::RotateProperty>();

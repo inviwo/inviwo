@@ -86,6 +86,8 @@
 #include <modules/basegl/processors/volumeraycaster.h>
 #include <modules/basegl/processors/volumeslicegl.h>
 #include <modules/basegl/processors/volumeprocessing/volumeshader.h>
+#include <modules/basegl/properties/linesettingsproperty.h>
+#include <modules/basegl/properties/stipplingproperty.h>
 #include <modules/basegl/datavisualizer/volumeraycastvisualizer.h>
 #include <modules/basegl/datavisualizer/volumeslicevisualizer.h>
 #include <modules/basegl/datavisualizer/imagevisualizer.h>
@@ -102,6 +104,9 @@ namespace inviwo {
 BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL") {
 
     basegl::addShaderResources(ShaderManager::getPtr(), {getPath(ModulePath::GLSL)});
+
+    registerProperty<LineSettingsProperty>();
+    registerProperty<StipplingProperty>();
 
     registerProcessor<AxisAlignedCutPlane>();
     registerProcessor<Background>();

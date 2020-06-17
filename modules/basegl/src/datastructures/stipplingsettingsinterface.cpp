@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,47 +26,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <modules/base/datastructures/stipplingsettingsinterface.h>
+#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
 
 namespace inviwo {
 
-/**
- * \brief Basic implementation of the StipplingSettingsInterface
- */
-class IVW_MODULE_BASE_API StipplingSettings : public StipplingSettingsInterface {
-public:
-    StipplingSettings() = default;
-    StipplingSettings(const StipplingSettingsInterface* other);
-    virtual ~StipplingSettings() = default;
+bool operator==(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b) {
+    return a.getMode() == b.getMode() && a.getLength() == b.getLength() &&
+           a.getSpacing() == b.getSpacing() && a.getOffset() == b.getOffset() &&
+           a.getWorldScale() == b.getWorldScale();
+}
 
-    Mode mode = Mode::None;
-    float length = 30.f;
-    float spacing = 10.f;
-    float offset = 0.f;
-    float worldScale = 4.f;
-    /*
-     * @copydoc StipplingSettingsInterface::getMode
-     */
-    virtual StipplingSettingsInterface::Mode getMode() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getLength
-     */
-    virtual float getLength() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getSpacing
-     */
-    virtual float getSpacing() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getOffset
-     */
-    virtual float getOffset() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getWorldScale
-     */
-    virtual float getWorldScale() const override;
-};
+bool operator!=(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b) {
+    return !(a == b);
+}
 
 }  // namespace inviwo

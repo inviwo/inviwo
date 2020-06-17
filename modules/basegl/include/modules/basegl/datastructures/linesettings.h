@@ -30,7 +30,7 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <modules/basegl/datastructures/linesettingsinterface.h>
-#include <modules/base/datastructures/stipplingsettings.h>
+#include <modules/basegl/datastructures/stipplingsettings.h>
 
 namespace inviwo {
 

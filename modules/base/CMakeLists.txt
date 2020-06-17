@@ -38,8 +38,6 @@ set(HEADER_FILES
     include/modules/base/datastructures/disjointsets.h
     include/modules/base/datastructures/imagereusecache.h
     include/modules/base/datastructures/kdtree.h
-    include/modules/base/datastructures/stipplingsettings.h
-    include/modules/base/datastructures/stipplingsettingsinterface.h
     include/modules/base/io/binarystlwriter.h
     include/modules/base/io/datvolumesequencereader.h
     include/modules/base/io/datvolumewriter.h
@@ -124,7 +122,6 @@ set(HEADER_FILES
     include/modules/base/properties/layerinformationproperty.h
     include/modules/base/properties/meshinformationproperty.h
     include/modules/base/properties/sequencetimerproperty.h
-    include/modules/base/properties/stipplingproperty.h
     include/modules/base/properties/transformlistproperty.h
     include/modules/base/properties/volumeinformationproperty.h
 )
@@ -163,8 +160,6 @@ set(SOURCE_FILES
     src/basemodule.cpp
     src/datastructures/disjointsets.cpp
     src/datastructures/imagereusecache.cpp
-    src/datastructures/stipplingsettings.cpp
-    src/datastructures/stipplingsettingsinterface.cpp
     src/io/binarystlwriter.cpp
     src/io/datvolumesequencereader.cpp
     src/io/datvolumewriter.cpp
@@ -244,7 +239,6 @@ set(SOURCE_FILES
     src/properties/layerinformationproperty.cpp
     src/properties/meshinformationproperty.cpp
     src/properties/sequencetimerproperty.cpp
-    src/properties/stipplingproperty.cpp
     src/properties/transformlistproperty.cpp
     src/properties/volumeinformationproperty.cpp
 )

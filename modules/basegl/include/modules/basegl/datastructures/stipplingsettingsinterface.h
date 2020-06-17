@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,27 +26,48 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/base/datastructures/stipplingsettingsinterface.h>
-#include <modules/base/datastructures/stipplingsettings.h>
+#include <modules/basegl/baseglmoduledefine.h>
 
 namespace inviwo {
 
-StipplingSettings::StipplingSettings(const StipplingSettingsInterface* other)
-    : mode(other->getMode())
-    , length(other->getLength())
-    , spacing(other->getSpacing())
-    , offset(other->getOffset())
-    , worldScale(other->getWorldScale()) {}
+/*
+ * \brief Settings for stippling (Dashed line, e.g., - - -)
+ */
+class IVW_MODULE_BASEGL_API StipplingSettingsInterface {
+public:
+    /*
+     * \brief Determines in which space the stippling parameters should be applied.
+     */
+    enum class Mode { None, ScreenSpace, WorldSpace };
+    StipplingSettingsInterface() = default;
+    virtual ~StipplingSettingsInterface() = default;
+    /*
+     * Determines which space the other settings should be applied.
+     */
+    virtual Mode getMode() const = 0;
+    /*
+     * Return length of dash, in pixels if Mode is ScreenSpace.
+     */
+    virtual float getLength() const = 0;
+    /*
+     * Return distance between dashes, in pixels if Mode is ScreenSpace.
+     */
+    virtual float getSpacing() const = 0;
+    /*
+     * Return offset of first dash, in pixels if Mode is ScreenSpace.
+     */
+    virtual float getOffset() const = 0;
+    /*
+     * Return scaling of parameters. Only applicable if Mode is WorldSpace.
+     */
+    virtual float getWorldScale() const = 0;
+};
 
-StipplingSettingsInterface::Mode StipplingSettings::getMode() const { return mode; }
-
-float StipplingSettings::getLength() const { return length; }
-
-float StipplingSettings::getSpacing() const { return spacing; }
-
-float StipplingSettings::getOffset() const { return offset; }
-
-float StipplingSettings::getWorldScale() const { return worldScale; }
+IVW_MODULE_BASEGL_API bool operator==(const StipplingSettingsInterface& a,
+                                      const StipplingSettingsInterface& b);
+IVW_MODULE_BASEGL_API bool operator!=(const StipplingSettingsInterface& a,
+                                      const StipplingSettingsInterface& b);
 
 }  // namespace inviwo
