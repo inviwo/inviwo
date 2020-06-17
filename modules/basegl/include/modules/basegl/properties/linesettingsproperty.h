@@ -41,7 +41,7 @@ class IVW_MODULE_BASEGL_API LineSettingsProperty : public LineSettingsInterface,
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
-    
+
     LineSettingsProperty(const std::string& identifier, const std::string& displayName,
                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                          PropertySemantics semantics = PropertySemantics::Default);

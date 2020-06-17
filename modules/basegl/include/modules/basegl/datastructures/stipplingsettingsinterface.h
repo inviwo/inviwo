@@ -66,8 +66,8 @@ public:
 };
 
 IVW_MODULE_BASEGL_API bool operator==(const StipplingSettingsInterface& a,
-                                    const StipplingSettingsInterface& b);
+                                      const StipplingSettingsInterface& b);
 IVW_MODULE_BASEGL_API bool operator!=(const StipplingSettingsInterface& a,
-                                    const StipplingSettingsInterface& b);
+                                      const StipplingSettingsInterface& b);
 
 }  // namespace inviwo
