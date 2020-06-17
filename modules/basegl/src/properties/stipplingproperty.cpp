@@ -98,11 +98,7 @@ void addShaderDefines(Shader& shader, const StipplingProperty::Mode& mode) {
     }
 
     auto fragShader = shader.getFragmentShaderObject();
-    if (mode != StipplingProperty::Mode::None) {
-        fragShader->addShaderDefine("ENABLE_STIPPLING");
-    } else {
-        fragShader->removeShaderDefine("ENABLE_STIPPLING");
-    }
+    fragShader->setShaderDefine("ENABLE_STIPPLING", mode != StipplingProperty::Mode::None);
     fragShader->addShaderDefine("STIPPLE_MODE", value);
 }
 

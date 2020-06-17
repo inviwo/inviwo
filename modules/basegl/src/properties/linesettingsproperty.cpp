@@ -52,6 +52,19 @@ LineSettingsProperty::LineSettingsProperty(const std::string& identifier,
                   roundDepthProfile_, stippling_);
 }
 
+LineSettingsProperty::LineSettingsProperty(const LineSettingsProperty& rhs)
+    : CompositeProperty(rhs)
+    , lineWidth_(rhs.lineWidth_)
+    , antialiasing_(rhs.antialiasing_)
+    , miterLimit_(rhs.miterLimit_)
+    , roundCaps_(rhs.roundCaps_)
+    , pseudoLighting_(rhs.pseudoLighting_)
+    , roundDepthProfile_(rhs.roundDepthProfile_)
+    , stippling_(rhs.stippling_) {
+    addProperties(lineWidth_, antialiasing_, miterLimit_, roundCaps_, pseudoLighting_,
+                  roundDepthProfile_, stippling_);
+}
+
 LineSettingsProperty* LineSettingsProperty::clone() const {
     return new LineSettingsProperty(*this);
 }

@@ -45,6 +45,7 @@ public:
     LineSettingsProperty(const std::string& identifier, const std::string& displayName,
                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                          PropertySemantics semantics = PropertySemantics::Default);
+    LineSettingsProperty(const LineSettingsProperty& rhs);
     virtual ~LineSettingsProperty() = default;
 
     virtual LineSettingsProperty* clone() const override;
