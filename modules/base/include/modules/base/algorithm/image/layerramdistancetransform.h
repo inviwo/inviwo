@@ -37,7 +37,7 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
-#ifndef __clang__
+#ifdef IVW_USE_OPENMP
 #include <omp.h>
 #endif
 
@@ -97,7 +97,7 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
                                      Predicate predicate, ValueTransform valueTransform,
                                      ProgressCallback callback) {
 
-#ifndef __clang__
+#ifdef IVW_USE_OPENMP
     omp_set_num_threads(std::thread::hardware_concurrency());
 #endif
 

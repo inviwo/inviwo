@@ -25,5 +25,5 @@ set_target_properties(utfcpp PROPERTIES VERSION 3.1.0 SOVERSION 3.1)
 # Creates VS folder structure
 ivw_folder(utfcpp ext)
 
-ivw_default_install_comp_targets(core utf8cpp)
+#ivw_default_install_targets(utf8cpp)
 ivw_register_package(utfcpp utf8cpp)

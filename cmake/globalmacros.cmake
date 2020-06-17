@@ -158,7 +158,6 @@ function(ivw_private_setup_module_data)
     set("${mod}_modName"      "Inviwo${name}Module"   CACHE INTERNAL "Module mod name")
     set("${mod}_version"      "${version}"            CACHE INTERNAL "Module version")
     set("${mod}_header"       "${header}"             CACHE INTERNAL "Module header")
-    set("${mod}_licenses"     ""                      CACHE INTERNAL "License ids")
     set("${mod}_incPrefix"    "${includePrefix}"      CACHE INTERNAL "Module include Prefix")
     set("${mod}_incPath"      "${includePath}"        CACHE INTERNAL "Module include Path")
     set("${mod}_orgName"      "${orgName}"            CACHE INTERNAL "Module Org Name")
@@ -537,7 +536,7 @@ function(ivw_create_module)
     # Add stuff to the installer
     ivw_default_install_targets(${${mod}_target})
     ivw_private_install_module_dirs()
-    
+
     ivw_make_unittest_target("${${mod}_dir}" "${${mod}_target}")
 
     if(ARG_GROUP)

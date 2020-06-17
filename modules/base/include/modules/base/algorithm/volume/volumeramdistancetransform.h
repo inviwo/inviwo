@@ -36,7 +36,7 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
-#ifndef __clang__
+#ifdef IVW_USE_OPENMP
 #include <omp.h>
 #endif
 
@@ -96,7 +96,7 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
                                       Predicate predicate, ValueTransform valueTransform,
                                       ProgressCallback callback) {
 
-#ifndef __clang__
+#ifdef IVW_USE_OPENMP
     omp_set_num_threads(std::thread::hardware_concurrency());
 #endif
 

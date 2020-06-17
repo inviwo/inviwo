@@ -1,9 +1,6 @@
-#--------------------------------------------------------------------
 # Inviwo hdf Module
 ivw_module(HDF5)
 
-#--------------------------------------------------------------------
-# Add header files
 set(HEADER_FILES
     include/modules/hdf5/datastructures/hdf5handle.h
     include/modules/hdf5/datastructures/hdf5metadata.h
@@ -20,8 +17,6 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
-# Add source files
 set(SOURCE_FILES
     src/datastructures/hdf5handle.cpp
     src/datastructures/hdf5metadata.cpp
@@ -36,13 +31,11 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
 option (IVW_USE_EXTERNAL_HDF5 "Link with external HDF5 library instead of building it." OFF)
 if (NOT IVW_USE_EXTERNAL_HDF5)
-    #--------------------------------------------------------------------
     # HDF5 Components
     set(HDF5_EXTERNALLY_CONFIGURED  1)
     set(HDF5_EXPORTED_TARGETS       "inviwo-hdf5-targets")
@@ -106,8 +99,12 @@ if (NOT IVW_USE_EXTERNAL_HDF5)
     remove_duplicates(hdf_unique_inc_dirs ${hdf_inc_dirs})
     target_include_directories(inviwo-module-hdf5 PUBLIC ${hdf_unique_inc_dirs})
 
-    set(copyright ${CMAKE_CURRENT_SOURCE_DIR}/ext/hdf5/COPYING)
-    set(version 1.10.0.1)
+    ivw_register_license_file(NAME hdf5 VERSION 1.10.0.1 MODULE HDF5
+        URL http://www.hdfgroup.org/HDF5/
+        TYPE "BSD-style"
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/hdf5/COPYING
+    )
+
 else()
     find_package(hdf5 REQUIRED)
     target_link_libraries(inviwo-module-hdf5 
@@ -117,14 +114,10 @@ else()
             hdf5::hdf5_cpp-shared 
             hdf5::hdf5_hl_cpp-shared
     )
-    ivw_vcpkg_install(hdf5 COPYRIGHT copyright)
+    ivw_vcpkg_install(hdf5 MODULE HDF5)
     set(version ${HDF5_VERSION_STRING})
 endif()
 
-ivw_register_license_file(NAME hdf5 VERSION ${version} MODULE HDF5
-    URL http://www.hdfgroup.org/HDF5/
-    TYPE "BSD-style"
-    FILES ${copyright}
-)
+
 
 ivw_make_package(InviwoHDF5Module inviwo-module-hdf5)

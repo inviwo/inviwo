@@ -1,11 +1,6 @@
-add_subdirectory(ext/nifticlib-2.0.0)
-
-#--------------------------------------------------------------------
 # Inviwo Nifti Module
 ivw_module(Nifti)
 
-#--------------------------------------------------------------------
-# Add header files
 set(HEADER_FILES
     include/modules/nifti/niftimodule.h
     include/modules/nifti/niftimoduledefine.h
@@ -13,18 +8,16 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
-# Add source files
 set(SOURCE_FILES
     src/niftimodule.cpp
     src/niftireader.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
+add_subdirectory(ext/nifticlib-2.0.0)
 target_link_libraries(inviwo-module-nifti PRIVATE inviwo::niftiio inviwo::znz)
 
 # niftio and znz are under same niftilib license 

@@ -38,14 +38,41 @@ option(IVW_USE_SIGAR "Use sigar to detect system capabilities" ON)
 
 option(IVW_USE_EXTERNAL_FMT "Fmt is provided externaly" OFF)
 
+ivw_append_install_list(DIRECTORY)
 
 # Img foramts
 option(IVW_USE_EXTERNAL_IMG "Link with external image libraries (zlib, png, jpeg, tiff) instead of building them." OFF)
 if (NOT IVW_USE_EXTERNAL_IMG)
-  add_subdirectory(zlib-1.2.11) # Defines target ZLIB::ZLIB
-  add_subdirectory(libpng)      # Defines target PNG::PNG
-  add_subdirectory(libjpeg)     # Defines target JPEG::JPEG
-  add_subdirectory(tiff)        # Defines target TIFF::TIFF
+ 	add_subdirectory(zlib-1.2.11) # Defines target ZLIB::ZLIB
+ 	add_subdirectory(libpng)      # Defines target PNG::PNG
+ 	add_subdirectory(libjpeg)     # Defines target JPEG::JPEG
+ 	add_subdirectory(tiff)        # Defines target TIFF::TIFF
+
+	ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core EXT
+	    URL "http://zlib.net/" TYPE "The zlib/libpng License"
+	    FILES ${IVW_EXTENSIONS_DIR}/zlib-1.2.11/LICENSE
+	)
+	ivw_register_license_file(NAME libjpeg-turbo TARGET ZLIB::ZLIB MODULE Core EXT
+	    TYPE "BSD-style, acknowledgement: This software is based in part on the work of the Independent JPEG Group"
+	    URL www.ijg.org FILES ${IVW_EXTENSIONS_DIR}/libjpeg/README
+	)
+	ivw_register_license_file(NAME tiff TARGET TIFF::TIFF MODULE Core EXT
+	    TYPE "The MIT License" URL http://www.libtiff.org/
+	    FILES ${IVW_EXTENSIONS_DIR}/tiff/COPYRIGHT
+	)
+	ivw_register_license_file(NAME libpng TARGET PNG::PNG MODULE Core EXT 
+		TYPE "libpng (BSD-style)" URL http://www.libpng.org/pub/png/libpng.html
+	    FILES ${IVW_EXTENSIONS_DIR}/libpng/LICENSE.txt
+	)
+else()
+	find_package(ZLIB REQUIRED)
+	find_package(JPEG REQUIRED)
+	find_package(TIFF REQUIRED)
+	find_package(PNG REQUIRED)
+	ivw_vcpkg_install(zlib          MODULE Core EXT)
+	ivw_vcpkg_install(libjpeg-turbo MODULE Core EXT)
+	ivw_vcpkg_install(tiff          MODULE Core EXT)
+	ivw_vcpkg_install(libpng        MODULE Core EXT)
 endif()
 
 # Flags
@@ -55,20 +82,14 @@ add_subdirectory(flags)
 option(IVW_USE_EXTERNAL_GLM "GLM is provided externaly" OFF)
 if(NOT IVW_USE_EXTERNAL_GLM)
 	add_subdirectory(glm)
-	set(glmCopyright ${IVW_EXTENSIONS_DIR}/glm/LICENSE)
-	set(glmVersion 0.9.9.3)
+	ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" 
+		VERSION 0.9.9.3 MODULE Core EXT URL "https://glm.g-truc.net"
+	    TYPE "The MIT License" FILES ${IVW_EXTENSIONS_DIR}/glm/LICENSE
+	)
 else()	
 	find_package(glm REQUIRED)
-	ivw_vcpkg_install(glm COPYRIGHT glmCopyright VERSION glmVersion)
+	ivw_vcpkg_install(glm MODULE Core EXT)
 endif()
-ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" 
-	VERSION ${glmVersion} 
-	MODULE Core EXT
-    URL "https://glm.g-truc.net"
-    TYPE "The MIT License"
-    FILES ${glmCopyright}
-)
-
 
 add_subdirectory(ticpp)
 if(IVW_TEST_UNIT_TESTS OR IVW_TEST_INTEGRATION_TESTS)
@@ -87,18 +108,15 @@ add_subdirectory(json)
 # Fmt
 if(NOT IVW_USE_EXTERNAL_FMT)
 	add_subdirectory(fmt)
-	set(fmtCopyright ${IVW_EXTENSIONS_DIR}/fmt/fmt/LICENSE.rst)
+	ivw_register_license_file(NAME "{fmt}" TARGET fmt::fmt MODULE Core EXT
+	    URL "https://github.com/fmtlib/fmt"
+	    TYPE "TBSD 2-Clause"
+	    FILES ${IVW_EXTENSIONS_DIR}/fmt/fmt/LICENSE.rst
+	)
 else()
 	find_package(fmt REQUIRED)
-	ivw_vcpkg_install(fmt COPYRIGHT fmtCopyright)
+	ivw_vcpkg_install(fmt MODULE Core EXT)
 endif()
-message("LIc: ${fmtCopyright}")
-ivw_register_license_file(NAME "{fmt}" TARGET fmt::fmt MODULE Core EXT
-    URL "https://github.com/fmtlib/fmt"
-    TYPE "TBSD 2-Clause"
-    FILES ${fmtCopyright}
-)
-
 
 add_subdirectory(span)
 add_subdirectory(sml)

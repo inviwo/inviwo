@@ -46,7 +46,7 @@ ivw_folder(ticpp ext)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_default_install_comp_targets(core ticpp)
+ivw_default_install_targets(ticpp)
 ivw_make_package(TiCPP ticpp)
 
 ivw_suppress_compiler_warnings(ticpp)

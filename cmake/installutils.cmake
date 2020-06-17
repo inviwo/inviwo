@@ -27,9 +27,14 @@
 # 
 #################################################################################
 
+# Components
+# Application   All the executables and dll etc needed to run the att
+# Development   Lib files, pdb files, headers, 
+# Datasets      General datasets i.e. boron etc.     
+# Testing       Regression files and data sets
+ 
 # install related paths
 if(APPLE)
-
 # See 
 # https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html#//apple_ref/doc/uid/10000123i-CH101-SW1
 	# Only show this "advanced" setting when packaging
@@ -45,12 +50,19 @@ if(APPLE)
     set(IVW_FRAMEWORK_INSTALL_DIR ${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks)
     set(IVW_INCLUDE_INSTALL_DIR include)
     set(IVW_RESOURCE_INSTALL_PREFIX ${IVW_APP_INSTALL_NAME}.app/Contents/Resources/)
-
-else()
+elseif(WIN32)
     set(IVW_RUNTIME_INSTALL_DIR bin)
     set(IVW_BUNDLE_INSTALL_DIR "not used!!!")
     set(IVW_LIBRARY_INSTALL_DIR ${IVW_RUNTIME_INSTALL_DIR})
     set(IVW_ARCHIVE_INSTALL_DIR ${IVW_RUNTIME_INSTALL_DIR})
+    set(IVW_FRAMEWORK_INSTALL_DIR "not used!!!")
+    set(IVW_INCLUDE_INSTALL_DIR include)
+    set(IVW_RESOURCE_INSTALL_PREFIX "")
+else()
+    set(IVW_RUNTIME_INSTALL_DIR bin)
+    set(IVW_BUNDLE_INSTALL_DIR "not used!!!")
+    set(IVW_LIBRARY_INSTALL_DIR lib)
+    set(IVW_ARCHIVE_INSTALL_DIR lib)
     set(IVW_FRAMEWORK_INSTALL_DIR "not used!!!")
     set(IVW_INCLUDE_INSTALL_DIR include)
     set(IVW_RESOURCE_INSTALL_PREFIX "")
@@ -59,58 +71,140 @@ endif()
 #--------------------------------------------------------------------
 # Add folder to module pack
 macro(ivw_add_to_module_pack folder)
-    get_filename_component(FOLDER_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+    get_filename_component(module ${CMAKE_CURRENT_SOURCE_DIR} NAME)
     install(
         DIRECTORY ${folder}
-        DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${FOLDER_NAME}
-        COMPONENT ${_cpackName}
+        DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${module}
+        COMPONENT Application
     )
 endmacro()
 
 #--------------------------------------------------------------------
-# A helper funtion to install targets
-# usage: ivw_default_install_comp_targets(<cpack component> <list of targets)
+# A helper funtion to install targets.  deprecated
 function(ivw_default_install_comp_targets comp)
-    # Dest type         Applies to
-    #------------------------------------------------
-    # ARCHIVE           Static libs, .lib
-    # LIBRARY           Module libraries .so 
-    # RUNTIME           Executables, DLLs
-    # OBJECTS           Object libraries
-    # FRAMEWORK         Targets marked as FRAMEWORK
-    # BUNDLE            Targets marked as BUNDLE
-    install(TARGETS ${ARGN}
-            EXPORT "${ARGN}"
-            RUNTIME DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
-            BUNDLE DESTINATION ${IVW_BUNDLE_INSTALL_DIR}
-            ARCHIVE DESTINATION ${IVW_ARCHIVE_INSTALL_DIR}
-            LIBRARY DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
-            FRAMEWORK DESTINATION ${IVW_FRAMEWORK_INSTALL_DIR}
-            COMPONENT ${comp})
-
+    ivw_default_install_targets(${ARGN})
 endfunction()
+
+define_property(
+    GLOBAL PROPERTY IVW_INSTALL_LIST INHERITED
+    BRIEF_DOCS "List of intstallation components to install for this target"
+    FULL_DOCS "List of intstallation components to install for this target"
+)
+define_property(
+    DIRECTORY PROPERTY IVW_INSTALL_LIST INHERITED
+    BRIEF_DOCS "List of intstallation components to install for this target"
+    FULL_DOCS "List of intstallation components to install for this target"
+)
+define_property(
+    TARGET PROPERTY IVW_INSTALL_LIST INHERITED
+    BRIEF_DOCS "List of intstallation components to install for this target"
+    FULL_DOCS "List of intstallation components to install for this target"
+)
+
+function(ivw_append_install_list)
+    set(options DIRECTORY GLOBAL)
+    set(oneValueArgs TARGET)
+    set(multiValueArgs "")
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if(ARG_TARGET) 
+        set(scope TARGET ${ARG_TARGET})
+    elseif(ARG_DIRECTORY)
+        set(scope DIRECTORY)
+    elseif(ARG_GLOBAL)
+        set(scope GOBAL)
+    else()
+        message(ERROR "Error either TARGET, DIRECTORY, or GLOBAL must be specified")
+    endif()
+
+    get_property(install_list ${scope} PROPERTY IVW_INSTALL_LIST)
+    if(NOT install_list) 
+        set(install_list "")
+    endif()
+    list(APPEND install_list 
+        "${CMAKE_CURRENT_BINARY_DIR}|%|${CMAKE_PROJECT_NAME}|%|Application|%|/"
+        "${CMAKE_CURRENT_BINARY_DIR}|%|${CMAKE_PROJECT_NAME}|%|Datasets|%|/"
+        "${CMAKE_CURRENT_BINARY_DIR}|%|${CMAKE_PROJECT_NAME}|%|Testing|%|/"
+        "${CMAKE_CURRENT_BINARY_DIR}|%|${CMAKE_PROJECT_NAME}|%|Development|%|/"
+    )
+    set_property(${scope} PROPERTY IVW_INSTALL_LIST ${install_list})
+endfunction()
+
+function(ivw_filter_install_list)
+    set(options "")
+    set(oneValueArgs LIST)
+    set(multiValueArgs REMOVE_COMPONENTS)
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    set(list ${${ARG_LIST}})
+    foreach(item IN LISTS ARG_REMOVE_COMPONENTS)
+        list(FILTER list EXCLUDE REGEX ".*\\|%\\|${item}\\|%\\|.*")
+    endforeach()
+    set(${ARG_LIST} ${list} PARENT_SCOPE)
+endfunction()
+
+
+
 
 #--------------------------------------------------------------------
 # A helper funtion to install module targets
 function(ivw_default_install_targets)
-    ivw_default_install_comp_targets(modules ${ARGN})
+    foreach(target IN LISTS ARGN)
+        install(TARGETS ${target} EXPORT "${target}"
+            RUNTIME        # DLLs, Exes, 
+                COMPONENT Application 
+                DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
+            BUNDLE         # Targets marked as BUNDLE
+                COMPONENT Application
+                DESTINATION ${IVW_BUNDLE_INSTALL_DIR}
+            ARCHIVE        # Static libs, .libs 
+                COMPONENT Development 
+                DESTINATION ${IVW_ARCHIVE_INSTALL_DIR}
+            LIBRARY        # Shared libs - DLLs   
+                COMPONENT Application
+                DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
+            FRAMEWORK      # Targets marked as FRAMEWORK
+                COMPONENT Application
+                DESTINATION ${IVW_FRAMEWORK_INSTALL_DIR}
+            PUBLIC_HEADER  # Public headers
+                COMPONENT Development 
+                DESTINATION ${IVW_INCLUDE_INSTALL_DIR}
+            RESOURCE       # Resource files
+                COMPONENT Application
+                DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}
+        )
+        ivw_append_install_list(TARGET ${target})
+    endforeach()
 endfunction()
 
 #--------------------------------------------------------------------
 # Install files
 function(ivw_private_install_module_dirs)
-    get_filename_component(module_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-    foreach(folder data docs tests/regression)
-        set(dir ${CMAKE_CURRENT_SOURCE_DIR}/${folder})
-        get_filename_component(base ${folder} DIRECTORY)
-        if(EXISTS ${dir})
-            install(
-                DIRECTORY ${dir}
-                DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${module_name}/${base}
-                COMPONENT modules
-            )
-        endif()
-    endforeach()
+    get_filename_component(module ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+
+    install(
+        DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data
+        DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${module}/data
+        COMPONENT Datasets
+        OPTIONAL
+    )
+    install(
+        DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs
+        DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${module}/docs
+        COMPONENT Application
+        OPTIONAL
+    )
+    install(
+        DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests
+        DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${module}/tests
+        COMPONENT Testing
+        OPTIONAL
+    )
+    list(APPEND ivw_install_list
+        "${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};Application;/"
+        "${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};Datasets;/"
+        "${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};Testing;/"
+    )
 endfunction()
 
 
@@ -124,11 +218,11 @@ macro(ivw_qt_add_to_install ivw_comp)
                 set(QTARGET_DIR "${${qtarget}_DIR}/../../../bin")
                 install(FILES ${QTARGET_DIR}/${qtarget}${CMAKE_DEBUG_POSTFIX}.dll 
                         DESTINATION bin 
-                        COMPONENT ${ivw_comp} 
+                        COMPONENT Application 
                         CONFIGURATIONS Debug)
                 install(FILES ${QTARGET_DIR}/${qtarget}.dll 
                         DESTINATION bin 
-                        COMPONENT ${ivw_comp} 
+                        COMPONENT Application 
                         CONFIGURATIONS Release RelWithDebInfo)
                 foreach(plugin IN LISTS ${qtarget}_PLUGINS)
                     get_target_property(_loc ${plugin} LOCATION)
@@ -136,7 +230,7 @@ macro(ivw_qt_add_to_install ivw_comp)
                     get_filename_component(_dirname ${_path} NAME)
                     install(FILES ${_loc} 
                             DESTINATION bin/${_dirname} 
-                            COMPONENT ${ivw_comp})
+                            COMPONENT Application)
                 endforeach()
             elseif(APPLE)
                 foreach(plugin IN LISTS ${qtarget}_PLUGINS)
@@ -145,11 +239,14 @@ macro(ivw_qt_add_to_install ivw_comp)
                     get_filename_component(_dirname ${_path} NAME)
                     install(FILES ${_loc} 
                             DESTINATION ${IVW_APP_INSTALL_NAME}.app/Contents/plugins/${_dirname} 
-                            COMPONENT ${ivw_comp})
+                            COMPONENT Application)
                 endforeach()
             endif()
         endif()
     endforeach()
+    list(APPEND ivw_install_list
+        "${CMAKE_CURRENT_BINARY_DIR};${CMAKE_PROJECT_NAME};Application;/"
+    )
 endmacro()
 
 function(ivw_register_package name)

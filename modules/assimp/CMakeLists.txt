@@ -23,16 +23,15 @@ if(NOT IVW_USE_EXTERNAL_ASSIMP)
 	target_include_directories(inviwo-module-assimp PUBLIC 
     	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext/assimp/include>
 	)
-    set(copyright ${CMAKE_CURRENT_SOURCE_DIR}/ext/assimp/assimp/LICENSE)
+    ivw_register_license_file(NAME Assimp VERSION ${Assimp_VERSION} MODULE Assimp 
+        URL http://assimp.sf.net
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/assimp/assimp/LICENSE
+    )
 else()
     find_package(assimp CONFIG REQUIRED)
-    ivw_vcpkg_install(assimp COPYRIGHT copyright)
+    ivw_vcpkg_install(assimp MODULE Assimp)
 endif()
 
-ivw_register_license_file(NAME Assimp VERSION 4.1 MODULE Assimp 
-    URL http://assimp.sf.net
-    FILES ${copyright}
-)
 target_link_libraries(inviwo-module-assimp PUBLIC assimp::assimp)
 
 ivw_make_package(InviwoAssimpModule inviwo-module-assimp)
