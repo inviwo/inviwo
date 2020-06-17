@@ -52,7 +52,7 @@ Document StringProperty::getDescription() const {
     Document doc = TemplateProperty<std::string>::getDescription();
     auto b = doc.get({P("html"), P("body")});
     auto val = value_.value;
-    replaceInString(val, "\n", "<br \>\n");
+    replaceInString(val, "\n", "<br />\n");
     b.append("p", val);
     return doc;
 }
