@@ -29,6 +29,17 @@
 
 include(CMakeParseArguments)
 
+define_property(
+    DIRECTORY PROPERTY IVW_LICENCE_LIST
+    BRIEF_DOCS "List of licence ids for this target"
+    FULL_DOCS "List of licence ids for this target"
+)
+define_property(
+    TARGET PROPERTY IVW_LICENCE_LIST INHERITED
+    BRIEF_DOCS "List of licence ids for this target"
+    FULL_DOCS "List of licence ids for this target"
+)
+
 #--------------------------------------------------------------------
 # Register a license file with inviwo. Will make the information 
 # available in the module factory object. All the registed files can 
@@ -55,8 +66,6 @@ include(CMakeParseArguments)
 #        TYPE "The zlib/libpng License"
 #        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/COPYING.txt
 #    )
-
-set("ivw_ext_licences" "" CACHE INTERNAL "External License ids")
 function(ivw_register_license_file)
     set(options EXT)
     set(oneValueArgs TARGET ID NAME VERSION URL MODULE TYPE)
@@ -84,28 +93,38 @@ function(ivw_register_license_file)
     endif()
 
     if(ARG_EXT)
-        message("Add est lic: ${ivw_ext_licences}")
-        set(ivw_ext_licences "${ivw_ext_licences};${ARG_ID}" CACHE INTERNAL "External License ids")
+        set(scope DIRECTORY)
     else()
         ivw_dir_to_mod_dep(mod ${ARG_MODULE})
-        if(NOT ${mod}_name)
+        if(NOT TARGET ${${mod}_target})
             message(FATAL_ERROR "ivw_register_license_file should be called from a module CMakeLists.txt")
         endif()
-        set("${mod}_licenses" "${${mod}_licenses};${ARG_ID}" CACHE INTERNAL "License ids")
+        set(scope TARGET ${${mod}_target})
+    endif()
+
+    get_property(license_list ${scope} PROPERTY IVW_LICENCE_LIST)
+    if(NOT license_list) 
+        set(license_list "")
+    endif()
+    list(APPEND license_list ${ARG_ID})
+    set_property(${scope} PROPERTY IVW_LICENCE_LIST ${license_list})
+
+    string(TOLOWER ${ARG_MODULE} lmodule)
+    if(${ARG_MODULE} STREQUAL "Core")
+        set(installDest ${IVW_RESOURCE_INSTALL_PREFIX}licenses/)
+    else()
+        set(installDest ${IVW_RESOURCE_INSTALL_PREFIX}modules/${lmodule}/licenses/)
     endif()
 
     set(files "")
-    foreach(file ${ARG_FILES})
-        if(IS_ABSOLUTE ${file})
-            if(${ARG_MODULE} STREQUAL "Core")
-                file(RELATIVE_PATH relfile ${IVW_ROOT_DIR} ${file})
-            else()
-                file(RELATIVE_PATH relfile ${CMAKE_CURRENT_SOURCE_DIR} ${file})
-            endif()
-            list(APPEND files ${relfile})
-        else()
-            list(APPEND files ${file})
-        endif()
+    set(fileCount 0)
+    foreach(file IN LISTS ARG_FILES)
+        get_filename_component(filename ${file} NAME)
+        set(dest "${IVW_BINARY_DIR}/modules/${lmodule}/licenses/${ARG_ID}-${filename}-${fileCount}.txt")
+        configure_file(${file} ${dest} COPYONLY)
+        install(FILES ${dest} DESTINATION ${installDest} COMPONENT Application)
+        list(APPEND files ${ARG_ID}-${filename}-${fileCount}.txt)
+        matH(EXPR fileCount "${fileCount} + 1")
     endforeach()
     
     set("ivw_licence_${ARG_ID}_name"    "${ARG_NAME}"    CACHE INTERNAL "License name")
@@ -114,17 +133,6 @@ function(ivw_register_license_file)
     set("ivw_licence_${ARG_ID}_files"   "${files}"       CACHE INTERNAL "License files")
     set("ivw_licence_${ARG_ID}_module"  "${ARG_MODULE}"  CACHE INTERNAL "License module")
     set("ivw_licence_${ARG_ID}_type"    "${ARG_TYPE}"    CACHE INTERNAL "License type")
-
-    if(${ARG_MODULE} STREQUAL "Core")
-        set(dest ${IVW_RESOURCE_INSTALL_PREFIX}licenses/)
-    else()
-        set(dest ${IVW_RESOURCE_INSTALL_PREFIX}modules/${${mod}_dir}/licenses/)
-    endif()
-    foreach(file ${ARG_FILES})
-        get_filename_component(filename ${file} NAME)
-        install(FILES ${file} DESTINATION ${dest} RENAME "${ARG_ID}-${filename}")
-    endforeach()
-
 endfunction()
 
 
@@ -137,8 +145,9 @@ function(ivw_private_generate_licence_header)
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+    get_property(license_list TARGET ${${ARG_MOD}_target} PROPERTY IVW_LICENCE_LIST)
     set(licenses "")
-    foreach(id ${${ARG_MOD}_licenses})
+    foreach(id IN LISTS license_list)
         # LicenseInfo(const std::string& id, const std::string& name, const Version& version,
         #             const std::string& module, const std::vector<std::string>& files);
         list_to_stringvector(files ${ivw_licence_${id}_files})

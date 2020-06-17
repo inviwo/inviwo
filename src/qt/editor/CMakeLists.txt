@@ -209,7 +209,7 @@ ivw_deploy_qt(inviwo-qteditor)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_default_install_comp_targets(qt_editor inviwo-qteditor)
+ivw_default_install_targets(inviwo-qteditor)
 ivw_qt_add_to_install(qt_editor Qt5Core Qt5Gui Qt5Widgets Qt5Help Qt5Sql Qt5Svg) # Qt5Sql is needed by Qt5Help
 ivw_make_package(InviwoQtEditor inviwo-qteditor)
 

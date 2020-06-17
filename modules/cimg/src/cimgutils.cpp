@@ -65,6 +65,11 @@
 #include <tiff/libtiff/tiffio.h>
 #endif
 
+#ifdef cimg_use_openexr
+#include <OpenEXRConfig.h>
+#endif
+
+
 // add CImg type specialization for half_float::half
 namespace cimg_library {
 namespace cimg {

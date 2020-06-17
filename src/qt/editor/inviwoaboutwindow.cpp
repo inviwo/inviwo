@@ -39,6 +39,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/inviwocommondefines.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -242,8 +243,8 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
                     dd.append("a", license.url, {{"href", license.url}});
                     dd += " ";
                 }
-                if (license.version != Version{0, 0, 0, 0}) {
-                    dd += toString(license.version);
+                if (!license.version.empty()) {
+                    dd += license.version;
                     dd += " ";
                 }
                 dd += "(" + license.module + ")";
@@ -257,46 +258,57 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     auto showLicense = [str, textdoc, app, escape, makeBody](const QUrl& url) {
         if (url.hasQuery()) {
             QUrlQuery query(url);
-            auto module = utilqt::fromQString(query.queryItemValue("module"));
-            auto id = utilqt::fromQString(query.queryItemValue("id"));
+            auto moduleName = utilqt::fromQString(query.queryItemValue("module"));
+            auto licenceId = utilqt::fromQString(query.queryItemValue("id"));
 
             const auto& mfos = app->getModuleManager().getModuleFactoryObjects();
-            auto mit = util::find_if(mfos, [&](auto& m) { return m->name == module; });
-            if (mit != mfos.end()) {
-                auto it = util::find_if((*mit)->licenses, [&](auto& l) { return l.id == id; });
-                if (it != (*mit)->licenses.end()) {
-                    Document doc;
-                    auto body = makeBody(doc);
-                    auto li = body.append("div");
-                    li.append("p").append("a", "Back", {{"href", "file://home.txt"}});
-                    li.append("br");
-                    li.append("b", it->name);
-                    if (it->version != Version{0, 0, 0, 0}) {
-                        li += toString(it->version);
-                    }
-                    if (!it->url.empty()) {
-                        li.append("a", it->url, {{"href", it->url}});
-                    }
-                    auto mod = app->getModuleByIdentifier(module);
-                    if (!mod) return;
-                    auto path = mod->getPath();
-                    for (auto& file : it->files) {
-                        auto licfile = path + "/" + file;
-                        if (!filesystem::fileExists(licfile)) {
-                            // Look for an installed file
-                            licfile = path + "/licenses/" + it->id + "-" +
-                                      filesystem::getFileNameWithExtension(file);
-                        }
+            auto mit = util::find_if(mfos, [&](auto& m) { return m->name == moduleName; });
+            if (mit == mfos.end()) return;
 
-                        auto f = filesystem::ifstream(licfile);
-                        std::stringstream buffer;
-                        buffer << f.rdbuf();
-                        li.append("pre", escape(buffer.str()), {{"style", "font: 12px;"}});
-                    }
-                    textdoc->setHtml(utilqt::toQString(doc));
-                    return;
-                }
+            auto& licenses = (*mit)->licenses;
+
+            auto lit = util::find_if(licenses, [&](auto& l) { return l.id == licenceId; });
+            if (lit == licenses.end()) return;
+
+            auto& license = *lit;
+
+            Document doc;
+            auto body = makeBody(doc);
+            auto li = body.append("div");
+            li.append("p").append("a", "Back", {{"href", "file://home.txt"}});
+            li.append("br");
+            li.append("b", license.name);
+            if (!license.version.empty()) {
+                li += license.version;
             }
+            if (!license.url.empty()) {
+                li.append("a", license.url, {{"href", license.url}});
+            }
+
+            auto mod = app->getModuleByIdentifier(moduleName);
+            if (!mod) return;
+            auto modulePath = mod->getPath();
+            for (auto& file : license.files) {
+
+                const auto defaultLicencePath = modulePath + "/licenses/" + file;
+                const auto fallbackLicencePath = std::string{build::binaryDirectory} + "/modules/" +
+                                                 toLower(moduleName) + "/licenses/" + file;
+
+                std::stringstream buffer;
+                if (filesystem::fileExists(defaultLicencePath)) {
+                    auto f = filesystem::ifstream(defaultLicencePath);
+                    buffer << f.rdbuf();
+                } else if (filesystem::fileExists(fallbackLicencePath)) {
+                    auto f = filesystem::ifstream(fallbackLicencePath);
+                    buffer << f.rdbuf();
+                } else {
+                    buffer << "Licence file not found";
+                }
+
+                li.append("pre", escape(buffer.str()), {{"style", "font: 12px;"}});
+            }
+            textdoc->setHtml(utilqt::toQString(doc));
+            return;
         }
         textdoc->setHtml(utilqt::toQString(str));
     };

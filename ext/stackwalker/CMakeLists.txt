@@ -37,6 +37,6 @@ ivw_folder(stackwalker ext)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_default_install_comp_targets(core stackwalker)
+ivw_default_install_targets(stackwalker)
 ivw_make_package(stackwalker stackwalker)
 ivw_suppress_compiler_warnings(stackwalker)

@@ -200,7 +200,41 @@ endif()
 # Define same target as find_package(ZLIB)
 add_library(ZLIB::ZLIB ALIAS zlib1)
 
+set(MINIZIP_PATH contrib/minizip)
+set(MINIZIP_SRCS
+  ${MINIZIP_PATH}/ioapi.c
+  ${MINIZIP_PATH}/unzip.c
+  ${MINIZIP_PATH}/zip.c
+  ${MINIZIP_PATH}/mztools.c
+)
+if(WIN32)
+  list(APPEND MINIZIP_SRCS ${MINIZIP_PATH}/iowin32.c)
+endif()
 
+set(MINIZIP_PUBLIC_HDRS
+  ${MINIZIP_PATH}/include/minizip/crypt.h
+  ${MINIZIP_PATH}/include/minizip/ioapi.h
+  ${MINIZIP_PATH}/include/minizip/unzip.h
+  ${MINIZIP_PATH}/include/minizip/zip.h
+  ${MINIZIP_PATH}/include/minizip/mztools.h
+)
+if(WIN32)
+  list(APPEND MINIZIP_PUBLIC_HDRS ${MINIZIP_PATH}/iowin32.h)
+endif()
+
+add_library(minizip STATIC ${MINIZIP_SRCS} ${MINIZIP_PUBLIC_HDRS})
+add_library(minizip::minizip ALIAS minizip)
+
+target_link_libraries(minizip PRIVATE ZLIB::ZLIB)
+target_compile_definitions(minizip PRIVATE -D_ZLIB_H)
+
+target_include_directories(minizip 
+    PUBLIC 
+        ${CMAKE_CURRENT_SOURCE_DIR}/${MINIZIP_PATH}/include
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/${MINIZIP_PATH}/include/minizip
+        ${CMAKE_CURRENT_SOURCE_DIR}/${MINIZIP_PATH}
+)
 
 if((NOT CYGWIN) AND BUILD_SHARED_LIBS)
     # This property causes shared libraries on Linux to have the full version
@@ -274,24 +308,14 @@ target_include_directories(zlib1 INTERFACE
     #$<INSTALL_INTERFACE:???>
 )
 
-#--------------------------------------------------------------------
-# add library path directory 
-#ivw_link_directories(${LIBRARY_OUTPUT_PATH})
-
-#--------------------------------------------------------------------
-# Install library into target folder
-ivw_default_install_comp_targets(core zlib1)
-
-
-#--------------------------------------------------------------------
-# Creates VS folder structure
-ivw_folder(zlib1 ext)
-
+# Inviwo Settings
+ivw_suppress_compiler_warnings(zlib1 minizip)
+ivw_default_install_targets(zlib1 minizip)
+set_target_properties(zlib1 minizip PROPERTIES FOLDER ext)
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
+ivw_make_package(ZLIB zlib1) # Make package (for other projects to find)
+ivw_make_package(minizip minizip::minizip) # Make package (for other projects to find)
 
-#--------------------------------------------------------------------
-# Make package (for other projects to find)
-ivw_make_package(ZLIB zlib1)
 # OpenEXR is dependent on zlib1 being exported  
 install(EXPORT ${PROJECT_NAME}
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}

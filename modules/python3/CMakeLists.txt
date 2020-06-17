@@ -1,18 +1,16 @@
-#--------------------------------------------------------------------
 # Inviwo Python3 Module
 ivw_module(Python3)
 
 #Check if numpy exist 
-execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
-                "try: import numpy; print(numpy.__version__);\nexcept: print('failed')\n"
-                RESULT_VARIABLE NUMPY_STATUS
-                OUTPUT_VARIABLE NUMPY_OUTPUT_VERSION
-                ERROR_VARIABLE NUMPY_ERROR
-                OUTPUT_STRIP_TRAILING_WHITESPACE
-               )
+execute_process(
+    COMMAND "${PYTHON_EXECUTABLE}" "-c"
+        "try: import numpy; print(numpy.__version__);\nexcept: print('failed')\n"
+    RESULT_VARIABLE NUMPY_STATUS
+    OUTPUT_VARIABLE NUMPY_OUTPUT_VERSION
+    ERROR_VARIABLE NUMPY_ERROR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 
-#--------------------------------------------------------------------
-# Add header files
 set(HEADER_FILES
     include/modules/python3/processors/numpymandelbrot.h
     include/modules/python3/processors/numpymeshcreatetest.h
@@ -32,8 +30,6 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
-# Add source files
 set(SOURCE_FILES
     src/processors/numpymandelbrot.cpp
     src/processors/numpymeshcreatetest.cpp
@@ -69,7 +65,6 @@ set(SCRIPT_FILES
 )
 ivw_group("Script Files" ${SCRIPT_FILES})
 
-#--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
     tests/unittests/python3-unittest-main.cpp
@@ -85,7 +80,6 @@ if(NOT NUMPY_OUTPUT_VERSION MATCHES "failed")
 endif()
 ivw_add_unittest(${TEST_FILES})
 
-#--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
 target_link_libraries(inviwo-module-python3 PUBLIC 
@@ -103,7 +97,6 @@ if(IVW_UNITTESTS)
     add_dependencies(inviwo-unittests-python3 inviwopy)
 endif()
 
-#--------------------------------------------------------------------
 # Add Python to package
 option(IVW_PACKAGE_EMBED_PYTHON "Embed a python dist in the installer.\ 
  Otherwise a existing python installation is needed to run inviwo" ON)
@@ -131,7 +124,8 @@ if(BUILD_SHARED_LIBS AND IVW_PACKAGE_EMBED_PYTHON)
         file(MAKE_DIRECTORY "${py_dir}/python")
         execute_process(COMMAND ${CMAKE_COMMAND} -E tar "xf" ${py_file}
                         WORKING_DIRECTORY "${py_dir}/python")
-        file(APPEND ${py_dir}/python/python37._pth "import site")
+        file(APPEND ${py_dir}/python/python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}._pth 
+            "import site")
 
         set(pip_file "${py_dir}/python/get-pip.py")
         if(NOT EXISTS "${pip_file}")
@@ -153,7 +147,7 @@ if(BUILD_SHARED_LIBS AND IVW_PACKAGE_EMBED_PYTHON)
                 WORKING_DIRECTORY "${py_dir}/python")
         endif()
 
-        install(DIRECTORY "${py_dir}/python/" DESTINATION bin COMPONENT python)
+        install(DIRECTORY "${py_dir}/python/" DESTINATION bin COMPONENT Application)
     endif()
 endif()
 
@@ -162,7 +156,6 @@ ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/scripts)
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/processors)
 ivw_make_package(InviwoPython3Module inviwo-module-python3)
 
-#--------------------------------------------------------------------
 # register license files
 # Cannot get pybind11::module version property since it is an INTERFACE target
 ivw_register_license_file(NAME "PyBind11" VERSION 2.2.4 MODULE Python3

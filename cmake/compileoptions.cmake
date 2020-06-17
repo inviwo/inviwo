@@ -62,7 +62,7 @@ function(ivw_define_standard_properties)
             list(APPEND comp_opts "/wd4251") # needs dll-interface   https://msdn.microsoft.com/en-us/library/esew7y1w.aspx
             list(APPEND comp_opts "/wd4505") # unreferenced funtion  https://msdn.microsoft.com/en-us/library/mt694070.aspx
             list(APPEND comp_opts "/w35038") # class member reorder
-            if(NOT IVW_OPENMP_ON)
+            if(NOT IVW_USE_OPENMP)
                 list(APPEND comp_opts "/permissive-")
             endif()
             list(APPEND comp_opts "/std:c++latest")
@@ -111,6 +111,7 @@ macro(ivw_define_standard_definitions project_name target)
         $<$<BOOL:${BUILD_SHARED_LIBS}>:INVIWO_ALL_DYN_LINK>
         $<$<BOOL:${IVW_CFG_PROFILING}>:IVW_PROFILING>
         $<$<BOOL:${IVW_CFG_FORCE_ASSERTIONS}>:IVW_FORCE_ASSERTIONS>
+        $<$<BOOL:${IVW_USE_OPENMP}>:IVW_USE_OPENMP>
         $<$<CONFIG:Debug>:IVW_DEBUG>
     )
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")

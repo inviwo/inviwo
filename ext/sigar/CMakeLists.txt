@@ -114,7 +114,7 @@ ivw_folder(sigar ext)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_default_install_comp_targets(core sigar)
+ivw_default_install_targets(sigar)
 ivw_make_package(Sigar sigar)
 
 ivw_suppress_compiler_warnings(sigar)

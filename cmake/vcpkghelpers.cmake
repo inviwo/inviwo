@@ -32,35 +32,88 @@ function(ivw_vcpkg_install name)
 		return()
 	endif()
 
-    set(options "")
-    set(oneValueArgs COPYRIGHT VERSION)
+    set(options EXT)
+    set(oneValueArgs OUT_COPYRIGHT OUT_VERSION MODULE)
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
 	string(TOLOWER "${name}" lowercase_name)
 	set(pkgdir "${_VCPKG_ROOT_DIR}/packages/${lowercase_name}_${VCPKG_TARGET_TRIPLET}")
-    
-    install(
-    	DIRECTORY "${pkgdir}/bin" 
-    	DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
-    	PATTERN "*.dll"
-    )
+    set(portdir "${_VCPKG_ROOT_DIR}/ports/${lowercase_name}")
 
-    if(ARG_VERSION)
-        set(version "?.?.?")
-        if(EXISTS ${pkgdir}/CONTROL)
-            file(STRINGS ${pkgdir}/CONTROL lines)
-            foreach(line IN LISTS lines)
-                if(line MATCHES "Version: (.*)")
-                    set(version ${CMAKE_MATCH_1})
-                endif()
-            endforeach()
-        endif()
-        set(${ARG_VERSION} ${version} PARENT_SCOPE)
+    if(EXISTS "${pkgdir}/bin")
+        install(
+    	   DIRECTORY "${pkgdir}/bin/" 
+    	   DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
+           COMPONENT Application
+    	   FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}"
+        )
+        install(
+           DIRECTORY "${pkgdir}/bin/" 
+           DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
+           COMPONENT Development
+           FILES_MATCHING PATTERN "*.pdb"
+        )
+        install(
+           DIRECTORY "${pkgdir}/lib/" 
+           DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
+           COMPONENT Development
+           FILES_MATCHING PATTERN "*${CMAKE_LINK_LIBRARY_SUFFIX}"
+        )
     endif()
 
-    if(ARG_COPYRIGHT)
-        set(copyright "${pkgdir}/share/${lowercase_name}/copyright")
-        set(${ARG_COPYRIGHT} ${copyright} PARENT_SCOPE)
+    set(version "?.?.?")
+    set(depends "")
+    if(EXISTS ${pkgdir}/CONTROL)
+        file(STRINGS ${pkgdir}/CONTROL lines)
+        foreach(line IN LISTS lines)
+            if(line MATCHES "Version: (.*)")
+                set(version ${CMAKE_MATCH_1})
+            endif()
+            if(line MATCHES "Depends: (.*)")
+                set(depDepends ${CMAKE_MATCH_1})
+                string(REPLACE "," ";" depDepends ${depDepends})
+                list(TRANSFORM depDepends STRIP)
+                list(APPEND depends ${depDepends})
+            endif()
+        endforeach()
+    else()
+        message(WARNING "Vcpkg control file not found ${pkgdir}/CONTROL")
+    endif()
+
+    set(homepage "")
+    if(EXISTS ${portdir}/CONTROL)
+        file(STRINGS ${portdir}/CONTROL lines)
+        foreach(line IN LISTS lines)
+            if(line MATCHES "Homepage: (.*)")
+                set(homepage URL ${CMAKE_MATCH_1})
+            endif()
+        endforeach()
+    else()
+        message(WARNING "Vcpkg control file not found ${portdir}/CONTROL")
+    endif()    
+
+    set(copyright "${pkgdir}/share/${lowercase_name}/copyright")
+
+    if(ARG_EXT)
+        set(ext EXT)
+    else()
+        set(ext "")
+    endif()
+
+    ivw_register_license_file(NAME ${name} 
+        VERSION ${version} MODULE ${ARG_MODULE} ${ext}
+        ${homepage} FILES ${copyright}
+    )
+
+    foreach(dep IN LISTS depends)
+        ivw_vcpkg_install(${dep} MODULE ${ARG_MODULE} ${ext})
+    endforeach()
+    
+    if(ARG_OUT_VERSION)
+        set(${ARG_OUT_VERSION} ${version} PARENT_SCOPE)
+    endif()
+    if(ARG_OUT_COPYRIGHT)
+        set(${ARG_OUT_COPYRIGHT} ${copyright} PARENT_SCOPE)
     endif()
 endfunction()

@@ -35,20 +35,9 @@ target_include_directories(libpng INTERFACE
 #find_package(ZLIB REQUIRED) # already done in inviwo/CmakeLists.txt
 target_link_libraries(libpng PRIVATE ZLIB::ZLIB)
 
-#--------------------------------------------------------------------
-# Supress warnings
+# Inviwo Settings
 ivw_suppress_compiler_warnings(libpng)
-
-#--------------------------------------------------------------------
-# Install library into target folder
-ivw_default_install_comp_targets(core libpng)
-
-#--------------------------------------------------------------------
-# Creates VS folder structure
+ivw_default_install_targets(libpng)
 ivw_folder(libpng ext)
-
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
-
-#--------------------------------------------------------------------
-# Make package (for other projects to find)
-ivw_make_package(PNG libpng)
+ivw_make_package(PNG libpng) # Make package (for other projects to find)

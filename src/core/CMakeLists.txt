@@ -1,9 +1,6 @@
-#--------------------------------------------------------------------
 # Inviwo Core
 project(inviwo-core)
 
-#--------------------------------------------------------------------
-# Add header files
 set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/boundingbox.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/camerautils.h
@@ -367,8 +364,6 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" BASE "${IVW_INCLUDE_DIR}/inviwo/core" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
-# Add source files
 set(SOURCE_FILES
     algorithm/boundingbox.cpp
     algorithm/camerautils.cpp
@@ -720,7 +715,6 @@ source_group("CMake Files" FILES ${cmake_files})
 # Special Core Defines
 remove_definitions(-DHAVE_CONFIG_H)
 
-#--------------------------------------------------------------------
 # Create library
 add_library(inviwo-core 
     ${SOURCE_FILES} ${HEADER_FILES} ${GEN_FILES}
@@ -729,7 +723,6 @@ add_library(inviwo-core
 )
 add_library(inviwo::core ALIAS inviwo-core)
 
-#--------------------------------------------------------------------
 # Define standard defintions
 ivw_define_standard_definitions(inviwo-core inviwo-core)
 ivw_define_standard_properties(inviwo-core)
@@ -742,7 +735,6 @@ target_compile_definitions(inviwo-core PRIVATE
     -DCMAKE_CXX_COMPILER_VERSION=\"${CMAKE_CXX_COMPILER_VERSION}\"
 )
 
-#--------------------------------------------------------------------
 # Add core folders to includes, this will also be picked up by all the modules
 target_include_directories(inviwo-core PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
@@ -786,23 +778,26 @@ endif (APPLE)
 #Optimize compiliation with PCH etc
 ivw_compile_optimize_on_target(inviwo-core)
 
-#--------------------------------------------------------------------
 # Make package (for other projects to find)
 ivw_default_install_targets(inviwo-core)
 ivw_make_package(InviwoCore inviwo-core)
+ivw_make_unittest_target(core inviwo-core)
 
-if(IVW_UNITTESTS)
-    ivw_make_unittest_target(core inviwo-core)
-endif()
+get_property(core_install_list TARGET inviwo-core PROPERTY IVW_INSTALL_LIST)
+get_property(ext_install_list DIRECTORY ${IVW_ROOT_DIR}/ext PROPERTY IVW_INSTALL_LIST)
+list(APPEND core_install_list ${ext_install_list})
+set_property(TARGET inviwo-core PROPERTY IVW_INSTALL_LIST ${core_install_list})
 
-#--------------------------------------------------------------------
 # register license files
 ivw_register_license_file(NAME "Inviwo" MODULE Core
     URL http://www.inviwo.org
     TYPE "The MIT License"
     FILES ${IVW_ROOT_DIR}/LICENSE
 )
-set(INVIWOCOREMODULE_licenses "${INVIWOCOREMODULE_licenses};${ivw_ext_licences}" CACHE INTERNAL "License ids")
+get_property(core_license_list TARGET inviwo-core PROPERTY IVW_LICENSE_LIST)
+get_property(ext_license_list DIRECTORY ${IVW_ROOT_DIR}/ext PROPERTY IVW_LICENSE_LIST)
+list(APPEND core_license_list ${ext_license_list})
+set_property(TARGET inviwo-core PROPERTY IVW_LICENSE_LIST ${core_license_list})
 
 ivw_register_license_file(NAME "Flags" MODULE Core
     URL "http://grisumbras.github.io/enum-flags/"
@@ -870,13 +865,6 @@ ivw_register_license_file(NAME "warn" MODULE Core
     FILES ${IVW_TOOLS_DIR}/codegen/warn/warn/LICENSE
 )
 
-find_package(ZLIB REQUIRED)
-ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core
-    URL "http://zlib.net/"
-    TYPE "The zlib/libpng License"
-    FILES ${IVW_EXTENSIONS_DIR}/zlib-1.2.11/LICENSE
-)
-
 if(IVW_UNITTESTS OR IVW_INTEGRATION_TESTS)
     ivw_register_license_file(NAME "Google C++ Testing Framework" TARGET gtest MODULE Core
         URL "https://github.com/google/googletest"
@@ -930,12 +918,7 @@ string(REPLACE ";" "\n" build_info_script "${build_info_script_list}")
 file(WRITE "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake" ${build_info_script})
 
 # Custom target for updating the build information (this target is always out-of-date)
-if(IVW_GENERATOR_IS_MULTI_CONFIG)
-    set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
-else()
-    set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/)
-endif()
-
+set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<$<BOOL:${IVW_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>/>)
 add_custom_target(inviwo-buildinfo-header ALL
     BYPRODUCTS  ${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp
     COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH=\"${buildinfo_output_dir}\"
@@ -950,19 +933,10 @@ if(IVW_CFG_EMBED_BUILDINFO)
     target_compile_definitions("inviwo-core" PRIVATE "IVW_CFG_EMBED_BUILDINFO")
 else()
     ## ensure that the ini file containing the build info is packaged and installed to the bin folder
-    if(GENERATOR_IS_MULTI_CONFIG)
-        install(
-            FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/inviwo_buildinfo.ini 
-            DESTINATION ${IVW_RUNTIME_INSTALL_DIR} 
-            COMPONENT modules 
-            CONFIGURATIONS Release Debug
-        )
-    else()
-        install(
-            FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/inviwo_buildinfo.ini 
-            DESTINATION ${IVW_RUNTIME_INSTALL_DIR} 
-            COMPONENT modules 
-            CONFIGURATIONS Release Debug)
-    endif()
+    install(
+        FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<$<BOOL:${IVW_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>/>inviwo_buildinfo.ini 
+        DESTINATION ${IVW_RUNTIME_INSTALL_DIR} 
+        COMPONENT Application
+    )
 endif()
 #--------------------------------------------------------------------

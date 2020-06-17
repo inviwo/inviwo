@@ -62,10 +62,12 @@ function(ivw_make_unittest_target name target)
     #--------------------------------------------------------------------
     # Create application
     add_executable(${test_name} ${SOURCE_FILES})
+
+    find_package(GTest CONFIG REQUIRED)
     target_link_libraries(${test_name} 
         PUBLIC 
-        gtest
-        gmock
+        GTest::gtest
+        GTest::gmock
         inviwo::testutil
         ${target}
     )

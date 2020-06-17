@@ -24,5 +24,5 @@ add_custom_target(tinydircpp SOURCES ${HEADER_FILES})
 # Creates VS folder structure
 ivw_folder(tinydircpp ext)
 
-ivw_default_install_comp_targets(core tinydir)
+#ivw_default_install_targets(tinydir)
 ivw_make_package(tinydir tinydir)
