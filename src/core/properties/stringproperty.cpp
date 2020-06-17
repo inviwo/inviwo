@@ -51,9 +51,7 @@ Document StringProperty::getDescription() const {
     using P = Document::PathComponent;
     Document doc = TemplateProperty<std::string>::getDescription();
     auto b = doc.get({P("html"), P("body")});
-    auto val = value_.value;
-    replaceInString(val, "\n", "<br />\n");
-    b.append("p", val);
+    auto pre = b.append("pre", value_.value, {{"style","font"}});
     return doc;
 }
 
