@@ -308,7 +308,7 @@ Map defaultCMakeOptions(String buildType) {
         "CMAKE_BUILD_TYPE" : buildType,
         "BUILD_SHARED_LIBS" : "ON",
         "IVW_CFG_CMAKE_DEBUG" : "ON",
-        "IVW_CFG_RUNTIME_MODULE_LOADING" : "OFF"
+        "IVW_CFG_RUNTIME_MODULE_LOADING" : "OFF",
         "IVW_DOXYGEN_PROJECT" : "ON",
         "IVW_APP_MINIMAL_GLFW" : "ON",
         "IVW_APP_MINIMAL_QT" : "ON",

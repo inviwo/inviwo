@@ -134,7 +134,7 @@ constexpr Version::Version(std::string_view version) {
     const std::array<unsigned int*, 4> v{&major, &minor, &patch, &build};
 
     size_t begin = 0;
-    size_t end = version.find_first_of(".-", 0);
+    size_t end = version.find('.', 0);
     for (auto e : v) {
         const auto num = version.substr(begin, end - begin);
         for (auto c : num) {
@@ -146,7 +146,7 @@ constexpr Version::Version(std::string_view version) {
         }
         if (end == std::string_view::npos) break;
         begin = end + 1;
-        end = version.find_first_of(".-", begin);
+        end = version.find('.', begin);
     }
 }
 

@@ -149,6 +149,8 @@ ivw_add_unittest(${TEST_FILES})
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES} ${JS_FILES})
 target_include_directories(inviwo-module-webbrowser PUBLIC ${CEF_INCLUDE_PATH})
+
+find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(inviwo-module-webbrowser PUBLIC
     $<$<NOT:$<BOOL:${OS_MACOSX}>>:libcef_lib>
     libcef_dll_wrapper 

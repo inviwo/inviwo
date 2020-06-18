@@ -243,8 +243,8 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
                     dd.append("a", license.url, {{"href", license.url}});
                     dd += " ";
                 }
-                if (license.version != Version{0, 0, 0, 0}) {
-                    dd += toString(license.version);
+                if (!license.version.empty()) {
+                    dd += license.version;
                     dd += " ";
                 }
                 dd += "(" + license.module + ")";
@@ -278,8 +278,8 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
             li.append("p").append("a", "Back", {{"href", "file://home.txt"}});
             li.append("br");
             li.append("b", license.name);
-            if (license.version != Version{0, 0, 0, 0}) {
-                li += toString(license.version);
+            if (!license.version.empty()) {
+                li += license.version;
             }
             if (!license.url.empty()) {
                 li.append("a", license.url, {{"href", license.url}});
