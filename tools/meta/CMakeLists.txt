@@ -64,6 +64,7 @@ ivw_define_standard_properties(inviwo-meta)
 ivw_define_standard_definitions(${PROJECT_NAME} inviwo-meta)
 
 find_package(fmt REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 target_link_libraries(inviwo-meta PUBLIC
 	std::filesystem 

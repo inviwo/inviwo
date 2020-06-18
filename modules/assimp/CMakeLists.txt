@@ -27,6 +27,7 @@ if(NOT IVW_USE_EXTERNAL_ASSIMP)
         URL http://assimp.sf.net
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/assimp/assimp/LICENSE
     )
+    ivw_default_install_targets(assimp)
 else()
     find_package(assimp CONFIG REQUIRED)
     ivw_vcpkg_install(assimp MODULE Assimp)

@@ -104,6 +104,7 @@ if (NOT IVW_USE_EXTERNAL_HDF5)
         TYPE "BSD-style"
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/hdf5/COPYING
     )
+    ivw_default_install_targets(${h5-targets})
 
 else()
     find_package(hdf5 REQUIRED)

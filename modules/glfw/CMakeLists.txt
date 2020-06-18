@@ -35,6 +35,7 @@ if(NOT IVW_USE_EXTERNAL_GLFW)
         TYPE "The zlib/libpng License"
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/glfw/LICENSE.md
     )
+    ivw_default_install_targets(glfw)
 else()
     find_package(glfw3 REQUIRED)
     ivw_vcpkg_install(glfw3 MODULE GLFW)    

@@ -25,12 +25,14 @@ endforeach()
 
 # Create application
 add_executable(inviwo-integrationtests ${SOURCE_FILES})
+
+find_package(GTest REQUIRED)
 target_link_libraries(inviwo-integrationtests PRIVATE 
     inviwo::core
     inviwo::module::glfw
     inviwo::module::base
     inviwo::testutil
-    gtest
+    GTest::gtest
 )
 ivw_configure_application_module_dependencies(inviwo-integrationtests ${enabled_modules})
 ivw_define_standard_definitions(inviwo-integrationtests inviwo-integrationtests)

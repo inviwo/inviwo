@@ -13,3 +13,5 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(gtest PRIVATE -DGTEST_CREATE_SHARED_LIBRARY=1)
     target_compile_definitions(gtest INTERFACE -DGTEST_LINKED_AS_SHARED_LIBRARY=1)
 endif()
+
+ivw_make_package(GTest gtest gtest_main gmock gmock_main)

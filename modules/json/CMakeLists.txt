@@ -40,13 +40,8 @@ ivw_add_unittest(${TEST_FILES})
 
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
+
+find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(inviwo-module-json PUBLIC
     nlohmann_json::nlohmann_json
-)
-
-# Register license for external library
-ivw_register_license_file(NAME "JSON for Modern C++" target nlohmann_json MODULE JSON
-URL "https://github.com/nlohmann/json"
-TYPE "The MIT License"
-FILES  ${IVW_EXTENSIONS_DIR}/json/LICENSE.MIT
 )

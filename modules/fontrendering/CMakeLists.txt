@@ -56,6 +56,7 @@ if(NOT IVW_USE_EXTERNAL_FREETYPE)
         TYPE "BSD-style, acknowledgement: Portions of this software are copyright The FreeType Project (www.freetype.org). All rights reserved."
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/freetype/freetype/docs/FTL.TXT
     )
+     ivw_default_install_targets(freetype)
 else()
     find_package(freetype REQUIRED)
     ivw_vcpkg_install(freetype MODULE FontRendering)

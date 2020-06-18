@@ -22,10 +22,11 @@ target_include_directories(inviwo-testutil PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
+find_package(GTest CONFIG REQUIRED)
 target_link_libraries(inviwo-testutil PUBLIC
 	inviwo::warn 
-    gtest
-    gmock
+    GTest::gtest
+    GTest::gmock
 )
 
 ivw_define_standard_properties(inviwo-testutil)

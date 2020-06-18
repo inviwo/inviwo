@@ -11,14 +11,3 @@ add_subdirectory(openexr)
 
 ivw_move_targets_in_dir_to_folder(${CMAKE_CURRENT_SOURCE_DIR} ext/openexr)
 ivw_suppress_warnings_for_targets_in_dir(${CMAKE_CURRENT_SOURCE_DIR})
-
-#--------------------------------------------------------------------
-# Make package (for other projects to find)
-ivw_make_package(IlmBase IlmBase::Half
-                         IlmBase::Iex
-                         IlmBase::IexMath
-                         IlmBase::Imath
-                         IlmBase::IlmThread)
-ivw_make_package(OpenEXR OpenEXR::IlmImf
-                         OpenEXR::IlmImfUtil)
-

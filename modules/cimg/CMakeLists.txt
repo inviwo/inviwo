@@ -38,11 +38,21 @@ find_package(ZLIB REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(TIFF REQUIRED)
 
-add_subdirectory(ext/cimg)
+option(IVW_USE_EXTERNAL_CIMG  "Cimg is provided externaly" OFF)
+if(NOT IVW_USE_EXTERNAL_CIMG)
+    add_subdirectory(ext/cimg)
+    ivw_register_license_file(NAME CImg VERSION 2.1.5 MODULE CImg TYPE CeCILL-C
+        URL http://cimg.eu
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/cimg/Licence_CeCILL-C_V1-en.txt
+    )
+    target_link_libraries(inviwo-module-cimg PRIVATE inviwo::cimg)
+else()
+    find_package(CImg CONFIG REQUIRED)
+    target_link_libraries(inviwo-module-cimg PRIVATE CImg::CImg)
+endif()
 
 target_link_libraries(inviwo-module-cimg 
     PRIVATE
-        inviwo::cimg   
         ZLIB::ZLIB
         JPEG::JPEG
         TIFF::TIFF
@@ -55,10 +65,7 @@ target_compile_definitions(inviwo-module-cimg PRIVATE
     cimg_use_tiff
 )
 
-ivw_register_license_file(NAME CImg VERSION 2.1.5 MODULE CImg TYPE CeCILL-C
-    URL http://cimg.eu
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/cimg/Licence_CeCILL-C_V1-en.txt
-)
+
 
 
 # The current OpenEXR has some problems with regards to packaging. So for now we make it optional.
@@ -78,6 +85,15 @@ if(IVW_USE_OPENEXR)
             URL "http://www.openexr.com"
             TYPE "Modified BSD License"
             FILES ext/openexr/openexr/LICENSE.md
+        )
+        ivw_default_install_targets(
+            Half
+            Iex
+            IexMath
+            Imath
+            IlmThread
+            IlmImf
+            IlmImfUtil
         )
         target_link_libraries(inviwo-module-cimg
             PRIVATE
