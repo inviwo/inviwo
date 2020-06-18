@@ -521,7 +521,6 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
                     } else {  // Only interpolate floating point buffers;
                         return [outRam](const std::vector<uint32_t>& indices,
                                         const std::vector<float>& weights, std::optional<vec3>) {
-                            IVW_UNUSED_PARAM(mix);
                             const auto it = std::max_element(weights.begin(), weights.end());
                             const auto index = std::distance(weights.begin(), it);
 

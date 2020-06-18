@@ -74,13 +74,8 @@ struct IVW_CORE_API TFPropertyConcept {
     virtual void removeObserver(TFPropertyObserver* observer) = 0;
 };
 
-
-
 template <typename U>
-class IVW_CORE_TMPL_EXP TFPropertyModel;
-
-template <typename U>
-class TFPropertyModel : public TFPropertyConcept {
+class IVW_CORE_TMPL_EXP TFPropertyModel : public TFPropertyConcept {
 public:
     TFPropertyModel(U data) : data_(data) {}
 
@@ -148,10 +143,6 @@ template <>
 IVW_CORE_API TransferFunctionProperty*
 TFPropertyModel<TransferFunctionProperty*>::getTFPropertyInternal() const;
 
-#ifdef _WIN32
-extern template class IVW_CORE_TMPL_EXP TFPropertyModel<TransferFunctionProperty*>;
-#endif
-
 // IsoValueProperty
 template <>
 IVW_CORE_API TFPrimitiveSet* TFPropertyModel<IsoValueProperty*>::getIsovaluesInternal() const;
@@ -166,10 +157,6 @@ IVW_CORE_API const dvec2 TFPropertyModel<IsoValueProperty*>::getMaskInternal() c
 template <>
 IVW_CORE_API void TFPropertyModel<IsoValueProperty*>::clearMaskInternal();
 
-#ifdef _WIN32
-extern template class IVW_CORE_TMPL_EXP TFPropertyModel<IsoValueProperty*>;
-#endif
-
 // IsoTFProperty
 template <>
 IVW_CORE_API TFPrimitiveSet* TFPropertyModel<IsoTFProperty*>::getTFInternal() const;
@@ -182,10 +169,6 @@ IVW_CORE_API bool TFPropertyModel<IsoTFProperty*>::hasIsovaluesInternal() const;
 template <>
 IVW_CORE_API TransferFunctionProperty* TFPropertyModel<IsoTFProperty*>::getTFPropertyInternal()
     const;
-
-#ifdef _WIN32
-extern template class IVW_CORE_TMPL_EXP TFPropertyModel<IsoTFProperty*>;
-#endif
 
 }  // namespace util
 
