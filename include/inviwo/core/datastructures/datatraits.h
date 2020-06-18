@@ -161,9 +161,7 @@ struct DataTraits<std::vector<T, A>> {
         return util::appendIfNotEmpty(DataTraits<T>::classIdentifier(), ".vector");
     }
     static std::string dataName() { return "vector<" + DataTraits<T>::dataName() + ">"; }
-    static uvec3 colorCode() {
-        return color::lighter(DataTraits<T>::colorCode(), 1.12f);
-    }
+    static uvec3 colorCode() { return color::lighter(DataTraits<T>::colorCode(), 1.12f); }
     static Document info(const std::vector<T, A>& data) {
         return detail::vectorInfo<T>(data.size(), data.empty() ? nullptr : &data.front(),
                                      data.empty() ? nullptr : &data.back());
