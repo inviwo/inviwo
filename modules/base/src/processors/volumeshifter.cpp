@@ -76,7 +76,7 @@ void VolumeShifter::process() {
                 const int size = glm::compMul(dim);
                 util::IndexMapper<3, int> im(dim);
 
-                auto vol = std::make_shared<VolumeRAMPrecision<typename ValueType>>(
+                auto vol = std::make_shared<VolumeRAMPrecision<ValueType>>(
                     vr->getDimensions(), vr->getSwizzleMask(), vr->getInterpolation(),
                     vr->getWrapping());
                 auto dst = vol->getDataTyped();
