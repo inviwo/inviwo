@@ -46,8 +46,7 @@ std::string AxisProperty::getClassIdentifier() const { return classIdentifier; }
 AxisProperty::AxisProperty(const std::string& identifier, const std::string& displayName,
                            Orientation orientation, InvalidationLevel invalidationLevel,
                            PropertySemantics semantics)
-    : CompositeProperty{identifier, displayName, invalidationLevel, semantics}
-    , visible_{"visible", "Visible", true}
+    : BoolCompositeProperty{identifier, displayName, true, invalidationLevel, semantics}
     , color_{"color",    "Color",     vec4{vec3{0.0f}, 1.0f},           vec4{0.0f},
              vec4{1.0f}, vec4{0.01f}, InvalidationLevel::InvalidOutput, PropertySemantics::Color}
     , width_{"width", "Width", 2.5f, 0.0f, 20.0f}
@@ -72,14 +71,7 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
 
     color_.setSemantics(PropertySemantics::Color);
 
-    addProperty(visible_);
-    addProperty(color_);
-    addProperty(width_);
-    addProperty(useDataRange_);
-    addProperty(range_);
-    addProperty(flipped_);
-    addProperty(orientation_);
-    addProperty(placement_);
+    addProperties(color_, width_, useDataRange_, range_, flipped_, orientation_, placement_);
 
     range_.setReadOnly(useDataRange_.get());
     useDataRange_.onChange([this]() { range_.setReadOnly(useDataRange_.get()); });
@@ -96,10 +88,7 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
     labelSettings_.position_.setVisible(false);
     labelSettings_.setCurrentStateAsDefault();
 
-    addProperty(captionSettings_);
-    addProperty(labelSettings_);
-    addProperty(majorTicks_);
-    addProperty(minorTicks_);
+    addProperties(captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 
     captionSettings_.setCollapsed(true);
     labelSettings_.setCollapsed(true);
@@ -120,8 +109,7 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
 }
 
 AxisProperty::AxisProperty(const AxisProperty& rhs)
-    : CompositeProperty{rhs}
-    , visible_{rhs.visible_}
+    : BoolCompositeProperty{rhs}
     , color_{rhs.color_}
     , width_{rhs.width_}
     , useDataRange_{rhs.useDataRange_}
@@ -134,22 +122,12 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , majorTicks_{rhs.majorTicks_}
     , minorTicks_{rhs.minorTicks_} {
 
-    addProperty(visible_);
-    addProperty(color_);
-    addProperty(width_);
-    addProperty(useDataRange_);
-    addProperty(range_);
-    addProperty(flipped_);
-    addProperty(orientation_);
-    addProperty(placement_);
+    addProperties(color_, width_, useDataRange_, range_, flipped_, orientation_, placement_);
 
     range_.setReadOnly(useDataRange_.get());
     useDataRange_.onChange([this]() { range_.setReadOnly(useDataRange_.get()); });
 
-    addProperty(captionSettings_);
-    addProperty(labelSettings_);
-    addProperty(majorTicks_);
-    addProperty(minorTicks_);
+    addProperties(captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 
     orientation_.onChange([this]() { adjustAlignment(); });
     placement_.onChange([this]() { adjustAlignment(); });
@@ -241,7 +219,7 @@ void AxisProperty::adjustAlignment() {
     captionSettings_.font_.anchorPos_.set(captionAnchor);
 }
 
-bool AxisProperty::getAxisVisible() const { return visible_.get(); }
+bool AxisProperty::getAxisVisible() const { return isChecked(); }
 
 bool AxisProperty::getFlipped() const { return flipped_.get(); }
 
