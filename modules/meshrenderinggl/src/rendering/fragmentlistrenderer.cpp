@@ -146,9 +146,6 @@ bool FragmentListRenderer::postPass(bool useIllustration, const Image* backgroun
     // check if enough space was available
     if (numFrags > fragmentSize_) {
         // we have to resize the fragment storage buffer
-        LogInfo("fragment lists resolved, pixels drawn: "
-                << numFrags << ", available: " << fragmentSize_ << ", allocate space for "
-                << int(1.1f * numFrags) << " pixels");
         fragmentSize_ = static_cast<size_t>(1.1f * numFrags);
 
         // unbind texture
@@ -308,10 +305,6 @@ void FragmentListRenderer::resizeBuffers(const size2_t& screenSize) {
         // create new SSBO for the pixel storage
         pixelBuffer_.setSizeInBytes(bufferSize);
         pixelBuffer_.unbind();
-
-        LogInfo("fragment-list: pixel storage for "
-                << fragmentSize_
-                << " pixels allocated, memory usage: " << (bufferSize / 1024 / 1024.0f) << " MB");
     }
 }
 
@@ -344,11 +337,6 @@ void FragmentListRenderer::Illustration::resizeBuffers(size2_t screenSize, size_
             smoothing[i].setSizeInBytes(bufferSize);
             smoothing[i].unbind();
         }
-        // reuse fragment lists as neighborhood storage
-
-        LogInfo("Illustration Buffers: additional pixel storage for "
-                << fragmentSize << " pixels allocated, memory usage: "
-                << (bufferSize * 4 / 1024 / 1024.0f) << " MB");
     }
 }
 

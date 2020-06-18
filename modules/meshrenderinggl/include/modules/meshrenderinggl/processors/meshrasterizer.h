@@ -185,6 +185,7 @@ protected:
 
         BoolProperty enableUniform_;
         FloatProperty uniformScaling_;
+        FloatProperty minimumAlpha_;
         // IRIS
         BoolProperty enableAngleBased_;
         FloatProperty angleBasedExponent_;
