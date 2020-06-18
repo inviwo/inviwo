@@ -78,9 +78,9 @@ list(APPEND CMAKE_MODULE_PATH
 set(PythonLibsNew_FIND_VERSION 3)
 set(Python_ADDITIONAL_VERSIONS 3.5 3.6 3.7 3.8 3.9)
 if(IVW_MODULE_PYTHON3)
-	find_package(PythonLibsNew 3 REQUIRED)
+    find_package(PythonLibsNew 3 REQUIRED)
 else()
-	find_package(PythonLibsNew 3)
+    find_package(PythonLibsNew 3)
 endif()
 
 include(cmake/globalconfig.cmake)
@@ -94,7 +94,10 @@ option(IVW_APP_MINIMAL_QT   "Build Inviwo Tiny QT Application" OFF)
 option(IVW_APP_PYTHON       "Build Inviwo Python Application" ON)
 
 if((IVW_APP_INVIWO OR IVW_APP_MINIMAL_QT OR IVW_APP_PYTHON) AND NOT IVW_APP_QTBASE)
-    set(IVW_APP_QTBASE ON CACHE BOOL "Build base for qt applications. \
+    set(IVW_APP_QTBASE ON CACHE BOOL 
+        "Build base for qt applications. Used by Qt network editor and Qt minimal application" 
+        FORCE
+    )
     message(STATUS "IVW_APP_QTBASE was set to build, due to dependencies")
 endif()
 
