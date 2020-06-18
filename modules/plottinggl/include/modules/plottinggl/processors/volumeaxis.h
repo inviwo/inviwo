@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEAXIS_H
-#define IVW_VOLUMEAXIS_H
+#pragma once
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -65,6 +64,7 @@ namespace plot {
  * ### Properties
  *   * __Axis Offset__      offset between each axis and the volume
  *   * __Axis Range Mode__  determines axis ranges (volume dimension, volume basis, or customized)
+ *   * __Visibility__       visibility of all available axes (default: all axis start at the origin)
  *   * __X Axis__           axis properties for x
  *   * __Y Axis__           axis properties for y
  *   * __Z Axis__           axis properties for z
@@ -102,6 +102,10 @@ private:
     DoubleMinMaxProperty rangeYaxis_;
     DoubleMinMaxProperty rangeZaxis_;
 
+    CompositeProperty visibility_;
+    OptionPropertyString presets_;
+    std::array<BoolProperty, 12> visibleAxes_;
+
     AxisStyleProperty axisStyle_;
     AxisProperty xAxis_;
     AxisProperty yAxis_;
@@ -118,5 +122,3 @@ private:
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEAXIS_H
