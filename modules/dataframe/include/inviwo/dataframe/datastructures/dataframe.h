@@ -78,7 +78,9 @@ public:
     using LookupTable = std::unordered_map<glm::u64, std::string>;
 
     DataFrame(const DataFrame &df);
-    DataFrame &operator=(const DataFrame &) = default;
+    DataFrame &operator=(const DataFrame &df);
+    DataFrame(const DataFrame &&df);
+    DataFrame &operator=(const DataFrame &&df);
 
     DataFrame(std::uint32_t size = 0);
     virtual ~DataFrame() = default;

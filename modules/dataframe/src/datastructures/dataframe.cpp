@@ -161,6 +161,19 @@ DataFrame::DataFrame(const DataFrame &df) {
     }
 }
 
+DataFrame &DataFrame::operator=(const DataFrame &df) {
+    for (const auto &col : df.columns_) {
+        columns_.emplace_back(col->clone());
+    }
+    return *this;
+}
+
+DataFrame &DataFrame::operator=(const DataFrame &&df) {
+    columns_ = std::move(df.columns_);
+    return *this;
+}
+DataFrame::DataFrame(const DataFrame &&df) { columns_ = std::move(df.columns_); }
+
 std::vector<std::shared_ptr<Column>>::const_iterator DataFrame::end() const {
     return columns_.end();
 }
