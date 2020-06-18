@@ -77,6 +77,7 @@
 #include <modules/base/processors/volumesource.h>
 #include <modules/base/processors/volumeexport.h>
 #include <modules/base/processors/volumebasistransformer.h>
+#include <modules/base/processors/volumeshifter.h>
 #include <modules/base/processors/volumeslice.h>
 #include <modules/base/processors/volumesubsample.h>
 #include <modules/base/processors/volumesubset.h>
@@ -200,6 +201,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MeshConverterProcessor>();
     registerProcessor<VolumeInformation>();
     registerProcessor<TFSelector>();
+    registerProcessor<VolumeShifter>();
 
     // input selectors
     registerProcessor<InputSelector<MultiDataInport<Volume>, VolumeOutport>>();
