@@ -86,7 +86,7 @@ include(cmake/globalconfig.cmake)
 # Application setup
 option(IVW_QT_APPLICATION_BASE
     "Build base for Qt apps. Used by the Qt network editor and the Tiny Qt app" ON)
-option(IVW_QT_APPLICATION        "Build Inviwo Qt network editor application" OFF)
+option(IVW_QT_APPLICATION        "Build Inviwo Qt network editor application" ON)
 option(IVW_INTEGRATION_TESTS     "Build inviwo integration test" OFF)
 option(IVW_TINY_GLFW_APPLICATION "Build Inviwo Tiny GLFW Application" OFF)
 option(IVW_TINY_QT_APPLICATION   "Build Inviwo Tiny QT Application" ON)
