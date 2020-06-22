@@ -79,8 +79,8 @@ public:
 
     DataFrame(const DataFrame &df);
     DataFrame &operator=(const DataFrame &df);
-    DataFrame(const DataFrame &&df);
-    DataFrame &operator=(const DataFrame &&df);
+    DataFrame(DataFrame &&df);
+    DataFrame &operator=(DataFrame &&df);
 
     DataFrame(std::uint32_t size = 0);
     virtual ~DataFrame() = default;
