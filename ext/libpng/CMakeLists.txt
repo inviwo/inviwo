@@ -37,7 +37,7 @@ target_link_libraries(libpng PRIVATE ZLIB::ZLIB)
 
 # Inviwo Settings
 ivw_suppress_compiler_warnings(libpng)
-ivw_default_install_targets(core libpng)
+ivw_default_install_targets(libpng)
 ivw_folder(libpng ext)
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 ivw_make_package(PNG libpng) # Make package (for other projects to find)
