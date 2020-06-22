@@ -274,24 +274,13 @@ target_include_directories(zlib1 INTERFACE
     #$<INSTALL_INTERFACE:???>
 )
 
-#--------------------------------------------------------------------
-# add library path directory 
-#ivw_link_directories(${LIBRARY_OUTPUT_PATH})
-
-#--------------------------------------------------------------------
-# Install library into target folder
-ivw_default_install_comp_targets(core zlib1)
-
-
-#--------------------------------------------------------------------
-# Creates VS folder structure
-ivw_folder(zlib1 ext)
-
+# Inviwo Settings
+ivw_suppress_compiler_warnings(zlib1 minizip)
+ivw_default_install_targets(zlib1 minizip)
+set_target_properties(zlib1 minizip PROPERTIES FOLDER ext)
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
+ivw_make_package(ZLIB zlib1) # Make package (for other projects to find)
 
-#--------------------------------------------------------------------
-# Make package (for other projects to find)
-ivw_make_package(ZLIB zlib1)
 # OpenEXR is dependent on zlib1 being exported  
 install(EXPORT ${PROJECT_NAME}
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}

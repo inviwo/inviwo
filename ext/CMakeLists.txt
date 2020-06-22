@@ -68,8 +68,6 @@ if (NOT IVW_USE_EXTERNAL_IMG)
 		TYPE "libpng (BSD-style)" URL http://www.libpng.org/pub/png/libpng.html
 	    FILES ${IVW_EXTENSIONS_DIR}/libpng/LICENSE.txt
 	)
-	ivw_default_install_targets(ZLIB JPEG PNG TIFF)
-
 else()
 	find_package(ZLIB REQUIRED)
 	find_package(JPEG REQUIRED)

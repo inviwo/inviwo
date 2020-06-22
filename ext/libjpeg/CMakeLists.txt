@@ -37,19 +37,9 @@ target_include_directories(libjpeg INTERFACE
     $<INSTALL_INTERFACE:include/ext/libjpeg>
 )
 
-#--------------------------------------------------------------------
-# Supress warnings
+# Inviwo settings
 ivw_suppress_compiler_warnings(libjpeg)
-
-#--------------------------------------------------------------------
-# Install library into target folder
-ivw_default_install_comp_targets(core libjpeg)
-
-#--------------------------------------------------------------------
-# Creates VS folder structure
+ivw_default_install_targets(libjpeg)
 ivw_folder(libjpeg ext)
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
-
-#--------------------------------------------------------------------
-# Make package (for other projects to find)
-ivw_make_package(JPEG libjpeg)
+ivw_make_package(JPEG libjpeg) # Make package (for other projects to find)
