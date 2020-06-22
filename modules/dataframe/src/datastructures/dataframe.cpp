@@ -35,6 +35,8 @@
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#include <utility>
+
 namespace inviwo {
 
 /*
@@ -42,12 +44,26 @@ namespace inviwo {
  */
 DataFrame::DataFrame(std::uint32_t size) : columns_() {
     // at the moment, GPUs only support uints up to 32bit
-    auto &cont = addColumn<std::uint32_t>("index", size)
+    auto& cont = addColumn<std::uint32_t>("index", size)
                      ->getTypedBuffer()
                      ->getEditableRAMRepresentation()
                      ->getDataContainer();
     std::iota(cont.begin(), cont.end(), 0);
 }
+DataFrame::DataFrame(const DataFrame& rhs) {
+    for (const auto* col : rhs.columns_) {
+        columns_.emplace_back(col->clone());
+    }
+}
+DataFrame& DataFrame::operator=(const DataFrame& that) {
+    if (this != &that) {
+        DataFrame tmp(that);
+        std::swap(tmp.columns_, columns_);
+    }
+    return *this;
+}
+DataFrame& DataFrame::operator=(DataFrame&&) = default;
+DataFrame::DataFrame(DataFrame&&) = default;
 
 std::shared_ptr<Column> DataFrame::addColumn(std::shared_ptr<Column> column) {
     if (column) {
@@ -154,27 +170,6 @@ size_t DataFrame::getNumberOfRows() const {
     }
     return size;
 }
-
-DataFrame::DataFrame(const DataFrame &df) {
-    for (const auto &col : df.columns_) {
-        columns_.emplace_back(col->clone());
-    }
-}
-
-DataFrame &DataFrame::operator=(const DataFrame &df) {
-    if (this == &df) return *this;
-    this->columns_.clear();
-    for (const auto &col : df.columns_) {
-        columns_.emplace_back(col->clone());
-    }
-    return *this;
-}
-
-DataFrame &DataFrame::operator=(DataFrame &&df) {
-    columns_ = std::move(df.columns_);
-    return *this;
-}
-DataFrame::DataFrame(DataFrame &&df) { columns_ = std::move(df.columns_); }
 
 std::vector<std::shared_ptr<Column>>::const_iterator DataFrame::end() const {
     return columns_.end();
