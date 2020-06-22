@@ -212,11 +212,11 @@ if(WIN32)
 endif()
 
 set(MINIZIP_PUBLIC_HDRS
-  ${MINIZIP_PATH}/crypt.h
-  ${MINIZIP_PATH}/ioapi.h
-  ${MINIZIP_PATH}/unzip.h
-  ${MINIZIP_PATH}/zip.h
-  ${MINIZIP_PATH}/mztools.h
+  ${MINIZIP_PATH}/include/minizip/crypt.h
+  ${MINIZIP_PATH}/include/minizip/ioapi.h
+  ${MINIZIP_PATH}/include/minizip/unzip.h
+  ${MINIZIP_PATH}/include/minizip/zip.h
+  ${MINIZIP_PATH}/include/minizip/mztools.h
 )
 if(WIN32)
   list(APPEND MINIZIP_PUBLIC_HDRS ${MINIZIP_PATH}/iowin32.h)
@@ -228,7 +228,13 @@ add_library(minizip::minizip ALIAS minizip)
 target_link_libraries(minizip PRIVATE ZLIB::ZLIB)
 target_compile_definitions(minizip PRIVATE -D_ZLIB_H)
 
-target_include_directories(minizip PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${MINIZIP_PATH})
+target_include_directories(minizip 
+    PUBLIC 
+        ${CMAKE_CURRENT_SOURCE_DIR}/${MINIZIP_PATH}/include
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/${MINIZIP_PATH}/include/minizip
+        ${CMAKE_CURRENT_SOURCE_DIR}/${MINIZIP_PATH}
+)
 
 if((NOT CYGWIN) AND BUILD_SHARED_LIBS)
     # This property causes shared libraries on Linux to have the full version

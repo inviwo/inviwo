@@ -66,7 +66,7 @@
 #endif
 
 #ifdef cimg_use_openexr
-#include <OpenEXR/OpenEXRConfig.h>
+#include <OpenEXRConfig.h>
 #endif
 
 
