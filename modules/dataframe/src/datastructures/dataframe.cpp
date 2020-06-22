@@ -162,6 +162,8 @@ DataFrame::DataFrame(const DataFrame &df) {
 }
 
 DataFrame &DataFrame::operator=(const DataFrame &df) {
+    if (this == &df) return;
+    this->columns_.clear();
     for (const auto &col : df.columns_) {
         columns_.emplace_back(col->clone());
     }
