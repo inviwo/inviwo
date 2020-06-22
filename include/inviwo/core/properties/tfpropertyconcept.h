@@ -34,6 +34,8 @@
 #include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 
+#include <inviwo/core/util/detected.h>
+
 namespace inviwo {
 
 class TFPropertyObserver;
@@ -52,6 +54,7 @@ struct IVW_CORE_API TFPropertyConcept {
     virtual bool hasIsovalues() const = 0;
 
     virtual TransferFunctionProperty* getTFProperty() const = 0;
+    virtual IsoValueProperty* getIsoValueProperty() const = 0;
 
     virtual TFPrimitiveSet* getTransferFunction() const = 0;
     virtual TFPrimitiveSet* getIsovalues() const = 0;
@@ -77,26 +80,70 @@ struct IVW_CORE_API TFPropertyConcept {
 template <typename U>
 class IVW_CORE_TMPL_EXP TFPropertyModel : public TFPropertyConcept {
 public:
-    TFPropertyModel(U data) : data_(data) {}
+    template <typename T>
+    using hasTFProp = decltype(std::declval<T>().tf_);
 
-    virtual U getProperty() const override { return data_; }
+    template <typename T>
+    using hasISOProp = decltype(std::declval<T>().isovalues_);
 
-    virtual bool hasTF() const override { return hasTFInternal(); }
-    virtual bool hasIsovalues() const override { return hasIsovaluesInternal(); }
+    TFPropertyModel(U* data) : data_(data) {}
+
+    virtual Property* getProperty() const override { return data_; }
+
+    virtual bool hasTF() const override { return getTFProperty() != nullptr; }
+    virtual bool hasIsovalues() const override { return getIsoValueProperty() != nullptr; }
 
     virtual TransferFunctionProperty* getTFProperty() const override {
-        return getTFPropertyInternal();
+        if constexpr (std::is_same_v<TransferFunctionProperty, U>) {
+            return data_;
+        } else if constexpr (util::is_detected_exact_v<TransferFunctionProperty, hasTFProp, U>) {
+            return &data_->tf_;
+        } else {
+            return nullptr;
+        }
+    }
+    virtual IsoValueProperty* getIsoValueProperty() const override {
+        if constexpr (std::is_same_v<IsoValueProperty, U>) {
+            return data_;
+        } else if constexpr (util::is_detected_exact_v<IsoValueProperty, hasISOProp, U>) {
+            return &data_->isovalues_;
+        } else {
+            return nullptr;
+        }
+    }
+    virtual TFPrimitiveSet* getTransferFunction() const override {
+        if (auto tf = getTFProperty()) {
+            return &tf->get();
+        } else {
+            return nullptr;
+        }
+    }
+    virtual TFPrimitiveSet* getIsovalues() const override {
+        if (auto iso = getIsoValueProperty()) {
+            return &iso->get();
+        } else {
+            return nullptr;
+        }
     }
 
-    virtual TFPrimitiveSet* getTransferFunction() const override { return getTFInternal(); }
-    virtual TFPrimitiveSet* getIsovalues() const override { return getIsovaluesInternal(); }
-
-    virtual bool supportsMask() const override { return supportsMaskInternal(); }
+    virtual bool supportsMask() const override { return hasTF(); }
     virtual void setMask(double maskMin, double maskMax) override {
-        setMaskInternal(maskMin, maskMax);
+        if (auto tf = getTFProperty()) {
+            tf->setMask(maskMin, maskMax);
+        }
     }
-    virtual const dvec2 getMask() const override { return getMaskInternal(); }
-    virtual void clearMask() override { clearMaskInternal(); }
+    virtual const dvec2 getMask() const override {
+        if (auto tf = getTFProperty()) {
+            return tf->getMask();
+        } else {
+            return {};
+        }
+    }
+    virtual void clearMask() override {
+        if (auto tf = getTFProperty()) {
+            tf->clearMask();
+        }
+    }
 
     virtual void setZoomH(double zoomHMin, double zoomHMax) override {
         data_->setZoomH(zoomHMin, zoomHMax);
@@ -120,55 +167,8 @@ public:
     }
 
 private:
-    TFPrimitiveSet* getTFInternal() const { return nullptr; }
-    TFPrimitiveSet* getIsovaluesInternal() const { return nullptr; }
-    bool hasTFInternal() const { return false; }
-    bool hasIsovaluesInternal() const { return false; }
-    TransferFunctionProperty* getTFPropertyInternal() const { return nullptr; }
-
-    bool supportsMaskInternal() const { return true; }
-    void setMaskInternal(double maskMin, double maskMax) { data_->setMask(maskMin, maskMax); }
-    const dvec2 getMaskInternal() const { return data_->getMask(); }
-    void clearMaskInternal() { data_->clearMask(); }
-
-    U data_;
+    U* data_;
 };
-
-// TransferFunctionProperty
-template <>
-IVW_CORE_API TFPrimitiveSet* TFPropertyModel<TransferFunctionProperty*>::getTFInternal() const;
-template <>
-IVW_CORE_API bool TFPropertyModel<TransferFunctionProperty*>::hasTFInternal() const;
-template <>
-IVW_CORE_API TransferFunctionProperty*
-TFPropertyModel<TransferFunctionProperty*>::getTFPropertyInternal() const;
-
-// IsoValueProperty
-template <>
-IVW_CORE_API TFPrimitiveSet* TFPropertyModel<IsoValueProperty*>::getIsovaluesInternal() const;
-template <>
-IVW_CORE_API bool TFPropertyModel<IsoValueProperty*>::hasIsovaluesInternal() const;
-template <>
-IVW_CORE_API bool TFPropertyModel<IsoValueProperty*>::supportsMaskInternal() const;
-template <>
-IVW_CORE_API void TFPropertyModel<IsoValueProperty*>::setMaskInternal(double, double);
-template <>
-IVW_CORE_API const dvec2 TFPropertyModel<IsoValueProperty*>::getMaskInternal() const;
-template <>
-IVW_CORE_API void TFPropertyModel<IsoValueProperty*>::clearMaskInternal();
-
-// IsoTFProperty
-template <>
-IVW_CORE_API TFPrimitiveSet* TFPropertyModel<IsoTFProperty*>::getTFInternal() const;
-template <>
-IVW_CORE_API TFPrimitiveSet* TFPropertyModel<IsoTFProperty*>::getIsovaluesInternal() const;
-template <>
-IVW_CORE_API bool TFPropertyModel<IsoTFProperty*>::hasTFInternal() const;
-template <>
-IVW_CORE_API bool TFPropertyModel<IsoTFProperty*>::hasIsovaluesInternal() const;
-template <>
-IVW_CORE_API TransferFunctionProperty* TFPropertyModel<IsoTFProperty*>::getTFPropertyInternal()
-    const;
 
 }  // namespace util
 
