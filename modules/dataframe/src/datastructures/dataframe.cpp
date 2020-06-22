@@ -44,26 +44,26 @@ namespace inviwo {
  */
 DataFrame::DataFrame(std::uint32_t size) : columns_() {
     // at the moment, GPUs only support uints up to 32bit
-    auto& cont = addColumn<std::uint32_t>("index", size)
+    auto &cont = addColumn<std::uint32_t>("index", size)
                      ->getTypedBuffer()
                      ->getEditableRAMRepresentation()
                      ->getDataContainer();
     std::iota(cont.begin(), cont.end(), 0);
 }
-DataFrame::DataFrame(const DataFrame& rhs) {
-    for (const auto* col : rhs.columns_) {
+DataFrame::DataFrame(const DataFrame &rhs) {
+    for (const auto *col : rhs.columns_) {
         columns_.emplace_back(col->clone());
     }
 }
-DataFrame& DataFrame::operator=(const DataFrame& that) {
+DataFrame &DataFrame::operator=(const DataFrame &that) {
     if (this != &that) {
         DataFrame tmp(that);
         std::swap(tmp.columns_, columns_);
     }
     return *this;
 }
-DataFrame& DataFrame::operator=(DataFrame&&) = default;
-DataFrame::DataFrame(DataFrame&&) = default;
+DataFrame &DataFrame::operator=(DataFrame &&) = default;
+DataFrame::DataFrame(DataFrame &&) = default;
 
 std::shared_ptr<Column> DataFrame::addColumn(std::shared_ptr<Column> column) {
     if (column) {

@@ -29,6 +29,4 @@
 
 #include <inviwo/core/properties/tfpropertyconcept.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

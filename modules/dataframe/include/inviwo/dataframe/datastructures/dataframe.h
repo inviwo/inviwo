@@ -154,7 +154,7 @@ public:
 
     DataItem getDataItem(size_t index, bool getStringsAsStrings = false) const;
 
-    const std::vector<std::pair<std::string, const DataFormatBase *>> getHeaders() const;
+    const std::vector<std::pair<std::string, const DataFormatBase*>> getHeaders() const;
     std::string getHeader(size_t idx) const;
 
     /**
