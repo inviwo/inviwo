@@ -5,3 +5,5 @@ option(BENCHMARK_ENABLE_GTEST_TESTS "Enable building the unit tests which depend
 set(BUILD_SHARED_LIBS OFF)
 add_subdirectory(benchmark)
 set_target_properties(benchmark PROPERTIES FOLDER ext)
+ivw_register_package(benchmark benchmark)
+add_library(benchmark::benchmark ALIAS benchmark)

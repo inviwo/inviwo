@@ -15,3 +15,7 @@ if(BUILD_SHARED_LIBS)
 endif()
 
 ivw_make_package(GTest gtest gtest_main gmock gmock_main)
+add_library(GTest::gtest ALIAS gtest)
+add_library(GTest::gtest_main ALIAS gtest_main)
+add_library(GTest::gmock ALIAS gmock)
+add_library(GTest::gmock_main ALIAS gmock_main)
