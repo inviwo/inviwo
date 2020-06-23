@@ -360,7 +360,7 @@ std::unique_ptr<KeyframeSequence> BaseTrack<Seq>::remove(size_t i) {
         auto seq = std::move(sequences_[i]);
         sequences_.erase(sequences_.begin() + i);
         notifyKeyframeSequenceRemoved(this, seq.get());
-        return std::move(seq);
+        return seq;
     } else {
         return nullptr;
     }
@@ -373,7 +373,7 @@ std::unique_ptr<Keyframe> BaseTrack<Seq>::remove(Keyframe* key) {
             if (seq->size() == 0) {
                 remove(seq.get());
             }
-            return std::move(res);
+            return res;
         }
     }
     return nullptr;
@@ -386,7 +386,7 @@ std::unique_ptr<KeyframeSequence> BaseTrack<Seq>::remove(KeyframeSequence* seq) 
         auto res = std::move(*it);
         sequences_.erase(it);
         notifyKeyframeSequenceRemoved(this, res.get());
-        return std::move(res);
+        return res;
     } else {
         return nullptr;
     }

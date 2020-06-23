@@ -75,7 +75,7 @@ TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* property,
                                    const std::vector<TFPrimitiveSet*>& primitiveSets)
     : PropertyEditorWidgetQt(property, "Transfer Function Editor", "TFEditorWidget")
     , sliderRange_(static_cast<int>(property->get().getTextureSize()))
-    , propertyPtr_(std::make_unique<util::TFPropertyModel<TransferFunctionProperty*>>(property))
+    , propertyPtr_(std::make_unique<util::TFPropertyModel<TransferFunctionProperty>>(property))
     , tfSets_(primitiveSets) {
     if (tfSets_.empty()) {
         // no sets given, make sure that the primitive set of the property is used
@@ -88,7 +88,7 @@ TFPropertyDialog::TFPropertyDialog(IsoValueProperty* property,
                                    const std::vector<TFPrimitiveSet*>& primitiveSets)
     : PropertyEditorWidgetQt(property, "Transfer Function Editor", "TFEditorWidget")
     , sliderRange_(1024)
-    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoValueProperty*>>(property))
+    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoValueProperty>>(property))
     , tfSets_(primitiveSets) {
     if (tfSets_.empty()) {
         // no sets given, make sure that the primitive set of the property is used
@@ -101,7 +101,7 @@ TFPropertyDialog::TFPropertyDialog(IsoTFProperty* property,
                                    const std::vector<TFPrimitiveSet*>& primitiveSets)
     : PropertyEditorWidgetQt(property, "Transfer Function Editor", "TFEditorWidget")
     , sliderRange_(static_cast<int>(property->tf_.get().getTextureSize()))
-    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoTFProperty*>>(property))
+    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoTFProperty>>(property))
     , tfSets_(primitiveSets) {
     if (tfSets_.empty()) {
         // no sets given, make sure that the primitive sets of the property are used

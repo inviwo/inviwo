@@ -108,7 +108,7 @@ std::unique_ptr<T> makeProcessor(ivec2 pos, Args&&... args) {
 
     setPosition(p.get(), pos);
 
-    return std::move(p);
+    return p;
 }
 
 }  // namespace util

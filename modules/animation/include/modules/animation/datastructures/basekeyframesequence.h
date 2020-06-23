@@ -193,7 +193,7 @@ std::unique_ptr<Keyframe> BaseKeyframeSequence<Key>::remove(size_t i) {
         auto key = std::move(keyframes_[i]);
         keyframes_.erase(keyframes_.begin() + i);
         notifyKeyframeRemoved(key.get(), this);
-        return std::move(key);
+        return key;
     } else {
         return nullptr;
     }
@@ -207,7 +207,7 @@ std::unique_ptr<Keyframe> BaseKeyframeSequence<Key>::remove(Keyframe* key) {
         auto res = std::move(*it);
         keyframes_.erase(it);
         notifyKeyframeRemoved(res.get(), this);
-        return std::move(res);
+        return res;
     } else {
         return nullptr;
     }
