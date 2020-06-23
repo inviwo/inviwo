@@ -711,8 +711,9 @@ TextTextureObject createTextTextureObject(TextRenderer& textRenderer, std::strin
     bbox.glyphsExtent = glm::max(bbox.glyphsExtent, size2_t(1));
 
     if (!tex || tex->getDimensions() != bbox.glyphsExtent) {
-        tex = std::make_shared<Texture2D>(bbox.glyphsExtent, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
-                                          GL_LINEAR);
+        tex = std::make_shared<Texture2D>(
+            bbox.glyphsExtent, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_LINEAR, swizzlemasks::rgba,
+            std::array<GLenum, 2>{{GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER}});
         tex->initialize(nullptr);
     }
     textRenderer.renderToTexture({tex, bbox}, size2_t(0u), bbox.glyphsExtent, text, fontColor);
