@@ -11,4 +11,5 @@ BreakConstructorInitializers : BeforeComma
 BreakConstructorInitializersBeforeComma: true
 KeepEmptyLinesAtTheStartOfBlocks: true
 # AllowShortCaseLabelsOnASingleLine: true
-# DerivePointerAlignment: true
+DerivePointerAlignment: false
+PointerAlignment: Left
