@@ -124,7 +124,7 @@ void DataFrame::addRow(const std::vector<std::string>& data) {
     for (size_t i = 0; i < data.size(); ++i) {
         try {
             columns_[i + 1]->add(data[i]);
-        } catch (InvalidConversion& ) {
+        } catch (InvalidConversion&) {
             columnIdForDataTypeErrors.push_back(i + 1);
         }
     }
@@ -175,8 +175,8 @@ std::vector<std::shared_ptr<Column>>::const_iterator DataFrame::end() const {
     return columns_.end();
 }
 
-const std::vector<std::pair<std::string, const DataFormatBase *>> DataFrame::getHeaders() const {
-    std::vector<std::pair<std::string, const DataFormatBase *>> headers;
+const std::vector<std::pair<std::string, const DataFormatBase*>> DataFrame::getHeaders() const {
+    std::vector<std::pair<std::string, const DataFormatBase*>> headers;
     for (const auto& c : columns_) {
         headers.emplace_back(c->getHeader(), c->getBuffer()->getDataFormat());
     }
