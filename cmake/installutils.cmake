@@ -28,9 +28,9 @@
 #################################################################################
 
 # Components
-# Application   All the executables and dll etc needed to run the att
+# Application   All the executables and dll etc needed to run the app
 # Development   Lib files, pdb files, headers, 
-# Datasets      General datasets i.e. boron etc.     
+# Datasets      General datasets i.e. boron etc. Workspaces, scripts, transfer functions.    
 # Testing       Regression files and data sets
  
 # install related paths

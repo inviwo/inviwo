@@ -79,11 +79,21 @@ option(PEGTL_BUILD_EXAMPLES "Build example programs" OFF)
 add_subdirectory(ext/pegtl)
 target_link_libraries(inviwo-meta PUBLIC taocpp::pegtl)
 ivw_move_targets_in_dir_to_folder(ext/pegtl ext/pegtl)
+ivw_register_license_file(NAME "PEGTL" VERSION 2.7.1 target taocpp::pegtl MODULE Core EXT
+    URL "https://github.com/taocpp/PEGTL"
+    TYPE "The MIT License"
+    FILES ${IVW_TOOLS_DIR}/meta/ext/pegtl/LICENSE
+)
 
 # Add inja
 option(BUILD_UNIT_TESTS "Build the unit tests" OFF)
 add_subdirectory(ext/inja)
 target_link_libraries(inviwo-meta PUBLIC inja)
+ivw_register_license_file(NAME "inja" VERSION 1.0.0 target inja MODULE Core EXT
+    URL "https://github.com/pantor/inja"
+    TYPE "The MIT License"
+    FILES ${IVW_TOOLS_DIR}/meta/ext/inja/LICENSE
+)
 
 # Added cli app
 add_executable(inviwo-meta-cli src/main.cpp)

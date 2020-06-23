@@ -58,7 +58,7 @@ if(NOT IVW_USE_EXTERNAL_FREETYPE)
     )
      ivw_default_install_targets(freetype)
 else()
-    find_package(freetype REQUIRED)
+    find_package(freetype CONFIG REQUIRED)
     ivw_vcpkg_install(freetype MODULE FontRendering)
 endif()
 

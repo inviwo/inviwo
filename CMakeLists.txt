@@ -27,7 +27,7 @@
  #
  #################################################################################
 
-cmake_minimum_required(VERSION 3.12...3.17 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13...3.17 FATAL_ERROR)
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
 #--------------------------------------------------------------------
@@ -62,12 +62,7 @@ verify_submodules("${CMAKE_CURRENT_LIST_DIR}/.gitmodules")
 option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 
 file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/pkg)
-set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
-
-list(APPEND CMAKE_MODULE_PATH 
-    ${PROJECT_SOURCE_DIR}/support/cmake/modules
-    ${CMAKE_SOURCE_DIR}/ext/pybind11/tools
-)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/modules)
 
 # Make sure we do look for python 3 here, before it is done in any subdirectory or external library.
 # If we do not specify version number on our first call to find_package(PythonLibs) it returns the
@@ -123,18 +118,18 @@ endif()
 add_custom_target(uninstall COMMENT "Dummy target to prevent other uninstalls")
 
 add_subdirectory(ext)                        # Add external libraries.
+add_subdirectory(tools/meta)                 # Add inviwo meta library, used in the qt editor
 if(IVW_TEST_INTEGRATION_TESTS OR IVW_TEST_UNIT_TESTS)
-    add_subdirectory(tests/testutil)         # Add test utils
+    add_subdirectory(tests/testutil)         # Add test utils, used in the module unit tests
 endif()                    
-ivw_register_modules(all_modules)            # Add modules
-add_subdirectory(tools/meta)                 # Add Inviwo meta
-add_subdirectory(src/qt)                     # Add Qt
-add_subdirectory(apps)                       # Add applications
+ivw_register_modules(all_modules)            # Add inviwo modules
+add_subdirectory(src/qt)                     # Add the Qt network editor
+add_subdirectory(apps)                       # Add all the applications, uses the modules.
 ivw_add_external_projects()                  # Add external projects
 if(IVW_TEST_INTEGRATION_TESTS)
-    add_subdirectory(tests/integrationtests) # Add integration tests project
+    add_subdirectory(tests/integrationtests) # Add integration tests, uses the modules.
 endif()
-add_subdirectory(docs)                       # Generate Doxygen setup.
+add_subdirectory(docs)                       # Generate Doxygen targets
 
 string(TIMESTAMP time "%Y-%m-%d %H:%M:%S")
 message(STATUS "Configure started at ${timeStart} and ended at ${time}")

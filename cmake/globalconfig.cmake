@@ -97,9 +97,6 @@ function(ivw_debug_message)
     endif()
 endfunction()
 
-# Add our cmake modules to search path
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/modules")
-
 # Add parameter for paths to external modules
 set(IVW_EXTERNAL_MODULES "" CACHE STRING "Semicolon (;) separated paths to directories containing external modules")
 # Convert to valid paths, i.e. exchange backslash to slash

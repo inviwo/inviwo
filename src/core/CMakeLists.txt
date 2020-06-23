@@ -745,6 +745,7 @@ target_include_directories(inviwo-core PUBLIC
 # Add core dependencies to this list
 find_package(fmt REQUIRED)
 find_package(glm REQUIRED)
+find_package(tclap REQUIRED)
 target_compile_definitions(glm INTERFACE
     GLM_FORCE_SIZE_T_LENGTH
     GLM_ENABLE_EXPERIMENTAL
@@ -796,115 +797,12 @@ ivw_register_license_file(NAME "Inviwo" MODULE Core
 )
 get_property(core_license_list TARGET inviwo-core PROPERTY IVW_LICENSE_LIST)
 get_property(ext_license_list DIRECTORY ${IVW_ROOT_DIR}/ext PROPERTY IVW_LICENSE_LIST)
-list(APPEND core_license_list ${ext_license_list})
+get_property(meta_license_list DIRECTORY ${IVW_TOOLS_DIR}/meta PROPERTY IVW_LICENSE_LIST)
+list(APPEND core_license_list ${ext_license_list} ${meta_license_list})
 set_property(TARGET inviwo-core PROPERTY IVW_LICENSE_LIST ${core_license_list})
-
-ivw_register_license_file(NAME "Flags" MODULE Core
-    URL "http://grisumbras.github.io/enum-flags/"
-    TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/flags/LICENSE
-)
-
-ivw_register_license_file(NAME "half" TARGET half MODULE Core
-    URL "http://half.sourceforge.net"
-    TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE.txt
-)
-
-if(TARGET inviwo::sigar)
-    ivw_register_license_file(NAME "Sigar" TARGET inviwo::sigar MODULE Core
-        URL "http://sigar.hyperic.com"
-        TYPE "Apache License"
-        FILES ${IVW_EXTENSIONS_DIR}/sigar/LICENSE
-    )
-endif()
-
-if (TARGET inviwo::stackwalker)
-    ivw_register_license_file(NAME "stackwalker" TARGET inviwo::stackwalker MODULE Core
-        URL http://stackwalker.codeplex.com/
-        TYPE "BSD-License"
-        FILES ${IVW_EXTENSIONS_DIR}/stackwalker/LICENSE.txt
-    )
-endif()
-
-ivw_register_license_file(NAME "tclap" TARGET tclap_dummy MODULE Core
-    URL http://tclap.sourceforge.net/
-    TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/tclap/COPYING
-)
-
-ivw_register_license_file(NAME "TiCPP" TARGET ticpp MODULE Core
-    URL https://github.com/wxFormBuilder/ticpp
-    TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/ticpp/LICENSE
-)
-
-ivw_register_license_file(NAME "TinyDir" MODULE Core
-    URL https://github.com/cxong/tinydir
-    TYPE "Simplified BSD"
-    FILES ${IVW_EXTENSIONS_DIR}/tinydir/COPYING
-)
-
-ivw_register_license_file(NAME "UTF8-CPP" TARGET utfcpp MODULE Core
-    URL "https://github.com/nemtrif/utfcpp"
-    TYPE "Boost Software License"
-    FILES ${IVW_EXTENSIONS_DIR}/utf/LICENSE
-)
-
-if (TARGET vld-interface)
-    ivw_register_license_file(NAME "Visual Leak Detector (VLD)" VERSION 2.5.1 MODULE Core
-        URL "https://kinddragon.github.io/vld/"
-        TYPE "GNU LESSER GENERAL PUBLIC LICENSE"
-        FILES ${IVW_EXTENSIONS_DIR}/vld/COPYING.txt
-    )
-endif()
-
-ivw_register_license_file(NAME "warn" MODULE Core
-    URL "https://github.com/petersteneteg/warn"
-    TYPE "BSD 2-clause"
-    FILES ${IVW_TOOLS_DIR}/codegen/warn/warn/LICENSE
-)
-
-if(IVW_UNITTESTS OR IVW_INTEGRATION_TESTS)
-    ivw_register_license_file(NAME "Google C++ Testing Framework" TARGET gtest MODULE Core
-        URL "https://github.com/google/googletest"
-        TYPE "BSD 3-clause"
-        FILES ${IVW_EXTENSIONS_DIR}/gtest/gtest/LICENSE
-    )
-endif()
-
-ivw_register_license_file(NAME "JSON for Modern C++" target nlohmann_json MODULE Core
-    URL "https://github.com/nlohmann/json"
-    TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/json/LICENSE.MIT
-)
-
-ivw_register_license_file(NAME "inja" VERSION 1.0.0 target inja MODULE Core
-    URL "https://github.com/pantor/inja"
-    TYPE "The MIT License"
-    FILES ${IVW_TOOLS_DIR}/meta/ext/inja/LICENSE
-)
-ivw_register_license_file(NAME "PEGTL" VERSION 2.7.1 target taocpp::pegtl MODULE Core
-    URL "https://github.com/taocpp/PEGTL"
-    TYPE "The MIT License"
-    FILES ${IVW_TOOLS_DIR}/meta/ext/pegtl/LICENSE
-)
-
-ivw_register_license_file(NAME "[Boost].SML" VERSION 1.1.0 target inviwo::sml MODULE Core
-    URL "https://github.com/boost-experimental/sml"
-    TYPE " Boost Software License"
-    FILES ${IVW_EXTENSIONS_DIR}/sml/LICENSE_1_0.txt
-)
-
-ivw_register_license_file(NAME "tcbrindle/span" target inviwo::span MODULE Core
-    URL "https://github.com/tcbrindle/span"
-    TYPE " Boost Software License"
-    FILES ${IVW_EXTENSIONS_DIR}/span/span/LICENSE_1_0.txt
-)
 
 #----------------------------------------------------------------
 # Generate build info - the build info will be updated during every compilation
-
 # make a clean help script
 set(build_info_script_list
     "include(${IVW_ROOT_DIR}/cmake/globalutils.cmake)"

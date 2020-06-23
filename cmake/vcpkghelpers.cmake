@@ -27,13 +27,49 @@
 # 
 #################################################################################
 
+function(ivw_vcpkg_paths)
+    set(options "")
+    set(oneValueArgs BIN INCLUDE LIB SHARE)
+    set(multiValueArgs "")
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if(NOT VCPKG_TOOLCHAIN)
+        if(ARG_BIN)
+            set(${ARG_BIN} "" PARENT_SCOPE)
+        endif()
+        if(ARG_INCLUDE)
+            set(${ARG_INCLUDE} "" PARENT_SCOPE)
+        endif()
+        if(ARG_LIB)
+            set(${ARG_LIB} "" PARENT_SCOPE)
+        endif()
+        if(ARG_SHARE)
+            set(${ARG_SHARE} "" PARENT_SCOPE)
+        endif()
+        return()
+    endif()
+
+    if(ARG_BIN)
+        set(${ARG_BIN} "${_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/bin" PARENT_SCOPE)
+    endif()
+    if(ARG_INCLUDE)
+        set(${ARG_INCLUDE} "${_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/include" PARENT_SCOPE)
+    endif()
+    if(ARG_LIB)
+        set(${ARG_LIB} "${_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/lib" PARENT_SCOPE)
+    endif()
+    if(ARG_SHARE)
+        set(${ARG_SHARE} "${_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/share" PARENT_SCOPE)
+    endif()
+endfunction()
+
 function(ivw_vcpkg_install name)
 	if(NOT VCPKG_TOOLCHAIN)
 		return()
 	endif()
 
     set(options EXT)
-    set(oneValueArgs OUT_COPYRIGHT OUT_VERSION MODULE)
+    set(oneValueArgs OUT_COPYRIGHT OUT_VERSION COPYRIGHT MODULE)
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -93,18 +129,24 @@ function(ivw_vcpkg_install name)
         message(WARNING "Vcpkg control file not found ${portdir}/CONTROL")
     endif()    
 
-    set(copyright "${pkgdir}/share/${lowercase_name}/copyright")
+    if(ARG_COPYRIGHT)
+        set(copyright "${pkgdir}/share/${lowercase_name}/${ARG_COPYRIGHT}")
+    else()
+        set(copyright "${pkgdir}/share/${lowercase_name}/copyright")
+    endif()
 
-    if(ARG_EXT)
+    if(ARG_EXT) 
         set(ext EXT)
     else()
         set(ext "")
     endif()
 
-    ivw_register_license_file(NAME ${name} 
-        VERSION ${version} MODULE ${ARG_MODULE} ${ext}
-        ${homepage} FILES ${copyright}
-    )
+    if(EXISTS ${copyright})
+        ivw_register_license_file(NAME ${name} 
+            VERSION ${version} MODULE ${ARG_MODULE} ${ext}
+            ${homepage} FILES ${copyright}
+        )
+    endif()
 
     foreach(dep IN LISTS depends)
         ivw_vcpkg_install(${dep} MODULE ${ARG_MODULE} ${ext})

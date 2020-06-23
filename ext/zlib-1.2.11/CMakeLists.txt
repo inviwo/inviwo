@@ -312,6 +312,7 @@ target_include_directories(zlib1 INTERFACE
 ivw_suppress_compiler_warnings(zlib1 minizip)
 ivw_default_install_targets(zlib1 minizip)
 set_target_properties(zlib1 minizip PROPERTIES FOLDER ext)
+
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 ivw_make_package(ZLIB zlib1) # Make package (for other projects to find)
 ivw_make_package(minizip minizip::minizip) # Make package (for other projects to find)
