@@ -38,7 +38,7 @@
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
-#include <inviwo/core/properties/tfpropertyconcept.h>
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>
 
 #include <inviwo/core/util/logcentral.h>
 #include <warn/push>

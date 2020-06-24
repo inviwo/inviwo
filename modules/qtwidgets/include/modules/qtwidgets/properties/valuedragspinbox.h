@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VALUEDRAGSPINBOX_H
-#define IVW_VALUEDRAGSPINBOX_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -98,5 +97,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VALUEDRAGSPINBOX_H

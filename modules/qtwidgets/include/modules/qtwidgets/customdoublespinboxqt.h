@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DOUBLE_SPIN_BOX_QT_H
-#define IVW_DOUBLE_SPIN_BOX_QT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
@@ -81,5 +80,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DOUBLE_SPIN_BOX_QT_H

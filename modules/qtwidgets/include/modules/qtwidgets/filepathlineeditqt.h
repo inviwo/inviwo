@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FILEPATHLINEEDITQT_H
-#define IVW_FILEPATHLINEEDITQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/lineeditqt.h>
@@ -76,5 +75,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FILEPATHLINEEDITQT_H

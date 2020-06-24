@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWODOCKWIDGET_H
-#define IVW_INVIWODOCKWIDGET_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <warn/push>
@@ -94,5 +93,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_INVIWODOCKWIDGET_H

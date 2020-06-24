@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LINEEDITQT_H
-#define IVW_LINEEDITQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/editablelabelqt.h>
@@ -66,5 +65,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LINEEDITQT_H

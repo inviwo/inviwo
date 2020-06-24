@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_COLORLINEEDIT_H
-#define IVW_COLORLINEEDIT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -130,5 +129,3 @@ struct DefaultColorRepresentation<ivec4> {
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_COLORLINEEDIT_H

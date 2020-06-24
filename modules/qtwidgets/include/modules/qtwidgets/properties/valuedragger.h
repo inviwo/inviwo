@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VALUEDRAGGER_H
-#define IVW_VALUEDRAGGER_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -276,5 +275,3 @@ void ValueDragger<T>::setValue(double val) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_VALUEDRAGGER_H

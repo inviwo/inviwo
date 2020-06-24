@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOFILEDIALOG_H
-#define IVW_INVIWOFILEDIALOG_H
+#pragma once
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
@@ -126,5 +125,3 @@ protected:
     FileExtMap extmap_;
 };
 }  // namespace inviwo
-
-#endif

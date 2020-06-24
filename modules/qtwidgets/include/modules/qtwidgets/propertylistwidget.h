@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYLISTWIDGET_H
-#define IVW_PROPERTYLISTWIDGET_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
@@ -101,5 +100,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYLISTWIDGET_H

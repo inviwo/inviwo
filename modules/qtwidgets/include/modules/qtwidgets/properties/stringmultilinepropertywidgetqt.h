@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STRINGMULTILINEPROPERTYWIDGETQT_H
-#define IVW_STRINGMULTILINEPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/editablelabelqt.h>
@@ -95,5 +94,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_STRINGMULTILINEPROPERTYWIDGETQT_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_COLORPROPERTYWDIGETQT_H
-#define IVW_COLORPROPERTYWDIGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
@@ -353,5 +352,3 @@ void ColorPropertyWidgetQt<T>::openColorDialog() {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_COLORPROPERTYWIDGETQT_H

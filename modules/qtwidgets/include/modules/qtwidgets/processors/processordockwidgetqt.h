@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORDOCKWIDGETQT_H
-#define IVW_PROCESSORDOCKWIDGETQT_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processorobserver.h>
@@ -80,5 +79,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORDOCKWIDGETQT_H

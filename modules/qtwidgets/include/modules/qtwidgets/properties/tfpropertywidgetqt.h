@@ -27,15 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
-#define IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/tf/tfpropertydialog.h>
 #include <modules/qtwidgets/inviwowidgetsqt.h>
 
-#include <inviwo/core/properties/tfpropertyconcept.h>
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>
 
 namespace inviwo {
 
@@ -80,5 +79,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H

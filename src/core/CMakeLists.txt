@@ -257,7 +257,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simplelightingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/simpleraycastingproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/templateproperty.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/properties/tfpropertyconcept.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/transferfunctionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/valuewrapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/volumeindicatorproperty.h
@@ -576,7 +575,6 @@ set(SOURCE_FILES
     properties/simplelightingproperty.cpp
     properties/simpleraycastingproperty.cpp
     properties/stringproperty.cpp
-    properties/tfpropertyconcept.cpp
     properties/transferfunctionproperty.cpp
     properties/volumeindicatorproperty.cpp
     rendering/datavisualizer.cpp

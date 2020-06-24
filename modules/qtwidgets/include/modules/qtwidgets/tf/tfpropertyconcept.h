@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -46,7 +46,7 @@ namespace util {
  * \class TFPropertyConcept
  * \brief property interface used by the TF dialog to support different TF properties
  */
-struct IVW_CORE_API TFPropertyConcept {
+struct IVW_MODULE_QTWIDGETS_API TFPropertyConcept {
     virtual ~TFPropertyConcept() = default;
     virtual Property* getProperty() const = 0;
 

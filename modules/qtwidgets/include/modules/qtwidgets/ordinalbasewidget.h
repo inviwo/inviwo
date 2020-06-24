@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ORDINALBASEWIDGET_H
-#define IVW_ORDINALBASEWIDGET_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/properties/constraintbehavior.h>
@@ -49,5 +48,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ORDINALBASEWIDGET_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_RANGESLIDERQT_H
-#define IVW_RANGESLIDERQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/util/glm.h>
@@ -96,5 +95,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_RANGESLIDERQT_H

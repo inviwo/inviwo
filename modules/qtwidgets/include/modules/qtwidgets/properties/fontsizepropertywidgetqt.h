@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FONTSIZEPROPERTYWIDGETQT_H
-#define IVW_FONTSIZEPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 
@@ -56,5 +55,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FONTSIZEPROPERTYWIDGETQT_H

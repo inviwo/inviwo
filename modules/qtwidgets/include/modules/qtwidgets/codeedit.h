@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CODEEDIT_H
-#define IVW_CODEEDIT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -89,5 +88,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CODEEDIT_H

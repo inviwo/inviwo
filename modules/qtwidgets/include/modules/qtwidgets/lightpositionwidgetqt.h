@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LIGHTPOSITIONWIDGETQT_H
-#define IVW_LIGHTPOSITIONWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <warn/push>
@@ -87,5 +86,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_INTSLIDERQT_H

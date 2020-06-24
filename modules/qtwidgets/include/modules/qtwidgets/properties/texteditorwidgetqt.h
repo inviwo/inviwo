@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TEXTEDITORWIDGETQT_H
-#define IVW_TEXTEDITORWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
@@ -76,5 +75,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TEXTEDITORWIDGETQT_H
