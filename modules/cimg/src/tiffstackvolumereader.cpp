@@ -29,7 +29,7 @@
 
 #include <modules/cimg/tiffstackvolumereader.h>
 
-#include <tiff/libtiff/tiffio.h>
+#include <tiffio.h>
 
 #include <modules/cimg/cimgutils.h>
 #include <inviwo/core/util/filesystem.h>

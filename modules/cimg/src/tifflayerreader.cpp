@@ -38,7 +38,7 @@
 
 #include <modules/cimg/cimgutils.h>
 
-#include <tiff/libtiff/tiffio.h>
+#include <tiffio.h>
 
 #include <sstream>
 
