@@ -50,7 +50,7 @@ class IVW_MODULE_QTWIDGETS_API DoubleValueDragSpinBox : public QWidget {
     Q_OBJECT
 #include <warn/pop>
 public:
-    explicit DoubleValueDragSpinBox(QWidget *parent = nullptr);
+    explicit DoubleValueDragSpinBox(QWidget* parent = nullptr);
     virtual ~DoubleValueDragSpinBox() override = default;
 
     void setReadOnly(bool r);
@@ -58,7 +58,7 @@ public:
 
     bool isValid() const;
 
-    void setSpecialValueText(const QString &txt);
+    void setSpecialValueText(const QString& txt);
     QString specialValueText() const;
 
     void setWrapping(bool w);
@@ -74,10 +74,10 @@ public:
     void setDecimals(int prec);
     void setMaximum(double max);
     void setMinimum(double min);
-    void setPrefix(const QString &prefix);
+    void setPrefix(const QString& prefix);
     void setRange(double minimum, double maximum);
     void setSingleStep(double val);
-    void setSuffix(const QString &suffix);
+    void setSuffix(const QString& suffix);
     double singleStep() const;
     QString suffix() const;
     double value() const;
@@ -92,7 +92,7 @@ public:
 
 signals:
     void valueChanged(double d);
-    void valueChanged(const QString &text);
+    void valueChanged(const QString& text);
     void editingFinished();
 
 public slots:
@@ -105,8 +105,8 @@ public slots:
 private:
     void updateState();
 
-    NumberLineEdit *spinBox_;
-    ValueDragger<double> *valueDragger_;
+    NumberLineEdit* spinBox_;
+    ValueDragger<double>* valueDragger_;
 
     bool invalid_;
 };

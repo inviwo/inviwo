@@ -48,38 +48,38 @@ namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API CodeEdit : public QPlainTextEdit {
 public:
-    CodeEdit(SyntaxType type = None, QWidget *parent = nullptr);
+    CodeEdit(SyntaxType type = None, QWidget* parent = nullptr);
     virtual ~CodeEdit() = default;
 
     void setSyntax(SyntaxType type);
 
     // QPlainTextEdit overrides
-    virtual void keyPressEvent(QKeyEvent *keyEvent) override;
+    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
 
     void setLineAnnotation(std::function<std::string(int)>);
     void setAnnotationSpace(std::function<int(int)>);
 
 protected:
-    void lineNumberAreaPaintEvent(QPaintEvent *event);
+    void lineNumberAreaPaintEvent(QPaintEvent* event);
     int lineNumberAreaWidth();
 
     class LineNumberArea : public QWidget {
     public:
-        LineNumberArea(CodeEdit *editor) : QWidget(editor) { codeEdit_ = editor; }
+        LineNumberArea(CodeEdit* editor) : QWidget(editor) { codeEdit_ = editor; }
         QSize sizeHint() const override { return QSize(codeEdit_->lineNumberAreaWidth(), 0); }
 
     protected:
-        void paintEvent(QPaintEvent *event) override { codeEdit_->lineNumberAreaPaintEvent(event); }
-        CodeEdit *codeEdit_;
+        void paintEvent(QPaintEvent* event) override { codeEdit_->lineNumberAreaPaintEvent(event); }
+        CodeEdit* codeEdit_;
     };
 
-    void resizeEvent(QResizeEvent *event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
     void updateLineNumberAreaWidth(int newBlockCount);
     void highlightCurrentLine();
-    void updateLineNumberArea(const QRect &, int);
+    void updateLineNumberArea(const QRect&, int);
 
-    QWidget *lineNumberArea_;
+    QWidget* lineNumberArea_;
     std::vector<std::shared_ptr<std::function<void()>>> callbacks_;
     ivec4 textColor_;
     ivec4 highLightColor_;

@@ -37,7 +37,7 @@ namespace inviwo {
 
 namespace util {
 
-IVW_MODULE_QTWIDGETS_API IvwKey mapKeyFromQt(const QKeyEvent *keyevent);
+IVW_MODULE_QTWIDGETS_API IvwKey mapKeyFromQt(const QKeyEvent* keyevent);
 
 }  // namespace util
 

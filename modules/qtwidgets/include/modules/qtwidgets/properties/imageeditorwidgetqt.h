@@ -90,7 +90,6 @@ signals:
     void status(const QString&);
 };
 
-
 // Simple Graphics Rectangle Item with label
 // used by Simple Graphics View
 class IVW_MODULE_QTWIDGETS_API SimpleWithRectangleLabel : public QGraphicsRectItem {
@@ -107,7 +106,6 @@ private:
     LabelGraphicsItem* label_;
     int uniqueIndex_;  // to keep track of added rectangles
 };
-
 
 // Simple Graphics view
 struct ImgRect {
@@ -156,7 +154,6 @@ private:
     QGraphicsRectItem* currentRectItem_;
     QGraphicsDropShadowEffect* shadowEffect_;
 };
-
 
 // Image Labeling widget
 class ImageEditorWidgetQt;

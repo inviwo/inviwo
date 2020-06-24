@@ -51,7 +51,7 @@ class IVW_MODULE_QTWIDGETS_API RangeSliderQt : public QSplitter {
     Q_OBJECT
 #include <warn/pop>
 public:
-    RangeSliderQt(Qt::Orientation orientation = Qt::Horizontal, QWidget *parent = nullptr,
+    RangeSliderQt(Qt::Orientation orientation = Qt::Horizontal, QWidget* parent = nullptr,
                   bool showTooltip = false);
     virtual ~RangeSliderQt() = default;
 
@@ -77,8 +77,8 @@ signals:
     void valuesChanged(int min, int max);
 
 protected:
-    virtual bool eventFilter(QObject *obj, QEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override;
+    virtual bool eventFilter(QObject* obj, QEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
     void updateStateFromSliders();
     void updateSlidersFromState();

@@ -48,25 +48,25 @@ class IVW_MODULE_QTWIDGETS_API FilePathLineEditQt : public LineEditQt {
     Q_OBJECT
 #include <warn/pop>
 public:
-    FilePathLineEditQt(QWidget *parent = nullptr);
+    FilePathLineEditQt(QWidget* parent = nullptr);
     virtual ~FilePathLineEditQt() = default;
 
-    void setPath(const std::string &path);
-    const std::string &getPath() const;
+    void setPath(const std::string& path);
+    const std::string& getPath() const;
 
     void setEditing(bool editing);
     bool isEditingEnabled() const;
 
 protected:
-    virtual void resizeEvent(QResizeEvent *event) override;
-    virtual void focusInEvent(QFocusEvent *event) override;
-    virtual void mousePressEvent(QMouseEvent *event) override;
+    virtual void resizeEvent(QResizeEvent* event) override;
+    virtual void focusInEvent(QFocusEvent* event) override;
+    virtual void mousePressEvent(QMouseEvent* event) override;
 
     void updateContents();
     void updateIcon();
 
 private:
-    QLabel *warningLabel_;  //!< warning icon which is visible if the path is invalid
+    QLabel* warningLabel_;  //!< warning icon which is visible if the path is invalid
     std::string path_;      //!< full path including file name
     bool editingEnabled_;  //!< if this flag is set, the full path is shown. Otherwise only the file
                            //!< name is shown

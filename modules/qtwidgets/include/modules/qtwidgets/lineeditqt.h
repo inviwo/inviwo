@@ -54,14 +54,14 @@ class IVW_MODULE_QTWIDGETS_API LineEditQt : public QLineEdit {
     Q_OBJECT
 #include <warn/pop>
 public:
-    LineEditQt(QWidget *parent = nullptr);
+    LineEditQt(QWidget* parent = nullptr);
     virtual ~LineEditQt() = default;
 
 signals:
     void editingCanceled();
 
 protected:
-    virtual void keyPressEvent(QKeyEvent *e) override;
+    virtual void keyPressEvent(QKeyEvent* e) override;
 };
 
 }  // namespace inviwo

@@ -57,8 +57,8 @@ class IVW_MODULE_QTWIDGETS_API ProcessorDockWidgetQt : public InviwoDockWidget,
 #include <warn/pop>
 
 public:
-    ProcessorDockWidgetQt(Processor *p, const QString &title = QString("ProcessorDockWidgetQt"),
-                          QWidget *parent = nullptr);
+    ProcessorDockWidgetQt(Processor* p, const QString& title = QString("ProcessorDockWidgetQt"),
+                          QWidget* parent = nullptr);
     virtual ~ProcessorDockWidgetQt() = default;
 
     // Override ProcessorWidget
@@ -69,13 +69,13 @@ public:
     virtual void setDimensions(ivec2 dimensions) override;
 
     // Override ProcessorObserver
-    virtual void onProcessorIdentifierChanged(Processor *processor,
-                                              const std::string &oldIdentifier) override;
+    virtual void onProcessorIdentifierChanged(Processor* processor,
+                                              const std::string& oldIdentifier) override;
 
 protected:
     // Override QWidget events
-    virtual void resizeEvent(QResizeEvent *) override;
-    virtual void moveEvent(QMoveEvent *) override;
+    virtual void resizeEvent(QResizeEvent*) override;
+    virtual void moveEvent(QMoveEvent*) override;
 };
 
 }  // namespace inviwo

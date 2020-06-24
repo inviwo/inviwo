@@ -51,15 +51,15 @@ class MultilineTextEdit;
 */
 class IVW_MODULE_QTWIDGETS_API StringMultilinePropertyWidgetQt : public PropertyWidgetQt {
 public:
-    StringMultilinePropertyWidgetQt(StringProperty *property);
+    StringMultilinePropertyWidgetQt(StringProperty* property);
 
     void updateFromProperty();
     void setPropertyValue();
 
 private:
-    StringProperty *property_;
-    MultilineTextEdit *textEdit_;
-    EditableLabelQt *label_;
+    StringProperty* property_;
+    MultilineTextEdit* textEdit_;
+    EditableLabelQt* label_;
 };
 
 /*! \class MultilineTextEdit
@@ -73,7 +73,7 @@ class IVW_MODULE_QTWIDGETS_API MultilineTextEdit : public QPlainTextEdit {
     Q_OBJECT
 #include <warn/pop>
 public:
-    MultilineTextEdit(QWidget *parent = nullptr);
+    MultilineTextEdit(QWidget* parent = nullptr);
     virtual ~MultilineTextEdit();
 
     void adjustHeight();
@@ -81,10 +81,10 @@ signals:
     void editingFinished();
 
 protected:
-    virtual void focusOutEvent(QFocusEvent *e) override;
-    virtual void resizeEvent(QResizeEvent *e) override;
-    virtual void keyPressEvent(QKeyEvent *e) override;
-    virtual void contextMenuEvent(QContextMenuEvent *e) override;
+    virtual void focusOutEvent(QFocusEvent* e) override;
+    virtual void resizeEvent(QResizeEvent* e) override;
+    virtual void keyPressEvent(QKeyEvent* e) override;
+    virtual void contextMenuEvent(QContextMenuEvent* e) override;
 
 private:
     const int minLineCount_;
