@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TFCOLOREDIT_H
-#define IVW_TFCOLOREDIT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -75,5 +74,3 @@ signals:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TFCOLOREDIT_H

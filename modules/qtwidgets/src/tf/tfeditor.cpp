@@ -39,9 +39,9 @@
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>
 #include <modules/qtwidgets/tf/tfcontrolpointconnection.h>
 #include <modules/qtwidgets/tf/tfutils.h>
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/tfpropertyconcept.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/raiiutils.h>

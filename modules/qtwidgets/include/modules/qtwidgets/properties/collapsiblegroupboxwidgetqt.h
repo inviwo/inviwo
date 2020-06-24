@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_COLLAPSIVEGROUPBOXWIDGETQT_H
-#define IVW_COLLAPSIVEGROUPBOXWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
@@ -153,5 +152,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_COLLAPSIVEGROUPBOXWIDGETQT_H

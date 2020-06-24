@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYWIDGETQT_H
-#define IVW_PROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/properties/propertyvisibility.h>
@@ -129,5 +128,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYWIDGETQT_H

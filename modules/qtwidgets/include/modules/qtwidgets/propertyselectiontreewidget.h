@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTY_SELECTION_TREE_WIDGET_H
-#define IVW_PROPERTY_SELECTION_TREE_WIDGET_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
@@ -101,5 +100,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTY_SELECTION_TREE_WIDGET_H

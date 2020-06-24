@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TFHELPWINDOW_H
-#define IVW_TFHELPWINDOW_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -70,5 +69,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TFHELPWINDOW_H

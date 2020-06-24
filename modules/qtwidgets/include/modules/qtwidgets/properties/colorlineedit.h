@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_COLORLINEEDIT_H
-#define IVW_COLORLINEEDIT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -50,7 +49,7 @@ class IVW_MODULE_QTWIDGETS_API ColorLineEdit : public QLineEdit {
 public:
     enum class ColorRepresentation { Integer, FloatingPoint, Hexadecimal };
 
-    ColorLineEdit(QWidget *parent = nullptr);
+    ColorLineEdit(QWidget* parent = nullptr);
     virtual ~ColorLineEdit() = default;
 
     void setColor(ivec3 v, ColorRepresentation rep = ColorRepresentation::Integer);
@@ -78,10 +77,10 @@ public slots:
     void setInvalid(bool invalid = true);
 
 protected:
-    virtual void changeEvent(QEvent *event) override;  // use to change validator
-    virtual void focusInEvent(QFocusEvent *event) override;
-    virtual void focusOutEvent(QFocusEvent *event) override;
-    virtual void keyPressEvent(QKeyEvent *event) override;
+    virtual void changeEvent(QEvent* event) override;  // use to change validator
+    virtual void focusInEvent(QFocusEvent* event) override;
+    virtual void focusOutEvent(QFocusEvent* event) override;
+    virtual void keyPressEvent(QKeyEvent* event) override;
 
 private:
     void updateText();
@@ -89,7 +88,7 @@ private:
 
     void updateRegExp();
 
-    QRegularExpressionValidator *validator_;
+    QRegularExpressionValidator* validator_;
 
     ColorRepresentation representation_ = ColorRepresentation::FloatingPoint;
     dvec4 color_ = dvec4(0.0);
@@ -130,5 +129,3 @@ struct DefaultColorRepresentation<ivec4> {
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_COLORLINEEDIT_H

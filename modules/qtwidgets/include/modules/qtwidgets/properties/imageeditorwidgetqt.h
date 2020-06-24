@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGEEDITORWIDGETQT_H
-#define IVW_IMAGEEDITORWIDGETQT_H
+#pragma once
 
 // Property includes
 #include <inviwo/core/properties/buttonproperty.h>
@@ -79,7 +78,6 @@
 
 namespace inviwo {
 
-/////////////////////////////////////////////////
 // Simple Graphics scene
 class IVW_MODULE_QTWIDGETS_API SimpleGraphicsScene : public QGraphicsScene {
 #include <warn/push>
@@ -92,7 +90,6 @@ signals:
     void status(const QString&);
 };
 
-/////////////////////////////////////////////////
 // Simple Graphics Rectangle Item with label
 // used by Simple Graphics View
 class IVW_MODULE_QTWIDGETS_API SimpleWithRectangleLabel : public QGraphicsRectItem {
@@ -110,9 +107,7 @@ private:
     int uniqueIndex_;  // to keep track of added rectangles
 };
 
-/////////////////////////////////////////////////
 // Simple Graphics view
-
 struct ImgRect {
     QRectF rect_;
     std::string label_;
@@ -160,7 +155,6 @@ private:
     QGraphicsDropShadowEffect* shadowEffect_;
 };
 
-/////////////////////////////////////////////////
 // Image Labeling widget
 class ImageEditorWidgetQt;
 class IVW_MODULE_QTWIDGETS_API ImageLabelWidget : public QWidget {
@@ -208,7 +202,6 @@ protected:
     float sceneScaleFactor_;
 };
 
-/////////////////////////////////////////////////
 // Image Editor widget
 class IVW_MODULE_QTWIDGETS_API ImageEditorWidgetQt : public PropertyWidgetQt {
 #include <warn/push>
@@ -238,5 +231,3 @@ public slots:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGEEDITORWIDGETQT_H

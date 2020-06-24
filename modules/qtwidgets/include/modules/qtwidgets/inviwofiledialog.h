@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOFILEDIALOG_H
-#define IVW_INVIWOFILEDIALOG_H
+#pragma once
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
@@ -52,14 +51,14 @@ class IVW_MODULE_QTWIDGETS_API InviwoFileDialog : public QFileDialog, public Fil
     Q_OBJECT
 #include <warn/pop>
 public:
-    InviwoFileDialog(QWidget *parent = nullptr, const std::string &title = "",
-                     const std::string &pathType = "default", const std::string &path = "");
+    InviwoFileDialog(QWidget* parent = nullptr, const std::string& title = "",
+                     const std::string& pathType = "default", const std::string& path = "");
 
     virtual bool show() override;
 
     virtual int exec() override;
 
-    virtual void setTitle(const std::string &title) override;
+    virtual void setTitle(const std::string& title) override;
 
     virtual void setAcceptMode(inviwo::AcceptMode mode) override;
     virtual inviwo::AcceptMode getAcceptMode() const override;
@@ -67,7 +66,7 @@ public:
     virtual void setFileMode(inviwo::FileMode mode) override;
     virtual inviwo::FileMode getFileMode() const override;
 
-    virtual void setContentType(const std::string &contentType) override;
+    virtual void setContentType(const std::string& contentType) override;
     virtual std::string getContentType() const override;
 
     /**
@@ -78,7 +77,7 @@ public:
      * @param filename  path and name of the file (can be either a file name or directory name
      * including the full path)
      */
-    virtual void setCurrentFile(const std::string &filename) override;
+    virtual void setCurrentFile(const std::string& filename) override;
     virtual std::vector<std::string> getSelectedFiles() const override;
 
     /**
@@ -86,33 +85,33 @@ public:
      *
      * @param path  given path, must not contain a file name
      */
-    virtual void setCurrentDirectory(const std::string &path) override;
+    virtual void setCurrentDirectory(const std::string& path) override;
 
     virtual FileExtension getSelectedFileExtension() const override;
-    virtual void setSelectedExtension(const FileExtension &ext) override;
+    virtual void setSelectedExtension(const FileExtension& ext) override;
 
-    virtual void addExtension(const FileExtension &fileExt) override;
-    virtual void addExtension(const std::string &ext, const std::string &description) override;
-    virtual void addExtension(const std::string &extString) override;
-    virtual void addExtensions(const std::vector<FileExtension> &extensions) override;
+    virtual void addExtension(const FileExtension& fileExt) override;
+    virtual void addExtension(const std::string& ext, const std::string& description) override;
+    virtual void addExtension(const std::string& extString) override;
+    virtual void addExtensions(const std::vector<FileExtension>& extensions) override;
 
-    void addSidebarPath(const PathType &path);
-    void addSidebarPath(const std::string &path);
-    void addSidebarPath(const QString &path);
+    void addSidebarPath(const PathType& path);
+    void addSidebarPath(const std::string& path);
+    void addSidebarPath(const QString& path);
 
-    void useNativeDialog(const bool &use = true);
+    void useNativeDialog(const bool& use = true);
 
-    static QString getPreviousPath(const QString &pathType);
-    static void setPreviousPath(const QString &pathType, const QString &path);
+    static QString getPreviousPath(const QString& pathType);
+    static void setPreviousPath(const QString& pathType, const QString& path);
 
-    static QString getPreviousExtension(const QString &pathType);
-    static void setPreviousExtension(const QString &pathType, const QString &path);
+    static QString getPreviousExtension(const QString& pathType);
+    static void setPreviousExtension(const QString& pathType, const QString& path);
 
 protected slots:
-    void filterSelectionChanged(const QString &filter);
+    void filterSelectionChanged(const QString& filter);
 
 protected:
-    FileExtension getMatchingFileExtension(const QString &extStr);
+    FileExtension getMatchingFileExtension(const QString& extStr);
 
     QList<QUrl> sidebarURLs_;
     QStringList extensions_;
@@ -126,5 +125,3 @@ protected:
     FileExtMap extmap_;
 };
 }  // namespace inviwo
-
-#endif

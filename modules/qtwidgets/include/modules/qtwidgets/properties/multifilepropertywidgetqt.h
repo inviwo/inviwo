@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MULTIFILEPROPERTYWIDGETQT_H
-#define IVW_MULTIFILEPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
@@ -71,5 +70,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_MULTIFILEPROPERTYWIDGETQT_H

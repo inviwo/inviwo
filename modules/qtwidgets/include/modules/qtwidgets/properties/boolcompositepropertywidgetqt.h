@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BOOLCOMPOSITEPROPERTYWIDGETQT_H
-#define IVW_BOOLCOMPOSITEPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
@@ -64,5 +63,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BOOLCOMPOSITEPROPERTYWIDGETQT_H

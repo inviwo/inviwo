@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/histogram.h>
-#include <inviwo/core/properties/tfpropertyconcept.h>
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>
 #include <modules/qtwidgets/tf/tfeditorview.h>
 #include <modules/qtwidgets/tf/tfpropertydialog.h>
 #include <modules/qtwidgets/tf/tfeditorcontrolpoint.h>

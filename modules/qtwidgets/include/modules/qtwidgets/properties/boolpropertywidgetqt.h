@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BOOLPROPERTYWIDGETQT_H
-#define IVW_BOOLPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/editablelabelqt.h>
@@ -55,5 +54,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BOOLPROPERTYWIDGETQT_H

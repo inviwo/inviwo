@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRANSFERFUNCTIONEDITORVIEW_H
-#define IVW_TRANSFERFUNCTIONEDITORVIEW_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/datastructures/transferfunction.h>
@@ -92,5 +91,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TRANSFERFUNCTIONEDITORVIEW_H

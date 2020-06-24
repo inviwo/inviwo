@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPTIONPROPERTYWIDGETQT_H
-#define IVW_OPTIONPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
@@ -54,5 +53,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_OPTIONPROPERTYWIDGETQT_H

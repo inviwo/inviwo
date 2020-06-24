@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TFEDITORISOVALUE_H
-#define IVW_TFEDITORISOVALUE_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>
@@ -93,5 +92,3 @@ IVW_MODULE_QTWIDGETS_API bool operator<=(const TFEditorIsovalue& lhs, const TFEd
 IVW_MODULE_QTWIDGETS_API bool operator>=(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs);
 
 }  // namespace inviwo
-
-#endif  // IVW_TFEDITORISOVALUE_H

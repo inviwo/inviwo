@@ -27,6 +27,6 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/tfpropertyconcept.h>
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>
 
 namespace inviwo {}  // namespace inviwo

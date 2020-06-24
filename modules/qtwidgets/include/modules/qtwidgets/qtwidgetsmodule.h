@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_QTWIDGETMODULE_H
-#define IVW_QTWIDGETMODULE_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/tfhelpwindow.h>
@@ -51,5 +50,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_QTWIDGETMODULE_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRANSFERFUNCTIONEDITORPRIMITIVE_H
-#define IVW_TRANSFERFUNCTIONEDITORPRIMITIVE_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
@@ -191,5 +190,3 @@ IVW_MODULE_QTWIDGETS_API bool operator>=(const TFEditorPrimitive& lhs,
                                          const TFEditorPrimitive& rhs);
 
 }  // namespace inviwo
-
-#endif  // IVW_TRANSFERFUNCTIONEDITORPRIMITIVE_H

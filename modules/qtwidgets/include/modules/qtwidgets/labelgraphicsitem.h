@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LABELGRAPHICSITEM_H
-#define IVW_LABELGRAPHICSITEM_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/util/observer.h>
@@ -100,5 +99,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LABELGRAPHICSITEM_H

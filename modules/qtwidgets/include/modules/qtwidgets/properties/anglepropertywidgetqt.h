@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ANGLEPROPERTYWIDGETQT_H
-#define IVW_ANGLEPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/angleradiuswidget.h>
@@ -137,5 +136,3 @@ void AnglePropertyWidgetQt<T>::showSettings() {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_ANGLEPROPERTYWIDGETQT_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EVENTPROPERTYWIDGETQT_H
-#define IVW_EVENTPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
@@ -74,5 +73,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EVENTPROPERTYWIDGETQT_H
