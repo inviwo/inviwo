@@ -36,6 +36,7 @@ if(NOT IVW_USE_EXTERNAL_GLFW)
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/glfw/LICENSE.md
     )
     ivw_default_install_targets(glfw)
+    ivw_make_package(glfw3 glfw)
 else()
     find_package(glfw3 REQUIRED)
     ivw_vcpkg_install(glfw3 MODULE GLFW)    

@@ -53,6 +53,8 @@ if (NOT IVW_USE_EXTERNAL_HDF5)
         set(HDF5_INSTALL_LIB_DIR lib)
     endif()
     
+    find_package(ZLIB REQUIRED)
+    set(ZLIB_USE_EXTERNAL ON)
     option(HDF5_ENABLE_Z_LIB_SUPPORT "Enable Zlib Filters" ON)
    
     set(HDF5_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)

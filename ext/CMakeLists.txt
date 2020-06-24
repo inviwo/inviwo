@@ -77,7 +77,7 @@ else()
 	find_package(ZLIB REQUIRED)
 	find_package(JPEG REQUIRED)
 	find_package(TIFF REQUIRED)
-	find_package(libpng CONFIG REQUIRED)
+	find_package(PNG  REQUIRED)
 	ivw_vcpkg_install(zlib          MODULE Core EXT)
 	ivw_vcpkg_install(libjpeg-turbo MODULE Core EXT)
 	ivw_vcpkg_install(tiff          MODULE Core EXT)
@@ -160,7 +160,7 @@ endif()
 
 # Half
 add_subdirectory(half)
-ivw_register_license_file(NAME "half" TARGET half MODULE Core EXT
+ivw_register_license_file(NAME "half" VERSION 1.12.0 MODULE Core EXT
     URL "http://half.sourceforge.net"
     TYPE "The MIT License"
     FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE.txt

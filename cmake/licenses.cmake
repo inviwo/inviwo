@@ -108,7 +108,6 @@ function(ivw_register_license_file)
     endif()
     list(APPEND license_list ${ARG_ID})
     set_property(${scope} PROPERTY IVW_LICENCE_LIST ${license_list})
-
     string(TOLOWER ${ARG_MODULE} lmodule)
     if(${ARG_MODULE} STREQUAL "Core")
         set(installDest ${IVW_RESOURCE_INSTALL_PREFIX}licenses/)

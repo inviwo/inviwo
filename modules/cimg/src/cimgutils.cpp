@@ -62,7 +62,7 @@
 #endif
 
 #ifdef cimg_use_tiff
-#include <tiff/libtiff/tiffio.h>
+#include <tiffio.h>
 #endif
 
 #ifdef cimg_use_openexr
