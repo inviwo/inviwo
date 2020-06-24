@@ -78,7 +78,7 @@ struct IVW_MODULE_QTWIDGETS_API TFPropertyConcept {
 };
 
 template <typename U>
-class IVW_CORE_TMPL_EXP TFPropertyModel : public TFPropertyConcept {
+class TFPropertyModel : public TFPropertyConcept {
 public:
     template <typename T>
     using hasTFProp = decltype(std::declval<T>().tf_);
