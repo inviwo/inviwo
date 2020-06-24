@@ -53,7 +53,7 @@ endif()
 option(IVW_USE_EXTERNAL_IMG "Link with external image libraries (zlib, png, jpeg, tiff) instead of building them." OFF)
 if (NOT IVW_USE_EXTERNAL_IMG)
  	add_subdirectory(zlib-1.2.11) # Defines target ZLIB::ZLIB
- 	add_subdirectory(libpng)      # Defines target PNG::PNG
+ 	add_subdirectory(libpng)      # Defines target png
  	add_subdirectory(libjpeg)     # Defines target JPEG::JPEG
  	add_subdirectory(tiff)        # Defines target TIFF::TIFF
 
@@ -69,7 +69,7 @@ if (NOT IVW_USE_EXTERNAL_IMG)
 	    TYPE "The MIT License" URL http://www.libtiff.org/
 	    FILES ${IVW_EXTENSIONS_DIR}/tiff/COPYRIGHT
 	)
-	ivw_register_license_file(NAME libpng TARGET PNG::PNG MODULE Core EXT 
+	ivw_register_license_file(NAME libpng TARGET png MODULE Core EXT 
 		TYPE "libpng (BSD-style)" URL http://www.libpng.org/pub/png/libpng.html
 	    FILES ${IVW_EXTENSIONS_DIR}/libpng/LICENSE.txt
 	)

@@ -35,6 +35,8 @@ if (WIN32)
     option(USE_SANDBOX "Enable or disable use of the sandbox." OFF)
 endif()
 
+set(PROJECT_ARCH "x86_64") # CEF Wants this on OS X.
+
 # Load the CEF configuration.
 # Execute FindCEF.cmake which must exist in CMAKE_MODULE_PATH.
 find_package(CEF REQUIRED)
