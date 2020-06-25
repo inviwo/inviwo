@@ -46,13 +46,9 @@ DatVolumeWriter::DatVolumeWriter() : DataWriterType<Volume>() {
     addExtension(FileExtension("dat", "Inviwo dat file format"));
 }
 
-DatVolumeWriter::DatVolumeWriter(const DatVolumeWriter& rhs) : DataWriterType<Volume>(rhs) {}
+DatVolumeWriter::DatVolumeWriter(const DatVolumeWriter& rhs) = default;
 
-DatVolumeWriter& DatVolumeWriter::operator=(const DatVolumeWriter& that) {
-    if (this != &that) DataWriterType<Volume>::operator=(that);
-
-    return *this;
-}
+DatVolumeWriter& DatVolumeWriter::operator=(const DatVolumeWriter& that) = default;
 
 DatVolumeWriter* DatVolumeWriter::clone() const { return new DatVolumeWriter(*this); }
 
@@ -61,15 +57,15 @@ void DatVolumeWriter::writeData(const Volume* data, const std::string filePath) 
 }
 
 namespace util {
-void writeDatVolume(const Volume& data, const std::string filePath, bool overwrite_) {
+void writeDatVolume(const Volume& data, const std::string filePath, bool overwrite) {
     std::string rawPath = filesystem::replaceFileExtension(filePath, "raw");
 
-    if (filesystem::fileExists(filePath) && !overwrite_)
-        throw DataWriterException("Error: Output file: " + filePath + " already exists",
+    if (filesystem::fileExists(filePath) && !overwrite)
+        throw DataWriterException("Output file: " + filePath + " already exists",
                                   IVW_CONTEXT_CUSTOM("util::writeDatVolume"));
 
-    if (filesystem::fileExists(rawPath) && !overwrite_)
-        throw DataWriterException("Error: Output file: " + rawPath + " already exists",
+    if (filesystem::fileExists(rawPath) && !overwrite)
+        throw DataWriterException("Output file: " + rawPath + " already exists",
                                   IVW_CONTEXT_CUSTOM("util::writeDatVolume"));
 
     std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
@@ -121,14 +117,14 @@ void writeDatVolume(const Volume& data, const std::string filePath, bool overwri
     if (auto f = filesystem::ofstream(filePath)) {
         f << ss.str();
     } else {
-        throw DataWriterException("Error: Could not write to dat file: " + filePath,
+        throw DataWriterException("Could not write to dat file: " + filePath,
                                   IVW_CONTEXT_CUSTOM("util::writeDatVolume"));
     }
 
     if (auto f = filesystem::ofstream(rawPath, std::ios::out | std::ios::binary)) {
         f.write(static_cast<const char*>(vr->getData()), vr->getNumberOfBytes());
     } else {
-        throw DataWriterException("Error: Could not write to raw file: " + rawPath,
+        throw DataWriterException("Could not write to raw file: " + rawPath,
                                   IVW_CONTEXT_CUSTOM("util::writeDatVolume"));
     }
 }
