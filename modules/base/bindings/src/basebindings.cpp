@@ -49,7 +49,7 @@ PYBIND11_MODULE(ivwbase, m) {
     auto ioMod = m.def_submodule("io", "Exposes various input/output functions");
     auto utilMod = m.def_submodule("util", "Exposes various util functions");
 
-    inviwo::exposeVolumeWriteMehtods(ioMod);
+    inviwo::exposeVolumeWriteMethods(ioMod);
     inviwo::exposeVolumeOperations(utilMod);
 
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST

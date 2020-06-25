@@ -41,13 +41,13 @@
 
 namespace inviwo {
 
-void exposeVolumeWriteMehtods(pybind11::module& m) {
+void exposeVolumeWriteMethods(pybind11::module& m) {
 
     m.def("saveDatVolume", &util::writeDatVolume);
+    m.def("saveIvfVolume", &util::writeIvfVolume);
     m.def("saveIvfVolumeSequence", &util::writeIvfVolumeSequence);
-    m.def("saveIvfVolumeSequence", [](pybind11::list list, std::string name,  // takes
-                                      std::string path, std::string reltivePathToTimesteps,
-                                      bool overwrite) {
+    m.def("saveIvfVolumeSequence", [](pybind11::list list, std::string name, std::string path,
+                                      std::string reltivePathToTimesteps, bool overwrite) {
         VolumeSequence seq;
         for (const auto& v : list) {
             seq.push_back(v.cast<std::shared_ptr<Volume>>());
