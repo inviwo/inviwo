@@ -35,14 +35,14 @@ namespace inviwo {
 
 IvfSequenceVolumeWriter::IvfSequenceVolumeWriter() : overwrite_(false) {}
 
-void IvfSequenceVolumeWriter::writeData(const VolumeSequence *data,
+void IvfSequenceVolumeWriter::writeData(const VolumeSequence* data,
                                         const std::string filePath) const {
     auto name = filesystem::getFileNameWithoutExtension(filePath);
     auto path = filesystem::getFileDirectory(filePath);
     return writeData(data, name, path);
 }
 
-void IvfSequenceVolumeWriter::writeData(const VolumeSequence *data, std::string name,
+void IvfSequenceVolumeWriter::writeData(const VolumeSequence* data, std::string name,
                                         std::string path,
                                         std::string reltivePathToTimesteps) const {
 
@@ -50,7 +50,7 @@ void IvfSequenceVolumeWriter::writeData(const VolumeSequence *data, std::string 
 }
 
 namespace util {
-std::string writeIvfVolumeSequence(const VolumeSequence &volumes, std::string name,
+std::string writeIvfVolumeSequence(const VolumeSequence& volumes, std::string name,
                                    std::string path, std::string reltivePathToTimesteps,
                                    bool overwrite) {
 
@@ -69,7 +69,7 @@ std::string writeIvfVolumeSequence(const VolumeSequence &volumes, std::string na
     writer.setOverwrite(overwrite);
     std::vector<std::string> filenames;
     size_t i = 0;
-    for (const auto &vol : volumes) {
+    for (const auto& vol : volumes) {
         std::stringstream filepath;
         filepath << reltivePathToTimesteps << "/" << name << std::setw(fillLength) << std::right
                  << std::setfill('0') << i++ << ".ivf";
