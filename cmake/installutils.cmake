@@ -68,37 +68,20 @@ else()
     set(IVW_RESOURCE_INSTALL_PREFIX "")
 endif()
 
-#--------------------------------------------------------------------
-# Add folder to module pack
-macro(ivw_add_to_module_pack folder)
-    get_filename_component(module ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-    install(
-        DIRECTORY ${folder}
-        DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${module}
-        COMPONENT Application
-    )
-endmacro()
-
-#--------------------------------------------------------------------
-# A helper funtion to install targets.  deprecated
-function(ivw_default_install_comp_targets comp)
-    ivw_default_install_targets(${ARGN})
-endfunction()
-
 define_property(
     GLOBAL PROPERTY IVW_INSTALL_LIST INHERITED
-    BRIEF_DOCS "List of intstallation components to install for this target"
-    FULL_DOCS "List of intstallation components to install for this target"
+    BRIEF_DOCS "List of global intstallation components to install"
+    FULL_DOCS "List of global intstallation components to install"
 )
 define_property(
     DIRECTORY PROPERTY IVW_INSTALL_LIST INHERITED
-    BRIEF_DOCS "List of intstallation components to install for this target"
-    FULL_DOCS "List of intstallation components to install for this target"
+    BRIEF_DOCS "List of intstallation components to install for directory"
+    FULL_DOCS "List of intstallation components to install for directory"
 )
 define_property(
     TARGET PROPERTY IVW_INSTALL_LIST INHERITED
-    BRIEF_DOCS "List of intstallation components to install for this target"
-    FULL_DOCS "List of intstallation components to install for this target"
+    BRIEF_DOCS "List of intstallation components to install for target"
+    FULL_DOCS "List of intstallation components to install for target"
 )
 
 function(ivw_append_install_list)
@@ -143,10 +126,21 @@ function(ivw_filter_install_list)
     set(${ARG_LIST} ${list} PARENT_SCOPE)
 endfunction()
 
+# Add folder to module pack
+macro(ivw_add_to_module_pack folder)
+    get_filename_component(module ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+    install(
+        DIRECTORY ${folder}
+        DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${module}
+        COMPONENT Application
+    )
+endmacro()
 
+# A helper funtion to install targets.  deprecated
+function(ivw_default_install_comp_targets comp)
+    ivw_default_install_targets(${ARGN})
+endfunction()
 
-
-#--------------------------------------------------------------------
 # A helper funtion to install module targets
 function(ivw_default_install_targets)
     foreach(target IN LISTS ARGN)
@@ -177,7 +171,6 @@ function(ivw_default_install_targets)
     endforeach()
 endfunction()
 
-#--------------------------------------------------------------------
 # Install files
 function(ivw_private_install_module_dirs)
     get_filename_component(module ${CMAKE_CURRENT_SOURCE_DIR} NAME)
@@ -208,7 +201,6 @@ function(ivw_private_install_module_dirs)
 endfunction()
 
 
-#--------------------------------------------------------------------
 # Adds special qt dependency and includes package variables to the project
 macro(ivw_qt_add_to_install ivw_comp)
     foreach(qtarget ${ARGN})
@@ -254,13 +246,14 @@ function(ivw_register_package name)
     foreach(target ${ARGN})
         get_target_property(dirs ${target} INTERFACE_INCLUDE_DIRECTORIES)
         if(dirs)
-            set(incdirs "${incdirs} ${dirs}")
+            list(APPEND incdirs ${dirs})
         endif()
     endforeach()
     string(TOLOWER "${name}" lowercase_name)
     string(TOUPPER "${name}" uppercase_name)
     set(${name}_DIR "${CMAKE_BINARY_DIR}/pkg/${lowercase_name}" CACHE PATH "" FORCE)
     
+    string(REPLACE ";" " " incdirs "${incdirs}")
     string(REPLACE ";" " " libs "${ARGN}")
     set(contents 
         "set(${name}_FOUND ON)\n"
@@ -282,8 +275,6 @@ function(ivw_register_package name)
     file(WRITE "${CMAKE_BINARY_DIR}/pkg/${lowercase_name}/${name}Config.cmake" ${contents})
  endfunction()
 
-
-#--------------------------------------------------------------------
 # Make package for target(s) (with configure file etc) 
 # usage: ivw_make_package(<name> <list of targets>)
 function(ivw_make_package package_name)
