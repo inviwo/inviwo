@@ -36,5 +36,4 @@
 namespace inviwo {
 
 void exposeVolumeOperations(pybind11::module& m);
-
 }
