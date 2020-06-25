@@ -57,7 +57,7 @@ std::string writeIvfVolumeSequence(const VolumeSequence &volumes, std::string na
     auto ivfwFile = path + "/" + name + ".ivfs";
 
     if (filesystem::fileExists(ivfwFile) && !overwrite)
-        throw DataWriterException("Error: Output file: " + ivfwFile + " already exists",
+        throw DataWriterException("Output file: " + ivfwFile + " already exists",
                                   IVW_CONTEXT_CUSTOM("writeIvfVolumeSequence"));
 
     Serializer serializer(ivfwFile);

@@ -51,6 +51,11 @@ public:
     virtual void writeData(const Volume* data, const std::string filePath) const;
 };
 
+namespace util {
+IVW_MODULE_BASE_API void writeIvfVolume(const Volume& data, const std::string filePath,
+                                        bool overwrite = false);
+}
+
 }  // namespace inviwo
 
 #endif  // IVW_IVFVOLUMEWRITER_H
