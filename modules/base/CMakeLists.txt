@@ -263,3 +263,7 @@ ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
 if(IVW_BENCHMARKS)
     add_subdirectory(tests/benchmarks)
 endif()
+
+if(IVW_MODULE_PYTHON3)
+    add_subdirectory(bindings)
+endif()
