@@ -36,5 +36,4 @@
 namespace inviwo {
 
 void exposeVolumeWriteMehtods(pybind11::module& m);
-
 }

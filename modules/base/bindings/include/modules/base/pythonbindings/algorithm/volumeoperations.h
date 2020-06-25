@@ -28,14 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <warn/pop>
 
-namespace inviwo{
+namespace inviwo {
 
-void exposeVolumeOperations(pybind11::module &m);
-
+void exposeVolumeOperations(pybind11::module& m);
 }
