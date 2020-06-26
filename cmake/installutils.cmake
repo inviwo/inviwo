@@ -121,7 +121,7 @@ function(ivw_append_install_list)
     set_property(${scope} PROPERTY INTERFACE_IVW_INSTALL_LIST ${install_list})
 endfunction()
 
-# Filders the given INTERFACE_IVW_INSTALL_LIST for specified components
+# Filter the given INTERFACE_IVW_INSTALL_LIST for specified components
 # List should be creted by calls to ivw_append_install_list
 # see apps/inviwo/packaging.cmake for an example use
 # Params:

@@ -88,23 +88,33 @@
 <h1>Latest Changes</h1>
 <h2>2020-06-26 Vcpkg support</h2>
 <p>Most of our external dependencies can now provided by vcpkg. Just install the corresponding vcpkg package and set <code>IVW_USE_EXTERNAL_&lt;package&gt;</code> to <code>TRUE</code><br />
-<code>cmake/vcpkghelpers.cmake</code> provides functions for installing the vcpkg packages needed to create installers. </p>
+<code>cmake/vcpkghelpers.cmake</code> provides functions for installing the vcpkg packages needed to create installers. <br />
+The following vcpkg packages can be install and used</p>
+<div class="highlight"><pre><span></span>&gt; vcpkg.exe install assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib      
+</pre></div>
+
+
+<p>vcpkg and be installed from <a href="https://github.com/microsoft/vcpkg">https://github.com/microsoft/vcpkg</a></p>
 <h2>2020-06-26 CMake refactor</h2>
 <p>We have renamed many cmake options to make the naming more consistent and the options easier to find. But you might need to review your cmake settings when updating to make sure you have the correct settings. <br />
-We now group the cmake settings like this:<br />
- * <code>IVW_APP_*</code> Enable disable building various apps<br />
- * <code>IVV_CFG_*</code> All configuration options, like  PRECOMPILED_HEADERS and PROFILING<br />
- * <code>IVW_DOXYGEN_*</code> Doxygen options<br />
- * <code>IVW_EXTERNAL_*</code> Add external modules / projects<br />
- * <code>IVW_MODULE_*</code> enable/disable modules<br />
- * <code>IVW_PACKAGE_*</code> options for installing/creating installers<br />
- * <code>IVW_TEST_*</code> option for unit test, integration test, regressions test.<br />
- * <code>IVW_USE_*</code> options for enabling/disabling some libraries / tools (sigar, openmp, openexr)<br />
- * <code>IVW_USE_EXTERNAL_*</code> enable/disable building various dependences. if off then dependences must be provided externally</p>
-<p>Notable changes include:<br />
- * <code>PRECOMPILED_HEADERS -&gt; IVW_CFG_PRECOMPILED_HEADERS</code><br />
- * <code>IVW_PROFILING -&gt; IVW_CFG_PROFILING</code><br />
- * <code>IVW_OPENMP_ON -&gt; IVW_USE_OPENMP</code></p>
+We now group the cmake settings like this:</p>
+<ul>
+<li><code>IVW_APP_*</code> Enable disable building various apps</li>
+<li><code>IVV_CFG_*</code> All configuration options, like  PRECOMPILED_HEADERS and PROFILING</li>
+<li><code>IVW_DOXYGEN_*</code> Doxygen options</li>
+<li><code>IVW_EXTERNAL_*</code> Add external modules / projects</li>
+<li><code>IVW_MODULE_*</code> enable/disable modules</li>
+<li><code>IVW_PACKAGE_*</code> options for installing/creating installers</li>
+<li><code>IVW_TEST_*</code> option for unit test, integration test, regressions test.</li>
+<li><code>IVW_USE_*</code> options for enabling/disabling some libraries / tools (sigar, openmp, openexr)</li>
+<li><code>IVW_USE_EXTERNAL_*</code> enable/disable building various dependences. if off then dependences must be provided externally</li>
+</ul>
+<p>Notable changes include:</p>
+<ul>
+<li><code>PRECOMPILED_HEADERS -&gt; IVW_CFG_PRECOMPILED_HEADERS</code></li>
+<li><code>IVW_PROFILING -&gt; IVW_CFG_PROFILING</code></li>
+<li><code>IVW_OPENMP_ON -&gt; IVW_USE_OPENMP</code></li>
+</ul>
 <h2>2020-06-16 StipplingProperty now in BaseGL</h2>
 <p>Moved StipplingProperty and associated settings from Base module to BaseGL.</p>
 <h2>2020-06-03 WebBrowser Javascript API</h2>
