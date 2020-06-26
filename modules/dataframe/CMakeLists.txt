@@ -61,9 +61,10 @@ ivw_group("Shader Files" ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
-	tests/unittests/dataframe-unittest-main.cpp
-	tests/unittests/jsonreader-test.cpp
-	tests/unittests/csvreader-test.cpp
+    tests/unittests/column-test.cpp
+    tests/unittests/csvreader-test.cpp
+    tests/unittests/dataframe-unittest-main.cpp
+    tests/unittests/jsonreader-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
