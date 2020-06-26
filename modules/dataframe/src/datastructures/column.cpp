@@ -29,6 +29,10 @@
 
 #include <inviwo/dataframe/datastructures/column.h>
 
+#include <inviwo/core/util/zip.h>
+
+#include <unordered_map>
+
 namespace inviwo {
 
 CategoricalColumn::CategoricalColumn(const std::string& header)
@@ -57,6 +61,35 @@ void CategoricalColumn::set(size_t idx, const std::string& str) {
 void CategoricalColumn::add(const std::string& value) {
     auto id = addOrGetID(value);
     getTypedBuffer()->getEditableRAMRepresentation()->add(id);
+}
+
+void CategoricalColumn::append(const Column& col) {
+    if (auto srccol = dynamic_cast<const CategoricalColumn*>(&col)) {
+        std::unordered_map<std::string, std::uint32_t> dict;
+        for (auto&& [idx, str] : util::enumerate(lookUpTable_)) {
+            dict[str] = static_cast<std::uint32_t>(idx);
+        }
+
+        std::vector<std::uint32_t> vec;
+        for (auto idx : srccol->getTypedBuffer()->getRAMRepresentation()->getDataContainer()) {
+            const auto& value = srccol->lookUpTable_[idx];
+
+            auto it = dict.find(value);
+            if (it != dict.end()) {
+                vec.push_back(it->second);
+            } else {
+                lookUpTable_.push_back(value);
+                auto newIdx = static_cast<glm::uint32_t>(lookUpTable_.size() - 1);
+                dict[value] = newIdx;
+
+                vec.push_back(newIdx);
+            }
+        }
+
+        buffer_->getEditableRAMRepresentation()->append(vec);
+    } else {
+        throw Exception("data formats of columns do not match", IVW_CONTEXT);
+    }
 }
 
 glm::uint32_t CategoricalColumn::addOrGetID(const std::string& str) {
