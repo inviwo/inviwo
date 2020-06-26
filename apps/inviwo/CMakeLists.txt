@@ -1,20 +1,16 @@
-#--------------------------------------------------------------------
 # Inviwo Qt Application
 project(inviwo)
 
 find_package(Qt5Core QUIET REQUIRED)
 find_package(Qt5Widgets QUIET REQUIRED)
 
-#--------------------------------------------------------------------
 # Add MOC files
 set(MOC_FILES  ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h)
 
-#--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES  ${MOC_FILES})
 ivw_group("Header Files" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
     ${IVW_APPLICATION_DIR}/inviwo/inviwo.cpp
@@ -26,7 +22,6 @@ ivw_group("Source Files" ${SOURCE_FILES})
 qt5_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
 
-#--------------------------------------------------------------------
 # Define libraries that should be linked
 ivw_retrieve_all_modules(enabled_modules)
 
@@ -42,7 +37,6 @@ elseif(APPLE)
 endif()
 source_group("Resource Files" FILES ${RES_FILES})
 
-#--------------------------------------------------------------------
 # Create application
 add_executable(inviwo MACOSX_BUNDLE WIN32 
     ${SOURCE_FILES} 
@@ -57,14 +51,13 @@ target_link_libraries(inviwo PUBLIC
     Qt5::Widgets
 )
 set_target_properties(inviwo PROPERTIES OUTPUT_NAME "Inviwo")
-#--------------------------------------------------------------------
+
 # Register the use of modules
 # Determine dendendencies and set runtime module loading defines
 ivw_configure_application_module_dependencies(inviwo ${enabled_modules})
 ivw_define_standard_definitions(inviwo inviwo)
 ivw_define_standard_properties(inviwo)
 
-#--------------------------------------------------------------------
 # Add application to pack
 ivw_default_install_targets(inviwo)
 
@@ -107,7 +100,6 @@ if(_allPyBindWrappers)
 endif()
 ivw_memleak_setup(inviwo)
 
-#--------------------------------------------------------------------
 # add a console version of inviwo.exe called inviwo-cli.exe
 if(WIN32)
     set_property(TARGET inviwo APPEND_STRING PROPERTY LINK_FLAGS 

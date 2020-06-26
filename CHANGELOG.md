@@ -12,7 +12,7 @@ We now group the cmake settings like this:
  * `IVW_DOXYGEN_*` Doxygen options
  * `IVW_EXTERNAL_*` Add external modules / projects
  * `IVW_MODULE_*` enable/disable modules
- * `IVW_PACKAGE_*` options for installing/cretings installers
+ * `IVW_PACKAGE_*` options for installing/creating installers
  * `IVW_TEST_*` option for unit test, integration test, regressions test.
  * `IVW_USE_*` options for enabling/disabling some libraries / tools (sigar, openmp, openexr)
  * `IVW_USE_EXTERNAL_*` enable/disable building various dependences. if off then dependences must be provided externally

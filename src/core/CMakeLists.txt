@@ -796,11 +796,11 @@ ivw_register_license_file(NAME "Inviwo" MODULE Core
     TYPE "The MIT License"
     FILES ${IVW_ROOT_DIR}/LICENSE
 )
-get_property(core_license_list TARGET inviwo-core PROPERTY IVW_LICENCE_LIST)
-get_property(ext_license_list DIRECTORY ${IVW_ROOT_DIR}/ext PROPERTY IVW_LICENCE_LIST)
-get_property(meta_license_list DIRECTORY ${IVW_TOOLS_DIR}/meta PROPERTY IVW_LICENCE_LIST)
+get_property(core_license_list TARGET inviwo-core PROPERTY IVW_LICENSE_LIST)
+get_property(ext_license_list DIRECTORY ${IVW_ROOT_DIR}/ext PROPERTY IVW_LICENSE_LIST)
+get_property(meta_license_list DIRECTORY ${IVW_TOOLS_DIR}/meta PROPERTY IVW_LICENSE_LIST)
 list(APPEND core_license_list ${ext_license_list} ${meta_license_list})
-set_property(TARGET inviwo-core PROPERTY IVW_LICENCE_LIST ${core_license_list})
+set_property(TARGET inviwo-core PROPERTY IVW_LICENSE_LIST ${core_license_list})
 
 #----------------------------------------------------------------
 # Generate build info - the build info will be updated during every compilation

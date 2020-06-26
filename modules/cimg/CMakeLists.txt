@@ -77,7 +77,7 @@ if(IVW_USE_OPENEXR)
         find_package(OpenEXR REQUIRED)
         target_link_libraries(inviwo-module-cimg PRIVATE ${OpenEXR_LIBRARIES})
         set(extraIncDir ${OpenEXR_INCLUDE_DIRS})
-        list(TRANSFORM extraIncDir APPEND "/OpenEXR") # CImg uses includes without OpendEXR
+        list(TRANSFORM extraIncDir APPEND "/OpenEXR") # CImg uses includes without OpenEXR
         target_include_directories(inviwo-module-cimg PRIVATE ${OpenEXR_INCLUDE_DIRS} ${extraIncDir})
         ivw_vcpkg_install(openexr MODULE CImg)
         # OpenEXR from vcpkg is missing this define

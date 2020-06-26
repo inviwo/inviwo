@@ -259,7 +259,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         if (url.hasQuery()) {
             QUrlQuery query(url);
             auto moduleName = utilqt::fromQString(query.queryItemValue("module"));
-            auto licenceId = utilqt::fromQString(query.queryItemValue("id"));
+            auto licenseId = utilqt::fromQString(query.queryItemValue("id"));
 
             const auto& mfos = app->getModuleManager().getModuleFactoryObjects();
             auto mit = util::find_if(mfos, [&](auto& m) { return m->name == moduleName; });
@@ -267,7 +267,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
 
             auto& licenses = (*mit)->licenses;
 
-            auto lit = util::find_if(licenses, [&](auto& l) { return l.id == licenceId; });
+            auto lit = util::find_if(licenses, [&](auto& l) { return l.id == licenseId; });
             if (lit == licenses.end()) return;
 
             auto& license = *lit;
@@ -290,19 +290,19 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
             auto modulePath = mod->getPath();
             for (auto& file : license.files) {
 
-                const auto defaultLicencePath = modulePath + "/licenses/" + file;
-                const auto fallbackLicencePath = std::string{build::binaryDirectory} + "/modules/" +
+                const auto defaultLicensePath = modulePath + "/licenses/" + file;
+                const auto fallbackLicensePath = std::string{build::binaryDirectory} + "/modules/" +
                                                  toLower(moduleName) + "/licenses/" + file;
 
                 std::stringstream buffer;
-                if (filesystem::fileExists(defaultLicencePath)) {
-                    auto f = filesystem::ifstream(defaultLicencePath);
+                if (filesystem::fileExists(defaultLicensePath)) {
+                    auto f = filesystem::ifstream(defaultLicensePath);
                     buffer << f.rdbuf();
-                } else if (filesystem::fileExists(fallbackLicencePath)) {
-                    auto f = filesystem::ifstream(fallbackLicencePath);
+                } else if (filesystem::fileExists(fallbackLicensePath)) {
+                    auto f = filesystem::ifstream(fallbackLicensePath);
                     buffer << f.rdbuf();
                 } else {
-                    buffer << "Licence file not found";
+                    buffer << "License file not found";
                 }
 
                 li.append("pre", escape(buffer.str()), {{"style", "font: 12px;"}});

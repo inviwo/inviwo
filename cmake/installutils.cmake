@@ -77,18 +77,18 @@ set_property(CACHE IVW_PACKAGE_SELECT_APP PROPERTY STRINGS "inviwo")
 # The property can be set in GLOBAL, DIRECTORY and TARGET scope.
 define_property(
     GLOBAL PROPERTY INTERFACE_IVW_INSTALL_LIST INHERITED
-    BRIEF_DOCS "List of global intstallation components to install"
-    FULL_DOCS "List of global intstallation components to install"
+    BRIEF_DOCS "List of global installation components to install"
+    FULL_DOCS "List of global installation components to install"
 )
 define_property(
     DIRECTORY PROPERTY INTERFACE_IVW_INSTALL_LIST INHERITED
-    BRIEF_DOCS "List of intstallation components to install for directory"
-    FULL_DOCS "List of intstallation components to install for directory"
+    BRIEF_DOCS "List of installation components to install for directory"
+    FULL_DOCS "List of installation components to install for directory"
 )
 define_property(
     TARGET PROPERTY INTERFACE_IVW_INSTALL_LIST INHERITED
-    BRIEF_DOCS "List of intstallation components to install for target"
-    FULL_DOCS "List of intstallation components to install for target"
+    BRIEF_DOCS "List of installation components to install for target"
+    FULL_DOCS "List of installation components to install for target"
 )
 
 # Adds the current project to the INTERFACE_IVW_INSTALL_LIST of the given scope

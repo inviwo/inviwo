@@ -14,9 +14,9 @@ add_executable(inviwo-meta-unittests ${tests})
 
 find_package(GTest CONFIG REQUIRED)
 target_link_libraries(inviwo-meta-unittests 
-	PUBLIC 
-		inviwo::meta
-		GTest::gtest
+    PUBLIC
+        inviwo::meta
+        GTest::gtest
 )
 
 if(MSVC)
