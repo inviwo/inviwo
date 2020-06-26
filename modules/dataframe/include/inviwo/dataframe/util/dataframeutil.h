@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_DATAFRAMEUTIL_H
-#define IVW_DATAFRAMEUTIL_H
+#pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 
@@ -49,13 +47,11 @@ void IVW_MODULE_DATAFRAME_API copyBufferRange(std::shared_ptr<const BufferBase> 
                                               size_t dstStart = 0);
 
 std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
-combineDataFrames(std::vector<std::shared_ptr<DataFrame>> histogramTimeDataFrame,
+combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataframes,
                   bool skipIndexColumn = false, std::string skipcol = "index");
 
-std::string IVW_MODULE_DATAFRAME_API createToolTipForRow(const DataFrame &dataframe, size_t rowId);
+std::string IVW_MODULE_DATAFRAME_API createToolTipForRow(const DataFrame& dataframe, size_t rowId);
 
 }  // namespace dataframeutil
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAFRAMEUTIL_H

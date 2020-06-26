@@ -51,7 +51,7 @@
 #include <inviwo/core/io/datareaderfactory.h>
 
 #include <modules/plotting/utils/statsutils.h>
-#include <inviwo/dataframe/datastructures/dataframeutil.h>
+#include <inviwo/dataframe/util/dataframeutil.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/zip.h>
 

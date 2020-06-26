@@ -32,7 +32,7 @@
 #include <modules/opengl/openglutils.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 
-#include <inviwo/dataframe/datastructures/dataframeutil.h>
+#include <inviwo/dataframe/util/dataframeutil.h>
 
 namespace inviwo {
 

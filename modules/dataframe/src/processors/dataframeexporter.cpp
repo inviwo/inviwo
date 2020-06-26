@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/processors/dataframeexporter.h>
-#include <inviwo/dataframe/datastructures/dataframeutil.h>
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/ostreamjoiner.h>

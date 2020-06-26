@@ -31,7 +31,7 @@
 
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/util/zip.h>
-#include <inviwo/dataframe/datastructures/dataframeutil.h>
+#include <inviwo/dataframe/util/dataframeutil.h>
 
 namespace inviwo {
 

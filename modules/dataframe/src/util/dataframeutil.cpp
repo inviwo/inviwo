@@ -27,8 +27,9 @@
  *
  *********************************************************************************/
 
+#include <inviwo/dataframe/util/dataframeutil.h>
+
 #include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/dataframe/datastructures/dataframeutil.h>
 #include <inviwo/core/util/document.h>
 
 #include <fmt/format.h>
@@ -73,15 +74,15 @@ void copyBufferRange(std::shared_ptr<const BufferBase> src, std::shared_ptr<Buff
         });
     } else {
         throw inviwo::Exception("Data Formats needs to be of same type",
-                                IVW_CONTEXT_CUSTOM("dataframeutil::copyBufferRange"));
+                                IVW_CONTEXT_CUSTOM("dataframeutils::copyBufferRange"));
     }
 }
 
 std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataFrames,
                                              bool skipIndexColumn, std::string skipcol) {
     if (dataFrames.empty()) {
-        throw inviwo::Exception("data frames vector is empty",
-                                IVW_CONTEXT_CUSTOM("dataframeutil::combineDataFrames"));
+        throw inviwo::Exception("DataFrames vector is empty",
+                                IVW_CONTEXT_CUSTOM("dataframeutils::combineDataFrames"));
     }
     if (dataFrames.size() == 1) {  // just one df, clone it;
         return std::make_shared<DataFrame>(*dataFrames.front().get());
@@ -93,8 +94,8 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
     }
 
     if (newSize == 0) {
-        throw inviwo::Exception("All Input data frames are empty",
-                                IVW_CONTEXT_CUSTOM("dataframeutil::combineDataFrames"));
+        throw inviwo::Exception("All input DataFrames are empty",
+                                IVW_CONTEXT_CUSTOM("dataframeutils::combineDataFrames"));
     }
 
     auto first = *dataFrames.front();
@@ -111,22 +112,19 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
                 if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
                 auto it = columnType.find(col->getHeader());
                 if (it == columnType.end()) {
-                    std::ostringstream oss;
-                    oss << "Column " << col->getHeader()
-                        << " did not exist in first data frame but in at least one of the other "
-                           "data frames";
-                    throw inviwo::Exception(oss.str(),
-                                            IVW_CONTEXT_CUSTOM("dataframeutil::combineDataFrames"));
+                    throw inviwo::Exception(
+                        fmt::format("Column {} did not exist in first DataFrame but in at least "
+                                    "one of the others",
+                                    col->getHeader()),
+                        IVW_CONTEXT_CUSTOM("dataframeutils::combineDataFrames"));
                 }
                 if (it->second != col->getBuffer()->getDataFormat()) {
                     if (it == columnType.end()) {
-                        std::ostringstream oss;
-                        oss << "Column " << col->getHeader()
-                            << " has different format in different data frames ("
-                            << it->second->getString() << " and "
-                            << col->getBuffer()->getDataFormat()->getSize() << ")";
                         throw inviwo::Exception(
-                            oss.str(), IVW_CONTEXT_CUSTOM("dataframeutil::combineDataFrames"));
+                            fmt::format("Column {} has different format in DataFrames ({}, {})",
+                                        col->getHeader(), it->second->getString(),
+                                        col->getBuffer()->getDataFormat()->getSize()),
+                            IVW_CONTEXT_CUSTOM("dataframeutils::combineDataFrames"));
                     }
                 }
             }
