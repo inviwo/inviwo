@@ -32,7 +32,7 @@
 #include <modules/opengl/openglutils.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 
-#include <inviwo/dataframe/datastructures/dataframeutil.h>
+#include <inviwo/dataframe/util/dataframeutils.h>
 
 namespace inviwo {
 
@@ -72,7 +72,7 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     tooltipCallBack_ = scatterPlot_.addToolTipCallback([this](PickingEvent* p, size_t rowId) {
         if (!p) return;
         if (auto dataframe = dataFramePort_.getData()) {
-            p->setToolTip(dataframeutil::createToolTipForRow(*dataFramePort_.getData(), rowId));
+            p->setToolTip(dataframeutils::createToolTipForRow(*dataFramePort_.getData(), rowId));
         }
     });
     selectionChangedCallBack_ =

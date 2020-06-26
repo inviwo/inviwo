@@ -31,7 +31,7 @@
 
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/util/zip.h>
-#include <inviwo/dataframe/datastructures/dataframeutil.h>
+#include <inviwo/dataframe/util/dataframeutils.h>
 
 namespace inviwo {
 
@@ -72,7 +72,7 @@ PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
         persistenceDiagramPlot_.addToolTipCallback([this](PickingEvent *p, size_t rowId) {
             if (!p) return;
             if (auto dataframe = dataFrame_.getData()) {
-                p->setToolTip(dataframeutil::createToolTipForRow(*dataFrame_.getData(), rowId));
+                p->setToolTip(dataframeutils::createToolTipForRow(*dataFrame_.getData(), rowId));
             }
         });
     selectionChangedCallBack_ = persistenceDiagramPlot_.addSelectionChangedCallback(

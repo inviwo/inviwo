@@ -51,7 +51,7 @@
 #include <inviwo/core/io/datareaderfactory.h>
 
 #include <modules/plotting/utils/statsutils.h>
-#include <inviwo/dataframe/datastructures/dataframeutil.h>
+#include <inviwo/dataframe/util/dataframeutils.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/zip.h>
 
@@ -631,7 +631,7 @@ void ParallelCoordinates::linePicked(PickingEvent* p) {
         // Show tooltip about current line
         if (p->getHoverState() == PickingHoverState::Move ||
             p->getHoverState() == PickingHoverState::Enter) {
-            p->setToolTip(dataframeutil::createToolTipForRow(*df, p->getPickedId()));
+            p->setToolTip(dataframeutils::createToolTipForRow(*df, p->getPickedId()));
             hoveredLine_ = static_cast<int>(p->getPickedId());
             invalidate(InvalidationLevel::InvalidOutput);
 

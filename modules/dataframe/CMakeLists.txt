@@ -9,7 +9,6 @@ set(HEADER_FILES
     include/inviwo/dataframe/dataframemoduledefine.h
     include/inviwo/dataframe/datastructures/column.h
     include/inviwo/dataframe/datastructures/dataframe.h
-    include/inviwo/dataframe/datastructures/dataframeutil.h
     include/inviwo/dataframe/datastructures/datapoint.h
     include/inviwo/dataframe/io/csvreader.h
     include/inviwo/dataframe/io/json/dataframepropertyjsonconverter.h
@@ -25,6 +24,7 @@ set(HEADER_FILES
     include/inviwo/dataframe/properties/colormapproperty.h
     include/inviwo/dataframe/properties/dataframecolormapproperty.h
     include/inviwo/dataframe/properties/dataframeproperty.h
+    include/inviwo/dataframe/util/dataframeutils.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -34,7 +34,6 @@ set(SOURCE_FILES
     src/dataframemodule.cpp
     src/datastructures/column.cpp
     src/datastructures/dataframe.cpp
-    src/datastructures/dataframeutil.cpp
     src/io/csvreader.cpp
     src/io/json/dataframepropertyjsonconverter.cpp
     src/io/jsonreader.cpp
@@ -49,6 +48,7 @@ set(SOURCE_FILES
     src/properties/colormapproperty.cpp
     src/properties/dataframecolormapproperty.cpp
     src/properties/dataframeproperty.cpp
+    src/util/dataframeutils.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
