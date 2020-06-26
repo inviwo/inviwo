@@ -1,5 +1,38 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2020-06-26 Vcpkg support
+Most of our external dependencies can now provided by vcpkg. Just install the corresponding vcpkg package and set `IVW_USE_EXTERNAL_<package>` to `TRUE`
+`cmake/vcpkghelpers.cmake` provides functions for installing the vcpkg packages needed to create installers. 
+
+## 2020-06-26 CMake `IVW_CFG_DEFAULT`
+A new options `IVW_CFG_DEFAULT` was added to enable including a file with user provided defaults options before the initial configure. To use just set IVW_CFG_DEFAULT to a file path to a cmake file with defaults, for example:
+```cmake
+# Config
+set(IVW_CFG_CMAKE_DEBUG                 ON)
+set(IVW_CFG_PROFILING                   ON)
+set(IVW_CFG_PRECOMPILED_HEADERS         OFF)
+set(IVW_CFG_FORCE_ASSERTIONS            ON)
+```
+before the first cmake configure call.  
+
+## 2020-06-26 CMake refactor
+We have renamed many cmake options to make the naming more consistent and the options easier to find. But you might need to review your cmake settings when updating to make sure you have the correct settings. 
+We now group the cmake settings like this:
+ * `IVW_APP_*` Enable disable building various apps
+ * `IVV_CFG_*` All configuration options, like  PRECOMPILED_HEADERS and PROFILING
+ * `IVW_DOXYGEN_*` Doxygen options
+ * `IVW_EXTERNAL_*` Add external modules / projects
+ * `IVW_MODULE_*` enable/disable modules
+ * `IVW_PACKAGE_*` options for installing/cretings installers
+ * `IVW_TEST_*` option for unit test, integration test, regressions test.
+ * `IVW_USE_*` options for enabling/disabling some libraries / tools (sigar, openmp, openexr)
+ * `IVW_USE_EXTERNAL_*` enable/disable building various dependences. if off then dependences must be provided externally
+
+Notable changes include:
+ * `PRECOMPILED_HEADERS -> IVW_CFG_PRECOMPILED_HEADERS`
+ * `IVW_PROFILING -> IVW_CFG_PROFILING`
+ * `IVW_OPENMP_ON -> IVW_USE_OPENMP`
+
 ## 2020-06-16 StipplingProperty now in BaseGL
 Moved StipplingProperty and associated settings from Base module to BaseGL.
 

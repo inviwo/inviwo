@@ -29,4 +29,4 @@ ivw_add_unittest(${TEST_FILES})
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
 find_package(PNG REQUIRED)
-target_link_libraries(inviwo-module-png PRIVATE png)
+target_link_libraries(inviwo-module-png PRIVATE PNG::PNG)

@@ -37,6 +37,8 @@
 #include <algorithm>
 #include <limits>
 
+#include <inviwo/core/util/glm.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #if (_MSC_VER)

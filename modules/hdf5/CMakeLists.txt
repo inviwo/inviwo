@@ -54,7 +54,7 @@ if (NOT IVW_USE_EXTERNAL_HDF5)
     endif()
     
     find_package(ZLIB REQUIRED)
-    set(ZLIB_USE_EXTERNAL ON)
+    set(ZLIB_SHARED_LIBRARY ${ZLIB_LIBRARIES}) # our zlib config is missing this one"
     option(HDF5_ENABLE_Z_LIB_SUPPORT "Enable Zlib Filters" ON)
    
     set(HDF5_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)

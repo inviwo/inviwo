@@ -42,7 +42,7 @@ set(CPACK_RESOURCE_FILE_LICENSE       "${IVW_ROOT_DIR}/LICENSE")
 set(CPACK_PACKAGE_FILE_NAME           "${CPACK_PACKAGE_NAME}-v${IVW_VERSION}")
 
 set(CPACK_MONOLITHIC_INSTALL OFF)
-ivw_get_target_property_recursive(install_list inviwo IVW_INSTALL_LIST OFF)
+ivw_get_target_property_recursive(install_list inviwo INTERFACE_IVW_INSTALL_LIST OFF)
 ivw_filter_install_list(LIST install_list REMOVE_COMPONENTS Development Testing)
 list(TRANSFORM install_list REPLACE "\\|%\\|" ";")
 set(CPACK_INSTALL_CMAKE_PROJECTS ${install_list})

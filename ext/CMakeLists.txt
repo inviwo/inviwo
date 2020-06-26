@@ -149,7 +149,7 @@ if(NOT IVW_USE_EXTERNAL_TINYDIR)
     	FILES ${IVW_EXTENSIONS_DIR}/tinydir/COPYING
 	)
 else()
-	ivw_vcpkg_paths(INCLUDE vcpkgInclude)
+	ivw_vcpkg_paths(INCLUDE vcpkgInclude) # get the vcpkg include path as a hint if available
 	find_path(TINYDIR_INCLUDE_DIR NAMES tinydir.h HINTS ${vcpkgInclude} REQUIRED)
 	add_library(tinydir INTERFACE)
 	add_library(inviwo::tinydir ALIAS tinydir)
@@ -170,13 +170,13 @@ ivw_register_license_file(NAME "half" VERSION 1.12.0 MODULE Core EXT
 option(IVW_USE_EXTERNAL_UTFCPP "UTFCPP is provided externaly" OFF)
 if(NOT IVW_USE_EXTERNAL_UTFCPP)
 	add_subdirectory(utf)
-	ivw_register_license_file(NAME "UTF8-CPP" TARGET utfcpp MODULE Core EXT
+	ivw_register_license_file(NAME "UTF8-CPP" VERSION ${utf8cpp_VERSION} MODULE Core EXT
 	    URL "https://github.com/nemtrif/utfcpp"
 	    TYPE "Boost Software License"
 	    FILES ${IVW_EXTENSIONS_DIR}/utf/LICENSE
 	)
 else()
-	ivw_vcpkg_paths(INCLUDE vcpkgInclude)
+	ivw_vcpkg_paths(INCLUDE vcpkgInclude)  # get the vcpkg include path as a hint if available
 	find_path(UTFCPP_INCLUDE_DIR NAMES utf8.h utf8/core.h HINTS ${vcpkgInclude} REQUIRED)
 	add_library(utf8cpp INTERFACE)
 	add_library(utf8::cpp ALIAS utf8cpp)

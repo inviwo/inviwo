@@ -68,22 +68,28 @@ else()
     set(IVW_RESOURCE_INSTALL_PREFIX "")
 endif()
 
+
+# the INTERFACE_IVW_INSTALL_LIST is a property to hold a list of projects/components to install
+# it is used in the packaging to creata a list of items to install. this list will be
+# passed to CPACK_INSTALL_CMAKE_PROJECTS after a potential filtering
+# The property can be set in GLOBAL, DIRECTORY and TARGET scope.
 define_property(
-    GLOBAL PROPERTY IVW_INSTALL_LIST INHERITED
+    GLOBAL PROPERTY INTERFACE_IVW_INSTALL_LIST INHERITED
     BRIEF_DOCS "List of global intstallation components to install"
     FULL_DOCS "List of global intstallation components to install"
 )
 define_property(
-    DIRECTORY PROPERTY IVW_INSTALL_LIST INHERITED
+    DIRECTORY PROPERTY INTERFACE_IVW_INSTALL_LIST INHERITED
     BRIEF_DOCS "List of intstallation components to install for directory"
     FULL_DOCS "List of intstallation components to install for directory"
 )
 define_property(
-    TARGET PROPERTY IVW_INSTALL_LIST INHERITED
+    TARGET PROPERTY INTERFACE_IVW_INSTALL_LIST INHERITED
     BRIEF_DOCS "List of intstallation components to install for target"
     FULL_DOCS "List of intstallation components to install for target"
 )
 
+# Adds the current project to the INTERFACE_IVW_INSTALL_LIST of the given scope
 function(ivw_append_install_list)
     set(options DIRECTORY GLOBAL)
     set(oneValueArgs TARGET)
@@ -100,7 +106,7 @@ function(ivw_append_install_list)
         message(ERROR "Error either TARGET, DIRECTORY, or GLOBAL must be specified")
     endif()
 
-    get_property(install_list ${scope} PROPERTY IVW_INSTALL_LIST)
+    get_property(install_list ${scope} PROPERTY INTERFACE_IVW_INSTALL_LIST)
     if(NOT install_list) 
         set(install_list "")
     endif()
@@ -110,9 +116,15 @@ function(ivw_append_install_list)
         "${CMAKE_CURRENT_BINARY_DIR}|%|${CMAKE_PROJECT_NAME}|%|Testing|%|/"
         "${CMAKE_CURRENT_BINARY_DIR}|%|${CMAKE_PROJECT_NAME}|%|Development|%|/"
     )
-    set_property(${scope} PROPERTY IVW_INSTALL_LIST ${install_list})
+    set_property(${scope} PROPERTY INTERFACE_IVW_INSTALL_LIST ${install_list})
 endfunction()
 
+# Filders the given INTERFACE_IVW_INSTALL_LIST for specified components
+# List should be creted by calls to ivw_append_install_list
+# see apps/inviwo/packaging.cmake for an example use
+# Params:
+#  * LIST an instace of INTERFACE_IVW_INSTALL_LIST to filter
+#  * REMOVE_COMPONENTS list of components to remove from the given list
 function(ivw_filter_install_list)
     set(options "")
     set(oneValueArgs LIST)

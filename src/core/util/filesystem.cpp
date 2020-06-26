@@ -340,25 +340,31 @@ std::vector<std::string> getDirectoryContents(const std::string& path, ListMode 
     if (path.empty()) {
         return {};
     }
-    TinyDirInterface tinydir;
-    switch (mode) {
-        case ListMode::Files:
-            tinydir.setListMode(TinyDirInterface::ListMode::FilesOnly);
-            break;
-        case ListMode::Directories:
-            tinydir.setListMode(TinyDirInterface::ListMode::DirectoriesOnly);
-            break;
-        case ListMode::FilesAndDirectories:
-            tinydir.setListMode(TinyDirInterface::ListMode::FilesAndDirectories);
-            break;
+    if (!directoryExists(path)) {
+        return {};
     }
-    tinydir.open(path);
-
+    const auto tdmode = [&]() {
+        switch (mode) {
+            case ListMode::Files:
+                return TinyDirInterface::ListMode::FilesOnly;
+            case ListMode::Directories:
+                return TinyDirInterface::ListMode::DirectoriesOnly;
+            case ListMode::FilesAndDirectories:
+                return TinyDirInterface::ListMode::FilesAndDirectories;
+            default:
+                return TinyDirInterface::ListMode::FilesOnly;
+        }
+    }();
+    TinyDirInterface tinydir(path, tdmode);
     return tinydir.getContents();
 }
 
 std::vector<std::string> getDirectoryContentsRecursively(const std::string& path,
                                                          ListMode mode /*= ListMode::Files*/) {
+    if (!directoryExists(path)) {
+        return {};
+    }
+
     auto content = filesystem::getDirectoryContents(path, mode);
     auto directories = filesystem::getDirectoryContents(path, filesystem::ListMode::Directories);
     if (mode == ListMode::Directories || mode == ListMode::FilesAndDirectories) {

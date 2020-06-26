@@ -27,6 +27,13 @@
 # 
 #################################################################################
 
+
+# A helper function to get to various vcpkg paths
+# If vcpkg is not used we just return empty strings
+# There are not "offically" exposed so we always use this helper to get then if needed
+# then we only need to update here if vcpkg changes. 
+# This is mostly used to provide hints when trying to find headers etc for libs that don't have
+# a proper FindFoo.cmake of FooConfig.cmake.
 function(ivw_vcpkg_paths)
     set(options "")
     set(oneValueArgs BIN INCLUDE LIB SHARE)
@@ -63,6 +70,17 @@ function(ivw_vcpkg_paths)
     endif()
 endfunction()
 
+
+# A helper function to install vcpkg libs. Will install dll/so, lib, pdb, stc. into the 
+# correspnding folders by globing the vcpkg package folders. 
+# It will also try and install eny transitive dependencies autoamtically 
+# We also autoamtically register the licence file using the metadata found in vcpkg
+# Params:
+#  * COPYRIGHT a special copytight file, default to "copyright" some vcpkg libs use other files.
+#  * OUT_COPYRIGHT retrive the path the the COPYRIGHT file
+#  * OUT_VERSION get the package version from the vcpkg metadata
+#  * MODULE the module to use for ivw_register_license_file
+#  * EXT pass on to ivw_register_license_file
 function(ivw_vcpkg_install name)
 	if(NOT VCPKG_TOOLCHAIN)
 		return()
