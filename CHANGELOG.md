@@ -4,17 +4,6 @@ Here we document changes that affect the public API or changes that needs to be 
 Most of our external dependencies can now provided by vcpkg. Just install the corresponding vcpkg package and set `IVW_USE_EXTERNAL_<package>` to `TRUE`
 `cmake/vcpkghelpers.cmake` provides functions for installing the vcpkg packages needed to create installers. 
 
-## 2020-06-26 CMake `IVW_CFG_DEFAULT`
-A new options `IVW_CFG_DEFAULT` was added to enable including a file with user provided defaults options before the initial configure. To use just set IVW_CFG_DEFAULT to a file path to a cmake file with defaults, for example:
-```cmake
-# Config
-set(IVW_CFG_CMAKE_DEBUG                 ON)
-set(IVW_CFG_PROFILING                   ON)
-set(IVW_CFG_PRECOMPILED_HEADERS         OFF)
-set(IVW_CFG_FORCE_ASSERTIONS            ON)
-```
-before the first cmake configure call.  
-
 ## 2020-06-26 CMake refactor
 We have renamed many cmake options to make the naming more consistent and the options easier to find. But you might need to review your cmake settings when updating to make sure you have the correct settings. 
 We now group the cmake settings like this:

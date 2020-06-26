@@ -68,6 +68,8 @@ else()
     set(IVW_RESOURCE_INSTALL_PREFIX "")
 endif()
 
+set(IVW_PACKAGE_SELECT_APP "inviwo" CACHE STRING "Select which app to package")
+set_property(CACHE IVW_PACKAGE_SELECT_APP PROPERTY STRINGS "inviwo")
 
 # the INTERFACE_IVW_INSTALL_LIST is a property to hold a list of projects/components to install
 # it is used in the packaging to creata a list of items to install. this list will be

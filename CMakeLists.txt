@@ -47,13 +47,12 @@ endwhile()
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
-if(IVW_CFG_DEFAULTS)
-    include(${IVW_CFG_DEFAULTS})
-endif()
-
 # option for setting the project/solution name of the Inviwo project
 set(IVW_CFG_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
-project(${IVW_CFG_PROJECT_NAME})
+project(${IVW_CFG_PROJECT_NAME} 
+    HOMEPAGE_URL https://github.com/inviwo/inviwo
+    LANGUAGES CXX
+)
 
 #Verify that git submodules has been cloned
 include(cmake/verifysubmodules.cmake)

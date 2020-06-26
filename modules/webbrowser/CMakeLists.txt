@@ -193,7 +193,7 @@ if (OS_MACOSX)
     # Copy the CEF framework into the Frameworks directory (used by installer)
     install(DIRECTORY "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
             DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/Chromium Embedded Framework.framework"
-            COMPONENT inviwo-module-webbrowser) 
+            COMPONENT Application) 
 elseif (WIN32)
     if(USE_SANDBOX)
         # Logical target used to link the cef_sandbox library.
@@ -209,7 +209,7 @@ elseif (WIN32)
     install(DIRECTORY "${CEF_BINARY_DIR}/" # Note importance of / in the end to not put files into subfolder
             "${CEF_RESOURCE_DIR}/"
             DESTINATION "${IVW_RUNTIME_INSTALL_DIR}"
-            COMPONENT inviwo-module-webbrowser)
+            COMPONENT Application)
 
 else () # Linux
     # Set rpath so that libraries can be placed next to the executable.
@@ -229,7 +229,7 @@ else () # Linux
     install(DIRECTORY "${CEF_BINARY_DIR}/" # Note importance of / in the end to not put files into subfolder
             "${CEF_RESOURCE_DIR}/"
             DESTINATION "${IVW_RUNTIME_INSTALL_DIR}"
-            COMPONENT inviwo-module-webbrowser)
+            COMPONENT Application)
 endif()
 
 # Setup CEF helper executable. Started from the web browser module as a sub-process.
