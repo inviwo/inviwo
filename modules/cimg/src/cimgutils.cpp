@@ -71,7 +71,6 @@
 #include <OpenEXRConfig.h>
 #endif
 
-
 // add CImg type specialization for half_float::half
 namespace cimg_library {
 namespace cimg {
