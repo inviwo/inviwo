@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_COLUMN_H
-#define IVW_COLUMN_H
+#pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -66,6 +65,7 @@ public:
     virtual void setHeader(const std::string& header) = 0;
 
     virtual void add(const std::string& value) = 0;
+    virtual void append(const Column& col) = 0;
 
     virtual std::shared_ptr<BufferBase> getBuffer() = 0;
     virtual std::shared_ptr<const BufferBase> getBuffer() const = 0;
@@ -120,6 +120,15 @@ public:
      * @throws InvalidConversion if the value cannot be converted to T
      */
     virtual void add(const std::string& value) override;
+
+    /**
+     * \brief appends all rows from column \p col
+     *
+     * @param col
+     * @throws Exception if data format does not match
+     */
+    virtual void append(const Column& col) override;
+
     virtual void set(size_t idx, const T& value);
 
     T get(size_t idx) const;
@@ -208,6 +217,14 @@ public:
     virtual void set(size_t idx, const std::string& str);
 
     virtual void add(const std::string& value) override;
+
+    /**
+     * \brief appends all rows from column \p col and builds a union of all categorical values
+     *
+     * @param col
+     * @throws Exception if data format does not match
+     */
+    virtual void append(const Column& col) override;
 
     /**
      * Returns the unique set of categorical values.
@@ -315,6 +332,16 @@ void TemplateColumn<T>::add(const std::string& value) {
 }
 
 template <typename T>
+void TemplateColumn<T>::append(const Column& col) {
+    if (auto srccol = dynamic_cast<const TemplateColumn<T>*>(&col)) {
+        buffer_->getEditableRAMRepresentation()->append(
+            srccol->buffer_->getRAMRepresentation()->getDataContainer());
+    } else {
+        throw Exception("data formats of columns do not match", IVW_CONTEXT);
+    }
+}
+
+template <typename T>
 void TemplateColumn<T>::set(size_t idx, const T& value) {
     buffer_->getEditableRAMRepresentation()->set(idx, value);
 }
@@ -397,5 +424,3 @@ size_t TemplateColumn<T>::getSize() const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_COLUMN_H
