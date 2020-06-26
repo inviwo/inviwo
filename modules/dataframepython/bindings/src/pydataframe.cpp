@@ -96,6 +96,7 @@ struct TemplateColumnReg {
             .def(py::init<const std::string&>())
             .def("add", py::overload_cast<const T&>(&C::add))
             .def("add", py::overload_cast<const std::string&>(&C::add))
+            .def("append", [](C& c, C& src) { c.append(src); })
             .def("set", &C::set)
             .def("get",
                  [](const C& c, size_t i) {
@@ -142,6 +143,7 @@ void exposeDataFrame(pybind11::module& m) {
         .def_property_readonly("categories", &CategoricalColumn::getCategories,
                                py::return_value_policy::copy)
         .def("add", [](CategoricalColumn& c, const std::string& str) { c.add(str); })
+        .def("append", [](CategoricalColumn& c, CategoricalColumn& src) { c.append(src); })
         .def("set", [](CategoricalColumn& c, size_t idx, const std::uint32_t& v) { c.set(idx, v); })
         .def("set", py::overload_cast<size_t, const std::string&>(&CategoricalColumn::set))
         .def("get",
