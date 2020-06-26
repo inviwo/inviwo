@@ -31,10 +31,10 @@
 
 namespace inviwo {
 
-CategoricalColumn::CategoricalColumn(const std::string &header)
+CategoricalColumn::CategoricalColumn(const std::string& header)
     : TemplateColumn<std::uint32_t>(header) {}
 
-CategoricalColumn *CategoricalColumn::clone() const { return new CategoricalColumn(*this); }
+CategoricalColumn* CategoricalColumn::clone() const { return new CategoricalColumn(*this); }
 
 std::string CategoricalColumn::getAsString(size_t idx) const {
     auto index = getTypedBuffer()->getRAMRepresentation()->getDataContainer()[idx];
@@ -49,17 +49,17 @@ std::shared_ptr<DataPointBase> CategoricalColumn::get(size_t idx, bool getString
     }
 }
 
-void CategoricalColumn::set(size_t idx, const std::string &str) {
+void CategoricalColumn::set(size_t idx, const std::string& str) {
     auto id = addOrGetID(str);
     getTypedBuffer()->getEditableRAMRepresentation()->set(idx, id);
 }
 
-void CategoricalColumn::add(const std::string &value) {
+void CategoricalColumn::add(const std::string& value) {
     auto id = addOrGetID(value);
     getTypedBuffer()->getEditableRAMRepresentation()->add(id);
 }
 
-glm::uint32_t CategoricalColumn::addOrGetID(const std::string &str) {
+glm::uint32_t CategoricalColumn::addOrGetID(const std::string& str) {
     auto it = std::find(lookUpTable_.begin(), lookUpTable_.end(), str);
     if (it != lookUpTable_.end()) {
         return static_cast<glm::uint32_t>(std::distance(lookUpTable_.begin(), it));

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAFRAMETOCSVEXPORTER_H
-#define IVW_DATAFRAMETOCSVEXPORTER_H
+#pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
@@ -92,5 +91,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAFRAMETOCSVEXPORTER_H

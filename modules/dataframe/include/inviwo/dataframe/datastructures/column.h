@@ -46,7 +46,7 @@ class BufferBase;
 
 class IVW_MODULE_DATAFRAME_API InvalidConversion : public Exception {
 public:
-    InvalidConversion(const std::string &message = "",
+    InvalidConversion(const std::string& message = "",
                       ExceptionContext context = ExceptionContext())
         : Exception(message, context) {}
     virtual ~InvalidConversion() throw() {}
@@ -60,12 +60,12 @@ class IVW_MODULE_DATAFRAME_API Column {
 public:
     virtual ~Column() = default;
 
-    virtual Column *clone() const = 0;
+    virtual Column* clone() const = 0;
 
-    virtual const std::string &getHeader() const = 0;
-    virtual void setHeader(const std::string &header) = 0;
+    virtual const std::string& getHeader() const = 0;
+    virtual void setHeader(const std::string& header) = 0;
 
-    virtual void add(const std::string &value) = 0;
+    virtual void add(const std::string& value) = 0;
 
     virtual std::shared_ptr<BufferBase> getBuffer() = 0;
     virtual std::shared_ptr<const BufferBase> getBuffer() const = 0;
@@ -94,33 +94,33 @@ class TemplateColumn : public Column {
 public:
     using type = T;
 
-    TemplateColumn(const std::string &header,
+    TemplateColumn(const std::string& header,
                    std::shared_ptr<Buffer<T>> buffer = std::make_shared<Buffer<T>>());
 
-    TemplateColumn(const std::string &header, std::vector<T> data);
+    TemplateColumn(const std::string& header, std::vector<T> data);
 
-    TemplateColumn(const TemplateColumn<T> &rhs);
-    TemplateColumn(TemplateColumn<T> &&rhs);
+    TemplateColumn(const TemplateColumn<T>& rhs);
+    TemplateColumn(TemplateColumn<T>&& rhs);
 
-    TemplateColumn<T> &operator=(const TemplateColumn<T> &rhs);
-    TemplateColumn<T> &operator=(TemplateColumn<T> &&rhs);
+    TemplateColumn<T>& operator=(const TemplateColumn<T>& rhs);
+    TemplateColumn<T>& operator=(TemplateColumn<T>&& rhs);
 
-    virtual TemplateColumn *clone() const override;
+    virtual TemplateColumn* clone() const override;
 
     virtual ~TemplateColumn() = default;
 
-    virtual const std::string &getHeader() const override;
-    void setHeader(const std::string &header) override;
+    virtual const std::string& getHeader() const override;
+    void setHeader(const std::string& header) override;
 
-    virtual void add(const T &value);
+    virtual void add(const T& value);
     /**
      * \brief converts given value to type T, which is added to the column
      *
      * @param value
      * @throws InvalidConversion if the value cannot be converted to T
      */
-    virtual void add(const std::string &value) override;
-    virtual void set(size_t idx, const T &value);
+    virtual void add(const std::string& value) override;
+    virtual void set(size_t idx, const T& value);
 
     T get(size_t idx) const;
     T operator[](size_t idx) const;
@@ -179,14 +179,14 @@ protected:
  */
 class IVW_MODULE_DATAFRAME_API CategoricalColumn : public TemplateColumn<std::uint32_t> {
 public:
-    CategoricalColumn(const std::string &header);
-    CategoricalColumn(const CategoricalColumn &rhs) = default;
-    CategoricalColumn(CategoricalColumn &&rhs) = default;
+    CategoricalColumn(const std::string& header);
+    CategoricalColumn(const CategoricalColumn& rhs) = default;
+    CategoricalColumn(CategoricalColumn&& rhs) = default;
 
-    CategoricalColumn &operator=(const CategoricalColumn &rhs) = default;
-    CategoricalColumn &operator=(CategoricalColumn &&rhs) = default;
+    CategoricalColumn& operator=(const CategoricalColumn& rhs) = default;
+    CategoricalColumn& operator=(CategoricalColumn&& rhs) = default;
 
-    virtual CategoricalColumn *clone() const override;
+    virtual CategoricalColumn* clone() const override;
 
     virtual ~CategoricalColumn() = default;
 
@@ -205,40 +205,40 @@ public:
     virtual std::shared_ptr<DataPointBase> get(size_t idx, bool getStringsAsStrings) const override;
 
     using TemplateColumn<std::uint32_t>::set;
-    virtual void set(size_t idx, const std::string &str);
+    virtual void set(size_t idx, const std::string& str);
 
-    virtual void add(const std::string &value) override;
+    virtual void add(const std::string& value) override;
 
     /**
      * Returns the unique set of categorical values.
      */
-    const std::vector<std::string> &getCategories() const { return lookUpTable_; }
+    const std::vector<std::string>& getCategories() const { return lookUpTable_; }
 
 private:
-    virtual glm::uint32_t addOrGetID(const std::string &str);
+    virtual glm::uint32_t addOrGetID(const std::string& str);
 
     std::vector<std::string> lookUpTable_;
 };
 
 template <typename T>
-TemplateColumn<T>::TemplateColumn(const std::string &header, std::shared_ptr<Buffer<T>> buffer)
+TemplateColumn<T>::TemplateColumn(const std::string& header, std::shared_ptr<Buffer<T>> buffer)
     : header_(header), buffer_(buffer) {}
 
 template <typename T>
-TemplateColumn<T>::TemplateColumn(const std::string &header, std::vector<T> data)
+TemplateColumn<T>::TemplateColumn(const std::string& header, std::vector<T> data)
     : header_(header), buffer_(util::makeBuffer(std::move(data))) {}
 
 template <typename T>
-TemplateColumn<T>::TemplateColumn(const TemplateColumn &rhs)
+TemplateColumn<T>::TemplateColumn(const TemplateColumn& rhs)
     : header_(rhs.getHeader())
     , buffer_(std::shared_ptr<Buffer<T>>(rhs.getTypedBuffer()->clone())) {}
 
 template <typename T>
-TemplateColumn<T>::TemplateColumn(TemplateColumn<T> &&rhs)
+TemplateColumn<T>::TemplateColumn(TemplateColumn<T>&& rhs)
     : header_(std::move(rhs.header_)), buffer_(std::move(rhs.buffer_)) {}
 
 template <typename T>
-TemplateColumn<T> &TemplateColumn<T>::operator=(const TemplateColumn<T> &rhs) {
+TemplateColumn<T>& TemplateColumn<T>::operator=(const TemplateColumn<T>& rhs) {
     if (this != &rhs) {
         header_ = rhs.getHeader();
         buffer_ = std::shared_ptr<Buffer<T>>(rhs.getTypedBuffer()->clone());
@@ -247,7 +247,7 @@ TemplateColumn<T> &TemplateColumn<T>::operator=(const TemplateColumn<T> &rhs) {
 }
 
 template <typename T>
-TemplateColumn<T> &TemplateColumn<T>::operator=(TemplateColumn<T> &&rhs) {
+TemplateColumn<T>& TemplateColumn<T>::operator=(TemplateColumn<T>&& rhs) {
     if (this != &rhs) {
         header_ = std::move(rhs.header_);
         buffer_ = std::move(rhs.buffer_);
@@ -256,29 +256,29 @@ TemplateColumn<T> &TemplateColumn<T>::operator=(TemplateColumn<T> &&rhs) {
 }
 
 template <typename T>
-TemplateColumn<T> *TemplateColumn<T>::clone() const {
+TemplateColumn<T>* TemplateColumn<T>::clone() const {
     return new TemplateColumn(*this);
 }
 
 template <typename T>
-const std::string &TemplateColumn<T>::getHeader() const {
+const std::string& TemplateColumn<T>::getHeader() const {
     return header_;
 }
 
 template <typename T>
-void TemplateColumn<T>::setHeader(const std::string &header) {
+void TemplateColumn<T>::setHeader(const std::string& header) {
     header_ = header;
 }
 
 template <typename T>
-void TemplateColumn<T>::add(const T &value) {
+void TemplateColumn<T>::add(const T& value) {
     buffer_->getEditableRAMRepresentation()->add(value);
 }
 
 namespace detail {
 
 template <typename T, typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
-void add(Buffer<T> *buffer, const std::string &value) {
+void add(Buffer<T>* buffer, const std::string& value) {
     T result;
     std::istringstream stream(value);
     stream >> result;
@@ -289,7 +289,7 @@ void add(Buffer<T> *buffer, const std::string &value) {
 }
 // Specialization for float and double types, add NaN instead of throwing an error
 template <typename T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
-void add(Buffer<T> *buffer, const std::string &value) {
+void add(Buffer<T>* buffer, const std::string& value) {
     T result;
     std::istringstream stream(value);
     stream >> result;
@@ -303,19 +303,19 @@ void add(Buffer<T> *buffer, const std::string &value) {
 template <typename T,
           typename std::enable_if<!std::is_integral<T>::value && !std::is_floating_point<T>::value,
                                   int>::type = 0>
-void add(Buffer<T> * /*buffer*/, const std::string &value) {
+void add(Buffer<T>* /*buffer*/, const std::string& value) {
     throw InvalidConversion("conversion to target type not implemented (\"" + value + "\")");
 }
 
 }  // namespace detail
 
 template <typename T>
-void TemplateColumn<T>::add(const std::string &value) {
+void TemplateColumn<T>::add(const std::string& value) {
     detail::add<T>(buffer_.get(), value);
 }
 
 template <typename T>
-void TemplateColumn<T>::set(size_t idx, const T &value) {
+void TemplateColumn<T>::set(size_t idx, const T& value) {
     buffer_->getEditableRAMRepresentation()->set(idx, value);
 }
 
