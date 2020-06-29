@@ -1,13 +1,18 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
 ## 2020-06-26 Vcpkg support
-Most of our external dependencies can now provided by vcpkg. Just install the corresponding vcpkg package and set `IVW_USE_EXTERNAL_<package>` to `TRUE`
-`cmake/vcpkghelpers.cmake` provides functions for installing the vcpkg packages needed to create installers. 
-The following vcpkg packages can be install and used
+We now support using [vcpkg](https://github.com/microsoft/vcpkg) for handling external dependencies. The following packages from vcpkg can be used `assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib`.
+
+To install vcpkg and the dependencies in a directory of your choice (outside of inviwo) do: 
 ```cmd  
-> vcpkg.exe install assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib      
+> git clone https://github.com/Microsoft/vcpkg.git
+> cd vcpkg
+> vcpkg\bootstrap-vcpkg.bat
+> vcpkg.exe install --triplet x64-windows assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib      
 ``` 
-vcpkg and be installed from https://github.com/microsoft/vcpkg
+Then set the `CMAKE_TOOLCHAIN_FILE` to `<vcpkg-install-dir>/scripts/buildsystems/vcpkg.cmake` when configuring CMake. And set all the corresponding `IVW_USE_EXTERNAL_<package>` to `TRUE`.
+
+To help interact with vcpkg `cmake/vcpkghelpers.cmake` provides functions for installing the vcpkg packages needed to create installers (only windows so far).
 
 ## 2020-06-26 CMake refactor
 We have renamed many cmake options to make the naming more consistent and the options easier to find. But you might need to review your cmake settings when updating to make sure you have the correct settings. 

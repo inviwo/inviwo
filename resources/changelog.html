@@ -87,14 +87,17 @@
 <body >
 <h1>Latest Changes</h1>
 <h2>2020-06-26 Vcpkg support</h2>
-<p>Most of our external dependencies can now provided by vcpkg. Just install the corresponding vcpkg package and set <code>IVW_USE_EXTERNAL_&lt;package&gt;</code> to <code>TRUE</code><br />
-<code>cmake/vcpkghelpers.cmake</code> provides functions for installing the vcpkg packages needed to create installers. <br />
-The following vcpkg packages can be install and used</p>
-<div class="highlight"><pre><span></span>&gt; vcpkg.exe install assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib      
+<p>We now support using <a href="https://github.com/microsoft/vcpkg">vcpkg</a> for handling external dependencies. The following packages from vcpkg can be used <code>assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib</code>.</p>
+<p>To install vcpkg and the dependencies in a directory of your choice (outside of inviwo) do: </p>
+<div class="highlight"><pre><span></span>&gt; git clone https://github.com/Microsoft/vcpkg.git
+&gt; cd vcpkg
+&gt; vcpkg\bootstrap-vcpkg.bat
+&gt; vcpkg.exe install --triplet x64-windows assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib      
 </pre></div>
 
 
-<p>vcpkg and be installed from <a href="https://github.com/microsoft/vcpkg">https://github.com/microsoft/vcpkg</a></p>
+<p>Then set the <code>CMAKE_TOOLCHAIN_FILE</code> to <code>&lt;vcpkg-install-dir&gt;/scripts/buildsystems/vcpkg.cmake</code> when configuring CMake. And set all the corresponding <code>IVW_USE_EXTERNAL_&lt;package&gt;</code> to <code>TRUE</code>.</p>
+<p>To help interact with vcpkg <code>cmake/vcpkghelpers.cmake</code> provides functions for installing the vcpkg packages needed to create installers (only windows so far).</p>
 <h2>2020-06-26 CMake refactor</h2>
 <p>We have renamed many cmake options to make the naming more consistent and the options easier to find. But you might need to review your cmake settings when updating to make sure you have the correct settings. <br />
 We now group the cmake settings like this:</p>
