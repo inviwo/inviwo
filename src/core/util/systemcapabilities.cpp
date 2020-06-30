@@ -33,7 +33,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/filesystem.h>
-#ifdef IVW_SIGAR
+#ifdef IVW_USE_SIGAR
 #include <sigar/include/sigar.h>
 #endif
 
@@ -43,7 +43,7 @@
 namespace inviwo {
 
 SystemCapabilities::SystemCapabilities() {
-#ifdef IVW_SIGAR
+#ifdef IVW_USE_SIGAR
     sigar_open(&sigar_);
 #endif
     retrieveStaticInfo();
@@ -51,7 +51,7 @@ SystemCapabilities::SystemCapabilities() {
 }
 
 SystemCapabilities::~SystemCapabilities() {
-#ifdef IVW_SIGAR
+#ifdef IVW_USE_SIGAR
     sigar_close(sigar_);
 #endif
 }
@@ -71,7 +71,7 @@ void SystemCapabilities::retrieveDynamicInfo() {
 const util::BuildInfo& SystemCapabilities::getBuildInfo() const { return buildInfo_; }
 
 bool SystemCapabilities::lookupOSInfo() {
-#ifdef IVW_SIGAR
+#ifdef IVW_USE_SIGAR
     sigar_sys_info_t systeminfo;
     int status = sigar_sys_info_get(sigar_, &systeminfo);
 
@@ -95,7 +95,7 @@ bool SystemCapabilities::lookupOSInfo() {
 
 bool SystemCapabilities::lookupCPUInfo() {
     infoCPUs_.clear();
-#ifdef IVW_SIGAR
+#ifdef IVW_USE_SIGAR
     sigar_cpu_info_list_t cpulinfolist;
     int status = sigar_cpu_info_list_get(sigar_, &cpulinfolist);
     bool success = (status == SIGAR_OK);
@@ -119,7 +119,7 @@ bool SystemCapabilities::lookupCPUInfo() {
 }
 
 bool SystemCapabilities::lookupMemoryInfo() {
-#ifdef IVW_SIGAR
+#ifdef IVW_USE_SIGAR
     sigar_mem_t meminfo;
     if (sigar_mem_get(sigar_, &meminfo) == SIGAR_OK) {
         infoRAM_.total = util::megabytes_to_bytes(static_cast<size_t>(meminfo.ram));
@@ -135,7 +135,7 @@ bool SystemCapabilities::lookupMemoryInfo() {
 
 bool SystemCapabilities::lookupDiskInfo() {
     infoDisks_.clear();
-#ifdef IVW_SIGAR
+#ifdef IVW_USE_SIGAR
     sigar_file_system_list_t diskinfolist;
     sigar_file_system_usage_t diskusageinfo;
     int status = sigar_file_system_list_get(sigar_, &diskinfolist);
@@ -172,7 +172,7 @@ bool SystemCapabilities::lookupDiskInfo() {
 }
 
 bool SystemCapabilities::lookupProcessMemoryInfo() {
-#ifdef IVW_SIGAR
+#ifdef IVW_USE_SIGAR
     sigar_proc_mem_t meminfo;
 
     if (sigar_proc_mem_get(sigar_, sigar_pid_get(sigar_), &meminfo) == SIGAR_OK) {

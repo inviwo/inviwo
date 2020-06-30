@@ -75,7 +75,7 @@ target_include_directories(sigar PUBLIC
     $<INSTALL_INTERFACE:include/ext/sigar>
 )
 
-target_compile_definitions(sigar PUBLIC IVW_SIGAR)
+target_compile_definitions(sigar PUBLIC IVW_USE_SIGAR)
 
 ## linux
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")

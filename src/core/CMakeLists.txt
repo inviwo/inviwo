@@ -745,6 +745,10 @@ target_include_directories(inviwo-core PUBLIC
 find_package(fmt REQUIRED)
 find_package(glm REQUIRED)
 find_package(tclap REQUIRED)
+if(APPLE)
+   find_library(CORESERVICES_LIBRARY CoreServices)
+endif()
+
 target_compile_definitions(glm INTERFACE
     GLM_FORCE_SIZE_T_LENGTH
     GLM_ENABLE_EXPERIMENTAL
@@ -765,17 +769,12 @@ target_link_libraries(inviwo-core
         fmt::fmt
         $<$<BOOL:${IVW_USE_OPENMP}>:OpenMP::OpenMP_CXX>
     PRIVATE
-        $<$<BOOL:${IVW_SIGAR}>:inviwo::sigar>
+        $<$<BOOL:${IVW_USE_SIGAR}>:inviwo::sigar>
         $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
         $<$<BOOL:${WIN32}>:inviwo::stackwalker>
+        $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
         inviwo::tinydir
 )
-
-if(APPLE)
-   find_library(CORESERVICES_LIBRARY CoreServices)
-   mark_as_advanced(CORESERVICES_LIBRARY)
-   target_link_libraries(inviwo-core PRIVATE ${CORESERVICES_LIBRARY})
-endif (APPLE)
 
 #Optimize compiliation with PCH etc
 ivw_compile_optimize_on_target(inviwo-core)
