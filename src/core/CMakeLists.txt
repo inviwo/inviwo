@@ -728,11 +728,12 @@ ivw_define_standard_definitions(inviwo-core inviwo-core)
 ivw_define_standard_properties(inviwo-core)
 
 # Special Core Defines
-target_compile_definitions(inviwo-core PRIVATE
-    -DCMAKE_BUILD_TYPE=\"$<CONFIG>\"
-    -DCMAKE_GENERATOR=\"${CMAKE_GENERATOR}\"
-    -DCMAKE_CXX_COMPILER_ID=\"${CMAKE_CXX_COMPILER_ID}\"
-    -DCMAKE_CXX_COMPILER_VERSION=\"${CMAKE_CXX_COMPILER_VERSION}\"
+target_compile_definitions(inviwo-core 
+    PRIVATE
+        -DCMAKE_BUILD_TYPE=\"$<CONFIG>\"
+        -DCMAKE_GENERATOR=\"${CMAKE_GENERATOR}\"
+        -DCMAKE_CXX_COMPILER_ID=\"${CMAKE_CXX_COMPILER_ID}\"
+        -DCMAKE_CXX_COMPILER_VERSION=\"${CMAKE_CXX_COMPILER_VERSION}\"
 )
 
 # Add core folders to includes, this will also be picked up by all the modules
@@ -749,11 +750,12 @@ if(APPLE)
    find_library(CORESERVICES_LIBRARY CoreServices)
 endif()
 
-target_compile_definitions(glm INTERFACE
-    GLM_FORCE_SIZE_T_LENGTH
-    GLM_ENABLE_EXPERIMENTAL
-    GLM_FORCE_UNRESTRICTED_GENTYPE
-    GLM_FORCE_SILENT_WARNINGS
+target_compile_definitions(inviwo-core 
+    PUBLIC
+        GLM_FORCE_SIZE_T_LENGTH
+        GLM_ENABLE_EXPERIMENTAL
+        GLM_FORCE_UNRESTRICTED_GENTYPE
+        GLM_FORCE_SILENT_WARNINGS
 )
 
 target_link_libraries(inviwo-core 

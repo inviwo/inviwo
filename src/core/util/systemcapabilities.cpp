@@ -34,7 +34,7 @@
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/filesystem.h>
 #ifdef IVW_USE_SIGAR
-#include <sigar/include/sigar.h>
+#include <sigar.h>
 #endif
 
 #include <sstream>

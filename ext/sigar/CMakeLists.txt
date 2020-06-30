@@ -72,7 +72,7 @@ set_target_properties(sigar PROPERTIES VERSION 1.6.4 SOVERSION 1.6)
 
 target_include_directories(sigar PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include/ext/sigar>
+    $<INSTALL_INTERFACE:include>
 )
 
 target_compile_definitions(sigar PUBLIC IVW_USE_SIGAR)
