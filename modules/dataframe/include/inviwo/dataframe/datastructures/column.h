@@ -231,6 +231,13 @@ public:
      */
     const std::vector<std::string>& getCategories() const { return lookUpTable_; }
 
+    /**
+     * \brief add a category \p cat. It will not be added if the category already exists.
+     *
+     * @return index of the category
+     */
+    std::uint32_t addCategory(const std::string& cat);
+
 private:
     virtual glm::uint32_t addOrGetID(const std::string& str);
 

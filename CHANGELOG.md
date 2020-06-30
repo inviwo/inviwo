@@ -1,7 +1,9 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
-## 2020-06-26 DataFrame utils
+## 2020-06-30 DataFrame
 Moved DataFrame utils files to `dataframe/util/dataframeutil.h` (previously `dataframe/datastructures/dataframeutil.h`).
+
+Added utility functions for joining two DataFrames: appendRows, appendColumns, innerJoin.
 
 ## 2020-06-26 Vcpkg support
 We now support using [vcpkg](https://github.com/microsoft/vcpkg) for handling external dependencies. The following packages from vcpkg can be used `assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib`.
