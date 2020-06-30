@@ -190,10 +190,10 @@ class IVW_MODULE_DATAFRAME_API CategoricalColumn : public TemplateColumn<std::ui
 public:
     CategoricalColumn(const std::string& header);
     CategoricalColumn(const CategoricalColumn& rhs) = default;
-    CategoricalColumn(CategoricalColumn&& rhs) = default;
+    CategoricalColumn(CategoricalColumn&& rhs) noexcept = default;
 
     CategoricalColumn& operator=(const CategoricalColumn& rhs) = default;
-    CategoricalColumn& operator=(CategoricalColumn&& rhs) = default;
+    CategoricalColumn& operator=(CategoricalColumn&& rhs) noexcept = default;
 
     virtual CategoricalColumn* clone() const override;
 
@@ -230,6 +230,13 @@ public:
      * Returns the unique set of categorical values.
      */
     const std::vector<std::string>& getCategories() const { return lookUpTable_; }
+
+    /**
+     * \brief add a category \p cat. It will not be added if the category already exists.
+     *
+     * @return index of the category
+     */
+    std::uint32_t addCategory(const std::string& cat);
 
 private:
     virtual glm::uint32_t addOrGetID(const std::string& str);

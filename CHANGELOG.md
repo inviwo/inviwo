@@ -1,7 +1,9 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
-## 2020-06-26 DataFrame utils
+## 2020-06-26 DataFrame
 Renamed `dataframeutil` namespace to `dataframeutils` and moved file to `dataframe/util/dataframeutils.h` (previously `dataframe/datastructures/dataframeutil.h`).
+
+Added utility functions for joining two DataFrames: appendRows, appendColumns, innerJoin.
 
 ## 2020-06-16 StipplingProperty now in BaseGL
 Moved StipplingProperty and associated settings from Base module to BaseGL.

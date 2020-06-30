@@ -46,9 +46,49 @@ void IVW_MODULE_DATAFRAME_API copyBufferRange(std::shared_ptr<const BufferBase> 
                                               std::shared_ptr<BufferBase> dst, ivec2 range,
                                               size_t dstStart = 0);
 
+/**
+ * \brief create a new DataFrame by appending the columns of DataFrame \p right to DataFrame \p left
+ *
+ * @param ignoreDuplicates duplicate columns, i.e. same column header, are ignored if true
+ * @param fillMissingRows  if true, missing rows in either DataFrame are filled with 0 or
+ *                         "undefined" (for categorical columns)
+ * @return joined DataFrame with columns from \p left and \p right DataFrame
+ * @throws Exception if number of rows is different and \p fillMissingRows is false
+ */
+std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API appendColumns(const DataFrame& left,
+                                                                  const DataFrame& right,
+                                                                  bool ignoreDuplicates = false,
+                                                                  bool fillMissingRows = false);
+
+/**
+ * \brief create a new DataFrame by appending the rows of DataFrame \p bottom to DataFrame \p top
+ *
+ * @param matchByName    if true, column headers are used for matching columns. Otherwise columns
+ *                       are matched by order (default)
+ * @return joined DataFrame with columns from \p left and \p right DataFrame
+ * @throws Exception if number of columns is different or a column cannot be found (matchByName)
+ */
+std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API appendRows(const DataFrame& top,
+                                                               const DataFrame& bottom,
+                                                               bool matchByName = false);
+
+/**
+ * \brief create a new DataFrame by using an inner join of DataFrame \p left and DataFrame \p right.
+ * That is only rows with matching keys are kept.
+ *
+ * It is assumed that the entries in the key columns are unique. Otherwise results are undefined.
+ *
+ * @param keyColumn   header of the column used as key for the join operation (default: index column)
+ * @return inner join of \p left and \p right DataFrame
+ * @throws Exception if keyColumn does not exist in either \p left or \p right
+ */
+std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API innerJoin(const DataFrame& left,
+                                                              const DataFrame& right,
+                                                              const std::string& keyColumn = "index");
+
 std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
-combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataframes,
-                  bool skipIndexColumn = false, std::string skipcol = "index");
+combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataframes, bool skipIndexColumn = false,
+                  std::string skipcol = "index");
 
 std::string IVW_MODULE_DATAFRAME_API createToolTipForRow(const DataFrame& dataframe, size_t rowId);
 
