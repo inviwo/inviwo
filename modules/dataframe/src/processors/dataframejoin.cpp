@@ -30,7 +30,7 @@
 #include <inviwo/dataframe/processors/dataframejoin.h>
 
 #include <inviwo/dataframe/datastructures/column.h>
-#include <inviwo/dataframe/util/dataframeutils.h>
+#include <inviwo/dataframe/util/dataframeutil.h>
 
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/zip.h>
@@ -87,15 +87,15 @@ void DataFrameJoin::process() {
     switch (join_) {
         case JoinType::AppendColumns:
             dataframe =
-                dataframeutils::appendColumns(*inportLeft_.getData(), *inportRight_.getData(),
+                dataframeutil::appendColumns(*inportLeft_.getData(), *inportRight_.getData(),
                                               ignoreDuplicateCols_, fillMissingRows_);
             break;
         case JoinType::AppendRows:
-            dataframe = dataframeutils::appendRows(*inportLeft_.getData(), *inportRight_.getData(),
+            dataframe = dataframeutil::appendRows(*inportLeft_.getData(), *inportRight_.getData(),
                                                    columnMatching_ == ColumnMatch::ByName);
             break;
         case JoinType::Inner:
-            dataframe = dataframeutils::innerJoin(*inportLeft_.getData(), *inportRight_.getData(),
+            dataframe = dataframeutil::innerJoin(*inportLeft_.getData(), *inportRight_.getData(),
                                                   key_.getColumnHeader());
             break;
         default:

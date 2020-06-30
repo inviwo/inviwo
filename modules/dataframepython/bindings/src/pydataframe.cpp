@@ -39,7 +39,7 @@
 #include <inviwo/dataframe/datastructures/column.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/dataframe/datastructures/datapoint.h>
-#include <inviwo/dataframe/util/dataframeutils.h>
+#include <inviwo/dataframe/util/dataframeutil.h>
 
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
@@ -206,7 +206,7 @@ Parameters
 exampleRows     Rows for guessing data type of each column.
 colHeaders      Name of each column. If none are given, "Column 1", "Column 2", ... is used
 )delim")
-        .def("appendColumns", dataframeutils::appendColumns, py::arg("left"), py::arg("right"),
+        .def("appendColumns", dataframeutil::appendColumns, py::arg("left"), py::arg("right"),
              py::arg("ignoreduplicates") = false, py::arg("fillmissingrows") = false,
              R"delim(
 Create a new DataFrame by appending the columns of DataFrame right to DataFrame left
@@ -217,7 +217,7 @@ ignoreduplicates   duplicate columns, i.e. same column header, are ignored if tr
 fillmissingrows    if true, missing rows in either DataFrame are filled with 0 or
                    "undefined" (for categorical columns)
 )delim")
-        .def("appendRows", dataframeutils::appendRows, py::arg("top"), py::arg("bottom"),
+        .def("appendRows", dataframeutil::appendRows, py::arg("top"), py::arg("bottom"),
              py::arg("matchbyname") = false,
              R"delim(
 Create a new DataFrame by appending the rows of DataFrame bottom to DataFrame top
@@ -227,7 +227,7 @@ Parameters
 matchByName    if true, column headers are used for matching columns. Otherwise columns
                are matched by order (default)
 )delim")
-        .def("innerJoin", dataframeutils::innerJoin, py::arg("left"), py::arg("right"),
+        .def("innerJoin", dataframeutil::innerJoin, py::arg("left"), py::arg("right"),
              py::arg("keycolumn") = "index",
              R"delim(
 Create a new DataFrame by using an inner join of DataFrame left and DataFrame right.

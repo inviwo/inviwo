@@ -77,7 +77,7 @@ void copyBufferRange(std::shared_ptr<const BufferBase> src, std::shared_ptr<Buff
         });
     } else {
         throw Exception("Data Formats needs to be of same type",
-                        IVW_CONTEXT_CUSTOM("dataframeutils::copyBufferRange"));
+                        IVW_CONTEXT_CUSTOM("dataframeutil::copyBufferRange"));
     }
 }
 
@@ -86,7 +86,7 @@ std::shared_ptr<DataFrame> appendColumns(const DataFrame& left, const DataFrame&
     if (!fillMissingRows && (left.getNumberOfRows() != right.getNumberOfRows())) {
         throw Exception(fmt::format("Row counts are different (top: {}, bottom: {})",
                                     left.getNumberOfRows(), right.getNumberOfRows()),
-                        IVW_CONTEXT_CUSTOM("dataframeutils::appendColumns"));
+                        IVW_CONTEXT_CUSTOM("dataframeutil::appendColumns"));
     }
 
     auto dataframe = std::make_shared<DataFrame>(left);
@@ -130,7 +130,7 @@ std::shared_ptr<DataFrame> appendRows(const DataFrame& top, const DataFrame& bot
     if (top.getNumberOfColumns() != bottom.getNumberOfColumns()) {
         throw Exception(fmt::format("Column counts are different (top: {}, bottom: {})",
                                     top.getNumberOfColumns(), bottom.getNumberOfColumns()),
-                        IVW_CONTEXT_CUSTOM("dataframeutils::appendRows"));
+                        IVW_CONTEXT_CUSTOM("dataframeutil::appendRows"));
     }
 
     auto dataframe = std::make_shared<DataFrame>(top);
@@ -141,7 +141,7 @@ std::shared_ptr<DataFrame> appendRows(const DataFrame& top, const DataFrame& bot
             } else {
                 throw Exception(
                     fmt::format("column '{}' not found in top DataFrame", srcCol->getHeader()),
-                    IVW_CONTEXT_CUSTOM("dataframeutils::appendRows"));
+                    IVW_CONTEXT_CUSTOM("dataframeutil::appendRows"));
             }
         }
     } else {
@@ -160,7 +160,7 @@ std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& rig
     auto indexCol2 = right.getColumn(keyColumn);
     if (!indexCol1 || !indexCol2) {
         throw Exception(fmt::format("key column '{}' missing", keyColumn),
-                        IVW_CONTEXT_CUSTOM("dataframeutils::innerJoin"));
+                        IVW_CONTEXT_CUSTOM("dataframeutil::innerJoin"));
     }
 
     if (indexCol1->getBuffer()->getDataFormat()->getId() !=
@@ -168,7 +168,7 @@ std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& rig
         throw Exception(fmt::format("format mismatch in key columns '{}': left = {}, right = {}",
                                     keyColumn, indexCol1->getBuffer()->getDataFormat()->getString(),
                                     indexCol2->getBuffer()->getDataFormat()->getString()),
-                        IVW_CONTEXT_CUSTOM("dataframeutils::innerJoin"));
+                        IVW_CONTEXT_CUSTOM("dataframeutil::innerJoin"));
     }
 
     // locate matching rows and determine row indices
@@ -226,7 +226,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
                                              bool skipIndexColumn, std::string skipcol) {
     if (dataFrames.empty()) {
         throw Exception("DataFrames vector is empty",
-                        IVW_CONTEXT_CUSTOM("dataframeutils::combineDataFrames"));
+                        IVW_CONTEXT_CUSTOM("dataframeutil::combineDataFrames"));
     }
     if (dataFrames.size() == 1) {  // just one df, clone it;
         return std::make_shared<DataFrame>(*dataFrames.front().get());
@@ -239,7 +239,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
 
     if (newSize == 0) {
         throw Exception("All input DataFrames are empty",
-                        IVW_CONTEXT_CUSTOM("dataframeutils::combineDataFrames"));
+                        IVW_CONTEXT_CUSTOM("dataframeutil::combineDataFrames"));
     }
 
     auto first = *dataFrames.front();
@@ -260,7 +260,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
                         fmt::format("Column {} did not exist in first DataFrame but in at least "
                                     "one of the others",
                                     col->getHeader()),
-                        IVW_CONTEXT_CUSTOM("dataframeutils::combineDataFrames"));
+                        IVW_CONTEXT_CUSTOM("dataframeutil::combineDataFrames"));
                 }
                 if (it->second != col->getBuffer()->getDataFormat()) {
                     if (it == columnType.end()) {
@@ -268,7 +268,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
                             fmt::format("Column {} has different format in DataFrames ({}, {})",
                                         col->getHeader(), it->second->getString(),
                                         col->getBuffer()->getDataFormat()->getSize()),
-                            IVW_CONTEXT_CUSTOM("dataframeutils::combineDataFrames"));
+                            IVW_CONTEXT_CUSTOM("dataframeutil::combineDataFrames"));
                     }
                 }
             }
