@@ -154,7 +154,7 @@ TEST(AppendColumns, Contents) {
     right.updateIndexBuffer();
 
     auto dataframe = dataframeutils::appendColumns(left, right, false, false);
-   
+
     checkColumnContents<int>(*dataframe->getColumn("int"), {1, 2});
     checkColumnContents<float>(*dataframe->getColumn("float"), {3.0f, 4.0f});
 }
@@ -230,7 +230,7 @@ TEST(InnerJoin, ByCustomColumn) {
     right.updateIndexBuffer();
 
     EXPECT_THROW(dataframeutils::innerJoin(left, right, "int"), Exception);
-    
+
     right.getColumn("int2")->setHeader("int");
 
     auto dataframe = dataframeutils::innerJoin(left, right, "int");

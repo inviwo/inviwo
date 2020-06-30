@@ -120,7 +120,7 @@ TEST(DataFrameTests, AddColumnFromBuffer) {
 
 TEST(DataFrameTests, RowAccess) {
     const size_t rowIndex = 1;
-    
+
     auto buffer = util::makeBuffer(std::vector<float>{1.0f, 2.0f, 3.0f});
 
     DataFrame dataframe;
@@ -133,7 +133,7 @@ TEST(DataFrameTests, RowAccess) {
 
     const size_t numCols = dataframe.getNumberOfColumns();
     ASSERT_EQ(3, dataframe.getNumberOfRows()) << "Incorrect number of rows";
-        
+
     auto rowValues = dataframe.getDataItem(rowIndex);
     EXPECT_EQ(numCols, rowValues.size()) << "DataFrame::DataItem size incorrect";
 
@@ -161,4 +161,4 @@ TEST(DataFrameTests, RowAccess) {
     }
 }
 
-}  // namespace inviwo 
+}  // namespace inviwo

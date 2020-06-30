@@ -65,10 +65,7 @@ public:
         AppendRows,
         Inner,
     };
-    enum class ColumnMatch {
-        ByName,
-        Ordered
-    };
+    enum class ColumnMatch { ByName, Ordered };
 
     DataFrameJoin();
     virtual ~DataFrameJoin() = default;

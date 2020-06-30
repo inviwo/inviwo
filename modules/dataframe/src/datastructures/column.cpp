@@ -92,9 +92,7 @@ void CategoricalColumn::append(const Column& col) {
     }
 }
 
-std::uint32_t CategoricalColumn::addCategory(const std::string& cat) {
-    return addOrGetID(cat);
-}
+std::uint32_t CategoricalColumn::addCategory(const std::string& cat) { return addOrGetID(cat); }
 
 glm::uint32_t CategoricalColumn::addOrGetID(const std::string& str) {
     auto it = std::find(lookUpTable_.begin(), lookUpTable_.end(), str);

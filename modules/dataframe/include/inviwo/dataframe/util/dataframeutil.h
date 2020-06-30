@@ -78,13 +78,13 @@ std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API appendRows(const DataFrame& 
  *
  * It is assumed that the entries in the key columns are unique. Otherwise results are undefined.
  *
- * @param keyColumn   header of the column used as key for the join operation (default: index column)
+ * @param keyColumn   header of the column used as key for the join operation (default: index
+ * column)
  * @return inner join of \p left and \p right DataFrame
  * @throws Exception if keyColumn does not exist in either \p left or \p right
  */
-std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API innerJoin(const DataFrame& left,
-                                                              const DataFrame& right,
-                                                              const std::string& keyColumn = "index");
+std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
+innerJoin(const DataFrame& left, const DataFrame& right, const std::string& keyColumn = "index");
 
 std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
 combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataframes, bool skipIndexColumn = false,
