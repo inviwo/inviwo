@@ -63,7 +63,9 @@ ivw_group("Shader Files" ${SHADER_FILES})
 set(TEST_FILES
     tests/unittests/column-test.cpp
     tests/unittests/csvreader-test.cpp
+    tests/unittests/dataframe-test.cpp
     tests/unittests/dataframe-unittest-main.cpp
+    tests/unittests/join-test.cpp
     tests/unittests/jsonreader-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})

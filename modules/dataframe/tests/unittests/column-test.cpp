@@ -46,7 +46,7 @@ namespace inviwo {
 
 namespace {
 
-struct CreateColumnScript {
+struct CreateColumn {
     template <typename T>
     auto operator()() {
         auto classname = Defaultvalues<T>::getName();
@@ -67,7 +67,7 @@ struct CreateColumnScript {
 TEST(ColumnTests, Create) {
     using Scalars = std::tuple<float, double, int, glm::i64, size_t, std::uint32_t>;
 
-    util::for_each_type<Scalars>{}(CreateColumnScript{});
+    util::for_each_type<Scalars>{}(CreateColumn{});
 }
 
 TEST(ColumnTests, CategoricalColumn) {
