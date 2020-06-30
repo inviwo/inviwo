@@ -1,5 +1,39 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2020-06-26 Vcpkg support
+We now support using [vcpkg](https://github.com/microsoft/vcpkg) for handling external dependencies. The following packages from vcpkg can be used `assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib`.
+
+To install vcpkg and the dependencies in a directory of your choice (outside of inviwo) do: 
+```cmd  
+> git clone https://github.com/Microsoft/vcpkg.git
+> cd vcpkg
+> vcpkg\bootstrap-vcpkg.bat
+> vcpkg.exe install --triplet x64-windows assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib      
+``` 
+Then set the `CMAKE_TOOLCHAIN_FILE` to `<vcpkg-install-dir>/scripts/buildsystems/vcpkg.cmake` when configuring CMake. And set all the corresponding `IVW_USE_EXTERNAL_<package>` to `TRUE`.
+
+To help interact with vcpkg `cmake/vcpkghelpers.cmake` provides functions for installing the vcpkg packages needed to create installers (only windows so far).
+
+## 2020-06-26 CMake refactor
+We have renamed many cmake options to make the naming more consistent and the options easier to find. But you might need to review your cmake settings when updating to make sure you have the correct settings. 
+We now group the cmake settings like this:
+
+ - `IVW_APP_*` Enable disable building various apps
+ - `IVV_CFG_*` All configuration options, like  PRECOMPILED_HEADERS and PROFILING
+ - `IVW_DOXYGEN_*` Doxygen options
+ - `IVW_EXTERNAL_*` Add external modules / projects
+ - `IVW_MODULE_*` enable/disable modules
+ - `IVW_PACKAGE_*` options for installing/creating installers
+ - `IVW_TEST_*` option for unit test, integration test, regressions test.
+ - `IVW_USE_*` options for enabling/disabling some libraries / tools (sigar, openmp, openexr)
+ - `IVW_USE_EXTERNAL_*` enable/disable building various dependences. if off then dependences must be provided externally
+
+Notable changes include:
+
+ - `PRECOMPILED_HEADERS -> IVW_CFG_PRECOMPILED_HEADERS`
+ - `IVW_PROFILING -> IVW_CFG_PROFILING`
+ - `IVW_OPENMP_ON -> IVW_USE_OPENMP`
+
 ## 2020-06-16 StipplingProperty now in BaseGL
 Moved StipplingProperty and associated settings from Base module to BaseGL.
 

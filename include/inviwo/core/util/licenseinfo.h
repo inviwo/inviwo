@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LICENSEINFO_H
-#define IVW_LICENSEINFO_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/version.h>
 
 #include <string>
 #include <vector>
@@ -40,14 +38,13 @@ namespace inviwo {
 
 class IVW_CORE_API LicenseInfo {
 public:
-    LicenseInfo(const std::string& id, const std::string& name, const Version& version,
+    LicenseInfo(const std::string& id, const std::string& name, const std::string& version,
                 const std::string& url, const std::string& module, const std::string& type,
                 const std::vector<std::string>& files);
-    ~LicenseInfo() = default;
 
     const std::string id;
     const std::string name;
-    const Version version;
+    const std::string version;
     const std::string url;
     const std::string module;
     const std::string type;
@@ -55,5 +52,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LICENSEINFO_H

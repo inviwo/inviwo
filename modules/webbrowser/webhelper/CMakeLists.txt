@@ -139,7 +139,7 @@ if (OS_MACOSX)
         # Copy the helper app bundle into the Frameworks directory (used by installer)
         install(DIRECTORY "${_helper_app}"
             DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/${_helper_output_name}.app"
-            COMPONENT inviwo-module-webbrowser)
+            COMPONENT Application)
 
         set_target_properties(${_helper_target} PROPERTIES
             MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/mac/helper-Info.plist
@@ -151,8 +151,8 @@ elseif (WIN32)
 	#ADD_WINDOWS_CEF_MANIFEST("${CEF_TARGET_OUT_DIR}" "${WEBBROWSER_MODULE_PATH}" "${CEF_HELPER_TARGET}" "exe")
 
 	# Copy helper executable into the bin directory (used by installer)
-	install(TARGETS ${CEF_HELPER_TARGET} RUNTIME DESTINATION "${IVW_RUNTIME_INSTALL_DIR}" COMPONENT inviwo-module-webbrowser)
+	install(TARGETS ${CEF_HELPER_TARGET} RUNTIME DESTINATION "${IVW_RUNTIME_INSTALL_DIR}" COMPONENT Application)
 else () # Linux
 	# Copy helper executable into the bin directory (used by installer)
-	install(TARGETS ${CEF_HELPER_TARGET} RUNTIME DESTINATION "${IVW_RUNTIME_INSTALL_DIR}" COMPONENT inviwo-module-webbrowser)
+	install(TARGETS ${CEF_HELPER_TARGET} RUNTIME DESTINATION "${IVW_RUNTIME_INSTALL_DIR}" COMPONENT Application)
 endif()

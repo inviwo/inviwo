@@ -1,9 +1,5 @@
 #--------------------------------------------------------------------
 # Sigar Library
-option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
-if(NOT IVW_SIGAR)
-    return()
-endif()
 
 project(sigar)
 
@@ -76,10 +72,10 @@ set_target_properties(sigar PROPERTIES VERSION 1.6.4 SOVERSION 1.6)
 
 target_include_directories(sigar PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include/ext/sigar>
+    $<INSTALL_INTERFACE:include>
 )
 
-target_compile_definitions(sigar PUBLIC IVW_SIGAR)
+target_compile_definitions(sigar PUBLIC IVW_USE_SIGAR)
 
 ## linux
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -118,7 +114,7 @@ ivw_folder(sigar ext)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_default_install_comp_targets(core sigar)
+ivw_default_install_targets(sigar)
 ivw_make_package(Sigar sigar)
 
 ivw_suppress_compiler_warnings(sigar)

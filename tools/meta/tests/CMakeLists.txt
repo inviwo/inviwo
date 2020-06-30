@@ -11,8 +11,13 @@ set(tests
 ivw_group("Test Files" BASE . ${tests})
 
 add_executable(inviwo-meta-unittests ${tests})
-target_link_libraries(inviwo-meta-unittests PUBLIC inviwo::meta)
-target_link_libraries(inviwo-meta-unittests PUBLIC gtest)
+
+find_package(GTest CONFIG REQUIRED)
+target_link_libraries(inviwo-meta-unittests 
+    PUBLIC
+        inviwo::meta
+        GTest::gtest
+)
 
 if(MSVC)
     target_compile_options(inviwo-meta-unittests PRIVATE /W4 /utf-8 /permissive- /diagnostics:caret)

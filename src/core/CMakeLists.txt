@@ -1,9 +1,6 @@
-#--------------------------------------------------------------------
 # Inviwo Core
 project(inviwo-core)
 
-#--------------------------------------------------------------------
-# Add header files
 set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/boundingbox.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/camerautils.h
@@ -366,8 +363,6 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" BASE "${IVW_INCLUDE_DIR}/inviwo/core" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
-# Add source files
 set(SOURCE_FILES
     algorithm/boundingbox.cpp
     algorithm/camerautils.cpp
@@ -660,7 +655,9 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # include implementation for build info - the build info will be
 # updated during every compilation
-if(IVW_EMBED_BUILDINFO)
+
+option(IVW_CFG_EMBED_BUILDINFO "Embed buildinfo into the binary file instead of using a ini file, will force inviwo-core to recompile every build" OFF)
+if(IVW_CFG_EMBED_BUILDINFO)
     list(APPEND SOURCE_FILES "${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp")
     ivw_group("Source Files" BASE "${CMAKE_CURRENT_BINARY_DIR}/src/"
         "${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp")
@@ -716,7 +713,6 @@ source_group("CMake Files" FILES ${cmake_files})
 # Special Core Defines
 remove_definitions(-DHAVE_CONFIG_H)
 
-#--------------------------------------------------------------------
 # Create library
 add_library(inviwo-core 
     ${SOURCE_FILES} ${HEADER_FILES} ${GEN_FILES}
@@ -725,196 +721,88 @@ add_library(inviwo-core
 )
 add_library(inviwo::core ALIAS inviwo-core)
 
-#--------------------------------------------------------------------
 # Define standard defintions
 ivw_define_standard_definitions(inviwo-core inviwo-core)
 ivw_define_standard_properties(inviwo-core)
 
 # Special Core Defines
-target_compile_definitions(inviwo-core PRIVATE
-    -DCMAKE_BUILD_TYPE=\"$<CONFIG>\"
-    -DCMAKE_GENERATOR=\"${CMAKE_GENERATOR}\"
-    -DCMAKE_CXX_COMPILER_ID=\"${CMAKE_CXX_COMPILER_ID}\"
-    -DCMAKE_CXX_COMPILER_VERSION=\"${CMAKE_CXX_COMPILER_VERSION}\"
+target_compile_definitions(inviwo-core 
+    PRIVATE
+        -DCMAKE_BUILD_TYPE=\"$<CONFIG>\"
+        -DCMAKE_GENERATOR=\"${CMAKE_GENERATOR}\"
+        -DCMAKE_CXX_COMPILER_ID=\"${CMAKE_CXX_COMPILER_ID}\"
+        -DCMAKE_CXX_COMPILER_VERSION=\"${CMAKE_CXX_COMPILER_VERSION}\"
 )
 
-#--------------------------------------------------------------------
 # Add core folders to includes, this will also be picked up by all the modules
 target_include_directories(inviwo-core PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
     $<BUILD_INTERFACE:${IVW_INCLUDE_DIR}>
-    $<BUILD_INTERFACE:${IVW_EXTENSIONS_DIR}> #Should we use this one?!?"
 )
 
 # Add core dependencies to this list
+find_package(fmt REQUIRED)
+find_package(glm REQUIRED)
+find_package(tclap REQUIRED)
+if(APPLE)
+   find_library(CORESERVICES_LIBRARY CoreServices)
+endif()
+
+target_compile_definitions(inviwo-core 
+    PUBLIC
+        GLM_FORCE_SIZE_T_LENGTH
+        GLM_ENABLE_EXPERIMENTAL
+        GLM_FORCE_UNRESTRICTED_GENTYPE
+        GLM_FORCE_SILENT_WARNINGS
+)
+
 target_link_libraries(inviwo-core 
     PUBLIC
         ticpp
-        inviwo::glm
+        glm
         inviwo::tclap
         inviwo::warn
         inviwo::sml
         inviwo::span
+        inviwo::half
+        inviwo::flags
         fmt::fmt
-        $<$<BOOL:${IVW_OPENMP_ON}>:OpenMP::OpenMP_CXX>
+        $<$<BOOL:${IVW_USE_OPENMP}>:OpenMP::OpenMP_CXX>
     PRIVATE
-        $<$<BOOL:${IVW_SIGAR}>:inviwo::sigar>
+        $<$<BOOL:${IVW_USE_SIGAR}>:inviwo::sigar>
         $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
         $<$<BOOL:${WIN32}>:inviwo::stackwalker>
+        $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
         inviwo::tinydir
 )
-
-if(APPLE)
-   find_library(CORESERVICES_LIBRARY CoreServices)
-   mark_as_advanced(CORESERVICES_LIBRARY)
-   target_link_libraries(inviwo-core PRIVATE ${CORESERVICES_LIBRARY})
-endif (APPLE)
 
 #Optimize compiliation with PCH etc
 ivw_compile_optimize_on_target(inviwo-core)
 
-#--------------------------------------------------------------------
 # Make package (for other projects to find)
 ivw_default_install_targets(inviwo-core)
 ivw_make_package(InviwoCore inviwo-core)
+ivw_make_unittest_target(core inviwo-core)
 
-if(IVW_UNITTESTS)
-    ivw_make_unittest_target(core inviwo-core)
-endif()
+get_property(core_install_list TARGET inviwo-core PROPERTY IVW_INSTALL_LIST)
+get_property(ext_install_list DIRECTORY ${IVW_ROOT_DIR}/ext PROPERTY IVW_INSTALL_LIST)
+list(APPEND core_install_list ${ext_install_list})
+set_property(TARGET inviwo-core PROPERTY IVW_INSTALL_LIST ${core_install_list})
 
-#--------------------------------------------------------------------
 # register license files
 ivw_register_license_file(NAME "Inviwo" MODULE Core
     URL http://www.inviwo.org
     TYPE "The MIT License"
     FILES ${IVW_ROOT_DIR}/LICENSE
 )
-
-ivw_register_license_file(NAME "Flags" MODULE Core
-    URL "http://grisumbras.github.io/enum-flags/"
-    TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/flags/LICENSE
-)
-
-ivw_register_license_file(NAME "{fmt}" target fmt MODULE Core
-    URL "https://github.com/fmtlib/fmt"
-    TYPE "TBSD 2-Clause"
-    FILES  ${IVW_EXTENSIONS_DIR}/fmt/fmt/LICENSE.rst
-)
-
-ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" VERSION 0.9.9.3 MODULE Core
-    URL "https://glm.g-truc.net"
-    TYPE "The MIT License"
-    FILES  ${IVW_EXTENSIONS_DIR}/glm/LICENSE
-)
-
-ivw_register_license_file(NAME "half" TARGET half MODULE Core
-    URL "http://half.sourceforge.net"
-    TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE.txt
-)
-
-if(TARGET inviwo::sigar)
-    ivw_register_license_file(NAME "Sigar" TARGET inviwo::sigar MODULE Core
-        URL "http://sigar.hyperic.com"
-        TYPE "Apache License"
-        FILES ${IVW_EXTENSIONS_DIR}/sigar/LICENSE
-    )
-endif()
-
-if (TARGET inviwo::stackwalker)
-    ivw_register_license_file(NAME "stackwalker" TARGET inviwo::stackwalker MODULE Core
-        URL http://stackwalker.codeplex.com/
-        TYPE "BSD-License"
-        FILES ${IVW_EXTENSIONS_DIR}/stackwalker/LICENSE.txt
-    )
-endif()
-
-ivw_register_license_file(NAME "tclap" TARGET tclap_dummy MODULE Core
-    URL http://tclap.sourceforge.net/
-    TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/tclap/COPYING
-)
-
-ivw_register_license_file(NAME "TiCPP" TARGET ticpp MODULE Core
-    URL https://github.com/wxFormBuilder/ticpp
-    TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/ticpp/LICENSE
-)
-
-ivw_register_license_file(NAME "TinyDir" MODULE Core
-    URL https://github.com/cxong/tinydir
-    TYPE "Simplified BSD"
-    FILES ${IVW_EXTENSIONS_DIR}/tinydir/COPYING
-)
-
-ivw_register_license_file(NAME "UTF8-CPP" TARGET utfcpp MODULE Core
-    URL "https://github.com/nemtrif/utfcpp"
-    TYPE "Boost Software License"
-    FILES ${IVW_EXTENSIONS_DIR}/utf/LICENSE
-)
-
-if (TARGET vld-interface)
-    ivw_register_license_file(NAME "Visual Leak Detector (VLD)" VERSION 2.5.1 MODULE Core
-        URL "https://kinddragon.github.io/vld/"
-        TYPE "GNU LESSER GENERAL PUBLIC LICENSE"
-        FILES ${IVW_EXTENSIONS_DIR}/vld/COPYING.txt
-    )
-endif()
-
-ivw_register_license_file(NAME "warn" MODULE Core
-    URL "https://github.com/petersteneteg/warn"
-    TYPE "BSD 2-clause"
-    FILES ${IVW_TOOLS_DIR}/codegen/warn/warn/LICENSE
-)
-
-find_package(ZLIB REQUIRED)
-ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core
-    URL "http://zlib.net/"
-    TYPE "The zlib/libpng License"
-    FILES ${IVW_EXTENSIONS_DIR}/zlib-1.2.11/LICENSE
-)
-
-if(IVW_UNITTESTS OR IVW_INTEGRATION_TESTS)
-    ivw_register_license_file(NAME "Google C++ Testing Framework" TARGET gtest MODULE Core
-        URL "https://github.com/google/googletest"
-        TYPE "BSD 3-clause"
-        FILES ${IVW_EXTENSIONS_DIR}/gtest/gtest/LICENSE
-    )
-endif()
-
-ivw_register_license_file(NAME "JSON for Modern C++" target nlohmann_json MODULE Core
-    URL "https://github.com/nlohmann/json"
-    TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/json/LICENSE.MIT
-)
-
-ivw_register_license_file(NAME "inja" VERSION 1.0.0 target inja MODULE Core
-    URL "https://github.com/pantor/inja"
-    TYPE "The MIT License"
-    FILES ${IVW_TOOLS_DIR}/meta/ext/inja/LICENSE
-)
-ivw_register_license_file(NAME "PEGTL" VERSION 2.7.1 target taocpp::pegtl MODULE Core
-    URL "https://github.com/taocpp/PEGTL"
-    TYPE "The MIT License"
-    FILES ${IVW_TOOLS_DIR}/meta/ext/pegtl/LICENSE
-)
-
-ivw_register_license_file(NAME "[Boost].SML" VERSION 1.1.0 target inviwo::sml MODULE Core
-    URL "https://github.com/boost-experimental/sml"
-    TYPE " Boost Software License"
-    FILES ${IVW_EXTENSIONS_DIR}/sml/LICENSE_1_0.txt
-)
-
-ivw_register_license_file(NAME "tcbrindle/span" target inviwo::span MODULE Core
-    URL "https://github.com/tcbrindle/span"
-    TYPE " Boost Software License"
-    FILES ${IVW_EXTENSIONS_DIR}/span/span/LICENSE_1_0.txt
-)
+get_property(core_license_list TARGET inviwo-core PROPERTY IVW_LICENSE_LIST)
+get_property(ext_license_list DIRECTORY ${IVW_ROOT_DIR}/ext PROPERTY IVW_LICENSE_LIST)
+get_property(meta_license_list DIRECTORY ${IVW_TOOLS_DIR}/meta PROPERTY IVW_LICENSE_LIST)
+list(APPEND core_license_list ${ext_license_list} ${meta_license_list})
+set_property(TARGET inviwo-core PROPERTY IVW_LICENSE_LIST ${core_license_list})
 
 #----------------------------------------------------------------
 # Generate build info - the build info will be updated during every compilation
-
 # make a clean help script
 set(build_info_script_list
     "include(${IVW_ROOT_DIR}/cmake/globalutils.cmake)"
@@ -928,12 +816,7 @@ string(REPLACE ";" "\n" build_info_script "${build_info_script_list}")
 file(WRITE "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake" ${build_info_script})
 
 # Custom target for updating the build information (this target is always out-of-date)
-if(IVW_GENERATOR_IS_MULTI_CONFIG)
-    set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
-else()
-    set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/)
-endif()
-
+set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<$<BOOL:${IVW_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>/>)
 add_custom_target(inviwo-buildinfo-header ALL
     BYPRODUCTS  ${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp
     COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH=\"${buildinfo_output_dir}\"
@@ -943,16 +826,15 @@ add_custom_target(inviwo-buildinfo-header ALL
     VERBATIM
 )
 
-option(IVW_EMBED_BUILDINFO "Embed buildinfo into the binary file instead of using a ini file, will force inviwo-core to recompile every build" OFF)
-if(IVW_EMBED_BUILDINFO)
+if(IVW_CFG_EMBED_BUILDINFO)
     add_dependencies("inviwo-core" "inviwo-buildinfo-header")
-    target_compile_definitions("inviwo-core" PRIVATE "IVW_EMBED_BUILDINFO")
+    target_compile_definitions("inviwo-core" PRIVATE "IVW_CFG_EMBED_BUILDINFO")
 else()
     ## ensure that the ini file containing the build info is packaged and installed to the bin folder
-    if(GENERATOR_IS_MULTI_CONFIG)
-    install(FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/inviwo_buildinfo.ini DESTINATION ${IVW_RUNTIME_INSTALL_DIR} COMPONENT modules CONFIGURATIONS Release Debug)
-    else()
-        install(FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/inviwo_buildinfo.ini DESTINATION ${IVW_RUNTIME_INSTALL_DIR} COMPONENT modules CONFIGURATIONS Release Debug)
-    endif()
+    install(
+        FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<$<BOOL:${IVW_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>/>inviwo_buildinfo.ini 
+        DESTINATION ${IVW_RUNTIME_INSTALL_DIR} 
+        COMPONENT Application
+    )
 endif()
 #--------------------------------------------------------------------

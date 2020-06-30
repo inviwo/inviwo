@@ -30,3 +30,4 @@ endif()
 add_custom_target(json_dummy SOURCES ${PROJECT_SOURCE_DIR}/single_include/nlohmann/json.hpp)
 # Creates VS folder structure
 ivw_folder(json_dummy ext)
+ivw_register_package(nlohmann_json nlohmann_json)

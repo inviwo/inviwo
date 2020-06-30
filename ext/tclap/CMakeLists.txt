@@ -17,5 +17,6 @@ target_include_directories(tclap INTERFACE
 add_custom_target(tclap_dummy SOURCES ${HEADER_FILES})
 set_target_properties(tclap_dummy PROPERTIES VERSION 1.2.1 SOVERSION 1.2)
 
+ivw_register_package(tclap tclap)
 # Creates VS folder structure
 ivw_folder(tclap_dummy ext)
