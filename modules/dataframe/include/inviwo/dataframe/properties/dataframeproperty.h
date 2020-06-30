@@ -55,8 +55,9 @@ public:
 
     void setOptions(std::shared_ptr<const DataFrame> dataframe);
 
-    std::shared_ptr<const Column> getColumn();
-    std::shared_ptr<const BufferBase> getBuffer();
+    std::string getColumnHeader() const;
+    std::shared_ptr<const Column> getColumn() const;
+    std::shared_ptr<const BufferBase> getBuffer() const;
 
     virtual std::string getClassIdentifierForWidget() const override {
         return TemplateOptionProperty<int>::getClassIdentifier();

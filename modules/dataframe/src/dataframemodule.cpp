@@ -30,6 +30,7 @@
 #include <inviwo/dataframe/dataframemodule.h>
 #include <inviwo/dataframe/io/json/dataframepropertyjsonconverter.h>
 #include <inviwo/dataframe/processors/csvsource.h>
+#include <inviwo/dataframe/processors/dataframejoin.h>
 #include <inviwo/dataframe/processors/dataframesource.h>
 #include <inviwo/dataframe/processors/dataframeexporter.h>
 #include <inviwo/dataframe/processors/imagetodataframe.h>
@@ -52,6 +53,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
 
     // Processors
     registerProcessor<CSVSource>();
+    registerProcessor<DataFrameJoin>();
     registerProcessor<DataFrameSource>();
     registerProcessor<DataFrameExporter>();
     registerProcessor<ImageToDataFrame>();
