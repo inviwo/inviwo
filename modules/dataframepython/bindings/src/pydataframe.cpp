@@ -39,6 +39,7 @@
 #include <inviwo/dataframe/datastructures/column.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/dataframe/datastructures/datapoint.h>
+#include <inviwo/dataframe/util/dataframeutils.h>
 
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
@@ -57,17 +58,19 @@ struct DataFrameAddColumnReg {
     auto operator()(py::class_<DataFrame, std::shared_ptr<DataFrame>>& d) {
         auto classname = Defaultvalues<T>::getName();
 
-        d.def(fmt::format("add{}Column", classname).c_str(),
-              [](DataFrame& d, const std::string& header, const size_t size = 0) {
-                  return d.addColumn<T>(header, size);
-              },
-              py::arg("header"), py::arg("size") = 0);
+        d.def(
+            fmt::format("add{}Column", classname).c_str(),
+            [](DataFrame& d, const std::string& header, const size_t size = 0) {
+                return d.addColumn<T>(header, size);
+            },
+            py::arg("header"), py::arg("size") = 0);
 
-        d.def(fmt::format("add{}Column", classname).c_str(),
-              [](DataFrame& d, std::string header, std::vector<T> data) {
-                  return d.addColumn(std::move(header), std::move(data));
-              },
-              py::arg("header"), py::arg("data"));
+        d.def(
+            fmt::format("add{}Column", classname).c_str(),
+            [](DataFrame& d, std::string header, std::vector<T> data) {
+                return d.addColumn(std::move(header), std::move(data));
+            },
+            py::arg("header"), py::arg("data"));
     }
 };
 
@@ -98,18 +101,20 @@ struct TemplateColumnReg {
             .def("add", py::overload_cast<const std::string&>(&C::add))
             .def("append", [](C& c, C& src) { c.append(src); })
             .def("set", &C::set)
-            .def("get",
-                 [](const C& c, size_t i) {
-                     if (i >= c.getSize()) throw py::index_error();
-                     return c.get(i);
-                 },
-                 py::arg("i"))
-            .def("get",
-                 [](const C& c, size_t i, bool asString) {
-                     if (i >= c.getSize()) throw py::index_error();
-                     return c.get(i, asString);
-                 },
-                 py::arg("i"), py::arg("asString"))
+            .def(
+                "get",
+                [](const C& c, size_t i) {
+                    if (i >= c.getSize()) throw py::index_error();
+                    return c.get(i);
+                },
+                py::arg("i"))
+            .def(
+                "get",
+                [](const C& c, size_t i, bool asString) {
+                    if (i >= c.getSize()) throw py::index_error();
+                    return c.get(i, asString);
+                },
+                py::arg("i"), py::arg("asString"))
             .def("__repr__", [classname](C& c) {
                 return fmt::format("<{}: '{}', {}, {}>", classname, c.getHeader(), c.getSize(),
                                    c.getBuffer()->getDataFormat()->getString());
@@ -146,12 +151,13 @@ void exposeDataFrame(pybind11::module& m) {
         .def("append", [](CategoricalColumn& c, CategoricalColumn& src) { c.append(src); })
         .def("set", [](CategoricalColumn& c, size_t idx, const std::uint32_t& v) { c.set(idx, v); })
         .def("set", py::overload_cast<size_t, const std::string&>(&CategoricalColumn::set))
-        .def("get",
-             [](const CategoricalColumn& c, size_t i, bool asString) {
-                 if (i >= c.getSize()) throw py::index_error();
-                 return c.get(i, asString);
-             },
-             py::arg("i"), py::arg("asString") = true)
+        .def(
+            "get",
+            [](const CategoricalColumn& c, size_t i, bool asString) {
+                if (i >= c.getSize()) throw py::index_error();
+                return c.get(i, asString);
+            },
+            py::arg("i"), py::arg("asString") = true)
         .def("__repr__", [](CategoricalColumn& c) {
             return fmt::format("<CategoricalColumn: '{}', {}, {} categories>", c.getHeader(),
                                c.getSize(), c.getCategories().size());
@@ -171,15 +177,17 @@ void exposeDataFrame(pybind11::module& m) {
         .def("updateIndex", [](DataFrame& d) { d.updateIndexBuffer(); })
 
         // interface for operator[]
-        .def("__getitem__",
-             [](const DataFrame& d, size_t i) {
-                 if (i >= d.getNumberOfColumns()) throw py::index_error();
-                 return *(d.begin() + i);
-             },
-             py::return_value_policy::reference_internal)
+        .def(
+            "__getitem__",
+            [](const DataFrame& d, size_t i) {
+                if (i >= d.getNumberOfColumns()) throw py::index_error();
+                return *(d.begin() + i);
+            },
+            py::return_value_policy::reference_internal)
         // sequence protocol operations
-        .def("__iter__", [](const DataFrame& d) { return py::make_iterator(d.begin(), d.end()); },
-             py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
+        .def(
+            "__iter__", [](const DataFrame& d) { return py::make_iterator(d.begin(), d.end()); },
+            py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
 
         .def("__repr__", [](const DataFrame& d) {
             std::string str = fmt::format("<DataFrame: {} column(s), {} rows",
@@ -198,13 +206,46 @@ void exposeDataFrame(pybind11::module& m) {
     m.def("createDataFrame", createDataFrame, py::arg("exampleRows"),
           py::arg("colheaders") = std::vector<std::string>{},
           R"delim(
-            Create a new DataFrame by guessing the column types from a number of rows.
+Create a new DataFrame by guessing the column types from a number of rows.
 
-            Parameters
-            ----------
-            exampleRows     Rows for guessing data type of each column.
-            colHeaders      Name of each column. If none are given, "Column 1", "Column 2", ... is used
-        )delim");
+Parameters
+----------
+exampleRows     Rows for guessing data type of each column.
+colHeaders      Name of each column. If none are given, "Column 1", "Column 2", ... is used
+)delim")
+        .def("appendColumns", dataframeutils::appendColumns, py::arg("left"), py::arg("right"),
+             py::arg("ignoreduplicates") = false, py::arg("fillmissingrows") = false,
+             R"delim(
+Create a new DataFrame by appending the columns of DataFrame right to DataFrame left
+
+Parameters
+----------
+ignoreduplicates   duplicate columns, i.e. same column header, are ignored if true
+fillmissingrows    if true, missing rows in either DataFrame are filled with 0 or
+                   "undefined" (for categorical columns)
+)delim")
+        .def("appendRows", dataframeutils::appendRows, py::arg("top"), py::arg("bottom"),
+             py::arg("matchbyname") = false,
+             R"delim(
+Create a new DataFrame by appending the rows of DataFrame bottom to DataFrame top
+
+Parameters
+----------
+matchByName    if true, column headers are used for matching columns. Otherwise columns
+               are matched by order (default)
+)delim")
+        .def("innerJoin", dataframeutils::innerJoin, py::arg("left"), py::arg("right"),
+             py::arg("keycolumn") = "index",
+             R"delim(
+Create a new DataFrame by using an inner join of DataFrame left and DataFrame right.
+That is only rows with matching keys are kept.
+
+It is assumed that the entries in the key columns are unique. Otherwise results are undefined.
+
+Parameters
+----------
+keycolumn    header of the column used as key for the join operation (default: index column)
+)delim");
 
     exposeStandardDataPorts<DataFrame>(m, "DataFrame");
 }
