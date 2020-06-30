@@ -16,6 +16,7 @@ set(HEADER_FILES
     include/inviwo/dataframe/jsondataframeconversion.h
     include/inviwo/dataframe/processors/csvsource.h
     include/inviwo/dataframe/processors/dataframeexporter.h
+    include/inviwo/dataframe/processors/dataframejoin.h
     include/inviwo/dataframe/processors/dataframesource.h
     include/inviwo/dataframe/processors/imagetodataframe.h
     include/inviwo/dataframe/processors/syntheticdataframe.h
@@ -40,6 +41,7 @@ set(SOURCE_FILES
     src/jsondataframeconversion.cpp
     src/processors/csvsource.cpp
     src/processors/dataframeexporter.cpp
+    src/processors/dataframejoin.cpp
     src/processors/dataframesource.cpp
     src/processors/imagetodataframe.cpp
     src/processors/syntheticdataframe.cpp
