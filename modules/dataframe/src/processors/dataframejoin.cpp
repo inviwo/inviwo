@@ -88,15 +88,15 @@ void DataFrameJoin::process() {
         case JoinType::AppendColumns:
             dataframe =
                 dataframeutil::appendColumns(*inportLeft_.getData(), *inportRight_.getData(),
-                                              ignoreDuplicateCols_, fillMissingRows_);
+                                             ignoreDuplicateCols_, fillMissingRows_);
             break;
         case JoinType::AppendRows:
             dataframe = dataframeutil::appendRows(*inportLeft_.getData(), *inportRight_.getData(),
-                                                   columnMatching_ == ColumnMatch::ByName);
+                                                  columnMatching_ == ColumnMatch::ByName);
             break;
         case JoinType::Inner:
             dataframe = dataframeutil::innerJoin(*inportLeft_.getData(), *inportRight_.getData(),
-                                                  key_.getColumnHeader());
+                                                 key_.getColumnHeader());
             break;
         default:
             throw Exception("unsupported join operation", IVW_CONTEXT);
