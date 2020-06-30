@@ -36,6 +36,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/util/exception.h>
@@ -71,7 +72,7 @@ public:
  * All columns must have the same number of elements for the
  * DataFrame to be valid.
  */
-class IVW_MODULE_DATAFRAME_API DataFrame {
+class IVW_MODULE_DATAFRAME_API DataFrame : public MetaDataOwner {
 public:
     using DataItem = std::vector<std::shared_ptr<DataPointBase>>;
     using LookupTable = std::unordered_map<glm::u64, std::string>;
