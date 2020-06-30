@@ -29,6 +29,9 @@
 
 #include <modules/postprocessing/processors/depthoffield.h>
 
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <modules/opengl/openglcapabilities.h>
+
 namespace inviwo {
 
 const ProcessorInfo DepthOfField::processorInfo_{
@@ -43,41 +46,56 @@ const ProcessorInfo DepthOfField::getProcessorInfo() const { return processorInf
 DepthOfField::DepthOfField()
     : Processor()
     , inport_("inport")
+    , trackingInport_("trackingInport")
     , outport_("outport")
-    , aperture_("aperture", "Aperture", 0.4f, 0.01f, 1.f, 0.01f)
-    , focusDepth_("focusDepth", "Focus depth", 5.f, 1.0f, 15.0f, 0.1f)
-    , approximate_("approximate", "Approximate", true)
+    , aperture_("aperture", "Aperture", 0.5f, 0.01f, 1.f, 0.01f)
+    , focusDepth_("focusDepth", "Focus depth", 8.f, 1.0f, 15.0f, 0.1f)
+    , manualFocus_("manualFocus", "Manual focus", true)
+    , approximate_("approximate", "Approximate", false)
     , viewCountExact_("viewCountExact", "View count", 20, 10, 200)
     , viewCountApprox_("viewCountApprox", "Rendered view count", 5, 1, 12)
     , simViewCountApprox_("simViewCountApprox", "Simulated view count", 10, 10, 200)
+    , clickToFocus_("clickToFocus", "Click to focus", [this](Event* e) { clickToFocus(e); },
+        MouseButton::Left, MouseState::Press, KeyModifier::Control)
     , camera_("camera", "Camera")
     , evalCount_(0)
+    , useComputeShaders_(OpenGLCapabilities::getOpenGLVersion() >= 430)
     , ogCamera_{}
     , addSampleShader_("fullscreenquad.vert", "dof_exact.frag")
     , addToLightFieldShader_({{ShaderType::Compute, "dof_approx.comp"}})
     , averageLightfieldShader_("fullscreenquad.vert", "dof_approx.frag") {
 
     addPort(inport_);
+    addPort(trackingInport_);
     addPort(outport_);
-    addProperties(aperture_, focusDepth_, approximate_, viewCountApprox_, simViewCountApprox_, camera_);
+    addProperties(aperture_, focusDepth_, manualFocus_, approximate_, viewCountExact_,
+                  viewCountApprox_, simViewCountApprox_, clickToFocus_, camera_);
+    setApproximate(approximate_);
+
+    trackingInport_.setOptional(true);
 
     approximate_.onChange([this]() {
-        if (approximate_) {
-            // Use approximative algorithm
-            removeProperty(viewCountExact_);
-            insertProperty(3, viewCountApprox_);
-            insertProperty(4, simViewCountApprox_);
-        } else {
-            // Use exact algorithm
-            removeProperty(viewCountApprox_);
-            removeProperty(simViewCountApprox_);
-            insertProperty(3, viewCountExact_);
-        }
+        setApproximate(approximate_);
+    });
+
+    manualFocus_.onChange([this]() {
+        focusDepth_.setReadOnly(!manualFocus_);
+        clickToFocus_.setReadOnly(!manualFocus_);
     });
 
     addSampleShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
     addToLightFieldShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
     averageLightfieldShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+}
+
+void DepthOfField::setApproximate(bool approximate) {
+    viewCountExact_.setVisible(!approximate);
+    viewCountApprox_.setVisible(approximate);
+    simViewCountApprox_.setVisible(approximate);
+    if (approximate && !useComputeShaders_) {
+        // Using CPU version of approximative algorithm.
+        LogWarn("Compute shaders are not supported. Approximative depth of field post-processing may be slow.");
+    }
 }
 
 void DepthOfField::process() {
@@ -86,6 +104,8 @@ void DepthOfField::process() {
     size2_t dim = img->getDimensions();
     TextureUnitContainer cont;
 
+
+
     if (evalCount_ >= maxEvalCount) {
         // Catch final network evaluation caused by camera resetting
         evalCount_ = 0;
@@ -93,8 +113,12 @@ void DepthOfField::process() {
     } else if (evalCount_ == 0) {
         // Set up for a new session
         ogCamera_.reset(camera_.get().clone());
+        ogType_ = camera_.get().getClassIdentifier();
+        if (ogType_ != PerspectiveCamera::classIdentifier) {
+            LogWarn("Intended for use with Perspective Camera. Unexpected behavior may follow.");
+        }
         camera_.setCamera(SkewedPerspectiveCamera::classIdentifier);
-        
+
         if (approximate_) {
             // Prepare light field
             dimLightField_ = size3_t(dim.x, dim.y, viewCountApprox_.get() + simViewCountApprox_.get());
@@ -102,7 +126,7 @@ void DepthOfField::process() {
             lightFieldDepth_ = std::make_shared<Volume>(dimLightField_, DataFormat<float>::get());
             float* lightFieldDepthData = static_cast<float*>(
                 lightFieldDepth_->getEditableRepresentation<VolumeRAM>()->getData());
-            std::fill(lightFieldDepthData, 
+            std::fill(lightFieldDepthData,
                 lightFieldDepthData + dimLightField_.x * dimLightField_.y * dimLightField_.z, -1.f);
 
             // Prepare Halton sequence
@@ -121,9 +145,50 @@ void DepthOfField::process() {
             haltonX_ = util::haltonSequence<float>(2, maxEvalCount);
             haltonY_ = util::haltonSequence<float>(3, maxEvalCount);
         }
+
+        // Update focus depth and aperture ranges based on the depths in the scene, ignoring
+        // background points and including the current value.
+        const float* inputDepthData = static_cast<const float*>(
+            img->getRepresentation<ImageRAM>()->getDepthLayerRAM()->getData());
+        float minDepthNdc = 1;
+        float maxDepthNdc = 0;
+        for(const float* f = inputDepthData; f < inputDepthData + dim.x * dim.y; f++) {
+            minDepthNdc = std::min(minDepthNdc, *f);
+            if (*f < 1) {
+                maxDepthNdc = std::max(maxDepthNdc, *f);
+            }
+        }
+
+        double nearClip = camera_.getNearPlaneDist();
+        double farClip = camera_.getFarPlaneDist();
+        float minDepthWorld = nearClip * farClip / (minDepthNdc * (nearClip - farClip) + farClip);
+        float maxDepthWorld = nearClip * farClip / (maxDepthNdc * (nearClip - farClip) + farClip);
+
+        focusDepth_.setMinValue(std::min(minDepthWorld, focusDepth_.get()));
+        focusDepth_.setMaxValue(std::max(maxDepthWorld, focusDepth_.get()));
+        focusDepth_.set(focusDepth_.get(), std::min(minDepthWorld, focusDepth_.get()),
+            std::max(maxDepthWorld, focusDepth_.get()), (maxDepthWorld - minDepthWorld) / 100.0);
+
+        int depthScale = floor(log10(minDepthWorld));
+        float minAperture = pow(10, depthScale - 1);
+        float maxAperture = pow(10, depthScale);
+        aperture_.set(aperture_.get(), std::min(minAperture, aperture_.get()),
+            std::max(maxAperture, aperture_.get()), (maxAperture - minAperture) / 90.0);
     }
 
     SkewedPerspectiveCamera* camera = dynamic_cast<SkewedPerspectiveCamera*>(&camera_.get());
+
+    // Calculate focus depth
+    double focusDepth = focusDepth_.get();
+    if (!manualFocus_ && trackingInport_.hasData()) {
+        vec3 lookFrom = ogCamera_->getLookFrom();
+        vec3 lookTo = ogCamera_->getLookTo();
+        vec3 front = glm::normalize(lookTo - lookFrom);
+
+        auto mesh = trackingInport_.getData();
+        const vec3 focusPoint = mesh->getBuffer(0)->getRepresentation<BufferRAM>()->getAsDVec3(0);
+        focusDepth = glm::length(glm::dot(focusPoint - lookFrom, front) * front);
+    }
 
     if (approximate_) {
         // Find position of current camera
@@ -131,7 +196,7 @@ void DepthOfField::process() {
         if (evalCount_ == 0) {
             cameraPos = vec2(0, 0);
         } else {
-            float currAngle = 2.0 * M_PI * (float(evalCount_) - 0.5) / float(maxEvalCount);
+            float currAngle = 2.0 * M_PI * (float(evalCount_) - 0.5) / float(maxEvalCount - 1);
             cameraPos = aperture_.get() / 2.0 * vec2(glm::cos(currAngle), glm::sin(currAngle));
         }
 
@@ -139,10 +204,8 @@ void DepthOfField::process() {
         double farClip = camera_.getFarPlaneDist();
         double fovy = glm::radians(camera->getFovy());
 
-        bool useComputeShaders = false;     // TODO: Change depending on support.
-
         // Warp rendered image to light field
-        if (useComputeShaders) {
+        if (useComputeShaders_) {
             glActiveTexture(GL_TEXTURE);
             auto lightFieldGL = lightField_->getEditableRepresentation<VolumeGL>();
             auto lightFieldTexHandle = lightFieldGL->getTexture()->getID();
@@ -163,7 +226,7 @@ void DepthOfField::process() {
             addToLightFieldShader_.setUniform("nViews", int(viewCountApprox_.get()));
             addToLightFieldShader_.setUniform("nSimViews", int(simViewCountApprox_.get()));
             addToLightFieldShader_.setUniform("fovy", float(fovy));
-            addToLightFieldShader_.setUniform("focusDepth", float(focusDepth_.get()));
+            addToLightFieldShader_.setUniform("focusDepth", float(focusDepth));
             addToLightFieldShader_.setUniform("dim", vec2(dim));
             addToLightFieldShader_.setUniform("cameraPos", cameraPos);
 
@@ -206,7 +269,8 @@ void DepthOfField::process() {
                     if (evalCount_ == 0) {
                         // Warp central (first) view to all simulated views.
                         for (size_t i = 0; i < simViewCountApprox_.get(); i++ ) {
-                            warp(cameraPos, screenPos, color, zWorld, i, lightFieldData, lightFieldDepthData, fovy);
+                            warp(cameraPos, screenPos, color, zWorld, i, lightFieldData,
+                                lightFieldDepthData, fovy, focusDepth);
                         }
                     } else {
                         // Warp peripheral views to a circle segment of simulated views.
@@ -214,7 +278,8 @@ void DepthOfField::process() {
                         int start = (evalCount_ - 1) * segmentWidth;
                         int stop = evalCount_ * segmentWidth;
                         for (int i = start; i < stop; i++) {
-                            warp(cameraPos, screenPos, color, zWorld, i, lightFieldData, lightFieldDepthData, fovy);
+                            warp(cameraPos, screenPos, color, zWorld, i, lightFieldData,
+                                lightFieldDepthData, fovy, focusDepth);
                         }
                     }
                 }
@@ -249,16 +314,17 @@ void DepthOfField::process() {
         vec3 front = glm::normalize(lookTo - lookFrom);
         vec3 up = glm::normalize(lookUp - glm::dot(lookUp, front) * front);
 
-        camera_.setLook(lookFrom, lookFrom + front * focusDepth_.get(), up);
+        camera_.setLook(lookFrom, lookFrom + front * focusDepth, up);
 
-        float radius = approximate_ 
+        float radius = approximate_
             ? aperture_.get() / 2.0
             : aperture_.get() / 2.0 * sqrt(haltonX_[evalCount_ - 1]);
-        float angle = 2.0 * M_PI * (approximate_ 
-            ?  (float(evalCount_) - 0.5) / float(maxEvalCount) 
+        float angle = 2.0 * M_PI * (approximate_
+            ?  (float(evalCount_) - 0.5) / float(maxEvalCount - 1)
             :  haltonY_[evalCount_ - 1]);
         vec2 offset = radius * vec2(glm::cos(angle), glm::sin(angle));
         camera->setOffset(offset);
+
     } else {
         // Set output
         if (approximate_) {
@@ -281,23 +347,37 @@ void DepthOfField::process() {
         }
 
         // Reset camera
-        if (typeid(camera) == typeid(*ogCamera_)) evalCount_ = 0;
+        if (ogType_ == SkewedPerspectiveCamera::classIdentifier) evalCount_ = 0;
         camera_.setCamera(std::unique_ptr<Camera>(ogCamera_->clone()));
     }
 }
 
+void DepthOfField::clickToFocus(Event* e) {
+    if (!manualFocus_) return;
+
+    auto mouseEvent = static_cast<MouseEvent*>(e);
+    size2_t clickPos(mouseEvent->x(), mouseEvent->y());
+    double depthNdc = inport_.getData()->getDepthLayer()->getRepresentation<LayerRAM>()->getAsNormalizedDouble(clickPos);
+
+    double nearClip = camera_.getNearPlaneDist();
+    double farClip = camera_.getFarPlaneDist();
+    double depthEye = farClip * nearClip / (farClip - depthNdc * (farClip - nearClip));
+    focusDepth_.set(depthEye);
+}
+
 void DepthOfField::warp(vec2 cameraPos, vec2 screenPos, vec4 color, double zWorld, size_t viewIndex,
-                        vec4* lightFieldData, float* lightFieldDepthData, double fovy) {
+        vec4* lightFieldData, float* lightFieldDepthData, double fovy, double focusDepth) {
     double radius = aperture_.get() / 2.0 * sqrt(haltonX_[viewIndex]);
     double angle = double(viewIndex) / double(simViewCountApprox_.get()) * 2.0 * M_PI;
     vec2 simCameraPos = radius * vec2(glm::cos(angle), glm::sin(angle));
 
-    vec2 disparity = (1.0 / zWorld - 1.0 / focusDepth_.get()) * (cameraPos - simCameraPos);
+    vec2 disparity = (1.0 / zWorld - 1.0 / focusDepth) * (cameraPos - simCameraPos);
     vec2 simScreenpos = screenPos + disparity * dimLightField_.y / (2.0 * std::tan(fovy / 2.0));
-    if (simScreenpos.x < 0 || simScreenpos.x >= dimLightField_.x 
-        || simScreenpos.y < 0 || simScreenpos.y >= dimLightField_.y) return;
-
     size3_t pos(round(simScreenpos.x), round(simScreenpos.y), viewCountApprox_.get() + viewIndex);
+    if (pos.x < 0 || pos.x >= dimLightField_.x
+        || pos.y < 0 || pos.y >= dimLightField_.y
+        || pos.z < 0 || pos.z >= dimLightField_.z) return;
+
     float currDepth = lightFieldDepthData[VolumeRAM::posToIndex(pos, dimLightField_)];
     if (currDepth < 0 || currDepth > zWorld + 0.01) {
         lightFieldData[VolumeRAM::posToIndex(pos, dimLightField_)] = color;

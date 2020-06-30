@@ -31,14 +31,17 @@
 
 #include <modules/postprocessing/postprocessingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/camera/perspectivecamera.h>
 #include <inviwo/core/datastructures/camera/skewedperspectivecamera.h>
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/base/algorithm/randomutils.h>
 #include <modules/opengl/image/imagegl.h>
@@ -57,6 +60,7 @@ namespace inviwo {
  *
  * ### Inports
  *   * __ImageInport__ Input image.
+ *   * __MeshInport__ World space point to track. The first point in the first position buffer will be used.
  *
  * ### Outports
  *   * __ImageOutport__ Output image.
@@ -64,6 +68,7 @@ namespace inviwo {
  * ### Properties
  *   * __Aperture__ The diameter of the simulated lens. Affects blur strength.
  *   * __FocusDepth__ The depth in the scene that is in focus.
+ *   * __ManualFocus__ Determines whether the focus depth is determined by manual input or inport data.
  *   * __Approximate__ If true, uses an approximative algorithm which renders 
  * the scene fewer times. Requires a valid depth map.
  *   * __ViewCount__ The number of times to render the scene.
@@ -82,19 +87,23 @@ public:
 
 private:
 	ImageInport inport_;
+    MeshInport trackingInport_;
     ImageOutport outport_;
 
     FloatProperty aperture_;
     FloatProperty focusDepth_;
+    BoolProperty manualFocus_;
     BoolProperty approximate_;
     IntSizeTProperty viewCountExact_;
     IntSizeTProperty viewCountApprox_;
     IntSizeTProperty simViewCountApprox_;
-
+    EventProperty clickToFocus_;
     CameraProperty camera_;
 
     int evalCount_;
+    const bool useComputeShaders_;
     std::unique_ptr<Camera> ogCamera_;
+    std::string ogType_;
 
     std::vector<float> haltonX_;
 
@@ -112,8 +121,10 @@ private:
     Shader addToLightFieldShader_;
     Shader averageLightfieldShader_;
 
+    void clickToFocus(Event* e);
     void warp(vec2 st, vec2 uv, vec4 color, double zWorld, size_t viewIndex, vec4* lightFieldData,
-              float* lightFieldDepthData, double fovy);
+              float* lightFieldDepthData, double fovy, double focusDepth);
+    void setApproximate(bool approximate);
 };
 
 }  // namespace inviwo
