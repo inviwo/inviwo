@@ -62,7 +62,8 @@ namespace inviwo {
  *
  * ### Inports
  *   * __ImageInport__ Input image.
- *   * __MeshInport__ World space point to focus on. The first point in the first position buffer will be used.
+ *   * __MeshInport__ World space point to focus on. The first point in the first position buffer
+ * will be used.
  *
  * ### Outports
  *   * __ImageOutport__ Output image.
@@ -70,7 +71,8 @@ namespace inviwo {
  * ### Properties
  *   * __Aperture__ The diameter of the simulated lens. Affects blur strength.
  *   * __FocusDepth__ The depth in the scene that is in focus.
- *   * __ManualFocus__ Determines whether the focus depth is determined by manual input or inport data.
+ *   * __ManualFocus__ Determines whether the focus depth is determined by manual input or inport
+ * data.
  *   * __Approximate__ If true, uses an approximative algorithm which renders
  * the scene fewer times. Requires a valid depth map. Note that the approximative algorithm does not
  * support transparency in the scene.
@@ -94,7 +96,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-	ImageInport inport_;
+    ImageInport inport_;
     MeshInport trackingInport_;
     ImageOutport outport_;
 
