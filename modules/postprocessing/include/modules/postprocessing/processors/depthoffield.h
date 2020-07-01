@@ -55,12 +55,14 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.DepthOfField, Depth Of Field}
  * ![](org.inviwo.DepthOfField.png?classIdentifier=org.inviwo.DepthOfField)
- * Use any pinhole image as input and connect the camera property to the rendering processor. 
- * Applies a depth of field effect where out-of-focus regions appear blurred.
+ *
+ * Use any pinhole image as input and connect the camera property to the rendering processor.
+ * Applies a depth of field effect where out-of-focus regions appear blurred. The image should be
+ * generated with a perspective camera but may use any rendering technique.
  *
  * ### Inports
  *   * __ImageInport__ Input image.
- *   * __MeshInport__ World space point to track. The first point in the first position buffer will be used.
+ *   * __MeshInport__ World space point to focus on. The first point in the first position buffer will be used.
  *
  * ### Outports
  *   * __ImageOutport__ Output image.
@@ -69,11 +71,17 @@ namespace inviwo {
  *   * __Aperture__ The diameter of the simulated lens. Affects blur strength.
  *   * __FocusDepth__ The depth in the scene that is in focus.
  *   * __ManualFocus__ Determines whether the focus depth is determined by manual input or inport data.
- *   * __Approximate__ If true, uses an approximative algorithm which renders 
- * the scene fewer times. Requires a valid depth map.
- *   * __ViewCount__ The number of times to render the scene.
- *   * __SimulatedViewCount__ The number of additional views to approximate.
- *   * __Camera__ The camera should be linked with the rendering processor. 
+ *   * __Approximate__ If true, uses an approximative algorithm which renders
+ * the scene fewer times. Requires a valid depth map. Note that the approximative algorithm does not
+ * support transparency in the scene.
+ *   * __ViewCount__ The number of times to render the scene. A higher view count leads to smoother
+ * blur in the image, but also requires longer computation times.
+ *   * __RenderedViewCount__ The number of times to render the scene when using the approximative
+ * algorithm. A higher rendered view count improves approximations of partially occluded regions and
+ * may reduce artifacts around object boundaries.
+ *   * __SimulatedViewCount__ The number of additional views to approximate. The simulated view
+ * count affects ghosting artifacts in the final image.
+ *   * __Camera__ The camera should be linked with the rendering processor.
  */
 class IVW_MODULE_POSTPROCESSING_API DepthOfField : public Processor {
 public:
