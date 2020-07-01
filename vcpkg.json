@@ -2,7 +2,7 @@
     "name": "inviwo",
     "version-string" : "0.9.11.1",
     "homepage" : "https://github.com/inviwo/inviwo",
-    "license": "BSD-2",
+    "license": "BSD-2-Clause",
     "dependencies" : [
         "assimp",
         "benchmark",

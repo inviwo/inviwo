@@ -7,10 +7,10 @@ To install vcpkg and the dependencies in a directory of your choice (outside of 
 ```cmd  
 > git clone https://github.com/Microsoft/vcpkg.git
 > cd vcpkg
-> vcpkg\bootstrap-vcpkg.bat
-> vcpkg.exe install --triplet x64-windows assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib      
+> ./bootstrap-vcpkg.bat
+> ./vcpkg.exe install --triplet x64-windows assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib      
 ``` 
-Then set the `CMAKE_TOOLCHAIN_FILE` to `<vcpkg-install-dir>/scripts/buildsystems/vcpkg.cmake` when configuring CMake. And set all the corresponding `IVW_USE_EXTERNAL_<package>` to `TRUE`.
+Then set the `CMAKE_TOOLCHAIN_FILE` to `<vcpkg-install-dir>/scripts/buildsystems/vcpkg.cmake` when configuring CMake (see https://stackoverflow.com/questions/29982505/setting-a-cross-compiler-file-using-the-cmake-gui ). Finally, set all the corresponding `IVW_USE_EXTERNAL_<package>` to `TRUE`.
 
 To help interact with vcpkg `cmake/vcpkghelpers.cmake` provides functions for installing the vcpkg packages needed to create installers (only windows so far).
 
