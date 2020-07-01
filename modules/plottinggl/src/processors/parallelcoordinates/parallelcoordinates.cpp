@@ -631,7 +631,7 @@ void ParallelCoordinates::linePicked(PickingEvent* p) {
         // Show tooltip about current line
         if (p->getHoverState() == PickingHoverState::Move ||
             p->getHoverState() == PickingHoverState::Enter) {
-            p->setToolTip(dataframeutil::createToolTipForRow(*df, p->getPickedId()));
+            p->setToolTip(dataframe::createToolTipForRow(*df, p->getPickedId()));
             hoveredLine_ = static_cast<int>(p->getPickedId());
             invalidate(InvalidationLevel::InvalidOutput);
 

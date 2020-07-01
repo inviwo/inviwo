@@ -72,7 +72,7 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     tooltipCallBack_ = scatterPlot_.addToolTipCallback([this](PickingEvent* p, size_t rowId) {
         if (!p) return;
         if (auto dataframe = dataFramePort_.getData()) {
-            p->setToolTip(dataframeutil::createToolTipForRow(*dataFramePort_.getData(), rowId));
+            p->setToolTip(dataframe::createToolTipForRow(*dataFramePort_.getData(), rowId));
         }
     });
     selectionChangedCallBack_ =

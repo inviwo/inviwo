@@ -86,17 +86,16 @@ void DataFrameJoin::process() {
     auto bottom = inportRight_.getData();
     switch (join_) {
         case JoinType::AppendColumns:
-            dataframe =
-                dataframeutil::appendColumns(*inportLeft_.getData(), *inportRight_.getData(),
-                                             ignoreDuplicateCols_, fillMissingRows_);
+            dataframe = dataframe::appendColumns(*inportLeft_.getData(), *inportRight_.getData(),
+                                                 ignoreDuplicateCols_, fillMissingRows_);
             break;
         case JoinType::AppendRows:
-            dataframe = dataframeutil::appendRows(*inportLeft_.getData(), *inportRight_.getData(),
-                                                  columnMatching_ == ColumnMatch::ByName);
+            dataframe = dataframe::appendRows(*inportLeft_.getData(), *inportRight_.getData(),
+                                              columnMatching_ == ColumnMatch::ByName);
             break;
         case JoinType::Inner:
-            dataframe = dataframeutil::innerJoin(*inportLeft_.getData(), *inportRight_.getData(),
-                                                 key_.getColumnHeader());
+            dataframe = dataframe::innerJoin(*inportLeft_.getData(), *inportRight_.getData(),
+                                             key_.getColumnHeader());
             break;
         default:
             throw Exception("unsupported join operation", IVW_CONTEXT);

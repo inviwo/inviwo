@@ -65,6 +65,11 @@ public:
     virtual void setHeader(const std::string& header) = 0;
 
     virtual void add(const std::string& value) = 0;
+    /**
+     * \brief appends all rows from column \p col
+     *
+     * @param col
+     */
     virtual void append(const Column& col) = 0;
 
     virtual std::shared_ptr<BufferBase> getBuffer() = 0;
@@ -122,9 +127,7 @@ public:
     virtual void add(const std::string& value) override;
 
     /**
-     * \brief appends all rows from column \p col
-     *
-     * @param col
+     * \copydoc Column::append(col)
      * @throws Exception if data format does not match
      */
     virtual void append(const Column& col) override;
@@ -219,7 +222,7 @@ public:
     virtual void add(const std::string& value) override;
 
     /**
-     * \brief appends all rows from column \p col and builds a union of all categorical values
+     * \brief \copybrief and builds a union of all categorical values
      *
      * @param col
      * @throws Exception if data format does not match

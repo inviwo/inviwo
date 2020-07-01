@@ -37,7 +37,7 @@
 
 namespace inviwo {
 
-namespace dataframeutil {
+namespace dataframe {
 
 std::shared_ptr<BufferBase> IVW_MODULE_DATAFRAME_API
 cloneBufferRange(std::shared_ptr<const BufferBase> buffer, ivec2 range);
@@ -92,6 +92,6 @@ combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataframes, bool skipI
 
 std::string IVW_MODULE_DATAFRAME_API createToolTipForRow(const DataFrame& dataframe, size_t rowId);
 
-}  // namespace dataframeutil
+}  // namespace dataframe
 
 }  // namespace inviwo

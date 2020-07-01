@@ -194,12 +194,14 @@ import ivwdataframe
 import numpy as np
 
 col = ivwdataframe.IntColumn('IntCol')
-col.buffer.size = 4
-col.buffer.data = np.array([0, 1, 2, 3], dtype=np.int)
+col.add(0)
+col.add(1)
+col.add(2)
+col.add(3)
 
 col2 = ivwdataframe.IntColumn('IntCol 2')
-col2.buffer.size = 2
-col2.buffer.data = np.array([4, 5], dtype=np.int)
+col2.add(4)
+col2.add(5)
 
 col.append(col2)
 )delim";
@@ -212,7 +214,7 @@ col.append(col2)
     auto rows = dict["col"].attr("size").cast<size_t>();
 
     ASSERT_EQ(DataFormat<int>::id(), buffer->getDataFormat()->getId())
-        << "incorrect number of rows after append";
+        << "column buffer has incorrect data format";
     EXPECT_EQ(6, rows) << "Row count differs";
 
     auto bufferram =

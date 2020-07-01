@@ -68,7 +68,7 @@ TEST(AppendRows, ByOrder) {
     bottom.addColumnFromBuffer("col", util::makeBuffer(std::vector<int>{3, 4}));
     bottom.updateIndexBuffer();
 
-    auto dataframe = dataframeutil::appendRows(top, bottom, false);
+    auto dataframe = dataframe::appendRows(top, bottom, false);
 
     EXPECT_EQ(2, dataframe->getNumberOfColumns())
         << "DataFrame should have 2 columns (index + 'col')";
@@ -88,7 +88,7 @@ TEST(AppendRows, ByName) {
     bottom.addColumnFromBuffer("int", util::makeBuffer(std::vector<int>{3, 4}));
     bottom.updateIndexBuffer();
 
-    auto dataframe = dataframeutil::appendRows(top, bottom, true);
+    auto dataframe = dataframe::appendRows(top, bottom, true);
 
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "DataFrame should have 3 columns";
     EXPECT_EQ(4, dataframe->getNumberOfRows()) << "Row count after appendRows not correct";
@@ -104,20 +104,17 @@ TEST(AppendRows, Exceptions) {
     DataFrame bottom;
     bottom.addColumn(std::make_shared<TemplateColumn<float>>("float"));
 
-    EXPECT_THROW(dataframeutil::appendRows(top, bottom, false), Exception)
-        << "Column type mismatch";
+    EXPECT_THROW(dataframe::appendRows(top, bottom, false), Exception) << "Column type mismatch";
 
     top.addColumn(std::make_shared<TemplateColumn<float>>("float"));
-    EXPECT_THROW(dataframeutil::appendRows(top, bottom, false), Exception)
-        << "Column count differs";
+    EXPECT_THROW(dataframe::appendRows(top, bottom, false), Exception) << "Column count differs";
 
     bottom.addColumn(std::make_shared<TemplateColumn<int>>("int"));
-    EXPECT_NO_THROW(dataframeutil::appendRows(top, bottom, true))
-        << "Could not match columns by name";
+    EXPECT_NO_THROW(dataframe::appendRows(top, bottom, true)) << "Could not match columns by name";
 
     top.addColumn(std::make_shared<TemplateColumn<int>>("int2"));
     bottom.addColumn(std::make_shared<TemplateColumn<int>>("float2"));
-    EXPECT_THROW(dataframeutil::appendRows(top, bottom, true), Exception)
+    EXPECT_THROW(dataframe::appendRows(top, bottom, true), Exception)
         << "Columns matched despite different names";
 }
 
@@ -133,12 +130,12 @@ TEST(AppendColumns, DuplicateColumns) {
     right.updateIndexBuffer();
 
     {
-        auto dataframe = dataframeutil::appendColumns(left, right, false, false);
+        auto dataframe = dataframe::appendColumns(left, right, false, false);
         EXPECT_EQ(5, dataframe->getNumberOfColumns()) << "DataFrame should have 5 columns";
     }
 
     {
-        auto dataframe = dataframeutil::appendColumns(left, right, true, false);
+        auto dataframe = dataframe::appendColumns(left, right, true, false);
         EXPECT_EQ(4, dataframe->getNumberOfColumns())
             << "Column duplicates detected (expected: 3 data columns + index)";
     }
@@ -153,7 +150,7 @@ TEST(AppendColumns, Contents) {
     right.addColumnFromBuffer("float", util::makeBuffer(std::vector<float>{3.0f, 4.0f}));
     right.updateIndexBuffer();
 
-    auto dataframe = dataframeutil::appendColumns(left, right, false, false);
+    auto dataframe = dataframe::appendColumns(left, right, false, false);
 
     checkColumnContents<int>(*dataframe->getColumn("int"), {1, 2});
     checkColumnContents<float>(*dataframe->getColumn("float"), {3.0f, 4.0f});
@@ -168,9 +165,9 @@ TEST(AppendColumns, MissingRows) {
     right.addColumnFromBuffer("float", util::makeBuffer(std::vector<float>{3.0f}));
     right.updateIndexBuffer();
 
-    EXPECT_THROW(dataframeutil::appendColumns(left, right, false, false), Exception);
+    EXPECT_THROW(dataframe::appendColumns(left, right, false, false), Exception);
 
-    auto dataframe = dataframeutil::appendColumns(left, right, false, true);
+    auto dataframe = dataframe::appendColumns(left, right, false, true);
     EXPECT_EQ(3, dataframe->getNumberOfRows()) << "Append was not successful";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "DataFrame should have 3 columns";
 
@@ -188,9 +185,9 @@ TEST(AppendColumns, MissingRowsCategorical) {
     col->add("bar");
     right.updateIndexBuffer();
 
-    EXPECT_THROW(dataframeutil::appendColumns(left, right, false, false), Exception);
+    EXPECT_THROW(dataframe::appendColumns(left, right, false, false), Exception);
 
-    auto dataframe = dataframeutil::appendColumns(left, right, false, true);
+    auto dataframe = dataframe::appendColumns(left, right, false, true);
     EXPECT_EQ(3, dataframe->getNumberOfRows()) << "Append was not successful";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "DataFrame should have 3 columns";
 
@@ -211,7 +208,7 @@ TEST(InnerJoin, ByIndexColumn) {
     right.addColumnFromBuffer("float", util::makeBuffer(std::vector<float>{3.0f, 4.0f}));
     right.updateIndexBuffer();
 
-    auto dataframe = dataframeutil::innerJoin(left, right);
+    auto dataframe = dataframe::innerJoin(left, right);
     EXPECT_EQ(2, dataframe->getNumberOfRows()) << "inner join should result in 2 rows";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "inner join should result in 3 columns";
 
@@ -229,11 +226,11 @@ TEST(InnerJoin, ByCustomColumn) {
     right.addColumnFromBuffer("int2", util::makeBuffer(std::vector<int>{42, 3, 8}));
     right.updateIndexBuffer();
 
-    EXPECT_THROW(dataframeutil::innerJoin(left, right, "int"), Exception);
+    EXPECT_THROW(dataframe::innerJoin(left, right, "int"), Exception);
 
     right.getColumn("int2")->setHeader("int");
 
-    auto dataframe = dataframeutil::innerJoin(left, right, "int");
+    auto dataframe = dataframe::innerJoin(left, right, "int");
     EXPECT_EQ(2, dataframe->getNumberOfRows()) << "inner join should result in 2 rows";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "inner join should result in 3 columns";
     EXPECT_TRUE(dataframe->getColumn("float"));
