@@ -84,16 +84,22 @@ std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 }
 
 struct TestablePropertyHelper {
+	// for Properties with values
 	template<typename T>
-	auto operator()(std::optional<std::shared_ptr<TestProperty>>& res, Property* prop) {
+	auto operator()(std::optional<std::shared_ptr<TestProperty>>& res, Property* prop) -> decltype((typename T::value_type*)(nullptr), void()) {
 		 if(auto tmp = dynamic_cast<T*>(prop); tmp != nullptr)
 			 res = {std::make_shared<TestPropertyTyped<T>>(tmp)};
 	}
 };
+
 std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop) {
 	std::optional<std::shared_ptr<TestProperty>> res = std::nullopt;
 	util::for_each_type<PropertyTypes>{}(TestablePropertyHelper{}, res, prop);
+	if(!res) {
+		if(auto tmp = dynamic_cast<CompositeProperty*>(prop); tmp != nullptr)
+			res = {std::make_shared<TestPropertyComposite>(tmp)};
+	}
 	return res;
 }
-	
+
 } // namespace inviwo

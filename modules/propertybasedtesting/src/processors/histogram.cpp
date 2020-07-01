@@ -138,12 +138,14 @@ void Histogram::updateProcessors() {
 			CompositeProperty* comp = new CompositeProperty(
 					ident,
 					processor->getDisplayName());
+			comp->setCollapsed(true);
 			for(auto&[propComp,p] : props) {
 				propComp = new BoolCompositeProperty(
 						p->getProperty()->getIdentifier() + "Comp",
 						p->getProperty()->getDisplayName(),
 						false);
-				p->withOptionProperties([&propComp](auto opt){ propComp->addProperty(opt); });
+				propComp->setCollapsed(true);
+				p->withSubProperties([&propComp](auto opt){ propComp->addProperty(opt); });
 
 				comp->addProperty(propComp);
 			}

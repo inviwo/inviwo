@@ -44,10 +44,8 @@ public:
 using Test = std::vector<std::shared_ptr<PropertyAssignment>>;
 
 template<typename T>
-std::vector<std::shared_ptr<PropertyAssignment>> _generateAssignments(T* const);
-template<>
-std::vector<std::shared_ptr<PropertyAssignment>> _generateAssignments<> (OrdinalProperty<int>* const prop);
-template<>
-std::vector<std::shared_ptr<PropertyAssignment>> _generateAssignments<> (IntMinMaxProperty* const prop);
+struct GenerateAssignments {
+	std::vector<std::shared_ptr<PropertyAssignment>> operator()(T* const) const;
+};
 
 }
