@@ -166,9 +166,10 @@ public:
 		for(const auto& subProp : subProperties)
 			subProp->setToDefault();
 	}
-	//const val_type& getDefaultValue() {
-	//	return defaultValue;
-	//}
+
+	template<typename T>
+	std::optional<typename T::value_type> getValue(const T* prop) const;
+
 	void storeDefault() {
 		for(const auto& subProp : subProperties)
 			subProp->storeDefault();
@@ -262,8 +263,10 @@ class TestResult {
 		const std::filesystem::path& getImagePath() {
 			return imgPath;
 		}
+
 		template<typename T>
-		const typename T::value_type& getValue(const T* prop) const;
+		typename T::value_type getValue(const T* prop) const;
+
 		TestResult(const std::vector<std::shared_ptr<TestProperty>>& defaultValues
 				, const Test& t
 				, size_t val
@@ -276,16 +279,35 @@ class TestResult {
 };
 		
 template<typename T>
-const typename T::value_type& TestResult::getValue(const T* prop) const {
+std::optional<typename T::value_type> TestPropertyComposite::getValue(const T* prop) const {
+	for(auto subProp : subProperties) {
+		if(auto p = std::dynamic_pointer_cast<TestPropertyTyped<T>>(subProp); p != nullptr) {
+			if(p->getProperty() == prop)
+				return p->getDefaultValue();
+		} else if(auto p = std::dynamic_pointer_cast<TestPropertyComposite>(subProp); p != nullptr) {
+			if(auto res = p->getValue(prop); res != std::nullopt)
+				return res;
+		}
+	}
+	return std::nullopt;
+}
+template<typename T>
+typename T::value_type TestResult::getValue(const T* prop) const {
 	for(const auto& t : test)
 		if(auto p = std::dynamic_pointer_cast<PropertyAssignmentTyped<typename T::value_type>>(t);
 				p && reinterpret_cast<T*>(p->getProperty()) == prop)
 			return p->getValue();
-	for(auto def : defaultValues)
-		if(auto p = std::dynamic_pointer_cast<TestPropertyTyped<T>>(def);
-				p && p->getProperty() == prop)
-			return p->getDefaultValue();
-	assert(false);
+
+	for(auto def : defaultValues) {
+		if(auto p = std::dynamic_pointer_cast<TestPropertyTyped<T>>(def); p != nullptr) {
+			if(p->getProperty() == prop) return p->getDefaultValue();
+		} else if(auto p = std::dynamic_pointer_cast<TestPropertyComposite>(def); p != nullptr) {
+			if(auto res = p->getValue(prop); res != std::nullopt)
+				return *res;
+		}
+	}
+	std::cerr << "could not get value for " << prop << " " << typeid(T).name() << std::endl;
+	exit(1);
 }
 
 using PropertyTypes = std::tuple<OrdinalProperty<int>, OrdinalProperty<float>, OrdinalProperty<double>, IntMinMaxProperty>;
