@@ -42,10 +42,10 @@ if(NOT IVW_USE_EXTERNAL_GTEST AND (IVW_TEST_UNIT_TESTS OR IVW_TEST_INTEGRATION_T
     add_subdirectory(gtest)
     ivw_register_license_file(NAME "Google C++ Testing Framework" TARGET gtest MODULE Core EXT
         URL "https://github.com/google/googletest"
-        TYPE "BSD 3-clause"
+        TYPE "BSD-3-Clause"
         FILES ${IVW_EXTENSIONS_DIR}/gtest/gtest/LICENSE
     )
-else()
+elseif(IVW_TEST_UNIT_TESTS OR IVW_TEST_INTEGRATION_TESTS)
     find_package(GTest CONFIG REQUIRED)
 endif()
 
