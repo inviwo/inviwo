@@ -63,10 +63,10 @@ void setupResourceManager(CefRefPtr<CefResourceManager> resource_manager) {
 
 }  // namespace detail
 
-WebBrowserClient::WebBrowserClient(ModuleManager& moduleManager, const PropertyWidgetCEFFactory* widgetFactory)
-    : widgetFactory_{widgetFactory} 
-    , renderHandler_(
-          new RenderHandlerGL([&](CefRefPtr<CefBrowser> browser) {
+WebBrowserClient::WebBrowserClient(ModuleManager& moduleManager,
+                                   const PropertyWidgetCEFFactory* widgetFactory)
+    : widgetFactory_{widgetFactory}
+    , renderHandler_(new RenderHandlerGL([&](CefRefPtr<CefBrowser> browser) {
         auto bdIt = browserParents_.find(browser->GetIdentifier());
         if (bdIt != browserParents_.end()) {
             bdIt->second.processor->invalidate(InvalidationLevel::InvalidOutput);
@@ -77,7 +77,6 @@ WebBrowserClient::WebBrowserClient(ModuleManager& moduleManager, const PropertyW
         // Ensure that all module resources have been registered before setting up resources
         detail::setupResourceManager(resourceManager_);
     });
-    
 }
 
 void WebBrowserClient::setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent) {
