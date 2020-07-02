@@ -29,12 +29,16 @@
 
 #include <inviwo/dataframe/datastructures/column.h>
 
+#include <inviwo/core/util/zip.h>
+
+#include <unordered_map>
+
 namespace inviwo {
 
-CategoricalColumn::CategoricalColumn(const std::string &header)
+CategoricalColumn::CategoricalColumn(const std::string& header)
     : TemplateColumn<std::uint32_t>(header) {}
 
-CategoricalColumn *CategoricalColumn::clone() const { return new CategoricalColumn(*this); }
+CategoricalColumn* CategoricalColumn::clone() const { return new CategoricalColumn(*this); }
 
 std::string CategoricalColumn::getAsString(size_t idx) const {
     auto index = getTypedBuffer()->getRAMRepresentation()->getDataContainer()[idx];
@@ -49,17 +53,48 @@ std::shared_ptr<DataPointBase> CategoricalColumn::get(size_t idx, bool getString
     }
 }
 
-void CategoricalColumn::set(size_t idx, const std::string &str) {
+void CategoricalColumn::set(size_t idx, const std::string& str) {
     auto id = addOrGetID(str);
     getTypedBuffer()->getEditableRAMRepresentation()->set(idx, id);
 }
 
-void CategoricalColumn::add(const std::string &value) {
+void CategoricalColumn::add(const std::string& value) {
     auto id = addOrGetID(value);
     getTypedBuffer()->getEditableRAMRepresentation()->add(id);
 }
 
-glm::uint32_t CategoricalColumn::addOrGetID(const std::string &str) {
+void CategoricalColumn::append(const Column& col) {
+    if (auto srccol = dynamic_cast<const CategoricalColumn*>(&col)) {
+        std::unordered_map<std::string, std::uint32_t> dict;
+        for (auto&& [idx, str] : util::enumerate(lookUpTable_)) {
+            dict[str] = static_cast<std::uint32_t>(idx);
+        }
+
+        std::vector<std::uint32_t> vec;
+        for (auto idx : srccol->getTypedBuffer()->getRAMRepresentation()->getDataContainer()) {
+            const auto& value = srccol->lookUpTable_[idx];
+
+            auto it = dict.find(value);
+            if (it != dict.end()) {
+                vec.push_back(it->second);
+            } else {
+                lookUpTable_.push_back(value);
+                auto newIdx = static_cast<glm::uint32_t>(lookUpTable_.size() - 1);
+                dict[value] = newIdx;
+
+                vec.push_back(newIdx);
+            }
+        }
+
+        buffer_->getEditableRAMRepresentation()->append(vec);
+    } else {
+        throw Exception("data formats of columns do not match", IVW_CONTEXT);
+    }
+}
+
+std::uint32_t CategoricalColumn::addCategory(const std::string& cat) { return addOrGetID(cat); }
+
+glm::uint32_t CategoricalColumn::addOrGetID(const std::string& str) {
     auto it = std::find(lookUpTable_.begin(), lookUpTable_.end(), str);
     if (it != lookUpTable_.end()) {
         return static_cast<glm::uint32_t>(std::distance(lookUpTable_.begin(), it));

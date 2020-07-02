@@ -39,6 +39,7 @@
 #include <inviwo/dataframe/datastructures/column.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/dataframe/datastructures/datapoint.h>
+#include <inviwo/dataframe/util/dataframeutil.h>
 
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
@@ -96,6 +97,7 @@ struct TemplateColumnReg {
             .def(py::init<const std::string&>())
             .def("add", py::overload_cast<const T&>(&C::add))
             .def("add", py::overload_cast<const std::string&>(&C::add))
+            .def("append", [](C& c, C& src) { c.append(src); })
             .def("set", &C::set)
             .def("get",
                  [](const C& c, size_t i) {
@@ -142,6 +144,7 @@ void exposeDataFrame(pybind11::module& m) {
         .def_property_readonly("categories", &CategoricalColumn::getCategories,
                                py::return_value_policy::copy)
         .def("add", [](CategoricalColumn& c, const std::string& str) { c.add(str); })
+        .def("append", [](CategoricalColumn& c, CategoricalColumn& src) { c.append(src); })
         .def("set", [](CategoricalColumn& c, size_t idx, const std::uint32_t& v) { c.set(idx, v); })
         .def("set", py::overload_cast<size_t, const std::string&>(&CategoricalColumn::set))
         .def("get",
@@ -196,13 +199,46 @@ void exposeDataFrame(pybind11::module& m) {
     m.def("createDataFrame", createDataFrame, py::arg("exampleRows"),
           py::arg("colheaders") = std::vector<std::string>{},
           R"delim(
-            Create a new DataFrame by guessing the column types from a number of rows.
+Create a new DataFrame by guessing the column types from a number of rows.
 
-            Parameters
-            ----------
-            exampleRows     Rows for guessing data type of each column.
-            colHeaders      Name of each column. If none are given, "Column 1", "Column 2", ... is used
-        )delim");
+Parameters
+----------
+exampleRows     Rows for guessing data type of each column.
+colHeaders      Name of each column. If none are given, "Column 1", "Column 2", ... is used
+)delim")
+        .def("appendColumns", dataframe::appendColumns, py::arg("left"), py::arg("right"),
+             py::arg("ignoreduplicates") = false, py::arg("fillmissingrows") = false,
+             R"delim(
+Create a new DataFrame by appending the columns of DataFrame right to DataFrame left
+
+Parameters
+----------
+ignoreduplicates   duplicate columns, i.e. same column header, are ignored if true
+fillmissingrows    if true, missing rows in either DataFrame are filled with 0 or
+                   "undefined" (for categorical columns)
+)delim")
+        .def("appendRows", dataframe::appendRows, py::arg("top"), py::arg("bottom"),
+             py::arg("matchbyname") = false,
+             R"delim(
+Create a new DataFrame by appending the rows of DataFrame bottom to DataFrame top
+
+Parameters
+----------
+matchByName    if true, column headers are used for matching columns. Otherwise columns
+               are matched by order (default)
+)delim")
+        .def("innerJoin", dataframe::innerJoin, py::arg("left"), py::arg("right"),
+             py::arg("keycolumn") = "index",
+             R"delim(
+Create a new DataFrame by using an inner join of DataFrame left and DataFrame right.
+That is only rows with matching keys are kept.
+
+It is assumed that the entries in the key columns are unique. Otherwise results are undefined.
+
+Parameters
+----------
+keycolumn    header of the column used as key for the join operation (default: index column)
+)delim");
 
     exposeStandardDataPorts<DataFrame>(m, "DataFrame");
 }

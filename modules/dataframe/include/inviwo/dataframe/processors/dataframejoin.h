@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,64 +30,61 @@
 #pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/properties/optionproperty.h>
+
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/properties/dataframeproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.DataFrameExporter, DataFrame Exporter}
- * ![](org.inviwo.DataFrameExporter.png?classIdentifier=org.inviwo.DataFrameExporter)
- * This processor exports a DataFrame into a CSV or XML file.
+/** \docpage{org.inviwo.DataFrameJoin, Data Frame Join}
+ * ![](org.inviwo.DataFrameJoin.png?classIdentifier=org.inviwo.DataFrameJoin)
+ * Merges two DataFrames according to selected join type. This processor supports appending either
+ * rows or columns as well as standard database joins, i.e. inner, left outer, right outer, full
+ * outer, and cross joins.
+ *
+ * For row joins, the column count, column headers, and types must match. Similarly, when joining
+ * columns the number of rows must match (unless the fill missing rows option is checked).
  *
  * ### Inports
- *   * __<Inport>__ source DataFrame which is saved as CSV or XML file
+ *   * __left__   DataFrame used as left table in join
+ *   * __right__  DataFrame used as right table in join
  *
+ * ### Outports
+ *   * __outport__  joined DataFrame
+ *
+ * ### Properties
+ *   * __join__   type of join
  */
-
-class IVW_MODULE_DATAFRAME_API DataFrameExporter : public Processor {
+class IVW_MODULE_DATAFRAME_API DataFrameJoin : public Processor {
 public:
-    DataFrameExporter();
-    virtual ~DataFrameExporter() = default;
+    enum class JoinType {
+        AppendColumns,
+        AppendRows,
+        Inner,
+    };
+    enum class ColumnMatch { ByName, Ordered };
+
+    DataFrameJoin();
+    virtual ~DataFrameJoin() = default;
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
-    void exportNow();
-
 private:
-    void exportAsCSV(bool separateVectorTypesIntoColumns = true);
-    void exportAsXML();
+    DataFrameInport inportLeft_;
+    DataFrameInport inportRight_;
+    DataFrameOutport outport_;
 
-    DataInport<DataFrame> dataFrame_;
-
-    FileProperty exportFile_;
-    ButtonProperty exportButton_;
-    BoolProperty overwrite_;
-    BoolProperty exportIndexCol_;
-    BoolProperty separateVectorTypesIntoColumns_;
-    BoolProperty quoteStrings_;
-    StringProperty delimiter_;
-
-    static FileExtension csvExtension_;
-    static FileExtension xmlExtension_;
-
-    bool export_;
+    TemplateOptionProperty<JoinType> join_;
+    BoolProperty ignoreDuplicateCols_;
+    BoolProperty fillMissingRows_;
+    TemplateOptionProperty<ColumnMatch> columnMatching_;
+    DataFrameColumnProperty key_;
 };
 
 }  // namespace inviwo
