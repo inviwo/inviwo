@@ -35,6 +35,7 @@
 #include <modules/webbrowser/processors/processorcefsynchronizer.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/stdextensions.h>
 
@@ -69,7 +70,7 @@ class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
                                                    public CefDisplayHandler,
                                                    public CefResourceRequestHandler {
 public:
-    WebBrowserClient(const PropertyWidgetCEFFactory* widgetFactory);
+    WebBrowserClient(ModuleManager& moduleManager, const PropertyWidgetCEFFactory* widgetFactory);
 
     virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return renderHandler_; }
