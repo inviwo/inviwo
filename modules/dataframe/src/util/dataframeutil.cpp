@@ -194,7 +194,7 @@ std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& rig
                             return std::make_pair(rowsLeft, rowsRight);
                         });
 
-    IVW_ASSERT(rowsLeft.size() == rowsRight.size(), "incorrect number of matching row indices");
+    IVW_ASSERT(rows.first.size() == rows.second.size(), "incorrect number of matching row indices");
 
     auto dataframe = std::make_shared<DataFrame>();
 
