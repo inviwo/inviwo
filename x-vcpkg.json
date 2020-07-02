@@ -14,7 +14,10 @@
         "glfw3",
         "glm",
         "gtest",
-        "hdf5",
+        {
+            "name": "hdf5",
+            "features": [ "cpp", "zlib"]
+        }
         "libjpeg-turbo",
         "libpng",
         "minizip",

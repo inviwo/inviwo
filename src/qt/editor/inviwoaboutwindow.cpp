@@ -151,17 +151,17 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         h.append("h3", "Core Team:");
         h.append("br");
         h.append("span",
-                 "Peter Steneteg, Erik Sundén, Daniel Jönsson, Martin Falk, "
-                 "Rickard Englund, Sathish Kottravel, Timo Ropinski");
+                 "Peter Steneteg, Martin Falk, Daniel Jönsson, Rickard Englund, Timo Ropinski, "
+                 "Anke Friederici, Julian Kreiser, Dominik Engel");
     }
     {
         auto h = body.append("p");
         h.append("h3", "Contributors:");
         h.append("br");
+
         h.append("span",
-                 "Robin Skånberg, Jochen Jankowai, Tino Weinkauf, "
-                 "Wiebke Köpp, Anke Friederici, Dominik Engel, "
-                 "Alexander Johansson, Andreas Valter, Johan Norén, Emanuel Winblad, "
+                 "Erik Sundén, Sathish Kottravel, Robin Skånberg, Jochen Jankowai, Tino Weinkauf, "
+                 "Wiebke Köpp, Alexander Johansson, Andreas Valter, Johan Norén, Emanuel Winblad, "
                  "Hans-Christian Helltegen, Viktor Axelsson");
     }
     {

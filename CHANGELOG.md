@@ -6,14 +6,14 @@ Moved DataFrame utils files to `dataframe/util/dataframeutil.h` (previously `dat
 Added utility functions for joining two DataFrames: `appendRows()`, `appendColumns()`, `innerJoin()`.
 
 ## 2020-06-26 Vcpkg support
-We now support using [vcpkg](https://github.com/microsoft/vcpkg) for handling external dependencies. The following packages from vcpkg can be used `assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib`.
+We now support using [vcpkg](https://github.com/microsoft/vcpkg) for handling external dependencies. The following packages from vcpkg can be used `assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib`.
 
 To install vcpkg and the dependencies in a directory of your choice (outside of inviwo) do: 
 ```cmd  
 > git clone https://github.com/Microsoft/vcpkg.git
 > cd vcpkg
 > ./bootstrap-vcpkg.bat
-> ./vcpkg.exe install --triplet x64-windows assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib      
+> ./vcpkg.exe install --triplet x64-windows assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib      
 ``` 
 Then set the `CMAKE_TOOLCHAIN_FILE` to `<vcpkg-install-dir>/scripts/buildsystems/vcpkg.cmake` when configuring CMake (see https://stackoverflow.com/questions/29982505/setting-a-cross-compiler-file-using-the-cmake-gui ). Finally, set all the corresponding `IVW_USE_EXTERNAL_<package>` to `TRUE`.
 

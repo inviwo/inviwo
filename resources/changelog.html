@@ -90,12 +90,12 @@
 <p>Moved DataFrame utils files to <code>dataframe/util/dataframeutil.h</code> (previously <code>dataframe/datastructures/dataframeutil.h</code>). Renamed namespace from <code>dataframeutil</code> to <code>dataframe</code>.</p>
 <p>Added utility functions for joining two DataFrames: <code>appendRows()</code>, <code>appendColumns()</code>, <code>innerJoin()</code>.</p>
 <h2>2020-06-26 Vcpkg support</h2>
-<p>We now support using <a href="https://github.com/microsoft/vcpkg">vcpkg</a> for handling external dependencies. The following packages from vcpkg can be used <code>assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib</code>.</p>
+<p>We now support using <a href="https://github.com/microsoft/vcpkg">vcpkg</a> for handling external dependencies. The following packages from vcpkg can be used <code>assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib</code>.</p>
 <p>To install vcpkg and the dependencies in a directory of your choice (outside of inviwo) do: </p>
 <div class="highlight"><pre><span></span>&gt; git clone https://github.com/Microsoft/vcpkg.git
 &gt; cd vcpkg
 &gt; vcpkg\bootstrap-vcpkg.bat
-&gt; vcpkg.exe install --triplet x64-windows assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5 libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib      
+&gt; vcpkg.exe install --triplet x64-windows assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib      
 </pre></div>
 
 
