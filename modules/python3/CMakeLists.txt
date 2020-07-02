@@ -95,7 +95,7 @@ target_include_directories(inviwo-module-python3 PUBLIC
 
 add_subdirectory(bindings)
 
-if(IVW_UNITTESTS)
+if(TARGET inviwo-unittests-python3)
     add_dependencies(inviwo-unittests-python3 inviwopy)
 endif()
 
