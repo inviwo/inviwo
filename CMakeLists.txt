@@ -105,6 +105,9 @@ ivw_enable_modules_if(IVW_APP_PYTHON Python3 Python3Qt QtWidgets)
 option(IVW_TEST_INTEGRATION_TESTS "Build inviwo integration test" ON)
 ivw_enable_modules_if(IVW_TEST_INTEGRATION_TESTS GLFW Base)
 
+# Provide optional hook for external application setup 
+ivw_external_apps_pre_module_registration_setup()
+
 # Try to find qt and add it if it is not already in CMAKE_PREFIX_PATH
 if(NOT "${CMAKE_PREFIX_PATH}" MATCHES "[Qq][Tt]")
     include(cmake/locateqt.cmake)
@@ -125,7 +128,7 @@ endif()
 ivw_register_modules(all_modules)            # Add inviwo modules
 add_subdirectory(src/qt)                     # Add the Qt network editor
 add_subdirectory(apps)                       # Add all the applications, uses the modules.
-ivw_add_external_projects()                  # Add external projects
+ivw_add_external_apps()                      # Add external projects
 if(IVW_TEST_INTEGRATION_TESTS)
     add_subdirectory(tests/integrationtests) # Add integration tests, uses the modules.
 endif()

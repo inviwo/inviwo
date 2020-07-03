@@ -549,10 +549,20 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Add all external projects specified in cmake string IVW_EXTERNAL_PROJECTS
-function(ivw_add_external_projects)
+function(ivw_add_external_apps)
     foreach(project_root_path ${IVW_EXTERNAL_PROJECTS})
         string(STRIP ${project_root_path} project_root_path)
         get_filename_component(FOLDER_NAME ${project_root_path} NAME)
         add_subdirectory(${project_root_path} ${CMAKE_CURRENT_BINARY_DIR}/ext_${FOLDER_NAME})
+    endforeach()
+endfunction()
+
+# Include file "preModuleRegistration.cmake" in each folder specified in IVW_EXTERNAL_PROJECTS to 
+# allow external application setup before modules are registered. 
+# Typical usage: ivw_enable_modules_if(IVW_APP_MYAPP YourDependentModuleName)
+function(ivw_external_apps_pre_module_registration_setup)
+    foreach(project_root_path ${IVW_EXTERNAL_PROJECTS})
+        string(STRIP ${project_root_path} project_root_path)
+        include(${project_root_path}/preModuleRegistration.cmake OPTIONAL)
     endforeach()
 endfunction()
