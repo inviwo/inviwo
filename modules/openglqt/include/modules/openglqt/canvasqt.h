@@ -145,7 +145,6 @@ CanvasQtBase<T>::~CanvasQtBase() {
 template <typename T>
 std::unique_ptr<Canvas> CanvasQtBase<T>::createHiddenCanvas() {
     return HiddenCanvasQt::createHiddenQtCanvas();
-
 }
 
 template <typename T>
