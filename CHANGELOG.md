@@ -1,5 +1,9 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2020-06-09 Remove use of deprecated QGLWidget and OpenGL compatibility mode
+In case you have built a custom Qt application your main file need be updated to enable shared OpenGL context, see apps/inviwo/inviwo.cpp.
+We now also use QOffScreenSurface for default OpenGL context and threaded rendering instead of a custom hidden window. 
+
 ## 2020-06-30 DataFrame
 Moved DataFrame utils files to `dataframe/util/dataframeutil.h` (previously `dataframe/datastructures/dataframeutil.h`). Renamed namespace from `dataframeutil` to `dataframe`.
 

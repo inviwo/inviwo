@@ -41,6 +41,7 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shadermanager.h>
 #include <inviwo/core/util/rendercontext.h>
 
 namespace inviwo {

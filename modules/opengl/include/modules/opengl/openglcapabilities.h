@@ -100,6 +100,7 @@ public:
 
     const std::string& getRenderString() const;
     const std::string& getVendorString() const;
+    const std::string& getProfileString() const;
     const std::string& getGLVersionString() const;
     const std::string& getGLSLVersionString() const;
     GlVendor getVendor() const;
@@ -111,9 +112,6 @@ public:
     int getMaxArrayVertexAttribs() const;
     int getMaxColorAttachments() const;
     int getNumTexUnits() const;
-
-    static std::string getPreferredProfile();
-    bool setPreferredProfile(std::string, bool);
 
 protected:
     virtual void retrieveStaticInfo() override;
@@ -145,7 +143,6 @@ private:
     }
 
     static bool glewInitialized_;
-    static std::string preferredProfile_;
     static int glVersion_;
     static std::string glVersionStr_;
 
@@ -153,6 +150,7 @@ private:
 
     std::string glVendorStr_;
     std::string glRenderStr_;
+    std::string glProfileStr_;
     std::string glslVersionStr_;
 
     // GLSL

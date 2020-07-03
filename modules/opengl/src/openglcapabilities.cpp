@@ -43,7 +43,6 @@ namespace inviwo {
 // Or minimal opengl version is 3.3 and glsl version 330
 
 bool OpenGLCapabilities::glewInitialized_ = false;
-std::string OpenGLCapabilities::preferredProfile_ = "core";
 int OpenGLCapabilities::glVersion_ = 0;
 std::string OpenGLCapabilities::glVersionStr_ = "0";
 
@@ -74,13 +73,15 @@ bool OpenGLCapabilities::GLSLShaderVersion::sortHighestFirst(GLSLShaderVersion i
 }
 
 OpenGLCapabilities::OpenGLCapabilities(OpenGLSettings* settings)
-    : shadersAreSupported_(false)
+    : glVendor_(GlVendor::Unknown)
+    , shadersAreSupported_(false)
     , shadersAreSupportedARB_(false)
     , geometryShadersAreSupported_(false)
     , maxProgramLoopCount_(-1)
     , geometryShadersMaxVertices_(-1)
     , geometryShadersMaxOutputComponents_(-1)
     , geometryShadersMaxTotalOutputComponents_(-1)
+    , currentGlobalGLSLVersionIdx_(0)
     , texSupported_(false)
     , tex3DSupported_(false)
     , texArraySupported_(false)
@@ -94,24 +95,7 @@ OpenGLCapabilities::OpenGLCapabilities(OpenGLSettings* settings)
 
     supportedShaderVersions_.clear();
 
-    preferredProfile_ = settings->selectedOpenGLProfile_.getSelectedIdentifier();
-
     settings->btnOpenGLInfo_.onChange([this]() { printDetailedInfo(); });
-
-    bool hasOutputedGLSLVersionOnce = false;
-    settings->selectedOpenGLProfile_.onChange(
-        [this, settings, hasOutputedGLSLVersionOnce]() mutable {
-            if (setPreferredProfile(settings->selectedOpenGLProfile_.getSelectedValue(),
-                                    !hasOutputedGLSLVersionOnce) &&
-                hasOutputedGLSLVersionOnce) {
-                ShaderManager::getPtr()->rebuildAllShaders();
-                if (preferredProfile_ != settings->selectedOpenGLProfile_.getSelectedValue()) {
-                    print("Restart application to enable " +
-                          settings->selectedOpenGLProfile_.getSelectedValue() + " mode.");
-                }
-            }
-            hasOutputedGLSLVersionOnce = true;
-        });
 }
 
 OpenGLCapabilities::~OpenGLCapabilities() {
@@ -119,7 +103,6 @@ OpenGLCapabilities::~OpenGLCapabilities() {
 
     // reset stuff.
     glewInitialized_ = false;
-    preferredProfile_ = "core";
     glVersion_ = 0;
     glVersionStr_ = "0";
 }
@@ -134,7 +117,7 @@ void OpenGLCapabilities::printInfo() {
               (totalMem > 0 ? util::formatBytesToString(totalMem) : "UNKNOWN"));
     }
     print("OpenGL Version: ", glVersionStr_);
-    std::string profile = preferredProfile_;
+    std::string profile = getProfileString();
     profile[0] = static_cast<char>(toupper(profile[0]));
     print("OpenGL Profile: ", profile);
 
@@ -148,7 +131,7 @@ void OpenGLCapabilities::printDetailedInfo() {
     print("GPU Vendor: " + glVendorStr_);
     print("GPU Renderer: " + glRenderStr_);
     print("OpenGL Version: " + glVersionStr_);
-    std::string profile = preferredProfile_;
+    std::string profile = getProfileString();
     profile[0] = static_cast<char>(toupper(profile[0]));
     print("OpenGL Profile: " + profile);
 
@@ -207,8 +190,8 @@ bool OpenGLCapabilities::hasOpenGLVersion() { return (glVersion_ > 0); }
 
 void OpenGLCapabilities::initializeGLEW() {
     if (!hasSupportedOpenGLVersion()) {
-        std::string preferProfile = getPreferredProfile();
-        if (preferProfile == "core") glewExperimental = GL_TRUE;
+        // Ensure that all extensions with valid entry points will be exposed
+        glewExperimental = GL_TRUE;
         GLenum glewError = glewInit();
         if (GLEW_OK == glewError) {
             const GLubyte* glversion = glGetString(GL_VERSION);
@@ -276,6 +259,7 @@ int OpenGLCapabilities::getMaxColorAttachments() const { return maxColorAttachme
 
 const std::string& OpenGLCapabilities::getRenderString() const { return glRenderStr_; }
 const std::string& OpenGLCapabilities::getVendorString() const { return glVendorStr_; }
+const std::string& OpenGLCapabilities::getProfileString() const { return glProfileStr_; }
 const std::string& OpenGLCapabilities::getGLVersionString() const { return glVersionStr_; }
 const std::string& OpenGLCapabilities::getGLSLVersionString() const { return glslVersionStr_; }
 OpenGLCapabilities::GlVendor OpenGLCapabilities::getVendor() const { return glVendor_; }
@@ -346,32 +330,6 @@ size_t OpenGLCapabilities::getTotalAvailableTextureMem() {
     return totalAvailableTexMemInBytes;
 }
 
-std::string OpenGLCapabilities::getPreferredProfile() { return preferredProfile_; }
-
-bool OpenGLCapabilities::setPreferredProfile(std::string profile, bool showMessage) {
-    preferredProfile_ = profile;
-
-    size_t i = 0;
-    while (i < supportedShaderVersions_.size() &&
-           (supportedShaderVersions_[i].hasProfile() &&
-            supportedShaderVersions_[i].getProfile() != preferredProfile_)) {
-        i++;
-    }
-
-    bool changed = false;
-    if (i != currentGlobalGLSLVersionIdx_) {
-        currentGlobalGLSLVersionIdx_ = i;
-        changed = true;
-    }
-
-    if (changed || showMessage) {
-        print("Current set global GLSL version: ",
-              getCurrentShaderVersion().getVersionAndProfileAsString());
-    }
-
-    return changed;
-}
-
 void OpenGLCapabilities::retrieveStaticInfo() {
     if (!OpenGLCapabilities::hasOpenGLVersion()) return;
 
@@ -394,6 +352,17 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     const GLubyte* glrender = glGetString(GL_RENDERER);
     glRenderStr_ =
         std::string((glrender != nullptr ? reinterpret_cast<const char*>(glrender) : "INVALID"));
+
+    GLint contextMask = 0;
+    glGetIntegerv(GL_CONTEXT_PROFILE_MASK, (GLint*)&contextMask);
+    if (contextMask & GL_CONTEXT_CORE_PROFILE_BIT) {
+        glProfileStr_ = "core";
+    } else if (contextMask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT) {
+        glProfileStr_ = "compatibility";
+    } else {
+        LogError("Error retrieving OpenGL profile, assuming core profile");
+        glProfileStr_ = "core";
+    }
     // GLSL
     shadersAreSupported_ = (glVersion_ >= 200);
     shadersAreSupportedARB_ = isExtensionSupported("GL_EXT_ARB_fragment_program");
@@ -481,7 +450,7 @@ void OpenGLCapabilities::retrieveStaticInfo() {
 
         while (i < supportedShaderVersions_.size() &&
                (supportedShaderVersions_[i].hasProfile() &&
-                supportedShaderVersions_[i].getProfile() != preferredProfile_))
+                supportedShaderVersions_[i].getProfile() != getProfileString()))
             i++;
 
         currentGlobalGLSLVersionIdx_ = i;

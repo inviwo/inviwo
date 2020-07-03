@@ -53,7 +53,7 @@ GLFWwindow* CanvasGLFW::createWindow(const std::string& title, uvec2 dimensions)
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
 #ifdef __APPLE__
-    if (!sharedContext_ && OpenGLCapabilities::getPreferredProfile() == "core") {
+    if (!sharedContext_) {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);

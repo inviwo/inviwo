@@ -48,7 +48,6 @@ public:
 
     BoolProperty shaderReloadingProperty_;
     ButtonProperty btnOpenGLInfo_;
-    OptionPropertyString selectedOpenGLProfile_;
     TemplateOptionProperty<Shader::UniformWarning> uniformWarnings_;
     TemplateOptionProperty<Shader::OnError> shaderObjectErrors_;
 

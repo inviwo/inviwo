@@ -48,6 +48,7 @@
 #include <warn/ignore/all>
 #include <QFile>
 #include <QMessageBox>
+#include <QSurfaceFormat>
 #include <warn/pop>
 
 int main(int argc, char** argv) {
@@ -63,6 +64,14 @@ int main(int argc, char** argv) {
      */
     qputenv("QT_STYLE_OVERRIDE", "");
 #endif
+    // Must be set before constructing QApplication
+    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+    QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+    QSurfaceFormat defaultFormat;
+    defaultFormat.setMajorVersion(10);
+    defaultFormat.setProfile(QSurfaceFormat::CoreProfile);
+    QSurfaceFormat::setDefaultFormat(defaultFormat);
+
     inviwo::InviwoApplicationQt inviwoApp(argc, argv, "Inviwo");
     inviwoApp.setStyleSheetFile(":/stylesheets/inviwo.qss");
 

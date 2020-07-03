@@ -42,6 +42,11 @@
 #include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QSurfaceFormat>
+#include <warn/pop>
+
 using namespace inviwo;
 
 int main(int argc, char** argv) {
@@ -49,6 +54,14 @@ int main(int argc, char** argv) {
     inviwo::util::OnScopeExit deleteLogcentral([]() { inviwo::LogCentral::deleteInstance(); });
     auto logger = std::make_shared<inviwo::ConsoleLogger>();
     LogCentral::getPtr()->registerLogger(logger);
+
+    // Must be set before constructing QApplication
+    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+    QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+    QSurfaceFormat defaultFormat;
+    defaultFormat.setMajorVersion(10);
+    defaultFormat.setProfile(QSurfaceFormat::CoreProfile);
+    QSurfaceFormat::setDefaultFormat(defaultFormat);
 
     InviwoApplicationQt inviwoApp(argc, argv, "Inviwo-Qt");
     inviwoApp.printApplicationInfo();
