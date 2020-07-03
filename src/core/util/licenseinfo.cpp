@@ -31,9 +31,10 @@
 
 namespace inviwo {
 
-LicenseInfo::LicenseInfo(const std::string& aId, const std::string& aName, const Version& aVersion,
-                         const std::string& aUrl, const std::string& aModule,
-                         const std::string& aType, const std::vector<std::string>& someFiles)
+LicenseInfo::LicenseInfo(const std::string& aId, const std::string& aName,
+                         const std::string& aVersion, const std::string& aUrl,
+                         const std::string& aModule, const std::string& aType,
+                         const std::vector<std::string>& someFiles)
     : id{aId}
     , name{aName}
     , version{aVersion}

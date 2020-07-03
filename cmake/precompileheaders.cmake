@@ -30,13 +30,13 @@
 
 
 if(WIN32)
-    option(PRECOMPILED_HEADERS "Create and use precompilied headers" ON)
+    option(IVW_CFG_PRECOMPILED_HEADERS "Create and use precompilied headers" ON)
 else()
-    option(PRECOMPILED_HEADERS "Create and use precompilied headers" OFF)
+    option(IVW_CFG_PRECOMPILED_HEADERS "Create and use precompilied headers" OFF)
 endif()
 
 
-if(PRECOMPILED_HEADERS)
+if(IVW_CFG_PRECOMPILED_HEADERS)
     include(${CMAKE_CURRENT_LIST_DIR}/cotire.cmake)
 endif()
 
@@ -89,7 +89,7 @@ function(ivw_get_drive file retval)
     set(${retval} ${tmp1} PARENT_SCOPE)
 endfunction()
 
-if(WIN32 AND MSVC AND PRECOMPILED_HEADERS)
+if(WIN32 AND MSVC AND IVW_CFG_PRECOMPILED_HEADERS)
     ivw_get_header_path("windows.h" ivw_private_windows_path)
 endif()
 
@@ -106,7 +106,7 @@ endfunction()
 # We make sure that these properties are propagated to the 
 # depending targets.
 function(ivw_compile_optimize_on_target target)
-    if(PRECOMPILED_HEADERS)
+    if(IVW_CFG_PRECOMPILED_HEADERS)
         ivw_get_target_property_recursive(publicIgnorePaths ${target} COTIRE_PREFIX_HEADER_PUBLIC_IGNORE_PATH False)
         get_target_property(ignorePaths ${target} COTIRE_PREFIX_HEADER_IGNORE_PATH)
         if(NOT ignorePaths)

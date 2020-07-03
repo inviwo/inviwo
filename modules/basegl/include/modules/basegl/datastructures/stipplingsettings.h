@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,27 +26,47 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/base/datastructures/stipplingsettingsinterface.h>
-#include <modules/base/datastructures/stipplingsettings.h>
+#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
 
 namespace inviwo {
 
-StipplingSettings::StipplingSettings(const StipplingSettingsInterface* other)
-    : mode(other->getMode())
-    , length(other->getLength())
-    , spacing(other->getSpacing())
-    , offset(other->getOffset())
-    , worldScale(other->getWorldScale()) {}
+/**
+ * \brief Basic implementation of the StipplingSettingsInterface
+ */
+class IVW_MODULE_BASEGL_API StipplingSettings : public StipplingSettingsInterface {
+public:
+    StipplingSettings() = default;
+    StipplingSettings(const StipplingSettingsInterface* other);
+    virtual ~StipplingSettings() = default;
 
-StipplingSettingsInterface::Mode StipplingSettings::getMode() const { return mode; }
-
-float StipplingSettings::getLength() const { return length; }
-
-float StipplingSettings::getSpacing() const { return spacing; }
-
-float StipplingSettings::getOffset() const { return offset; }
-
-float StipplingSettings::getWorldScale() const { return worldScale; }
+    Mode mode = Mode::None;
+    float length = 30.f;
+    float spacing = 10.f;
+    float offset = 0.f;
+    float worldScale = 4.f;
+    /*
+     * @copydoc StipplingSettingsInterface::getMode
+     */
+    virtual StipplingSettingsInterface::Mode getMode() const override;
+    /*
+     * @copydoc StipplingSettingsInterface::getLength
+     */
+    virtual float getLength() const override;
+    /*
+     * @copydoc StipplingSettingsInterface::getSpacing
+     */
+    virtual float getSpacing() const override;
+    /*
+     * @copydoc StipplingSettingsInterface::getOffset
+     */
+    virtual float getOffset() const override;
+    /*
+     * @copydoc StipplingSettingsInterface::getWorldScale
+     */
+    virtual float getWorldScale() const override;
+};
 
 }  // namespace inviwo

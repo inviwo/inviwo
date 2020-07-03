@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,47 +26,48 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <modules/base/datastructures/stipplingsettingsinterface.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 
-/**
- * \brief Basic implementation of the StipplingSettingsInterface
+/** \docpage{org.inviwo.VolumeShifter, Volume Shifter}
+ * ![](org.inviwo.VolumeShifter.png?classIdentifier=org.inviwo.VolumeShifter)
+ * Shifts the voxel data within the volume by a pre-defined offset. Voxel data is wrapped. This
+ * processor does not change any other properties, e.g. dimensions, of the volume.
+ *
+ * ### Inports
+ *   * __volume__  input volume
+ *
+ * ### Outports
+ *   * __outport__  resulting volume with shifted voxel data
+ *
+ * ### Properties
+ *   * __enable__  if not enabled, the input volume is forwarded
+ *   * __offset__  shifting offset
  */
-class IVW_MODULE_BASE_API StipplingSettings : public StipplingSettingsInterface {
+class IVW_MODULE_BASE_API VolumeShifter : public Processor {
 public:
-    StipplingSettings() = default;
-    StipplingSettings(const StipplingSettingsInterface* other);
-    virtual ~StipplingSettings() = default;
+    VolumeShifter();
+    virtual ~VolumeShifter() = default;
 
-    Mode mode = Mode::None;
-    float length = 30.f;
-    float spacing = 10.f;
-    float offset = 0.f;
-    float worldScale = 4.f;
-    /*
-     * @copydoc StipplingSettingsInterface::getMode
-     */
-    virtual StipplingSettingsInterface::Mode getMode() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getLength
-     */
-    virtual float getLength() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getSpacing
-     */
-    virtual float getSpacing() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getOffset
-     */
-    virtual float getOffset() const override;
-    /*
-     * @copydoc StipplingSettingsInterface::getWorldScale
-     */
-    virtual float getWorldScale() const override;
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    VolumeInport inport_;
+    VolumeOutport outport_;
+
+    BoolProperty enabled_;
+    FloatVec3Property offset_;
 };
 
 }  // namespace inviwo

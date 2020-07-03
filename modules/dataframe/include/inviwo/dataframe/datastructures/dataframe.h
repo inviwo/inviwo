@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAFRAME_H
-#define IVW_DATAFRAME_H
+#pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/dataframe/datastructures/datapoint.h>
@@ -37,6 +36,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/util/exception.h>
@@ -49,21 +49,21 @@ class BufferRAM;
 
 class IVW_MODULE_DATAFRAME_API InvalidColCount : public Exception {
 public:
-    InvalidColCount(const std::string &message = "", ExceptionContext context = ExceptionContext())
+    InvalidColCount(const std::string& message = "", ExceptionContext context = ExceptionContext())
         : Exception(message, context) {}
-    virtual ~InvalidColCount() throw() {}
+    virtual ~InvalidColCount() noexcept {}
 };
 class IVW_MODULE_DATAFRAME_API NoColumns : public Exception {
 public:
-    NoColumns(const std::string &message = "", ExceptionContext context = ExceptionContext())
+    NoColumns(const std::string& message = "", ExceptionContext context = ExceptionContext())
         : Exception(message, context) {}
-    virtual ~NoColumns() throw() {}
+    virtual ~NoColumns() noexcept {}
 };
 class IVW_MODULE_DATAFRAME_API DataTypeMismatch : public Exception {
 public:
-    DataTypeMismatch(const std::string &message = "", ExceptionContext context = ExceptionContext())
+    DataTypeMismatch(const std::string& message = "", ExceptionContext context = ExceptionContext())
         : Exception(message, context) {}
-    virtual ~DataTypeMismatch() throw() {}
+    virtual ~DataTypeMismatch() noexcept {}
 };
 /**
  * \class DataFrame
@@ -72,15 +72,17 @@ public:
  * All columns must have the same number of elements for the
  * DataFrame to be valid.
  */
-class IVW_MODULE_DATAFRAME_API DataFrame {
+class IVW_MODULE_DATAFRAME_API DataFrame : public MetaDataOwner {
 public:
     using DataItem = std::vector<std::shared_ptr<DataPointBase>>;
     using LookupTable = std::unordered_map<glm::u64, std::string>;
 
-    DataFrame(const DataFrame &df);
-
     DataFrame(std::uint32_t size = 0);
-    virtual ~DataFrame() = default;
+    DataFrame(const DataFrame& df);
+    DataFrame& operator=(const DataFrame& df);
+    DataFrame(DataFrame&& df);
+    DataFrame& operator=(DataFrame&& df);
+    ~DataFrame() = default;
 
     /**
      * \brief add existing column to DataFrame
@@ -94,7 +96,7 @@ public:
      * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
      */
-    std::shared_ptr<Column> addColumnFromBuffer(const std::string &identifier,
+    std::shared_ptr<Column> addColumnFromBuffer(const std::string& identifier,
                                                 std::shared_ptr<const BufferBase> buffer);
 
     /**
@@ -103,7 +105,7 @@ public:
      * the DataFrame can be used
      */
     template <typename T>
-    std::shared_ptr<TemplateColumn<T>> addColumn(const std::string &header, size_t size = 0);
+    std::shared_ptr<TemplateColumn<T>> addColumn(const std::string& header, size_t size = 0);
 
     /**
      * \brief add column of type T from a std::vector<T>
@@ -111,7 +113,7 @@ public:
      * the DataFrame can be used
      */
     template <typename T>
-    auto addColumn(const std::string &header, std::vector<T> data);
+    auto addColumn(const std::string& header, std::vector<T> data);
 
     /**
      * \brief Drop a column from data frame
@@ -121,7 +123,7 @@ public:
      *
      * \param header Name of the column to be dropped
      */
-    void dropColumn(const std::string &header);
+    void dropColumn(const std::string& header);
 
     /**
      * \brief Drop a column from data frame
@@ -137,7 +139,7 @@ public:
      * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
      */
-    std::shared_ptr<CategoricalColumn> addCategoricalColumn(const std::string &header,
+    std::shared_ptr<CategoricalColumn> addCategoricalColumn(const std::string& header,
                                                             size_t size = 0);
     /**
      * \brief add a new row given a vector of strings.
@@ -149,11 +151,11 @@ public:
      * data
      * @throws DataTypeMismatch  if the data type of a column doesn't match with the input data
      */
-    void addRow(const std::vector<std::string> &data);
+    void addRow(const std::vector<std::string>& data);
 
     DataItem getDataItem(size_t index, bool getStringsAsStrings = false) const;
 
-    const std::vector<std::pair<std::string, const DataFormatBase *>> getHeaders() const;
+    const std::vector<std::pair<std::string, const DataFormatBase*>> getHeaders() const;
     std::string getHeader(size_t idx) const;
 
     /**
@@ -167,8 +169,8 @@ public:
      * fetch the first column where the header matches \p name.
      * @return  matching column if existing, else nullptr
      */
-    std::shared_ptr<Column> getColumn(const std::string &name);
-    std::shared_ptr<const Column> getColumn(const std::string &name) const;
+    std::shared_ptr<Column> getColumn(const std::string& name);
+    std::shared_ptr<const Column> getColumn(const std::string& name) const;
 
     std::shared_ptr<TemplateColumn<std::uint32_t>> getIndexColumn();
     std::shared_ptr<const TemplateColumn<std::uint32_t>> getIndexColumn() const;
@@ -208,11 +210,11 @@ using DataFrameMultiInport = DataInport<DataFrame, 0>;
  * @throws InvalidColCount  if column count between exampleRows and colHeaders does not match
  */
 std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
-createDataFrame(const std::vector<std::vector<std::string>> &exampleRows,
-                const std::vector<std::string> &colHeaders = {});
+createDataFrame(const std::vector<std::vector<std::string>>& exampleRows,
+                const std::vector<std::string>& colHeaders = {});
 
 template <typename T>
-std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string &header, size_t size) {
+std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string& header, size_t size) {
     auto col = std::make_shared<TemplateColumn<T>>(header);
     col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer().resize(size);
     columns_.push_back(col);
@@ -220,7 +222,7 @@ std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string &heade
 }
 
 template <typename T>
-auto DataFrame::addColumn(const std::string &header, std::vector<T> data) {
+auto DataFrame::addColumn(const std::string& header, std::vector<T> data) {
     return columns_.emplace_back(
         std::move(std::make_shared<TemplateColumn<T>>(header, std::move(data))));
 }
@@ -230,7 +232,7 @@ struct DataTraits<DataFrame> {
     static std::string classIdentifier() { return "org.inviwo.DataFrame"; }
     static std::string dataName() { return "DataFrame"; }
     static uvec3 colorCode() { return uvec3(153, 76, 0); }
-    static Document info(const DataFrame &data) {
+    static Document info(const DataFrame& data) {
         using H = utildoc::TableBuilder::Header;
         using P = Document::PathComponent;
         Document doc;
@@ -258,5 +260,3 @@ struct DataTraits<DataFrame> {
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAFRAME_H

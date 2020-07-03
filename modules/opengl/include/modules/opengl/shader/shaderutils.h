@@ -41,7 +41,6 @@
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/raycastingproperty.h>
 #include <inviwo/core/ports/port.h>
-#include <modules/base/properties/stipplingproperty.h>
 #include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/texture/textureutils.h>
 
@@ -127,12 +126,6 @@ IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader,
                                             const VolumeIndicatorProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader,
                                              const VolumeIndicatorProperty& property,
-                                             const std::string& name);
-
-// StipplingProperty
-IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const StipplingProperty& property);
-IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const StipplingProperty::Mode& mode);
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const StipplingProperty& property,
                                              const std::string& name);
 
 // Ordinal Property

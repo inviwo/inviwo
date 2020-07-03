@@ -35,7 +35,7 @@
 #include <vector>
 #include <string>
 
-#ifdef IVW_SIGAR
+#ifdef IVW_USE_SIGAR
 struct sigar_t;
 #endif
 
@@ -108,7 +108,7 @@ private:
     bool successDiskInfo_;
     bool successProcessMemoryInfo_;
 
-#ifdef IVW_SIGAR
+#ifdef IVW_USE_SIGAR
     sigar_t* sigar_;
 #endif
 };

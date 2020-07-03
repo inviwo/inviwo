@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRANSFERFUNCTIONCONTROLPOINTCONNECTION_H
-#define IVW_TRANSFERFUNCTIONCONTROLPOINTCONNECTION_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
@@ -93,5 +92,3 @@ IVW_MODULE_QTWIDGETS_API bool operator>=(const TFControlPointConnection& lhs,
                                          const TFControlPointConnection& rhs);
 
 }  // namespace inviwo
-
-#endif  // IVW_TRANSFERFUNCTIONCONTROLPOINTCONNECTION_H

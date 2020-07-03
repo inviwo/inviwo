@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/base/properties/stipplingproperty.h>
+#include <modules/basegl/properties/stipplingproperty.h>
 
 namespace inviwo {
 
@@ -76,5 +76,39 @@ StipplingProperty::StipplingProperty(const StipplingProperty& rhs)
 }
 
 StipplingProperty* StipplingProperty::clone() const { return new StipplingProperty(*this); }
+
+namespace utilgl {
+
+void addShaderDefines(Shader& shader, const StipplingProperty& property) {
+    addShaderDefines(shader, property.mode_.get());
+}
+
+void addShaderDefines(Shader& shader, const StipplingProperty::Mode& mode) {
+    std::string value;
+    switch (mode) {
+        case StipplingProperty::Mode::ScreenSpace:
+            value = "1";
+            break;
+        case StipplingProperty::Mode::WorldSpace:
+            value = "2";
+            break;
+        case StipplingProperty::Mode::None:
+        default:
+            break;
+    }
+
+    auto fragShader = shader.getFragmentShaderObject();
+    fragShader->setShaderDefine("ENABLE_STIPPLING", mode != StipplingProperty::Mode::None);
+    fragShader->addShaderDefine("STIPPLE_MODE", value);
+}
+
+void setShaderUniforms(Shader& shader, const StipplingProperty& property, const std::string& name) {
+    shader.setUniform(name + ".length", property.length_.get());
+    shader.setUniform(name + ".spacing", property.spacing_.get());
+    shader.setUniform(name + ".offset", property.offset_.get());
+    shader.setUniform(name + ".worldScale", property.worldScale_.get());
+}
+
+}  // namespace utilgl
 
 }  // namespace inviwo

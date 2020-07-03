@@ -27,11 +27,14 @@
 # 
 #################################################################################
 
-option(IVW_USE_GENERATED_RESOURCES "Use and Generate File Resources" OFF)
+option(IVW_CFG_EMBED_SHADERS 
+    [[Embed shaders files as code in the executable. Makes distribution easier, but removes possibility of runtime modifications.]] 
+    OFF
+)
 
 function(ivw_handle_shader_resources path)
     # Handle external resources
-    if(IVW_USE_GENERATED_RESOURCES)
+    if(IVW_CFG_EMBED_SHADERS)
         ivw_generate_shader_resource(${path} ${ARGN})
     else()
         # Add shader directory to pack

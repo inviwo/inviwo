@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORWIDGETQT_H
-#define IVW_PROCESSORWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/processors/processorwidget.h>
@@ -75,5 +74,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORWIDGETQT_H

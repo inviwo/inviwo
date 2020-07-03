@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BUTTONPROPERTYWIDGETQT_H
-#define IVW_BUTTONPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
@@ -55,5 +54,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BUTTONPROPERTYWIDGETQT_H

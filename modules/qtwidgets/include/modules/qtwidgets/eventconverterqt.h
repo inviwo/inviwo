@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EVENTCONVERTERQT_H
-#define IVW_EVENTCONVERTERQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
@@ -75,5 +74,3 @@ IVW_MODULE_QTWIDGETS_API IvwKey getKeyButton(const QKeyEvent* e);
 }  // namespace utilqt
 
 }  // namespace inviwo
-
-#endif  // IVW_EVENTCONVERTERQT_H

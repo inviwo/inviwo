@@ -36,7 +36,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 
@@ -49,7 +49,7 @@ namespace inviwo {
 
 namespace plot {
 
-class IVW_MODULE_PLOTTING_API AxisProperty : public AxisSettings, public CompositeProperty {
+class IVW_MODULE_PLOTTING_API AxisProperty : public AxisSettings, public BoolCompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -115,7 +115,6 @@ public:
     virtual const MinorTickSettings& getMinorTicks() const override;
 
     // general properties
-    BoolProperty visible_;
     FloatVec4Property color_;
     FloatProperty width_;
     BoolProperty useDataRange_;

@@ -83,7 +83,7 @@ function(ivw_private_generate_module_registration_file mod)
         set(module_protected "ProtectedModule::off")
     endif()
 
-    ivw_private_generate_licence_header(MOD ${mod} RETVAL module_license_vector)
+    ivw_private_generate_license_header(MOD ${mod} RETVAL module_license_vector)
     set(fuction_args
         "        \"${${mod}_name}\", // Module name \n"
         "        \"${${mod}_version}\", // Module version\n"

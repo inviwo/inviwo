@@ -29,6 +29,8 @@ ivw_add_unittest(${TEST_FILES})
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
+
+find_package(pybind11 CONFIG REQUIRED)
 target_link_libraries(inviwo-module-dataframepython PUBLIC 
     pybind11::embed 
     $<BUILD_INTERFACE:${PYTHON_LIBRARIES}>

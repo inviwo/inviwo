@@ -35,8 +35,7 @@
  * All the code here is free for you.
  *********************************************************************************/
 
-#ifndef IVW_COLORWHEEL_H
-#define IVW_COLORWHEEL_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <warn/push>
@@ -107,5 +106,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_COLORWHEEL_H

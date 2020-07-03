@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_QTWIDGETSSETTINGS_H
-#define IVW_QTWIDGETSSETTINGS_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -73,5 +72,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_QTWIDGETSSETTINGS_H

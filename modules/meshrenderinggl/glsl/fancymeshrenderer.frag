@@ -95,6 +95,7 @@ uniform sampler2D transferFunction1;  // back
 
 // global alpha construction
 struct AlphaSettings {
+    float minAlpha;
     float uniformScale;
     float angleExp;
     float normalExp;
@@ -187,30 +188,34 @@ vec4 performShading() {
         // custom alpha
         float angle = abs(dot(normal, toCameraDir));
 #ifdef ALPHA_UNIFORM
-        alpha *= alphaSettings.uniformScale;
+        alpha *= max(alphaSettings.uniformScale, alphaSettings.minAlpha);
 #endif
 #ifdef ALPHA_ANGLE_BASED
         alpha *= pow(acos(angle) * 2 / M_PI, alphaSettings.angleExp);
+        alpha += alphaSettings.minAlpha;
 #endif
 #ifdef ALPHA_NORMAL_VARIATION
         float nv_dzi = dFdxFinest(normal.z);
         float nv_dzj = dFdyFinest(normal.z);
         float nv_curvature = min(1, nv_dzi * nv_dzi + nv_dzj * nv_dzj + 0.0000001);
-        alpha *= min(1, pow(nv_curvature, alphaSettings.normalExp * 0.5) * 10);
+        alpha *= pow(nv_curvature, alphaSettings.normalExp * 0.5) * 10;
+        alpha += alphaSettings.minAlpha;
 #endif
 #ifdef ALPHA_DENSITY
         float density_alpha = alphaSettings.baseDensity / (frag.area * angle * 100);
-        alpha *= pow(min(1, density_alpha), alphaSettings.densityExp);
+        alpha *= pow(density_alpha, alphaSettings.densityExp);
+        alpha += alphaSettings.minAlpha;
 #endif
 #ifdef ALPHA_SHAPE
         float shape_alpha = 4 * frag.area /
                             (sqrt(3) * max(max(frag.sideLengths.x * frag.sideLengths.y,
                                                frag.sideLengths.x * frag.sideLengths.z),
                                            frag.sideLengths.y * frag.sideLengths.z));
-        alpha *= pow(min(1, shape_alpha), alphaSettings.shapeExp);
+        alpha *= pow(shape_alpha, alphaSettings.shapeExp);
+        alpha += alphaSettings.minAlpha;
 #endif
     }
-    color.a *= alpha;
+    color.a *= min(1, alpha);
 
     //==================================================
     // EDGES

@@ -86,6 +86,49 @@
 </head>
 <body >
 <h1>Latest Changes</h1>
+<h2>2020-06-30 DataFrame</h2>
+<p>Moved DataFrame utils files to <code>dataframe/util/dataframeutil.h</code> (previously <code>dataframe/datastructures/dataframeutil.h</code>). Renamed namespace from <code>dataframeutil</code> to <code>dataframe</code>.</p>
+<p>Added utility functions for joining two DataFrames: <code>appendRows()</code>, <code>appendColumns()</code>, <code>innerJoin()</code>.</p>
+<h2>2020-06-26 Vcpkg support</h2>
+<p>We now support using <a href="https://github.com/microsoft/vcpkg">vcpkg</a> for handling external dependencies. The following packages from vcpkg can be used <code>assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib</code>.</p>
+<p>To install vcpkg and the dependencies in a directory of your choice (outside of inviwo) do: </p>
+<div class="highlight"><pre><span></span>&gt; git clone https://github.com/Microsoft/vcpkg.git
+&gt; cd vcpkg
+&gt; vcpkg\bootstrap-vcpkg.bat
+&gt; vcpkg.exe install --triplet x64-windows assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib      
+</pre></div>
+
+
+<p>Then set the <code>CMAKE_TOOLCHAIN_FILE</code> to <code>&lt;vcpkg-install-dir&gt;/scripts/buildsystems/vcpkg.cmake</code> when configuring CMake. And set all the corresponding <code>IVW_USE_EXTERNAL_&lt;package&gt;</code> to <code>TRUE</code>.</p>
+<p>To help interact with vcpkg <code>cmake/vcpkghelpers.cmake</code> provides functions for installing the vcpkg packages needed to create installers (only windows so far).</p>
+<h2>2020-06-26 CMake refactor</h2>
+<p>We have renamed many cmake options to make the naming more consistent and the options easier to find. But you might need to review your cmake settings when updating to make sure you have the correct settings. <br />
+We now group the cmake settings like this:</p>
+<ul>
+<li><code>IVW_APP_*</code> Enable disable building various apps</li>
+<li><code>IVV_CFG_*</code> All configuration options, like  PRECOMPILED_HEADERS and PROFILING</li>
+<li><code>IVW_DOXYGEN_*</code> Doxygen options</li>
+<li><code>IVW_EXTERNAL_*</code> Add external modules / projects</li>
+<li><code>IVW_MODULE_*</code> enable/disable modules</li>
+<li><code>IVW_PACKAGE_*</code> options for installing/creating installers</li>
+<li><code>IVW_TEST_*</code> option for unit test, integration test, regressions test.</li>
+<li><code>IVW_USE_*</code> options for enabling/disabling some libraries / tools (sigar, openmp, openexr)</li>
+<li><code>IVW_USE_EXTERNAL_*</code> enable/disable building various dependences. if off then dependences must be provided externally</li>
+</ul>
+<p>Notable changes include:</p>
+<ul>
+<li><code>PRECOMPILED_HEADERS -&gt; IVW_CFG_PRECOMPILED_HEADERS</code></li>
+<li><code>IVW_PROFILING -&gt; IVW_CFG_PROFILING</code></li>
+<li><code>IVW_OPENMP_ON -&gt; IVW_USE_OPENMP</code></li>
+</ul>
+<h2>2020-06-16 StipplingProperty now in BaseGL</h2>
+<p>Moved StipplingProperty and associated settings from Base module to BaseGL.</p>
+<h2>2020-06-03 WebBrowser Javascript API</h2>
+<p>Changed redirection of <code>https://inviwo</code> to <code>inviwo://</code> to avoid confusion with the https scheme.<br />
+Your html-files will need to update from <br />
+'<a href="https://inviwo/modules/yourmodule">https://inviwo/modules/yourmodule</a>' <br />
+to <br />
+'inviwo://yourmodule' </p>
 <h2>2020-04-03 OrdinalPropertyState</h2>
 <p>Added a OrdinalPropertyState helper for constructing ordinal properties.<br />
 And a factory function <code>util::ordinalColor</code> for OrdinalProperties representing Colors<br />

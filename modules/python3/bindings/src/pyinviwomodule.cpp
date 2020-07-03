@@ -46,11 +46,11 @@ namespace inviwo {
 class ProcessorFactoryObjectPythonWrapper : public ProcessorFactoryObject {
 public:
     ProcessorFactoryObjectPythonWrapper(pybind11::object pfo)
-        : ProcessorFactoryObject{pfo.cast<ProcessorFactoryObject *>()->getProcessorInfo()}
+        : ProcessorFactoryObject{pfo.cast<ProcessorFactoryObject*>()->getProcessorInfo()}
         , pfo_(pfo) {}
 
-    virtual std::unique_ptr<Processor> create(InviwoApplication *app) override {
-        return pfo_.cast<ProcessorFactoryObject *>()->create(app);
+    virtual std::unique_ptr<Processor> create(InviwoApplication* app) override {
+        return pfo_.cast<ProcessorFactoryObject*>()->create(app);
     }
 
     pybind11::object pfo_;
@@ -60,25 +60,25 @@ class InviwoModuleFactoryObjectTrampoline : public InviwoModuleFactoryObject {
 public:
     using InviwoModuleFactoryObject::InviwoModuleFactoryObject;
 
-    virtual pybind11::object createModule(InviwoApplication *app) {
+    virtual pybind11::object createModule(InviwoApplication* app) {
         PYBIND11_OVERLOAD(pybind11::object, InviwoModuleFactoryObjectTrampoline, createModule, app);
     }
 
-    virtual std::unique_ptr<InviwoModule> create(InviwoApplication *app) override {
+    virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) override {
         auto mod = createModule(app);
-        auto m = std::unique_ptr<InviwoModule>(mod.cast<InviwoModule *>());
+        auto m = std::unique_ptr<InviwoModule>(mod.cast<InviwoModule*>());
         mod.release();
         return m;
     }
 };
 
-void exposeInviwoModule(pybind11::module &m) {
+void exposeInviwoModule(pybind11::module& m) {
     namespace py = pybind11;
 
     py::class_<Version>(m, "Version")
         .def(py::init<std::string>())
         .def(py::init<unsigned int, unsigned int, unsigned int, unsigned int>())
-        .def("__repr__", [](Version *m) { return toString(*m); })
+        .def("__repr__", [](Version* m) { return toString(*m); })
         .def_readwrite("major", &Version::major)
         .def_readwrite("minor", &Version::minor)
         .def_readwrite("patch", &Version::patch)
@@ -89,8 +89,8 @@ void exposeInviwoModule(pybind11::module &m) {
 
     py::class_<LicenseInfo>(m, "LicenseInfo")
         .def(
-            py::init<const std::string &, const std::string &, const Version &, const std::string &,
-                     const std::string &, const std::string &, const std::vector<std::string> &>(),
+            py::init<const std::string&, const std::string&, const std::string&, const std::string&,
+                     const std::string&, const std::string&, const std::vector<std::string>&>(),
             py::arg("id"), py::arg("name"), py::arg("version"), py::arg("url"), py::arg("module"),
             py::arg("type"), py::arg("files"))
         .def_readonly("id", &LicenseInfo::id)
@@ -121,21 +121,21 @@ void exposeInviwoModule(pybind11::module &m) {
         .value("CL", ModulePath::CL);
 
     py::class_<InviwoModule>(m, "InviwoModule")
-        .def(py::init<InviwoApplication *, const std::string &>())
+        .def(py::init<InviwoApplication*, const std::string&>())
         .def("__repr__",
-             [](InviwoModule *m) { return m->getIdentifier() + " v" + toString(m->getVersion()); })
+             [](InviwoModule* m) { return m->getIdentifier() + " v" + toString(m->getVersion()); })
         .def_property_readonly("identifier", &InviwoModule::getIdentifier)
         .def_property_readonly("description", &InviwoModule::getDescription)
-        .def_property_readonly("path", [](InviwoModule *m) { return m->getPath(); })
+        .def_property_readonly("path", [](InviwoModule* m) { return m->getPath(); })
         .def_property_readonly("version", &InviwoModule::getVersion)
-        .def("getPath", [](InviwoModule *m, ModulePath type) { return m->getPath(type); })
-        .def("registerProcessor", [](InviwoModule *m, py::object pfo) {
+        .def("getPath", [](InviwoModule* m, ModulePath type) { return m->getPath(type); })
+        .def("registerProcessor", [](InviwoModule* m, py::object pfo) {
             m->registerProcessor(std::make_unique<ProcessorFactoryObjectPythonWrapper>(pfo));
         });
 
     py::class_<InviwoModuleFactoryObject, InviwoModuleFactoryObjectTrampoline>(
         m, "InviwoModuleFactoryObject")
-        .def(py::init<const std::string &, Version, const std::string &, Version,
+        .def(py::init<const std::string&, Version, const std::string&, Version,
                       std::vector<std::string>, std::vector<Version>, std::vector<std::string>,
                       std::vector<LicenseInfo>, ProtectedModule>(),
              py::arg("name"), py::arg("version"), py::arg("description") = "",
@@ -145,7 +145,7 @@ void exposeInviwoModule(pybind11::module &m) {
              py::arg("licenses") = std::vector<LicenseInfo>{},
              py::arg("protectedModule") = ProtectedModule::off)
         .def("__repr__",
-             [](InviwoModuleFactoryObject *m) { return m->name + " v" + toString(m->version); })
+             [](InviwoModuleFactoryObject* m) { return m->name + " v" + toString(m->version); })
         .def("create", &InviwoModuleFactoryObject::create)
         .def_readonly("name", &InviwoModuleFactoryObject::name)
         .def_readonly("version", &InviwoModuleFactoryObject::version)

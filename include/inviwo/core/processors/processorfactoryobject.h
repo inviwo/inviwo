@@ -71,8 +71,7 @@ public:
         : ProcessorFactoryObject(ProcessorTraits<T>::getProcessorInfo()) {}
     virtual ~ProcessorFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Processor> create(InviwoApplication* app) {
-        (void)app;
+    virtual std::unique_ptr<Processor> create([[maybe_unused]] InviwoApplication* app) {
         std::unique_ptr<Processor> p;
 
         if constexpr (std::is_constructible_v<T, const std::string&, const std::string&,

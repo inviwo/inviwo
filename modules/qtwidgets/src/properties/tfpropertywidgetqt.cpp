@@ -153,15 +153,15 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
 
 TFPushButton::TFPushButton(TransferFunctionProperty* property, QWidget* parent)
     : IvwPushButton(parent)
-    , propertyPtr_(std::make_unique<util::TFPropertyModel<TransferFunctionProperty*>>(property)) {}
+    , propertyPtr_(std::make_unique<util::TFPropertyModel<TransferFunctionProperty>>(property)) {}
 
 TFPushButton::TFPushButton(IsoValueProperty* property, QWidget* parent)
     : IvwPushButton(parent)
-    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoValueProperty*>>(property)) {}
+    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoValueProperty>>(property)) {}
 
 TFPushButton::TFPushButton(IsoTFProperty* property, QWidget* parent)
     : IvwPushButton(parent)
-    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoTFProperty*>>(property)) {}
+    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoTFProperty>>(property)) {}
 
 void TFPushButton::updateFromProperty() {
     const QSize size = this->size() - QSize(2, 2);

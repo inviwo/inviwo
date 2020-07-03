@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,46 +26,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/base/basemoduledefine.h>
+#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
 
 namespace inviwo {
-/*
- * \brief Settings for stippling (Dashed line, e.g., - - -)
- */
-class IVW_MODULE_BASE_API StipplingSettingsInterface {
-public:
-    /*
-     * \brief Determines in which space the stippling parameters should be applied.
-     */
-    enum class Mode { None, ScreenSpace, WorldSpace };
-    StipplingSettingsInterface() = default;
-    virtual ~StipplingSettingsInterface() = default;
-    /*
-     * Determines which space the other settings should be applied.
-     */
-    virtual Mode getMode() const = 0;
-    /*
-     * Return length of dash, in pixels if Mode is ScreenSpace.
-     */
-    virtual float getLength() const = 0;
-    /*
-     * Return distance between dashes, in pixels if Mode is ScreenSpace.
-     */
-    virtual float getSpacing() const = 0;
-    /*
-     * Return offset of first dash, in pixels if Mode is ScreenSpace.
-     */
-    virtual float getOffset() const = 0;
-    /*
-     * Return scaling of parameters. Only applicable if Mode is WorldSpace.
-     */
-    virtual float getWorldScale() const = 0;
-};
-IVW_MODULE_BASE_API bool operator==(const StipplingSettingsInterface& a,
-                                    const StipplingSettingsInterface& b);
-IVW_MODULE_BASE_API bool operator!=(const StipplingSettingsInterface& a,
-                                    const StipplingSettingsInterface& b);
+
+bool operator==(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b) {
+    return a.getMode() == b.getMode() && a.getLength() == b.getLength() &&
+           a.getSpacing() == b.getSpacing() && a.getOffset() == b.getOffset() &&
+           a.getWorldScale() == b.getWorldScale();
+}
+
+bool operator!=(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b) {
+    return !(a == b);
+}
 
 }  // namespace inviwo

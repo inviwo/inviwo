@@ -99,7 +99,14 @@ void DataFrameColumnProperty::setOptions(std::shared_ptr<const DataFrame> datafr
     setCurrentStateAsDefault();
 }
 
-std::shared_ptr<const Column> DataFrameColumnProperty::getColumn() {
+std::string DataFrameColumnProperty::getColumnHeader() const {
+    if (auto col = getColumn(); col) {
+        return col->getHeader();
+    }
+    return {};
+}
+
+std::shared_ptr<const Column> DataFrameColumnProperty::getColumn() const {
     if (!dataframe_) {
         return nullptr;
     }
@@ -110,7 +117,7 @@ std::shared_ptr<const Column> DataFrameColumnProperty::getColumn() {
     return dataframe_->getColumn(id);
 }
 
-std::shared_ptr<const BufferBase> DataFrameColumnProperty::getBuffer() {
+std::shared_ptr<const BufferBase> DataFrameColumnProperty::getBuffer() const {
     if (auto col = getColumn()) {
         return col->getBuffer();
     }

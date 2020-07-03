@@ -1,0 +1,36 @@
+{
+    "name": "inviwo",
+    "version-string" : "0.9.11.1",
+    "homepage" : "https://github.com/inviwo/inviwo",
+    "license": "BSD-2-Clause",
+    "dependencies" : [
+        "assimp",
+        "benchmark",
+        "cimg",
+        "eigen3",
+        "fmt",
+        "freetype",
+        "glew",
+        "glfw3",
+        "glm",
+        "gtest",
+        {
+            "name": "hdf5",
+            "features": [ "cpp", "zlib"]
+        }
+        "libjpeg-turbo",
+        "libpng",
+        "minizip",
+        "nlohmann-json",
+        "openexr",
+        "pybind11",
+        "python3",
+        "tclap",
+        "tiff",
+        "tinydir",
+        "tinyxml2",
+        "utfcpp",
+        "zlib"
+    ]
+}   
+

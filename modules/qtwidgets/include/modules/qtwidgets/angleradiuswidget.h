@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ANGLERADIUSWIDGET_H
-#define IVW_ANGLERADIUSWIDGET_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <warn/push>
@@ -107,5 +106,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ANGLERADIUSWIDGET_H

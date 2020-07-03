@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRANSFERFUNCTIONPROPERTYDIALOG_H
-#define IVW_TRANSFERFUNCTIONPROPERTYDIALOG_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
@@ -38,7 +37,7 @@
 #include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
 #include <modules/qtwidgets/properties/optionpropertywidgetqt.h>
 #include <inviwo/core/properties/propertywidget.h>
-#include <inviwo/core/properties/tfpropertyconcept.h>
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>
 #include <inviwo/core/util/observer.h>
 
 class QPushButton;
@@ -139,5 +138,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TRANSFERFUNCTIONPROPERTYDIALOG_H

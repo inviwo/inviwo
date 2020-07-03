@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2018-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,18 +27,6 @@
  *
  *********************************************************************************/
 
-#include <modules/base/datastructures/stipplingsettingsinterface.h>
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>
 
-namespace inviwo {
-
-bool operator==(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b) {
-    return a.getMode() == b.getMode() && a.getLength() == b.getLength() &&
-           a.getSpacing() == b.getSpacing() && a.getOffset() == b.getOffset() &&
-           a.getWorldScale() == b.getWorldScale();
-}
-
-bool operator!=(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b) {
-    return !(a == b);
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

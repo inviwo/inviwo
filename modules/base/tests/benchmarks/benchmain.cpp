@@ -57,7 +57,8 @@ static void SphereOld(benchmark::State& state) {
             static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
         benchmark::ClobberMemory();
     }
-    state.counters["Voxels"] = state.range(0) * state.range(0) * state.range(0);
+    state.counters["Voxels"] =
+        static_cast<double>(state.range(0) * state.range(0) * state.range(0));
 }
 
 static void SphereNew(benchmark::State& state) {
@@ -71,7 +72,8 @@ static void SphereNew(benchmark::State& state) {
             static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
         benchmark::ClobberMemory();
     }
-    state.counters["Voxels"] = state.range(0) * state.range(0) * state.range(0);
+    state.counters["Voxels"] =
+        static_cast<double>(state.range(0) * state.range(0) * state.range(0));
 }
 
 static void RippleOld(benchmark::State& state) {
@@ -85,7 +87,8 @@ static void RippleOld(benchmark::State& state) {
             static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
         benchmark::ClobberMemory();
     }
-    state.counters["Voxels"] = state.range(0) * state.range(0) * state.range(0);
+    state.counters["Voxels"] =
+        static_cast<double>(state.range(0) * state.range(0) * state.range(0));
 }
 
 static void RippleNew(benchmark::State& state) {
@@ -99,7 +102,8 @@ static void RippleNew(benchmark::State& state) {
             static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
         benchmark::ClobberMemory();
     }
-    state.counters["Voxels"] = state.range(0) * state.range(0) * state.range(0);
+    state.counters["Voxels"] =
+        static_cast<double>(state.range(0) * state.range(0) * state.range(0));
 }
 
 static void MiniOld(benchmark::State& state) {
@@ -113,7 +117,8 @@ static void MiniOld(benchmark::State& state) {
             static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
         benchmark::ClobberMemory();
     }
-    state.counters["Voxels"] = state.range(0) * state.range(0) * state.range(0);
+    state.counters["Voxels"] =
+        static_cast<double>(state.range(0) * state.range(0) * state.range(0));
 }
 
 static void MiniNew(benchmark::State& state) {
@@ -127,7 +132,8 @@ static void MiniNew(benchmark::State& state) {
             static_cast<double>(mesh->getIndexBuffers().front().second->getSize());
         benchmark::ClobberMemory();
     }
-    state.counters["Voxels"] = state.range(0) * state.range(0) * state.range(0);
+    state.counters["Voxels"] =
+        static_cast<double>(state.range(0) * state.range(0) * state.range(0));
 }
 
 BENCHMARK(SphereOld)->RangeMultiplier(2)->Range(8, 8 << 5);

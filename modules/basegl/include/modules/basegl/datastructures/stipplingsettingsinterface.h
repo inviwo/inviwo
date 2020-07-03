@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,36 +26,48 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifndef IVW_DATAFRAMEUTIL_H
-#define IVW_DATAFRAMEUTIL_H
-
-#include <inviwo/dataframe/dataframemoduledefine.h>
-
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/io/serialization/serializable.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <modules/basegl/baseglmoduledefine.h>
 
 namespace inviwo {
 
-namespace dataframeutil {
+/*
+ * \brief Settings for stippling (Dashed line, e.g., - - -)
+ */
+class IVW_MODULE_BASEGL_API StipplingSettingsInterface {
+public:
+    /*
+     * \brief Determines in which space the stippling parameters should be applied.
+     */
+    enum class Mode { None, ScreenSpace, WorldSpace };
+    StipplingSettingsInterface() = default;
+    virtual ~StipplingSettingsInterface() = default;
+    /*
+     * Determines which space the other settings should be applied.
+     */
+    virtual Mode getMode() const = 0;
+    /*
+     * Return length of dash, in pixels if Mode is ScreenSpace.
+     */
+    virtual float getLength() const = 0;
+    /*
+     * Return distance between dashes, in pixels if Mode is ScreenSpace.
+     */
+    virtual float getSpacing() const = 0;
+    /*
+     * Return offset of first dash, in pixels if Mode is ScreenSpace.
+     */
+    virtual float getOffset() const = 0;
+    /*
+     * Return scaling of parameters. Only applicable if Mode is WorldSpace.
+     */
+    virtual float getWorldScale() const = 0;
+};
 
-std::shared_ptr<BufferBase> IVW_MODULE_DATAFRAME_API
-cloneBufferRange(std::shared_ptr<const BufferBase> buffer, ivec2 range);
-
-void IVW_MODULE_DATAFRAME_API copyBufferRange(std::shared_ptr<const BufferBase> src,
-                                              std::shared_ptr<BufferBase> dst, ivec2 range,
-                                              size_t dstStart = 0);
-
-std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
-combineDataFrames(std::vector<std::shared_ptr<DataFrame>> histogramTimeDataFrame,
-                  bool skipIndexColumn = false, std::string skipcol = "index");
-
-std::string IVW_MODULE_DATAFRAME_API createToolTipForRow(const DataFrame &dataframe, size_t rowId);
-
-}  // namespace dataframeutil
+IVW_MODULE_BASEGL_API bool operator==(const StipplingSettingsInterface& a,
+                                      const StipplingSettingsInterface& b);
+IVW_MODULE_BASEGL_API bool operator!=(const StipplingSettingsInterface& a,
+                                      const StipplingSettingsInterface& b);
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAFRAMEUTIL_H

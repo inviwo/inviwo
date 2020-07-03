@@ -542,40 +542,6 @@ void setShaderUniforms(Shader& shader, const VolumeIndicatorProperty& indicator,
     }
 }
 
-void addShaderDefines(Shader& shader, const StipplingProperty& property) {
-    addShaderDefines(shader, property.mode_.get());
-}
-
-void addShaderDefines(Shader& shader, const StipplingProperty::Mode& mode) {
-    std::string value;
-    switch (mode) {
-        case StipplingProperty::Mode::ScreenSpace:
-            value = "1";
-            break;
-        case StipplingProperty::Mode::WorldSpace:
-            value = "2";
-            break;
-        case StipplingProperty::Mode::None:
-        default:
-            break;
-    }
-
-    auto fragShader = shader.getFragmentShaderObject();
-    if (mode != StipplingProperty::Mode::None) {
-        fragShader->addShaderDefine("ENABLE_STIPPLING");
-    } else {
-        fragShader->removeShaderDefine("ENABLE_STIPPLING");
-    }
-    fragShader->addShaderDefine("STIPPLE_MODE", value);
-}
-
-void setShaderUniforms(Shader& shader, const StipplingProperty& property, const std::string& name) {
-    shader.setUniform(name + ".length", property.length_.get());
-    shader.setUniform(name + ".spacing", property.spacing_.get());
-    shader.setUniform(name + ".offset", property.offset_.get());
-    shader.setUniform(name + ".worldScale", property.worldScale_.get());
-}
-
 int getLogLineNumber(const std::string& compileLogLine) {
     int result = -1;
     std::istringstream input(compileLogLine);

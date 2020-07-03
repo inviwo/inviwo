@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,21 +26,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifndef IVW_STIPPLINGPROPERTY_H
-#define IVW_STIPPLINGPROPERTY_H
-
-#include <modules/base/basemoduledefine.h>
-#include <modules/base/datastructures/stipplingsettingsinterface.h>
+#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/datastructures/stipplingsettingsinterface.h>
 
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 
+#include <modules/opengl/shader/shader.h>
+
 namespace inviwo {
 
-class IVW_MODULE_BASE_API StipplingProperty : public CompositeProperty,
-                                              public StipplingSettingsInterface {
+class IVW_MODULE_BASEGL_API StipplingProperty : public CompositeProperty,
+                                                public StipplingSettingsInterface {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -66,6 +66,13 @@ public:
     FloatProperty worldScale_;
 };
 
-}  // namespace inviwo
+namespace utilgl {
 
-#endif  // IVW_STIPPLINGPROPERTY_H
+IVW_MODULE_BASEGL_API void addShaderDefines(Shader& shader, const StipplingProperty& property);
+IVW_MODULE_BASEGL_API void addShaderDefines(Shader& shader, const StipplingProperty::Mode& mode);
+IVW_MODULE_BASEGL_API void setShaderUniforms(Shader& shader, const StipplingProperty& property,
+                                             const std::string& name);
+
+}  // namespace utilgl
+
+}  // namespace inviwo

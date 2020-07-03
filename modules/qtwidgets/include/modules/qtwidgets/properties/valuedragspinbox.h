@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VALUEDRAGSPINBOX_H
-#define IVW_VALUEDRAGSPINBOX_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -51,13 +50,13 @@ class IVW_MODULE_QTWIDGETS_API ValueDragSpinBox : public QWidget {
     Q_OBJECT
 #include <warn/pop>
 public:
-    explicit ValueDragSpinBox(QWidget *parent = nullptr);
+    explicit ValueDragSpinBox(QWidget* parent = nullptr);
     virtual ~ValueDragSpinBox() override = default;
 
     void setReadOnly(bool r);
     bool isReadOnly() const;
 
-    void setSpecialValueText(const QString &txt);
+    void setSpecialValueText(const QString& txt);
     QString specialValueText() const;
 
     void setWrapping(bool w);
@@ -73,17 +72,17 @@ public:
     void setDisplayIntegerBase(int base);
     void setMaximum(int max);
     void setMinimum(int min);
-    void setPrefix(const QString &prefix);
+    void setPrefix(const QString& prefix);
     void setRange(int minimum, int maximum);
     void setSingleStep(int val);
-    void setSuffix(const QString &suffix);
+    void setSuffix(const QString& suffix);
     int singleStep() const;
     QString suffix() const;
     int value() const;
 
 signals:
     void valueChanged(int i);
-    void valueChanged(const QString &text);
+    void valueChanged(const QString& text);
     void editingFinished();
 
 public slots:
@@ -93,10 +92,8 @@ public slots:
     void stepUp();
 
 private:
-    NumberLineEdit *spinBox_;
-    ValueDragger<int> *valueDragger_;
+    NumberLineEdit* spinBox_;
+    ValueDragger<int>* valueDragger_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VALUEDRAGSPINBOX_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LISTPROPERTYWIDGETQT_H
-#define IVW_LISTPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
@@ -76,5 +75,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LISTPROPERTYWIDGETQT_H

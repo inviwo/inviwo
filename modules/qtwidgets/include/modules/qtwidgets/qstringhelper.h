@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_QSTRINGHELPER_H
-#define IVW_QSTRINGHELPER_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -63,5 +62,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_QSTRINGHELPER_H

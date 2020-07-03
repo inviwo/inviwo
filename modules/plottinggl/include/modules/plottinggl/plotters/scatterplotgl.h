@@ -38,7 +38,7 @@
 #include <inviwo/core/util/dispatcher.h>
 
 #include <modules/base/algorithm/dataminmax.h>
-#include <modules/base/properties/stipplingproperty.h>
+#include <modules/basegl/properties/stipplingproperty.h>
 #include <modules/basegl/properties/linesettingsproperty.h>
 
 #include <modules/opengl/texture/textureutils.h>
