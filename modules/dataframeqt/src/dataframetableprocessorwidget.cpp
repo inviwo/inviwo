@@ -86,8 +86,8 @@ DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
 }
 
 void DataFrameTableProcessorWidget::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
-                                                 bool vectorsIntoColumns) {
-    tableview_->setDataFrame(dataframe, vectorsIntoColumns);
+                                                 bool vectorsIntoColumns, bool categoryIndices) {
+    tableview_->setDataFrame(dataframe, vectorsIntoColumns, categoryIndices);
 }
 
 void DataFrameTableProcessorWidget::setIndexColumnVisible(bool visible) {

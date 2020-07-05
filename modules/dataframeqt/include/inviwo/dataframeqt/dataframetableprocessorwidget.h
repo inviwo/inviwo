@@ -57,7 +57,8 @@ public:
     DataFrameTableProcessorWidget(Processor* p);
     virtual ~DataFrameTableProcessorWidget() = default;
 
-    void setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool vectorsIntoColumns = false);
+    void setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool vectorsIntoColumns = false,
+                      bool categoryIndices = false);
     void setIndexColumnVisible(bool visible);
 
     void updateSelection(const std::unordered_set<size_t>& columns,
