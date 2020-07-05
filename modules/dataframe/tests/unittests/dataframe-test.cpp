@@ -100,6 +100,31 @@ TEST(DataFrameTests, AddCategoricalColumn) {
     EXPECT_STREQ(colname.c_str(), col->getHeader().c_str()) << "Column header does not match";
 }
 
+TEST(DataFrameTests, AddCategoricalColumnData) {
+    const std::string colname = "CatColumn";
+
+    DataFrame dataframe;
+    dataframe.addCategoricalColumn(colname, {"a", "c", "b"});
+    dataframe.updateIndexBuffer();
+
+    ASSERT_EQ(2, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
+    ASSERT_EQ(3, dataframe.getNumberOfRows()) << "Incorrect number of rows";
+
+    auto col = dataframe.getColumn(1);
+    auto expectedFormat = DataFormat<uint32_t>::get();
+    EXPECT_EQ(expectedFormat->getId(), col->getBuffer()->getDataFormat()->getId())
+        << "Dataformat mismatch";
+    EXPECT_STREQ(colname.c_str(), col->getHeader().c_str()) << "Column header does not match";
+
+    auto catcol = dynamic_cast<CategoricalColumn*>(col.get());
+    ASSERT_TRUE(catcol) << "Column is not categorical";
+
+    const auto& result = catcol->getCategories();
+    const std::vector<std::string> expected = {"a", "c", "b"};
+
+    EXPECT_EQ(expected, result) << "Categories after append are not correct";
+}
+
 TEST(DataFrameTests, AddColumnFromBuffer) {
     const std::string colname = "FloatCol";
 
