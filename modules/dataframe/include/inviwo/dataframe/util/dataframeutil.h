@@ -85,6 +85,25 @@ std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API appendRows(const DataFrame& 
  */
 std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
 innerJoin(const DataFrame& left, const DataFrame& right, const std::string& keyColumn = "index");
+std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API innerJoin(
+    const DataFrame& left, const DataFrame& right, const std::vector<std::string>& keyColumns);
+
+/**
+ * \brief create a new DataFrame by using an outer left join of DataFrame \p left and DataFrame \p
+ * right. That is all rows of \p left are augmented with matching rows from \p right.
+ *
+ * It is assumed that the entries in the key columns of \p right are unique. Otherwise results are
+ * undefined.
+ *
+ * @param keyColumn   header of the column used as key for the join operation (default: index
+ * column)
+ * @return left join of \p left and \p right DataFrame
+ * @throws Exception if keyColumn does not exist in either \p left or \p right
+ */
+std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
+leftJoin(const DataFrame& left, const DataFrame& right, const std::string& keyColumn = "index");
+std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
+leftJoin(const DataFrame& left, const DataFrame& right, const std::vector<std::string>& keyColumns);
 
 std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
 combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataframes, bool skipIndexColumn = false,

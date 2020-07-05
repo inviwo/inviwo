@@ -64,6 +64,7 @@ public:
         AppendColumns,
         AppendRows,
         Inner,
+        OuterLeft,
     };
     enum class ColumnMatch { ByName, Ordered };
 

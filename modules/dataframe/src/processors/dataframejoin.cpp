@@ -57,7 +57,8 @@ DataFrameJoin::DataFrameJoin()
     , join_("join", "Join Type",
             {{"appendColumns", "Append Columns", JoinType::AppendColumns},
              {"appendRows", "Append Rows", JoinType::AppendRows},
-             {"inner", "Inner Join", JoinType::Inner}})
+             {"inner", "Inner Join", JoinType::Inner},
+             {"outerleft", "Outer Left Join", JoinType::OuterLeft}})
     , ignoreDuplicateCols_("ignoreDuplicateCols", "Ignore Duplicate Columns", false)
     , fillMissingRows_("fillMissingRows", "Fill Missing Rows", false)
     , columnMatching_("columnMatching", "Match Columns",
@@ -96,6 +97,10 @@ void DataFrameJoin::process() {
         case JoinType::Inner:
             dataframe = dataframe::innerJoin(*inportLeft_.getData(), *inportRight_.getData(),
                                              key_.getColumnHeader());
+            break;
+        case JoinType::OuterLeft:
+            dataframe = dataframe::leftJoin(*inportLeft_.getData(), *inportRight_.getData(),
+                                            key_.getColumnHeader());
             break;
         default:
             throw Exception("unsupported join operation", IVW_CONTEXT);
