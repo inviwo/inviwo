@@ -64,7 +64,10 @@ DataFrameJoin::DataFrameJoin()
     , columnMatching_("columnMatching", "Match Columns",
                       {{"byname", "By Name", ColumnMatch::ByName},
                        {"ordered", "By Order", ColumnMatch::Ordered}})
-    , key_("key", "Key Column", inportLeft_, false) {
+    , key_("key", "Key Column", inportLeft_, false)
+    , secondaryKeys_("secondaryKeys", "Secondary Key Columns",
+                     std::make_unique<DataFrameColumnProperty>("keyColumn2", "Key Column 2",
+                                                               inportLeft_, false)) {
 
     addPort(inportLeft_);
     addPort(inportRight_);
@@ -76,15 +79,36 @@ DataFrameJoin::DataFrameJoin()
         join_, [](const auto& p) { return p == JoinType::AppendColumns; });
     columnMatching_.visibilityDependsOn(join_,
                                         [](const auto& p) { return p == JoinType::AppendRows; });
-    key_.visibilityDependsOn(join_, [](const auto& p) { return p == JoinType::Inner; });
+    auto keyVisible = [](const auto& p) {
+        return (p == JoinType::Inner || p == JoinType::OuterLeft);
+    };
+    key_.visibilityDependsOn(join_, keyVisible);
+    secondaryKeys_.visibilityDependsOn(join_, keyVisible);
 
-    addProperties(join_, ignoreDuplicateCols_, fillMissingRows_, columnMatching_, key_);
+    addProperties(join_, ignoreDuplicateCols_, fillMissingRows_, columnMatching_, key_,
+                  secondaryKeys_);
+
+    inportLeft_.onChange([&]() {
+        for (auto p : secondaryKeys_) {
+            if (auto keyProp = dynamic_cast<DataFrameColumnProperty*>(p)) {
+                keyProp->setOptions(inportLeft_.getData());
+            }
+        }
+    });
+
+    secondaryKeys_.PropertyOwnerObservable::addObserver(this);
 }
 
 void DataFrameJoin::process() {
+    std::vector<std::string> keys;
+    keys.push_back(key_.getColumnHeader());
+    for (auto p : secondaryKeys_) {
+        if (auto keyProp = dynamic_cast<DataFrameColumnProperty*>(p)) {
+            keys.push_back(keyProp->getColumnHeader());
+        }
+    }
+
     std::shared_ptr<DataFrame> dataframe;
-    auto top = inportLeft_.getData();
-    auto bottom = inportRight_.getData();
     switch (join_) {
         case JoinType::AppendColumns:
             dataframe = dataframe::appendColumns(*inportLeft_.getData(), *inportRight_.getData(),
@@ -95,17 +119,25 @@ void DataFrameJoin::process() {
                                               columnMatching_ == ColumnMatch::ByName);
             break;
         case JoinType::Inner:
-            dataframe = dataframe::innerJoin(*inportLeft_.getData(), *inportRight_.getData(),
-                                             key_.getColumnHeader());
+            dataframe = dataframe::innerJoin(*inportLeft_.getData(), *inportRight_.getData(), keys);
             break;
         case JoinType::OuterLeft:
-            dataframe = dataframe::leftJoin(*inportLeft_.getData(), *inportRight_.getData(),
-                                            key_.getColumnHeader());
+            dataframe = dataframe::leftJoin(*inportLeft_.getData(), *inportRight_.getData(), keys);
             break;
         default:
             throw Exception("unsupported join operation", IVW_CONTEXT);
     }
     outport_.setData(dataframe);
+}
+
+void DataFrameJoin::onDidAddProperty(Property* property, size_t) {
+    if (auto keyProp = dynamic_cast<DataFrameColumnProperty*>(property)) {
+        keyProp->setOptions(inportLeft_.getData());
+    }
+}
+
+void DataFrameJoin::onDidRemoveProperty(Property*, size_t) {
+    secondaryKeys_.setModified();
 }
 
 }  // namespace inviwo

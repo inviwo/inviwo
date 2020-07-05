@@ -33,6 +33,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/listproperty.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/dataframe/properties/dataframeproperty.h>
@@ -58,7 +59,7 @@ namespace inviwo {
  * ### Properties
  *   * __join__   type of join
  */
-class IVW_MODULE_DATAFRAME_API DataFrameJoin : public Processor {
+class IVW_MODULE_DATAFRAME_API DataFrameJoin : public Processor, public PropertyOwnerObserver {
 public:
     enum class JoinType {
         AppendColumns,
@@ -77,6 +78,9 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    virtual void onDidAddProperty(Property* property, size_t index) override;
+    virtual void onDidRemoveProperty(Property* property, size_t index) override;
+
     DataFrameInport inportLeft_;
     DataFrameInport inportRight_;
     DataFrameOutport outport_;
@@ -86,6 +90,7 @@ private:
     BoolProperty fillMissingRows_;
     TemplateOptionProperty<ColumnMatch> columnMatching_;
     DataFrameColumnProperty key_;
+    ListProperty secondaryKeys_;
 };
 
 }  // namespace inviwo
