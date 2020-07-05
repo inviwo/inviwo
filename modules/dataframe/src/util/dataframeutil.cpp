@@ -172,27 +172,43 @@ std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& rig
     }
 
     // locate matching rows and determine row indices
-    auto rows = indexCol1->getBuffer()
-                    ->getRepresentation<BufferRAM>()
-                    ->dispatch<std::pair<std::vector<size_t>, std::vector<size_t>>>(
-                        [rightBuffer = indexCol2->getBuffer()](auto typedBuf) {
-                            using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
+    std::pair<std::vector<size_t>, std::vector<size_t>> rows;
 
-                            const auto& left = typedBuf->getDataContainer();
-                            const auto& right = static_cast<const BufferRAMPrecision<ValueType>*>(
-                                                    rightBuffer->getRepresentation<BufferRAM>())
-                                                    ->getDataContainer();
+    if (auto catCol1 = dynamic_cast<const CategoricalColumn*>(indexCol1.get())) {
+        // need to match values of categorical columns instead of indices stored in buffer
+        auto catCol2 = dynamic_cast<const CategoricalColumn*>(indexCol2.get());
+        IVW_ASSERT(catCol2, "right column is not categorical");
 
-                            std::vector<size_t> rowsLeft;
-                            std::vector<size_t> rowsRight;
-                            for (auto&& [i, key] : util::enumerate(left)) {
-                                if (auto it = util::find(right, key); it != right.end()) {
-                                    rowsLeft.push_back(i);
-                                    rowsRight.push_back(std::distance(right.begin(), it));
-                                }
-                            }
-                            return std::make_pair(rowsLeft, rowsRight);
-                        });
+        auto valuesRight = catCol2->getValues();
+        for (auto&& [i, value] : util::enumerate(catCol1->getValues())) {
+            if (auto it = util::find(valuesRight, value); it != valuesRight.end()) {
+                rows.first.push_back(i);
+                rows.second.push_back(std::distance(valuesRight.begin(), it));
+            }
+        }
+    } else {
+        rows = indexCol1->getBuffer()
+                   ->getRepresentation<BufferRAM>()
+                   ->dispatch<std::pair<std::vector<size_t>, std::vector<size_t>>>(
+                       [rightBuffer = indexCol2->getBuffer()](auto typedBuf) {
+                           using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
+
+                           const auto& left = typedBuf->getDataContainer();
+                           const auto& right = static_cast<const BufferRAMPrecision<ValueType>*>(
+                                                   rightBuffer->getRepresentation<BufferRAM>())
+                                                   ->getDataContainer();
+
+                           std::vector<size_t> rowsLeft;
+                           std::vector<size_t> rowsRight;
+                           for (auto&& [i, key] : util::enumerate(left)) {
+                               if (auto it = util::find(right, key); it != right.end()) {
+                                   rowsLeft.push_back(i);
+                                   rowsRight.push_back(std::distance(right.begin(), it));
+                               }
+                           }
+                           return std::make_pair(rowsLeft, rowsRight);
+                       });
+    }
 
     IVW_ASSERT(rows.first.size() == rows.second.size(), "incorrect number of matching row indices");
 
@@ -206,12 +222,18 @@ std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& rig
                 continue;
             }
 
-            srcCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>(
-                [&dataframe, header = srcCol->getHeader(), rows](auto typedBuf) {
-                    auto dst = util::transform(
-                        rows, [src = typedBuf->getDataContainer()](size_t i) { return src[i]; });
-                    dataframe->addColumn(header, dst);
-                });
+            if (auto c = dynamic_cast<CategoricalColumn*>(srcCol.get())) {
+                auto data =
+                    util::transform(rows, [src = c->getValues()](size_t i) { return src[i]; });
+                dataframe->addCategoricalColumn(c->getHeader(), data);
+            } else {
+                srcCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>(
+                    [&dataframe, srcCol, header = srcCol->getHeader(), rows](auto typedBuf) {
+                        auto dst = util::transform(rows, [&src = typedBuf->getDataContainer()](
+                                                             size_t i) { return src[i]; });
+                        dataframe->addColumn(header, dst);
+                    });
+            }
         }
     };
 
