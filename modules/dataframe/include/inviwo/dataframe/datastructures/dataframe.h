@@ -143,6 +143,8 @@ public:
      */
     std::shared_ptr<CategoricalColumn> addCategoricalColumn(const std::string& header,
                                                             size_t size = 0);
+    std::shared_ptr<CategoricalColumn> addCategoricalColumn(const std::string& header,
+                                                            const std::vector<std::string>& values);
     /**
      * \brief add a new row given a vector of strings.
      * updateIndexBuffer() needs to be called after the last row has been added.

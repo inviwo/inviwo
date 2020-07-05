@@ -109,6 +109,13 @@ std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(const std::st
     return col;
 }
 
+std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(
+    const std::string& header, const std::vector<std::string>& values) {
+    auto col = std::make_shared<CategoricalColumn>(header, values);
+    columns_.push_back(col);
+    return col;
+}
+
 void DataFrame::addRow(const std::vector<std::string>& data) {
     if (columns_.size() <= 1) {
         throw NoColumns("DataFrame: DataFrame has no columns", IVW_CONTEXT);

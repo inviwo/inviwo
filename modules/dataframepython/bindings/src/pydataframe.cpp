@@ -165,8 +165,13 @@ void exposeDataFrame(pybind11::module& m) {
         .def("indexcol", [](DataFrame& d) { return d.getIndexColumn(); })
         .def("column", [](DataFrame& self, size_t index) { return self.getColumn(index); })
         .def("addColumnFromBuffer", &DataFrame::addColumnFromBuffer)
-        .def("addCategoricalColumn", &DataFrame::addCategoricalColumn, py::arg("header"),
-             py::arg("size") = 0)
+        .def("addCategoricalColumn",
+             py::overload_cast<const std::string&, size_t>(&DataFrame::addCategoricalColumn),
+             py::arg("header"), py::arg("size") = 0)
+        .def("addCategoricalColumn",
+             py::overload_cast<const std::string&, const std::vector<std::string>&>(
+                 &DataFrame::addCategoricalColumn),
+             py::arg("header"), py::arg("values"))
         .def("getRow", &DataFrame::getDataItem, py::arg("index"), py::arg("asString") = false)
 
         .def("updateIndex", [](DataFrame& d) { d.updateIndexBuffer(); })
