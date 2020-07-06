@@ -35,4 +35,4 @@ The application base path, i.e. where the core data and modules folder and etc a
 <script src="inviwo://app"></script>
 ```
 
-An example can be seen in data/workspaces/web_property_sync.html
+An example can be seen in tests/regression/web-property-sync/web_property_sync.html

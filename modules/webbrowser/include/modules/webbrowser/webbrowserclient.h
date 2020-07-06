@@ -214,6 +214,7 @@ protected:
     int browserCount_ = 0;
 
 private:
+    std::shared_ptr<std::function<void()>> onModulesRegisteredCallback_;
     IMPLEMENT_REFCOUNTING(WebBrowserClient);
     DISALLOW_COPY_AND_ASSIGN(WebBrowserClient);
 };
