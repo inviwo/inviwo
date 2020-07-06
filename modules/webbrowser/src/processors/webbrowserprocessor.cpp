@@ -104,7 +104,8 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
             fileObserver_.stop();
         }
     });
-    url_.onChange(reload).setVisible(false);
+    url_.setVisible(false);
+    url_.onChange(reload);
     reload_.onChange(reload);
     isLoading_.setReadOnly(true).setSerializationMode(PropertySerializationMode::None);
 
