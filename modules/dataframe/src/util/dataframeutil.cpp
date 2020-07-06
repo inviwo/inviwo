@@ -412,7 +412,7 @@ std::shared_ptr<DataFrame> leftJoin(const DataFrame& left, const DataFrame& righ
     auto indexCol2 = right.getColumn(keyColumn);
 
     auto rows = util::transform(detail::getMatchingRows<true>(indexCol1, indexCol2),
-                                [](auto& rowIndices) -> std::optional<size_t> {
+                                [](std::vector<size_t>& rowIndices) -> std::optional<size_t> {
                                     if (rowIndices.empty()) {
                                         return {};
                                     } else {
@@ -439,7 +439,7 @@ std::shared_ptr<DataFrame> leftJoin(const DataFrame& left, const DataFrame& righ
     detail::columnCheck(left, right, keyColumns, "dataframe::leftJoin");
 
     auto rows = util::transform(detail::getMatchingRows(left, right, keyColumns),
-                                [](auto& rowIndices) -> std::optional<size_t> {
+                                [](std::vector<size_t>& rowIndices) -> std::optional<size_t> {
                                     if (rowIndices.empty()) {
                                         return {};
                                     } else {
