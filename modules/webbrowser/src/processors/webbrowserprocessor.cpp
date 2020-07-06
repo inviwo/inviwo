@@ -69,6 +69,7 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
     , sourceType_("sourceType", "Source",
                   {{"localFile", "Local File", SourceType::LocalFile},
                    {"webAddress", "Web Address", SourceType::WebAddress}})
+    , isLoading_("isLoading", "Loading", false, InvalidationLevel::Valid)
     , picking_(this, 1, [&](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); })
     , cefToInviwoImageConverter_(picking_.getColor())
     , renderHandler_{static_cast<RenderHandlerGL*>(
@@ -76,16 +77,6 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
     addPort(background_);
     background_.setOptional(true);
     addPort(outport_);
-
-    addProperty(sourceType_);
-    addProperty(fileName_);
-    addProperty(autoReloadFile_);
-    addProperty(url_);
-    url_.setVisible(false);
-    addProperty(reload_);
-
-    addProperty(runJS_);
-    addProperty(js_);
 
     auto updateVisibility = [this]() {
         fileName_.setVisible(sourceType_ == SourceType::LocalFile);
@@ -113,8 +104,12 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
             fileObserver_.stop();
         }
     });
-    url_.onChange(reload);
+    url_.onChange(reload).setVisible(false);
     reload_.onChange(reload);
+    isLoading_.setReadOnly(true).setSerializationMode(PropertySerializationMode::None);
+
+    addProperties(sourceType_, fileName_, autoReloadFile_, url_, reload_, runJS_, js_,
+                isLoading_);
 
     fileObserver_.onChange([this, reload]() {
         if (sourceType_ == SourceType::LocalFile) {
@@ -170,7 +165,7 @@ void WebBrowserProcessor::deserialize(Deserializer& d) {
 void WebBrowserProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading,
                                                bool /*canGoBack*/, bool /*canGoForward*/) {
     if (browser_ && browser->GetIdentifier() == browser_->GetIdentifier()) {
-        isBrowserLoading_ = isLoading;
+        isLoading_ = isLoading;
         // Render new page (content may have been rendered before the state changed)
         if (!isLoading) {
             invalidate(InvalidationLevel::InvalidOutput);
@@ -179,7 +174,7 @@ void WebBrowserProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bo
 }
 
 void WebBrowserProcessor::process() {
-    if (isBrowserLoading_) {
+    if (isLoading_) {
         return;
     }
     if (js_.isModified() && !js_.get().empty()) {

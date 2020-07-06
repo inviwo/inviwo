@@ -38,6 +38,7 @@
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -136,6 +137,7 @@ protected:
     enum class SourceType { LocalFile, WebAddress };
 
     TemplateOptionProperty<SourceType> sourceType_;
+    BoolProperty isLoading_;
 
     CEFInteractionHandler cefInteractionHandler_;
     PickingMapper picking_;
@@ -143,7 +145,6 @@ protected:
     // create browser-window
     CefRefPtr<RenderHandlerGL> renderHandler_;
     CefRefPtr<CefBrowser> browser_;
-    bool isBrowserLoading_ = true;
 
     SingleFileObserver fileObserver_;
 
