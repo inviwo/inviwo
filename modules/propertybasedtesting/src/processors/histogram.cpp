@@ -36,11 +36,10 @@
 
 #include <inviwo/core/util/datetime.h>
 
+#include <inviwo/core/datastructures/image/layerramprecision.h>
+
 #include <iostream>
 #include <filesystem>
-
-#undef NDEBUG
-#include <assert.h>
 
 namespace inviwo {
 
@@ -165,6 +164,7 @@ Histogram::Histogram(InviwoApplication* app)
 	, app_(app)
 	, tempDir_{std::filesystem::temp_directory_path() / ("inviwo_histogram_" + std::to_string(rand()))}
 	, inport_("imageInport")
+	, outport_("imageOutport")
 	, reportDirectory_("reportDirectory", "Report Directory", tempDir_.string())
 	, useDepth_("useDepth", "Use Depth", false, InvalidationLevel::Valid)
 	, color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(0.0f))
@@ -192,6 +192,8 @@ Histogram::Histogram(InviwoApplication* app)
 
 	inport_.setOutportDeterminesSize(true);
 	addPort(inport_);
+
+	addPort(outport_);
 
 	addProperty(reportDirectory_);
 
@@ -334,6 +336,32 @@ std::ostream& printError(std::ostream& out, const std::vector<std::shared_ptr<Te
 	return out;
 }
 
+namespace {
+	struct Dispatch {
+		template <typename Result, typename T>
+		std::shared_ptr<LayerRAM> operator()(void* data, const uvec2& dims) const {
+			using F = typename T::type;
+
+			auto swizzleMask = [](std::size_t numComponents) {
+				switch (numComponents) {
+					case 1:
+						return swizzlemasks::luminance;
+					case 2:
+						return swizzlemasks::luminanceAlpha;
+					case 3:
+						return swizzlemasks::rgb;
+					case 4:
+					default:
+						return swizzlemasks::rgba;
+				}
+			};
+
+			return std::make_shared<LayerRAMPrecision<F>>(static_cast<F*>(data), dims, LayerType::Color,
+						swizzleMask(T::comp));
+		}
+	};
+}
+
 void Histogram::checkTestResults() {
 	std::vector< TestingError > errors;
 
@@ -426,6 +454,39 @@ void Histogram::checkTestResults() {
 		}
 		errFile.close();
 		util::log(IVW_CONTEXT, "Wrote errors to " + errFilePath.string(), LogLevel::Info, LogAudience::User);
+
+		// generate image from errors
+		{
+			size2_t dimensions{16}; // TODO
+			using F = DataFormat<glm::u8vec4>;
+			using T = F::type;
+			T* data = new T[dimensions.x * dimensions.y]; // TODO
+
+			for(size_t i = 0; i < dimensions.x * dimensions.y; i++) {
+				data[i] = T(255,0,0,255);
+			}
+
+			auto swizzleMask = [](size_t numComponents) {
+				switch (numComponents) {
+					case 1:
+						return swizzlemasks::luminance;
+					case 2:
+						return swizzlemasks::luminanceAlpha;
+					case 3:
+						return swizzlemasks::rgb;
+					case 4:
+					default:
+						return swizzlemasks::rgba;
+				}
+			};
+
+			auto errLayerRAM = std::make_shared<LayerRAMPrecision<T>>(
+						static_cast<T*>(data), dimensions, LayerType::Color, swizzleMask(F::comp));
+			auto errLayer = std::make_shared<Layer>(errLayerRAM);
+			auto img = std::make_shared<Image>(errLayer);
+			outputImage = {img};
+			this->invalidate(InvalidationLevel::InvalidOutput);
+		}
 
 		// write report
 		const auto reportFilePath = errFileDir / std::string("report.html");
@@ -528,6 +589,11 @@ void Histogram::process() {
 			break;
 	}
 	testingState = NONE;
+
+	if(outputImage) {
+		outport_.setData(*outputImage);
+		this->invalidate(InvalidationLevel::InvalidOutput);
+	}
 }
 
 }  // namespace inviwo
