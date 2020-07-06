@@ -7,8 +7,8 @@ import time
 
 network = inviwopy.app.network;
 lineWidth = network.LineRenderer.lineSettings.lineWidth;
-lineWidth.value = 2;
-while (network.Webbrowser.isLoading.value): 
+# Line width will be set to two when the webpage has loaded
+while (lineWidth.value != 2): 
     time.sleep(0.01);
 
 inviwo_utils.update()
