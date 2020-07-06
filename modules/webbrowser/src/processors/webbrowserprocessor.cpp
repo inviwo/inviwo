@@ -108,8 +108,7 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
     reload_.onChange(reload);
     isLoading_.setReadOnly(true).setSerializationMode(PropertySerializationMode::None);
 
-    addProperties(sourceType_, fileName_, autoReloadFile_, url_, reload_, runJS_, js_,
-                isLoading_);
+    addProperties(sourceType_, fileName_, autoReloadFile_, url_, reload_, runJS_, js_, isLoading_);
 
     fileObserver_.onChange([this, reload]() {
         if (sourceType_ == SourceType::LocalFile) {
