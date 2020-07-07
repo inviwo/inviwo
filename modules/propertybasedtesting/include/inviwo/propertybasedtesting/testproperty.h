@@ -75,113 +75,45 @@ public:
 
 	virtual void setToDefault() const = 0;
 	virtual void storeDefault() = 0;
-	virtual std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() = 0;
+	virtual std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() const = 0;
 	virtual Property* getProperty() const = 0;
 	virtual ~TestProperty() = default;
 };
 
 std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop);
 
+void makeOnChange(BoolCompositeProperty* prop);
+
 class TestPropertyComposite : public TestProperty {
 	CompositeProperty* property;
 	std::vector<std::shared_ptr<TestProperty>> subProperties;
 	std::vector<BoolCompositeProperty*> compProps;
 public:
-	void withSubProperties(std::function<void(Property*)> f) const override {
-		for(const auto& x : compProps)
-			f(x);
-	}
+	void withSubProperties(std::function<void(Property*)> f) const override;
 
-	std::string getValueString(std::shared_ptr<TestResult> testResult) const override {
-		std::stringstream str;
-		size_t n = 0;
-		str << "(";
-		for(const auto& subProp : subProperties)
-			str << (n++ > 0 ? ", " : "") << subProp->getValueString(testResult);
-		str << ")";
-		return str.str();
-	}
+	std::string getValueString(std::shared_ptr<TestResult> testResult) const override;
 
 	std::optional<util::PropertyEffect> getPropertyEffect(
 			std::shared_ptr<TestResult> newTestResult,
-			std::shared_ptr<TestResult> oldTestResult) const override {
-		std::vector<util::PropertyEffect> subEffects;
-	
-		std::optional<util::PropertyEffect> res = {util::PropertyEffect::ANY};
-		for(const auto& subProp : subProperties) {
-			if(!res)
-				break;
-			auto tmp = subProp->getPropertyEffect(newTestResult, oldTestResult);
-			if(!tmp) {
-				res = std::nullopt;
-				break;
-			}
-			res = util::combine(*res, *tmp);
-		}
-		return res;
-	}
+			std::shared_ptr<TestResult> oldTestResult) const override;
 
 	std::ostream& ostr(std::ostream& out,
-			std::shared_ptr<TestResult> testResult) const override {
-		out << "(";
-		size_t n = 0;
-		for(const auto& subProp : subProperties) {
-			if(n++ > 0) out << ", ";
-			subProp->ostr(out, testResult);
-		}
-		return out << ")";
-	}
+			std::shared_ptr<TestResult> testResult) const override;
 
 	std::ostream& ostr(std::ostream& out,
 			std::shared_ptr<TestResult> newTestResult,
-			std::shared_ptr<TestResult> oldTestResult) const override {
-		out << getProperty()->getDisplayName() << ":" << std::endl;
-		for(const auto& subProp : subProperties)
-			subProp->ostr(out << "\t", newTestResult, oldTestResult) << std::endl;
-		return out;
-	}
+			std::shared_ptr<TestResult> oldTestResult) const override;
 
-	TestPropertyComposite(CompositeProperty* original)
-			: TestProperty()
-			, property(original) {
-		for(Property* prop : original->getProperties())
-			if(auto p = testableProperty(prop); p != std::nullopt) {
-				subProperties.emplace_back(*p);
-
-				auto propComp = new BoolCompositeProperty(
-						(*p)->getProperty()->getIdentifier() + "Comp",
-						(*p)->getProperty()->getDisplayName(),
-						false);
-				propComp->setCollapsed(true);
-				(*p)->withSubProperties([&propComp](auto opt){ propComp->addProperty(opt); });
-
-				compProps.emplace_back(propComp);
-			}
-	}
+	TestPropertyComposite(CompositeProperty* original);
 	~TestPropertyComposite() = default;
-	Property* getProperty() const override {
-		return property;//getTypedProperty();
-	}
-	void setToDefault() const override {
-		for(const auto& subProp : subProperties)
-			subProp->setToDefault();
-	}
+	Property* getProperty() const override;
+	void setToDefault() const override;
 
 	template<typename T>
 	std::optional<typename T::value_type> getValue(const T* prop) const;
 
-	void storeDefault() {
-		for(const auto& subProp : subProperties)
-			subProp->storeDefault();
-	}
-	std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() {
-		std::vector<std::shared_ptr<PropertyAssignment>> res;
-		for(const auto& subProp : subProperties) {
-			auto tmp = subProp->generateAssignments();
-			res.insert(res.end(), tmp.begin(), tmp.end());
-		}
-		return res;
-	}
+	void storeDefault();
+	std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() const override;
 };
 
 template<typename T>
@@ -211,43 +143,14 @@ public:
 			std::shared_ptr<TestResult>,
 			std::shared_ptr<TestResult>) const override;
 
-	TestPropertyTyped(T* original)
-		: TestProperty()
-		, typedProperty(original)
-		, defaultValue(original->get())
-		, effectOption([this,original](){
-				std::array<OptionPropertyInt*, numComponents> res;
-				for(size_t i = 0; i < numComponents; i++) {
-					std::string identifier = original->getIdentifier() + "_selector_" + std::to_string(i);
-					res[i] = new OptionPropertyInt(
-						identifier,
-						"Comparator for increasing values",
-						options(),
-						options().size() - 1);
-				}
-				return res;
-			}()){
-	}
+	TestPropertyTyped(T* original);
 	~TestPropertyTyped() = default;
-	T* getTypedProperty() const {
-		return typedProperty;
-	}
-	Property* getProperty() const override {
-		return getTypedProperty();
-	}
-	void setToDefault() const override {
-		typedProperty->set(defaultValue);
-	}
-	const val_type& getDefaultValue() {
-		return defaultValue;
-	}
-	void storeDefault() {
-		defaultValue = typedProperty->get();
-	}
-	std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() {
-		static const GenerateAssignments<T> tmp;
-		return tmp(typedProperty);
-	}
+	T* getTypedProperty() const;
+	Property* getProperty() const override;
+	void setToDefault() const override;
+	const val_type& getDefaultValue() const;
+	void storeDefault();
+	std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() const override;
 };
 
 class TestResult {
@@ -313,5 +216,7 @@ typename T::value_type TestResult::getValue(const T* prop) const {
 using PropertyTypes = std::tuple<OrdinalProperty<int>, OrdinalProperty<float>, OrdinalProperty<double>, IntMinMaxProperty>;
 
 using TestingError = std::tuple<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>, util::PropertyEffect, size_t, size_t>;
+
+void testingErrorToBinary(std::vector<unsigned char>&, const std::vector<std::shared_ptr<TestProperty>>&, const TestingError&);
 
 } // namespace inviwo

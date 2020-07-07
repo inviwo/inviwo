@@ -4,8 +4,10 @@ namespace inviwo {
 
 namespace util {
 
-	// 2-coverage, randomized discrete SLJ strategy
+// 2-coverage, randomized discrete SLJ strategy
 std::vector<Test> coveringArray(const Test& init, const std::vector<std::vector< std::shared_ptr<PropertyAssignment> >>& vars) {
+	srand(42); // deterministic for regression testing
+
 	std::cerr << "coveringArray: vars.size() = " << vars.size() << std::endl;
 	assert(vars.size() > 0);
 

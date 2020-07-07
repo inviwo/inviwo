@@ -145,6 +145,7 @@ void Histogram::updateProcessors() {
 						false);
 				propComp->setCollapsed(true);
 				p->withSubProperties([&propComp](auto opt){ propComp->addProperty(opt); });
+				makeOnChange(propComp);
 
 				comp->addProperty(propComp);
 			}
@@ -325,7 +326,7 @@ void Histogram::initTesting() {
 	}
 }
 
-std::ostream& printError(std::ostream& out, const std::vector<std::shared_ptr<TestProperty>> props, const TestingError& err) {
+std::ostream& printError(std::ostream& out, const std::vector<std::shared_ptr<TestProperty>>& props, const TestingError& err) {
 	const auto&[testResult1, testResult2, effect, res1, res2] = err;
 	out << "Tests with values" << std::endl;
 	for(auto prop : props)
@@ -455,39 +456,6 @@ void Histogram::checkTestResults() {
 		errFile.close();
 		util::log(IVW_CONTEXT, "Wrote errors to " + errFilePath.string(), LogLevel::Info, LogAudience::User);
 
-		// generate image from errors
-		{
-			size2_t dimensions{16}; // TODO
-			using F = DataFormat<glm::u8vec4>;
-			using T = F::type;
-			T* data = new T[dimensions.x * dimensions.y]; // TODO
-
-			for(size_t i = 0; i < dimensions.x * dimensions.y; i++) {
-				data[i] = T(255,0,0,255);
-			}
-
-			auto swizzleMask = [](size_t numComponents) {
-				switch (numComponents) {
-					case 1:
-						return swizzlemasks::luminance;
-					case 2:
-						return swizzlemasks::luminanceAlpha;
-					case 3:
-						return swizzlemasks::rgb;
-					case 4:
-					default:
-						return swizzlemasks::rgba;
-				}
-			};
-
-			auto errLayerRAM = std::make_shared<LayerRAMPrecision<T>>(
-						static_cast<T*>(data), dimensions, LayerType::Color, swizzleMask(F::comp));
-			auto errLayer = std::make_shared<Layer>(errLayerRAM);
-			auto img = std::make_shared<Image>(errLayer);
-			outputImage = {img};
-			this->invalidate(InvalidationLevel::InvalidOutput);
-		}
-
 		// write report
 		const auto reportFilePath = errFileDir / std::string("report.html");
 		std::ofstream reportFile(reportFilePath.string(), std::ios::out);
@@ -496,6 +464,57 @@ void Histogram::checkTestResults() {
 		util::log(IVW_CONTEXT, "Wrote report to " + reportFilePath.string(), LogLevel::Info, LogAudience::User);
 	} else {
 		util::log(IVW_CONTEXT, "All tests passed.", LogLevel::Info, LogAudience::User);
+	}
+
+	// generate image from errors
+	{
+		using F = DataFormat<glm::u8vec4>;
+		using T = F::type;
+		std::vector<unsigned char> tmpData;
+
+		for(const auto& error : errors)
+			testingErrorToBinary(tmpData, props_, error);
+
+		auto swizzleMask = [](size_t numComponents) {
+			switch (numComponents) {
+				case 1:
+					return swizzlemasks::luminance;
+				case 2:
+					return swizzlemasks::luminanceAlpha;
+				case 3:
+					return swizzlemasks::rgb;
+				case 4:
+				default:
+					return swizzlemasks::rgba;
+			}
+		};
+
+		size2_t dimensions;
+		// determine dimensions: find smallest power of two that is at least as large as
+		// tmpData.size(), and split it as evenly as possible, i.e. 2^a*2^b >= tmpData.size(),
+		// a>=b, a<=b+1. let x=2^a,y<=2^b, x*y>=tmpData.size()y
+		{
+			const size_t numElements = std::max(size_t(1), (tmpData.size()+3)/4);
+			size_t e = 0;
+			while((1ull<<e) < numElements) e++;
+			size_t b = e/2, a = e - b;
+			dimensions.x = 1ull<<b;
+			dimensions.y = 1ull<<a;
+			while(dimensions.x * (dimensions.y-1) >= numElements)
+				dimensions.y--;
+		}
+
+		T* data = new T[dimensions.x * dimensions.y];
+		std::memcpy(data, tmpData.data(), tmpData.size());
+		for(size_t i = tmpData.size(); i < dimensions.x * dimensions.y; i++) // padding
+			data[i] = T(255,0,0,255);
+
+		auto errLayerRAM = std::make_shared<LayerRAMPrecision<T>>(
+					static_cast<T*>(data), dimensions, LayerType::Color, swizzleMask(F::comp));
+		auto errLayer = std::make_shared<Layer>(errLayerRAM);
+		auto img = std::make_shared<Image>(errLayer);
+		outputImage = {img};
+		this->invalidate(InvalidationLevel::InvalidOutput);
 	}
 }
 
@@ -593,6 +612,7 @@ void Histogram::process() {
 	if(outputImage) {
 		outport_.setData(*outputImage);
 		this->invalidate(InvalidationLevel::InvalidOutput);
+		std::cerr << "setting output image" << std::endl;
 	}
 }
 
