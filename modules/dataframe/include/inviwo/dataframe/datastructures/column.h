@@ -191,7 +191,7 @@ protected:
  */
 class IVW_MODULE_DATAFRAME_API CategoricalColumn : public TemplateColumn<std::uint32_t> {
 public:
-    CategoricalColumn(const std::string& header);
+    CategoricalColumn(const std::string& header, const std::vector<std::string>& values = {});
     CategoricalColumn(const CategoricalColumn& rhs) = default;
     CategoricalColumn(CategoricalColumn&& rhs) = default;
 
@@ -230,9 +230,23 @@ public:
     virtual void append(const Column& col) override;
 
     /**
+     * \brief append the categorical values given in \p data
+     *
+     * @param data    categorical values
+     */
+    void append(const std::vector<std::string>& data);
+
+    /**
      * Returns the unique set of categorical values.
      */
     const std::vector<std::string>& getCategories() const { return lookUpTable_; }
+
+    /**
+     * \brief returns column contents as list of categorical values
+     *
+     * @return all categorical values stored in column
+     */
+    std::vector<std::string> getValues() const;
 
     /**
      * \brief add a category \p cat. It will not be added if the category already exists.

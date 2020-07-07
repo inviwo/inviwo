@@ -239,4 +239,150 @@ TEST(InnerJoin, ByCustomColumn) {
     checkColumnContents<float>(*dataframe->getColumn("float"), {5.0f, 3.0f});
 }
 
+TEST(InnerJoin, Categorical) {
+    DataFrame left;
+    left.addColumnFromBuffer("int", util::makeBuffer(std::vector<int>{1, 2, 3}));
+    left.updateIndexBuffer();
+
+    DataFrame right;
+    auto col = right.addCategoricalColumn("cat");
+    col->add("foo");
+    col->add("bar");
+    right.updateIndexBuffer();
+
+    auto dataframe = dataframe::innerJoin(left, right);
+    EXPECT_EQ(2, dataframe->getNumberOfRows()) << "inner join should result in 2 rows";
+    EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "inner join should result in 3 columns";
+
+    checkColumnContents<int>(*dataframe->getColumn("int"), {1, 2});
+
+    auto catCol = dynamic_cast<CategoricalColumn*>(dataframe->getColumn("cat").get());
+    ASSERT_TRUE(catCol != nullptr) << "column 'cat' is not categorical after join";
+
+    const std::vector<std::string> expected = {"foo", "bar"};
+    const auto result = catCol->getCategories();
+
+    EXPECT_EQ(expected, result) << "categories after join are not correct";
+}
+
+TEST(InnerJoin, ByCategoricalColumn) {
+    DataFrame left;
+    left.addCategoricalColumn("cat", {"a", "b", "c"});
+    left.updateIndexBuffer();
+
+    DataFrame right;
+    right.addCategoricalColumn("cat", {"a", "c", "b"});
+    right.addColumnFromBuffer("int", util::makeBuffer(std::vector<int>{1, 2, 3}));
+    right.updateIndexBuffer();
+
+    auto dataframe = dataframe::innerJoin(left, right, "cat");
+    EXPECT_EQ(3, dataframe->getNumberOfRows()) << "inner join should result in 5 rows";
+    EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "inner join should result in 3 columns";
+    EXPECT_TRUE(dataframe->getColumn("int"));
+
+    auto catCol = dynamic_cast<CategoricalColumn*>(dataframe->getColumn("cat").get());
+    ASSERT_TRUE(catCol != nullptr) << "column 'cat' is not categorical after join";
+
+    const std::vector<std::string> expected = {"a", "b", "c"};
+    const auto result = catCol->getValues();
+    EXPECT_EQ(expected, result) << "column contents of categorical column differ";
+
+    checkColumnContents<int>(*dataframe->getColumn("int"), {1, 3, 2});
+}
+
+TEST(LeftJoin, ByIndexColumn) {
+    DataFrame left;
+    left.addColumnFromBuffer("int", util::makeBuffer(std::vector<int>{1, 2, 3}));
+    left.updateIndexBuffer();
+
+    DataFrame right;
+    right.addColumnFromBuffer("float", util::makeBuffer(std::vector<float>{3.0f, 4.0f}));
+    right.updateIndexBuffer();
+
+    auto dataframe = dataframe::leftJoin(left, right);
+    EXPECT_EQ(3, dataframe->getNumberOfRows()) << "left join should result in 3 rows";
+    EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "left join should result in 3 columns";
+
+    checkColumnContents<int>(*dataframe->getColumn("int"), {1, 2, 3});
+    checkColumnContents<float>(*dataframe->getColumn("float"), {3.0f, 4.0f, 0.0f});
+}
+
+TEST(LeftJoin, ByCustomColumn) {
+    DataFrame left;
+    left.addColumnFromBuffer("int", util::makeBuffer(std::vector<int>{8, 42, 1, 3, 42}));
+    left.updateIndexBuffer();
+
+    DataFrame right;
+    right.addColumnFromBuffer("float", util::makeBuffer(std::vector<float>{3.0f, 4.0f, 5.0f}));
+    right.addColumnFromBuffer("int2", util::makeBuffer(std::vector<int>{42, 3, 8}));
+    right.updateIndexBuffer();
+
+    EXPECT_THROW(dataframe::leftJoin(left, right, "int"), Exception);
+
+    right.getColumn("int2")->setHeader("int");
+
+    auto dataframe = dataframe::leftJoin(left, right, "int");
+    EXPECT_EQ(5, dataframe->getNumberOfRows()) << "left join should result in 5 rows";
+    EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "left join should result in 3 columns";
+    EXPECT_TRUE(dataframe->getColumn("float"));
+
+    checkColumnContents<int>(*dataframe->getColumn("int"), {8, 42, 1, 3, 42});
+    checkColumnContents<float>(*dataframe->getColumn("float"), {5.0f, 3.0f, 0.0f, 4.0f, 3.0f});
+}
+
+TEST(LeftJoin, Categorical) {
+    DataFrame left;
+    left.addColumnFromBuffer("int", util::makeBuffer(std::vector<int>{1, 2, 3}));
+    left.updateIndexBuffer();
+
+    DataFrame right;
+    right.addCategoricalColumn("cat", {"foo", "bar"});
+    right.updateIndexBuffer();
+
+    auto dataframe = dataframe::leftJoin(left, right);
+    EXPECT_EQ(3, dataframe->getNumberOfRows()) << "inner join should result in 3 rows";
+    EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "inner join should result in 3 columns";
+
+    checkColumnContents<int>(*dataframe->getColumn("int"), {1, 2, 3});
+
+    auto catCol = dynamic_cast<CategoricalColumn*>(dataframe->getColumn("cat").get());
+    ASSERT_TRUE(catCol != nullptr) << "column 'cat' is not categorical after join";
+
+    const std::vector<std::string> expected = {"foo", "bar", "undefined"};
+    const auto result = catCol->getCategories();
+
+    EXPECT_EQ(expected, result) << "categories after join are not correct";
+}
+
+TEST(LeftJoin, MultipleKeyColumns) {
+    DataFrame left;
+    left.addColumnFromBuffer("int", util::makeBuffer(std::vector<int>{1, 1, 1, 2, 2, 4, 3, 1}));
+    left.addCategoricalColumn("cat", {"b", "a", "c", "b", "c", "a", "a", "d"});
+    left.updateIndexBuffer();
+
+    DataFrame right;
+    right.addColumnFromBuffer("float",
+                              util::makeBuffer(std::vector<float>{3.0f, 4.0f, 5.0f, 6.0f, 7.0f}));
+    right.addCategoricalColumn("cat", {"a", "b", "c", "a", "d"});
+    right.addColumnFromBuffer("int", util::makeBuffer(std::vector<int>{1, 1, 2, 3, 1}));
+    right.addCategoricalColumn("cat2", {"hello", "world", "test", "cat", "dog"});
+    right.updateIndexBuffer();
+
+    auto dataframe = dataframe::leftJoin(left, right, std::vector<std::string>{"int", "cat"});
+    EXPECT_EQ(8, dataframe->getNumberOfRows()) << "left join should result in 8 rows";
+    EXPECT_EQ(5, dataframe->getNumberOfColumns()) << "left join should result in 5 columns";
+    EXPECT_TRUE(dataframe->getColumn("float"));
+
+    auto catCol = dynamic_cast<CategoricalColumn*>(dataframe->getColumn("cat2").get());
+    ASSERT_TRUE(catCol != nullptr) << "column 'cat' is not categorical after join";
+
+    const std::vector<std::string> expected = {"world", "hello",     "undefined", "undefined",
+                                               "test",  "undefined", "cat",       "dog"};
+    const auto result = catCol->getValues();
+    EXPECT_EQ(expected, result) << "contents of categorical column 'cat2' differ";
+
+    checkColumnContents<float>(*dataframe->getColumn("float"),
+                               {4.0f, 3.0f, 0.0f, 0.0f, 5.0f, 0.0f, 6.0f, 7.0f});
+}
+
 }  // namespace inviwo

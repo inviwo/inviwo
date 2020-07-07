@@ -146,6 +146,42 @@ d.addCategoricalColumn('{}')
     EXPECT_STREQ(colname.c_str(), col->getHeader().c_str()) << "Column header does not match";
 }
 
+TEST(DataFrameTests, AddCategoricalColumnData) {
+    const std::string colname = "CatColumn";
+
+    const std::string source = fmt::format(R"delim(
+import inviwopy
+import ivwdataframe
+
+d = ivwdataframe.DataFrame()
+d.addCategoricalColumn('{}', ['a', 'c', 'b'])
+d.updateIndex()
+)delim",
+                                           colname);
+
+    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+
+    py::eval<py::eval_statements>(source, dict);
+
+    auto dataframe = dict["d"].cast<DataFrame>();
+
+    ASSERT_EQ(2, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
+
+    auto col = dataframe.getColumn(1);
+    auto expectedFormat = DataFormat<uint32_t>::get();
+    EXPECT_EQ(expectedFormat->getId(), col->getBuffer()->getDataFormat()->getId())
+        << "Dataformat mismatch";
+    EXPECT_STREQ(colname.c_str(), col->getHeader().c_str()) << "Column header does not match";
+
+    auto catcol = dynamic_cast<CategoricalColumn*>(col.get());
+    ASSERT_TRUE(catcol) << "Column is not categorical";
+
+    const auto& result = catcol->getCategories();
+    const std::vector<std::string> expected = {"a", "c", "b"};
+
+    EXPECT_EQ(expected, result) << "Categories after append are not correct";
+}
+
 TEST(DataFrameTests, AddColumnFromBuffer) {
     const std::string colName = "FloatCol";
 

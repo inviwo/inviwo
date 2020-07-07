@@ -73,8 +73,11 @@ DataFrameTableView::DataFrameTableView(QWidget* parent) : QTableWidget(3, 3, par
 }
 
 void DataFrameTableView::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
-                                      bool vectorsIntoColumns) {
-    if (data_ == dataframe) return;
+                                      bool vectorsIntoColumns, bool categoryIndices) {
+    if (data_ == dataframe && vectorsIntoCols_ == vectorsIntoColumns &&
+        categoryIndices_ == categoryIndices) {
+        return;
+    }
 
     data_ = dataframe;
     if (!dataframe) {
@@ -83,6 +86,7 @@ void DataFrameTableView::setDataFrame(std::shared_ptr<const DataFrame> dataframe
     }
 
     vectorsIntoCols_ = vectorsIntoColumns;
+    categoryIndices_ = categoryIndices;
     auto headers = generateHeaders();
 
     // empty existing table, and disable sorting temporarily (messes up insertion otherwise)
@@ -94,23 +98,26 @@ void DataFrameTableView::setDataFrame(std::shared_ptr<const DataFrame> dataframe
 
     int colIndex = 0;
     for (auto col : *dataframe) {
-        std::vector<std::function<QVariant(size_t)>> getValueFunc;
+        // create access function for data values and tooltip
+        std::vector<std::function<std::pair<QVariant, QString>(size_t)>> getValueFunc;
         auto df = col->getBuffer()->getDataFormat();
-        if (auto cc = dynamic_cast<const CategoricalColumn*>(col.get())) {
-            getValueFunc.push_back(
-                [cc](size_t index) { return utilqt::toQString(cc->getAsString(index)); });
+        if (auto cc = dynamic_cast<const CategoricalColumn*>(col.get()); cc && !categoryIndices) {
+            getValueFunc.push_back([cc](size_t index) -> std::pair<QVariant, QString> {
+                return {utilqt::toQString(cc->getAsString(index)),
+                        QString("Key: %1").arg(cc->TemplateColumn<std::uint32_t>::get(index))};
+            });
         } else if (df->getComponents() == 1) {
             col->getBuffer()
                 ->getRepresentation<BufferRAM>()
                 ->dispatch<void, dispatching::filter::Scalars>([&getValueFunc](auto br) {
-                    getValueFunc.push_back([br](size_t index) {
+                    getValueFunc.push_back([br](size_t index) -> std::pair<QVariant, QString> {
                         auto val = br->getDataContainer()[index];
                         if constexpr (std::is_floating_point_v<decltype(val)>) {
-                            return QVariant{val};
+                            return {QVariant{val}, ""};
                         } else if constexpr (std::is_signed_v<decltype(val)>) {
-                            return QVariant{static_cast<qlonglong>(val)};
+                            return {QVariant{static_cast<qlonglong>(val)}, ""};
                         } else {
-                            return QVariant{static_cast<qulonglong>(val)};
+                            return {QVariant{static_cast<qulonglong>(val)}, ""};
                         }
                     });
                 });
@@ -120,31 +127,35 @@ void DataFrameTableView::setDataFrame(std::shared_ptr<const DataFrame> dataframe
                 ->dispatch<void, dispatching::filter::Vecs>([&getValueFunc](auto br) {
                     using ValueType = util::PrecisionValueType<decltype(br)>;
                     for (size_t i = 0; i < util::flat_extent<ValueType>::value; ++i) {
-                        getValueFunc.push_back([br, i](size_t index) {
-                            auto val = br->getDataContainer()[index][i];
-                            if constexpr (std::is_floating_point_v<decltype(val)>) {
-                                return QVariant{val};
-                            } else if constexpr (std::is_signed_v<decltype(val)>) {
-                                return QVariant{static_cast<qlonglong>(val)};
-                            } else {
-                                return QVariant{static_cast<qulonglong>(val)};
-                            }
-                        });
+                        getValueFunc.push_back(
+                            [br, i](size_t index) -> std::pair<QVariant, QString> {
+                                auto val = br->getDataContainer()[index][i];
+                                if constexpr (std::is_floating_point_v<decltype(val)>) {
+                                    return {QVariant{val}, ""};
+                                } else if constexpr (std::is_signed_v<decltype(val)>) {
+                                    return {QVariant{static_cast<qlonglong>(val)}, ""};
+                                } else {
+                                    return {QVariant{static_cast<qulonglong>(val)}, ""};
+                                }
+                            });
                     }
                 });
         } else {
             col->getBuffer()
                 ->getRepresentation<BufferRAM>()
                 ->dispatch<void, dispatching::filter::Vecs>([&getValueFunc](auto br) {
-                    getValueFunc.push_back([br](size_t index) {
-                        return QVariant{utilqt::toQString(toString(br->getDataContainer()[index]))};
+                    getValueFunc.push_back([br](size_t index) -> std::pair<QVariant, QString> {
+                        return {
+                            QVariant{utilqt::toQString(toString(br->getDataContainer()[index]))},
+                            ""};
                     });
                 });
         }
 
         for (auto& func : getValueFunc) {
             for (size_t row = 0; row < col->getSize(); ++row) {
-                const QString str = [val = func(row)]() {
+                auto [val, tooltip] = func(row);
+                const QString str = [val = val]() {
                     switch (static_cast<QMetaType::Type>(val.type())) {
                         case QMetaType::Double:
                             return QString::number(val.toDouble(), 'g', 6);
@@ -156,7 +167,11 @@ void DataFrameTableView::setDataFrame(std::shared_ptr<const DataFrame> dataframe
                     }
                 }();
 
-                setItem(static_cast<int>(row), colIndex, new QTableWidgetItem(str));
+                auto item = new QTableWidgetItem(str);
+                if (!tooltip.isEmpty()) {
+                    item->setData(Qt::ToolTipRole, tooltip);
+                }
+                setItem(static_cast<int>(row), colIndex, item);
             }
             ++colIndex;
         }

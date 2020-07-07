@@ -154,69 +154,304 @@ std::shared_ptr<DataFrame> appendRows(const DataFrame& top, const DataFrame& bot
     return dataframe;
 }
 
+namespace detail {
+
+void columnCheck(const DataFrame& left, const DataFrame& right,
+                 const std::vector<std::string>& keyColumns, const std::string& context) {
+    for (const auto& col : keyColumns) {
+        auto indexCol1 = left.getColumn(col);
+        auto indexCol2 = right.getColumn(col);
+        if (!indexCol1 || !indexCol2) {
+            throw Exception(
+                fmt::format("key column '{}' missing in {}", col,
+                            (!indexCol1 && !indexCol2)
+                                ? "both DataFrames"
+                                : fmt::format("{} DataFrame", !indexCol1 ? "left" : "right")),
+                IVW_CONTEXT_CUSTOM(context));
+        }
+
+        auto catcol1 = dynamic_cast<const CategoricalColumn*>(indexCol1.get());
+        auto catcol2 = dynamic_cast<const CategoricalColumn*>(indexCol2.get());
+        if (!catcol1 != !catcol2) {
+            throw Exception(
+                fmt::format("column type mismatch in key columns '{}': left = {}, right = {}", col,
+                            catcol1 ? "categorical" : "regular",
+                            catcol2 ? "categorical" : "regular"),
+                IVW_CONTEXT_CUSTOM(context));
+        }
+
+        if (indexCol1->getBuffer()->getDataFormat()->getId() !=
+            indexCol2->getBuffer()->getDataFormat()->getId()) {
+            throw Exception(
+                fmt::format("format mismatch in key columns '{}': left = {}, right = {}", col,
+                            indexCol1->getBuffer()->getDataFormat()->getString(),
+                            indexCol2->getBuffer()->getDataFormat()->getString()),
+                IVW_CONTEXT_CUSTOM(context));
+        }
+    }
+}
+
+/**
+ * \brief for each row in leftCol return a list of matching row indices in rightCol
+ */
+template <bool firstMatchOnly = false>
+std::vector<std::vector<size_t>> getMatchingRows(std::shared_ptr<const Column> leftCol,
+                                                 std::shared_ptr<const Column> rightCol) {
+    std::vector<std::vector<size_t>> rows(leftCol->getSize());
+
+    if (auto catCol1 = dynamic_cast<const CategoricalColumn*>(leftCol.get())) {
+        // need to match values of categorical columns instead of indices stored in buffer
+        auto catCol2 = dynamic_cast<const CategoricalColumn*>(rightCol.get());
+        IVW_ASSERT(catCol2, "right column is not categorical");
+
+        auto valuesRight = catCol2->getValues();
+        for (auto&& [i, key] : util::enumerate(catCol1->getValues())) {
+            // find all matching rows in right column
+            std::vector<size_t> matches;
+            for (auto&& [r, value] : util::enumerate(valuesRight)) {
+                if (key == value) {
+                    matches.emplace_back(r);
+                    if constexpr (firstMatchOnly) break;
+                }
+            }
+            rows[i] = std::move(matches);
+        }
+    } else {
+        leftCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>(
+            [rightBuffer = rightCol->getBuffer(), &rows](auto typedBuf) {
+                using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
+
+                const auto& left = typedBuf->getDataContainer();
+                const auto& right = static_cast<const BufferRAMPrecision<ValueType>*>(
+                                        rightBuffer->getRepresentation<BufferRAM>())
+                                        ->getDataContainer();
+
+                for (auto&& [i, key] : util::enumerate(left)) {
+                    // find all matching rows in right
+                    std::vector<size_t> matches;
+                    for (auto&& [r, value] : util::enumerate(right)) {
+                        if (key == value) {
+                            matches.emplace_back(r);
+                            if constexpr (firstMatchOnly) break;
+                        }
+                    }
+                    rows[i] = std::move(matches);
+                }
+            });
+    }
+    return rows;
+}
+
+std::vector<std::vector<size_t>> getMatchingRows(const DataFrame& left, const DataFrame& right,
+                                                 const std::vector<std::string>& keyColumns) {
+    auto indexCol1 = left.getColumn(keyColumns.front());
+    auto indexCol2 = right.getColumn(keyColumns.front());
+
+    auto rows = detail::getMatchingRows(indexCol1, indexCol2);
+    // narrow down row selection by filtering with remaining keys
+    for (auto keyColName : util::as_range(keyColumns.begin() + 1, keyColumns.end())) {
+        auto leftCol = left.getColumn(keyColName);
+        auto rightCol = right.getColumn(keyColName);
+
+        if (auto catCol1 = dynamic_cast<const CategoricalColumn*>(leftCol.get())) {
+            auto catCol2 = dynamic_cast<const CategoricalColumn*>(rightCol.get());
+            IVW_ASSERT(catCol2, "right column is not categorical");
+
+            auto valuesLeft = catCol1->getValues();
+            auto valuesRight = catCol2->getValues();
+            for (auto&& [i, rowMatches] : util::enumerate(rows)) {
+                util::erase_remove_if(rowMatches, [key = valuesLeft[i], &valuesRight](auto row) {
+                    return key != valuesRight[row];
+                });
+            }
+        } else {
+            leftCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>(
+                [&rows, rightBuffer = rightCol->getBuffer()](auto typedBuf) {
+                    using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
+
+                    const auto& left = typedBuf->getDataContainer();
+                    const auto& right = static_cast<const BufferRAMPrecision<ValueType>*>(
+                                            rightBuffer->getRepresentation<BufferRAM>())
+                                            ->getDataContainer();
+
+                    for (auto&& [i, rowMatches] : util::enumerate(rows)) {
+                        util::erase_remove_if(rowMatches, [key = left[i], &right](auto row) {
+                            return key != right[row];
+                        });
+                    }
+                });
+        }
+    }
+    return rows;
+}
+
+void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
+                const std::vector<std::string>& keyColumns, bool skipKeyCol) {
+    for (auto srcCol : srcDataFrame) {
+        if (srcCol == srcDataFrame.getIndexColumn()) continue;
+        if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) {
+            continue;
+        }
+        dst->addColumn(std::shared_ptr<Column>{srcCol->clone()});
+    }
+}
+
+void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
+                const std::vector<size_t>& rows, const std::vector<std::string>& keyColumns,
+                bool skipKeyCol) {
+    for (auto srcCol : srcDataFrame) {
+        if (srcCol == srcDataFrame.getIndexColumn()) continue;
+        if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) {
+            continue;
+        }
+
+        if (auto c = dynamic_cast<CategoricalColumn*>(srcCol.get())) {
+            auto data = util::transform(rows, [src = c->getValues()](size_t i) { return src[i]; });
+            dst->addCategoricalColumn(c->getHeader(), data);
+        } else {
+            srcCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>(
+                [dst, srcCol, header = srcCol->getHeader(), rows](auto typedBuf) {
+                    auto dstData = util::transform(
+                        rows, [& src = typedBuf->getDataContainer()](size_t i) { return src[i]; });
+                    dst->addColumn(header, std::move(dstData));
+                });
+        }
+    }
+}
+
+void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
+                const std::vector<std::optional<size_t>>& rows,
+                const std::vector<std::string>& keyColumns, bool skipKeyCol) {
+    for (auto srcCol : srcDataFrame) {
+        if (srcCol == srcDataFrame.getIndexColumn()) continue;
+        if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) {
+            continue;
+        }
+
+        if (auto c = dynamic_cast<CategoricalColumn*>(srcCol.get())) {
+            auto data = util::transform(rows, [src = c->getValues()](auto v) {
+                return v.has_value() ? src[v.value()] : "undefined";
+            });
+            dst->addCategoricalColumn(c->getHeader(), data);
+        } else {
+            srcCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>(
+                [dst, srcCol, header = srcCol->getHeader(), rows](auto typedBuf) {
+                    using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
+                    auto dstData =
+                        util::transform(rows, [& src = typedBuf->getDataContainer()](auto v) {
+                            return v.has_value() ? src[v.value()] : ValueType{0};
+                        });
+                    dst->addColumn(header, std::move(dstData));
+                });
+        }
+    }
+}
+
+}  // namespace detail
+
 std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& right,
                                      const std::string& keyColumn) {
+    detail::columnCheck(left, right, {keyColumn}, "dataframe::innerJoin");
+
     auto indexCol1 = left.getColumn(keyColumn);
     auto indexCol2 = right.getColumn(keyColumn);
-    if (!indexCol1 || !indexCol2) {
-        throw Exception(fmt::format("key column '{}' missing", keyColumn),
-                        IVW_CONTEXT_CUSTOM("dataframe::innerJoin"));
+
+    std::vector<size_t> rowsLeft;
+    std::vector<size_t> rowsRight;
+    for (auto&& [i, rowIndices] :
+         util::enumerate(detail::getMatchingRows<true>(indexCol1, indexCol2))) {
+        if (!rowIndices.empty()) {
+            rowsLeft.push_back(i);
+            rowsRight.push_back(rowIndices.front());
+        }
     }
-
-    if (indexCol1->getBuffer()->getDataFormat()->getId() !=
-        indexCol2->getBuffer()->getDataFormat()->getId()) {
-        throw Exception(fmt::format("format mismatch in key columns '{}': left = {}, right = {}",
-                                    keyColumn, indexCol1->getBuffer()->getDataFormat()->getString(),
-                                    indexCol2->getBuffer()->getDataFormat()->getString()),
-                        IVW_CONTEXT_CUSTOM("dataframe::innerJoin"));
-    }
-
-    // locate matching rows and determine row indices
-    auto rows = indexCol1->getBuffer()
-                    ->getRepresentation<BufferRAM>()
-                    ->dispatch<std::pair<std::vector<size_t>, std::vector<size_t>>>(
-                        [rightBuffer = indexCol2->getBuffer()](auto typedBuf) {
-                            using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
-
-                            const auto& left = typedBuf->getDataContainer();
-                            const auto& right = static_cast<const BufferRAMPrecision<ValueType>*>(
-                                                    rightBuffer->getRepresentation<BufferRAM>())
-                                                    ->getDataContainer();
-
-                            std::vector<size_t> rowsLeft;
-                            std::vector<size_t> rowsRight;
-                            for (auto&& [i, key] : util::enumerate(left)) {
-                                if (auto it = util::find(right, key); it != right.end()) {
-                                    rowsLeft.push_back(i);
-                                    rowsRight.push_back(std::distance(right.begin(), it));
-                                }
-                            }
-                            return std::make_pair(rowsLeft, rowsRight);
-                        });
 
     IVW_ASSERT(rows.first.size() == rows.second.size(), "incorrect number of matching row indices");
 
     auto dataframe = std::make_shared<DataFrame>();
+    detail::addColumns(dataframe, left, rowsLeft, {keyColumn}, false);
+    detail::addColumns(dataframe, right, rowsRight, {keyColumn}, true);
 
-    auto addColumns = [&dataframe, keyColumn](const DataFrame& srcDataFrame,
-                                              const std::vector<size_t>& rows, bool skipKeyCol) {
-        for (auto srcCol : srcDataFrame) {
-            if (srcCol == srcDataFrame.getIndexColumn()) continue;
-            if (skipKeyCol && (srcCol->getHeader() == keyColumn)) {
-                continue;
-            }
+    dataframe->updateIndexBuffer();
+    return dataframe;
+}
 
-            srcCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>(
-                [&dataframe, header = srcCol->getHeader(), rows](auto typedBuf) {
-                    auto dst = util::transform(
-                        rows, [src = typedBuf->getDataContainer()](size_t i) { return src[i]; });
-                    dataframe->addColumn(header, dst);
-                });
+std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& right,
+                                     const std::vector<std::string>& keyColumns) {
+    if (keyColumns.empty()) {
+        throw Exception("no key columns given", IVW_CONTEXT_CUSTOM("dataframe::innerJoin"));
+    }
+
+    detail::columnCheck(left, right, keyColumns, "dataframe::innerJoin");
+
+    std::vector<size_t> rowsLeft;
+    std::vector<size_t> rowsRight;
+    for (auto&& [i, rowIndices] :
+         util::enumerate(detail::getMatchingRows(left, right, keyColumns))) {
+        if (!rowIndices.empty()) {
+            rowsLeft.push_back(i);
+            rowsRight.push_back(rowIndices.front());
         }
-    };
+    }
 
-    addColumns(left, rows.first, false);
-    addColumns(right, rows.second, true);
+    IVW_ASSERT(rowsLeft.size() == rowsRight.size(), "incorrect number of matching row indices");
+
+    auto dataframe = std::make_shared<DataFrame>();
+    detail::addColumns(dataframe, left, rowsLeft, keyColumns, false);
+    detail::addColumns(dataframe, right, rowsRight, keyColumns, true);
+
+    dataframe->updateIndexBuffer();
+    return dataframe;
+}
+
+std::shared_ptr<DataFrame> leftJoin(const DataFrame& left, const DataFrame& right,
+                                    const std::string& keyColumn) {
+    detail::columnCheck(left, right, {keyColumn}, "dataframe::leftJoin");
+
+    auto indexCol1 = left.getColumn(keyColumn);
+    auto indexCol2 = right.getColumn(keyColumn);
+
+    auto rows = util::transform(detail::getMatchingRows<true>(indexCol1, indexCol2),
+                                [](const std::vector<size_t>& rowIndices) -> std::optional<size_t> {
+                                    if (rowIndices.empty()) {
+                                        return {};
+                                    } else {
+                                        return rowIndices.front();
+                                    }
+                                });
+
+    IVW_ASSERT(indexCol1->size() == rows.size(), "incorrect number of matching row indices");
+
+    auto dataframe = std::make_shared<DataFrame>();
+    detail::addColumns(dataframe, left, {keyColumn}, false);
+    detail::addColumns(dataframe, right, rows, {keyColumn}, true);
+
+    dataframe->updateIndexBuffer();
+    return dataframe;
+}
+
+std::shared_ptr<DataFrame> leftJoin(const DataFrame& left, const DataFrame& right,
+                                    const std::vector<std::string>& keyColumns) {
+    if (keyColumns.empty()) {
+        throw Exception("no key columns given", IVW_CONTEXT_CUSTOM("dataframe::leftJoin"));
+    }
+
+    detail::columnCheck(left, right, keyColumns, "dataframe::leftJoin");
+
+    auto rows = util::transform(detail::getMatchingRows(left, right, keyColumns),
+                                [](const std::vector<size_t>& rowIndices) -> std::optional<size_t> {
+                                    if (rowIndices.empty()) {
+                                        return {};
+                                    } else {
+                                        return rowIndices.front();
+                                    }
+                                });
+
+    IVW_ASSERT(indexCol1->size() == rows.size(), "incorrect number of matching row indices");
+
+    auto dataframe = std::make_shared<DataFrame>();
+    detail::addColumns(dataframe, left, keyColumns, false);
+    detail::addColumns(dataframe, right, rows, keyColumns, true);
 
     dataframe->updateIndexBuffer();
     return dataframe;

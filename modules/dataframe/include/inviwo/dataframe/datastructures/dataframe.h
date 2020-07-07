@@ -42,6 +42,8 @@
 #include <inviwo/core/util/exception.h>
 #include <unordered_map>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 class DataPointBase;
 class BufferBase;
@@ -141,6 +143,8 @@ public:
      */
     std::shared_ptr<CategoricalColumn> addCategoricalColumn(const std::string& header,
                                                             size_t size = 0);
+    std::shared_ptr<CategoricalColumn> addCategoricalColumn(const std::string& header,
+                                                            const std::vector<std::string>& values);
     /**
      * \brief add a new row given a vector of strings.
      * updateIndexBuffer() needs to be called after the last row has been added.
@@ -239,20 +243,47 @@ struct DataTraits<DataFrame> {
         doc.append("b", "DataFrame", {{"style", "color:white;"}});
         utildoc::TableBuilder tb(doc.handle(), P::end());
         tb(H("Number of Columns: "), data.getNumberOfColumns());
-        tb(H("Number of Rows: "), data.getNumberOfRows());
+        const auto rowCount = data.getNumberOfRows();
+        tb(H("Number of Rows: "), rowCount);
 
         utildoc::TableBuilder tb2(doc.handle(), P::end());
         tb2(H("Col"), H("Format"), H("Rows"), H("Name"));
         // abbreviate list of columns if there are more than 20
         const size_t ncols = (data.getNumberOfColumns() > 20) ? 10 : data.getNumberOfColumns();
 
+        bool inconsistenRowCount = false;
         for (size_t i = 0; i < ncols; i++) {
-            tb2(std::to_string(i + 1), data.getColumn(i)->getBuffer()->getDataFormat()->getString(),
-                data.getColumn(i)->getBuffer()->getSize(), data.getHeader(i));
+            inconsistenRowCount |= (data.getColumn(i)->getSize() != rowCount);
+            if (auto col = dynamic_cast<const CategoricalColumn*>(data.getColumn(i).get())) {
+                tb2(std::to_string(i + 1), "categorical", col->getBuffer()->getSize(),
+                    data.getHeader(i));
+                std::string categories;
+                for (const auto& str : col->getCategories()) {
+                    if (!categories.empty()) {
+                        categories += ", ";
+                    }
+                    categories += str;
+                    if (categories.size() > 50) {
+                        // elide rest of the categories
+                        categories += ", ...";
+                        break;
+                    }
+                }
+                categories += fmt::format(" [{}]", col->getCategories().size());
+                tb2("", categories, utildoc::TableBuilder::Span_t{},
+                    utildoc::TableBuilder::Span_t{}, utildoc::TableBuilder::Span_t{});
+            } else {
+                tb2(std::to_string(i + 1),
+                    data.getColumn(i)->getBuffer()->getDataFormat()->getString(),
+                    data.getColumn(i)->getBuffer()->getSize(), data.getHeader(i));
+            }
         }
         if (ncols != data.getNumberOfColumns()) {
             doc.append("span", "... (" + std::to_string(data.getNumberOfColumns() - ncols) +
                                    " additional columns)");
+        }
+        if (inconsistenRowCount) {
+            doc.append("span", "Inconsistent row counts");
         }
 
         return doc;
