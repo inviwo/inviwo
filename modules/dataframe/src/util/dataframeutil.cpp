@@ -366,7 +366,7 @@ std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& rig
         }
     }
 
-    IVW_ASSERT(rows.first.size() == rows.second.size(), "incorrect number of matching row indices");
+    IVW_ASSERT(rowsLeft.size() == rowsRight.size(), "incorrect number of matching row indices");
 
     auto dataframe = std::make_shared<DataFrame>();
     detail::addColumns(dataframe, left, rowsLeft, {keyColumn}, false);
@@ -420,7 +420,7 @@ std::shared_ptr<DataFrame> leftJoin(const DataFrame& left, const DataFrame& righ
                                     }
                                 });
 
-    IVW_ASSERT(indexCol1->size() == rows.size(), "incorrect number of matching row indices");
+    IVW_ASSERT(indexCol1->getSize() == rows.size(), "incorrect number of matching row indices");
 
     auto dataframe = std::make_shared<DataFrame>();
     detail::addColumns(dataframe, left, {keyColumn}, false);
@@ -446,8 +446,6 @@ std::shared_ptr<DataFrame> leftJoin(const DataFrame& left, const DataFrame& righ
                                         return rowIndices.front();
                                     }
                                 });
-
-    IVW_ASSERT(indexCol1->size() == rows.size(), "incorrect number of matching row indices");
 
     auto dataframe = std::make_shared<DataFrame>();
     detail::addColumns(dataframe, left, keyColumns, false);
