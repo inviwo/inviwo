@@ -132,9 +132,19 @@ private:
     Shader averageLightfieldShader_;
 
     void clickToFocus(Event* e);
-    void warp(vec2 st, vec2 uv, vec4 color, double zWorld, size_t viewIndex, vec4* lightFieldData,
-              float* lightFieldDepthData, double fovy, double focusDepth);
     void setApproximate(bool approximate);
+    void setupRecursion(size2_t dim, int maxEvalCount, std::shared_ptr<const Image> img);
+    double calculateFocusDepth();
+    vec2 calculateCurrentCameraPos(int maxEvalCount);
+    void addToAccumulationBuffer(std::shared_ptr<const Image> img, TextureUnitContainer& cont);
+    void warpToLightfieldGPU(TextureUnitContainer& cont, double nearClip, double farClip,
+                             double fovy, double focusDepth, size2_t dim, vec2 cameraPos);
+    void warpToLightfieldCPU(std::shared_ptr<const Image> img, double nearClip, double farClip,
+                             double fovy, double focusDepth, size2_t dim, vec2 cameraPos);
+    void warp(vec2 st, vec2 uv, vec4 color, double zWorld, size_t viewIndex, VolumeRAM* lightField,
+              VolumeRAM* lightFieldDepth, double fovy, double focusDepth);
+    void synthesizeLightfield(TextureUnitContainer& cont);
+    void moveCamera(SkewedPerspectiveCamera* camera, int maxEvalCount, double focusDepth);
 };
 
 }  // namespace inviwo

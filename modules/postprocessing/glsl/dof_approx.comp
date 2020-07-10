@@ -64,7 +64,7 @@ void main() {
     vec2 simCameraPos = radius * vec2(cos(angle), sin(angle));
 
     // Warp to simulated view.
-    float disparity = (1.0 / zWorld - 1.0 / focusDepth) * (cameraPos - simCameraPos);
+    vec2 disparity = (1.0 / zWorld - 1.0 / focusDepth) * (cameraPos - simCameraPos);
     vec2 simScreenPos = screenPos + disparity * dim.y / (2.0 * tan(fovy / 2.0));
     ivec3 pos = ivec3(round(simScreenPos.x), round(simScreenPos.y), viewIndex + nViews);
     float currDepth = imageLoad(lightFieldDepth, pos).r;
