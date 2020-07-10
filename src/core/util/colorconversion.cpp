@@ -479,7 +479,7 @@ vec3 lighter(const vec3& rgb, float factor) {
 vec4 lighter(const vec4& rgba, float factor) {
     vec3 hsv = rgb2hsv(rgba);
     hsv.r = std::min(hsv.r * factor, 1.0f);
-    return vec4(hsv, rgba.a);
+    return vec4(hsv2rgb(hsv), rgba.a);
 }
 
 vec3 darker(const vec3& rgb, float factor) {
@@ -491,7 +491,7 @@ vec3 darker(const vec3& rgb, float factor) {
 vec4 darker(const vec4& rgba, float factor) {
     vec3 hsv = rgb2hsv(rgba);
     hsv.r = std::min(hsv.r / factor, 1.0f);
-    return vec4(hsv, rgba.a);
+    return vec4(hsv2rgb(hsv), rgba.a);
 }
 
 }  // namespace color
