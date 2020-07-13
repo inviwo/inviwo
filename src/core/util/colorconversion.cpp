@@ -472,26 +472,26 @@ vec3 LuvChromaticity2XYZ(const vec3& LuvChroma, vec3 whitePointXYZ) {
 
 vec3 lighter(const vec3& rgb, float factor) {
     vec3 hsv = rgb2hsv(rgb);
-    hsv.r = std::min(hsv.r * factor, 1.0f);
+    hsv.z = std::min(hsv.z * factor, 1.0f);
     return hsv2rgb(hsv);
 }
 
 vec4 lighter(const vec4& rgba, float factor) {
     vec3 hsv = rgb2hsv(rgba);
-    hsv.r = std::min(hsv.r * factor, 1.0f);
-    return vec4(hsv, rgba.a);
+    hsv.z = std::min(hsv.z * factor, 1.0f);
+    return vec4(hsv2rgb(hsv), rgba.a);
 }
 
 vec3 darker(const vec3& rgb, float factor) {
     vec3 hsv = rgb2hsv(rgb);
-    hsv.r = std::min(hsv.r / factor, 1.0f);
+    hsv.z = std::min(hsv.z / factor, 1.0f);
     return hsv2rgb(hsv);
 }
 
 vec4 darker(const vec4& rgba, float factor) {
     vec3 hsv = rgb2hsv(rgba);
-    hsv.r = std::min(hsv.r / factor, 1.0f);
-    return vec4(hsv, rgba.a);
+    hsv.z = std::min(hsv.z / factor, 1.0f);
+    return vec4(hsv2rgb(hsv), rgba.a);
 }
 
 }  // namespace color
