@@ -202,8 +202,7 @@ void exposeDataFrame(pybind11::module& m) {
     util::for_each_type<Scalars>{}(DataFrameAddColumnReg{}, dataframe);
 
     m.def("createDataFrame", createDataFrame, py::arg("exampleRows"),
-          py::arg("colheaders") = std::vector<std::string>{},
-          py::arg("doubleprecision") = false,
+          py::arg("colheaders") = std::vector<std::string>{}, py::arg("doubleprecision") = false,
           R"delim(
 Create a new DataFrame by guessing the column types from a number of rows.
 
