@@ -31,9 +31,10 @@
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/exception.h>
 #include <inviwo/core/io/serialization/serializer.h>
 
-#include <fstream>
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -111,7 +112,12 @@ void DataFrameExporter::exportNow() {
 }
 
 void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
-    std::ofstream file(exportFile_);
+    auto file = filesystem::ofstream(exportFile_);
+    if (!file.is_open()) {
+        throw FileException(fmt::format("could not open file '{}'", exportFile_.get()),
+                            IVW_CONTEXT);
+    }
+
     auto dataFrame = dataFrame_.getData();
 
     const std::string delimiter = delimiter_.get();
@@ -198,7 +204,11 @@ void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
 void DataFrameExporter::exportAsXML() {
     auto dataFrame = dataFrame_.getData();
 
-    std::ofstream file(exportFile_);
+    auto file = filesystem::ofstream(exportFile_);
+    if (!file.is_open()) {
+        throw FileException(fmt::format("could not open file '{}'", exportFile_.get()),
+                            IVW_CONTEXT);
+    }
     Serializer serializer("");
 
     for (const auto& col : *dataFrame) {
