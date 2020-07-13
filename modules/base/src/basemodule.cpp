@@ -96,6 +96,7 @@
 
 // Properties
 #include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/datarangeproperty.h>
 #include <modules/base/properties/gaussianproperty.h>
 #include <modules/base/properties/imageinformationproperty.h>
 #include <modules/base/properties/layerinformationproperty.h>
@@ -208,14 +209,15 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<InputSelector<MultiDataInport<Mesh>, MeshOutport>>();
     registerProcessor<InputSelector<ImageMultiInport, ImageOutport>>();
 
-    registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();
-    registerProperty<ImageInformationProperty>();
-    registerProperty<LayerInformationProperty>();
-    registerProperty<MeshInformationProperty>();
     registerProperty<BufferInformationProperty>();
-    registerProperty<MeshBufferInformationProperty>();
+    registerProperty<DataRangeProperty>();
+    registerProperty<ImageInformationProperty>();
     registerProperty<IndexBufferInformationProperty>();
+    registerProperty<LayerInformationProperty>();
+    registerProperty<MeshBufferInformationProperty>();
+    registerProperty<MeshInformationProperty>();
+    registerProperty<SequenceTimerProperty>();
     registerProperty<VolumeInformationProperty>();
 
     registerProperty<Gaussian1DProperty>();

@@ -116,6 +116,7 @@ set(HEADER_FILES
     include/modules/base/processors/worldtransformdeprecated.h
     include/modules/base/properties/basisproperty.h
     include/modules/base/properties/bufferinformationproperty.h
+    include/modules/base/properties/datarangeproperty.h
     include/modules/base/properties/gaussianproperty.h
     include/modules/base/properties/imageinformationproperty.h
     include/modules/base/properties/layerinformationproperty.h
@@ -232,6 +233,7 @@ set(SOURCE_FILES
     src/processors/volumetospatialsampler.cpp
     src/properties/basisproperty.cpp
     src/properties/bufferinformationproperty.cpp
+    src/properties/datarangeproperty.cpp
     src/properties/gaussianproperty.cpp
     src/properties/imageinformationproperty.cpp
     src/properties/layerinformationproperty.cpp
