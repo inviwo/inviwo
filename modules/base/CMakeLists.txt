@@ -96,6 +96,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumebasistransformer.h
     include/modules/base/processors/volumeboundaryplanes.h
     include/modules/base/processors/volumeboundingbox.h
+    include/modules/base/processors/volumeconverter.h
     include/modules/base/processors/volumecreator.h
     include/modules/base/processors/volumecurlcpuprocessor.h
     include/modules/base/processors/volumedivergencecpuprocessor.h
@@ -214,6 +215,7 @@ set(SOURCE_FILES
     src/processors/trianglestowireframe.cpp
     src/processors/volumeboundaryplanes.cpp
     src/processors/volumeboundingbox.cpp
+    src/processors/volumeconverter.cpp
     src/processors/volumecreator.cpp
     src/processors/volumecurlcpuprocessor.cpp
     src/processors/volumedivergencecpuprocessor.cpp

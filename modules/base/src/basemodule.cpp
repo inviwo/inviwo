@@ -72,6 +72,7 @@
 #include <modules/base/processors/transform.h>
 #include <modules/base/processors/trianglestowireframe.h>
 #include <modules/base/processors/volumeboundaryplanes.h>
+#include <modules/base/processors/volumeconverter.h>
 #include <modules/base/processors/volumecreator.h>
 #include <modules/base/processors/volumesequenceelementselectorprocessor.h>
 #include <modules/base/processors/volumesource.h>
@@ -167,6 +168,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<TrianglesToWireframe>();
     registerProcessor<TransformMesh>();
     registerProcessor<TransformVolume>();
+    registerProcessor<VolumeConverter>();
     registerProcessor<WorldTransformMeshDeprecated>();
     registerProcessor<WorldTransformVolumeDeprecated>();
     registerProcessor<VolumeSlice>();
