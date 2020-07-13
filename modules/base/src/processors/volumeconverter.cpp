@@ -71,9 +71,9 @@ struct CopyVol {
                         srcData, srcData + glm::compMul(dims), dstData,
                         [srcRange, dstRange](auto& v) {
                             return static_cast<T>((static_cast<Tdouble>(v) - srcRange.x) /
-                                                       (srcRange.y - srcRange.x) *
-                                                       (dstRange.y - dstRange.x) +
-                                                   dstRange.x);
+                                                      (srcRange.y - srcRange.x) *
+                                                      (dstRange.y - dstRange.x) +
+                                                  dstRange.x);
                         });
                 } else {
                     std::transform(srcData, srcData + glm::compMul(dims), dstData,
