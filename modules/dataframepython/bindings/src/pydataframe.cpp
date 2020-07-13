@@ -203,6 +203,7 @@ void exposeDataFrame(pybind11::module& m) {
 
     m.def("createDataFrame", createDataFrame, py::arg("exampleRows"),
           py::arg("colheaders") = std::vector<std::string>{},
+          py::arg("doubleprecision") = false,
           R"delim(
 Create a new DataFrame by guessing the column types from a number of rows.
 
@@ -210,6 +211,7 @@ Parameters
 ----------
 exampleRows     Rows for guessing data type of each column.
 colHeaders      Name of each column. If none are given, "Column 1", "Column 2", ... is used
+doubleprecision If true, columns with floating point values will use double for storage
 )delim")
         .def("appendColumns", dataframe::appendColumns, py::arg("left"), py::arg("right"),
              py::arg("ignoreduplicates") = false, py::arg("fillmissingrows") = false,

@@ -61,7 +61,7 @@ public:
  */
 class IVW_MODULE_DATAFRAME_API CSVReader : public DataReaderType<DataFrame> {
 public:
-    CSVReader();
+    CSVReader(const std::string& delim = ",", bool hasHeader = true, bool doubleprec = false);
     CSVReader(const CSVReader&) = default;
     CSVReader(CSVReader&&) noexcept = default;
     CSVReader& operator=(const CSVReader&) = default;
@@ -71,6 +71,7 @@ public:
 
     void setDelimiters(const std::string& delim);
     void setFirstRowHeader(bool hasHeader);
+    void setDoublePrecision(bool doubleprec);
     using DataReaderType<DataFrame>::readData;
 
     /**
@@ -101,6 +102,7 @@ public:
 private:
     std::string delimiters_;
     bool firstRowHeader_;
+    bool doublePrecision_;
 };
 
 }  // namespace inviwo

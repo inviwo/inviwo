@@ -35,9 +35,9 @@
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 
@@ -67,9 +67,10 @@ public:
 
 private:
     DataOutport<DataFrame> data_;
-    BoolProperty firstRowIsHeaders_;
     FileProperty inputFile_;
+    BoolProperty firstRowIsHeaders_;
     StringProperty delimiters_;
+    BoolProperty doublePrecision_;
     ButtonProperty reloadData_;
 };
 
