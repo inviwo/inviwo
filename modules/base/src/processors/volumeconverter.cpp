@@ -36,8 +36,6 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/foreacharg.h>
 
-#pragma optimize("", off)
-
 namespace inviwo {
 
 namespace detail {
