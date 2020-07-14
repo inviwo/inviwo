@@ -131,7 +131,7 @@ TEST(CSVdata, emptyFields) {
     auto value = dataframe->getColumn(3)->get(1, true)->toString();
     EXPECT_EQ("", value) << "empty field at end of row";
     value = dataframe->getColumn(1)->get(2, false)->toString();
-    EXPECT_EQ("nan", value) << "empty numeric field at begin of row";
+    EXPECT_EQ("0", value) << "empty numeric field at begin of row";
     value = dataframe->getColumn(2)->get(2, true)->toString();
     EXPECT_EQ("", value) << "empty field in middle of row";
 }

@@ -280,11 +280,12 @@ std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::vector<std::st
                 IVW_CONTEXT_CUSTOM("DataFrame::createDataFrame"));
         }
         for (auto column = 0u; column < rowData.size(); ++column) {
-            if (detail::isIntegral(rowData[column])) {
+            if (rowData[column].empty()) {
+                continue;
+            } else if (detail::isIntegral(rowData[column])) {
                 ++stats[column].integral;
                 continue;
-            }
-            if (detail::isFloat(rowData[column])) {
+            } else if (detail::isFloat(rowData[column])) {
                 ++stats[column].floatingPoint;
                 continue;
             }
