@@ -246,7 +246,7 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
     while (!row.second) {
         // Do not add empty rows, i.e. rows with only delimiters (,,,,) or newline
         if (std::any_of(std::begin(row.first), std::end(row.first),
-                         [](const auto& a) { return !a.empty(); })) {
+                        [](const auto& a) { return !a.empty(); })) {
             // May throw DataTypeMismatch, but do not catch it here since it indicates
             // that the DataFrame is in an invalid state
             dataFrame->addRow(row.first);

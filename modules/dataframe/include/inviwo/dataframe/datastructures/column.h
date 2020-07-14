@@ -322,7 +322,7 @@ template <typename T, typename std::enable_if<std::is_integral<T>::value, int>::
 void add(Buffer<T>* buffer, const std::string& value) {
     T result;
     if (value.empty()) {
-        result = T{0}; // no special value indicating missing data for integral types
+        result = T{0};  // no special value indicating missing data for integral types
     } else {
         std::istringstream stream(value);
         stream >> result;
