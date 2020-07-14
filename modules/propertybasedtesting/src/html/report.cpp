@@ -115,8 +115,8 @@ HTML::BaseElement PropertyBasedTestingReport::generateHTML
 			<< HTML::Text("Value"));
 	for(auto prop : props) {
 		res << (HTML::Row()
-				<< HTML::Text(prop->getProperty()->getDisplayName())
-				<< HTML::Text(prop->getProperty()->getIdentifier())
+				<< HTML::Text(prop->getDisplayName())
+				<< HTML::Text(prop->getIdentifier())
 				<< HTML::Text(prop->getValueString(testResult)));
 	}
 	return res;

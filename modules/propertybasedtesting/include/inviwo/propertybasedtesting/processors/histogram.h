@@ -110,13 +110,7 @@ private:
 	void onProcessorNetworkDidRemoveConnection(const PortConnection&) override;
 
 	void updateProcessors();
-	std::unordered_map<Processor*,
-			std::pair<CompositeProperty*,
-				std::vector<
-					std::pair<BoolCompositeProperty*, std::shared_ptr<TestProperty>>
-				>
-			>
-		> processors_;
+	std::unordered_map<Processor*, std::shared_ptr<TestPropertyComposite>> processors_;
 
 	std::vector<std::shared_ptr<TestProperty>> props_; // Properties to test
 	void resetAllProps();

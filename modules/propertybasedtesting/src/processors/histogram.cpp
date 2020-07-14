@@ -112,18 +112,21 @@ void Histogram::updateProcessors() {
 		}
 	}
 	for(const auto& processor : processorsToRemove) {
-		const auto& [comp, testProps] = processors_.at(processor);
-		this->removeProperty(comp);
+		const auto& testProp = processors_.at(processor);
+		this->removeProperty(testProp->getBoolComp());
 		processors_.erase(processor);
 	}
 	
 	// add newly connected processors
 	for(const auto& processor : visitedProcessors) {
-		std::cerr << processor << " " << processor->getIdentifier() << ": " << processors_.count(processor) << std::endl;
+		std::cerr << processor << " "
+			<< processor->getIdentifier() << ": "
+			<< processors_.count(processor) << std::endl;
 		if(!processors_.count(processor)) {
 			std::vector<std::pair<BoolCompositeProperty*, std::shared_ptr<TestProperty>>> props;
 			for(Property* prop : processor->getProperties()) {
-				if(std::optional<std::shared_ptr<TestProperty>> p = testableProperty(prop); p != std::nullopt) {
+				if(std::optional<std::shared_ptr<TestProperty>> p = testableProperty(prop);
+						p != std::nullopt) {
 					props.emplace_back(nullptr, *p);
 				}
 			}
@@ -132,27 +135,11 @@ void Histogram::updateProcessors() {
 			if(props.empty())
 				continue;
 
-			std::string ident = processor->getIdentifier();
-			std::replace(ident.begin(), ident.end(), ' ', '_');
-			CompositeProperty* comp = new CompositeProperty(
-					ident,
-					processor->getDisplayName());
-			comp->setCollapsed(true);
-			for(auto&[propComp,p] : props) {
-				propComp = new BoolCompositeProperty(
-						p->getProperty()->getIdentifier() + "Comp",
-						p->getProperty()->getDisplayName(),
-						false);
-				propComp->setCollapsed(true);
-				p->withSubProperties([&propComp](auto opt){ propComp->addProperty(opt); });
-				makeOnChange(propComp);
-
-				comp->addProperty(propComp);
-			}
-			processors_.emplace(processor, std::make_pair(comp, props));
+			auto comp = TestPropertyComposite::make<Processor>(processor);
+			processors_.emplace(processor, comp);
 			std::cerr << processor->getDisplayName() << ": " << props.size() << std::endl;
 
-			this->addProperty(comp);
+			this->addProperty(comp->getBoolComp());
 		}
 	}
 
@@ -194,6 +181,8 @@ Histogram::Histogram(InviwoApplication* app)
 	inport_.setOutportDeterminesSize(true);
 	addPort(inport_);
 
+	outport_.setHandleResizeEvents(false); // No resize-event handling
+	// TODO: maybe generate fitting image on resize event?
 	addPort(outport_);
 
 	addProperty(reportDirectory_);
@@ -223,60 +212,35 @@ void Histogram::serialize(Serializer& s) const {
 
 	std::cerr << "Histogram::serialize()" << std::endl;
 
-	std::vector<Processor*> procs;
-	std::vector<CompositeProperty*> comps;
-	std::vector<std::vector<BoolCompositeProperty*>> boolComps;
-	std::vector<std::vector<Property*>> testProps;
-
-	for(const auto&[processor,procData] : processors_) {
-		std::vector<BoolCompositeProperty*> boolComp;
-		std::vector<Property*> testProp;
-
-		const auto&[comp,props] = procData;
-		for(const auto&[propComp, prop] : props) {
-			boolComp.emplace_back(propComp);
-			testProp.emplace_back(prop->getProperty());
-		}
-
-		procs.emplace_back(processor);
-		comps.emplace_back(comp);
-		boolComps.emplace_back(boolComp);
-		testProps.emplace_back(testProp);
+	std::vector<Processor*> processors;
+	std::vector<TestPropertyComposite*> testProperties;
+	for(auto[proc, test] : processors_) {
+		processors.emplace_back(proc);
+		testProperties.emplace_back(test.get());
 	}
-
-	s.serialize("TestProcessors", procs);
-	s.serialize("CompositeProps", comps);
-	s.serialize("BoolComps", boolComps);
-	s.serialize("TestProps", testProps);
+	s.serialize("Processors", processors);
+	std::cerr << "\tserialized " << processors.size() << " processors" << std::endl;
+	s.serialize("TestProperties", testProperties);
+	std::cerr << "\tserialized " << testProperties.size() << " testProperties" << std::endl;
 }
 
 void Histogram::deserialize(Deserializer& d) {
 	Processor::deserialize(d);
 
 	std::cerr << "Histogram::deserialize()" << std::endl;
-	
-	std::vector<Processor*> procs;
-	std::vector<CompositeProperty*> comps;
-	std::vector<std::vector<BoolCompositeProperty*>> boolComps;
-	std::vector<std::vector<Property*>> testProps;
 
-	d.deserialize("TestProcessors", procs);
-	d.deserialize("CompositeProps", comps);
-	d.deserialize("BoolComps", boolComps);
-	d.deserialize("TestProps", testProps);
-
-	assert(procs.size() == comps.size() &&
-			procs.size() == boolComps.size() &&
-			procs.size() == testProps.size());
-
-	for(size_t i = 0; i < procs.size(); i++) {
-		assert(boolComps[i].size() == testProps[i].size());
-		std::vector<std::pair<BoolCompositeProperty*, std::shared_ptr<TestProperty>>> props;
-		for(size_t j = 0; j < boolComps[i].size(); j++)
-			props.emplace_back(boolComps[i][j], *testableProperty(testProps[i][j]));
-
-		processors_[procs[i]] = std::make_pair(comps[i], props);
+	std::vector<Processor*> processors;
+	d.deserialize("Processors", processors);
+	std::cerr << "\tdeserialized " << processors.size() << " processors" << std::endl;
+	std::vector<TestProperty*> testProperties;
+	d.deserialize("TestProperties", testProperties);
+	assert(processors.size() == testProperties.size());
+	for(size_t i = 0; i < processors.size(); i++) {
+		TestPropertyComposite* const tmp = dynamic_cast<TestPropertyComposite*>(testProperties[i]);
+		assert(tmp != nullptr);
+		processors_.emplace(processors[i], std::shared_ptr<TestPropertyComposite>(tmp));
 	}
+	std::cerr << "\tdeserialized " << testProperties.size() << " testProperties" << std::endl;
 }
 
 void Histogram::initTesting() {
@@ -285,11 +249,9 @@ void Histogram::initTesting() {
 
 	props_.clear();
 
-	for(const auto&[processor,procData] : processors_) {
-		const auto&[comp,props] = procData;
-		for(const auto&[propComp, prop] : props)
-			if(propComp->isChecked())
-				props_.emplace_back(prop);
+	for(const auto&[processor,comp] : processors_) {
+		if(comp->getBoolComp()->isChecked())
+			props_.emplace_back(comp);
 	}
 
 	// store current state in order to reset it after testing
@@ -317,7 +279,8 @@ void Histogram::initTesting() {
 	}
 
 	std::cerr << "remainingTests.size() = " << remainingTests.size() << std::endl;
-	util::log(IVW_CONTEXT, std::string("Testing ") + std::to_string(remainingTests.size()) + " configurations...", LogLevel::Info, LogAudience::User);
+	util::log(IVW_CONTEXT, std::string("Testing ") + std::to_string(remainingTests.size()) + " configurations...",
+			LogLevel::Info, LogAudience::User);
 
 	if(remainingTests.size() > 0) {
 		app_->dispatchFront([this]() {
@@ -326,7 +289,8 @@ void Histogram::initTesting() {
 	}
 }
 
-std::ostream& printError(std::ostream& out, const std::vector<std::shared_ptr<TestProperty>>& props, const TestingError& err) {
+std::ostream& printError(std::ostream& out,
+		const std::vector<std::shared_ptr<TestProperty>>& props, const TestingError& err) {
 	const auto&[testResult1, testResult2, effect, res1, res2] = err;
 	out << "Tests with values" << std::endl;
 	for(auto prop : props)
@@ -357,8 +321,8 @@ namespace {
 				}
 			};
 
-			return std::make_shared<LayerRAMPrecision<F>>(static_cast<F*>(data), dims, LayerType::Color,
-						swizzleMask(T::comp));
+			return std::make_shared<LayerRAMPrecision<F>>(static_cast<F*>(data), dims,
+					LayerType::Color, swizzleMask(T::comp));
 		}
 	};
 }
@@ -448,20 +412,23 @@ void Histogram::checkTestResults() {
 		// writing errors to file
 		const auto errFileDir = std::filesystem::path(reportDirectory_.get());
 
-		const auto errFilePath = errFileDir / (std::string("err_") + currentDateTime() + std::string(".txt"));
+		const auto errFilePath = errFileDir /
+			(std::string("err_") + currentDateTime() + std::string(".txt"));
 		std::ofstream errFile(errFilePath, std::ios::out);
 		for(const auto& e : errors) {
 			printError(errFile, props_, e) << std::endl;
 		}
 		errFile.close();
-		util::log(IVW_CONTEXT, "Wrote errors to " + errFilePath.string(), LogLevel::Info, LogAudience::User);
+		util::log(IVW_CONTEXT, "Wrote errors to " + errFilePath.string(),
+				LogLevel::Info, LogAudience::User);
 
 		// write report
 		const auto reportFilePath = errFileDir / std::string("report.html");
 		std::ofstream reportFile(reportFilePath.string(), std::ios::out);
 		PropertyBasedTestingReport report(reportFile, errors, props_);
 		reportFile.close();
-		util::log(IVW_CONTEXT, "Wrote report to " + reportFilePath.string(), LogLevel::Info, LogAudience::User);
+		util::log(IVW_CONTEXT, "Wrote report to " + reportFilePath.string(),
+				LogLevel::Info, LogAudience::User);
 	} else {
 		util::log(IVW_CONTEXT, "All tests passed.", LogLevel::Info, LogAudience::User);
 	}
@@ -525,6 +492,7 @@ bool Histogram::testIsSetUp(const Test& test) const {
 	return true;
 }
 void Histogram::setupTest(const Test& test) {
+	std::cerr << "setup Test" << std::endl;
 	NetworkLock lock(this);
 
 	resetAllProps();
@@ -540,11 +508,12 @@ void Histogram::setupTest(const Test& test) {
 			});
 
 	app_->dispatchPool([this]() {
-			std::this_thread::sleep_for(std::chrono::milliseconds(20)); // necessary because of synchronicity issues, TODO: find better solution
+			// necessary because of synchronicity issues, TODO: find better solution
+			std::this_thread::sleep_for(std::chrono::milliseconds(20));
 			app_->dispatchFrontAndForget([this]() {
 					testingState = TestingState::GATHERING;
 					this->invalidate(InvalidationLevel::InvalidOutput);
-					});
+				});
 			});
 }
 
@@ -580,7 +549,8 @@ void Histogram::process() {
 		case TestingState::SINGLE_COUNT:
 			{
 				const size_t pixelCount = countPixels(img, color_.get(), useDepth_);
-				util::log(IVW_CONTEXT, std::to_string(pixelCount) + " pixels", LogLevel::Info, LogAudience::User);
+				util::log(IVW_CONTEXT, std::to_string(pixelCount) + " pixels",
+						LogLevel::Info, LogAudience::User);
 			} break;
 		case TestingState::GATHERING:
 			assert(!remainingTests.empty());
@@ -593,7 +563,8 @@ void Histogram::process() {
 			const size_t pixelCount = countPixels(img, color_.get(), useDepth_);
 		
 			static size_t num = 0;
-			const auto imagePath = tempDir_ / (std::string("img_") + std::to_string(num++) + std::string(".png"));
+			const auto imagePath = tempDir_ /
+				(std::string("img_") + std::to_string(num++) + std::string(".png"));
 			static const auto pngExt = inviwo::FileExtension::createFileExtensionFromString("png");
 			inviwo::util::saveLayer(*img->getColorLayer(), imagePath.string(), pngExt);
 

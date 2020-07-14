@@ -42,7 +42,7 @@ namespace inviwo {
 
 class TestResult;
 
-class TestProperty {
+class TestProperty : public Serializable {
 protected:
 	const auto& options() {
 		const static std::vector<OptionPropertyOption<int>> options {
@@ -58,9 +58,12 @@ protected:
 		return options;
 	}
 public:
-	virtual void withSubProperties(std::function<void(Property*)>) const = 0;
+	virtual BoolCompositeProperty* getBoolComp() const = 0;
 
 	virtual std::string getValueString(std::shared_ptr<TestResult>) const = 0;
+
+	virtual std::string getDisplayName() const = 0;
+	virtual std::string getIdentifier() const = 0;
 
 	virtual std::optional<util::PropertyEffect> getPropertyEffect(
 			std::shared_ptr<TestResult>, 
@@ -76,7 +79,6 @@ public:
 	virtual void setToDefault() const = 0;
 	virtual void storeDefault() = 0;
 	virtual std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() const = 0;
-	virtual Property* getProperty() const = 0;
 	virtual ~TestProperty() = default;
 };
 
@@ -84,14 +86,28 @@ std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop);
 
 void makeOnChange(BoolCompositeProperty* prop);
 
+// for PropertyOwners which support getDisplayName and getIdentifier (i.e.
+// Properties and Processors)
 class TestPropertyComposite : public TestProperty {
-	CompositeProperty* property;
+	PropertyOwner* propertyOwner;
+	std::string displayName, identifier;
+	BoolCompositeProperty* boolComp;
 	std::vector<std::shared_ptr<TestProperty>> subProperties;
-	std::vector<BoolCompositeProperty*> compProps;
+	
+	TestPropertyComposite() = default;
 public:
-	void withSubProperties(std::function<void(Property*)> f) const override;
+	const static std::string& getClassIdentifier() {
+		const static std::string name = "org.inviwo.TestPropertyComposite";
+		return name;
+	}
+	friend class TestPropertyFactory;
+
+	BoolCompositeProperty* getBoolComp() const override;
 
 	std::string getValueString(std::shared_ptr<TestResult> testResult) const override;
+	
+	std::string getDisplayName() const override;
+	std::string getIdentifier() const override;
 
 	std::optional<util::PropertyEffect> getPropertyEffect(
 			std::shared_ptr<TestResult> newTestResult,
@@ -104,13 +120,25 @@ public:
 			std::shared_ptr<TestResult> newTestResult,
 			std::shared_ptr<TestResult> oldTestResult) const override;
 
-	TestPropertyComposite(CompositeProperty* original);
+	TestPropertyComposite(PropertyOwner* original, const std::string& displayName,
+			const std::string& identifier);
+	template<typename C, decltype(static_cast<PropertyOwner*>(std::declval<C*>()),
+			std::declval<C>().getDisplayName(),
+			std::declval<C>().getIdentifier(), int()) = 0>
+	static std::shared_ptr<TestPropertyComposite> make(C* orig) {
+		std::string ident = orig->getIdentifier();
+		std::replace(ident.begin(), ident.end(), ' ', '_');
+		return std::make_shared<TestPropertyComposite>(orig, orig->getDisplayName(), ident);
+	}
+
 	~TestPropertyComposite() = default;
-	Property* getProperty() const override;
 	void setToDefault() const override;
 
+	void serialize(Serializer& s) const override;
+	void deserialize(Deserializer& s) override;
+
 	template<typename T>
-	std::optional<typename T::value_type> getValue(const T* prop) const;
+	std::optional<typename T::value_type> getDefaultValue(const T* prop) const;
 
 	void storeDefault();
 	std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() const override;
@@ -123,14 +151,23 @@ class TestPropertyTyped : public TestProperty {
 
 	T* typedProperty;
 	val_type defaultValue;
+	BoolCompositeProperty* boolComp;
 	std::array<OptionPropertyInt*, numComponents> effectOption;
+	
+	TestPropertyTyped() = default;
 public:
-	void withSubProperties(std::function<void(Property*)> f) const override {
-		for(auto& x : effectOption)
-			f(x);
+	const static std::string& getClassIdentifier() {
+		const static std::string name = std::string("org.inviwo.TestPropertyTyped<") + PropertyTraits<T>::classIdentifier() + ">";
+		return name;
 	}
+	friend class TestPropertyFactoryHelper;
+
+	BoolCompositeProperty* getBoolComp() const override;
 
 	std::string getValueString(std::shared_ptr<TestResult>) const override;
+	
+	std::string getDisplayName() const override;
+	std::string getIdentifier() const override;
 
 	std::optional<util::PropertyEffect> getPropertyEffect(
 			std::shared_ptr<TestResult> newTestResult,
@@ -146,9 +183,12 @@ public:
 	TestPropertyTyped(T* original);
 	~TestPropertyTyped() = default;
 	T* getTypedProperty() const;
-	Property* getProperty() const override;
 	void setToDefault() const override;
 	const val_type& getDefaultValue() const;
+
+	void serialize(Serializer& s) const override;
+	void deserialize(Deserializer& s) override;
+	
 	void storeDefault();
 	std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() const override;
 };
@@ -180,15 +220,26 @@ class TestResult {
 			  , imgPath(imgPath) {
 			  }
 };
-		
+
+class TestPropertyFactory : public Factory<TestProperty> {
+	static const std::unordered_map<std::string, std::function<std::unique_ptr<TestProperty>()>> members;
+public:
+	std::unique_ptr<TestProperty> create(const std::string& key) const override {
+		return members.at(key)();
+	}
+	bool hasKey(const std::string& key) const override {
+		return members.find(key) != members.end();
+	}
+};
+
 template<typename T>
-std::optional<typename T::value_type> TestPropertyComposite::getValue(const T* prop) const {
+std::optional<typename T::value_type> TestPropertyComposite::getDefaultValue(const T* prop) const {
 	for(auto subProp : subProperties) {
 		if(auto p = std::dynamic_pointer_cast<TestPropertyTyped<T>>(subProp); p != nullptr) {
-			if(p->getProperty() == prop)
+			if(p->getTypedProperty() == prop)
 				return p->getDefaultValue();
 		} else if(auto p = std::dynamic_pointer_cast<TestPropertyComposite>(subProp); p != nullptr) {
-			if(auto res = p->getValue(prop); res != std::nullopt)
+			if(auto res = p->getDefaultValue(prop); res != std::nullopt)
 				return res;
 		}
 	}
@@ -203,9 +254,10 @@ typename T::value_type TestResult::getValue(const T* prop) const {
 
 	for(auto def : defaultValues) {
 		if(auto p = std::dynamic_pointer_cast<TestPropertyTyped<T>>(def); p != nullptr) {
-			if(p->getProperty() == prop) return p->getDefaultValue();
+			if(p->getTypedProperty() == prop)
+				return p->getDefaultValue();
 		} else if(auto p = std::dynamic_pointer_cast<TestPropertyComposite>(def); p != nullptr) {
-			if(auto res = p->getValue(prop); res != std::nullopt)
+			if(auto res = p->getDefaultValue(prop); res != std::nullopt)
 				return *res;
 		}
 	}

@@ -40,6 +40,8 @@ PropertyBasedTestingModule::PropertyBasedTestingModule(InviwoApplication* app) :
     // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Register objects that can be shared with the rest of inviwo here:
+	
+	app->getWorkspaceManager()->registerFactory(&testPropertyFactory_);
 
     // Processors
     registerProcessor<Histogram>();

@@ -33,9 +33,8 @@ namespace inviwo {
 
 // TestPropertyComposite
 
-void TestPropertyComposite::withSubProperties(std::function<void(Property*)> f) const {
-	for(const auto& x : compProps)
-		f(x);
+BoolCompositeProperty* TestPropertyComposite::getBoolComp() const {
+	return boolComp;
 }
 
 std::string TestPropertyComposite::getValueString(std::shared_ptr<TestResult> testResult) const {
@@ -46,6 +45,13 @@ std::string TestPropertyComposite::getValueString(std::shared_ptr<TestResult> te
 		str << (n++ > 0 ? ", " : "") << subProp->getValueString(testResult);
 	str << ")";
 	return str.str();
+}
+	
+std::string TestPropertyComposite::getDisplayName() const {
+	return displayName;
+}
+std::string TestPropertyComposite::getIdentifier() const {
+	return identifier;
 }
 
 std::optional<util::PropertyEffect> TestPropertyComposite::getPropertyEffect(
@@ -81,32 +87,26 @@ std::ostream& TestPropertyComposite::ostr(std::ostream& out,
 std::ostream& TestPropertyComposite::ostr(std::ostream& out,
 		std::shared_ptr<TestResult> newTestResult,
 		std::shared_ptr<TestResult> oldTestResult) const {
-	out << getProperty()->getDisplayName() << ":" << std::endl;
+	out << getDisplayName() << ":" << std::endl;
 	for(const auto& subProp : subProperties)
 		subProp->ostr(out << "\t", newTestResult, oldTestResult) << std::endl;
 	return out;
 }
 
-TestPropertyComposite::TestPropertyComposite(CompositeProperty* original)
+TestPropertyComposite::TestPropertyComposite(PropertyOwner* original,
+	const std::string& displayName, const std::string& identifier)
 		: TestProperty()
-		, property(original) {
+		, propertyOwner(original)
+		, displayName(displayName)
+		, identifier(identifier)
+		, boolComp(new BoolCompositeProperty(identifier+"Comp", displayName, false)) {
 	for(Property* prop : original->getProperties())
 		if(auto p = testableProperty(prop); p != std::nullopt) {
 			subProperties.emplace_back(*p);
-
-			auto propComp = new BoolCompositeProperty(
-					(*p)->getProperty()->getIdentifier() + "Comp",
-					(*p)->getProperty()->getDisplayName(),
-					false);
-			propComp->setCollapsed(true);
-			(*p)->withSubProperties([&propComp](auto opt){ propComp->addProperty(opt); });
-			makeOnChange(propComp);
-
-			compProps.emplace_back(propComp);
+			boolComp->addProperty((*p)->getBoolComp());
 		}
-}
-Property* TestPropertyComposite::getProperty() const {
-	return property;//getTypedProperty();
+	boolComp->setCollapsed(true);
+	makeOnChange(boolComp);
 }
 void TestPropertyComposite::setToDefault() const {
 	for(const auto& subProp : subProperties)
@@ -126,12 +126,50 @@ std::vector<std::shared_ptr<PropertyAssignment>> TestPropertyComposite::generate
 	return res;
 }
 
+void TestPropertyComposite::serialize(Serializer& s) const {
+	std::cerr << "\tserializing TestPropertyComposite" << std::endl;
+    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+
+	s.serialize("PropertyOwner", propertyOwner);
+	s.serialize("DisplayName", displayName);
+	s.serialize("Identifier", identifier);
+	s.serialize("BoolComp", boolComp);
+
+	{
+		std::vector<TestProperty*> subProps;
+		for(const auto& sp : subProperties)
+			subProps.emplace_back(sp.get());
+		s.serialize("SubProperties", subProps);
+	}
+}
+void TestPropertyComposite::deserialize(Deserializer& d) {
+	std::cerr << "\tdeserializing TestPropertyComposite" << std::endl;
+	d.deserialize("PropertyOwner", propertyOwner);
+	d.deserialize("DisplayName", displayName);
+	d.deserialize("Identifier", identifier);
+	d.deserialize("BoolComp", boolComp);
+
+	{
+		std::vector<TestProperty*> subProps;
+		d.deserialize("SubProperties", subProps);
+		for(const auto& sp : subProps)
+			subProperties.emplace_back(std::shared_ptr<TestProperty>(sp));
+	}
+}
+
 // TestPropertyTyped
+
+template<typename T>
+BoolCompositeProperty* TestPropertyTyped<T>::getBoolComp() const {
+	return boolComp;
+}
+
 template<typename T>
 TestPropertyTyped<T>::TestPropertyTyped(T* original)
 	: TestProperty()
 	, typedProperty(original)
 	, defaultValue(original->get())
+	, boolComp(new BoolCompositeProperty(original->getIdentifier()+"Comp", original->getDisplayName(), false))
 	, effectOption([this,original](){
 			std::array<OptionPropertyInt*, numComponents> res;
 			for(size_t i = 0; i < numComponents; i++) {
@@ -144,14 +182,15 @@ TestPropertyTyped<T>::TestPropertyTyped(T* original)
 			}
 			return res;
 		}()){
+
+	boolComp->setCollapsed(true);
+	for(auto effectOpt : effectOption)
+		boolComp->addProperty(effectOpt);
+	makeOnChange(boolComp);
 }
 template<typename T>
 T* TestPropertyTyped<T>::getTypedProperty() const {
 	return typedProperty;
-}
-template<typename T>
-Property* TestPropertyTyped<T>::getProperty() const {
-	return getTypedProperty();
 }
 template<typename T>
 void TestPropertyTyped<T>::setToDefault() const {
@@ -198,6 +237,14 @@ std::string TestPropertyTyped<T>::getValueString(std::shared_ptr<TestResult> tes
 	str << testResult->getValue(this->typedProperty);
 	return str.str();
 }
+template<typename T>
+std::string TestPropertyTyped<T>::getDisplayName() const {
+	return getTypedProperty()->getDisplayName();
+}
+template<typename T>
+std::string TestPropertyTyped<T>::getIdentifier() const {
+	return getTypedProperty()->getIdentifier();
+}
 
 template<typename T>
 std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
@@ -208,7 +255,7 @@ std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 	for(size_t i = 0; i < numComponents; i++)
 		selectedEffects[i] = util::PropertyEffect(effectOption[i]->getSelectedValue());
 	
-	return out << '\"' << getProperty()->getDisplayName() << "\" with identifier \"" << getProperty()->getIdentifier() << "\": "
+	return out << '\"' << getDisplayName() << "\" with identifier \"" << getIdentifier() << "\": "
 				<< val;
 }
 template<typename T>
@@ -218,17 +265,59 @@ std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 	const val_type& valNew = newTestResult->getValue(this->typedProperty);
 	const val_type& valOld = oldTestResult->getValue(this->typedProperty);
 	
-	return out << '\"' << getProperty()->getDisplayName() << "\" with identifier \"" << getProperty()->getIdentifier() << "\": "
+	return out << '\"' << getDisplayName() << "\" with identifier \"" << getIdentifier() << "\": "
 				<< valNew << ", " << valOld << " ; comparator set to  "
 				<< getPropertyEffect(newTestResult, oldTestResult);
 }
+
+template<typename T>
+void TestPropertyTyped<T>::serialize(Serializer& s) const {
+    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+
+	s.serialize("TypedProperty", typedProperty);
+	s.serialize("DefaultValue", defaultValue);
+	s.serialize("BoolComp", boolComp);
+	s.serialize("EffectOption", effectOption);
+}
+template<typename T>
+void TestPropertyTyped<T>::deserialize(Deserializer& d) {
+	d.deserialize("TypedProperty", typedProperty);
+	d.deserialize("DefaultValue", defaultValue);
+	d.deserialize("BoolComp", boolComp);
+	d.deserialize("EffectOption", effectOption);
+}
+
+// Helpers
+struct TestPropertyFactoryHelper {
+	template<typename T>
+	auto operator()(std::unordered_map<std::string, std::function<std::unique_ptr<TestProperty>()>>& res) {
+		res[TestPropertyTyped<T>::getClassIdentifier()] = [](){
+				return std::unique_ptr<TestProperty>(new TestPropertyTyped<T>());
+			};
+	}
+};
+
+const std::unordered_map<std::string, std::function<std::unique_ptr<TestProperty>()>> TestPropertyFactory::members = [](){
+	std::cerr << "filling TestPropertyFactory" << std::endl;
+	using M = std::remove_const_t<decltype(TestPropertyFactory::members)>;
+	M res;
+	res[TestPropertyComposite::getClassIdentifier()] = [](){
+			return std::unique_ptr<TestProperty>(new TestPropertyComposite());
+		};
+	util::for_each_type<PropertyTypes>{}(TestPropertyFactoryHelper{}, res);
+	for(auto [key,value] : res)
+		std::cerr << "\t" << key << std::endl;
+	return res;
+}();
 
 struct TestablePropertyHelper {
 	// for Properties with values
 	template<typename T>
 	auto operator()(std::optional<std::shared_ptr<TestProperty>>& res, Property* prop) -> decltype((typename T::value_type*)(nullptr), void()) {
-		 if(auto tmp = dynamic_cast<T*>(prop); tmp != nullptr)
-			 res = {std::make_shared<TestPropertyTyped<T>>(tmp)};
+		if(res != std::nullopt)
+			return;
+		if(auto tmp = dynamic_cast<T*>(prop); tmp != nullptr)
+			res = {std::make_shared<TestPropertyTyped<T>>(tmp)};
 	}
 };
 
@@ -237,7 +326,7 @@ std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop) {
 	util::for_each_type<PropertyTypes>{}(TestablePropertyHelper{}, res, prop);
 	if(!res) {
 		if(auto tmp = dynamic_cast<CompositeProperty*>(prop); tmp != nullptr)
-			res = {std::make_shared<TestPropertyComposite>(tmp)};
+			return TestPropertyComposite::make<CompositeProperty>(tmp);
 	}
 	return res;
 }

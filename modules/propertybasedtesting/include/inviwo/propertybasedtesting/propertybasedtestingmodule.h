@@ -31,9 +31,12 @@
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 
+#include <inviwo/propertybasedtesting/testproperty.h>
+
 namespace inviwo {
 
 class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyBasedTestingModule : public InviwoModule {
+	TestPropertyFactory testPropertyFactory_;
 public:
     PropertyBasedTestingModule(InviwoApplication* app);
     virtual ~PropertyBasedTestingModule() = default;
