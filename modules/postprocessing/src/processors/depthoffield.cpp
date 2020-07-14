@@ -131,7 +131,7 @@ void DepthOfField::process() {
     double focusDepth = calculateFocusDepth();
 
     if (approximate_) {
-        vec2 cameraPos = calculateCurrentCameraPos(maxEvalCount);
+        vec2 cameraPos = calculatePeripheralCameraPos(evalCount_, maxEvalCount);
         double nearClip = camera_.getNearPlaneDist();
         double farClip = camera_.getFarPlaneDist();
         double fovy = glm::radians(camera->getFovy());
@@ -144,13 +144,13 @@ void DepthOfField::process() {
         addToAccumulationBuffer(img, cont);
     }
 
-    evalCount_++;
-    if (evalCount_ < maxEvalCount) {
+    if (evalCount_ < maxEvalCount - 1) {
         // Prepare camera for rendering again
         if (!approximate_) {
             nextOutImg_->copyRepresentationsTo(prevOutImg_.get());
         }
         moveCamera(camera, maxEvalCount, focusDepth);
+        evalCount_++;
     } else {
         // Set output
         if (approximate_) {
@@ -160,7 +160,7 @@ void DepthOfField::process() {
         }
 
         // Reset camera
-        if (ogType_ == SkewedPerspectiveCamera::classIdentifier) evalCount_ = 0;
+        evalCount_ = (ogType_ == SkewedPerspectiveCamera::classIdentifier) ? 0 : maxEvalCount;
         camera_.setCamera(std::unique_ptr<Camera>(ogCamera_->clone()));
     }
 }
@@ -246,11 +246,11 @@ double DepthOfField::calculateFocusDepth() {
     }
 }
 
-vec2 DepthOfField::calculateCurrentCameraPos(int maxEvalCount) {
-    if (evalCount_ == 0) {
+vec2 DepthOfField::calculatePeripheralCameraPos(int evalCount, int maxEvalCount) {
+    if (evalCount == 0) {
         return vec2(0, 0);
     } else {
-        float currAngle = 2.0 * M_PI * (float(evalCount_) - 0.5) / float(maxEvalCount - 1);
+        float currAngle = 2.0 * M_PI * (float(evalCount) - 0.5) / float(maxEvalCount - 1);
         return aperture_.get() / 2.0 * vec2(glm::cos(currAngle), glm::sin(currAngle));
     }
 }
@@ -305,15 +305,18 @@ void DepthOfField::warpToLightfieldGPU(TextureUnitContainer& cont, double nearCl
     addToLightFieldShader_.setUniform("lightFieldDepth", 1);
 
     if (evalCount_ == 0) {
-        // Warp central (first) view to all simulated views.
+        // Warp central (first) view to all simulated views to approximate the view from each point.
         addToLightFieldShader_.setUniform("segmentStart", 0);
         glDispatchCompute(dim.x, dim.y, simViewCountApprox_.get());
     } else {
-        // Warp peripheral views to a circle segment of simulated views.
+        // Warp peripheral views to a circle segment of simulated views to fill visibility holes
+        // left after warping the central view.
         double segmentWidth =
             double(simViewCountApprox_.get()) / double(viewCountApprox_.get() - 1);
-        addToLightFieldShader_.setUniform("segmentStart", int((evalCount_ - 1) * segmentWidth));
-        glDispatchCompute(dim.x, dim.y, int(segmentWidth));
+        int start = (evalCount_ - 1) * segmentWidth;
+        int stop = evalCount_ * segmentWidth;
+        addToLightFieldShader_.setUniform("segmentStart", start);
+        glDispatchCompute(dim.x, dim.y, stop - start);
     }
 
     addToLightFieldShader_.deactivate();
@@ -339,13 +342,15 @@ void DepthOfField::warpToLightfieldCPU(std::shared_ptr<const Image> img, double 
             lightFieldDepth->setFromDouble(pos, zWorld);
 
             if (evalCount_ == 0) {
-                // Warp central (first) view to all simulated views.
+                // Warp central (first) view to all simulated views to approximate the view from
+                // each point.
                 for (size_t i = 0; i < simViewCountApprox_.get(); i++) {
                     warp(cameraPos, screenPos, color, zWorld, i, lightField, lightFieldDepth, fovy,
                          focusDepth);
                 }
             } else {
-                // Warp peripheral views to a circle segment of simulated views.
+                // Warp peripheral views to a circle segment of simulated views to fill visibility
+                // holes left after warping the central view.
                 double segmentWidth =
                     double(simViewCountApprox_.get()) / double(viewCountApprox_.get() - 1);
                 int start = (evalCount_ - 1) * segmentWidth;
@@ -409,12 +414,14 @@ void DepthOfField::moveCamera(SkewedPerspectiveCamera* camera, int maxEvalCount,
 
     camera_.setLook(lookFrom, lookFrom + front * focusDepth, up);
 
-    float radius = approximate_ ? aperture_.get() / 2.0
-                                : aperture_.get() / 2.0 * sqrt(haltonX_[evalCount_ - 1]);
-    float angle = 2.0 * M_PI *
-                  (approximate_ ? (float(evalCount_) - 0.5) / float(maxEvalCount - 1)
-                                : haltonY_[evalCount_ - 1]);
-    vec2 offset = radius * vec2(glm::cos(angle), glm::sin(angle));
+    vec2 offset;
+    if (approximate_) {
+        offset = calculatePeripheralCameraPos(evalCount_ + 1, maxEvalCount);
+    } else {
+        float radius = aperture_.get() / 2.0 * sqrt(haltonX_[evalCount_]);
+        float angle = 2.0 * M_PI * haltonY_[evalCount_];
+        offset = radius * vec2(glm::cos(angle), glm::sin(angle));
+    }
     camera->setOffset(offset);
 }
 }  // namespace inviwo

@@ -135,7 +135,7 @@ private:
     void setApproximate(bool approximate);
     void setupRecursion(size2_t dim, int maxEvalCount, std::shared_ptr<const Image> img);
     double calculateFocusDepth();
-    vec2 calculateCurrentCameraPos(int maxEvalCount);
+    vec2 calculatePeripheralCameraPos(int evalCount, int maxEvalCount);
     void addToAccumulationBuffer(std::shared_ptr<const Image> img, TextureUnitContainer& cont);
     void warpToLightfieldGPU(TextureUnitContainer& cont, double nearClip, double farClip,
                              double fovy, double focusDepth, size2_t dim, vec2 cameraPos);
