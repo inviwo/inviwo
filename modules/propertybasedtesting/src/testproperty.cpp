@@ -37,12 +37,16 @@ BoolCompositeProperty* TestProperty::getBoolComp() const {
 BoolCompositeProperty* TestProperty::copyBoolComp() {
 	auto res = boolComp;
 	boolComp = boolComp->clone();
+	makeOnChange(boolComp);
 	return res;
 }
 TestProperty::TestProperty(const std::string& displayName, const std::string& identifier)
 		: displayName(displayName)
 		, identifier(identifier)
 		, boolComp(new BoolCompositeProperty(identifier+"Comp", displayName, false)) {
+	boolComp->setSerializationMode(PropertySerializationMode::All);
+	boolComp->setCollapsed(true);
+	makeOnChange(boolComp);
 }
 
 const std::string& TestProperty::getDisplayName() const {
@@ -112,8 +116,6 @@ TestPropertyComposite::TestPropertyComposite(PropertyOwner* original,
 			subProperties.emplace_back(*p);
 			boolComp->addProperty((*p)->getBoolComp());
 		}
-	boolComp->setCollapsed(true);
-	makeOnChange(boolComp);
 }
 void TestPropertyComposite::setToDefault() const {
 	for(const auto& subProp : subProperties)
@@ -148,8 +150,10 @@ void TestPropertyComposite::serialize(Serializer& s) const {
 
 	{
 		std::vector<TestProperty*> subProps;
-		for(const auto& sp : subProperties)
+		for(const auto& sp : subProperties) {
+			std::cerr << "\t\tsp " << sp.get() << std::endl;
 			subProps.emplace_back(sp.get());
+		}
 		s.serialize("SubProperties", subProps);
 	}
 }
@@ -163,19 +167,21 @@ void TestPropertyComposite::deserialize(Deserializer& d) {
 		d.deserialize("PropertyOwner", tmp);
 		propertyOwner = static_cast<PropertyOwner*>(tmp);
 	} else {
-		CompositeProperty* tmp = nullptr;
+		Property* tmp = nullptr;
 		d.deserialize("PropertyOwner", tmp);
-		propertyOwner = static_cast<PropertyOwner*>(tmp);
+		propertyOwner = reinterpret_cast<PropertyOwner*>(tmp);
 	}
 	assert(propertyOwner != nullptr);
 
 	d.deserialize("DisplayName", displayName);
 	d.deserialize("Identifier", identifier);
 	d.deserialize("BoolComp", boolComp);
+	makeOnChange(boolComp);
 
 	{
 		std::vector<TestProperty*> subProps;
 		d.deserialize("SubProperties", subProps);
+		std::cerr << "\t\tsubProps.size()=" << subProps.size() << std::endl;
 		for(const auto& sp : subProps)
 			subProperties.emplace_back(std::shared_ptr<TestProperty>(sp));
 	}
@@ -197,14 +203,13 @@ TestPropertyTyped<T>::TestPropertyTyped(T* original)
 					"Comparator for increasing values",
 					options(),
 					options().size() - 1);
+				res[i]->setSerializationMode(PropertySerializationMode::All);
 			}
 			return res;
 		}()){
 
-	boolComp->setCollapsed(true);
 	for(auto effectOpt : effectOption)
 		boolComp->addProperty(effectOpt);
-	makeOnChange(boolComp);
 }
 template<typename T>
 T* TestPropertyTyped<T>::getTypedProperty() const {
@@ -308,15 +313,12 @@ struct TestPropertyFactoryHelper {
 };
 
 const std::unordered_map<std::string, std::function<std::unique_ptr<TestProperty>()>> TestPropertyFactory::members = [](){
-	std::cerr << "filling TestPropertyFactory" << std::endl;
 	using M = std::remove_const_t<decltype(TestPropertyFactory::members)>;
 	M res;
 	res[TestPropertyComposite::getClassIdentifier()] = [](){
 			return std::unique_ptr<TestProperty>(new TestPropertyComposite());
 		};
 	util::for_each_type<PropertyTypes>{}(TestPropertyFactoryHelper{}, res);
-	for(auto [key,value] : res)
-		std::cerr << "\t" << key << std::endl;
 	return res;
 }();
 
@@ -342,22 +344,22 @@ std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop) {
 }
 
 void makeOnChange(BoolCompositeProperty* prop) {
-	std::vector<BoolProperty*> subProps;
-	for(auto boolCompProp : prop->getPropertiesByType<BoolCompositeProperty>())
-		subProps.emplace_back(boolCompProp->getBoolProperty());
-	for(auto boolProp : prop->getPropertiesByType<BoolProperty>())
-		if(boolProp != prop->getBoolProperty())
-			subProps.emplace_back(boolProp);
+	prop->onChange([prop](){
+			std::vector<BoolProperty*> subProps;
+			for(auto boolCompProp : prop->getPropertiesByType<BoolCompositeProperty>())
+				subProps.emplace_back(boolCompProp->getBoolProperty());
+			for(auto boolProp : prop->getPropertiesByType<BoolProperty>())
+				if(boolProp != prop->getBoolProperty())
+					subProps.emplace_back(boolProp);
+			//prop->getBoolProperty()->setReadOnly(subProps.size() > 0);
 
-	//prop->getBoolProperty()->setReadOnly(subProps.size() > 0);
-	if(!subProps.empty()) {
-		prop->onChange([prop, subProps](){
+			if(subProps.size() > 0) {
 				bool checked = false;
 				for(auto* boolProp : subProps)
 					checked |= boolProp->get();
 				prop->setChecked(checked);
-			});
-	}
+			}
+		});
 }
 
 void testingErrorToBinary(std::vector<unsigned char>& output,

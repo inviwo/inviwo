@@ -130,7 +130,7 @@ public:
 		return std::make_shared<TestPropertyComposite>(orig, orig->getDisplayName(), ident);
 	}
 
-	~TestPropertyComposite() = default;
+	virtual ~TestPropertyComposite() = default;
 	void setToDefault() const override;
 
 	void serialize(Serializer& s) const override;
@@ -155,7 +155,7 @@ class TestPropertyTyped : public TestProperty {
 	TestPropertyTyped() = default;
 public:
 	const static std::string& getClassIdentifier() {
-		const static std::string name = std::string("org.inviwo.TestPropertyTyped<") + PropertyTraits<T>::classIdentifier() + ">";
+		const static std::string name = std::string("org.inviwo.TestPropertyTyped") + PropertyTraits<T>::classIdentifier();
 		return name;
 	}
 	friend class TestPropertyFactoryHelper;
@@ -174,7 +174,7 @@ public:
 			std::shared_ptr<TestResult>) const override;
 
 	TestPropertyTyped(T* original);
-	~TestPropertyTyped() = default;
+	virtual ~TestPropertyTyped() = default;
 	T* getTypedProperty() const;
 	void setToDefault() const override;
 	const val_type& getDefaultValue() const;
@@ -258,7 +258,7 @@ typename T::value_type TestResult::getValue(const T* prop) const {
 	exit(1);
 }
 
-using PropertyTypes = std::tuple<OrdinalProperty<int>, OrdinalProperty<float>, OrdinalProperty<double>, IntMinMaxProperty>;
+using PropertyTypes = std::tuple<IntProperty, FloatProperty, DoubleProperty, IntMinMaxProperty>;
 
 using TestingError = std::tuple<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>, util::PropertyEffect, size_t, size_t>;
 

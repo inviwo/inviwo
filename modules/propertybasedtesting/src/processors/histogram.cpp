@@ -268,6 +268,11 @@ void Histogram::initTesting() {
 			props_.emplace_back(comp);
 	}
 
+	if(props_.empty()) {
+		std::cerr << "not testing because there are no selected properties" << std::endl;
+		return;
+	}
+
 	// store current state in order to reset it after testing
 	for(auto prop : props_) {
 		prop->storeDefault();
@@ -282,6 +287,11 @@ void Histogram::initTesting() {
 	std::cerr << "assignments: ";
 	for(const auto& x : assignments) std::cerr << " [" << x.size() << "]";
 	std::cerr << std::endl;
+
+	if(assignments.empty()) {
+		std::cerr << "not testing because there are no assignments generated" << std::endl;
+		return;
+	}
 
 	auto allTests = util::coveringArray(Test(), assignments);
 	// TODO: find set of tests with size <= numTests_ and maximum number of testable pairs
