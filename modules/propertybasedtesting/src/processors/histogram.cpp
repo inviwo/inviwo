@@ -96,24 +96,38 @@ void Histogram::onProcessorNetworkDidRemoveConnection(const PortConnection& conn
 	updateProcessors();
 }
 void Histogram::updateProcessors() {
+	std::cerr << this << "->updateProcessors()" << std::endl;
+
+	processors_.insert(inactiveProcessors.begin(), inactiveProcessors.end());
+	inactiveProcessors.clear();
+
 	std::unordered_set<Processor*> visitedProcessors;
 	for(Processor* const processor : util::getPredecessors(this)) {
 		if(processor == this) continue;
 		std::cerr << "visiting processor " << processor << " "
-			<< processor->getIdentifier() << std::endl;
+			<< processor->getIdentifier() << " " <<
+			(processors_.count(processor) > 0 ? "known" : "new") << std::endl;
 		visitedProcessors.insert(processor);
 	}
 
 	// remove no longer connected processors
 	std::unordered_set<Processor*> processorsToRemove;
-	for(const auto& [processor,_] : processors_) {
+	for(const auto& [processor,testProp] : processors_) {
 		if(!visitedProcessors.count(processor)) { // processor no longer visited
 			processorsToRemove.insert(processor);
+		} else if(testProp->getBoolComp()->getOwner() == nullptr) { // add to this
+			std::cerr << " adding " << testProp->getBoolComp() << std::endl;
+			this->addProperty(testProp->getBoolComp());
 		}
 	}
 	for(const auto& processor : processorsToRemove) {
 		const auto& testProp = processors_.at(processor);
-		this->removeProperty(testProp->getBoolComp());
+		std::cerr << " removing " << testProp->getBoolComp() << std::endl;
+
+		removeProperty(testProp->copyBoolComp());
+		testProp->getBoolComp()->setOwner(nullptr);
+
+		inactiveProcessors.emplace(processor, testProp);
 		processors_.erase(processor);
 	}
 	
@@ -122,7 +136,7 @@ void Histogram::updateProcessors() {
 		std::cerr << processor << " "
 			<< processor->getIdentifier() << ": "
 			<< processors_.count(processor) << std::endl;
-		if(!processors_.count(processor)) {
+		if(processors_.count(processor) == 0) {
 			std::vector<std::pair<BoolCompositeProperty*, std::shared_ptr<TestProperty>>> props;
 			for(Property* prop : processor->getProperties()) {
 				if(std::optional<std::shared_ptr<TestProperty>> p = testableProperty(prop);
@@ -227,20 +241,20 @@ void Histogram::serialize(Serializer& s) const {
 void Histogram::deserialize(Deserializer& d) {
 	Processor::deserialize(d);
 
-	std::cerr << "Histogram::deserialize()" << std::endl;
+	std::cerr << this << "->Histogram::deserialize()" << std::endl;
 
 	std::vector<Processor*> processors;
 	d.deserialize("Processors", processors);
-	std::cerr << "\tdeserialized " << processors.size() << " processors" << std::endl;
+	std::cerr << "\tdeserialized " << processors.size() << " processors: " << processors << std::endl;
 	std::vector<TestProperty*> testProperties;
 	d.deserialize("TestProperties", testProperties);
+	std::cerr << "\tdeserialized " << testProperties.size() << " testProperties: " << testProperties << std::endl;
 	assert(processors.size() == testProperties.size());
 	for(size_t i = 0; i < processors.size(); i++) {
 		TestPropertyComposite* const tmp = dynamic_cast<TestPropertyComposite*>(testProperties[i]);
 		assert(tmp != nullptr);
-		processors_.emplace(processors[i], std::shared_ptr<TestPropertyComposite>(tmp));
+		inactiveProcessors.emplace(processors[i], std::shared_ptr<TestPropertyComposite>(tmp));
 	}
-	std::cerr << "\tdeserialized " << testProperties.size() << " testProperties" << std::endl;
 }
 
 void Histogram::initTesting() {

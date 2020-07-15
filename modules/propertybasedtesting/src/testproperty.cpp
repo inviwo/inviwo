@@ -31,11 +31,28 @@
 
 namespace inviwo {
 
-// TestPropertyComposite
-
-BoolCompositeProperty* TestPropertyComposite::getBoolComp() const {
+BoolCompositeProperty* TestProperty::getBoolComp() const {
 	return boolComp;
 }
+BoolCompositeProperty* TestProperty::copyBoolComp() {
+	auto res = boolComp;
+	boolComp = boolComp->clone();
+	return res;
+}
+TestProperty::TestProperty(const std::string& displayName, const std::string& identifier)
+		: displayName(displayName)
+		, identifier(identifier)
+		, boolComp(new BoolCompositeProperty(identifier+"Comp", displayName, false)) {
+}
+
+const std::string& TestProperty::getDisplayName() const {
+	return displayName;
+}
+const std::string& TestProperty::getIdentifier() const {
+	return identifier;
+}
+
+// TestPropertyComposite
 
 std::string TestPropertyComposite::getValueString(std::shared_ptr<TestResult> testResult) const {
 	std::stringstream str;
@@ -47,13 +64,6 @@ std::string TestPropertyComposite::getValueString(std::shared_ptr<TestResult> te
 	return str.str();
 }
 	
-std::string TestPropertyComposite::getDisplayName() const {
-	return displayName;
-}
-std::string TestPropertyComposite::getIdentifier() const {
-	return identifier;
-}
-
 std::optional<util::PropertyEffect> TestPropertyComposite::getPropertyEffect(
 		std::shared_ptr<TestResult> newTestResult,
 		std::shared_ptr<TestResult> oldTestResult) const {
@@ -95,11 +105,8 @@ std::ostream& TestPropertyComposite::ostr(std::ostream& out,
 
 TestPropertyComposite::TestPropertyComposite(PropertyOwner* original,
 	const std::string& displayName, const std::string& identifier)
-		: TestProperty()
-		, propertyOwner(original)
-		, displayName(displayName)
-		, identifier(identifier)
-		, boolComp(new BoolCompositeProperty(identifier+"Comp", displayName, false)) {
+		: TestProperty(displayName, identifier)
+		, propertyOwner(original) {
 	for(Property* prop : original->getProperties())
 		if(auto p = testableProperty(prop); p != std::nullopt) {
 			subProperties.emplace_back(*p);
@@ -128,9 +135,13 @@ std::vector<std::shared_ptr<PropertyAssignment>> TestPropertyComposite::generate
 
 void TestPropertyComposite::serialize(Serializer& s) const {
 	std::cerr << "\tserializing TestPropertyComposite" << std::endl;
+
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
 
+	bool propertyOwnerIsProcessor = (dynamic_cast<Processor*>(propertyOwner) != nullptr);
+	s.serialize("PropertyOwnerIsProcessor", propertyOwnerIsProcessor);
 	s.serialize("PropertyOwner", propertyOwner);
+
 	s.serialize("DisplayName", displayName);
 	s.serialize("Identifier", identifier);
 	s.serialize("BoolComp", boolComp);
@@ -144,7 +155,20 @@ void TestPropertyComposite::serialize(Serializer& s) const {
 }
 void TestPropertyComposite::deserialize(Deserializer& d) {
 	std::cerr << "\tdeserializing TestPropertyComposite" << std::endl;
-	d.deserialize("PropertyOwner", propertyOwner);
+
+	bool propertyOwnerIsProcessor;
+	d.deserialize("PropertyOwnerIsProcessor", propertyOwnerIsProcessor);
+	if(propertyOwnerIsProcessor) {
+		Processor* tmp = nullptr;
+		d.deserialize("PropertyOwner", tmp);
+		propertyOwner = static_cast<PropertyOwner*>(tmp);
+	} else {
+		CompositeProperty* tmp = nullptr;
+		d.deserialize("PropertyOwner", tmp);
+		propertyOwner = static_cast<PropertyOwner*>(tmp);
+	}
+	assert(propertyOwner != nullptr);
+
 	d.deserialize("DisplayName", displayName);
 	d.deserialize("Identifier", identifier);
 	d.deserialize("BoolComp", boolComp);
@@ -160,16 +184,10 @@ void TestPropertyComposite::deserialize(Deserializer& d) {
 // TestPropertyTyped
 
 template<typename T>
-BoolCompositeProperty* TestPropertyTyped<T>::getBoolComp() const {
-	return boolComp;
-}
-
-template<typename T>
 TestPropertyTyped<T>::TestPropertyTyped(T* original)
-	: TestProperty()
+	: TestProperty(original->getDisplayName(), original->getIdentifier())
 	, typedProperty(original)
 	, defaultValue(original->get())
-	, boolComp(new BoolCompositeProperty(original->getIdentifier()+"Comp", original->getDisplayName(), false))
 	, effectOption([this,original](){
 			std::array<OptionPropertyInt*, numComponents> res;
 			for(size_t i = 0; i < numComponents; i++) {
@@ -236,14 +254,6 @@ std::string TestPropertyTyped<T>::getValueString(std::shared_ptr<TestResult> tes
 	std::stringstream str;
 	str << testResult->getValue(this->typedProperty);
 	return str.str();
-}
-template<typename T>
-std::string TestPropertyTyped<T>::getDisplayName() const {
-	return getTypedProperty()->getDisplayName();
-}
-template<typename T>
-std::string TestPropertyTyped<T>::getIdentifier() const {
-	return getTypedProperty()->getIdentifier();
 }
 
 template<typename T>

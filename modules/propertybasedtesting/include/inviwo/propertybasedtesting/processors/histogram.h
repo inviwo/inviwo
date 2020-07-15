@@ -111,6 +111,7 @@ private:
 
 	void updateProcessors();
 	std::unordered_map<Processor*, std::shared_ptr<TestPropertyComposite>> processors_;
+	decltype(processors_) inactiveProcessors; // currently disconnected processors
 
 	std::vector<std::shared_ptr<TestProperty>> props_; // Properties to test
 	void resetAllProps();

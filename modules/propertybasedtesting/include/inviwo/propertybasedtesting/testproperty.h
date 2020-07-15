@@ -44,6 +44,11 @@ class TestResult;
 
 class TestProperty : public Serializable {
 protected:
+	std::string displayName, identifier;
+	BoolCompositeProperty* boolComp = nullptr;
+	TestProperty() = default;
+	TestProperty(const std::string& displayName, const std::string& identifier);
+
 	const auto& options() {
 		const static std::vector<OptionPropertyOption<int>> options {
 				{"EQUAL",			"EQUAL",			0},
@@ -58,12 +63,13 @@ protected:
 		return options;
 	}
 public:
-	virtual BoolCompositeProperty* getBoolComp() const = 0;
+	virtual BoolCompositeProperty* getBoolComp() const;
+	virtual BoolCompositeProperty* copyBoolComp();
 
 	virtual std::string getValueString(std::shared_ptr<TestResult>) const = 0;
 
-	virtual std::string getDisplayName() const = 0;
-	virtual std::string getIdentifier() const = 0;
+	const std::string& getDisplayName() const;
+	const std::string& getIdentifier() const;
 
 	virtual std::optional<util::PropertyEffect> getPropertyEffect(
 			std::shared_ptr<TestResult>, 
@@ -90,8 +96,6 @@ void makeOnChange(BoolCompositeProperty* prop);
 // Properties and Processors)
 class TestPropertyComposite : public TestProperty {
 	PropertyOwner* propertyOwner;
-	std::string displayName, identifier;
-	BoolCompositeProperty* boolComp;
 	std::vector<std::shared_ptr<TestProperty>> subProperties;
 	
 	TestPropertyComposite() = default;
@@ -102,12 +106,7 @@ public:
 	}
 	friend class TestPropertyFactory;
 
-	BoolCompositeProperty* getBoolComp() const override;
-
 	std::string getValueString(std::shared_ptr<TestResult> testResult) const override;
-	
-	std::string getDisplayName() const override;
-	std::string getIdentifier() const override;
 
 	std::optional<util::PropertyEffect> getPropertyEffect(
 			std::shared_ptr<TestResult> newTestResult,
@@ -151,7 +150,6 @@ class TestPropertyTyped : public TestProperty {
 
 	T* typedProperty;
 	val_type defaultValue;
-	BoolCompositeProperty* boolComp;
 	std::array<OptionPropertyInt*, numComponents> effectOption;
 	
 	TestPropertyTyped() = default;
@@ -162,12 +160,7 @@ public:
 	}
 	friend class TestPropertyFactoryHelper;
 
-	BoolCompositeProperty* getBoolComp() const override;
-
 	std::string getValueString(std::shared_ptr<TestResult>) const override;
-	
-	std::string getDisplayName() const override;
-	std::string getIdentifier() const override;
 
 	std::optional<util::PropertyEffect> getPropertyEffect(
 			std::shared_ptr<TestResult> newTestResult,
