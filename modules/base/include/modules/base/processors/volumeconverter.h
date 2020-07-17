@@ -54,10 +54,14 @@ namespace inviwo {
  * ### Properties
  *   * __Format__    data format of the output volume. The number of channels remains
  *                   the same. If identical to input data, no conversion will be performed.
- *   * __Use Data Mapping__   If enabled, the processor will utilize data mapping between different
+ *   * __Use Data Range__   If enabled, the processor will utilize data mapping between different
  *                   integer formats. That is, each data value is normalized using the data range of
  *                   the input volume before being adjusted to the target format (using the range of
- *                   the data type). Float formats are __not__ normalized!
+ *                   the data type). For example in a conversion from `uint8 [0 255]` to
+ *                   `uint16 [0 65536]`, a value of `255` will be mapped to `65536`. If the target 
+ *                   format is floating point, then data values are only normalized.
+ *                   Float formats are __not__ normalized! 
+ *
  */
 class IVW_MODULE_BASE_API VolumeConverter : public Processor {
 public:

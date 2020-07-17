@@ -86,6 +86,12 @@
 </head>
 <body >
 <h1>Latest Changes</h1>
+<h2>2020-07-17 Volume and DataFrame converter</h2>
+<p>The <code>VolumeConverter</code> processor provides functionality for converting a <code>Volume</code> to a different data format with optional mapping of data values and custom ranges. The base module now also features a <code>DataRangeProperty</code> holding data &amp;value ranges of a volume plus optional overrides.</p>
+<p>The CSV reader now distinguishes between integral, floating point, and string/categorical values. Floating point values are stored either in float32 (default) or float64/double columns depending on the <code>doubleprec</code> argument in the CSVReader constructor. Since some of the plotting processors are relying on float32 columns, a <code>DataFrame Float32 Converter</code> processor was added which converts float64 columns to float32.</p>
+<h2>2020-06-09 Remove use of deprecated QGLWidget and OpenGL compatibility mode</h2>
+<p>In case you have built a custom Qt application your main file need be updated to enable shared OpenGL context, see apps/inviwo/inviwo.cpp.<br />
+We now also use QOffScreenSurface for default OpenGL context and threaded rendering instead of a custom hidden window. </p>
 <h2>2020-06-30 DataFrame</h2>
 <p>Moved DataFrame utils files to <code>dataframe/util/dataframeutil.h</code> (previously <code>dataframe/datastructures/dataframeutil.h</code>). Renamed namespace from <code>dataframeutil</code> to <code>dataframe</code>.</p>
 <p>Added utility functions for joining two DataFrames: <code>appendRows()</code>, <code>appendColumns()</code>, <code>innerJoin()</code>.</p>

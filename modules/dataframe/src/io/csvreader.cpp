@@ -56,7 +56,7 @@ void CSVReader::setDelimiters(const std::string& delim) { delimiters_ = delim; }
 
 void CSVReader::setFirstRowHeader(bool hasHeader) { firstRowHeader_ = hasHeader; }
 
-void CSVReader::setDoublePrecision(bool doubleprec) { doublePrecision_ = doubleprec; }
+void CSVReader::setEnableDoublePrecision(bool doubleprec) { doublePrecision_ = doubleprec; }
 
 std::shared_ptr<DataFrame> CSVReader::readData(const std::string& fileName) {
     auto file = filesystem::ifstream(fileName);

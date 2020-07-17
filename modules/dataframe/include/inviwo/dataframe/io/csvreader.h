@@ -57,7 +57,8 @@ public:
  * \ingroup dataio
  *
  * \brief A reader for comma separated value (CSV) files with customizable delimiters.
- * The default delimiter is ',' and headers are included
+ * The default delimiter is ',' and headers are included. Floating point values are stored as
+ * float32.
  */
 class IVW_MODULE_DATAFRAME_API CSVReader : public DataReaderType<DataFrame> {
 public:
@@ -71,7 +72,11 @@ public:
 
     void setDelimiters(const std::string& delim);
     void setFirstRowHeader(bool hasHeader);
-    void setDoublePrecision(bool doubleprec);
+    /**
+     * sets the precision for columns containing floating point values. If \p doubleprec is true,
+     * values are stored as double. Otherwise float32 is used.
+     */
+    void setEnableDoublePrecision(bool doubleprec);
     using DataReaderType<DataFrame>::readData;
 
     /**
