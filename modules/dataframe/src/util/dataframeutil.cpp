@@ -27,7 +27,6 @@
  *
  *********************************************************************************/
 
-#include <optional>
 
 #include <inviwo/dataframe/util/dataframeutil.h>
 
@@ -38,6 +37,8 @@
 #include <inviwo/core/util/assertion.h>
 
 #include <fmt/format.h>
+
+#include <optional>
 
 namespace inviwo {
 
