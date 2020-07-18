@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+ #include <optional>
+
 #include <inviwo/dataframe/util/dataframeutil.h>
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
