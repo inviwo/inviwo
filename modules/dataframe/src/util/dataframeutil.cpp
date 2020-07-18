@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
- #include <optional>
+#include <optional>
 
 #include <inviwo/dataframe/util/dataframeutil.h>
 
@@ -314,7 +314,7 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
             srcCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>(
                 [dst, srcCol, header = srcCol->getHeader(), rows](auto typedBuf) {
                     auto dstData = util::transform(
-                        rows, [& src = typedBuf->getDataContainer()](size_t i) { return src[i]; });
+                        rows, [&src = typedBuf->getDataContainer()](size_t i) { return src[i]; });
                     dst->addColumn(header, std::move(dstData));
                 });
         }
@@ -340,7 +340,7 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
                 [dst, srcCol, header = srcCol->getHeader(), rows](auto typedBuf) {
                     using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
                     auto dstData =
-                        util::transform(rows, [& src = typedBuf->getDataContainer()](auto v) {
+                        util::transform(rows, [&src = typedBuf->getDataContainer()](auto v) {
                             return v.has_value() ? src[v.value()] : ValueType{0};
                         });
                     dst->addColumn(header, std::move(dstData));
