@@ -76,16 +76,16 @@ void DatVolumeWriter::writeData(const Volume* data, const std::string filePath) 
     glm::mat4 wtm = glm::transpose(data->getWorldMatrix());
 
     auto print = util::overloaded{
-        [&](std::string_view key, const std::string& val) { fmt::print(ss, "{}: {}", key, val); },
-        [&](std::string_view key, InterpolationType val) { fmt::print(ss, "{}: {}", key, val); },
+        [&](std::string_view key, const std::string& val) { fmt::print(ss, "{}: {}\n", key, val); },
+        [&](std::string_view key, InterpolationType val) { fmt::print(ss, "{}: {}\n", key, val); },
         [&](std::string_view key, const SwizzleMask& mask) {
-            fmt::print(ss, "{}: {}{}{}{}", key, mask[0], mask[1], mask[2], mask[3]);
+            fmt::print(ss, "{}: {}{}{}{}\n", key, mask[0], mask[1], mask[2], mask[3]);
         },
         [&](std::string_view key, const Wrapping3D& wrapping) {
-            fmt::print(ss, "{}: {} {} {}", key, wrapping[0], wrapping[1], wrapping[2]);
+            fmt::print(ss, "{}: {} {} {}\n", key, wrapping[0], wrapping[1], wrapping[2]);
         },
         [&](std::string_view key, const auto& vec) {
-            fmt::print(ss, "{}: {}", key, fmt::join(begin(vec), end(vec), " "));
+            fmt::print(ss, "{}: {}\n", key, fmt::join(begin(vec), end(vec), " "));
         }};
 
     print("RawFile", fileName + ".raw");
