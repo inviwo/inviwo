@@ -221,6 +221,8 @@ Shader &Shader::operator=(Shader &&that) {
             ShaderManager::getPtr()->unregisterShader(this);
         }
 
+        shaderObjects_.clear();
+
         program_ = std::move(that.program_);
         ShaderManager::getPtr()->unregisterShader(&that);
         auto ready = that.ready_;
