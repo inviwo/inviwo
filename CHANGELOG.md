@@ -1,5 +1,10 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2020-07-17 Volume and DataFrame converter
+The `VolumeConverter` processor provides functionality for converting a `Volume` to a different data format with optional mapping of data values and custom ranges. The base module now also features a `DataRangeProperty` holding data &value ranges of a volume plus optional overrides.
+
+The CSV reader now distinguishes between integral, floating point, and string/categorical values. Floating point values are stored either in float32 (default) or float64/double columns depending on the `doubleprec` argument in the CSVReader constructor. Since some of the plotting processors are relying on float32 columns, a `DataFrame Float32 Converter` processor was added which converts float64 columns to float32.
+
 ## 2020-06-09 Remove use of deprecated QGLWidget and OpenGL compatibility mode
 In case you have built a custom Qt application your main file need be updated to enable shared OpenGL context, see apps/inviwo/inviwo.cpp.
 We now also use QOffScreenSurface for default OpenGL context and threaded rendering instead of a custom hidden window. 

@@ -211,11 +211,12 @@ using DataFrameMultiInport = DataInport<DataFrame, 0>;
  *
  * @param exampleRows  Rows for guessing data type of each column.
  * @param colHeaders   Name of each column. If none are given, "Column 1", "Column 2", ... is used
+ * @param doublePrecision  if true, columns with floating point values will use double for storage
  * @throws InvalidColCount  if column count between exampleRows and colHeaders does not match
  */
 std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
 createDataFrame(const std::vector<std::vector<std::string>>& exampleRows,
-                const std::vector<std::string>& colHeaders = {});
+                const std::vector<std::string>& colHeaders = {}, bool doublePrecision = false);
 
 template <typename T>
 std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string& header, size_t size) {

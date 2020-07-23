@@ -135,7 +135,7 @@ void HdrBloom::process() {
 
     // --- HIGHPASS ---
     bright_.fbo.activate();
-    utilgl::ViewportState(ivec4(0, 0, bright_.tex.getWidth(), bright_.tex.getHeight()));
+    utilgl::ViewportState viewport(ivec4(0, 0, bright_.tex.getWidth(), bright_.tex.getHeight()));
     glBindTexture(GL_TEXTURE_2D, colorTex);
     highPass_.activate();
     highPass_.setUniform("threshold", threshold_.get());

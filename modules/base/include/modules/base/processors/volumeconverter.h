@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,46 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CSVSOURCE_H
-#define IVW_CSVSOURCE_H
+#pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/core/common/inviwo.h>
+#include <modules/base/basemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <modules/base/properties/datarangeproperty.h>
+#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.CSVSource, CSVSource}
- * ![](org.inviwo.CSVSource.png?classIdentifier=org.inviwo.CSVSource)
- * Reads comma separated values (CSV) and converts it into a DataFrame.
+/** \docpage{org.inviwo.VolumeConverter, Volume Converter}
+ * ![](org.inviwo.VolumeConverter.png?classIdentifier=org.inviwo.VolumeConverter)
+ * Converts the data type of a volume to a given output data format. The number of channels remains
+ * unchanged.
+ *
+ * ### Inports
+ *   * __inport__    volume input
  *
  * ### Outports
- *   * __data__  DataFrame representation of the CSV input file
+ *   * __outport__   converted input volume
  *
  * ### Properties
- *   * __First Row Headers__   if true, the first row is used as column names in the DataFrame
- *   * __Delimiters__          defines the delimiter between values (default ',')
+ *   * __Format__    data format of the output volume. The number of channels remains
+ *                   the same. If identical to input data, no conversion will be performed.
+ *   * __Use Data Range__   If enabled, the processor will utilize data mapping between different
+ *                   integer formats. That is, each data value is normalized using the data range of
+ *                   the input volume before being adjusted to the target format (using the range of
+ *                   the data type). For example in a conversion from `uint8 [0 255]` to
+ *                   `uint16 [0 65536]`, a value of `255` will be mapped to `65536`. If the target
+ *                   format is floating point, then data values are only normalized.
+ *                   Float formats are __not__ normalized!
+ *
  */
-
-class IVW_MODULE_DATAFRAME_API CSVSource : public Processor {
+class IVW_MODULE_BASE_API VolumeConverter : public Processor {
 public:
-    CSVSource(const std::string& file = "");
-    virtual ~CSVSource() = default;
+    VolumeConverter();
+    virtual ~VolumeConverter() = default;
 
     virtual void process() override;
 
@@ -66,14 +74,15 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataOutport<DataFrame> data_;
-    FileProperty inputFile_;
-    BoolProperty firstRowIsHeaders_;
-    StringProperty delimiters_;
-    BoolProperty doublePrecision_;
-    ButtonProperty reloadData_;
+    VolumeInport inport_;
+    VolumeOutport outport_;
+
+    StringProperty inputFormat_;
+    TemplateOptionProperty<DataFormatId> format_;
+    BoolProperty enableDataMapping_;
+
+    DataRangeProperty dataRange_;
+    DoubleMinMaxProperty outputDataRange_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CSVSOURCE_H

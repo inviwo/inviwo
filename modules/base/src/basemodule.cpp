@@ -72,6 +72,7 @@
 #include <modules/base/processors/transform.h>
 #include <modules/base/processors/trianglestowireframe.h>
 #include <modules/base/processors/volumeboundaryplanes.h>
+#include <modules/base/processors/volumeconverter.h>
 #include <modules/base/processors/volumecreator.h>
 #include <modules/base/processors/volumesequenceelementselectorprocessor.h>
 #include <modules/base/processors/volumesource.h>
@@ -96,6 +97,7 @@
 
 // Properties
 #include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/datarangeproperty.h>
 #include <modules/base/properties/gaussianproperty.h>
 #include <modules/base/properties/imageinformationproperty.h>
 #include <modules/base/properties/layerinformationproperty.h>
@@ -166,6 +168,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<TrianglesToWireframe>();
     registerProcessor<TransformMesh>();
     registerProcessor<TransformVolume>();
+    registerProcessor<VolumeConverter>();
     registerProcessor<WorldTransformMeshDeprecated>();
     registerProcessor<WorldTransformVolumeDeprecated>();
     registerProcessor<VolumeSlice>();
@@ -208,14 +211,15 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<InputSelector<MultiDataInport<Mesh>, MeshOutport>>();
     registerProcessor<InputSelector<ImageMultiInport, ImageOutport>>();
 
-    registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();
-    registerProperty<ImageInformationProperty>();
-    registerProperty<LayerInformationProperty>();
-    registerProperty<MeshInformationProperty>();
     registerProperty<BufferInformationProperty>();
-    registerProperty<MeshBufferInformationProperty>();
+    registerProperty<DataRangeProperty>();
+    registerProperty<ImageInformationProperty>();
     registerProperty<IndexBufferInformationProperty>();
+    registerProperty<LayerInformationProperty>();
+    registerProperty<MeshBufferInformationProperty>();
+    registerProperty<MeshInformationProperty>();
+    registerProperty<SequenceTimerProperty>();
     registerProperty<VolumeInformationProperty>();
 
     registerProperty<Gaussian1DProperty>();

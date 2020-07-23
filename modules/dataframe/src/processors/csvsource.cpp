@@ -49,17 +49,15 @@ const ProcessorInfo CSVSource::getProcessorInfo() const { return processorInfo_;
 CSVSource::CSVSource(const std::string& file)
     : Processor()
     , data_("data")
-    , firstRowIsHeaders_("firstRowIsHeaders", "First Row Contains Column Headers", true)
     , inputFile_("inputFile_", "CSV File", file, "dataframe")
+    , firstRowIsHeaders_("firstRowIsHeaders", "First Row Contains Column Headers", true)
     , delimiters_("delimiters", "Delimiters", ",")
+    , doublePrecision_("doublePrecision", "Double Precision", false)
     , reloadData_("reloadData", "Reload Data") {
 
     addPort(data_);
 
-    addProperty(inputFile_);
-    addProperty(firstRowIsHeaders_);
-    addProperty(delimiters_);
-    addProperty(reloadData_);
+    addProperties(inputFile_, firstRowIsHeaders_, delimiters_, doublePrecision_, reloadData_);
 
     isReady_.setUpdate([this]() { return filesystem::fileExists(inputFile_.get()); });
     inputFile_.onChange([this]() { isReady_.update(); });
@@ -68,10 +66,7 @@ CSVSource::CSVSource(const std::string& file)
 void CSVSource::process() {
     if (inputFile_.get().empty()) return;
 
-    CSVReader reader;
-
-    reader.setDelimiters(delimiters_.get());
-    reader.setFirstRowHeader(firstRowIsHeaders_.get());
+    CSVReader reader(delimiters_, firstRowIsHeaders_, doublePrecision_);
 
     data_.setData(reader.readData(inputFile_.get()));
 }

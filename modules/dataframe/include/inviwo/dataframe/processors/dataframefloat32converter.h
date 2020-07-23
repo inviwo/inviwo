@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,28 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CSVSOURCE_H
-#define IVW_CSVSOURCE_H
+#pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
-
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.CSVSource, CSVSource}
- * ![](org.inviwo.CSVSource.png?classIdentifier=org.inviwo.CSVSource)
- * Reads comma separated values (CSV) and converts it into a DataFrame.
+/** \docpage{org.inviwo.DataFrameFloat32Converter, DataFrame Float32 Converter}
+ * ![](org.inviwo.DataFrameFloat32Converter.png?classIdentifier=org.inviwo.DataFrameFloat32Converter)
+ * Converts all floating point columns from double precision to single precision.
+ *
+ * ### Inports
+ *   * __inport__ Input DataFrame
  *
  * ### Outports
- *   * __data__  DataFrame representation of the CSV input file
- *
- * ### Properties
- *   * __First Row Headers__   if true, the first row is used as column names in the DataFrame
- *   * __Delimiters__          defines the delimiter between values (default ',')
+ *   * __outport__  DataFrame with double columns converted to float32
  */
-
-class IVW_MODULE_DATAFRAME_API CSVSource : public Processor {
+class IVW_MODULE_DATAFRAME_API DataFrameFloat32Converter : public Processor {
 public:
-    CSVSource(const std::string& file = "");
-    virtual ~CSVSource() = default;
+    DataFrameFloat32Converter();
+    virtual ~DataFrameFloat32Converter() = default;
 
     virtual void process() override;
 
@@ -66,14 +56,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataOutport<DataFrame> data_;
-    FileProperty inputFile_;
-    BoolProperty firstRowIsHeaders_;
-    StringProperty delimiters_;
-    BoolProperty doublePrecision_;
-    ButtonProperty reloadData_;
+    DataFrameInport inport_;
+    DataFrameOutport outport_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CSVSOURCE_H

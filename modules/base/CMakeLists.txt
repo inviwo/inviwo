@@ -96,6 +96,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumebasistransformer.h
     include/modules/base/processors/volumeboundaryplanes.h
     include/modules/base/processors/volumeboundingbox.h
+    include/modules/base/processors/volumeconverter.h
     include/modules/base/processors/volumecreator.h
     include/modules/base/processors/volumecurlcpuprocessor.h
     include/modules/base/processors/volumedivergencecpuprocessor.h
@@ -116,6 +117,7 @@ set(HEADER_FILES
     include/modules/base/processors/worldtransformdeprecated.h
     include/modules/base/properties/basisproperty.h
     include/modules/base/properties/bufferinformationproperty.h
+    include/modules/base/properties/datarangeproperty.h
     include/modules/base/properties/gaussianproperty.h
     include/modules/base/properties/imageinformationproperty.h
     include/modules/base/properties/layerinformationproperty.h
@@ -213,6 +215,7 @@ set(SOURCE_FILES
     src/processors/trianglestowireframe.cpp
     src/processors/volumeboundaryplanes.cpp
     src/processors/volumeboundingbox.cpp
+    src/processors/volumeconverter.cpp
     src/processors/volumecreator.cpp
     src/processors/volumecurlcpuprocessor.cpp
     src/processors/volumedivergencecpuprocessor.cpp
@@ -232,6 +235,7 @@ set(SOURCE_FILES
     src/processors/volumetospatialsampler.cpp
     src/properties/basisproperty.cpp
     src/properties/bufferinformationproperty.cpp
+    src/properties/datarangeproperty.cpp
     src/properties/gaussianproperty.cpp
     src/properties/imageinformationproperty.cpp
     src/properties/layerinformationproperty.cpp
