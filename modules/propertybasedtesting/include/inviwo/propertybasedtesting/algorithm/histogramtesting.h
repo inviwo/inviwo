@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 
 #include <inviwo/propertybasedtesting/algorithm/generatingassignments.h>
+#include <optional>
 
 namespace inviwo {
 

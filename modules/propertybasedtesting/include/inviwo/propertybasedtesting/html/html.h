@@ -179,10 +179,10 @@ public:
 
 class Image : public Element<Image> {
 public:
-	Image(const std::string& path, const std::string& alt = "")
+	Image(const std::filesystem::path& path, const std::string& alt = "")
 			: Element("img") {
 		BaseElement::printClosing = false;
-		addAttribute("src", path);
+		addAttribute("src", path.string());
 		addAttribute("alt", alt);
 	}
 };

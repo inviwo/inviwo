@@ -71,7 +71,8 @@ PropertyBasedTestingReport::PropertyBasedTestingReport
 std::vector<HTML::Row> PropertyBasedTestingReport::generateHTML
 		( const TestingError& e
 		, const std::vector<std::shared_ptr<TestProperty>>& props) {
-	const auto&[testResult1, testResult2, expectedEffect, num1, num2] = e;
+    const auto& [testResult1, testResult2, _expectedEffect, num1, num2] = e;
+    const auto& expectedEffect = _expectedEffect;
 
 	const std::string expectedEffectString = [expectedEffect]() {
 			std::stringstream str;

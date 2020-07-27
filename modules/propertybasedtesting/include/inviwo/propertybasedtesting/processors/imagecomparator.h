@@ -85,10 +85,10 @@ private:
         double diffSum;
         double differentPixels;
         double pixelCount;
-        std::string img1;
-        std::string img2;
-        std::string diff;
-        std::string mask;
+        std::filesystem::path img1;
+        std::filesystem::path img2;
+        std::filesystem::path diff;
+        std::filesystem::path mask;
     };
     std::vector<Comparison> comparisons_;
 };
