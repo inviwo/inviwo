@@ -34,6 +34,5 @@ uniform int nOldImages;
 void main() {
     vec4 oldColor = texelFetch(oldImgColor, ivec2(gl_FragCoord.xy), 0);
     vec4 newColor = texelFetch(newImgColor, ivec2(gl_FragCoord.xy), 0);
-    FragData0 = oldColor * float(nOldImages) / float(nOldImages + 1) +
-                newColor * 1.0 / float(nOldImages + 1);
+    FragData0 = (oldColor * float(nOldImages) + newColor) / float(nOldImages + 1);
 }

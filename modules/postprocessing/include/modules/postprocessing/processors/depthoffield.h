@@ -56,9 +56,10 @@ namespace inviwo {
 /** \docpage{org.inviwo.DepthOfField, Depth Of Field}
  * ![](org.inviwo.DepthOfField.png?classIdentifier=org.inviwo.DepthOfField)
  *
- * Use any pinhole image as input and connect the camera property to the rendering processor.
- * Applies a depth of field effect where out-of-focus regions appear blurred. The image should be
- * generated with a perspective camera but may use any rendering technique.
+ * Applies a depth of field effect where out-of-focus regions appear blurred.
+ * Use any pinhole camera-generated image as input and connect the camera property to the rendering
+ * processor. The image should be generated with a perspective camera but may use any rendering
+ * technique.
  *
  * ### Inports
  *   * __ImageInport__ Input image.
@@ -70,7 +71,7 @@ namespace inviwo {
  *
  * ### Properties
  *   * __Aperture__ The diameter of the simulated lens. Affects blur strength.
- *   * __FocusDepth__ The depth in the scene that is in focus.
+ *   * __FocusDepth__ The depth in the scene that is in focus. Requires manual focus to be enabled.
  *   * __ManualFocus__ Determines whether the focus depth is determined by manual input or inport
  * data.
  *   * __Approximate__ If true, uses an approximative algorithm which renders
@@ -113,7 +114,6 @@ private:
     int evalCount_;
     const bool useComputeShaders_;
     std::unique_ptr<Camera> ogCamera_;
-    std::string ogType_;
 
     std::vector<float> haltonX_;
 
@@ -124,16 +124,14 @@ private:
     Shader addSampleShader_;
 
     // Approximative algorithm
-    size3_t dimLightField_;
     std::shared_ptr<Volume> lightField_;
     std::shared_ptr<Volume> lightFieldDepth_;
     std::shared_ptr<Image> haltonImg_;
     Shader addToLightFieldShader_;
-    Shader averageLightfieldShader_;
+    Shader averageLightFieldShader_;
 
     void clickToFocus(Event* e);
-    void setApproximate(bool approximate);
-    void setupRecursion(size2_t dim, int maxEvalCount, std::shared_ptr<const Image> img);
+    void setupRecursion(size2_t dim, size_t maxEvalCount, std::shared_ptr<const Image> img);
     double calculateFocusDepth();
     vec2 calculatePeripheralCameraPos(int evalCount, int maxEvalCount);
     void addToAccumulationBuffer(std::shared_ptr<const Image> img, TextureUnitContainer& cont);

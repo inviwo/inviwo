@@ -35,7 +35,7 @@ void main() {
     ivec2 xy = ivec2(gl_FragCoord.xy);
 
     vec4 acc = vec4(0);
-    int weight = 0;
+    float weight = 0;
 
     for (int i = 0; i < dim.z; i++) {
         float depth = texelFetch(lightFieldDepth, ivec3(xy, i), 0).r;
@@ -45,5 +45,5 @@ void main() {
         }
     }
 
-    FragData0 = acc / (weight > 0 ? float(weight) : 1);
+    FragData0 = acc / (weight > 0 ? weight : 1);
 }
