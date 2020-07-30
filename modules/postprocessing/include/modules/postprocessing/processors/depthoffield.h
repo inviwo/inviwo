@@ -61,6 +61,9 @@ namespace inviwo {
  * processor. The image should be generated with a perspective camera but may use any rendering
  * technique.
  *
+ * Implementation is based on Depth of Field Rendering from Sparsely Sampled Pinhole Images (Master
+ * thesis, 2020) by Natalie Axelsson.
+ *
  * ### Inports
  *   * __ImageInport__ Input image.
  *   * __MeshInport__ World space point to focus on. The first point in the first position buffer
@@ -135,14 +138,15 @@ private:
     double calculateFocusDepth();
     vec2 calculatePeripheralCameraPos(int evalCount, int maxEvalCount);
     void addToAccumulationBuffer(std::shared_ptr<const Image> img, TextureUnitContainer& cont);
-    void warpToLightfieldGPU(TextureUnitContainer& cont, double nearClip, double farClip,
-                             double fovy, double focusDepth, size2_t dim, vec2 cameraPos);
-    void warpToLightfieldCPU(std::shared_ptr<const Image> img, double nearClip, double farClip,
-                             double fovy, double focusDepth, size2_t dim, vec2 cameraPos);
+    void warpToLightfieldGPU(TextureUnitContainer& cont, double fovy, double focusDepth,
+                             size2_t dim, vec2 cameraPos);
+    void warpToLightfieldCPU(std::shared_ptr<const Image> img, double fovy, double focusDepth,
+                             size2_t dim, vec2 cameraPos);
     void warp(vec2 st, vec2 uv, vec4 color, double zWorld, size_t viewIndex, VolumeRAM* lightField,
               VolumeRAM* lightFieldDepth, double fovy, double focusDepth);
     void synthesizeLightfield(TextureUnitContainer& cont);
     void moveCamera(SkewedPerspectiveCamera* camera, int maxEvalCount, double focusDepth);
+    double ndcToWorldDepth(double depthNdc);
 };
 
 }  // namespace inviwo

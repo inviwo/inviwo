@@ -101,11 +101,7 @@ void DepthOfField::clickToFocus(Event* e) {
     double depthNdc =
         inport_.getData()->getDepthLayer()->getRepresentation<LayerRAM>()->getAsNormalizedDouble(
             clickPos);
-
-    double nearClip = camera_.getNearPlaneDist();
-    double farClip = camera_.getFarPlaneDist();
-    double depthEye = farClip * nearClip / (farClip - depthNdc * (farClip - nearClip));
-    focusDepth_.set(depthEye);
+    focusDepth_.set(ndcToWorldDepth(depthNdc));
 }
 
 void DepthOfField::process() {
@@ -129,13 +125,11 @@ void DepthOfField::process() {
 
     if (approximate_) {
         vec2 cameraPos = calculatePeripheralCameraPos(evalCount_, maxEvalCount);
-        double nearClip = camera_.getNearPlaneDist();
-        double farClip = camera_.getFarPlaneDist();
         double fovy = glm::radians(camera->getFovy());
         if (useComputeShaders_) {
-            warpToLightfieldGPU(cont, nearClip, farClip, fovy, focusDepth, dim, cameraPos);
+            warpToLightfieldGPU(cont, fovy, focusDepth, dim, cameraPos);
         } else {
-            warpToLightfieldCPU(img, nearClip, farClip, fovy, focusDepth, dim, cameraPos);
+            warpToLightfieldCPU(img, fovy, focusDepth, dim, cameraPos);
         }
     } else {
         addToAccumulationBuffer(img, cont);
@@ -214,19 +208,16 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount, std::shared_
     // background points and including the current value.
     const float* inputDepthData = static_cast<const float*>(
         img->getRepresentation<ImageRAM>()->getDepthLayerRAM()->getData());
-    float minDepthNdc = 1;
-    float maxDepthNdc = 0;
-    for (const float* f = inputDepthData; f < inputDepthData + dim.x * dim.y; f++) {
-        minDepthNdc = std::min(minDepthNdc, *f);
-        if (*f < 1) {
-            maxDepthNdc = std::max(maxDepthNdc, *f);
-        }
-    }
-
-    double nearClip = camera_.getNearPlaneDist();
-    double farClip = camera_.getFarPlaneDist();
-    float minDepthWorld = nearClip * farClip / (minDepthNdc * (nearClip - farClip) + farClip);
-    float maxDepthWorld = nearClip * farClip / (maxDepthNdc * (nearClip - farClip) + farClip);
+    std::pair<float, float> minmax(1, 0);
+    minmax = std::accumulate(inputDepthData, inputDepthData + dim.x * dim.y, minmax,
+        [](const std::pair<float, float>& acc, const float v) -> std::pair<float, float> {
+            std::pair<float, float> res;
+            res.first = std::min(acc.first, v);
+            res.second = (v < 1) ? std::max(acc.second, v) : acc.second;
+            return res;
+    });
+    float minDepthWorld = ndcToWorldDepth(minmax.first);
+    float maxDepthWorld = ndcToWorldDepth(minmax.second);
 
     dispatchFront( [this, minDepthWorld, maxDepthWorld] () {
         NetworkLock lock(this);
@@ -285,9 +276,8 @@ void DepthOfField::addToAccumulationBuffer(std::shared_ptr<const Image> img,
     addSampleShader_.deactivate();
 }
 
-void DepthOfField::warpToLightfieldGPU(TextureUnitContainer& cont, double nearClip, double farClip,
-                                       double fovy, double focusDepth, size2_t dim,
-                                       vec2 cameraPos) {
+void DepthOfField::warpToLightfieldGPU(TextureUnitContainer& cont, double fovy, double focusDepth,
+                                       size2_t dim, vec2 cameraPos) {
     glActiveTexture(GL_TEXTURE);
     auto lightFieldGL = lightField_->getEditableRepresentation<VolumeGL>();
     auto lightFieldTexHandle = lightFieldGL->getTexture()->getID();
@@ -302,8 +292,8 @@ void DepthOfField::warpToLightfieldGPU(TextureUnitContainer& cont, double nearCl
     utilgl::bindAndSetUniforms(addToLightFieldShader_, cont, *haltonImg_, "halton",
                                ImageType::ColorOnly);
 
-    addToLightFieldShader_.setUniform("nearClip", float(nearClip));
-    addToLightFieldShader_.setUniform("farClip", float(farClip));
+    addToLightFieldShader_.setUniform("nearClip", float(camera_.getNearPlaneDist()));
+    addToLightFieldShader_.setUniform("farClip", float(camera_.getFarPlaneDist()));
     addToLightFieldShader_.setUniform("evalCount", int(evalCount_));
     addToLightFieldShader_.setUniform("aperture", float(aperture_.get()));
     addToLightFieldShader_.setUniform("nViews", int(viewCountApprox_.get()));
@@ -336,9 +326,8 @@ void DepthOfField::warpToLightfieldGPU(TextureUnitContainer& cont, double nearCl
     addToLightFieldShader_.deactivate();
 }
 
-void DepthOfField::warpToLightfieldCPU(std::shared_ptr<const Image> img, double nearClip,
-                                       double farClip, double fovy, double focusDepth, size2_t dim,
-                                       vec2 cameraPos) {
+void DepthOfField::warpToLightfieldCPU(std::shared_ptr<const Image> img, double fovy,
+                                      double focusDepth, size2_t dim, vec2 cameraPos) {
     const LayerRAM* inColor = img->getRepresentation<ImageRAM>()->getColorLayerRAM();
     const LayerRAM* inDepth = img->getRepresentation<ImageRAM>()->getDepthLayerRAM();
     VolumeRAM* lightField = lightField_->getEditableRepresentation<VolumeRAM>();
@@ -348,7 +337,7 @@ void DepthOfField::warpToLightfieldCPU(std::shared_ptr<const Image> img, double 
         for (size_t y = 0; y < dim.y; y++) {
             vec2 screenPos(x, y);
             double zNdc = inDepth->getAsDouble(screenPos);
-            double zWorld = nearClip * farClip / (zNdc * (nearClip - farClip) + farClip);
+            double zWorld = ndcToWorldDepth(zNdc);
             vec4 color = inColor->getAsNormalizedDVec4(screenPos);
 
             size3_t pos(x, y, evalCount_);
@@ -439,5 +428,11 @@ void DepthOfField::moveCamera(SkewedPerspectiveCamera* camera, int maxEvalCount,
         offset = radius * vec2(glm::cos(angle), glm::sin(angle));
     }
     camera->setOffset(offset);
+}
+
+double DepthOfField::ndcToWorldDepth(double depthNdc) {
+    double nearClip = camera_.getNearPlaneDist();
+    double farClip = camera_.getFarPlaneDist();
+    return farClip * nearClip / (farClip - depthNdc * (farClip - nearClip));
 }
 }  // namespace inviwo

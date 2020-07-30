@@ -68,6 +68,8 @@ void main() {
     vec2 simScreenPos = screenPos + disparity * dim.y / (2.0 * tan(fovy / 2.0));
     ivec3 pos = ivec3(round(simScreenPos.x), round(simScreenPos.y), viewIndex + nViews);
     float currDepth = imageLoad(lightFieldDepth, pos).r;
+
+    // Awkward nested conditional because it didn't compile with && (Nvidia 2070S).
     if (currDepth > 0) {
         if (currDepth < zWorld) {
             return;
