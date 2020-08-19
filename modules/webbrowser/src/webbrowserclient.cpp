@@ -73,7 +73,7 @@ WebBrowserClient::WebBrowserClient(ModuleManager& moduleManager,
         }
     }))
     , resourceManager_(new CefResourceManager()) {
-    moduleManager.onModulesDidRegister([&]() {
+    onModulesRegisteredCallback_ = moduleManager.onModulesDidRegister([&]() {
         // Ensure that all module resources have been registered before setting up resources
         detail::setupResourceManager(resourceManager_);
     });
