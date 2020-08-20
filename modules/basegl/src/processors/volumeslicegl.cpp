@@ -470,18 +470,29 @@ void VolumeSliceGL::renderPositionIndicator() {
 
 VolumeSliceGL::ColoredMesh2D VolumeSliceGL::createIndicatorMesh() {
 
-    // add two vertical and two horizontal lines with a gap around the selected position
-    auto vertices = std::vector<std::tuple<vec2, vec4>>(12);
     // indices for cross lines
-    auto indexBuf1 = util::table([&](int i) { return static_cast<uint32_t>(i); }, 0, 8);
+    auto indexBuf1 = util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 0, 8));
 
     // indices for box lines
     auto indexBuf2 =
         util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 8, 12));
 
-    ColoredMesh2D meshCrossHair(DrawType::Lines, ConnectivityType::None, vertices, std::move(indexBuf1));
+    ColoredMesh2D meshCrossHair(DrawType::Lines, ConnectivityType::None);
     meshCrossHair.setModelMatrix(mat4(1.0f));
-
+    // Add 12 arbitrary vertices, which need to be updated later
+    meshCrossHair.addVertices({{vec2(0.f), vec4(1.f)},
+                               {vec2(0.f), vec4(1.f)},
+                               {vec2(0.f), vec4(1.f)},
+                               {vec2(0.f), vec4(1.f)},
+                               {vec2(0.f), vec4(1.f)},
+                               {vec2(0.f), vec4(1.f)},
+                               {vec2(0.f), vec4(1.f)},
+                               {vec2(0.f), vec4(1.f)},
+                               {vec2(0.f), vec4(1.f)},
+                               {vec2(0.f), vec4(1.f)},
+                               {vec2(0.f), vec4(1.f)},
+                               {vec2(0.f), vec4(1.f)}});
+    meshCrossHair.addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None), indexBuf1);
     meshCrossHair.addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::Loop), indexBuf2);
 
     return meshCrossHair;
