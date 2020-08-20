@@ -64,7 +64,7 @@ const ProcessorInfo VolumeSliceGL::getProcessorInfo() const { return processorIn
 VolumeSliceGL::VolumeSliceGL()
     : Processor()
     , inport_("volume")
-    , outport_("outport", DataFormat<glm::u8vec4>::get(), false)
+    , outport_("outport", DataFormat<glm::u8vec4>::get())
     , shader_("standard.vert", "volumeslice.frag", false)
     , indicatorShader_("standard.vert", "standard.frag", true)
     , trafoGroup_("trafoGroup", "Transformations")
@@ -276,8 +276,12 @@ void VolumeSliceGL::initializeResources() {
 }
 
 void VolumeSliceGL::invokeEvent(Event* event) {
-    if (!handleInteractionEvents_) return;
+    if (dynamic_cast<InteractionEvent*>(event) && !handleInteractionEvents_) return;
     Processor::invokeEvent(event);
+    if (auto re = event->getAs<ResizeEvent>()) {
+        planeSettingsChanged();
+    }
+
 }
 
 void VolumeSliceGL::modeChange() {
@@ -326,8 +330,9 @@ void VolumeSliceGL::planeSettingsChanged() {
     const vec3 normal = glm::normalize(planeNormal_.get());
     const Plane plane(planePosition_.get(), normal);
 
-    // In worldSpace.
-    const mat4 texToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
+    // In worldSpace, ignoring translation because it should not affect rotation (fixes issue #875)
+    const mat4 texToWorld(mat3(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()));
+
     const vec3 worldNormal(
         glm::normalize(vec3(glm::inverseTranspose(texToWorld) * vec4(normal, 0.0f))));
     const mat4 boxrotation(glm::toMat4(glm::rotation(worldNormal, vec3(0.0f, 0.0f, 1.0f))));
@@ -398,16 +403,16 @@ void VolumeSliceGL::planeSettingsChanged() {
 }
 
 void VolumeSliceGL::process() {
-    if (volumeDimensions_ != inport_.getData()->getDimensions()) {
-        volumeDimensions_ = inport_.getData()->getDimensions();
-        updateMaxSliceNumber();
-        modeChange();
-        vec2 dim{glm::length(vec3(volumeDimensions_))};
-        outport_.setDimensions(static_cast<size2_t>(dim));  // set default dimensions.
-    }
-    if (texToWorld_ != inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()) {
-        texToWorld_ = inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
-        planeSettingsChanged();
+    if (inport_.isChanged()) {
+        if (volumeDimensions_ != inport_.getData()->getDimensions()) {
+            volumeDimensions_ = inport_.getData()->getDimensions();
+            updateMaxSliceNumber();
+            modeChange();
+        }
+        if (texToWorld_ != inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()) {
+            texToWorld_ = inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
+            planeSettingsChanged();
+        }
     }
 
     utilgl::activateAndClearTarget(outport_, ImageType::ColorOnly);
@@ -450,7 +455,7 @@ void VolumeSliceGL::renderPositionIndicator() {
         updateIndicatorMesh();
     }
 
-    MeshDrawerGL drawer(meshCrossHair_.get());
+    MeshDrawerGL drawer(&meshCrossHair_);
 
     utilgl::GlBoolState smooth(GL_LINE_SMOOTH, true);
     utilgl::BlendModeState blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -463,18 +468,35 @@ void VolumeSliceGL::renderPositionIndicator() {
     indicatorShader_.deactivate();
 }
 
+VolumeSliceGL::ColoredMesh2D VolumeSliceGL::createIndicatorMesh() {
+
+    // add two vertical and two horizontal lines with a gap around the selected position
+    auto vertices = std::vector<std::tuple<vec2, vec4>>(12);
+    // indices for cross lines
+    auto indexBuf1 = util::table([&](int i) { return static_cast<uint32_t>(i); }, 0, 8);
+
+    // indices for box lines
+    auto indexBuf2 =
+        util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 8, 12));
+
+    ColoredMesh2D meshCrossHair(DrawType::Lines, ConnectivityType::None, vertices, std::move(indexBuf1));
+    meshCrossHair.setModelMatrix(mat4(1.0f));
+
+    meshCrossHair.addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::Loop), indexBuf2);
+
+    return meshCrossHair;
+}
+
 void VolumeSliceGL::updateIndicatorMesh() {
     const vec2 pos = getScreenPosFromVolPos();
 
     const size2_t canvasSize(outport_.getDimensions());
     const vec2 indicatorSize =
         vec2(indicatorSize_.get() / canvasSize.x, indicatorSize_.get() / canvasSize.y);
-    const vec4 color(indicatorColor_.get());
 
-    meshCrossHair_ = std::make_unique<Mesh>();
-    meshCrossHair_->setModelMatrix(mat4(1.0f));
     // add two vertical and two horizontal lines with a gap around the selected position
-    auto posBuf = util::makeBuffer<vec2>(
+    auto posBuf = meshCrossHair_.getTypedEditableRAMRepresentation<buffertraits::PositionsBuffer2D>();
+    posBuf->getDataContainer() = 
         {// horizontal
          vec2(-0.5f, pos.y) * 2.0f - 1.0f, vec2(pos.x - indicatorSize.x, pos.y) * 2.0f - 1.0f,
          vec2(pos.x + indicatorSize.x, pos.y) * 2.0f - 1.0f, vec2(1.5f, pos.y) * 2.0f - 1.0f,
@@ -487,22 +509,12 @@ void VolumeSliceGL::updateIndicatorMesh() {
          vec2(pos.x - indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
          vec2(pos.x + indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
          vec2(pos.x + indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f,
-         vec2(pos.x - indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f});
+         vec2(pos.x - indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f};
 
-    auto colorBuf = util::makeBuffer<vec4>(std::vector<vec4>(12, color));
+    auto colorBuf = meshCrossHair_.getTypedEditableRAMRepresentation<buffertraits::ColorsBuffer>();
+    const vec4 color(indicatorColor_.get());
+    colorBuf->getDataContainer() = std::vector<vec4>(12, color);
 
-    // indices for cross lines
-    auto indexBuf1 =
-        util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 0, 8));
-
-    // indices for box lines
-    auto indexBuf2 =
-        util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 8, 12));
-
-    meshCrossHair_->addBuffer(BufferType::PositionAttrib, posBuf);
-    meshCrossHair_->addBuffer(BufferType::ColorAttrib, colorBuf);
-    meshCrossHair_->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None), indexBuf1);
-    meshCrossHair_->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::Loop), indexBuf2);
 
     meshDirty_ = false;
 }

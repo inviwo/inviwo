@@ -33,7 +33,7 @@
 #include <modules/basegl/baseglmoduledefine.h>
 
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
@@ -109,7 +109,7 @@ public:
 
     virtual void initializeResources() override;
 
-    // Overridden to be able to turn off interaction events.
+    // Overridden to be able to turn off interaction events and detect resize events.
     virtual void invokeEvent(Event*) override;
 
     bool positionModeEnabled() const { return posPicking_.get(); }
@@ -118,6 +118,8 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 protected:
+    using ColoredMesh2D = TypedMesh<buffertraits::PositionsBuffer2D, buffertraits::ColorsBuffer>;
+
     virtual void process() override;
 
     void shiftSlice(int);
@@ -127,6 +129,8 @@ protected:
     void updateMaxSliceNumber();
 
     void renderPositionIndicator();
+    // Create a lines and crosshair -  use together with updateIndicatorMesh
+    static ColoredMesh2D createIndicatorMesh();
     void updateIndicatorMesh();
 
     // updates the selected position, pos is given in normalized viewport coordinates, i.e. [0,1]
@@ -201,7 +205,8 @@ private:
 
     EventProperty gestureShiftSlice_;
 
-    std::unique_ptr<Mesh> meshCrossHair_;
+
+    ColoredMesh2D meshCrossHair_ = createIndicatorMesh();
 
     bool meshDirty_;
     bool updating_;
