@@ -205,7 +205,6 @@ private:
 
     EventProperty gestureShiftSlice_;
 
-
     ColoredMesh2D meshCrossHair_ = createIndicatorMesh();
 
     bool meshDirty_;

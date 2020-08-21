@@ -281,7 +281,6 @@ void VolumeSliceGL::invokeEvent(Event* event) {
     if (auto re = event->getAs<ResizeEvent>()) {
         planeSettingsChanged();
     }
-
 }
 
 void VolumeSliceGL::modeChange() {
@@ -331,7 +330,8 @@ void VolumeSliceGL::planeSettingsChanged() {
     const Plane plane(planePosition_.get(), normal);
 
     // In worldSpace, ignoring translation because it should not affect rotation (fixes issue #875)
-    const mat4 texToWorld(mat3(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()));
+    const mat4 texToWorld(
+        mat3(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()));
 
     const vec3 worldNormal(
         glm::normalize(vec3(glm::inverseTranspose(texToWorld) * vec4(normal, 0.0f))));
@@ -409,7 +409,8 @@ void VolumeSliceGL::process() {
             updateMaxSliceNumber();
             modeChange();
         }
-        if (texToWorld_ != inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()) {
+        if (texToWorld_ !=
+            inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()) {
             texToWorld_ = inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
             planeSettingsChanged();
         }
@@ -471,7 +472,8 @@ void VolumeSliceGL::renderPositionIndicator() {
 VolumeSliceGL::ColoredMesh2D VolumeSliceGL::createIndicatorMesh() {
 
     // indices for cross lines
-    auto indexBuf1 = util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 0, 8));
+    auto indexBuf1 =
+        util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 0, 8));
 
     // indices for box lines
     auto indexBuf2 =
@@ -506,26 +508,26 @@ void VolumeSliceGL::updateIndicatorMesh() {
         vec2(indicatorSize_.get() / canvasSize.x, indicatorSize_.get() / canvasSize.y);
 
     // add two vertical and two horizontal lines with a gap around the selected position
-    auto posBuf = meshCrossHair_.getTypedEditableRAMRepresentation<buffertraits::PositionsBuffer2D>();
-    posBuf->getDataContainer() = 
-        {// horizontal
-         vec2(-0.5f, pos.y) * 2.0f - 1.0f, vec2(pos.x - indicatorSize.x, pos.y) * 2.0f - 1.0f,
-         vec2(pos.x + indicatorSize.x, pos.y) * 2.0f - 1.0f, vec2(1.5f, pos.y) * 2.0f - 1.0f,
+    auto posBuf =
+        meshCrossHair_.getTypedEditableRAMRepresentation<buffertraits::PositionsBuffer2D>();
+    posBuf->getDataContainer() = {
+        // horizontal
+        vec2(-0.5f, pos.y) * 2.0f - 1.0f, vec2(pos.x - indicatorSize.x, pos.y) * 2.0f - 1.0f,
+        vec2(pos.x + indicatorSize.x, pos.y) * 2.0f - 1.0f, vec2(1.5f, pos.y) * 2.0f - 1.0f,
 
-         // vertical
-         vec2(pos.x, -0.5f) * 2.0f - 1.0f, vec2(pos.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
-         vec2(pos.x, pos.y + indicatorSize.y) * 2.0f - 1.0f, vec2(pos.x, 1.5f) * 2.0f - 1.0f,
+        // vertical
+        vec2(pos.x, -0.5f) * 2.0f - 1.0f, vec2(pos.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
+        vec2(pos.x, pos.y + indicatorSize.y) * 2.0f - 1.0f, vec2(pos.x, 1.5f) * 2.0f - 1.0f,
 
-         // box
-         vec2(pos.x - indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
-         vec2(pos.x + indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
-         vec2(pos.x + indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f,
-         vec2(pos.x - indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f};
+        // box
+        vec2(pos.x - indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
+        vec2(pos.x + indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
+        vec2(pos.x + indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f,
+        vec2(pos.x - indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f};
 
     auto colorBuf = meshCrossHair_.getTypedEditableRAMRepresentation<buffertraits::ColorsBuffer>();
     const vec4 color(indicatorColor_.get());
     colorBuf->getDataContainer() = std::vector<vec4>(12, color);
-
 
     meshDirty_ = false;
 }
