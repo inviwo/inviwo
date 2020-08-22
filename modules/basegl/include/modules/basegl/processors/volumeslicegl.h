@@ -55,7 +55,7 @@ class Mesh;
  * ![](org.inviwo.VolumeSliceGL.png?classIdentifier=org.inviwo.VolumeSliceGL)
  * This processor visualizes an arbitrary 2D slice from an input volume.
  *
- * Note: The output dimensions generally differ from the input Volume dimensions. 
+ * Note: The output dimensions generally differ from the input Volume dimensions.
  * Use Volume Slice Extracter to extract slices with the same dimensions as the Volume.
  *
  * ### Inports
