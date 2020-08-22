@@ -53,7 +53,10 @@ class Mesh;
 
 /** \docpage{org.inviwo.VolumeSliceGL, Volume Slice (GL)}
  * ![](org.inviwo.VolumeSliceGL.png?classIdentifier=org.inviwo.VolumeSliceGL)
- * This processor extracts an arbitrary 2D slice from an input volume.
+ * This processor visualizes an arbitrary 2D slice from an input volume.
+ *
+ * Note: The output dimensions generally differ from the input Volume dimensions. 
+ * Use Volume Slice Extracter to extract slices with the same dimensions as the Volume.
  *
  * ### Inports
  *   * __volume__ The input volume
@@ -93,11 +96,6 @@ class Mesh;
  *   * __World Position__ Outputs the world position of the slice plane (read-only)
  *   * __Handle interaction events__ Toggles whether this processor will handle interaction events
  *                                   like mouse buttons or key presses
- */
-
-/**
- * \class VolumeSliceGL
- * \brief extracts an arbitrary 2D slice from an input volume
  */
 class IVW_MODULE_BASEGL_API VolumeSliceGL : public Processor {
 public:

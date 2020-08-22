@@ -54,7 +54,7 @@ namespace inviwo {
 
 const ProcessorInfo VolumeSliceGL::processorInfo_{
     "org.inviwo.VolumeSliceGL",  // Class identifier
-    "Volume Slice",              // Display name
+    "Volume Slice Viewer",       // Display name
     "Volume Operation",          // Category
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
