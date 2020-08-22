@@ -43,7 +43,7 @@ namespace inviwo {
 
 const ProcessorInfo VolumeSlice::processorInfo_{
     "org.inviwo.VolumeSlice",  // Class identifier
-    "Volume Slice",            // Display name
+    "Volume Slice Extracter",  // Display name
     "Volume Operation",        // Category
     CodeState::Stable,         // Code state
     Tags::CPU,                 // Tags
