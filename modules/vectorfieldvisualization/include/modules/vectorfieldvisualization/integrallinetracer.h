@@ -72,24 +72,26 @@ public:
     using DataHomogenouSpatialMatrixrix = Matrix<SpatialSampler::DataDimensions + 1, double>;
 
     IntegralLineTracer(std::shared_ptr<const Sampler> sampler,
-                       const IntegralLineProperties &properties);
+                       const IntegralLineProperties& properties);
 
-    Result traceFrom(const SpatialVector &pIn);
+    Result traceFrom(const SpatialVector& pIn) const;
 
-    void addMetaDataSampler(const std::string &name, std::shared_ptr<const Sampler> sampler);
+    void addMetaDataSampler(const std::string& name, std::shared_ptr<const Sampler> sampler);
 
-    const DataHomogenouSpatialMatrixrix &getSeedTransformationMatrix() const;
+    const DataHomogenouSpatialMatrixrix& getSeedTransformationMatrix() const;
 
 private:
-    inline SpatialVector seedTransform(const SpatialVector &seed) const;
+    inline SpatialVector seedTransform(const SpatialVector& seed) const;
 
-    std::pair<SpatialVector, DataVector> step(const SpatialVector &oldPos, const double stepSize);
+    std::pair<SpatialVector, DataVector> step(const SpatialVector& oldPos,
+                                              const double stepSize) const;
 
-    bool addPoint(IntegralLine &line, const SpatialVector &pos);
-    bool addPoint(IntegralLine &line, const SpatialVector &pos, const DataVector &worldVelocity);
+    bool addPoint(IntegralLine& line, const SpatialVector& pos) const;
+    bool addPoint(IntegralLine& line, const SpatialVector& pos,
+                  const DataVector& worldVelocity) const;
 
-    IntegralLine::TerminationReason integrate(size_t steps, SpatialVector pos, IntegralLine &line,
-                                              bool fwd);
+    IntegralLine::TerminationReason integrate(size_t steps, SpatialVector pos, IntegralLine& line,
+                                              bool fwd) const;
 
     IntegralLineProperties::IntegrationScheme integrationScheme_;
 
@@ -107,7 +109,7 @@ private:
 
 template <typename SpatialSampler, bool TimeDependent>
 IntegralLineTracer<SpatialSampler, TimeDependent>::IntegralLineTracer(
-    std::shared_ptr<const Sampler> sampler, const IntegralLineProperties &properties)
+    std::shared_ptr<const Sampler> sampler, const IntegralLineProperties& properties)
     : integrationScheme_(properties.getIntegrationScheme())
     , steps_(properties.getNumberOfSteps())
     , stepSize_(properties.getStepSize())
@@ -120,10 +122,10 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::IntegralLineTracer(
 
 template <typename SpatialSampler, bool TimeDependent>
 typename IntegralLineTracer<SpatialSampler, TimeDependent>::Result
-IntegralLineTracer<SpatialSampler, TimeDependent>::traceFrom(const SpatialVector &pIn) {
+IntegralLineTracer<SpatialSampler, TimeDependent>::traceFrom(const SpatialVector& pIn) const {
     const SpatialVector p = seedTransform(pIn);
     Result res;
-    IntegralLine &line = res.line;
+    IntegralLine& line = res.line;
 
     const auto [stepsBWD, stepsFWD] = [dir = dir_, steps = steps_,
                                        &line]() -> std::pair<size_t, size_t> {
@@ -148,7 +150,7 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::traceFrom(const SpatialVector
         line.getMetaData<double>("timestamp", true).reserve(steps_ + 2);
     }
 
-    for (auto &m : metaSamplers_) {
+    for (auto& m : metaSamplers_) {
         line.getMetaData<typename Sampler::ReturnType>(m.first, true).reserve(steps_ + 2);
     }
 
@@ -169,19 +171,19 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::traceFrom(const SpatialVector
 
 template <typename SpatialSampler, bool TimeDependent>
 void IntegralLineTracer<SpatialSampler, TimeDependent>::addMetaDataSampler(
-    const std::string &name, std::shared_ptr<const Sampler> sampler) {
+    const std::string& name, std::shared_ptr<const Sampler> sampler) {
     metaSamplers_[name] = sampler;
 }
 
 template <typename SpatialSampler, bool TimeDependent>
-const typename IntegralLineTracer<SpatialSampler, TimeDependent>::DataHomogenouSpatialMatrixrix &
+const typename IntegralLineTracer<SpatialSampler, TimeDependent>::DataHomogenouSpatialMatrixrix&
 IntegralLineTracer<SpatialSampler, TimeDependent>::getSeedTransformationMatrix() const {
     return seedTransformation_;
 }
 
 template <typename SpatialSampler, bool TimeDependent>
 inline typename IntegralLineTracer<SpatialSampler, TimeDependent>::SpatialVector
-IntegralLineTracer<SpatialSampler, TimeDependent>::seedTransform(const SpatialVector &seed) const {
+IntegralLineTracer<SpatialSampler, TimeDependent>::seedTransform(const SpatialVector& seed) const {
     if constexpr (IsTimeDependent) {
         using V = DataVector;
         auto p = seedTransformation_ * SpatialVector(V(seed), 1.0f);
@@ -197,15 +199,15 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::seedTransform(const SpatialVe
 template <typename SpatialSampler, bool TimeDependent>
 std::pair<typename IntegralLineTracer<SpatialSampler, TimeDependent>::SpatialVector,
           typename IntegralLineTracer<SpatialSampler, TimeDependent>::DataVector>
-IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector &oldPos,
-                                                        const double stepSize) {
+IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector& oldPos,
+                                                        const double stepSize) const {
     auto normalize = [](const auto v) {
         auto l = glm::length(v);
         if (l == 0) return v;
         return v / l;
     };
 
-    auto move = [&](const auto &pos, auto v, const auto stepsize) {
+    auto move = [&](const auto& pos, auto v, const auto stepsize) {
         if (normalizeSamples_) {
             v = normalize(v);
         }
@@ -228,7 +230,7 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector &old
             const auto k2 = sampler_->sample(move(oldPos, k1, stepSize / 2));
             const auto k3 = sampler_->sample(move(oldPos, k2, stepSize / 2));
             const auto k4 = sampler_->sample(move(oldPos, k3, stepSize));
-            const auto &&K = [n = normalizeSamples_, normalize, &k1, &k2, &k3, &k4]() {
+            const auto&& K = [n = normalizeSamples_, normalize, &k1, &k2, &k3, &k4]() {
                 if (n) {
                     return normalize(k1 + k2 + k2 + k3 + k3 + k4);
                 } else {
@@ -241,15 +243,14 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector &old
 }
 
 template <typename SpatialSampler, bool TimeDependent>
-bool IntegralLineTracer<SpatialSampler, TimeDependent>::addPoint(IntegralLine &line,
-                                                                 const SpatialVector &pos) {
+bool IntegralLineTracer<SpatialSampler, TimeDependent>::addPoint(IntegralLine& line,
+                                                                 const SpatialVector& pos) const {
     return addPoint(line, pos, sampler_->sample(pos));
 }
 
 template <typename SpatialSampler, bool TimeDependent>
-bool IntegralLineTracer<SpatialSampler, TimeDependent>::addPoint(IntegralLine &line,
-                                                                 const SpatialVector &pos,
-                                                                 const DataVector &worldVelocity) {
+bool IntegralLineTracer<SpatialSampler, TimeDependent>::addPoint(
+    IntegralLine& line, const SpatialVector& pos, const DataVector& worldVelocity) const {
 
     if (glm::length(worldVelocity) < std::numeric_limits<double>::epsilon()) {
         return false;
@@ -262,7 +263,7 @@ bool IntegralLineTracer<SpatialSampler, TimeDependent>::addPoint(IntegralLine &l
         line.getMetaData<double>("timestamp").emplace_back(pos[Sampler::SpatialDimensions - 1]);
     }
 
-    for (auto &m : metaSamplers_) {
+    for (auto& m : metaSamplers_) {
         line.getMetaData<typename Sampler::ReturnType>(m.first).emplace_back(
             util::glm_convert<dvec3>(m.second->sample(pos)));
     }
@@ -271,7 +272,7 @@ bool IntegralLineTracer<SpatialSampler, TimeDependent>::addPoint(IntegralLine &l
 
 template <typename SpatialSampler, bool TimeDependent>
 IntegralLine::TerminationReason IntegralLineTracer<SpatialSampler, TimeDependent>::integrate(
-    size_t steps, SpatialVector pos, IntegralLine &line, bool fwd) {
+    size_t steps, SpatialVector pos, IntegralLine& line, bool fwd) const {
     if (steps == 0) return IntegralLine::TerminationReason::StartPoint;
     for (size_t i = 0; i < steps; i++) {
         if (!sampler_->withinBounds(pos)) {
