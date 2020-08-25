@@ -40,14 +40,14 @@ namespace inviwo {
 namespace detail {
 
 template <typename T>
-static double norm(const T &t) {
+static double norm(const T& t) {
     return static_cast<double>(t);
 }
 
 template <
     glm::length_t L, typename T, glm::qualifier Q,
     typename F = typename std::conditional<std::is_same<T, float>::value, float, double>::type>
-static double norm(const glm::vec<L, T, Q> &glm) {
+static double norm(const glm::vec<L, T, Q>& glm) {
     return glm::length(util::glm_convert<glm::vec<L, F, Q>>(glm));
 }
 }  // namespace detail
@@ -77,7 +77,7 @@ IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(
     addProperties();
 }
 
-IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(const ColorByProperty &rhs)
+IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(const ColorByProperty& rhs)
     : CompositeProperty(rhs)
     , scaleBy_(rhs.scaleBy_)
     , loopTF_(rhs.loopTF_)
@@ -87,19 +87,19 @@ IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(const ColorByProperty
     addProperties();
 }
 
-IntegralLineVectorToMesh::ColorByProperty *IntegralLineVectorToMesh::ColorByProperty::clone()
+IntegralLineVectorToMesh::ColorByProperty* IntegralLineVectorToMesh::ColorByProperty::clone()
     const {
     return new ColorByProperty(*this);
 }
 
 IntegralLineVectorToMesh::ColorByProperty::~ColorByProperty() {}
 
-void IntegralLineVectorToMesh::ColorByProperty::serialize(Serializer &s) const {
+void IntegralLineVectorToMesh::ColorByProperty::serialize(Serializer& s) const {
     CompositeProperty::serialize(s);
     s.serialize("key", key_);
 }
 
-void IntegralLineVectorToMesh::ColorByProperty::deserialize(Deserializer &d) {
+void IntegralLineVectorToMesh::ColorByProperty::deserialize(Deserializer& d) {
     CompositeProperty::deserialize(d);
     d.deserialize("key", key_);
 }
@@ -131,7 +131,7 @@ const ProcessorInfo IntegralLineVectorToMesh::processorInfo_{
     Tags::CPU,                              // Tags
 };
 
-bool IntegralLineVectorToMesh::isFiltered(const IntegralLine &line, size_t idx) const {
+bool IntegralLineVectorToMesh::isFiltered(const IntegralLine& line, size_t idx) const {
     switch (brushBy_.get()) {
         case BrushBy::LineIndex:
             return brushingList_.isFiltered(line.getIndex());
@@ -143,7 +143,7 @@ bool IntegralLineVectorToMesh::isFiltered(const IntegralLine &line, size_t idx) 
     }
 }
 
-bool IntegralLineVectorToMesh::isSelected(const IntegralLine &line, size_t idx) const {
+bool IntegralLineVectorToMesh::isSelected(const IntegralLine& line, size_t idx) const {
     switch (brushBy_.get()) {
         case BrushBy::LineIndex:
             return brushingList_.isSelected(line.getIndex());
@@ -161,7 +161,7 @@ void IntegralLineVectorToMesh::updateOptions() {
 
     std::vector<OptionPropertyStringOption> options = {{"constant", "constant color"}};
 
-    for (const auto &key : lines->front().getMetaDataKeys()) {
+    for (const auto& key : lines->front().getMetaDataKeys()) {
         options.emplace_back(key, key);
 
         if (!getPropertyByIdentifier(key)) {
@@ -228,7 +228,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     setAllPropertiesCurrentStateAsDefault();
 
     auto updateVisibility = [&]() {
-        for (auto &prop : getPropertiesByType<ColorByProperty>()) {
+        for (auto& prop : getPropertiesByType<ColorByProperty>()) {
             prop->setVisible(prop->getKey() == colorBy_.getSelectedIdentifier());
         }
     };
@@ -245,7 +245,8 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
             double maxT = std::numeric_limits<double>::lowest();
 
             size_t idx = 0;
-            for (auto &line : (*lines_.getData())) {
+            const auto data = lines_.getData();
+            for (auto& line : *data) {
                 util::OnScopeExit incIdx([&idx]() { idx++; });
                 auto size = line.getPositions().size();
                 if (size == 0) continue;
@@ -258,7 +259,8 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
                     minT = std::min(minT, 0.);
                     maxT = std::max(maxT, 1.);
                 } else {
-                    for (const auto &t : line.getMetaData<double>("timestamp")) {
+                    const auto& timestamp = line.getMetaData<double>("timestamp");
+                    for (const auto& t : timestamp) {
                         minT = std::min(minT, t);
                         maxT = std::max(t, maxT);
                     }
@@ -304,9 +306,9 @@ void IntegralLineVectorToMesh::process() {
 
     const bool colorByPort = colorByPortIndex || colorByPortNumber;
 
-    ColorByProperty *mdProp = nullptr;
+    ColorByProperty* mdProp = nullptr;
     if (!colorByPort && !constantColor) {
-        mdProp = dynamic_cast<ColorByProperty *>(getPropertyByIdentifier(metaDataKey));
+        mdProp = dynamic_cast<ColorByProperty*>(getPropertyByIdentifier(metaDataKey));
 
         if (!mdProp) {  // Fallback
             auto props = getPropertiesByType<ColorByProperty>();
@@ -328,7 +330,8 @@ void IntegralLineVectorToMesh::process() {
     Output output = output_.get();
 
     size_t lineIdx = 0;
-    for (auto &line : (*lines_.getData())) {
+    const auto data = lines_.getData();
+    for (auto& line : *data) {
         util::OnScopeExit incIdx([&lineIdx]() { lineIdx++; });
         auto size = line.getPositions().size();
 
@@ -370,7 +373,7 @@ void IntegralLineVectorToMesh::process() {
                 }
                 return colors->at(index);
             } else {
-                auto &mdValue = get<2>(sample);
+                auto& mdValue = get<2>(sample);
                 double md = detail::norm(mdValue);
                 minMetaData = std::min(minMetaData, md);
                 maxMetaData = std::max(maxMetaData, md);
@@ -386,9 +389,9 @@ void IntegralLineVectorToMesh::process() {
         };
 
         auto lineLoop = [&coloring, &vertices, &indexBuffer, &lineIdx, this](
-                            const IntegralLine &line, auto mdContainter) {
+                            const IntegralLine& line, auto mdContainter) {
             size_t pointIdx = 0;
-            for (auto &&sample : util::zip(line.getPositions(), line.getMetaData<dvec3>("velocity"),
+            for (auto&& sample : util::zip(line.getPositions(), line.getMetaData<dvec3>("velocity"),
                                            mdContainter)) {
                 util::OnScopeExit incPointIdx([&pointIdx]() { pointIdx++; });
                 bool first = pointIdx <= 1;
@@ -409,8 +412,8 @@ void IntegralLineVectorToMesh::process() {
         };
 
         auto ribbonLoop = [&coloring, &vertices, &indexBuffer, &lineIdx, this](
-                              const IntegralLine &line, auto mdContainter) {
-            for (auto &&sample : util::zip(line.getPositions(), line.getMetaData<dvec3>("velocity"),
+                              const IntegralLine& line, auto mdContainter) {
+            for (auto&& sample : util::zip(line.getPositions(), line.getMetaData<dvec3>("velocity"),
                                            mdContainter, line.getMetaData<dvec3>("vorticity"))) {
                 vec3 pos = get<0>(sample);
                 vec3 vel = get<1>(sample);
