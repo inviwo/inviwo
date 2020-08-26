@@ -225,29 +225,32 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         h.append("h3", "Libraries: ");
         auto dl = h.append("dl");
         const auto& mfos = app->getModuleManager().getModuleFactoryObjects();
+        std::map<std::string, LicenseInfo> licenses;
         for (auto& mfo : mfos) {
             for (auto& license : mfo->licenses) {
-                QUrl url;
-                url.setScheme("file");
-                url.setHost("license.txt");
-                QUrlQuery query;
-                query.addQueryItem("module", utilqt::toQString(mfo->name));
-                query.addQueryItem("id", utilqt::toQString(license.id));
-                url.setQuery(query);
-                auto dt = dl.append("dt");
-                dt.append("b", license.name);
-                dt += " ";
-                dt.append("a", license.type, {{"href", utilqt::fromQString(url.url())}});
-                auto dd = dl.append("dd", "", {{"style", "margin-bottom:10px;"}});
-                if (!license.url.empty()) {
-                    dd.append("a", license.url, {{"href", license.url}});
-                    dd += " ";
-                }
-                if (!license.version.empty()) {
-                    dd += license.version;
-                    dd += " ";
-                }
-                dd += "(" + license.module + ")";
+                licenses.try_emplace(license.id, license);
+            }
+        }
+        for (auto&& [id, license] : licenses) {
+            QUrl url;
+            url.setScheme("file");
+            url.setHost("license.txt");
+            QUrlQuery query;
+            query.addQueryItem("module", utilqt::toQString(license.module));
+            query.addQueryItem("id", utilqt::toQString(license.id));
+            url.setQuery(query);
+            auto dt = dl.append("dt");
+            dt.append("b", license.name);
+            dt += " ";
+            dt.append("a", license.type, {{"href", utilqt::fromQString(url.url())}});
+            auto dd = dl.append("dd", "", {{"style", "margin-bottom:10px;"}});
+            if (!license.url.empty()) {
+                dd.append("a", license.url, {{"href", license.url}});
+                dd += " ";
+            }
+            if (!license.version.empty()) {
+                dd += license.version;
+                dd += " ";
             }
         }
     }

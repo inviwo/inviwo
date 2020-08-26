@@ -36,7 +36,7 @@
 # a proper FindFoo.cmake of FooConfig.cmake.
 function(ivw_vcpkg_paths)
     set(options "")
-    set(oneValueArgs BIN INCLUDE LIB SHARE)
+    set(oneValueArgs BIN INCLUDE LIB SHARE BASE)
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -53,6 +53,9 @@ function(ivw_vcpkg_paths)
         if(ARG_SHARE)
             set(${ARG_SHARE} "" PARENT_SCOPE)
         endif()
+        if(ARG_BASE)
+            set(${ARG_BASE} "" PARENT_SCOPE)
+        endif()
         return()
     endif()
 
@@ -68,6 +71,9 @@ function(ivw_vcpkg_paths)
     if(ARG_SHARE)
         set(${ARG_SHARE} "${_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/share" PARENT_SCOPE)
     endif()
+    if(ARG_BASE)
+        set(${ARG_SHARE} "${_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}" PARENT_SCOPE)
+    endif()
 endfunction()
 
 
@@ -76,7 +82,6 @@ endfunction()
 # It will also try and install eny transitive dependencies autoamtically 
 # We also autoamtically register the licence file using the metadata found in vcpkg
 # Params:
-#  * COPYRIGHT a special copytight file, default to "copyright" some vcpkg libs use other files.
 #  * OUT_COPYRIGHT retrive the path the the COPYRIGHT file
 #  * OUT_VERSION get the package version from the vcpkg metadata
 #  * MODULE the module to use for ivw_register_license_file
@@ -87,70 +92,70 @@ function(ivw_vcpkg_install name)
 	endif()
 
     set(options EXT)
-    set(oneValueArgs OUT_COPYRIGHT OUT_VERSION COPYRIGHT MODULE)
+    set(oneValueArgs OUT_COPYRIGHT OUT_VERSION MODULE)
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
 	string(TOLOWER "${name}" lowercase_name)
-	set(pkgdir "${_VCPKG_ROOT_DIR}/packages/${lowercase_name}_${VCPKG_TARGET_TRIPLET}")
-    set(portdir "${_VCPKG_ROOT_DIR}/ports/${lowercase_name}")
 
-    if(EXISTS "${pkgdir}/bin")
-        install(
-    	   DIRECTORY "${pkgdir}/bin/" 
-    	   DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
-           COMPONENT Application
-    	   FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}"
+    if(NOT DEFINED ivw_vcpkg_info_${lowercase_name})
+        message(STATUS "Vcpkg fetching metadata for: ${name}")
+        execute_process(
+            COMMAND "${PYTHON_EXECUTABLE}" "${IVW_TOOLS_DIR}/vcpkginfo.py"
+                --vcpkg "${_VCPKG_EXECUTABLE}" 
+                --pkg ${lowercase_name}
+                --triplet ${VCPKG_TARGET_TRIPLET}
+            OUTPUT_VARIABLE pkgInfo
+            OUTPUT_STRIP_TRAILING_WHITESPACE
         )
-        install(
-           DIRECTORY "${pkgdir}/bin/" 
-           DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
-           COMPONENT Development
-           FILES_MATCHING PATTERN "*.pdb"
-        )
-        install(
-           DIRECTORY "${pkgdir}/lib/" 
-           DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
-           COMPONENT Development
-           FILES_MATCHING PATTERN "*${CMAKE_LINK_LIBRARY_SUFFIX}"
-        )
+        set("ivw_vcpkg_info_${lowercase_name}" "${pkgInfo}" CACHE INTERNAL "Vcpkg meta data")
+    else()
+        set(pkgInfo ${ivw_vcpkg_info_${lowercase_name}})
     endif()
 
-    set(version "?.?.?")
-    set(depends "")
-    if(EXISTS ${pkgdir}/CONTROL)
-        file(STRINGS ${pkgdir}/CONTROL lines)
-        foreach(line IN LISTS lines)
-            if(line MATCHES "Version: (.*)")
-                set(version ${CMAKE_MATCH_1})
-            endif()
-            if(line MATCHES "Depends: (.*)")
-                set(depDepends ${CMAKE_MATCH_1})
-                string(REPLACE "," ";" depDepends ${depDepends})
-                list(TRANSFORM depDepends STRIP)
-                list(APPEND depends ${depDepends})
-            endif()
-        endforeach()
-    else()
-        message(WARNING "Vcpkg control file not found ${pkgdir}/CONTROL")
-    endif()
+    set(vcoptions "")
+    set(vconeValueArgs VCPKG_VERSION VCPKG_HOMEPAGE VCPKG_DESCRIPTION)
+    set(vcmultiValueArgs VCPKG_DEPENDENCIES VCPKG_OWNED_FILES)
+    cmake_parse_arguments(INFO "${vcoptions}" "${vconeValueArgs}" "${vcmultiValueArgs}" ${pkgInfo})
 
-    set(homepage "")
-    if(EXISTS ${portdir}/CONTROL)
-        file(STRINGS ${portdir}/CONTROL lines)
-        foreach(line IN LISTS lines)
-            if(line MATCHES "Homepage: (.*)")
-                set(homepage URL ${CMAKE_MATCH_1})
-            endif()
-        endforeach()
-    else()
-        message(WARNING "Vcpkg control file not found ${portdir}/CONTROL")
-    endif()    
+    set(binfiles ${INFO_VCPKG_OWNED_FILES})
+    string(REPLACE "." "\\." binsuffix ${CMAKE_SHARED_LIBRARY_SUFFIX})
+    list(FILTER binfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/bin/.*${binsuffix}") 
+    list(TRANSFORM binfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
 
-    if(ARG_COPYRIGHT)
-        set(copyright "${pkgdir}/share/${lowercase_name}/${ARG_COPYRIGHT}")
+    set(pdbfiles ${INFO_VCPKG_OWNED_FILES})
+    list(FILTER pdbfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/bin/.*\\.pdb")
+    list(TRANSFORM pdbfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+
+    set(libfiles ${INFO_VCPKG_OWNED_FILES})
+    string(REPLACE "." "\\." libsuffix ${CMAKE_LINK_LIBRARY_SUFFIX})
+    list(FILTER libfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/lib/.*${libsuffix}")
+    list(TRANSFORM libfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+
+    set(copyright ${INFO_VCPKG_OWNED_FILES})
+    list(FILTER copyright INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/share/.*copyright.*")
+    list(TRANSFORM copyright PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+
+    install(
+       FILES ${binfiles} 
+       DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
+       COMPONENT Application
+    )
+    install(
+       FILES ${pdbfiles} 
+       DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
+       COMPONENT Development
+    )
+    install(
+       FILES ${libfiles} 
+       DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
+       COMPONENT Development
+    )
+
+    if(INFO_VCPKG_HOMEPAGE)
+        set(homepage URL ${INFO_VCPKG_HOMEPAGE})
     else()
-        set(copyright "${pkgdir}/share/${lowercase_name}/copyright")
+        set(homepage "")
     endif()
 
     if(ARG_EXT) 
@@ -159,19 +164,20 @@ function(ivw_vcpkg_install name)
         set(ext "")
     endif()
 
-    if(EXISTS ${copyright})
+    if(copyright)
         ivw_register_license_file(NAME ${name} 
-            VERSION ${version} MODULE ${ARG_MODULE} ${ext}
+            VERSION ${INFO_VCPKG_VERSION} MODULE ${ARG_MODULE} ${ext}
             ${homepage} FILES ${copyright}
         )
     endif()
 
-    foreach(dep IN LISTS depends)
+    list(TRANSFORM INFO_VCPKG_DEPENDENCIES REPLACE ":.*" "")
+    foreach(dep IN LISTS INFO_VCPKG_DEPENDENCIES)
         ivw_vcpkg_install(${dep} MODULE ${ARG_MODULE} ${ext})
     endforeach()
     
     if(ARG_OUT_VERSION)
-        set(${ARG_OUT_VERSION} ${version} PARENT_SCOPE)
+        set(${ARG_OUT_VERSION} ${INFO_VCPKG_VERSION} PARENT_SCOPE)
     endif()
     if(ARG_OUT_COPYRIGHT)
         set(${ARG_OUT_COPYRIGHT} ${copyright} PARENT_SCOPE)
