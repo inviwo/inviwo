@@ -1,0 +1,5 @@
+Source: tracy
+Version: 0.7.3
+Description: A real time, nanosecond resolution, remote telemetry, hybrid frame and sampling profiler for games and other applications.
+Homepage: https://github.com/wolfpld/tracy
+Build-Depends: freetype, glfw3, capstone[arm,arm64,x86]

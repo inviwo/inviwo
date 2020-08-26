@@ -106,6 +106,14 @@ GLFWWindowEventManager::GLFWWindowEventManager(GLFWwindow* glWindow, std::functi
     glfwSetScrollCallback(glWindow_, scroll);
 }
 
+GLFWWindowEventManager::~GLFWWindowEventManager() {
+    glfwSetKeyCallback(glWindow_, nullptr);
+    glfwSetCharCallback(glWindow_, nullptr);
+    glfwSetMouseButtonCallback(glWindow_, nullptr);
+    glfwSetCursorPosCallback(glWindow_, nullptr);
+    glfwSetScrollCallback(glWindow_, nullptr);
+}
+
 void GLFWWindowEventManager::keyboard(GLFWwindow* window, int key, int scancode, int action,
                                       int mods) {
     auto self = GLFWUserData::get<GLFWWindowEventManager>(window, GLFWUserDataId::Interaction);

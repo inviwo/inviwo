@@ -109,7 +109,8 @@ include(cmake/globalconfig.cmake)
 # Application setup
 option(IVW_APP_INVIWO       "Build Inviwo Qt network editor application" ON)
 option(IVW_APP_MINIMAL_GLFW "Build Inviwo Tiny GLFW Application" OFF)
-option(IVW_APP_MINIMAL_QT   "Build Inviwo Tiny QT Application" ON)
+option(IVW_APP_MINIMAL_QT   "Build Inviwo Tiny QT Application" OFF)
+option(IVW_APP_INVIWO_DOME  "Build Inviwo Dome Application" OFF)
 option(IVW_APP_PYTHON       "Build Inviwo Python Application" ON)
 
 ivw_enable_modules_if(IVW_APP_INVIWO QtWidgets)
@@ -152,6 +153,9 @@ else()
 endif()
 if(IVW_APP_MINIMAL_GLFW)
     add_subdirectory(apps/inviwo_glfwminimum)
+endif()
+if(IVW_APP_INVIWO_DOME)
+    add_subdirectory(apps/inviwodome)
 endif()
 
 ivw_add_external_projects()                  # Add external projects

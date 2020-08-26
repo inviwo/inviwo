@@ -1,0 +1,45 @@
+include(vcpkg_common_functions)
+
+vcpkg_from_github(
+    OUT_SOURCE_PATH SOURCE_PATH
+    REPO inviwo/sgct
+    REF a6765f7580d7749da10ea96c90f749319e224c0f  
+    SHA512 e54388a630e557d6bfd5fb59bf3108d80fbd2015fc2dfdeecabd79a5ea23d8d7cd5266142e6a410666f768e6691740d2e910587fb49a51cc38387f2cc9b5b756
+    HEAD_REF master
+)
+
+vcpkg_configure_cmake(
+    SOURCE_PATH ${SOURCE_PATH}
+    PREFER_NINJA
+    OPTIONS
+        -DSGCT_INSTALL=ON
+        -DSGCT_DEP_ENABLE_TRACY=ON
+        -DSGCT_EXAMPLES=OFF
+        -DSGCT_FREETYPE_SUPPORT=ON
+        -DSGCT_OPENVR_SUPPORT=OFF
+        -DSGCT_SPOUT_SUPPORT=OFF
+        -DSGCT_VRPN_SUPPORT=OFF
+
+        -DSGCT_DEP_INCLUDE_FMT=OFF
+        -DSGCT_DEP_INCLUDE_FREETYPE=OFF
+        -DSGCT_DEP_INCLUDE_GLFW=OFF
+        -DSGCT_DEP_INCLUDE_GLM=OFF
+        -DSGCT_DEP_INCLUDE_LIBPNG=OFF
+        -DSGCT_DEP_INCLUDE_TRACY=OFF
+        -DSGCT_DEP_INCLUDE_ZLIB=OFF
+        -DSGCT_DEP_INCLUDE_TINYXML=OFF
+        -DSGCT_DEP_INCLUDE_GLAD=OFF
+
+        -DSGCT_DEP_INCLUDE_OPENVR=ON
+        -DSGCT_DEP_INCLUDE_VRPN=ON
+)
+vcpkg_install_cmake()
+vcpkg_copy_pdbs()
+vcpkg_fixup_cmake_targets(CONFIG_PATH lib/cmake/sgct TARGET_PATH share/sgct)
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
+
+file(
+    INSTALL ${SOURCE_PATH}/LICENSE.md 
+    DESTINATION ${CURRENT_PACKAGES_DIR}/share/sgct 
+    RENAME copyright
+)
