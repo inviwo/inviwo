@@ -25,7 +25,7 @@ source_group("MOC Files" FILES ${MOCED_FILES})
 ivw_retrieve_all_modules(enabled_modules)
 
 # Only include one OpenGL context creation module
-list(REMOVE_ITEM enabled_modules InviwoGLFWModule)
+list(REMOVE_ITEM enabled_modules InviwoGLFWModule InviwoSGCTModule)
 
 set(RES_FILES "")
 if(WIN32)
