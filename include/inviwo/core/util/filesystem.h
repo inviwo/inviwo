@@ -279,8 +279,9 @@ IVW_CORE_API std::string getParentFolderWithChildren(const std::string& path,
 
 /**
  * Try to find the Inviwo base path containing subfolders "data/workspaces" and "modules".
- * If not found, try searching for path containing "modules". If neither are found, return the executable path. 
- * 
+ * If not found, try searching for path containing "modules". If neither are found, return the
+ * executable path.
+ *
  * @return Inviwo base path
  */
 IVW_CORE_API std::string findBasePath();
