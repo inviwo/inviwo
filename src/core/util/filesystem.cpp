@@ -549,6 +549,14 @@ std::string findBasePath() {
         }
     }
 #endif
+    // Search process:
+    // Modules folder might exist during development, so first try with  
+    // both data/workspaces and modules folder.
+    // If they are not found we might be running through a debugger, so try source directory.
+    // If neither of above works then we probably have an application withouth a data/workspaces folder,
+    // so become less restrictive and only search for the modules folder. 
+    // If nothing works then use the executable path, but warn that this might have negative effects.
+
     // locate Inviwo base path matching the subfolders data/workspaces and modules
     std::string basePath = inviwo::filesystem::getParentFolderWithChildren(
         inviwo::filesystem::getExecutablePath(), {"data/workspaces", "modules"});
@@ -558,12 +566,19 @@ std::string findBasePath() {
         if (directoryExists(fmt::format("{}/{}", build::sourceDirectory, "data/workspaces")) &&
             directoryExists(fmt::format("{}/{}", build::sourceDirectory, "modules"))) {
             basePath = build::sourceDirectory;
-        } else {
-            throw Exception("Could not locate Inviwo base path",
-                            IVW_CONTEXT_CUSTOM("filesystem::findBasePath"));
-        }
+        } 
     }
-    return basePath;
+    if (basePath.empty()) {
+        // Relax the criterion, only require the modules folder
+        basePath = inviwo::filesystem::getParentFolderWithChildren(
+        inviwo::filesystem::getExecutablePath(), {"modules"});
+    }
+    if (basePath.empty()) {
+        LogWarnCustom("filesystem::findBasePath", "Could not locate Inviwo base path meaning that application data might not be found.");
+        return inviwo::filesystem::getExecutablePath();
+    } else {
+        return basePath;
+    }
 }
 
 IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix,
