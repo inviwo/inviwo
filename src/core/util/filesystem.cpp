@@ -574,7 +574,7 @@ std::string findBasePath() {
         inviwo::filesystem::getExecutablePath(), {"modules"});
     }
     if (basePath.empty()) {
-        LogWarnCustom("filesystem::findBasePath", "Could not locate Inviwo base path meaning that application data might not be found.");
+        LogErrorCustom("filesystem::findBasePath", "Could not locate Inviwo base path meaning that application data might not be found.");
         return inviwo::filesystem::getExecutablePath();
     } else {
         return basePath;
