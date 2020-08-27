@@ -191,19 +191,19 @@ function(ivw_private_install_module_dirs)
 
     install(
         DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data
-        DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${module}/data
+        DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${module}
         COMPONENT Datasets
         OPTIONAL
     )
     install(
         DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs
-        DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${module}/docs
+        DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${module}
         COMPONENT Application
         OPTIONAL
     )
     install(
         DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests
-        DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${module}/tests
+        DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${module}
         COMPONENT Testing
         OPTIONAL
     )
