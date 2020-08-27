@@ -65,7 +65,7 @@ DepthOfField::DepthOfField()
     , useComputeShaders_(OpenGLCapabilities::getOpenGLVersion() >= 430)
     , ogCamera_{}
     , addSampleShader_("fullscreenquad.vert", "dof_exact.frag")
-    , addToLightFieldShader_({{ShaderType::Compute, "dof_approx.comp"}})
+    , addToLightFieldShader_({{ShaderType::Compute, "dof_approx.comp"}}, Shader::Build::No)
     , averageLightFieldShader_("fullscreenquad.vert", "dof_approx.frag") {
 
     addPort(inport_);
@@ -91,8 +91,12 @@ DepthOfField::DepthOfField()
     });
 
     addSampleShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
-    addToLightFieldShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
     averageLightFieldShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+
+    if (useComputeShaders_) {
+        addToLightFieldShader_.build();
+        addToLightFieldShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+    }
 }
 
 void DepthOfField::clickToFocus(Event* e) {
