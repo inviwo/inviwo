@@ -39,6 +39,8 @@
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/image/imagegl.h>
 
+#include <glm/gtx/handed_coordinate_space.hpp>
+
 namespace inviwo {
 
 namespace algorithm {
@@ -117,6 +119,9 @@ void EntryExitPointsHelper::createEntryExitPoints(ImageGL& entryPoints, ImageGL&
     shader.setUniform("dataToClip", dataToClipMatrix);
     shader.setUniform("meshDataToVolData", meshDataToVolumeData);
 
+    const bool righthanded = glm::rightHanded(vec3(dataToClipMatrix[0]), vec3(dataToClipMatrix[1]),
+                                              vec3(dataToClipMatrix[2]));
+
     auto drawer = MeshDrawerGL::getDrawObject(&mesh);
 
     {
@@ -125,7 +130,7 @@ void EntryExitPointsHelper::createEntryExitPoints(ImageGL& entryPoints, ImageGL&
         utilgl::ClearDepth clearDepth(0.0f);
         exitPoints.activateBuffer(ImageType::ColorDepth);
         utilgl::clearCurrentTarget();
-        utilgl::CullFaceState cull(GL_FRONT);
+        utilgl::CullFaceState cull(righthanded ? GL_BACK : GL_FRONT);
         drawer.draw();
         utilgl::deactivateCurrentTarget();
     }
@@ -136,7 +141,7 @@ void EntryExitPointsHelper::createEntryExitPoints(ImageGL& entryPoints, ImageGL&
         entryPoints.activateBuffer(ImageType::ColorDepth);
         utilgl::clearCurrentTarget();
 
-        utilgl::CullFaceState cull(GL_BACK);
+        utilgl::CullFaceState cull(righthanded ? GL_FRONT : GL_BACK);
         drawer.draw();
         utilgl::deactivateCurrentTarget();
     }
@@ -155,6 +160,9 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
     shader.setUniform("dataToClip", dataToClipMatrix);
     shader.setUniform("meshDataToVolData", meshDataToVolumeData);
 
+    const bool righthanded = glm::rightHanded(vec3(dataToClipMatrix[0]), vec3(dataToClipMatrix[1]),
+                                              vec3(dataToClipMatrix[2]));
+
     auto drawer = MeshDrawerGL::getDrawObject(&mesh);
 
     {
@@ -163,7 +171,7 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
         utilgl::ClearDepth clearDepth(0.0f);
         exitPoints.activateBuffer(ImageType::ColorDepth);
         utilgl::clearCurrentTarget();
-        utilgl::CullFaceState cull(GL_FRONT);
+        utilgl::CullFaceState cull(righthanded ? GL_BACK : GL_FRONT);
         drawer.draw();
         utilgl::deactivateCurrentTarget();
     }
@@ -180,7 +188,7 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
         tmpEntryGL_->activateBuffer(ImageType::AllLayers);
         utilgl::clearCurrentTarget();
 
-        utilgl::CullFaceState cull(GL_BACK);
+        utilgl::CullFaceState cull(righthanded ? GL_FRONT : GL_BACK);
         drawer.draw();
         utilgl::deactivateCurrentTarget();
     }
