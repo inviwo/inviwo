@@ -57,9 +57,11 @@ DepthOfField::DepthOfField()
     , viewCountExact_("viewCountExact", "View count", 40, 10, 200)
     , viewCountApprox_("viewCountApprox", "Rendered view count", 5, 1, 12)
     , simViewCountApprox_("simViewCountApprox", "Simulated view count", 40, 10, 200)
-    , clickToFocus_(
-          "clickToFocus", "Click to focus", [this](Event* e) { if (manualFocus_) clickToFocus(e); },
-          MouseButton::Left, MouseState::Press, KeyModifier::Control)
+    , clickToFocus_("clickToFocus", "Click to focus",
+                    [this](Event* e) {
+                        if (manualFocus_) clickToFocus(e);
+                    },
+                    MouseButton::Left, MouseState::Press, KeyModifier::Control)
     , camera_("camera", "Camera")
     , evalCount_(-1)
     , useComputeShaders_(OpenGLCapabilities::getOpenGLVersion() >= 430)
@@ -158,13 +160,12 @@ void DepthOfField::process() {
 
         // Reset camera
         evalCount_ = maxEvalCount;
-        dispatchFront([this]() {
-            camera_.setCamera(std::unique_ptr<Camera>(ogCamera_->clone()));
-        });
+        dispatchFront([this]() { camera_.setCamera(std::unique_ptr<Camera>(ogCamera_->clone())); });
     }
 }
 
-void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount, std::shared_ptr<const Image> img) {
+void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
+                                  std::shared_ptr<const Image> img) {
     ogCamera_.reset(camera_.get().clone());
     if (camera_.get().getClassIdentifier() != PerspectiveCamera::classIdentifier) {
         LogWarn("Intended for use with Perspective Camera. Unexpected behavior may follow.");
@@ -188,7 +189,7 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount, std::shared_
         }
         if (!haltonImg_ || haltonImg_->getDimensions().x != simViewCountApprox_.get()) {
             haltonImg_ = std::make_shared<Image>(size2_t(simViewCountApprox_.get(), 1),
-                                                DataFormat<float>::get());
+                                                 DataFormat<float>::get());
             float* haltonData = static_cast<float*>(
                 haltonImg_->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
             std::copy(haltonX_.begin(), haltonX_.end(), haltonData);
@@ -213,17 +214,18 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount, std::shared_
     const float* inputDepthData = static_cast<const float*>(
         img->getRepresentation<ImageRAM>()->getDepthLayerRAM()->getData());
     std::pair<float, float> minmax(1, 0);
-    minmax = std::accumulate(inputDepthData, inputDepthData + dim.x * dim.y, minmax,
+    minmax = std::accumulate(
+        inputDepthData, inputDepthData + dim.x * dim.y, minmax,
         [](const std::pair<float, float>& acc, const float v) -> std::pair<float, float> {
             std::pair<float, float> res;
             res.first = std::min(acc.first, v);
             res.second = (v < 1) ? std::max(acc.second, v) : acc.second;
             return res;
-    });
+        });
     float minDepthWorld = ndcToWorldDepth(minmax.first);
     float maxDepthWorld = ndcToWorldDepth(minmax.second);
 
-    dispatchFront( [this, minDepthWorld, maxDepthWorld] () {
+    dispatchFront([this, minDepthWorld, maxDepthWorld]() {
         NetworkLock lock(this);
 
         focusDepth_.set(focusDepth_.get(), std::min(minDepthWorld, focusDepth_.get()),
@@ -234,11 +236,10 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount, std::shared_
         float minAperture = pow(10, depthScale - 1);
         float maxAperture = pow(10, depthScale);
         aperture_.set(aperture_.get(), std::min(minAperture, aperture_.get()),
-                    std::max(maxAperture, aperture_.get()), (maxAperture - minAperture) / 90.0);
+                      std::max(maxAperture, aperture_.get()), (maxAperture - minAperture) / 90.0);
 
         camera_.setCamera(SkewedPerspectiveCamera::classIdentifier);
     });
-
 }
 
 double DepthOfField::calculateFocusDepth() {
@@ -331,7 +332,7 @@ void DepthOfField::warpToLightfieldGPU(TextureUnitContainer& cont, double fovy, 
 }
 
 void DepthOfField::warpToLightfieldCPU(std::shared_ptr<const Image> img, double fovy,
-                                      double focusDepth, size2_t dim, vec2 cameraPos) {
+                                       double focusDepth, size2_t dim, vec2 cameraPos) {
     const LayerRAM* inColor = img->getRepresentation<ImageRAM>()->getColorLayerRAM();
     const LayerRAM* inDepth = img->getRepresentation<ImageRAM>()->getDepthLayerRAM();
     VolumeRAM* lightField = lightField_->getEditableRepresentation<VolumeRAM>();
@@ -382,8 +383,7 @@ void DepthOfField::warp(vec2 cameraPos, vec2 screenPos, vec4 color, double zWorl
     size3_t dimLightField = lightField_->getDimensions();
     vec2 simScreenpos = screenPos + disparity * dimLightField.y / (2.0 * std::tan(fovy / 2.0));
     size3_t pos(round(simScreenpos.x), round(simScreenpos.y), viewCountApprox_.get() + viewIndex);
-    if (pos.x < 0 || pos.x >= dimLightField.x ||
-        pos.y < 0 || pos.y >= dimLightField.y ||
+    if (pos.x < 0 || pos.x >= dimLightField.x || pos.y < 0 || pos.y >= dimLightField.y ||
         pos.z < 0 || pos.z >= dimLightField.z)
         return;
 
