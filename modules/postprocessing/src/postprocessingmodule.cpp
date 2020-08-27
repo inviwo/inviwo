@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/postprocessing/postprocessingmodule.h>
+#include <modules/postprocessing/processors/depthoffield.h>
 #include <modules/postprocessing/processors/ssao.h>
 #include <modules/postprocessing/processors/fog.h>
 #include <modules/postprocessing/processors/fxaa.h>
@@ -52,6 +53,7 @@ PostProcessingModule::PostProcessingModule(InviwoApplication* app)
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
+    registerProcessor<DepthOfField>();
     registerProcessor<SSAO>();
     registerProcessor<FXAA>();
     registerProcessor<Fog>();
