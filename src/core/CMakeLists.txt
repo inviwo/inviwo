@@ -792,6 +792,7 @@ set_property(TARGET inviwo-core PROPERTY IVW_INSTALL_LIST ${core_install_list})
 # register license files
 ivw_register_license_file(NAME "Inviwo" MODULE Core
     URL http://www.inviwo.org
+    VERSION ${IVW_VERSION}
     TYPE "The MIT License"
     FILES ${IVW_ROOT_DIR}/LICENSE
 )
