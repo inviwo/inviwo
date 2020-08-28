@@ -429,11 +429,11 @@ auto copy_if(const T& cont, P pred) -> std::vector<typename T::value_type> {
 
 template <typename T, typename UnaryOperation>
 auto transform(const T& cont, UnaryOperation op)
-    -> std::vector<std::invoke_result_t<UnaryOperation, typename T::value_type>> {
+    -> std::vector<std::invoke_result_t<UnaryOperation, const typename T::value_type>> {
     using std::begin;
     using std::end;
 
-    std::vector<std::invoke_result_t<UnaryOperation, typename T::value_type>> res;
+    std::vector<std::invoke_result_t<UnaryOperation, const typename T::value_type>> res;
     res.reserve(std::distance(begin(cont), end(cont)));
     std::transform(begin(cont), end(cont), std::back_inserter(res), op);
     return res;
