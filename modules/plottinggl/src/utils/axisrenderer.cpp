@@ -379,8 +379,12 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
 
         const vec3 pos(plot::getAxisCaptionPosition3D(settings_, startPos, endPos, tickDirection));
 
+        const auto angle = glm::radians(captionSettings.getRotation());
+        const auto transform = glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f));
+
         quadRenderer_.renderToRect3D(*camera, *captex.texture, pos,
-                                     ivec2(captex.texture->getDimensions()), outputDims, anchor);
+                                     ivec2(captex.texture->getDimensions()), outputDims, anchor,
+                                     transform);
     }
 
     // axis labels
