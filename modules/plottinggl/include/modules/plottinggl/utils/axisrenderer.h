@@ -276,17 +276,17 @@ public:
     AxisRenderer& operator=(const AxisRenderer& rhs) = delete;
     virtual ~AxisRenderer() = default;
 
-    void render(const size2_t& outputDims, const size2_t& startPos, const size2_t& endPos,
+    void render(const size2_t& outputDims, const ivec2& startPos, const ivec2& endPos,
                 bool antialiasing = true);
 
     /**
      * Returns the bounding rect (lower left, upper right) of the axis in pixels.
      */
 
-    std::pair<vec2, vec2> boundingRect(const size2_t& startPos, const size2_t& endPos);
+    std::pair<vec2, vec2> boundingRect(const ivec2& startPos, const ivec2& endPos);
 
 private:
-    void renderText(const size2_t& outputDims, const size2_t& startPos, const size2_t& endPos);
+    void renderText(const size2_t& outputDims, const ivec2& startPos, const ivec2& endPos);
 
     Labels labels_;
 };

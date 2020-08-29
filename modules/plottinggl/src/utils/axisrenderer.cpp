@@ -209,7 +209,7 @@ AxisRenderer::AxisRenderer(const AxisSettings& settings)
                        [&](auto&& p) { return p.second; });
     }} {}
 
-void AxisRenderer::render(const size2_t& outputDims, const size2_t& startPos, const size2_t& endPos,
+void AxisRenderer::render(const size2_t& outputDims, const ivec2& startPos, const ivec2& endPos,
                           bool antialiasing) {
     if (!settings_.getAxisVisible()) {
         return;
@@ -223,8 +223,8 @@ void AxisRenderer::render(const size2_t& outputDims, const size2_t& startPos, co
     renderText(outputDims, startPos, endPos);
 }
 
-void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos,
-                              const size2_t& endPos) {
+void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
+                              const ivec2& endPos) {
     // axis caption
     if (const auto& captionSettings = settings_.getCaptionSettings()) {
         auto& captex = caption_.getCaption(settings_.getCaption(), captionSettings, textRenderer_);
@@ -278,7 +278,7 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
     }
 }
 
-std::pair<vec2, vec2> AxisRenderer::boundingRect(const size2_t& startPos, const size2_t& endPos) {
+std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const ivec2& endPos) {
 
     auto bRect = tickBoundingRect(settings_, startPos, endPos);
 
