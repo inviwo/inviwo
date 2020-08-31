@@ -41,6 +41,8 @@ def makeCmdParser():
 	parser.add_argument('-v', '--vcpkg', type=str, action="store", dest="vcpkg", help='Paths to vcpgk executable')
 	parser.add_argument('-p', '--pkg', type=str, action="store", dest="pkg", help='Vcpkg package name')
 	parser.add_argument('-t', '--triplet', type=str, action="store", dest="triplet", help='Triplet')
+	parser.add_argument('-o', '--overlay', type=str, action="store", dest="overlay", help='Extra vcpkg overlay', default="")
+
 	return parser.parse_args()
 
 def toString(list):
@@ -51,8 +53,14 @@ if __name__ == '__main__':
 
 	#  x-package-info --x-installed --x-json zlib:x64-windows 
 	
+	if len(args.overlay) > 0:
+		overlay = "--overlay-ports=" + args.overlay
+	else:
+		overlay = ""
+
 	cmd = subprocess.run([
 		args.vcpkg, 
+		overlay,
 		"x-package-info", 
 		"--x-json", 
 		f"{args.pkg}"],
@@ -62,6 +70,7 @@ if __name__ == '__main__':
 
 	cmd = subprocess.run([
 		args.vcpkg, 
+		overlay,
 		"x-package-info", 
 		"--x-installed", 
 		"--x-json", 

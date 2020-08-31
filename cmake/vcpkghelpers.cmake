@@ -98,17 +98,28 @@ function(ivw_vcpkg_install name)
 
 	string(TOLOWER "${name}" lowercase_name)
 
+    if(DEFINED IVW_CFG_VCPKG_OVERLAYS)
+        set(overlay --overlay ${IVW_CFG_VCPKG_OVERLAYS})
+    else()
+        set(overlay "")
+    endif()
+
     if(NOT DEFINED ivw_vcpkg_info_${lowercase_name})
         message(STATUS "Vcpkg fetching metadata for: ${name}")
         execute_process(
             COMMAND "${PYTHON_EXECUTABLE}" "${IVW_TOOLS_DIR}/vcpkginfo.py"
                 --vcpkg "${_VCPKG_EXECUTABLE}" 
+                ${overlay}
                 --pkg ${lowercase_name}
                 --triplet ${VCPKG_TARGET_TRIPLET}
             OUTPUT_VARIABLE pkgInfo
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
-        set("ivw_vcpkg_info_${lowercase_name}" "${pkgInfo}" CACHE INTERNAL "Vcpkg meta data")
+        if(NOT pkgInfo)
+            message(WARNING "Unable to retrive vcpkg package info for ${name}")
+        else()
+            set("ivw_vcpkg_info_${lowercase_name}" "${pkgInfo}" CACHE INTERNAL "Vcpkg meta data")
+        endif()
     else()
         set(pkgInfo ${ivw_vcpkg_info_${lowercase_name}})
     endif()
@@ -135,6 +146,10 @@ function(ivw_vcpkg_install name)
     set(copyright ${INFO_VCPKG_OWNED_FILES})
     list(FILTER copyright INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/share/.*copyright.*")
     list(TRANSFORM copyright PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+
+    set(headers ${INFO_VCPKG_OWNED_FILES})
+    list(FILTER headers INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/include/.*\\..?.*")
+    list(TRANSFORM headers PREPEND "${_VCPKG_ROOT_DIR}/installed/")
 
     install(
        FILES ${binfiles} 
@@ -182,4 +197,16 @@ function(ivw_vcpkg_install name)
     if(ARG_OUT_COPYRIGHT)
         set(${ARG_OUT_COPYRIGHT} ${copyright} PARENT_SCOPE)
     endif()
+
+    #  HACK: have the files showing in the IDE
+    if(NOT TARGET ${name}_vcpkg)
+        add_custom_target(${name}_vcpkg SOURCES ${headers})
+        source_group(
+            TREE "${_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/include/" 
+            PREFIX "Header Files" 
+            FILES ${headers}
+        )
+        set_target_properties(${name}_vcpkg PROPERTIES FOLDER vcpkg)
+    endif()
+
 endfunction()
