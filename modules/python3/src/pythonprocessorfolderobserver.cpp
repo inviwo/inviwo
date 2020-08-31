@@ -72,8 +72,10 @@ bool PythonProcessorFolderObserver::registerFile(const std::string& filename) {
             module_.registerProcessor(std::move(pfo));
             registeredFiles_.push_back(filename);
             return true;
+        } catch (const Exception& e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
         } catch (const std::exception& e) {
-            LogError(e.what());
+            LogWarn(e.what());
         }
     }
     return false;
