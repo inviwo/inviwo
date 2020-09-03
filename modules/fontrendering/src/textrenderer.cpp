@@ -60,6 +60,38 @@ TextRenderer::TextRenderer(const std::string& fontPath)
     fbo_.deactivate();
 }
 
+TextRenderer::TextRenderer(TextRenderer&& rhs)
+    : glyphAtlas_(std::move(rhs.glyphAtlas_))
+    , fontlib_(rhs.fontlib_)
+    , fontface_(rhs.fontface_)
+    , fontSize_(rhs.fontSize_)
+    , lineSpacing_(rhs.lineSpacing_)
+    , shader_(std::move(rhs.shader_))
+    , fbo_(std::move(rhs.fbo_))
+    , prevTexture_(std::move(rhs.prevTexture_)) {
+    rhs.fontlib_ = nullptr;
+    rhs.fontface_ = nullptr;
+}
+
+TextRenderer& TextRenderer::operator=(TextRenderer&& rhs) noexcept {
+    if (this != &rhs) {
+        FT_Done_FreeType(fontlib_);
+
+        glyphAtlas_ = std::move(rhs.glyphAtlas_);
+        fontlib_ = rhs.fontlib_;
+        fontface_ = rhs.fontface_;
+        fontSize_ = rhs.fontSize_;
+        lineSpacing_ = rhs.lineSpacing_;
+        shader_ = std::move(rhs.shader_);
+        fbo_ = std::move(rhs.fbo_);
+        prevTexture_ = std::move(rhs.prevTexture_);
+
+        rhs.fontlib_ = nullptr;
+        rhs.fontface_ = nullptr;
+    }
+    return *this;
+}
+
 TextRenderer::~TextRenderer() { FT_Done_FreeType(fontlib_); }
 
 void TextRenderer::setFont(const std::string& fontPath) {

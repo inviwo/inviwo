@@ -110,7 +110,11 @@ struct TextTextureObject {
 class IVW_MODULE_FONTRENDERING_API TextRenderer {
 public:
     TextRenderer(const std::string& fontPath = util::getDefaultFontPath() + "/arial.ttf");
-    virtual ~TextRenderer();
+    TextRenderer(const TextRenderer& rhs) = delete;
+    TextRenderer(TextRenderer&& rhs);
+    TextRenderer& operator=(const TextRenderer& rhs) = delete;
+    TextRenderer& operator=(TextRenderer&& rhs) noexcept;
+    ~TextRenderer();
 
     /**
      * \brief replace the currently loaded font face with a new one
