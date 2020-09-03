@@ -67,7 +67,8 @@ void IndexList::update() {
 
 void IndexList::clear() {
     indices_.clear();
-    update();
+    indicesBySource_.clear();
+    onUpdate_.invoke();
 }
 
 }  // namespace inviwo

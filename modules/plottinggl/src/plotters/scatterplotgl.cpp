@@ -534,6 +534,7 @@ void ScatterPlotGL::setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t
 
 void ScatterPlotGL::setSelectedIndices(const std::unordered_set<size_t>& indices) {
     ensureSelectAndFilterSizes();
+    std::fill(selected_.begin(), selected_.end(), false);
     selected_.resize(xAxis_->getSize(), false);
     for (auto i : indices) {
         selected_[i] = true;
