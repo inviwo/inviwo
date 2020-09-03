@@ -122,6 +122,28 @@ AxisRendererBase::AxisRendererBase(const AxisSettings& settings)
 AxisRendererBase::AxisRendererBase(const AxisRendererBase& rhs)
     : settings_{rhs.settings_}, shaders_{getShaders()} {}
 
+AxisRendererBase::AxisRendererBase(AxisRendererBase&& rhs)
+    : settings_{rhs.settings_}
+    , textRenderer_{std::move(rhs.textRenderer_)}
+    , quadRenderer_{std::move(rhs.quadRenderer_)}
+    , axisPickingId_{rhs.axisPickingId_}
+    , meshes_{std::move(rhs.meshes_)}
+    , caption_{std::move(rhs.caption_)}
+    , shaders_{std::move(rhs.shaders_)} {}
+
+AxisRendererBase& AxisRendererBase::operator=(AxisRendererBase&& rhs) {
+    if (this != &rhs) {
+        settings_ = rhs.settings_;
+        textRenderer_ = std::move(rhs.textRenderer_);
+        quadRenderer_ = std::move(rhs.quadRenderer_);
+        axisPickingId_ = rhs.axisPickingId_;
+        meshes_ = std::move(rhs.meshes_);
+        caption_ = std::move(rhs.caption_);
+        shaders_ = std::move(rhs.shaders_);
+    }
+    return *this;
+}
+
 std::shared_ptr<MeshShaderCache> AxisRendererBase::getShaders() {
     static std::weak_ptr<MeshShaderCache> cache_;
 
@@ -190,11 +212,11 @@ void AxisRendererBase::renderAxis(Camera* camera, const vec3& start, const vec3&
         drawer.draw();
     };
 
-    drawMesh(axisMesh, settings_.getWidth(), false);
+    drawMesh(axisMesh, settings_.get().getWidth(), false);
     auto majorMesh = meshes_.getMajor(settings_, start, end, tickdir);
-    drawMesh(majorMesh, settings_.getMajorTicks().getTickWidth(), true);
+    drawMesh(majorMesh, settings_.get().getMajorTicks().getTickWidth(), true);
     auto minorMesh = meshes_.getMinor(settings_, start, end, tickdir);
-    drawMesh(minorMesh, settings_.getMinorTicks().getTickWidth(), true);
+    drawMesh(minorMesh, settings_.get().getMinorTicks().getTickWidth(), true);
 
     lineShader.deactivate();
 }
@@ -209,9 +231,20 @@ AxisRenderer::AxisRenderer(const AxisSettings& settings)
                        [&](auto&& p) { return p.second; });
     }} {}
 
+AxisRenderer::AxisRenderer(AxisRenderer&& rhs)
+    : AxisRendererBase(rhs), labels_{std::move(rhs.labels_)} {}
+
+AxisRenderer& AxisRenderer::operator=(AxisRenderer&& rhs) {
+    if (this != &rhs) {
+        AxisRendererBase::operator=(std::move(rhs));
+        labels_ = std::move(rhs.labels_);
+    }
+    return *this;
+}
+
 void AxisRenderer::render(const size2_t& outputDims, const ivec2& startPos, const ivec2& endPos,
                           bool antialiasing) {
-    if (!settings_.getAxisVisible()) {
+    if (!settings_.get().getAxisVisible()) {
         return;
     }
 
@@ -226,8 +259,9 @@ void AxisRenderer::render(const size2_t& outputDims, const ivec2& startPos, cons
 void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
                               const ivec2& endPos) {
     // axis caption
-    if (const auto& captionSettings = settings_.getCaptionSettings()) {
-        auto& captex = caption_.getCaption(settings_.getCaption(), captionSettings, textRenderer_);
+    if (const auto& captionSettings = settings_.get().getCaptionSettings()) {
+        auto& captex =
+            caption_.getCaption(settings_.get().getCaption(), captionSettings, textRenderer_);
 
         // render axis caption centered at the axis using the offset
         const auto anchor = captionSettings.getFont().getAnchorPos();
@@ -237,7 +271,7 @@ void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
                                vec2{captex.bbox.glyphsOrigin};
 
         const auto angle = glm::radians(captionSettings.getRotation()) +
-                           (settings_.isVertical() ? glm::half_pi<float>() : 0.0f);
+                           (settings_.get().isVertical() ? glm::half_pi<float>() : 0.0f);
 
         // translate to anchor pos and apply rotation
         const auto transform =
@@ -250,7 +284,7 @@ void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
     }
 
     // axis labels
-    if (const auto& labels = settings_.getLabelSettings()) {
+    if (const auto& labels = settings_.get().getLabelSettings()) {
         auto& pos = labels_.getLabelPos(settings_, vec3{startPos, 0}, vec3{endPos, 0},
                                         textRenderer_, vec3{1});
 
@@ -282,9 +316,10 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
 
     auto bRect = tickBoundingRect(settings_, startPos, endPos);
 
-    if (const auto& captionSettings = settings_.getCaptionSettings()) {
+    if (const auto& captionSettings = settings_.get().getCaptionSettings()) {
 
-        auto& captex = caption_.getCaption(settings_.getCaption(), captionSettings, textRenderer_);
+        auto& captex =
+            caption_.getCaption(settings_.get().getCaption(), captionSettings, textRenderer_);
         const auto texDims(captex.texture->getDimensions());
 
         const auto anchor = captionSettings.getFont().getAnchorPos();
@@ -294,7 +329,7 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
                                vec2{captex.bbox.glyphsOrigin};
 
         const auto angle = glm::radians(captionSettings.getRotation()) +
-                           (settings_.isVertical() ? glm::half_pi<float>() : 0.0f);
+                           (settings_.get().isVertical() ? glm::half_pi<float>() : 0.0f);
 
         // translate to anchor pos and apply rotation
         const auto transform =
@@ -313,7 +348,7 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const iv
     }
 
     // axis labels
-    if (const auto& labels = settings_.getLabelSettings()) {
+    if (const auto& labels = settings_.get().getLabelSettings()) {
         auto& positions = labels_.getLabelPos(settings_, vec3{startPos, 0}, vec3{endPos, 0},
                                               textRenderer_, vec3{1});
 
@@ -358,9 +393,20 @@ AxisRenderer3D::AxisRenderer3D(const AxisSettings& settings)
                        [](auto& tick) { return tick.second; });
     }} {}
 
+AxisRenderer3D::AxisRenderer3D(AxisRenderer3D&& rhs)
+    : AxisRendererBase(rhs), labels_{std::move(rhs.labels_)} {}
+
+AxisRenderer3D& AxisRenderer3D::operator=(AxisRenderer3D&& rhs) {
+    if (this != &rhs) {
+        AxisRendererBase::operator=(std::move(rhs));
+        labels_ = std::move(rhs.labels_);
+    }
+    return *this;
+}
+
 void AxisRenderer3D::render(Camera* camera, const size2_t& outputDims, const vec3& startPos,
                             const vec3& endPos, const vec3& tickDirection, bool antialiasing) {
-    if (!settings_.getAxisVisible()) return;
+    if (!settings_.get().getAxisVisible()) return;
 
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     renderAxis(camera, startPos, endPos, tickDirection, outputDims, antialiasing);
@@ -370,8 +416,9 @@ void AxisRenderer3D::render(Camera* camera, const size2_t& outputDims, const vec
 void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const vec3& startPos,
                                 const vec3& endPos, const vec3& tickDirection) {
     // axis caption
-    if (const auto& captionSettings = settings_.getCaptionSettings()) {
-        auto captex = caption_.getCaption(settings_.getCaption(), captionSettings, textRenderer_);
+    if (const auto& captionSettings = settings_.get().getCaptionSettings()) {
+        auto captex =
+            caption_.getCaption(settings_.get().getCaption(), captionSettings, textRenderer_);
 
         // render axis caption centered at the axis using the offset
         const vec2 texDims(captex.texture->getDimensions());
@@ -388,7 +435,7 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
     }
 
     // axis labels
-    if (const auto& labels = settings_.getLabelSettings()) {
+    if (const auto& labels = settings_.get().getLabelSettings()) {
         const auto& pos =
             labels_.getLabelPos(settings_, startPos, endPos, textRenderer_, tickDirection);
 

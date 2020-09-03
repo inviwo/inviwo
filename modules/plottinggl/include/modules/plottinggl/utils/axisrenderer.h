@@ -44,6 +44,7 @@
 #include <modules/fontrendering/util/textureatlas.h>
 
 #include <map>
+#include <functional>
 
 namespace inviwo {
 
@@ -240,7 +241,9 @@ class IVW_MODULE_PLOTTINGGL_API AxisRendererBase {
 public:
     AxisRendererBase(const AxisSettings& settings);
     AxisRendererBase(const AxisRendererBase& rhs);
+    AxisRendererBase(AxisRendererBase&& rhs);
     AxisRendererBase& operator=(const AxisRendererBase& rhs) = delete;
+    AxisRendererBase& operator=(AxisRendererBase&& rhs) noexcept;
     virtual ~AxisRendererBase() = default;
 
     void setAxisPickingId(size_t id) { axisPickingId_ = id; }
@@ -250,7 +253,7 @@ protected:
     void renderAxis(Camera* camera, const vec3& start, const vec3& end, const vec3& tickdir,
                     const size2_t& outputDims, bool antialiasing);
 
-    const AxisSettings& settings_;
+    std::reference_wrapper<const AxisSettings> settings_;
 
     TextRenderer textRenderer_;
     TextureQuadRenderer quadRenderer_;
@@ -273,7 +276,9 @@ public:
     using Labels = detail::AxisLabels<ivec2>;
     AxisRenderer(const AxisSettings& settings);
     AxisRenderer(const AxisRenderer& rhs) = default;
+    AxisRenderer(AxisRenderer&& rhs);
     AxisRenderer& operator=(const AxisRenderer& rhs) = delete;
+    AxisRenderer& operator=(AxisRenderer&& rhs) noexcept;
     virtual ~AxisRenderer() = default;
 
     void render(const size2_t& outputDims, const ivec2& startPos, const ivec2& endPos,
@@ -296,7 +301,9 @@ public:
     using Labels = detail::AxisLabels<vec3>;
     AxisRenderer3D(const AxisSettings& property);
     AxisRenderer3D(const AxisRenderer3D& rhs) = default;
+    AxisRenderer3D(AxisRenderer3D&& rhs);
     AxisRenderer3D& operator=(const AxisRenderer3D& rhs) = delete;
+    AxisRenderer3D& operator=(AxisRenderer3D&& rhs) noexcept;
     virtual ~AxisRenderer3D() = default;
 
     void render(Camera* camera, const size2_t& outputDims, const vec3& startPos, const vec3& endPos,
