@@ -63,11 +63,16 @@ FrameBufferObject::~FrameBufferObject() {
 }
 
 void FrameBufferObject::activate() {
-    // store currently bound FBO
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFbo_);
+    GLint currentFbo = 0;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFbo);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, id_);
-    LGL_ERROR;
+    if (static_cast<GLint>(id_) != currentFbo) {
+        // store currently bound FBO
+        prevFbo_ = currentFbo;
+
+        glBindFramebuffer(GL_FRAMEBUFFER, id_);
+        LGL_ERROR;
+    }
 }
 
 void FrameBufferObject::defineDrawBuffers() {

@@ -42,10 +42,14 @@ MarginProperty::MarginProperty(
     float left, InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/,
     PropertySemantics semantics /*= PropertySemantics::Default*/)
     : CompositeProperty(identifier, displayName)
-    , top_("top", "Top", top, 0.0f, 200.0f, 1.0f, invalidationLevel, semantics)
-    , right_("right_", "Right", right, 0.0f, 200.0f, 1.0f, invalidationLevel, semantics)
-    , bottom_("bottom", "Bottom", bottom, 0.0f, 200.0f, 1.0f, invalidationLevel, semantics)
-    , left_("left", "Left", left, 0.0f, 200.0f, 1.0f, invalidationLevel, semantics) {
+    , top_("top", "Top", top, {0.0f, ConstraintBehavior::Ignore},
+           {200.0f, ConstraintBehavior::Ignore}, 1.0f, invalidationLevel, semantics)
+    , right_("right_", "Right", right, {0.0f, ConstraintBehavior::Ignore},
+             {200.0f, ConstraintBehavior::Ignore}, 1.0f, invalidationLevel, semantics)
+    , bottom_("bottom", "Bottom", bottom, {0.0f, ConstraintBehavior::Ignore},
+              {200.0f, ConstraintBehavior::Ignore}, 1.0f, invalidationLevel, semantics)
+    , left_("left", "Left", left, {0.0f, ConstraintBehavior::Ignore},
+            {200.0f, ConstraintBehavior::Ignore}, 1.0f, invalidationLevel, semantics) {
     addProperty(top_);
     addProperty(right_);
     addProperty(bottom_);

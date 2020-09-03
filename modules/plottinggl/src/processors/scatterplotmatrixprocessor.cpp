@@ -179,27 +179,6 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     });
 }
 
-template <typename T>
-struct RangeIterator : public std::iterator<std::forward_iterator_tag, T, T, const T*, T> {
-    T i;
-
-    RangeIterator(T i = 0) : i(i) {}
-
-    bool operator==(RangeIterator b) { return i == b.i; }
-    bool operator!=(RangeIterator b) { return i != b.i; }
-    RangeIterator operator++() {
-        ++i;
-        return *this;
-    }
-    RangeIterator operator++(int) {
-        auto tmp = *this;
-        ++i;
-        return tmp;
-    }
-
-    T operator*() const { return i; }
-};
-
 void ScatterPlotMatrixProcessor::process() {
     if (plots_.empty()) {
         createScatterPlots();
