@@ -60,7 +60,7 @@ TextRenderer::TextRenderer(const std::string& fontPath)
     fbo_.deactivate();
 }
 
-TextRenderer::~TextRenderer() { FT_Done_Face(fontface_); }
+TextRenderer::~TextRenderer() { FT_Done_FreeType(fontlib_); }
 
 void TextRenderer::setFont(const std::string& fontPath) {
     // free previous font face
