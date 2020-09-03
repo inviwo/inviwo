@@ -321,8 +321,6 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
         vec2 textPos(computeBoundingBox(get<2>(elem)).glyphPenOffset);
         render(get<2>(elem), vec2(-1.0f, 1.0f) - textPos * scale, scale, color);
     }
-
-    fbo_.deactivate();
 }
 
 void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
@@ -341,8 +339,6 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
         vec2 textPos(computeBoundingBox(elem.value).glyphPenOffset);
         render(elem.value, vec2(-1.0f, 1.0f) - textPos * scale, scale, elem.color);
     }
-
-    fbo_.deactivate();
 }
 
 vec2 TextRenderer::computeTextSize(const std::string& str, const vec2& scale) {

@@ -78,7 +78,7 @@ void FrameBufferObject::defineDrawBuffers() {
 }
 
 void FrameBufferObject::deactivate() {
-    if (isActive()) {
+    if (isActive() && (static_cast<GLuint>(prevFbo_) != id_)) {
         glBindFramebuffer(GL_FRAMEBUFFER, prevFbo_);
         LGL_ERROR;
     }
