@@ -109,7 +109,7 @@ struct TextTextureObject {
  */
 class IVW_MODULE_FONTRENDERING_API TextRenderer {
 public:
-    TextRenderer(const std::string& fontPath = util::getDefaultFontPath() + "/arial.ttf");
+    TextRenderer(const std::string &fontPath = util::getDefaultFontPath() + "/OpenSans-semibold.ttf");
     TextRenderer(const TextRenderer& rhs) = delete;
     TextRenderer(TextRenderer&& rhs) noexcept;
     TextRenderer& operator=(const TextRenderer& rhs) = delete;

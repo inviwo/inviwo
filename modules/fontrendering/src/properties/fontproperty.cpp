@@ -64,7 +64,7 @@ FontProperty::FontProperty(const std::string& identifier, const std::string& dis
 
 FontProperty::FontProperty(const std::string& identifier, const std::string& displayName,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : FontProperty(identifier, displayName, "Montserrat-Medium", 14, 0.0f, vec2{-1.0f},
+    : FontProperty(identifier, displayName, "OpenSans-Semibold", 14, 0.0f, vec2{-1.0f},
                    invalidationLevel, semantics) {}
 
 FontProperty::FontProperty(const FontProperty& rhs)

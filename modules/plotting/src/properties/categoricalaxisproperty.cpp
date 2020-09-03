@@ -76,7 +76,7 @@ CategoricalAxisProperty::CategoricalAxisProperty(const std::string& identifier,
     addProperty(placement_);
 
     // change default fonts, make axis labels slightly less pronounced
-    captionSettings_.font_.fontFace_.setSelectedIdentifier("Montserrat-Regular");
+    captionSettings_.font_.fontFace_.setSelectedIdentifier("OpenSans-Semibold");
     labelSettings_.font_.fontFace_.setSelectedIdentifier("Montserrat-Light");
 
     captionSettings_.title_.set("Axis Title");

@@ -73,7 +73,7 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
     range_.readonlyDependsOn(useDataRange_, [](const auto& p) { return p.get(); });
 
     // change default fonts, make axis labels slightly less pronounced
-    captionSettings_.font_.fontFace_.setSelectedIdentifier("Montserrat-Regular");
+    captionSettings_.font_.fontFace_.setSelectedIdentifier("OpenSans-Semibold");
     labelSettings_.font_.fontFace_.setSelectedIdentifier("Montserrat-Light");
 
     captionSettings_.title_.set("Axis Title");
