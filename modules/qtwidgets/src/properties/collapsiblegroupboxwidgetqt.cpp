@@ -516,6 +516,8 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(QGridLayout* layout, int row, 
     auto removePropertyBtn = createButton("removeListItemButton", str);
 
     connect(removePropertyBtn, &QToolButton::clicked, this, [layout, prop, buttonWidget]() {
+        // need to activate the default render context in case the property contains member
+        // depending on OpenGL
         RenderContext::getPtr()->activateDefaultRenderContext();
         if (prop->getOwner()) {
             prop->getOwner()->removeProperty(prop);

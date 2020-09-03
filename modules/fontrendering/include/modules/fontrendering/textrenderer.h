@@ -316,7 +316,7 @@ protected:
     int fontSize_;        //<! font size in pixel
     double lineSpacing_;  //!< spacing between two lines in percent (default = 0.2)
 
-    static constexpr int glyphMargin_ = 2;
+    static constexpr int glyphMargin_ = 2;  //<! margin around glyphs in font cache
     std::shared_ptr<Shader> shader_;
 
     FrameBufferObject fbo_;
