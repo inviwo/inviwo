@@ -156,6 +156,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     fontColor_.onChange(updateLabels);
 
     fontColor_.onChange(updateStatsLabels);
+    fontFaceStats_.onChange(updateStatsLabels);
     statsFontSize_.onChange(updateStatsLabels);
     correlectionTF_.onChange(updateStatsLabels);
 
