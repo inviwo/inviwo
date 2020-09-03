@@ -47,7 +47,7 @@
 namespace inviwo {
 
 TextRenderer::TextRenderer(const std::string& fontPath)
-    : fontface_(nullptr), fontSize_(10), lineSpacing_(0.2), glyphMargin_(2), shader_{getShader()} {
+    : fontface_(nullptr), fontSize_(10), lineSpacing_(0.2), shader_{getShader()} {
 
     if (FT_Init_FreeType(&fontlib_)) {
         throw Exception("Could not initialize FreeType library", IVW_CONTEXT);
