@@ -40,6 +40,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <inviwo/core/properties/propertypresetmanager.h>
@@ -515,6 +516,7 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(QGridLayout* layout, int row, 
     auto removePropertyBtn = createButton("removeListItemButton", str);
 
     connect(removePropertyBtn, &QToolButton::clicked, this, [layout, prop, buttonWidget]() {
+        RenderContext::getPtr()->activateDefaultRenderContext();
         if (prop->getOwner()) {
             prop->getOwner()->removeProperty(prop);
         } else {
