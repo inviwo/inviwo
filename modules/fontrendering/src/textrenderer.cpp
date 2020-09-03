@@ -75,7 +75,9 @@ TextRenderer::TextRenderer(TextRenderer&& rhs)
 
 TextRenderer& TextRenderer::operator=(TextRenderer&& rhs) noexcept {
     if (this != &rhs) {
-        FT_Done_FreeType(fontlib_);
+        if (fontlib_) {
+            FT_Done_FreeType(fontlib_);
+        }
 
         glyphAtlas_ = std::move(rhs.glyphAtlas_);
         fontlib_ = rhs.fontlib_;
@@ -92,11 +94,17 @@ TextRenderer& TextRenderer::operator=(TextRenderer&& rhs) noexcept {
     return *this;
 }
 
-TextRenderer::~TextRenderer() { FT_Done_FreeType(fontlib_); }
+TextRenderer::~TextRenderer() {
+    if (fontlib_) {
+        FT_Done_FreeType(fontlib_);
+    }
+}
 
 void TextRenderer::setFont(const std::string& fontPath) {
     // free previous font face
-    FT_Done_Face(fontface_);
+    if (fontface_) {
+        FT_Done_Face(fontface_);
+    }
     fontface_ = nullptr;
 
     int error = FT_New_Face(fontlib_, fontPath.c_str(), 0, &fontface_);
