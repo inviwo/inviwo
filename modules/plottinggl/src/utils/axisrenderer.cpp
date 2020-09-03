@@ -131,7 +131,7 @@ AxisRendererBase::AxisRendererBase(AxisRendererBase&& rhs)
     , caption_{std::move(rhs.caption_)}
     , shaders_{std::move(rhs.shaders_)} {}
 
-AxisRendererBase& AxisRendererBase::operator=(AxisRendererBase&& rhs) {
+AxisRendererBase& AxisRendererBase::operator=(AxisRendererBase&& rhs) noexcept {
     if (this != &rhs) {
         settings_ = rhs.settings_;
         textRenderer_ = std::move(rhs.textRenderer_);
@@ -234,7 +234,7 @@ AxisRenderer::AxisRenderer(const AxisSettings& settings)
 AxisRenderer::AxisRenderer(AxisRenderer&& rhs)
     : AxisRendererBase(rhs), labels_{std::move(rhs.labels_)} {}
 
-AxisRenderer& AxisRenderer::operator=(AxisRenderer&& rhs) {
+AxisRenderer& AxisRenderer::operator=(AxisRenderer&& rhs) noexcept {
     if (this != &rhs) {
         AxisRendererBase::operator=(std::move(rhs));
         labels_ = std::move(rhs.labels_);
@@ -396,7 +396,7 @@ AxisRenderer3D::AxisRenderer3D(const AxisSettings& settings)
 AxisRenderer3D::AxisRenderer3D(AxisRenderer3D&& rhs)
     : AxisRendererBase(rhs), labels_{std::move(rhs.labels_)} {}
 
-AxisRenderer3D& AxisRenderer3D::operator=(AxisRenderer3D&& rhs) {
+AxisRenderer3D& AxisRenderer3D::operator=(AxisRenderer3D&& rhs) noexcept {
     if (this != &rhs) {
         AxisRendererBase::operator=(std::move(rhs));
         labels_ = std::move(rhs.labels_);
