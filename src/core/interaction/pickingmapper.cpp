@@ -40,7 +40,8 @@ PickingMapper::PickingMapper(Processor* processor, size_t size,
     : manager_(manager)
     , processor_(processor)
     , callback_(callback)
-    , pickingAction_(manager_->registerPickingAction(processor, callback, size)) {}
+    , pickingAction_(size > 0 ? manager_->registerPickingAction(processor, callback, size)
+                              : nullptr) {}
 
 PickingMapper::PickingMapper(PickingMapper&& rhs)
     : manager_(rhs.manager_)
