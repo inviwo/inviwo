@@ -47,6 +47,7 @@
 #include <algorithm>
 #include <numeric>
 #include <functional>
+#include <type_traits>
 
 namespace inviwo {
 
@@ -190,11 +191,11 @@ void AxisRendererBase::renderAxis(Camera* camera, const vec3& start, const vec3&
         drawer.draw();
     };
 
-    drawMesh(axisMesh, settings_.getWidth(), false);
+    drawMesh(axisMesh, settings_.get().getWidth(), false);
     auto majorMesh = meshes_.getMajor(settings_, start, end, tickdir);
-    drawMesh(majorMesh, settings_.getMajorTicks().getTickWidth(), true);
+    drawMesh(majorMesh, settings_.get().getMajorTicks().getTickWidth(), true);
     auto minorMesh = meshes_.getMinor(settings_, start, end, tickdir);
-    drawMesh(minorMesh, settings_.getMinorTicks().getTickWidth(), true);
+    drawMesh(minorMesh, settings_.get().getMinorTicks().getTickWidth(), true);
 
     lineShader.deactivate();
 }
@@ -209,9 +210,9 @@ AxisRenderer::AxisRenderer(const AxisSettings& settings)
                        [&](auto&& p) { return p.second; });
     }} {}
 
-void AxisRenderer::render(const size2_t& outputDims, const size2_t& startPos, const size2_t& endPos,
+void AxisRenderer::render(const size2_t& outputDims, const ivec2& startPos, const ivec2& endPos,
                           bool antialiasing) {
-    if (!settings_.getAxisVisible()) {
+    if (!settings_.get().getAxisVisible()) {
         return;
     }
 
@@ -223,11 +224,12 @@ void AxisRenderer::render(const size2_t& outputDims, const size2_t& startPos, co
     renderText(outputDims, startPos, endPos);
 }
 
-void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos,
-                              const size2_t& endPos) {
+void AxisRenderer::renderText(const size2_t& outputDims, const ivec2& startPos,
+                              const ivec2& endPos) {
     // axis caption
-    if (const auto& captionSettings = settings_.getCaptionSettings()) {
-        auto& captex = caption_.getCaption(settings_.getCaption(), captionSettings, textRenderer_);
+    if (const auto& captionSettings = settings_.get().getCaptionSettings()) {
+        auto& captex =
+            caption_.getCaption(settings_.get().getCaption(), captionSettings, textRenderer_);
 
         // render axis caption centered at the axis using the offset
         const auto anchor = captionSettings.getFont().getAnchorPos();
@@ -237,7 +239,7 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
                                vec2{captex.bbox.glyphsOrigin};
 
         const auto angle = glm::radians(captionSettings.getRotation()) +
-                           (settings_.isVertical() ? glm::half_pi<float>() : 0.0f);
+                           (settings_.get().isVertical() ? glm::half_pi<float>() : 0.0f);
 
         // translate to anchor pos and apply rotation
         const auto transform =
@@ -250,7 +252,7 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
     }
 
     // axis labels
-    if (const auto& labels = settings_.getLabelSettings()) {
+    if (const auto& labels = settings_.get().getLabelSettings()) {
         auto& pos = labels_.getLabelPos(settings_, vec3{startPos, 0}, vec3{endPos, 0},
                                         textRenderer_, vec3{1});
 
@@ -278,13 +280,14 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
     }
 }
 
-std::pair<vec2, vec2> AxisRenderer::boundingRect(const size2_t& startPos, const size2_t& endPos) {
+std::pair<vec2, vec2> AxisRenderer::boundingRect(const ivec2& startPos, const ivec2& endPos) {
 
     auto bRect = tickBoundingRect(settings_, startPos, endPos);
 
-    if (const auto& captionSettings = settings_.getCaptionSettings()) {
+    if (const auto& captionSettings = settings_.get().getCaptionSettings()) {
 
-        auto& captex = caption_.getCaption(settings_.getCaption(), captionSettings, textRenderer_);
+        auto& captex =
+            caption_.getCaption(settings_.get().getCaption(), captionSettings, textRenderer_);
         const auto texDims(captex.texture->getDimensions());
 
         const auto anchor = captionSettings.getFont().getAnchorPos();
@@ -294,7 +297,7 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const size2_t& startPos, const 
                                vec2{captex.bbox.glyphsOrigin};
 
         const auto angle = glm::radians(captionSettings.getRotation()) +
-                           (settings_.isVertical() ? glm::half_pi<float>() : 0.0f);
+                           (settings_.get().isVertical() ? glm::half_pi<float>() : 0.0f);
 
         // translate to anchor pos and apply rotation
         const auto transform =
@@ -313,7 +316,7 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const size2_t& startPos, const 
     }
 
     // axis labels
-    if (const auto& labels = settings_.getLabelSettings()) {
+    if (const auto& labels = settings_.get().getLabelSettings()) {
         auto& positions = labels_.getLabelPos(settings_, vec3{startPos, 0}, vec3{endPos, 0},
                                               textRenderer_, vec3{1});
 
@@ -360,7 +363,7 @@ AxisRenderer3D::AxisRenderer3D(const AxisSettings& settings)
 
 void AxisRenderer3D::render(Camera* camera, const size2_t& outputDims, const vec3& startPos,
                             const vec3& endPos, const vec3& tickDirection, bool antialiasing) {
-    if (!settings_.getAxisVisible()) return;
+    if (!settings_.get().getAxisVisible()) return;
 
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     renderAxis(camera, startPos, endPos, tickDirection, outputDims, antialiasing);
@@ -370,8 +373,9 @@ void AxisRenderer3D::render(Camera* camera, const size2_t& outputDims, const vec
 void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const vec3& startPos,
                                 const vec3& endPos, const vec3& tickDirection) {
     // axis caption
-    if (const auto& captionSettings = settings_.getCaptionSettings()) {
-        auto captex = caption_.getCaption(settings_.getCaption(), captionSettings, textRenderer_);
+    if (const auto& captionSettings = settings_.get().getCaptionSettings()) {
+        auto captex =
+            caption_.getCaption(settings_.get().getCaption(), captionSettings, textRenderer_);
 
         // render axis caption centered at the axis using the offset
         const vec2 texDims(captex.texture->getDimensions());
@@ -388,7 +392,7 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
     }
 
     // axis labels
-    if (const auto& labels = settings_.getLabelSettings()) {
+    if (const auto& labels = settings_.get().getLabelSettings()) {
         const auto& pos =
             labels_.getLabelPos(settings_, startPos, endPos, textRenderer_, tickDirection);
 
@@ -401,6 +405,40 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
                                      renderInfo.texTransform, outputDims, anchorPos);
     }
 }
+
+static_assert(std::is_copy_constructible_v<detail::AxisCaption>);
+static_assert(std::is_copy_assignable_v<detail::AxisCaption>);
+static_assert(std::is_nothrow_move_constructible_v<detail::AxisCaption>);
+static_assert(std::is_nothrow_move_assignable_v<detail::AxisCaption>);
+
+static_assert(std::is_nothrow_move_constructible_v<detail::AxisMeshes>);
+static_assert(std::is_nothrow_move_assignable_v<detail::AxisMeshes>);
+
+static_assert(std::is_nothrow_move_constructible_v<TextRenderer>);
+static_assert(std::is_nothrow_move_assignable_v<TextRenderer>);
+static_assert(std::is_nothrow_move_constructible_v<TextureQuadRenderer>);
+static_assert(std::is_nothrow_move_assignable_v<TextureQuadRenderer>);
+
+static_assert(std::is_copy_constructible_v<detail::AxisLabels<ivec2>>);
+static_assert(std::is_copy_assignable_v<detail::AxisLabels<ivec2>>);
+static_assert(std::is_nothrow_move_constructible_v<detail::AxisLabels<ivec2>>);
+static_assert(std::is_nothrow_move_assignable_v<detail::AxisLabels<ivec2>>);
+
+static_assert(std::is_copy_constructible_v<AxisRendererBase>);
+static_assert(!std::is_copy_assignable_v<AxisRendererBase>);
+static_assert(std::is_move_constructible_v<AxisRendererBase>);
+static_assert(std::is_nothrow_move_constructible_v<AxisRendererBase>);
+static_assert(std::is_nothrow_move_assignable_v<AxisRendererBase>);
+
+static_assert(std::is_copy_constructible_v<AxisRenderer>);
+static_assert(!std::is_copy_assignable_v<AxisRenderer>);
+static_assert(std::is_nothrow_move_constructible_v<AxisRenderer>);
+static_assert(std::is_nothrow_move_assignable_v<AxisRenderer>);
+
+static_assert(std::is_copy_constructible_v<AxisRenderer3D>);
+static_assert(!std::is_copy_assignable_v<AxisRenderer3D>);
+static_assert(std::is_nothrow_move_constructible_v<AxisRenderer3D>);
+static_assert(std::is_nothrow_move_assignable_v<AxisRenderer3D>);
 
 }  // namespace plot
 

@@ -41,6 +41,10 @@ class IVW_MODULE_PLOTTING_API PlotTextData : public PlotTextSettings {
 public:
     PlotTextData() = default;
     PlotTextData(const PlotTextSettings& s);
+    PlotTextData(const PlotTextData&) = default;
+    PlotTextData(PlotTextData&&) noexcept = default;
+    PlotTextData& operator=(const PlotTextData&) = default;
+    PlotTextData& operator=(PlotTextData&&) = default;
     virtual ~PlotTextData() = default;
 
     // Inherited via PlotTextSettings

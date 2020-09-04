@@ -44,10 +44,12 @@
 
 #include <utf8.h>
 
+#include <type_traits>
+
 namespace inviwo {
 
 TextRenderer::TextRenderer(const std::string& fontPath)
-    : fontface_(nullptr), fontSize_(10), lineSpacing_(0.2), glyphMargin_(2), shader_{getShader()} {
+    : fontface_(nullptr), fontSize_(10), lineSpacing_(0.2), shader_{getShader()} {
 
     if (FT_Init_FreeType(&fontlib_)) {
         throw Exception("Could not initialize FreeType library", IVW_CONTEXT);
@@ -60,11 +62,51 @@ TextRenderer::TextRenderer(const std::string& fontPath)
     fbo_.deactivate();
 }
 
-TextRenderer::~TextRenderer() { FT_Done_Face(fontface_); }
+TextRenderer::TextRenderer(TextRenderer&& rhs) noexcept
+    : glyphAtlas_(std::move(rhs.glyphAtlas_))
+    , fontlib_(rhs.fontlib_)
+    , fontface_(rhs.fontface_)
+    , fontSize_(rhs.fontSize_)
+    , lineSpacing_(rhs.lineSpacing_)
+    , shader_(std::move(rhs.shader_))
+    , fbo_(std::move(rhs.fbo_))
+    , prevTexture_(std::move(rhs.prevTexture_)) {
+    rhs.fontlib_ = nullptr;
+    rhs.fontface_ = nullptr;
+}
+
+TextRenderer& TextRenderer::operator=(TextRenderer&& rhs) noexcept {
+    if (this != &rhs) {
+        if (fontlib_) {
+            FT_Done_FreeType(fontlib_);
+        }
+
+        glyphAtlas_ = std::move(rhs.glyphAtlas_);
+        fontlib_ = rhs.fontlib_;
+        fontface_ = rhs.fontface_;
+        fontSize_ = rhs.fontSize_;
+        lineSpacing_ = rhs.lineSpacing_;
+        shader_ = std::move(rhs.shader_);
+        fbo_ = std::move(rhs.fbo_);
+        prevTexture_ = std::move(rhs.prevTexture_);
+
+        rhs.fontlib_ = nullptr;
+        rhs.fontface_ = nullptr;
+    }
+    return *this;
+}
+
+TextRenderer::~TextRenderer() {
+    if (fontlib_) {
+        FT_Done_FreeType(fontlib_);
+    }
+}
 
 void TextRenderer::setFont(const std::string& fontPath) {
     // free previous font face
-    FT_Done_Face(fontface_);
+    if (fontface_) {
+        FT_Done_Face(fontface_);
+    }
     fontface_ = nullptr;
 
     int error = FT_New_Face(fontlib_, fontPath.c_str(), 0, &fontface_);
@@ -321,8 +363,6 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
         vec2 textPos(computeBoundingBox(get<2>(elem)).glyphPenOffset);
         render(get<2>(elem), vec2(-1.0f, 1.0f) - textPos * scale, scale, color);
     }
-
-    fbo_.deactivate();
 }
 
 void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
@@ -341,8 +381,6 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
         vec2 textPos(computeBoundingBox(elem.value).glyphPenOffset);
         render(elem.value, vec2(-1.0f, 1.0f) - textPos * scale, scale, elem.color);
     }
-
-    fbo_.deactivate();
 }
 
 vec2 TextRenderer::computeTextSize(const std::string& str, const vec2& scale) {
@@ -662,6 +700,11 @@ std::shared_ptr<Texture2D> createTextTexture(TextRenderer& textRenderer, std::st
     auto texObj = createTextTextureObject(textRenderer, text, fontColor, tex);
     return texObj.texture;
 }
+
+static_assert(std::is_copy_constructible_v<TextTextureObject>);
+static_assert(std::is_copy_assignable_v<TextTextureObject>);
+static_assert(std::is_nothrow_move_constructible_v<TextTextureObject>);
+static_assert(std::is_nothrow_move_assignable_v<TextTextureObject>);
 
 }  // namespace util
 

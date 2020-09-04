@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/rendercontext.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -71,6 +72,9 @@ ListPropertyWidgetQt::ListPropertyWidgetQt(ListProperty* property)
 
     connect(addItemButton_, &QToolButton::clicked, this, [&]() {
         if (listProperty_ && listProperty_->getPrefabCount() > 0) {
+            // need to activate the default render context in case the property contains member
+            // depending on OpenGL
+            RenderContext::getPtr()->activateDefaultRenderContext();
             if (listProperty_->getPrefabCount() == 1) {
                 addNewItem(0);
             } else {

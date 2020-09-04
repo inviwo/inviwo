@@ -61,6 +61,7 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     registerProcessor<plot::ScatterPlotProcessor>();
     registerProcessor<plot::VolumeAxis>();
 
+    registerProperty<plot::ScatterPlotGL::Properties>();
     registerProperty<plot::PCPAxisSettings>();
 
     registerDataVisualizer(std::make_unique<PCPDataFrameVisualizer>(app));

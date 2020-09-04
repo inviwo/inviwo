@@ -35,6 +35,8 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/texture/texture2d.h>
+#include <modules/opengl/texture/textureunit.h>
 
 namespace inviwo {
 
@@ -50,7 +52,13 @@ public:
     void composite(ImageInport& source, ImageOutport& target, ImageType type);
 
 private:
+    void copyTextures(const Image& target);
+    void bindTextures(TextureUnitContainer& cont, const std::string& id);
+
     Shader shader_;
+    Texture2D colorTex_;
+    Texture2D depthTex_;
+    Texture2D pickingTex_;
 };
 
 }  // namespace inviwo

@@ -57,17 +57,58 @@ FrameBufferObject::FrameBufferObject()
     buffersInUse_.resize(maxColorattachments_, false);
 }
 
+FrameBufferObject::FrameBufferObject(FrameBufferObject&& rhs)
+    : id_(rhs.id_)
+    , hasDepthAttachment_(rhs.hasDepthAttachment_)
+    , hasStencilAttachment_(rhs.hasStencilAttachment_)
+    , drawBuffers_(std::move(rhs.drawBuffers_))
+    , buffersInUse_(std::move(rhs.buffersInUse_))
+    , maxColorattachments_(rhs.maxColorattachments_)
+    , prevFbo_(rhs.prevFbo_)
+    , prevDrawFbo_(rhs.prevDrawFbo_)
+    , prevReadFbo_(rhs.prevReadFbo_) {
+    rhs.id_ = 0;
+    rhs.prevFbo_ = 0;
+    rhs.prevDrawFbo_ = 0;
+    rhs.prevReadFbo_ = 0;
+}
+
+FrameBufferObject& FrameBufferObject::operator=(FrameBufferObject&& rhs) noexcept {
+    if (this != &rhs) {
+        id_ = rhs.id_;
+        hasDepthAttachment_ = rhs.hasDepthAttachment_;
+        hasStencilAttachment_ = rhs.hasStencilAttachment_;
+        drawBuffers_ = std::move(rhs.drawBuffers_);
+        buffersInUse_ = std::move(rhs.buffersInUse_);
+        maxColorattachments_ = rhs.maxColorattachments_;
+        prevFbo_ = rhs.prevFbo_;
+        prevDrawFbo_ = rhs.prevDrawFbo_;
+        prevReadFbo_ = rhs.prevReadFbo_;
+
+        rhs.id_ = 0;
+        rhs.prevFbo_ = 0;
+        rhs.prevDrawFbo_ = 0;
+        rhs.prevReadFbo_ = 0;
+    }
+    return *this;
+}
+
 FrameBufferObject::~FrameBufferObject() {
     deactivate();
     glDeleteFramebuffers(1, &id_);
 }
 
 void FrameBufferObject::activate() {
-    // store currently bound FBO
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFbo_);
+    GLint currentFbo = 0;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFbo);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, id_);
-    LGL_ERROR;
+    if (static_cast<GLint>(id_) != currentFbo) {
+        // store currently bound FBO
+        prevFbo_ = currentFbo;
+
+        glBindFramebuffer(GL_FRAMEBUFFER, id_);
+        LGL_ERROR;
+    }
 }
 
 void FrameBufferObject::defineDrawBuffers() {
@@ -78,7 +119,7 @@ void FrameBufferObject::defineDrawBuffers() {
 }
 
 void FrameBufferObject::deactivate() {
-    if (isActive()) {
+    if ((static_cast<GLuint>(prevFbo_) != id_) && isActive()) {
         glBindFramebuffer(GL_FRAMEBUFFER, prevFbo_);
         LGL_ERROR;
     }

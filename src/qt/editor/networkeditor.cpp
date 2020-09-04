@@ -460,6 +460,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 auto action = subMenu->addAction(utilqt::toQString(vis->getName()));
                 connect(action, &QAction::triggered, [this, vis, outport]() {
                     AdjustSceneToChangesBlocker blocker(*this);
+                    RenderContext::getPtr()->activateDefaultRenderContext();
 
                     auto pos = util::getPosition(outport->getProcessor());
                     auto oldPos = util::getPositions(network_);

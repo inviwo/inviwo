@@ -43,6 +43,10 @@ class IVW_MODULE_OPENGL_API FrameBufferObject {
 
 public:
     FrameBufferObject();
+    FrameBufferObject(const FrameBufferObject&) = delete;
+    FrameBufferObject(FrameBufferObject&& rhs);
+    FrameBufferObject& operator=(const FrameBufferObject&) = delete;
+    FrameBufferObject& operator=(FrameBufferObject&& rhs) noexcept;
     ~FrameBufferObject();
 
     /**
