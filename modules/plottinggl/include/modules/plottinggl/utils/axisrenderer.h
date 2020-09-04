@@ -154,6 +154,10 @@ struct AxisLabels {
                                        const vec3&, const vec3&, const vec3&)>;
 
     AxisLabels(Updater updatePos) : updatePos_{updatePos} {}
+    AxisLabels(const AxisLabels&) = default;
+    AxisLabels(AxisLabels&&) noexcept = default;
+    AxisLabels& operator=(const AxisLabels&) = default;
+    AxisLabels& operator=(AxisLabels&&) noexcept = default;
 
     util::TextureAtlas& getAtlas(const AxisSettings& settings, const vec3& start, const vec3& end,
                                  TextRenderer& renderer) {
@@ -230,6 +234,11 @@ private:
     using MPCap = MemPtr<AxisCaption, TextTextureObject, &AxisCaption::axisCaption_>;
     Guard<std::string, MPCap> caption_;
     Guard<PlotTextData, MPCap> settings_;
+
+    static_assert(
+        std::is_nothrow_move_assignable_v<Guard<std::string, MPCap>>);
+    static_assert(
+        std::is_nothrow_move_assignable_v<Guard<PlotTextData, MPCap>>);
 };
 
 }  // namespace detail
@@ -241,9 +250,9 @@ class IVW_MODULE_PLOTTINGGL_API AxisRendererBase {
 public:
     AxisRendererBase(const AxisSettings& settings);
     AxisRendererBase(const AxisRendererBase& rhs);
-    AxisRendererBase(AxisRendererBase&& rhs);
+    AxisRendererBase(AxisRendererBase&& rhs) noexcept = default;
     AxisRendererBase& operator=(const AxisRendererBase& rhs) = delete;
-    AxisRendererBase& operator=(AxisRendererBase&& rhs) noexcept;
+    AxisRendererBase& operator=(AxisRendererBase&& rhs) noexcept = default;
     virtual ~AxisRendererBase() = default;
 
     void setAxisPickingId(size_t id) { axisPickingId_ = id; }
@@ -276,9 +285,9 @@ public:
     using Labels = detail::AxisLabels<ivec2>;
     AxisRenderer(const AxisSettings& settings);
     AxisRenderer(const AxisRenderer& rhs) = default;
-    AxisRenderer(AxisRenderer&& rhs);
+    AxisRenderer(AxisRenderer&& rhs) noexcept = default;
     AxisRenderer& operator=(const AxisRenderer& rhs) = delete;
-    AxisRenderer& operator=(AxisRenderer&& rhs) noexcept;
+    AxisRenderer& operator=(AxisRenderer&& rhs) noexcept = default;
     virtual ~AxisRenderer() = default;
 
     void render(const size2_t& outputDims, const ivec2& startPos, const ivec2& endPos,
@@ -301,9 +310,9 @@ public:
     using Labels = detail::AxisLabels<vec3>;
     AxisRenderer3D(const AxisSettings& property);
     AxisRenderer3D(const AxisRenderer3D& rhs) = default;
-    AxisRenderer3D(AxisRenderer3D&& rhs);
+    AxisRenderer3D(AxisRenderer3D&& rhs) noexcept = default;
     AxisRenderer3D& operator=(const AxisRenderer3D& rhs) = delete;
-    AxisRenderer3D& operator=(AxisRenderer3D&& rhs) noexcept;
+    AxisRenderer3D& operator=(AxisRenderer3D&& rhs) noexcept = default;
     virtual ~AxisRenderer3D() = default;
 
     void render(Camera* camera, const size2_t& outputDims, const vec3& startPos, const vec3& endPos,

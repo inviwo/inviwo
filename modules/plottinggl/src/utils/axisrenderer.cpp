@@ -47,6 +47,7 @@
 #include <algorithm>
 #include <numeric>
 #include <functional>
+#include <type_traits>
 
 namespace inviwo {
 
@@ -121,28 +122,6 @@ AxisRendererBase::AxisRendererBase(const AxisSettings& settings)
 
 AxisRendererBase::AxisRendererBase(const AxisRendererBase& rhs)
     : settings_{rhs.settings_}, shaders_{getShaders()} {}
-
-AxisRendererBase::AxisRendererBase(AxisRendererBase&& rhs)
-    : settings_{rhs.settings_}
-    , textRenderer_{std::move(rhs.textRenderer_)}
-    , quadRenderer_{std::move(rhs.quadRenderer_)}
-    , axisPickingId_{rhs.axisPickingId_}
-    , meshes_{std::move(rhs.meshes_)}
-    , caption_{std::move(rhs.caption_)}
-    , shaders_{std::move(rhs.shaders_)} {}
-
-AxisRendererBase& AxisRendererBase::operator=(AxisRendererBase&& rhs) noexcept {
-    if (this != &rhs) {
-        settings_ = rhs.settings_;
-        textRenderer_ = std::move(rhs.textRenderer_);
-        quadRenderer_ = std::move(rhs.quadRenderer_);
-        axisPickingId_ = rhs.axisPickingId_;
-        meshes_ = std::move(rhs.meshes_);
-        caption_ = std::move(rhs.caption_);
-        shaders_ = std::move(rhs.shaders_);
-    }
-    return *this;
-}
 
 std::shared_ptr<MeshShaderCache> AxisRendererBase::getShaders() {
     static std::weak_ptr<MeshShaderCache> cache_;
@@ -230,17 +209,6 @@ AxisRenderer::AxisRenderer(const AxisSettings& settings)
         std::transform(tickmarks.begin(), tickmarks.end(), labelPos.begin(),
                        [&](auto&& p) { return p.second; });
     }} {}
-
-AxisRenderer::AxisRenderer(AxisRenderer&& rhs)
-    : AxisRendererBase(std::move(rhs)), labels_{std::move(rhs.labels_)} {}
-
-AxisRenderer& AxisRenderer::operator=(AxisRenderer&& rhs) noexcept {
-    if (this != &rhs) {
-        AxisRendererBase::operator=(std::move(rhs));
-        labels_ = std::move(rhs.labels_);
-    }
-    return *this;
-}
 
 void AxisRenderer::render(const size2_t& outputDims, const ivec2& startPos, const ivec2& endPos,
                           bool antialiasing) {
@@ -393,17 +361,6 @@ AxisRenderer3D::AxisRenderer3D(const AxisSettings& settings)
                        [](auto& tick) { return tick.second; });
     }} {}
 
-AxisRenderer3D::AxisRenderer3D(AxisRenderer3D&& rhs)
-    : AxisRendererBase(std::move(rhs)), labels_{std::move(rhs.labels_)} {}
-
-AxisRenderer3D& AxisRenderer3D::operator=(AxisRenderer3D&& rhs) noexcept {
-    if (this != &rhs) {
-        AxisRendererBase::operator=(std::move(rhs));
-        labels_ = std::move(rhs.labels_);
-    }
-    return *this;
-}
-
 void AxisRenderer3D::render(Camera* camera, const size2_t& outputDims, const vec3& startPos,
                             const vec3& endPos, const vec3& tickDirection, bool antialiasing) {
     if (!settings_.get().getAxisVisible()) return;
@@ -448,6 +405,40 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
                                      renderInfo.texTransform, outputDims, anchorPos);
     }
 }
+
+static_assert(std::is_copy_constructible_v<detail::AxisCaption>);
+static_assert(std::is_copy_assignable_v<detail::AxisCaption>);
+static_assert(std::is_nothrow_move_constructible_v<detail::AxisCaption>);
+static_assert(std::is_nothrow_move_assignable_v<detail::AxisCaption>);
+
+static_assert(std::is_nothrow_move_constructible_v<detail::AxisMeshes>);
+static_assert(std::is_nothrow_move_assignable_v<detail::AxisMeshes>);
+
+static_assert(std::is_nothrow_move_constructible_v<TextRenderer>);
+static_assert(std::is_nothrow_move_assignable_v<TextRenderer>);
+static_assert(std::is_nothrow_move_constructible_v<TextureQuadRenderer>);
+static_assert(std::is_nothrow_move_assignable_v<TextureQuadRenderer>);
+
+static_assert(std::is_copy_constructible_v<detail::AxisLabels<ivec2>>);
+static_assert(std::is_copy_assignable_v<detail::AxisLabels<ivec2>>);
+static_assert(std::is_nothrow_move_constructible_v<detail::AxisLabels<ivec2>>);
+static_assert(std::is_nothrow_move_assignable_v<detail::AxisLabels<ivec2>>);
+
+static_assert(std::is_copy_constructible_v<AxisRendererBase>);
+static_assert(!std::is_copy_assignable_v<AxisRendererBase>);
+static_assert(std::is_move_constructible_v<AxisRendererBase>);
+static_assert(std::is_nothrow_move_constructible_v<AxisRendererBase>);
+static_assert(std::is_nothrow_move_assignable_v<AxisRendererBase>);
+
+static_assert(std::is_copy_constructible_v<AxisRenderer>);
+static_assert(!std::is_copy_assignable_v<AxisRenderer>);
+static_assert(std::is_nothrow_move_constructible_v<AxisRenderer>);
+static_assert(std::is_nothrow_move_assignable_v<AxisRenderer>);
+
+static_assert(std::is_copy_constructible_v<AxisRenderer3D>);
+static_assert(!std::is_copy_assignable_v<AxisRenderer3D>);
+static_assert(std::is_nothrow_move_constructible_v<AxisRenderer3D>);
+static_assert(std::is_nothrow_move_assignable_v<AxisRenderer3D>);
 
 }  // namespace plot
 

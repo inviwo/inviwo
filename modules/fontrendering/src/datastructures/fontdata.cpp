@@ -29,6 +29,8 @@
 
 #include <modules/fontrendering/datastructures/fontdata.h>
 
+#include <type_traits>
+
 namespace inviwo {
 FontData::FontData(const FontSettings& s)
     : fontFace{s.getFontFace()}
@@ -39,4 +41,10 @@ std::string FontData::getFontFace() const { return fontFace; }
 int FontData::getFontSize() const { return fontSize; }
 float FontData::getLineSpacing() const { return lineSpacing; }
 vec2 FontData::getAnchorPos() const { return anchorPos; }
+
+static_assert(std::is_copy_constructible_v<FontData>);
+static_assert(std::is_copy_assignable_v<FontData>);
+static_assert(std::is_nothrow_move_constructible_v<FontData>);
+static_assert(std::is_nothrow_move_assignable_v<FontData>);
+
 }  // namespace inviwo

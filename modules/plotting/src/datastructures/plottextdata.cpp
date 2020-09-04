@@ -29,6 +29,8 @@
 
 #include <modules/plotting/datastructures/plottextdata.h>
 
+#include <type_traits>
+
 namespace inviwo {
 
 namespace plot {
@@ -52,6 +54,11 @@ vec2 PlotTextData::getOffset() const { return offset; }
 float PlotTextData::getRotation() const { return rotation; }
 
 const FontSettings& PlotTextData::getFont() const { return font; }
+
+static_assert(std::is_copy_constructible_v<PlotTextData>);
+static_assert(std::is_copy_assignable_v<PlotTextData>);
+static_assert(std::is_nothrow_move_constructible_v<PlotTextData>);
+static_assert(std::is_nothrow_move_assignable_v<PlotTextData>);
 
 }  // namespace plot
 

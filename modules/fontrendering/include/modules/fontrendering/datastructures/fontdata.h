@@ -39,6 +39,10 @@ class IVW_MODULE_FONTRENDERING_API FontData : public FontSettings {
 public:
     FontData() = default;
     FontData(const FontSettings& s);
+    FontData(const FontData&) = default;
+    FontData(FontData&&) noexcept = default;
+    FontData& operator=(const FontData&) = default;
+    FontData& operator=(FontData&&) noexcept = default;
     virtual ~FontData() = default;
 
     // Inherited via FontSettings

@@ -44,6 +44,8 @@
 
 #include <utf8.h>
 
+#include <type_traits>
+
 namespace inviwo {
 
 TextRenderer::TextRenderer(const std::string& fontPath)
@@ -60,7 +62,7 @@ TextRenderer::TextRenderer(const std::string& fontPath)
     fbo_.deactivate();
 }
 
-TextRenderer::TextRenderer(TextRenderer&& rhs)
+TextRenderer::TextRenderer(TextRenderer&& rhs) noexcept
     : glyphAtlas_(std::move(rhs.glyphAtlas_))
     , fontlib_(rhs.fontlib_)
     , fontface_(rhs.fontface_)
@@ -698,6 +700,11 @@ std::shared_ptr<Texture2D> createTextTexture(TextRenderer& textRenderer, std::st
     auto texObj = createTextTextureObject(textRenderer, text, fontColor, tex);
     return texObj.texture;
 }
+
+static_assert(std::is_copy_constructible_v<TextTextureObject>);
+static_assert(std::is_copy_assignable_v<TextTextureObject>);
+static_assert(std::is_nothrow_move_constructible_v<TextTextureObject>);
+static_assert(std::is_nothrow_move_assignable_v<TextTextureObject>);
 
 }  // namespace util
 
