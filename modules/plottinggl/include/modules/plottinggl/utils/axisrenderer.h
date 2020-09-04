@@ -235,10 +235,8 @@ private:
     Guard<std::string, MPCap> caption_;
     Guard<PlotTextData, MPCap> settings_;
 
-    static_assert(
-        std::is_nothrow_move_assignable_v<Guard<std::string, MPCap>>);
-    static_assert(
-        std::is_nothrow_move_assignable_v<Guard<PlotTextData, MPCap>>);
+    static_assert(std::is_nothrow_move_assignable_v<Guard<std::string, MPCap>>);
+    static_assert(std::is_nothrow_move_assignable_v<Guard<PlotTextData, MPCap>>);
 };
 
 }  // namespace detail
