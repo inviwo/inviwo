@@ -70,9 +70,6 @@ void ImageCompositor::composite(ImageInport& source, ImageOutport& target, Image
         shader_.activate();
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
 
-        GLint currentFbo = 0;
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFbo);
-
         TextureUnitContainer units;
         utilgl::bindAndSetUniforms(shader_, units, *source.getData(), "tex0",
                                    ImageType::ColorDepthPicking);
