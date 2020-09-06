@@ -101,8 +101,10 @@ void from_json(const json& j, OptionPropertyOption<T>& o) {
  */
 template <typename T>
 void to_json(json& j, const TemplateOptionProperty<T>& p) {
-    j = json{
+    if (!p.getOptions().empty()) {
+        j = json{
         {"value", p.get()}, {"selectedIndex", p.getSelectedIndex()}, {"options", p.getOptions()}};
+    }
 }
 
 /**

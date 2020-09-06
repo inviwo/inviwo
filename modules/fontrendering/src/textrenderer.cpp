@@ -561,8 +561,11 @@ void TextRenderer::createDefaultGlyphAtlas() {
             continue;
         }
         const auto& elem = it->second;
-        glTexSubImage2D(GL_TEXTURE_2D, 0, elem.texAtlasPos.x, elem.texAtlasPos.y, elem.size.x,
-                        elem.size.y, GL_RED, GL_UNSIGNED_BYTE, fontface_->glyph->bitmap.buffer);
+        if (fontface_->glyph->bitmap.buffer) {
+            glTexSubImage2D(GL_TEXTURE_2D, 0, elem.texAtlasPos.x, elem.texAtlasPos.y, elem.size.x,
+                    elem.size.y, GL_RED, GL_UNSIGNED_BYTE, fontface_->glyph->bitmap.buffer);
+        }
+
     }
 
     // insert font cache into global map
