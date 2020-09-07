@@ -30,6 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 
@@ -57,7 +58,7 @@ void forEachPixel(const size2_t dims, C callback) {
 }
 
 template <typename C>
-void forEachPixel(const LayerRAM &layer, C callback) {
+void forEachPixel(const LayerRAM& layer, C callback) {
     forEachPixel(layer.getDimensions(), callback);
 }
 
@@ -87,13 +88,13 @@ void forEachPixelParallel(const size2_t dims, C callback, size_t jobs = 0) {
         }));
     }
 
-    for (const auto &e : futures) {
+    for (const auto& e : futures) {
         e.wait();
     }
 }
 
 template <typename C>
-void forEachPixelParallel(const LayerRAM &layer, C callback, size_t jobs = 0) {
+void forEachPixelParallel(const LayerRAM& layer, C callback, size_t jobs = 0) {
     forEachPixelParallel(layer.getDimensions(), callback, jobs);
 }
 

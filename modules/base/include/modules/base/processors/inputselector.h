@@ -130,7 +130,12 @@ InputSelector<Inport, Outport>::InputSelector()
 
 template <typename Inport, typename Outport>
 void InputSelector<Inport, Outport>::process() {
-    outport_.setData(inport_.getVectorData().at(selectedPort_.get()));
+    auto data = inport_.getVectorData();
+    if (selectedPort_.get() < data.size()) {
+        outport_.setData(data[selectedPort_.get()]);
+    } else {
+        outport_.setData(data.back());
+    }
 }
 
 template <typename InportType, typename OutportType>
