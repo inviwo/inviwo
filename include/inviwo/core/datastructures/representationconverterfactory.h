@@ -132,7 +132,7 @@ template <typename BaseRepr>
 const RepresentationConverterPackage<BaseRepr>*
 RepresentationConverterFactory<BaseRepr>::getRepresentationConverter(ConverterID id) {
     RepresentationConverterPackage<BaseRepr>* res = nullptr;
-    const size_t steps = std::numeric_limits<size_t>::max();
+    constexpr size_t steps = std::numeric_limits<size_t>::max();
     {
         std::unique_lock<std::mutex> lock(mutex_);
         auto range = packages_.equal_range(id);
@@ -166,7 +166,7 @@ RepresentationConverterFactory<BaseRepr>::createConverterPackage(ConverterID id)
     std::type_index target = id.second;
 
     std::unordered_set<std::type_index> verts;
-    for (auto converter : converters_) {
+    for (auto& converter : converters_) {
         verts.insert(converter.first.first);
         verts.insert(converter.first.second);
     }
@@ -177,7 +177,7 @@ RepresentationConverterFactory<BaseRepr>::createConverterPackage(ConverterID id)
     dist[source] = 0;
 
     std::unordered_set<std::type_index> Q;
-    for (auto v : verts) {
+    for (const auto& v : verts) {
         if (v != source) {
             dist[v] = std::numeric_limits<size_t>::max();
         }
@@ -187,16 +187,17 @@ RepresentationConverterFactory<BaseRepr>::createConverterPackage(ConverterID id)
     while (!Q.empty()) {
         std::size_t steps = std::numeric_limits<size_t>::max();
         std::type_index u = *Q.begin();
-        for (auto t : Q)
+        for (const auto& t : Q) {
             if (dist[t] < steps) {
                 steps = dist[t];
                 u = t;
             }
+        }
         Q.erase(u);
 
         if (u == target) break;
 
-        for (auto converter : converters_) {
+        for (const auto& converter : converters_) {
             if (converter.first.first == u) {
                 auto v = converter.first.second;
                 size_t alt = dist[u] + 1;
