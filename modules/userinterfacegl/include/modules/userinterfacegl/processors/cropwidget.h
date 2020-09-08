@@ -111,11 +111,11 @@ private:
     void createLineStripMesh();
     void updateAxisRanges();
     void updateBoundingCube();
-    void objectPicked(PickingEvent *p);
-    void rangePositionHandlePicked(CropAxis &cropAxis, PickingEvent *p, InteractionElement element);
+    void objectPicked(PickingEvent* p);
+    void rangePositionHandlePicked(CropAxis& cropAxis, PickingEvent* p, InteractionElement element);
 
     AnnotationInfo getAxis(CartesianCoordinateAxis majorAxis);
-    void renderAxis(const CropAxis &axis);
+    void renderAxis(const CropAxis& axis);
 
     ImageInport inport_;
     VolumeInport volume_;
@@ -155,7 +155,7 @@ private:
     bool isMouseBeingPressedAndHold_;
     ivec2 lastState_;
 
-    std::array<std::shared_ptr<Mesh>, 2> interactionHandleMesh_;
+    std::array<std::shared_ptr<const Mesh>, 2> interactionHandleMesh_;
 
     std::shared_ptr<Mesh> linestrip_;
 

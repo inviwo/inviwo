@@ -1,5 +1,6 @@
 /* Eviorment customizations
  *  * disabledProperties
+ *  * disableFormat
  *  * disableUnittest
  *  * disableIntegration
  *  * disableRegression
@@ -139,6 +140,7 @@ def wrap(def state, String reportSlackChannel, Closure fun) {
 }
 
 def format(def state, repo) {
+    if(state.env.disableFormat) return
     cmd("Format Tests", 'build') {
         checked(state, 'Format Test', false) {
             def labels = ifdef({state.pullRequest})?.labels.collect { it }
