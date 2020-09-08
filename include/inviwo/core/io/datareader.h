@@ -34,6 +34,7 @@
 
 #include <vector>
 #include <memory>
+#include <any>
 
 namespace inviwo {
 
@@ -60,6 +61,13 @@ public:
 
     const std::vector<FileExtension>& getExtensions() const;
     void addExtension(FileExtension ext);
+
+    virtual bool setOption([[maybe_unused]] std::string_view key, [[maybe_unused]] std::any value) {
+        return false;
+    }
+    virtual std::any getOption([[maybe_unused]] std::string_view key) {
+        return std::any{};
+    }
 
 private:
     std::vector<FileExtension> extensions_;

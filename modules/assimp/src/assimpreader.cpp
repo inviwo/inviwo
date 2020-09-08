@@ -396,4 +396,49 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string& filePath) {
     return mesh;
 }
 
+inline bool AssimpReader::setOption(std::string_view key, std::any value) {
+    if (auto* v = std::any_cast<bool>(&value); v && key == "FixInvalidData") {
+        setFixInvalidDataFlag(*v);
+        return true;
+    } else if (auto* v = std::any_cast<LogVerbosity>(&value); v && key == "LogLevel") {
+        switch (*v) {
+            case LogVerbosity::Error:
+                setLogLevel(AssimpLogLevel::Error);
+                return true;
+            case LogVerbosity::Warn:
+                setLogLevel(AssimpLogLevel::Warn);
+                return true;
+            case LogVerbosity::Info:
+                setLogLevel(AssimpLogLevel::Info);
+                return true;
+            case LogVerbosity::None:
+                setLogLevel(AssimpLogLevel::None);
+                return true;
+        }
+        return false;
+    }
+
+    return false;
+}
+
+inline std::any AssimpReader::getOption(std::string_view key) {
+    if (key == "FixInvalidData") {
+
+    } else if (key == "LogLevel") {
+        switch (getLogLevel()) {
+            case AssimpLogLevel::Error:
+                return LogVerbosity::Error;
+            case AssimpLogLevel::Warn:
+                return LogVerbosity::Warn;
+            case AssimpLogLevel::Info:
+                return LogVerbosity::Info;
+            case AssimpLogLevel::Debug:
+                return LogVerbosity::Info;
+            case AssimpLogLevel::None:
+                return LogVerbosity::None;
+        }
+    }
+    return std::any{};
+}
+
 }  // namespace inviwo

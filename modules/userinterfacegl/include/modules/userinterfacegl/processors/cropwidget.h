@@ -155,7 +155,7 @@ private:
     bool isMouseBeingPressedAndHold_;
     ivec2 lastState_;
 
-    std::array<std::shared_ptr<Mesh>, 2> interactionHandleMesh_;
+    std::array<std::shared_ptr<const Mesh>, 2> interactionHandleMesh_;
 
     std::shared_ptr<Mesh> linestrip_;
 
