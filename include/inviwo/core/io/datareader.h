@@ -62,12 +62,24 @@ public:
     const std::vector<FileExtension>& getExtensions() const;
     void addExtension(FileExtension ext);
 
+    /**
+     * @brief Set reader specific options
+     * See the documentation of the specific reader about which options that are available
+     * @param key the option to set
+     * @param value the new value for the option
+     * @return true of the option was recognized and set, otherwise false
+     */
     virtual bool setOption([[maybe_unused]] std::string_view key, [[maybe_unused]] std::any value) {
         return false;
     }
-    virtual std::any getOption([[maybe_unused]] std::string_view key) {
-        return std::any{};
-    }
+
+    /**
+     * @brief Query the value of an reader specific option
+     * @param key the option to query
+     * @return an std::any with the requested option of an empty std::any of the option was not
+     * found
+     */
+    virtual std::any getOption([[maybe_unused]] std::string_view key) { return std::any{}; }
 
 private:
     std::vector<FileExtension> extensions_;
