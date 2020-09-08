@@ -111,11 +111,11 @@ private:
     void createLineStripMesh();
     void updateAxisRanges();
     void updateBoundingCube();
-    void objectPicked(PickingEvent *p);
-    void rangePositionHandlePicked(CropAxis &cropAxis, PickingEvent *p, InteractionElement element);
+    void objectPicked(PickingEvent* p);
+    void rangePositionHandlePicked(CropAxis& cropAxis, PickingEvent* p, InteractionElement element);
 
     AnnotationInfo getAxis(CartesianCoordinateAxis majorAxis);
-    void renderAxis(const CropAxis &axis);
+    void renderAxis(const CropAxis& axis);
 
     ImageInport inport_;
     VolumeInport volume_;
