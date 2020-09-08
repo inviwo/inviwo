@@ -93,7 +93,7 @@ public:
 
 private:
     void reload(const std::string& fileName) {
-        const auto file = QString::fromStdString(fileName);
+        const auto file = utilqt::toQString(fileName);
         const auto ns = QHelpEngineCore::namespaceName(file);
 
         engine_->unregisterDocumentation(ns);
@@ -143,7 +143,7 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
     // settings folder, we will create the folder if it does not exists
     const std::string helpfile = app->getPath(PathType::Settings, "/inviwo.qhc", true);
 
-    helpEngine_ = new QHelpEngineCore(QString::fromStdString(helpfile), this);
+    helpEngine_ = new QHelpEngineCore(utilqt::toQString(helpfile), this);
     // Any old data will be left in the since last time, we want to clear that so we can load the
     // new qch files.
     for (const auto& ns : helpEngine_->registeredDocumentations()) {
@@ -166,7 +166,7 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
     });
 
     if (!helpEngine_->setupData()) {
-        const std::string error{helpEngine_->error().toUtf8().constData()};
+        const std::string error = utilqt::fromQString(helpEngine_->error());
         delete helpEngine_;
         throw Exception("Failed to setup the help engine:" + error, IVW_CONTEXT);
     }
@@ -212,24 +212,22 @@ void HelpWidget::updateDoc() {
     current_ = requested_;
 
     const QString path("qthelp://org.inviwo.base/doc/docpage-%1.html");
-    QUrl foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(requested_))));
+    QUrl foundUrl = helpEngine_->findFile(QUrl(path.arg(utilqt::toQString(requested_))));
 
     if (foundUrl.isValid() && !helpEngine_->fileData(foundUrl).isEmpty()) {
-        auto txt = foundUrl.toString();
         helpBrowser_->setSource(foundUrl);
         return;
     }
 
     std::string classIdentifier = requested_;
     replaceInString(classIdentifier, ".", "_8");
-    foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(classIdentifier))));
+    foundUrl = helpEngine_->findFile(QUrl(path.arg(utilqt::toQString(classIdentifier))));
     if (foundUrl.isValid() && !helpEngine_->fileData(foundUrl).isEmpty()) {
-        auto txt = foundUrl.toString();
         helpBrowser_->setSource(foundUrl);
         return;
     }
 
-    helpBrowser_->setText(QString::fromStdString("No documentation available for: " + requested_));
+    helpBrowser_->setText(utilqt::toQString("No documentation available for: " + requested_));
 }
 
 HelpBrowser::HelpBrowser(HelpWidget* parent, QHelpEngineCore* helpEngine)
