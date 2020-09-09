@@ -35,11 +35,13 @@
 #include <inviwo/core/util/glmvec.h>
 
 #include <type_traits>
+#include <string_view>
 
 namespace inviwo {
 
 class Processor;
 class ProcessorMetaData;
+class InviwoModule;
 
 namespace util {
 
@@ -110,6 +112,23 @@ std::unique_ptr<T> makeProcessor(ivec2 pos, Args&&... args) {
 
     return p;
 }
+
+/**
+ * @brief Find which module that registered a processor
+ * @param processor the processor to look for
+ * @param app the InviwoApplication needed to get the modules
+ * @return the InviwoModule that registered the processor or nullptr if not found
+ */
+IVW_CORE_API InviwoModule* getProcessorModule(Processor* processor, const InviwoApplication& app);
+
+/**
+ * @brief Find which module that registered a processor
+ * @param classIdentifier the class identifier of the processor to look for
+ * @param app the InviwoApplication needed to get the modules
+ * @return the InviwoModule that registered the processor or nullptr if not found
+ */
+IVW_CORE_API InviwoModule* getProcessorModule(std::string_view classIdentifier,
+                                              const InviwoApplication& app);
 
 }  // namespace util
 

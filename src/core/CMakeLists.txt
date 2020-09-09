@@ -690,6 +690,7 @@ set(TEST_FILES
     tests/unittests/serialize-container-test.cpp
     tests/unittests/serializer-polymorphic-test.cpp
     tests/unittests/serializer-test.cpp
+    tests/unittests/stringconversion-test.cpp
     tests/unittests/tfprimitiveset-test.cpp
     tests/unittests/typedmesh-test.cpp
     tests/unittests/utilities-test.cpp
