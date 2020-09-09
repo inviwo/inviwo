@@ -52,4 +52,4 @@ TEST(StringConversion, toWstring) {
     EXPECT_EQ(wstr, conv);
 }
 
-}  // namespace inviwo 
+}  // namespace inviwo

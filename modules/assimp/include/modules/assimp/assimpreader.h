@@ -63,7 +63,7 @@ public:
     virtual std::shared_ptr<Mesh> readData(const std::string& filePath) override;
 
     virtual bool setOption(std::string_view key, std::any value) override;
-    virtual std::any getOption(std::string_view key);
+    virtual std::any getOption(std::string_view key) override;
 
 private:
     AssimpLogLevel

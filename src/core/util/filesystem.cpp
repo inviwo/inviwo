@@ -661,21 +661,21 @@ void createDirectoryRecursively(std::string path) {
 #ifdef _WIN32
         const auto wpart = util::toWstring(pathPart);
         if (_wmkdir(wpart.c_str()) != 0) {
-            if (errno != EEXIST) {
+            if (errno != EEXIST && errno != EISDIR) {
                 throw Exception("Unable to create directory " + path,
                                 IVW_CONTEXT_CUSTOM("filesystem"));
             }
         }
 #elif defined(__unix__)
         if (mkdir(pathPart.c_str(), 0755) != 0) {
-            if (errno != EEXIST) {
+            if (errno != EEXIST && errno != EISDIR) {
                 throw Exception("Unable to create directory " + path,
                                 IVW_CONTEXT_CUSTOM("filesystem"));
             }
         }
 #elif defined(__APPLE__)
         if (mkdir(pathPart.c_str(), 0755) != 0) {
-            if (errno != EEXIST) {
+            if (errno != EEXIST && errno != EISDIR) {
                 throw Exception("Unable to create directory " + path,
                                 IVW_CONTEXT_CUSTOM("filesystem"));
             }
