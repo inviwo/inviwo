@@ -40,9 +40,10 @@
 #include <sys/stat.h>
 
 // For working directory
-#include <stdio.h>  // FILENAME_MAX
+#include <cstdio>  // FILENAME_MAX
 #include <codecvt>
 #include <cctype>  // isdigit()
+#include <cerrno>
 
 #ifdef WIN32
 struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax error: 'identifier' was
@@ -217,13 +218,9 @@ IVW_CORE_API std::string getInviwoUserSettingsPath() {
     PWSTR path;
     HRESULT hr = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, nullptr, &path);
     if (SUCCEEDED(hr)) {
-        char ch[1024];
-        static const char DefChar = ' ';
-        WideCharToMultiByte(CP_ACP, 0, path, -1, ch, 1024, &DefChar, nullptr);
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-        auto tstConv = converter.to_bytes(path);
+        const std::wstring wpath(path);
         CoTaskMemFree(path);
-        ss << std::string(ch) << "/Inviwo";
+        ss << util::fromWstring(wpath) << "/Inviwo";
     } else {
         throw Exception("SHGetKnownFolderPath failed to get settings folder",
                         IVW_CONTEXT_CUSTOM("filesystem"));
@@ -662,37 +659,33 @@ void createDirectoryRecursively(std::string path) {
         pathPart += "/" + v.front();
         v.erase(v.begin());
 #ifdef _WIN32
-        _mkdir(pathPart.c_str());
+        const auto wpart = util::toWstring(pathPart);
+        if (_wmkdir(wpart.c_str()) != 0) {
+            if (errno != EEXIST && errno != EISDIR) {
+                throw Exception("Unable to create directory " + path,
+                                IVW_CONTEXT_CUSTOM("filesystem"));
+            }
+        }
 #elif defined(__unix__)
-        mkdir(pathPart.c_str(), 0755);
+        if (mkdir(pathPart.c_str(), 0755) != 0) {
+            if (errno != EEXIST && errno != EISDIR) {
+                throw Exception("Unable to create directory " + path,
+                                IVW_CONTEXT_CUSTOM("filesystem"));
+            }
+        }
 #elif defined(__APPLE__)
-        mkdir(pathPart.c_str(), 0755);
+        if (mkdir(pathPart.c_str(), 0755) != 0) {
+            if (errno != EEXIST && errno != EISDIR) {
+                throw Exception("Unable to create directory " + path,
+                                IVW_CONTEXT_CUSTOM("filesystem"));
+            }
+        }
 #else
-        LogWarnCustom("", "createDirectoryRecursively is not implemented for current system");
+        throw Exception("createDirectoryRecursively is not implemented for current system",
+                        IVW_CONTEXT_CUSTOM("filesystem"));
 #endif
     }
-}
-
-// ---------- Helper function to retrieve inviwo settings folder -----------//
-#ifdef _WIN32
-static std::string helperSHGetKnownFolderPath(const KNOWNFOLDERID& id) {
-    PWSTR path;
-    HRESULT hr = SHGetKnownFolderPath(id, 0, nullptr, &path);
-    std::string s = "";
-    if (SUCCEEDED(hr)) {
-        char ch[1024];
-        static const char DefChar = ' ';
-        WideCharToMultiByte(CP_ACP, 0, path, -1, ch, 1024, &DefChar, nullptr);
-        s = std::string(ch);
-    } else {
-        LogErrorCustom("filesystem::getUserSettingsPath",
-                       "SHGetKnownFolderPath failed to get settings folder");
-    }
-
-    CoTaskMemFree(path);
-    return s;
-}
-#endif
+}  // namespace filesystem
 
 std::string addBasePath(const std::string& url) {
     if (url.empty()) return findBasePath();
@@ -879,6 +872,6 @@ std::string cleanupPath(const std::string& path) {
     return result;
 }
 
-}  // end namespace filesystem
+}  // namespace filesystem
 
 }  // end namespace inviwo

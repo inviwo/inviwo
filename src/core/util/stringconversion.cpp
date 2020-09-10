@@ -61,9 +61,20 @@ std::wstring toWstring(const std::string& str) {
 #else
     auto state = std::mbstate_t();
     auto sptr = str.data();
-    size_t len = std::mbsrtowcs(nullptr, &sptr, 0, &state) + 1;
+    const char* loc = nullptr;
+    size_t len = std::mbsrtowcs(nullptr, &sptr, 0, &state);
+    if (len == static_cast<std::size_t>(-1)) {
+        loc = std::setlocale(LC_CTYPE, nullptr);
+        std::setlocale(LC_CTYPE, "en_US.UTF-8");
+        len = std::mbsrtowcs(nullptr, &sptr, 0, &state);
+        if (len == static_cast<std::size_t>(-1)) {
+            if (loc) std::setlocale(LC_CTYPE, loc);
+            throw Exception("Invalid unicode sequence", IVW_CONTEXT_CUSTOM("String Conversion"));
+        }
+    }
     std::wstring result(len, 0);
     std::mbsrtowcs(result.data(), &sptr, result.size(), &state);
+    if (loc) std::setlocale(LC_CTYPE, loc);
     return result;
 #endif
 }
@@ -92,9 +103,20 @@ std::string fromWstring(const std::wstring& str) {
 #else
     auto state = std::mbstate_t();
     auto sptr = str.data();
-    size_t len = std::wcsrtombs(nullptr, &sptr, 0, &state) + 1;
+    const char* loc = nullptr;
+    size_t len = std::wcsrtombs(nullptr, &sptr, 0, &state);
+    if (len == static_cast<std::size_t>(-1)) {
+        loc = std::setlocale(LC_CTYPE, nullptr);
+        std::setlocale(LC_CTYPE, "en_US.UTF-8");
+        len = std::wcsrtombs(nullptr, &sptr, 0, &state);
+        if (len == static_cast<std::size_t>(-1)) {
+            if (loc) std::setlocale(LC_CTYPE, loc);
+            throw Exception("Invalid unicode sequence", IVW_CONTEXT_CUSTOM("String Conversion"));
+        }
+    }
     std::string result(len, 0);
     std::wcsrtombs(result.data(), &sptr, result.size(), &state);
+    if (loc) std::setlocale(LC_CTYPE, loc);
     return result;
 #endif
 }
