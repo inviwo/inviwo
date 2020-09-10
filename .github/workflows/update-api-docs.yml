@@ -1,0 +1,53 @@
+name: Update API Docs
+
+on: 
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Build Inviwo]
+    types: 
+      - completed
+    branches:
+      - 'master'
+      - 'feature/github-action'
+
+jobs:
+  update-api-docs:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: windows-latest
+    steps:
+      - name: Clone Inviwo
+        uses: actions/checkout@v2
+        with: 
+          ref: gh-pages
+          path: inviwo
+          submodules: false
+
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          name: inviwo-python-api
+          path: inviwo/python-api
+          workflow: inviwo.yml
+
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          name: inviwo-cpp-api
+          path: inviwo/cpp-api
+          workflow: inviwo.yml
+
+      - run: |
+          cd inviwo
+          git config user.name Inviwo-Team
+          git config user.email team@inviwo.org
+          git add python-api
+          git commit -m "Update Python API Docs"
+          git push
+
+      - run: |
+          cd inviwo
+          git config user.name Inviwo-Team
+          git config user.email team@inviwo.org
+          git add cpp-api
+          git commit -m "Update C++ API Docs"
+          git push
