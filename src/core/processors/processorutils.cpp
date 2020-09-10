@@ -79,7 +79,8 @@ void setSelected(Processor* processor, bool selected) {
     }
 }
 
-InviwoModule* getProcessorModule(Processor* processor, const InviwoApplication& app) {
+InviwoModule* getProcessorModule(const Processor* processor, const InviwoApplication& app) {
+    if (!processor) return nullptr;
     return getProcessorModule(processor->getClassIdentifier(), app);
 }
 
