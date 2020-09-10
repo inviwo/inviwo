@@ -32,6 +32,7 @@
 
 #include <random>
 #include <iomanip>
+#include <clocale>
 
 #if defined(__clang__) || defined(__GNUC__)
 #include <cstdlib>
