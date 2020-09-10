@@ -1,0 +1,47 @@
+name: CMake
+
+on: [push]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+
+    - name: Vcpkg
+      uses: lukka/run-vcpkg@v4
+      id: runvcpkg
+      with:
+        vcpkgArguments: 'qt5 assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp zlib] libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib'
+        vcpkgTriplet: 'x64-windows-static'
+        vcpkgGitCommitId: '18ab4b72a26284f0df28295ce7bf9b21c96f20f4'
+
+    - name: Prints output of run-vcpkg's task
+      run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_TRIPLET_OUT }}'"
+
+    - uses: lukka/get-cmake@latest
+
+    - uses: actions/checkout@v2
+      with: 
+        path: inviwo
+        submodules: recursive
+        
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{runner.workspace}}/build
+      run: >
+        cmake -S $GITHUB_WORKSPACE/inviwo 
+          -B ${{runner.workspace}}/build 
+          -DCMAKE_TOOLCHAIN_FILE==${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT}}/scripts/buildsystems/vcpkg.cmake
+          -DVCPKG_TARGET_TRIPLET='x64-windows-static'
+          -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+          
+
+    - name: Build
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: cmake --build . --config $BUILD_TYPE
