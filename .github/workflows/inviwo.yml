@@ -1,0 +1,178 @@
+name: Build Inviwo
+
+on: [push]
+
+env:
+  BUILD_TYPE: Release
+  IVW_VCPKG_SHA: '2a6442cb934de2f99c8ac5bbd8a9dcf5538aee98'   # vcpkg "version" to use
+  #IVW_VCPKG_SHA: '399458a9d9a763c0e06cc979464a17074fe8517d'  # nuget verbose version, git remote add inviwo https://github.com/inviwo/vcpkg.git
+  VCPKG_BINARY_SOURCES : 'clear;nuget,GitHub,readwrite'       # recognized by vcpkg
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-20.04]
+        include:
+          - os: 'windows-latest'
+            triplet: 'x64-windows'
+            mono: ''
+            cmake: '-DIVW_MODULE_HDF5=ON'
+            generator: 'Visual Studio 16 2019' 
+          - os: 'macos-latest'
+            triplet: 'x64-osx'
+            mono: 'mono'
+            cmake: '-DIVW_MODULE_HDF5=OFF'
+            generator: 'Ninja' 
+          - os: 'ubuntu-20.04'
+            triplet: 'x64-linux'
+            mono: 'mono'
+            cmake: '-DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF' 
+            generator: 'Ninja' 
+      fail-fast: false
+      
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 360
+    
+    steps:  
+    - name: Setup VCPKG
+      shell: bash
+      run: |
+        set -x
+        cd $VCPKG_INSTALLATION_ROOT
+        git fetch --all
+        git reset --hard $IVW_VCPKG_SHA
+        ./bootstrap-vcpkg.sh
+            
+    - name: 'Setup NuGet Credentials'
+      shell: bash
+      run: >
+        ${{ matrix.mono }} `vcpkg fetch nuget | tail -n 1`
+        sources add
+        -source "https://nuget.pkg.github.com/inviwo/index.json"
+        -storepasswordincleartext
+        -name "GitHub"
+        -username "inviwo"
+        -password "${{ secrets.GITHUB_TOKEN }}"
+
+    - name: Apt Install
+      shell: bash
+      if: runner.os == 'Linux'
+      run: sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev ninja-build doxygen
+      
+    - name: Brew Install
+      shell: bash
+      if: runner.os == 'macOS'
+      run: brew install ninja doxygen
+
+    - name: Install Scoop
+      if: runner.os == 'Windows'
+      run: |
+        Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+        scoop bucket add extras
+        scoop install nsis doxygen
+
+    - name: VCPKG Install
+      shell: bash
+      run: > 
+        vcpkg --triplet ${{ matrix.triplet }} install
+        assimp benchmark cimg eigen3 fmt freetype glfw3 glm gtest zlib 
+        hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json 
+        openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp 
+    
+    - name: Glew Install
+      shell: bash
+      if: runner.os != 'Linux'
+      run: vcpkg --triplet ${{ matrix.triplet }} install glew
+    
+    - name: Install Numpy
+      shell: bash
+      run: pip3 install numpy
+   
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: 5.15.0
+        dir: ${{ github.workspace }}
+           
+    - uses: actions/checkout@v2
+      with: 
+        path: inviwo
+        submodules: recursive
+        
+    - name: Configure CMake
+      shell: bash
+      run: >
+        cmake -S inviwo -B build -G '${{ matrix.generator }}'
+        -DVCPKG_TARGET_TRIPLET='${{ matrix.triplet }}'
+        -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+        -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+        -DIVW_CFG_CMAKE_DEBUG=ON
+        -DIVW_CFG_PRECOMPILED_HEADERS=OFF
+        -DIVW_DOXYGEN_PROJECT=ON
+        -DIVW_TEST_UNIT_TESTS_RUN_ON_BUILD=OFF
+        -DIVW_TEST_BENCHMARKS=OFF
+        -DIVW_TEST_INTEGRATION_TESTS=ON
+        -DIVW_USE_OPENMP=OFF
+        -DIVW_USE_OPENEXR=OFF
+        -DIVW_MODULE_CIMG=ON
+        -DIVW_PACKAGE_INSTALLER=ON
+        -DIVW_USE_EXTERNAL_ASSIMP=ON
+        -DIVW_USE_EXTERNAL_BENCHMARK=ON
+        -DIVW_USE_EXTERNAL_EIGEN=ON
+        -DIVW_USE_EXTERNAL_FMT=ON
+        -DIVW_USE_EXTERNAL_FREETYPE=ON
+        -DIVW_USE_EXTERNAL_GLFW=ON
+        -DIVW_USE_EXTERNAL_GLM=ON
+        -DIVW_USE_EXTERNAL_GTEST=ON
+        -DIVW_USE_EXTERNAL_HDF5=ON
+        -DIVW_USE_EXTERNAL_IMG=ON
+        -DIVW_USE_EXTERNAL_JSON=ON
+        -DIVW_USE_EXTERNAL_CIMG=ON
+        -DIVW_USE_EXTERNAL_GLEW=ON
+        -DIVW_USE_EXTERNAL_TCLAP=ON
+        -DIVW_USE_EXTERNAL_UTFCPP=ON
+        -DIVW_USE_EXTERNAL_TINYDIR=ON
+        -DIVW_USE_EXTERNAL_PYBIND11=ON
+        -DIVW_USE_EXTERNAL_OPENEXR=ON
+        ${{ matrix.cmake }}
+         
+    - name: Build
+      timeout-minutes: 180
+      working-directory: build
+      shell: bash
+      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel
+
+    - name: Package
+      if: runner.os == 'Windows'
+      working-directory: build
+      shell: bash
+      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel --target package 
+
+    - name: Upload Windows
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v2
+      with:
+        name: inviwo-installer-win
+        path: build/inviwo-v*.exe
+   
+    #- name: Upload macOS
+    #  if: runner.os == 'macOS'
+    #  uses: actions/upload-artifact@v2
+    #  with:
+    #    name: inviwo-installer-macos
+    #    path: build/inviwo-v*.dmg
+
+    #- name: Upload Linux
+    #  if: runner.os == 'Linux'
+    #  uses: actions/upload-artifact@v2
+    #  with:
+    #    name: inviwo-installer-ubuntu
+    #    path: build/inviwo-v*.zip
+
+    - name: Doxygen
+      working-directory: build
+      shell: bash
+      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel --target DOXY-ALL 
+
+
