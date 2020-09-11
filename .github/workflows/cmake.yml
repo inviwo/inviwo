@@ -31,7 +31,7 @@ jobs:
     - name: VCPKG Clone
       uses: actions/checkout@v2.3.2
       with:
-        repository: 'https://github.com/microsoft/vcpkg.git'
+        repository: 'microsoft/vcpkg'
         ref: ${{ env.VCPKG_SHA }}
         path: vcpkg
     
