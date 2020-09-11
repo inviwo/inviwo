@@ -16,7 +16,7 @@ jobs:
       uses: lukka/run-vcpkg@v4
       id: runvcpkg
       with:
-        vcpkgArguments: 'qt5 assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib'
+        vcpkgArguments: 'qt5[core,tool,svg] assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib'
         vcpkgTriplet: 'x64-windows-static'
         vcpkgGitCommitId: '18ab4b72a26284f0df28295ce7bf9b21c96f20f4'
 
