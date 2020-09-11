@@ -32,7 +32,7 @@ jobs:
       uses: actions/checkout@v2.3.2
       with:
         repository: 'https://github.com/microsoft/vcpkg.git'
-        ref: ${{VCPKG_SHA}}
+        ref: ${{ env.VCPKG_SHA }}
         path: vcpkg
     
     - name: VCPKG Bootstrap
@@ -57,17 +57,13 @@ jobs:
         
     - name: Configure CMake
       shell: bash
-      working-directory: ${{runner.workspace}}/build
       run: >
-        cmake 
-          -S $GITHUB_WORKSPACE/inviwo 
-          -B ${{runner.workspace}}/build 
-          -DCMAKE_TOOLCHAIN_FILE==${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT}}/scripts/buildsystems/vcpkg.cmake
+        cmake -S inviwo -B build 
+          -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake
           -DVCPKG_TARGET_TRIPLET='x64-windows-static'
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE
           
-
     - name: Build
-      working-directory: ${{runner.workspace}}/build
+      working-directory: build
       shell: bash
       run: cmake --build . --config $BUILD_TYPE
