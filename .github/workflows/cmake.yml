@@ -39,6 +39,7 @@ jobs:
         assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest 
         hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json 
         openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib
+        qt5[core,svg]
   
     # qt5[core,svg] assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo 
     # libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib
