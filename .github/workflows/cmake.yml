@@ -26,7 +26,7 @@ jobs:
     - name: Cache Vcpkg binaries
       uses: inviwo/cache@v2
       with:
-        path: '${{ env.VCPKG_BIN_CACHE }}'
+        path: '${{ env.VCPKG_BINARY_SOURCES }}'
         key: 'vcpkg-${{ env.VCPKG_DEFAULT_TRIPLET }}-${{ env.VCPKG_SHA }}'  
   
     - name: VCPKG Clone
