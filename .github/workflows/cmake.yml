@@ -6,6 +6,7 @@ env:
   BUILD_TYPE: Release
   VCPKG_SHA: '18ab4b72a26284f0df28295ce7bf9b21c96f20f4'
   VCPKG_TRIPLET: 'x64-windows-static'
+  VCPKG_BIN_CACHE: '${{ github.workspace }}/vcpkg-cache'
 
 jobs:
   build:
@@ -13,7 +14,7 @@ jobs:
 
     steps:
     - name: Cache Vcpkg
-      uses: actions/cache@v2
+      uses: inviwo/cache@v2
       with:
         path: |
           vcpkg
@@ -23,9 +24,9 @@ jobs:
         key: 'vcpkg-${{ env.VCPKG_SHA }}'  
   
     - name: Cache Vcpkg binaries
-      uses: actions/cache@v2
+      uses: inviwo/cache@v2
       with:
-        path: 'vcpkg-cache'
+        path: '${{ env.VCPKG_BIN_CACHE }}'
         key: 'vcpkg-${{ env.VCPKG-TRIPLET }}-${{ env.VCPKG_SHA }}'  
   
     - name: VCPKG Clone
@@ -44,7 +45,7 @@ jobs:
       shell: bash
       working-directory: vcpkg
       run: > 
-        vcpkg --binarysource=files,${{ github.workspace }}/vcpkg-cache 
+        vcpkg --binarysource=files,$VCPKG_BIN_CACHE 
         install fmt glm zlib
   
     # qt5[core,tools,svg] assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo 
