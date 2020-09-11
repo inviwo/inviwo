@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - name: Cache Vcpkg
-      uses: inviwo/cache@v2
+      uses: inviwo/cache@v3
       with:
         path: |
           vcpkg
@@ -24,7 +24,7 @@ jobs:
         key: 'vcpkg-${{ env.VCPKG_SHA }}'  
   
     - name: Cache Vcpkg binaries
-      uses: inviwo/cache@v2
+      uses: inviwo/cache@v3
       with:
         path: 'vcpkg-cache'
         key: 'vcpkg-bin-cache'
@@ -46,7 +46,7 @@ jobs:
       working-directory: vcpkg
       run: > 
         vcpkg install 
-        fmt glm zlib assimp benchmark cimg 
+        fmt glm zlib assimp benchmark cimg freetype glew glfw3 glm gtest
   
     # qt5[core,svg] assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo 
     # libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib
