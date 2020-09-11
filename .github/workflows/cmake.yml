@@ -5,8 +5,8 @@ on: [push]
 env:
   BUILD_TYPE: Release
   VCPKG_SHA: '18ab4b72a26284f0df28295ce7bf9b21c96f20f4'
-  VCPKG_TRIPLET: 'x64-windows-static'
-  VCPKG_BIN_CACHE: '${{ github.workspace }}/vcpkg-cache'
+  VCPKG_DEFAULT_TRIPLET: 'x64-windows-static'                         # recognized by vcpkg
+  VCPKG_BINARY_SOURCES : 'files,${{ github.workspace }}/vcpkg-cache'  # recognized by vcpkg
 
 jobs:
   build:
@@ -27,7 +27,7 @@ jobs:
       uses: inviwo/cache@v2
       with:
         path: '${{ env.VCPKG_BIN_CACHE }}'
-        key: 'vcpkg-${{ env.VCPKG-TRIPLET }}-${{ env.VCPKG_SHA }}'  
+        key: 'vcpkg-${{ env.VCPKG_DEFAULT_TRIPLET }}-${{ env.VCPKG_SHA }}'  
   
     - name: VCPKG Clone
       uses: actions/checkout@v2.3.2
@@ -45,10 +45,10 @@ jobs:
       shell: bash
       working-directory: vcpkg
       run: > 
-        vcpkg --binarysource=files,$VCPKG_BIN_CACHE 
-        install fmt glm zlib
+        vcpkg install 
+        fmt glm zlib assimp benchmark cimg 
   
-    # qt5[core,tools,svg] assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo 
+    # qt5[core,svg] assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo 
     # libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib
      
     - uses: actions/checkout@v2
@@ -56,15 +56,15 @@ jobs:
         path: inviwo
         submodules: recursive
         
-    - name: Configure CMake
-      shell: bash
-      run: >
-        cmake -S inviwo -B build 
-          -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake
-          -DVCPKG_TARGET_TRIPLET='x64-windows-static'
-          -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+    #- name: Configure CMake
+    #  shell: bash
+    #  run: >
+    #    cmake -S inviwo -B build 
+    #      -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake
+    #      -DVCPKG_TARGET_TRIPLET='x64-windows-static'
+    #      -DCMAKE_BUILD_TYPE=$BUILD_TYPE
           
-    - name: Build
-      working-directory: build
-      shell: bash
-      run: cmake --build . --config $BUILD_TYPE
+    #- name: Build
+    #  working-directory: build
+    #  shell: bash
+    #  run: cmake --build . --config $BUILD_TYPE
