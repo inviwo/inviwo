@@ -5,7 +5,7 @@ on: [push]
 env:
   BUILD_TYPE: Release
   VCPKG_SHA: '18ab4b72a26284f0df28295ce7bf9b21c96f20f4'
-  VCPKG_DEFAULT_TRIPLET: 'x64-windows-static'                                   # recognized by vcpkg
+  VCPKG_DEFAULT_TRIPLET: 'x64-windows'                                          # recognized by vcpkg
   VCPKG_BINARY_SOURCES : 'files,${{ github.workspace }}/vcpkg-cache,readwrite'  # recognized by vcpkg
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
       uses: inviwo/cache@v3
       with:
         path: 'vcpkg-cache'
-        key: 'vcpkg-bin-cache'
+        key: 'vcpkg-bin-cache-dynamic'
   
     - name: VCPKG Clone
       uses: actions/checkout@v2.3.2
