@@ -44,8 +44,8 @@ jobs:
       shell: bash
       working-directory: vcpkg
       run: > 
-        vcpkg --binarysource=files,../vcpkg-cache 
-        install fmt
+        vcpkg --binarysource=files,${{ github.workspace }}/vcpkg-cache 
+        install fmt glm zlib
   
     # qt5[core,tools,svg] assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo 
     # libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib
