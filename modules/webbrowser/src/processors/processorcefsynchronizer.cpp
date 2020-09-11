@@ -53,6 +53,13 @@ void ProcessorCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPt
     }
 }
 
+auto ProcessorCefSynchronizer::registerCallback(const std::string& name,
+                                                std::function<CallbackFunc> callback)
+    -> CallbackHandle {
+    if (name.empty()) return nullptr;
+    return callbacks_[name].add(callback);
+}
+
 bool ProcessorCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                        int64, const CefString& request, bool,
                                        CefRefPtr<Callback> callback) {
@@ -66,6 +73,7 @@ bool ProcessorCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<
         constexpr std::string_view subscribeProgressCommand = "processor.progress.subscribe";
         constexpr std::string_view unsubscribeProgressCommand = "processor.progress.unsubscribe";
         constexpr std::string_view parentProcessorCommand = "parentwebbrowserprocessor";
+        constexpr std::string_view callbackCommand = "callback";
 
         if (command == subscribeProgressCommand) {
             auto p = j.at("path").get<std::string>();
@@ -102,6 +110,15 @@ bool ProcessorCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<
         } else if (command == parentProcessorCommand) {
             callback->Success(json{{"path", joinString(parent_->getPath(), ".")}}.dump());
             return true;
+        } else if (command == callbackCommand) {
+            const auto callbackName = j.at("callback").get<std::string>();
+            if (auto it = callbacks_.find(callbackName); it != callbacks_.end()) {
+                it->second.invoke(j.at("data").get<std::string>());
+                callback->Success("");
+                return true;
+            } else {
+                callback->Failure(0, "Trying to invoke non-registered Callback: " + callbackName);
+            }
         }
     } catch (json::exception& ex) {
         LogError(ex.what());

@@ -162,6 +162,22 @@ class InviwoAPI {
             }
         });
     }
+    /*
+     * Call a previously registered processor callback.
+     * @param callback  name of the callback
+     * @param data      payload will be stringified into JSON
+     */
+    async invokeCallback(callback, data) {
+        window.cefQuery({
+            request: JSON.stringify({
+                'command': 'callback',
+                'callback': callback,
+                'data': JSON.stringify(data)
+            }),
+            onSuccess: function (response) { },
+            onFailure: function (error_code, error_message) { }
+        });
+    }
 
     async syncRange(htmlId, prop) {
         var property = document.getElementById(htmlId);

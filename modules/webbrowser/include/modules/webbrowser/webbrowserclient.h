@@ -86,6 +86,23 @@ public:
      */
     void setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent);
 
+    /**
+     * Register a processor \p callback for a specific \p browser which can be triggered through a
+     * cefQuery request where the 'command' is 'callback' and 'name' refers to \p name in the JSON
+     * object. The callback will then be called with the string payload given by 'data'.
+     *
+     * Note: setBrowserParent() must have been called before.
+     *
+     * \code{.json}
+     * {"command": "callback", "callback": "name", "data": "string payload"}
+     * \endcode
+     *
+     * \see ProcessorCefSynchronizer::registerCallback, setBrowserParent
+     */
+    ProcessorCefSynchronizer::CallbackHandle registerCallback(
+        CefRefPtr<CefBrowser> browser, const std::string& name,
+        std::function<ProcessorCefSynchronizer::CallbackFunc> callback);
+
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
 
     bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,

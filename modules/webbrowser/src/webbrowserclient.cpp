@@ -29,11 +29,14 @@
 
 #include <modules/webbrowser/webbrowserclient.h>
 #include <modules/webbrowser/webbrowsermodule.h>
+#include <inviwo/core/util/exception.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <include/wrapper/cef_helpers.h>
 #include <warn/pop>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -85,6 +88,22 @@ void WebBrowserClient::setBrowserParent(CefRefPtr<CefBrowser> browser, Processor
     browserParents_[browser->GetIdentifier()] = bd;
     addLoadHandler(bd.processorCefSynchronizer);
     messageRouter_->AddHandler(bd.processorCefSynchronizer.get(), false);
+}
+
+ProcessorCefSynchronizer::CallbackHandle WebBrowserClient::registerCallback(
+    CefRefPtr<CefBrowser> browser, const std::string& name,
+    std::function<ProcessorCefSynchronizer::CallbackFunc> callback) {
+    CEF_REQUIRE_UI_THREAD();
+    if (auto it = browserParents_.find(browser->GetIdentifier()); it != browserParents_.end()) {
+        return it->second.processorCefSynchronizer->registerCallback(name, callback);
+    } else {
+        throw Exception(
+            fmt::format(
+                "Registering callback '{}' in browser without a parent processor (browser ID {})",
+                name, browser->GetIdentifier()),
+            IVW_CONTEXT);
+    }
+    return nullptr;
 }
 
 bool WebBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
