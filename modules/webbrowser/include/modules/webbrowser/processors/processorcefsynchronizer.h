@@ -117,7 +117,7 @@ private:
     const Processor* parent_;
     std::map<Processor*, ProgressBarObserverCEF> progressObservers_;
     // maps callback name used in JavaScript to registered callbacks
-    std::unordered_map<std::string, typename Dispatcher<CallbackFunc>> callbacks_;
+    std::unordered_map<std::string, Dispatcher<CallbackFunc>> callbacks_;
     IMPLEMENT_REFCOUNTING(ProcessorCefSynchronizer);
 };
 #include <warn/pop>
