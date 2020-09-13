@@ -42,10 +42,7 @@ jobs:
         assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest 
         hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json 
         openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib
-  
-    # qt5[core,svg] assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo 
-    # libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib
-     
+       
     - name: Cache Qt
       id: cache-qt
       uses: actions/cache@v2
@@ -57,13 +54,17 @@ jobs:
       uses: jurplel/install-qt-action@v2
       with:
         version: 5.15.0
+        dir: ${{ github.workspace }}
         cached: ${{ steps.cache-qt.outputs.cache-hit }}
       
     - name: Log
       shell: bash
       run: |
+        echo 'dir'
         pwd
+        echo 'ls .'
         ls -al
+        echo 'ls ..'
         ls -al ..
         echo $Qt5_DIR
      
