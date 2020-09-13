@@ -27,7 +27,6 @@
 # 
 #################################################################################
 
-
 # A helper function to get to various vcpkg paths
 # If vcpkg is not used we just return empty strings
 # There are not "offically" exposed so we always use this helper to get then if needed
@@ -76,6 +75,9 @@ function(ivw_vcpkg_paths)
     endif()
 endfunction()
 
+if(VCPKG_TOOLCHAIN)
+    ivw_git_get_hash(${_VCPKG_ROOT_DIR} ivw_vcpkg_sha)
+endif()
 
 # A helper function to install vcpkg libs. Will install dll/so, lib, pdb, stc. into the 
 # correspnding folders by globing the vcpkg package folders. 
@@ -104,7 +106,8 @@ function(ivw_vcpkg_install name)
         set(overlay "")
     endif()
 
-    if(NOT DEFINED ivw_vcpkg_info_${lowercase_name})
+    if(NOT DEFINED ivw_vcpkg_info_${lowercase_name} OR 
+        NOT ivw_vcpkg_info_${lowercase_name}_sha STREQUAL ivw_vcpkg_sha)
         message(STATUS "Vcpkg fetching metadata for: ${name}")
         execute_process(
             COMMAND "${PYTHON_EXECUTABLE}" "${IVW_TOOLS_DIR}/vcpkginfo.py"
@@ -119,6 +122,7 @@ function(ivw_vcpkg_install name)
             message(WARNING "Unable to retrive vcpkg package info for ${name}")
         else()
             set("ivw_vcpkg_info_${lowercase_name}" "${pkgInfo}" CACHE INTERNAL "Vcpkg meta data")
+            set("ivw_vcpkg_info_${lowercase_name}_sha" "${ivw_vcpkg_sha}" CACHE INTERNAL "Vcpkg SHA")
         endif()
     else()
         set(pkgInfo ${ivw_vcpkg_info_${lowercase_name}})
