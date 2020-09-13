@@ -60,8 +60,8 @@ jobs:
       shell: bash
       run: >
         cmake -S inviwo -B build 
-        -DVCPKG_TARGET_TRIPLET=x64-windows-static
-        '-DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake'
+        -DVCPKG_TARGET_TRIPLET='${{ env.VCPKG_DEFAULT_TRIPLET }}'
+        -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake'
         -DCMAKE_BUILD_TYPE=$BUILD_TYPE
         -DIVW_CFG_CMAKE_DEBUG=ON
         -DIVW_CFG_PRECOMPILED_HEADERS=OFF
