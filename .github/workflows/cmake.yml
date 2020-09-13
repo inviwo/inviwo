@@ -60,27 +60,30 @@ jobs:
       shell: bash
       run: >
         cmake -S inviwo -B build 
-          '-DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake'
-          -DVCPKG_TARGET_TRIPLET='x64-windows-static'
-          -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-          -DIVW_USE_EXTERNAL_ASSIMP=ON
-          -DIVW_USE_EXTERNAL_BENCHMARK=ON
-          -DIVW_USE_EXTERNAL_EIGEN=ON
-          -DIVW_USE_EXTERNAL_FMT=ON
-          -DIVW_USE_EXTERNAL_FREETYPE=ON
-          -DIVW_USE_EXTERNAL_GLFW=ON
-          -DIVW_USE_EXTERNAL_GLM=ON
-          -DIVW_USE_EXTERNAL_GTEST=ON
-          -DIVW_USE_EXTERNAL_HDF5=ON
-          -DIVW_USE_EXTERNAL_IMG=ON
-          -DIVW_USE_EXTERNAL_JSON=ON
-          -DIVW_USE_EXTERNAL_CIMG=ON
-          -DIVW_USE_EXTERNAL_GLEW=ON
-          -DIVW_USE_EXTERNAL_TCLAP=ON
-          -DIVW_USE_EXTERNAL_UTFCPP=ON
-          -DIVW_USE_EXTERNAL_TINYDIR=ON
-          -DIVW_USE_EXTERNAL_PYBIND11=ON
-          -DIVW_USE_EXTERNAL_OPENEXR=ON
+        -DVCPKG_TARGET_TRIPLET=x64-windows-static
+        -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+        -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        -DIVW_CFG_CMAKE_DEBUG=ON
+        -DIVW_CFG_PRECOMPILED_HEADERS=OFF
+        -DIVW_USE_OPENMP=OFF
+        -DIVW_USE_EXTERNAL_ASSIMP=ON
+        -DIVW_USE_EXTERNAL_BENCHMARK=ON
+        -DIVW_USE_EXTERNAL_EIGEN=ON
+        -DIVW_USE_EXTERNAL_FMT=ON
+        -DIVW_USE_EXTERNAL_FREETYPE=ON
+        -DIVW_USE_EXTERNAL_GLFW=ON
+        -DIVW_USE_EXTERNAL_GLM=ON
+        -DIVW_USE_EXTERNAL_GTEST=ON
+        -DIVW_USE_EXTERNAL_HDF5=ON
+        -DIVW_USE_EXTERNAL_IMG=ON
+        -DIVW_USE_EXTERNAL_JSON=ON
+        -DIVW_USE_EXTERNAL_CIMG=ON
+        -DIVW_USE_EXTERNAL_GLEW=ON
+        -DIVW_USE_EXTERNAL_TCLAP=ON
+        -DIVW_USE_EXTERNAL_UTFCPP=ON
+        -DIVW_USE_EXTERNAL_TINYDIR=ON
+        -DIVW_USE_EXTERNAL_PYBIND11=ON
+        -DIVW_USE_EXTERNAL_OPENEXR=ON
           
     - name: Build
       working-directory: build
