@@ -16,9 +16,12 @@ jobs:
     - name: Cache Vcpkg binaries
       uses: inviwo/cache@v3
       with:
-        path: 'vcpkg-cache'
-        key: 'vcpkg-bin-cache-dynamic'
-  
+        path: vcpkg-cache
+        key: vcpkg-bin-cache-dynamic-v1
+        restore-keys: | 
+          vcpkg-bin-cache-dynamic-v1
+          vcpkg-bin-cache-dynamic
+            
     - name: VCPKG Clone
       uses: actions/checkout@v2.3.2
       with:
