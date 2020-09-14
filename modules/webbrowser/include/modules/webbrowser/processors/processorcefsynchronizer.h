@@ -34,6 +34,7 @@
 
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/dispatcher.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -57,12 +58,28 @@ class IVW_MODULE_WEBBROWSER_API ProcessorCefSynchronizer
       public CefLoadHandler,
       public ProcessorNetworkObserver {
 public:
+    using CallbackFunc = void(const std::string&);
+    using CallbackHandle = std::shared_ptr<std::function<CallbackFunc>>;
+
     /**
      * @param const Processor* parent web browser processor responsible for the browser. Cannot be
      * null.
      */
     explicit ProcessorCefSynchronizer(const Processor* parent);
     virtual ~ProcessorCefSynchronizer() = default;
+
+    /**
+     * Register a \p callback which can be triggered through a cefQuery request where the 'command'
+     * is 'callback' and 'name' refers to \p name in the JSON object. The callback will then be
+     * called with the payload given by 'data'.
+     *
+     * \code{.json}
+     * {"command": "callback", "callback": "name", "data": "string payload"}
+     * \endcode
+     *
+     * \see OnQuery
+     */
+    CallbackHandle registerCallback(const std::string& name, std::function<CallbackFunc> callback);
 
     /**
      * Synchronizes all widgets and sets their frame, called when frame has loaded.
@@ -73,10 +90,21 @@ public:
     /**
      * Called due to cefQuery execution in message_router.html.
      * Expects the request to be a JSON data object, see inviwoapi.js:
-     * {command: "processor.subscribe.progress", "path": ProcessorIdentifier,
+     *
+     * \code{.json}
+     * {"command": "processor.subscribe.progress", "path": ProcessorIdentifier,
      * "onProgressChange":onProgressCallback, "onProgressVisibleChange":onProgressVisibleChange}
+     * \endcode
+     *
      * or
-     * {command: "parentwebbrowserprocessor"}
+     * \code{.json}
+     * {"command": "parentwebbrowserprocessor"}
+     * \endcode
+     *
+     * or, in case callbacks have been registered, calling the given callback
+     * \code{.json}
+     * {"command": "callback", "callback": "name", "data" : "string payload"}
+     * \endcode
      */
     virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
                          const CefString& request, bool persistent,
@@ -88,6 +116,8 @@ public:
 private:
     const Processor* parent_;
     std::map<Processor*, ProgressBarObserverCEF> progressObservers_;
+    // maps callback name used in JavaScript to registered callbacks
+    std::unordered_map<std::string, Dispatcher<CallbackFunc>> callbacks_;
     IMPLEMENT_REFCOUNTING(ProcessorCefSynchronizer);
 };
 #include <warn/pop>
