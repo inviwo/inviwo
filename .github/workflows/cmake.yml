@@ -30,15 +30,15 @@ jobs:
         path: vcpkg
     
     - name: VCPKG Bootstrap
-      shell: bash
+      shell: cmd
       working-directory: vcpkg
-      run: 'bootstrap-vcpkg.sh'
+      run: 'bootstrap-vcpkg.bat'
     
     - name: VCPKG Install
-      shell: bash
+      shell: cmd
       working-directory: vcpkg
       run: > 
-        vcpkg install 
+        vcpkg.exe install 
         assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest 
         hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json 
         openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib
@@ -66,7 +66,7 @@ jobs:
         cmake.exe -S inviwo -B build 
         -DVCPKG_TARGET_TRIPLET='${{ env.VCPKG_DEFAULT_TRIPLET }}'
         -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake'
-        -DCMAKE_BUILD_TYPE='${{ env.BUILD_TYPE }}'
+        -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
         -DIVW_CFG_CMAKE_DEBUG=ON
         -DIVW_CFG_PRECOMPILED_HEADERS=OFF
         -DIVW_USE_OPENMP=OFF
@@ -93,7 +93,7 @@ jobs:
     - name: Build
       working-directory: build
       shell: cmd
-      run: cmake.exe --build . --config '${{ env.BUILD_TYPE }}' --parallel --target PACKAGE 
+      run: cmake.exe --build . --config ${{ env.BUILD_TYPE }} --parallel --target PACKAGE 
 
     - uses: actions/upload-artifact@v2
       with:
