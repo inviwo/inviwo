@@ -116,10 +116,11 @@ function(ivw_vcpkg_install name)
                 --pkg ${lowercase_name}
                 --triplet ${VCPKG_TARGET_TRIPLET}
             OUTPUT_VARIABLE pkgInfo
+            ERROR_VARIABLE pkgError
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
         if(NOT pkgInfo)
-            message(WARNING "Unable to retrive vcpkg package info for ${name}")
+            message(WARNING "Unable to retrive vcpkg package info for ${name}. Error: ${pkgError}")
         else()
             set("ivw_vcpkg_info_${lowercase_name}" "${pkgInfo}" CACHE INTERNAL "Vcpkg meta data")
             set("ivw_vcpkg_info_${lowercase_name}_sha" "${ivw_vcpkg_sha}" CACHE INTERNAL "Vcpkg SHA")
