@@ -49,7 +49,11 @@ jobs:
         version: 5.15.0
         dir: ${{ github.workspace }}
       
-    #$Qt5_DIR
+    - name: Install NSIS
+      run: |
+        Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+        scoop bucket add extras
+        scoop install nsis
      
     - uses: actions/checkout@v2
       with: 
@@ -57,15 +61,16 @@ jobs:
         submodules: recursive
         
     - name: Configure CMake
-      shell: bash
+      shell: powershell
       run: >
-        cmake -S inviwo -B build 
+        cmake.exe -S inviwo -B build 
         -DVCPKG_TARGET_TRIPLET='${{ env.VCPKG_DEFAULT_TRIPLET }}'
         -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake'
-        -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        -DCMAKE_BUILD_TYPE='${{ env.BUILD_TYPE }}'
         -DIVW_CFG_CMAKE_DEBUG=ON
         -DIVW_CFG_PRECOMPILED_HEADERS=OFF
         -DIVW_USE_OPENMP=OFF
+        -DIVW_PACKAGE_INSTALLER=ON
         -DIVW_USE_EXTERNAL_ASSIMP=ON
         -DIVW_USE_EXTERNAL_BENCHMARK=ON
         -DIVW_USE_EXTERNAL_EIGEN=ON
@@ -87,5 +92,14 @@ jobs:
           
     - name: Build
       working-directory: build
-      shell: bash
-      run: cmake --build . --config $BUILD_TYPE
+      shell: powershell
+      run: cmake.exe --build . --config '${{ env.BUILD_TYPE }}'
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: inviwo-installer
+        path: |
+          build/inviwo-v*.zip
+          build/inviwo-v*.exe
+
+
