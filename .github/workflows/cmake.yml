@@ -61,7 +61,7 @@ jobs:
         submodules: recursive
         
     - name: Configure CMake
-      shell: powershell
+      shell: cmd
       run: >
         cmake.exe -S inviwo -B build 
         -DVCPKG_TARGET_TRIPLET='${{ env.VCPKG_DEFAULT_TRIPLET }}'
@@ -92,8 +92,8 @@ jobs:
           
     - name: Build
       working-directory: build
-      shell: powershell
-      run: cmake.exe --build . --config '${{ env.BUILD_TYPE }}'
+      shell: cmd
+      run: cmake.exe --build . --config '${{ env.BUILD_TYPE }}' --parallel --target PACKAGE 
 
     - uses: actions/upload-artifact@v2
       with:
