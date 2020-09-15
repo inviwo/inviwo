@@ -48,7 +48,11 @@ jobs:
       with:
         version: 5.15.0
         dir: ${{ github.workspace }}
-      
+    
+    - name: QTbin
+      shell: bash
+      run: 'ls -al D:/a/inviwo/inviwo/Qt/5.15.0/msvc2019_64/bin/'
+    
     - name: Install NSIS
       run: |
         Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
@@ -89,6 +93,7 @@ jobs:
         -DIVW_USE_EXTERNAL_TINYDIR=ON
         -DIVW_USE_EXTERNAL_PYBIND11=ON
         -DIVW_USE_EXTERNAL_OPENEXR=ON
+        -DIVW_MODULE_CIMG=OFF
           
     - name: Build
       working-directory: build
