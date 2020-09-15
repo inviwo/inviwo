@@ -45,6 +45,7 @@
 #include <QObject>
 #include <QFile>
 #include <warn/pop>
+#include <iostream>
 
 namespace py = pybind11;
 
@@ -55,8 +56,8 @@ PYBIND11_MODULE(inviwopyapp, m) {
     auto inviwoApplicationClass = static_cast<py::object>(inviwopy.attr("InviwoApplication"));
     py::class_<InviwoApplicationQt, InviwoApplication>(m, "InviwoApplicationQt",
                                                        py::multiple_inheritance{})
-        .def(py::init([]() {
-            auto app = new InviwoApplicationQt("inviwo");
+        .def(py::init([](std::string appName) {
+            auto app = new InviwoApplicationQt(appName);
             app->setStyleSheetFile(":/stylesheets/inviwo.qss");
 
             auto win = new QMainWindow();
@@ -85,7 +86,19 @@ PYBIND11_MODULE(inviwopyapp, m) {
         .def("registerModules",
              [](InviwoApplicationQt* app) { app->registerModules(inviwo::getModuleList()); })
         .def("registerRuntimeModules",
-             [](InviwoApplicationQt* app) { app->registerModules(RuntimeModuleLoading{}); });
+             [](InviwoApplicationQt* app) { app->registerModules(RuntimeModuleLoading{}); })
+        .def("runningBackgroundJobs", [](InviwoApplicationQt* app) {
+            return app->getProcessorNetwork()->runningBackgroundJobs();
+        })
+        .def("waitForNetwork", [](InviwoApplicationQt* app, int maxJobs=0) {
+            app->processEvents();
+            app->waitForPool();
+            std::cout << "Running Background Jobs:" << app->getProcessorNetwork()->runningBackgroundJobs() << "\n";
+            do {
+                app->processEvents();
+                app->processFront();
+            } while (app->getProcessorNetwork()->runningBackgroundJobs() > maxJobs);
+        }, py::arg("maxJobs") = 0);
 
     m.add_object("py", inviwopy);
     m.doc() = "Python inviwo application";

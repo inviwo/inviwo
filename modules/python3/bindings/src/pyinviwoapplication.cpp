@@ -77,17 +77,18 @@ void exposeInviwoApplication(pybind11::module &m) {
         .def_property_readonly("displayName", &InviwoApplication::getDisplayName)
 
         .def_property_readonly(
-            "modules", [](InviwoApplication *app) { return ModuleVecWrapper(app->getModules()); })
+            "modules", [](InviwoApplication* app) { return ModuleVecWrapper(app->getModules()); })
         .def("getModuleByIdentifier", &InviwoApplication::getModuleByIdentifier,
              py::return_value_policy::reference)
         .def("getModuleSettings", &InviwoApplication::getModuleSettings,
              py::return_value_policy::reference)
 
         .def("waitForPool", &InviwoApplication::waitForPool)
+        .def("resizePool", &InviwoApplication::resizePool)
         .def("closeInviwoApplication", &InviwoApplication::closeInviwoApplication)
 
         .def("getOutputPath",
-             [](InviwoApplication *app) { return app->getCommandLineParser().getOutputPath(); })
+             [](InviwoApplication* app) { return app->getCommandLineParser().getOutputPath(); })
 
         .def_property_readonly("network", &InviwoApplication::getProcessorNetwork,
                                "Get the processor network", py::return_value_policy::reference)
