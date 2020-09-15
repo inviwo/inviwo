@@ -233,11 +233,12 @@ void exposeProperties(py::module& m) {
         .def_property_readonly("viewMatrix", &CameraProperty::viewMatrix)
         .def_property_readonly("projectionMatrix", &CameraProperty::projectionMatrix)
         .def_property_readonly("inverseViewMatrix", &CameraProperty::inverseViewMatrix)
-        .def_property_readonly("inverseProjectionMatrix", &CameraProperty::inverseProjectionMatrix);
+        .def_property_readonly("inverseProjectionMatrix", &CameraProperty::inverseProjectionMatrix)
+        .def("fitData", &CameraProperty::fitData);
 
-    PyPropertyClass<TransferFunctionProperty>(m, "TransferFunctionProperty")
-        .def(py::init([](const std::string& identifier, const std::string& displayName,
-                         const TransferFunction& value, VolumeInport* volumeInport,
+    PyPropertyClass<TransferFunctionProperty, Property>(m, "TransferFunctionProperty")
+        .def(py::init([](const std::string &identifier, const std::string &displayName,
+                         const TransferFunction &value, VolumeInport *volumeInport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new TransferFunctionProperty(identifier, displayName, value, volumeInport,
                                                      invalidationLevel, semantics);
