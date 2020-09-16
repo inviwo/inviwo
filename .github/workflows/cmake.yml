@@ -52,16 +52,12 @@ jobs:
       with:
         version: 5.15.0
         dir: ${{ github.workspace }}
-    
-    - name: QTbin
-      shell: bash
-      run: 'ls -al D:/a/inviwo/inviwo/Qt/5.15.0/msvc2019_64/bin/'
-    
+       
     - name: Install NSIS
       run: |
         Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
         scoop bucket add extras
-        scoop install nsis
+        scoop install nsis doxygen
      
     - uses: actions/checkout@v2
       with: 
@@ -78,7 +74,12 @@ jobs:
         -DIVW_CFG_CMAKE_DEBUG=ON
         -DIVW_CFG_PRECOMPILED_HEADERS=OFF
         -DIVW_TEST_UNIT_TESTS_RUN_ON_BUILD=OFF
+        -DIVW_TEST_BENCHMARKS=ON
+        -DIVW_TEST_INTEGRATION_TESTS=ON
         -DIVW_USE_OPENMP=OFF
+        -DIVW_USE_OPENEXR=OFF
+        -DIVW_MODULE_CIMG=ON
+        -IVW_MODULE_HDF5=ON
         -DIVW_PACKAGE_INSTALLER=ON
         -DIVW_USE_EXTERNAL_ASSIMP=ON
         -DIVW_USE_EXTERNAL_BENCHMARK=ON
@@ -98,8 +99,8 @@ jobs:
         -DIVW_USE_EXTERNAL_TINYDIR=ON
         -DIVW_USE_EXTERNAL_PYBIND11=ON
         -DIVW_USE_EXTERNAL_OPENEXR=ON
-        -DIVW_MODULE_CIMG=OFF
-          
+       
+         
     - name: Build
       working-directory: build
       shell: cmd
