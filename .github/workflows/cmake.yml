@@ -79,7 +79,7 @@ jobs:
         -DIVW_USE_OPENMP=OFF
         -DIVW_USE_OPENEXR=OFF
         -DIVW_MODULE_CIMG=ON
-        -IVW_MODULE_HDF5=ON
+        -DIVW_MODULE_HDF5=ON
         -DIVW_PACKAGE_INSTALLER=ON
         -DIVW_USE_EXTERNAL_ASSIMP=ON
         -DIVW_USE_EXTERNAL_BENCHMARK=ON
@@ -99,7 +99,6 @@ jobs:
         -DIVW_USE_EXTERNAL_TINYDIR=ON
         -DIVW_USE_EXTERNAL_PYBIND11=ON
         -DIVW_USE_EXTERNAL_OPENEXR=ON
-       
          
     - name: Build
       working-directory: build
