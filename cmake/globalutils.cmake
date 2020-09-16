@@ -989,10 +989,11 @@ function(ivw_deploy_qt target)
                 find_program(WINDEPLOYQT_EXECUTABLE NAMES windeployqt HINTS ${qt_bin_dir} )
             endif()
 
-            add_custom_command(TARGET ${target} POST_BUILD 
-                                COMMAND ${qt_bin_dir}/qtenv2.bat
-                                COMMAND ${WINDEPLOYQT_EXECUTABLE} --no-compiler-runtime --verbose 1 $<TARGET_FILE:${target}>
-                )
+            add_custom_command(
+                TARGET ${target} POST_BUILD 
+                COMMAND ${WINDEPLOYQT_EXECUTABLE} 
+                    --no-compiler-runtime --verbose 1 $<TARGET_FILE:${target}>
+            )
         endif()
     endif()
 endfunction()
