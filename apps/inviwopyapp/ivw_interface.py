@@ -16,8 +16,10 @@ class InviwoInterface:
 
         # Create the inviwo application
         self.app = qt.InviwoApplicationQt(ivw_appname)
+        print('Registering modules')
         self.app.registerModules()
         self.app.resizePool(ivw_poolsize)
+        print(f'Resized pool to {self.app.getPoolSize()}')
 
 
         # load a workspace
