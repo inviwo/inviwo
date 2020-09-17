@@ -30,10 +30,8 @@
 
 #include <inviwo/dataframe/util/dataframeutil.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/assertion.h>
 
 #include <fmt/format.h>
