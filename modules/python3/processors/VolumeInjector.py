@@ -5,6 +5,8 @@ from inviwopy.glm import dvec2
 from inviwopy.data import InterpolationType
 from inviwopy.properties import InvalidationLevel
 
+import numpy as np
+
 class VolumeInjector(ivw.Processor):
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
@@ -29,7 +31,8 @@ class VolumeInjector(ivw.Processor):
         pass
 
     def setArray(self, array):
-        print('Setting array. (pyproc)')
+        if array.dtype == np.float64:
+            array = array.astype(np.float32)
         self.array = array
         self.invalidate(InvalidationLevel.InvalidOutput)
 
@@ -40,3 +43,4 @@ class VolumeInjector(ivw.Processor):
             vol.dataMap.dataRange, vol.dataMap.valueRange = dvec2(0.0, 1.0), dvec2(0.0, 1.0)
             self.outport.setData(vol)
             print('Outport data set!')
+            print(f'pyproc: num jobs: {self.network.getApplication().runningBackgroundJobs()}')
