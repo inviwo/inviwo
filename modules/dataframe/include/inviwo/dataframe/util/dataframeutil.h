@@ -117,8 +117,8 @@ combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataframes, bool skipI
  *
  * Note: the predicate function needs to take care of the different column datatypes
  * \code{.cpp}
- * auto pred = [](const auto& arg) { 
- *                 if  constexpr(std::is_same_v<decltype(arg), float>) { 
+ * auto pred = [](const auto& arg) {
+ *                 if  constexpr(std::is_same_v<decltype(arg), float>) {
  *                     return  arg == 4.5f
  *                 } else {
  *                     return true;
@@ -129,8 +129,8 @@ combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataframes, bool skipI
  * \code{.cpp}
  * #include <inviwo/core/util/stdextensions.h>
  *
- * auto pred = util::overloaded{[](const std::string& arg) { return arg == "bla"; }, 
- *                              [](const int& arg) { return arg == 5;  }, 
+ * auto pred = util::overloaded{[](const std::string& arg) { return arg == "bla"; },
+ *                              [](const int& arg) { return arg == 5;  },
  *                              [](const auto&) { return true; });
  * \endcode
  *
