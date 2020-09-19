@@ -45,7 +45,8 @@ void bitonicSort(int n);
 void fillFragmentArray(uint idx, out int numFrag);
 // Fill local memory array with lowest values
 void fillFragmentArraySortedUntilDepth(uint pixelIdx, float maxDepth, out int numFrag);
-// Selection sort, allowing to get the first elements of a larger series
+// Selection sort, allowing to get the next elements of a larger series.
+// Returns the next fragment with lowest depth but behind/at the same depth as the last.
 vec4 selectionSortNext(uint headPtr, float lastDepth, inout uint lastPtr);
 
 // Bubble sort used to sort fragments
@@ -117,13 +118,17 @@ void fillFragmentArraySortedUntilDepth(uint pixelIdx, float maxDepth, out int nu
 }
 
 vec4 selectionSortNext(uint headPtr, float lastDepth, inout uint lastPtr) {
+    // Remember the next fragment closest to the camera.
     vec4 closestVal = vec4(-1.0);
     float minDepth = 1.0;
-    bool passedLastPtr = false;
     uint minPtr = 0;
+    // Remember whether the previous element was visited yet to work through fragemtns of same depth in order. 
+    bool passedLastPtr = false;
     while (headPtr != 0) {
         vec4 val = readPixelStorage(headPtr - 1);
         if (headPtr == lastPtr) passedLastPtr = true;
+        // Require fragment to be both closer than the current nearest one
+        // and behind the previous fragment returned in either depth or, iff at the same depth, in order. 
         else if (val.y < minDepth && (val.y > lastDepth || (passedLastPtr && val.y == lastDepth) )) {
             minDepth = val.y;
             closestVal = val;
@@ -131,6 +136,7 @@ vec4 selectionSortNext(uint headPtr, float lastDepth, inout uint lastPtr) {
         }
         headPtr = floatBitsToUint(val.x);
     }
+    // Update pointer to selected fragment.
     lastPtr = minPtr;
     return closestVal;
 }
