@@ -97,7 +97,8 @@ void main() {
 
         // front-to-back shading
         vec4 color = vec4(0);
-        vec4 nextFragment = selectionSortNext(pixelIdx, 0.0);
+        uint lastPtr = 0;
+        vec4 nextFragment = selectionSortNext(pixelIdx, 0.0, lastPtr);
         abufferPixel unpackedFragment = uncompressPixelData(nextFragment);
         gl_FragDepth = min(backgroundDepth, unpackedFragment.depth);
 
@@ -106,7 +107,7 @@ void main() {
             color.rgb = color.rgb + (1 - color.a) * c.a * c.rgb;
             color.a = color.a + (1 - color.a) * c.a;
 
-            nextFragment = selectionSortNext(pixelIdx, unpackedFragment.depth);
+            nextFragment = selectionSortNext(pixelIdx, unpackedFragment.depth, lastPtr);
             unpackedFragment = uncompressPixelData(nextFragment);
         }
 

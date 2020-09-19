@@ -46,7 +46,7 @@ void fillFragmentArray(uint idx, out int numFrag);
 // Fill local memory array with lowest values
 void fillFragmentArraySortedUntilDepth(uint pixelIdx, float maxDepth, out int numFrag);
 // Selection sort, allowing to get the first elements of a larger series
-vec4 selectionSortNext(uint headPtr, float lastDepth);
+vec4 selectionSortNext(uint headPtr, float lastDepth, inout uint lastPtr);
 
 // Bubble sort used to sort fragments
 void bubbleSort(int array_size) {
@@ -105,9 +105,10 @@ void fillFragmentArraySortedUntilDepth(uint pixelIdx, float maxDepth, out int nu
     // Load fragments into a local memory array for sorting
     numFrag = 0;
     float depth = 0.0;
+    uint lastPtr = 0;
 
     while (numFrag < ABUFFER_SIZE) {
-        vec4 val = selectionSortNext(pixelIdx, depth);
+        vec4 val = selectionSortNext(pixelIdx, depth, lastPtr);
         depth = val.y;
         if (depth < 0.0 || depth > maxDepth) return;
         fragmentList[numFrag] = val;
@@ -115,17 +116,22 @@ void fillFragmentArraySortedUntilDepth(uint pixelIdx, float maxDepth, out int nu
     }
 }
 
-vec4 selectionSortNext(uint headPtr, float lastDepth) {
+vec4 selectionSortNext(uint headPtr, float lastDepth, inout uint lastPtr) {
     vec4 closestVal = vec4(-1.0);
     float minDepth = 1.0;
+    bool passedLastPtr = false;
+    uint minPtr = 0;
     while (headPtr != 0) {
         vec4 val = readPixelStorage(headPtr - 1);
-        if (val.y > lastDepth && val.y < minDepth) {
+        if (headPtr == lastPtr) passedLastPtr = true;
+        else if (val.y < minDepth && (val.y > lastDepth || (passedLastPtr && val.y == lastDepth) )) {
             minDepth = val.y;
             closestVal = val;
+            minPtr = headPtr;
         }
         headPtr = floatBitsToUint(val.x);
     }
+    lastPtr = minPtr;
     return closestVal;
 }
 
