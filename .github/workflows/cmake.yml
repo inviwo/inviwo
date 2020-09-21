@@ -8,8 +8,6 @@ env:
   VCPKG_DEFAULT_TRIPLET: 'x64-windows'                   # recognized by vcpkg
   VCPKG_BINARY_SOURCES : 'clear;nuget,GitHub,readwrite'  # recognized by vcpkg
   # files,${{ github.workspace }}/vcpkg-cache,readwrite
-  GITHUB_REPOSITORY : 'inviwo/inviwo'
-  GITHUB_SERVER_URL : 'https://github.com'
   
 jobs:
   build:
@@ -48,6 +46,10 @@ jobs:
         -name "GitHub"
         -username "inviwo"
         -password "${{ secrets.GITHUB_TOKEN }}"
+    
+    - name: ENV
+      shell: bash
+      run: env
     
     - name: VCPKG Install
       shell: bash
