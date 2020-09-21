@@ -14,7 +14,7 @@ jobs:
 
     steps:  
     - name: Cache Vcpkg binaries
-      uses: actions/cache@v3
+      uses: actions/cache@v2
       with:
         path: vcpkg-cache
         key: vcpkg-bin-cache-dynamic-v1
