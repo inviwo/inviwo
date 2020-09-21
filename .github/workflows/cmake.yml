@@ -51,6 +51,11 @@ jobs:
       shell: bash
       run: env
     
+    - name: Nuget
+      shell: bash
+      run: `vcpkg fetch nuget | tail -n 1`
+      
+  
     - name: VCPKG Install
       shell: bash
       working-directory: vcpkg
