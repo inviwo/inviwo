@@ -24,7 +24,11 @@ jobs:
     #    restore-keys: | 
     #      vcpkg-bin-cache-dynamic-v1
     #      vcpkg-bin-cache-dynamic
-            
+    
+    - name: Clean vcpkg
+      shell: bash
+      run: rm -rf C:\vcpkg
+    
     - name: VCPKG Clone
       uses: actions/checkout@v2.3.2
       with:
