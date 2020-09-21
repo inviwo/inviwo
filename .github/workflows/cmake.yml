@@ -35,7 +35,7 @@ jobs:
       run: 'bootstrap-vcpkg.bat'
     
     - name: 'Setup NuGet Credentials'
-      shell: cmd
+      shell: bash
       working-directory: vcpkg
       run: >
         `vcpkg.exe fetch nuget | tail -n 1`
