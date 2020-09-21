@@ -36,10 +36,15 @@ jobs:
         ref: ${{ env.IVW_VCPKG_SHA }}
         path: '${{ github.workspace }}/vcpkg'
     
+    - name: dir
+      shell: bash
+      working-directory: '${{ github.workspace }}/vcpkg'
+      run: 'ls -al'
+    
     - name: VCPKG Bootstrap
       shell: bash
       working-directory: '${{ github.workspace }}/vcpkg'
-      run: 'bootstrap-vcpkg.sh'
+      run: './bootstrap-vcpkg.sh'
     
     - name: 'Setup NuGet Credentials'
       shell: bash
