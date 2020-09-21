@@ -56,6 +56,11 @@ jobs:
      #   hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json 
      #   openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib
    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: nuget-pkgs
+        path: vcpkg/buildtrees/*.nupkg
+   
     #- name: Install Numpy
     #  shell: bash
     #  run: pip3 install numpy
