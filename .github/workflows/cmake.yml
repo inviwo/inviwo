@@ -4,8 +4,8 @@ on: [push]
 
 env:
   BUILD_TYPE: Release
-  #VCPKG_SHA: '2a6442cb934de2f99c8ac5bbd8a9dcf5538aee98'
-  VCPKG_SHA: '88bfde3e361498770d060f7d18b3d6ab7887eac0'
+  #IVW_VCPKG_SHA: '2a6442cb934de2f99c8ac5bbd8a9dcf5538aee98'
+  IVW_VCPKG_SHA: '88bfde3e361498770d060f7d18b3d6ab7887eac0'
   VCPKG_DEFAULT_TRIPLET: 'x64-windows'                   # recognized by vcpkg
   VCPKG_BINARY_SOURCES : 'clear;nuget,GitHub,readwrite'  # recognized by vcpkg
   # files,${{ github.workspace }}/vcpkg-cache,readwrite
@@ -28,7 +28,7 @@ jobs:
       uses: actions/checkout@v2.3.2
       with:
         repository: 'ras0219/vcpkg'
-        ref: ${{ env.VCPKG_SHA }}
+        ref: ${{ env.IVW_VCPKG_SHA }}
         path: vcpkg
     
     - name: VCPKG Bootstrap
