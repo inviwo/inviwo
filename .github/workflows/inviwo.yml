@@ -20,12 +20,14 @@ jobs:
     steps:  
     - name: Setup
       shell: bash
-      working-directory: '${{ env.VCPKG_INSTALLATION_ROOT }}'
       run: |
+        cd $VCPKG_INSTALLATION_ROOT
         pwd
         env
         ls -al
         git status
+        git pull
+        ./bootstrap-vcpkg.sh
         
       
     #- name: VCPKG Clone
