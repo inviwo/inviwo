@@ -1,4 +1,4 @@
-name: CMake
+name: Build Inviwo
 
 on: [push]
 
@@ -20,9 +20,12 @@ jobs:
     steps:  
     - name: Setup
       shell: bash
+      working-directory: '${{ env.VCPKG_INSTALLATION_ROOT }}'
       run: |
+        pwd
         env
-        ls $VCPKG_INSTALLATION_ROOT
+        ls -al
+        git status
         
       
     #- name: VCPKG Clone
