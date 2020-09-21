@@ -34,16 +34,16 @@ jobs:
       with:
         repository: 'ras0219/vcpkg'
         ref: ${{ env.IVW_VCPKG_SHA }}
-        path: vcpkg
+        path: '${{ github.workspace }}/vcpkg'
     
     - name: VCPKG Bootstrap
       shell: bash
-      working-directory: vcpkg
+      working-directory: '${{ github.workspace }}/vcpkg'
       run: 'bootstrap-vcpkg.sh'
     
     - name: 'Setup NuGet Credentials'
       shell: bash
-      working-directory: vcpkg
+      working-directory: '${{ github.workspace }}/vcpkg'
       run: >
         `./vcpkg fetch nuget | tail -n 1`
         sources add
@@ -59,7 +59,7 @@ jobs:
       
     - name: VCPKG Install
       shell: bash
-      working-directory: vcpkg
+      working-directory: '${{ github.workspace }}/vcpkg'
       run: > 
         ./vcpkg --debug install fmt
      #   assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest 
