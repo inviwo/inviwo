@@ -6,7 +6,7 @@ env:
   BUILD_TYPE: Release
   VCPKG_SHA: '18ab4b72a26284f0df28295ce7bf9b21c96f20f4'
   VCPKG_DEFAULT_TRIPLET: 'x64-windows'                                          # recognized by vcpkg
-  VCPKG_BINARY_SOURCES : 'files,${{ github.workspace }}/vcpkg-cache,readwrite'  # recognized by vcpkg
+  VCPKG_BINARY_SOURCES : 'clear;nuget,GitHub,readwrite;files,${{ github.workspace }}/vcpkg-cache,readwrite'  # recognized by vcpkg
 
 jobs:
   build:
@@ -14,7 +14,7 @@ jobs:
 
     steps:  
     - name: Cache Vcpkg binaries
-      uses: inviwo/cache@v3
+      uses: actions/cache@v3
       with:
         path: vcpkg-cache
         key: vcpkg-bin-cache-dynamic-v1
@@ -33,6 +33,18 @@ jobs:
       shell: cmd
       working-directory: vcpkg
       run: 'bootstrap-vcpkg.bat'
+    
+    - name: 'Setup NuGet Credentials'
+      shell: cmd
+      working-directory: vcpkg
+      run: >
+        `vcpkg.exe fetch nuget | tail -n 1`
+        sources add
+        -source "https://nuget.pkg.github.com/inviwo/index.json"
+        -storepasswordincleartext
+        -name "GitHub"
+        -username "inviwo"
+        -password "${{ secrets.GITHUB_TOKEN }}"
     
     - name: VCPKG Install
       shell: cmd
@@ -100,16 +112,16 @@ jobs:
         -DIVW_USE_EXTERNAL_PYBIND11=ON
         -DIVW_USE_EXTERNAL_OPENEXR=ON
          
-    - name: Build
-      working-directory: build
-      shell: cmd
-      run: cmake.exe --build . --config ${{ env.BUILD_TYPE }} --parallel --target PACKAGE 
+    #- name: Build
+    #  working-directory: build
+    #  shell: cmd
+    #  run: cmake.exe --build . --config ${{ env.BUILD_TYPE }} --parallel --target PACKAGE 
 
-    - uses: actions/upload-artifact@v2
-      with:
-        name: inviwo-installer
-        path: |
-          build/inviwo-v*.zip
-          build/inviwo-v*.exe
+    #- uses: actions/upload-artifact@v2
+    #  with:
+    #    name: inviwo-installer
+    #    path: |
+    #      build/inviwo-v*.zip
+    #      build/inviwo-v*.exe
 
 
