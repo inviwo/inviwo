@@ -4,12 +4,13 @@ on: [push]
 
 env:
   BUILD_TYPE: Release
-  #VCPKG_SHA: '2a6442cb934de2f99c8ac5bbd8a9dcf5538aee98'
-  VCPKG_SHA: 'b13cb242b4db8f367c678f89460be88bd2000bc6'
+  VCPKG_SHA: '2a6442cb934de2f99c8ac5bbd8a9dcf5538aee98'
   VCPKG_DEFAULT_TRIPLET: 'x64-windows'                   # recognized by vcpkg
   VCPKG_BINARY_SOURCES : 'clear;nuget,GitHub,readwrite'  # recognized by vcpkg
   # files,${{ github.workspace }}/vcpkg-cache,readwrite
-
+  GITHUB_REPOSITORY : 'inviwo/inviwo'
+  GITHUB_SERVER_URL : 'https://github.com'
+  
 jobs:
   build:
     runs-on: windows-latest
@@ -27,7 +28,7 @@ jobs:
     - name: VCPKG Clone
       uses: actions/checkout@v2.3.2
       with:
-        repository: 'inviwo/vcpkg'
+        repository: 'microsoft/vcpkg'
         ref: ${{ env.VCPKG_SHA }}
         path: vcpkg
     
