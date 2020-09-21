@@ -30,6 +30,7 @@
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/pickingaction.h>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
@@ -102,6 +103,7 @@ size_t PickingMapper::getPickingId(size_t id) const {
     if (pickingAction_) {
         return pickingAction_->getPickingId(id);
     } else {
+        throw RangeException("no registered picking action to fetch picking ID ", IVW_CONTEXT);
         return 0;
     }
 }

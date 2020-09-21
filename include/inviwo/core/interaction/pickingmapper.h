@@ -46,7 +46,6 @@ class PickingAction;
  */
 class IVW_CORE_API PickingMapper {
 public:
-
     /**
      * Construct a picking mapper. This will register a range of colors in the PickingMangaer and
      * create a PickingAction to associate those indices the the supplied action. The processor
@@ -76,6 +75,8 @@ public:
      * Returns the global picking index, the global index can be used with the
      * PickingManager::indexToColor(size_t index) function to get a picking color.
      * \param id the local picking index
+     *
+     * @throw RangeException if \id is out of bounds or there is no registered picking action
      */
     size_t getPickingId(size_t id = 0) const;
 
