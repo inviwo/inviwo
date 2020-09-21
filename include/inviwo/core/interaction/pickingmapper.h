@@ -46,7 +46,6 @@ class PickingAction;
  */
 class IVW_CORE_API PickingMapper {
 public:
-    PickingMapper(PickingManager* manager = PickingManager::getPtr());
 
     /**
      * Construct a picking mapper. This will register a range of colors in the PickingMangaer and
