@@ -51,19 +51,19 @@ jobs:
       shell: bash
       run: > 
         vcpkg --triplet ${{ matrix.triplet }} install
-        assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest 
+        assimp benchmark cimg eigen3 fmt freetype glfw3 glm gtest zlib 
         hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json 
-        openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib
+        openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp glew
       
-    #- name: Install Numpy
-    #  shell: bash
-    #  run: pip3 install numpy
+    - name: Install Numpy
+      shell: bash
+      run: pip3 install numpy
    
-    #- name: Install Qt
-    #  uses: jurplel/install-qt-action@v2
-    #  with:
-    #    version: 5.15.0
-    #    dir: ${{ github.workspace }}
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: 5.15.0
+        dir: ${{ github.workspace }}
        
     #- name: Install NSIS
     #  run: |
