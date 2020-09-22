@@ -4,10 +4,9 @@ on: [push]
 
 env:
   BUILD_TYPE: Release
-  IVW_VCPKG_SHA: '2a6442cb934de2f99c8ac5bbd8a9dcf5538aee98'
-  VCPKG_DEFAULT_TRIPLET: 'x64-windows'                   # recognized by vcpkg
-  VCPKG_BINARY_SOURCES : 'clear;nuget,GitHub,readwrite'  # recognized by vcpkg
-
+  IVW_VCPKG_SHA: '2a6442cb934de2f99c8ac5bbd8a9dcf5538aee98' # vcpkg "version" to use
+  VCPKG_DEFAULT_TRIPLET: 'x64-windows'                      # recognized by vcpkg
+  VCPKG_BINARY_SOURCES : 'clear;nuget,GitHub,readwrite'     # recognized by vcpkg
 
 jobs:
   build:
@@ -19,44 +18,30 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:  
-    - name: Setup
+    - name: Setup VCPKG
       shell: bash
       run: |
-        set +x
+        set -x
         cd $VCPKG_INSTALLATION_ROOT
         git fetch origin
         git reset --hard $IVW_VCPKG_SHA
         ./bootstrap-vcpkg.sh
-        
-    #- name: VCPKG Clone
-    #  uses: actions/checkout@v2.3.2
-    #  with:
-    #    repository: 'microsoft/vcpkg'
-    #    ref: ${{ env.IVW_VCPKG_SHA }}
-    #    path: '${{ github.workspace }}/vcpkg'
-    
-    #- name: VCPKG Bootstrap
-    #  shell: bash
-    #  working-directory: '${{ github.workspace }}/vcpkg'
-    #  run: './bootstrap-vcpkg.sh'
-    
-    #- name: 'Setup NuGet Credentials'
-    #  shell: bash
-    #  working-directory: '${{ github.workspace }}/vcpkg'
-    #  run: >
-    #    `./vcpkg fetch nuget | tail -n 1`
-    #    sources add
-    #    -source "https://nuget.pkg.github.com/inviwo/index.json"
-    #    -storepasswordincleartext
-    #    -name "GitHub"
-    #    -username "inviwo"
-    #    -password "${{ secrets.GITHUB_TOKEN }}"
+            
+    - name: 'Setup NuGet Credentials'
+      shell: bash
+      run: >
+        `vcpkg fetch nuget | tail -n 1`
+        sources add
+        -source "https://nuget.pkg.github.com/inviwo/index.json"
+        -storepasswordincleartext
+        -name "GitHub"
+        -username "inviwo"
+        -password "${{ secrets.GITHUB_TOKEN }}"
            
-    #- name: VCPKG Install
-    #  shell: bash
-    #  working-directory: '${{ github.workspace }}/vcpkg'
-    #  run: > 
-    #    ./vcpkg --debug install fmt
+    - name: VCPKG Install
+      shell: bash
+      run: > 
+        vcpkg --debug install fmt zlib
      #   assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest 
      #   hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json 
      #   openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib
