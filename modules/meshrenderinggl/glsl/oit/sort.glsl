@@ -45,8 +45,9 @@ void bitonicSort(int n);
 void fillFragmentArray(uint idx, out int numFrag);
 // Fill local memory array with lowest values
 void fillFragmentArraySortedUntilDepth(uint pixelIdx, float maxDepth, out int numFrag);
-// Selection sort, allowing to get the first elements of a larger series
-vec4 selectionSortNext(uint headPtr, float lastDepth);
+// Selection sort, allowing to get the next elements of a larger series.
+// Returns the next fragment with lowest depth but behind/at the same depth as the last.
+vec4 selectionSortNext(uint headPtr, float lastDepth, inout uint lastPtr);
 
 // Bubble sort used to sort fragments
 void bubbleSort(int array_size) {
@@ -105,9 +106,10 @@ void fillFragmentArraySortedUntilDepth(uint pixelIdx, float maxDepth, out int nu
     // Load fragments into a local memory array for sorting
     numFrag = 0;
     float depth = 0.0;
+    uint lastPtr = 0;
 
     while (numFrag < ABUFFER_SIZE) {
-        vec4 val = selectionSortNext(pixelIdx, depth);
+        vec4 val = selectionSortNext(pixelIdx, depth, lastPtr);
         depth = val.y;
         if (depth < 0.0 || depth > maxDepth) return;
         fragmentList[numFrag] = val;
@@ -115,17 +117,27 @@ void fillFragmentArraySortedUntilDepth(uint pixelIdx, float maxDepth, out int nu
     }
 }
 
-vec4 selectionSortNext(uint headPtr, float lastDepth) {
+vec4 selectionSortNext(uint headPtr, float lastDepth, inout uint lastPtr) {
+    // Remember the next fragment closest to the camera.
     vec4 closestVal = vec4(-1.0);
     float minDepth = 1.0;
+    uint minPtr = 0;
+    // Remember whether the previous element was visited yet to work through fragemtns of same depth in order. 
+    bool passedLastPtr = false;
     while (headPtr != 0) {
         vec4 val = readPixelStorage(headPtr - 1);
-        if (val.y > lastDepth && val.y < minDepth) {
+        if (headPtr == lastPtr) passedLastPtr = true;
+        // Require fragment to be both closer than the current nearest one
+        // and behind the previous fragment returned in either depth or, iff at the same depth, in order. 
+        else if (val.y < minDepth && (val.y > lastDepth || (passedLastPtr && val.y == lastDepth) )) {
             minDepth = val.y;
             closestVal = val;
+            minPtr = headPtr;
         }
         headPtr = floatBitsToUint(val.x);
     }
+    // Update pointer to selected fragment.
+    lastPtr = minPtr;
     return closestVal;
 }
 
