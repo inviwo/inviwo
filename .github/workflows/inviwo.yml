@@ -13,7 +13,7 @@ jobs:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
         include:
-          - os: 'windows-2019'
+          - os: 'windows-latest'
             triplet: 'x64-windows'
             mono: ''
           - os: 'macos-latest'
@@ -50,10 +50,10 @@ jobs:
     - name: VCPKG Install
       shell: bash
       run: > 
-        vcpkg --debug --triplet ${{ matrix.triplet }} install fmt zlib
-     #   assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest 
-     #   hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json 
-     #   openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib
+        vcpkg --triplet ${{ matrix.triplet }} install
+        assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest 
+        hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json 
+        openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib
       
     #- name: Install Numpy
     #  shell: bash
