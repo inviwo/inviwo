@@ -56,6 +56,8 @@ public:
      * Returns the global picking index, the global index can be used with the
      * PickingManager::indexToColor(size_t index) function to get a picking color.
      * \param id the local picking index
+     *
+     * @throw RangeException if \id is out of bounds
      */
     size_t getPickingId(size_t id = 0) const;
 
