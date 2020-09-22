@@ -26,6 +26,8 @@ jobs:
         pwd
         env
         ls -al
+        echo "Reset"
+        git reset --hard
         echo "Status"
         git status
         echo "Pull"
