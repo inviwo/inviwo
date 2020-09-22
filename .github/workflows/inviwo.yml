@@ -5,7 +5,6 @@ on: [push]
 env:
   BUILD_TYPE: Release
   IVW_VCPKG_SHA: '2a6442cb934de2f99c8ac5bbd8a9dcf5538aee98' # vcpkg "version" to use
-  VCPKG_DEFAULT_TRIPLET: 'x64-windows'                      # recognized by vcpkg
   VCPKG_BINARY_SOURCES : 'clear;nuget,GitHub,readwrite'     # recognized by vcpkg
 
 jobs:
@@ -13,6 +12,16 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
+        include:
+          - os: 'windows-2019'
+            triplet: 'x64-windows'
+            mono: ''
+          - os: 'macos-latest'
+            triplet: 'x64-osx'
+            mono: 'mono' 
+          - os: 'ubuntu-latest'
+            triplet: 'x64-linux'
+            mono: 'mono' 
       fail-fast: false
       
     runs-on: ${{ matrix.os }}
@@ -30,7 +39,7 @@ jobs:
     - name: 'Setup NuGet Credentials'
       shell: bash
       run: >
-        `vcpkg fetch nuget | tail -n 1`
+        ${{ matrix.mono }} `vcpkg fetch nuget | tail -n 1`
         sources add
         -source "https://nuget.pkg.github.com/inviwo/index.json"
         -storepasswordincleartext
@@ -41,7 +50,7 @@ jobs:
     - name: VCPKG Install
       shell: bash
       run: > 
-        vcpkg --debug install fmt zlib
+        vcpkg --debug --triplet ${{ matrix.triplet }} install fmt zlib
      #   assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest 
      #   hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json 
      #   openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib
