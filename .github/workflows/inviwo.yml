@@ -22,17 +22,10 @@ jobs:
     - name: Setup
       shell: bash
       run: |
+        set +x
         cd $VCPKG_INSTALLATION_ROOT
-        pwd
-        env
-        ls -al
-        echo "Reset"
-        git reset --hard
-        echo "Status"
-        git status
-        echo "Pull"
-        git pull
-        echo "Bootstrap"
+        git fetch origin
+        git reset --hard {{ env.IVW_VCPKG_SHA }}
         ./bootstrap-vcpkg.sh
         
     #- name: VCPKG Clone
