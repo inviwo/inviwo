@@ -49,7 +49,7 @@ jobs:
 
     - name: Apt Install
       shell: bash
-      if: matrix.os == 'linux-latest'
+      if: matrix.os == 'ubuntu-latest'
       run: sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev
 
     - name: VCPKG Install
@@ -62,7 +62,7 @@ jobs:
     
     - name: Glew Install
       shell: bash
-      if: matrix.os != 'linux-latest'
+      if: matrix.os != 'ubuntu-latest'
       run: vcpkg --debug --triplet ${{ matrix.triplet }} install glew
     
     - name: Install Numpy
