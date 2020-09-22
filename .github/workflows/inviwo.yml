@@ -25,7 +25,7 @@ jobs:
         set +x
         cd $VCPKG_INSTALLATION_ROOT
         git fetch origin
-        git reset --hard {{ env.IVW_VCPKG_SHA }}
+        git reset --hard $IVW_VCPKG_SHA
         ./bootstrap-vcpkg.sh
         
     #- name: VCPKG Clone
