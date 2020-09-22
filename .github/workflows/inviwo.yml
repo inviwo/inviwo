@@ -88,10 +88,10 @@ jobs:
         submodules: recursive
         
     - name: Configure CMake
-      shell: cmd
+      shell: bash
       run: >
-        cmake.exe -S inviwo -B build 
-        -DVCPKG_TARGET_TRIPLET='${{ env.VCPKG_DEFAULT_TRIPLET }}'
+        cmake -S inviwo -B build 
+        -DVCPKG_TARGET_TRIPLET='${{ matrix.triplet }}'
         -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
         -DIVW_CFG_CMAKE_DEBUG=ON
@@ -125,8 +125,8 @@ jobs:
          
     - name: Build
       working-directory: build
-      shell: cmd
-      run: cmake.exe --build . --config ${{ env.BUILD_TYPE }} --parallel --target PACKAGE 
+      shell: bash
+      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel --target PACKAGE 
 
     #- uses: actions/upload-artifact@v2
     #  with:
