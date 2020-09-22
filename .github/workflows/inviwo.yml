@@ -50,7 +50,7 @@ jobs:
     - name: VCPKG Install
       shell: bash
       run: > 
-        vcpkg --triplet ${{ matrix.triplet }} install
+        vcpkg --debug --triplet ${{ matrix.triplet }} install
         assimp benchmark cimg eigen3 fmt freetype glfw3 glm gtest zlib 
         hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json 
         openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp glew
@@ -65,16 +65,17 @@ jobs:
         version: 5.15.0
         dir: ${{ github.workspace }}
        
-    #- name: Install NSIS
-    #  run: |
-    #    Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-    #    scoop bucket add extras
-    #    scoop install nsis doxygen
+    - name: Install NSIS
+      if: matrix.os == windows-latest
+      run: |
+        Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+        scoop bucket add extras
+        scoop install nsis doxygen
      
-    #- uses: actions/checkout@v2
-    #  with: 
-    #    path: inviwo
-    #    submodules: recursive
+    - uses: actions/checkout@v2
+      with: 
+        path: inviwo
+        submodules: recursive
         
     #- name: Configure CMake
     #  shell: cmd
