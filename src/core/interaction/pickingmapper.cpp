@@ -30,7 +30,7 @@
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/pickingaction.h>
-#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 
@@ -100,20 +100,13 @@ void PickingMapper::setEnabled(bool enabled) {
 }
 
 size_t PickingMapper::getPickingId(size_t id) const {
-    if (pickingAction_) {
-        return pickingAction_->getPickingId(id);
-    } else {
-        throw RangeException("no registered picking action to fetch picking ID ", IVW_CONTEXT);
-        return 0;
-    }
+    IVW_ASSERT(pickingAction_, "no picking action set");
+    return pickingAction_->getPickingId(id);
 }
 
 vec3 PickingMapper::getColor(size_t id) const {
-    if (pickingAction_) {
-        return pickingAction_->getColor(id);
-    } else {
-        return {0.0f, 0.0f, 0.0f};
-    }
+    IVW_ASSERT(pickingAction_, "no picking action set");
+    return pickingAction_->getColor(id);
 }
 
 size_t PickingMapper::getSize() const {
