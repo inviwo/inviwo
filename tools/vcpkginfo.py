@@ -47,8 +47,8 @@ def makeCmdParser():
 
 	return parser.parse_args()
 
-def toString(list):
-	return ';' .join(list)
+def toString(items):
+	return ';'.join(items)
 
 if __name__ == '__main__':
 	args = makeCmdParser()
@@ -78,7 +78,8 @@ if __name__ == '__main__':
 		"--x-installed", 
 		"--x-json", 
 		f"{args.pkg}:{args.triplet}"],
-		capture_output=True
+		stdout=subprocess.PIPE,
+		stderr=subprocess.STDOUT
 	)
 	installInfo = json.loads(cmd.stdout)
 
@@ -94,10 +95,10 @@ if __name__ == '__main__':
 	if "homepage" in info:
 		result += f"VCPKG_HOMEPAGE;{info['homepage']};"
 
-	if "dependencies" in info:
+	if "dependencies" in info and len(info['dependencies'])>0:
 		result += f"VCPKG_DEPENDENCIES;{toString(info['dependencies'])};"
 
-	if "owns" in info:
+	if "owns" in info and len(info['owns'])>0:
 		result += f"VCPKG_OWNED_FILES;{toString(info['owns'])};"
 
 	print(result)
