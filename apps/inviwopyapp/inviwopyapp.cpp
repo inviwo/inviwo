@@ -45,7 +45,6 @@
 #include <QObject>
 #include <QFile>
 #include <warn/pop>
-#include <iostream>
 
 namespace py = pybind11;
 
@@ -93,7 +92,6 @@ PYBIND11_MODULE(inviwopyapp, m) {
         .def("waitForNetwork", [](InviwoApplicationQt* app, int maxJobs=0) {
             app->processEvents();
             app->waitForPool();
-            std::cout << "Running Background Jobs:" << app->getProcessorNetwork()->runningBackgroundJobs() << "\n";
             do {
                 app->processEvents();
                 app->processFront();
