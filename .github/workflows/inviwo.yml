@@ -4,7 +4,8 @@ on: [push]
 
 env:
   BUILD_TYPE: Release
-  IVW_VCPKG_SHA: '2a6442cb934de2f99c8ac5bbd8a9dcf5538aee98' # vcpkg "version" to use
+  #IVW_VCPKG_SHA: '2a6442cb934de2f99c8ac5bbd8a9dcf5538aee98' # vcpkg "version" to use
+  IVW_VCPKG_SHA: 'd3a3590a147a8d73c1efe09f0fed0f3bcc22b705'  # nuget verbose version
   VCPKG_BINARY_SOURCES : 'clear;nuget,GitHub,readwrite'     # recognized by vcpkg
 
 jobs:
@@ -32,7 +33,8 @@ jobs:
       run: |
         set -x
         cd $VCPKG_INSTALLATION_ROOT
-        git fetch origin
+        git remote add inviwo https://github.com/inviwo/vcpkg.git
+        git fetch
         git reset --hard $IVW_VCPKG_SHA
         ./bootstrap-vcpkg.sh
             
