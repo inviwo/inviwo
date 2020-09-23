@@ -71,6 +71,12 @@ if __name__ == '__main__':
 	)
 	portInfo = json.loads(cmd.stdout)
 
+	if args.pkg in portInfo['results']:
+		portInfo = portInfo['results'][args.pkg]
+	else:
+		print(f"Package {args.pkg}:{args.triplet} not found in vcpkg", file=sys.stderr)
+		exit(1)
+
 	cmd = subprocess.run([
 		args.vcpkg, 
 		overlay,
@@ -83,9 +89,12 @@ if __name__ == '__main__':
 	)
 	installInfo = json.loads(cmd.stdout)
 
-	portInfo = portInfo['results'][args.pkg]
-	installInfo = installInfo['results'][f"{args.pkg}:{args.triplet}"]
-
+	if f"{args.pkg}:{args.triplet}" in installInfo['results']:
+		installInfo = installInfo['results'][f"{args.pkg}:{args.triplet}"]
+	else:
+		print(f"Package {args.pkg}:{args.triplet} not found in vcpkg", file=sys.stderr)
+		exit(1)
+	
 	result = ""
 	if "version-string" in portInfo:
 		result += f"VCPKG_VERSION;{portInfo['version-string']};"
