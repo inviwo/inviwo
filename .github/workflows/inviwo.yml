@@ -34,7 +34,7 @@ jobs:
         set -x
         cd $VCPKG_INSTALLATION_ROOT
         git remote add inviwo https://github.com/inviwo/vcpkg.git
-        git fetch
+        git fetch --all
         git reset --hard $IVW_VCPKG_SHA
         ./bootstrap-vcpkg.sh
             
