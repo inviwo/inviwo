@@ -83,22 +83,20 @@ if __name__ == '__main__':
 	)
 	installInfo = json.loads(cmd.stdout)
 
-	info = {}
-	info.update(portInfo['results'][args.pkg])
-	info.update(installInfo['results'][f"{args.pkg}:{args.triplet}"])
-
+	portInfo = portInfo['results'][args.pkg]
+	installInfo = installInfo['results'][f"{args.pkg}:{args.triplet}"]
 
 	result = ""
-	if "version-string" in info:
-		result += f"VCPKG_VERSION;{info['version-string']};"
+	if "version-string" in portInfo:
+		result += f"VCPKG_VERSION;{portInfo['version-string']};"
 
-	if "homepage" in info:
-		result += f"VCPKG_HOMEPAGE;{info['homepage']};"
+	if "homepage" in portInfo:
+		result += f"VCPKG_HOMEPAGE;{portInfo['homepage']};"
 
-	if "dependencies" in info and len(info['dependencies'])>0:
-		result += f"VCPKG_DEPENDENCIES;{toString(info['dependencies'])};"
+	if "dependencies" in installInfo and len(installInfo['dependencies'])>0:
+		result += f"VCPKG_DEPENDENCIES;{toString(installInfo['dependencies'])};"
 
-	if "owns" in info and len(info['owns'])>0:
-		result += f"VCPKG_OWNED_FILES;{toString(info['owns'])};"
+	if "owns" in installInfo and len(installInfo['owns'])>0:
+		result += f"VCPKG_OWNED_FILES;{toString(installInfo['owns'])};"
 
 	print(result)

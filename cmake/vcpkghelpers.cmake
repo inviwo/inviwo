@@ -144,19 +144,71 @@ function(ivw_vcpkg_install name)
         set(INFO_VCPKG_OWNED_FILES "")
     endif()
 
-    set(binfiles ${INFO_VCPKG_OWNED_FILES})
-    string(REPLACE "." "\\." binsuffix "${CMAKE_SHARED_LIBRARY_SUFFIX}")
-    list(FILTER binfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/bin/.*${binsuffix}") 
-    list(TRANSFORM binfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+    if(WIN32)
+        set(binfiles ${INFO_VCPKG_OWNED_FILES})
+        list(FILTER binfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/bin/.*\\.dll") 
+        list(TRANSFORM binfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
 
-    set(pdbfiles ${INFO_VCPKG_OWNED_FILES})
-    list(FILTER pdbfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/bin/.*\\.pdb")
-    list(TRANSFORM pdbfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+        set(pdbfiles ${INFO_VCPKG_OWNED_FILES})
+        list(FILTER pdbfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/bin/.*\\.pdb")
+        list(TRANSFORM pdbfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
 
-    set(libfiles ${INFO_VCPKG_OWNED_FILES})
-    string(REPLACE "." "\\." libsuffix "${CMAKE_LINK_LIBRARY_SUFFIX}")
-    list(FILTER libfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/lib/.*${libsuffix}")
-    list(TRANSFORM libfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+        set(libfiles ${INFO_VCPKG_OWNED_FILES})
+        list(FILTER libfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/lib/.*\\.lib")
+        list(TRANSFORM libfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+
+        install(
+            FILES ${binfiles} 
+            DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
+            COMPONENT Application
+        )
+        install(
+            FILES ${pdbfiles} 
+            DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
+            COMPONENT Development
+        )
+        install(
+            FILES ${libfiles} 
+            DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
+            COMPONENT Development
+        )
+    elseif(APPLE)
+        set(libfiles ${INFO_VCPKG_OWNED_FILES})
+        list(FILTER libfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/lib/.*\\.dylib")
+        list(TRANSFORM libfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+        install(
+            FILES ${libfiles} 
+            DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
+            COMPONENT Application
+        )
+        
+        set(libfiles ${INFO_VCPKG_OWNED_FILES})
+        list(FILTER libfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/lib/.*\\.a")
+        list(TRANSFORM libfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+        install(
+            FILES ${libfiles} 
+            DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
+            COMPONENT Development
+        )
+    else()
+        set(libfiles ${INFO_VCPKG_OWNED_FILES})
+        list(FILTER libfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/lib/.*\\.so")
+        list(TRANSFORM libfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+        install(
+            FILES ${libfiles} 
+            DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
+            COMPONENT Application
+        )
+        
+        set(libfiles ${INFO_VCPKG_OWNED_FILES})
+        list(FILTER libfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/lib/.*\\.a")
+        list(TRANSFORM libfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+        install(
+            FILES ${libfiles} 
+            DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
+            COMPONENT Development
+        )
+    endif()
 
     set(copyright ${INFO_VCPKG_OWNED_FILES})
     list(FILTER copyright INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/share/.*copyright.*")
@@ -166,21 +218,8 @@ function(ivw_vcpkg_install name)
     list(FILTER headers INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/include/.*\\..?.*")
     list(TRANSFORM headers PREPEND "${_VCPKG_ROOT_DIR}/installed/")
 
-    install(
-       FILES ${binfiles} 
-       DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
-       COMPONENT Application
-    )
-    install(
-       FILES ${pdbfiles} 
-       DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
-       COMPONENT Development
-    )
-    install(
-       FILES ${libfiles} 
-       DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
-       COMPONENT Development
-    )
+
+
 
     if(INFO_VCPKG_HOMEPAGE)
         set(homepage URL ${INFO_VCPKG_HOMEPAGE})
