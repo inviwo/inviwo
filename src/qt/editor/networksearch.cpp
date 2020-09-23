@@ -135,8 +135,6 @@ NetworkSearch::NetworkSearch(InviwoMainWindow *win)
     hLayout->addWidget(edit_);
     setLayout(hLayout);
     setVisible(false);
-    setMaximumWidth(400);
-    setMinimumWidth(200);
     edit_->setPlaceholderText("Search Network...");
     edit_->installEventFilter(this);
     edit_->setClearButtonEnabled(true);
