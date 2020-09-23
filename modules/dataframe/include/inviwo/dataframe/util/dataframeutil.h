@@ -32,8 +32,10 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 
@@ -109,7 +111,65 @@ std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
 combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataframes, bool skipIndexColumn = false,
                   std::string skipcol = "index");
 
+/**
+ * \brief apply predicate \pred to each value of column \col and return the row indices where the
+ * predicate evaluates to true.
+ *
+ * Note: the predicate function needs to take care of the different column datatypes
+ * \code{.cpp}
+ * auto pred = [](const auto& arg) {
+ *                 if  constexpr(std::is_same_v<decltype(arg), float>) {
+ *                     return  arg == 4.5f
+ *                 } else {
+ *                     return true;
+ *                 }};
+ * \endcode
+ *
+ * Alternatively, predicate overloads can be used.
+ * \code{.cpp}
+ * #include <inviwo/core/util/stdextensions.h>
+ *
+ * auto pred = util::overloaded{[](const std::string& arg) { return arg == "bla"; },
+ *                              [](const int& arg) { return arg == 5;  },
+ *                              [](const auto&) { return true; });
+ * \endcode
+ *
+ * @param col   column containing data for filtering
+ * @param pred  predicate to check values from \p col
+ * @return list of row indices where rows fulfill the predicate
+ */
+template <typename Pred>
+std::vector<size_t> filteredRows(std::shared_ptr<const Column> col, Pred pred);
+
 std::string IVW_MODULE_DATAFRAME_API createToolTipForRow(const DataFrame& dataframe, size_t rowId);
+
+#include <warn/push>
+#include <warn/ignore/conversion>
+template <typename Pred>
+std::vector<size_t> filteredRows(std::shared_ptr<const Column> col, Pred pred) {
+    if (auto catCol = dynamic_cast<const CategoricalColumn*>(col.get())) {
+        std::vector<size_t> rows;
+        for (auto&& [row, v] : util::enumerate(catCol->getValues())) {
+            if (pred(v)) {
+                rows.push_back(row);
+            }
+        }
+        return rows;
+    } else {
+        return col->getBuffer()->getRepresentation<BufferRAM>()->dispatch<std::vector<size_t>>(
+            [pred](auto typedBuf) {
+                std::vector<size_t> rows;
+                for (auto&& [row, value] : util::enumerate(typedBuf->getDataContainer())) {
+                    // find all rows fulfilling the predicate
+                    if (pred(value)) {
+                        rows.push_back(row);
+                    }
+                }
+                return rows;
+            });
+    }
+}
+#include <warn/pop>
 
 }  // namespace dataframe
 

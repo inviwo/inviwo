@@ -32,6 +32,8 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/interaction/events/eventutil.h>
 
+#include <fmt/format.h>
+
 #include <algorithm>
 
 namespace inviwo {
@@ -65,9 +67,7 @@ void BrushingAndLinkingEvent::printEvent(const std::string& eventType, std::ostr
         if (indices.empty()) return "none"s;
         std::string str = joinString(indices.begin(),
                                      indices.begin() + std::min<size_t>(indices.size(), 10), ", ");
-        if (indices_.size() > 10) {
-            str.append("...");
-        }
+        str.append(fmt::format("{} ({})", (indices_.size() > 10) ? "..." : "", indices.size()));
         return str;
     }();
 
