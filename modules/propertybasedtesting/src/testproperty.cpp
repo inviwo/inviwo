@@ -111,6 +111,8 @@ TestPropertyComposite::TestPropertyComposite(PropertyOwner* original,
 	const std::string& displayName, const std::string& identifier)
 		: TestProperty(displayName, identifier)
 		, propertyOwner(original) {
+	if(auto p = dynamic_cast<Property*>(propertyOwner); p != nullptr)
+		p->setSerializationMode(PropertySerializationMode::All);
 	for(Property* prop : original->getProperties())
 		if(auto p = testableProperty(prop); p != std::nullopt) {
 			subProperties.emplace_back(*p);
@@ -128,7 +130,9 @@ void TestPropertyComposite::storeDefault() {
 }
 std::vector<std::shared_ptr<PropertyAssignment>> TestPropertyComposite::generateAssignments() const {
 	std::vector<std::shared_ptr<PropertyAssignment>> res;
+	std::cerr << "TestPropertyComposite::generateAssignments " << getIdentifier() << std::endl;
 	for(const auto& subProp : subProperties) {
+		std::cerr << "   " << subProp->getIdentifier() << std::endl;
 		auto tmp = subProp->generateAssignments();
 		res.insert(res.end(), tmp.begin(), tmp.end());
 	}
@@ -136,7 +140,7 @@ std::vector<std::shared_ptr<PropertyAssignment>> TestPropertyComposite::generate
 }
 
 void TestPropertyComposite::serialize(Serializer& s) const {
-	std::cerr << "\tserializing TestPropertyComposite" << std::endl;
+	std::cerr << "\tserializing TestPropertyComposite: " << getIdentifier() << std::endl;
 
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
 
@@ -151,15 +155,13 @@ void TestPropertyComposite::serialize(Serializer& s) const {
 	{
 		std::vector<TestProperty*> subProps;
 		for(const auto& sp : subProperties) {
-			std::cerr << "\t\tsp " << sp.get() << std::endl;
+			std::cerr << "\t\tsp " << sp.get() << " : " << sp->getIdentifier() << std::endl;
 			subProps.emplace_back(sp.get());
 		}
 		s.serialize("SubProperties", subProps);
 	}
 }
 void TestPropertyComposite::deserialize(Deserializer& d) {
-	std::cerr << "\tdeserializing TestPropertyComposite" << std::endl;
-
 	bool propertyOwnerIsProcessor;
 	d.deserialize("PropertyOwnerIsProcessor", propertyOwnerIsProcessor);
 	if(propertyOwnerIsProcessor) {
@@ -167,9 +169,10 @@ void TestPropertyComposite::deserialize(Deserializer& d) {
 		d.deserialize("PropertyOwner", tmp);
 		propertyOwner = static_cast<PropertyOwner*>(tmp);
 	} else {
-		Property* tmp = nullptr;
+		Property* tmp = nullptr; // required for proper deserialization of properties
 		d.deserialize("PropertyOwner", tmp);
-		propertyOwner = reinterpret_cast<PropertyOwner*>(tmp);
+		propertyOwner = dynamic_cast<PropertyOwner*>(tmp);
+		assert((propertyOwner == nullptr) == (tmp == nullptr));
 	}
 	assert(propertyOwner != nullptr);
 
@@ -181,9 +184,12 @@ void TestPropertyComposite::deserialize(Deserializer& d) {
 	{
 		std::vector<TestProperty*> subProps;
 		d.deserialize("SubProperties", subProps);
-		std::cerr << "\t\tsubProps.size()=" << subProps.size() << std::endl;
 		for(const auto& sp : subProps)
 			subProperties.emplace_back(std::shared_ptr<TestProperty>(sp));
+		std::cerr << "deserializing TestPropertyComposite : " << getIdentifier() << std::endl
+			<< "\t\tsubProps.size()=" << subProps.size() << std::endl;
+		for(auto sp : subProperties)
+			std::cerr << "\t\t; " << sp.get() << " : " << sp->getIdentifier() << std::endl;
 	}
 }
 
@@ -291,6 +297,8 @@ void TestPropertyTyped<T>::serialize(Serializer& s) const {
 
 	s.serialize("TypedProperty", typedProperty);
 	s.serialize("DefaultValue", defaultValue);
+	s.serialize("DisplayName", displayName);
+	s.serialize("Identifier", identifier);
 	s.serialize("BoolComp", boolComp);
 	s.serialize("EffectOption", effectOption);
 }
@@ -298,8 +306,11 @@ template<typename T>
 void TestPropertyTyped<T>::deserialize(Deserializer& d) {
 	d.deserialize("TypedProperty", typedProperty);
 	d.deserialize("DefaultValue", defaultValue);
+	d.deserialize("DisplayName", displayName);
+	d.deserialize("Identifier", identifier);
 	d.deserialize("BoolComp", boolComp);
 	d.deserialize("EffectOption", effectOption);
+	std::cerr << "deserialized " << getClassIdentifier() << "@" << this << " : " << typedProperty->getIdentifier() << std::endl;
 }
 
 // Helpers
