@@ -141,7 +141,7 @@ function(ivw_vcpkg_install name)
     cmake_parse_arguments(INFO "${vcoptions}" "${vconeValueArgs}" "${vcmultiValueArgs}" ${pkgInfo})
 
     set(binfiles ${INFO_VCPKG_OWNED_FILES})
-    string(REPLACE "." "\\." binsuffix ${CMAKE_SHARED_LIBRARY_SUFFIX})
+    string(REPLACE "." "\\." binsuffix "${CMAKE_SHARED_LIBRARY_SUFFIX}")
     list(FILTER binfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/bin/.*${binsuffix}") 
     list(TRANSFORM binfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
 

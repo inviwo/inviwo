@@ -33,6 +33,8 @@ import argparse
 import subprocess
 import json
 
+## Needs to work with python 3.6 on github
+
 def makeCmdParser():
 	parser = argparse.ArgumentParser(
 		description="Get vcpkg package info",
@@ -64,7 +66,8 @@ if __name__ == '__main__':
 		"x-package-info", 
 		"--x-json", 
 		f"{args.pkg}"],
-		capture_output=True
+		stdout=subprocess.PIPE,
+		stderr=subprocess.STDOUT
 	)
 	portInfo = json.loads(cmd.stdout)
 
