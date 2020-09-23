@@ -126,12 +126,12 @@ jobs:
         -DIVW_USE_EXTERNAL_TINYDIR=ON
         -DIVW_USE_EXTERNAL_PYBIND11=ON
         -DIVW_USE_EXTERNAL_OPENEXR=ON
-        '${{ matrix.cmake }}'
+        ${{ matrix.cmake }}
          
     - name: Build
       working-directory: build
       shell: bash
-      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel --target PACKAGE 
+      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel --target package 
 
     #- uses: actions/upload-artifact@v2
     #  with:
