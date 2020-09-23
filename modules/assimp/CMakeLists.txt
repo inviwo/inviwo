@@ -29,7 +29,7 @@ if(NOT IVW_USE_EXTERNAL_ASSIMP)
     )
     ivw_default_install_targets(assimp)
 else()
-    find_package(assimp CONFIG REQUIRED)
+    find_package(Assimp CONFIG REQUIRED)
     ivw_vcpkg_install(assimp MODULE Assimp)
 endif()
 
