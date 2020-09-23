@@ -1,5 +1,6 @@
 import os, sys, time
 from pathlib import Path
+from contextlib import contextmanager
 import numpy as np
 from PIL import Image
 
@@ -29,11 +30,36 @@ class InviwoInterface:
         self.proc_dict = {str(p): p for p in self.network.processors}
         print(f'Loaded workspace: {workspace_path}')
 
+        self.set_canvas_hidden_evaluation(True)
+
         self.injectors = {}
 
         # Get Background Job Number
         self.app.waitForNetwork(1)
         self.bgJobs = self.app.runningBackgroundJobs()
+
+    def set_canvas_hidden_evaluation(self, value):
+        for p in self.network.processors:
+            if p.classIdentifier == 'org.inviwo.CanvasGL':
+                print(p.properties)
+                p.getPropertyByIdentifier('evaluateWhenHidden').value = value
+
+    @contextmanager
+    def network_locked(self, wait_after_unlock=False):
+        try:
+            self.network.lock()
+            yield
+        finally:
+            self.network.unlock()
+            if wait_after_unlock: self.app.waitForNetwork()
+
+    def eval(self, keep_network_unlocked=False):
+        relock = self.network.isLocked()
+        while self.network.isLocked():
+            self.network.unlock()
+        self.app.waitForNetwork()
+        if relock and not keep_network_unlocked:
+            self.network.lock()
 
     def inject_volume_source(self, src_id):
         ''' Replaces VolumeSource processors with a VolumeInjector

@@ -139,6 +139,7 @@ void exposeNetwork(py::module& m) {
         .def_property_readonly("runningBackgroundJobs", &ProcessorNetwork::runningBackgroundJobs)
         .def("lock", &ProcessorNetwork::lock)
         .def("unlock", &ProcessorNetwork::unlock)
+        .def("isLocked", &ProcessorNetwork::islocked)
         .def_property_readonly("locked", &ProcessorNetwork::islocked)
         .def_property_readonly("deserializing", &ProcessorNetwork::isDeserializing)
 

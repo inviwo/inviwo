@@ -42,5 +42,3 @@ class VolumeInjector(ivw.Processor):
             vol.interpolation = InterpolationType.Linear
             vol.dataMap.dataRange, vol.dataMap.valueRange = dvec2(0.0, 1.0), dvec2(0.0, 1.0)
             self.outport.setData(vol)
-            print('Outport data set!')
-            print(f'pyproc: num jobs: {self.network.getApplication().runningBackgroundJobs()}')
