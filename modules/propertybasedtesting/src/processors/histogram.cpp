@@ -171,7 +171,7 @@ Histogram::Histogram(InviwoApplication* app)
 	, useDepth_("useDepth", "Use Depth", false, InvalidationLevel::Valid)
 	, color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(0.0f))
 	, countPixelsButton_("cntPixelsButton", "Count number of pixels with set color")
-	, startButton_("startButton", "Start")
+	, startButton_("startButton", "Update Test Results")
 	, numTests_("numTests", "Maximum number of tests", 200, 1, 10000) {
 
 	std::cerr << "Histogram(app=" << app << ")" << std::endl;
@@ -258,18 +258,21 @@ void Histogram::deserialize(Deserializer& d) {
 }
 
 void Histogram::initTesting() {
-	testResults.clear();
 	assert(remainingTests.empty());
+	testResults.clear();
 
 	props_.clear();
 
 	for(const auto&[processor,comp] : processors_) {
-		if(comp->getBoolComp()->isChecked())
+		if(comp->getBoolComp()->isChecked()) {
 			props_.emplace_back(comp);
+			std::cerr << "Checked: " << comp->getIdentifier() << " @ " << processor->getIdentifier() << std::endl;
+		}
 	}
 
 	if(props_.empty()) {
 		std::cerr << "not testing because there are no selected properties" << std::endl;
+		checkTestResults(); // create Image with (empty) results
 		return;
 	}
 
@@ -325,30 +328,46 @@ std::ostream& printError(std::ostream& out,
 	return out;
 }
 
-namespace {
-	struct Dispatch {
-		template <typename Result, typename T>
-		std::shared_ptr<LayerRAM> operator()(void* data, const uvec2& dims) const {
-			using F = typename T::type;
-
-			auto swizzleMask = [](std::size_t numComponents) {
-				switch (numComponents) {
-					case 1:
-						return swizzlemasks::luminance;
-					case 2:
-						return swizzlemasks::luminanceAlpha;
-					case 3:
-						return swizzlemasks::rgb;
-					case 4:
-					default:
-						return swizzlemasks::rgba;
-				}
-			};
-
-			return std::make_shared<LayerRAMPrecision<F>>(static_cast<F*>(data), dims,
-					LayerType::Color, swizzleMask(T::comp));
+template<typename F, typename T = typename F::type>
+auto generateImageFromData(const std::vector<unsigned char>& data) {
+	auto swizzleMask = [](size_t numComponents) {
+		switch (numComponents) {
+			case 1:
+				return swizzlemasks::luminance;
+			case 2:
+				return swizzlemasks::luminanceAlpha;
+			case 3:
+				return swizzlemasks::rgb;
+			case 4:
+			default:
+				return swizzlemasks::rgba;
 		}
 	};
+
+	size2_t dimensions;
+	// determine dimensions: find smallest power of two that is at least as large as
+	// data.size(), and split it as evenly as possible, i.e. 2^a*2^b >= data.size(),
+	// a>=b, a<=b+1. let x=2^a,y<=2^b, x*y>=data.size()y
+	{
+		const size_t numElements = std::max(size_t(1), (data.size()+3)/4);
+		size_t e = 0;
+		while((1ull<<e) < numElements) e++;
+		size_t b = e/2, a = e - b;
+		dimensions.x = 1ull<<b;
+		dimensions.y = 1ull<<a;
+		while(dimensions.x * (dimensions.y-1) >= numElements)
+			dimensions.y--;
+	}
+
+	T* raw = new T[dimensions.x * dimensions.y];
+	std::memcpy(raw, data.data(), data.size());
+	for(size_t i = data.size(); i < dimensions.x * dimensions.y; i++) // padding
+		raw[i] = T(255,0,0,255);
+
+	auto errLayerRAM = std::make_shared<LayerRAMPrecision<T>>(
+				raw, dimensions, LayerType::Color, swizzleMask(F::comp));
+	auto errLayer = std::make_shared<Layer>(errLayerRAM);
+	return std::make_shared<Image>(errLayer);
 }
 
 void Histogram::checkTestResults() {
@@ -460,51 +479,12 @@ void Histogram::checkTestResults() {
 	// generate image from errors
 	{
 		using F = DataFormat<glm::u8vec4>;
-		using T = F::type;
 		std::vector<unsigned char> tmpData;
 
 		for(const auto& error : errors)
 			testingErrorToBinary(tmpData, props_, error);
 
-		auto swizzleMask = [](size_t numComponents) {
-			switch (numComponents) {
-				case 1:
-					return swizzlemasks::luminance;
-				case 2:
-					return swizzlemasks::luminanceAlpha;
-				case 3:
-					return swizzlemasks::rgb;
-				case 4:
-				default:
-					return swizzlemasks::rgba;
-			}
-		};
-
-		size2_t dimensions;
-		// determine dimensions: find smallest power of two that is at least as large as
-		// tmpData.size(), and split it as evenly as possible, i.e. 2^a*2^b >= tmpData.size(),
-		// a>=b, a<=b+1. let x=2^a,y<=2^b, x*y>=tmpData.size()y
-		{
-			const size_t numElements = std::max(size_t(1), (tmpData.size()+3)/4);
-			size_t e = 0;
-			while((1ull<<e) < numElements) e++;
-			size_t b = e/2, a = e - b;
-			dimensions.x = 1ull<<b;
-			dimensions.y = 1ull<<a;
-			while(dimensions.x * (dimensions.y-1) >= numElements)
-				dimensions.y--;
-		}
-
-		T* data = new T[dimensions.x * dimensions.y];
-		std::memcpy(data, tmpData.data(), tmpData.size());
-		for(size_t i = tmpData.size(); i < dimensions.x * dimensions.y; i++) // padding
-			data[i] = T(255,0,0,255);
-
-		auto errLayerRAM = std::make_shared<LayerRAMPrecision<T>>(
-					static_cast<T*>(data), dimensions, LayerType::Color, swizzleMask(F::comp));
-		auto errLayer = std::make_shared<Layer>(errLayerRAM);
-		auto img = std::make_shared<Image>(errLayer);
-		outputImage = {img};
+		outputImage = { generateImageFromData<F>(tmpData) };
 		this->invalidate(InvalidationLevel::InvalidOutput);
 	}
 }
@@ -568,14 +548,19 @@ void Histogram::process() {
 
 	switch(testingState) {
 		case TestingState::NONE:
-
+			if(!outputImage && remainingTests.empty()) {
+				// output image does not exist and we are currently not testing
+				//	   generate output image
+				app_->dispatchFrontAndForget([this]() { initTesting(); });
+			}
 			break;
 		case TestingState::SINGLE_COUNT:
 			{
 				const size_t pixelCount = countPixels(img, color_.get(), useDepth_);
 				util::log(IVW_CONTEXT, std::to_string(pixelCount) + " pixels",
 						LogLevel::Info, LogAudience::User);
-			} break;
+			}
+			break;
 		case TestingState::GATHERING:
 			assert(!remainingTests.empty());
 
@@ -606,7 +591,6 @@ void Histogram::process() {
 
 	if(outputImage) {
 		outport_.setData(*outputImage);
-		this->invalidate(InvalidationLevel::InvalidOutput);
 		std::cerr << "setting output image" << std::endl;
 	}
 }
