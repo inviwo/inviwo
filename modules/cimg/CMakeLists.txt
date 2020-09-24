@@ -60,6 +60,8 @@ target_link_libraries(inviwo-module-cimg
 )
 
 target_compile_definitions(inviwo-module-cimg PRIVATE
+    cimg_verbosity=0
+    cimg_display=0
     cimg_use_cpp11
     cimg_use_jpeg
     cimg_use_zlib
