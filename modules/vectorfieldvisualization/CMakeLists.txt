@@ -24,6 +24,7 @@ set(HEADER_FILES
     include/modules/vectorfieldvisualization/processors/integrallinevectortomesh.h
     include/modules/vectorfieldvisualization/processors/seed3dto4d.h
     include/modules/vectorfieldvisualization/processors/seedsfrommasksequence.h
+    include/modules/vectorfieldvisualization/processors/seedsfrommesh.h
     include/modules/vectorfieldvisualization/processors/unsteadyvolumetospatialsampler.h
     include/modules/vectorfieldvisualization/properties/integrallineproperties.h
     include/modules/vectorfieldvisualization/properties/pathlineproperties.h
@@ -53,6 +54,7 @@ set(SOURCE_FILES
     src/processors/integrallinevectortomesh.cpp
     src/processors/seed3dto4d.cpp
     src/processors/seedsfrommasksequence.cpp
+    src/processors/seedsfrommesh.cpp
     src/processors/unsteadyvolumetospatialsampler.cpp
     src/properties/integrallineproperties.cpp
     src/properties/pathlineproperties.cpp
