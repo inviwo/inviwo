@@ -22,7 +22,7 @@ jobs:
             triplet: 'x64-osx'
             mono: 'mono'
             cmake: '-DIVW_MODULE_HDF5=OFF' 
-          - os: 'ubuntu-latest'
+          - os: 'ubuntu-20.04'
             triplet: 'x64-linux'
             mono: 'mono'
             cmake: '-DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF' 
