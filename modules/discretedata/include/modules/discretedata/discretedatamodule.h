@@ -32,6 +32,9 @@
 #include <modules/discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 
+// I'll put the recordings of our zoom rehearsals in here.
+// Please go through them if you could not attend.
+
 namespace inviwo {
 
 class IVW_MODULE_DISCRETEDATA_API DiscreteDataModule : public InviwoModule {

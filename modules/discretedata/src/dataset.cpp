@@ -29,6 +29,7 @@
 
 #include <modules/discretedata/dataset.h>
 #include <modules/discretedata/channels/bufferchannel.h>
+#include <inviwo/core/util/utilities.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -41,6 +42,7 @@ std::shared_ptr<const Channel> DataSet::addChannel(const Channel* channel) {
 }
 
 void DataSet::addChannel(std::shared_ptr<const Channel> sharedChannel) {
+    util::validateIdentifier(sharedChannel->getName(), "Channel", IVW_CONTEXT);
     channels_.insert(std::make_pair(
         std::make_pair(sharedChannel->getName(), sharedChannel->getGridPrimitiveType()),
         sharedChannel));
@@ -75,7 +77,7 @@ std::shared_ptr<const Channel> DataSet::getChannel(
 }
 
 std::vector<std::pair<std::string, GridPrimitive>> DataSet::getChannelNames() const {
-    ind numChannels = getNumChannels();
+    ind numChannels = size();
 
     std::vector<std::pair<std::string, GridPrimitive>> channelNames;
     channelNames.reserve(numChannels);

@@ -52,23 +52,23 @@ void ExampleDataset::process() {
 
     const std::array<ind, 3> dataSize = {9, 6, 11};
     auto dataset = std::make_shared<DataSet>(dataSize);
-    auto wave = std::make_shared<AnalyticChannel<float, 3, glm::vec3>>(
+    auto wave = std::make_shared<AnalyticChannel<double, 3, glm::dvec3>>(
         [dataSize](auto& vec, ind idx) {
-            glm::vec3 pos = {
-                (float)(idx % dataSize[0]) / dataSize[0],
-                (float)((idx % (dataSize[0] * dataSize[1])) / dataSize[0]) / dataSize[1],
-                (float)(idx / (dataSize[0] * dataSize[1])) / dataSize[2]};
+            glm::dvec3 pos = {
+                (double)(idx % dataSize[0]) / dataSize[0],
+                (double)((idx % (dataSize[0] * dataSize[1])) / dataSize[0]) / dataSize[1],
+                (double)(idx / (dataSize[0] * dataSize[1])) / dataSize[2]};
 
             vec.x = pos.z * 10;  // Check
             vec.y = std::cos(pos.z * 6);
             vec.z = (pos.x - 0.5f) * (pos.z * 3 + 1);  // Check
 
-            float slope = std::sin(pos.z * 6);
-            float rad = pos.y - 0.5f;
+            double slope = std::sin(pos.z * 6);
+            double rad = pos.y - 0.5f;
             vec.x += slope * rad;
             vec.y += rad;
         },
-        dataset->getGrid()->getNumElements(), "Wave Pos");
+        dataset->getGrid()->getNumElements(), "WavePos");
 
     auto donut = std::make_shared<AnalyticChannel<float, 3, glm::vec3>>(
         [dataSize](auto& vec, ind idx) {
@@ -91,7 +91,7 @@ void ExampleDataset::process() {
             vec.x += std::cos(angle) * rad * vec.x / norm;
             vec.y += std::cos(angle) * rad * vec.y / norm;
         },
-        dataset->getGrid()->getNumElements(), "Torus Pos");
+        dataset->getGrid()->getNumElements(), "TorusPos");
 
     auto color = std::make_shared<AnalyticChannel<float, 3, glm::vec3>>(
         [dataSize](auto& vec, ind idx) {

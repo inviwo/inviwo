@@ -135,6 +135,11 @@ public:
     void addChannel(std::shared_ptr<const Channel> channel);
 
     /**
+     * Returns the channel list (map from name and primitive to channel shared pointer).
+     */
+    DataChannelMap getChannels() const { return DataChannelMap(channels_); };
+
+    /**
      * Returns the first channel from an unordered list.
      */
     std::shared_ptr<const Channel> getFirstChannel() const;
@@ -188,7 +193,7 @@ public:
     /**
      * Number of channels currently held
      */
-    ind getNumChannels() const { return channels_.size(); }
+    ind size() const { return channels_.size(); }
 
     std::vector<std::pair<std::string, GridPrimitive>> getChannelNames() const;
 
@@ -259,7 +264,11 @@ struct DataTraits<discretedata::DataSet> {
     static uvec3 colorCode() { return uvec3(255, 144, 1); }
     static Document info(const discretedata::DataSet& data) {
         std::ostringstream oss;
-        oss << "Data set with " << data.getNumChannels() << " channels.";
+        auto grid = data.getGrid();
+        oss << "Data set with " << data.size() << " channels."
+            << "Defined on " << grid->getNumElements() << " vertices and "
+            << grid->getNumElements(grid->getDimension()) << ' ' << int(grid->getDimension())
+            << "D cells.";
 
         auto channelKeyList = data.getChannelNames();
         if (channelKeyList.size() != 0)

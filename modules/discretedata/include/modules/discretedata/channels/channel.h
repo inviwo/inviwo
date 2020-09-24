@@ -47,10 +47,10 @@ class DataChannel;
  *
  * General version of a DataChannel for use in general containers
  * (see DataSet).
- *
- * @author Anke Friederici and Tino Weinkauf
  */
 class IVW_MODULE_DISCRETEDATA_API Channel : public MetaDataOwner {
+    // friend class CombinedChannel;
+
 public:
     /**
      * \brief Direct construction
@@ -72,6 +72,7 @@ public:
 
     GridPrimitive getGridPrimitiveType() const;
 
+    /** Gets the scalar data format type, i.e. Float64 for a vec3 channel. **/
     DataFormatId getDataFormatId() const;
 
     ind getNumComponents() const;
@@ -92,6 +93,8 @@ protected:
      * Should be constant, only DataSet is allowed to write.
      */
     void setNumComponents(ind);
+
+    virtual void fillRaw(void* dest, ind index, ind numElements = 1) const = 0;
 
 public:
     /**
@@ -137,7 +140,7 @@ private:
 namespace detail_dd {
 struct ChannelDispatcher {
     template <typename Result, typename T, ind N, typename Callable, typename... Args>
-    auto operator()(Callable&& obj, Channel* channel, Args... args) -> Result {
+    Result operator()(Callable&& obj, Channel* channel, Args... args) {
         return obj(dynamic_cast<DataChannel<typename T::type, N>*>(channel),
                    std::forward<Args>(args)...);
     }
@@ -145,7 +148,7 @@ struct ChannelDispatcher {
 
 struct ChannelConstDispatcher {
     template <typename Result, typename T, ind N, typename Callable, typename... Args>
-    auto operator()(Callable&& obj, const Channel* channel, Args... args) -> Result {
+    Result operator()(Callable&& obj, const Channel* channel, Args... args) {
         static_assert(N > 0);
         return obj(dynamic_cast<const DataChannel<typename T::type, N>*>(channel),
                    std::forward<Args>(args)...);

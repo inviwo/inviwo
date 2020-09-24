@@ -55,7 +55,8 @@ class Volume;
 namespace pyutil {
 
 IVW_MODULE_PYTHON3_API pybind11::dtype toNumPyFormat(const DataFormatBase* df);
-IVW_MODULE_PYTHON3_API const DataFormatBase* getDataFormat(size_t components, pybind11::array& arr);
+IVW_MODULE_PYTHON3_API const DataFormatBase* getDataFormat(size_t components,
+                                                           const pybind11::array& arr);
 IVW_MODULE_PYTHON3_API std::unique_ptr<BufferBase> createBuffer(pybind11::array& arr);
 IVW_MODULE_PYTHON3_API std::unique_ptr<Layer> createLayer(pybind11::array& arr);
 IVW_MODULE_PYTHON3_API std::unique_ptr<Volume> createVolume(pybind11::array& arr);

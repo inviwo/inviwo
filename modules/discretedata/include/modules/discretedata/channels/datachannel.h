@@ -46,14 +46,19 @@ class BufferChannel;
 template <typename T, ind N>
 class BaseChannel : public Channel {
     friend class BufferChannel<T, N>;
+    friend class Channel;
 
 public:
     BaseChannel(const std::string& name, DataFormatId dataFormat,
                 GridPrimitive definedOn = GridPrimitive::Vertex)
         : Channel(N, name, dataFormat, definedOn) {}
 
-protected:
     virtual void fillRaw(T* dest, ind index, ind numElements = 1) const = 0;
+
+protected:
+    virtual void fillRaw(void* dest, ind index, ind numElements = 1) const {
+        fillRaw(reinterpret_cast<T*>(dest), index, numElements);
+    }
     virtual ChannelGetter<T, N>* newIterator() = 0;
 };
 
@@ -67,7 +72,7 @@ protected:
  * Direct indexing is virtual, avoid where possible.
  */
 template <typename T, ind N>
-class DataChannel : public BaseChannel<T, N> {
+class IVW_MODULE_DISCRETEDATA_API DataChannel : public BaseChannel<T, N> {
     friend class DataSet;
     friend struct ChannelGetter<T, N>;
 

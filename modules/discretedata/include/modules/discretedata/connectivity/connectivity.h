@@ -58,9 +58,7 @@ namespace discretedata {
  *   Butler and Bryson, 1992.
  *
  *  Connectivity and Coordinates jointly define the manifold
- *   in the above paper.
- *
- *   @author Tino Weinkauf and Anke Friederici
+ *  in the above paper.
  */
 class IVW_MODULE_DISCRETEDATA_API Connectivity {
 public:

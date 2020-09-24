@@ -43,8 +43,8 @@ PeriodicGrid<N>::PeriodicGrid(const std::array<ind, N>& numVertsPerDim,
     ind numCells = 1;
     ind numVerts = 1;
     for (ind dim = 0; dim < N; ++dim) {
-        numCells *= numVerticesPerDimension_[dim] - 1;
-        numVerts *= numVerticesPerDimension_[dim];
+        numCells *= StructuredGrid<N>::numPrimitives_.NumVerticesPerDimension[dim] - 1;
+        numVerts *= StructuredGrid<N>::numPrimitives_.NumVerticesPerDimension[dim];
     }
 
     Connectivity::numGridPrimitives_[(ind)Connectivity::gridDimension_] = numCells;
@@ -56,136 +56,137 @@ void PeriodicGrid<N>::getConnections(std::vector<ind>& result, ind idxLin, GridP
                                      GridPrimitive to, bool isPosition) const {
 
     std::array<ind, N> cellDims;
-    for (ind dim = 0; dim < N; ++dim) {
-        cellDims[dim] = numVerticesPerDimension_[dim] - 1;
-    }
+    // for (ind dim = 0; dim < N; ++dim) {
+    //     cellDims[dim] = numPrimitives_.NumVerticesPerDimension[dim] - 1;
+    // }
 
-    if (isPosition) {
-        // Position-wise, there is no difference from a StructuredGrid.
-        StructuredGrid<N>::getConnections(result, idxLin, from, to, isPosition);
-        return;
-    }
-    if (from == to && from == Connectivity::gridDimension_) {
-        // In this variant, the last cell is the same as the first within each dimension.
-        sameLevelConnection(result, idxLin, cellDims);
-        return;
-    }
+    // if (isPosition) {
+    //     // Position-wise, there is no difference from a StructuredGrid.
+    //     StructuredGrid<N>::getConnections(result, idxLin, from, to, isPosition);
+    //     return;
+    // }
+    // if (from == to && from == Connectivity::gridDimension_) {
+    //     // In this variant, the last cell is the same as the first within each dimension.
+    //     sameLevelConnection(result, idxLin, cellDims);
+    //     return;
+    // }
 
-    if (from == to && from == GridPrimitive::Vertex) {
-        // In this variant, the last vertex is the same as the first within each dimension.
-        sameLevelConnection(result, idxLin, numVerticesPerDimension_);
-        return;
-    }
+    // if (from == to && from == GridPrimitive::Vertex) {
+    //     // In this variant, the last vertex is the same as the first within each dimension.
+    //     sameLevelConnection(result, idxLin, numPrimitives_.NumVerticesPerDimension);
+    //     return;
+    // }
 
-    if (from == Connectivity::gridDimension_ && to == GridPrimitive::Vertex) {
-        // Prepare corners
-        const ind numDimensions = N;
-        const ind numCorners = ind(1) << numDimensions;
-        result.resize(numCorners);
+    // if (from == Connectivity::gridDimension_ && to == GridPrimitive::Vertex) {
+    //     // Prepare corners
+    //     const ind numDimensions = N;
+    //     const ind numCorners = ind(1) << numDimensions;
+    //     result.resize(numCorners);
 
-        // Vertex Strides - how much to add to the linear index to go forward by 1 in each dimension
-        std::array<ind, N> VStrides;
-        ind dimProduct(1);
-        for (ind dim(0); dim < numDimensions; dim++) {
-            VStrides[dim] = dimProduct;
-            dimProduct *= numVerticesPerDimension_[dim];
-        }
-        // Linear Index to nD Cell Index.
-        std::array<ind, N> cellIndex = indexFromLinear(idxLin, cellDims);
+    //     // Vertex Strides - how much to add to the linear index to go forward by 1 in each
+    //     dimension std::array<ind, N> VStrides; ind dimProduct(1); for (ind dim(0); dim <
+    //     numDimensions; dim++) {
+    //         VStrides[dim] = dimProduct;
+    //         dimProduct *= numPrimitives_.NumVerticesPerDimension[dim];
+    //     }
+    //     // Linear Index to nD Cell Index.
+    //     std::array<ind, N> cellIndex = indexFromLinear(idxLin, cellDims);
 
-        // The given cell index is also the index of its lower-left-front corner vertex
-        // Let's compute the linear index for this vertex
-        ind lowerLeftFrontVertexLinearIndex = cellIndex[0];
-        for (ind dim(1); dim < numDimensions; dim++) {
-            lowerLeftFrontVertexLinearIndex += cellIndex[dim] * VStrides[dim];
-        }
+    //     // The given cell index is also the index of its lower-left-front corner vertex
+    //     // Let's compute the linear index for this vertex
+    //     ind lowerLeftFrontVertexLinearIndex = cellIndex[0];
+    //     for (ind dim(1); dim < numDimensions; dim++) {
+    //         lowerLeftFrontVertexLinearIndex += cellIndex[dim] * VStrides[dim];
+    //     }
 
-        result[0] = lowerLeftFrontVertexLinearIndex;
-        for (ind i(1); i < numCorners; i++) {
-            // Base is the lower-left-front corner.
-            result[i] = lowerLeftFrontVertexLinearIndex;
-            // Add strides to the lower-left-front corner.
-            for (ind d(0); d < numDimensions; d++) {
-                if (i & (ind(1) << d)) {
-                    // Last cell in a periodic dimension does not connect to the last vertex, but
-                    // the first one.
-                    if (isPeriodic(d) && cellIndex[d] == cellDims[d])
-                        result[i] -= VStrides[d] * cellDims[d];
-                    else
-                        result[i] += VStrides[d];
-                }
-            }
-        }
+    //     result[0] = lowerLeftFrontVertexLinearIndex;
+    //     for (ind i(1); i < numCorners; i++) {
+    //         // Base is the lower-left-front corner.
+    //         result[i] = lowerLeftFrontVertexLinearIndex;
+    //         // Add strides to the lower-left-front corner.
+    //         for (ind d(0); d < numDimensions; d++) {
+    //             if (i & (ind(1) << d)) {
+    //                 // Last cell in a periodic dimension does not connect to the last vertex, but
+    //                 // the first one.
+    //                 if (isPeriodic(d) && cellIndex[d] == cellDims[d])
+    //                     result[i] -= VStrides[d] * cellDims[d];
+    //                 else
+    //                     result[i] += VStrides[d];
+    //             }
+    //         }
+    //     }
 
-        return;
-    }
+    //     return;
+    // }
 
-    if (from == GridPrimitive::Vertex && to == Connectivity::gridDimension_) {
-        // Compute dimensions for vertices
-        std::array<ind, N> vertDims;
-        for (ind dim = 0; dim < N; ++dim) {
-            vertDims[dim] = numVerticesPerDimension_[dim];
-        }
+    // if (from == GridPrimitive::Vertex && to == Connectivity::gridDimension_) {
+    //     // Compute dimensions for vertices
+    //     std::array<ind, N> vertDims;
+    //     for (ind dim = 0; dim < N; ++dim) {
+    //         vertDims[dim] = numPrimitives_.NumVerticesPerDimension[dim];
+    //     }
 
-        // Linear Index to nD Vertex Index.
-        std::array<ind, N> VertexIndex = indexFromLinear(idxLin, vertDims);
+    //     // Linear Index to nD Vertex Index.
+    //     std::array<ind, N> VertexIndex = indexFromLinear(idxLin, vertDims);
 
-        // Prepare neighbors.
-        const ind MaxNeighbors = ind(1) << N;
-        result.reserve(MaxNeighbors);
+    //     // Prepare neighbors.
+    //     const ind MaxNeighbors = ind(1) << N;
+    //     result.reserve(MaxNeighbors);
 
-        // Compute neighbors.
-        std::array<ind, N> CurrentNeighbor;
-        for (ind i(0); i < MaxNeighbors; i++) {
-            // Base index is the vertex index. The same cell index is the upper-right one of the
-            // neighbors.
-            CurrentNeighbor = VertexIndex;
+    //     // Compute neighbors.
+    //     std::array<ind, N> CurrentNeighbor;
+    //     for (ind i(0); i < MaxNeighbors; i++) {
+    //         // Base index is the vertex index. The same cell index is the upper-right one of the
+    //         // neighbors.
+    //         CurrentNeighbor = VertexIndex;
 
-            // Generate new neighbor index
-            for (ind d(0); d < N; d++) {
-                if (i & (ind(1) << d)) CurrentNeighbor[d]--;
-            }
+    //         // Generate new neighbor index
+    //         for (ind d(0); d < N; d++) {
+    //             if (i & (ind(1) << d)) CurrentNeighbor[d]--;
+    //         }
 
-            // Is it in the allowed range? And compute linear index while checking.
-            bool bOk(true);
-            ind CurrentNeighborLinearIndex(0);
-            ind DimensionProduct(1);
-            for (ind d(0); bOk && d < N; d++) {
-                if (CurrentNeighbor[d] < 0) {
-                    if (isPeriodic(d)) {
-                        // Map to last cell in dimension, the one going over the boundary.
-                        CurrentNeighbor[d] = cellDims[d] - 2;
-                    } else {
-                        bOk = false;
-                    }
-                }
-                if (CurrentNeighbor[d] == cellDims[d]) {
-                    if (isPeriodic(d)) {
-                        // Map to first cell in dimension.
-                        CurrentNeighbor[d] = 0;
-                    } else {
-                        bOk = false;
-                    }
-                }
+    //         // Is it in the allowed range? And compute linear index while checking.
+    //         bool bOk(true);
+    //         ind CurrentNeighborLinearIndex(0);
+    //         ind DimensionProduct(1);
+    //         for (ind d(0); bOk && d < N; d++) {
+    //             if (CurrentNeighbor[d] < 0) {
+    //                 if (isPeriodic(d)) {
+    //                     // Map to last cell in dimension, the one going over the boundary.
+    //                     CurrentNeighbor[d] = cellDims[d] - 2;
+    //                 } else {
+    //                     bOk = false;
+    //                 }
+    //             }
+    //             if (CurrentNeighbor[d] == cellDims[d]) {
+    //                 if (isPeriodic(d)) {
+    //                     // Map to first cell in dimension.
+    //                     CurrentNeighbor[d] = 0;
+    //                 } else {
+    //                     bOk = false;
+    //                 }
+    //             }
 
-                CurrentNeighborLinearIndex += CurrentNeighbor[d] * DimensionProduct;
-                DimensionProduct *= cellDims[d];
-            }
+    //             CurrentNeighborLinearIndex += CurrentNeighbor[d] * DimensionProduct;
+    //             DimensionProduct *= cellDims[d];
+    //         }
 
-            // If so, let's add it.
-            if (bOk) result.push_back(CurrentNeighborLinearIndex);
-        }
+    //         // If so, let's add it.
+    //         if (bOk) result.push_back(CurrentNeighborLinearIndex);
+    //     }
 
-        return;
-    }
+    //     return;
+    // }
 
     assert(false && "Not implemented yet.");
 }
 
 template <ind N>
 ind PeriodicGrid<N>::getNumVerticesInDimension(ind dim) const {
-    assert(numVerticesPerDimension_[dim] >= 0 && "Number of elements not known yet.");
-    return numVerticesPerDimension_[dim];
+    // assert(numPrimitives_.NumVerticesPerDimension[dim] >= 0 && "Number of elements not known
+    // yet.");
+    // return numPrimitives_.NumVerticesPerDimension[dim];
+    return 0;
 }
 
 template <ind N>

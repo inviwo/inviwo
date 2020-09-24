@@ -28,6 +28,9 @@
  *********************************************************************************/
 
 #include <modules/discretedata/discretedatamodule.h>
+#include <modules/discretedata/processors/colormapchannel.h>
+#include <modules/discretedata/processors/combinechannels.h>
+#include <modules/discretedata/processors/createuniformgrid.h>
 #include <modules/discretedata/processors/datasetfrombase.h>
 #include <modules/discretedata/processors/datasetsource.h>
 #include <modules/discretedata/processors/computegridmeasure.h>
@@ -36,11 +39,16 @@
 #include <modules/discretedata/processors/segmentationvoxelizer.h>
 #include <modules/discretedata/processors/createchannel.h>
 #include <modules/discretedata/processors/exampledataset.h>
+#include <modules/discretedata/processors/sphericalcoordinates.h>
 
 namespace inviwo {
 
 DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(app, "discretedata") {
     // Processors
+    registerProcessor<discretedata::SphericalCoordinates>();
+    registerProcessor<discretedata::ColormapChannel>();
+    registerProcessor<discretedata::CombineChannels>();
+    registerProcessor<discretedata::CreateUniformGrid>();
     registerProcessor<discretedata::DataSetFromVolume>();
     registerProcessor<discretedata::ComputeGridMeasure>();
     registerProcessor<discretedata::MeshFromDataSet>();
@@ -53,6 +61,9 @@ DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(ap
     // Ports
     registerPort<discretedata::DataSetOutport>();
     registerPort<discretedata::DataSetInport>();
+
+    // Properties
+    registerProperty<discretedata::DimensionProperty>();
 }
 
 }  // namespace inviwo

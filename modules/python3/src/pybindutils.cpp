@@ -72,7 +72,7 @@ pybind11::dtype toNumPyFormat(const DataFormatBase* df) {
     return pybind11::dtype(format);
 }
 
-const DataFormatBase* getDataFormat(size_t components, pybind11::array& arr) {
+const DataFormatBase* getDataFormat(size_t components, const pybind11::array& arr) {
     auto k = arr.dtype().kind();
     auto numType = [&]() {
         if (k == 'f')

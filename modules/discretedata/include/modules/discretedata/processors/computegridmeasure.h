@@ -45,8 +45,6 @@ namespace discretedata {
 
     Choose a grid element to compute the size of.
     The data will be appended as ChannelBuffer in the dataset.
-
-    @author Anke Friederici & Tino Weinkauf
 */
 class IVW_MODULE_DISCRETEDATA_API ComputeGridMeasure : public Processor {
     // Friends
@@ -80,7 +78,7 @@ public:
     /// Which dimension are we computing? Volume, Area, ...
     OptionPropertyInt dimensionToMeasure;
 
-    ///Whether to map it back to vertices.
+    /// Whether to map it back to vertices.
     BoolProperty propMapToVertices;
 
     // Attributes

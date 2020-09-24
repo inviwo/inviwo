@@ -45,8 +45,6 @@ namespace discretedata {
  * Data block with a size of
  * NumDataPoints * NumComponents.
  * The buffer is not constant, copy to change.
- *
- * @author Anke Friederici and Tino Weinkauf
  */
 template <typename T, ind N = 1>
 class BufferChannel : public DataChannel<T, N> {
@@ -166,7 +164,8 @@ protected:
      * @param index Linear point index
      */
     virtual void fillRaw(T* dest, ind index, ind numElements) const override {
-        memcpy(dest, buffer_.data() + index * N, sizeof(T) * N * numElements);
+        memcpy(reinterpret_cast<void*>(dest), buffer_.data() + index * N,
+               sizeof(T) * N * numElements);
     }
 
     /**

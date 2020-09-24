@@ -72,8 +72,8 @@ VolumeSequenceSampler::VolumeSequenceSampler(
         return;
     }
 
-    bool firstAndLastAreSame = true;
-    if (volumeSequence->size() >= 2) {
+    bool firstAndLastAreSame = allowLooping_;
+    if (volumeSequence->size() >= 2 && allowLooping_) {
         auto firstVol = volumeSequence->front();
         auto lastVol = volumeSequence->back();
         auto firstVolRam = firstVol->getRepresentation<VolumeRAM>();
@@ -166,7 +166,9 @@ dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4& pos) const {
 }
 
 bool VolumeSequenceSampler::withinBoundsDataSpace(const dvec4& pos) const {
-    // TODO check also time
+    if (!allowLooping_ && (pos.w < timeRange_.x || pos.w > timeRange_.y)) {
+        return false;
+    }
     if (glm::any(glm::lessThan(dvec3(pos), dvec3(0.0)))) {
         return false;
     }

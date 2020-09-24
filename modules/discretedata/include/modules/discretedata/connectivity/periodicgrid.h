@@ -43,7 +43,7 @@ class PeriodicGrid : public StructuredGrid<N> {
 public:
     using StructuredGrid<N>::indexFromLinear;
     using StructuredGrid<N>::indexToLinear;
-    using StructuredGrid<N>::numVerticesPerDimension_;
+    // using StructuredGrid<N>::numPrimitives_;  //::NumVerticesPerDimension;
     /**
      * \brief Create an nD grid
      * @param gridDimension Dimension of grid (not vertices)

@@ -33,6 +33,7 @@
 #include <modules/discretedata/channels/datachannel.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -90,18 +91,116 @@ struct VectorCompare {
     }
 };
 
-static bool nextNchooseK(std::vector<ind>& chosenK, ind N) {
-    for (size_t e = 1; e <= chosenK.size(); ++e) {
-        if (chosenK[N - e] != N - static_cast<ind>(e)) {
-            chosenK[N - e]++;
-            ind valE = chosenK[N - e];
-            for (ind afterE = N - e + 1; afterE < N; ++afterE) chosenK[afterE] = ++valE;
-            break;
-        }
-        return false;
+struct GetMinMaxDispatcher {
+    template <typename T, ind N>
+    std::pair<dvec4, dvec4> operator()(const DataChannel<T, N>* channel) {
+        glm::vec<N, T> min, max;
+        channel->getMinMax(min, max);
+
+        std::pair<dvec4, dvec4> minMax;
+        minMax.first = util::glm_convert<dvec4>(min);
+        minMax.second = util::glm_convert<dvec4>(max);
+        return minMax;
     }
-    return true;
+};
+
+inline std::pair<dvec4, dvec4> getMinMax(const Channel* channel) {
+
+    GetMinMaxDispatcher dispatcher;
+    return channel->dispatch<std::pair<dvec4, dvec4>>(dispatcher);
 }
+
+// static bool nextNchooseK(std::vector<ind>& chosenK, ind N) {
+//     for (size_t e = 1; e <= chosenK.size(); ++e) {
+//         if (chosenK[N - e] != N - static_cast<ind>(e)) {
+//             chosenK[N - e]++;
+//             ind valE = chosenK[N - e];
+//             for (ind afterE = N - e + 1; afterE < N; ++afterE) chosenK[afterE] = ++valE;
+//             return true;
+//         }
+//     }
+//     return false;
+// }
+
+/** Get the initial array for choosing Choose many elements (the first Choose numbers). **/
+template <size_t Choose>
+static typename std::array<size_t, Choose> initNchooseK() {
+    typename std::array<size_t, Choose> init;
+    std::iota(init.begin(), init.end(), 0);
+    return init;
+}
+
+/** Given a previous chosen selection, return the next one in the sequence. Returns false if the end
+ * is reached. **/
+template <size_t Choose>
+static constexpr bool nextNchooseK(size_t from, typename std::array<size_t, Choose>& choice) {
+    for (size_t k = 1; k <= Choose; ++k) {
+        if (choice[Choose - k] != from - k) {
+            choice[Choose - k]++;
+            ind valE = choice[from - k];
+            for (size_t afterC = from - k + 1; afterC < Choose; ++afterC) choice[afterC] = ++valE;
+            return true;
+        }
+    }
+    return false;
+}
+
+/** Get an array containing the Binomial coefficients for N elements. **/
+template <size_t N>
+static constexpr typename std::array<size_t, N> binomialCoefficients() {
+    typename std::array<size_t, N> coeffs;
+    if (N == 0) return coeffs;
+
+    coeffs[0] = 1;
+    for (size_t c = 1; c < N; ++c) {
+        coeffs[c] = (coeffs[c - 1] * (N + 1 - c)) / c;
+    }
+    return coeffs;
+}
+
+/** Get an array containing offsets which have binomial coefficients steps. **/
+// template <size_t N>
+// static constexpr size_t[N + 1] binomialCoefficientOffsets() {
+//     size_t[N + 1] coeffs;
+//     // coeffs[0] = 0;
+//     // // if (N == 0) return coeffs;
+//     // size_t prevSum = 0;
+
+//     // size_t lastCoeff = 1;
+//     // for (size_t c = 1; c <= N; ++c) {
+//     //     // coeffs[c] = prevSum + lastCoeff;
+//     //     // lastCoeff = (lastCoeff * (N + 1 - c)) / c;
+//     //     prevSum = prevSum + lastCoeff;  // coeffs[c];
+//     // }
+//     return coeffs;
+// }
+template <size_t N>
+static constexpr typename std::array<size_t, N + 1> binomialCoefficientOffsets() {
+    typename std::array<size_t, N + 1> coeffs{};
+    coeffs[0] = 0;
+    size_t prevSum = 0;
+
+    size_t lastCoeff = 1;
+    for (size_t c = 1; c <= N; ++c) {
+        coeffs[c] = prevSum + lastCoeff;
+        prevSum += lastCoeff;
+        lastCoeff = (lastCoeff * (N + 1 - c)) / c;
+    }
+    return coeffs;
+}
+
+// template <size_t N>
+// static constexpr typename std::array<size_t, N> binomialCoefficientsOffsets() {
+//     typename std::array<size_t, N> coeffs;
+//     if (N == 0) return coeffs;
+
+//     coeffs[0] = 0;
+//     coeffs[1] = 1;
+//     for (size_t c = 2; c < N; ++c) {
+//         coeffs[c] = (coeffs[c - 1] * (N + 1 - c)) / c;
+//     }
+//     return coeffs;
+// }
 
 }  // namespace dd_util
 }  // namespace discretedata

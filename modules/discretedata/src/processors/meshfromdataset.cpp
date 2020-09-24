@@ -63,11 +63,40 @@ MeshFromDataSet::MeshFromDataSet()
     addProperty(primitive_);
 }
 
+// namespace {
+// template <typename ToType>
+// struct NormalizeChannelToBufferDispatcher {
+
+//     template <typename T, ind N>
+//     std::shared_ptr<BufferBase> operator()(const DataChannel<T, N>* positions) {
+//         typedef typename DataChannel<T, N>::DefaultVec DefaultVec;
+//         ind numElements = positions->size();
+//         std::vector<DefaultVec> data(numElements);
+//         positions->fill(*data.data(), 0, numElements);
+//         DefaultVec min, max;
+//         auto ext = positions->getMinMax(min, max);
+//         T* rawPtr = reinterpret_cast<T*>(data.data());
+//         for (ind e = 0; e < numElements * N; ++e) {
+//             rawPtr[e] = (rawPtr[e] - min) / (max - min);
+//         }
+
+//         std::vector<ToType> convBuffer;
+//         convBuffer.reserve(data.size());
+
+//         for (const DefaultVec& val : data) convBuffer.push_back(util::glm_convert<ToType>(val));
+
+//         auto buffer = util::makeBuffer(std::move(convBuffer));
+//         return buffer;
+//     }
+// };
+// }  // namespace
+
 void MeshFromDataSet::process() {
 
     // Get data
     auto pInDataSet = portInDataSet_.getData();
-    if (!pInDataSet) {
+    if (!pInDataSet || !pInDataSet->size() ||
+        !pInDataSet->getGrid()->getNumElements(GridPrimitive::Vertex)) {
         invalidate(InvalidationLevel::InvalidOutput);
         return;
     }
@@ -92,7 +121,7 @@ void MeshFromDataSet::process() {
         primitive_.set(GridPrimitive((former == GridPrimitive::Vertex) ? maxDim : (ind)former));
     }
 
-    DrawType primType = (DrawType)((int)primitive_.get() + 1);
+    DrawType primType = (DrawType)(std::max((int)primitive_.get() + 1, (int)DrawType::Triangles));
     inviwo::Mesh* result = new Mesh(primType, ConnectivityType::None);
 
     // Add positions.
@@ -118,29 +147,38 @@ void MeshFromDataSet::process() {
     if (primitive_.get() != GridPrimitive::Vertex) {
         std::vector<ind> indexData;
         std::vector<std::uint32_t> indexMeshData;
-        for (auto element : pInDataSet->getGrid()->all(primitive_.get())) {
-            indexData.clear();
-            pInDataSet->getGrid()->getConnections(indexData, element.getIndex(), primitive_.get(),
-                                                  GridPrimitive::Vertex);
 
-            switch (primitive_.get()) {
-                case GridPrimitive::Face:
+        switch (primitive_.get()) {
+            case GridPrimitive::Face:
+                for (auto element : pInDataSet->getGrid()->all(GridPrimitive::Face)) {
+                    indexData.clear();
+                    pInDataSet->getGrid()->getConnections(
+                        indexData, element.getIndex(), GridPrimitive::Face, GridPrimitive::Vertex);
+
                     for (size_t tri = 0; tri < indexData.size() - 2; ++tri) {
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri]));
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 1]));
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 2]));
                     }
-                    break;
-                default:
-                    LogWarn("Something, but not a face! #" << indexData.size());
-                    for (auto val : indexData)
-                        indexMeshData.push_back(static_cast<std::uint32_t>(val));
-                    break;
-            }
+                }
+                break;
+            case GridPrimitive::Edge:
+                for (auto element : pInDataSet->getGrid()->all(GridPrimitive::Edge)) {
+                    indexData.clear();
+                    pInDataSet->getGrid()->getConnections(
+                        indexData, element.getIndex(), GridPrimitive::Edge, GridPrimitive::Vertex);
+                    ivwAssert(indexData.size() == 2, "An Edge not made out of 2 points...");
+
+                    indexMeshData.push_back(static_cast<std::uint32_t>(indexData[0]));
+                    indexMeshData.push_back(static_cast<std::uint32_t>(indexData[1]));
+                }
+                break;
+            default:
+                break;
         }
 
         auto indexBuff = util::makeIndexBuffer(std::move(indexMeshData));
-        result->addIndicies(Mesh::MeshInfo(primType, ConnectivityType::None), indexBuff);
+        result->addIndices(Mesh::MeshInfo(primType, ConnectivityType::None), indexBuff);
     }
 
     portOutMesh_.setData(result);

@@ -89,7 +89,8 @@ ConnectionMap ExplicitConnectivity::createConnectionMap(GridPrimitive from,
     auto& fromToVert = connectionMaps_[{from, GridPrimitive::Vertex}];
     if (!fromToVert) createConnectionMapToAndFromVertex(from);
     // HERE, TODO
-    auto& cellByVert = connectionMaps_[{GridPrimitive::Vertex, gridDimension_}];
+    // auto& cellByVert = connectionMaps_[{GridPrimitive::Vertex, gridDimension_}];
+    return connectionMaps_[{from, to}];
 }
 
 void ExplicitConnectivity::getConnections(std::vector<ind>& result, ind index, GridPrimitive from,

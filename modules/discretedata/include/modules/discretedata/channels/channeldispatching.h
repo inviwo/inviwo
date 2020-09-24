@@ -34,6 +34,7 @@
 
 #include <tuple>
 #include <type_traits>
+#include <fmt/format.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -53,7 +54,7 @@ struct NumComponentDispatchHelper {
     static const int M = (B + E) / 2;
 
     template <typename Callable, typename... Args>
-    static Result dispatch(ind numComponents, Callable &&obj, Args &&... args) {
+    static Result dispatch(ind numComponents, Callable&& obj, Args&&... args) {
 
         if constexpr (B <= E) {
             if (numComponents == M) {
@@ -80,7 +81,7 @@ struct NumComponentDispatchHelper {
 template <ind Min, ind Max>
 struct CombinedDispatcher {
     template <typename Result, typename Scalar, typename Callable, typename... Args>
-    auto operator()(ind numComponents, Callable &&obj, Args &&... args) -> Result {
+    auto operator()(ind numComponents, Callable&& obj, Args&&... args) -> Result {
 
         // Pass in the combined dispatcher as the Callable, and forward the generic Callable as a
         // parameter.
@@ -115,7 +116,7 @@ struct CombinedDispatcher {
  */
 template <typename Result, template <class> class Predicate, ind Min, ind Max, typename Callable,
           typename... Args>
-auto dispatch(DataFormatId format, ind numComponents, Callable &&obj, Args &&... args) -> Result {
+auto dispatch(DataFormatId format, ind numComponents, Callable&& obj, Args&&... args) -> Result {
 
     detail::CombinedDispatcher<Min, Max> nestedDispatcher;
 
@@ -123,6 +124,67 @@ auto dispatch(DataFormatId format, ind numComponents, Callable &&obj, Args &&...
     return inviwo::dispatching::dispatch<Result, Predicate>(format, nestedDispatcher, numComponents,
                                                             std::forward<Callable>(obj),
                                                             std::forward<Args>(args)...);
+}
+
+/**
+ * Function for dispatching a DataFormat and dimension based on a DataFormatId and ind.
+ * Both are found using binary search.
+ *
+ * # Template arguments:
+ *  * __Result__ the return type of the lambda.
+ *  * __Predicate__ A type that is used to filter the list of types to consider in the
+ *    dispatching. The `dispatching::filter` namespace have a few standard ones predefined.
+ *  * __Min__ Minimum dimension to consider.
+ *  * __Max__ Maximal dimension to consider.
+ *
+ * @param callable This should be a struct with a generic call operator taking three template
+ * arguments: the result type, the DataFormat type and the dimension. The callable will be called
+ * with the supplied arguments (`args`).
+ * @param args Any arguments that should be passed on to the lambda.
+ *
+ *
+ * @throws dispatching::DispatchException in the case that the format of the buffer is not in
+ * the list of formats after the filtering or the dimension is not within [Min, Max].
+ */
+template <typename Result, template <class> class Predicate, ind Min, ind Max, typename Callable,
+          typename... Args>
+auto dispatch(const DataFormatBase* combinedFormat, Callable&& obj, Args&&... args) -> Result {
+
+    detail::CombinedDispatcher<Min, Max> nestedDispatcher;
+
+    DataFormatId scalarType =
+        DataFormatBase::get(combinedFormat->getNumericType(), 1, combinedFormat->getPrecision())
+            ->getId();
+    size_t numComponents = combinedFormat->getComponents();
+    // First, use the base format dispatching. Then, dispatch on dimension.
+    return inviwo::dispatching::dispatch<Result, Predicate>(
+        scalarType, nestedDispatcher, numComponents, std::forward<Callable>(obj),
+        std::forward<Args>(args)...);
+}
+
+template <typename Result, int B, int E, typename Callable, typename... Args>
+static Result dispatchNumber(ind number, Callable&& obj, Args&&... args) {
+
+    if constexpr (B <= E) {
+        static const int M = (B + E) / 2;
+        static_assert(M >= B);
+        if (number == M) {
+#ifdef _WIN32  // TODO: remove win fix when VS does the right thing...
+            return (obj.operator()<Result, M>(std::forward<Args>(args)...));
+#else
+            return (obj.template operator()<Result, M>(std::forward<Args>(args)...));
+#endif
+        } else if (number < M) {
+            return dispatchNumber<Result, B, M - 1>(number, std::forward<Callable>(obj),
+                                                    std::forward<Args>(args)...);
+        } else {
+            return dispatchNumber<Result, M + 1, E>(number, std::forward<Callable>(obj),
+                                                    std::forward<Args>(args)...);
+        }
+    } else {
+        throw inviwo::dispatching::DispatchException(
+            fmt::format("Size {} not within range.", number), IVW_CONTEXT_CUSTOM("Dispatching"));
+    }
 }
 
 }  // namespace channeldispatching

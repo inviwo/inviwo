@@ -47,7 +47,9 @@ struct BufferGetter : public ChannelGetter<typename Parent::value_type, Parent::
     virtual ~BufferGetter() = default;
     virtual BufferGetter* clone() const override { return new BufferGetter(parent_); }
 
-    virtual value_type* get(ind index) override { return &(parent_->buffer_[index * num_comp]); }
+    virtual value_type* get(ind index) override {
+        return reinterpret_cast<value_type*>(&(parent_->get(index)));
+    }
 
 protected:
     virtual Channel* parent() const override { return parent_; }

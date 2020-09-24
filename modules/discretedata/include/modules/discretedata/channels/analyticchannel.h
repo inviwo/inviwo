@@ -46,8 +46,6 @@ namespace discretedata {
  * Data is stored implicitly by a function f:index -> vec<T, N>,
  * where the destination memory is pre-allocated.
  * Indices are linear.
- *
- *   @author Anke Friederici and Tino Weinkauf
  */
 template <typename T, ind N, typename Vec = std::array<T, N>>
 class AnalyticChannel : public DataChannel<T, N> {
