@@ -4,15 +4,15 @@ on: [push]
 
 env:
   BUILD_TYPE: Release
-  #IVW_VCPKG_SHA: '2a6442cb934de2f99c8ac5bbd8a9dcf5538aee98' # vcpkg "version" to use
-  IVW_VCPKG_SHA: '399458a9d9a763c0e06cc979464a17074fe8517d'  # nuget verbose version
-  VCPKG_BINARY_SOURCES : 'clear;nuget,GitHub,readwrite'     # recognized by vcpkg
+  IVW_VCPKG_SHA: '2a6442cb934de2f99c8ac5bbd8a9dcf5538aee98'   # vcpkg "version" to use
+  #IVW_VCPKG_SHA: '399458a9d9a763c0e06cc979464a17074fe8517d'  # nuget verbose version, git remote add inviwo https://github.com/inviwo/vcpkg.git
+  VCPKG_BINARY_SOURCES : 'clear;nuget,GitHub,readwrite'       # recognized by vcpkg
 
 jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [windows-latest, macos-latest, ubuntu-20.04]
         include:
           - os: 'windows-latest'
             triplet: 'x64-windows'
@@ -36,7 +36,6 @@ jobs:
       run: |
         set -x
         cd $VCPKG_INSTALLATION_ROOT
-        git remote add inviwo https://github.com/inviwo/vcpkg.git
         git fetch --all
         git reset --hard $IVW_VCPKG_SHA
         ./bootstrap-vcpkg.sh
@@ -54,21 +53,21 @@ jobs:
 
     - name: Apt Install
       shell: bash
-      if: matrix.os == 'ubuntu-latest'
+      if: runner.os == 'Linux'
       run: sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev
 
     - name: VCPKG Install
       shell: bash
       run: > 
-        vcpkg --debug --triplet ${{ matrix.triplet }} install
+        vcpkg --triplet ${{ matrix.triplet }} install
         assimp benchmark cimg eigen3 fmt freetype glfw3 glm gtest zlib 
         hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json 
         openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp 
     
     - name: Glew Install
       shell: bash
-      if: matrix.os != 'ubuntu-latest'
-      run: vcpkg --debug --triplet ${{ matrix.triplet }} install glew
+      if: runner.os != 'Linux'
+      run: vcpkg --triplet ${{ matrix.triplet }} install glew
     
     - name: Install Numpy
       shell: bash
@@ -81,7 +80,7 @@ jobs:
         dir: ${{ github.workspace }}
        
     - name: Install NSIS
-      if: matrix.os == 'windows-latest'
+      if: runner.os == 'Windows'
       run: |
         Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
         scoop bucket add extras
@@ -133,11 +132,23 @@ jobs:
       shell: bash
       run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel --target package 
 
-    #- uses: actions/upload-artifact@v2
-    #  with:
-    #    name: inviwo-installer
-    #    path: |
-    #      build/inviwo-v*.zip
-    #      build/inviwo-v*.exe
+    - name: Upload Windows
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v2
+      with:
+        name: inviwo-installer-win
+        path: build/inviwo-v*.exe
+   
+    - name: Upload macOS
+      if: runner.os == 'macOS'
+      uses: actions/upload-artifact@v2
+      with:
+        name: inviwo-installer-macos
+        path: build/inviwo-v*.dmg
 
-
+    - name: Upload Linux
+      if: runner.os == 'Linux'
+      uses: actions/upload-artifact@v2
+      with:
+        name: inviwo-installer-ubuntu
+        path: build/inviwo-v*.zip
