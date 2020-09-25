@@ -29,7 +29,8 @@ jobs:
       fail-fast: false
       
     runs-on: ${{ matrix.os }}
-
+    timeout-minutes: 360
+    
     steps:  
     - name: Setup VCPKG
       shell: bash
@@ -128,6 +129,7 @@ jobs:
         ${{ matrix.cmake }}
          
     - name: Build
+      timeout-minutes: 180
       working-directory: build
       shell: bash
       run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel
