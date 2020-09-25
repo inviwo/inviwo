@@ -130,6 +130,11 @@ jobs:
     - name: Build
       working-directory: build
       shell: bash
+      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel
+
+    - name: Package
+      working-directory: build
+      shell: bash
       run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel --target package 
 
     - name: Upload Windows
