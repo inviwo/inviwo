@@ -59,7 +59,7 @@ jobs:
     - name: Apt Install
       shell: bash
       if: runner.os == 'Linux'
-      run: sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev ninja
+      run: sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev ninja-build
       
     - name: Brew Install
       shell: bash
