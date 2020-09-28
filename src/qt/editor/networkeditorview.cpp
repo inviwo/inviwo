@@ -252,14 +252,13 @@ void NetworkEditorView::onSceneSizeChanged() {
     setSceneRect(growSceneRect(br));
 }
 
-QRectF NetworkEditorView::growSceneRect(QRectF r) const { 
+QRectF NetworkEditorView::growSceneRect(QRectF r) const {
     QSizeF viewsize = viewport()->size();
     const auto w = std::max(viewsize.width(), r.width());
     const auto h = std::max(viewsize.height(), r.height());
 
     return r.adjusted(-w, -h, w, h);
 }
-
 
 void NetworkEditorView::wheelEvent(QWheelEvent* e) {
     QPointF numPixels = e->pixelDelta() / 5.0;
