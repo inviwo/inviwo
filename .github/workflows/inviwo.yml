@@ -132,12 +132,12 @@ jobs:
       timeout-minutes: 180
       working-directory: build
       shell: bash
-      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel
+      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel --verbose
 
     - name: Package
       working-directory: build
       shell: bash
-      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel --target package 
+      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel --verbose --target package 
 
     - name: Upload Windows
       if: runner.os == 'Windows'
