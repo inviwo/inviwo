@@ -31,6 +31,7 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/opengl/openglcapabilities.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -48,6 +49,7 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, size2_t dim)
 
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
+    installEventFilter(new utilqt::WidgetCloseEventFilter(this));
 }
 
 void CanvasQOpenGLWidget::activate() { makeCurrent(); }
