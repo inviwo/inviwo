@@ -368,36 +368,36 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     settings.endGroup();
 
     auto editmenu = mainwindow_->getInviwoEditMenu();
-    editActionsHandle_ = editmenu->registerItem(
-        std::make_shared<MenuItem>(this,
-                                   [this](MenuItemType t) -> bool {
-                                       switch (t) {
-                                           case MenuItemType::copy:
-                                               return tableView_->selectionModel()->hasSelection();
-                                           case MenuItemType::cut:
-                                           case MenuItemType::paste:
-                                           case MenuItemType::del:
-                                           case MenuItemType::select:
-                                           default:
-                                               return false;
-                                       }
-                                   },
-                                   [this](MenuItemType t) -> void {
-                                       switch (t) {
-                                           case MenuItemType::copy: {
-                                               if (tableView_->selectionModel()->hasSelection()) {
-                                                   copy();
-                                               }
-                                               break;
-                                           }
-                                           case MenuItemType::cut:
-                                           case MenuItemType::paste:
-                                           case MenuItemType::del:
-                                           case MenuItemType::select:
-                                           default:
-                                               break;
-                                       }
-                                   }));
+    editActionsHandle_ = editmenu->registerItem(std::make_shared<MenuItem>(
+        this,
+        [this](MenuItemType t) -> bool {
+            switch (t) {
+                case MenuItemType::copy:
+                    return tableView_->selectionModel()->hasSelection();
+                case MenuItemType::cut:
+                case MenuItemType::paste:
+                case MenuItemType::del:
+                case MenuItemType::select:
+                default:
+                    return false;
+            }
+        },
+        [this](MenuItemType t) -> void {
+            switch (t) {
+                case MenuItemType::copy: {
+                    if (tableView_->selectionModel()->hasSelection()) {
+                        copy();
+                    }
+                    break;
+                }
+                case MenuItemType::cut:
+                case MenuItemType::paste:
+                case MenuItemType::del:
+                case MenuItemType::select:
+                default:
+                    break;
+            }
+        }));
 }
 
 ConsoleWidget::~ConsoleWidget() = default;
@@ -424,57 +424,63 @@ void ConsoleWidget::updateIndicators(LogLevel level) {
     }
 }
 
-void ConsoleWidget::log(std::string source, LogLevel level, LogAudience audience, const char* file,
-                        const char* function, int line, std::string msg) {
-    LogTableModelEntry e = {
-        std::chrono::system_clock::now(), source, level, audience, file ? file : "", line,
-        function ? function : "",         msg};
+void ConsoleWidget::log(std::string_view source, LogLevel level, LogAudience audience,
+                        std::string_view file, std::string_view function, int line,
+                        std::string_view msg) {
+    LogTableModelEntry e = {std::chrono::system_clock::now(),
+                            std::string(source),
+                            level,
+                            audience,
+                            std::string(file),
+                            line,
+                            std::string(function),
+                            std::string(msg)};
     logEntry(std::move(e));
 }
 
 void ConsoleWidget::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                                 std::string msg, const char* file, const char* function,
-                                 int line) {
+                                 std::string_view msg, std::string_view file,
+                                 std::string_view function, int line) {
     LogTableModelEntry e = {std::chrono::system_clock::now(),
                             processor->getIdentifier(),
                             level,
                             audience,
-                            file ? file : "",
+                            std::string(file),
                             line,
-                            function ? function : "",
-                            msg};
+                            std::string(function),
+                            std::string(msg)};
     logEntry(std::move(e));
 }
 
-void ConsoleWidget::logNetwork(LogLevel level, LogAudience audience, std::string msg,
-                               const char* file, const char* function, int line) {
+void ConsoleWidget::logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
+                               std::string_view file, std::string_view function, int line) {
     LogTableModelEntry e = {std::chrono::system_clock::now(),
                             "ProcessorNetwork",
                             level,
                             audience,
-                            file ? file : "",
+                            std::string(file),
                             line,
-                            function ? function : "",
-                            msg};
+                            std::string(function),
+                            std::string(msg)};
     logEntry(std::move(e));
 }
 
-void ConsoleWidget::logAssertion(const char* file, const char* function, int line,
-                                 std::string msg) {
+void ConsoleWidget::logAssertion(std::string_view file, std::string_view function, int line,
+                                 std::string_view msg) {
     LogTableModelEntry e = {std::chrono::system_clock::now(),
                             "Assertion",
                             LogLevel::Error,
                             LogAudience::Developer,
-                            file ? file : "",
+                            std::string(file),
                             line,
-                            function ? function : "",
-                            msg};
+                            std::string(function),
+                            std::string(msg)};
     logEntry(std::move(e));
 
     auto error = QString{"<b>Assertion Failed</b><br>File: %1:%2<br>Function: %3<p>%4"}
-                     .arg(file)
+                     .arg(file.data())
                      .arg(line)
-                     .arg(function)
+                     .arg(function.data())
                      .arg(utilqt::toQString(msg));
     QMessageBox::critical(nullptr, "Assertion Failed", error);
 }

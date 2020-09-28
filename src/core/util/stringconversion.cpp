@@ -123,14 +123,38 @@ std::string fromWstring(const std::wstring& str) {
 
 }  // namespace util
 
-std::vector<std::string> splitString(const std::string& str, char delimeter) {
-    std::vector<std::string> strings;
-    std::stringstream stream(str);
-    std::string part;
+std::vector<std::string> splitString(std::string_view str, char delimeter) {
+    std::vector<std::string> output;
+    size_t first = 0;
 
-    while (std::getline(stream, part, delimeter)) strings.push_back(part);
+    while (first < str.size()) {
+        const auto second = str.find_first_of(delimeter, first);
 
-    return strings;
+        if (first != second) output.emplace_back(str.substr(first, second - first));
+
+        if (second == std::string_view::npos) break;
+
+        first = second + 1;
+    }
+
+    return output;
+}
+
+std::vector<std::string_view> splitStringView(std::string_view str, char delimeter) {
+    std::vector<std::string_view> output;
+    size_t first = 0;
+
+    while (first < str.size()) {
+        const auto second = str.find_first_of(delimeter, first);
+
+        if (first != second) output.emplace_back(str.substr(first, second - first));
+
+        if (second == std::string_view::npos) break;
+
+        first = second + 1;
+    }
+
+    return output;
 }
 
 std::vector<std::string> splitStringWithMultipleDelimiters(const std::string& str,
@@ -167,7 +191,7 @@ void replaceInString(std::string& str, const std::string& oldStr, const std::str
     }
 }
 
-std::string htmlEncode(const std::string& data) {
+std::string htmlEncode(std::string_view data) {
     std::string buffer;
     buffer.reserve(data.size());
     for (size_t pos = 0; pos != data.size(); ++pos) {
@@ -259,14 +283,6 @@ std::string randomString(size_t length) {
     return s;
 }
 
-// trim from start
-std::string ltrim(std::string s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](auto c) {
-                return !std::isspace(static_cast<unsigned char>(c));
-            }));
-    return s;
-}
-
 std::string dotSeperatedToPascalCase(const std::string& s) {
     std::stringstream ss;
     for (auto elem : splitString(s, '.')) {
@@ -306,6 +322,14 @@ bool iCaseLess(const std::string& l, const std::string& r) {
                                         });
 }
 
+// trim from start
+std::string ltrim(std::string s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](auto c) {
+                return !std::isspace(static_cast<unsigned char>(c));
+            }));
+    return s;
+}
+
 // trim from end
 std::string rtrim(std::string s) {
     s.erase(std::find_if(s.rbegin(), s.rend(),
@@ -317,6 +341,18 @@ std::string rtrim(std::string s) {
 
 // trim from both ends
 std::string trim(std::string s) { return ltrim(rtrim(s)); }
+
+std::string_view trim(std::string_view s) {
+    auto left = s.begin();
+    for (;; ++left) {
+        if (left == s.end()) return std::string_view();
+        if (!std::isspace(*left)) break;
+    }
+    auto right = s.end() - 1;
+    for (; right > left && std::isspace(*right); --right)
+        ;
+    return s.substr(std::distance(s.begin(), left), std::distance(left, right) + 1);
+}
 
 std::string removeSubString(const std::string& str, const std::string& strToRemove) {
     std::string newString(str);

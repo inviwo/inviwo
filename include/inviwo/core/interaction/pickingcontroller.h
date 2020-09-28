@@ -72,7 +72,7 @@ private:
     };
 
     PickingManager::Result findPickingAction(const uvec2& coord);
-    std::shared_ptr<const Image> src_;
+    std::weak_ptr<const Image> src_;
 
     PickingControllerMouseState mouseState_;
 

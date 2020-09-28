@@ -49,10 +49,10 @@ namespace inviwo {
 ConsoleLogger::ConsoleLogger() = default;
 ConsoleLogger::~ConsoleLogger() = default;
 
-void ConsoleLogger::log(std::string logSource, [[maybe_unused]] LogLevel logLevel,
-                        LogAudience /*audience*/, [[maybe_unused]] const char* fileName,
-                        [[maybe_unused]] const char* functionName, [[maybe_unused]] int lineNumber,
-                        std::string logMsg) {
+void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel logLevel,
+                        LogAudience /*audience*/, [[maybe_unused]] std::string_view fileName,
+                        [[maybe_unused]] std::string_view functionName,
+                        [[maybe_unused]] int lineNumber, std::string_view logMsg) {
 
     auto& os = logLevel == LogLevel::Error ? std::cerr : std::cout;
 
@@ -109,8 +109,8 @@ void ConsoleLogger::log(std::string logSource, [[maybe_unused]] LogLevel logLeve
 
     const size_t reserved = 33;
     const auto maxWidth = width - reserved - 1;
-    auto lines = splitString(logMsg, '\n');
-    std::vector<std::string> res;
+    auto lines = splitStringView(logMsg, '\n');
+    std::vector<std::string_view> res;
     for (auto line : lines) {
         if (line.size() < maxWidth) {
             res.push_back(line);
@@ -126,10 +126,9 @@ void ConsoleLogger::log(std::string logSource, [[maybe_unused]] LogLevel logLeve
     std::stringstream ss;
     auto joiner = util::make_ostream_joiner(ss, "\n" + std::string(reserved, ' '));
     std::copy(res.begin(), res.end(), joiner);
-    logMsg = ss.str();
 
     os << std::left << std::setw(5) << logLevel << " " << std::setw(25) << logSource << ": "
-       << logMsg << std::endl;
+       << ss.str() << std::endl;
 
 #ifdef WIN32
     SetConsoleTextAttribute(hConsole, oldState.wAttributes);

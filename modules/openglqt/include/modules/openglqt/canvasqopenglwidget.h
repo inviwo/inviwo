@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CANVASQOPENGLWIDGET_H
-#define IVW_CANVASQOPENGLWIDGET_H
+#pragma once
 
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <modules/opengl/canvasgl.h>
@@ -50,10 +49,9 @@ class IVW_MODULE_OPENGLQT_API CanvasQOpenGLWidget : public QOpenGLWidget, public
     friend class CanvasProcessorWidgetQt;
 
 public:
-    using QtBase = QOpenGLWidget;
-
-    explicit CanvasQOpenGLWidget(QWidget* parent = nullptr, size2_t dim = size2_t(256, 256));
-    virtual ~CanvasQOpenGLWidget() = default;
+    explicit CanvasQOpenGLWidget(QWidget* parent = nullptr, size2_t dim = size2_t(256, 256),
+                                 std::string_view name = "Canvas");
+    virtual ~CanvasQOpenGLWidget();
 
     virtual void activate() override;
     virtual void glSwapBuffers() override;
@@ -69,8 +67,8 @@ protected:
     virtual void resizeEvent(QResizeEvent* event) override;
 
     virtual void releaseContext() override;
+
+    std::string name_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CANVASQOPENGLWIDGET_H

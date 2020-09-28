@@ -179,12 +179,18 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
     {
         // generate entry points
         utilgl::DepthFuncState depthfunc(GL_LESS);
-        if (!tmpEntry_ || tmpEntry_->getDimensions() != entryPoints.getDimensions() ||
+        if (!tmpEntry_ ||
             tmpEntry_->getDataFormat() != entryPoints.getColorLayerGL()->getDataFormat()) {
             tmpEntry_.reset(new Image(entryPoints.getDimensions(),
                                       entryPoints.getColorLayerGL()->getDataFormat()));
             tmpEntryGL_ = tmpEntry_->getEditableRepresentation<ImageGL>();
         }
+
+        if (tmpEntry_->getDimensions() != entryPoints.getDimensions()) {
+            tmpEntry_->setDimensions(entryPoints.getDimensions());
+            tmpEntryGL_ = tmpEntry_->getEditableRepresentation<ImageGL>();
+        }
+
         tmpEntryGL_->activateBuffer(ImageType::AllLayers);
         utilgl::clearCurrentTarget();
 

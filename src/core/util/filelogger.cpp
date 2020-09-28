@@ -64,10 +64,10 @@ FileLogger::FileLogger(std::string logPath) : Logger() {
 
 FileLogger::~FileLogger() = default;
 
-void FileLogger::log(std::string logSource, LogLevel logLevel, LogAudience /*audience*/,
-                     [[maybe_unused]] const char* fileName,
-                     [[maybe_unused]] const char* functionName, [[maybe_unused]] int lineNumber,
-                     std::string logMsg) {
+void FileLogger::log(std::string_view logSource, LogLevel logLevel, LogAudience /*audience*/,
+                     [[maybe_unused]] std::string_view fileName,
+                     [[maybe_unused]] std::string_view functionName,
+                     [[maybe_unused]] int lineNumber, std::string_view logMsg) {
 
     switch (logLevel) {
         case LogLevel::Info:
@@ -83,12 +83,12 @@ void FileLogger::log(std::string logSource, LogLevel logLevel, LogAudience /*aud
             break;
     }
 
-    logMsg = htmlEncode(logMsg);
-    replaceInString(logMsg, " ", "&nbsp;");
-    replaceInString(logMsg, "\n", "<br/>");
-    replaceInString(logMsg, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+    auto msg = htmlEncode(logMsg);
+    replaceInString(msg, " ", "&nbsp;");
+    replaceInString(msg, "\n", "<br/>");
+    replaceInString(msg, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
 
-    fileStream_ << "(" << htmlEncode(logSource) << ":" << lineNumber << ") " << logMsg;
+    fileStream_ << "(" << htmlEncode(logSource) << ":" << lineNumber << ") " << msg;
     fileStream_ << "</div>" << std::endl;
 }
 

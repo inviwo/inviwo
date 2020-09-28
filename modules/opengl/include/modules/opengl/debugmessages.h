@@ -291,12 +291,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 
 }  // namespace debug
 
-IVW_MODULE_OPENGL_API void GLAPIENTRY openGLDebugMessageCallback(GLenum source, GLenum type,
-                                                                 GLuint id, GLenum severity,
-                                                                 GLsizei length,
-                                                                 const GLchar* message,
-                                                                 const void* none);
-
 IVW_MODULE_OPENGL_API void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity);
 IVW_MODULE_OPENGL_API void handleOpenGLDebugMode(Canvas::ContextID context);
 IVW_MODULE_OPENGL_API void setOpenGLDebugMode(debug::Mode mode, debug::Severity severity);

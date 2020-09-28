@@ -30,6 +30,8 @@
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/logcentral.h>
 
+#include <fmt/format.h>
+
 #ifndef WIN32
 #include <signal.h>
 #endif
@@ -38,12 +40,11 @@ namespace inviwo {
 
 #if defined(IVW_DEBUG) || defined(IVW_FORCE_ASSERTIONS)
 
-void assertion(const char* fileName, const char* functionName, long lineNumber,
-               std::string message) {
-    std::cout << "Assertion failed in (" << fileName << ":" << lineNumber << ", " << functionName
-              << "): ";
-    std::cout << message << std::endl;
+void assertion(std::string_view fileName, std::string_view functionName, long lineNumber,
+               std::string_view error) {
 
+    const auto message = fmt::format("Assertion failed in ({}:{}, {}): {}", fileName, lineNumber,
+                                     functionName, error);
     if (LogCentral::isInitialized()) {
         LogCentral::getPtr()->logAssertion(fileName, functionName, lineNumber, message);
     }
@@ -54,7 +55,7 @@ void assertion(const char* fileName, const char* functionName, long lineNumber,
 
 #else
 
-void assertion(const char*, const char*, long, std::string) {}
+void assertion(std::string_view, std::string_view, long, std::string_view) {}
 
 #endif  // _DEBUG
 

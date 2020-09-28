@@ -30,6 +30,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     src/canvasprocessorwidgetqt.cpp
+    src/canvasqt.cpp
     src/canvasqopenglwidget.cpp
     src/hiddencanvasqt.cpp
     src/openglqtcapabilities.cpp

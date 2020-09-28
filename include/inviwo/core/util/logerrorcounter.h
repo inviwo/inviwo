@@ -43,9 +43,9 @@ public:
     LogErrorCounter();
     virtual ~LogErrorCounter();
 
-    virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience,
-                     const char* fileName, const char* functionName, int lineNumber,
-                     std::string logMsg) override;
+    virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,
+                     std::string_view fileName, std::string_view functionName, int lineNumber,
+                     std::string_view logMsg) override;
 
     size_t getCount(const LogLevel& level) const;
     size_t getInfoCount() const;

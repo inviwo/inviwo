@@ -37,6 +37,7 @@
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/util/timer.h>
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/network/processornetwork.h>
 
 #include <atomic>
@@ -376,8 +377,14 @@ template <typename Result, typename Done>
 inline void PoolProcessor::callDone(
     InviwoApplication* app, std::shared_ptr<pool::detail::StateTemplate<Result, Done>> state) {
     static const auto done = [](PoolProcessor& p, auto state) {
+        RenderContext::getPtr()->activateDefaultRenderContext();
         try {
-            if constexpr (std::is_invocable_v<Done, Result>) {
+            if constexpr (std::is_same_v<Result, void>) {
+                for (auto& res : state->futures) {
+                    res.get();
+                }
+                state->done();
+            } else if constexpr (std::is_invocable_v<Done, Result>) {
                 state->done(state->futures.front().get());
             } else {
                 std::vector<Result> results;
@@ -421,7 +428,13 @@ template <typename Job, typename Done>
 void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
     using Result = typename pool::detail::JobTraits<Job>::Result;
 
-    static_assert(std::is_invocable_v<Done, std::vector<Result>>);
+    if constexpr (std::is_same_v<Result, void>) {
+        static_assert(std::is_invocable_v<Done>, "The 'Done' functor should callable");
+    } else {
+        static_assert(std::is_invocable_v<Done, std::vector<Result>>,
+                      "The 'Done' functor should take a std::vector of the result of the 'Job' "
+                      "functor as argument");
+    }
 
     if (!keepOldJobs()) stopJobs();
 
@@ -434,7 +447,10 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
         auto task = makeTask<Result>(std::move(job), state->getStop(), state->getProgress(i++));
         state->futures.push_back(task->get_future());
         sub.tasks.emplace_back([state, task, app]() {
-            if (!state->stop) (*task)();
+            if (!state->stop) {
+                RenderContext::getPtr()->activateLocalRenderContext();
+                (*task)();
+            }
             callDone(app, state);
         });
     }
@@ -463,7 +479,12 @@ template <typename Job, typename Done>
 void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
     using Result = typename pool::detail::JobTraits<Job>::Result;
 
-    static_assert(std::is_invocable_v<Done, Result>);
+    if constexpr (std::is_same_v<Result, void>) {
+        static_assert(std::is_invocable_v<Done>, "The 'Done' functor should be callable");
+    } else {
+        static_assert(std::is_invocable_v<Done, Result>,
+                      "The 'Done' functor should take the result of the 'Job' functor as argument");
+    }
 
     if (!keepOldJobs()) stopJobs();
 
@@ -474,7 +495,10 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
 
     Submission sub{state,
                    {[state, task, app]() {
-                       if (!state->stop) (*task)();
+                       if (!state->stop) {
+                           RenderContext::getPtr()->activateLocalRenderContext();
+                           (*task)();
+                       }
                        callDone(app, state);
                    }},
                    [this]() { setupProgress<Job>(); }};

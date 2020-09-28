@@ -104,8 +104,8 @@ private:
     MeshInport trackingInport_;
     ImageOutport outport_;
 
-    FloatProperty aperture_;
-    FloatProperty focusDepth_;
+    DoubleProperty aperture_;
+    DoubleProperty focusDepth_;
     BoolProperty manualFocus_;
     BoolProperty approximate_;
     IntSizeTProperty viewCountExact_;

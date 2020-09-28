@@ -102,12 +102,14 @@ std::ios_base& localizeStream(std::ios_base& stream) {
     return stream;
 }
 
-QString toLocalQString(const std::string& input) { return QString::fromLocal8Bit(input.c_str()); }
+QString toLocalQString(std::string_view input) { return QString::fromLocal8Bit(input.data()); }
+QString toLocalQString(std::string str) { return toLocalQString(std::string_view(str)); }
 std::string fromLocalQString(const QString& input) {
     return std::string(input.toLocal8Bit().constData());
 }
 
-QString toQString(const std::string& input) { return QString::fromUtf8(input.c_str()); }
+QString toQString(std::string_view input) { return QString::fromUtf8(input.data()); }
+QString toQString(const std::string str) { return toQString(std::string_view(str)); }
 std::string fromQString(const QString& input) { return std::string(input.toUtf8().constData()); }
 
 QPointF toQPoint(dvec2 v) { return QPointF(v.x, v.y); }

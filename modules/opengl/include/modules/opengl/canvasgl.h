@@ -72,15 +72,14 @@ public:
     double getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate) const;
 
 protected:
-    void renderLayer(size_t idx = 0);
+    void renderLayer();
     void renderNoise();
 
     void drawSquare();
 
     void renderTexture(int);
 
-    std::shared_ptr<const Image> image_;
-    const ImageGL* imageGL_ = nullptr;
+    std::weak_ptr<const Image> image_;
     std::unique_ptr<Mesh> square_;
     /**
      * Each canvas must have its own MeshGL
@@ -99,10 +98,10 @@ protected:
     bool ready_ = false;
 
     LayerType layerType_ = LayerType::Color;
+    size_t layerIdx_ = 0;
+    
     Shader* textureShader_ = nullptr;  ///< non-owning reference
     Shader* noiseShader_ = nullptr;    ///< non-owning reference
-
-    size_t activeRenderLayerIdx_ = 0;
 };
 
 }  // namespace inviwo

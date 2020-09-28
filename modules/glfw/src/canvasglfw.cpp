@@ -88,11 +88,12 @@ CanvasGLFW::CanvasGLFW(const std::string& windowTitle, uvec2 dimensions)
     glfwSetWindowSizeCallback(glWindow_, reshape);
     glfwSetWindowPosCallback(glWindow_, move);
 
-    RenderContext::getPtr()->registerContext(this, windowTitle);
+    RenderContext::getPtr()->registerContext(contextId(), windowTitle,
+                                             std::make_unique<DefaultContextHolder>(this));
 }
 
 CanvasGLFW::~CanvasGLFW() {
-    RenderContext::getPtr()->unRegisterContext(this);
+    RenderContext::getPtr()->unRegisterContext(contextId());
     glfwDestroyWindow(glWindow_);
     if (glWindow_ == sharedContext_) sharedContext_ = nullptr;
 }

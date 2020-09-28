@@ -62,32 +62,29 @@ void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, s
     image_ = image;
     layerType_ = layerType;
     pickingController_.setPickingSource(image);
-    if (image_) {
-        imageGL_ = image_->getRepresentation<ImageGL>();
-        activeRenderLayerIdx_ = (imageGL_->getLayerGL(layerType_, idx) != nullptr) ? idx : 0;
-    } else {
-        imageGL_ = nullptr;
-        activeRenderLayerIdx_ = 0;
-    }
+    layerIdx_ = idx;
     update();
 }
 
 void CanvasGL::resize(size2_t size) {
-    imageGL_ = nullptr;
+    image_.reset();
     pickingController_.setPickingSource(nullptr);
     Canvas::resize(size);
 }
 
-void CanvasGL::update() { renderLayer(activeRenderLayerIdx_); }
+void CanvasGL::update() { renderLayer(); }
 
-void CanvasGL::renderLayer(size_t idx) {
-    if (imageGL_) {
-        if (auto layerGL = imageGL_->getLayerGL(layerType_, idx)) {
-            TextureUnit textureUnit;
-            layerGL->bindTexture(textureUnit.getEnum());
-            renderTexture(textureUnit.getUnitNumber());
-            layerGL->unbindTexture();
-            return;
+void CanvasGL::renderLayer() {
+    if (auto image = image_.lock()) {
+        if (auto layer = image->getLayer(layerType_, layerIdx_)) {
+
+            if (auto layerGL = layer->getRepresentation<LayerGL>()) {
+                TextureUnit textureUnit;
+                layerGL->bindTexture(textureUnit.getEnum());
+                renderTexture(textureUnit.getUnitNumber());
+                layerGL->unbindTexture();
+                return;
+            }
         }
     }
     renderNoise();
@@ -159,41 +156,29 @@ double CanvasGL::getDepthValueAtCoord(ivec2 coord) const {
 double CanvasGL::getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate) const {
     const dvec2 coords = glm::clamp(normalizedScreenCoordinate, dvec2(0.0), dvec2(1.0));
 
-    if (imageGL_) {
-        RenderContext::getPtr()->activateDefaultRenderContext();
-        const dvec2 depthDims{imageGL_->getDimensions() - size2_t(1, 1)};
+    if (auto image = image_.lock()) {
+        const dvec2 depthDims{image->getDimensions() - size2_t(1, 1)};
         const size2_t coordDepth{depthDims * coords};
-        auto depth = imageGL_->readPixel(coordDepth, LayerType::Depth).x;
-
+        const auto depth = image->readPixel(coordDepth, LayerType::Depth).x;
         // Convert to normalized device coordinates
         return 2.0 * depth - 1.0;
     }
-
-    // RAM fallback
-    if (!image_) return 1.0;
-    auto depthLayer = image_->getDepthLayer();
-    if (!depthLayer) return 1.0;
-    auto depthLayerRAM = depthLayer->getRepresentation<LayerRAM>();
-    if (!depthLayerRAM) return 1.0;
-
-    const dvec2 depthDims{depthLayerRAM->getDimensions() - size2_t(1, 1)};
-    const size2_t coordDepth{depthDims * coords};
-    const double depthValue = depthLayerRAM->getAsNormalizedDouble(coordDepth);
-
-    // Convert to normalized device coordinates
-    return 2.0 * depthValue - 1.0;
+    return 1.0;
 }
 
 void CanvasGL::setProcessorWidgetOwner(ProcessorWidget* widget) {
     // Clear internal state
     image_.reset();
-    imageGL_ = nullptr;
     pickingController_.setPickingSource(nullptr);
     Canvas::setProcessorWidgetOwner(widget);
 }
 
 size2_t CanvasGL::getImageDimensions() const {
-    return image_ ? image_->getDimensions() : size2_t(0, 0);
+    if (auto image = image_.lock()) {
+        return image->getDimensions();
+    } else {
+        return {0, 0};
+    }
 }
 
 }  // namespace inviwo

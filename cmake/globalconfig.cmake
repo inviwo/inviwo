@@ -200,8 +200,6 @@ if(WIN32 AND MSVC)
         )
     endif()
 
-    # For >=VS2015 enable edit and continue "ZI"
-    add_compile_options($<$<CONFIG:Debug>:/ZI>)
     add_compile_options(/bigobj)
     
     # Add debug postfix if WIN32

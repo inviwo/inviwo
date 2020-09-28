@@ -27,11 +27,15 @@
  *
  *********************************************************************************/
 
+#include <modules/opengl/inviwoopengl.h> // Special needs to be first since GLEW
+
 #include <modules/openglqt/canvasqopenglwidget.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/opengl/openglcapabilities.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <modules/opengl/debugmessages.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -42,14 +46,18 @@
 
 namespace inviwo {
 
-CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, size2_t dim)
-    : QOpenGLWidget(parent), CanvasGL(dim) {
+CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, size2_t dim, std::string_view name)
+    : QOpenGLWidget(parent), CanvasGL(dim), name_{name} {
 
     setFocusPolicy(Qt::StrongFocus);
 
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
     installEventFilter(new utilqt::WidgetCloseEventFilter(this));
+}
+
+CanvasQOpenGLWidget::~CanvasQOpenGLWidget() {
+    RenderContext::getPtr()->unRegisterContext(contextId());
 }
 
 void CanvasQOpenGLWidget::activate() { makeCurrent(); }
@@ -62,7 +70,12 @@ void CanvasQOpenGLWidget::initializeGL() {
     // Note however that the framebuffer is not yet available at this stage,
     // so do not issue draw calls from here.
     // Defer such calls to paintGL() instead.
+
     QOpenGLWidget::initializeGL();
+
+    RenderContext::getPtr()->registerContext(contextId(), name_,
+                                             std::make_unique<DefaultContextHolder>(this));
+    utilgl::handleOpenGLDebugMode(activeContext());
 }
 
 void CanvasQOpenGLWidget::glSwapBuffers() {

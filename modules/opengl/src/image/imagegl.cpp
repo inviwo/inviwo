@@ -35,6 +35,7 @@
 #include <modules/opengl/canvasgl.h>
 #include <inviwo/core/datastructures/image/image.h>
 #include <modules/opengl/sharedopenglresources.h>
+#include <inviwo/core/util/rendercontext.h>
 
 namespace inviwo {
 

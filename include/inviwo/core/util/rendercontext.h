@@ -45,6 +45,23 @@ public:
     virtual void activate() = 0;
     virtual std::unique_ptr<Canvas> createHiddenCanvas() = 0;
     virtual Canvas::ContextID activeContext() const = 0;
+    virtual Canvas::ContextID contextId() const = 0;
+};
+
+class DefaultContextHolder : public ContextHolder {
+public:
+    DefaultContextHolder(Canvas* canvas) : canvas_{canvas} {}
+    virtual void activate() override { return canvas_->activate(); }
+    virtual std::unique_ptr<Canvas> createHiddenCanvas() override {
+        return canvas_->createHiddenCanvas();
+    }
+    virtual Canvas::ContextID activeContext() const override { return canvas_->activeContext(); }
+
+    virtual Canvas::ContextID contextId() const override {
+        return canvas_->contextId();
+    }
+
+    Canvas* canvas_;
 };
 
 /**
@@ -67,12 +84,12 @@ public:
 
     void clearContext();
 
-    void registerContext(Canvas* canvas, const std::string& name);
-    void unRegisterContext(Canvas* canvas);
+    void registerContext(Canvas::ContextID id, std::string_view name,
+                         std::unique_ptr<ContextHolder> context);
+    void unRegisterContext(Canvas::ContextID id);
 
-    Canvas* getCanvas(Canvas::ContextID id) const;
     std::string getContextName(Canvas::ContextID id) const;
-    void setContextName(Canvas::ContextID id, const std::string& name);
+    void setContextName(Canvas::ContextID id, std::string_view name);
     std::thread::id getContextThreadId(Canvas::ContextID id) const;
     void setContextThreadId(Canvas::ContextID id, std::thread::id);
 
@@ -82,8 +99,8 @@ public:
 private:
     struct ContextInfo {
         std::string name;
-        Canvas* canvas = nullptr;
         std::thread::id threadId;
+        std::unique_ptr<ContextHolder> context;
     };
 
     std::unordered_map<Canvas::ContextID, ContextInfo> contextRegistry_;
@@ -100,7 +117,7 @@ private:
 template <typename C>
 void RenderContext::forEachContext(C callback) {
     for (const auto& item : contextRegistry_) {
-        callback(item.first, item.second.name, item.second.canvas, item.second.threadId);
+        callback(item.first, item.second.name, item.second.context.get(), item.second.threadId);
     }
 }
 
