@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         #os: [windows-latest, macos-latest, ubuntu-20.04]
-        os: [macos-latest]
+        os: [macos-latest, ubuntu-20.04]
         include:
         #  - os: 'windows-latest'
         #    triplet: 'x64-windows'
@@ -25,11 +25,11 @@ jobs:
             mono: 'mono'
             cmake: '-DIVW_MODULE_HDF5=OFF'
             generator: 'Ninja' 
-        #  - os: 'ubuntu-20.04'
-        #    triplet: 'x64-linux'
-        #    mono: 'mono'
-        #    cmake: '-DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF' 
-        #    generator: 'Ninja' 
+          - os: 'ubuntu-20.04'
+            triplet: 'x64-linux'
+            mono: 'mono'
+            cmake: '-DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF' 
+            generator: 'Ninja' 
       fail-fast: false
       
     runs-on: ${{ matrix.os }}
@@ -111,7 +111,7 @@ jobs:
         -DIVW_CFG_CMAKE_DEBUG=ON
         -DIVW_CFG_PRECOMPILED_HEADERS=OFF
         -DIVW_TEST_UNIT_TESTS_RUN_ON_BUILD=OFF
-        -DIVW_TEST_BENCHMARKS=ON
+        -DIVW_TEST_BENCHMARKS=OFF
         -DIVW_TEST_INTEGRATION_TESTS=ON
         -DIVW_USE_OPENMP=OFF
         -DIVW_USE_OPENEXR=OFF
@@ -141,12 +141,13 @@ jobs:
       timeout-minutes: 180
       working-directory: build
       shell: bash
-      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel --verbose
+      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel
 
     - name: Package
+      if: runner.os == 'Windows'
       working-directory: build
       shell: bash
-      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel --verbose --target package 
+      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel --target package 
 
     - name: Upload Windows
       if: runner.os == 'Windows'
@@ -155,16 +156,16 @@ jobs:
         name: inviwo-installer-win
         path: build/inviwo-v*.exe
    
-    - name: Upload macOS
-      if: runner.os == 'macOS'
-      uses: actions/upload-artifact@v2
-      with:
-        name: inviwo-installer-macos
-        path: build/inviwo-v*.dmg
+    #- name: Upload macOS
+    #  if: runner.os == 'macOS'
+    #  uses: actions/upload-artifact@v2
+    #  with:
+    #    name: inviwo-installer-macos
+    #    path: build/inviwo-v*.dmg
 
-    - name: Upload Linux
-      if: runner.os == 'Linux'
-      uses: actions/upload-artifact@v2
-      with:
-        name: inviwo-installer-ubuntu
-        path: build/inviwo-v*.zip
+    #- name: Upload Linux
+    #  if: runner.os == 'Linux'
+    #  uses: actions/upload-artifact@v2
+    #  with:
+    #    name: inviwo-installer-ubuntu
+    #    path: build/inviwo-v*.zip
