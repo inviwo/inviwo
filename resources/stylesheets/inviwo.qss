@@ -51,6 +51,16 @@ QSplitter#WelcomeWidget {
     background-color: #323235;
 }
 
+QWidget#NetworkSearch {
+    background-color: #323235;
+}
+
+QWidget#NetworkSearch > QLineEdit {
+    font-size: 12pt;
+    padding: 0.125em;
+    min-width: 15em; 
+}
+
 /************************ 
 QMainWindow
 ************************/

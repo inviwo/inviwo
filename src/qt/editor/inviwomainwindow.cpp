@@ -615,7 +615,7 @@ void InviwoMainWindow::addActions() {
         fileMenuItem->addAction(reloadAction);
     }
 
-#ifdef IVW_DEBUG
+#ifndef IVW_RELEASE
     {
         fileMenuItem->addSeparator();
         auto reloadStyle = fileMenuItem->addAction("Reload Style sheet");

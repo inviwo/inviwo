@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_NETWORKEDITORVIEW_H
-#define IVW_NETWORKEDITORVIEW_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/networkeditor.h>
@@ -39,6 +38,8 @@
 #include <QGraphicsView>
 #include <QImage>
 #include <warn/pop>
+
+#include <optional>
 
 class QDropEvent;
 class QDragEnterEvent;
@@ -70,13 +71,14 @@ protected:
     virtual void resizeEvent(QResizeEvent* re) override;
     virtual void wheelEvent(QWheelEvent* e) override;
 
-    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
-    virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
-    virtual void focusOutEvent(QFocusEvent*) override;
+    virtual void mousePressEvent(QMouseEvent* e) override;
+    virtual void mouseReleaseEvent(QMouseEvent* e) override;
+    virtual void mouseMoveEvent(QMouseEvent* e) override;
 
 private:
     void zoom(double dz);
     virtual void onSceneSizeChanged() override;
+    QRectF growSceneRect(QRectF r) const;
 
     InviwoMainWindow* mainwindow_;
     NetworkEditor* editor_;
@@ -87,8 +89,7 @@ private:
     WorkspaceManager::DeserializationHandle loadHandle_;
     WorkspaceManager::ClearHandle clearHandle_;
     std::shared_ptr<MenuItem> editActionsHandle_;
+    std::optional<QPoint> dragPos_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_NETWORKEDITORVIEW_H
