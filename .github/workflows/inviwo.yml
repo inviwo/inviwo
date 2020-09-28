@@ -12,20 +12,24 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-20.04]
+        #os: [windows-latest, macos-latest, ubuntu-20.04]
+        os: [macos-latest]
         include:
-          - os: 'windows-latest'
-            triplet: 'x64-windows'
-            mono: ''
-            cmake: '-DIVW_MODULE_HDF5=ON'
+        #  - os: 'windows-latest'
+        #    triplet: 'x64-windows'
+        #    mono: ''
+        #    cmake: '-DIVW_MODULE_HDF5=ON'
+        #    generator: 'Visual Studio 16 2019' 
           - os: 'macos-latest'
             triplet: 'x64-osx'
             mono: 'mono'
-            cmake: '-DIVW_MODULE_HDF5=OFF' 
-          - os: 'ubuntu-20.04'
-            triplet: 'x64-linux'
-            mono: 'mono'
-            cmake: '-DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF' 
+            cmake: '-DIVW_MODULE_HDF5=OFF'
+            generator: 'Ninja' 
+        #  - os: 'ubuntu-20.04'
+        #    triplet: 'x64-linux'
+        #    mono: 'mono'
+        #    cmake: '-DIVW_USE_SIGAR=OFF -DIVW_MODULE_HDF5=OFF' 
+        #    generator: 'Ninja' 
       fail-fast: false
       
     runs-on: ${{ matrix.os }}
@@ -55,7 +59,12 @@ jobs:
     - name: Apt Install
       shell: bash
       if: runner.os == 'Linux'
-      run: sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev
+      run: sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev ninja
+      
+    - name: Brew Install
+      shell: bash
+      if: runner.os == 'macOS'
+      run: brew install ninja
 
     - name: VCPKG Install
       shell: bash
@@ -95,7 +104,7 @@ jobs:
     - name: Configure CMake
       shell: bash
       run: >
-        cmake -S inviwo -B build 
+        cmake -S inviwo -B build -G ${{ matrix.generator }}
         -DVCPKG_TARGET_TRIPLET='${{ matrix.triplet }}'
         -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
