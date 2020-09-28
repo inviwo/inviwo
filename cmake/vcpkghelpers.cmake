@@ -27,6 +27,11 @@
 # 
 #################################################################################
 
+# Retrive the git sha of the VCPKG installation, once for later use in ivw_vcpkg_install
+if(VCPKG_TOOLCHAIN)
+    ivw_git_get_hash(${_VCPKG_ROOT_DIR} ivw_vcpkg_sha)
+endif()
+
 # A helper function to get to various vcpkg paths
 # If vcpkg is not used we just return empty strings
 # There are not "offically" exposed so we always use this helper to get then if needed
@@ -74,10 +79,6 @@ function(ivw_vcpkg_paths)
         set(${ARG_SHARE} "${_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}" PARENT_SCOPE)
     endif()
 endfunction()
-
-if(VCPKG_TOOLCHAIN)
-    ivw_git_get_hash(${_VCPKG_ROOT_DIR} ivw_vcpkg_sha)
-endif()
 
 # A helper function to install vcpkg libs. Will install dll/so, lib, pdb, stc. into the 
 # correspnding folders by globing the vcpkg package folders. 
