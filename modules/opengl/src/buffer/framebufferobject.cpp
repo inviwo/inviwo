@@ -44,7 +44,7 @@ inline void checkContext(std::string_view error, Canvas::ContextID org, SourceLo
         if (org != curr) {
 
             const auto message =
-                fmt::format("{}: {} ({}) then it was created: {} ({})", error,
+                fmt::format("{}: '{}' ({}) than it was created: '{}' ({})", error,
                             rc->getContextName(curr), curr, rc->getContextName(org), org);
 
             assertion(loc.getFile(), loc.getFunction(), loc.getLine(), message);
@@ -114,7 +114,7 @@ FrameBufferObject& FrameBufferObject::operator=(FrameBufferObject&& rhs) noexcep
 }
 
 FrameBufferObject::~FrameBufferObject() {
-    checkContext("FBO deleted on a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
+    checkContext("FBO deleted in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
 
     deactivate();
     glDeleteFramebuffers(1, &id_);
@@ -128,7 +128,7 @@ void FrameBufferObject::activate() {
         // store currently bound FBO
         prevFbo_ = currentFbo;
 
-        checkContext("FBO activated on a different context"sv, creationContext_,
+        checkContext("FBO activated in a different context"sv, creationContext_,
                      IVW_SOURCE_LOCATION);
 
         glBindFramebuffer(GL_FRAMEBUFFER, id_);
@@ -151,7 +151,7 @@ void FrameBufferObject::deactivate() {
 }
 
 bool FrameBufferObject::isActive() const {
-    checkContext("FBO used on a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
+    checkContext("FBO used in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
     GLint currentFbo = 0;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFbo);
     return (static_cast<GLint>(id_) == currentFbo);
@@ -397,7 +397,7 @@ void FrameBufferObject::setRead_Blit(bool set) const {
     if (set) {  // store currently bound draw FBO
         glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &prevReadFbo_);
 
-        checkContext("FBO activated on a different context"sv, creationContext_,
+        checkContext("FBO activated in a different context"sv, creationContext_,
                      IVW_SOURCE_LOCATION);
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, id_);
@@ -414,7 +414,7 @@ void FrameBufferObject::setDraw_Blit(bool set) {
     if (set) {  // store currently bound draw FBO
         glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &prevDrawFbo_);
 
-        checkContext("FBO activated on a different context"sv, creationContext_,
+        checkContext("FBO activated in a different context"sv, creationContext_,
                      IVW_SOURCE_LOCATION);
 
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id_);

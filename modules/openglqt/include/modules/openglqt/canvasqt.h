@@ -83,9 +83,9 @@ private:
     bool mapPanTriggered(QPanGesture*);
     bool mapPinchTriggered(QPinchGesture* e);
 
-    ///< Links QTouchDevice to inviwo::TouchDevice
+    //! Links QTouchDevice to inviwo::TouchDevice
     std::map<QTouchDevice*, TouchDevice> touchDevices_;
-    ///< Compare with next touch event to prevent duplicates
+    //! Compare with next touch event to prevent duplicates
     std::vector<TouchPoint> prevTouchPoints_;
     Qt::GestureType lastType_{};
     int lastNumFingers_{0};
