@@ -59,19 +59,21 @@ jobs:
     - name: Apt Install
       shell: bash
       if: runner.os == 'Linux'
-      run: sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev ninja-build doxygen
+      run: sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev ninja-build doxygen texlive
       
     - name: Brew Install
       shell: bash
       if: runner.os == 'macOS'
-      run: brew install ninja doxygen
+      run: >
+        brew install ninja doxygen
+        brew cask install mactex
 
     - name: Install Scoop
       if: runner.os == 'Windows'
       run: |
         Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
         scoop bucket add extras
-        scoop install nsis doxygen
+        scoop install nsis doxygen latex
 
     - name: VCPKG Install
       shell: bash
@@ -137,7 +139,10 @@ jobs:
         -DIVW_USE_EXTERNAL_PYBIND11=ON
         -DIVW_USE_EXTERNAL_OPENEXR=ON
         ${{ matrix.cmake }}
-         
+    
+    - name: Setup C++
+      uses: Trass3r/setup-cpp@v1
+    
     - name: Build
       timeout-minutes: 180
       working-directory: build
