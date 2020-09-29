@@ -43,5 +43,4 @@ public:
                                             bool clampBorderOutsideVolume = true);
 };
 
-
 }  // namespace inviwo

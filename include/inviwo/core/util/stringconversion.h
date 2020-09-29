@@ -94,8 +94,8 @@ IVW_CORE_API std::string fromWstring(const std::wstring& str);
  * @return a vector containing the substrings
  */
 IVW_CORE_API std::vector<std::string> splitString(std::string_view str, char delimeter = ' ');
-IVW_CORE_API std::vector<std::string_view> splitStringView(std::string_view str, char delimeter = ' ');
-
+IVW_CORE_API std::vector<std::string_view> splitStringView(std::string_view str,
+                                                           char delimeter = ' ');
 
 template <typename T>
 std::string joinString(const std::vector<T>& str, std::string delimeter = " ") {

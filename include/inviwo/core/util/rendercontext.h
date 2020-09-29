@@ -57,9 +57,7 @@ public:
     }
     virtual Canvas::ContextID activeContext() const override { return canvas_->activeContext(); }
 
-    virtual Canvas::ContextID contextId() const override {
-        return canvas_->contextId();
-    }
+    virtual Canvas::ContextID contextId() const override { return canvas_->contextId(); }
 
     Canvas* canvas_;
 };

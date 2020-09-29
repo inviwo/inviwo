@@ -150,4 +150,3 @@ std::shared_ptr<LayerRAMPrecision<T>> util::layerSubSet(const Layer* in, ivec2 o
 }
 
 }  // namespace inviwo
-

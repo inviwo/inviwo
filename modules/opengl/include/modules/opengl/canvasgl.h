@@ -99,7 +99,7 @@ protected:
 
     LayerType layerType_ = LayerType::Color;
     size_t layerIdx_ = 0;
-    
+
     Shader* textureShader_ = nullptr;  ///< non-owning reference
     Shader* noiseShader_ = nullptr;    ///< non-owning reference
 };

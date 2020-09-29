@@ -97,8 +97,8 @@ static void GLAPIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, 
 void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity) {
     if (RenderContext::getPtr()->hasDefaultRenderContext()) {
         RenderContext::getPtr()->forEachContext(
-            [mode, severity](Canvas::ContextID id, const std::string& /*name*/, ContextHolder* canvas,
-                             std::thread::id threadId) {
+            [mode, severity](Canvas::ContextID id, const std::string& /*name*/,
+                             ContextHolder* canvas, std::thread::id threadId) {
                 if (threadId == std::this_thread::get_id()) {
                     canvas->activate();
                     setOpenGLDebugMode(mode, severity);

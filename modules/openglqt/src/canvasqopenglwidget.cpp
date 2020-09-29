@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/opengl/inviwoopengl.h> // Special needs to be first since GLEW
+#include <modules/opengl/inviwoopengl.h>  // Special needs to be first since GLEW
 
 #include <modules/openglqt/canvasqopenglwidget.h>
 #include <inviwo/core/datastructures/image/layerram.h>

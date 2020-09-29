@@ -150,13 +150,13 @@ void PathLinesDeprecated::process() {
     auto lines = std::make_shared<IntegralLineSet>(sampler->getModelMatrix());
     std::vector<BasicMesh::Vertex> vertices;
     size_t startID = 0;
-    for (const auto &seeds : seedPoints_) {
- 
+    for (const auto& seeds : seedPoints_) {
+
 #ifdef IVW_USE_OPENMP
 #pragma omp parallel for
 #endif
         for (long long j = 0; j < static_cast<long long>(seeds->size()); j++) {
-            const auto &p = (*seeds)[j];
+            const auto& p = (*seeds)[j];
             vec4 P = m * vec4(p, 1.0f);
             IntegralLine line = tracer.traceFrom(vec4(vec3(P), pathLineProperties_.getStartT()));
             auto size = line.getPositions().size();
@@ -171,7 +171,7 @@ void PathLinesDeprecated::process() {
         startID += seeds->size();
     }
 
-    for (auto &line : *lines) {
+    for (auto& line : *lines) {
         auto size = line.getPositions().size();
         if (size <= 1) continue;
 
@@ -248,7 +248,7 @@ void PathLinesDeprecated::process() {
     maxVelocity_.set(toString(maxVelocity));
 }
 
-void PathLinesDeprecated::deserialize(Deserializer &d) {
+void PathLinesDeprecated::deserialize(Deserializer& d) {
     DoubleProperty dProperty("stepSize", "Step size", 0.001f, 0.001f, 1.0f, 0.001f);
     util::renameProperty(d, {{&dProperty, "dt"}});
     util::changePropertyType(d, {{&dProperty, PropertyTraits<FloatProperty>::classIdentifier()}});
