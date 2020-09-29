@@ -6,7 +6,8 @@ env:
   BUILD_TYPE: Release
   IVW_VCPKG_SHA: '2a6442cb934de2f99c8ac5bbd8a9dcf5538aee98'   # vcpkg "version" to use
   #IVW_VCPKG_SHA: '399458a9d9a763c0e06cc979464a17074fe8517d'  # nuget verbose version, git remote add inviwo https://github.com/inviwo/vcpkg.git
-  VCPKG_BINARY_SOURCES : 'clear;nuget,GitHub,readwrite'       # recognized by vcpkg
+  VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'        # recognized by vcpkg
+  QT_DEBUG_PLUGINS: 1                                         # print qt plugin debug info
 
 jobs:
   build:
@@ -17,7 +18,7 @@ jobs:
           - os: 'windows-latest'
             triplet: 'x64-windows'
             mono: ''
-            cmake: '-DIVW_MODULE_HDF5=ON'
+            cmake: '-DIVW_MODULE_HDF5=ON -DDOXYGEN_EXECUTABLE=~/scoop/apps/doxygen/1.8.20/doxygen.exe'
             generator: 'Visual Studio 16 2019' 
           - os: 'macos-latest'
             triplet: 'x64-osx'
