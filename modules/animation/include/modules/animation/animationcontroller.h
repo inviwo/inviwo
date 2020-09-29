@@ -104,7 +104,7 @@ public:
     const AnimationPlaySettings& getRenderingSettings() const { return settingsRendering_; }
     Seconds getCurrentTime() const;
 
-    InviwoApplication* getInviwoApplication() { return app_; }
+    InviwoApplication* getInviwoApplication() override { return app_; }
 
     virtual void resetAllPoperties() override;
     virtual void serialize(Serializer& s) const override;
