@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LORENZSYSTEM_H
-#define IVW_LORENZSYSTEM_H
+#pragma once
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
@@ -73,5 +71,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LORENZSYSTEM_H

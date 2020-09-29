@@ -32,6 +32,10 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/indexmapper.h>
 
+#ifdef IVW_USE_OPENMP
+#include <omp.h>
+#endif
+
 namespace inviwo {
 
 std::shared_ptr<VolumeRAM> util::volumeSubSample(const VolumeRAM* volume, size3_t f) {
@@ -57,7 +61,10 @@ std::shared_ptr<VolumeRAM> util::volumeSubSample(const VolumeRAM* volume, size3_
             util::IndexMapper3D n(destDims);
 
             const double samplesInv = 1.0 / (f.x * f.y * f.z);
+
+#ifdef IVW_USE_OPENMP
 #pragma omp parallel for
+#endif
             for (long long z_ = 0; z_ < static_cast<long long>(destDims.z); ++z_) {
                 const size_t z = static_cast<size_t>(z_);  // OpenMP need signed integral type.
                 for (size_t y = 0; y < destDims.y; ++y) {

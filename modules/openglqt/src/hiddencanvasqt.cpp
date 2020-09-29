@@ -92,7 +92,7 @@ std::unique_ptr<Canvas> HiddenCanvasQt::createHiddenQtCanvas() {
     // OpenGL can be initialized in this thread
     newContext->initializeGL();
 
-    return std::move(newContext);
+    return newContext;
 }
 
 Canvas::ContextID HiddenCanvasQt::activeContext() const {

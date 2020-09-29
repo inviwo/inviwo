@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PATHLINEPROPERTIES_H
-#define IVW_PATHLINEPROPERTIES_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -58,5 +56,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PATHLINEPROPERTIES_H

@@ -36,6 +36,10 @@
 #include <inviwo/core/util/zip.h>
 #include <modules/vectorfieldvisualization/integrallinetracer.h>
 
+#ifdef IVW_USE_OPENMP
+#include <omp.h>
+#endif
+
 namespace inviwo {
 
 const ProcessorInfo PathLinesDeprecated::processorInfo_{
@@ -147,14 +151,19 @@ void PathLinesDeprecated::process() {
     std::vector<BasicMesh::Vertex> vertices;
     size_t startID = 0;
     for (const auto &seeds : seedPoints_) {
+ 
+#ifdef IVW_USE_OPENMP
 #pragma omp parallel for
+#endif
         for (long long j = 0; j < static_cast<long long>(seeds->size()); j++) {
             const auto &p = (*seeds)[j];
             vec4 P = m * vec4(p, 1.0f);
             IntegralLine line = tracer.traceFrom(vec4(vec3(P), pathLineProperties_.getStartT()));
             auto size = line.getPositions().size();
             if (size > 1) {
+#ifdef IVW_USE_OPENMP
 #pragma omp critical
+#endif
                 // lines->push_back(line, startID + j);
                 lines->push_back(line, lines->size());
             };

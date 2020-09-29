@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VECTORFIELDVISUALIZATIONMODULE_H
-#define IVW_VECTORFIELDVISUALIZATIONMODULE_H
+#pragma once
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -62,5 +61,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VECTORFIELDVISUALIZATIONMODULE_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VECTOR3DCURL_H
-#define IVW_VECTOR3DCURL_H
+#pragma once
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
@@ -51,5 +49,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VECTOR3DCURL_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SEEDPOINTSFROMMASK_H
-#define IVW_SEEDPOINTSFROMMASK_H
+#pragma once
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -73,5 +71,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SEEDPOINTSFROMMASK_H

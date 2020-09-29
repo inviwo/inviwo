@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMERAMDISTANCETRANSFORM_H
-#define IVW_VOLUMERAMDISTANCETRANSFORM_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
@@ -155,7 +153,9 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
 
 // first pass, forward and backward scan along x
 // result: min distance in x direction
+#ifdef IVW_USE_OPENMP
 #pragma omp parallel for
+#endif
     for (int64 z = 0; z < dstDim.z; ++z) {
         for (int64 y = 0; y < dstDim.y; ++y) {
             // forward
@@ -187,11 +187,15 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
     // for each voxel v(x,y,z) find min_i(data(x,i,z) + (y - i)^2), 0 <= i < dimY
     // result: min distance in x and y direction
     callback(0.3);
+#ifdef IVW_USE_OPENMP
 #pragma omp parallel
+#endif
     {
         std::vector<U> buff;
         buff.resize(dstDim.y);
+#ifdef IVW_USE_OPENMP
 #pragma omp for
+#endif
         for (int64 z = 0; z < dstDim.z; ++z) {
             for (int64 x = 0; x < dstDim.x; ++x) {
 
@@ -222,11 +226,15 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
     // for each voxel v(x,y,z) find min_i(data(x,y,i) + (z - i)^2), 0 <= i < dimZ
     // result: min distance in x and y direction
     callback(0.6);
+#ifdef IVW_USE_OPENMP
 #pragma omp parallel
+#endif
     {
         std::vector<U> buff;
         buff.resize(dstDim.z);
+#ifdef IVW_USE_OPENMP
 #pragma omp for
+#endif
         for (int64 y = 0; y < dstDim.y; ++y) {
             for (int64 x = 0; x < dstDim.x; ++x) {
 
@@ -256,7 +264,9 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
     // scale data
     callback(0.9);
     const int64 volSize = dstDim.x * dstDim.y * dstDim.z;
+#ifdef IVW_USE_OPENMP
 #pragma omp parallel for
+#endif
     for (int64 i = 0; i < volSize; ++i) {
         dst[i] = valueTransform(dst[i]);
     }
@@ -354,4 +364,3 @@ void util::volumeDistanceTransform(const Volume *inVolume, VolumeRAMPrecision<U>
 
 }  // namespace inviwo
 
-#endif  // IVW_VOLUMERAMDISTANCETRANSFORM_H

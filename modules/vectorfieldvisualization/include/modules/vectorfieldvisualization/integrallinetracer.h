@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INTEGRALLINETRACER_H
-#define IVW_INTEGRALLINETRACER_H
+#pragma once
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/spatialsampler.h>
 #include <inviwo/core/util/spatial4dsampler.h>
 #include <inviwo/core/util/bufferutils.h>
@@ -42,11 +40,6 @@
 
 namespace inviwo {
 
-/**
- * \class IntegralLineTracer
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
 template <typename SpatialSampler,
           bool TimeDependent = SpatialSampler::SpatialDimensions != SpatialSampler::DataDimensions>
 class IntegralLineTracer {
@@ -293,5 +286,3 @@ using StreamLine3DTracer = IntegralLineTracer<SpatialSampler<3, 3, double>>;
 using PathLine3DTracer = IntegralLineTracer<Spatial4DSampler<3, double>>;
 
 }  // namespace inviwo
-
-#endif  // IVW_INTEGRALLINETRACER_H

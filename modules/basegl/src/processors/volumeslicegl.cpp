@@ -278,7 +278,7 @@ void VolumeSliceGL::initializeResources() {
 void VolumeSliceGL::invokeEvent(Event* event) {
     if (dynamic_cast<InteractionEvent*>(event) && !handleInteractionEvents_) return;
     Processor::invokeEvent(event);
-    if (auto re = event->getAs<ResizeEvent>()) {
+    if (event->getAs<ResizeEvent>()) {
         planeSettingsChanged();
     }
 }

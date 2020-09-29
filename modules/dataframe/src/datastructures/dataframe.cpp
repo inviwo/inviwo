@@ -234,7 +234,7 @@ bool isIntegral(const std::string& str) {
         if (pos == str.size()) {
             return true;
         }
-    } catch (std::exception) {
+    } catch (const std::exception&) {
     }
     return false;
 }
@@ -247,7 +247,7 @@ bool isFloat(const std::string& str) {
         if (pos == str.size()) {
             return true;
         }
-    } catch (std::exception) {
+    } catch (const std::exception&) {
     }
     return false;
 }

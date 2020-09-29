@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LAYERRAMDISTANCETRANSFORM_H
-#define IVW_LAYERRAMDISTANCETRANSFORM_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -156,7 +155,9 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
 
 // first pass, forward and backward scan along x
 // result: min distance in x direction
+#ifdef IVW_USE_OPENMP
 #pragma omp parallel for
+#endif
     for (int64 y = 0; y < dstDim.y; ++y) {
         // forward
         U dist = static_cast<U>(dstDim.x);
@@ -185,11 +186,15 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
     // for each voxel v(x,y,z) find min_i(data(x,i,z) + (y - i)^2), 0 <= i < dimY
     // result: min distance in x and y direction
     callback(0.45);
+#ifdef IVW_USE_OPENMP
 #pragma omp parallel
+#endif
     {
         std::vector<U> buff;
         buff.resize(dstDim.y);
+#ifdef IVW_USE_OPENMP
 #pragma omp for
+#endif
         for (int64 x = 0; x < dstDim.x; ++x) {
 
             // cache column data into temporary buffer
@@ -216,7 +221,9 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
     // scale data
     callback(0.9);
     const int64 layerSize = dstDim.x * dstDim.y;
+#ifdef IVW_USE_OPENMP
 #pragma omp parallel for
+#endif
     for (int64 i = 0; i < layerSize; ++i) {
         dst[i] = valueTransform(dst[i]);
     }
@@ -313,4 +320,3 @@ void util::layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *ou
 
 }  // namespace inviwo
 
-#endif  // IVW_LAYERRAMDISTANCETRANSFORM_H
