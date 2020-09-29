@@ -58,12 +58,19 @@ jobs:
     - name: Apt Install
       shell: bash
       if: runner.os == 'Linux'
-      run: sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev ninja-build
+      run: sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev libglew-dev ninja-build doxygen
       
     - name: Brew Install
       shell: bash
       if: runner.os == 'macOS'
-      run: brew install ninja
+      run: brew install ninja doxygen
+
+    - name: Install Scoop
+      if: runner.os == 'Windows'
+      run: |
+        Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+        scoop bucket add extras
+        scoop install nsis doxygen
 
     - name: VCPKG Install
       shell: bash
@@ -87,14 +94,7 @@ jobs:
       with:
         version: 5.15.0
         dir: ${{ github.workspace }}
-       
-    - name: Install NSIS
-      if: runner.os == 'Windows'
-      run: |
-        Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-        scoop bucket add extras
-        scoop install nsis doxygen
-     
+           
     - uses: actions/checkout@v2
       with: 
         path: inviwo
@@ -103,12 +103,13 @@ jobs:
     - name: Configure CMake
       shell: bash
       run: >
-        cmake -S inviwo -B build -G ${{ matrix.generator }}
+        cmake -S inviwo -B build -G '${{ matrix.generator }}'
         -DVCPKG_TARGET_TRIPLET='${{ matrix.triplet }}'
         -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
         -DIVW_CFG_CMAKE_DEBUG=ON
         -DIVW_CFG_PRECOMPILED_HEADERS=OFF
+        -DIVW_DOXYGEN_PROJECT=ON
         -DIVW_TEST_UNIT_TESTS_RUN_ON_BUILD=OFF
         -DIVW_TEST_BENCHMARKS=OFF
         -DIVW_TEST_INTEGRATION_TESTS=ON
@@ -168,3 +169,10 @@ jobs:
     #  with:
     #    name: inviwo-installer-ubuntu
     #    path: build/inviwo-v*.zip
+
+    - name: Doxygen
+      working-directory: build
+      shell: bash
+      run: cmake --build . --config ${{ env.BUILD_TYPE }} --parallel --target DOXY-ALL 
+
+
