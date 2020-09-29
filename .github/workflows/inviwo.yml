@@ -12,14 +12,13 @@ jobs:
   build:
     strategy:
       matrix:
-        #os: [windows-latest, macos-latest, ubuntu-20.04]
-        os: [macos-latest, ubuntu-20.04]
+        os: [windows-latest, macos-latest, ubuntu-20.04]
         include:
-        #  - os: 'windows-latest'
-        #    triplet: 'x64-windows'
-        #    mono: ''
-        #    cmake: '-DIVW_MODULE_HDF5=ON'
-        #    generator: 'Visual Studio 16 2019' 
+          - os: 'windows-latest'
+            triplet: 'x64-windows'
+            mono: ''
+            cmake: '-DIVW_MODULE_HDF5=ON'
+            generator: 'Visual Studio 16 2019' 
           - os: 'macos-latest'
             triplet: 'x64-osx'
             mono: 'mono'
