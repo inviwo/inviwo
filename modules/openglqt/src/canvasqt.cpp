@@ -57,7 +57,7 @@
 namespace inviwo {
 
 CanvasQt::CanvasQt(QWidget* parent, size2_t dim, std::string_view name)
-    : CanvasQOpenGLWidget(parent, dim), blockContextMenu_(false) {
+    : CanvasQOpenGLWidget(parent, dim, name), blockContextMenu_(false) {
 
     setContextMenuPolicy(Qt::PreventContextMenu);
 }
