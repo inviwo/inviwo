@@ -151,6 +151,8 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
     renderOptions.setCollapsed(true);
     addProperty(renderOptions);
 
+    renderImageExtension.setSerializationMode(PropertySerializationMode::None);
+
     // Control Track
     controlInsertPauseFrame.onChange([this]() {
         auto ct = std::make_unique<ControlTrack>();
@@ -281,7 +283,9 @@ void AnimationController::render() {
                     desiredDims = renderSize.get();
                     break;
                 }
-                default: { ivwAssert(false, "Should not happen."); }
+                default: {
+                    ivwAssert(false, "Should not happen.");
+                }
             }
             // - adjust basic dimensions to the aspect ratio
             if (renderAspectRatio.get() > 0) {
@@ -478,6 +482,53 @@ Animation& AnimationController::getAnimation() { return *animation_; }
 const AnimationState& AnimationController::getState() const { return state_; }
 
 Seconds AnimationController::getCurrentTime() const { return currentTime_; }
+
+void AnimationController::resetAllPoperties() {
+    auto options = util::transform(app_->getDataWriterFactory()->getExtensionsForType<Layer>(),
+                                   [](const auto& i) -> std::string { return toString(i); });
+
+    size_t selectedIndex = [&]() -> size_t {
+        auto ext = app_->getDataWriterFactory()->getExtensionsForType<Layer>();
+        auto it =
+            std::find_if(ext.begin(), ext.end(), [](auto& e) { return e.extension_ == "png"; });
+        if (it != ext.end())
+            return std::distance(ext.begin(), it);
+        else
+            return 0;
+    }();
+
+    renderImageExtension.replaceOptions(options);
+    renderImageExtension.setSelectedIndex(selectedIndex);
+    renderImageExtension.setCurrentStateAsDefault();
+
+    PropertyOwner::resetAllPoperties();
+}
+
+void AnimationController::serialize(Serializer& s) const {
+    PropertyOwner::serialize(s);
+    s.serialize("renderImageExtension", renderImageExtension.getSelectedIndex());
+}
+
+void AnimationController::deserialize(Deserializer& d) {
+    PropertyOwner::deserialize(d);
+
+    auto options = util::transform(app_->getDataWriterFactory()->getExtensionsForType<Layer>(),
+                                   [](const auto& i) -> std::string { return toString(i); });
+
+    size_t selectedIndex = [&]() -> size_t {
+        auto ext = app_->getDataWriterFactory()->getExtensionsForType<Layer>();
+        auto it =
+            std::find_if(ext.begin(), ext.end(), [](auto& e) { return e.extension_ == "png"; });
+        if (it != ext.end())
+            return std::distance(ext.begin(), it);
+        else
+            return 0;
+    }();
+    d.deserialize("renderImageExtension", selectedIndex);
+
+    renderImageExtension.replaceOptions(options);
+    renderImageExtension.setSelectedIndex(selectedIndex);
+}
 
 }  // namespace animation
 
