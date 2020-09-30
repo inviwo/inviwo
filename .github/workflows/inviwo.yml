@@ -18,7 +18,7 @@ jobs:
           - os: 'windows-latest'
             triplet: 'x64-windows'
             mono: ''
-            cmake: '-DIVW_MODULE_HDF5=ON -DDOXYGEN_EXECUTABLE=~/scoop/apps/doxygen/1.8.20/doxygen.exe'
+            cmake: '-DIVW_MODULE_HDF5=ON'
             generator: 'Visual Studio 16 2019' 
           - os: 'macos-latest'
             triplet: 'x64-osx'
@@ -66,7 +66,7 @@ jobs:
       if: runner.os == 'macOS'
       run: >
         brew install ninja doxygen
-        brew cask install mactex
+        brew cask install basictex
 
     - name: Install Scoop
       if: runner.os == 'Windows'
@@ -74,10 +74,11 @@ jobs:
         Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
         scoop bucket add extras
         scoop install nsis doxygen latex
+        echo "::add-path::~/scoop/shims"
 
     - name: VCPKG Install
       shell: bash
-      run: > 
+      run: >
         vcpkg --triplet ${{ matrix.triplet }} install
         assimp benchmark cimg eigen3 fmt freetype glfw3 glm gtest zlib 
         hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json 
