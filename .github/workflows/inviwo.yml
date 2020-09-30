@@ -64,7 +64,7 @@ jobs:
     - name: Brew Install
       shell: bash
       if: runner.os == 'macOS'
-      run: >
+      run: |
         brew install ninja doxygen
         brew cask install basictex
 
