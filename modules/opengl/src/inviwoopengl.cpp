@@ -80,7 +80,7 @@ std::string getGLErrorString(GLenum err) {
     return (errorString ? util::fromWstring(errorString) : "Undefined error");
 #else
     const auto* errorString = gluErrorString(err);
-    return (errorString ? std::string(static_cast<const char*>(errorString)) : "Undefined error");
+    return (errorString ? std::string(reinterpret_cast<const char*>(errorString)) : "Undefined error");
 #endif
 #endif
 }

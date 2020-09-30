@@ -36,6 +36,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/util/logerrorcounter.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/stringlogger.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
@@ -80,6 +81,8 @@ protected:
 };
 
 TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
+    RenderContext::getPtr()->activateDefaultRenderContext();
+
     LogErrorCheck checklog(GetParam());
     auto s = factory_->create(GetParam());
     ASSERT_TRUE(s.get() != nullptr) << "Could not create processor " << GetParam();
