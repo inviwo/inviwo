@@ -45,6 +45,10 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <nlohmann/json.hpp>
+
+#ifdef WIN32
+#include <ciso646> // required for logical operators 'not', 'and', ... used by inja.hpp
+#endif
 #include <inja.hpp>
 #include <warn/pop>
 
