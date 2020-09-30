@@ -75,8 +75,13 @@ std::string getGLErrorString(GLenum err) {
     }
     return "Undefined error";
 #else
+#if defined(_WIN32)
     const auto* errorString = gluErrorUnicodeStringEXT(err);
     return (errorString ? util::fromWstring(errorString) : "Undefined error");
+#else
+    const auto* errorString = gluErrorString(err);
+    return (errorString ? std::string(errorString) : "Undefined error");
+#endif
 #endif
 }
 
