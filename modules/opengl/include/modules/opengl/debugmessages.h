@@ -27,13 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DEBUGMESSAGES_H
-#define IVW_DEBUGMESSAGES_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/util/canvas.h>
+#include <inviwo/core/util/logcentral.h>
 
 namespace inviwo {
 
@@ -299,5 +298,3 @@ IVW_MODULE_OPENGL_API void configureOpenGLDebugMessages(utilgl::debug::Severity 
 }  // namespace utilgl
 
 }  // namespace inviwo
-
-#endif  // IVW_DEBUGMESSAGES_H

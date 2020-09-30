@@ -43,6 +43,7 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shadermanager.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <modules/opengl/debugmessages.h>
 
 namespace inviwo {
 
@@ -73,6 +74,8 @@ void CanvasGL::resize(size2_t size) {
 }
 
 void CanvasGL::update() { renderLayer(); }
+
+void CanvasGL::setupDebug() { utilgl::handleOpenGLDebugMode(activeContext()); }
 
 void CanvasGL::renderLayer() {
     if (auto image = image_.lock()) {

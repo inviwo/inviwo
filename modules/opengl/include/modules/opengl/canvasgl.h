@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CANVASGL_H
-#define IVW_CANVASGL_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/util/canvas.h>
@@ -72,6 +71,8 @@ public:
     double getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate) const;
 
 protected:
+    void setupDebug();
+
     void renderLayer();
     void renderNoise();
 
@@ -105,5 +106,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CANVASGL_H

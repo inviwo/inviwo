@@ -31,7 +31,6 @@
 
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <modules/opengl/canvasgl.h>
-#include <inviwo/core/common/inviwo.h>
 
 #define QT_NO_OPENGL_ES_2
 #define GLEXT_64_TYPES_DEFINED
