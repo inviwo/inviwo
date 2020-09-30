@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SEEDPOINTGENERATOR2D_H
-#define IVW_SEEDPOINTGENERATOR2D_H
+#pragma once
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
@@ -75,5 +73,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SEEDPOINTGENERATOR2D_H

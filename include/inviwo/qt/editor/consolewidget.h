@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CONSOLEWIDGET_H
-#define IVW_CONSOLEWIDGET_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/util/logcentral.h>
@@ -142,18 +141,19 @@ public:
     ConsoleWidget(InviwoMainWindow* parent);
     ~ConsoleWidget();
 
-    virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience,
-                     const char* file, const char* function, int line, std::string msg) override;
+    virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,
+                     std::string_view file, std::string_view function, int line,
+                     std::string_view) override;
 
     virtual void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                              std::string msg, const char* file, const char* function,
-                              int line) override;
+                              std::string_view msg, std::string_view file,
+                              std::string_view function, int line) override;
 
-    virtual void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
-                            const char* function, int line) override;
+    virtual void logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
+                            std::string_view file, std::string_view function, int line) override;
 
-    virtual void logAssertion(const char* file, const char* function, int line,
-                              std::string msg) override;
+    virtual void logAssertion(std::string_view file, std::string_view function, int line,
+                              std::string_view msg) override;
 
     QAction* getClearAction();
     QTableView* view() { return tableView_; }
@@ -205,5 +205,3 @@ private:
 }  // namespace inviwo
 
 Q_DECLARE_METATYPE(inviwo::LogTableModelEntry)
-
-#endif  // IVW_CONSOLELISTWIDGET_H

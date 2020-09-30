@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TMIP_H
-#define IVW_TMIP_H
+#pragma once
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
@@ -58,8 +56,8 @@ public:
     virtual void initializeResources() override;
 
 private:
-    void initShader(Shader &s, int samplers);
-    std::shared_ptr<Volume> iteration(Shader &s, std::shared_ptr<Volume> vol,
+    void initShader(Shader& s, int samplers);
+    std::shared_ptr<Volume> iteration(Shader& s, std::shared_ptr<Volume> vol,
                                       std::shared_ptr<Volume> target,
                                       std::vector<std::shared_ptr<Volume>>::const_iterator start,
                                       std::vector<std::shared_ptr<Volume>>::const_iterator end);
@@ -80,5 +78,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TMIP_H

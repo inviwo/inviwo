@@ -47,6 +47,9 @@ struct Helper {
     }
 };
 
+#include <warn/push>
+#include <warn/ignore/conversion>
+
 struct CopyVol {
     template <typename Result, typename Format>
     Result operator()(std::shared_ptr<const Volume> src, bool mapData, dvec2 dstRange) {
@@ -67,14 +70,14 @@ struct CopyVol {
                         (src->getDataFormat()->getNumericType() != NumericType::Float)
                             ? src->dataMap_.dataRange
                             : dvec2{0.0, 1.0}};
-                    std::transform(
-                        srcData, srcData + glm::compMul(dims), dstData,
-                        [srcRange, dstRange](auto& v) {
-                            return static_cast<T>((static_cast<Tdouble>(v) - srcRange.x) /
-                                                      (srcRange.y - srcRange.x) *
-                                                      (dstRange.y - dstRange.x) +
-                                                  dstRange.x);
-                        });
+                    std::transform(srcData, srcData + glm::compMul(dims), dstData,
+                                   [srcRange, dstRange](auto& v) {
+                                       const auto result = (static_cast<Tdouble>(v) - srcRange.x) /
+                                                               (srcRange.y - srcRange.x) *
+                                                               (dstRange.y - dstRange.x) +
+                                                           dstRange.x;
+                                       return static_cast<T>(result);
+                                   });
                 } else {
                     std::transform(srcData, srcData + glm::compMul(dims), dstData,
                                    [](auto& v) { return static_cast<T>(v); });
@@ -90,6 +93,8 @@ struct CopyVol {
             mapData, dstRange);
     }
 };
+
+#include <warn/pop>
 
 }  // namespace detail
 

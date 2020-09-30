@@ -235,15 +235,20 @@ void Image::copyRepresentationsTo(Image* targetImage) const {
 const DataFormatBase* Image::getDataFormat() const { return getColorLayer()->getDataFormat(); }
 
 dvec4 Image::readPixel(size2_t pos, LayerType layer, size_t index) const {
-    std::vector<std::pair<size_t, ImageRepresentation*>> order;
-    for (const auto& elem : representations_) {
-        order.emplace_back(elem.second->priority(), elem.second.get());
-    }
-    std::sort(order.begin(), order.end(),
-              [](const auto& a, const auto& b) { return a.first < b.first; });
+    const auto it = std::min_element(representations_.begin(), representations_.end(),
+                                     [](const auto& a, const auto& b) {
+                                         if (a.second->isValid() && b.second->isValid()) {
+                                             return a.second->priority() < b.second->priority();
+                                         } else if (a.second->isValid()) {
+                                             return true;
+                                         } else if (b.second->isValid()) {
+                                             return false;
+                                         } else {
+                                             return a.second->priority() < b.second->priority();
+                                         }
+                                     });
 
-    auto it = util::find_if(order, [&](const auto& elem) { return elem.second->isValid(); });
-    if (it != order.end()) {
+    if (it != representations_.end()) {
         return it->second->readPixel(pos, layer, index);
     }
     return dvec4(0.0);

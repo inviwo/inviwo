@@ -56,6 +56,11 @@ public:
     virtual Canvas::ContextID activeContext() const override {
         return static_cast<Canvas::ContextID>(glfwGetCurrentContext());
     }
+
+    virtual Canvas::ContextID contextId() const override {
+        return static_cast<Canvas::ContextID>(win_);
+    }
+
     GLFWwindow* win_;
 };
 

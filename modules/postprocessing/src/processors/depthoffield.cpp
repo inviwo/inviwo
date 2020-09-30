@@ -50,8 +50,8 @@ DepthOfField::DepthOfField()
     , inport_("inport")
     , trackingInport_("trackingInport")
     , outport_("outport")
-    , aperture_("aperture", "Aperture", 0.5f, 0.01f, 1.f, 0.01f)
-    , focusDepth_("focusDepth", "Focus depth", 8.f, 1.0f, 15.0f, 0.1f)
+    , aperture_("aperture", "Aperture", 0.5, 0.01, 1., 0.01)
+    , focusDepth_("focusDepth", "Focus depth", 8., 1.0, 15.0, 0.1)
     , manualFocus_("manualFocus", "Manual focus", true)
     , approximate_("approximate", "Approximate", false)
     , viewCountExact_("viewCountExact", "View count", 40, 10, 200)
@@ -111,7 +111,8 @@ void DepthOfField::clickToFocus(Event* e) {
 }
 
 void DepthOfField::process() {
-    int maxEvalCount = approximate_ ? viewCountApprox_.get() : viewCountExact_.get();
+    int maxEvalCount =
+        static_cast<int>(approximate_ ? viewCountApprox_.get() : viewCountExact_.get());
     std::shared_ptr<const Image> img = inport_.getData();
     size2_t dim = img->getDimensions();
     TextureUnitContainer cont;
@@ -222,8 +223,8 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
             res.second = (v < 1) ? std::max(acc.second, v) : acc.second;
             return res;
         });
-    float minDepthWorld = ndcToWorldDepth(minmax.first);
-    float maxDepthWorld = ndcToWorldDepth(minmax.second);
+    const auto minDepthWorld = ndcToWorldDepth(minmax.first);
+    const auto maxDepthWorld = ndcToWorldDepth(minmax.second);
 
     dispatchFront([this, minDepthWorld, maxDepthWorld]() {
         NetworkLock lock(this);
@@ -232,9 +233,9 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
                         std::max(maxDepthWorld, focusDepth_.get()),
                         (maxDepthWorld - minDepthWorld) / 100.0);
 
-        int depthScale = floor(log10(minDepthWorld));
-        float minAperture = pow(10, depthScale - 1);
-        float maxAperture = pow(10, depthScale);
+        int depthScale = static_cast<int>(floor(log10(minDepthWorld)));
+        double minAperture = pow(10, depthScale - 1);
+        double maxAperture = pow(10, depthScale);
         aperture_.set(aperture_.get(), std::min(minAperture, aperture_.get()),
                       std::max(maxAperture, aperture_.get()), (maxAperture - minAperture) / 90.0);
 
@@ -258,10 +259,12 @@ double DepthOfField::calculateFocusDepth() {
 
 vec2 DepthOfField::calculatePeripheralCameraPos(int evalCount, int maxEvalCount) {
     if (evalCount == 0) {
-        return vec2(0, 0);
+        return vec2(0.0f, 0.0f);
     } else {
-        float currAngle = 2.0 * M_PI * (float(evalCount) - 0.5) / float(maxEvalCount - 1);
-        return aperture_.get() / 2.0 * vec2(glm::cos(currAngle), glm::sin(currAngle));
+        double currAngle = 2.0 * M_PI * (static_cast<double>(evalCount) - 0.5) /
+                           static_cast<double>(maxEvalCount - 1);
+        return static_cast<vec2>(aperture_.get() / 2.0 *
+                                 dvec2(glm::cos(currAngle), glm::sin(currAngle)));
     }
 }
 
@@ -297,15 +300,15 @@ void DepthOfField::warpToLightfieldGPU(TextureUnitContainer& cont, double fovy, 
     utilgl::bindAndSetUniforms(addToLightFieldShader_, cont, *haltonImg_, "halton",
                                ImageType::ColorOnly);
 
-    addToLightFieldShader_.setUniform("nearClip", float(camera_.getNearPlaneDist()));
-    addToLightFieldShader_.setUniform("farClip", float(camera_.getFarPlaneDist()));
-    addToLightFieldShader_.setUniform("evalCount", int(evalCount_));
-    addToLightFieldShader_.setUniform("aperture", float(aperture_.get()));
-    addToLightFieldShader_.setUniform("nViews", int(viewCountApprox_.get()));
-    addToLightFieldShader_.setUniform("nSimViews", int(simViewCountApprox_.get()));
-    addToLightFieldShader_.setUniform("fovy", float(fovy));
-    addToLightFieldShader_.setUniform("focusDepth", float(focusDepth));
-    addToLightFieldShader_.setUniform("dim", vec2(dim));
+    addToLightFieldShader_.setUniform("nearClip", static_cast<float>(camera_.getNearPlaneDist()));
+    addToLightFieldShader_.setUniform("farClip", static_cast<float>(camera_.getFarPlaneDist()));
+    addToLightFieldShader_.setUniform("evalCount", static_cast<int>(evalCount_));
+    addToLightFieldShader_.setUniform("aperture", static_cast<float>(aperture_.get()));
+    addToLightFieldShader_.setUniform("nViews", static_cast<int>(viewCountApprox_.get()));
+    addToLightFieldShader_.setUniform("nSimViews", static_cast<int>(simViewCountApprox_.get()));
+    addToLightFieldShader_.setUniform("fovy", static_cast<float>(fovy));
+    addToLightFieldShader_.setUniform("focusDepth", static_cast<float>(focusDepth));
+    addToLightFieldShader_.setUniform("dim", static_cast<vec2>(dim));
     addToLightFieldShader_.setUniform("cameraPos", cameraPos);
 
     lightFieldGL->getTexture()->bind();
@@ -316,16 +319,18 @@ void DepthOfField::warpToLightfieldGPU(TextureUnitContainer& cont, double fovy, 
     if (evalCount_ == 0) {
         // Warp central (first) view to all simulated views to approximate the view from each point.
         addToLightFieldShader_.setUniform("segmentStart", 0);
-        glDispatchCompute(dim.x, dim.y, simViewCountApprox_.get());
+        glDispatchCompute(static_cast<GLuint>(dim.x), static_cast<GLuint>(dim.y),
+                          static_cast<GLuint>(simViewCountApprox_.get()));
     } else {
         // Warp peripheral views to a circle segment of simulated views to fill visibility holes
         // left after warping the central view.
-        double segmentWidth =
+        const double segmentWidth =
             double(simViewCountApprox_.get()) / double(viewCountApprox_.get() - 1);
-        int start = (evalCount_ - 1) * segmentWidth;
-        int stop = evalCount_ * segmentWidth;
+        const int start = static_cast<int>((evalCount_ - 1) * segmentWidth);
+        const int stop = static_cast<int>(evalCount_ * segmentWidth);
         addToLightFieldShader_.setUniform("segmentStart", start);
-        glDispatchCompute(dim.x, dim.y, stop - start);
+        glDispatchCompute(static_cast<GLuint>(dim.x), static_cast<GLuint>(dim.y),
+                          static_cast<GLuint>(stop - start));
     }
 
     addToLightFieldShader_.deactivate();
@@ -359,10 +364,10 @@ void DepthOfField::warpToLightfieldCPU(std::shared_ptr<const Image> img, double 
             } else {
                 // Warp peripheral views to a circle segment of simulated views to fill visibility
                 // holes left after warping the central view.
-                double segmentWidth =
+                const double segmentWidth =
                     double(simViewCountApprox_.get()) / double(viewCountApprox_.get() - 1);
-                int start = (evalCount_ - 1) * segmentWidth;
-                int stop = evalCount_ * segmentWidth;
+                const int start = static_cast<int>((evalCount_ - 1) * segmentWidth);
+                const int stop = static_cast<int>(evalCount_ * segmentWidth);
                 for (int i = start; i < stop; i++) {
                     warp(cameraPos, screenPos, color, zWorld, i, lightField, lightFieldDepth, fovy,
                          focusDepth);
@@ -427,9 +432,9 @@ void DepthOfField::moveCamera(SkewedPerspectiveCamera* camera, int maxEvalCount,
     if (approximate_) {
         offset = calculatePeripheralCameraPos(evalCount_ + 1, maxEvalCount);
     } else {
-        float radius = aperture_.get() / 2.0 * sqrt(haltonX_[evalCount_]);
-        float angle = 2.0 * M_PI * haltonY_[evalCount_];
-        offset = radius * vec2(glm::cos(angle), glm::sin(angle));
+        double radius = aperture_.get() / 2.0 * sqrt(haltonX_[evalCount_]);
+        double angle = 2.0 * M_PI * haltonY_[evalCount_];
+        offset = static_cast<vec2>(radius * dvec2(glm::cos(angle), glm::sin(angle)));
     }
     camera->setOffset(offset);
 }

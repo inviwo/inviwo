@@ -487,6 +487,7 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     tb(H("Code"), processor_->getCodeState());
     tb(H("Tags"), processor_->getTags().getString());
     tb(H("Ready"), processor_->isReady() ? "Yes" : "No");
+    tb(H("Valid"), processor_->getInvalidationLevel());
     tb(H("Source"), processor_->isSource() ? "Yes" : "No");
     tb(H("Sink"), processor_->isSink() ? "Yes" : "No");
 

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PATHLINES_H
-#define IVW_PATHLINES_H
+#pragma once
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
@@ -82,5 +80,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PATHLINES_H

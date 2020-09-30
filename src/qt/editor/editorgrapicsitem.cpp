@@ -173,7 +173,8 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     // otherwise we might loose focus and the tooltip will go away...
     qApp->processEvents();
 
-    showToolTipHelper(e, utilqt::toLocalQString(doc));
+    const std::string info = doc;
+    showToolTipHelper(e, utilqt::toLocalQString(info));
 }
 
 }  // namespace inviwo

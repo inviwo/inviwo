@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ANIMATIONCONTROLLER_H
-#define IVW_ANIMATIONCONTROLLER_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/timer.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
@@ -106,7 +104,11 @@ public:
     const AnimationPlaySettings& getRenderingSettings() const { return settingsRendering_; }
     Seconds getCurrentTime() const;
 
-    InviwoApplication* getInviwoApplication() { return app_; }
+    InviwoApplication* getInviwoApplication() override { return app_; }
+
+    virtual void resetAllPoperties() override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     CompositeProperty playOptions;
     OptionPropertyInt playWindowMode;
@@ -188,5 +190,3 @@ protected:
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_ANIMATIONCONTROLLER_H

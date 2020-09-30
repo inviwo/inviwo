@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STREAMRIBBONS_H
-#define IVW_STREAMRIBBONS_H
+#pragma once
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -82,5 +81,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_STREAMRIBBONS_H

@@ -30,6 +30,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     src/canvasprocessorwidgetqt.cpp
+    src/canvasqt.cpp
     src/canvasqopenglwidget.cpp
     src/hiddencanvasqt.cpp
     src/openglqtcapabilities.cpp
@@ -47,8 +48,6 @@ ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
 target_link_libraries(inviwo-module-openglqt PRIVATE Qt5::OpenGL Qt5::Svg)
 
 ivw_deploy_qt(inviwo-module-openglqt)
-
-ivw_compile_optimize_on_target(inviwo-module-openglqt)
 
 ivw_make_package(InviwoOpenGLQtModule inviwo-module-openglqt)
 ivw_qt_add_to_install(qt_modules Qt5OpenGL)

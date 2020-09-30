@@ -27,14 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FRAMEBUFFEROBJECT_H
-#define IVW_FRAMEBUFFEROBJECT_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/texture/texture2darray.h>
 #include <modules/opengl/texture/texture3d.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <vector>
 
 namespace inviwo {
@@ -44,7 +44,7 @@ class IVW_MODULE_OPENGL_API FrameBufferObject {
 public:
     FrameBufferObject();
     FrameBufferObject(const FrameBufferObject&) = delete;
-    FrameBufferObject(FrameBufferObject&& rhs);
+    FrameBufferObject(FrameBufferObject&& rhs) noexcept;
     FrameBufferObject& operator=(const FrameBufferObject&) = delete;
     FrameBufferObject& operator=(FrameBufferObject&& rhs) noexcept;
     ~FrameBufferObject();
@@ -200,8 +200,8 @@ private:
     GLint prevFbo_;
     GLint prevDrawFbo_;
     mutable GLint prevReadFbo_;
+
+    Canvas::ContextID creationContext_ = nullptr;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FRAMEBUFFEROBJECT_H

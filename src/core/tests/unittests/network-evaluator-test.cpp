@@ -253,7 +253,7 @@ TEST(NetworkEvaluator, Error) {
         a->invalidate(InvalidationLevel::InvalidOutput);
         EXPECT_EQ(throwCount, 1);
         ai.checkAndReset(0, 1, 0);
-        bi.checkAndReset(0, 1, 0);
+        bi.checkAndReset(0, 0, 1);
     }
 }
 

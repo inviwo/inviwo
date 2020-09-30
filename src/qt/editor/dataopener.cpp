@@ -84,7 +84,8 @@ public:
             auto use = new QCheckBox(utilqt::toQString(visualizer->getName()));
             useVisualuzers.push_back(use);
             mainLayout->addWidget(use, ++row, 0, 1, 1);
-            auto text = new QLabel(utilqt::toQString(visualizer->getDescription()));
+            const std::string info = visualizer->getDescription();
+            auto text = new QLabel(utilqt::toQString(info));
             text->setWordWrap(true);
             mainLayout->addWidget(text, row, 1, 1, 1);
         }

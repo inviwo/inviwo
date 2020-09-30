@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LIC3D_H
-#define IVW_LIC3D_H
+#pragma once
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -51,7 +49,7 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void preProcess(TextureUnitContainer &cont) override;
+    virtual void preProcess(TextureUnitContainer& cont) override;
     virtual void postProcess() override;
 
 protected:
@@ -72,5 +70,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LIC3D_H

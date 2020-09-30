@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LAYERRAMSUBSET_H
-#define IVW_LAYERRAMSUBSET_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
@@ -121,7 +119,9 @@ std::shared_ptr<LayerRAMPrecision<U>> extractLayerSubSet(const LayerRAMPrecision
         std::fill(dst, dst + dstDim.x * dstDim.y, U(0));
     }
     // memcpy each row to form sub layer
+#ifdef IVW_USE_OPENMP
 #pragma omp parallel for
+#endif
     for (int j = 0; j < copyExtent.y; j++) {
         size_t srcPos = (j + srcOffset.y) * srcDim.x + srcOffset.x;
         size_t dstPos = (j + dstOffset.y) * dstDim.x + dstOffset.x;
@@ -150,5 +150,3 @@ std::shared_ptr<LayerRAMPrecision<T>> util::layerSubSet(const Layer* in, ivec2 o
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_LAYERRAMSUBSET_H

@@ -75,6 +75,10 @@ void addDataFrameColumnHelper(json::value_t valueType, std::string header, DataF
             throw JSONConversionException(
                 "Value was discarded by the the parser callback function");
             break;
+        case json::value_t::binary:
+            // Not supported
+            throw JSONConversionException("Binary elements is unsupported");
+            break;
     }
 }
 
@@ -139,6 +143,10 @@ void from_json(const json& j, DataFrame& df) {
             case json::value_t::discarded:  ///< discarded by the the parser callback function
                 throw JSONConversionException(
                     "Value was discarded by the the parser callback function");
+                break;
+            case json::value_t::binary:
+                // Not supported
+                throw JSONConversionException("Binary elements is unsupported");
                 break;
         }
     }

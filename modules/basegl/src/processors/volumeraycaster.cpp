@@ -51,7 +51,7 @@ const ProcessorInfo VolumeRaycaster::processorInfo_{
 };
 
 VolumeRaycaster::VolumeRaycaster()
-    : Processor()
+    : PoolProcessor()
     , shader_("raycasting.frag", false)
     , volumePort_("volume")
     , entryPort_("entry")
@@ -132,36 +132,30 @@ void VolumeRaycaster::initializeResources() {
 
 void VolumeRaycaster::process() {
     if (volumePort_.isChanged()) {
-        auto newVolume = volumePort_.getData();
-
-        if (newVolume->hasRepresentation<VolumeGL>()) {
-            loadedVolume_ = newVolume;
-        } else {
-            notifyObserversStartBackgroundWork(this, 1);
-            dispatchPool([this, newVolume]() {
-                RenderContext::getPtr()->activateLocalRenderContext();
-                newVolume->getRep<kind::GL>();
+        dispatchOne(
+            [volume = volumePort_.getData()]() {
+                volume->getRep<kind::GL>();
                 glFinish();
-                dispatchFront([this, newVolume]() {
-                    loadedVolume_ = newVolume;
-                    notifyObserversFinishBackgroundWork(this, 1);
-                    invalidate(InvalidationLevel::InvalidOutput);
-                });
+                return volume;
+            },
+            [this](std::shared_ptr<const Volume> volume) {
+                raycast(*volume);
+                newResults();
             });
-        }
+    } else {
+        raycast(*volumePort_.getData());
     }
+}
 
-    if (!loadedVolume_) return;
-    if (!loadedVolume_->hasRepresentation<VolumeGL>()) {
-        LogWarn("No GL rep !!!");
-        return;
+void VolumeRaycaster::raycast(const Volume& volume) {
+    if (!volume.getRep<kind::GL>()) {
+        throw Exception("Could not find VolumeGL representation", IVW_CONTEXT);
     }
-
     utilgl::activateAndClearTarget(outport_);
     shader_.activate();
 
     TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(shader_, units, *loadedVolume_, "volume");
+    utilgl::bindAndSetUniforms(shader_, units, volume, "volume");
     utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);

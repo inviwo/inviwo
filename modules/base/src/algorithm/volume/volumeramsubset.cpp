@@ -29,7 +29,94 @@
 
 #include <modules/base/algorithm/volume/volumeramsubset.h>
 
+#ifdef IVW_USE_OPENMP
+#include <omp.h>
+#endif
+
 namespace inviwo {
+
+namespace detail {
+
+struct VolumeRAMSubSetDispatcher {
+    using type = std::shared_ptr<VolumeRAM>;
+    template <typename Result, typename T>
+    std::shared_ptr<VolumeRAM> operator()(const VolumeRepresentation* in, size3_t dim,
+                                          size3_t offset, const VolumeBorders& border,
+                                          bool clampBorderOutsideVolume);
+};
+
+template <typename Result, typename DataType>
+std::shared_ptr<VolumeRAM> VolumeRAMSubSetDispatcher::operator()(const VolumeRepresentation* in,
+                                                                 size3_t dim, size3_t offset,
+                                                                 const VolumeBorders& border,
+                                                                 bool clampBorderOutsideVolume) {
+    using T = typename DataType::type;
+
+    const VolumeRAMPrecision<T>* volume = dynamic_cast<const VolumeRAMPrecision<T>*>(in);
+    if (!volume) return nullptr;
+
+    // determine parameters
+    const size3_t dataDims{volume->getDimensions()};
+    const size3_t copyDataDims{static_cast<size3_t>(glm::max(
+        static_cast<ivec3>(dim) -
+            glm::max(static_cast<ivec3>(offset + dim) - static_cast<ivec3>(dataDims), ivec3(0)),
+        ivec3(0)))};
+
+    ivec3 newOffset_Dims = static_cast<ivec3>(glm::min(offset, dataDims) - border.llf);
+    VolumeBorders trueBorder = VolumeBorders();
+    VolumeBorders correctBorder = border;
+
+    if (clampBorderOutsideVolume) {
+        correctBorder.llf += static_cast<size3_t>(-glm::min(newOffset_Dims, ivec3(0, 0, 0)));
+        correctBorder.urb += static_cast<size3_t>(
+            -glm::min(static_cast<ivec3>(dataDims) -
+                          static_cast<ivec3>(offset + copyDataDims + correctBorder.urb),
+                      ivec3(0, 0, 0)));
+        newOffset_Dims = static_cast<ivec3>(offset - correctBorder.llf);
+    } else {
+        trueBorder.llf = static_cast<size3_t>(-glm::min(newOffset_Dims, ivec3(0, 0, 0)));
+        trueBorder.urb = static_cast<size3_t>(
+            glm::max(static_cast<ivec3>(offset + copyDataDims + correctBorder.urb) -
+                         static_cast<ivec3>(dataDims),
+                     ivec3(0, 0, 0)));
+    }
+
+    size3_t newOffset_DimsU = static_cast<size3_t>(glm::max(newOffset_Dims, ivec3(0, 0, 0)));
+    size_t initialStartPos = (newOffset_DimsU.z * (dataDims.x * dataDims.y)) +
+                             (newOffset_DimsU.y * dataDims.x) + newOffset_DimsU.x;
+    size3_t dimsWithBorder = dim + correctBorder.llf + correctBorder.urb;
+    size3_t copyDimsWithoutBorder = static_cast<size3_t>(
+        glm::max(static_cast<ivec3>(copyDataDims + correctBorder.llf + correctBorder.urb) -
+                     static_cast<ivec3>(trueBorder.llf) - static_cast<ivec3>(trueBorder.urb),
+                 ivec3(1, 1, 1)));
+    // per row
+    size_t dataSize =
+        copyDimsWithoutBorder.x * static_cast<size_t>(volume->getDataFormat()->getSize());
+    // allocate space
+    auto newVolume =
+        std::make_shared<VolumeRAMPrecision<T>>(dim + correctBorder.llf + correctBorder.urb);
+
+    const T* src = static_cast<const T*>(volume->getData());
+    T* dst = static_cast<T*>(newVolume->getData());
+    // memcpy each row for every slice to form sub volume
+
+    for (int i = 0; i < static_cast<int>(copyDimsWithoutBorder.z); i++) {
+#ifdef IVW_USE_OPENMP
+#pragma omp parallel for
+#endif
+        for (int j = 0; j < static_cast<int>(copyDimsWithoutBorder.y); j++) {
+            size_t volumePos = (j * dataDims.x) + (i * dataDims.x * dataDims.y);
+            size_t subVolumePos = ((j + trueBorder.llf.y) * dimsWithBorder.x) +
+                                  ((i + trueBorder.llf.z) * dimsWithBorder.x * dimsWithBorder.y) +
+                                  trueBorder.llf.x;
+            std::memcpy(dst + subVolumePos, (src + volumePos + initialStartPos), dataSize);
+        }
+    }
+
+    return newVolume;
+}
+
+}  // namespace detail
 
 std::shared_ptr<VolumeRAM> VolumeRAMSubSet::apply(const VolumeRepresentation* in, size3_t dim,
                                                   size3_t offset,

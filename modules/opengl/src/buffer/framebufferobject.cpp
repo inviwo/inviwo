@@ -30,10 +30,27 @@
 #include <modules/opengl/buffer/framebufferobject.h>
 #include <inviwo/core/util/assertion.h>
 
-#define IS_ACTIVE_CHECK_ATTACH IVW_ASSERT(isActive(), "FBO not active when attaching texture")
-#define IS_ACTIVE_CHECK_DETACH IVW_ASSERT(isActive(), "FBO not active when detaching texture")
+#include <fmt/format.h>
+#include <string_view>
 
 namespace inviwo {
+
+using namespace std::literals;
+
+inline void checkContext(std::string_view error, Canvas::ContextID org, SourceLocation loc) {
+    if constexpr (cfg::assertions) {
+        auto rc = RenderContext::getPtr();
+        Canvas::ContextID curr = rc->activeContext();
+        if (org != curr) {
+
+            const auto message =
+                fmt::format("{}: '{}' ({}) than it was created: '{}' ({})", error,
+                            rc->getContextName(curr), curr, rc->getContextName(org), org);
+
+            assertion(loc.getFile(), loc.getFunction(), loc.getLine(), message);
+        }
+    }
+}
 
 const std::array<GLenum, 16> FrameBufferObject::colorAttachmentEnums_ = {
     GL_COLOR_ATTACHMENT0,  GL_COLOR_ATTACHMENT1,  GL_COLOR_ATTACHMENT2,  GL_COLOR_ATTACHMENT3,
@@ -50,6 +67,9 @@ FrameBufferObject::FrameBufferObject()
     , prevDrawFbo_(0u)
     , prevReadFbo_(0u) {
 
+    creationContext_ = RenderContext::getPtr()->activeContext();
+    IVW_ASSERT(creationContext_, "A OpenGL Context has to be active");
+
     glGenFramebuffers(1, &id_);
     glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorattachments_);
 
@@ -57,7 +77,7 @@ FrameBufferObject::FrameBufferObject()
     buffersInUse_.resize(maxColorattachments_, false);
 }
 
-FrameBufferObject::FrameBufferObject(FrameBufferObject&& rhs)
+FrameBufferObject::FrameBufferObject(FrameBufferObject&& rhs) noexcept
     : id_(rhs.id_)
     , hasDepthAttachment_(rhs.hasDepthAttachment_)
     , hasStencilAttachment_(rhs.hasStencilAttachment_)
@@ -94,6 +114,8 @@ FrameBufferObject& FrameBufferObject::operator=(FrameBufferObject&& rhs) noexcep
 }
 
 FrameBufferObject::~FrameBufferObject() {
+    checkContext("FBO deleted in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
+
     deactivate();
     glDeleteFramebuffers(1, &id_);
 }
@@ -105,6 +127,9 @@ void FrameBufferObject::activate() {
     if (static_cast<GLint>(id_) != currentFbo) {
         // store currently bound FBO
         prevFbo_ = currentFbo;
+
+        checkContext("FBO activated in a different context"sv, creationContext_,
+                     IVW_SOURCE_LOCATION);
 
         glBindFramebuffer(GL_FRAMEBUFFER, id_);
         LGL_ERROR;
@@ -126,6 +151,7 @@ void FrameBufferObject::deactivate() {
 }
 
 bool FrameBufferObject::isActive() const {
+    checkContext("FBO used in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
     GLint currentFbo = 0;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFbo);
     return (static_cast<GLint>(id_) == currentFbo);
@@ -136,13 +162,13 @@ void FrameBufferObject::deactivateFBO() { glBindFramebuffer(GL_FRAMEBUFFER, 0); 
 /******************************* 2D Texture *****************************************/
 
 void FrameBufferObject::attachTexture(Texture2D* texture, GLenum attachmentID) {
-    IS_ACTIVE_CHECK_ATTACH;
+    IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     performAttachTexture(attachmentID);
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_2D, texture->getID(), 0);
 }
 
 GLenum FrameBufferObject::attachColorTexture(Texture2D* texture) {
-    IS_ACTIVE_CHECK_ATTACH;
+    IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID)) {
         glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_2D, texture->getID(), 0);
@@ -152,7 +178,7 @@ GLenum FrameBufferObject::attachColorTexture(Texture2D* texture) {
 
 GLenum FrameBufferObject::attachColorTexture(Texture2D* texture, int attachmentNumber,
                                              bool attachFromRear, int forcedLocation) {
-    IS_ACTIVE_CHECK_ATTACH;
+    IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
         glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_2D, texture->getID(), 0);
@@ -163,13 +189,13 @@ GLenum FrameBufferObject::attachColorTexture(Texture2D* texture, int attachmentN
 /******************************* 2D Array Texture *****************************************/
 
 void FrameBufferObject::attachTexture(Texture2DArray* texture, GLenum attachmentID) {
-    IS_ACTIVE_CHECK_ATTACH;
+    IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     performAttachTexture(attachmentID);
     glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
 }
 
 GLenum FrameBufferObject::attachColorTexture(Texture2DArray* texture) {
-    IS_ACTIVE_CHECK_ATTACH;
+    IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID)) {
         glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
@@ -179,7 +205,7 @@ GLenum FrameBufferObject::attachColorTexture(Texture2DArray* texture) {
 
 GLenum FrameBufferObject::attachColorTexture(Texture2DArray* texture, int attachmentNumber,
                                              bool attachFromRear, int forcedLocation) {
-    IS_ACTIVE_CHECK_ATTACH;
+    IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
         glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
@@ -189,13 +215,13 @@ GLenum FrameBufferObject::attachColorTexture(Texture2DArray* texture, int attach
 
 void FrameBufferObject::attachTextureLayer(Texture2DArray* texture, GLenum attachmentID, int layer,
                                            int level) {
-    IS_ACTIVE_CHECK_ATTACH;
+    IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     performAttachTexture(attachmentID);
     glFramebufferTextureLayer(GL_FRAMEBUFFER, attachmentID, texture->getID(), level, layer);
 }
 
 GLenum FrameBufferObject::attachColorTextureLayer(Texture2DArray* texture, int layer) {
-    IS_ACTIVE_CHECK_ATTACH;
+    IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID)) {
         glFramebufferTextureLayer(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0, layer);
@@ -206,7 +232,7 @@ GLenum FrameBufferObject::attachColorTextureLayer(Texture2DArray* texture, int l
 GLenum FrameBufferObject::attachColorTextureLayer(Texture2DArray* texture, int attachmentNumber,
                                                   int layer, bool attachFromRear,
                                                   int forcedLocation) {
-    IS_ACTIVE_CHECK_ATTACH;
+    IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
         glFramebufferTextureLayer(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0, layer);
@@ -217,13 +243,13 @@ GLenum FrameBufferObject::attachColorTextureLayer(Texture2DArray* texture, int a
 /******************************* 3D Texture *****************************************/
 
 void FrameBufferObject::attachTexture(Texture3D* texture, GLenum attachmentID) {
-    IS_ACTIVE_CHECK_ATTACH;
+    IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     performAttachTexture(attachmentID);
     glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
 }
 
 GLenum FrameBufferObject::attachColorTexture(Texture3D* texture) {
-    IS_ACTIVE_CHECK_ATTACH;
+    IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID)) {
         glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
@@ -233,7 +259,7 @@ GLenum FrameBufferObject::attachColorTexture(Texture3D* texture) {
 
 GLenum FrameBufferObject::attachColorTexture(Texture3D* texture, int attachmentNumber,
                                              bool attachFromRear, int forcedLocation) {
-    IS_ACTIVE_CHECK_ATTACH;
+    IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
         glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
@@ -242,13 +268,13 @@ GLenum FrameBufferObject::attachColorTexture(Texture3D* texture, int attachmentN
 }
 
 void FrameBufferObject::attachTextureLayer(Texture3D* texture, GLenum attachmentID, int layer) {
-    IS_ACTIVE_CHECK_ATTACH;
+    IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     performAttachTexture(attachmentID);
     glFramebufferTexture3D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_3D, texture->getID(), 0, layer);
 }
 
 GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int layer) {
-    IS_ACTIVE_CHECK_ATTACH;
+    IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID)) {
         glFramebufferTexture3D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_3D, texture->getID(), 0,
@@ -260,7 +286,7 @@ GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int layer)
 GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int attachmentNumber,
                                                   int layer, bool attachFromRear,
                                                   int forcedLocation) {
-    IS_ACTIVE_CHECK_ATTACH;
+    IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
         glFramebufferTexture3D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_3D, texture->getID(), 0,
@@ -270,7 +296,7 @@ GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int attach
 }
 
 void FrameBufferObject::detachTexture(GLenum attachmentID) {
-    IS_ACTIVE_CHECK_DETACH;
+    IVW_ASSERT(isActive(), "FBO not active when detaching texture");
     if (attachmentID == GL_DEPTH_ATTACHMENT) {
         hasDepthAttachment_ = false;
     } else if (attachmentID == GL_STENCIL_ATTACHMENT) {
@@ -299,7 +325,7 @@ void FrameBufferObject::detachTexture(GLenum attachmentID) {
 }
 
 void FrameBufferObject::detachAllTextures() {
-    IS_ACTIVE_CHECK_DETACH;
+    IVW_ASSERT(isActive(), "FBO not active when detaching texture");
     detachTexture(GL_DEPTH_ATTACHMENT);
     detachTexture(GL_STENCIL_ATTACHMENT);
 
@@ -370,6 +396,10 @@ void FrameBufferObject::checkStatus() {
 void FrameBufferObject::setRead_Blit(bool set) const {
     if (set) {  // store currently bound draw FBO
         glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &prevReadFbo_);
+
+        checkContext("FBO activated in a different context"sv, creationContext_,
+                     IVW_SOURCE_LOCATION);
+
         glBindFramebuffer(GL_READ_FRAMEBUFFER, id_);
     } else {
         GLint currentReadFbo;
@@ -383,6 +413,10 @@ void FrameBufferObject::setRead_Blit(bool set) const {
 void FrameBufferObject::setDraw_Blit(bool set) {
     if (set) {  // store currently bound draw FBO
         glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &prevDrawFbo_);
+
+        checkContext("FBO activated in a different context"sv, creationContext_,
+                     IVW_SOURCE_LOCATION);
+
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id_);
     } else {
         GLint currentDrawFbo;

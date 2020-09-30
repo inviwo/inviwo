@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VECTOR2DDIVERGENCE_H
-#define IVW_VECTOR2DDIVERGENCE_H
+#pragma once
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/shader/shader.h>
@@ -55,5 +53,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VECTOR2DDIVERGENCE_H

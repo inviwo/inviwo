@@ -50,6 +50,8 @@
 #include <QLocale>
 #include <warn/pop>
 
+#include <string_view>
+
 class QFontMetrics;
 
 namespace inviwo {
@@ -93,7 +95,8 @@ IVW_MODULE_QTWIDGETS_API std::ios_base& localizeStream(std::ios_base& stream);
 /**
  * \brief convert a std::string to a localized QString using the currently set system locale
  */
-IVW_MODULE_QTWIDGETS_API QString toLocalQString(const std::string&);
+IVW_MODULE_QTWIDGETS_API QString toLocalQString(std::string_view str);
+IVW_MODULE_QTWIDGETS_API QString toLocalQString(std::string str);
 /**
  * \brief convert a QString to a localized 8bit std::string
  */
@@ -102,7 +105,9 @@ IVW_MODULE_QTWIDGETS_API std::string fromLocalQString(const QString& input);
 /**
  * \brief create a QString from a UTF8-encoded std::string
  */
-IVW_MODULE_QTWIDGETS_API QString toQString(const std::string&);
+IVW_MODULE_QTWIDGETS_API QString toQString(const std::string_view str);
+IVW_MODULE_QTWIDGETS_API QString toQString(const std::string str);
+
 /**
  * \brief create a UTF8-encoded std::string from a QString
  */

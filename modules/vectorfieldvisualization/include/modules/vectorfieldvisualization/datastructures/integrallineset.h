@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INTEGRALLINESET_H
-#define IVW_INTEGRALLINESET_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <modules/vectorfieldvisualization/datastructures/integralline.h>
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/ports/datainport.h>
@@ -40,11 +38,6 @@
 
 namespace inviwo {
 
-/**
- * \class IntegralLineSet
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineSet {
 public:
     enum class SetIndex { Yes, No };
@@ -109,5 +102,3 @@ struct DataTraits<IntegralLineSet> {
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_INTEGRALLINESET_H

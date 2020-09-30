@@ -34,6 +34,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <sstream>
 #include <vector>
 #include <chrono>
@@ -92,7 +93,9 @@ IVW_CORE_API std::string fromWstring(const std::wstring& str);
  * @param delimeter The character use for splitting (default to space)
  * @return a vector containing the substrings
  */
-IVW_CORE_API std::vector<std::string> splitString(const std::string& str, char delimeter = ' ');
+IVW_CORE_API std::vector<std::string> splitString(std::string_view str, char delimeter = ' ');
+IVW_CORE_API std::vector<std::string_view> splitStringView(std::string_view str,
+                                                           char delimeter = ' ');
 
 template <typename T>
 std::string joinString(const std::vector<T>& str, std::string delimeter = " ") {
@@ -108,7 +111,7 @@ std::string joinString(Iterator begin, Iterator end, std::string delimeter = " "
     return ss.str();
 }
 
-IVW_CORE_API std::string htmlEncode(const std::string& data);
+IVW_CORE_API std::string htmlEncode(std::string_view data);
 
 IVW_CORE_API std::vector<std::string> splitStringWithMultipleDelimiters(
     const std::string& str, std::vector<char> delimiters = std::vector<char>());
@@ -133,6 +136,9 @@ IVW_CORE_API std::string ltrim(std::string s);
 IVW_CORE_API std::string rtrim(std::string s);
 // trim from both ends
 IVW_CORE_API std::string trim(std::string s);
+
+// trim from both ends
+IVW_CORE_API std::string_view trim(std::string_view s);
 
 IVW_CORE_API std::string dotSeperatedToPascalCase(const std::string& s);
 IVW_CORE_API std::string camelCaseToHeader(const std::string& s);

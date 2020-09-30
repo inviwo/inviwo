@@ -123,7 +123,6 @@ void MultichannelRaycaster::initializeResources() {
 }
 
 void MultichannelRaycaster::process() {
-    LGL_ERROR;
     utilgl::activateAndClearTarget(outport_);
     shader_.activate();
 
@@ -146,7 +145,6 @@ void MultichannelRaycaster::process() {
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
-    LGL_ERROR;
 }
 
 void MultichannelRaycaster::deserialize(Deserializer& d) {

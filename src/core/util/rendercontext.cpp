@@ -32,26 +32,20 @@
 
 namespace inviwo {
 
-class DefaultContextHolder : public ContextHolder {
-public:
-    DefaultContextHolder(Canvas* canvas) : canvas_{canvas} {}
-    virtual void activate() override { return canvas_->activate(); }
-    virtual std::unique_ptr<Canvas> createHiddenCanvas() override {
-        return canvas_->createHiddenCanvas();
-    }
-    virtual Canvas::ContextID activeContext() const override { return canvas_->activeContext(); }
-    Canvas* canvas_;
-};
-
 RenderContext* RenderContext::instance_ = nullptr;
 
 ContextHolder* RenderContext::setDefaultRenderContext(Canvas* canvas) {
-    return setDefaultRenderContext(std::make_unique<DefaultContextHolder>(canvas));
+    if (canvas) {
+        return setDefaultRenderContext(std::make_unique<CanvasContextHolder>(canvas));
+    } else {
+        return setDefaultRenderContext(std::unique_ptr<ContextHolder>{});
+    }
 }
 
 ContextHolder* RenderContext::setDefaultRenderContext(std::unique_ptr<ContextHolder> context) {
     defaultContext_ = std::move(context);
     mainThread_ = std::this_thread::get_id();
+
     return defaultContext_.get();
 }
 
@@ -103,14 +97,16 @@ void RenderContext::clearContext() {
     }
 }
 
-void RenderContext::registerContext(Canvas* canvas, const std::string& name) {
+void RenderContext::registerContext(Canvas::ContextID id, std::string_view name,
+                                    std::unique_ptr<ContextHolder> context) {
     std::unique_lock<std::mutex> lock(mutex_);
-    contextRegistry_[canvas->contextId()] = {name, canvas, std::this_thread::get_id()};
+    contextRegistry_[id] =
+        ContextInfo{std::string(name), std::this_thread::get_id(), std::move(context)};
 }
 
-void RenderContext::unRegisterContext(Canvas* canvas) {
+void RenderContext::unRegisterContext(Canvas::ContextID id) {
     std::unique_lock<std::mutex> lock(mutex_);
-    contextRegistry_.erase(canvas->contextId());
+    contextRegistry_.erase(id);
 }
 
 std::string RenderContext::getContextName(Canvas::ContextID id) const {
@@ -119,25 +115,15 @@ std::string RenderContext::getContextName(Canvas::ContextID id) const {
     if (it != contextRegistry_.end()) {
         return it->second.name;
     } else {
-        return "";
+        return "Unknown";
     }
 }
 
-void RenderContext::setContextName(Canvas::ContextID id, const std::string& name) {
+void RenderContext::setContextName(Canvas::ContextID id, std::string_view name) {
     std::unique_lock<std::mutex> lock(mutex_);
     auto it = contextRegistry_.find(id);
     if (it != contextRegistry_.end()) {
         it->second.name = name;
-    }
-}
-
-Canvas* RenderContext::getCanvas(Canvas::ContextID id) const {
-    std::unique_lock<std::mutex> lock(mutex_);
-    auto it = contextRegistry_.find(id);
-    if (it != contextRegistry_.end()) {
-        return it->second.canvas;
-    } else {
-        return nullptr;
     }
 }
 
@@ -166,5 +152,17 @@ Canvas::ContextID RenderContext::activeContext() const {
 ContextHolder* RenderContext::getDefaultRenderContext() { return defaultContext_.get(); }
 
 bool RenderContext::hasDefaultRenderContext() const { return defaultContext_ != nullptr; }
+
+CanvasContextHolder::CanvasContextHolder(Canvas* canvas) : canvas_{canvas} {}
+
+void CanvasContextHolder::activate() { return canvas_->activate(); }
+
+std::unique_ptr<Canvas> CanvasContextHolder::createHiddenCanvas() {
+    return canvas_->createHiddenCanvas();
+}
+
+Canvas::ContextID CanvasContextHolder::activeContext() const { return canvas_->activeContext(); }
+
+Canvas::ContextID CanvasContextHolder::contextId() const { return canvas_->contextId(); }
 
 }  // namespace inviwo

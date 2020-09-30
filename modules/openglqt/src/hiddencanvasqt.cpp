@@ -30,6 +30,7 @@
 #include <modules/openglqt/hiddencanvasqt.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <modules/opengl/openglcapabilities.h>
 
 #include <warn/push>
@@ -40,9 +41,11 @@
 #include <QThread>
 #include <warn/pop>
 
+#include <atomic>
+
 namespace inviwo {
 
-HiddenCanvasQt::HiddenCanvasQt(QSurfaceFormat format)
+HiddenCanvasQt::HiddenCanvasQt(std::string_view name, QSurfaceFormat format)
     : Canvas(size2_t{0})
     , context_{new QOpenGLContext()}
     , offScreenSurface_{new QOffscreenSurface()} {
@@ -50,8 +53,13 @@ HiddenCanvasQt::HiddenCanvasQt(QSurfaceFormat format)
     offScreenSurface_->setFormat(format);
     offScreenSurface_->create();
     context_->setShareContext(QOpenGLContext::globalShareContext());
+
+    RenderContext::getPtr()->registerContext(contextId(), name,
+                                             std::make_unique<CanvasContextHolder>(this));
 }
 HiddenCanvasQt::~HiddenCanvasQt() {
+    RenderContext::getPtr()->unRegisterContext(contextId());
+
     delete context_;
     delete offScreenSurface_;
 }
@@ -68,10 +76,14 @@ void HiddenCanvasQt::activate() { context_->makeCurrent(offScreenSurface_); }
 std::unique_ptr<Canvas> HiddenCanvasQt::createHiddenCanvas() { return createHiddenQtCanvas(); }
 
 std::unique_ptr<Canvas> HiddenCanvasQt::createHiddenQtCanvas() {
+    static std::atomic<int> hiddenContextCount = 0;
+    const auto contextNumber = hiddenContextCount++;
+    const auto name = "Background Context " + toString(contextNumber);
+
     auto thread = QThread::currentThread();
     // The context has to be created on the main thread.
-    auto res = dispatchFront([&thread]() {
-        auto canvas = std::make_unique<HiddenCanvasQt>();
+    auto res = dispatchFront([&thread, name]() {
+        auto canvas = std::make_unique<HiddenCanvasQt>(name);
         canvas->getContext()->moveToThread(thread);
         return canvas;
     });
@@ -79,15 +91,14 @@ std::unique_ptr<Canvas> HiddenCanvasQt::createHiddenQtCanvas() {
     auto newContext = res.get();
     // OpenGL can be initialized in this thread
     newContext->initializeGL();
-    RenderContext::getPtr()->setContextThreadId(newContext->contextId(),
-                                                std::this_thread::get_id());
-    return std::move(newContext);
+
+    return newContext;
 }
 
 Canvas::ContextID HiddenCanvasQt::activeContext() const {
     return static_cast<ContextID>(QOpenGLContext::currentContext());
 }
-Canvas::ContextID HiddenCanvasQt::contextId() const { return static_cast<ContextID>(&context_); }
+Canvas::ContextID HiddenCanvasQt::contextId() const { return static_cast<ContextID>(context_); }
 
 void HiddenCanvasQt::releaseContext() {
     context_->doneCurrent();

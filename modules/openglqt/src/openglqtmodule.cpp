@@ -53,7 +53,10 @@
 namespace inviwo {
 
 OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
-    : InviwoModule(app, "OpenGLQt"), ProcessorNetworkEvaluationObserver() {
+    : InviwoModule{app, "OpenGLQt"}
+    , ProcessorNetworkEvaluationObserver{}
+    , sharedCanvas_{"DefaultContext"} {
+
     if (!qApp) {
         throw ModuleInitException("QApplication must be constructed before OpenGLQtModule",
                                   IVW_CONTEXT);

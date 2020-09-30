@@ -109,10 +109,8 @@ void ProcessorNetworkEvaluator::evaluate() {
                     if (processor->getInvalidationLevel() >= InvalidationLevel::InvalidResources) {
                         processor->initializeResources();
                     }
-
                 } catch (...) {
                     exceptionHandler_(processor, EvaluationType::InitResource, IVW_CONTEXT);
-                    processor->setValid();
                     continue;
                 }
 
@@ -123,7 +121,6 @@ void ProcessorNetworkEvaluator::evaluate() {
                     }
                 } catch (...) {
                     exceptionHandler_(processor, EvaluationType::PortOnChange, IVW_CONTEXT);
-                    processor->setValid();
                     continue;
                 }
 
@@ -133,14 +130,15 @@ void ProcessorNetworkEvaluator::evaluate() {
                     IVW_CPU_PROFILING_IF(500, "Processed " << processor->getIdentifier());
                     // do the actual processing
                     processor->process();
+
+                    // Set processor as valid only if we still are ready.
+                    // Callbacks might have made our inports invalid, if so abort
+                    // the evaluation by not setting the processor valid.
+                    if (processor->isReady()) processor->setValid();
+
                 } catch (...) {
                     exceptionHandler_(processor, EvaluationType::Process, IVW_CONTEXT);
                 }
-
-                // Set processor as valid only if we still are ready.
-                // Callbacks might have made our inports invalid, if so abort
-                // the evaluation by not setting the processor valid.
-                if (processor->isReady()) processor->setValid();
 
                 processor->notifyObserversFinishedProcess(processor);
 

@@ -128,8 +128,8 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    void setAllPropertiesCurrentStateAsDefault();
-    void resetAllPoperties();
+    virtual void setAllPropertiesCurrentStateAsDefault();
+    virtual void resetAllPoperties();
 
     virtual void invokeEvent(Event* event) override;
 

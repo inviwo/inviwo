@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SEED3DTO4D_H
-#define IVW_SEED3DTO4D_H
+#pragma once
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>
@@ -57,5 +55,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SEED3DTO4D_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_RBFVECTORFIELDGENERATOR3D_H
-#define IVW_RBFVECTORFIELDGENERATOR3D_H
+#pragma once
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/imageport.h>
@@ -79,5 +77,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_RBFVECTORFIELDGENERATOR3D_H
