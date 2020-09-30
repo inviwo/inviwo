@@ -71,7 +71,7 @@ public:
     void setLastTime(const Seconds timeValue);
 
     /// Returns the number of frames to be rendered between firstTime and lastTime given the
-    /// current @framesPerSecond.
+    /// current framesPerSecond.
     int getNumFrames() const;
 
     /** Sets the number of frames to be rendered between firstTime and lastTime, and adjusts
@@ -88,7 +88,7 @@ public:
     double getFramesPerSecond() const;
 
     /** Sets the frames per second for the animation playback, and adjusts numFrames accordingly.
-     *  The smallest @framesPerSecond is 1e-3, as an arbitrary but positive, non-zero minimum.
+     *  The smallest framesPerSecond is 1e-3, as an arbitrary but positive, non-zero minimum.
      *  @returns true on success.
      */
     bool setFramesPerSecond(const double desiredFPS);
