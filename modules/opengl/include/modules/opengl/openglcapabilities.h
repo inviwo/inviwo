@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENGLCAPABILITIES_H
-#define IVW_OPENGLCAPABILITIES_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/util/capabilities.h>
@@ -181,4 +180,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_OPENGLCAPABILITIES_H

@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/opengl/inviwoopengl.h>  // Special needs to be first since GLEW
+
 
 #include <modules/openglqt/canvasqopenglwidget.h>
 #include <inviwo/core/datastructures/image/layerram.h>
@@ -35,7 +35,6 @@
 #include <modules/opengl/openglcapabilities.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/util/rendercontext.h>
-#include <modules/opengl/debugmessages.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -75,7 +74,7 @@ void CanvasQOpenGLWidget::initializeGL() {
 
     RenderContext::getPtr()->registerContext(contextId(), name_,
                                              std::make_unique<CanvasContextHolder>(this));
-    utilgl::handleOpenGLDebugMode(activeContext());
+    setupDebug();
 }
 
 void CanvasQOpenGLWidget::glSwapBuffers() {
