@@ -27,8 +27,6 @@
  *
  *********************************************************************************/
 
-
-
 #include <modules/openglqt/canvasqopenglwidget.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/common/inviwoapplication.h>
