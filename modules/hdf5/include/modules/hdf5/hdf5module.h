@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HDF55MODULE_H
-#define IVW_HDF55MODULE_H
+#pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -42,5 +41,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_HDF55MODULE_H

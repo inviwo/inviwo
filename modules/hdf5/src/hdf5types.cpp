@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/hdf5/hdf5types.h>
+#include <inviwo/core/util/logcentral.h>
 
 namespace inviwo {
 

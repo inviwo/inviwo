@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HDF5PORT_H
-#define IVW_HDF5PORT_H
+#pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
 #include <inviwo/core/ports/datainport.h>
@@ -45,5 +44,3 @@ using Outport = DataOutport<Handle>;
 }  // namespace hdf5
 
 }  // namespace inviwo
-
-#endif  // IVW_HDF5PORT_H

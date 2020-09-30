@@ -14,6 +14,7 @@ catch-semantic-changed            | *no*               | *no*                 | 
 char-subscripts                   | *same* (3.2)       | *same* (3.4)         | *no*              
 class-memaccess                   | *no*               | *same* (8)           | *no*              
 conditional-uninitialized         | *same* (3.2)       | *no*                 | *no*              
+const-zero-init                   | *no*               | *no*                 | C4268 (13)        
 constant-conditional              | *no*               | *no*                 | C4127 (13)        
 constant-conversion               | *same* (3.2)       | *no*                 | *no*              
 conversion                        | *same* (3.2)       | *same* (3.4)         | C4244 (13)        
