@@ -36,7 +36,7 @@ RenderContext* RenderContext::instance_ = nullptr;
 
 ContextHolder* RenderContext::setDefaultRenderContext(Canvas* canvas) {
     if (canvas) {
-        return setDefaultRenderContext(std::make_unique<DefaultContextHolder>(canvas));
+        return setDefaultRenderContext(std::make_unique<CanvasContextHolder>(canvas));
     } else {
         return setDefaultRenderContext(std::unique_ptr<ContextHolder>{});
     }
@@ -152,5 +152,17 @@ Canvas::ContextID RenderContext::activeContext() const {
 ContextHolder* RenderContext::getDefaultRenderContext() { return defaultContext_.get(); }
 
 bool RenderContext::hasDefaultRenderContext() const { return defaultContext_ != nullptr; }
+
+CanvasContextHolder::CanvasContextHolder(Canvas* canvas) : canvas_{canvas} {}
+
+void CanvasContextHolder::activate() { return canvas_->activate(); }
+
+std::unique_ptr<Canvas> CanvasContextHolder::createHiddenCanvas() {
+    return canvas_->createHiddenCanvas();
+}
+
+Canvas::ContextID CanvasContextHolder::activeContext() const { return canvas_->activeContext(); }
+
+Canvas::ContextID CanvasContextHolder::contextId() const { return canvas_->contextId(); }
 
 }  // namespace inviwo

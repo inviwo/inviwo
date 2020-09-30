@@ -89,7 +89,7 @@ CanvasGLFW::CanvasGLFW(const std::string& windowTitle, uvec2 dimensions)
     glfwSetWindowPosCallback(glWindow_, move);
 
     RenderContext::getPtr()->registerContext(contextId(), windowTitle,
-                                             std::make_unique<DefaultContextHolder>(this));
+                                             std::make_unique<CanvasContextHolder>(this));
 }
 
 CanvasGLFW::~CanvasGLFW() {

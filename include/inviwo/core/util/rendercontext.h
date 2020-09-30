@@ -48,16 +48,13 @@ public:
     virtual Canvas::ContextID contextId() const = 0;
 };
 
-class DefaultContextHolder : public ContextHolder {
+class IVW_CORE_API CanvasContextHolder : public ContextHolder {
 public:
-    DefaultContextHolder(Canvas* canvas) : canvas_{canvas} {}
-    virtual void activate() override { return canvas_->activate(); }
-    virtual std::unique_ptr<Canvas> createHiddenCanvas() override {
-        return canvas_->createHiddenCanvas();
-    }
-    virtual Canvas::ContextID activeContext() const override { return canvas_->activeContext(); }
-
-    virtual Canvas::ContextID contextId() const override { return canvas_->contextId(); }
+    CanvasContextHolder(Canvas* canvas);
+    virtual void activate() override;
+    virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
+    virtual Canvas::ContextID activeContext() const override;
+    virtual Canvas::ContextID contextId() const override;
 
     Canvas* canvas_;
 };

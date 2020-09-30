@@ -55,7 +55,7 @@ HiddenCanvasQt::HiddenCanvasQt(std::string_view name, QSurfaceFormat format)
     context_->setShareContext(QOpenGLContext::globalShareContext());
 
     RenderContext::getPtr()->registerContext(contextId(), name,
-                                             std::make_unique<DefaultContextHolder>(this));
+                                             std::make_unique<CanvasContextHolder>(this));
 }
 HiddenCanvasQt::~HiddenCanvasQt() {
     RenderContext::getPtr()->unRegisterContext(contextId());

@@ -377,8 +377,10 @@ template <typename Result, typename Done>
 inline void PoolProcessor::callDone(
     InviwoApplication* app, std::shared_ptr<pool::detail::StateTemplate<Result, Done>> state) {
     static const auto done = [](PoolProcessor& p, auto state) {
+        // This code will run in the main thread, make sure the default context is active
         RenderContext::getPtr()->activateDefaultRenderContext();
         try {
+            // The Done call callback should be callable with the Result type
             if constexpr (std::is_same_v<Result, void>) {
                 for (auto& res : state->futures) {
                     res.get();
@@ -448,6 +450,7 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
         state->futures.push_back(task->get_future());
         sub.tasks.emplace_back([state, task, app]() {
             if (!state->stop) {
+                // This code will run in a background thread, make sure the local context is active
                 RenderContext::getPtr()->activateLocalRenderContext();
                 (*task)();
             }

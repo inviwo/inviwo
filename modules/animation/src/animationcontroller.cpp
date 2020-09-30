@@ -295,7 +295,9 @@ void AnimationController::render() {
                     desiredDims = renderSize.get();
                     break;
                 }
-                default: { ivwAssert(false, "Should not happen."); }
+                default: {
+                    ivwAssert(false, "Should not happen.");
+                }
             }
             // - adjust basic dimensions to the aspect ratio
             if (renderAspectRatio.get() > 0) {
@@ -507,19 +509,22 @@ void AnimationController::resetAllPoperties() {
 
 void AnimationController::serialize(Serializer& s) const {
     PropertyOwner::serialize(s);
-    s.serialize("renderImageExtension", renderImageExtension.getSelectedIndex());
+    if (renderImageExtension.size() > 0) {
+        s.serialize("renderImageExtension", renderImageExtension.getSelectedValue());
+    }
 }
 
 void AnimationController::deserialize(Deserializer& d) {
     PropertyOwner::deserialize(d);
 
     const auto options = imageExts(app_);
-    auto selectedIndex = imageExtIndex(app_, defaultImageExt);
+    std::string selectedValue{defaultImageExt};
 
-    d.deserialize("renderImageExtension", selectedIndex);
+    d.deserialize("renderImageExtension", selectedValue);
 
     renderImageExtension.replaceOptions(options);
-    renderImageExtension.setSelectedIndex(selectedIndex);
+    renderImageExtension.setSelectedValue(selectedValue);
+    renderImageExtension.setCurrentStateAsDefault();
 }
 
 }  // namespace animation

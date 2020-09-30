@@ -74,7 +74,7 @@ void CanvasQOpenGLWidget::initializeGL() {
     QOpenGLWidget::initializeGL();
 
     RenderContext::getPtr()->registerContext(contextId(), name_,
-                                             std::make_unique<DefaultContextHolder>(this));
+                                             std::make_unique<CanvasContextHolder>(this));
     utilgl::handleOpenGLDebugMode(activeContext());
 }
 
