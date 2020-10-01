@@ -83,6 +83,7 @@ public:
     virtual void serialize(Serializer& d) const override;
     virtual void deserialize(Deserializer& d) override;
 private:
+	static std::mutex mutex_;
 	enum TestingState {
 		NONE,
 		GATHERING,
@@ -110,8 +111,10 @@ private:
 	void onProcessorNetworkDidRemoveConnection(const PortConnection&) override;
 
 	void updateProcessors();
-	std::unordered_map<Processor*, std::shared_ptr<TestPropertyComposite>> processors_;
-	decltype(processors_) inactiveProcessors; // currently disconnected processors
+	using ProcessorTestPropertyMap =
+		std::map<Processor*, std::shared_ptr<TestPropertyComposite>>;
+	ProcessorTestPropertyMap processors_; // currently connected processors
+	ProcessorTestPropertyMap inactiveProcessors; // currently disconnected processors
 
 	std::vector<std::shared_ptr<TestProperty>> props_; // Properties to test
 	void resetAllProps();

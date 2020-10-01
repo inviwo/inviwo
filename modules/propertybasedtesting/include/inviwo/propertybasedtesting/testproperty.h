@@ -64,7 +64,6 @@ protected:
 	}
 public:
 	virtual BoolCompositeProperty* getBoolComp() const;
-	virtual BoolCompositeProperty* copyBoolComp();
 
 	virtual std::string getValueString(std::shared_ptr<TestResult>) const = 0;
 
@@ -90,7 +89,7 @@ public:
 
 std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop);
 
-void makeOnChange(BoolCompositeProperty* prop);
+void makeOnChange(BoolCompositeProperty* const prop);
 
 // for PropertyOwners which support getDisplayName and getIdentifier (i.e.
 // Properties and Processors)
@@ -218,6 +217,8 @@ class TestPropertyFactory : public Factory<TestProperty> {
 	static const std::unordered_map<std::string, std::function<std::unique_ptr<TestProperty>()>> members;
 public:
 	std::unique_ptr<TestProperty> create(const std::string& key) const override {
+		std::cerr << "TestPropertyFactory::create(" << key << ") : " << members.count(key) << std::endl;
+		assert(members.count(key) > 0);
 		return members.at(key)();
 	}
 	bool hasKey(const std::string& key) const override {

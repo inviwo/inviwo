@@ -43,6 +43,8 @@
 
 namespace inviwo {
 
+std::mutex Histogram::mutex_;
+
 template<typename T>
 std::ostream& operator<<(std::ostream& out, const std::vector<T>& v);
 template<typename A, typename B>
@@ -82,31 +84,36 @@ const ProcessorInfo Histogram::processorInfo_{
 const ProcessorInfo Histogram::getProcessorInfo() const { return processorInfo_; }
 
 void Histogram::resetAllProps() {
+	const std::lock_guard<std::mutex> lock(mutex_);
+
 	for(auto prop : props_) {
 		prop->setToDefault();
 	}
 }
 
 void Histogram::onProcessorNetworkDidAddConnection(const PortConnection& conn) {
+	const std::lock_guard<std::mutex> lock(mutex_);
+
 	ProcessorNetworkObserver::onProcessorNetworkDidAddConnection(conn);
 	updateProcessors();
 }
 void Histogram::onProcessorNetworkDidRemoveConnection(const PortConnection& conn) {
+	const std::lock_guard<std::mutex> lock(mutex_);
+
 	ProcessorNetworkObserver::onProcessorNetworkDidRemoveConnection(conn);
 	updateProcessors();
 }
 void Histogram::updateProcessors() {
-	std::cerr << this << "->updateProcessors()" << std::endl;
-
+	std::cerr << "UPDATE_PROCESSOR" << std::endl;
 	processors_.insert(inactiveProcessors.begin(), inactiveProcessors.end());
 	inactiveProcessors.clear();
 
 	std::unordered_set<Processor*> visitedProcessors;
 	for(Processor* const processor : util::getPredecessors(this)) {
 		if(processor == this) continue;
-		std::cerr << "visiting processor " << processor << " "
-			<< processor->getIdentifier() << " " <<
-			(processors_.count(processor) > 0 ? "known" : "new") << std::endl;
+		//std::cerr << "visiting processor " << processor << " "
+		//	<< processor->getIdentifier() << " " <<
+		//	(processors_.count(processor) > 0 ? "known" : "new") << std::endl;
 		visitedProcessors.insert(processor);
 	}
 
@@ -115,17 +122,22 @@ void Histogram::updateProcessors() {
 	for(const auto& [processor,testProp] : processors_) {
 		if(!visitedProcessors.count(processor)) { // processor no longer visited
 			processorsToRemove.insert(processor);
-		} else if(testProp->getBoolComp()->getOwner() == nullptr) { // add to this
-			std::cerr << " adding " << testProp->getBoolComp() << std::endl;
-			this->addProperty(testProp->getBoolComp());
+		} else { // make visible again
+			testProp->getBoolComp()->setVisible(true);
 		}
 	}
 	for(const auto& processor : processorsToRemove) {
 		const auto& testProp = processors_.at(processor);
-		std::cerr << " removing " << testProp->getBoolComp() << std::endl;
+		//std::cerr << " removing " << testProp->getBoolComp() << std::endl;
 
-		removeProperty(testProp->copyBoolComp());
-		testProp->getBoolComp()->setOwner(nullptr);
+		std::cerr << "testProp = " << testProp << std::endl;
+		std::cerr << "testProp->getBoolComp() = " << testProp->getBoolComp() << std::endl;
+		testProp->getBoolComp()->setVisible(false);
+		//auto tmp = removeProperty(testProp->getBoolComp());
+		////std::cerr << "tmp = " << tmp << ", tmp->getOwner() = " << tmp->getOwner() << std::endl;
+		//assert(tmp != nullptr);
+		//assert(tmp == testProp->getBoolComp());
+		//assert(tmp->getOwner() == nullptr);
 
 		inactiveProcessors.emplace(processor, testProp);
 		processors_.erase(processor);
@@ -133,15 +145,15 @@ void Histogram::updateProcessors() {
 	
 	// add newly connected processors
 	for(const auto& processor : visitedProcessors) {
-		std::cerr << processor << " "
-			<< processor->getIdentifier() << ": "
-			<< processors_.count(processor) << std::endl;
+		//std::cerr << processor << " "
+		//	<< processor->getIdentifier() << ": "
+		//	<< processors_.count(processor) << std::endl;
 		if(processors_.count(processor) == 0) {
-			std::vector<std::pair<BoolCompositeProperty*, std::shared_ptr<TestProperty>>> props;
+			std::vector<std::shared_ptr<TestProperty>> props;
 			for(Property* prop : processor->getProperties()) {
 				if(std::optional<std::shared_ptr<TestProperty>> p = testableProperty(prop);
 						p != std::nullopt) {
-					props.emplace_back(nullptr, *p);
+					props.emplace_back(*p);
 				}
 			}
 
@@ -151,13 +163,13 @@ void Histogram::updateProcessors() {
 
 			auto comp = TestPropertyComposite::make<Processor>(processor);
 			processors_.emplace(processor, comp);
-			std::cerr << processor->getDisplayName() << ": " << props.size() << std::endl;
+			//std::cerr << processor->getDisplayName() << ": " << props.size() << std::endl;
 
-			this->addProperty(comp->getBoolComp());
+			addProperty(comp->getBoolComp());
 		}
 	}
 
-	std::cerr << std::endl;
+	//std::cerr << std::endl;
 }
 
 Histogram::Histogram(InviwoApplication* app)
@@ -174,7 +186,7 @@ Histogram::Histogram(InviwoApplication* app)
 	, startButton_("startButton", "Update Test Results")
 	, numTests_("numTests", "Maximum number of tests", 200, 1, 10000) {
 
-	std::cerr << "Histogram(app=" << app << ")" << std::endl;
+	//std::cerr << "Histogram(app=" << app << ")" << std::endl;
 
 	countPixelsButton_.onChange([this]() {
 			NetworkLock lock(this);
@@ -222,15 +234,21 @@ Histogram::Histogram(InviwoApplication* app)
 }
 
 void Histogram::serialize(Serializer& s) const {
+	const std::lock_guard<std::mutex> lock(mutex_);
+
 	Processor::serialize(s);
 
 	std::cerr << "Histogram::serialize()" << std::endl;
 
 	std::vector<Processor*> processors;
-	std::vector<TestPropertyComposite*> testProperties;
+	std::vector<TestProperty*> testProperties;
 	for(auto[proc, test] : processors_) {
 		processors.emplace_back(proc);
-		testProperties.emplace_back(test.get());
+		testProperties.emplace_back(static_cast<TestProperty*>(test.get()));
+	}
+	for(auto[proc, test] : inactiveProcessors) {
+		processors.emplace_back(proc);
+		testProperties.emplace_back(static_cast<TestProperty*>(test.get()));
 	}
 	s.serialize("Processors", processors);
 	std::cerr << "\tserialized " << processors.size() << " processors" << std::endl;
@@ -239,6 +257,8 @@ void Histogram::serialize(Serializer& s) const {
 }
 
 void Histogram::deserialize(Deserializer& d) {
+	const std::lock_guard<std::mutex> lock(mutex_);
+
 	Processor::deserialize(d);
 
 	std::cerr << this << "->Histogram::deserialize()" << std::endl;
@@ -250,11 +270,27 @@ void Histogram::deserialize(Deserializer& d) {
 	d.deserialize("TestProperties", testProperties);
 	std::cerr << "\tdeserialized " << testProperties.size() << " testProperties: " << testProperties << std::endl;
 	assert(processors.size() == testProperties.size());
+
+	inactiveProcessors.insert(processors_.begin(), processors_.end());
+	processors_.clear();
+	const auto old = inactiveProcessors;
+	std::cerr << "old.size() = " << old.size() << std::endl;
+
+	ProcessorTestPropertyMap keep;
 	for(size_t i = 0; i < processors.size(); i++) {
-		TestPropertyComposite* const tmp = dynamic_cast<TestPropertyComposite*>(testProperties[i]);
+		TestPropertyComposite* tmp = dynamic_cast<TestPropertyComposite*>(testProperties[i]);
 		assert(tmp != nullptr);
-		inactiveProcessors.emplace(processors[i], std::shared_ptr<TestPropertyComposite>(tmp));
+		assert(keep.count(processors[i]) == 0);
+		if(old.count(processors[i]) == 0) {
+			keep.emplace(processors[i], std::shared_ptr<TestPropertyComposite>(tmp));
+		} else {
+			keep.emplace(processors[i], old.at(processors[i]));
+			assert(keep.at(processors[i]).get() == tmp);
+		}
 	}
+	std::cerr << "keep.size() = " << keep.size() << std::endl;
+
+	inactiveProcessors = keep;
 }
 
 void Histogram::initTesting() {
@@ -374,8 +410,6 @@ void Histogram::checkTestResults() {
 	std::vector< TestingError > errors;
 
 	size_t numComparable = 0;
-	std::array<size_t,7> cnt;
-	std::fill_n(cnt.begin(), 7, 0);
 
 	for(size_t tRi = 0; tRi < testResults.size(); tRi++) {
 		const auto& testResult = testResults[tRi];
@@ -399,42 +433,8 @@ void Histogram::checkTestResults() {
 
 			const auto num = testResult->getNumberOfPixels();
 			const auto otherNum = otherTestResult->getNumberOfPixels();
-			bool ok;
 
-			switch(*propEff) {
-				case util::PropertyEffect::ANY:
-					ok = true;
-					cnt[0]++;
-					break;
-				case util::PropertyEffect::NOT_EQUAL:
-					ok = (num != otherNum);
-					cnt[1]++;
-					break;
-				case util::PropertyEffect::EQUAL:
-					ok = (num == otherNum);
-					cnt[2]++;
-					break;
-				case util::PropertyEffect::LESS:
-					ok = (num < otherNum);
-					cnt[3]++;
-					break;
-				case util::PropertyEffect::LESS_EQUAL:
-					ok = (num <= otherNum);
-					cnt[4]++;
-					break;
-				case util::PropertyEffect::GREATER:
-					ok = (num > otherNum);
-					cnt[5]++;
-					break;
-				case util::PropertyEffect::GREATER_EQUAL:
-					ok = (num >= otherNum);
-					cnt[6]++;
-					break;
-				default:
-					assert(false);
-					break;
-			}
-
+			const bool ok = util::propertyEffectComparator(*propEff, num, otherNum);
 			if(!ok) {
 				errors.emplace_back( testResult, otherTestResult, *propEff, num, otherNum );
 			}
@@ -544,6 +544,8 @@ size_t countPixels(std::shared_ptr<const Image> img, const dvec4& col, const boo
 }
 
 void Histogram::process() {
+	const std::lock_guard<std::mutex> lock(mutex_);
+
 	auto img = inport_.getData();
 
 	switch(testingState) {

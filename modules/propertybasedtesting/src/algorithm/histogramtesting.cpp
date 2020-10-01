@@ -5,25 +5,18 @@ namespace inviwo {
 namespace util {
 
 std::ostream& operator<<(std::ostream& out, const PropertyEffect& a) {
-	switch(a) {
-		case PropertyEffect::EQUAL:
-			return out << "EQUAL";
-		case PropertyEffect::NOT_EQUAL:
-			return out << "NOT_EQUAL";
-		case PropertyEffect::LESS:
-			return out << "LESS";
-		case PropertyEffect::LESS_EQUAL:
-			return out << "LESS_EQUAL";
-		case PropertyEffect::GREATER:
-			return out << "GREATER";
-		case PropertyEffect::GREATER_EQUAL:
-			return out << "GREATER_EQUAL";
-		case PropertyEffect::ANY:
-			return out << "ANY";
-		case PropertyEffect::NOT_COMPARABLE:
-			return out << "NOT_COMPARABLE";
-	}
-	return out << "ERROR<<PropertyEffect";
+	static const std::string names[] = {
+		"EQUAL",
+		"NOT_EQUAL",
+		"LESS",
+		"LESS_EQUAL",
+		"GREATER",
+		"GREATER_EQUAL",
+		"ANY",
+		"NOT_COMPARABLE"
+	};
+	assert(static_cast<size_t>(a) < numPropertyEffects);
+	return out << names[static_cast<size_t>(a)];
 }
 
 std::optional<PropertyEffect> combine(const PropertyEffect& a, const PropertyEffect& b) {
@@ -53,7 +46,7 @@ std::optional<PropertyEffect> combine(const PropertyEffect& a, const PropertyEff
 }
 
 const PropertyEffect& reverseEffect(const PropertyEffect& pe) {
-	assert(pe != PropertyEffect::Count);
+	assert(static_cast<size_t>(pe) < numPropertyEffects);
 	const static std::array<PropertyEffect, numPropertyEffects> reverseEffects {
 			PropertyEffect::EQUAL,			// EQUAL
 			PropertyEffect::NOT_EQUAL,		// NOT_EQUAL

@@ -34,12 +34,6 @@ namespace inviwo {
 BoolCompositeProperty* TestProperty::getBoolComp() const {
 	return boolComp;
 }
-BoolCompositeProperty* TestProperty::copyBoolComp() {
-	auto res = boolComp;
-	boolComp = boolComp->clone();
-	makeOnChange(boolComp);
-	return res;
-}
 TestProperty::TestProperty(const std::string& displayName, const std::string& identifier)
 		: displayName(displayName)
 		, identifier(identifier)
@@ -143,25 +137,37 @@ void TestPropertyComposite::serialize(Serializer& s) const {
 	std::cerr << "\tserializing TestPropertyComposite: " << getIdentifier() << std::endl;
 
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+	s.serialize("identifier", identifier, SerializationTarget::Attribute);
 
-	bool propertyOwnerIsProcessor = (dynamic_cast<Processor*>(propertyOwner) != nullptr);
-	s.serialize("PropertyOwnerIsProcessor", propertyOwnerIsProcessor);
-	s.serialize("PropertyOwner", propertyOwner);
+	{
+		const Processor* propertyOwnerProc = dynamic_cast<Processor*>(propertyOwner);
+		const bool propertyOwnerIsProcessor = (propertyOwnerProc != nullptr);
+		s.serialize("PropertyOwnerIsProcessor", propertyOwnerIsProcessor);
+		if(propertyOwnerIsProcessor) {
+			s.serialize("PropertyOwner", propertyOwnerProc);
+		} else {
+			const Property* propertyOwnerProp = dynamic_cast<Property*>(propertyOwner);
+			assert(propertyOwnerProp != nullptr);
+			s.serialize("PropertyOwner", propertyOwnerProp);
+		}
+	}
 
 	s.serialize("DisplayName", displayName);
-	s.serialize("Identifier", identifier);
+	assert(boolComp != nullptr);
 	s.serialize("BoolComp", boolComp);
 
 	{
 		std::vector<TestProperty*> subProps;
 		for(const auto& sp : subProperties) {
-			std::cerr << "\t\tsp " << sp.get() << " : " << sp->getIdentifier() << std::endl;
 			subProps.emplace_back(sp.get());
+			assert(subProps.back() != nullptr);
 		}
 		s.serialize("SubProperties", subProps);
 	}
 }
 void TestPropertyComposite::deserialize(Deserializer& d) {
+	d.deserialize("identifier", identifier, SerializationTarget::Attribute);
+
 	bool propertyOwnerIsProcessor;
 	d.deserialize("PropertyOwnerIsProcessor", propertyOwnerIsProcessor);
 	if(propertyOwnerIsProcessor) {
@@ -177,19 +183,26 @@ void TestPropertyComposite::deserialize(Deserializer& d) {
 	assert(propertyOwner != nullptr);
 
 	d.deserialize("DisplayName", displayName);
-	d.deserialize("Identifier", identifier);
 	d.deserialize("BoolComp", boolComp);
+	assert(boolComp != nullptr);
 	makeOnChange(boolComp);
 
 	{
 		std::vector<TestProperty*> subProps;
+		std::map<TestProperty*, decltype(subProperties)::value_type> old;
+		std::transform(subProperties.begin(), subProperties.end(), std::inserter(old, old.end()),
+				[](const auto& a) { return std::make_pair(a.get(), a); });
+		std::vector<decltype(subProperties)::value_type> des;
+
 		d.deserialize("SubProperties", subProps);
-		for(const auto& sp : subProps)
-			subProperties.emplace_back(std::shared_ptr<TestProperty>(sp));
-		std::cerr << "deserializing TestPropertyComposite : " << getIdentifier() << std::endl
-			<< "\t\tsubProps.size()=" << subProps.size() << std::endl;
-		for(auto sp : subProperties)
-			std::cerr << "\t\t; " << sp.get() << " : " << sp->getIdentifier() << std::endl;
+		for(TestProperty* const sp : subProps) {
+			if(old.count(sp) == 0)
+				des.emplace_back(std::shared_ptr<TestProperty>(sp));
+			else
+				des.emplace_back(old.at(sp));
+		}
+
+		subProperties = des;
 	}
 }
 
@@ -293,21 +306,24 @@ std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 
 template<typename T>
 void TestPropertyTyped<T>::serialize(Serializer& s) const {
+	std::cerr << "\tserializing " << getClassIdentifier() << ": " << getIdentifier() << std::endl;
+
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+	s.serialize("identifier", identifier, SerializationTarget::Attribute);
 
 	s.serialize("TypedProperty", typedProperty);
 	s.serialize("DefaultValue", defaultValue);
 	s.serialize("DisplayName", displayName);
-	s.serialize("Identifier", identifier);
 	s.serialize("BoolComp", boolComp);
 	s.serialize("EffectOption", effectOption);
 }
 template<typename T>
 void TestPropertyTyped<T>::deserialize(Deserializer& d) {
+	d.deserialize("identifier", identifier, SerializationTarget::Attribute);
+
 	d.deserialize("TypedProperty", typedProperty);
 	d.deserialize("DefaultValue", defaultValue);
 	d.deserialize("DisplayName", displayName);
-	d.deserialize("Identifier", identifier);
 	d.deserialize("BoolComp", boolComp);
 	d.deserialize("EffectOption", effectOption);
 	std::cerr << "deserialized " << getClassIdentifier() << "@" << this << " : " << typedProperty->getIdentifier() << std::endl;
@@ -354,7 +370,7 @@ std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop) {
 	return res;
 }
 
-void makeOnChange(BoolCompositeProperty* prop) {
+void makeOnChange(BoolCompositeProperty* const prop) {
 	prop->onChange([prop](){
 			std::vector<BoolProperty*> subProps;
 			for(auto boolCompProp : prop->getPropertiesByType<BoolCompositeProperty>())

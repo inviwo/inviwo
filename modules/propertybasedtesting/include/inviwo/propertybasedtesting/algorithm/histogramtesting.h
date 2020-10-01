@@ -53,9 +53,32 @@ enum class PropertyEffect {
 	GREATER,
 	GREATER_EQUAL,
 	ANY,
-	NOT_COMPARABLE,
-	Count
+	NOT_COMPARABLE
 };
+constexpr size_t numPropertyEffects = 1 + static_cast<size_t>(PropertyEffect::NOT_COMPARABLE);
+
+template<typename A, typename B>
+bool propertyEffectComparator(const PropertyEffect& e, const A& a, const B& b) {
+	assert(static_cast<size_t>(e) < numPropertyEffects);
+	switch(e) {
+		case PropertyEffect::NOT_COMPARABLE:
+			return false;
+		case PropertyEffect::ANY:
+			return true;
+		case PropertyEffect::NOT_EQUAL:
+			return a != b;
+		case PropertyEffect::EQUAL:
+			return a == b;
+		case util::PropertyEffect::LESS:
+			return a < b;
+		case util::PropertyEffect::LESS_EQUAL:
+			return a <= b;
+		case util::PropertyEffect::GREATER:
+			return a > b;
+		case util::PropertyEffect::GREATER_EQUAL:
+			return a >= b;
+	}
+}
 
 std::ostream& operator<<(std::ostream& out, const PropertyEffect& a);
 
@@ -64,8 +87,6 @@ std::ostream& operator<<(std::ostream& out, const std::optional<T>& a) {
 	if(!a) return out << "{}";
 	return out << "{" << *a << "}";
 }
-
-constexpr size_t numPropertyEffects = (size_t)(PropertyEffect::Count);
 
 std::optional<PropertyEffect> combine(const PropertyEffect& a, const PropertyEffect& b);
 
