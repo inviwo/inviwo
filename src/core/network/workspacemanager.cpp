@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/inviwosetupinfo.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/serialization/serialization.h>
 
@@ -136,7 +137,10 @@ WorkspaceManager::WorkspaceManager(InviwoApplication* app) : app_(app) {}
 
 WorkspaceManager::~WorkspaceManager() = default;
 
-void WorkspaceManager::clear() { clears_.invoke(); }
+void WorkspaceManager::clear() {
+    RenderContext::getPtr()->activateDefaultRenderContext();
+    clears_.invoke();
+}
 
 void WorkspaceManager::save(std::ostream& stream, const std::string& refPath,
                             const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
@@ -153,7 +157,8 @@ void WorkspaceManager::save(std::ostream& stream, const std::string& refPath,
 
 void WorkspaceManager::load(std::istream& stream, const std::string& refPath,
                             const ExceptionHandler& exceptionHandler) {
-
+    RenderContext::getPtr()->activateDefaultRenderContext();
+    
     auto deserializer = createWorkspaceDeserializer(stream, refPath);
 
     InviwoSetupInfo info;

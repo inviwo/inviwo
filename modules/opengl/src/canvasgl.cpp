@@ -52,11 +52,12 @@ CanvasGL::CanvasGL(size2_t dimensions) : Canvas(dimensions) {}
 void CanvasGL::defaultGLState() {
     if (!OpenGLCapabilities::hasSupportedOpenGLVersion()) return;
 
+    LGL_ERROR;
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClearDepth(1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
+    LGL_ERROR;
 }
 
 void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, size_t idx) {

@@ -538,9 +538,10 @@ std::string ShaderObject::resolveLog(const std::string& compileLog) const {
 }
 
 void ShaderObject::upload() {
+    LGL_ERROR_CLASS;
     const char* source = sourceProcessed_.c_str();
     glShaderSource(id_, 1, &source, nullptr);
-    LGL_ERROR;
+    LGL_ERROR_CLASS;
 }
 
 bool ShaderObject::isReady() const {

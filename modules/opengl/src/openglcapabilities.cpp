@@ -211,7 +211,7 @@ void OpenGLCapabilities::initializeGLEW() {
             ss << "Failed to initialize GLEW: " << glewGetErrorString(glewError);
             throw OpenGLInitException(ss.str(), IVW_CONTEXT_CUSTOM("OpenGLCapabilities"));
         }
-        LGL_ERROR_SUPPRESS;
+        LGL_ERROR;
         glewInitialized_ = true;
     }
 }
