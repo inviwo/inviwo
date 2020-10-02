@@ -158,7 +158,7 @@ void WorkspaceManager::save(std::ostream& stream, const std::string& refPath,
 void WorkspaceManager::load(std::istream& stream, const std::string& refPath,
                             const ExceptionHandler& exceptionHandler) {
     RenderContext::getPtr()->activateDefaultRenderContext();
-    
+
     auto deserializer = createWorkspaceDeserializer(stream, refPath);
 
     InviwoSetupInfo info;
