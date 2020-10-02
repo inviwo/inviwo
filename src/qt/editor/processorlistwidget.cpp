@@ -587,7 +587,7 @@ static QString mimeType = "inviwo/ProcessorDragObject";
 
 ProcessorDragObject::ProcessorDragObject(QWidget* source, std::unique_ptr<Processor> processor)
     : QDrag(source) {
-    auto img = QPixmap::fromImage(utilqt::generateProcessorPreview(processor.get(), 0.8));
+    auto img = QPixmap::fromImage(utilqt::generateProcessorPreview(processor.get(), 1.0));
     setPixmap(img);
     auto mime = new ProcessorMimeData(std::move(processor));
     setMimeData(mime);

@@ -157,10 +157,10 @@ QImage utilqt::generateProcessorPreview(Processor* processor, double opacity) {
         scene->clearSelection();  // Selections would also render to the file
         // Re-shrink the scene to it's bounding contents
         scene->setSceneRect(scene->itemsBoundingRect().adjusted(-10.0, -padAbove, 10.0, padBelow));
-        QImage image(
-            scene->sceneRect().size().toSize(),
-            QImage::Format_ARGB32);   // Create the image with the exact size of the shrunk scene
-        image.fill(Qt::transparent);  // Start all pixels transparent
+        QImage image(scene->sceneRect().size().toSize(),
+                     QImage::Format_ARGB32_Premultiplied);  // Create the image with the exact size
+                                                            // of the shrunk scene
+        image.fill(Qt::transparent);                        // Start all pixels transparent
 
         QPainter painter(&image);
         painter.setRenderHints(QPainter::Antialiasing);
