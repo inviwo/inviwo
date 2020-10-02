@@ -314,7 +314,14 @@ IVW_CORE_API vec3 Luv2XYZ(const vec3& Luv, vec3 whitePointXYZ = getD65WhitePoint
  * See https://doc.qt.io/qt-5/qcolor.html#lighter
  */
 IVW_CORE_API vec3 lighter(const vec3& rgb, float factor = 1.5f);
+/**
+ * \overload vec4 lighter(const vec4&, float)
+ */
 IVW_CORE_API vec4 lighter(const vec4& rgba, float factor = 1.5f);
+/**
+ * \overload uvec3 lighter(const uvec3&, float)
+ */
+IVW_CORE_API uvec3 lighter(const uvec3& rgb, float factor = 1.5f);
 
 /**
  * \brief Return a darker color by adjusting the brightness
@@ -331,7 +338,14 @@ IVW_CORE_API vec4 lighter(const vec4& rgba, float factor = 1.5f);
  * See https://doc.qt.io/qt-5/qcolor.html#lighter
  */
 IVW_CORE_API vec3 darker(const vec3& rgb, float factor = 2.0f);
+/**
+ * \overload vec4 darker(const vec4&, float)
+ */
 IVW_CORE_API vec4 darker(const vec4& rgba, float factor = 2.0f);
+/**
+ * \overload uvec3 darker(const uvec3&, float)
+ */
+IVW_CORE_API uvec3 darker(const uvec3& rgb, float factor = 2.0f);
 
 }  // namespace color
 
