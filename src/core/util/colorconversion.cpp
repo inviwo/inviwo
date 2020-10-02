@@ -470,6 +470,10 @@ vec3 LuvChromaticity2XYZ(const vec3& LuvChroma, vec3 whitePointXYZ) {
     return Luv2XYZ(vec3(L, u, v));
 }
 
+uvec3 lighter(const uvec3& rgb, float factor) {
+    return uvec3{lighter(vec3{rgb} / 255.0f, factor) * 255.0f};
+}
+
 vec3 lighter(const vec3& rgb, float factor) {
     vec3 hsv = rgb2hsv(rgb);
     hsv.z = std::min(hsv.z * factor, 1.0f);
@@ -480,6 +484,10 @@ vec4 lighter(const vec4& rgba, float factor) {
     vec3 hsv = rgb2hsv(rgba);
     hsv.z = std::min(hsv.z * factor, 1.0f);
     return vec4(hsv2rgb(hsv), rgba.a);
+}
+
+uvec3 darker(const uvec3& rgb, float factor) {
+    return uvec3{darker(vec3{rgb} / 255.0f, factor) * 255.0f};
 }
 
 vec3 darker(const vec3& rgb, float factor) {
