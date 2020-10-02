@@ -40,6 +40,8 @@
 #include <inviwo/core/util/stringlogger.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
+#include <modules/opengl/inviwoopengl.h>
+
 namespace inviwo {
 
 namespace {
@@ -82,7 +84,8 @@ protected:
 
 TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
     RenderContext::getPtr()->activateDefaultRenderContext();
-
+    LGL_ERROR;
+    
     LogErrorCheck checklog(GetParam());
     auto s = factory_->create(GetParam());
     ASSERT_TRUE(s.get() != nullptr) << "Could not create processor " << GetParam();
@@ -96,6 +99,8 @@ TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
     network_->removeAndDeleteProcessor(p);
     EXPECT_EQ(sizeBefore, network_->getProcessors().size())
         << "Could not remove processor " << GetParam();
+    
+    LGL_ERROR;
 }
 
 INSTANTIATE_TEST_SUITE_P(

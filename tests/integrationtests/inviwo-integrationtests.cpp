@@ -49,6 +49,7 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/util/rendercontext.h>
 
 #include <inviwo/testutil/configurablegtesteventlistener.h>
 
@@ -85,6 +86,8 @@ int main(int argc, char** argv) {
         inviwoApp.resizePool(0);
         inviwoApp.printApplicationInfo();
 
+        RenderContext::getPtr()->activateDefaultRenderContext();
+        
         auto& cmdparser = inviwoApp.getCommandLineParser();
 
         cmdparser.processCallbacks();  // run any command line callbacks from modules.
