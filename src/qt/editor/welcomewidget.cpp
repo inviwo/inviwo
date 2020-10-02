@@ -49,6 +49,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 
+#include <QScreen>
 #include <QTabWidget>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -238,7 +239,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
     // left column: workspace filter, list of recently used workspaces, and examples
     filetree_ = new FileTreeWidget(window->getInviwoApplication(), leftWidget);
     filetree_->setObjectName("FileTreeWidget");
-    filetree_->setMinimumWidth(300);
+    filetree_->setMinimumWidth(200);
     filetree_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     QObject::connect(filetree_, &FileTreeWidget::selectedFileChanged, this,
                      [this, updateDetails](const QString& filename, bool isExample) {
@@ -402,6 +403,11 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
     // ensure that the splitter handle responds to hover events
     // see https://bugreports.qt.io/browse/QTBUG-13768
     handle(1)->setAttribute(Qt::WA_Hover);
+
+    // hide changelog on screens with less width than 1920
+    if (utilqt::getApplicationMainWindow()->screen()->size().width() < 1920) {
+        this->setSizes(QList<int>({1, 0}));
+    }
 
     setTabOrder(filterLineEdit_, filetree_);
     setTabOrder(filetree_, loadWorkspaceBtn_);
