@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/properties/propertyowner.h>
 
 #include <cmath>
@@ -226,8 +227,10 @@ void OrdinalLikePropertyWidgetQt<Prop, Sem>::updateFromProperty() {
     T val = ordinal_->get();
 
     constexpr size_t nelem = util::flat_extent<T>::value;
-    std::array<ConstraintBehavior, nelem> mincb = {ordinal_->getMinConstraintBehaviour()};
-    std::array<ConstraintBehavior, nelem> maxcb = {ordinal_->getMaxConstraintBehaviour()};
+    auto mincb =
+        util::make_array<nelem>([&](auto) { return ordinal_->getMinConstraintBehaviour(); });
+    auto maxcb =
+        util::make_array<nelem>([&](auto) { return ordinal_->getMaxConstraintBehaviour(); });
 
     if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SphericalSpinBox ||
                   Sem == OrdinalPropertyWidgetQtSematics::Spherical) {
