@@ -70,6 +70,9 @@
 #include <QKeyEvent>
 #include <QCoreApplication>
 #include <QFile>
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+#include <QWindow>
+#endif
 
 #include <warn/pop>
 
@@ -405,7 +408,15 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
     handle(1)->setAttribute(Qt::WA_Hover);
 
     // hide changelog on screens with less width than 1920
-    if (utilqt::getApplicationMainWindow()->screen()->size().width() < 1920) {
+    auto getScreen = []() {
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+        return utilqt::getApplicationMainWindow()->window()->windowHandle()->screen();
+#else
+        return utilqt::getApplicationMainWindow()->screen();
+#endif
+    };
+
+    if (getScreen()->size().width() < 1920) {
         this->setSizes(QList<int>({1, 0}));
     }
 
