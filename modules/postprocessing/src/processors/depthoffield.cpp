@@ -57,11 +57,12 @@ DepthOfField::DepthOfField()
     , viewCountExact_("viewCountExact", "View count", 40, 10, 200)
     , viewCountApprox_("viewCountApprox", "Rendered view count", 5, 1, 12)
     , simViewCountApprox_("simViewCountApprox", "Simulated view count", 40, 10, 200)
-    , clickToFocus_("clickToFocus", "Click to focus",
-                    [this](Event* e) {
-                        if (manualFocus_) clickToFocus(e);
-                    },
-                    MouseButton::Left, MouseState::Press, KeyModifier::Control)
+    , clickToFocus_(
+          "clickToFocus", "Click to focus",
+          [this](Event* e) {
+              if (manualFocus_) clickToFocus(e);
+          },
+          MouseButton::Left, MouseState::Press, KeyModifier::Control)
     , camera_("camera", "Camera")
     , evalCount_(-1)
     , useComputeShaders_(OpenGLCapabilities::getOpenGLVersion() >= 430)
@@ -387,9 +388,10 @@ void DepthOfField::warp(vec2 cameraPos, vec2 screenPos, vec4 color, double zWorl
     vec2 disparity = (1.0 / zWorld - 1.0 / focusDepth) * (cameraPos - simCameraPos);
     size3_t dimLightField = lightField_->getDimensions();
     vec2 simScreenpos = screenPos + disparity * dimLightField.y / (2.0 * std::tan(fovy / 2.0));
-    size3_t pos(round(simScreenpos.x), round(simScreenpos.y), viewCountApprox_.get() + viewIndex);
-    if (pos.x < 0 || pos.x >= dimLightField.x || pos.y < 0 || pos.y >= dimLightField.y ||
-        pos.z < 0 || pos.z >= dimLightField.z)
+    ivec3 pos(round(simScreenpos.x), round(simScreenpos.y), viewCountApprox_.get() + viewIndex);
+    if (pos.x < 0 || pos.x >= static_cast<int>(dimLightField.x) || pos.y < 0 ||
+        pos.y >= static_cast<int>(dimLightField.y) || pos.z < 0 ||
+        pos.z >= static_cast<int>(dimLightField.z))
         return;
 
     double currDepth = lightFieldDepth->getAsDouble(pos);
