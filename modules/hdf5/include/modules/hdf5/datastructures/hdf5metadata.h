@@ -27,13 +27,21 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HDF5METADATA_H
-#define IVW_HDF5METADATA_H
+#pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/hdf5/datastructures/hdf5path.h>
+
+#include <inviwo/core/util/formats.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <H5Cpp.h>
+#include <warn/pop>
+
+#include <string>
+#include <vector>
+#include <ostream>
 
 namespace inviwo {
 
@@ -83,5 +91,3 @@ IVW_MODULE_HDF5_API const DataFormatBase* getDataFormat(const H5::DataType type)
 }  // namespace hdf5
 
 }  // namespace inviwo
-
-#endif  // IVW_HDF5METADATA_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HDF5EXCEPTION_H
-#define IVW_HDF5EXCEPTION_H
+#pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
 #include <inviwo/core/util/exception.h>
@@ -40,11 +39,9 @@ namespace hdf5 {
 class IVW_MODULE_HDF5_API Exception : public ::inviwo::Exception {
 public:
     Exception(const std::string& message = "", ExceptionContext context = ExceptionContext());
-    virtual ~Exception() throw() {}
+    virtual ~Exception() = default;
 };
 
 }  // namespace hdf5
 
 }  // namespace inviwo
-
-#endif  // IVW_HDF5EXCEPTION_H

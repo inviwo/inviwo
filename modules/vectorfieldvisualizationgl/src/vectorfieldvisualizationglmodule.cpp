@@ -77,7 +77,7 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
     registerProcessor<VectorFieldGenerator4D>();
 
     auto& gl = app->getModuleByType<OpenGLModule>()->getOpenGLCapabilities();
-    if (gl.isComputeShadersSupported()) {
+    if (gl.getOpenGLVersion() >= 430) {
         registerProcessor<StreamParticles>();
     }
 }

@@ -79,14 +79,15 @@ FrameBufferObject::FrameBufferObject()
 
 FrameBufferObject::FrameBufferObject(FrameBufferObject&& rhs) noexcept
     : id_(rhs.id_)
-    , hasDepthAttachment_(rhs.hasDepthAttachment_)
-    , hasStencilAttachment_(rhs.hasStencilAttachment_)
-    , drawBuffers_(std::move(rhs.drawBuffers_))
-    , buffersInUse_(std::move(rhs.buffersInUse_))
-    , maxColorattachments_(rhs.maxColorattachments_)
-    , prevFbo_(rhs.prevFbo_)
-    , prevDrawFbo_(rhs.prevDrawFbo_)
-    , prevReadFbo_(rhs.prevReadFbo_) {
+    , hasDepthAttachment_{rhs.hasDepthAttachment_}
+    , hasStencilAttachment_{rhs.hasStencilAttachment_}
+    , drawBuffers_{std::move(rhs.drawBuffers_)}
+    , buffersInUse_{std::move(rhs.buffersInUse_)}
+    , maxColorattachments_{rhs.maxColorattachments_}
+    , prevFbo_{rhs.prevFbo_}
+    , prevDrawFbo_{rhs.prevDrawFbo_}
+    , prevReadFbo_{rhs.prevReadFbo_}
+    , creationContext_{rhs.creationContext_} {
     rhs.id_ = 0;
     rhs.prevFbo_ = 0;
     rhs.prevDrawFbo_ = 0;
@@ -104,6 +105,7 @@ FrameBufferObject& FrameBufferObject::operator=(FrameBufferObject&& rhs) noexcep
         prevFbo_ = rhs.prevFbo_;
         prevDrawFbo_ = rhs.prevDrawFbo_;
         prevReadFbo_ = rhs.prevReadFbo_;
+        creationContext_ = rhs.creationContext_;
 
         rhs.id_ = 0;
         rhs.prevFbo_ = 0;
@@ -114,10 +116,11 @@ FrameBufferObject& FrameBufferObject::operator=(FrameBufferObject&& rhs) noexcep
 }
 
 FrameBufferObject::~FrameBufferObject() {
-    checkContext("FBO deleted in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
-
-    deactivate();
-    glDeleteFramebuffers(1, &id_);
+    if (id_ != 0) {
+        checkContext("FBO deleted in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
+        deactivate();
+        glDeleteFramebuffers(1, &id_);
+    }
 }
 
 void FrameBufferObject::activate() {
@@ -132,7 +135,7 @@ void FrameBufferObject::activate() {
                      IVW_SOURCE_LOCATION);
 
         glBindFramebuffer(GL_FRAMEBUFFER, id_);
-        LGL_ERROR;
+        LGL_ERROR_CLASS;
     }
 }
 
@@ -140,13 +143,13 @@ void FrameBufferObject::defineDrawBuffers() {
     // TODO: how to handle empty drawBuffers_ ? Do nothing or activate GL_COLOR_ATTACHMENT0 ?
     if (drawBuffers_.empty()) return;
     glDrawBuffers(static_cast<GLsizei>(drawBuffers_.size()), &drawBuffers_[0]);
-    LGL_ERROR;
+    LGL_ERROR_CLASS;
 }
 
 void FrameBufferObject::deactivate() {
     if ((static_cast<GLuint>(prevFbo_) != id_) && isActive()) {
         glBindFramebuffer(GL_FRAMEBUFFER, prevFbo_);
-        LGL_ERROR;
+        LGL_ERROR_CLASS;
     }
 }
 

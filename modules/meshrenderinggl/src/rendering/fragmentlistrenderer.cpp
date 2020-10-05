@@ -84,6 +84,8 @@ FragmentListRenderer::FragmentListRenderer()
     , display_("oit/simplequad.vert", "oit/display.frag", false)
     , illustration_{screenSize_, fragmentSize_} {
 
+    LGL_ERROR_CLASS;
+
     buildShaders();
 
     illustrationOnReload_ = illustration_.onReload.add([this]() { onReload_.invoke(); });
@@ -94,7 +96,8 @@ FragmentListRenderer::FragmentListRenderer()
 
     // create fragment query
     glGenQueries(1, &totalFragmentQuery_);
-    LGL_ERROR;
+
+    LGL_ERROR_CLASS;
 }
 
 FragmentListRenderer::~FragmentListRenderer() {

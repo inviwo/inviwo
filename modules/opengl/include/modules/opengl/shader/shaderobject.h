@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SHADEROBJECT_H
-#define IVW_SHADEROBJECT_H
+#pragma once
 
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglmoduledefine.h>
@@ -117,6 +116,7 @@ public:
     const std::vector<std::shared_ptr<const ShaderResource>>& getResources() const;
     ShaderType getShaderType() const;
 
+    void create();
     void preprocess();
     void upload();
     void compile();
@@ -267,5 +267,3 @@ std::shared_ptr<ShaderObject::Callback> ShaderObject::onChange(T&& callback) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_SHADEROBJECT_H

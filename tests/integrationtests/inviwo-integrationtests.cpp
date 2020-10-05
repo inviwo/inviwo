@@ -49,8 +49,12 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/util/rendercontext.h>
 
 #include <inviwo/testutil/configurablegtesteventlistener.h>
+
+#include <modules/opengl/openglmodule.h>
+#include <modules/opengl/openglsettings.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -84,6 +88,15 @@ int main(int argc, char** argv) {
         inviwoApp.registerModules(inviwo::getModuleList());
         inviwoApp.resizePool(0);
         inviwoApp.printApplicationInfo();
+
+        RenderContext::getPtr()->activateDefaultRenderContext();
+
+        for (auto* settings : inviwoApp.getModuleByType<OpenGLModule>()->getSettings()) {
+            if (auto glSettings = dynamic_cast<OpenGLSettings*>(settings)) {
+                glSettings->debugMessages_.set(utilgl::debug::Mode::DebugSynchronous);
+                glSettings->debugSeverity_.set(utilgl::debug::Severity::Medium);
+            }
+        }
 
         auto& cmdparser = inviwoApp.getCommandLineParser();
 

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HDF5VOLUMESOURCE_H
-#define IVW_HDF5VOLUMESOURCE_H
+#pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/hdf5/ports/hdf5port.h>
 #include <modules/hdf5/datastructures/hdf5metadata.h>
@@ -175,5 +173,3 @@ private:
 }  // namespace hdf5
 
 }  // namespace inviwo
-
-#endif  // IVW_HDF5VOLUMESOURCE_H

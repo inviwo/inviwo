@@ -46,6 +46,7 @@
 #include <warn/ignore/char-subscripts>
 #include <warn/ignore/class-memaccess>
 #include <warn/ignore/conditional-uninitialized>
+#include <warn/ignore/const-zero-init>
 #include <warn/ignore/constant-conditional>
 #include <warn/ignore/constant-conversion>
 #include <warn/ignore/conversion>

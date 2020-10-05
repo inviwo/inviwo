@@ -27,15 +27,17 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HDF5SOURCE_H
-#define IVW_HDF5SOURCE_H
+#pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <modules/hdf5/ports/hdf5port.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <H5Cpp.h>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -56,7 +58,7 @@ namespace hdf5 {
 class IVW_MODULE_HDF5_API Source : public Processor {
 public:
     Source();
-    virtual ~Source() {}
+    virtual ~Source() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -71,5 +73,3 @@ private:
 
 }  // namespace hdf5
 }  // namespace inviwo
-
-#endif  // IVW_HDF5SOURCE_H

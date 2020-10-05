@@ -320,7 +320,7 @@ void Texture::unbindFromPBO() const {
 
 void Texture::unbindToPBO() const {
     glBindBuffer(GL_PIXEL_PACK_BUFFER_ARB, 0);
-    LGL_ERROR_SUPPRESS;
+    LGL_ERROR_CLASS;
 }
 
 void Texture::download(void* data) const {

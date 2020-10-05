@@ -248,8 +248,6 @@ ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
 EXTERNAL_PAGES         = YES
 
-PERL_PATH              = ${PERL_EXECUTABLE}
-
 CLASS_DIAGRAMS         = ${ARG_GENERATE_IMG}
 HAVE_DOT               = ${DOXYGEN_DOT_FOUND}
 
@@ -391,7 +389,6 @@ endif()
 ivw_retrieve_all_modules(reg_modules)
 ivw_mod_name_to_mod_dep(modules ${reg_modules})
 
-find_package(Perl QUIET)            # sets: PERL_FOUND, PERL_EXECUTABLE
 find_package(Doxygen QUIET)         # sets: DOXYGEN_FOUND, DOXYGEN_EXECUTABLE,
                                     # DOXYGEN_DOT_FOUND, DOXYGEN_DOT_EXECUTABLE
 find_package(PythonInterp QUIET)    # sets: PYTHONINTERP_FOUND PYTHON_EXECUTABLE

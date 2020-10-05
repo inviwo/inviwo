@@ -29,6 +29,7 @@ add_executable(inviwo-integrationtests ${SOURCE_FILES})
 find_package(GTest CONFIG REQUIRED)
 target_link_libraries(inviwo-integrationtests PRIVATE 
     inviwo::core
+    inviwo::module::opengl
     inviwo::module::glfw
     inviwo::module::base
     inviwo::testutil

@@ -68,6 +68,7 @@ IVW_MODULE_OPENGL_API void LogGLError(std::string_view source, std::string_view 
 #define LGL_ERROR_SUPPRESS glGetError()
 #else
 #define LGL_ERROR
+#define LGL_ERROR_CLASS
 #define LGL_ERROR_SUPPRESS
 #endif
 

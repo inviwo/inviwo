@@ -27,16 +27,18 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HDF5PATHSELECTION_H
-#define IVW_HDF5PATHSELECTION_H
+#pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/hdf5/ports/hdf5port.h>
 #include <modules/hdf5/hdf5utils.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <H5Cpp.h>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -79,5 +81,3 @@ private:
 
 }  // namespace hdf5
 }  // namespace inviwo
-
-#endif  // IVW_HDF5PATHSELECTION_H
