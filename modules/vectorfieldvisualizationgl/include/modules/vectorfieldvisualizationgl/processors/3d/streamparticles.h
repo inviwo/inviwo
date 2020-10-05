@@ -83,7 +83,7 @@ namespace inviwo {
 
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API StreamParticles : public Processor {
 public:
-    StreamParticles(InviwoApplication *app);
+    StreamParticles(InviwoApplication* app);
     virtual ~StreamParticles() = default;
 
     virtual void initializeResources() override;

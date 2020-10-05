@@ -85,7 +85,7 @@ protected:
 TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
     RenderContext::getPtr()->activateDefaultRenderContext();
     LGL_ERROR;
-    
+
     LogErrorCheck checklog(GetParam());
     auto s = factory_->create(GetParam());
 
@@ -95,19 +95,19 @@ TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
     s->resetAllPoperties();
 
     LGL_ERROR;
-    
+
     const size_t sizeBefore = network_->getProcessors().size();
     auto p = s.release();
     network_->addProcessor(p);
     EXPECT_EQ(sizeBefore + 1, network_->getProcessors().size())
         << "Could not add processor " << GetParam();
-    
+
     LGL_ERROR;
-    
+
     network_->removeAndDeleteProcessor(p);
     EXPECT_EQ(sizeBefore, network_->getProcessors().size())
         << "Could not remove processor " << GetParam();
-    
+
     LGL_ERROR;
 }
 

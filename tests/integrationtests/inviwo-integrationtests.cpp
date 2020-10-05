@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
         inviwoApp.printApplicationInfo();
 
         RenderContext::getPtr()->activateDefaultRenderContext();
-        
+
         for (auto* settings : inviwoApp.getModuleByType<OpenGLModule>()->getSettings()) {
             if (auto glSettings = dynamic_cast<OpenGLSettings*>(settings)) {
                 glSettings->debugMessages_.set(utilgl::debug::Mode::DebugSynchronous);

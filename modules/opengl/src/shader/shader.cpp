@@ -40,15 +40,15 @@ namespace inviwo {
 
 // glCreateProgram This function returns 0 if an error occurs creating the program object.
 Shader::Program::Program() : id{glCreateProgram()} {}
-Shader::Program::Program(const Program &) : Program() {}
-Shader::Program::Program(Program &&rhs) noexcept : id{rhs.id} { rhs.id = 0; }
-Shader::Program &Shader::Program::operator=(const Program &) {
+Shader::Program::Program(const Program&) : Program() {}
+Shader::Program::Program(Program&& rhs) noexcept : id{rhs.id} { rhs.id = 0; }
+Shader::Program& Shader::Program::operator=(const Program&) {
     if (id == 0) {
         id = glCreateProgram();
     }
     return *this;
 }
-Shader::Program &Shader::Program::operator=(Program &&that) noexcept {
+Shader::Program& Shader::Program::operator=(Program&& that) noexcept {
     Program copy(std::move(that));
     std::swap(id, copy.id);
     return *this;
@@ -60,13 +60,14 @@ Shader::Program::~Program() {
     }
 }
 
-Shader::Shader(const std::vector<std::pair<ShaderType, std::string>> &items, Build buildShader)
+Shader::Shader(const std::vector<std::pair<ShaderType, std::string>>& items, Build buildShader)
     : warningLevel_{UniformWarning::Ignore} {
 
-    for (auto &item : items) {
+    for (auto& item : items) {
         shaderObjects_.emplace_back(item.first, utilgl::findShaderResource(item.second));
         attached_.emplace_back(false);
-        callbacks_.emplace_back(shaderObjects_.back().onChange([this](ShaderObject* o){rebuildShader(o);}));
+        callbacks_.emplace_back(
+            shaderObjects_.back().onChange([this](ShaderObject* o) { rebuildShader(o); }));
     }
 
     if (buildShader == Build::Yes) build();
@@ -74,30 +75,32 @@ Shader::Shader(const std::vector<std::pair<ShaderType, std::string>> &items, Bui
 }
 
 Shader::Shader(
-    const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> &items,
+    const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>>& items,
     Build buildShader)
     : warningLevel_{UniformWarning::Ignore} {
-       
-    for (auto &item : items) {
+
+    for (auto& item : items) {
         shaderObjects_.emplace_back(item.first, item.second);
         attached_.emplace_back(false);
-        callbacks_.emplace_back(shaderObjects_.back().onChange([this](ShaderObject* o){rebuildShader(o);}));
+        callbacks_.emplace_back(
+            shaderObjects_.back().onChange([this](ShaderObject* o) { rebuildShader(o); }));
     }
     if (buildShader == Build::Yes) build();
-    ShaderManager::getPtr()->registerShader(this);        
+    ShaderManager::getPtr()->registerShader(this);
 }
 
-Shader::Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool buildShader)
+Shader::Shader(std::vector<std::unique_ptr<ShaderObject>>& shaderObjects, bool buildShader)
     : warningLevel_{UniformWarning::Ignore} {
-        
-    for (auto &obj : shaderObjects) {
+
+    for (auto& obj : shaderObjects) {
         shaderObjects_.emplace_back(std::move(*obj));
         attached_.emplace_back(false);
-        callbacks_.emplace_back(shaderObjects_.back().onChange([this](ShaderObject* o){rebuildShader(o);}));
+        callbacks_.emplace_back(
+            shaderObjects_.back().onChange([this](ShaderObject* o) { rebuildShader(o); }));
     }
 
     if (buildShader) build();
-    ShaderManager::getPtr()->registerShader(this);        
+    ShaderManager::getPtr()->registerShader(this);
 }
 
 Shader::Shader(std::string vertexFilename, std::string geometryFilename,
@@ -116,19 +119,19 @@ Shader::Shader(std::string fragmentFilename, bool buildShader)
               {ShaderType::Fragment, utilgl::findShaderResource(fragmentFilename)}},
              buildShader ? Build::Yes : Build::No) {}
 
-Shader::Shader(const char *fragmentFilename, bool buildShader)
+Shader::Shader(const char* fragmentFilename, bool buildShader)
     : Shader(std::string(fragmentFilename), buildShader) {}
 
-Shader::Shader(const char *vertexFilename, const char *fragmentFilename, bool buildShader)
+Shader::Shader(const char* vertexFilename, const char* fragmentFilename, bool buildShader)
     : Shader(std::string(vertexFilename), std::string(fragmentFilename), buildShader) {}
 
-Shader::Shader(const char *vertexFilename, const char *geometryFilename,
-               const char *fragmentFilename, bool buildShader)
+Shader::Shader(const char* vertexFilename, const char* geometryFilename,
+               const char* fragmentFilename, bool buildShader)
     : Shader(std::string(vertexFilename), std::string(geometryFilename),
              std::string(fragmentFilename), buildShader) {}
 
-Shader::Shader(const Shader &rhs) : program_{rhs.program_}, warningLevel_{rhs.warningLevel_} {
-    for (auto &elem : rhs.shaderObjects_) {
+Shader::Shader(const Shader& rhs) : program_{rhs.program_}, warningLevel_{rhs.warningLevel_} {
+    for (auto& elem : rhs.shaderObjects_) {
         shaderObjects_.emplace_back(elem);
         attached_.emplace_back(false);
     }
@@ -137,7 +140,7 @@ Shader::Shader(const Shader &rhs) : program_{rhs.program_}, warningLevel_{rhs.wa
     ShaderManager::getPtr()->registerShader(this);
 }
 
-Shader::Shader(Shader &&rhs)
+Shader::Shader(Shader&& rhs)
     : program_{std::move(rhs.program_)}
     , shaderObjects_{std::move(rhs.shaderObjects_)}
     , attached_{std::move(rhs.attached_)}
@@ -151,29 +154,29 @@ Shader::Shader(Shader &&rhs)
     ShaderManager::getPtr()->unregisterShader(&rhs);
     rhs.ready_ = false;
 
-    for (auto &elem : shaderObjects_) {
-        callbacks_.emplace_back(elem.onChange([this](ShaderObject* o){rebuildShader(o);}));
+    for (auto& elem : shaderObjects_) {
+        callbacks_.emplace_back(elem.onChange([this](ShaderObject* o) { rebuildShader(o); }));
     }
-    
+
     if (ready) build();
     ShaderManager::getPtr()->registerShader(this);
 }
 
-Shader &Shader::operator=(const Shader &that) {
+Shader& Shader::operator=(const Shader& that) {
     if (this != &that) {
         program_ = that.program_;
 
         detatch();
-        
+
         callbacks_.clear();
         attached_.clear();
         shaderObjects_.clear();
-        
-        for (auto &elem : that.shaderObjects_) {
+
+        for (auto& elem : that.shaderObjects_) {
             shaderObjects_.emplace_back(elem);
             attached_.emplace_back(false);
-            callbacks_.emplace_back(shaderObjects_.back().onChange([this](ShaderObject* o){rebuildShader(o);}));
-            
+            callbacks_.emplace_back(
+                shaderObjects_.back().onChange([this](ShaderObject* o) { rebuildShader(o); }));
         }
         warningLevel_ = that.warningLevel_;
 
@@ -186,7 +189,7 @@ Shader &Shader::operator=(const Shader &that) {
     return *this;
 }
 
-Shader &Shader::operator=(Shader &&that) {
+Shader& Shader::operator=(Shader&& that) {
     if (this != &that) {
         if (ShaderManager::getPtr()->isRegistered(this)) {
             ShaderManager::getPtr()->unregisterShader(this);
@@ -206,9 +209,9 @@ Shader &Shader::operator=(Shader &&that) {
         shaderObjects_ = std::move(that.shaderObjects_);
         attached_ = std::move(that.attached_);
         that.callbacks_.clear();
-        
-        for (auto &elem : shaderObjects_) {
-            callbacks_.emplace_back(elem.onChange([this](ShaderObject* o){rebuildShader(o);}));
+
+        for (auto& elem : shaderObjects_) {
+            callbacks_.emplace_back(elem.onChange([this](ShaderObject* o) { rebuildShader(o); }));
         }
 
         ShaderManager::getPtr()->registerShader(this);
@@ -223,16 +226,16 @@ Shader::~Shader() {
     }
 }
 void Shader::attatch() {
-    for(size_t i = 0; i<shaderObjects_.size(); ++i) { 
-        if(!attached_[i]) {
+    for (size_t i = 0; i < shaderObjects_.size(); ++i) {
+        if (!attached_[i]) {
             glAttachShader(program_.id, shaderObjects_[i].getID());
             attached_[i] = true;
         }
     }
 }
 void Shader::detatch() {
-    for(size_t i = 0; i<shaderObjects_.size(); ++i) { 
-        if(attached_[i]) {
+    for (size_t i = 0; i < shaderObjects_.size(); ++i) {
+        if (attached_[i]) {
             glDetachShader(program_.id, shaderObjects_[i].getID());
             attached_[i] = false;
         }
@@ -242,9 +245,9 @@ void Shader::detatch() {
 void Shader::build() {
     try {
         ready_ = false;
-        for (auto &elem : shaderObjects_) elem.build();
+        for (auto& elem : shaderObjects_) elem.build();
         linkShader();
-    } catch (OpenGLException &e) {
+    } catch (OpenGLException& e) {
         handleError(e);
     }
 }
@@ -253,7 +256,7 @@ void Shader::link() {
     try {
         ready_ = false;
         linkShader();
-    } catch (OpenGLException &e) {
+    } catch (OpenGLException& e) {
         handleError(e);
     }
 }
@@ -264,7 +267,7 @@ void Shader::linkShader(bool notifyRebuild) {
     uniformLookup_.clear();  // clear uniform location cache.
     bindAttributes();
 
-    if (!util::all_of(shaderObjects_, [](const auto &elem) { return elem.isReady(); })) {
+    if (!util::all_of(shaderObjects_, [](const auto& elem) { return elem.isReady(); })) {
         util::log(IVW_CONTEXT, "Id: " + toString(program_.id) + " objects not ready when linking.",
                   LogLevel::Error, LogAudience::User);
         return;
@@ -280,7 +283,8 @@ void Shader::linkShader(bool notifyRebuild) {
 
     auto log = utilgl::getProgramInfoLog(program_.id);
     if (!log.empty()) {
-        util::log(IVW_CONTEXT, "Id: " + toString(program_.id) + " (" + shaderNames() +") " + processLog(log),
+        util::log(IVW_CONTEXT,
+                  "Id: " + toString(program_.id) + " (" + shaderNames() + ") " + processLog(log),
                   LogLevel::Info, LogAudience::User);
     }
 
@@ -296,17 +300,17 @@ bool Shader::checkLinkStatus() const {
 }
 
 void Shader::bindAttributes() {
-    for (const auto &obj : getShaderObjects()) {
-        for (const auto &item : obj.getInDeclarations()) {
+    for (const auto& obj : getShaderObjects()) {
+        for (const auto& item : obj.getInDeclarations()) {
             glBindAttribLocation(program_.id, item.location, item.name.c_str());
         }
-        for (const auto &item : obj.getOutDeclarations()) {
+        for (const auto& item : obj.getOutDeclarations()) {
             glBindFragDataLocation(program_.id, item.location, item.name.c_str());
         }
     }
 }
 
-void Shader::rebuildShader(ShaderObject *obj) {
+void Shader::rebuildShader(ShaderObject* obj) {
     try {
         ready_ = false;
         obj->build();
@@ -318,19 +322,19 @@ void Shader::rebuildShader(ShaderObject *obj) {
                   "Id: " + toString(program_.id) + ", resource: " + obj->getFileName() +
                       " successfully reloaded",
                   LogLevel::Info, LogAudience::User);
-                  
+
         auto log = utilgl::getProgramInfoLog(program_.id);
         if (!log.empty()) {
             util::log(IVW_CONTEXT, "Id: " + toString(program_.id) + " " + processLog(log),
                       LogLevel::Info, LogAudience::User);
         }
 
-    } catch (OpenGLException &e) {
+    } catch (OpenGLException& e) {
         util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
     }
 }
 
-void Shader::handleError(OpenGLException &e) {
+void Shader::handleError(OpenGLException& e) {
     auto onError = ShaderManager::getPtr()->getOnShaderError();
     switch (onError) {
         case Shader::OnError::Warn:
@@ -396,7 +400,7 @@ void Shader::deactivate() {
 
 void Shader::setUniformWarningLevel(UniformWarning level) { warningLevel_ = level; }
 
-const BaseCallBack *Shader::onReload(std::function<void()> callback) {
+const BaseCallBack* Shader::onReload(std::function<void()> callback) {
     return onReloadCallback_.addLambdaCallback(callback);
 }
 
@@ -404,17 +408,17 @@ std::shared_ptr<std::function<void()>> Shader::onReloadScoped(std::function<void
     return onReloadCallback_.addLambdaCallbackRaii(callback);
 }
 
-void Shader::removeOnReload(const BaseCallBack *callback) { onReloadCallback_.remove(callback); }
+void Shader::removeOnReload(const BaseCallBack* callback) { onReloadCallback_.remove(callback); }
 
 std::string Shader::shaderNames() const {
     std::vector<std::string> names;
-    for (const auto &elem : shaderObjects_) {
+    for (const auto& elem : shaderObjects_) {
         names.push_back(elem.getFileName());
     }
     return joinString(names, "/");
 }
 
-GLint Shader::findUniformLocation(const std::string &name) const {
+GLint Shader::findUniformLocation(const std::string& name) const {
     auto it = uniformLookup_.find(name);
     if (it != uniformLookup_.end()) {
         return it->second;
@@ -437,14 +441,12 @@ GLint Shader::findUniformLocation(const std::string &name) const {
     }
 }
 
+const ShaderObject* Shader::operator[](ShaderType type) const { return getShaderObject(type); }
+ShaderObject* Shader::operator[](ShaderType type) { return getShaderObject(type); }
 
-const ShaderObject *Shader::operator[](ShaderType type) const { return getShaderObject(type); }
-ShaderObject *Shader::operator[](ShaderType type) { return getShaderObject(type); }
-
-const ShaderObject *Shader::getShaderObject(ShaderType type) const {
-    auto it = std::find_if(shaderObjects_.begin(), shaderObjects_.end(), [&](const ShaderObject& obj){
-        return obj.getShaderType() == type;
-    });
+const ShaderObject* Shader::getShaderObject(ShaderType type) const {
+    auto it = std::find_if(shaderObjects_.begin(), shaderObjects_.end(),
+                           [&](const ShaderObject& obj) { return obj.getShaderType() == type; });
     if (it != shaderObjects_.end()) {
         return &(*it);
     } else {
@@ -452,17 +454,15 @@ const ShaderObject *Shader::getShaderObject(ShaderType type) const {
     }
 }
 
-ShaderObject *Shader::getShaderObject(ShaderType type) {
-    auto it = std::find_if(shaderObjects_.begin(), shaderObjects_.end(), [&](const ShaderObject& obj){
-        return obj.getShaderType() == type;
-    });
+ShaderObject* Shader::getShaderObject(ShaderType type) {
+    auto it = std::find_if(shaderObjects_.begin(), shaderObjects_.end(),
+                           [&](const ShaderObject& obj) { return obj.getShaderType() == type; });
     if (it != shaderObjects_.end()) {
         return &(*it);
     } else {
         return nullptr;
     }
 }
-
 
 const ShaderObject* Shader::getFragmentShaderObject() const {
     return getShaderObject(ShaderType::Fragment);
@@ -472,15 +472,13 @@ const ShaderObject* Shader::getGeometryShaderObject() const {
     return getShaderObject(ShaderType::Geometry);
 }
 
-const ShaderObject* Shader::getVertexShaderObject() const { return getShaderObject(ShaderType::Vertex); }
-
-ShaderObject* Shader::getFragmentShaderObject() {
-    return getShaderObject(ShaderType::Fragment);
+const ShaderObject* Shader::getVertexShaderObject() const {
+    return getShaderObject(ShaderType::Vertex);
 }
 
-ShaderObject* Shader::getGeometryShaderObject() {
-    return getShaderObject(ShaderType::Geometry);
-}
+ShaderObject* Shader::getFragmentShaderObject() { return getShaderObject(ShaderType::Fragment); }
+
+ShaderObject* Shader::getGeometryShaderObject() { return getShaderObject(ShaderType::Geometry); }
 
 ShaderObject* Shader::getVertexShaderObject() { return getShaderObject(ShaderType::Vertex); }
 

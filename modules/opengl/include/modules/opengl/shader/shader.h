@@ -46,10 +46,10 @@ namespace inviwo {
 class IVW_MODULE_OPENGL_API Shader {
     struct Program {
         Program();
-        Program(const Program &);
-        Program(Program &&rhs) noexcept;
-        Program &operator=(const Program &);
-        Program &operator=(Program &&that) noexcept;
+        Program(const Program&);
+        Program(Program&& rhs) noexcept;
+        Program& operator=(const Program&);
+        Program& operator=(Program&& that) noexcept;
         ~Program();
         GLuint id = 0;
     };
@@ -59,10 +59,10 @@ public:
     enum class Build { Yes, No };
     enum class UniformWarning { Ignore, Warn, Throw };
 
-    Shader(const std::vector<std::pair<ShaderType, std::string>> &items,
+    Shader(const std::vector<std::pair<ShaderType, std::string>>& items,
            Build buildShader = Build::Yes);
 
-    Shader(const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> &items,
+    Shader(const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>>& items,
            Build buildShader = Build::Yes);
     /*
      * Will add utilgl::imgIdentityVert() as vertex shader.
@@ -73,17 +73,17 @@ public:
            bool buildShader = true);
 
     // We need these to avoid strange implicit conversions...
-    Shader(const char *fragmentFilename, bool buildShader = true);
-    Shader(const char *vertexFilename, const char *fragmentFilename, bool buildShader = true);
-    Shader(const char *vertexFilename, const char *geometryFilename, const char *fragmentFilename,
+    Shader(const char* fragmentFilename, bool buildShader = true);
+    Shader(const char* vertexFilename, const char* fragmentFilename, bool buildShader = true);
+    Shader(const char* vertexFilename, const char* geometryFilename, const char* fragmentFilename,
            bool buildShader = true);
 
-    Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool buildShader = true);
+    Shader(std::vector<std::unique_ptr<ShaderObject>>& shaderObjects, bool buildShader = true);
 
-    Shader(const Shader &rhs);
-    Shader(Shader &&rhs);
-    Shader &operator=(const Shader &that);
-    Shader &operator=(Shader &&that);
+    Shader(const Shader& rhs);
+    Shader(Shader&& rhs);
+    Shader& operator=(const Shader& that);
+    Shader& operator=(Shader&& that);
 
     virtual ~Shader();
 
@@ -92,11 +92,10 @@ public:
     bool isReady() const;  // returns whether the shader has been built and linked successfully
 
     GLuint getID() const { return program_.id; }
-    
+
     using iterator = typename std::vector<ShaderObject>::iterator;
     using const_iterator = typename std::vector<ShaderObject>::const_iterator;
-    
-    
+
     iterator begin();
     iterator end();
     const_iterator begin() const;
@@ -112,7 +111,7 @@ public:
     const ShaderObject* getVertexShaderObject() const;
     const ShaderObject* getGeometryShaderObject() const;
     const ShaderObject* getFragmentShaderObject() const;
-    
+
     ShaderObject* getVertexShaderObject();
     ShaderObject* getGeometryShaderObject();
     ShaderObject* getFragmentShaderObject();
@@ -121,25 +120,25 @@ public:
     void deactivate();
 
     template <typename T>
-    void setUniform(const std::string &name, const T &value) const;
+    void setUniform(const std::string& name, const T& value) const;
 
     template <typename T>
-    void setUniform(const std::string &name, std::size_t len, const T *value) const;
+    void setUniform(const std::string& name, std::size_t len, const T* value) const;
 
     void setUniformWarningLevel(UniformWarning level);
 
     // Callback when the shader is reloaded. A reload can for example be triggered by a file change.
-    const BaseCallBack *onReload(std::function<void()> callback);
+    const BaseCallBack* onReload(std::function<void()> callback);
     std::shared_ptr<std::function<void()>> onReloadScoped(std::function<void()> callback);
-    void removeOnReload(const BaseCallBack *callback);
+    void removeOnReload(const BaseCallBack* callback);
 
 private:
     void bindAttributes();
 
-    void handleError(OpenGLException &e);
+    void handleError(OpenGLException& e);
     std::string processLog(std::string log) const;
 
-    void rebuildShader(ShaderObject *obj);
+    void rebuildShader(ShaderObject* obj);
     void linkShader(bool notifyRebuild = false);
     bool checkLinkStatus() const;
 
@@ -147,7 +146,7 @@ private:
     void detatch();
 
     std::string shaderNames() const;
-    GLint findUniformLocation(const std::string &name) const;
+    GLint findUniformLocation(const std::string& name) const;
 
     Program program_;
 
@@ -155,7 +154,7 @@ private:
     std::vector<ShaderObject> shaderObjects_;
     std::vector<bool> attached_;
     std::vector<std::shared_ptr<ShaderObject::Callback>> callbacks_;
-    
+
     bool ready_ = false;
 
     UniformWarning warningLevel_;
@@ -167,13 +166,13 @@ private:
 };
 
 template <typename T>
-void Shader::setUniform(const std::string &name, const T &value) const {
+void Shader::setUniform(const std::string& name, const T& value) const {
     GLint location = findUniformLocation(name);
     if (location != -1) utilgl::UniformSetter<T>::set(location, value);
 }
 
 template <typename T>
-void Shader::setUniform(const std::string &name, std::size_t len, const T *value) const {
+void Shader::setUniform(const std::string& name, std::size_t len, const T* value) const {
     GLint location = findUniformLocation(name);
     if (location != -1) utilgl::UniformSetter<T>::set(location, static_cast<GLsizei>(len), value);
 }

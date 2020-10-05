@@ -54,7 +54,7 @@ public:
     std::string extension() const;
 
     std::string name() const;
-    
+
     static ShaderType Vertex;
     static ShaderType Geometry;
     static ShaderType Fragment;
