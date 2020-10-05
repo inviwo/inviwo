@@ -273,12 +273,14 @@ std::string ShaderObject::OutDeclaration::toString() const {
 }
 
 ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderResource> resource)
-    : shaderType_{shaderType}, id_{glCreateShader(shaderType)}, resource_{resource} {
+    : shaderType_{shaderType}, id_{0}, resource_{resource} {
+          
     if (!shaderType_) {
-        glDeleteShader(id_);
         throw OpenGLException("Invalid shader type", IVW_CONTEXT);
     }
-
+    
+    LGL_ERROR_CLASS;
+        
     // Help developer to spot errors
     std::string fileExtension = filesystem::getFileExtension(resource_->key());
     if (fileExtension != shaderType_.extension()) {
@@ -308,7 +310,7 @@ ShaderObject::ShaderObject(GLenum shaderType, std::string fileName)
 
 ShaderObject::ShaderObject(const ShaderObject& rhs)
     : shaderType_(rhs.shaderType_)
-    , id_(glCreateShader(rhs.shaderType_))
+    , id_(rhs.id_ == 0 ? 0 : glCreateShader(rhs.shaderType_))
     , resource_(rhs.resource_)
     , inDeclarations_(rhs.inDeclarations_)
     , outDeclarations_(rhs.outDeclarations_)
@@ -372,7 +374,11 @@ ShaderObject& ShaderObject::operator=(ShaderObject&& that) noexcept {
     return *this;
 }
 
-ShaderObject::~ShaderObject() { glDeleteShader(id_); }
+ShaderObject::~ShaderObject() { 
+    if (id_!=0) {
+        glDeleteShader(id_); 
+    }
+}
 
 GLuint ShaderObject::getID() const { return id_; }
 
@@ -396,6 +402,18 @@ void ShaderObject::build() {
     compile();
 }
 
+void ShaderObject::create() {
+    if (id_ != 0) return;
+    id_ = glCreateShader(shaderType_);
+    if(id_ == 0) {
+        if (auto err = glGetError(); err != GL_NO_ERROR) {
+            throw OpenGLException("Unable to create shader of type: " + shaderType_.name() + ". Error: " + getGLErrorString(err), IVW_CONTEXT);
+        } else {
+            throw OpenGLException("Unable to create shader of type: " + shaderType_.name(), IVW_CONTEXT);
+        }
+    }
+ }
+                
 void ShaderObject::preprocess() {
     resourceCallbacks_.clear();
     lnr_.clear();
@@ -539,31 +557,35 @@ std::string ShaderObject::resolveLog(const std::string& compileLog) const {
 
 void ShaderObject::upload() {
     LGL_ERROR_CLASS;
+    create();
     const char* source = sourceProcessed_.c_str();
     glShaderSource(id_, 1, &source, nullptr);
-    LGL_ERROR_CLASS;
+    if (auto err = glGetError(); err != GL_NO_ERROR) {
+        throw OpenGLException("Unable to upload shader source for " + resource_->key() + ". Error: " + getGLErrorString(err), IVW_CONTEXT);
+    }
 }
 
 bool ShaderObject::isReady() const {
+    if (id_ == 0) return false;
     GLint res = GL_FALSE;
     glGetShaderiv(id_, GL_COMPILE_STATUS, &res);
     return res == GL_TRUE;
 }
 
 void ShaderObject::compile() {
+    LGL_ERROR_CLASS;
+    create();
     glCompileShader(id_);
     if (!isReady()) {
         throw OpenGLException(resource_->key() + " " + resolveLog(utilgl::getShaderInfoLog(id_)),
                               IVW_CONTEXT);
     }
 
-#ifdef IVW_DEBUG
     const auto log = utilgl::getShaderInfoLog(id_);
     if (!log.empty()) {
         util::log(IVW_CONTEXT, resource_->key() + " " + resolveLog(log), LogLevel::Info,
                   LogAudience::User);
-    }
-#endif
+    }	
 }
 
 void ShaderObject::addShaderDefine(const std::string& name, const std::string& value) {

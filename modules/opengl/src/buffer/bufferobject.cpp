@@ -29,6 +29,8 @@
 
 #include <modules/opengl/buffer/bufferobject.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format, BufferUsage usage,
@@ -210,6 +212,7 @@ void BufferObject::setSizeInBytes(GLsizeiptr sizeInBytes) { initialize(nullptr, 
 GLsizeiptr BufferObject::getSizeInBytes() const { return sizeInBytes_; }
 
 void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
+    LGL_ERROR_CLASS;
     sizeInBytes_ = sizeInBytes;
 
     // Notify observers
@@ -220,6 +223,11 @@ void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
     // Allocation a zero sized buffer may create
     // errors (OpenCL sharing) so ensure at least one byte
     glBufferData(target_, sizeInBytes <= 0 ? 1 : sizeInBytes, data, usageGL_);
+    
+    if (auto err = glGetError(); err != GL_NO_ERROR) {
+        throw OpenGLException(fmt::format("Unable to create buffer of type: {}. Error: {}",
+         targetName(target_), getGLErrorString(err)), IVW_CONTEXT);
+    }
 
     forEachObserver([](BufferObjectObserver* o) { o->onAfterBufferInitialization(); });
 }
@@ -241,6 +249,27 @@ void BufferObject::download(void* data) const {
         glUnmapBufferARB(target_);
     } else {
         LogError("Unable to map data");
+    }
+}
+
+std::string_view BufferObject::targetName(GLenum target) {
+    using namespace std::literals;		
+    switch(target) {
+        case GL_ARRAY_BUFFER: return "GL_ARRAY_BUFFER"sv;
+        case GL_ATOMIC_COUNTER_BUFFER: return "GL_ATOMIC_COUNTER_BUFFER"sv;
+        case GL_COPY_READ_BUFFER: return "GL_COPY_READ_BUFFER"sv;
+        case GL_COPY_WRITE_BUFFER: return "GL_COPY_WRITE_BUFFER"sv;
+        case GL_DISPATCH_INDIRECT_BUFFER: return "GL_DISPATCH_INDIRECT_BUFFER"sv;
+        case GL_DRAW_INDIRECT_BUFFER: return "GL_DRAW_INDIRECT_BUFFER"sv;
+        case GL_ELEMENT_ARRAY_BUFFER: return "GL_ELEMENT_ARRAY_BUFFER"sv;
+        case GL_PIXEL_PACK_BUFFER: return "GL_PIXEL_PACK_BUFFER"sv;
+        case GL_PIXEL_UNPACK_BUFFER: return "GL_PIXEL_UNPACK_BUFFER"sv;
+        case GL_QUERY_BUFFER: return "GL_QUERY_BUFFER"sv;
+        case GL_SHADER_STORAGE_BUFFER: return "GL_SHADER_STORAGE_BUFFER"sv;
+        case GL_TEXTURE_BUFFER: return "GL_TEXTURE_BUFFER"sv;
+        case GL_TRANSFORM_FEEDBACK_BUFFER: return "GL_TRANSFORM_FEEDBACK_BUFFER"sv;
+        case GL_UNIFORM_BUFFER: return "GL_UNIFORM_BUFFER"sv;
+        default: return "UNKNOW_TARGET"sv;
     }
 }
 

@@ -53,6 +53,7 @@
 #include <modules/meshrenderinggl/algorithm/calcnormals.h>
 
 #include <string_view>
+#include <optional>
 
 namespace inviwo {
 
@@ -164,9 +165,8 @@ protected:
     };
     IllustrationSettings illustrationSettings_;
 
-    FragmentListRenderer flr_;
+    std::optional<FragmentListRenderer> flr_;
     typename Dispatcher<void()>::Handle flrReload_;
-    bool supportsFragmentLists_;
     bool supportesIllustration_;
 };
 

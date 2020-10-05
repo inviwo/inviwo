@@ -82,12 +82,10 @@ RasterizationRenderer::RasterizationRenderer()
     , intermediateImage_()
     , camera_("camera", "Camera")
     , trackball_(&camera_)
-    , flr_() {
-
-    // query OpenGL Capability
-    supportsFragmentLists_ = FragmentListRenderer::supportsFragmentLists();
-    supportesIllustration_ = FragmentListRenderer::supportsIllustration();
-    if (!supportsFragmentLists_) {
+    , flr_{FragmentListRenderer::supportsFragmentLists() ? std::make_optional<FragmentListRenderer>() : std::nullopt}
+    , supportesIllustration_{FragmentListRenderer::supportsIllustration()} {
+    
+    if (!FragmentListRenderer::supportsFragmentLists()) {
         LogProcessorWarn(
             "Fragment lists are not supported by the hardware -> use blending without sorting, may "
             "lead to errors");
@@ -109,7 +107,9 @@ RasterizationRenderer::RasterizationRenderer()
 
     illustrationSettings_.enabled_.setReadOnly(!supportesIllustration_);
 
-    flrReload_ = flr_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    if (flr_) {
+        flrReload_ = flr_->onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    }
 
     imageInport_->onChange([this]() {
         if (imageInport_->hasData()) {
@@ -167,20 +167,20 @@ void RasterizationRenderer::process() {
     do {
         retry = false;
 
-        if (fragmentLists) {
+        if (flr_ && fragmentLists) {
             // prepare fragment list rendering
-            flr_.prePass(outport_.getDimensions());
+            flr_->prePass(outport_.getDimensions());
         }
 
         for (auto rasterization : rasterizations_) {
             rasterization->rasterize(outport_.getDimensions(), mat4(1.0),
                                      [this, fragmentLists](Shader& sh) {
                                          utilgl::setUniforms(sh, camera_);
-                                         if (fragmentLists) this->flr_.setShaderUniforms(sh);
+                                         if (flr_ && fragmentLists) flr_->setShaderUniforms(sh);
                                      });
         }
 
-        if (fragmentLists) {
+        if (flr_ && fragmentLists) {
             // final processing of fragment list rendering
             if (useIntermediateTarget) {
                 utilgl::deactivateCurrentTarget();
@@ -190,11 +190,11 @@ void RasterizationRenderer::process() {
             const bool useIllustration =
                 illustrationSettings_.enabled_.isChecked() && supportesIllustration_;
             if (useIllustration) {
-                flr_.setIllustrationSettings(illustrationSettings_.getSettings());
+                flr_->setIllustrationSettings(illustrationSettings_.getSettings());
             }
             const Image* background =
                 useIntermediateTarget ? &intermediateImage_ : imageInport_->getData().get();
-            retry = !flr_.postPass(useIllustration, background);
+            retry = !flr_->postPass(useIllustration, background);
         }
     } while (retry);
 

@@ -88,14 +88,22 @@ TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
     
     LogErrorCheck checklog(GetParam());
     auto s = factory_->create(GetParam());
+
+    LGL_ERROR;
+
     ASSERT_TRUE(s.get() != nullptr) << "Could not create processor " << GetParam();
     s->resetAllPoperties();
 
+    LGL_ERROR;
+    
     const size_t sizeBefore = network_->getProcessors().size();
     auto p = s.release();
     network_->addProcessor(p);
     EXPECT_EQ(sizeBefore + 1, network_->getProcessors().size())
         << "Could not add processor " << GetParam();
+    
+    LGL_ERROR;
+    
     network_->removeAndDeleteProcessor(p);
     EXPECT_EQ(sizeBefore, network_->getProcessors().size())
         << "Could not remove processor " << GetParam();

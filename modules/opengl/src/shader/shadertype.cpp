@@ -57,6 +57,25 @@ std::string ShaderType::extension(const ShaderType& type) {
     }
 }
 
+std::string ShaderType::name() const {
+    switch (type_) {
+        case GL_VERTEX_SHADER:
+            return "vertex";
+        case GL_GEOMETRY_SHADER:
+            return "geometry";
+        case GL_FRAGMENT_SHADER:
+            return "fragment";
+        case GL_TESS_CONTROL_SHADER:
+            return "tesc_control";
+        case GL_TESS_EVALUATION_SHADER:
+            return "tese_evaluation";
+        case GL_COMPUTE_SHADER:
+            return "compute";
+        default:
+            return "invalid";
+    }
+}
+
 ShaderType::operator bool() const {
     return type_ == GL_VERTEX_SHADER || type_ == GL_GEOMETRY_SHADER ||
            type_ == GL_FRAGMENT_SHADER || type_ == GL_TESS_CONTROL_SHADER ||

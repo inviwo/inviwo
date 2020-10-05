@@ -99,62 +99,35 @@ private:
     void advect();
 
     enum class SeedingSpace { Data, World };
-    VolumeInport volume_{"volume"};
-    SeedPoints3DInport seeds_{"seeds"};
-    MeshOutport meshPort_{"particles"};
+    VolumeInport volume_;
+    SeedPoints3DInport seeds_;
+    MeshOutport meshPort_;
+    TemplateOptionProperty<SeedingSpace> seedingSpace_;
 
-    TemplateOptionProperty<SeedingSpace> seedingSpace_{
-        "seedingSpace",
-        "Seeding Space",
-        {{"data", "Data", SeedingSpace::Data}, {"world", "World", SeedingSpace::World}}};
+    FloatProperty advectionSpeed_;
+    IntProperty internalSteps_;
 
-    FloatProperty advectionSpeed_{"advectionSpeed", "Advection Speed", 0.01f, 0.0f, 1.0f};
-    IntProperty internalSteps_{"advectionsPerFrame",
-                               "Advections per Frame",
-                               10,
-                               1,
-                               100,
-                               1,
-                               InvalidationLevel::InvalidResources};
+    FloatMinMaxProperty particleSize_;
 
-    FloatMinMaxProperty particleSize_{
-        "particleSize", "Particle radius", 0.025f, 0.035f, 0.0f, 1.0f};
+    FloatProperty minV_;
+    FloatProperty maxV_;
+    TransferFunctionProperty tf_;
 
-    FloatProperty minV_{"minV",
-                        "Min velocity",
-                        0,
-                        0,
-                        std::numeric_limits<float>::max(),
-                        0.1f,
-                        InvalidationLevel::Valid,
-                        PropertySemantics::Text};
-    FloatProperty maxV_{"maxV",
-                        "Max velocity",
-                        1,
-                        0,
-                        std::numeric_limits<float>::max(),
-                        0.1f,
-                        InvalidationLevel::Valid,
-                        PropertySemantics::Text};
-    TransferFunctionProperty tf_{"tf", "Velocity mapping"};
+    FloatProperty reseedInterval_;
 
-    FloatProperty reseedInterval_{"reseedsInterval", "Reseed interval", 1.0f, 0.0f, 10.0f};
-
-    Shader shader_{{{ShaderType::Compute, std::string{"streamparticles.comp"}}}, Shader::Build::No};
-
-    Timer timer_{Timer::Milliseconds(17), [&]() { update(); }};
-
+    Shader shader_;
+    Timer timer_;
     double reseedtime_;
     double prevT_;
     Clock clock_;
     bool ready_;
-    bool buffersDirty_ = true;
+    bool buffersDirty_;
 
-    std::shared_ptr<Mesh> mesh_{nullptr};
-    std::shared_ptr<Buffer<vec4>> bufPos_{nullptr};
-    std::shared_ptr<Buffer<float>> bufLife_{nullptr};
-    std::shared_ptr<Buffer<float>> bufRad_{nullptr};
-    std::shared_ptr<Buffer<vec4>> bufCol_{nullptr};
+    std::shared_ptr<Mesh> mesh_;
+    std::shared_ptr<Buffer<vec4>> bufPos_;
+    std::shared_ptr<Buffer<float>> bufLife_;
+    std::shared_ptr<Buffer<float>> bufRad_;
+    std::shared_ptr<Buffer<vec4>> bufCol_;
 };
 
 }  // namespace inviwo
