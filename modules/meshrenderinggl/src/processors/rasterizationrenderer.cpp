@@ -82,9 +82,8 @@ RasterizationRenderer::RasterizationRenderer()
     , intermediateImage_()
     , camera_("camera", "Camera")
     , trackball_(&camera_)
-    , flr_{FragmentListRenderer::supportsFragmentLists()
-               ? std::make_optional<FragmentListRenderer>()
-               : std::nullopt}
+    , flr_{FragmentListRenderer::supportsFragmentLists() ? std::make_unique<FragmentListRenderer>()
+                                                         : nullptr}
     , supportesIllustration_{FragmentListRenderer::supportsIllustration()} {
 
     if (!FragmentListRenderer::supportsFragmentLists()) {
