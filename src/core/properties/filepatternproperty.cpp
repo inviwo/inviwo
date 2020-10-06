@@ -42,14 +42,14 @@ const std::string FilePatternProperty::classIdentifier = "org.inviwo.FilePattern
 std::string FilePatternProperty::getClassIdentifier() const { return classIdentifier; }
 
 FilePatternProperty::FilePatternProperty(std::string identifier, std::string displayName,
-                                         std::string pattern, std::string directory,
+                                         std::string pattern, std::string contentType,
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , helpText_("helpText", "",
                 "A pattern might include '#' as placeholder for digits, where "
                 "multiple '###' indicate leading zeros. Wildcards('*', '?') are supported.")
-    , pattern_("pattern", "Pattern", {pattern})
+    , pattern_("pattern", "Pattern", {pattern}, contentType)
     , updateBtn_("updateBtn", "Update File List")
     , sort_("sorting", "Sort File Names", true)
     , matchShorterNumbers_("matchShorterNumbers", "Match Numbers with less Digits", true)

@@ -64,7 +64,7 @@ public:
     static const std::string classIdentifier;
 
     FilePatternProperty(std::string identifier, std::string displayName, std::string pattern = "",
-                        std::string directory = "",
+                        std::string contentType = "default",
                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                         PropertySemantics semantics = PropertySemantics::Default);
 
