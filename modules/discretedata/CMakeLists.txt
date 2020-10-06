@@ -57,6 +57,7 @@ set(SOURCE_FILES
     src/processors/createchannel.cpp
     src/processors/datasetfrombase.cpp
     src/processors/datasetsource.cpp
+    src/processors/exampledataset.cpp
     src/processors/meshfromdataset.cpp
     src/processors/segmentationvoxelizer.cpp
     src/processors/volumefromdataset.cpp

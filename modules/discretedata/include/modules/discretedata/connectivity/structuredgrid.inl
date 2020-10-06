@@ -331,12 +331,14 @@ const CellStructure* StructuredGrid<N>::getCellType(GridPrimitive dim, ind) cons
 
 template <ind N>
 void StructuredGrid<N>::calculateSizes() {
+#ifdef IVW_DEBUG
     IVW_ASSERT(static_cast<ind>(gridDimension_) > static_cast<ind>(GridPrimitive::Vertex),
                "GridPrimitive need to be at least Edge for a structured grid");
     IVW_ASSERT(N == static_cast<ind>(gridDimension_),
                "Grid dimension should match cell dimension.");
     for (ind size : numVerticesPerDimension_)
         IVW_ASSERT(size >= 1, "At least one vertex in each dimension required.");
+#endif
 
     ind numCombinations = ind(1) << N;
     for (ind combo = 0; combo < numCombinations; ++combo) {

@@ -58,19 +58,19 @@ TEST(AccessingData, Connectivity) {
             // Iterate over all vertices of the respective cell.
             // Basically a fromGridPrimitive/toGridPrimitive/fromIndex/toIndex object.
             // Do something with them.
-            ind idx = vert.getIndex();
+            ind vertIdx = vert.getIndex();
+            ind cellIdx = cell.getIndex();
 
             // Make sure the grid is bi-directional.
-            grid->getConnections(neighbors, idx, vert.getType(), cell.getType());
-            if (std::find(neighbors.cbegin(), neighbors.cend(), cell.getIndex()) ==
-                neighbors.cend()) {
-                EXPECT_TRUE(allFine);
+            neighbors.clear();
+            grid->getConnections(neighbors, vertIdx, vert.getType(), cell.getType());
+            if (std::find(neighbors.cbegin(), neighbors.cend(), cellIdx) == neighbors.cend()) {
                 allFine = false;
                 break;
             }
         }
+        if (!allFine) break;
     }
-
     EXPECT_TRUE(allFine && "Connectivity is not bi-directional.");
 }
 

@@ -90,9 +90,9 @@ struct VectorCompare {
     }
 };
 
-bool nextNchooseK(std::vector<ind>& chosenK, ind N) {
-    for (ind e = 1; e <= chosenK.size(); ++e) {
-        if (chosenK[N - e] != N - e) {
+static bool nextNchooseK(std::vector<ind>& chosenK, ind N) {
+    for (size_t e = 1; e <= chosenK.size(); ++e) {
+        if (chosenK[N - e] != N - static_cast<ind>(e)) {
             chosenK[N - e]++;
             ind valE = chosenK[N - e];
             for (ind afterE = N - e + 1; afterE < N; ++afterE) chosenK[afterE] = ++valE;

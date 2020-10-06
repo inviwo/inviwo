@@ -70,6 +70,7 @@ public:
 
     virtual const CellStructure* getCellType(GridPrimitive dim, ind index) const override;
 
+    /** Append the indices of all primitves connected to the given index. **/
     virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
                                 GridPrimitive to, bool positions = false) const override;
 
