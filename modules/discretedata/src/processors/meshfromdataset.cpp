@@ -81,7 +81,9 @@ void MeshFromDataSet::process() {
 
     if (portInDataSet_.isChanged()) {
         ind maxDim = std::min((ind)pInDataSet->getGrid()->getDimension(), ind(2));
-        GridPrimitive former = primitive_.get();
+        GridPrimitive former = GridPrimitive::Vertex;
+        if (primitive_.getSelectedIndex() < primitive_.size()) former = primitive_.get();
+
         primitive_.clearOptions();
         for (ind dim = 0; dim <= maxDim; ++dim) {
             GridPrimitive gridDim = (GridPrimitive)dim;
@@ -113,27 +115,33 @@ void MeshFromDataSet::process() {
 
     result->addBuffer(BufferType::ColorAttrib, colors);
 
-    std::vector<ind> indexData;
-    std::vector<std::uint32_t> indexMeshData;
-    for (auto element : pInDataSet->getGrid()->all(primitive_.get())) {
-        indexData.clear();
-        pInDataSet->getGrid()->getConnections(indexData, element.getIndex(), primitive_.get(),
-                                              GridPrimitive::Vertex);
-        if (primitive_.get() == GridPrimitive::Face)
-            for (size_t tri = 0; tri < indexData.size() - 2; ++tri) {
-                indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri]));
-                indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 1]));
-                indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 2]));
+    if (primitive_.get() != GridPrimitive::Vertex) {
+        std::vector<ind> indexData;
+        std::vector<std::uint32_t> indexMeshData;
+        for (auto element : pInDataSet->getGrid()->all(primitive_.get())) {
+            indexData.clear();
+            pInDataSet->getGrid()->getConnections(indexData, element.getIndex(), primitive_.get(),
+                                                  GridPrimitive::Vertex);
+
+            switch (primitive_.get()) {
+                case GridPrimitive::Face:
+                    for (size_t tri = 0; tri < indexData.size() - 2; ++tri) {
+                        indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri]));
+                        indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 1]));
+                        indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 2]));
+                    }
+                    break;
+                default:
+                    LogWarn("Something, but not a face! #" << indexData.size());
+                    for (auto val : indexData)
+                        indexMeshData.push_back(static_cast<std::uint32_t>(val));
+                    break;
             }
-        else
-            for (auto val : indexData) indexMeshData.push_back(static_cast<std::uint32_t>(val));
+        }
+
+        auto indexBuff = util::makeIndexBuffer(std::move(indexMeshData));
+        result->addIndicies(Mesh::MeshInfo(primType, ConnectivityType::None), indexBuff);
     }
-
-    // indexMeshData.reserve(indexData.size());
-    for (auto val : indexData) indexMeshData.push_back(static_cast<std::uint32_t>(val));
-
-    auto indexBuff = util::makeIndexBuffer(std::move(indexMeshData));
-    result->addIndicies(Mesh::MeshInfo(primType, ConnectivityType::None), indexBuff);
 
     portOutMesh_.setData(result);
 }

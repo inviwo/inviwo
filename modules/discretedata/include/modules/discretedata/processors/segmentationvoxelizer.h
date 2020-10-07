@@ -35,6 +35,7 @@
 #include <modules/discretedata/connectivity/connectioniterator.h>
 #include <modules/discretedata/channels/datachannel.h>
 #include <modules/discretedata/channels/channeldispatching.h>
+#include <fstream>
 
 namespace inviwo {
 namespace discretedata {
@@ -49,14 +50,14 @@ public:
     virtual void process() override;
 
     template <typename T, ind N>
-    Mesh createVoxels(Mesh& voxels, const Connectivity& grid, const DataChannel<T, N>& segmentation,
-                      const Channel& vertices);
+    inline Mesh createVoxels(Mesh& voxels, const Connectivity& grid,
+                             const DataChannel<T, N>& segmentation, const Channel& vertices);
 
 private:
     template <typename Ts, ind Ns, typename Tv, ind Nv>
-    Mesh createVoxelsFullTemplate(Mesh& voxels, const Connectivity& grid,
-                                  const DataChannel<Ts, Ns>& segmentation,
-                                  const DataChannel<Tv, Nv>& vertices);
+    inline Mesh createVoxelsFullTemplate(Mesh& voxels, const Connectivity& grid,
+                                         const DataChannel<Ts, Ns>& segmentation,
+                                         const DataChannel<Tv, Nv>& vertices);
 
 private:
     /** DataSet with segmented channel & vertex positions */

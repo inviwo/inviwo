@@ -247,14 +247,6 @@ std::shared_ptr<const BufferChannel<T, N>> DataSet::getAsBuffer(const std::strin
     // Check for nullptr inside.
     if (bufferChannel) return bufferChannel;
 
-    // Copy data over.
-    // BufferChannel<T, N>* buffer = new BufferChannel<T, N>(dataChannel->size(), name, definedOn);
-    // for (ind element = 0; element < dataChannel->size(); ++element)
-    //     dataChannel->fill(buffer->template get<std::array<T, N>>(element), element);
-
-    // buffer->copyMetaDataFrom(*dataChannel.get());
-
-    // return std::shared_ptr<const BufferChannel<T, N>>(buffer);
     return std::make_shared<const BufferChannel<T, N>>(*dataChannel);
 }
 

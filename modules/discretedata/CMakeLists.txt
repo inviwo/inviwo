@@ -16,11 +16,13 @@ set(HEADER_FILES
     include/modules/discretedata/connectivity/cell.h
     include/modules/discretedata/connectivity/connectioniterator.h
     include/modules/discretedata/connectivity/connectivity.h
+    include/modules/discretedata/connectivity/explicitconnectivity.h
     include/modules/discretedata/connectivity/elementiterator.h
     include/modules/discretedata/connectivity/euclideanmeasure.h
     include/modules/discretedata/connectivity/lineset.h
     include/modules/discretedata/connectivity/periodicgrid.h
     include/modules/discretedata/connectivity/structuredgrid.h
+    include/modules/discretedata/connectivity/trianglemesh.h
     include/modules/discretedata/ports/datasetport.h
     include/modules/discretedata/processors/computegridmeasure.h
     include/modules/discretedata/processors/createchannel.h
@@ -50,9 +52,11 @@ set(SOURCE_FILES
     src/connectivity/cell.cpp
     src/connectivity/connectioniterator.cpp
     src/connectivity/connectivity.cpp
+    src/connectivity/explicitconnectivity.cpp
     src/connectivity/elementiterator.cpp
     src/connectivity/euclideanmeasure.cpp
     src/connectivity/lineset.cpp
+    src/connectivity/trianglemesh.cpp
     src/processors/computegridmeasure.cpp
     src/processors/createchannel.cpp
     src/processors/datasetfrombase.cpp
