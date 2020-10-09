@@ -40,6 +40,7 @@
 
 namespace inviwo {
 class Image;
+class Layer;
 
 namespace util {
 
@@ -97,6 +98,12 @@ template <typename C>
 void forEachPixelParallel(const LayerRAM& layer, C callback, size_t jobs = 0) {
     forEachPixelParallel(layer.getDimensions(), callback, jobs);
 }
+
+IVW_CORE_API void flipLayerVertical(std::shared_ptr<Layer> layer);
+IVW_CORE_API void flipLayerHorizontal(std::shared_ptr<Layer> layer);
+
+IVW_CORE_API void flipImageVertical(std::shared_ptr<Image> img);
+IVW_CORE_API void flipImageHorizontal(std::shared_ptr<Image> img);
 
 IVW_CORE_API std::shared_ptr<Image> readImageFromDisk(std::string filename);
 

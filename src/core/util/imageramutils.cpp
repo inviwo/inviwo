@@ -33,10 +33,43 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
+
+#include <algorithm>
 
 namespace inviwo {
 
 namespace util {
+
+void flipLayerVertical(std::shared_ptr<Layer> layer) {
+    layer->getEditableRepresentation<LayerRAM>()->dispatch<void>([](auto layerpr) {
+        using ValueType = util::PrecisionValueType<decltype(layerpr)>;
+        auto data = layerpr->getDataTyped();
+        const auto dims = layerpr->getDimensions();
+        for (size_t y = 0; y < dims.y / 2; ++y) {
+            ValueType* it1 = data + y * dims.x;
+            ValueType* it2 = data + (dims.y - 1 - y) * dims.x;
+            std::swap_ranges(it1, it1 + dims.x, it2);
+        }
+    });
+}
+
+void flipLayerHorizontal(std::shared_ptr<Layer> layer) {
+    layer->getEditableRepresentation<LayerRAM>()->dispatch<void>([](auto layerpr) {
+        using ValueType = util::PrecisionValueType<decltype(layerpr)>;
+        auto data = layerpr->getDataTyped();
+        const auto dims = layerpr->getDimensions();
+        for (size_t y = 0; y < dims.y; ++y) {
+            ValueType* it = data + y * dims.x;
+            std::reverse(it, it + dims.x);
+        }
+    });
+}
+
+void flipImageVertical(std::shared_ptr<Image> img) { img->forEachLayer(flipLayerVertical); }
+
+void flipImageHorizontal(std::shared_ptr<Image> img) { img->forEachLayer(flipLayerHorizontal); }
 
 std::shared_ptr<Image> readImageFromDisk(std::string filename) {
     auto app = InviwoApplication::getPtr();
