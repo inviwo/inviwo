@@ -107,6 +107,14 @@ public:
      */
     dvec4 readPixel(size2_t pos, LayerType layer, size_t index = 0) const;
 
+    /**
+     * Call the given \p callback for each layer including depth and picking, if existing.
+     */
+    template <typename C>
+    void forEachLayer(C callback);
+    template <typename C>
+    void forEachLayer(C callback) const;
+
     static uvec3 colorCode;
     static const std::string classIdentifier;
     static const std::string dataName;
@@ -125,5 +133,19 @@ protected:
 // https://docs.microsoft.com/en-us/cpp/cpp/general-rules-and-limitations?view=vs-2017
 extern template class IVW_CORE_TMPL_EXP DataReaderType<Image>;
 extern template class IVW_CORE_TMPL_EXP DataWriterType<Image>;
+
+template <typename C>
+void Image::forEachLayer(C callback) {
+    for (auto& layer : colorLayers_) callback(layer);
+    if (depthLayer_) callback(depthLayer_);
+    if (pickingLayer_) callback(pickingLayer_);
+}
+
+template <typename C>
+void Image::forEachLayer(C callback) const {
+    for (auto& layer : colorLayers_) callback(layer);
+    if (depthLayer_) callback(depthLayer_);
+    if (pickingLayer_) callback(pickingLayer_);
+}
 
 }  // namespace inviwo
