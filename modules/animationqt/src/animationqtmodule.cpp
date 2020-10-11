@@ -56,6 +56,7 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 
 #include <warn/push>
@@ -191,6 +192,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
                              dmat2, dmat3, dmat4, int, ivec2, ivec3, ivec4, unsigned int, uvec2,
                              uvec3, uvec4, size_t, size2_t, size3_t, size4_t>;
     util::for_each_type<Types>{}(Reghelper<OrdinalProperty>{}, *this);
+    util::for_each_type<Types>{}(Reghelper<OrdinalRefProperty>{}, *this);
 
     util::for_each_type<std::tuple<float, double, int, unsigned int, size_t>>{}(
         Reghelper<MinMaxProperty>{}, *this);
