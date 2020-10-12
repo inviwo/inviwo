@@ -42,8 +42,8 @@ namespace inviwo {
 
 namespace util {
 
-void flipLayerVertical(std::shared_ptr<Layer> layer) {
-    layer->getEditableRepresentation<LayerRAM>()->dispatch<void>([](auto layerpr) {
+void flipLayerVertical(Layer& layer) {
+    layer.getEditableRepresentation<LayerRAM>()->dispatch<void>([](auto layerpr) {
         using ValueType = util::PrecisionValueType<decltype(layerpr)>;
         auto data = layerpr->getDataTyped();
         const auto dims = layerpr->getDimensions();
@@ -55,8 +55,8 @@ void flipLayerVertical(std::shared_ptr<Layer> layer) {
     });
 }
 
-void flipLayerHorizontal(std::shared_ptr<Layer> layer) {
-    layer->getEditableRepresentation<LayerRAM>()->dispatch<void>([](auto layerpr) {
+void flipLayerHorizontal(Layer& layer) {
+    layer.getEditableRepresentation<LayerRAM>()->dispatch<void>([](auto layerpr) {
         using ValueType = util::PrecisionValueType<decltype(layerpr)>;
         auto data = layerpr->getDataTyped();
         const auto dims = layerpr->getDimensions();
@@ -67,9 +67,9 @@ void flipLayerHorizontal(std::shared_ptr<Layer> layer) {
     });
 }
 
-void flipImageVertical(std::shared_ptr<Image> img) { img->forEachLayer(flipLayerVertical); }
+void flipImageVertical(Image& img) { img.forEachLayer(flipLayerVertical); }
 
-void flipImageHorizontal(std::shared_ptr<Image> img) { img->forEachLayer(flipLayerHorizontal); }
+void flipImageHorizontal(Image& img) { img.forEachLayer(flipLayerHorizontal); }
 
 std::shared_ptr<Image> readImageFromDisk(std::string filename) {
     auto app = InviwoApplication::getPtr();
