@@ -32,6 +32,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 
 #include <memory>
@@ -39,7 +41,6 @@
 #include <future>
 
 namespace inviwo {
-class Image;
 
 namespace util {
 
@@ -97,6 +98,12 @@ template <typename C>
 void forEachPixelParallel(const LayerRAM& layer, C callback, size_t jobs = 0) {
     forEachPixelParallel(layer.getDimensions(), callback, jobs);
 }
+
+IVW_CORE_API void flipLayerVertical(Layer& layer);
+IVW_CORE_API void flipLayerHorizontal(Layer& layer);
+
+IVW_CORE_API void flipImageVertical(Image& img);
+IVW_CORE_API void flipImageHorizontal(Image& img);
 
 IVW_CORE_API std::shared_ptr<Image> readImageFromDisk(std::string filename);
 
