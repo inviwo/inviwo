@@ -47,7 +47,7 @@ class PickingAction;
 class IVW_CORE_API PickingMapper {
 public:
     /**
-     * Construct a picking mapper. This will register a range of colors in the PickingMangaer and
+     * Construct a picking mapper. This will register a range of colors in the PickingManager and
      * create a PickingAction to associate those indices the the supplied action. The processor
      * argument should be the processor where the picking colors are drawn.
      */

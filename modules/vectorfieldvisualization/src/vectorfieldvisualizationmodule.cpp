@@ -33,6 +33,7 @@
 #include <modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/seedpointsfrommask.h>
 
+#include <modules/vectorfieldvisualization/processors/unsteadyvolumetospatialsampler.h>
 #include <modules/vectorfieldvisualization/processors/3d/streamlines.h>
 #include <modules/vectorfieldvisualization/processors/3d/pathlines.h>
 #include <modules/vectorfieldvisualization/processors/3d/streamribbons.h>
@@ -74,6 +75,8 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<RBFVectorFieldGenerator3D>();
     registerProcessor<SeedPointGenerator>();
     registerProcessor<SeedPointsFromMask>();
+
+    registerProcessor<UnsteadyVolumeToSpatialSampler>();
 
     registerProcessor<StreamLinesDeprecated>();
     registerProcessor<PathLinesDeprecated>();

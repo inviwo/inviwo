@@ -107,7 +107,8 @@ void exposeVolume(pybind11::module& m) {
             return oss.str();
         });
 
-    py::bind_vector<VolumeSequence>(m, "VolumeSequence", py::module_local(false));
+    py::bind_vector<VolumeSequence, std::shared_ptr<VolumeSequence>>(m, "VolumeSequence",
+                                                                     py::module_local(false));
 
     exposeStandardDataPorts<Volume>(m, "Volume");
     exposeStandardDataPorts<VolumeSequence>(m, "VolumeSequence");

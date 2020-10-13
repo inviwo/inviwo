@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 uniform sampler2D vectorFieldColor;
@@ -38,67 +38,62 @@ uniform bool useRK4;
 
 in vec3 texCoord_;
 
-
-vec2 euler(vec2 posF ){
+vec2 euler(vec2 posF) {
     vec2 V0 = texture(vectorFieldColor, posF).rg;
-    if(normalizeVectors){
+    if (normalizeVectors) {
         V0 = normalize(V0);
     }
     return V0;
-
 }
- 
-vec2 rk4(vec2 p0 , float stepsize) {
+
+vec2 rk4(vec2 p0, float stepsize) {
     vec2 V0 = euler(p0);
-    
-    vec2 p1 = p0 + V0 * stepsize/2;
+
+    vec2 p1 = p0 + V0 * stepsize / 2;
     vec2 V1 = euler(p1);
-    
-    vec2 p2 = p0 + V1 * stepsize/2;
+
+    vec2 p2 = p0 + V1 * stepsize / 2;
     vec2 V2 = euler(p2);
 
     vec2 p3 = p0 + V2 * stepsize;
     vec2 V3 = euler(p3);
 
-
-    return (V0 + 2*(V1+V2) + V3) / 6.0;
+    return (V0 + 2 * (V1 + V2) + V3) / 6.0;
 }
 
-void traverse(inout  float v , inout int c,vec2 posF , float stepSize,int steps){
-    for(int i = 0;i<steps;i++){
+void traverse(inout float v, inout int c, vec2 posF, float stepSize, int steps) {
+    for (int i = 0; i < steps; i++) {
         vec2 V0;
-        if(useRK4){
-            V0 = rk4(posF,stepSize);
-        }else{
+        if (useRK4) {
+            V0 = rk4(posF, stepSize);
+        } else {
             V0 = euler(posF);
         }
         posF += V0 * stepSize;
 
-        if(posF.x < 0 ) break;
-        if(posF.y < 0 ) break;
+        if (posF.x < 0) break;
+        if (posF.y < 0) break;
 
-        if(posF.x > 1 ) break;
-        if(posF.y > 1 ) break;
+        if (posF.x > 1) break;
+        if (posF.y > 1) break;
 
         v += texture(noiseTextureColor, posF.xy).r;
         c += 1;
     }
 }
 
-
-
-
 void main() {
-	float v = texture(noiseTextureColor, texCoord_.xy).r;
+    vec2 test = texture(vectorFieldColor, texCoord_.xy).rg;
+    if (test.r == 0) discard;
+    float v = texture(noiseTextureColor, texCoord_.xy).r;
 
-	int c = 1;
-	traverse(v,c,texCoord_.xy , stepLength , samples / 2);
-    traverse(v,c,texCoord_.xy , -stepLength , samples / 2);
+    int c = 1;
+    traverse(v, c, texCoord_.xy, stepLength, samples / 2);
+    traverse(v, c, texCoord_.xy, -stepLength, samples / 2);
 
-	v /= c;
+    v /= c;
 
-    if(intensityMapping)
-        v = pow(v,(5.0/pow((v+1.0),4)));
+    if (intensityMapping) v = pow(v, (5.0 / pow((v + 1.0), 4)));
 
-    FragData0 = vec4(v,v,v,1.0);
+    FragData0 = vec4(v, v, v, 1.0);
 }

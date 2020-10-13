@@ -129,6 +129,10 @@ void HeightFieldProcessor::process() {
     shader_.setUniform("terrainShadingMode", terrainShadingMode);
     shader_.setUniform("normalMapping", (normalMapping ? 1 : 0));
 
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
+    utilgl::DepthMaskState depthMask(GL_TRUE);
+    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+
     utilgl::setUniforms(shader_, camera_, lightingProperty_, heightScale_);
 
     for (auto mesh : inport_) {

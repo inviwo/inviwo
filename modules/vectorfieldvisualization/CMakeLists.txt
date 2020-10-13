@@ -24,9 +24,11 @@ set(HEADER_FILES
     include/modules/vectorfieldvisualization/processors/integrallinevectortomesh.h
     include/modules/vectorfieldvisualization/processors/seed3dto4d.h
     include/modules/vectorfieldvisualization/processors/seedsfrommasksequence.h
+    include/modules/vectorfieldvisualization/processors/unsteadyvolumetospatialsampler.h
     include/modules/vectorfieldvisualization/properties/integrallineproperties.h
     include/modules/vectorfieldvisualization/properties/pathlineproperties.h
     include/modules/vectorfieldvisualization/properties/streamlineproperties.h
+    include/modules/vectorfieldvisualization/util/unsteadyspatialsampler.h
     include/modules/vectorfieldvisualization/vectorfieldvisualizationmodule.h
     include/modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h
 )
@@ -51,9 +53,11 @@ set(SOURCE_FILES
     src/processors/integrallinevectortomesh.cpp
     src/processors/seed3dto4d.cpp
     src/processors/seedsfrommasksequence.cpp
+    src/processors/unsteadyvolumetospatialsampler.cpp
     src/properties/integrallineproperties.cpp
     src/properties/pathlineproperties.cpp
     src/properties/streamlineproperties.cpp
+    src/util/unsteadyspatialsampler.cpp
     src/vectorfieldvisualizationmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
