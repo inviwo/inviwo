@@ -135,7 +135,7 @@ void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
             double prevMaxRatio = (prevVal.y - prevRange.x) / (l);
 
             Property::OnChangeBlocker block{range};
-            range.setRange(glm::tvec2<T>(minV, maxV));
+            range.setRange({minV, maxV});
             if (l > 0 && maxV != minV) {
                 range.set(
                     {minV + prevMinRatio * (maxV - minV), minV + prevMaxRatio * (maxV - minV)});
