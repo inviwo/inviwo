@@ -122,13 +122,23 @@ void TestPropertyComposite::storeDefault() {
 	for(const auto& subProp : subProperties)
 		subProp->storeDefault();
 }
-std::vector<std::shared_ptr<PropertyAssignment>> TestPropertyComposite::generateAssignments() const {
-	std::vector<std::shared_ptr<PropertyAssignment>> res;
-	std::cerr << "TestPropertyComposite::generateAssignments " << getIdentifier() << std::endl;
+std::vector<std::pair<util::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>> TestPropertyComposite::generateAssignmentsCmp() const {
+	std::vector<std::pair<util::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>> res;
 	for(const auto& subProp : subProperties) {
-		std::cerr << "   " << subProp->getIdentifier() << std::endl;
-		auto tmp = subProp->generateAssignments();
-		res.insert(res.end(), tmp.begin(), tmp.end());
+		if(subProp->getBoolComp()->isChecked()) {
+			const auto tmp = subProp->generateAssignmentsCmp();
+			res.insert(res.end(), tmp.begin(), tmp.end());
+		}
+	}
+	return res;
+}
+std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> TestPropertyComposite::generateAssignments() const {
+	std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> res;
+	for(const auto& subProp : subProperties) {
+		if(subProp->getBoolComp()->isChecked()) {
+			const auto tmp = subProp->generateAssignments();
+			res.insert(res.end(), tmp.begin(), tmp.end());
+		}
 	}
 	return res;
 }
@@ -247,9 +257,32 @@ void TestPropertyTyped<T>::storeDefault() {
 	defaultValue = typedProperty->get();
 }
 template<typename T>
-std::vector<std::shared_ptr<PropertyAssignment>> TestPropertyTyped<T>::generateAssignments() const {
+auto TestPropertyTyped<T>::selectedEffects() const -> std::array<util::PropertyEffect, numComponents> {
+	std::array<util::PropertyEffect, numComponents> selectedEffects;
+	for(size_t i = 0; i < numComponents; i++)
+		selectedEffects[i] = util::PropertyEffect(effectOption[i]->getSelectedValue());
+	return selectedEffects;
+}
+template<typename T>
+std::vector<std::pair<util::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>> TestPropertyTyped<T>::generateAssignmentsCmp() const {
 	static const GenerateAssignments<T> tmp;
-	return tmp(typedProperty);
+	static const util::AssignmentComparator cmp = [this](const auto& oldA, const auto& newA) {
+			const PropertyAssignmentTyped<val_type>* oldAptr = dynamic_cast<PropertyAssignmentTyped<val_type>*>(oldA.get());
+			const PropertyAssignmentTyped<val_type>* newAptr = dynamic_cast<PropertyAssignmentTyped<val_type>*>(newA.get());
+			assert(oldAptr != nullptr);
+			assert(newAptr != nullptr);
+
+			const val_type& oldV = oldAptr->getValue();
+			const val_type& newV = newAptr->getValue();
+
+			return propertyEffect<val_type>(oldV, newV, selectedEffects());
+		};
+	return {{cmp,tmp(typedProperty)}};
+}
+template<typename T>
+std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> TestPropertyTyped<T>::generateAssignments() const {
+	static const GenerateAssignments<T> tmp;
+	return {tmp(typedProperty)};
 }
 
 template<typename T>
@@ -259,18 +292,7 @@ std::optional<util::PropertyEffect> TestPropertyTyped<T>::getPropertyEffect(
 	const val_type& valNew = newTestResult->getValue(this->typedProperty);
 	const val_type& valOld = oldTestResult->getValue(this->typedProperty);
 
-	std::array<util::PropertyEffect, numComponents> selectedEffects;
-	for(size_t i = 0; i < numComponents; i++)
-		selectedEffects[i] = util::PropertyEffect(effectOption[i]->getSelectedValue());
-
-	std::optional<util::PropertyEffect> res = {util::PropertyEffect::ANY};
-	for(size_t i = 0; res && i < numComponents; i++) {
-		auto compEff = util::propertyEffect(selectedEffects[i],
-				util::GetComponent<val_type, numComponents>::get(valNew, i),
-				util::GetComponent<val_type, numComponents>::get(valOld, i));
-		res = util::combine(*res, compEff);
-	}
-	return res;
+	return propertyEffect<val_type>(valOld, valNew, selectedEffects());
 }
 
 template<typename T>
@@ -284,10 +306,6 @@ template<typename T>
 std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 			std::shared_ptr<TestResult> testResult) const {
 	const val_type& val = testResult->getValue(this->typedProperty);
-	
-	std::array<util::PropertyEffect, numComponents> selectedEffects;
-	for(size_t i = 0; i < numComponents; i++)
-		selectedEffects[i] = util::PropertyEffect(effectOption[i]->getSelectedValue());
 	
 	return out << '\"' << getDisplayName() << "\" with identifier \"" << getIdentifier() << "\": "
 				<< val;

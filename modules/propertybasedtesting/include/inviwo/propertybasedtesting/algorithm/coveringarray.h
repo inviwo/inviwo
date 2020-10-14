@@ -33,13 +33,23 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/propertybasedtesting/algorithm/generatingassignments.h>
+#include <inviwo/propertybasedtesting/algorithm/histogramtesting.h>
 
 namespace inviwo {
 
 namespace util {
 
 // 2-coverage, randomized discrete SLJ strategy
-std::vector<Test> coveringArray(const Test& init, const std::vector<std::vector< std::shared_ptr<PropertyAssignment> >>& vars);
+std::vector<Test> coveringArray(const Test& init,
+		const std::vector<std::vector< std::shared_ptr<PropertyAssignment> >>& vars);
+
+std::vector<Test> optCoveringArray(const Test& init,
+		const std::vector<
+				std::pair<
+					util::AssignmentComparator,
+					std::vector< std::shared_ptr<PropertyAssignment> >
+				>
+			>& vars);
 
 }  // namespace util
 

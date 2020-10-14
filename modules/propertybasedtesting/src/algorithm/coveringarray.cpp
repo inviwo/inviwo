@@ -82,6 +82,116 @@ std::vector<Test> coveringArray(const Test& init, const std::vector<std::vector<
 	return res;
 }
 
+std::vector<Test> optCoveringArray(const Test& init,
+		const std::vector<
+				std::pair<
+					std::function<std::optional<util::PropertyEffect>(
+						const std::shared_ptr<PropertyAssignment>& oldVal,
+						const std::shared_ptr<PropertyAssignment>& newVal)>,
+					std::vector< std::shared_ptr<PropertyAssignment> >
+				>
+			>& vars) {
+	srand(42); // deterministic for regression testing
+	
+	std::cerr << "optCoveringArray: vars.size() = " << vars.size() << std::endl;
+	for(const auto&[cmp,var] : vars) {
+		for(const auto& as : var) {
+			as->print(std::cerr << "\t");
+			std::cerr << std::endl;
+		}
+		std::cerr << std::endl;
+	}
+	assert(vars.size() > 0);
+
+	using TestConf = std::map<size_t, size_t>; // {var, var_idx}, vars[var][var_idx]
+	std::vector<TestConf> unused;
+	
+	// init
+	for(size_t var = 0; var < vars.size(); var++)
+		for(size_t i = 0; i < vars[var].second.size(); i++)
+			for(size_t var2 = 0; var2 < var; var2++)
+				for(size_t i2 = 0; i2 < vars[var2].second.size(); i2++)
+					unused.emplace_back(std::map<size_t,size_t>{{{var,i}, {var2,i2}}});
+
+	std::vector<TestConf> finished;
+
+	const std::function<bool(const TestConf&, const std::vector<TestConf::value_type>&)> comparable = 
+		[&](const auto& ref, const auto& vs) {
+			std::optional<util::PropertyEffect> res = {util::PropertyEffect::ANY};
+			for(const auto&[var,i] : vs) {
+				const auto& j = ref.at(var);
+				const auto& expect = vars[var].first( vars[var].second[i], vars[var].second[j] );
+				if(!expect)
+					return false;
+				res = util::combine(*expect, *res);
+				if(!res)
+					return false;
+			}
+			return true;
+		};
+
+	const std::function<size_t(const TestConf&, const TestConf&)> cmp =
+		[&](const auto& gen, const auto& ref) {
+			std::vector<TestConf::value_type> vars(gen.begin(), gen.end());
+			for(const auto&[var,i] : ref)
+				if(gen.count(var) == 0)
+					vars.emplace_back(var,i);
+			
+			size_t res = 0;
+			for(const auto& fin : finished)
+				res += comparable(fin, vars) ? 1 : 0;
+			return res;
+		};
+
+	const std::function<void(TestConf&, const TestConf&)> comb =
+		[&](auto& gen, const auto& ref) {
+			for(const auto&[i,v] : ref)
+				gen.emplace(i,v);
+		};
+
+	while(!unused.empty()) {
+		TestConf gen{{unused.back()}};
+		unused.pop_back();
+		while(gen.size() < vars.size()) {
+			// find opt
+			int opt = -1, idx;
+			bool is_unused;
+
+			for(size_t i = 0; i < unused.size(); i++) {
+				const int val = cmp(gen, unused[i]);
+				if(val > opt)
+					opt = val, idx = i, is_unused = true;
+			}
+			for(size_t i = 0; i < finished.size(); i++) {
+				const int val = cmp(gen, finished[i]);
+				if(val > opt)
+					opt = val, idx = i, is_unused = false;
+			}
+
+			assert(opt != -1);
+
+			if(is_unused) {
+				comb(gen, unused[idx]);
+				swap(unused[idx], unused.back());
+				unused.pop_back();
+			} else {
+				comb(gen, finished[idx]);
+			}
+		}
+		finished.emplace_back(gen);
+	}
+	
+	// build tests
+	std::vector<Test> res;
+	for(const auto& test : finished) {
+		Test tmp = init;
+		for(const auto&[var,i] : test)
+			tmp.emplace_back(vars[var].second[i]);
+		res.emplace_back(tmp);
+	}
+	return res;
+}
+
 } // namespace util
 
 } // namespace inviwo

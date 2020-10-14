@@ -8,6 +8,8 @@
 
 #include <vector>
 
+#include <iostream> // TODO: remove
+
 namespace inviwo {
 
 class PropertyAssignment {
@@ -15,6 +17,7 @@ public:
 	virtual ~PropertyAssignment() = default;
 	virtual void apply() const = 0;
 	virtual bool isApplied() const = 0;
+	virtual void print(std::ostream& out) const = 0;
 };
 
 template<typename T>
@@ -38,6 +41,10 @@ public:
 	}
 	bool isApplied() const override {
 		return prop->get() == value;
+	}
+	
+	void print(std::ostream& out) const override {
+		out << "PropertyAssignment(" << prop->getIdentifier() << "," << getValue() << ")";
 	}
 };
 

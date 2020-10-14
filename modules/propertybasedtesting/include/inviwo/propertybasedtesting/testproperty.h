@@ -83,16 +83,33 @@ public:
 
 	virtual void setToDefault() const = 0;
 	virtual void storeDefault() = 0;
-	virtual std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() const = 0;
+	virtual std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> generateAssignments() const = 0;
+	virtual std::vector<std::pair<util::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>> generateAssignmentsCmp() const = 0;
 	virtual ~TestProperty() = default;
 };
+
+template<typename T,
+	size_t numComp = DataFormat<T>::components()>
+std::optional<util::PropertyEffect> propertyEffect(const T& val_old, const T& val_new,
+		const std::array<util::PropertyEffect, numComp>& selectedEffects) {
+	
+	std::optional<util::PropertyEffect> res = {util::PropertyEffect::ANY};
+	for(size_t i = 0; res && i < numComp; i++) {
+		auto compEff = util::propertyEffect(selectedEffects[i],
+				util::GetComponent<T, numComp>::get(val_new, i),
+				util::GetComponent<T, numComp>::get(val_old, i));
+		res = util::combine(*res, compEff);
+	}
+	return res;
+	
+}
 
 std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop);
 
 void makeOnChange(BoolCompositeProperty* const prop);
 
 // for PropertyOwners which support getDisplayName and getIdentifier (i.e.
-// Properties and Processors)
+// CompositeProperties and Processors)
 class TestPropertyComposite : public TestProperty {
 	PropertyOwner* propertyOwner;
 	std::vector<std::shared_ptr<TestProperty>> subProperties;
@@ -139,7 +156,8 @@ public:
 	std::optional<typename T::value_type> getDefaultValue(const T* prop) const;
 
 	void storeDefault();
-	std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() const override;
+	std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> generateAssignments() const override;
+	std::vector<std::pair<util::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>> generateAssignmentsCmp() const override;
 };
 
 template<typename T>
@@ -152,6 +170,8 @@ class TestPropertyTyped : public TestProperty {
 	std::array<OptionPropertyInt*, numComponents> effectOption;
 	
 	TestPropertyTyped() = default;
+
+	std::array<util::PropertyEffect, numComponents> selectedEffects() const;
 public:
 	const static std::string& getClassIdentifier() {
 		const static std::string name = std::string("org.inviwo.TestPropertyTyped") + PropertyTraits<T>::classIdentifier();
@@ -182,7 +202,8 @@ public:
 	void deserialize(Deserializer& s) override;
 	
 	void storeDefault();
-	std::vector<std::shared_ptr<PropertyAssignment>> generateAssignments() const override;
+	std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> generateAssignments() const override;
+	std::vector<std::pair<util::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>> generateAssignmentsCmp() const override;
 };
 
 class TestResult {

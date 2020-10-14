@@ -317,10 +317,10 @@ void Histogram::initTesting() {
 		prop->storeDefault();
 	}
 
-	std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> assignments(props_.size());
-	for(size_t pi = 0; pi < props_.size(); pi++) {
-		for(const auto& assignment : props_[pi]->generateAssignments())
-			assignments[pi].push_back(assignment);
+	std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> assignments;
+	for(const auto prop : props_) {
+		const auto tmp = prop->generateAssignments();
+		assignments.insert(assignments.end(), tmp.begin(), tmp.end());
 	}
 
 	std::cerr << "assignments: ";
@@ -332,7 +332,23 @@ void Histogram::initTesting() {
 		return;
 	}
 
-	auto allTests = util::coveringArray(Test(), assignments);
+	const auto assignmentsComp = [&]() {
+			std::vector<
+				std::pair<
+					util::AssignmentComparator,
+					std::vector< std::shared_ptr<PropertyAssignment> >
+				>
+			> res;
+
+			for(const auto prop : props_) {
+				const auto tmp = prop->generateAssignmentsCmp();
+				res.insert(res.end(), tmp.begin(), tmp.end());
+			}
+			return res;
+		}();
+
+	//auto allTests = util::optCoveringArray(Test{}, assignmentsComp); 
+	auto allTests = util::coveringArray(Test{}, assignments);
 	// TODO: find set of tests with size <= numTests_ and maximum number of testable pairs
 	if(numTests_.get() < allTests.size()) {
 		allTests.resize(numTests_.get());
@@ -385,10 +401,10 @@ auto generateImageFromData(const std::vector<unsigned char>& data) {
 	// data.size(), and split it as evenly as possible, i.e. 2^a*2^b >= data.size(),
 	// a>=b, a<=b+1. let x=2^a,y<=2^b, x*y>=data.size()y
 	{
-		const size_t numElements = std::max(size_t(1), (data.size()+3)/4);
+		const size_t numElements = std::max(size_t(1), (data.size()+sizeof(T)-1)/sizeof(T));
 		size_t e = 0;
 		while((1ull<<e) < numElements) e++;
-		size_t b = e/2, a = e - b;
+		const size_t b = e/2, a = e - b;
 		dimensions.x = 1ull<<b;
 		dimensions.y = 1ull<<a;
 		while(dimensions.x * (dimensions.y-1) >= numElements)
@@ -396,9 +412,10 @@ auto generateImageFromData(const std::vector<unsigned char>& data) {
 	}
 
 	T* raw = new T[dimensions.x * dimensions.y];
-	std::memcpy(raw, data.data(), data.size());
-	for(size_t i = data.size(); i < dimensions.x * dimensions.y; i++) // padding
-		raw[i] = T(255,0,0,255);
+	memcpy(raw, data.data(), data.size());
+	// padding
+	memset(reinterpret_cast<unsigned char*>(raw) + data.size(), 0xFF, dimensions.x*dimensions.y*sizeof(T) - data.size());
+	//std::fill_n(raw + data.size(), dimensions.x*dimensions.y - data.size(), T(0,255,0,255));
 
 	auto errLayerRAM = std::make_shared<LayerRAMPrecision<T>>(
 				raw, dimensions, LayerType::Color, swizzleMask(F::comp));

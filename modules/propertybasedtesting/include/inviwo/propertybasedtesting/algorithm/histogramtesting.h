@@ -55,7 +55,8 @@ enum class PropertyEffect {
 	ANY,
 	NOT_COMPARABLE
 };
-constexpr size_t numPropertyEffects = 1 + static_cast<size_t>(PropertyEffect::NOT_COMPARABLE);
+constexpr size_t numPropertyEffects = 1 +
+	static_cast<size_t>(PropertyEffect::NOT_COMPARABLE);
 
 template<typename A, typename B>
 bool propertyEffectComparator(const PropertyEffect& e, const A& a, const B& b) {
@@ -78,7 +79,12 @@ bool propertyEffectComparator(const PropertyEffect& e, const A& a, const B& b) {
 		case util::PropertyEffect::GREATER_EQUAL:
 			return a >= b;
 	}
+	assert(false);
 }
+
+using AssignmentComparator = std::function<std::optional<util::PropertyEffect>(
+						const std::shared_ptr<PropertyAssignment>& oldVal,
+						const std::shared_ptr<PropertyAssignment>& newVal)>;
 
 std::ostream& operator<<(std::ostream& out, const PropertyEffect& a);
 
