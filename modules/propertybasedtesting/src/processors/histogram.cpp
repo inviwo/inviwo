@@ -29,6 +29,7 @@
 
 #include <inviwo/propertybasedtesting/processors/histogram.h>
 #include <inviwo/propertybasedtesting/html/report.h>
+#include <inviwo/propertybasedtesting/algorithm/reservoirsampling.h>
 
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/io/imagewriterutil.h>
@@ -347,11 +348,16 @@ void Histogram::initTesting() {
 			return res;
 		}();
 
-	//auto allTests = util::optCoveringArray(Test{}, assignmentsComp); 
-	auto allTests = util::coveringArray(Test{}, assignments);
-	// TODO: find set of tests with size <= numTests_ and maximum number of testable pairs
-	if(numTests_.get() < allTests.size()) {
-		allTests.resize(numTests_.get());
+	auto allTests = util::optCoveringArray(Test{}, assignmentsComp); 
+	//auto allTests = util::coveringArray(Test{}, assignments);
+	
+	{
+		const auto sample = reservoirSampling(allTests.size(), numTests_.get());
+		const auto tmp = allTests;
+		allTests.clear();
+		for(const size_t i : sample) {
+			allTests.emplace_back(std::move(tmp[i]));
+		}
 	}
 	for(const auto& test : allTests) {
 		remainingTests.emplace(test);

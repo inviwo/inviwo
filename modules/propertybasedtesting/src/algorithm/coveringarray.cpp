@@ -113,9 +113,11 @@ std::vector<Test> optCoveringArray(const Test& init,
 				for(size_t i2 = 0; i2 < vars[var2].second.size(); i2++)
 					unused.emplace_back(std::map<size_t,size_t>{{{var,i}, {var2,i2}}});
 
-	std::vector<TestConf> finished;
+	std::vector<std::pair<TestConf,size_t>> finished;
 
-	const std::function<bool(const TestConf&, const std::vector<TestConf::value_type>&)> comparable = 
+	// note: assumes that all keys of the second argument are also present in
+	// the first
+	const std::function<bool(const TestConf&, const TestConf&)> comparable = 
 		[&](const auto& ref, const auto& vs) {
 			std::optional<util::PropertyEffect> res = {util::PropertyEffect::ANY};
 			for(const auto&[var,i] : vs) {
@@ -130,60 +132,67 @@ std::vector<Test> optCoveringArray(const Test& init,
 			return true;
 		};
 
-	const std::function<size_t(const TestConf&, const TestConf&)> cmp =
-		[&](const auto& gen, const auto& ref) {
-			std::vector<TestConf::value_type> vars(gen.begin(), gen.end());
-			for(const auto&[var,i] : ref)
-				if(gen.count(var) == 0)
-					vars.emplace_back(var,i);
+	const std::function<std::vector<size_t>(std::vector<size_t>, const TestConf&)> filterComparables =
+		[&](auto comparables, const auto& test) {
+			for(size_t i = 0; i < comparables.size(); i++)
+				if(!comparable(finished[comparables[i]].first, test)) {
+					comparables[i] = comparables.back();
+					comparables.pop_back();
+					i--;
+				}
+			return comparables;
+		};
+	const std::function<size_t(const std::vector<size_t>&, TestConf, const TestConf&)> cmp =
+		[&](const auto& comparables, auto gen, const auto& ref) {
+			gen.insert(ref.begin(), ref.end());
 			
 			size_t res = 0;
-			for(const auto& fin : finished)
-				res += comparable(fin, vars) ? 1 : 0;
+			for(const size_t i : filterComparables(comparables, gen))
+				res += 1 + (finished.size() - finished[i].second) * 2;
 			return res;
-		};
-
-	const std::function<void(TestConf&, const TestConf&)> comb =
-		[&](auto& gen, const auto& ref) {
-			for(const auto&[i,v] : ref)
-				gen.emplace(i,v);
 		};
 
 	while(!unused.empty()) {
 		TestConf gen{{unused.back()}};
 		unused.pop_back();
+		std::vector<size_t> comparables(finished.size());
+		std::iota(comparables.begin(), comparables.end(), 0);
+
 		while(gen.size() < vars.size()) {
-			// find opt
 			int opt = -1, idx;
 			bool is_unused;
 
-			for(size_t i = 0; i < unused.size(); i++) {
-				const int val = cmp(gen, unused[i]);
-				if(val > opt)
-					opt = val, idx = i, is_unused = true;
-			}
 			for(size_t i = 0; i < finished.size(); i++) {
-				const int val = cmp(gen, finished[i]);
+				const int val = cmp(comparables, gen, finished[i].first);
 				if(val > opt)
 					opt = val, idx = i, is_unused = false;
+			}
+			for(size_t i = 0; i < unused.size(); i++) {
+				const int val = cmp(comparables, gen, unused[i]);
+				if(val > opt)
+					opt = val, idx = i, is_unused = true;
 			}
 
 			assert(opt != -1);
 
 			if(is_unused) {
-				comb(gen, unused[idx]);
+				gen.insert(unused[idx].begin(), unused[idx].end());
 				swap(unused[idx], unused.back());
 				unused.pop_back();
 			} else {
-				comb(gen, finished[idx]);
+				gen.insert(finished[idx].first.begin(), finished[idx].first.end());
 			}
+
+			comparables = filterComparables(comparables, gen);
 		}
-		finished.emplace_back(gen);
+		for(const size_t i : comparables)
+			finished[i].second++;
+		finished.emplace_back(gen, comparables.size());
 	}
 	
 	// build tests
 	std::vector<Test> res;
-	for(const auto& test : finished) {
+	for(const auto& [test,val] : finished) {
 		Test tmp = init;
 		for(const auto&[var,i] : test)
 			tmp.emplace_back(vars[var].second[i]);
