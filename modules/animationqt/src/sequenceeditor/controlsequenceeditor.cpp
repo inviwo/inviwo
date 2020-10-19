@@ -63,7 +63,7 @@ public:
         auto &ctrlKey = dynamic_cast<ControlKeyframe &>(keyframe);
 
         setObjectName("KeyframeEditorWidget");
-
+        setVisible(keyframe_.isSelected());
         keyframe.addObserver(this);
 
         auto layout = new QHBoxLayout();
@@ -117,7 +117,8 @@ public:
 
     Keyframe &getKeyframe() { return keyframe_; }
 
-    virtual void onKeyframeSelectionChanged(Keyframe *) override {
+    virtual void onKeyframeSelectionChanged(Keyframe *key) override {
+        setVisible(key->isSelected());
         sequenceEditorWidget_->updateVisibility();
     }
 

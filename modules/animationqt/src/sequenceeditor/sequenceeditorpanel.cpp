@@ -113,7 +113,11 @@ void SequenceEditorPanel::onTrackAdded(Track* track) {
     track->addObserver(this);
 }
 
-void SequenceEditorPanel::onTrackRemoved(Track* track) { track->removeObserver(this); }
+void SequenceEditorPanel::onTrackRemoved(Track* track) { 
+    for (size_t i = 0; i < track->size(); i++) {
+        onKeyframeSequenceRemoved(track, &(*track)[i]);
+    }
+    track->removeObserver(this); }
 
 void SequenceEditorPanel::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) {
     auto widgetId = factory_.getSequenceEditorId(t->getClassIdentifier());

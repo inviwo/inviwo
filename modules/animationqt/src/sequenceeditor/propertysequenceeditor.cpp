@@ -66,7 +66,7 @@ public:
         auto &propTrack = dynamic_cast<BasePropertyTrack &>(parent->getTrack());
 
         setObjectName("KeyframeEditorWidget");
-
+        setVisible(keyframe_.isSelected());
         keyframe.addObserver(this);
 
         auto layout = new QHBoxLayout();
@@ -121,7 +121,8 @@ public:
 
     Keyframe &getKeyframe() { return keyframe_; }
 
-    virtual void onKeyframeSelectionChanged(Keyframe *) override {
+    virtual void onKeyframeSelectionChanged(Keyframe *key) override {
+        setVisible(key->isSelected());
         sequenceEditorWidget_->updateVisibility();
     }
 
