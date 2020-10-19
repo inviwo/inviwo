@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BASETRACK_H
-#define IVW_BASETRACK_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -91,8 +90,18 @@ public:
     const_iterator end() const;
 
     virtual void add(Seconds time, bool asNewSequence) override;
-    virtual void add(std::unique_ptr<KeyframeSequence> sequence) override;
-    virtual void add(std::unique_ptr<Seq> sequence);
+    /**
+     * Add KeyframeSequence and call KeyframeSequenceObserverble::notifyKeyframeSequenceAdded
+     * @throw Exception if KeyframeSequence is not compatible with BaseTrack<Seq>
+     * @throw Exception if KeyframeSequence overlaps existing sequences
+     * @see BaseTrack::add(std::unique_ptr<Seq> sequence)
+     */
+    virtual KeyframeSequence* add(std::unique_ptr<KeyframeSequence> sequence) override;
+    /**
+     * Add KeyframeSequence and call KeyframeSequenceObserverble::notifyKeyframeSequenceAdded
+     * @throw Exception if KeyframeSequence overlaps existing sequences
+     */    
+    virtual KeyframeSequence* add(std::unique_ptr<Seq> sequence);
 
     virtual std::unique_ptr<KeyframeSequence> remove(size_t i) override;
     virtual std::unique_ptr<Keyframe> remove(Keyframe* key) override;
@@ -103,7 +112,7 @@ public:
 
 protected:
     virtual void onKeyframeSequenceMoved(KeyframeSequence* seq) override;
-    void addToClosestSequence(std::unique_ptr<key_type> key);
+    Keyframe* addToClosestSequence(std::unique_ptr<key_type> key);
 
     bool enabled_{true};
     std::string identifier_;
@@ -306,37 +315,38 @@ void BaseTrack<Seq>::add(Seconds time, bool asNewSequence) {
  *           |-case 2a-----------|-case 2b-|
  */
 template <typename Seq>
-void BaseTrack<Seq>::addToClosestSequence(std::unique_ptr<key_type> key) {
+Keyframe* BaseTrack<Seq>::addToClosestSequence(std::unique_ptr<key_type> key) {
     // 'it' will be the first seq. with a first time larger then 'to'.
     auto it = std::upper_bound(this->begin(), this->end(), key->getTime());
 
     if (it == this->begin()) {  // case 1
-        it->add(std::move(key));
+        return it->add(std::move(key));
     } else if (it == this->end()) {  // case 3
         auto& seq1 = *std::prev(it);
-        seq1.add(std::move(key));
+        return seq1.add(std::move(key));
     } else {  // case 2
         auto& seq1 = *std::prev(it);
         auto& seq2 = *it;
         if ((key->getTime() - seq1.getLastTime()) < (seq2.getFirstTime() - key->getTime())) {
-            seq1.add(std::move(key));  // case 2a
+            return seq1.add(std::move(key));  // case 2a
         } else {
-            seq2.add(std::move(key));  // case 2b
+            return seq2.add(std::move(key));  // case 2b
         }
     }
 }
 
 template <typename Seq>
-void BaseTrack<Seq>::add(std::unique_ptr<KeyframeSequence> sequence) {
+KeyframeSequence* BaseTrack<Seq>::add(std::unique_ptr<KeyframeSequence> sequence) {
     if (auto s = util::dynamic_unique_ptr_cast<Seq>(std::move(sequence))) {
-        add(std::move(s));
+        return add(std::move(s));
     } else {
         throw Exception("Invalid sequence type", IVW_CONTEXT);
     }
+    return nullptr;
 }
 
 template <typename Seq>
-void BaseTrack<Seq>::add(std::unique_ptr<Seq> sequence) {
+KeyframeSequence* BaseTrack<Seq>::add(std::unique_ptr<Seq> sequence) {
     auto it = std::upper_bound(sequences_.begin(), sequences_.end(), sequence,
                                [](const auto& a, const auto& b) { return *a < *b; });
 
@@ -352,6 +362,7 @@ void BaseTrack<Seq>::add(std::unique_ptr<Seq> sequence) {
     auto inserted = sequences_.insert(it, std::move(sequence));
     this->notifyKeyframeSequenceAdded(this, inserted->get());
     (*inserted)->KeyframeSequenceObserverble::addObserver(this);
+    return inserted->get();
 }
 
 template <typename Seq>
@@ -457,4 +468,3 @@ void BaseTrack<Seq>::deserialize(Deserializer& d) {
 
 }  // namespace inviwo
 
-#endif  // IVW_BASETRACK_H

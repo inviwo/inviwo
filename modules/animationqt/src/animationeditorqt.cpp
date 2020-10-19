@@ -198,9 +198,9 @@ void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent* event) {
         // Use AnimationManager for adding keyframe or keyframe sequence.
         auto& am = app->template getModuleByType<AnimationModule>()->getAnimationManager();
         if (event->modifiers() & Qt::ControlModifier) {
-            am.addSequenceCallback(property, Seconds(time));
+            am.addKeyframeSequence(property, Seconds(time));
         } else {
-            am.addKeyframeCallback(property, Seconds(time));
+            am.addKeyframe(property, Seconds(time));
         }
 
         event->acceptProposedAction();

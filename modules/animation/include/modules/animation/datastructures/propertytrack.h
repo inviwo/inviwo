@@ -189,7 +189,7 @@ public:
      * @throw Exception If supplied property is not of same type as BasePropertyTrack::getProperty
      * @throw Exception If Interpolation type is invalid for property value.
      */
-    virtual void addKeyFrameUsingPropertyValue(const Property* property, Seconds time,
+    virtual Keyframe* addKeyFrameUsingPropertyValue(const Property* property, Seconds time,
                                                std::unique_ptr<Interpolation> interpolation) = 0;
     /*
      * Add KeyFrame at specified time using the current value of the property.
@@ -198,7 +198,7 @@ public:
      * @param time at which KeyFrame should be added.
      * @param interpolation to use if a new sequence is created
      */
-    virtual void addKeyFrameUsingPropertyValue(Seconds time,
+    virtual Keyframe* addKeyFrameUsingPropertyValue(Seconds time,
                                                std::unique_ptr<Interpolation> interpolation) = 0;
     /*
      * Add KeyFrameSequence at specified time using the current value of the property.
@@ -206,7 +206,7 @@ public:
      * @param interpolation to use for the new sequence.
      * @throw Exception If a sequence already exist at time
      */
-    virtual void addSequenceUsingPropertyValue(Seconds time,
+    virtual KeyframeSequence* addSequenceUsingPropertyValue(Seconds time,
                                                std::unique_ptr<Interpolation> interpolation) = 0;
     virtual Track* toTrack() = 0;
 
@@ -252,12 +252,12 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    virtual void addKeyFrameUsingPropertyValue(
+    virtual Keyframe* addKeyFrameUsingPropertyValue(
         const Property* property, Seconds time,
         std::unique_ptr<Interpolation> interpolation) override;
-    virtual void addKeyFrameUsingPropertyValue(
+    virtual Keyframe* addKeyFrameUsingPropertyValue(
         Seconds time, std::unique_ptr<Interpolation> interpolation) override;
-    virtual void addSequenceUsingPropertyValue(
+    virtual KeyframeSequence* addSequenceUsingPropertyValue(
         Seconds time, std::unique_ptr<Interpolation> interpolation) override;
 
     // BasePropertyTrack overload
@@ -267,7 +267,7 @@ public:
      * \brief Helper function to set a property (other than the property owned by the track) from a
      * keyframe
      *
-     * Called from inviwo::animation:: KeyframeEditorWidget when creating the widget
+     * Called from inviwo::animation::KeyframeEditorWidget when creating the widget
      *
      * @param dstProperty The property to set
      * @param keyframe The keyframe to set from
@@ -415,7 +415,7 @@ AnimationTimeState PropertyTrack<Prop, Key>::operator()(Seconds from, Seconds to
 }
 
 template <typename Prop, typename Key>
-void PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(
+Keyframe* PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(
     const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation) {
     auto prop = dynamic_cast<const Prop*>(property);
     if (!prop) {
@@ -433,7 +433,9 @@ void PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(
             keys.push_back(std::make_unique<Key>(time, prop->get()));
             auto sequence = std::make_unique<KeyframeSequenceTyped<Key>>(
                 std::move(keys), std::unique_ptr<InterpolationTyped<Key>>(ip));
-            this->add(std::move(sequence));
+            if (auto se = add(std::move(sequence))) {
+                return &se->getFirst();
+            }
         } else {
             throw Exception("Invalid interpolation " + interpolation->getClassIdentifier() +
                                 " for " + getClassIdentifier(),
@@ -441,18 +443,19 @@ void PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(
         }
 
     } else {
-        this->addToClosestSequence(std::make_unique<Key>(time, prop->get()));
+        return this->addToClosestSequence(std::make_unique<Key>(time, prop->get()));
     }
+    return nullptr;
 }
 
 template <typename Prop, typename Key>
-void PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(
+Keyframe* PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(
     Seconds time, std::unique_ptr<Interpolation> interpolation) {
-    addKeyFrameUsingPropertyValue(property_, time, std::move(interpolation));
+    return addKeyFrameUsingPropertyValue(property_, time, std::move(interpolation));
 }
 
 template <typename Prop, typename Key>
-void PropertyTrack<Prop, Key>::addSequenceUsingPropertyValue(
+KeyframeSequence* PropertyTrack<Prop, Key>::addSequenceUsingPropertyValue(
     Seconds time, std::unique_ptr<Interpolation> interpolation) {
     if (auto ip = dynamic_cast<InterpolationTyped<Key>*>(interpolation.get())) {
         interpolation.release();
@@ -461,13 +464,14 @@ void PropertyTrack<Prop, Key>::addSequenceUsingPropertyValue(
         keys.push_back(std::make_unique<Key>(time, property_->get()));
         auto sequence = std::make_unique<KeyframeSequenceTyped<Key>>(
             std::move(keys), std::unique_ptr<InterpolationTyped<Key>>(ip));
-        this->add(std::move(sequence));
+        return this->add(std::move(sequence));
 
     } else {
         throw Exception("Invalid interpolation " + interpolation->getClassIdentifier() + " for " +
                             getClassIdentifier(),
                         IVW_CONTEXT);
     }
+    return nullptr;
 }
 
 template <typename Prop, typename Key>

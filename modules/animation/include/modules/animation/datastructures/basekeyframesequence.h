@@ -85,9 +85,13 @@ public:
 
     /**
      * Add Keyframe and call KeyframeObserver::notifyKeyframeAdded
+     * @throw Exception if Keyframe is not compatible with BaseKeyframeSequence<Key>
      */
-    virtual void add(std::unique_ptr<Keyframe> key) override;
-    void add(std::unique_ptr<Key> key);
+    virtual Keyframe* add(std::unique_ptr<Keyframe> key) override;
+    /**
+     * Add Keyframe and call KeyframeObserver::notifyKeyframeAdded
+     */
+    Key* add(std::unique_ptr<Key> key);
 
     /**
      * Remove Keyframe and call KeyframeObserver::notifyKeyframeRemoved
@@ -168,16 +172,17 @@ void BaseKeyframeSequence<Key>::onKeyframeTimeChanged(Keyframe* key, Seconds /*o
 }
 
 template <typename Key>
-void BaseKeyframeSequence<Key>::add(std::unique_ptr<Keyframe> key) {
+Keyframe* BaseKeyframeSequence<Key>::add(std::unique_ptr<Keyframe> key) {
     if (auto k = util::dynamic_unique_ptr_cast<Key>(std::move(key))) {
-        add(std::move(k));
+        return add(std::move(k));
     } else {
         throw Exception("Invalid key type", IVW_CONTEXT);
     }
+    return nullptr;
 }
 
 template <typename Key>
-void BaseKeyframeSequence<Key>::add(std::unique_ptr<Key> key) {
+Key* BaseKeyframeSequence<Key>::add(std::unique_ptr<Key> key) {
     auto it =
         keyframes_.insert(std::upper_bound(keyframes_.begin(), keyframes_.end(), key,
                                            [](const auto& a, const auto& b) { return *a < *b; }),
@@ -185,6 +190,7 @@ void BaseKeyframeSequence<Key>::add(std::unique_ptr<Key> key) {
 
     (*it)->addObserver(this);
     notifyKeyframeAdded(it->get(), this);
+    return it->get();
 }
 
 template <typename Key>

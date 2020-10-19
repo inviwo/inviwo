@@ -123,7 +123,7 @@ public:
     /**
      * Add KeyframeSequence and call TrackObserver::notifyKeyframeSequenceAdded
      */
-    virtual void add(std::unique_ptr<KeyframeSequence> sequence) = 0;
+    virtual KeyframeSequence* add(std::unique_ptr<KeyframeSequence> sequence) = 0;
 
     /**
      * Remove KeyframeSequence at index i and call TrackObserver::notifyKeyframeSequenceRemoved

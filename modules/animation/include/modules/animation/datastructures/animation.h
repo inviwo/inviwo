@@ -91,6 +91,13 @@ public:
     std::unique_ptr<Track> remove(const std::string& id);
 
     /**
+     * Remove Track if matching any of the tracks.
+     * Calls AnimationObservable::notifyTrackRemoved after removing Track.
+     * @note Track will be deleted if removed so do not use pointer after calling this function.
+     */
+    std::unique_ptr<Track> remove(Track* track);
+
+    /**
      * Remove Keyframe if matching any of the Keyframes in the tracks.
      * Calls TrackObserver::notifyKeyframeRemoved after removing Keyframe.
      * Removes the KeyFrameSequence owning the Keyframe if it does not contain any Keyframe

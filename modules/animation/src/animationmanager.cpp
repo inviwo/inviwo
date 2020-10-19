@@ -51,15 +51,14 @@ AnimationManager::AnimationManager(InviwoApplication* app, AnimationModule* anim
         auto callbackAction = new ModuleCallbackAction("Add Key Frame", animationModule,
                                                        ModuleCallBackActionState::Enabled);
 
-        callbackAction->getCallBack().addMemberFunction(this,
-                                                        &AnimationManager::addKeyframeCallback);
+        callbackAction->getCallBack().addMemberFunction(this, &AnimationManager::addKeyframeCallback);
         app->addCallbackAction(callbackAction);
     }
     {
         auto callbackAction = new ModuleCallbackAction("Add Sequence", animationModule,
                                                        ModuleCallBackActionState::Enabled);
         callbackAction->getCallBack().addMemberFunction(this,
-                                                        &AnimationManager::addSequenceCallback);
+                                                        &AnimationManager::addKeyframeSequenceCallback);
         app->addCallbackAction(callbackAction);
     }
 
@@ -111,19 +110,19 @@ AnimationController& AnimationManager::getAnimationController() { return control
 
 const AnimationController& AnimationManager::getAnimationController() const { return controller_; }
 
-void AnimationManager::addKeyframeCallback(Property* property) {
-    addKeyframeCallback(property, controller_.getCurrentTime());
+Keyframe* AnimationManager::addKeyframe(Property* property) {
+    return addKeyframe(property, controller_.getCurrentTime());
 }
 
-void AnimationManager::addKeyframeCallback(Property* property, Seconds time) {
+Keyframe* AnimationManager::addKeyframe(Property* property, Seconds time) {
     auto it = trackMap_.find(property);
     try {
         auto interpolation = getDefaultInterpolation(property);
         if (it != trackMap_.end()) {
             // Note: interpolation will only be used if a new sequence is created.
-            it->second->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
+            return it->second->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
         } else if (auto basePropertyTrack = addNewTrack(property)) {
-            basePropertyTrack->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
+            return basePropertyTrack->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
         } else {
             LogWarn("No matching Track found for property \"" + property->getIdentifier() + "\"");
         }
@@ -131,20 +130,22 @@ void AnimationManager::addKeyframeCallback(Property* property, Seconds time) {
         // No interpolation method registered?
         LogError(ex.getMessage());
     }
+    return nullptr;
 }
 
-void AnimationManager::addSequenceCallback(Property* property) {
-    addSequenceCallback(property, controller_.getCurrentTime());
+KeyframeSequence* AnimationManager::addKeyframeSequence(Property* property) {
+    return addKeyframeSequence(property, controller_.getCurrentTime());
 }
 
-void AnimationManager::addSequenceCallback(Property* property, Seconds time) {
+KeyframeSequence* AnimationManager::addKeyframeSequence(Property* property, Seconds time) {
     auto it = trackMap_.find(property);
     try {
         auto interpolation = getDefaultInterpolation(property);
         if (it != trackMap_.end()) {
-            it->second->addSequenceUsingPropertyValue(time, std::move(interpolation));
+            return it->second->addSequenceUsingPropertyValue(time, std::move(interpolation));
         } else if (auto basePropertyTrack = addNewTrack(property)) {
             basePropertyTrack->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
+            return &basePropertyTrack->toTrack()->getFirst();
         } else {
             LogWarn("No matching Track found for property \"" + property->getIdentifier() + "\"");
         }
@@ -152,6 +153,15 @@ void AnimationManager::addSequenceCallback(Property* property, Seconds time) {
         // No interpolation method registered?
         LogError(ex.getMessage());
     }
+    return nullptr;
+}
+
+void AnimationManager::addKeyframeCallback(Property* property) {
+    addKeyframe(property, controller_.getCurrentTime());
+}
+
+void AnimationManager::addKeyframeSequenceCallback(Property* property) {
+    addKeyframeSequence(property, controller_.getCurrentTime());
 }
 
 BasePropertyTrack* AnimationManager::addNewTrack(Property* property) {

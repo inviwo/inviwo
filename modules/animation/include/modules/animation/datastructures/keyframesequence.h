@@ -77,7 +77,7 @@ public:
     /**
      * Add Keyframe and call KeyframeObserver::notifyKeyframeAdded
      */
-    virtual void add(std::unique_ptr<Keyframe> key) = 0;
+    virtual Keyframe* add(std::unique_ptr<Keyframe> key) = 0;
 
     /**
      * Remove Keyframe and call KeyframeObserver::notifyKeyframeRemoved

@@ -89,6 +89,16 @@ std::unique_ptr<Track> Animation::remove(const std::string& id) {
     }
 }
 
+std::unique_ptr<Track> Animation::remove(Track* track) {
+    auto it = std::find_if(tracks_.begin(), tracks_.end(),
+                           [&](const auto& t) { return t.get() == track; });
+    if (it != tracks_.end()) {
+        return remove(std::distance(tracks_.begin(), it));
+    } else {
+        return nullptr;
+    }
+}
+
 std::unique_ptr<Keyframe> Animation::remove(Keyframe* key) {
     for (auto& track : tracks_) {
         if (auto res = track->remove(key)) {
