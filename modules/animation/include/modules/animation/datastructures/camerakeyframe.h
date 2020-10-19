@@ -66,11 +66,11 @@ public:
 
     static std::string getName() { return "Camera"; }
     friend IVW_MODULE_ANIMATION_API bool operator==(const CameraKeyframe& a,
-        const CameraKeyframe& b) {
+                                                    const CameraKeyframe& b) {
         return a.getTime() == b.getTime() && a.getValue() == b.getValue();
     }
     friend IVW_MODULE_ANIMATION_API bool operator!=(const CameraKeyframe& a,
-        const CameraKeyframe& b) {
+                                                    const CameraKeyframe& b) {
         return !(a == b);
     }
 
@@ -78,8 +78,6 @@ private:
     std::unique_ptr<Camera> value_{std::make_unique<PerspectiveCamera>()};
 };
 
-
 }  // namespace animation
 
 }  // namespace inviwo
-

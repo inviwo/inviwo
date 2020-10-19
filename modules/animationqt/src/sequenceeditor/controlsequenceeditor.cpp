@@ -57,10 +57,10 @@ namespace {
 
 class ControlEditorWidget : public QWidget, public KeyframeObserver {
 public:
-    ControlEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent)
+    ControlEditorWidget(Keyframe& keyframe, SequenceEditorWidget* parent)
         : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
 
-        auto &ctrlKey = dynamic_cast<ControlKeyframe &>(keyframe);
+        auto& ctrlKey = dynamic_cast<ControlKeyframe&>(keyframe);
 
         setObjectName("KeyframeEditorWidget");
         setVisible(keyframe_.isSelected());
@@ -110,31 +110,31 @@ public:
     }
     virtual ~ControlEditorWidget() = default;
 
-    virtual void onKeyframeTimeChanged(Keyframe *key, Seconds) override {
+    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds) override {
         timeSpinner_->setValue(key->getTime().count());
         sequenceEditorWidget_->setReorderNeeded();
     }
 
-    Keyframe &getKeyframe() { return keyframe_; }
+    Keyframe& getKeyframe() { return keyframe_; }
 
-    virtual void onKeyframeSelectionChanged(Keyframe *key) override {
+    virtual void onKeyframeSelectionChanged(Keyframe* key) override {
         setVisible(key->isSelected());
         sequenceEditorWidget_->updateVisibility();
     }
 
 private:
-    Keyframe &keyframe_;
-    SequenceEditorWidget *sequenceEditorWidget_{nullptr};
+    Keyframe& keyframe_;
+    SequenceEditorWidget* sequenceEditorWidget_{nullptr};
 
-    QComboBox *actionWidget_{nullptr};
-    QDoubleSpinBox *jumpToWidget_{nullptr};
-    QDoubleSpinBox *timeSpinner_{nullptr};
+    QComboBox* actionWidget_{nullptr};
+    QDoubleSpinBox* jumpToWidget_{nullptr};
+    QDoubleSpinBox* timeSpinner_{nullptr};
 };
 
 }  // namespace
 
-ControlSequenceEditor::ControlSequenceEditor(KeyframeSequence &sequence, Track &track,
-                                             AnimationManager &)
+ControlSequenceEditor::ControlSequenceEditor(KeyframeSequence& sequence, Track& track,
+                                             AnimationManager&)
     : SequenceEditorWidget(sequence, track) {
 
     sequence_.addObserver(this);
@@ -164,7 +164,7 @@ ControlSequenceEditor::ControlSequenceEditor(KeyframeSequence &sequence, Track &
     updateVisibility();
 }
 
-QWidget *ControlSequenceEditor::create(Keyframe *key) {
+QWidget* ControlSequenceEditor::create(Keyframe* key) {
     return new ControlEditorWidget(*key, this);
 }
 

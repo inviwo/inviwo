@@ -189,8 +189,8 @@ public:
      * @throw Exception If supplied property is not of same type as BasePropertyTrack::getProperty
      * @throw Exception If Interpolation type is invalid for property value.
      */
-    virtual Keyframe* addKeyFrameUsingPropertyValue(const Property* property, Seconds time,
-                                               std::unique_ptr<Interpolation> interpolation) = 0;
+    virtual Keyframe* addKeyFrameUsingPropertyValue(
+        const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation) = 0;
     /*
      * Add KeyFrame at specified time using the current value of the property.
      * @see addKeyFrameUsingPropertyValue(const Property* property, Seconds time,
@@ -198,16 +198,16 @@ public:
      * @param time at which KeyFrame should be added.
      * @param interpolation to use if a new sequence is created
      */
-    virtual Keyframe* addKeyFrameUsingPropertyValue(Seconds time,
-                                               std::unique_ptr<Interpolation> interpolation) = 0;
+    virtual Keyframe* addKeyFrameUsingPropertyValue(
+        Seconds time, std::unique_ptr<Interpolation> interpolation) = 0;
     /*
      * Add KeyFrameSequence at specified time using the current value of the property.
      * @param time at which KeyFrame should be added.
      * @param interpolation to use for the new sequence.
      * @throw Exception If a sequence already exist at time
      */
-    virtual KeyframeSequence* addSequenceUsingPropertyValue(Seconds time,
-                                               std::unique_ptr<Interpolation> interpolation) = 0;
+    virtual KeyframeSequence* addSequenceUsingPropertyValue(
+        Seconds time, std::unique_ptr<Interpolation> interpolation) = 0;
     virtual Track* toTrack() = 0;
 
     virtual void setOtherProperty(Property*, Keyframe*){};            // Should this be pure virtual

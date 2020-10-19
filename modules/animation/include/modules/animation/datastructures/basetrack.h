@@ -102,7 +102,7 @@ public:
     /**
      * Add KeyframeSequence and call KeyframeSequenceObserverble::notifyKeyframeSequenceAdded
      * @throw Exception if KeyframeSequence overlaps existing sequences
-     */    
+     */
     virtual KeyframeSequence* add(std::unique_ptr<Seq> sequence);
 
     virtual std::unique_ptr<KeyframeSequence> remove(size_t i) override;
@@ -469,4 +469,3 @@ void BaseTrack<Seq>::deserialize(Deserializer& d) {
 }  // namespace animation
 
 }  // namespace inviwo
-

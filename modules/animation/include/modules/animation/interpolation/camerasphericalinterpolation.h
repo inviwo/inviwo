@@ -36,14 +36,14 @@ namespace inviwo {
 namespace animation {
 
 /** \class CameraSphericalInterpolation
- * Spherical interpolation between two neighboring key frames. 
+ * Spherical interpolation between two neighboring key frames.
  * 1. Orbit around lookAt if lookFrom's are different between key frames.
  * 2. Pan/tilt (rotate lookAt between key frames) otherwise.
  *
  * @note Only modifies lookFrom, lookAt, lookUp.
  * @see CameraPanTiltInterpolation
  */
-class IVW_MODULE_ANIMATION_API CameraSphericalInterpolation: public CameraInterpolation {
+class IVW_MODULE_ANIMATION_API CameraSphericalInterpolation : public CameraInterpolation {
 public:
     CameraSphericalInterpolation() = default;
     virtual ~CameraSphericalInterpolation() = default;
@@ -59,15 +59,14 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
     /*
-     * Uses orbit between two key frames if lookFrom has changed and pan/tilt otherwise. 
+     * Uses orbit between two key frames if lookFrom has changed and pan/tilt otherwise.
      * Orbit: Rotate the lookFrom around the lookAt position.
      * lookAt position will be linearly interpolated.
      * Pan/tilt: Rotate lookAt between key frames.
      */
-    virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from, Seconds to,
-                            easing::EasingType easing, Camera& out) const;
+    virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from,
+                            Seconds to, easing::EasingType easing, Camera& out) const;
 };
-
 
 }  // namespace animation
 

@@ -38,11 +38,12 @@ namespace animation {
 /** \class CameraLinearInterpolation
  * Perfoms linear interpolation between lookFrom and lookTo of two neighboring key frames.
  * lookUp is rotated between the two neighboring keyframes.
- * Generally, you do not want to linearly interpolate lookFrom/lookTo - use CameraSphericalInterpolation instead.
+ * Generally, you do not want to linearly interpolate lookFrom/lookTo - use
+ * CameraSphericalInterpolation instead.
  * @note Only considers lookFrom, lookAt, lookUp in Camera
  * @see CameraSphericalInterpolation
  */
-class IVW_MODULE_ANIMATION_API CameraLinearInterpolation: public CameraInterpolation {
+class IVW_MODULE_ANIMATION_API CameraLinearInterpolation : public CameraInterpolation {
 public:
     CameraLinearInterpolation() = default;
     virtual ~CameraLinearInterpolation() = default;
@@ -62,8 +63,8 @@ public:
     /*
      * Returns linear interpolation of keyframe values at time t.
      */
-    virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from, Seconds to,
-                            easing::EasingType easing, Camera& out) const;
+    virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from,
+                            Seconds to, easing::EasingType easing, Camera& out) const;
 };
 
 }  // namespace animation

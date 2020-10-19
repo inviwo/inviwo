@@ -205,9 +205,9 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
         PropertyValueKeyframeReghelper{}, *this);
 
     registerTrackToWidgetMap(CameraTrack::classIdentifier(),
-                                PropertyTrackWidgetQt::classIdentifier());
+                             PropertyTrackWidgetQt::classIdentifier());
     registerTrackToSequenceEditorMap(CameraTrack::classIdentifier(),
-                                        PropertySequenceEditor::classIdentifier());
+                                     PropertySequenceEditor::classIdentifier());
 
     registerTrackToWidgetMap(ControlTrack::classIdentifier(),
                              ControlTrackWidgetQt::classIdentifier());

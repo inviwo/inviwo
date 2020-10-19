@@ -52,20 +52,12 @@ CameraKeyframe& CameraKeyframe::operator=(const CameraKeyframe& that) {
     return *this;
 }
 
-CameraKeyframe* CameraKeyframe::clone() const {
-    return new CameraKeyframe(*this);
-}
+CameraKeyframe* CameraKeyframe::clone() const { return new CameraKeyframe(*this); }
 
-const Camera& CameraKeyframe::getValue() const {
-    return *value_;
-}
-Camera& CameraKeyframe::getValue() {
-    return *value_;
-}
+const Camera& CameraKeyframe::getValue() const { return *value_; }
+Camera& CameraKeyframe::getValue() { return *value_; }
 
-void CameraKeyframe::updateFrom(const Camera& value) {
-    value_->updateFrom(value);
-}
+void CameraKeyframe::updateFrom(const Camera& value) { value_->updateFrom(value); }
 
 void CameraKeyframe::serialize(Serializer& s) const {
     BaseKeyframe::serialize(s);

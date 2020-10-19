@@ -128,7 +128,6 @@ struct ConstantInterpolationReghelper {
 
 }  // namespace
 
-
 AnimationModule::AnimationModule(InviwoApplication* app)
     : InviwoModule(app, "Animation")
     , animation::AnimationSupplier(manager_)
@@ -156,21 +155,18 @@ AnimationModule::AnimationModule(InviwoApplication* app)
 
     // Camera property
     registerTrack<CameraTrack>();
-    registerPropertyTrackConnection(
-        PropertyTraits<CameraProperty>::classIdentifier(),
-        CameraTrack::classIdentifier());
+    registerPropertyTrackConnection(PropertyTraits<CameraProperty>::classIdentifier(),
+                                    CameraTrack::classIdentifier());
 
     registerInterpolation<CameraSphericalInterpolation>();
     registerInterpolation<CameraLinearInterpolation>();
 
-    registerPropertyInterpolationConnection(
-        PropertyTraits<CameraProperty>::classIdentifier(),
-        CameraSphericalInterpolation::classIdentifier());
-    registerPropertyInterpolationConnection(
-        PropertyTraits<CameraProperty>::classIdentifier(),
-        CameraLinearInterpolation::classIdentifier());
-    //interpolationRegHelper<CameraProperty, ConstantInterpolation>(*this);
-    
+    registerPropertyInterpolationConnection(PropertyTraits<CameraProperty>::classIdentifier(),
+                                            CameraSphericalInterpolation::classIdentifier());
+    registerPropertyInterpolationConnection(PropertyTraits<CameraProperty>::classIdentifier(),
+                                            CameraLinearInterpolation::classIdentifier());
+    // interpolationRegHelper<CameraProperty, ConstantInterpolation>(*this);
+
     // Todo: Add ButtonProperty. Have not tested but might work out of the box with constant
     // interpolation? Todo: Add support for TransferFunctionProperty (special interpolation)
 }

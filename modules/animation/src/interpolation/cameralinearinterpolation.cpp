@@ -34,18 +34,13 @@ namespace inviwo {
 
 namespace animation {
 
-    
 CameraLinearInterpolation* CameraLinearInterpolation::clone() const {
     return new CameraLinearInterpolation(*this);
 }
 
-std::string CameraLinearInterpolation::getName() const {
-    return "Linear";
-}
+std::string CameraLinearInterpolation::getName() const { return "Linear"; }
 
-std::string CameraLinearInterpolation::getClassIdentifier() const {
-    return classIdentifier();
-}
+std::string CameraLinearInterpolation::getClassIdentifier() const { return classIdentifier(); }
 
 bool CameraLinearInterpolation::equal(const Interpolation& other) const {
     return classIdentifier() == other.getClassIdentifier();
@@ -56,8 +51,8 @@ std::string CameraLinearInterpolation::classIdentifier() {
 }
 
 void CameraLinearInterpolation::operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys,
-                                          Seconds /*from*/, Seconds to,
-                                          easing::EasingType easing, Camera& out) const {
+                                           Seconds /*from*/, Seconds to, easing::EasingType easing,
+                                           Camera& out) const {
 
     auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
         return time < key->getTime();
@@ -69,17 +64,16 @@ void CameraLinearInterpolation::operator()(const std::vector<std::unique_ptr<Cam
     const auto& v2 = (*it)->getValue();
     const auto& t2 = (*it)->getTime();
 
-
     auto t = easing::ease((to - t1) / (t2 - t1), easing);
     auto fromDir = glm::normalize(v1.getDirection());
 
     auto lookTo = glm::mix(dvec3(v1.getLookTo()), dvec3(v2.getLookTo()), t);
     auto lookFrom = glm::mix(dvec3(v1.getLookFrom()), dvec3(v2.getLookFrom()), t);
     // Assume that lookUp vectors are normalized
-    auto lookUpQ = glm::slerp(glm::quat_identity<double, glm::defaultp>(), 
-        glm::rotation(dvec3(v1.getLookUp()), dvec3(v2.getLookUp())), t);
-    auto lookUp = glm::normalize(lookUpQ*dvec3(v1.getLookUp()));
-    
+    auto lookUpQ = glm::slerp(glm::quat_identity<double, glm::defaultp>(),
+                              glm::rotation(dvec3(v1.getLookUp()), dvec3(v2.getLookUp())), t);
+    auto lookUp = glm::normalize(lookUpQ * dvec3(v1.getLookUp()));
+
     out.setLookFrom(lookFrom);
     out.setLookTo(lookTo);
     out.setLookUp(lookUp);

@@ -29,66 +29,43 @@
 
 #include <modules/animation/datastructures/cameratrack.h>
 
-
 namespace inviwo {
 
 namespace animation {
 
-CameraTrack::CameraTrack()
-    : BaseTrack<CameraKeyframeSequence>{"", "", 100}, property_(nullptr) {}
-
+CameraTrack::CameraTrack() : BaseTrack<CameraKeyframeSequence>{"", "", 100}, property_(nullptr) {}
 
 CameraTrack::CameraTrack(CameraProperty* property)
-    : BaseTrack<CameraKeyframeSequence>{property->getIdentifier(), property->getDisplayName(),
-                                            100}
+    : BaseTrack<CameraKeyframeSequence>{property->getIdentifier(), property->getDisplayName(), 100}
     , property_(property) {}
 
-
 CameraTrack::~CameraTrack() = default;
-
 
 bool operator==(const CameraTrack& a, const CameraTrack& b) {
     return std::equal(a.begin(), a.end(), a.begin(), b.end());
 }
 
-bool operator!=(const CameraTrack& a, const CameraTrack& b) {
-    return !(a == b);
-}
+bool operator!=(const CameraTrack& a, const CameraTrack& b) { return !(a == b); }
 
-Track* CameraTrack::toTrack() {
-    return this;
-}
-
-
+Track* CameraTrack::toTrack() { return this; }
 
 std::string CameraTrack::classIdentifier() {
     // Use property class identifier since multiple properties
     // may have the same key (data type)
-    std::string id =
-        "org.inviwo.animation.PropertyTrack.for. " + PropertyTraits<CameraProperty>::classIdentifier();
+    std::string id = "org.inviwo.animation.PropertyTrack.for. " +
+                     PropertyTraits<CameraProperty>::classIdentifier();
     return id;
 }
-
 
 const std::string& CameraTrack::getIdentifier() const {
     return BaseTrack<CameraKeyframeSequence>::getIdentifier();
 }
 
+std::string CameraTrack::getClassIdentifier() const { return classIdentifier(); }
 
-std::string CameraTrack::getClassIdentifier() const {
-    return classIdentifier();
-}
+CameraProperty* CameraTrack::getProperty() { return property_; }
 
-
-CameraProperty* CameraTrack::getProperty() {
-    return property_;
-}
-
-
-const CameraProperty* CameraTrack::getProperty() const {
-    return property_;
-}
-
+const CameraProperty* CameraTrack::getProperty() const { return property_; }
 
 void CameraTrack::setProperty(Property* property) {
     if (auto prop = dynamic_cast<CameraProperty*>(property)) {
@@ -107,8 +84,7 @@ void CameraTrack::setProperty(Property* property) {
  *           |-case 2a---|-case 2b---|
  */
 
-AnimationTimeState CameraTrack::operator()(Seconds from, Seconds to,
-                                                        AnimationState state) const {
+AnimationTimeState CameraTrack::operator()(Seconds from, Seconds to, AnimationState state) const {
     if (!this->isEnabled() || this->empty()) return {to, state};
 
     // 'it' will be the first seq. with a first time larger then 'to'.
@@ -144,9 +120,8 @@ AnimationTimeState CameraTrack::operator()(Seconds from, Seconds to,
     return {to, state};
 }
 
-
-Keyframe* CameraTrack::addKeyFrameUsingPropertyValue(
-    const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation) {
+Keyframe* CameraTrack::addKeyFrameUsingPropertyValue(const Property* property, Seconds time,
+                                                     std::unique_ptr<Interpolation> interpolation) {
     auto prop = dynamic_cast<const CameraProperty*>(property);
     if (!prop) {
         throw Exception("Cannot add key frame from property type " +
@@ -178,11 +153,10 @@ Keyframe* CameraTrack::addKeyFrameUsingPropertyValue(
     return nullptr;
 }
 
-Keyframe* CameraTrack::addKeyFrameUsingPropertyValue(
-    Seconds time, std::unique_ptr<Interpolation> interpolation) {
+Keyframe* CameraTrack::addKeyFrameUsingPropertyValue(Seconds time,
+                                                     std::unique_ptr<Interpolation> interpolation) {
     return addKeyFrameUsingPropertyValue(property_, time, std::move(interpolation));
 }
-
 
 KeyframeSequence* CameraTrack::addSequenceUsingPropertyValue(
     Seconds time, std::unique_ptr<Interpolation> interpolation) {
@@ -203,12 +177,10 @@ KeyframeSequence* CameraTrack::addSequenceUsingPropertyValue(
     return nullptr;
 }
 
-
 void CameraTrack::serialize(Serializer& s) const {
     BaseTrack<CameraKeyframeSequence>::serialize(s);
     s.serialize("property", property_);
 }
-
 
 void CameraTrack::deserialize(Deserializer& d) {
     BaseTrack<CameraKeyframeSequence>::deserialize(d);

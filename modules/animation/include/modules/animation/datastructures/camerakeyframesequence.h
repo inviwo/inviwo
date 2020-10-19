@@ -46,7 +46,8 @@ namespace animation {
  * @see KeyframeSequence
  */
 
-class IVW_MODULE_ANIMATION_API CameraKeyframeSequence : public BaseKeyframeSequence<CameraKeyframe>, public ValueKeyframeSequence {
+class IVW_MODULE_ANIMATION_API CameraKeyframeSequence : public BaseKeyframeSequence<CameraKeyframe>,
+                                                        public ValueKeyframeSequence {
 public:
     using key_type = CameraKeyframe;
     using value_type = typename CameraKeyframe::value_type;
@@ -54,7 +55,7 @@ public:
     CameraKeyframeSequence();
     CameraKeyframeSequence(std::vector<std::unique_ptr<CameraKeyframe>> keyframes);
     CameraKeyframeSequence(std::vector<std::unique_ptr<CameraKeyframe>> keyframes,
-                          std::unique_ptr<CameraInterpolation> interpolation);
+                           std::unique_ptr<CameraInterpolation> interpolation);
 
     CameraKeyframeSequence(const CameraKeyframeSequence& rhs);
     CameraKeyframeSequence& operator=(const CameraKeyframeSequence& that);
@@ -83,15 +84,12 @@ private:
     std::unique_ptr<CameraInterpolation> interpolation_;
 };
 
-
 IVW_MODULE_ANIMATION_API bool operator==(const CameraKeyframeSequence& a,
                                          const CameraKeyframeSequence& b);
 
 IVW_MODULE_ANIMATION_API bool operator!=(const CameraKeyframeSequence& a,
                                          const CameraKeyframeSequence& b);
 
-
 }  // namespace animation
 
 }  // namespace inviwo
-

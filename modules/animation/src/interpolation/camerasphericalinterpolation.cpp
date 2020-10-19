@@ -39,13 +39,9 @@ CameraSphericalInterpolation* CameraSphericalInterpolation::clone() const {
     return new CameraSphericalInterpolation(*this);
 }
 
-std::string CameraSphericalInterpolation::getName() const {
-    return "Orbit/Pan/Tilt";
-}
+std::string CameraSphericalInterpolation::getName() const { return "Orbit/Pan/Tilt"; }
 
-std::string CameraSphericalInterpolation::getClassIdentifier() const {
-    return classIdentifier();
-}
+std::string CameraSphericalInterpolation::getClassIdentifier() const { return classIdentifier(); }
 
 bool CameraSphericalInterpolation::equal(const Interpolation& other) const {
     return classIdentifier() == other.getClassIdentifier();
@@ -55,9 +51,9 @@ std::string CameraSphericalInterpolation::classIdentifier() {
     return "org.inviwo.animation.camerasphericalinterpolation";
 }
 
-void CameraSphericalInterpolation::operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys,
-                                          Seconds /*from*/, Seconds to,
-                                          easing::EasingType easing, Camera& out) const {
+void CameraSphericalInterpolation::operator()(
+    const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds /*from*/, Seconds to,
+    easing::EasingType easing, Camera& out) const {
 
     auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
         return time < key->getTime();
@@ -69,12 +65,11 @@ void CameraSphericalInterpolation::operator()(const std::vector<std::unique_ptr<
     const auto& v2 = (*it)->getValue();
     const auto& t2 = (*it)->getTime();
 
-
     auto t = static_cast<float>(easing::ease((to - t1) / (t2 - t1), easing));
 
     auto fromDir = glm::normalize(v1.getDirection());
-    auto rotation = glm::slerp(glm::quat_identity<float, glm::defaultp>(), 
-        glm::rotation(fromDir, glm::normalize(v2.getDirection())), t);
+    auto rotation = glm::slerp(glm::quat_identity<float, glm::defaultp>(),
+                               glm::rotation(fromDir, glm::normalize(v2.getDirection())), t);
 
     // Adjust for different direction lengths
     auto d = glm::mix(glm::length(v1.getDirection()), glm::length(v2.getDirection()), t);
@@ -85,8 +80,7 @@ void CameraSphericalInterpolation::operator()(const std::vector<std::unique_ptr<
         auto lookFrom = lookTo - glm::normalize(rotation * fromDir) * d;
         out.setLookFrom(lookFrom);
         out.setLookTo(lookTo);
-    }
-    else {
+    } else {
         // Pan/tilt (lookFrom's are equal)
         const auto& lookFrom = v1.getLookFrom();
         auto lookTo = lookFrom + glm::normalize(rotation * fromDir) * d;
@@ -94,9 +88,9 @@ void CameraSphericalInterpolation::operator()(const std::vector<std::unique_ptr<
         out.setLookTo(lookTo);
     }
     // Assume that lookUp vectors are normalized
-    auto lookUpQ = glm::slerp(glm::quat_identity<float, glm::defaultp>(), 
-        glm::rotation(v1.getLookUp(), v2.getLookUp()), t);
-    auto lookUp = glm::normalize(lookUpQ*v1.getLookUp());
+    auto lookUpQ = glm::slerp(glm::quat_identity<float, glm::defaultp>(),
+                              glm::rotation(v1.getLookUp(), v2.getLookUp()), t);
+    auto lookUp = glm::normalize(lookUpQ * v1.getLookUp());
     out.setLookUp(lookUp);
 }
 

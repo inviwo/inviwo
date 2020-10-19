@@ -33,8 +33,6 @@
 #include <modules/animation/datastructures/propertytrack.h>
 #include <inviwo/core/properties/cameraproperty.h>
 
-
-
 namespace inviwo {
 
 namespace animation {
@@ -48,9 +46,9 @@ namespace animation {
  * @see CameraTrack
  * @see Property
  */
-class IVW_MODULE_ANIMATION_API CameraTrack : public BaseTrack<CameraKeyframeSequence>, public BasePropertyTrack {
+class IVW_MODULE_ANIMATION_API CameraTrack : public BaseTrack<CameraKeyframeSequence>,
+                                             public BasePropertyTrack {
 public:
-    
     CameraTrack();
     CameraTrack(CameraProperty* property);
     /**
@@ -93,9 +91,12 @@ public:
      * @param keyframe The keyframe to set from
      */
     void setOtherProperty(Property* dstProperty, Keyframe* keyframe) override {
-        IVW_ASSERT(dstProperty->getClassIdentifier() == PropertyTraits<CameraProperty>::classIdentifier(),
-                   "Incorrect Property type");
-        static_cast<CameraProperty*>(dstProperty)->setCamera(std::unique_ptr<Camera>(static_cast<CameraKeyframe*>(keyframe)->getValue().clone()));
+        IVW_ASSERT(
+            dstProperty->getClassIdentifier() == PropertyTraits<CameraProperty>::classIdentifier(),
+            "Incorrect Property type");
+        static_cast<CameraProperty*>(dstProperty)
+            ->setCamera(std::unique_ptr<Camera>(
+                static_cast<CameraKeyframe*>(keyframe)->getValue().clone()));
     }
 
     /**
@@ -109,15 +110,16 @@ public:
      * @param keyframe The keyframe to set
      */
     void updateKeyframeFromProperty(Property* srcProperty, Keyframe* keyframe) override {
-        ivwAssert(srcProperty->getClassIdentifier() == PropertyTraits<CameraProperty>::classIdentifier(),
-                  "Incorrect Property type");
-        static_cast<CameraKeyframe*>(keyframe)->updateFrom(static_cast<CameraProperty*>(srcProperty)->get());
+        ivwAssert(
+            srcProperty->getClassIdentifier() == PropertyTraits<CameraProperty>::classIdentifier(),
+            "Incorrect Property type");
+        static_cast<CameraKeyframe*>(keyframe)->updateFrom(
+            static_cast<CameraProperty*>(srcProperty)->get());
     }
 
 private:
     CameraProperty* property_;  ///< non-owning reference
 };
-
 
 }  // namespace animation
 

@@ -34,19 +34,16 @@ namespace inviwo {
 
 namespace animation {
 
-
-
 CameraKeyframeSequence::CameraKeyframeSequence()
     : BaseKeyframeSequence<CameraKeyframe>{}
     , ValueKeyframeSequence{}
     , interpolation_{std::make_unique<CameraSphericalInterpolation>()} {}
 
-
-CameraKeyframeSequence::CameraKeyframeSequence(std::vector<std::unique_ptr<CameraKeyframe>> keyframes)
+CameraKeyframeSequence::CameraKeyframeSequence(
+    std::vector<std::unique_ptr<CameraKeyframe>> keyframes)
     : BaseKeyframeSequence<CameraKeyframe>{std::move(keyframes)}
     , ValueKeyframeSequence()
     , interpolation_{std::make_unique<CameraSphericalInterpolation>()} {}
-
 
 CameraKeyframeSequence::CameraKeyframeSequence(
     std::vector<std::unique_ptr<CameraKeyframe>> keyframes,
@@ -60,9 +57,7 @@ CameraKeyframeSequence::CameraKeyframeSequence(const CameraKeyframeSequence& rhs
     , ValueKeyframeSequence(rhs)
     , interpolation_(std::unique_ptr<CameraInterpolation>(rhs.interpolation_->clone())) {}
 
-
-CameraKeyframeSequence& CameraKeyframeSequence::operator=(
-    const CameraKeyframeSequence& that) {
+CameraKeyframeSequence& CameraKeyframeSequence::operator=(const CameraKeyframeSequence& that) {
     if (this != &that) {
         BaseKeyframeSequence<CameraKeyframe>::operator=(that);
         ValueKeyframeSequence::operator=(that);
@@ -72,17 +67,13 @@ CameraKeyframeSequence& CameraKeyframeSequence::operator=(
     return *this;
 }
 
-
 CameraKeyframeSequence::~CameraKeyframeSequence() = default;
-
 
 CameraKeyframeSequence* CameraKeyframeSequence::clone() const {
     return new CameraKeyframeSequence(*this);
 }
 
-
-void CameraKeyframeSequence::operator()(Seconds from, Seconds to, Camera& out) const
-{
+void CameraKeyframeSequence::operator()(Seconds from, Seconds to, Camera& out) const {
     if (interpolation_) {
         (*interpolation_)(this->keyframes_, from, to, easing_, out);
     } else {
@@ -90,35 +81,26 @@ void CameraKeyframeSequence::operator()(Seconds from, Seconds to, Camera& out) c
     }
 }
 
-
 const CameraInterpolation& CameraKeyframeSequence::getInterpolation() const {
     return *interpolation_;
 }
 
-
-void CameraKeyframeSequence::setInterpolation(
-    std::unique_ptr<CameraInterpolation> interpolation) {
+void CameraKeyframeSequence::setInterpolation(std::unique_ptr<CameraInterpolation> interpolation) {
     if (interpolation && !interpolation_->equal(*interpolation)) {
         interpolation_ = std::move(interpolation);
         notifyValueKeyframeSequenceInterpolationChanged(this);
     }
 }
 
-
 void CameraKeyframeSequence::setInterpolation(std::unique_ptr<Interpolation> interpolation) {
-    if (auto inter =
-            util::dynamic_unique_ptr_cast<CameraInterpolation>(std::move(interpolation))) {
+    if (auto inter = util::dynamic_unique_ptr_cast<CameraInterpolation>(std::move(interpolation))) {
         setInterpolation(std::move(inter));
     } else {
         throw Exception("Interpolation type does not match key", IVW_CONTEXT);
     }
 }
 
-
-easing::EasingType CameraKeyframeSequence::getEasingType() const {
-    return easing_;
-}
-
+easing::EasingType CameraKeyframeSequence::getEasingType() const { return easing_; }
 
 void CameraKeyframeSequence::setEasingType(easing::EasingType easing) {
     if (easing_ != easing) {
@@ -127,13 +109,11 @@ void CameraKeyframeSequence::setEasingType(easing::EasingType easing) {
     }
 }
 
-
 void CameraKeyframeSequence::serialize(Serializer& s) const {
     BaseKeyframeSequence<CameraKeyframe>::serialize(s);
     s.serialize("easing", easing_);
     s.serialize("interpolation", interpolation_);
 }
-
 
 void CameraKeyframeSequence::deserialize(Deserializer& d) {
     BaseKeyframeSequence<CameraKeyframe>::deserialize(d);

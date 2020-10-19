@@ -35,7 +35,6 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 
-
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/datastructures/valuekeyframesequence.h>
 #include <modules/animation/datastructures/propertytrack.h>
@@ -44,8 +43,6 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
-
-
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -64,10 +61,10 @@ namespace {
 
 class PropertyEditorWidget : public QWidget, public KeyframeObserver {
 public:
-    PropertyEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent)
+    PropertyEditorWidget(Keyframe& keyframe, SequenceEditorWidget* parent)
         : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
 
-        auto &propTrack = dynamic_cast<BasePropertyTrack &>(parent->getTrack());
+        auto& propTrack = dynamic_cast<BasePropertyTrack&>(parent->getTrack());
 
         setObjectName("KeyframeEditorWidget");
         setVisible(keyframe_.isSelected());
@@ -98,9 +95,9 @@ public:
 
         auto propWidget =
             util::getInviwoApplication()->getPropertyWidgetFactory()->create(property_.get());
-        propertyWidget_ = static_cast<PropertyWidgetQt *>(propWidget.release());
+        propertyWidget_ = static_cast<PropertyWidgetQt*>(propWidget.release());
 
-        if (auto label = propertyWidget_->findChild<EditableLabelQt *>()) {
+        if (auto label = propertyWidget_->findChild<EditableLabelQt*>()) {
             // Do not repeat information (Track name in PropertySequenceEditor) for each property
             label->setVisible(false);
         }
@@ -108,12 +105,13 @@ public:
             collapsibleWidget->initState();
             if (auto cameraProperty = dynamic_cast<CameraProperty*>(property_.get())) {
                 // HACK: Only show relevant properties for the CameraTrack
-                // We should delegate this in case more properties need this 
+                // We should delegate this in case more properties need this
                 std::vector<Property*> properties = cameraProperty->getPropertiesRecursive();
                 for (auto prop : properties) {
                     const auto keepProperties = {"lookFrom", "lookTo", "lookUp"};
-                    if (std::none_of(std::begin(keepProperties), std::end(keepProperties),
-                                          [prop](const auto& v) { return v == prop->getIdentifier(); })) {
+                    if (std::none_of(
+                            std::begin(keepProperties), std::end(keepProperties),
+                            [prop](const auto& v) { return v == prop->getIdentifier(); })) {
                         prop->setVisible(false);
                     }
                 }
@@ -133,35 +131,35 @@ public:
         }
     }
 
-    virtual void onKeyframeTimeChanged(Keyframe *key, Seconds) override {
+    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds) override {
         timeSpinner_->setValue(key->getTime().count());
         sequenceEditorWidget_->setReorderNeeded();
     }
 
-    Keyframe &getKeyframe() { return keyframe_; }
+    Keyframe& getKeyframe() { return keyframe_; }
 
-    virtual void onKeyframeSelectionChanged(Keyframe *key) override {
+    virtual void onKeyframeSelectionChanged(Keyframe* key) override {
         setVisible(key->isSelected());
         sequenceEditorWidget_->updateVisibility();
     }
 
 private:
-    Keyframe &keyframe_;
-    SequenceEditorWidget *sequenceEditorWidget_{nullptr};
+    Keyframe& keyframe_;
+    SequenceEditorWidget* sequenceEditorWidget_{nullptr};
 
     std::unique_ptr<Property> property_{nullptr};
-    PropertyWidgetQt *propertyWidget_{nullptr};
-    QDoubleSpinBox *timeSpinner_{nullptr};
+    PropertyWidgetQt* propertyWidget_{nullptr};
+    QDoubleSpinBox* timeSpinner_{nullptr};
 };
 
 }  // namespace
 
-PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track &track,
-                                               AnimationManager &manager)
+PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track& track,
+                                               AnimationManager& manager)
     : SequenceEditorWidget(sequence, track) {
 
-    auto &bpt = dynamic_cast<BasePropertyTrack &>(track);
-    auto &valseq = dynamic_cast<ValueKeyframeSequence &>(sequence);
+    auto& bpt = dynamic_cast<BasePropertyTrack&>(track);
+    auto& valseq = dynamic_cast<ValueKeyframeSequence&>(sequence);
 
     sequence.addObserver(this);
 
@@ -233,18 +231,18 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track
     updateVisibility();
 }
 
-QWidget *PropertySequenceEditor::create(Keyframe *key) {
+QWidget* PropertySequenceEditor::create(Keyframe* key) {
     return new PropertyEditorWidget(*key, this);
 }
 
-void PropertySequenceEditor::onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence *seq) {
+void PropertySequenceEditor::onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence* seq) {
     QSignalBlocker block(easingComboBox_);
     auto index = easingComboBox_->findData(QVariant(static_cast<int>(seq->getEasingType())));
     easingComboBox_->setCurrentIndex(index);
 }
 
 void PropertySequenceEditor::onValueKeyframeSequenceInterpolationChanged(
-    ValueKeyframeSequence *seq) {
+    ValueKeyframeSequence* seq) {
 
     auto id = utilqt::toQString(seq->getInterpolation().getClassIdentifier());
     auto ind = interpolation_->findData(id);

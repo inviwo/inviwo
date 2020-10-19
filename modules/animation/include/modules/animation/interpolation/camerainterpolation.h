@@ -53,12 +53,10 @@ public:
     /*
      * Returns linear interpolation of keyframe values at time t.
      */
-    virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from, Seconds to,
-                            easing::EasingType easing, Camera& out) const = 0;
+    virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from,
+                            Seconds to, easing::EasingType easing, Camera& out) const = 0;
 };
-
 
 }  // namespace animation
 
 }  // namespace inviwo
-

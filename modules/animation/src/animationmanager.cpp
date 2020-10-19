@@ -51,14 +51,15 @@ AnimationManager::AnimationManager(InviwoApplication* app, AnimationModule* anim
         auto callbackAction = new ModuleCallbackAction("Add Key Frame", animationModule,
                                                        ModuleCallBackActionState::Enabled);
 
-        callbackAction->getCallBack().addMemberFunction(this, &AnimationManager::addKeyframeCallback);
+        callbackAction->getCallBack().addMemberFunction(this,
+                                                        &AnimationManager::addKeyframeCallback);
         app->addCallbackAction(callbackAction);
     }
     {
         auto callbackAction = new ModuleCallbackAction("Add Sequence", animationModule,
                                                        ModuleCallBackActionState::Enabled);
-        callbackAction->getCallBack().addMemberFunction(this,
-                                                        &AnimationManager::addKeyframeSequenceCallback);
+        callbackAction->getCallBack().addMemberFunction(
+            this, &AnimationManager::addKeyframeSequenceCallback);
         app->addCallbackAction(callbackAction);
     }
 
