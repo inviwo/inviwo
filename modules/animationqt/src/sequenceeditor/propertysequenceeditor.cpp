@@ -28,20 +28,24 @@
  *********************************************************************************/
 
 #include <modules/animationqt/sequenceeditor/propertysequenceeditor.h>
-
 #include <modules/animationqt/sequenceeditor/keyframeeditorwidget.h>
+
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertywidgetfactory.h>
+
+
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/datastructures/valuekeyframesequence.h>
 #include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/animationmanager.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 
-#include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>
 
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/properties/propertywidgetfactory.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -97,10 +101,25 @@ public:
         propertyWidget_ = static_cast<PropertyWidgetQt *>(propWidget.release());
 
         if (auto label = propertyWidget_->findChild<EditableLabelQt *>()) {
+            // Do not repeat information (Track name in PropertySequenceEditor) for each property
             label->setVisible(false);
         }
+        if (auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(propertyWidget_)) {
+            collapsibleWidget->initState();
+            if (auto cameraProperty = dynamic_cast<CameraProperty*>(property_.get())) {
+                // HACK: Only show relevant properties for the CameraTrack
+                // We should delegate this in case more properties need this 
+                std::vector<Property*> properties = cameraProperty->getPropertiesRecursive();
+                for (auto prop : properties) {
+                    const auto keepProperties = {"lookFrom", "lookTo", "lookUp"};
+                    if (std::none_of(std::begin(keepProperties), std::end(keepProperties),
+                                          [prop](const auto& v) { return v == prop->getIdentifier(); })) {
+                        prop->setVisible(false);
+                    }
+                }
+            }
+        }
         layout->addWidget(propertyWidget_);
-
         setLayout(layout);
     }
 

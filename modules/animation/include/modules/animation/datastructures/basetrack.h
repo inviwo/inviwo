@@ -88,7 +88,9 @@ public:
     const_iterator begin() const;
     iterator end();
     const_iterator end() const;
-
+    /**
+     * Add a Keyframe/KeyframeSequence at time
+     */
     virtual void add(Seconds time, bool asNewSequence) override;
     /**
      * Add KeyframeSequence and call KeyframeSequenceObserverble::notifyKeyframeSequenceAdded

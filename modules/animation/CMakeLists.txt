@@ -18,6 +18,9 @@ set(HEADER_FILES
     include/modules/animation/datastructures/basekeyframe.h
     include/modules/animation/datastructures/basekeyframesequence.h
     include/modules/animation/datastructures/basetrack.h
+    include/modules/animation/datastructures/camerakeyframe.h
+    include/modules/animation/datastructures/camerakeyframesequence.h
+    include/modules/animation/datastructures/cameratrack.h
     include/modules/animation/datastructures/controlkeyframe.h
     include/modules/animation/datastructures/controlkeyframesequence.h
     include/modules/animation/datastructures/controltrack.h
@@ -37,6 +40,9 @@ set(HEADER_FILES
     include/modules/animation/factories/interpolationfactoryobject.h
     include/modules/animation/factories/trackfactory.h
     include/modules/animation/factories/trackfactoryobject.h
+    include/modules/animation/interpolation/camerainterpolation.h
+    include/modules/animation/interpolation/cameralinearinterpolation.h
+    include/modules/animation/interpolation/camerasphericalinterpolation.h
     include/modules/animation/interpolation/constantinterpolation.h
     include/modules/animation/interpolation/interpolation.h
     include/modules/animation/interpolation/linearinterpolation.h
@@ -58,6 +64,9 @@ set(SOURCE_FILES
     src/datastructures/basekeyframe.cpp
     src/datastructures/basekeyframesequence.cpp
     src/datastructures/basetrack.cpp
+    src/datastructures/camerakeyframe.cpp
+    src/datastructures/camerakeyframesequence.cpp
+    src/datastructures/cameratrack.cpp
     src/datastructures/controlkeyframe.cpp
     src/datastructures/controlkeyframesequence.cpp
     src/datastructures/controltrack.cpp
@@ -77,6 +86,9 @@ set(SOURCE_FILES
     src/factories/interpolationfactoryobject.cpp
     src/factories/trackfactory.cpp
     src/factories/trackfactoryobject.cpp
+    src/interpolation/camerainterpolation.cpp
+    src/interpolation/cameralinearinterpolation.cpp
+    src/interpolation/camerasphericalinterpolation.cpp
     src/interpolation/interpolation.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
