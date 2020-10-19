@@ -31,6 +31,7 @@ set(HEADER_FILES
     include/modules/base/algorithm/volume/volumeramsubsample.h
     include/modules/base/algorithm/volume/volumeramsubset.h
     include/modules/base/algorithm/volume/volumesignificantvoxels.h
+    include/modules/base/algorithm/volume/volumevoronoi.h
     include/modules/base/basemodule.h
     include/modules/base/basemoduledefine.h
     include/modules/base/datastructures/disjointsets.h
@@ -114,6 +115,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumesubsample.h
     include/modules/base/processors/volumesubset.h
     include/modules/base/processors/volumetospatialsampler.h
+    include/modules/base/processors/volumevoronoisegmentation.h
     include/modules/base/processors/worldtransformdeprecated.h
     include/modules/base/properties/basisproperty.h
     include/modules/base/properties/bufferinformationproperty.h
@@ -156,6 +158,7 @@ set(SOURCE_FILES
     src/algorithm/volume/volumeramsubsample.cpp
     src/algorithm/volume/volumeramsubset.cpp
     src/algorithm/volume/volumesignificantvoxels.cpp
+    src/algorithm/volume/volumevoronoi.cpp
     src/basemodule.cpp
     src/datastructures/disjointsets.cpp
     src/datastructures/imagereusecache.cpp
@@ -233,6 +236,7 @@ set(SOURCE_FILES
     src/processors/volumesubsample.cpp
     src/processors/volumesubset.cpp
     src/processors/volumetospatialsampler.cpp
+    src/processors/volumevoronoisegmentation.cpp
     src/properties/basisproperty.cpp
     src/properties/bufferinformationproperty.cpp
     src/properties/datarangeproperty.cpp
@@ -253,6 +257,7 @@ set(TEST_FILES
     tests/unittests/kdtree-test.cpp
     tests/unittests/marchingcubes-test.cpp
     tests/unittests/meshcutting-test.cpp
+    tests/unittests/volumevoronoi-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
