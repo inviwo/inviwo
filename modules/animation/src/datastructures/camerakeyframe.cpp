@@ -75,9 +75,7 @@ bool operator==(const CameraKeyframe& a, const CameraKeyframe& b) {
              glm::any(glm::notEqual(a.getValue().getLookTo(), b.getValue().getLookTo())) ||
              glm::any(glm::notEqual(a.getValue().getLookUp(), b.getValue().getLookUp())));
 }
-bool operator!=(const CameraKeyframe& a, const CameraKeyframe& b) {
-    return !(a == b);
-}
+bool operator!=(const CameraKeyframe& a, const CameraKeyframe& b) { return !(a == b); }
 
 }  // namespace animation
 
