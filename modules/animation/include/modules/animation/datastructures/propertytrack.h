@@ -296,6 +296,12 @@ public:
                                                  static_cast<Key*>(keyframe));
     }
 
+protected:
+    /*
+     * Creates a Seq::key_type using the current property value. 
+     */
+    virtual std::unique_ptr<Key> createKeyframe(Seconds time) override;
+
 private:
     Prop* property_;  ///< non-owning reference
     ProcessorNetwork* network_;
@@ -316,8 +322,13 @@ Track* PropertyTrack<Prop, Key>::toTrack() {
 }
 
 template <typename Prop, typename Key>
-PropertyTrack<Prop, Key>::PropertyTrack(ProcessorNetwork* network)
-    : BaseTrack<KeyframeSequenceTyped<Key>>{"", "", 100}, property_(nullptr), network_{network} {}
+inline std::unique_ptr<Key> PropertyTrack<Prop, Key>::createKeyframe(Seconds time) {
+    return std::make_unique<Key>(time, property_->get());
+}
+
+template <typename Prop, typename Key>
+PropertyTrack<Prop, Key>::PropertyTrack()
+    : BaseTrack<KeyframeSequenceTyped<Key>>{"", "", 100}, property_(nullptr) {}
 
 template <typename Prop, typename Key>
 PropertyTrack<Prop, Key>::PropertyTrack(Prop* property)

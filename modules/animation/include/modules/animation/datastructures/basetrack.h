@@ -113,6 +113,11 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 protected:
+    /*
+     * Creates a Seq::key_type using default constructor. 
+     * Override to add custom behaviour in add(Seconds time, bool asNewSequence)
+     */
+    virtual std::unique_ptr<typename key_type> createKeyframe(Seconds time);
     virtual void onKeyframeSequenceMoved(KeyframeSequence* seq) override;
     Keyframe* addToClosestSequence(std::unique_ptr<key_type> key);
 
@@ -282,7 +287,7 @@ void BaseTrack<Seq>::add(Seconds time, bool asNewSequence) {
         add(std::make_unique<Seq>(std::move(keys)));
     };
 
-    auto key = std::make_unique<key_type>(time);
+    auto key = createKeyframe(time);
     if (sequences_.empty()) {
         addNew(std::move(key));
         return;
@@ -403,6 +408,11 @@ std::unique_ptr<KeyframeSequence> BaseTrack<Seq>::remove(KeyframeSequence* seq) 
     } else {
         return nullptr;
     }
+}
+
+template <typename Seq>
+std::unique_ptr<typename Seq::key_type> BaseTrack<Seq>::createKeyframe(Seconds time) {
+    return std::make_unique<Seq::key_type>(time);
 }
 
 template <typename Seq>
