@@ -114,7 +114,7 @@ public:
 
 protected:
     /*
-     * Creates a Seq::key_type using default constructor. 
+     * Creates a Seq::key_type using default constructor.
      * Override to add custom behaviour in add(Seconds time, bool asNewSequence)
      */
     virtual std::unique_ptr<typename key_type> createKeyframe(Seconds time);

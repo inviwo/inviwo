@@ -298,7 +298,7 @@ public:
 
 protected:
     /*
-     * Creates a Seq::key_type using the current property value. 
+     * Creates a Seq::key_type using the current property value.
      */
     virtual std::unique_ptr<Key> createKeyframe(Seconds time) override;
 
