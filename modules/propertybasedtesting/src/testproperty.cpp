@@ -122,29 +122,28 @@ void TestPropertyComposite::storeDefault() {
 	for(const auto& subProp : subProperties)
 		subProp->storeDefault();
 }
-std::vector<std::pair<util::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>> TestPropertyComposite::generateAssignmentsCmp() const {
-	std::vector<std::pair<util::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>> res;
+std::vector<std::tuple<std::unique_ptr<bool>,
+		util::AssignmentComparator,
+		std::vector<std::shared_ptr<PropertyAssignment>>>>
+	TestPropertyComposite::generateAssignmentsCmp() const {
+
+	std::vector<std::tuple<std::unique_ptr<bool>,
+			util::AssignmentComparator,
+			std::vector<std::shared_ptr<PropertyAssignment>>>>
+		res;
 	for(const auto& subProp : subProperties) {
 		if(subProp->getBoolComp()->isChecked()) {
-			const auto tmp = subProp->generateAssignmentsCmp();
-			res.insert(res.end(), tmp.begin(), tmp.end());
-		}
-	}
-	return res;
-}
-std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> TestPropertyComposite::generateAssignments() const {
-	std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> res;
-	for(const auto& subProp : subProperties) {
-		if(subProp->getBoolComp()->isChecked()) {
-			const auto tmp = subProp->generateAssignments();
-			res.insert(res.end(), tmp.begin(), tmp.end());
+			auto tmp = subProp->generateAssignmentsCmp();
+			res.insert(res.end(),
+					std::make_move_iterator(tmp.begin()),
+					std::make_move_iterator(tmp.end()));
 		}
 	}
 	return res;
 }
 
 void TestPropertyComposite::serialize(Serializer& s) const {
-	std::cerr << "\tserializing TestPropertyComposite: " << getIdentifier() << std::endl;
+	//std::cerr << "\tserializing TestPropertyComposite: " << getIdentifier() << std::endl;
 
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
 	s.serialize("identifier", identifier, SerializationTarget::Attribute);
@@ -249,7 +248,7 @@ void TestPropertyTyped<T>::setToDefault() const {
 	typedProperty->set(defaultValue);
 }
 template<typename T>
-auto TestPropertyTyped<T>::getDefaultValue() const -> const val_type& {
+auto TestPropertyTyped<T>::getDefaultValue() const -> const value_type& {
 	return defaultValue;
 }
 template<typename T>
@@ -264,35 +263,43 @@ auto TestPropertyTyped<T>::selectedEffects() const -> std::array<util::PropertyE
 	return selectedEffects;
 }
 template<typename T>
-std::vector<std::pair<util::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>> TestPropertyTyped<T>::generateAssignmentsCmp() const {
+std::vector<std::tuple<std::unique_ptr<bool>,
+		util::AssignmentComparator,
+		std::vector<std::shared_ptr<PropertyAssignment>>>>
+	TestPropertyTyped<T>::generateAssignmentsCmp() const {
+
 	static const GenerateAssignments<T> tmp;
 	static const util::AssignmentComparator cmp = [this](const auto& oldA, const auto& newA) {
-			const PropertyAssignmentTyped<val_type>* oldAptr = dynamic_cast<PropertyAssignmentTyped<val_type>*>(oldA.get());
-			const PropertyAssignmentTyped<val_type>* newAptr = dynamic_cast<PropertyAssignmentTyped<val_type>*>(newA.get());
+			const PropertyAssignmentTyped<value_type>* oldAptr =
+				dynamic_cast<PropertyAssignmentTyped<value_type>*>(oldA.get());
+			const PropertyAssignmentTyped<value_type>* newAptr =
+				dynamic_cast<PropertyAssignmentTyped<value_type>*>(newA.get());
 			assert(oldAptr != nullptr);
 			assert(newAptr != nullptr);
 
-			const val_type& oldV = oldAptr->getValue();
-			const val_type& newV = newAptr->getValue();
+			const value_type& oldV = oldAptr->getValue();
+			const value_type& newV = newAptr->getValue();
 
-			return propertyEffect<val_type>(oldV, newV, selectedEffects());
+			return propertyEffect<value_type>(oldV, newV, selectedEffects());
 		};
-	return {{cmp,tmp(typedProperty)}};
-}
-template<typename T>
-std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> TestPropertyTyped<T>::generateAssignments() const {
-	static const GenerateAssignments<T> tmp;
-	return {tmp(typedProperty)};
+	auto[deactivated,assignments] = tmp(typedProperty);
+
+	std::vector<std::tuple<std::unique_ptr<bool>,
+			util::AssignmentComparator,
+			std::vector<std::shared_ptr<PropertyAssignment>>>>
+		res;
+	res.emplace_back(std::move(deactivated), cmp, assignments);
+	return res;
 }
 
 template<typename T>
 std::optional<util::PropertyEffect> TestPropertyTyped<T>::getPropertyEffect(
 		std::shared_ptr<TestResult> newTestResult,
 		std::shared_ptr<TestResult> oldTestResult) const {
-	const val_type& valNew = newTestResult->getValue(this->typedProperty);
-	const val_type& valOld = oldTestResult->getValue(this->typedProperty);
+	const value_type& valNew = newTestResult->getValue(this->typedProperty);
+	const value_type& valOld = oldTestResult->getValue(this->typedProperty);
 
-	return propertyEffect<val_type>(valOld, valNew, selectedEffects());
+	return propertyEffect<value_type>(valOld, valNew, selectedEffects());
 }
 
 template<typename T>
@@ -305,7 +312,7 @@ std::string TestPropertyTyped<T>::getValueString(std::shared_ptr<TestResult> tes
 template<typename T>
 std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 			std::shared_ptr<TestResult> testResult) const {
-	const val_type& val = testResult->getValue(this->typedProperty);
+	const value_type& val = testResult->getValue(this->typedProperty);
 	
 	return out << '\"' << getDisplayName() << "\" with identifier \"" << getIdentifier() << "\": "
 				<< val;
@@ -314,8 +321,8 @@ template<typename T>
 std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 			std::shared_ptr<TestResult> newTestResult,
 			std::shared_ptr<TestResult> oldTestResult) const {
-	const val_type& valNew = newTestResult->getValue(this->typedProperty);
-	const val_type& valOld = oldTestResult->getValue(this->typedProperty);
+	const value_type& valNew = newTestResult->getValue(this->typedProperty);
+	const value_type& valOld = oldTestResult->getValue(this->typedProperty);
 	
 	return out << '\"' << getDisplayName() << "\" with identifier \"" << getIdentifier() << "\": "
 				<< valNew << ", " << valOld << " ; comparator set to  "
@@ -324,7 +331,7 @@ std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 
 template<typename T>
 void TestPropertyTyped<T>::serialize(Serializer& s) const {
-	std::cerr << "\tserializing " << getClassIdentifier() << ": " << getIdentifier() << std::endl;
+	//std::cerr << "\tserializing " << getClassIdentifier() << ": " << getIdentifier() << std::endl;
 
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
 	s.serialize("identifier", identifier, SerializationTarget::Attribute);
@@ -344,7 +351,7 @@ void TestPropertyTyped<T>::deserialize(Deserializer& d) {
 	d.deserialize("DisplayName", displayName);
 	d.deserialize("BoolComp", boolComp);
 	d.deserialize("EffectOption", effectOption);
-	std::cerr << "deserialized " << getClassIdentifier() << "@" << this << " : " << typedProperty->getIdentifier() << std::endl;
+	//std::cerr << "deserialized " << getClassIdentifier() << "@" << this << " : " << typedProperty->getIdentifier() << std::endl;
 }
 
 // Helpers

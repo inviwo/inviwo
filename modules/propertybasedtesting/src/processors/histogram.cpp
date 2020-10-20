@@ -105,16 +105,12 @@ void Histogram::onProcessorNetworkDidRemoveConnection(const PortConnection& conn
 	updateProcessors();
 }
 void Histogram::updateProcessors() {
-	std::cerr << "UPDATE_PROCESSOR" << std::endl;
 	processors_.insert(inactiveProcessors.begin(), inactiveProcessors.end());
 	inactiveProcessors.clear();
 
 	std::unordered_set<Processor*> visitedProcessors;
 	for(Processor* const processor : util::getPredecessors(this)) {
 		if(processor == this) continue;
-		//std::cerr << "visiting processor " << processor << " "
-		//	<< processor->getIdentifier() << " " <<
-		//	(processors_.count(processor) > 0 ? "known" : "new") << std::endl;
 		visitedProcessors.insert(processor);
 	}
 
@@ -129,16 +125,6 @@ void Histogram::updateProcessors() {
 	}
 	for(const auto& processor : processorsToRemove) {
 		const auto& testProp = processors_.at(processor);
-		//std::cerr << " removing " << testProp->getBoolComp() << std::endl;
-
-		std::cerr << "testProp = " << testProp << std::endl;
-		std::cerr << "testProp->getBoolComp() = " << testProp->getBoolComp() << std::endl;
-		testProp->getBoolComp()->setVisible(false);
-		//auto tmp = removeProperty(testProp->getBoolComp());
-		////std::cerr << "tmp = " << tmp << ", tmp->getOwner() = " << tmp->getOwner() << std::endl;
-		//assert(tmp != nullptr);
-		//assert(tmp == testProp->getBoolComp());
-		//assert(tmp->getOwner() == nullptr);
 
 		inactiveProcessors.emplace(processor, testProp);
 		processors_.erase(processor);
@@ -146,9 +132,6 @@ void Histogram::updateProcessors() {
 	
 	// add newly connected processors
 	for(const auto& processor : visitedProcessors) {
-		//std::cerr << processor << " "
-		//	<< processor->getIdentifier() << ": "
-		//	<< processors_.count(processor) << std::endl;
 		if(processors_.count(processor) == 0) {
 			std::vector<std::shared_ptr<TestProperty>> props;
 			for(Property* prop : processor->getProperties()) {
@@ -164,13 +147,10 @@ void Histogram::updateProcessors() {
 
 			auto comp = TestPropertyComposite::make<Processor>(processor);
 			processors_.emplace(processor, comp);
-			//std::cerr << processor->getDisplayName() << ": " << props.size() << std::endl;
 
 			addProperty(comp->getBoolComp());
 		}
 	}
-
-	//std::cerr << std::endl;
 }
 
 Histogram::Histogram(InviwoApplication* app)
@@ -185,6 +165,7 @@ Histogram::Histogram(InviwoApplication* app)
 	, color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(0.0f))
 	, countPixelsButton_("cntPixelsButton", "Count number of pixels with set color")
 	, startButton_("startButton", "Update Test Results")
+	, condenseButton_("condenseButton", "Condense Failed Tests")
 	, numTests_("numTests", "Maximum number of tests", 200, 1, 10000) {
 
 	//std::cerr << "Histogram(app=" << app << ")" << std::endl;
@@ -205,6 +186,12 @@ Histogram::Histogram(InviwoApplication* app)
 
 	startButton_.onChange([this]() { this->initTesting(); } );
 
+	condenseButton_.setVisible(false); // make visible when errors have been found
+	condenseButton_.onChange([this]() {
+			this->currently_condensing = true;
+			this->checkTestResults();
+		});
+
 	inport_.setOutportDeterminesSize(true);
 	addPort(inport_);
 
@@ -222,6 +209,7 @@ Histogram::Histogram(InviwoApplication* app)
 	addProperty(countPixelsButton_);
 	addProperty(numTests_);
 	addProperty(startButton_);
+	addProperty(condenseButton_);
 
 	if (std::filesystem::create_directory(tempDir_.string())) {
 		std::stringstream str;
@@ -239,7 +227,7 @@ void Histogram::serialize(Serializer& s) const {
 
 	Processor::serialize(s);
 
-	std::cerr << "Histogram::serialize()" << std::endl;
+	//std::cerr << "Histogram::serialize()" << std::endl;
 
 	std::vector<Processor*> processors;
 	std::vector<TestProperty*> testProperties;
@@ -252,9 +240,9 @@ void Histogram::serialize(Serializer& s) const {
 		testProperties.emplace_back(static_cast<TestProperty*>(test.get()));
 	}
 	s.serialize("Processors", processors);
-	std::cerr << "\tserialized " << processors.size() << " processors" << std::endl;
+	//std::cerr << "\tserialized " << processors.size() << " processors" << std::endl;
 	s.serialize("TestProperties", testProperties);
-	std::cerr << "\tserialized " << testProperties.size() << " testProperties" << std::endl;
+	//std::cerr << "\tserialized " << testProperties.size() << " testProperties" << std::endl;
 }
 
 void Histogram::deserialize(Deserializer& d) {
@@ -262,14 +250,14 @@ void Histogram::deserialize(Deserializer& d) {
 
 	Processor::deserialize(d);
 
-	std::cerr << this << "->Histogram::deserialize()" << std::endl;
+	//std::cerr << this << "->Histogram::deserialize()" << std::endl;
 
 	std::vector<Processor*> processors;
 	d.deserialize("Processors", processors);
-	std::cerr << "\tdeserialized " << processors.size() << " processors: " << processors << std::endl;
+	//std::cerr << "\tdeserialized " << processors.size() << " processors: " << processors << std::endl;
 	std::vector<TestProperty*> testProperties;
 	d.deserialize("TestProperties", testProperties);
-	std::cerr << "\tdeserialized " << testProperties.size() << " testProperties: " << testProperties << std::endl;
+	//std::cerr << "\tdeserialized " << testProperties.size() << " testProperties: " << testProperties << std::endl;
 	assert(processors.size() == testProperties.size());
 
 	inactiveProcessors.insert(processors_.begin(), processors_.end());
@@ -296,7 +284,10 @@ void Histogram::deserialize(Deserializer& d) {
 
 void Histogram::initTesting() {
 	assert(remainingTests.empty());
+	deactivated.clear();
 	testResults.clear();
+
+	condenseButton_.setVisible(false);
 
 	props_.clear();
 
@@ -318,11 +309,25 @@ void Histogram::initTesting() {
 		prop->storeDefault();
 	}
 
-	std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> assignments;
-	for(const auto prop : props_) {
-		const auto tmp = prop->generateAssignments();
-		assignments.insert(assignments.end(), tmp.begin(), tmp.end());
-	}
+	const auto [assignments, assignmentsComp] = [&]() {
+			std::vector<
+				std::pair<
+					util::AssignmentComparator,
+					std::vector< std::shared_ptr<PropertyAssignment> >
+				>
+			> resComp;
+			std::vector<std::vector< std::shared_ptr<PropertyAssignment> >> res;
+
+			for(const auto prop : props_) {
+				auto why = prop->generateAssignmentsCmp();
+				for(auto& [deac, cmp, prop_assignments] : why) {
+					resComp.emplace_back(cmp, prop_assignments);
+					res.emplace_back(prop_assignments);
+					deactivated.emplace_back(std::move(deac));
+				}
+			}
+			return std::make_pair(res, resComp);
+		}();
 
 	std::cerr << "assignments: ";
 	for(const auto& x : assignments) std::cerr << " [" << x.size() << "]";
@@ -333,22 +338,8 @@ void Histogram::initTesting() {
 		return;
 	}
 
-	const auto assignmentsComp = [&]() {
-			std::vector<
-				std::pair<
-					util::AssignmentComparator,
-					std::vector< std::shared_ptr<PropertyAssignment> >
-				>
-			> res;
 
-			for(const auto prop : props_) {
-				const auto tmp = prop->generateAssignmentsCmp();
-				res.insert(res.end(), tmp.begin(), tmp.end());
-			}
-			return res;
-		}();
-
-	auto allTests = util::optCoveringArray(Test{}, assignmentsComp); 
+	allTests = util::optCoveringArray(Test{}, assignmentsComp); 
 	//auto allTests = util::coveringArray(Test{}, assignments);
 	
 	{
@@ -362,6 +353,10 @@ void Histogram::initTesting() {
 	for(const auto& test : allTests) {
 		remainingTests.emplace(test);
 	}
+
+	for(const auto& d : deactivated)
+		(*d) = false;
+	last_deactivated = -1;
 
 	std::cerr << "remainingTests.size() = " << remainingTests.size() << std::endl;
 	util::log(IVW_CONTEXT, std::string("Testing ") + std::to_string(remainingTests.size()) + " configurations...",
@@ -430,6 +425,8 @@ auto generateImageFromData(const std::vector<unsigned char>& data) {
 }
 
 void Histogram::checkTestResults() {
+	std::cerr << "checking test results" << std::endl;
+	assert(remainingTests.empty());
 	std::vector< TestingError > errors;
 
 	size_t numComparable = 0;
@@ -495,6 +492,8 @@ void Histogram::checkTestResults() {
 		reportFile.close();
 		util::log(IVW_CONTEXT, "Wrote report to " + reportFilePath.string(),
 				LogLevel::Info, LogAudience::User);
+
+		condenseButton_.setVisible(true);
 	} else {
 		util::log(IVW_CONTEXT, "All tests passed.", LogLevel::Info, LogAudience::User);
 	}
@@ -510,6 +509,36 @@ void Histogram::checkTestResults() {
 		outputImage = { generateImageFromData<F>(tmpData) };
 		this->invalidate(InvalidationLevel::InvalidOutput);
 	}
+
+	
+	if(currently_condensing) {
+		if(errors.empty()) {
+			assert(last_deactivated != -1);
+			(*deactivated[last_deactivated]) = false;
+			last_deactivated++;
+		} else {
+			last_deactivated++;
+		}
+
+		if(last_deactivated >= deactivated.size()) {
+			// we have tried to deactivate all properties
+			// terminate condensing
+			currently_condensing = false;
+		} else {
+			(*deactivated[last_deactivated]) = true;
+
+			// copy tests to 'remainingTests'
+			for(const auto& test : allTests) {
+				remainingTests.emplace(test);
+			}
+
+			// kick off testing
+			if(remainingTests.size() > 0)
+				app_->dispatchFront([this]() {
+						setupTest(remainingTests.front());
+					});
+		}
+	}
 }
 
 bool Histogram::testIsSetUp(const Test& test) const {
@@ -519,7 +548,6 @@ bool Histogram::testIsSetUp(const Test& test) const {
 	return true;
 }
 void Histogram::setupTest(const Test& test) {
-	std::cerr << "setup Test" << std::endl;
 	NetworkLock lock(this);
 
 	resetAllProps();
@@ -612,11 +640,10 @@ void Histogram::process() {
 			}
 			break;
 	}
-	testingState = NONE;
+	testingState = TestingState::NONE;
 
 	if(outputImage) {
 		outport_.setData(*outputImage);
-		std::cerr << "setting output image" << std::endl;
 	}
 }
 

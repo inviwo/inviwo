@@ -49,7 +49,7 @@ protected:
 	TestProperty() = default;
 	TestProperty(const std::string& displayName, const std::string& identifier);
 
-	const auto& options() {
+	const auto& options() const {
 		const static std::vector<OptionPropertyOption<int>> options {
 				{"EQUAL",			"EQUAL",			0},
 				{"NOT_EQUAL",		"NOT_EQUAL",		1},
@@ -83,8 +83,10 @@ public:
 
 	virtual void setToDefault() const = 0;
 	virtual void storeDefault() = 0;
-	virtual std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> generateAssignments() const = 0;
-	virtual std::vector<std::pair<util::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>> generateAssignmentsCmp() const = 0;
+	virtual std::vector<std::tuple<std::unique_ptr<bool>,
+			util::AssignmentComparator,
+			std::vector<std::shared_ptr<PropertyAssignment>>>>
+		generateAssignmentsCmp() const = 0;
 	virtual ~TestProperty() = default;
 };
 
@@ -156,17 +158,19 @@ public:
 	std::optional<typename T::value_type> getDefaultValue(const T* prop) const;
 
 	void storeDefault();
-	std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> generateAssignments() const override;
-	std::vector<std::pair<util::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>> generateAssignmentsCmp() const override;
+	std::vector<std::tuple<std::unique_ptr<bool>,
+			util::AssignmentComparator,
+			std::vector<std::shared_ptr<PropertyAssignment>>>>
+		generateAssignmentsCmp() const override;
 };
 
 template<typename T>
 class TestPropertyTyped : public TestProperty {
-	using val_type = typename T::value_type;
-	static constexpr size_t numComponents = DataFormat<val_type>::components();
+	using value_type = typename T::value_type;
+	static constexpr size_t numComponents = DataFormat<value_type>::components();
 
 	T* typedProperty;
-	val_type defaultValue;
+	value_type defaultValue;
 	std::array<OptionPropertyInt*, numComponents> effectOption;
 	
 	TestPropertyTyped() = default;
@@ -196,14 +200,16 @@ public:
 	virtual ~TestPropertyTyped() = default;
 	T* getTypedProperty() const;
 	void setToDefault() const override;
-	const val_type& getDefaultValue() const;
+	const value_type& getDefaultValue() const;
 
 	void serialize(Serializer& s) const override;
 	void deserialize(Deserializer& s) override;
 	
 	void storeDefault();
-	std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> generateAssignments() const override;
-	std::vector<std::pair<util::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>> generateAssignmentsCmp() const override;
+	std::vector<std::tuple<std::unique_ptr<bool>,
+			util::AssignmentComparator,
+			std::vector<std::shared_ptr<PropertyAssignment>>>>
+		generateAssignmentsCmp() const override;
 };
 
 class TestResult {

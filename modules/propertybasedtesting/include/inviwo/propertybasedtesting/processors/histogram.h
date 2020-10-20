@@ -82,6 +82,7 @@ public:
     
     virtual void serialize(Serializer& d) const override;
     virtual void deserialize(Deserializer& d) override;
+
 private:
 	static std::mutex mutex_;
 	enum TestingState {
@@ -90,6 +91,7 @@ private:
 		SINGLE_COUNT
 	};
 	TestingState testingState;
+	bool currently_condensing = false;
 
 	InviwoApplication* const app_;
     std::filesystem::path tempDir_;
@@ -103,6 +105,7 @@ private:
     FloatVec4Property color_;
 	ButtonProperty countPixelsButton_;
 	ButtonProperty startButton_;
+	ButtonProperty condenseButton_;
 	IntSizeTProperty numTests_;
 
 	void collectProperties();
@@ -125,6 +128,10 @@ private:
 	bool testIsSetUp(const Test& test) const;
 	void setupTest(const Test& test);
 
+	std::vector<std::unique_ptr<bool>> deactivated;
+	int last_deactivated;
+
+	std::vector<Test> allTests;
 	std::queue<Test> remainingTests;
 	std::vector<std::shared_ptr<TestResult>> testResults;
 	void checkTestResults();

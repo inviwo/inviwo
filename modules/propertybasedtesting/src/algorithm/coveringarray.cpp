@@ -160,7 +160,7 @@ std::vector<Test> optCoveringArray(const Test& init,
 
 		while(gen.size() < vars.size()) {
 			int opt = -1, idx;
-			bool is_unused;
+			bool is_unused = false;
 
 			for(size_t i = 0; i < finished.size(); i++) {
 				const int val = cmp(comparables, gen, finished[i].first);

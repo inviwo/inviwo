@@ -13,20 +13,39 @@
 namespace inviwo {
 
 class PropertyAssignment {
+private:
+	const bool* m_deactivated;
+protected:
+	virtual void m_apply() const = 0;
+	virtual bool m_isApplied() const = 0;
 public:
+	PropertyAssignment(const bool* deactivated);
+	bool isDeactivated() const;
+	
+	void apply() const;
+	bool isApplied() const;
+
 	virtual ~PropertyAssignment() = default;
-	virtual void apply() const = 0;
-	virtual bool isApplied() const = 0;
 	virtual void print(std::ostream& out) const = 0;
 };
 
 template<typename T>
 class PropertyAssignmentTyped : public PropertyAssignment {
+private:
 	OrdinalProperty<T>* const prop;
 	const T value;
+	
+	void m_apply() const override {
+		prop->set(value);
+	}
+	bool m_isApplied() const override {
+		return prop->get() == value;
+	}
 public:
-	PropertyAssignmentTyped(OrdinalProperty<T>* const prop, const T& value)
-		: prop(prop)
+	PropertyAssignmentTyped(const bool* deactivated,
+			OrdinalProperty<T>* const prop, const T& value)
+		: PropertyAssignment(deactivated)
+		, prop(prop)
 		, value(value) {
 	}
 	~PropertyAssignmentTyped() = default;
@@ -35,12 +54,6 @@ public:
 	}
 	const T& getValue() const {
 		return value;
-	}
-	void apply() const override {
-		prop->set(value);
-	}
-	bool isApplied() const override {
-		return prop->get() == value;
 	}
 	
 	void print(std::ostream& out) const override {
@@ -52,7 +65,8 @@ using Test = std::vector<std::shared_ptr<PropertyAssignment>>;
 
 template<typename T>
 struct GenerateAssignments {
-	std::vector<std::shared_ptr<PropertyAssignment>> operator()(T* const) const;
+	std::pair<std::unique_ptr<bool>,
+		std::vector<std::shared_ptr<PropertyAssignment>>> operator()(T* const) const;
 };
 
 }
