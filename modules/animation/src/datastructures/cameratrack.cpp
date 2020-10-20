@@ -139,7 +139,7 @@ Keyframe* CameraTrack::addKeyFrameUsingPropertyValue(const Property* property, S
             auto sequence = std::make_unique<CameraKeyframeSequence>(
                 std::move(keys), std::unique_ptr<CameraInterpolation>(ip));
             if (auto se = add(std::move(sequence))) {
-                &se->getFirst();
+                return &se->getFirst();
             }
         } else {
             throw Exception("Invalid interpolation " + interpolation->getClassIdentifier() +

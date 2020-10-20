@@ -30,6 +30,8 @@
 #include <modules/animation/datastructures/camerakeyframesequence.h>
 #include <modules/animation/interpolation/camerasphericalinterpolation.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 namespace animation {
