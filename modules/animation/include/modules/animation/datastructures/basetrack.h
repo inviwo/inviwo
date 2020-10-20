@@ -411,8 +411,8 @@ std::unique_ptr<KeyframeSequence> BaseTrack<Seq>::remove(KeyframeSequence* seq) 
 }
 
 template <typename Seq>
-std::unique_ptr<typename Seq::key_type> BaseTrack<Seq>::createKeyframe(Seconds time) {
-    return std::make_unique<Seq::key_type>(time);
+std::unique_ptr<typename BaseTrack<Seq>::key_type> BaseTrack<Seq>::createKeyframe(Seconds time) {
+    return std::make_unique<key_type>(time);
 }
 
 template <typename Seq>
