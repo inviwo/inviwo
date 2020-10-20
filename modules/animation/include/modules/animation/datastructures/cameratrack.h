@@ -127,11 +127,9 @@ private:
     CameraProperty* property_;  ///< non-owning reference
 };
 
-IVW_MODULE_ANIMATION_API bool operator==(const CameraTrack& a,
-                                         const CameraTrack& b);
+IVW_MODULE_ANIMATION_API bool operator==(const CameraTrack& a, const CameraTrack& b);
 
-IVW_MODULE_ANIMATION_API bool operator!=(const CameraTrack& a,
-                                         const CameraTrack& b);
+IVW_MODULE_ANIMATION_API bool operator!=(const CameraTrack& a, const CameraTrack& b);
 
 }  // namespace animation
 
