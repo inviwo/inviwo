@@ -49,6 +49,10 @@ bool operator!=(const CameraTrack& a, const CameraTrack& b) { return !(a == b); 
 
 Track* CameraTrack::toTrack() { return this; }
 
+std::unique_ptr<CameraKeyframe> CameraTrack::createKeyframe(Seconds time) {
+    return std::make_unique<CameraKeyframe>(time, property_->get());
+}
+
 std::string CameraTrack::classIdentifier() {
     // Use property class identifier since multiple properties
     // may have the same key (data type)

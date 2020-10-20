@@ -117,6 +117,11 @@ public:
             static_cast<CameraProperty*>(srcProperty)->get());
     }
 
+protected:
+    /*
+     * Creates a Seq::key_type using the current property value. 
+     */
+    virtual std::unique_ptr<CameraKeyframe> createKeyframe(Seconds time) override;
 private:
     CameraProperty* property_;  ///< non-owning reference
 };
