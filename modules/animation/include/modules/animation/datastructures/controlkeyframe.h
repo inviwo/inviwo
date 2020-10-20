@@ -68,8 +68,8 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    ControlAction action_;
-    Seconds jumpTime_;
+    ControlAction action_ = ControlAction::Pause;
+    Seconds jumpTime_ = Seconds{0};
 };
 
 }  // namespace animation
