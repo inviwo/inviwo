@@ -39,8 +39,9 @@ namespace inviwo {
 namespace animation {
 
 /** \class CameraKeyframe
- * Keyframe of a given value type (float, integer, vec3 and so on).
+ * Keyframe of Camera value type.
  * Stores the KeyFrame value at a given time.
+ * @note Only considers the Camera lookFrom, lookTo and lookUp
  * @see Keyframe
  */
 class IVW_MODULE_ANIMATION_API CameraKeyframe : public BaseKeyframe {
@@ -65,18 +66,13 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
     static std::string getName() { return "Camera"; }
-    friend IVW_MODULE_ANIMATION_API bool operator==(const CameraKeyframe& a,
-                                                    const CameraKeyframe& b) {
-        return a.getTime() == b.getTime() && a.getValue() == b.getValue();
-    }
-    friend IVW_MODULE_ANIMATION_API bool operator!=(const CameraKeyframe& a,
-                                                    const CameraKeyframe& b) {
-        return !(a == b);
-    }
 
 private:
     std::unique_ptr<Camera> value_{std::make_unique<PerspectiveCamera>()};
 };
+
+IVW_MODULE_ANIMATION_API bool operator==(const CameraKeyframe& a, const CameraKeyframe& b);
+IVW_MODULE_ANIMATION_API bool operator!=(const CameraKeyframe& a, const CameraKeyframe& b);
 
 }  // namespace animation
 

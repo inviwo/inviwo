@@ -69,6 +69,16 @@ void CameraKeyframe::deserialize(Deserializer& d) {
     d.deserialize("value", value_);
 }
 
+bool operator==(const CameraKeyframe& a, const CameraKeyframe& b) {
+    return a.getTime() == b.getTime() &&
+           !(glm::any(glm::notEqual(a.getValue().getLookFrom(), b.getValue().getLookFrom())) ||
+             glm::any(glm::notEqual(a.getValue().getLookTo(), b.getValue().getLookTo())) ||
+             glm::any(glm::notEqual(a.getValue().getLookUp(), b.getValue().getLookUp())));
+}
+bool operator!=(const CameraKeyframe& a, const CameraKeyframe& b) {
+    return !(a == b);
+}
+
 }  // namespace animation
 
 }  // namespace inviwo
