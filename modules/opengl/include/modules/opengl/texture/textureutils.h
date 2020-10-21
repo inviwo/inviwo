@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TEXTUREUTILS_H
-#define IVW_TEXTUREUTILS_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -181,7 +180,7 @@ IVW_MODULE_OPENGL_API void bindTexture(const Texture& texture, GLenum texUnit);
 IVW_MODULE_OPENGL_API void bindTexture(const Texture& texture, const TextureUnit& texUnit);
 
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                                              const Texture& texture, const std::string samplerID);
+                                              const Texture& texture, std::string_view samplerID);
 
 IVW_MODULE_OPENGL_API void bindTexture(const TransferFunctionProperty& tf,
                                        const TextureUnit& texUnit);
@@ -200,11 +199,11 @@ IVW_MODULE_OPENGL_API void bindTexture(const VolumeInport& inport, const Texture
 
 // Shader defines.
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const Image& image,
-                                             const std::string samplerID);
+                                             std::string_view samplerID);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const ImageInport& inport,
-                                             const std::string samplerID = "");
+                                             std::string_view samplerID = "");
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const ImageOutport& outport,
-                                             const std::string samplerID = "");
+                                             std::string_view samplerID = "");
 
 // Draw image plane.
 
@@ -223,7 +222,7 @@ IVW_MODULE_OPENGL_API void multiDrawImagePlaneRect(int instances);
 
 // convenience Image port binding and setting uniforms
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                                              const Image& image, const std::string& id,
+                                              const Image& image, std::string_view id,
                                               ImageType type);
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
                                               const ImageInport& image, ImageType type);
@@ -231,5 +230,3 @@ IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContain
                                               const ImageOutport& image, ImageType type);
 }  // namespace utilgl
 }  // namespace inviwo
-
-#endif  // IVW_TEXTUREUTILS_H

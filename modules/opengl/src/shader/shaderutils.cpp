@@ -42,6 +42,8 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/volume/volumeutils.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 namespace utilgl {
@@ -52,83 +54,76 @@ void addShaderDefines(Shader& shader, const SimpleLightingProperty& property) {
 
 void addShaderDefines(Shader& shader, const ShadingMode::Modes& mode) {
     // implementations in  modules/opengl/glsl/utils/shading.glsl
-    std::string shadingKey =
+    constexpr std::string_view shadingKey =
         "APPLY_LIGHTING(lighting, materialAmbientColor, materialDiffuseColor, "
         "materialSpecularColor, position, normal, toCameraDir)";
-    std::string shadingValue = "";
-
-    switch (mode) {
-        case ShadingMode::Ambient:
-            shadingValue = "shadeAmbient(lighting, materialAmbientColor)";
-            break;
-        case ShadingMode::Diffuse:
-            shadingValue = "shadeDiffuse(lighting, materialDiffuseColor, position, normal)";
-            break;
-        case ShadingMode::Specular:
-            shadingValue =
-                "shadeSpecular(lighting, materialSpecularColor, position, normal, toCameraDir)";
-            break;
-        case ShadingMode::BlinnPhong:
-            shadingValue =
-                "shadeBlinnPhong(lighting, materialAmbientColor, materialDiffuseColor, "
-                "materialSpecularColor, position, normal, toCameraDir)";
-            break;
-        case ShadingMode::Phong:
-            shadingValue =
-                "shadePhong(lighting, materialAmbientColor, materialDiffuseColor, "
-                "materialSpecularColor, position, normal, toCameraDir)";
-            break;
-        case ShadingMode::None:
-        default:
-            shadingValue = "materialAmbientColor";
-            break;
-    }
+    const std::string_view shadingValue = [&]() {
+        switch (mode) {
+            case ShadingMode::Ambient:
+                return "shadeAmbient(lighting, materialAmbientColor)";
+            case ShadingMode::Diffuse:
+                return "shadeDiffuse(lighting, materialDiffuseColor, position, normal)";
+            case ShadingMode::Specular:
+                return "shadeSpecular(lighting, materialSpecularColor, position, normal, "
+                       "toCameraDir)";
+            case ShadingMode::BlinnPhong:
+                return "shadeBlinnPhong(lighting, materialAmbientColor, materialDiffuseColor, "
+                       "materialSpecularColor, position, normal, toCameraDir)";
+            case ShadingMode::Phong:
+                return "shadePhong(lighting, materialAmbientColor, materialDiffuseColor, "
+                       "materialSpecularColor, position, normal, toCameraDir)";
+            case ShadingMode::None:
+            default:
+                return "materialAmbientColor";
+        }
+    }();
 
     shader.getFragmentShaderObject()->addShaderDefine(shadingKey, shadingValue);
-
-    if (mode == ShadingMode::None) {
-        shader.getFragmentShaderObject()->removeShaderDefine("SHADING_ENABLED");
-    } else {
-        shader.getFragmentShaderObject()->addShaderDefine("SHADING_ENABLED");
-    }
+    shader.getFragmentShaderObject()->setShaderDefine("SHADING_ENABLED", mode != ShadingMode::None);
 }
 
 void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property,
-                       const std::string& name) {
-    shader.setUniform(name + ".position", property.getTransformedPosition());
-    shader.setUniform(name + ".ambientColor", property.ambientColor_.get());
-    shader.setUniform(name + ".diffuseColor", property.diffuseColor_.get());
-    shader.setUniform(name + ".specularColor", property.specularColor_.get());
-    shader.setUniform(name + ".specularExponent", property.specularExponent_.get());
+                       std::string_view name) {
+    StrBuffer buff;
+    shader.setUniform(buff.replace("{}.position", name), property.getTransformedPosition());
+    shader.setUniform(buff.replace("{}.ambientColor", name), property.ambientColor_.get());
+    shader.setUniform(buff.replace("{}.diffuseColor", name), property.diffuseColor_.get());
+    shader.setUniform(buff.replace("{}.specularColor", name), property.specularColor_.get());
+    shader.setUniform(buff.replace("{}.specularExponent", name), property.specularExponent_.get());
 }
 
 void addShaderDefines(Shader& /*shader*/, const CameraProperty& /*property*/) {}
 
-void setShaderUniforms(Shader& shader, const CameraProperty& property, const std::string& name) {
-    shader.setUniform(name + ".worldToView", property.viewMatrix());
-    shader.setUniform(name + ".viewToWorld", property.inverseViewMatrix());
-    shader.setUniform(name + ".worldToClip", property.projectionMatrix() * property.viewMatrix());
-    shader.setUniform(name + ".viewToClip", property.projectionMatrix());
-    shader.setUniform(name + ".clipToView", property.inverseProjectionMatrix());
-    shader.setUniform(name + ".clipToWorld",
+void setShaderUniforms(Shader& shader, const CameraProperty& property, std::string_view name) {
+    StrBuffer buff;
+
+    shader.setUniform(buff.replace("{}.worldToView", name), property.viewMatrix());
+    shader.setUniform(buff.replace("{}.viewToWorld", name), property.inverseViewMatrix());
+    shader.setUniform(buff.replace("{}.worldToClip", name),
+                      property.projectionMatrix() * property.viewMatrix());
+    shader.setUniform(buff.replace("{}.viewToClip", name), property.projectionMatrix());
+    shader.setUniform(buff.replace("{}.clipToView", name), property.inverseProjectionMatrix());
+    shader.setUniform(buff.replace("{}.clipToWorld", name),
                       property.inverseViewMatrix() * property.inverseProjectionMatrix());
-    shader.setUniform(name + ".position", property.getLookFrom());
-    shader.setUniform(name + ".nearPlane", property.getNearPlaneDist());
-    shader.setUniform(name + ".farPlane", property.getFarPlaneDist());
+    shader.setUniform(buff.replace("{}.position", name), property.getLookFrom());
+    shader.setUniform(buff.replace("{}.nearPlane", name), property.getNearPlaneDist());
+    shader.setUniform(buff.replace("{}.farPlane", name), property.getFarPlaneDist());
 }
 
-void setShaderUniforms(Shader& shader, const Camera& property, const std::string& name) {
-    shader.setUniform(name + ".worldToView", property.getViewMatrix());
-    shader.setUniform(name + ".viewToWorld", property.getInverseViewMatrix());
-    shader.setUniform(name + ".worldToClip",
+void setShaderUniforms(Shader& shader, const Camera& property, std::string_view name) {
+    StrBuffer buff;
+
+    shader.setUniform(buff.replace("{}.worldToView", name), property.getViewMatrix());
+    shader.setUniform(buff.replace("{}.viewToWorld", name), property.getInverseViewMatrix());
+    shader.setUniform(buff.replace("{}.worldToClip", name),
                       property.getProjectionMatrix() * property.getViewMatrix());
-    shader.setUniform(name + ".viewToClip", property.getProjectionMatrix());
-    shader.setUniform(name + ".clipToView", property.getInverseProjectionMatrix());
-    shader.setUniform(name + ".clipToWorld",
+    shader.setUniform(buff.replace("{}.viewToClip", name), property.getProjectionMatrix());
+    shader.setUniform(buff.replace("{}.clipToView", name), property.getInverseProjectionMatrix());
+    shader.setUniform(buff.replace("{}.clipToWorld", name),
                       property.getInverseViewMatrix() * property.getInverseProjectionMatrix());
-    shader.setUniform(name + ".position", property.getLookFrom());
-    shader.setUniform(name + ".nearPlane", property.getNearPlaneDist());
-    shader.setUniform(name + ".farPlane", property.getFarPlaneDist());
+    shader.setUniform(buff.replace("{}.position", name), property.getLookFrom());
+    shader.setUniform(buff.replace("{}.nearPlane", name), property.getNearPlaneDist());
+    shader.setUniform(buff.replace("{}.farPlane", name), property.getFarPlaneDist());
 }
 
 void addShaderDefines(Shader& shader, const RaycastingProperty& property) {
@@ -153,8 +148,8 @@ void addShaderDefines(Shader& shader, const RaycastingProperty& property) {
 
     {
         // classification (default (red channel) or specific channel)
-        std::string value;
-        std::string valueMulti;
+        std::string_view value;
+        std::string_view valueMulti;
         switch (property.classification_.get()) {
             case RaycastingProperty::Classification::None:
                 value = "vec4(voxel.r)";
@@ -170,15 +165,16 @@ void addShaderDefines(Shader& shader, const RaycastingProperty& property) {
                 valueMulti = "voxel";
                 break;
         }
-        const std::string key = "APPLY_CLASSIFICATION(transferFunc, voxel)";
-        const std::string keyMulti = "APPLY_CHANNEL_CLASSIFICATION(transferFunc, voxel, channel)";
+        const std::string_view key = "APPLY_CLASSIFICATION(transferFunc, voxel)";
+        const std::string_view keyMulti =
+            "APPLY_CHANNEL_CLASSIFICATION(transferFunc, voxel, channel)";
         shader.getFragmentShaderObject()->addShaderDefine(key, value);
         shader.getFragmentShaderObject()->addShaderDefine(keyMulti, valueMulti);
     }
 
     {
         // compositing
-        std::string value;
+        std::string_view value;
         switch (property.compositing_.get()) {
             case RaycastingProperty::CompositingType::Dvr:
                 value = "compositeDVR(result, color, t, tDepth, tIncr)";
@@ -202,7 +198,7 @@ void addShaderDefines(Shader& shader, const RaycastingProperty& property) {
                 value = "result";
                 break;
         }
-        const std::string key =
+        const std::string_view key =
             "APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera, isoValue, t, "
             "tDepth, tIncr)";
         shader.getFragmentShaderObject()->addShaderDefine(key, value);
@@ -217,12 +213,12 @@ void setShaderDefines(
     Shader& shader, const TemplateOptionProperty<RaycastingProperty::GradientComputation>& property,
     bool voxelClassification) {
 
-    const std::string channel = (voxelClassification ? "3" : "channel");
-    const std::string channelDef = (voxelClassification ? "3" : "0");
+    const std::string_view channel = (voxelClassification ? "3" : "channel");
+    const std::string_view channelDef = (voxelClassification ? "3" : "0");
 
-    std::string value;         // compute gradient for default channel
-    std::string valueChannel;  // compute gradient for specific channel
-    std::string valueAll;      // compute gradient for all channels
+    std::string_view value;         // compute gradient for default channel
+    std::string_view valueChannel;  // compute gradient for specific channel
+    std::string_view valueAll;      // compute gradient for all channels
     switch (property.get()) {
         case RaycastingProperty::GradientComputation::None:
         default:
@@ -231,31 +227,25 @@ void setShaderDefines(
             valueAll = "mat4x3(0)";
             break;
         case RaycastingProperty::GradientComputation::Forward:
-            value =
-                "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + channelDef + ")";
-            valueChannel =
-                "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
+            value = "gradientForwardDiff(voxel, volume, volumeParams, samplePos, {channelDef})";
+            valueChannel = "gradientForwardDiff(voxel, volume, volumeParams, samplePos, {channel})";
             valueAll = "gradientAllForwardDiff(voxel, volume, volumeParams, samplePos)";
             break;
         case RaycastingProperty::GradientComputation::Backward:
-            value =
-                "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + channelDef + ")";
+            value = "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, {channelDef})";
             valueChannel =
-                "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
+                "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, {channel})";
             valueAll = "gradientAllBackwardDiff(voxel, volume, volumeParams, samplePos)";
             break;
         case RaycastingProperty::GradientComputation::Central:
-            value =
-                "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + channelDef + ")";
-            valueChannel =
-                "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
+            value = "gradientCentralDiff(voxel, volume, volumeParams, samplePos, {channelDef})";
+            valueChannel = "gradientCentralDiff(voxel, volume, volumeParams, samplePos, {channel})";
             valueAll = "gradientAllCentralDiff(voxel, volume, volumeParams, samplePos)";
             break;
         case RaycastingProperty::GradientComputation::CentralHigherOrder:
-            value =
-                "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + channelDef + ")";
+            value = "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, {channelDef})";
             valueChannel =
-                "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + channel + ")";
+                "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, {channel})";
             valueAll = "gradientAllCentralDiffH(voxel, volume, volumeParams, samplePos)";
             break;
         case RaycastingProperty::GradientComputation::PrecomputedXYZ:
@@ -267,15 +257,20 @@ void setShaderDefines(
     }
 
     // gradient for channel 1
-    const std::string key = "COMPUTE_GRADIENT(voxel, volume, volumeParams, samplePos)";
+    const std::string_view key = "COMPUTE_GRADIENT(voxel, volume, volumeParams, samplePos)";
     // gradient for specific channel
-    const std::string keyChannel =
+    const std::string_view keyChannel =
         "COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParams, samplePos, channel)";
     // gradients for all channels
-    const std::string keyAll = "COMPUTE_ALL_GRADIENTS(voxel, volume, volumeParams, samplePos)";
+    const std::string_view keyAll = "COMPUTE_ALL_GRADIENTS(voxel, volume, volumeParams, samplePos)";
 
-    shader.getFragmentShaderObject()->addShaderDefine(key, value);
-    shader.getFragmentShaderObject()->addShaderDefine(keyChannel, valueChannel);
+    StrBuffer buff;
+    buff.replace(value, fmt::arg("channelDef", channelDef));
+    shader.getFragmentShaderObject()->addShaderDefine(key, buff);
+
+    buff.replace(valueChannel, fmt::arg("channel", channel));
+    shader.getFragmentShaderObject()->addShaderDefine(keyChannel, buff);
+
     shader.getFragmentShaderObject()->addShaderDefine(keyAll, valueAll);
 
     if (property.get() != RaycastingProperty::GradientComputation::None) {
@@ -289,47 +284,50 @@ void setShaderUniforms(Shader& shader, const RaycastingProperty& property) {
     shader.setUniform("samplingRate_", property.samplingRate_.get());
 }
 
-void setShaderUniforms(Shader& shader, const RaycastingProperty& property,
-                       const std::string& name) {
-    shader.setUniform(name + ".samplingRate", property.samplingRate_.get());
+void setShaderUniforms(Shader& shader, const RaycastingProperty& property, std::string_view name) {
+    StrBuffer buff;
+    shader.setUniform(buff.replace("{}.samplingRate", name), property.samplingRate_.get());
 }
 
-void setShaderUniforms(Shader& shader, const SpatialEntity<3>& object, const std::string& name) {
+void setShaderUniforms(Shader& shader, const SpatialEntity<3>& object, std::string_view name) {
     const SpatialCoordinateTransformer<3>& ct = object.getCoordinateTransformer();
 
     mat4 dataToWorldMatrix = ct.getDataToWorldMatrix();
     mat4 modelToWorldMatrix = ct.getModelToWorldMatrix();
 
-    shader.setUniform(name + ".dataToModel", ct.getDataToModelMatrix());
-    shader.setUniform(name + ".modelToData", ct.getModelToDataMatrix());
+    StrBuffer buff;
 
-    shader.setUniform(name + ".dataToWorld", dataToWorldMatrix);
-    shader.setUniform(name + ".worldToData", ct.getWorldToDataMatrix());
+    shader.setUniform(buff.replace("{}.dataToModel", name), ct.getDataToModelMatrix());
+    shader.setUniform(buff.replace("{}.modelToData", name), ct.getModelToDataMatrix());
 
-    shader.setUniform(name + ".modelToWorld", modelToWorldMatrix);
-    shader.setUniform(name + ".worldToModel", ct.getWorldToModelMatrix());
-    shader.setUniform(name + ".modelToWorldNormalMatrix",
+    shader.setUniform(buff.replace("{}.dataToWorld", name), dataToWorldMatrix);
+    shader.setUniform(buff.replace("{}.worldToData", name), ct.getWorldToDataMatrix());
+
+    shader.setUniform(buff.replace("{}.modelToWorld", name), modelToWorldMatrix);
+    shader.setUniform(buff.replace("{}.worldToModel", name), ct.getWorldToModelMatrix());
+    shader.setUniform(buff.replace("{}.modelToWorldNormalMatrix", name),
                       glm::mat3(glm::transpose(glm::inverse(modelToWorldMatrix))));
 
-    shader.setUniform(name + ".dataToWorldNormalMatrix",
+    shader.setUniform(buff.replace("{}.dataToWorldNormalMatrix", name),
                       glm::mat3(glm::transpose(glm::inverse(dataToWorldMatrix))));
 }
 
 void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) {
     // gradient for channel 1
-    std::string gradientComputationKey = "COMPUTE_GRADIENT(voxel, volume, volumeParams, samplePos)";
+    const std::string_view gradientComputationKey =
+        "COMPUTE_GRADIENT(voxel, volume, volumeParams, samplePos)";
     // gradient for specific channel
-    std::string singleChannelGradientKey =
+    const std::string_view singleChannelGradientKey =
         "COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParams, samplePos, channel)";
     // gradients for all channels
-    std::string allChannelsGradientKey =
+    const std::string_view allChannelsGradientKey =
         "COMPUTE_ALL_GRADIENTS(voxel, volume, volumeParams, samplePos)";
 
-    std::string gradientValue = "";
-    std::string singleChannelGradientValue = "";
-    std::string allChannelsGradientValue = "";
-    std::string channel = "channel";
-    std::string defaultChannel = "0";
+    std::string_view gradientValue = "";
+    std::string_view singleChannelGradientValue = "";
+    std::string_view allChannelsGradientValue = "";
+    std::string_view channel = "channel";
+    std::string_view defaultChannel = "0";
 
     if (property.classificationMode_.isSelectedIdentifier("voxel-value")) {
         channel = "3";
@@ -342,28 +340,28 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
         allChannelsGradientValue = "mat4x3(0)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("forward")) {
         gradientValue =
-            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ")";
+            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, {defaultChannel})";
         singleChannelGradientValue =
-            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
+            "gradientForwardDiff(voxel, volume, volumeParams, samplePos, {channel})";
         allChannelsGradientValue = "gradientAllForwardDiff(voxel, volume, volumeParams, samplePos)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("central")) {
         gradientValue =
-            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ")";
+            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, {defaultChannel})";
         singleChannelGradientValue =
-            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
+            "gradientCentralDiff(voxel, volume, volumeParams, samplePos, {channel})";
         allChannelsGradientValue = "gradientAllCentralDiff(voxel, volume, volumeParams, samplePos)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("central-higher")) {
         gradientValue =
-            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + defaultChannel + ")";
+            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, {defaultChannel})";
         singleChannelGradientValue =
-            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, " + channel + ")";
+            "gradientCentralDiffH(voxel, volume, volumeParams, samplePos, {channel})";
         allChannelsGradientValue =
             "gradientAllCentralDiffH(voxel, volume, volumeParams, samplePos)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("backward")) {
         gradientValue =
-            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + defaultChannel + ")";
+            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, {defaultChannel})";
         singleChannelGradientValue =
-            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, " + channel + ")";
+            "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, {channel})";
         allChannelsGradientValue =
             "gradientAllBackwardDiff(voxel, volume, volumeParams, samplePos)";
     } else if (property.gradientComputationMode_.isSelectedIdentifier("precomputedXYZ")) {
@@ -376,9 +374,13 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
         allChannelsGradientValue = "gradientPrecomputedYZW(voxel, volumeParams)";
     }
 
-    shader.getFragmentShaderObject()->addShaderDefine(gradientComputationKey, gradientValue);
-    shader.getFragmentShaderObject()->addShaderDefine(singleChannelGradientKey,
-                                                      singleChannelGradientValue);
+    StrBuffer buff;
+    buff.replace(gradientValue, fmt::arg("defaultChannel", defaultChannel));
+    shader.getFragmentShaderObject()->addShaderDefine(gradientComputationKey, buff);
+
+    buff.replace(singleChannelGradientValue, fmt::arg("channel", channel));
+    shader.getFragmentShaderObject()->addShaderDefine(singleChannelGradientKey, buff);
+
     shader.getFragmentShaderObject()->addShaderDefine(allChannelsGradientKey,
                                                       allChannelsGradientValue);
 
@@ -389,8 +391,8 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     }
 
     // classification defines, red channel is used
-    std::string classificationKey = "APPLY_CLASSIFICATION(transferFunc, voxel)";
-    std::string classificationValue = "";
+    std::string_view classificationKey = "APPLY_CLASSIFICATION(transferFunc, voxel)";
+    std::string_view classificationValue = "";
     if (property.classificationMode_.isSelectedIdentifier("none"))
         classificationValue = "vec4(voxel.r)";
     else if (property.classificationMode_.isSelectedIdentifier("transfer-function"))
@@ -411,10 +413,10 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
 
     // compositing defines
-    std::string compositingKey =
+    std::string_view compositingKey =
         "APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera, isoValue, t, tDepth, "
         "tIncr)";
-    std::string compositingValue = "result";
+    std::string_view compositingValue = "result";
 
     if (property.compositingMode_.isSelectedIdentifier("dvr"))
         compositingValue = "compositeDVR(result, color, t, tDepth, tIncr)";
@@ -442,24 +444,23 @@ void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property)
 }
 
 void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property,
-                       const std::string& name) {
-    shader.setUniform(name + ".samplingRate", property.samplingRate_.get());
-    shader.setUniform(name + ".isoValue", property.isoValue_.get());
+                       std::string_view name) {
+    StrBuffer buff;
+    shader.setUniform(buff.replace("{}.samplingRate", name), property.samplingRate_.get());
+    shader.setUniform(buff.replace("{}.isoValue", name), property.isoValue_.get());
 }
 
 void addShaderDefines(Shader& shader, const IsoValueProperty& property) {
-    auto isovalueCount = property.get().size();
+    const auto isovalueCount = property.get().size();
 
     // need to ensure there is always at least one isovalue due to the use of the macro
     // as array size in IsovalueParameters
-    shader.getFragmentShaderObject()->addShaderDefine("MAX_ISOVALUE_COUNT",
-                                                      toString(std::max<size_t>(1, isovalueCount)));
 
-    if (!property.get().empty()) {
-        shader.getFragmentShaderObject()->addShaderDefine("ISOSURFACE_ENABLED");
-    } else {
-        shader.getFragmentShaderObject()->removeShaderDefine("ISOSURFACE_ENABLED");
-    }
+    shader.getFragmentShaderObject()->addShaderDefine(
+        "MAX_ISOVALUE_COUNT", StrBuffer{"{}", std::max<size_t>(1, isovalueCount)});
+
+    shader.getFragmentShaderObject()->setShaderDefine("ISOSURFACE_ENABLED",
+                                                      !property.get().empty());
 }
 
 void setShaderUniforms(Shader& shader, const IsoValueProperty& property) {
@@ -469,11 +470,12 @@ void setShaderUniforms(Shader& shader, const IsoValueProperty& property) {
     shader.setUniform("isosurfaceColors", data.second.size(), data.second.data());
 }
 
-void setShaderUniforms(Shader& shader, const IsoValueProperty& property, const std::string& name) {
+void setShaderUniforms(Shader& shader, const IsoValueProperty& property, std::string_view name) {
     auto data = property.get().getVectorsf();
 
-    shader.setUniform(name + ".values", data.first.size(), data.first.data());
-    shader.setUniform(name + ".colors", data.second.size(), data.second.data());
+    StrBuffer buff;
+    shader.setUniform(buff.replace("{}.values", name), data.first.size(), data.first.data());
+    shader.setUniform(buff.replace("{}.colors", name), data.second.size(), data.second.data());
 }
 
 void addShaderDefines(Shader& shader, const IsoTFProperty& property) {
@@ -484,12 +486,12 @@ void setShaderUniforms(Shader& shader, const IsoTFProperty& property) {
     setShaderUniforms(shader, property.isovalues_);
 }
 
-void setShaderUniforms(Shader& shader, const IsoTFProperty& property, const std::string&) {
+void setShaderUniforms(Shader& shader, const IsoTFProperty& property, std::string_view) {
     setShaderUniforms(shader, property.isovalues_, property.isovalues_.getIdentifier());
 }
 
 void addShaderDefinesBGPort(Shader& shader, const ImageInport& port) {
-    std::string bgKey = "DRAW_BACKGROUND(result,t,tIncr,color,bgTDepth,tDepth)";
+    std::string_view bgKey = "DRAW_BACKGROUND(result,t,tIncr,color,bgTDepth,tDepth)";
     if (port.isConnected()) {
         shader.getFragmentShaderObject()->addShaderDefine("BACKGROUND_AVAILABLE");
         shader.getFragmentShaderObject()->addShaderDefine(
@@ -501,50 +503,50 @@ void addShaderDefinesBGPort(Shader& shader, const ImageInport& port) {
 }
 
 void addShaderDefines(Shader& shader, const VolumeIndicatorProperty& indicator) {
-    // compositing defines
-    std::string key =
+    const bool enabled = indicator && (indicator.plane1_ || indicator.plane2_ || indicator.plane3_);
+    shader.getFragmentShaderObject()->setShaderDefine("PLANES_ENABLED", enabled);
+
+    constexpr std::string_view key =
         "DRAW_PLANES(result, samplePosition, rayDirection, increment, params,t,tDepth)";
-    std::string value = "result";
-
-    if (indicator && (indicator.plane1_ || indicator.plane2_ || indicator.plane3_)) {
-        std::string planes("");
-        planes += indicator.plane1_ ? ", params.plane1" : "";
-        planes += indicator.plane2_ ? ", params.plane2" : "";
-        planes += indicator.plane3_ ? ", params.plane3" : "";
-        value =
-            "drawPlanes(result, samplePosition, rayDirection, increment " + planes + ",t,tDepth)";
-
-        shader.getFragmentShaderObject()->addShaderDefine("PLANES_ENABLED");
+    if (enabled) {
+        StrBuffer planes(
+            "drawPlanes(result, samplePosition, rayDirection, increment {}{}{}, t, tDepth)",
+            (indicator.plane1_ ? ", params.plane1" : ""),
+            (indicator.plane2_ ? ", params.plane2" : ""),
+            (indicator.plane3_ ? ", params.plane3" : ""));
+        shader.getFragmentShaderObject()->addShaderDefine(key, planes);
     } else {
-        shader.getFragmentShaderObject()->removeShaderDefine("PLANES_ENABLED");
+        shader.getFragmentShaderObject()->addShaderDefine(key, "result");
     }
-    shader.getFragmentShaderObject()->addShaderDefine(key, value);
 }
 
 void setShaderUniforms(Shader& shader, const VolumeIndicatorProperty& indicator,
-                       const std::string& name) {
+                       std::string_view name) {
+    StrBuffer buff;
+
     if (indicator) {
         if (indicator.plane1_) {
-            shader.setUniform(name + ".plane1.position", indicator.plane1_.position_);
-            shader.setUniform(name + ".plane1.normal", indicator.plane1_.normal_);
-            shader.setUniform(name + ".plane1.color", indicator.plane1_.color_);
+            shader.setUniform(buff.replace("{}.plane1position", name), indicator.plane1_.position_);
+            shader.setUniform(buff.replace("{}.plane1normal", name), indicator.plane1_.normal_);
+            shader.setUniform(buff.replace("{}.plane1color", name), indicator.plane1_.color_);
         }
         if (indicator.plane2_) {
-            shader.setUniform(name + ".plane2.position", indicator.plane2_.position_);
-            shader.setUniform(name + ".plane2.normal", indicator.plane2_.normal_);
-            shader.setUniform(name + ".plane2.color", indicator.plane2_.color_);
+            shader.setUniform(buff.replace("{}.plane2position", name), indicator.plane2_.position_);
+            shader.setUniform(buff.replace("{}.plane2normal", name), indicator.plane2_.normal_);
+            shader.setUniform(buff.replace("{}.plane2color", name), indicator.plane2_.color_);
         }
         if (indicator.plane3_) {
-            shader.setUniform(name + ".plane3.position", indicator.plane3_.position_);
-            shader.setUniform(name + ".plane3.normal", indicator.plane3_.normal_);
-            shader.setUniform(name + ".plane3.color", indicator.plane3_.color_);
+            shader.setUniform(buff.replace("{}.plane3position", name), indicator.plane3_.position_);
+            shader.setUniform(buff.replace("{}.plane3normal", name), indicator.plane3_.normal_);
+            shader.setUniform(buff.replace("{}.plane3color", name), indicator.plane3_.color_);
         }
     }
 }
 
-int getLogLineNumber(const std::string& compileLogLine) {
+int getLogLineNumber(std::string_view compileLogLine) {
     int result = -1;
-    std::istringstream input(compileLogLine);
+    std::stringstream input;
+    input << compileLogLine;
     int num;
 
     if (input >> num) {
@@ -558,12 +560,7 @@ int getLogLineNumber(const std::string& compileLogLine) {
 
     // ATI parsing:
     // ATI error: "ERROR: 0:145: Call to undeclared function 'texelFetch'\n"
-    std::vector<std::string> elems;
-    std::stringstream ss(compileLogLine);
-    std::string item;
-    while (std::getline(ss, item, ':')) {
-        elems.push_back(item);
-    }
+    const auto elems = splitStringView(compileLogLine, ':');
     if (elems.size() >= 3) {
         std::stringstream number;
         number << elems[2];
@@ -603,11 +600,12 @@ std::string getProgramInfoLog(GLuint id) {
     }
 }
 
-std::shared_ptr<const ShaderResource> findShaderResource(const std::string& fileName) {
+std::shared_ptr<const ShaderResource> findShaderResource(std::string_view fileName) {
     auto resource = ShaderManager::getPtr()->getShaderResource(fileName);
     if (!resource) {
         throw OpenGLException(
-            "Shader file: " + fileName + " not found in shader search paths or shader resources.",
+            fmt::format("Shader file: '{}' not found in shader search paths or shader resources.",
+                        fileName),
             IVW_CONTEXT_CUSTOM("ShaderUtils"));
     }
     return resource;

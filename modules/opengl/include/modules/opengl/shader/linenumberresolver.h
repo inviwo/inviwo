@@ -50,7 +50,7 @@ struct IVW_MODULE_OPENGL_API LineNumberResolver {
     /**
      * Lookup up the source file and line for the given line.
      */
-    std::pair<std::string, size_t> resolveLine(size_t line) const;
+    const std::pair<std::string, size_t>& resolveLine(size_t line) const;
     void clear();
     size_t size() { return lines_.size(); }
     auto begin() const { return lines_.cbegin(); }

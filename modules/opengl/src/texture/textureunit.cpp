@@ -52,13 +52,13 @@ TextureUnit::TextureUnit() : unitEnum_(0), unitNumber_(0) {
     throw OpenGLException("Exceeding number of available texture units.", IVW_CONTEXT);
 }
 
-TextureUnit::TextureUnit(TextureUnit&& rhs)
+TextureUnit::TextureUnit(TextureUnit&& rhs) noexcept
     : unitEnum_(rhs.unitEnum_), unitNumber_(rhs.unitNumber_) {
     rhs.unitEnum_ = 0;
     rhs.unitNumber_ = 0;
 }
 
-TextureUnit& TextureUnit::operator=(TextureUnit&& that) {
+TextureUnit& TextureUnit::operator=(TextureUnit&& that) noexcept {
     if (this != &that) {
         if (textureUnits_.size() > static_cast<size_t>(unitNumber_)) {
             textureUnits_[static_cast<size_t>(unitNumber_)] = false;
@@ -81,15 +81,9 @@ void TextureUnit::initialize(int numUnits) { textureUnits_.resize(numUnits, fals
 
 void TextureUnit::deinitialize() { textureUnits_.clear(); }
 
-TextureUnitContainer::TextureUnitContainer(size_t i) : units_(i) {}
-
-TextureUnitContainer::TextureUnitContainer(TextureUnitContainer&& rhs)
-    : units_(std::move(rhs.units_)) {}
-TextureUnitContainer& TextureUnitContainer::operator=(TextureUnitContainer&& that) {
-    if (this != &that) {
-        units_ = std::move(that.units_);
-    }
-    return *this;
+TextureUnitContainer::TextureUnitContainer(size_t i) : units_{} {
+    units_.reserve(std::max(size_t{8}, i));
+    units_.resize(i);
 }
 
 void TextureUnitContainer::push_back(TextureUnit&& unit) { units_.push_back(std::move(unit)); }

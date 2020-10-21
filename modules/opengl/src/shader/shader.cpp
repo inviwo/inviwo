@@ -35,6 +35,9 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/shader/standardshaders.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/safecstr.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -414,22 +417,22 @@ std::string Shader::shaderNames() const {
     return joinString(names, "/");
 }
 
-GLint Shader::findUniformLocation(const std::string& name) const {
+GLint Shader::findUniformLocation(std::string_view name) const {
     auto it = uniformLookup_.find(name);
     if (it != uniformLookup_.end()) {
         return it->second;
     } else {
-        GLint location = glGetUniformLocation(program_.id, name.c_str());
-        uniformLookup_[name] = location;
+        GLint location = glGetUniformLocation(program_.id, SafeCStr{name});
+        uniformLookup_.try_emplace(std::string{name}, location);
 
         if (warningLevel_ == UniformWarning::Throw && location == -1) {
-            throw OpenGLException("Unable to set uniform " + name + " in shader id: " +
-                                      toString(program_.id) + " " + shaderNames(),
+            throw OpenGLException(fmt::format("Unable to set uniform {} in shader id: {}, {}", name,
+                                              program_.id, shaderNames()),
                                   IVW_CONTEXT);
         } else if (warningLevel_ == UniformWarning::Warn && location == -1) {
             util::log(IVW_CONTEXT,
-                      "Unable to set uniform " + name + " in shader " +
-                          " in shader id: " + toString(program_.id) + " " + shaderNames(),
+                      fmt::format("Unable to set uniform {} in shader id {}, {}: ", name,
+                                  program_.id, shaderNames()),
                       LogLevel::Warn, LogAudience::User);
         }
 

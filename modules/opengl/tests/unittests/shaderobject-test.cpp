@@ -113,7 +113,7 @@ TEST(ShaderObject, parseSource) {
     LineNumberResolver lnr;
 
     auto getSource =
-        [](const std::string& path) -> std::optional<std::pair<std::string, std::string>> {
+        [](std::string_view path) -> std::optional<std::pair<std::string, std::string>> {
         if (path == "inc1") {
             return std::pair<std::string, std::string>{path, "Inc1"};
         }

@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <modules/opengl/canvasgl.h>
 #include <modules/opengl/volume/volumegl.h>
@@ -52,6 +53,8 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/texture.h>
 #include <modules/opengl/texture/textureunit.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -351,38 +354,48 @@ void unbindTextures(const ImageOutport& outport) {
     unbindTextures(*outport.getData(), true, true, true);
 }
 
-void setShaderUniforms(Shader& shader, const Image& image, const std::string samplerID) {
+void setShaderUniforms(Shader& shader, const Image& image, std::string_view samplerID) {
     const StructuredCoordinateTransformer<2>& ct =
         image.getColorLayer()->getCoordinateTransformer();
 
-    shader.setUniform(samplerID + ".dataToModel", ct.getDataToModelMatrix());
-    shader.setUniform(samplerID + ".modelToData", ct.getModelToDataMatrix());
+    StrBuffer buff;
+    shader.setUniform(buff.replace("{}.dataToModel", samplerID), ct.getDataToModelMatrix());
+    shader.setUniform(buff.replace("{}.modelToData", samplerID), ct.getModelToDataMatrix());
 
-    shader.setUniform(samplerID + ".dataToWorld", ct.getDataToWorldMatrix());
-    shader.setUniform(samplerID + ".worldToData", ct.getWorldToDataMatrix());
+    shader.setUniform(buff.replace("{}.dataToWorld", samplerID), ct.getDataToWorldMatrix());
+    shader.setUniform(buff.replace("{}.worldToData", samplerID), ct.getWorldToDataMatrix());
 
-    shader.setUniform(samplerID + ".modelToWorld", ct.getModelToWorldMatrix());
-    shader.setUniform(samplerID + ".worldToModel", ct.getWorldToModelMatrix());
+    shader.setUniform(buff.replace("{}.modelToWorld", samplerID), ct.getModelToWorldMatrix());
+    shader.setUniform(buff.replace("{}.worldToModel", samplerID), ct.getWorldToModelMatrix());
 
-    shader.setUniform(samplerID + ".worldToTexture", ct.getWorldToTextureMatrix());
-    shader.setUniform(samplerID + ".textureToWorld", ct.getTextureToWorldMatrix());
+    shader.setUniform(buff.replace("{}.worldToTexture", samplerID), ct.getWorldToTextureMatrix());
+    shader.setUniform(buff.replace("{}.textureToWorld", samplerID), ct.getTextureToWorldMatrix());
 
-    shader.setUniform(samplerID + ".textureToIndex", ct.getTextureToIndexMatrix());
-    shader.setUniform(samplerID + ".indexToTexture", ct.getIndexToTextureMatrix());
+    shader.setUniform(buff.replace("{}.textureToIndex", samplerID), ct.getTextureToIndexMatrix());
+    shader.setUniform(buff.replace("{}.indexToTexture", samplerID), ct.getIndexToTextureMatrix());
 
     vec2 dimensions = vec2(image.getDimensions());
-    shader.setUniform(samplerID + ".dimensions", dimensions);
-    shader.setUniform(samplerID + ".reciprocalDimensions", vec2(1.0f) / dimensions);
+    shader.setUniform(buff.replace("{}.dimensions", samplerID), dimensions);
+    shader.setUniform(buff.replace("{}.reciprocalDimensions", samplerID), vec2(1.0f) / dimensions);
 }
 
-void setShaderUniforms(Shader& shader, const ImageInport& inport, const std::string samplerID) {
-    setShaderUniforms(shader, *inport.getData(),
-                      samplerID.empty() ? inport.getIdentifier() + "Parameters" : samplerID);
+void setShaderUniforms(Shader& shader, const ImageInport& inport, std::string_view samplerID) {
+    if (samplerID.empty()) {
+        setShaderUniforms(shader, *inport.getData(),
+                          StrBuffer{"{}Parameters", inport.getIdentifier()});
+    } else {
+
+        setShaderUniforms(shader, *inport.getData(), samplerID);
+    }
 }
 
-void setShaderUniforms(Shader& shader, const ImageOutport& outport, const std::string samplerID) {
-    setShaderUniforms(shader, *outport.getData(),
-                      samplerID.empty() ? outport.getIdentifier() + "Parameters" : samplerID);
+void setShaderUniforms(Shader& shader, const ImageOutport& outport, std::string_view samplerID) {
+    if (samplerID.empty()) {
+        setShaderUniforms(shader, *outport.getData(),
+                          StrBuffer{"{}Parameters", outport.getIdentifier()});
+    } else {
+        setShaderUniforms(shader, *outport.getData(), samplerID);
+    }
 }
 
 std::unique_ptr<Mesh> planeRect() {
@@ -427,7 +440,7 @@ void bindTexture(const Texture& texture, const TextureUnit& texUnit) {
 }
 
 void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Texture& texture,
-                        const std::string samplerID) {
+                        std::string_view samplerID) {
     TextureUnit unit;
     bindTexture(texture, unit);
     shader.setUniform(samplerID, unit);
@@ -476,22 +489,25 @@ void bindTexture(const VolumeInport& inport, const TextureUnit& texUnit) {
 }
 
 void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image& image,
-                        const std::string& id, ImageType type) {
+                        std::string_view id, ImageType type) {
+
+    StrBuffer buff;
+
     switch (type) {
         case ImageType::ColorOnly: {
             TextureUnit unit;
             bindColorTexture(image, unit);
-            utilgl::setShaderUniforms(shader, image, id + "Parameters");
-            shader.setUniform(id + "Color", unit);
+            utilgl::setShaderUniforms(shader, image, buff.replace("{}Parameters", id));
+            shader.setUniform(buff.replace("{}Color", id), unit);
             cont.push_back(std::move(unit));
             break;
         }
         case ImageType::ColorDepth: {
             TextureUnit unit1, unit2;
             bindTextures(image, unit1, unit2);
-            utilgl::setShaderUniforms(shader, image, id + "Parameters");
-            shader.setUniform(id + "Color", unit1);
-            shader.setUniform(id + "Depth", unit2);
+            utilgl::setShaderUniforms(shader, image, buff.replace("{}Parameters", id));
+            shader.setUniform(buff.replace("{}Color", id), unit1);
+            shader.setUniform(buff.replace("{}Depth", id), unit2);
             cont.push_back(std::move(unit1));
             cont.push_back(std::move(unit2));
             break;
@@ -500,9 +516,9 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image&
             TextureUnit unit1, unit2;
             bindColorTexture(image, unit1);
             bindPickingTexture(image, unit2);
-            utilgl::setShaderUniforms(shader, image, id + "Parameters");
-            shader.setUniform(id + "Color", unit1);
-            shader.setUniform(id + "Picking", unit2);
+            utilgl::setShaderUniforms(shader, image, buff.replace("{}Parameters", id));
+            shader.setUniform(buff.replace("{}Color", id), unit1);
+            shader.setUniform(buff.replace("{}Picking", id), unit2);
             cont.push_back(std::move(unit1));
             cont.push_back(std::move(unit2));
             break;
@@ -510,10 +526,10 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image&
         case ImageType::ColorDepthPicking: {
             TextureUnit unit1, unit2, unit3;
             bindTextures(image, unit1, unit2, unit3);
-            utilgl::setShaderUniforms(shader, image, id + "Parameters");
-            shader.setUniform(id + "Color", unit1);
-            shader.setUniform(id + "Depth", unit2);
-            shader.setUniform(id + "Picking", unit3);
+            utilgl::setShaderUniforms(shader, image, buff.replace("{}Parameters", id));
+            shader.setUniform(buff.replace("{}Color", id), unit1);
+            shader.setUniform(buff.replace("{}Depth", id), unit2);
+            shader.setUniform(buff.replace("{}Picking", id), unit3);
             cont.push_back(std::move(unit1));
             cont.push_back(std::move(unit2));
             cont.push_back(std::move(unit3));

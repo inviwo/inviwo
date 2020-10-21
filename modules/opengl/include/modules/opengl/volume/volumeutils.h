@@ -27,13 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEUTILSGL_H
-#define IVW_VOLUMEUTILSGL_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/ports/volumeport.h>
+
+#include <string_view>
 
 namespace inviwo {
 
@@ -43,18 +43,16 @@ class TextureUnitContainer;
 namespace utilgl {
 
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const Volume& volume,
-                                             const std::string& samplerID);
+                                             std::string_view samplerID);
 
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const VolumeInport& port,
-                                             const std::string& samplerID);
+                                             std::string_view samplerID);
 
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
                                               VolumeInport& volume);
 
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                                              const Volume& volume, const std::string& samplerID);
+                                              const Volume& volume, std::string_view samplerID);
 }  // namespace utilgl
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEUTILSGL_H

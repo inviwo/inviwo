@@ -47,7 +47,8 @@ namespace inviwo {
 
 ShaderManager* ShaderManager::instance_ = nullptr;
 
-ShaderManager::ShaderManager() : uniformWarnings_(nullptr) { openGLInfoRef_ = nullptr; }
+ShaderManager::ShaderManager()
+    : openGLInfoRef_{nullptr}, uniformWarnings_(nullptr), shaderObjectErrors_{nullptr} {}
 
 void ShaderManager::setOpenGLSettings(OpenGLSettings* settings) {
     uniformWarnings_ = &(settings->uniformWarnings_);
@@ -112,7 +113,7 @@ void ShaderManager::addShaderResource(std::shared_ptr<ShaderResource> resource) 
     shaderResources_[resource->key()] = std::weak_ptr<ShaderResource>(resource);
 }
 
-std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string key) {
+std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string_view key) {
     auto it1 = shaderResources_.find(key);
     if (it1 != shaderResources_.end()) {
         if (!it1->second.expired()) {
@@ -136,18 +137,18 @@ std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string key
 
     if (filesystem::fileExists(key)) {
         auto resource = std::make_shared<FileShaderResource>(key, key);
-        shaderResources_[key] = resource;
+        shaderResources_.emplace(key, resource);
         return resource;
     }
 
     auto it2 = util::find_if(shaderSearchPaths_, [&](const std::string& path) {
-        return filesystem::fileExists(path + "/" + key);
+        return filesystem::fileExists(fmt::format("{}/{}", path, key));
     });
     if (it2 != shaderSearchPaths_.end()) {
-        std::string file = *it2 + "/" + key;
+        const std::string file = fmt::format("{}/{}", *it2, key);
 
         auto resource = std::make_shared<FileShaderResource>(key, file);
-        shaderResources_[key] = resource;
+        shaderResources_.emplace(key, resource);
         return resource;
     }
 

@@ -31,11 +31,13 @@
 
 namespace inviwo {
 
-std::pair<std::string, size_t> LineNumberResolver::resolveLine(size_t line) const {
+const std::pair<std::string, size_t>& LineNumberResolver::resolveLine(size_t line) const {
+    static const std::pair<std::string, size_t> empty{"", 0};
+
     if (line < lines_.size()) {
         return lines_[line];
     } else {
-        return {"", 0};
+        return empty;
     }
 }
 

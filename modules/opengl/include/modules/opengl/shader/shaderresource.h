@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SHADERRESOURCE_H
-#define IVW_SHADERRESOURCE_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -51,10 +50,10 @@ public:
     virtual ~ShaderResource() = default;
     virtual std::unique_ptr<ShaderResource> clone() = 0;
 
-    virtual std::string key() const = 0;
-    virtual std::string source() const = 0;
+    virtual const std::string& key() const = 0;
+    virtual const std::string& source() const = 0;
 
-    virtual void setSource(const std::string& source) = 0;
+    virtual void setSource(std::string_view source) = 0;
 
     template <typename T>
     std::shared_ptr<Callback> onChange(T&& callback) const;
@@ -70,17 +69,17 @@ std::shared_ptr<ShaderResource::Callback> ShaderResource::onChange(T&& callback)
 
 class IVW_MODULE_OPENGL_API FileShaderResource : public ShaderResource, public FileObserver {
 public:
-    FileShaderResource(const std::string& key, const std::string& fileName);
+    FileShaderResource(std::string_view key, std::string_view fileName);
     virtual ~FileShaderResource() = default;
 
     virtual std::unique_ptr<ShaderResource> clone() override;
 
-    virtual std::string key() const override;
-    virtual std::string source() const override;
+    virtual const std::string& key() const override;
+    virtual const std::string& source() const override;
 
-    virtual void setSource(const std::string& source) override;
+    virtual void setSource(std::string_view source) override;
 
-    std::string file() const;
+    const std::string& file() const;
 
     virtual void fileChanged(const std::string& fileName) override;
 
@@ -98,10 +97,10 @@ public:
 
     virtual std::unique_ptr<ShaderResource> clone() override;
 
-    virtual std::string key() const override;
-    virtual std::string source() const override;
+    virtual const std::string& key() const override;
+    virtual const std::string& source() const override;
 
-    virtual void setSource(const std::string& source) override;
+    virtual void setSource(std::string_view source) override;
 
 private:
     std::string key_;
@@ -110,4 +109,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_SHADERRESOURCE_H
