@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRACKFACTORY_H
-#define IVW_TRACKFACTORY_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -38,17 +37,29 @@
 #include <modules/animation/factories/trackfactoryobject.h>
 
 namespace inviwo {
+
+class ProcessorNetwork;
+
 namespace animation {
 
-class IVW_MODULE_ANIMATION_API TrackFactory : public StandardFactory<Track, TrackFactoryObject> {
+class IVW_MODULE_ANIMATION_API TrackFactory
+    : public Factory<Track>,
+      public StandardFactory<Track, TrackFactoryObject, const std::string&, ProcessorNetwork*> {
+
+    using Parent =
+        StandardFactory<Track, TrackFactoryObject, const std::string&, ProcessorNetwork*>;
+
 public:
-    TrackFactory() = default;
+    TrackFactory(ProcessorNetwork* network);
     virtual ~TrackFactory() = default;
 
-    using StandardFactory<Track, TrackFactoryObject>::create;
+    using Parent::create;
+
+    virtual bool hasKey(const std::string& key) const override;
+    virtual std::unique_ptr<Track> create(const std::string& key) const override;
+
+    ProcessorNetwork* network_;
 };
 
 }  // namespace animation
 }  // namespace inviwo
-
-#endif  // IVW_TRACKFACTORY_H

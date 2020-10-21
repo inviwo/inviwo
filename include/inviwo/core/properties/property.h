@@ -74,7 +74,7 @@ struct PropertyTraits {
      * "T::CLASS_IDENTIFIER". In case it is not found an empty string will be returned. An empty
      * class identifier will be considered an error in various factories.
      */
-    static std::string classIdentifier() { return util::classIdentifier<T>(); }
+    static const std::string& classIdentifier() { return util::classIdentifier<T>(); }
 };
 
 // Deprecated
@@ -153,6 +153,7 @@ public:
     virtual Property& setIdentifier(const std::string& identifier);
     virtual std::string getIdentifier() const;
     virtual std::vector<std::string> getPath() const;
+    virtual std::string getPathStr() const;
 
     /**
      * \brief A property's name displayed to the user
@@ -227,6 +228,10 @@ public:
      */
     bool hasWidgets() const;
 
+
+    virtual void setSerializationMode(PropertySerializationMode mode);
+    virtual PropertySerializationMode getSerializationMode() const;
+
     /**
      * Save the current state of the property as the default. This state will then be used as a
      * reference when serializing, only state different from the default will be serialized.
@@ -243,6 +248,19 @@ public:
      * implementation.
      */
     virtual Property& resetToDefaultState();
+
+    /**
+     * Check if the property is in it's default state, i.e. resetToDefaultState would do nothing
+     * @see setCurrentStateAsDefault @see resetToDefaultState
+    */
+    virtual bool isDefaultState() const;
+
+    /**
+     * Determinate if the property should be included in the serialization
+     * Depends on the serialization mode and if the property is in the default state
+     */
+    virtual bool needsSerialization() const;
+
 
     virtual Property& propertyModified();
     virtual void setValid();
@@ -285,9 +303,6 @@ public:
 
     virtual Property& setUsageMode(UsageMode usageMode);
     virtual UsageMode getUsageMode() const;
-
-    virtual void setSerializationMode(PropertySerializationMode mode);
-    virtual PropertySerializationMode getSerializationMode() const;
 
     virtual Property& setVisible(bool val);
     virtual bool getVisible() const;

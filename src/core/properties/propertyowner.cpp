@@ -96,6 +96,8 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
 
     if (owner) {  // Assume ownership of property;
         ownedProperties_.emplace_back(property);
+        // Need to serialize everything for owned properties
+        property->setSerializationMode(PropertySerializationMode::All);
     }
     notifyObserversDidAddProperty(property, index);
 }
@@ -104,7 +106,7 @@ void PropertyOwner::insertProperty(size_t index, Property& property) {
     insertProperty(index, &property, false);
 }
 
-Property* PropertyOwner::removeProperty(const std::string& identifier) {
+Property* PropertyOwner::removeProperty(std::string_view identifier) {
     return removeProperty(
         std::find_if(properties_.begin(), properties_.end(),
                      [&identifier](Property* p) { return p->getIdentifier() == identifier; }));
@@ -181,7 +183,7 @@ std::vector<Property*> PropertyOwner::getPropertiesRecursive() const {
     return result;
 }
 
-Property* PropertyOwner::getPropertyByIdentifier(const std::string& identifier,
+Property* PropertyOwner::getPropertyByIdentifier(std::string_view identifier,
                                                  bool recursiveSearch) const {
     for (auto* property : properties_) {
         if (property->getIdentifier() == identifier) return property;
@@ -198,6 +200,26 @@ Property* PropertyOwner::getPropertyByPath(const std::vector<std::string>& path)
     if (path.empty()) return nullptr;
 
     auto lastIt = --path.end();
+    auto* curr = this;
+    for (auto pathIt = path.begin(); pathIt != lastIt; ++pathIt) {
+        auto compIt =
+            std::find_if(curr->compositeProperties_.begin(), curr->compositeProperties_.end(),
+                         [&](auto* comp) { return comp->getIdentifier() == *pathIt; });
+        if (compIt != curr->compositeProperties_.end()) {
+            curr = *compIt;
+        } else {
+            return nullptr;
+        }
+    }
+    return curr->getPropertyByIdentifier(*lastIt);
+}
+
+Property* PropertyOwner::getPropertyByPath(util::span<std::string_view> path) const {
+    if (path.empty()) return nullptr;
+
+    auto lastIt = path.end();
+    --lastIt;
+
     auto* curr = this;
     for (auto pathIt = path.begin(); pathIt != lastIt; ++pathIt) {
         auto compIt =
@@ -233,7 +255,7 @@ void PropertyOwner::setValid() {
     invalidationLevel_ = InvalidationLevel::Valid;
 }
 
-inviwo::InvalidationLevel PropertyOwner::getInvalidationLevel() const { return invalidationLevel_; }
+InvalidationLevel PropertyOwner::getInvalidationLevel() const { return invalidationLevel_; }
 
 void PropertyOwner::invalidate(InvalidationLevel invalidationLevel, Property*) {
     invalidationLevel_ = std::max(invalidationLevel_, invalidationLevel);
@@ -244,11 +266,12 @@ Processor* PropertyOwner::getProcessor() { return nullptr; }
 const Processor* PropertyOwner::getProcessor() const { return nullptr; }
 
 void PropertyOwner::serialize(Serializer& s) const {
-    auto ownedIdentifiers = util::transform(
-        ownedProperties_, [](const std::unique_ptr<Property>& p) { return p->getIdentifier(); });
-    s.serialize("OwnedPropertyIdentifiers", ownedIdentifiers, "PropertyIdentifier");
+    s.serialize("OwnedPropertyIdentifiers", ownedProperties_, "PropertyIdentifier",
+                util::alwaysTrue{},
+                [](const std::unique_ptr<Property>& p) { return p->getIdentifier(); });
 
-    s.serialize("Properties", properties_, "Property");
+    s.serialize("Properties", properties_, "Property",
+                [](const Property* p) { return p->needsSerialization(); });
 }
 
 void PropertyOwner::deserialize(Deserializer& d) {

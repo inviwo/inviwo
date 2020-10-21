@@ -155,6 +155,7 @@ public:
 
     virtual OrdinalRefProperty<T>& setCurrentStateAsDefault() override;
     virtual OrdinalRefProperty<T>& resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -246,8 +247,9 @@ using IntSize4RefProperty = OrdinalRefProperty<size4_t>;
 
 template <typename T>
 struct PropertyTraits<OrdinalRefProperty<T>> {
-    static std::string classIdentifier() {
-        return "org.inviwo." + Defaultvalues<T>::getName() + "RefProperty";
+    static const std::string& classIdentifier() {
+        static const std::string identifier = "org.inviwo." + Defaultvalues<T>::getName() + "RefProperty";
+        return identifier;
     }
 };
 
@@ -510,6 +512,11 @@ OrdinalRefProperty<T>& OrdinalRefProperty<T>::resetToDefaultState() {
     modified |= increment_.reset();
     if (modified) this->propertyModified();
     return *this;
+}
+
+template <typename T>
+bool OrdinalRefProperty<T>::isDefaultState() const {
+    return increment_.isDefault() && minValue_.isDefault() && maxValue_.isDefault();
 }
 
 template <typename T>

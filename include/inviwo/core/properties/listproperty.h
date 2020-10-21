@@ -193,7 +193,7 @@ public:
      */
     virtual void insertProperty(size_t index, Property& property) override;
 
-    virtual Property* removeProperty(const std::string& identifier) override;
+    virtual Property* removeProperty(std::string_view identifier) override;
     virtual Property* removeProperty(Property* property) override;
     virtual Property* removeProperty(Property& property) override;
     virtual Property* removeProperty(size_t index) override;

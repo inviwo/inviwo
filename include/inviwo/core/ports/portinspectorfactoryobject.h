@@ -42,9 +42,9 @@ class IVW_CORE_API PortInspectorFactoryObject {
 public:
     PortInspectorFactoryObject(const std::string& portClassIdentifier,
                                const std::string& inspectorWorkspaceFileName);
-    virtual ~PortInspectorFactoryObject() {}
+    ~PortInspectorFactoryObject() = default;
 
-    virtual std::unique_ptr<PortInspector> create();
+    std::unique_ptr<PortInspector> create();
 
     std::string getClassIdentifier() const;
 

@@ -38,6 +38,7 @@ namespace inviwo {
 
 void EventMatcher::setCurrentStateAsDefault() {}
 void EventMatcher::resetToDefaultState() {}
+bool EventMatcher::isDefaultState() const { return false; }
 void EventMatcher::serialize(Serializer&) const {}
 void EventMatcher::deserialize(Deserializer&) {}
 
@@ -80,6 +81,10 @@ void KeyboardEventMatcher::setCurrentStateAsDefault() {
 }
 void KeyboardEventMatcher::resetToDefaultState() {
     util::for_each_argument([](auto& x) { x.reset(); }, key_, states_, modifiers_);
+}
+
+bool KeyboardEventMatcher::isDefaultState() const {
+    return key_.isDefault() && states_.isDefault() && modifiers_.isDefault();
 }
 
 void KeyboardEventMatcher::serialize(Serializer& s) const {
@@ -149,6 +154,10 @@ void MouseEventMatcher::resetToDefaultState() {
     util::for_each_argument([](auto& x) { x.reset(); }, buttons_, states_, modifiers_);
 }
 
+bool MouseEventMatcher::isDefaultState() const {
+    return buttons_.isDefault() && states_.isDefault() && modifiers_.isDefault();
+}
+
 void MouseEventMatcher::serialize(Serializer& s) const {
     EventMatcher::serialize(s);
     util::for_each_argument([&s](const auto& x) { x.serialize(s); }, buttons_, states_, modifiers_);
@@ -183,6 +192,8 @@ void WheelEventMatcher::setCurrentStateAsDefault() {
 void WheelEventMatcher::resetToDefaultState() {
     util::for_each_argument([](auto& x) { x.reset(); }, modifiers_);
 }
+
+bool WheelEventMatcher::isDefaultState() const { return modifiers_.isDefault(); }
 
 void WheelEventMatcher::serialize(Serializer& s) const {
     EventMatcher::serialize(s);
@@ -240,6 +251,11 @@ void GestureEventMatcher::resetToDefaultState() {
     util::for_each_argument([](auto& x) { x.reset(); }, types_, states_, numFingers_, modifiers_);
 }
 
+bool GestureEventMatcher::isDefaultState() const {
+    return types_.isDefault() && states_.isDefault() && numFingers_.isDefault() &&
+           modifiers_.isDefault();
+}
+
 void GestureEventMatcher::serialize(Serializer& s) const {
     EventMatcher::serialize(s);
     util::for_each_argument([&s](const auto& x) { x.serialize(s); }, types_, states_, numFingers_,
@@ -257,5 +273,7 @@ GeneralEventMatcher::GeneralEventMatcher(std::function<bool(Event*)> matcher)
 GeneralEventMatcher* GeneralEventMatcher::clone() const { return new GeneralEventMatcher(*this); }
 
 bool GeneralEventMatcher::operator()(Event* e) { return matcher_(e); }
+
+bool GeneralEventMatcher::isDefaultState() const { return true; }
 
 }  // namespace inviwo

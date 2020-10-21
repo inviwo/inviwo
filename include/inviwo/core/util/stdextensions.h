@@ -139,7 +139,40 @@ struct overloaded : Ts... {
     using Ts::operator()...;
 };
 template <class... Ts>
-overloaded(Ts...)->overloaded<Ts...>;
+overloaded(Ts...) -> overloaded<Ts...>;
+
+struct identity {
+    template <typename T>
+    constexpr decltype(auto) operator()(T&& t) const noexcept {
+        return std::forward<T>(t);
+    }
+};
+
+struct alwaysTrue {
+    template <typename T>
+    constexpr bool operator()(T&&) const noexcept {
+        return true;
+    }
+};
+
+struct identifier {
+    template <typename T>
+    constexpr decltype(auto) operator()(T&& item) const noexcept {
+        return item.getIdentifier();
+    }
+    template <typename T>
+    constexpr decltype(auto) operator()(T* item) const noexcept {
+        return item->getIdentifier();
+    }
+    template <typename T>
+    constexpr decltype(auto) operator()(const std::unique_ptr<T>& item) const noexcept {
+        return item->getIdentifier();
+    }
+    template <typename T>
+    constexpr decltype(auto) operator()(const std::shared_ptr<T>& item) const noexcept {
+        return item->getIdentifier();
+    }
+};
 
 // type trait to check if T is derived from std::basic_string
 namespace detail {

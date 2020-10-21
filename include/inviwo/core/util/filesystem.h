@@ -172,7 +172,7 @@ IVW_CORE_API std::string getInviwoUserSettingsPath();
  * @param filePath The path to the file
  * @return true if file exists, false otherwise
  */
-IVW_CORE_API bool fileExists(const std::string& filePath);
+IVW_CORE_API bool fileExists(std::string_view filePath);
 
 /**
  * Check if the directory exists
@@ -181,7 +181,7 @@ IVW_CORE_API bool fileExists(const std::string& filePath);
  * @param path Directory path
  * @return True if directory exists, false otherwise
  */
-IVW_CORE_API bool directoryExists(const std::string& path);
+IVW_CORE_API bool directoryExists(std::string_view path);
 
 /**
  * \brief Get last time file was modified.
@@ -189,7 +189,7 @@ IVW_CORE_API bool directoryExists(const std::string& path);
  * @param filePath The path to the file
  * @return Time of last modification, or 0 if an error occured (00:00, Jan 1 1970 UTC).
  */
-IVW_CORE_API std::time_t fileModificationTime(const std::string& filePath);
+IVW_CORE_API std::time_t fileModificationTime(std::string_view filePath);
 
 /**
  * \brief Copy an existing file to a new file. Overwrites existing file.
@@ -197,7 +197,7 @@ IVW_CORE_API std::time_t fileModificationTime(const std::string& filePath);
  * @param dst Path to the new file
  * @return True if source file exists and the copy is successful, false otherwise
  */
-IVW_CORE_API bool copyFile(const std::string& src, const std::string& dst);
+IVW_CORE_API bool copyFile(std::string_view src, std::string_view dst);
 
 enum class ListMode {
     Files,

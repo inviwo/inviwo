@@ -73,6 +73,8 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::string& file)
 
     util::updateFilenameFilters<Volume, VolumeSequence>(*app_->getDataReaderFactory(), file_,
                                                         reader_);
+    reader_.setCurrentStateAsDefault();
+
     util::updateReaderFromFile(file_, reader_);
 
     // make sure that we always process even if not connected

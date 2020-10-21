@@ -235,7 +235,7 @@ void ListProperty::insertProperty(size_t index, Property& property) {
     insertProperty(index, &property, false);
 }
 
-Property* ListProperty::removeProperty(const std::string& identifier) {
+Property* ListProperty::removeProperty(std::string_view identifier) {
     auto result = CompositeProperty::removeProperty(identifier);
     propertyModified();
     return result;

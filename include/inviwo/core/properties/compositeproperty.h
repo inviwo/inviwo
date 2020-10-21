@@ -74,6 +74,12 @@ public:
 
     virtual CompositeProperty& setCurrentStateAsDefault() override;
     virtual CompositeProperty& resetToDefaultState() override;
+
+    virtual bool isDefaultState() const override;
+
+    virtual bool needsSerialization() const override;
+
+
     virtual CompositeProperty& setReadOnly(bool value) override;
 
     // Override from the PropertyOwner

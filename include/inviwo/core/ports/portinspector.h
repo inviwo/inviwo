@@ -41,11 +41,15 @@
 
 namespace inviwo {
 
-class IVW_CORE_API PortInspector : public Serializable {
+class IVW_CORE_API PortInspector {
 public:
     PortInspector();  // Should only be used for deserialization.
     PortInspector(std::string portClassIdentifier, std::string inspectorWorkspaceFileName);
-    virtual ~PortInspector();
+    PortInspector(const PortInspector&) = delete;
+    PortInspector(PortInspector&&) = default;
+    PortInspector& operator=(const PortInspector&) = delete;
+    PortInspector& operator=(PortInspector&&) = default;
+    ~PortInspector();
 
     const std::string& getInspectorNetworkFileName() const;
     const std::string& getPortClassName() const;
@@ -55,10 +59,6 @@ public:
     CanvasProcessor* getCanvasProcessor() const;
     const std::vector<PortConnection>& getConnections() const;
     const std::vector<PropertyLink>& getPropertyLinks() const;
-
-    virtual void serialize(Serializer& s) const override;
-
-    virtual void deserialize(Deserializer& d) override;
 
 private:
     std::string inspectorNetworkFileName_;

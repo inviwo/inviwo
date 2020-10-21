@@ -40,6 +40,7 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/network/networkvisitor.h>
+#include <inviwo/core/network/networkedge.h>
 
 #include <fmt/format.h>
 
@@ -69,11 +70,11 @@ bool ProcessorNetwork::addProcessor(Processor* processor) {
     NetworkLock lock(this);
 
     processor->setIdentifier(util::findUniqueIdentifier(
-        processor->getIdentifier(),
+        util::stripIdentifier(processor->getIdentifier()),
         [&](const std::string& id) { return getProcessorByIdentifier(id) == nullptr; }, ""));
 
     notifyObserversProcessorNetworkWillAddProcessor(processor);
-    processors_[util::stripIdentifier(processor->getIdentifier())] = processor;
+    processors_[processor->getIdentifier()] = processor;
     processor->setNetwork(this);
     processor->ProcessorObservable::addObserver(this);
     addPropertyOwnerObservation(processor);
@@ -121,7 +122,7 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
 
     // remove processor itself
     notifyObserversProcessorNetworkWillRemoveProcessor(processor);
-    processors_.erase(util::stripIdentifier(processor->getIdentifier()));
+    processors_.erase(processor->getIdentifier());
     processor->ProcessorObservable::removeObserver(this);
     removePropertyOwnerObservation(processor);
     processor->setNetwork(nullptr);
@@ -138,7 +139,7 @@ void ProcessorNetwork::removeAndDeleteProcessor(Processor* processor) {
 
     // remove processor itself
     notifyObserversProcessorNetworkWillRemoveProcessor(processor);
-    processors_.erase(util::stripIdentifier(processor->getIdentifier()));
+    processors_.erase(processor->getIdentifier());
     removePropertyOwnerObservation(processor);
     processor->setNetwork(nullptr);
     processor->setProcessorWidget(nullptr);
@@ -147,8 +148,8 @@ void ProcessorNetwork::removeAndDeleteProcessor(Processor* processor) {
     delete processor;
 }
 
-Processor* ProcessorNetwork::getProcessorByIdentifier(std::string identifier) const {
-    return util::map_find_or_null(processors_, util::stripIdentifier(identifier));
+Processor* ProcessorNetwork::getProcessorByIdentifier(std::string_view identifier) const {
+    return util::map_find_or_null(processors_, std::string(identifier));
 }
 
 std::vector<Processor*> ProcessorNetwork::getProcessors() const {
@@ -347,8 +348,8 @@ void ProcessorNetwork::onProcessorInvalidationEnd(Processor* p) {
 
 void ProcessorNetwork::onProcessorIdentifierChanged(Processor* processor,
                                                     const std::string& oldIdentifier) {
-    processors_.erase(util::stripIdentifier(oldIdentifier));
-    processors_[util::stripIdentifier(processor->getIdentifier())] = processor;
+    processors_.erase(oldIdentifier);
+    processors_[processor->getIdentifier()] = processor;
 }
 
 void ProcessorNetwork::onProcessorPortRemoved(Processor*, Port* port) {
@@ -388,8 +389,22 @@ void ProcessorNetwork::onProcessorMetaDataSelectionChange() {
 void ProcessorNetwork::serialize(Serializer& s) const {
     s.serialize("ProcessorNetworkVersion", processorNetworkVersion_);
     s.serialize("Processors", getProcessors(), "Processor");
-    s.serialize("Connections", getConnections(), "Connection");
-    s.serialize("PropertyLinks", getLinks(), "PropertyLink");
+
+    {
+        std::vector<NetworkEdge> connections;
+        for (auto& item : connectionsVec_) {
+            connections.emplace_back(item);
+        }
+        s.serialize("Connections", connections, "Connection");
+    }
+
+    {
+        std::vector<NetworkEdge> links;
+        for (auto& item : links_) {
+            links.emplace_back(item);
+        }
+        s.serialize("PropertyLinks", links, "PropertyLink");
+    }
 }
 
 void ProcessorNetwork::addPropertyOwnerObservation(PropertyOwner* po) {
@@ -408,7 +423,7 @@ void ProcessorNetwork::removePropertyOwnerObservation(PropertyOwner* po) {
 
 int ProcessorNetwork::getVersion() const { return processorNetworkVersion_; }
 
-const int ProcessorNetwork::processorNetworkVersion_ = 17;
+const int ProcessorNetwork::processorNetworkVersion_ = 18;
 
 void ProcessorNetwork::deserialize(Deserializer& d) {
     NetworkLock lock(this);
@@ -462,8 +477,17 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     // Connections
     try {
+        std::vector<NetworkEdge> connectionsEdges;
+        d.deserialize("Connections", connectionsEdges, "Connection");
+
         std::vector<PortConnection> connections;
-        d.deserialize("Connections", connections, "Connection");
+        for (const auto& edge : connectionsEdges) {
+            try {
+                connections.emplace_back(edge.toConnection(*this));
+            } catch (...) {
+                d.handleError(IVW_CONTEXT);
+            }
+        }
 
         // remove any already existing connections.
         PortConnections save;
@@ -504,8 +528,17 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     // Links
     try {
+        std::vector<NetworkEdge> linkEdges;
+        d.deserialize("PropertyLinks", linkEdges, "PropertyLink");
+
         std::vector<PropertyLink> links;
-        d.deserialize("PropertyLinks", links, "PropertyLink");
+        for (const auto& item : linkEdges) {
+            try {
+                links.emplace_back(item.toLink(*this));
+            } catch (...) {
+                d.handleError(IVW_CONTEXT);
+            }
+        }
 
         // remove any already existing links.
         PropertyLinks save;
@@ -554,6 +587,47 @@ Property* ProcessorNetwork::getProperty(std::vector<std::string> path) const {
         if (auto processor = getProcessorByIdentifier(path[0])) {
             std::vector<std::string> propPath(path.begin() + 1, path.end());
             return processor->getPropertyByPath(propPath);
+        }
+    }
+    return nullptr;
+}
+
+Property* ProcessorNetwork::getProperty(std::string_view path) const {
+    auto items = splitStringView(path, '.');
+    if (items.size() >= 2) {
+        if (auto processor = getProcessorByIdentifier(items[0])) {
+            util::span<std::string_view> propPath(items.data(), items.size());
+            return processor->getPropertyByPath(propPath.subspan(1));
+        }
+    }
+    return nullptr;
+}
+
+Port* ProcessorNetwork::getPort(std::string_view path) const {
+    auto items = splitStringView(path, '.');
+    if (items.size() >= 2) {
+        if (auto processor = getProcessorByIdentifier(items[0])) {
+            return processor->getPort(items[1]);
+        }
+    }
+    return nullptr;
+}
+
+Inport* ProcessorNetwork::getInport(std::string_view path) const {
+    auto items = splitStringView(path, '.');
+    if (items.size() >= 2) {
+        if (auto processor = getProcessorByIdentifier(items[0])) {
+            return processor->getInport(items[1]);
+        }
+    }
+    return nullptr;
+}
+
+Outport* ProcessorNetwork::getOutport(std::string_view path) const {
+    auto items = splitStringView(path, '.');
+    if (items.size() >= 2) {
+        if (auto processor = getProcessorByIdentifier(items[0])) {
+            return processor->getOutport(items[1]);
         }
     }
     return nullptr;

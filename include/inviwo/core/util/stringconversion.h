@@ -42,6 +42,8 @@
 #include <cctype>
 #include <locale>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 template <class T>
@@ -60,6 +62,34 @@ T stringTo(const std::string& str) {
     return result;
 }
 
+struct IVW_CORE_API StrBuffer {
+    StrBuffer() = default;
+
+    template <typename... Args>
+    explicit StrBuffer(std::string_view format, Args&&... args) {
+        fmt::format_to(buff, format, std::forward<Args>(args)...);
+    }
+
+    template <typename... Args>
+    StrBuffer& append(std::string_view format, Args&&... args) {
+        fmt::format_to(buff, format, std::forward<Args>(args)...);
+        return *this;
+    }
+    template <typename... Args>
+    StrBuffer& replace(std::string_view format, Args&&... args) {
+        buff.clear();
+        fmt::format_to(buff, format, std::forward<Args>(args)...);
+        return *this;
+    }
+
+    void clear() { buff.clear(); }
+    bool empty() const { return buff.size() == 0; }
+
+    std::string_view view() const { return {buff.data(), buff.size()}; }
+    operator std::string_view() const { return {buff.data(), buff.size()}; }
+    fmt::memory_buffer buff;
+};
+
 namespace util {
 
 /**
@@ -70,7 +100,7 @@ namespace util {
  * @param str   multibyte character string
  * @return input converted to std::wstring
  */
-IVW_CORE_API std::wstring toWstring(const std::string& str);
+IVW_CORE_API std::wstring toWstring(std::string_view str);
 
 /**
  * \brief convert the given std::wstring to std::string.
@@ -80,7 +110,17 @@ IVW_CORE_API std::wstring toWstring(const std::string& str);
  * @param str   std::wstring character string
  * @return input converted to multibyte std::string
  */
-IVW_CORE_API std::string fromWstring(const std::wstring& str);
+IVW_CORE_API std::string fromWstring(std::wstring_view str);
+
+template <typename Func>
+constexpr void forEachStringPart(std::string_view str, std::string_view sep, Func&& func) {
+    for (size_t first = 0; first < str.size();) {
+        const auto second = str.find(sep, first);
+        std::invoke(func, str.substr(first, second - first));
+        if (second == std::string_view::npos) break;
+        first = second + sep.size();
+    }
+}
 
 }  // namespace util
 
@@ -96,7 +136,6 @@ IVW_CORE_API std::string fromWstring(const std::wstring& str);
 IVW_CORE_API std::vector<std::string> splitString(std::string_view str, char delimeter = ' ');
 IVW_CORE_API std::vector<std::string_view> splitStringView(std::string_view str,
                                                            char delimeter = ' ');
-
 template <typename T>
 std::string joinString(const std::vector<T>& str, std::string delimeter = " ") {
     std::stringstream ss;

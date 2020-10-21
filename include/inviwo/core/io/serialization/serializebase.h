@@ -36,6 +36,10 @@
 #include <map>
 #include <string>
 
+#if __has_include(<charconv>)
+#include <charconv>
+#endif
+
 namespace ticpp {
 class Element;
 class Document;
@@ -44,6 +48,14 @@ class Document;
 namespace inviwo {
 using TxElement = ticpp::Element;
 using TxDocument = ticpp::Document;
+
+namespace config {
+#if __has_include(<charconv>)
+constexpr bool charconv = true;
+#else
+constexpr bool charconv = false;
+#endif
+}  // namespace config
 
 namespace detail {
 IVW_CORE_API std::string getNodeAttributeOrDefault(TxElement* node, const std::string& key,
@@ -62,7 +74,7 @@ struct StandardIdentifier : public ElementIdentifier<T> {
     typedef std::string (T::*funcPtr)() const;
 
     StandardIdentifier(std::string key = "identifier", funcPtr ptr = &T::getIdentifier)
-        : ptr_(ptr), key_(key) {}
+        : ptr_(ptr), key_(std::move(key)) {}
 
     virtual void setKey(TxElement* node) {
         identifier_ = detail::getNodeAttributeOrDefault(node, key_, "");
@@ -88,10 +100,8 @@ public:
      * This class consists of features that are common to both serializer
      * and de-serializer. Some of them are reference data manager,
      * (ticpp::Node) node switch and factory registration.
-     *
-     * @param allowReference disables or enables reference management schemes.
      */
-    SerializeBase(bool allowReference = true);
+    SerializeBase();
 
     /**
      * \brief Base class for Serializer and Deserializer.
@@ -101,9 +111,8 @@ public:
      * (ticpp::Node) node switch and factory registration.
      *
      * @param fileName full path to xml file (for reading or writing).
-     * @param allowReference disables or enables reference management schemes.
      */
-    SerializeBase(std::string fileName, bool allowReference = true);
+    SerializeBase(std::string_view fileName);
 
     /**
      * \brief Base class for Serializer and Deserializer.
@@ -114,14 +123,13 @@ public:
      *
      * @param stream containing all xml data (for reading).
      * @param path A path that will be used to decode the location of data during deserialization.
-     * @param allowReference disables or enables reference management schemes.
      */
-    SerializeBase(std::istream& stream, const std::string& path, bool allowReference = true);
+    SerializeBase(std::istream& stream, std::string_view path);
 
     SerializeBase(const SerializeBase& rhs) = delete;
-    SerializeBase(SerializeBase&& rhs);
+    SerializeBase(SerializeBase&& rhs) noexcept;
     SerializeBase& operator=(const SerializeBase&) = delete;
-    SerializeBase& operator=(SerializeBase&&);
+    SerializeBase& operator=(SerializeBase&&) noexcept;
 
     virtual ~SerializeBase();
 
@@ -140,35 +148,16 @@ public:
      * std::string
      * @return true or false
      */
-    bool isPrimitiveType(const std::type_info& type) const;
-
-    struct IVW_CORE_API ReferenceData {
-        TxElement* node_;  // Ticpp Node element.
-        bool isPointer_;   // Used to differentiate pointer and object.
-    };
-
-    using RefDataPair = std::pair<const void*, SerializeBase::ReferenceData>;
-    using RefMap = std::multimap<const void*, ReferenceData>;
-
-    class IVW_CORE_API ReferenceDataContainer {
-    public:
-        ReferenceDataContainer() = default;
-        ReferenceDataContainer(const ReferenceDataContainer&) = delete;
-        ReferenceDataContainer(ReferenceDataContainer&&) = default;
-        ReferenceDataContainer& operator=(const ReferenceDataContainer&) = delete;
-        ReferenceDataContainer& operator=(ReferenceDataContainer&&) = default;
-        ~ReferenceDataContainer() = default;
-
-        size_t insert(const void* data, TxElement* node, bool isPointer = true);
-        size_t find(const void* data);
-        void* find(const std::string& key, const std::string& reference_or_id);
-        TxElement* nodeCopy(const void* data);
-        void setReferenceAttributes();
-
-    private:
-        RefMap referenceMap_;
-        int referenceCount_ = 0;
-    };
+    template <typename U>
+    static constexpr bool isPrimitiveType() {
+        using T = std::remove_cv_t<std::remove_reference_t<U>>;
+        return std::is_same_v<T, bool> || std::is_same_v<T, char> || std::is_same_v<T, int> ||
+               std::is_same_v<T, signed int> || std::is_same_v<T, unsigned int> ||
+               std::is_same_v<T, size_t> || std::is_same_v<T, long long> ||
+               std::is_same_v<T, unsigned long long> || std::is_same_v<T, float> ||
+               std::is_same_v<T, double> || std::is_same_v<T, long double> ||
+               std::is_same_v<T, std::string>;
+    }
 
     static std::string nodeToString(const TxElement& node);
 
@@ -178,9 +167,7 @@ protected:
     std::string fileName_;
     std::unique_ptr<TxDocument> doc_;
     TxElement* rootElement_;
-    bool allowRef_;
     bool retrieveChild_;
-    ReferenceDataContainer refDataContainer_;
 };
 
 namespace detail {
@@ -189,6 +176,16 @@ template <class T>
 decltype(auto) toStr(const T& value) {
     if constexpr (std::is_same_v<std::string, T>) {
         return value;
+    } else if constexpr (config::charconv &&
+                         (std::is_same_v<double, T> || std::is_same_v<float, T> ||
+                          (!std::is_same_v<bool, T> && std::is_integral_v<T>))) {
+        std::array<char, 40> buff;
+        auto [p, ec] = std::to_chars(buff.data(), buff.data() + buff.size(), value);
+        if (ec != std::errc()) {
+            throw SerializationException("Error writing number", IVW_CONTEXT_CUSTOM("toStr"));
+        }
+        return std::string{buff.data(), static_cast<size_t>(p - buff.data())};
+
     } else {
         std::ostringstream stream;
         if constexpr (std::is_same_v<T, double>) {
@@ -205,6 +202,14 @@ template <class T>
 void fromStr(const std::string& value, T& dest) {
     if constexpr (std::is_same_v<std::string, T>) {
         dest = value;
+    } else if constexpr (config::charconv &&
+                         (std::is_same_v<double, T> || std::is_same_v<float, T> ||
+                          (!std::is_same_v<bool, T> && std::is_integral_v<T>))) {
+        const auto end = value.data() + value.size();
+        if (auto [p, ec] = std::from_chars(value.data(), end, dest);
+            ec != std::errc() || p != end) {
+            throw SerializationException("Error parsing number", IVW_CONTEXT_CUSTOM("fromStr"));
+        }
     } else {
         std::istringstream stream{value};
         stream >> dest;
@@ -247,7 +252,7 @@ public:
      * @param key the child to switch to.
      * @param retrieveChild whether to retrieve child node or not.
      */
-    NodeSwitch(SerializeBase& serializer, const std::string& key, bool retrieveChild = true);
+    NodeSwitch(SerializeBase& serializer, std::string_view key, bool retrieveChild = true);
 
     /**
      * \brief Destructor

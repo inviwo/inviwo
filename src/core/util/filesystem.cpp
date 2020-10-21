@@ -34,6 +34,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/inviwocommondefines.h>
+#include <inviwo/core/util/safecstr.h>
 
 // For directory exists
 #include <sys/types.h>
@@ -80,7 +81,7 @@ namespace detail {
 // If path contains the location of a directory, it cannot contain a trailing backslash.
 // If it does, stat will return -1 and errno will be set to ENOENT.
 // https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
-std::string removeTrailingSlash(const std::string& path) {
+std::string_view removeTrailingSlash(std::string_view path) {
     // Remove trailing backslash or slash
     if (path.size() > 1 && (path.back() == '/' || path.back() == '\\')) {
         return path.substr(0, path.size() - 1);
@@ -212,7 +213,7 @@ std::string getExecutablePath() {
     return retVal;
 }
 
-IVW_CORE_API std::string getInviwoUserSettingsPath() {
+std::string getInviwoUserSettingsPath() {
     std::stringstream ss;
 #ifdef _WIN32
     PWSTR path;
@@ -253,18 +254,18 @@ IVW_CORE_API std::string getInviwoUserSettingsPath() {
     return ss.str();
 }
 
-bool fileExists(const std::string& filePath) {
+bool fileExists(std::string_view filePath) {
 // http://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
 #if defined(_WIN32)
     struct _stat buffer;
     return (_wstat(util::toWstring(filePath).c_str(), &buffer) == 0);
 #else
     struct stat buffer;
-    return (stat(filePath.c_str(), &buffer) == 0);
+    return (stat(SafeCStr<256>{filePath}.c_str(), &buffer) == 0);
 #endif
 }
 
-bool directoryExists(const std::string& path) {
+bool directoryExists(std::string_view path) {
 // If path contains the location of a directory, it cannot contain a trailing backslash.
 // If it does, -1 will be returned and errno will be set to ENOENT.
 // https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
@@ -275,12 +276,12 @@ bool directoryExists(const std::string& path) {
     return (retVal == 0 && (buffer.st_mode & S_IFDIR));
 #else
     struct stat buffer;
-    return (stat(detail::removeTrailingSlash(path).c_str(), &buffer) == 0 &&
+    return (stat(SafeCStr<256>{detail::removeTrailingSlash(path)}.c_str(), &buffer) == 0 &&
             (buffer.st_mode & S_IFDIR));
 #endif
 }
 
-std::time_t fileModificationTime(const std::string& filePath) {
+std::time_t fileModificationTime(std::string_view filePath) {
     // If path contains the location of a directory, it cannot contain a trailing backslash.
     // If it does, -1 will be returned and errno will be set to ENOENT.
     // https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
@@ -291,7 +292,7 @@ std::time_t fileModificationTime(const std::string& filePath) {
     err = _wstat(util::toWstring(detail::removeTrailingSlash(filePath)).c_str(), &buffer);
 #else
     struct stat buffer;
-    err = stat(detail::removeTrailingSlash(filePath).c_str(), &buffer);
+    err = stat(SafeCStr<256>{detail::removeTrailingSlash(filePath)}.c_str(), &buffer);
 #endif
     if (err != -1) {
         return buffer.st_mtime;
@@ -300,12 +301,16 @@ std::time_t fileModificationTime(const std::string& filePath) {
     }
 }
 
-IVW_CORE_API bool copyFile(const std::string& src, const std::string& dst) {
+bool copyFile(std::string_view src_view, std::string_view dst_view) {
 #ifdef WIN32
     // Copy file and overwrite if it exists.
     // != 0 to get rid of bool comparison warning (C4800)
-    return CopyFileA(src.c_str(), dst.c_str(), FALSE) != 0;
+    return CopyFileW(util::toWstring(src_view).c_str(), util::toWstring(dst_view).c_str(), FALSE) !=
+           0;
 #else
+    SafeCStr<256> src{src_view};
+    SafeCStr<256> dst{dst_view};
+
     int source = open(src.c_str(), O_RDONLY, 0);
     if (source < 0) {
         return false;
@@ -580,8 +585,7 @@ std::string findBasePath() {
     }
 }
 
-IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix,
-                                 const bool createFolder) {
+std::string getPath(PathType pathType, const std::string& suffix, const bool createFolder) {
     std::string result = findBasePath();
 
     switch (pathType) {

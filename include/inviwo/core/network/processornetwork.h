@@ -41,6 +41,8 @@
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/util/exception.h>
 
+#include <string_view>
+
 namespace inviwo {
 
 class InviwoApplication;
@@ -117,7 +119,7 @@ public:
      * @param identifier Identifier of the Processor to be accessed.
      * @see getProcessorsByType(), Processor::setIdentifier(), Processor::getIdentifier()
      */
-    Processor* getProcessorByIdentifier(std::string identifier) const;
+    Processor* getProcessorByIdentifier(std::string_view identifier) const;
 
     /**
      * Returns a vector of Processors which are of type T. In case no Processors match T
@@ -226,6 +228,11 @@ public:
     std::vector<PropertyLink> getLinksBetweenProcessors(Processor* p1, Processor* p2);
 
     Property* getProperty(std::vector<std::string> path) const;
+    Property* getProperty(std::string_view path) const;
+    Port* getPort(std::string_view path) const;
+    Inport* getInport(std::string_view path) const;
+    Outport* getOutport(std::string_view path) const;
+
     bool isPropertyInNetwork(Property* prop) const;
 
     InviwoApplication* getApplication() const;

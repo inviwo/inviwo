@@ -36,6 +36,7 @@
 #include <inviwo/core/processors/processorwidget.h>
 
 #include <inviwo/core/properties/property.h>
+#include <fmt/format.h>
 
 namespace inviwo {
 namespace util {
@@ -99,17 +100,19 @@ void saveAllCanvases(ProcessorNetwork* network, const std::string& dir, const st
     }
 }
 
-bool isValidIdentifierCharacter(char c, const std::string& extra) {
+bool isValidIdentifierCharacter(char c, std::string_view extra) {
     return (std::isalnum(c) || c == '_' || c == '-' || util::contains(extra, c));
 }
 
-void validateIdentifier(const std::string& identifier, const std::string& type,
-                        ExceptionContext context, const std::string& extra) {
+void validateIdentifier(std::string_view identifier, std::string_view type,
+                        ExceptionContext context, std::string_view extra) {
     for (const auto& c : identifier) {
+        if (c == 0) return;
         if (!(c >= -1) || !isValidIdentifierCharacter(c, extra)) {
-            throw Exception(type + " identifiers are not allowed to contain \"" + c +
-                                "\". Found in \"" + identifier + "\"",
-                            context);
+            throw Exception(
+                fmt::format("{} identifiers are not allowed to contain \"{}\". Found in \"{}\"",
+                            type, c, identifier),
+                context);
         }
     }
 }
@@ -134,8 +137,9 @@ std::string findUniqueIdentifier(const std::string& identifier,
 
 std::string cleanIdentifier(const std::string& identifier, const std::string& extra) {
     std::string str{identifier};
-    std::replace_if(str.begin(), str.end(),
-                    [&](char c) { return !util::isValidIdentifierCharacter(c, extra); }, ' ');
+    std::replace_if(
+        str.begin(), str.end(), [&](char c) { return !util::isValidIdentifierCharacter(c, extra); },
+        ' ');
     util::erase_remove_if(str, [s = false](char c) mutable {
         if (s && c == ' ') return true;
         s = c == ' ';

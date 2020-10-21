@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,19 +26,41 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/animation/factories/trackfactory.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/io/serialization/serializable.h>
+
+#include <string>
+#include <unordered_map>
 
 namespace inviwo {
-namespace animation {
 
-TrackFactory::TrackFactory(ProcessorNetwork* network) : network_{network} {}
+class PropertyLink;
+class PortConnection;
+class ProcessorNetwork;
 
-bool TrackFactory::hasKey(const std::string& key) const { return Parent::hasKey(key); }
+struct IVW_CORE_API NetworkEdge : Serializable {
+    NetworkEdge() = default;
+    NetworkEdge(std::string asrc, std::string adst);
 
-std::unique_ptr<Track> TrackFactory::create(const std::string& key) const {
-    return Parent::create(key, network_);
-}
+    NetworkEdge(const PropertyLink& link);
+    NetworkEdge(const PortConnection& connection);
 
-}  // namespace animation
+    virtual ~NetworkEdge() = default;
+
+    PortConnection toConnection(const ProcessorNetwork& net) const;
+    PropertyLink toLink(const ProcessorNetwork& net) const;
+
+    void updateProcessorID(const std::unordered_map<std::string, std::string>& map);
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+
+    std::string src;
+    std::string dst;
+
+};
+
+
 }  // namespace inviwo

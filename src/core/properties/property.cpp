@@ -98,6 +98,8 @@ std::vector<std::string> Property::getPath() const {
     return path;
 }
 
+std::string Property::getPathStr() const { return joinString(getPath(), "."); }
+
 std::string Property::getDisplayName() const { return displayName_; }
 
 Property& Property::setDisplayName(const std::string& displayName) {
@@ -315,6 +317,21 @@ Property& Property::setCurrentStateAsDefault() {
 Property& Property::resetToDefaultState() {
     propertyModified();
     return *this;
+}
+
+bool Property::isDefaultState() const { return false; }
+
+bool Property::needsSerialization() const {
+    switch (serializationMode_) {
+        case PropertySerializationMode::All:
+            return true;
+        case PropertySerializationMode::None:
+            return false;
+        case PropertySerializationMode::Default:
+            [[fallthrough]];
+        default:
+            return !isDefaultState();
+    }
 }
 
 void Property::set(const Property* /*src*/) { propertyModified(); }

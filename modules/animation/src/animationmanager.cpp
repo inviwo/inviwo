@@ -42,7 +42,7 @@ namespace animation {
 
 AnimationManager::AnimationManager(InviwoApplication* app, AnimationModule* animationModule)
     : app_(app)
-    , trackFactory_{}
+    , trackFactory_{app_->getProcessorNetwork()}
     , interpolationFactory_{}
     , animation_{}
     , controller_{animation_, app} {

@@ -59,6 +59,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <memory>
 #include <exception>
 #include <typeinfo>
+#include <type_traits>
 
 /**
 @subpage ticpp is a TinyXML wrapper that uses a lot more C++ ideals.
@@ -206,7 +207,7 @@ namespace ticpp
         std::string ToString( const double& value ) const
         {
             std::stringstream convert;
-            convert.precision(40);
+            convert.precision(17);
             convert << value;
             if ( convert.fail() )
             {
@@ -577,6 +578,12 @@ namespace ticpp
 			void SetValue( const T& value )
 		{
 			GetTiXmlPointer()->SetValue( ToString( value ) );
+		}
+
+
+		void SetValue( const char* value )
+		{
+			GetTiXmlPointer()->SetValue(value);
 		}
 
 		/**
@@ -1618,8 +1625,24 @@ namespace ticpp
 			void SetAttribute ( const std::string& name, const T& value )
 		{
 			ValidatePointer();
-			m_tiXmlPointer->SetAttribute( name, ToString( value ) );
+			if constexpr (std::is_same_v<T, std::string>) {
+				m_tiXmlPointer->SetAttribute( name, value );
+			} else {
+				m_tiXmlPointer->SetAttribute( name, ToString( value ) );
+			}
 		}
+
+		void SetAttribute ( const char* name, const char* value )
+		{
+			ValidatePointer();		
+			m_tiXmlPointer->SetAttribute( name, value );
+		}
+		void SetAttribute ( const char* name, int value )
+		{
+			ValidatePointer();		
+			m_tiXmlPointer->SetAttribute( name, value );
+		}
+
 
 		/**
 		Gets the text of an Element.
@@ -1880,6 +1903,7 @@ namespace ticpp
 		@see GetAttributeOrDefault
 		*/
 		std::string GetAttribute( const std::string& name ) const;
+		std::string GetAttribute( const char* name ) const;
 
 		/**
 		Returns true, if attribute exists

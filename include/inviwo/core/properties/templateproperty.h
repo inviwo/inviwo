@@ -66,6 +66,7 @@ public:
 
     virtual TemplateProperty& setCurrentStateAsDefault() override;
     virtual TemplateProperty& resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -102,6 +103,11 @@ template <typename T>
 TemplateProperty<T>& TemplateProperty<T>::resetToDefaultState() {
     if (value_.reset()) propertyModified();
     return *this;
+}
+
+template <typename T>
+inline bool TemplateProperty<T>::isDefaultState() const {
+    return value_.isDefault();
 }
 
 template <typename T>

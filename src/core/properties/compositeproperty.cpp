@@ -114,6 +114,25 @@ CompositeProperty& CompositeProperty::resetToDefaultState() {
     return *this;
 }
 
+bool CompositeProperty::isDefaultState() const {
+    return std::all_of(properties_.begin(), properties_.end(),
+                       [](const Property* p) { return p->isDefaultState(); });
+}
+
+bool CompositeProperty::needsSerialization() const {
+    switch (serializationMode_) {
+        case PropertySerializationMode::All:
+            return true;
+        case PropertySerializationMode::None:
+            return false;
+        case PropertySerializationMode::Default:
+            [[fallthrough]];
+        default:
+            return std::any_of(properties_.begin(), properties_.end(),
+                               [](const Property* p) { return p->needsSerialization(); });
+    }
+}
+
 CompositeProperty& CompositeProperty::setReadOnly(bool value) {
     Property::setReadOnly(value);
     for (auto& elem : properties_) {

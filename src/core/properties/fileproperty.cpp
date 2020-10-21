@@ -107,6 +107,8 @@ void FileProperty::set(const Property* property) {
     }
 }
 
+FileProperty::operator std::string_view() const { return this->value_.value; }
+
 void FileProperty::serialize(Serializer& s) const {
     /*
     We always use absolute paths inside of inviwo but serialize
@@ -166,8 +168,8 @@ void FileProperty::deserialize(Deserializer& d) {
                 absolutePath = oldWorkspacePath;
             }
         } else {
-            if (workspaceRelativePath
-                    .empty()) {  // on use url if "workspaceRelativePath" is not set
+            // on use url if "workspaceRelativePath" is not set
+            if (workspaceRelativePath.empty()) {
                 workspaceRelativePath = oldWorkspacePath;
             }
         }

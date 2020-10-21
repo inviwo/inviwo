@@ -29,6 +29,7 @@
 
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/safecstr.h>
 
 #include <random>
 #include <iomanip>
@@ -51,7 +52,7 @@ namespace inviwo {
 
 namespace util {
 
-std::wstring toWstring(const std::string& str) {
+std::wstring toWstring(std::string_view str) {
 #if defined(_WIN32)
     if (str.empty()) return std::wstring();
     int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), NULL, 0);
@@ -60,7 +61,8 @@ std::wstring toWstring(const std::string& str) {
     return result;
 #else
     auto state = std::mbstate_t();
-    auto sptr = str.data();
+    SafeCStr safestr{str};
+    auto sptr = safestr.c_str();
     const char* loc = nullptr;
     size_t len = std::mbsrtowcs(nullptr, &sptr, 0, &state);
     if (len == static_cast<std::size_t>(-1)) {
@@ -79,7 +81,7 @@ std::wstring toWstring(const std::string& str) {
 #endif
 }
 
-std::string fromWstring(const std::wstring& str) {
+std::string fromWstring(std::wstring_view str) {
 #if defined(_WIN32)
     int s_size = static_cast<int>(str.size());
     if (s_size == 0) {  // WideCharToMultiByte does not support zero length, handle separately.
@@ -102,7 +104,8 @@ std::string fromWstring(const std::wstring& str) {
     return result;
 #else
     auto state = std::mbstate_t();
-    auto sptr = str.data();
+    std::wstring safestr(str);
+    auto sptr = safestr.data();
     const char* loc = nullptr;
     size_t len = std::wcsrtombs(nullptr, &sptr, 0, &state);
     if (len == static_cast<std::size_t>(-1)) {

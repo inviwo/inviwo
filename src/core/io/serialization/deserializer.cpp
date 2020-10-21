@@ -38,52 +38,51 @@
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/safecstr.h>
 
 #include <inviwo/core/io/serialization/ticpp.h>
 
+
 namespace inviwo {
 
-Deserializer::Deserializer(std::string fileName, bool allowReference)
-    : SerializeBase(fileName, allowReference) {
+Deserializer::Deserializer(std::string_view fileName) : SerializeBase(fileName) {
     try {
         doc_->LoadFile();
         rootElement_ = doc_->FirstChildElement();
-        storeReferences(rootElement_);
-        rootElement_->GetAttribute(SerializeConstants::VersionAttribute, &inviwoWorkspaceVersion_,
-                                   false);
+        rootElement_->GetAttribute(std::string{SerializeConstants::VersionAttribute},
+                                   &inviwoWorkspaceVersion_, false);
     } catch (TxException& e) {
         throw AbortException(e.what(), IVW_CONTEXT);
     }
 }
 
-Deserializer::Deserializer(std::istream& stream, const std::string& path, bool allowReference)
-    : SerializeBase(stream, path, allowReference) {
+Deserializer::Deserializer(std::istream& stream, std::string_view path)
+    : SerializeBase(stream, path) {
     try {
         // Base streamed in the xml data. Get the first node.
         rootElement_ = doc_->FirstChildElement();
-        storeReferences(rootElement_);
     } catch (TxException& e) {
         throw AbortException(e.what(), IVW_CONTEXT);
     }
 }
 
-void Deserializer::deserialize(const std::string& key, Serializable& sObj) {
+void Deserializer::deserialize(std::string_view key, Serializable& sObj) {
     if (NodeSwitch ns{*this, key}) sObj.deserialize(*this);
 }
 
-void Deserializer::deserialize(const std::string& key, signed char& data,
+void Deserializer::deserialize(std::string_view key, signed char& data,
                                const SerializationTarget& target) {
     int val = data;
     deserialize(key, val, target);
     data = static_cast<char>(val);
 }
-void Deserializer::deserialize(const std::string& key, char& data,
+void Deserializer::deserialize(std::string_view key, char& data,
                                const SerializationTarget& target) {
     int val = data;
     deserialize(key, val, target);
     data = static_cast<char>(val);
 }
-void Deserializer::deserialize(const std::string& key, unsigned char& data,
+void Deserializer::deserialize(std::string_view key, unsigned char& data,
                                const SerializationTarget& target) {
     unsigned int val = data;
     deserialize(key, val, target);
@@ -93,11 +92,7 @@ void Deserializer::deserialize(const std::string& key, unsigned char& data,
 void Deserializer::setExceptionHandler(ExceptionHandler handler) { exceptionHandler_ = handler; }
 
 void Deserializer::convertVersion(VersionConverter* converter) {
-    if (converter->convert(rootElement_)) {
-        // Re-generate the reference table
-        referenceLookup_.clear();
-        storeReferences(doc_->FirstChildElement());
-    }
+    converter->convert(rootElement_);
 }
 
 void Deserializer::handleError(const ExceptionContext& context) {
@@ -112,19 +107,8 @@ void Deserializer::handleError(const ExceptionContext& context) {
     }
 }
 
-void Deserializer::storeReferences(TxElement* node) {
-    std::string id = node->GetAttributeOrDefault("id", "");
-    if (id != "") {
-        referenceLookup_[id] = node;
-    }
-    ticpp::Iterator<ticpp::Element> child;
-    for (child = child.begin(node); child != child.end(); child++) {
-        storeReferences(child.Get());
-    }
-}
-
-TxElement* Deserializer::retrieveChild(const std::string& key) {
-    return retrieveChild_ ? rootElement_->FirstChildElement(key, false) : rootElement_;
+TxElement* Deserializer::retrieveChild(std::string_view key) {
+    return retrieveChild_ ? rootElement_->FirstChildElement(SafeCStr{key}, false) : rootElement_;
 }
 
 void Deserializer::registerFactory(FactoryBase* factory) {
@@ -133,14 +117,14 @@ void Deserializer::registerFactory(FactoryBase* factory) {
 
 int Deserializer::getInviwoWorkspaceVersion() const { return inviwoWorkspaceVersion_; }
 
-std::string detail::getNodeAttribute(TxElement* node, const std::string& key) {
-    return node->GetAttribute(key);
+std::string detail::getNodeAttribute(TxElement* node, std::string_view key) {
+    return node->GetAttribute(SafeCStr{key});
 }
 
-void detail::forEachChild(TxElement* node, const std::string& key,
+void detail::forEachChild(TxElement* node, std::string_view key,
                           std::function<void(TxElement*)> func) {
 
-    TxEIt child(key);
+    TxEIt child(std::string{key});
 
     for (child = child.begin(node); child != child.end(); ++child) {
         func(&(*child));

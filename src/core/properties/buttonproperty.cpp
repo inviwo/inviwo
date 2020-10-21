@@ -84,4 +84,6 @@ ButtonProperty& ButtonProperty::propertyModified() {
 
 ButtonProperty& ButtonProperty::resetToDefaultState() { return *this; }
 
+bool ButtonProperty::isDefaultState() const { return true; }
+
 }  // namespace inviwo

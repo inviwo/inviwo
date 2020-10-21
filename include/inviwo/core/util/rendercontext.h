@@ -40,6 +40,7 @@ namespace inviwo {
  * An abstraction for what we need from a "context".
  */
 class IVW_CORE_API ContextHolder {
+
 public:
     virtual ~ContextHolder() = default;
     virtual void activate() = 0;

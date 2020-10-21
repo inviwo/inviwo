@@ -49,10 +49,10 @@ IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, const std::string& 
                                   const std::string& name = "UPN", const std::string& ext = ".png",
                                   bool onlyActiveCanvases = false);
 
-IVW_CORE_API bool isValidIdentifierCharacter(char c, const std::string& extra = "");
+IVW_CORE_API bool isValidIdentifierCharacter(char c, std::string_view extra = "");
 
-IVW_CORE_API void validateIdentifier(const std::string& identifier, const std::string& type,
-                                     ExceptionContext context, const std::string& extra = "");
+IVW_CORE_API void validateIdentifier(std::string_view identifier, std::string_view type,
+                                     ExceptionContext context, std::string_view extra = "");
 
 /**
  * Utility to augment an identifier with a number to make it unique. Will add an increasing number

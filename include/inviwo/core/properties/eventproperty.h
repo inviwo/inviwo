@@ -99,6 +99,7 @@ public:
 
     virtual EventProperty& setCurrentStateAsDefault() override;
     virtual EventProperty& resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

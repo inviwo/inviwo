@@ -41,11 +41,11 @@ public:
     PositionMetaData(int x, int y);
     virtual ~PositionMetaData();
 
-    virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; }
+    virtual const std::string& getClassIdentifier() const override { return CLASS_IDENTIFIER; }
     virtual PositionMetaData* clone() const;
 
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     ivec2 getXY();
     void setXY(const ivec2& xy);

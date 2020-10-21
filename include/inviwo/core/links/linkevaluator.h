@@ -44,6 +44,14 @@ class Processor;
 class PropertyLink;
 class ProcessorNetwork;
 
+struct IVW_CORE_API ConvertableLink {
+    ConvertableLink(Property* src, Property* dst, const PropertyConverter* converter)
+        : src_(src), dst_(dst), converter_(converter) {}
+    Property* src_;
+    Property* dst_;
+    const PropertyConverter* converter_;
+};
+
 class IVW_CORE_API LinkEvaluator {
 public:
     using ProcessorLinkMap = std::unordered_map<ProcessorPair, std::vector<PropertyLink>>;
@@ -70,18 +78,10 @@ public:
     bool isLinking() const;
 
 private:
-    struct Link {
-        Link(Property* src, Property* dst, const PropertyConverter* converter)
-            : src_(src), dst_(dst), converter_(converter) {}
-        Property* src_;
-        Property* dst_;
-        const PropertyConverter* converter_;
-    };
-
     // Cache helpers
-    std::vector<Link>& addToSecondaryCache(Property* property);
-    void secondaryCacheHelper(std::vector<Link>& links, Property* src, Property* dst);
-    std::vector<Link>& getTriggerdLinksForProperty(Property* property);
+    std::vector<ConvertableLink>& addToSecondaryCache(Property* property);
+    void secondaryCacheHelper(std::vector<ConvertableLink>& links, Property* src, Property* dst);
+    std::vector<ConvertableLink>& getTriggerdLinksForProperty(Property* property);
 
     ProcessorNetwork* network_;
 
@@ -90,31 +90,12 @@ private:
     std::unordered_map<Property*, std::vector<Property*>> propertyLinkPrimaryCache_;
     // The secondary link cache is a map with all source properties and a vector of ALL the
     // properties that they link to. Directly or indirectly.
-    std::unordered_map<Property*, std::vector<Link>> propertyLinkSecondaryCache_;
+    std::unordered_map<Property*, std::vector<ConvertableLink>> propertyLinkSecondaryCache_;
     // A cache of all links between two processors.
     ProcessorLinkMap processorLinksCache_;
 
     // Used to make sure we don't end up in circular links
     std::vector<Property*> visited_;
-    struct VisitedHelper {
-        VisitedHelper(std::vector<Property*>& visited, std::vector<Link>& toVisit)
-            : visited_(visited), toVisit_(toVisit) {
-            for (auto& link : toVisit_) {
-                util::push_back_unique(visited_, link.src_);
-                util::push_back_unique(visited_, link.dst_);
-            }
-        }
-        ~VisitedHelper() {
-            for (auto& link : toVisit_) {
-                util::erase_remove(visited_, link.src_);
-                util::erase_remove(visited_, link.dst_);
-            }
-        }
-
-    private:
-        std::vector<Property*>& visited_;
-        std::vector<Link>& toVisit_;
-    };
 };
 
 }  // namespace inviwo

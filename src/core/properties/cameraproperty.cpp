@@ -44,6 +44,8 @@
 
 #include <limits>
 
+#include <tracy/Tracy.hpp>
+
 namespace inviwo {
 
 const std::string CameraProperty::classIdentifier = "org.inviwo.CameraProperty";
@@ -97,13 +99,20 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
     , getBoundingBox_{std::move(getBoundingBox)} {
 
     aspectRatio_.setReadOnly(true).setCurrentStateAsDefault();
-    settings_.setCollapsed(true).setCurrentStateAsDefault().addProperties(
+
+    setNearFarButton_.setSerializationMode(PropertySerializationMode::None);
+    setLookRangesButton_.setSerializationMode(PropertySerializationMode::None);
+
+    settings_.setCollapsed(true).addProperties(
         setNearFarButton_, setLookRangesButton_, updateNearFar_, updateLookRanges_, fittingRatio_);
+    settings_.setCurrentStateAsDefault();
 
     addProperties(cameraType_, cameraActions_, lookFrom_, lookTo_, lookUp_, aspectRatio_,
                   nearPlane_, farPlane_, settings_);
     util::for_each_argument([this](auto& arg) { cameraProperties_.push_back(&arg); }, lookFrom_,
                             lookTo_, lookUp_, aspectRatio_, nearPlane_, farPlane_);
+
+    cameraActions_.setSerializationMode(PropertySerializationMode::None);
 
     camera_->configureProperties(*this, true);
     cameraType_.onChange([this]() {
@@ -376,11 +385,13 @@ void CameraProperty::addCamerapProperty(std::unique_ptr<Property> camprop) {
 }
 
 void CameraProperty::serialize(Serializer& s) const {
+    ZoneScopedNC("CameraProperty serialize", 0xAA0000);
     CompositeProperty::serialize(s);
     s.serialize("Camera", camera_);
 }
 
 void CameraProperty::deserialize(Deserializer& d) {
+    ZoneScopedNC("CameraProperty deserialize", 0xAA0000);
     camera_->configureProperties(*this, false);
     d.deserialize("Camera", camera_);
     hideConfiguredProperties();

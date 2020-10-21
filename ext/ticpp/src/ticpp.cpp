@@ -945,6 +945,23 @@ std::string Element::GetAttribute( const std::string& name ) const
 	return GetAttributeOrDefault( name, std::string() );
 }
 
+std::string ticpp::Element::GetAttribute(const char* name) const { 
+	ValidatePointer();
+
+	// Get value from TinyXML, if the attribute exists
+	const char* retVal = m_tiXmlPointer->Attribute( name );
+
+	// TinyXML returns NULL if the attribute doesn't exist
+	if ( 0 == retVal )
+	{
+		return {};
+	}
+	else
+	{
+		return {retVal};
+	}
+}
+
 bool Element::HasAttribute( const std::string& name ) const
 {
 	ValidatePointer();

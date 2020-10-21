@@ -36,6 +36,8 @@
 
 #include <vector>
 #include <memory>
+#include <string_view>
+#include <tcb/span.hpp>
 
 namespace inviwo {
 
@@ -83,7 +85,7 @@ public:
      */
     virtual void insertProperty(size_t index, Property& property);
 
-    virtual Property* removeProperty(const std::string& identifier);
+    virtual Property* removeProperty(std::string_view identifier);
     virtual Property* removeProperty(Property* property);
     virtual Property* removeProperty(Property& property);
     /**
@@ -99,9 +101,12 @@ public:
     const std::vector<Property*>& getProperties() const;
     const std::vector<CompositeProperty*>& getCompositeProperties() const;
     std::vector<Property*> getPropertiesRecursive() const;
-    Property* getPropertyByIdentifier(const std::string& identifier,
+    Property* getPropertyByIdentifier(std::string_view identifier,
                                       bool recursiveSearch = false) const;
+    
     Property* getPropertyByPath(const std::vector<std::string>& path) const;
+    Property* getPropertyByPath(util::span<std::string_view> path) const;
+    
     template <class T>
     std::vector<T*> getPropertiesByType(bool recursiveSearch = false) const;
 

@@ -77,10 +77,8 @@ public:
 private:
     using PortInspectorMap = std::map<std::string, std::unique_ptr<PortInspector>>;
 
-    static std::string getPortId(Outport* outport);
     PortInspector* borrow(Outport* outport);
     std::unique_ptr<PortInspector> getPortInspector(Outport* outport);
-    void returnPortInspector(std::unique_ptr<PortInspector>);
 
     static void insertNetwork(PortInspector* portInspector, ProcessorNetwork* network,
                               Outport* outport, bool bidirectionalAutoLinks);
@@ -92,6 +90,8 @@ private:
 
     PortInspectorMap portInspectors_;
     std::vector<std::unique_ptr<PortInspector>> unUsedInspectors_;
+
+    std::unordered_map<std::string, std::vector<std::string>> embeddedProcessors_;
 
     InviwoApplication* app_;
 };
