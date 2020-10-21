@@ -98,8 +98,8 @@ std::string LinearInterpolation<Key, Result>::classIdentifier() {
 
 template <typename Key, typename Result>
 void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
-                                          Seconds /*from*/, Seconds to,
-                                          easing::EasingType easing, Result& out) const {
+                                                  Seconds /*from*/, Seconds to,
+                                                  easing::EasingType easing, Result& out) const {
 
     using VT = typename Key::value_type;
     using DT = typename util::same_extent<VT, double>::type;

@@ -203,7 +203,6 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
     util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
         PropertyValueKeyframeReghelper{}, *this);
 
-
     registerPropertyTrackHelper<CameraProperty, CameraKeyframe>(*this);
 
     registerTrackToWidgetMap(ControlTrack::classIdentifier(),

@@ -44,7 +44,8 @@ namespace animation {
  * @note Only modifies lookFrom, lookAt, lookUp.
  * @see CameraPanTiltInterpolation
  */
-class IVW_MODULE_ANIMATION_API CameraSphericalInterpolation : public InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type> {
+class IVW_MODULE_ANIMATION_API CameraSphericalInterpolation
+    : public InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type> {
 public:
     CameraSphericalInterpolation() = default;
     virtual ~CameraSphericalInterpolation() = default;

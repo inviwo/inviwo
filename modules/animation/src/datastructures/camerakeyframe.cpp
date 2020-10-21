@@ -43,8 +43,6 @@ CameraKeyframe::CameraKeyframe(Seconds time, const Camera& cam)
 
 CameraKeyframe* CameraKeyframe::clone() const { return new CameraKeyframe(*this); }
 
-
-
 const vec3& CameraKeyframe::getLookFrom() const { return lookFrom_; }
 const vec3& CameraKeyframe::getLookTo() const { return lookTo_; }
 const vec3& CameraKeyframe::getLookUp() const { return lookUp_; }
@@ -55,7 +53,7 @@ void CameraKeyframe::setLookUp(vec3 val) { lookUp_ = glm::normalize(val); }
 
 vec3 CameraKeyframe::getDirection() const { return lookTo_ - lookFrom_; }
 
-void CameraKeyframe::updateFrom(const Camera& cam) { 
+void CameraKeyframe::updateFrom(const Camera& cam) {
     lookFrom_ = cam.getLookFrom();
     lookTo_ = cam.getLookTo();
     lookUp_ = glm::normalize(cam.getLookUp());

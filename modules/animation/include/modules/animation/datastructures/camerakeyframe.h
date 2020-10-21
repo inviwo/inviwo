@@ -78,8 +78,7 @@ public:
     static std::string getName() { return "Camera"; }
 
 private:
-    vec3 lookFrom_ = cameradefaults::lookFrom, 
-         lookTo_ =  cameradefaults::lookTo, 
+    vec3 lookFrom_ = cameradefaults::lookFrom, lookTo_ = cameradefaults::lookTo,
          lookUp_ = cameradefaults::lookUp;
 };
 

@@ -54,13 +54,15 @@ KeyframeSequenceTyped<CameraKeyframe>::KeyframeSequenceTyped()
     , interpolation_{std::make_unique<CameraSphericalInterpolation>()} {}
 
 template <>
-KeyframeSequenceTyped<CameraKeyframe>::KeyframeSequenceTyped(std::vector<std::unique_ptr<CameraKeyframe>> keyframes)
+KeyframeSequenceTyped<CameraKeyframe>::KeyframeSequenceTyped(
+    std::vector<std::unique_ptr<CameraKeyframe>> keyframes)
     : BaseKeyframeSequence<CameraKeyframe>{std::move(keyframes)}
     , ValueKeyframeSequence()
     , interpolation_{std::make_unique<CameraSphericalInterpolation>()} {}
 
 template <>
-void KeyframeSequenceTyped<CameraKeyframe>::operator()(Seconds from, Seconds to, Camera& out) const {
+void KeyframeSequenceTyped<CameraKeyframe>::operator()(Seconds from, Seconds to,
+                                                       Camera& out) const {
     if (interpolation_) {
         (*interpolation_)(this->keyframes_, from, to, easing_, out);
     } else {

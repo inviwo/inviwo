@@ -53,8 +53,7 @@ template <>
 std::string PropertyTrack<CameraProperty, CameraKeyframe>::classIdentifier() {
     // Use property class identifier since multiple properties
     // may have the same key (data type)
-    std::string id =
-        "org.inviwo.animation.PropertyTrack.for." + CameraProperty::classIdentifier;
+    std::string id = "org.inviwo.animation.PropertyTrack.for." + CameraProperty::classIdentifier;
     return id;
 }
 /**
@@ -64,8 +63,8 @@ std::string PropertyTrack<CameraProperty, CameraKeyframe>::classIdentifier() {
  *           |-case 2a---|-case 2b---|
  */
 template <>
-AnimationTimeState PropertyTrack<CameraProperty, CameraKeyframe>::operator()(Seconds from, Seconds to,
-                                                        AnimationState state) const {
+AnimationTimeState PropertyTrack<CameraProperty, CameraKeyframe>::operator()(
+    Seconds from, Seconds to, AnimationState state) const {
     using Prop = typename CameraProperty;
     if (!this->isEnabled() || this->empty()) return {to, state};
 
@@ -102,8 +101,8 @@ AnimationTimeState PropertyTrack<CameraProperty, CameraKeyframe>::operator()(Sec
     return {to, state};
 }
 
-//template <>
-//Keyframe* PropertyTrack<CameraProperty, CameraKeyframe>::addKeyFrameUsingPropertyValue(
+// template <>
+// Keyframe* PropertyTrack<CameraProperty, CameraKeyframe>::addKeyFrameUsingPropertyValue(
 //    const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation) {
 //    using Key = typename CameraKeyframe;
 //    auto prop = dynamic_cast<const CameraProperty*>(property);

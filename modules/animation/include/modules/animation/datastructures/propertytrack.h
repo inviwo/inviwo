@@ -509,6 +509,7 @@ void PropertyTrack<Prop, Key>::serialize(Serializer& s) const {
 template <typename Prop, typename Key>
 void PropertyTrack<Prop, Key>::deserialize(Deserializer& d) {
     BaseTrack<KeyframeSequenceTyped<Key>>::deserialize(d);
+
     std::string propertyId;
     d.deserialize("property", propertyId);
 

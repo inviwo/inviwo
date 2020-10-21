@@ -107,7 +107,8 @@ bool ConstantInterpolation<typename Key, typename Result>::equal(const Interpola
 }
 template <typename Key, typename Result>
 void ConstantInterpolation<Key, Result>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
-                                            Seconds from, Seconds to, easing::EasingType, Result& out) const {
+                                                    Seconds from, Seconds to, easing::EasingType,
+                                                    Result& out) const {
 
     if (to > from) {
         auto it = std::upper_bound(
