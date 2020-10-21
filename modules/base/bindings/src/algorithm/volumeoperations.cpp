@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2019-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,35 +27,26 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IVFVOLUMEWRITER_H
-#define IVW_IVFVOLUMEWRITER_H
+#include <modules/base/pythonbindings/algorithm/volumeoperations.h>
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/datawriter.h>
-#include <inviwo/core/datastructures/volume/volume.h>
+#include <modules/base/io/datvolumewriter.h>
+#include <modules/base/io/ivfvolumewriter.h>
+#include <modules/base/io/ivfsequencevolumewriter.h>
+
+#include <modules/base/algorithm/volume/volumecurl.h>
+#include <modules/base/algorithm/volume/volumedivergence.h>
+
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
+#include <warn/pop>
 
 namespace inviwo {
 
-/**
- * \ingroup dataio
- */
-class IVW_MODULE_BASE_API IvfVolumeWriter : public DataWriterType<Volume> {
-public:
-    IvfVolumeWriter();
-    IvfVolumeWriter(const IvfVolumeWriter& rhs);
-    IvfVolumeWriter& operator=(const IvfVolumeWriter& that);
-    virtual IvfVolumeWriter* clone() const;
-    virtual ~IvfVolumeWriter() {}
+void exposeVolumeOperations(pybind11::module& m) {
 
-    virtual void writeData(const Volume* data, const std::string filePath) const;
-};
-
-namespace util {
-IVW_MODULE_BASE_API void writeIvfVolume(const Volume& data, const std::string filePath,
-                                        bool overwrite = false);
+    m.def("curlVolume", [](Volume& vol) { return util::curlVolume(vol).release(); });
+    m.def("divergenceVolume", [](Volume& vol) { return util::divergenceVolume(vol).release(); });
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_IVFVOLUMEWRITER_H

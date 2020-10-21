@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2019-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,35 +27,30 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IVFVOLUMEWRITER_H
-#define IVW_IVFVOLUMEWRITER_H
+#include <modules/base/pythonbindings/io/volumewriting.h>
+#include <modules/base/pythonbindings/algorithm/volumeoperations.h>
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/datawriter.h>
-#include <inviwo/core/datastructures/volume/volume.h>
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
+#include <warn/pop>
 
-namespace inviwo {
+namespace py = pybind11;
 
-/**
- * \ingroup dataio
- */
-class IVW_MODULE_BASE_API IvfVolumeWriter : public DataWriterType<Volume> {
-public:
-    IvfVolumeWriter();
-    IvfVolumeWriter(const IvfVolumeWriter& rhs);
-    IvfVolumeWriter& operator=(const IvfVolumeWriter& that);
-    virtual IvfVolumeWriter* clone() const;
-    virtual ~IvfVolumeWriter() {}
+PYBIND11_MODULE(ivwbase, m) {
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+    VLDDisable();
+#endif
 
-    virtual void writeData(const Volume* data, const std::string filePath) const;
-};
+    m.doc() = "Gives python scripts access to inviwo functionality in base";
 
-namespace util {
-IVW_MODULE_BASE_API void writeIvfVolume(const Volume& data, const std::string filePath,
-                                        bool overwrite = false);
+    auto ioMod = m.def_submodule("io", "Exposes various input/output functions");
+    auto utilMod = m.def_submodule("algorithm", "Exposes various algorithms and util functions");
+
+    inviwo::exposeVolumeWriteMethods(ioMod);
+    inviwo::exposeVolumeOperations(utilMod);
+
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+    VLDEnable();
+#endif
 }
-
-}  // namespace inviwo
-
-#endif  // IVW_IVFVOLUMEWRITER_H
