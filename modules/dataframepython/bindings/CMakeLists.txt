@@ -16,4 +16,4 @@ ivw_add_py_wrapper(ivwdataframe ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(ivwdataframe PUBLIC inviwo::module::dataframe inviwo::module::python3)
 target_include_directories(ivwdataframe PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-ivw_default_install_targets(python ivwdataframe)
+ivw_default_install_targets(ivwdataframe)
