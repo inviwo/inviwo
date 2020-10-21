@@ -224,8 +224,6 @@ if(WIN32 AND MSVC)
             add_compile_options(/MP)
         endif()
     endif()
-
-    set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT inviwo)
 endif()
 
 # Mac specific

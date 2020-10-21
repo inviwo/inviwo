@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.12.0)
-cmake_policy(VERSION 3.12.0)
+cmake_minimum_required(VERSION 3.13...3.18 FATAL_ERROR)
 project(inviwo-meta VERSION 0.0.1 DESCRIPTION "CMakeList Parser" LANGUAGES CXX)
 
 if(NOT cxx_std_17 IN_LIST CMAKE_CXX_COMPILE_FEATURES)
@@ -96,11 +95,14 @@ ivw_register_license_file(NAME "inja" VERSION 1.0.0 target inja MODULE Core EXT
 )
 
 # Added cli app
-add_executable(inviwo-meta-cli src/main.cpp)
-target_link_libraries(inviwo-meta-cli 
-    inviwo::meta
-    inviwo::tclap
-)
+option(IVW_APP_META_CLI "Build meta cli tool" ON)
+if(IVW_APP_META_CLI)
+    add_executable(inviwo-meta-cli src/main.cpp)
+    target_link_libraries(inviwo-meta-cli 
+        inviwo::meta
+        inviwo::tclap
+    )
+endif()
 
 # Add testing
 option(IVW_TEST_META_BUILD_TESTS "Build meta tests" ON)

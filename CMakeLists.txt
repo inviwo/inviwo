@@ -27,7 +27,7 @@
  #
  #################################################################################
 
-cmake_minimum_required(VERSION 3.13...3.17 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13...3.18 FATAL_ERROR)
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
 #--------------------------------------------------------------------
@@ -134,6 +134,10 @@ if(IVW_TEST_INTEGRATION_TESTS)
     add_subdirectory(tests/integrationtests) # Add integration tests, uses the modules.
 endif()
 add_subdirectory(docs)                       # Generate Doxygen targets
+
+if(MSVC AND TARGET inviwo)
+    set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT inviwo)
+endif()
 
 string(TIMESTAMP time "%Y-%m-%d %H:%M:%S")
 message(STATUS "Configure started at ${timeStart} and ended at ${time}")
