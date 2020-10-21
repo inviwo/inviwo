@@ -35,45 +35,51 @@ namespace animation {
 
 CameraKeyframe::CameraKeyframe(Seconds time) : BaseKeyframe{time} {}
 
-CameraKeyframe::CameraKeyframe(Seconds time, const Camera& value)
-    : BaseKeyframe{time}, value_{std::unique_ptr<Camera>(value.clone())} {}
-
-CameraKeyframe::CameraKeyframe(Seconds time, std::unique_ptr<Camera> value)
-    : BaseKeyframe{time}, value_{std::move(value)} {}
-
-CameraKeyframe::CameraKeyframe(const CameraKeyframe& that)
-    : BaseKeyframe(that), value_{that.value_->clone()} {}
-
-CameraKeyframe& CameraKeyframe::operator=(const CameraKeyframe& that) {
-    if (this != &that) {
-        BaseKeyframe::operator=(that);
-        value_->updateFrom(*that.value_);
-    }
-    return *this;
-}
+CameraKeyframe::CameraKeyframe(Seconds time, const Camera& cam)
+    : BaseKeyframe{time}
+    , lookFrom_{cam.getLookFrom()}
+    , lookTo_{cam.getLookTo()}
+    , lookUp_{glm::normalize(cam.getLookUp())} {}
 
 CameraKeyframe* CameraKeyframe::clone() const { return new CameraKeyframe(*this); }
 
-const Camera& CameraKeyframe::getValue() const { return *value_; }
-Camera& CameraKeyframe::getValue() { return *value_; }
 
-void CameraKeyframe::updateFrom(const Camera& value) { value_->updateFrom(value); }
+
+const vec3& CameraKeyframe::getLookFrom() const { return lookFrom_; }
+const vec3& CameraKeyframe::getLookTo() const { return lookTo_; }
+const vec3& CameraKeyframe::getLookUp() const { return lookUp_; }
+
+void CameraKeyframe::setLookFrom(vec3 val) { lookFrom_ = val; }
+void CameraKeyframe::setLookTo(vec3 val) { lookTo_ = val; }
+void CameraKeyframe::setLookUp(vec3 val) { lookUp_ = glm::normalize(val); }
+
+vec3 CameraKeyframe::getDirection() const { return lookTo_ - lookFrom_; }
+
+void CameraKeyframe::updateFrom(const Camera& cam) { 
+    lookFrom_ = cam.getLookFrom();
+    lookTo_ = cam.getLookTo();
+    lookUp_ = glm::normalize(cam.getLookUp());
+}
 
 void CameraKeyframe::serialize(Serializer& s) const {
     BaseKeyframe::serialize(s);
-    s.serialize("value", value_);
+    s.serialize("lookFrom", lookFrom_);
+    s.serialize("lookTo", lookTo_);
+    s.serialize("lookUp", lookUp_);
 }
 
 void CameraKeyframe::deserialize(Deserializer& d) {
     BaseKeyframe::deserialize(d);
-    d.deserialize("value", value_);
+    d.deserialize("lookFrom", lookFrom_);
+    d.deserialize("lookTo", lookTo_);
+    d.deserialize("lookUp", lookUp_);
 }
 
 bool operator==(const CameraKeyframe& a, const CameraKeyframe& b) {
     return a.getTime() == b.getTime() &&
-           !(glm::any(glm::notEqual(a.getValue().getLookFrom(), b.getValue().getLookFrom())) ||
-             glm::any(glm::notEqual(a.getValue().getLookTo(), b.getValue().getLookTo())) ||
-             glm::any(glm::notEqual(a.getValue().getLookUp(), b.getValue().getLookUp())));
+           !(glm::any(glm::notEqual(a.getLookFrom(), b.getLookFrom())) ||
+             glm::any(glm::notEqual(a.getLookTo(), b.getLookTo())) ||
+             glm::any(glm::notEqual(a.getLookUp(), b.getLookUp())));
 }
 bool operator!=(const CameraKeyframe& a, const CameraKeyframe& b) { return !(a == b); }
 

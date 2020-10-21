@@ -30,5 +30,114 @@
 #include <modules/animation/datastructures/propertytrack.h>
 
 namespace inviwo {
-namespace animation {}  // namespace animation
+namespace animation {
+namespace detail {
+/**
+ * Helper function for inviwo::animation::PropertyTrack::setOtherProperty
+ * @see inviwo::animation::BasePropertyTrack::setOtherProperty
+ */
+void setOtherPropertyHelper(CameraProperty* property, CameraKeyframe* keyframe) {
+    property->setLook(keyframe->getLookFrom(), keyframe->getLookTo(), keyframe->getLookUp());
+}
+/**
+ * Helper function for inviwo::animation::PropertyTrack::updateKeyframeFromProperty
+ * @see inviwo::animation::BasePropertyTrack::updateKeyframeFromProperty
+ */
+void updateKeyframeFromPropertyHelper(CameraProperty* property, CameraKeyframe* keyframe) {
+    keyframe->updateFrom(property->get());
+}
+
+}  // namespace detail
+
+template <>
+std::string PropertyTrack<CameraProperty, CameraKeyframe>::classIdentifier() {
+    // Use property class identifier since multiple properties
+    // may have the same key (data type)
+    std::string id =
+        "org.inviwo.animation.PropertyTrack.for." + CameraProperty::classIdentifier;
+    return id;
+}
+/**
+ * Track of sequences
+ * ----------X======X====X-----------X=========X-------X=====X--------
+ * |- case 1-|-case 2----------------|-case 2----------|-case 2------|
+ *           |-case 2a---|-case 2b---|
+ */
+template <>
+AnimationTimeState PropertyTrack<CameraProperty, CameraKeyframe>::operator()(Seconds from, Seconds to,
+                                                        AnimationState state) const {
+    using Prop = typename CameraProperty;
+    if (!this->isEnabled() || this->empty()) return {to, state};
+
+    // 'it' will be the first seq. with a first time larger then 'to'.
+    auto it = std::upper_bound(this->begin(), this->end(), to,
+                               [](const auto& a, const auto& b) { return a < b; });
+
+    if (it == this->begin()) {
+        if (from > it->getFirstTime()) {  // case 1
+            const auto& key = it->getFirst();
+            // Do not update aspect ratio, e.g. updateFrom(Camera&)
+            property_->setLook(key.getLookFrom(), key.getLookTo(), key.getLookUp());
+        }
+    } else {  // case 2
+        auto& seq1 = *std::prev(it);
+
+        if (to < seq1.getLastTime()) {  // case 2a
+            seq1(from, to, property_->get());
+        } else {  // case 2b
+            if (from < seq1.getLastTime()) {
+                // We came from before the previous key
+                const auto& key = seq1.getLast();
+                // Do not update aspect ratio, e.g. updateFrom(Camera&)
+                property_->setLook(key.getLookFrom(), key.getLookTo(), key.getLookUp());
+            } else if (it != this->end() && from > it->getFirstTime()) {
+                // We came form after the next key
+                const auto& key = it->getFirst();
+                // Do not update aspect ratio, e.g. updateFrom(Camera&)
+                property_->setLook(key.getLookFrom(), key.getLookTo(), key.getLookUp());
+            }
+            // we moved in an unmarked region, do nothing.
+        }
+    }
+    return {to, state};
+}
+
+//template <>
+//Keyframe* PropertyTrack<CameraProperty, CameraKeyframe>::addKeyFrameUsingPropertyValue(
+//    const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation) {
+//    using Key = typename CameraKeyframe;
+//    auto prop = dynamic_cast<const CameraProperty*>(property);
+//    if (!prop) {
+//        throw Exception("Cannot add key frame from property type " +
+//                            property->getClassIdentifier() + " for " +
+//                            property_->getClassIdentifier(),
+//                        IVW_CONTEXT);
+//    }
+//    if (this->empty()) {
+//        // Use provided interpolation if we can
+//        if (auto ip = dynamic_cast<InterpolationTyped<Key>*>(interpolation.get())) {
+//            interpolation.release();
+//
+//            std::vector<std::unique_ptr<Key>> keys;
+//            keys.push_back(std::make_unique<Key>(time, prop->get()));
+//            auto sequence = std::make_unique<KeyframeSequenceTyped<CameraKeyframe>>(
+//                std::move(keys), std::unique_ptr<InterpolationTyped<CameraKeyframe>>(ip));
+//            if (auto se = add(std::move(sequence))) {
+//                return &se->getFirst();
+//            }
+//        } else {
+//            throw Exception("Invalid interpolation " + interpolation->getClassIdentifier() +
+//                                " for " + getClassIdentifier(),
+//                            IVW_CONTEXT);
+//        }
+//
+//    } else {
+//        return this->addToClosestSequence(std::make_unique<Key>(time, prop->get()));
+//    }
+//    return nullptr;
+//}
+
+template class IVW_MODULE_ANIMATION_TMPL_INST PropertyTrack<CameraProperty, CameraKeyframe>;
+
+}  // namespace animation
 }  // namespace inviwo

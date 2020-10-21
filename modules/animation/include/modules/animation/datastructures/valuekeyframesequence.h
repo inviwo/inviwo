@@ -35,6 +35,7 @@
 #include <inviwo/core/util/observer.h>
 
 #include <modules/animation/datastructures/basekeyframesequence.h>
+#include <modules/animation/datastructures/camerakeyframe.h>
 #include <modules/animation/interpolation/interpolation.h>
 #include <modules/animation/interpolation/constantinterpolation.h>
 
@@ -95,11 +96,11 @@ public:
 
     virtual KeyframeSequenceTyped<Key>* clone() const override;
 
-    virtual auto operator()(Seconds from, Seconds to) const -> value_type;
+    virtual void operator()(Seconds from, Seconds to, value_type& out) const;
 
     virtual const InterpolationTyped<Key>& getInterpolation() const override;
     virtual void setInterpolation(std::unique_ptr<Interpolation> interpolation) override;
-    void setInterpolation(std::unique_ptr<InterpolationTyped<Key>> interpolation);
+    void setInterpolation(std::unique_ptr<InterpolationTyped<Key, value_type>> interpolation);
 
     virtual easing::EasingType getEasingType() const override;
     virtual void setEasingType(easing::EasingType easing) override;
@@ -154,7 +155,7 @@ KeyframeSequenceTyped<Key>& KeyframeSequenceTyped<Key>::operator=(
     if (this != &that) {
         BaseKeyframeSequence<Key>::operator=(that);
         ValueKeyframeSequence::operator=(that);
-        setInterpolation(that.interpolation_->clone());
+        setInterpolation(std::unique_ptr<InterpolationTyped<Key>>(that.interpolation_->clone()));
         setEasingType(that.easing_);
     }
     return *this;
@@ -169,12 +170,11 @@ KeyframeSequenceTyped<Key>* KeyframeSequenceTyped<Key>::clone() const {
 }
 
 template <typename Key>
-auto KeyframeSequenceTyped<Key>::operator()(Seconds from, Seconds to) const ->
-    typename Key::value_type {
+void KeyframeSequenceTyped<Key>::operator()(Seconds from, Seconds to, value_type& out) const {
     if (interpolation_) {
-        return (*interpolation_)(this->keyframes_, from, to, easing_);
+        (*interpolation_)(this->keyframes_, from, to, easing_, out);
     } else {
-        return this->keyframes_.front()->getValue();
+        out = this->keyframes_.front()->getValue();
     }
 }
 
@@ -185,7 +185,7 @@ const InterpolationTyped<Key>& KeyframeSequenceTyped<Key>::getInterpolation() co
 
 template <typename Key>
 void KeyframeSequenceTyped<Key>::setInterpolation(
-    std::unique_ptr<InterpolationTyped<Key>> interpolation) {
+    std::unique_ptr<InterpolationTyped<Key, value_type>> interpolation) {
     if (interpolation && !interpolation_->equal(*interpolation)) {
         interpolation_ = std::move(interpolation);
         notifyValueKeyframeSequenceInterpolationChanged(this);
@@ -236,6 +236,17 @@ void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
         setInterpolation(std::move(interpolation));
     }
 }
+
+template <>
+KeyframeSequenceTyped<CameraKeyframe>::KeyframeSequenceTyped();
+template <>
+KeyframeSequenceTyped<CameraKeyframe>::KeyframeSequenceTyped(
+    std::vector<std::unique_ptr<CameraKeyframe>> keyframes);
+
+template <>
+void KeyframeSequenceTyped<CameraKeyframe>::operator()(Seconds from, Seconds to, Camera& out) const;
+
+extern template class IVW_MODULE_ANIMATION_TMPL_EXP KeyframeSequenceTyped<CameraKeyframe>;
 
 }  // namespace animation
 

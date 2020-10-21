@@ -59,10 +59,10 @@ void CameraSphericalInterpolation::operator()(
         return time < key->getTime();
     });
 
-    const auto& v1 = (*std::prev(it))->getValue();
+    const auto& v1 = *(*std::prev(it));
     const auto& t1 = (*std::prev(it))->getTime();
 
-    const auto& v2 = (*it)->getValue();
+    const auto& v2 = *(*it);
     const auto& t2 = (*it)->getTime();
 
     auto t = static_cast<float>(easing::ease((to - t1) / (t2 - t1), easing));

@@ -49,16 +49,26 @@ public:
     using value_type = Camera;
     CameraKeyframe() = default;
     CameraKeyframe(Seconds time);
-    CameraKeyframe(Seconds time, const Camera& value);
-    CameraKeyframe(Seconds time, std::unique_ptr<Camera> value);
+    CameraKeyframe(Seconds time, const Camera& cam);
     virtual ~CameraKeyframe() = default;
     virtual CameraKeyframe* clone() const override;
 
-    CameraKeyframe(const CameraKeyframe& rhs);
-    CameraKeyframe& operator=(const CameraKeyframe& that);
+    CameraKeyframe(const CameraKeyframe& rhs) = default;
+    CameraKeyframe& operator=(const CameraKeyframe& that) = default;
 
-    const Camera& getValue() const;
-    Camera& getValue();
+    const vec3& getLookFrom() const;
+    virtual void setLookFrom(vec3 val);
+
+    const vec3& getLookTo() const;
+    virtual void setLookTo(vec3 val);
+
+    const vec3& getLookUp() const;
+    virtual void setLookUp(vec3 val);
+
+    /**
+     * \brief Get unnormalized direction of camera: lookTo - lookFrom
+     */
+    vec3 getDirection() const;
 
     void updateFrom(const Camera& value);
 
@@ -68,7 +78,9 @@ public:
     static std::string getName() { return "Camera"; }
 
 private:
-    std::unique_ptr<Camera> value_{std::make_unique<PerspectiveCamera>()};
+    vec3 lookFrom_ = cameradefaults::lookFrom, 
+         lookTo_ =  cameradefaults::lookTo, 
+         lookUp_ = cameradefaults::lookUp;
 };
 
 IVW_MODULE_ANIMATION_API bool operator==(const CameraKeyframe& a, const CameraKeyframe& b);

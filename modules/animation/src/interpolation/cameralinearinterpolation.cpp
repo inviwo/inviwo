@@ -58,10 +58,10 @@ void CameraLinearInterpolation::operator()(const std::vector<std::unique_ptr<Cam
         return time < key->getTime();
     });
 
-    const auto& v1 = (*std::prev(it))->getValue();
+    const auto& v1 = *(*std::prev(it));
     const auto& t1 = (*std::prev(it))->getTime();
 
-    const auto& v2 = (*it)->getValue();
+    const auto& v2 = *(*it);
     const auto& t2 = (*it)->getTime();
 
     auto t = easing::ease((to - t1) / (t2 - t1), easing);

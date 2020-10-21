@@ -46,8 +46,8 @@ namespace animation {
  * Returns left keyframe value until reaching right keyframe.
  *
  */
-template <typename Key>
-class ConstantInterpolation : public InterpolationTyped<Key> {
+template <typename Key, typename Result = Key::value_type>
+class ConstantInterpolation : public InterpolationTyped<Key, Result> {
 public:
     ConstantInterpolation() = default;
     virtual ~ConstantInterpolation() = default;
@@ -65,13 +65,13 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
     // keys should be sorted by time
-    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
-                            easing::EasingType) const -> typename Key::value_type override;
+    virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
+                            easing::EasingType easing, Result& out) const override;
 };
 
-template <typename Key>
-ConstantInterpolation<Key>* ConstantInterpolation<Key>::clone() const {
-    return new ConstantInterpolation<Key>(*this);
+template <typename Key, typename Result>
+ConstantInterpolation<Key, Result>* ConstantInterpolation<Key, Result>::clone() const {
+    return new ConstantInterpolation<Key, Result>(*this);
 }
 
 namespace detail {
@@ -86,29 +86,28 @@ std::string getConstantInterpolationClassIdentifier() {
 }
 }  // namespace detail
 
-template <typename Key>
-std::string ConstantInterpolation<Key>::classIdentifier() {
+template <typename Key, typename Result>
+std::string ConstantInterpolation<typename Key, typename Result>::classIdentifier() {
     return detail::getConstantInterpolationClassIdentifier<typename Key::value_type>();
 }
 
-template <typename Key>
-std::string ConstantInterpolation<Key>::getClassIdentifier() const {
+template <typename Key, typename Result>
+std::string ConstantInterpolation<typename Key, typename Result>::getClassIdentifier() const {
     return classIdentifier();
 }
 
-template <typename Key>
-std::string ConstantInterpolation<Key>::getName() const {
+template <typename Key, typename Result>
+std::string ConstantInterpolation<typename Key, typename Result>::getName() const {
     return "Constant";
 }
 
-template <typename Key>
-bool ConstantInterpolation<Key>::equal(const Interpolation& other) const {
+template <typename Key, typename Result>
+bool ConstantInterpolation<typename Key, typename Result>::equal(const Interpolation& other) const {
     return classIdentifier() == other.getClassIdentifier();
 }
-template <typename Key>
-auto ConstantInterpolation<Key>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
-                                            Seconds from, Seconds to, easing::EasingType) const ->
-    typename Key::value_type {
+template <typename Key, typename Result>
+void ConstantInterpolation<Key, Result>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
+                                            Seconds from, Seconds to, easing::EasingType, Result& out) const {
 
     if (to > from) {
         auto it = std::upper_bound(
@@ -116,9 +115,9 @@ auto ConstantInterpolation<Key>::operator()(const std::vector<std::unique_ptr<Ke
             [](const auto& time, const auto& key) { return time < key->getTime(); });
 
         if (it == keys.begin()) {
-            return (*it)->getValue();
+            out = (*it)->getValue();
         } else {
-            return (*std::prev(it))->getValue();
+            out = (*std::prev(it))->getValue();
         }
 
     } else {
@@ -127,20 +126,20 @@ auto ConstantInterpolation<Key>::operator()(const std::vector<std::unique_ptr<Ke
             [](const auto& time, const auto& key) { return time < key->getTime(); });
 
         if (it == keys.end()) {
-            return (*std::prev(it))->getValue();
+            out = (*std::prev(it))->getValue();
         } else {
-            return (*it)->getValue();
+            out = (*it)->getValue();
         }
     }
 }
 
-template <typename Key>
-void ConstantInterpolation<Key>::serialize(Serializer& s) const {
+template <typename Key, typename Result>
+void ConstantInterpolation<typename Key, typename Result>::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
 }
 
-template <typename Key>
-void ConstantInterpolation<Key>::deserialize(Deserializer& d) {
+template <typename Key, typename Result>
+void ConstantInterpolation<typename Key, typename Result>::deserialize(Deserializer& d) {
     std::string className;
     d.deserialize("type", className, SerializationTarget::Attribute);
     if (className != getClassIdentifier()) {

@@ -34,7 +34,6 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <modules/animation/animationmodule.h>
-#include <modules/animation/datastructures/cameratrack.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/datastructures/track.h>
@@ -204,10 +203,8 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
     util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
         PropertyValueKeyframeReghelper{}, *this);
 
-    registerTrackToWidgetMap(CameraTrack::classIdentifier(),
-                             PropertyTrackWidgetQt::classIdentifier());
-    registerTrackToSequenceEditorMap(CameraTrack::classIdentifier(),
-                                     PropertySequenceEditor::classIdentifier());
+
+    registerPropertyTrackHelper<CameraProperty, CameraKeyframe>(*this);
 
     registerTrackToWidgetMap(ControlTrack::classIdentifier(),
                              ControlTrackWidgetQt::classIdentifier());

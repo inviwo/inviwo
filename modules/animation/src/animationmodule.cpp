@@ -43,7 +43,6 @@
 #include <modules/animation/interpolation/cameralinearinterpolation.h>
 #include <modules/animation/interpolation/camerasphericalinterpolation.h>
 #include <modules/animation/datastructures/camerakeyframe.h>
-#include <modules/animation/datastructures/cameratrack.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/propertytrack.h>
@@ -63,21 +62,21 @@ auto trackRegHelper(AnimationModule& am) {
         PropertyTrack<PropertyType, ValueKeyframe<ValueType>>::classIdentifier());
 }
 
-template <typename PropertyType, template <class> class Interpolation>
+template <typename PropertyType, template <typename Key, typename> class Interpolation>
 auto interpolationRegHelper(AnimationModule& am) {
     using namespace animation;
     using ValueType = typename PropertyType::value_type;
 
     // No need to add existing interpolation method. Will produce a warning if adding a duplicate
     if (!am.getAnimationManager().getInterpolationFactory().hasKey(
-            Interpolation<ValueKeyframe<ValueType>>::classIdentifier())) {
-        am.registerInterpolation<Interpolation<ValueKeyframe<ValueType>>>();
+            Interpolation<ValueKeyframe<ValueType>, ValueType>::classIdentifier())) {
+        am.registerInterpolation<Interpolation<ValueKeyframe<ValueType>, ValueType>>();
     }
 
     // Default interpolation for this property
     am.registerPropertyInterpolationConnection(
         PropertyTraits<PropertyType>::classIdentifier(),
-        Interpolation<ValueKeyframe<ValueType>>::classIdentifier());
+        Interpolation<ValueKeyframe<ValueType>, ValueType>::classIdentifier());
 }
 
 struct OrdinalReghelper {
@@ -85,6 +84,8 @@ struct OrdinalReghelper {
     auto operator()(AnimationModule& am) {
         using namespace animation;
         using PropertyType = OrdinalProperty<T>;
+        using ValueType = typename PropertyType::value_type;
+        using KeyframeType = typename ValueKeyframe<ValueType>;
         trackRegHelper<PropertyType>(am);
         interpolationRegHelper<PropertyType, LinearInterpolation>(am);
         interpolationRegHelper<PropertyType, ConstantInterpolation>(am);
@@ -154,6 +155,7 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     util::for_each_type<std::tuple<std::string>>{}(OptionReghelper{}, *this);
 
     // Camera property
+    using CameraTrack = PropertyTrack<CameraProperty, CameraKeyframe>;
     registerTrack<CameraTrack>();
     registerPropertyTrackConnection(PropertyTraits<CameraProperty>::classIdentifier(),
                                     CameraTrack::classIdentifier());
@@ -165,7 +167,6 @@ AnimationModule::AnimationModule(InviwoApplication* app)
                                             CameraSphericalInterpolation::classIdentifier());
     registerPropertyInterpolationConnection(PropertyTraits<CameraProperty>::classIdentifier(),
                                             CameraLinearInterpolation::classIdentifier());
-    // interpolationRegHelper<CameraProperty, ConstantInterpolation>(*this);
 
     // Todo: Add ButtonProperty. Have not tested but might work out of the box with constant
     // interpolation? Todo: Add support for TransferFunctionProperty (special interpolation)

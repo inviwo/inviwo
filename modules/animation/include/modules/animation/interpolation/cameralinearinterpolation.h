@@ -29,7 +29,8 @@
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
-#include <modules/animation/interpolation/camerainterpolation.h>
+#include <modules/animation/datastructures/camerakeyframe.h>
+#include <modules/animation/interpolation/interpolation.h>
 
 namespace inviwo {
 
@@ -43,7 +44,7 @@ namespace animation {
  * @note Only considers lookFrom, lookAt, lookUp in Camera
  * @see CameraSphericalInterpolation
  */
-class IVW_MODULE_ANIMATION_API CameraLinearInterpolation : public CameraInterpolation {
+class IVW_MODULE_ANIMATION_API CameraLinearInterpolation : public InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type> {
 public:
     CameraLinearInterpolation() = default;
     virtual ~CameraLinearInterpolation() = default;

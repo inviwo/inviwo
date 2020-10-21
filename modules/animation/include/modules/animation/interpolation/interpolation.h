@@ -72,7 +72,7 @@ IVW_MODULE_ANIMATION_API bool operator!=(const Interpolation& a, const Interpola
  *  @see KeyFrame
  *  @see KeyFrameSequence
  */
-template <typename Key>
+template <typename Key, typename Result = typename Key::value_type>
 class InterpolationTyped : public Interpolation {
 public:
     InterpolationTyped() = default;
@@ -85,8 +85,8 @@ public:
     virtual void deserialize(Deserializer& d) override = 0;
 
     // Override this function to interpolate between key frames
-    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
-                            easing::EasingType easing) const -> typename Key::value_type = 0;
+    virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
+                            easing::EasingType easing, Result& out) const = 0;
 };
 
 }  // namespace animation
