@@ -42,8 +42,6 @@ PYBIND11_MODULE(ivwbase, m) {
     VLDDisable();
 #endif
 
-    py::module::import("inviwopy");
-
     m.doc() = "Gives python scripts access to inviwo functionality in base";
 
     auto ioMod = m.def_submodule("io", "Exposes various input/output functions");
@@ -56,5 +54,3 @@ PYBIND11_MODULE(ivwbase, m) {
     VLDEnable();
 #endif
 }
-
-namespace inviwo {}
