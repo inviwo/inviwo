@@ -101,42 +101,5 @@ AnimationTimeState PropertyTrack<CameraProperty, CameraKeyframe>::operator()(
     return {to, state};
 }
 
-// template <>
-// Keyframe* PropertyTrack<CameraProperty, CameraKeyframe>::addKeyFrameUsingPropertyValue(
-//    const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation) {
-//    using Key = typename CameraKeyframe;
-//    auto prop = dynamic_cast<const CameraProperty*>(property);
-//    if (!prop) {
-//        throw Exception("Cannot add key frame from property type " +
-//                            property->getClassIdentifier() + " for " +
-//                            property_->getClassIdentifier(),
-//                        IVW_CONTEXT);
-//    }
-//    if (this->empty()) {
-//        // Use provided interpolation if we can
-//        if (auto ip = dynamic_cast<InterpolationTyped<Key>*>(interpolation.get())) {
-//            interpolation.release();
-//
-//            std::vector<std::unique_ptr<Key>> keys;
-//            keys.push_back(std::make_unique<Key>(time, prop->get()));
-//            auto sequence = std::make_unique<KeyframeSequenceTyped<CameraKeyframe>>(
-//                std::move(keys), std::unique_ptr<InterpolationTyped<CameraKeyframe>>(ip));
-//            if (auto se = add(std::move(sequence))) {
-//                return &se->getFirst();
-//            }
-//        } else {
-//            throw Exception("Invalid interpolation " + interpolation->getClassIdentifier() +
-//                                " for " + getClassIdentifier(),
-//                            IVW_CONTEXT);
-//        }
-//
-//    } else {
-//        return this->addToClosestSequence(std::make_unique<Key>(time, prop->get()));
-//    }
-//    return nullptr;
-//}
-
-template class IVW_MODULE_ANIMATION_TMPL_INST PropertyTrack<CameraProperty, CameraKeyframe>;
-
 }  // namespace animation
 }  // namespace inviwo

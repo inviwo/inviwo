@@ -459,7 +459,7 @@ Keyframe* PropertyTrack<Prop, Key>::addKeyFrameUsingPropertyValue(
             keys.push_back(std::make_unique<Key>(time, prop->get()));
             auto sequence = std::make_unique<KeyframeSequenceTyped<Key>>(
                 std::move(keys), std::unique_ptr<InterpolationTyped<Key>>(ip));
-            if (auto se = add(std::move(sequence))) {
+            if (auto se = this->add(std::move(sequence))) {
                 return &se->getFirst();
             }
         } else {
