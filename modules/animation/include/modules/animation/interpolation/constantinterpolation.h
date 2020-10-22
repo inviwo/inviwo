@@ -46,7 +46,7 @@ namespace animation {
  * Returns left keyframe value until reaching right keyframe.
  *
  */
-template <typename Key, typename Result = Key::value_type>
+template <typename Key, typename Result = typename Key::value_type>
 class ConstantInterpolation : public InterpolationTyped<Key, Result> {
 public:
     ConstantInterpolation() = default;

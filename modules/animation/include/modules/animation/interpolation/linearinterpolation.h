@@ -45,7 +45,7 @@ namespace animation {
  * Linear interpolation function for key frames.
  * Perfoms linear interpolation between two neighboring key frames.
  */
-template <typename Key, typename Result = Key::value_type>
+template <typename Key, typename Result = typename Key::value_type>
 class LinearInterpolation : public InterpolationTyped<Key, Result> {
 public:
     LinearInterpolation() = default;
