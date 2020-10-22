@@ -87,22 +87,22 @@ std::string getConstantInterpolationClassIdentifier() {
 }  // namespace detail
 
 template <typename Key, typename Result>
-std::string ConstantInterpolation<typename Key, typename Result>::classIdentifier() {
+std::string ConstantInterpolation<Key, Result>::classIdentifier() {
     return detail::getConstantInterpolationClassIdentifier<typename Key::value_type>();
 }
 
 template <typename Key, typename Result>
-std::string ConstantInterpolation<typename Key, typename Result>::getClassIdentifier() const {
+std::string ConstantInterpolation<Key, Result>::getClassIdentifier() const {
     return classIdentifier();
 }
 
 template <typename Key, typename Result>
-std::string ConstantInterpolation<typename Key, typename Result>::getName() const {
+std::string ConstantInterpolation<Key, Result>::getName() const {
     return "Constant";
 }
 
 template <typename Key, typename Result>
-bool ConstantInterpolation<typename Key, typename Result>::equal(const Interpolation& other) const {
+bool ConstantInterpolation<Key, Result>::equal(const Interpolation& other) const {
     return classIdentifier() == other.getClassIdentifier();
 }
 template <typename Key, typename Result>
@@ -135,12 +135,12 @@ void ConstantInterpolation<Key, Result>::operator()(const std::vector<std::uniqu
 }
 
 template <typename Key, typename Result>
-void ConstantInterpolation<typename Key, typename Result>::serialize(Serializer& s) const {
+void ConstantInterpolation<Key, Result>::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
 }
 
 template <typename Key, typename Result>
-void ConstantInterpolation<typename Key, typename Result>::deserialize(Deserializer& d) {
+void ConstantInterpolation<Key, Result>::deserialize(Deserializer& d) {
     std::string className;
     d.deserialize("type", className, SerializationTarget::Attribute);
     if (className != getClassIdentifier()) {
