@@ -85,7 +85,7 @@ struct OrdinalReghelper {
         using namespace animation;
         using PropertyType = OrdinalProperty<T>;
         using ValueType = typename PropertyType::value_type;
-        using KeyframeType = typename ValueKeyframe<ValueType>;
+        using KeyframeType = ValueKeyframe<ValueType>;
         trackRegHelper<PropertyType>(am);
         interpolationRegHelper<PropertyType, LinearInterpolation>(am);
         interpolationRegHelper<PropertyType, ConstantInterpolation>(am);

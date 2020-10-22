@@ -423,7 +423,7 @@ AnimationTimeState PropertyTrack<Prop, Key>::operator()(Seconds from, Seconds to
         auto& seq1 = *std::prev(it);
 
         if (to < seq1.getLastTime()) {  // case 2a
-            Prop::value_type v;
+            typename Prop::value_type v;
             seq1(from, to, v);
             property_->set(v);
         } else {  // case 2b
