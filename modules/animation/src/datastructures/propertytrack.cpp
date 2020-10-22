@@ -65,7 +65,7 @@ std::string PropertyTrack<CameraProperty, CameraKeyframe>::classIdentifier() {
 template <>
 AnimationTimeState PropertyTrack<CameraProperty, CameraKeyframe>::operator()(
     Seconds from, Seconds to, AnimationState state) const {
-    using Prop = typename CameraProperty;
+    using Prop = CameraProperty;
     if (!this->isEnabled() || this->empty()) return {to, state};
 
     // 'it' will be the first seq. with a first time larger then 'to'.
