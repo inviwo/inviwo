@@ -103,7 +103,7 @@ public:
      * Add KeyframeSequence and call KeyframeSequenceObserverble::notifyKeyframeSequenceAdded
      * @throw Exception if KeyframeSequence overlaps existing sequences
      */
-    virtual KeyframeSequence* add(std::unique_ptr<Seq> sequence);
+    virtual Seq* add(std::unique_ptr<Seq> sequence);
 
     virtual std::unique_ptr<KeyframeSequence> remove(size_t i) override;
     virtual std::unique_ptr<Keyframe> remove(Keyframe* key) override;
@@ -353,7 +353,7 @@ KeyframeSequence* BaseTrack<Seq>::add(std::unique_ptr<KeyframeSequence> sequence
 }
 
 template <typename Seq>
-KeyframeSequence* BaseTrack<Seq>::add(std::unique_ptr<Seq> sequence) {
+Seq* BaseTrack<Seq>::add(std::unique_ptr<Seq> sequence) {
     auto it = std::upper_bound(sequences_.begin(), sequences_.end(), sequence,
                                [](const auto& a, const auto& b) { return *a < *b; });
 
