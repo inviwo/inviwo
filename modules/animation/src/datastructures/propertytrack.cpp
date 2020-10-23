@@ -33,17 +33,17 @@ namespace inviwo {
 namespace animation {
 namespace detail {
 /**
- * Helper function for inviwo::animation::PropertyTrack::setOtherProperty
- * @see inviwo::animation::BasePropertyTrack::setOtherProperty
+ * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
+ * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
  */
-void setOtherPropertyHelper(CameraProperty* property, CameraKeyframe* keyframe) {
+void setPropertyFromKeyframeHelper(CameraProperty* property, const CameraKeyframe* keyframe) {
     property->setLook(keyframe->getLookFrom(), keyframe->getLookTo(), keyframe->getLookUp());
 }
 /**
- * Helper function for inviwo::animation::PropertyTrack::updateKeyframeFromProperty
- * @see inviwo::animation::BasePropertyTrack::updateKeyframeFromProperty
+ * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
+ * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
  */
-void updateKeyframeFromPropertyHelper(CameraProperty* property, CameraKeyframe* keyframe) {
+void setKeyframeFromPropertyHelper(const CameraProperty* property, CameraKeyframe* keyframe) {
     keyframe->updateFrom(property->get());
 }
 
@@ -56,48 +56,11 @@ std::string PropertyTrack<CameraProperty, CameraKeyframe>::classIdentifier() {
     std::string id = "org.inviwo.animation.PropertyTrack.for." + CameraProperty::classIdentifier;
     return id;
 }
-/**
- * Track of sequences
- * ----------X======X====X-----------X=========X-------X=====X--------
- * |- case 1-|-case 2----------------|-case 2----------|-case 2------|
- *           |-case 2a---|-case 2b---|
- */
+
 template <>
-AnimationTimeState PropertyTrack<CameraProperty, CameraKeyframe>::operator()(
-    Seconds from, Seconds to, AnimationState state) const {
-    using Prop = CameraProperty;
-    if (!this->isEnabled() || this->empty()) return {to, state};
-
-    // 'it' will be the first seq. with a first time larger then 'to'.
-    auto it = std::upper_bound(this->begin(), this->end(), to,
-                               [](const auto& a, const auto& b) { return a < b; });
-
-    if (it == this->begin()) {
-        if (from > it->getFirstTime()) {  // case 1
-            const auto& key = it->getFirst();
-            // Do not update aspect ratio, e.g. updateFrom(Camera&)
-            property_->setLook(key.getLookFrom(), key.getLookTo(), key.getLookUp());
-        }
-    } else {  // case 2
-        auto& seq1 = *std::prev(it);
-
-        if (to < seq1.getLastTime()) {  // case 2a
-            seq1(from, to, property_->get());
-        } else {  // case 2b
-            if (from < seq1.getLastTime()) {
-                // We came from before the previous key
-                const auto& key = seq1.getLast();
-                // Do not update aspect ratio, e.g. updateFrom(Camera&)
-                property_->setLook(key.getLookFrom(), key.getLookTo(), key.getLookUp());
-            } else if (it != this->end() && from > it->getFirstTime()) {
-                // We came form after the next key
-                const auto& key = it->getFirst();
-                // Do not update aspect ratio, e.g. updateFrom(Camera&)
-                property_->setLook(key.getLookFrom(), key.getLookTo(), key.getLookUp());
-            }
-            // we moved in an unmarked region, do nothing.
-        }
-    }
+AnimationTimeState PropertyTrack<CameraProperty, CameraKeyframe>::animateSequence(
+    const KeyframeSequenceTyped<CameraKeyframe>& seq, Seconds from, Seconds to, AnimationState state) const {
+    seq(from, to, property_->get());
     return {to, state};
 }
 

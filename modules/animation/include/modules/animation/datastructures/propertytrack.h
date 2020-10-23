@@ -58,11 +58,31 @@ namespace animation {
 namespace detail {
 
 /**
- * Helper function for inviwo::animation::PropertyTrack::setOtherProperty
- * @see inviwo::animation::BasePropertyTrack::setOtherProperty
+ * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
+ * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
  */
 template <typename T>
-void setOtherPropertyHelper(TemplateProperty<T>* property, ValueKeyframe<T>* keyframe) {
+void setPropertyFromKeyframeHelper(TemplateProperty<T>* property,
+                                   const ValueKeyframe<T>* keyframe) {
+    property->set(keyframe->getValue());
+}
+
+/**
+ * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
+ * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
+ */
+template <typename T>
+void setPropertyFromKeyframeHelper(OrdinalProperty<T>* property, const ValueKeyframe<T>* keyframe) {
+    property->set(keyframe->getValue());
+}
+
+/**
+ * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
+ * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
+ */
+template <typename T>
+void setPropertyFromKeyframeHelper(MinMaxProperty<T>* property,
+                                   const ValueKeyframe<glm::tvec2<T, glm::defaultp>>* keyframe) {
     property->set(keyframe->getValue());
 }
 
@@ -70,45 +90,47 @@ void setOtherPropertyHelper(TemplateProperty<T>* property, ValueKeyframe<T>* key
  * Helper function for inviwo::animation::PropertyTrack::setOtherProperty
  * @see inviwo::animation::BasePropertyTrack::setOtherProperty
  */
-template <typename T>
-void setOtherPropertyHelper(OrdinalProperty<T>* property, ValueKeyframe<T>* keyframe) {
+void setPropertyFromKeyframeHelper(OrdinalRefProperty<T>* property,
+                                   const ValueKeyframe<T>* keyframe) {
     property->set(keyframe->getValue());
 }
 
 /**
- * Helper function for inviwo::animation::PropertyTrack::setOtherProperty
- * @see inviwo::animation::BasePropertyTrack::setOtherProperty
+ * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
+ * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
  */
 template <typename T>
-void setOtherPropertyHelper(MinMaxProperty<T>* property,
-                            ValueKeyframe<glm::tvec2<T, glm::defaultp>>* keyframe) {
-    property->set(keyframe->getValue());
-}
-
-/**
- * Helper function for inviwo::animation::PropertyTrack::setOtherProperty
- * @see inviwo::animation::BasePropertyTrack::setOtherProperty
- */
-template <typename T>
-void setOtherPropertyHelper(OrdinalRefProperty<T>* property, ValueKeyframe<T>* keyframe) {
-    property->set(keyframe->getValue());
-}
-
-/**
- * Helper function for inviwo::animation::PropertyTrack::setOtherProperty
- * @see inviwo::animation::BasePropertyTrack::setOtherProperty
- */
-template <typename T>
-void setOtherPropertyHelper(TemplateOptionProperty<T>* property, ValueKeyframe<T>* keyframe) {
+void setPropertyFromKeyframeHelper(TemplateOptionProperty<T>* property,
+                                   const ValueKeyframe<T>* keyframe) {
     property->setSelectedValue(keyframe->getValue());
 }
 
 /**
- * Helper function for inviwo::animation::PropertyTrack::updateKeyframeFromProperty
- * @see inviwo::animation::BasePropertyTrack::updateKeyframeFromProperty
+ * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
+ * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
  */
 template <typename T>
-void updateKeyframeFromPropertyHelper(TemplateProperty<T>* property, ValueKeyframe<T>* keyframe) {
+void setKeyframeFromPropertyHelper(const TemplateProperty<T>* property,
+                                   ValueKeyframe<T>* keyframe) {
+    keyframe->setValue(property->get());
+}
+
+/**
+ * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
+ * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
+ */
+template <typename T>
+void setKeyframeFromPropertyHelper(const OrdinalProperty<T>* property, ValueKeyframe<T>* keyframe) {
+    keyframe->setValue(property->get());
+}
+
+/**
+ * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
+ * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
+ */
+template <typename T>
+void setKeyframeFromPropertyHelper(const MinMaxProperty<T>* property,
+                                   ValueKeyframe<glm::tvec2<T, glm::defaultp>>* keyframe) {
     keyframe->setValue(property->get());
 }
 
@@ -117,49 +139,31 @@ void updateKeyframeFromPropertyHelper(TemplateProperty<T>* property, ValueKeyfra
  * @see inviwo::animation::BasePropertyTrack::updateKeyframeFromProperty
  */
 template <typename T>
-void updateKeyframeFromPropertyHelper(OrdinalProperty<T>* property, ValueKeyframe<T>* keyframe) {
+void setKeyframeFromPropertyHelper(const OrdinalRefProperty<T>* property,
+                                   ValueKeyframe<T>* keyframe) {
     keyframe->setValue(property->get());
 }
 
 /**
- * Helper function for inviwo::animation::PropertyTrack::updateKeyframeFromProperty
- * @see inviwo::animation::BasePropertyTrack::updateKeyframeFromProperty
+ * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
+ * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
  */
 template <typename T>
-void updateKeyframeFromPropertyHelper(MinMaxProperty<T>* property,
-                                      ValueKeyframe<glm::tvec2<T, glm::defaultp>>* keyframe) {
-    keyframe->setValue(property->get());
-}
-
-/**
- * Helper function for inviwo::animation::PropertyTrack::updateKeyframeFromProperty
- * @see inviwo::animation::BasePropertyTrack::updateKeyframeFromProperty
- */
-template <typename T>
-void updateKeyframeFromPropertyHelper(OrdinalRefProperty<T>* property, ValueKeyframe<T>* keyframe) {
-    keyframe->setValue(property->get());
-}
-
-/**
- * Helper function for inviwo::animation::PropertyTrack::updateKeyframeFromProperty
- * @see inviwo::animation::BasePropertyTrack::updateKeyframeFromProperty
- */
-template <typename T>
-void updateKeyframeFromPropertyHelper(TemplateOptionProperty<T>* property,
-                                      ValueKeyframe<T>* keyframe) {
+void setKeyframeFromPropertyHelper(const TemplateOptionProperty<T>* property,
+                                   ValueKeyframe<T>* keyframe) {
     keyframe->setValue(property->getSelectedValue());
 }
 
 /**
- * Helper function for inviwo::animation::PropertyTrack::setOtherProperty
- * @see inviwo::animation::BasePropertyTrack::setOtherProperty
+ * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
+ * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
  */
-void setOtherPropertyHelper(CameraProperty* property, CameraKeyframe* keyframe);
+void setPropertyFromKeyframeHelper(CameraProperty* property, const CameraKeyframe* keyframe);
 /**
- * Helper function for inviwo::animation::PropertyTrack::updateKeyframeFromProperty
- * @see inviwo::animation::BasePropertyTrack::updateKeyframeFromProperty
+ * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
+ * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
  */
-void updateKeyframeFromPropertyHelper(CameraProperty* property, CameraKeyframe* keyframe);
+void setKeyframeFromPropertyHelper(const CameraProperty* property, CameraKeyframe* keyframe);
 
 }  // namespace detail
 
@@ -223,8 +227,8 @@ public:
         Seconds time, std::unique_ptr<Interpolation> interpolation) = 0;
     virtual Track* toTrack() = 0;
 
-    virtual void setOtherProperty(Property*, Keyframe*){};            // Should this be pure virtual
-    virtual void updateKeyframeFromProperty(Property*, Keyframe*){};  // Should this be pure
+    virtual void setPropertyFromKeyframe(Property* dst, const Keyframe* src) const = 0;
+    virtual void setKeyframeFromProperty(const Property* src, Keyframe* dst) = 0;
 };
 
 /** \class PropertyTrack
@@ -243,8 +247,8 @@ public:
                                typename Key::value_type>::value,
                   "The value type of Prop has to match that of Key");
 
+    using seq_type = typename BaseTrack<KeyframeSequenceTyped<Key>>::seq_type;
     PropertyTrack(ProcessorNetwork* network);
-    PropertyTrack(Prop* property);
     PropertyTrack(Prop* property, ProcessorNetwork* network);
     /**
      * Remove all keyframe sequences and call TrackObserver::notifyKeyframeSequenceRemoved
@@ -277,19 +281,18 @@ public:
     virtual Track* toTrack() override;
 
     /**
-     * \brief Helper function to set a property (other than the property owned by the track) from a
-     * keyframe
+     * \brief Helper function to set a property from a keyframe
      *
      * Called from inviwo::animation::KeyframeEditorWidget when creating the widget
      *
      * @param dstProperty The property to set
      * @param keyframe The keyframe to set from
      */
-    void setOtherProperty(Property* dstProperty, Keyframe* keyframe) override {
+    void setPropertyFromKeyframe(Property* dstProperty, const Keyframe* keyframe) const override {
         IVW_ASSERT(dstProperty->getClassIdentifier() == PropertyTraits<Prop>::classIdentifier(),
                    "Incorrect Property type");
-        detail::setOtherPropertyHelper(static_cast<Prop*>(dstProperty),
-                                       static_cast<Key*>(keyframe));
+        detail::setPropertyFromKeyframeHelper(static_cast<Prop*>(dstProperty),
+                                              static_cast<const Key*>(keyframe));
     }
 
     /**
@@ -302,14 +305,22 @@ public:
      * @param srcProperty The property to set from
      * @param keyframe The keyframe to set
      */
-    void updateKeyframeFromProperty(Property* srcProperty, Keyframe* keyframe) override {
+    void setKeyframeFromProperty(const Property* srcProperty, Keyframe* keyframe) override {
         IVW_ASSERT(srcProperty->getClassIdentifier() == PropertyTraits<Prop>::classIdentifier(),
                    "Incorrect Property type");
-        detail::updateKeyframeFromPropertyHelper(static_cast<Prop*>(srcProperty),
-                                                 static_cast<Key*>(keyframe));
+        detail::setKeyframeFromPropertyHelper(static_cast<const Prop*>(srcProperty),
+                                              static_cast<Key*>(keyframe));
     }
 
 protected:
+    /*
+     * Helper function for when we know that we are between keyframes within a KeyframeSequence.
+     * Called from operator()(Seconds from, Seconds to, AnimationState state) const
+     * Provide template specialization of this method if you want custom property/sequence
+     * behaviour.
+     */
+    AnimationTimeState animateSequence(const seq_type& seq, Seconds from, Seconds to,
+                                       AnimationState state) const;
     /*
      * Creates a Seq::key_type using the current property value.
      */
@@ -332,6 +343,16 @@ bool operator!=(const PropertyTrack<Prop, Key>& a, const PropertyTrack<Prop, Key
 template <typename Prop, typename Key>
 Track* PropertyTrack<Prop, Key>::toTrack() {
     return this;
+}
+
+template <typename Prop, typename Key>
+AnimationTimeState PropertyTrack<Prop, Key>::animateSequence(const seq_type& seq, Seconds from,
+                                                             Seconds to,
+                                                             AnimationState state) const {
+    typename Prop::value_type v;
+    seq(from, to, v);
+    property_->set(v);
+    return {to, state};
 }
 
 template <typename Prop, typename Key>
@@ -417,22 +438,20 @@ AnimationTimeState PropertyTrack<Prop, Key>::operator()(Seconds from, Seconds to
 
     if (it == this->begin()) {
         if (from > it->getFirstTime()) {  // case 1
-            property_->set(it->getFirst().getValue());
+            setPropertyFromKeyframe(property_, &(it->getFirst()));
         }
     } else {  // case 2
         auto& seq1 = *std::prev(it);
 
         if (to < seq1.getLastTime()) {  // case 2a
-            typename Prop::value_type v;
-            seq1(from, to, v);
-            property_->set(v);
+            return animateSequence(seq1, from, to, state);
         } else {  // case 2b
             if (from < seq1.getLastTime()) {
                 // We came from before the previous key
-                property_->set(seq1.getLast().getValue());
+                setPropertyFromKeyframe(property_, &(seq1.getLast()));
             } else if (it != this->end() && from > it->getFirstTime()) {
                 // We came form after the next key
-                property_->set(it->getFirst().getValue());
+                setPropertyFromKeyframe(property_, &(it->getFirst()));
             }
             // we moved in an unmarked region, do nothing.
         }
