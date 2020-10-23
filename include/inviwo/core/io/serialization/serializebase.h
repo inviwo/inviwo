@@ -35,11 +35,8 @@
 
 #include <map>
 #include <string>
-
-#if __has_include(<charconv>)
 #include <charconv>
 #include <array>
-#endif
 
 namespace ticpp {
 class Element;
@@ -51,7 +48,7 @@ using TxElement = ticpp::Element;
 using TxDocument = ticpp::Document;
 
 namespace config {
-#if __has_include(<charconv>)
+#if defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L
 constexpr bool charconv = true;
 #else
 constexpr bool charconv = false;
@@ -177,6 +174,8 @@ template <class T>
 decltype(auto) toStr(const T& value) {
     if constexpr (std::is_same_v<std::string, T>) {
         return value;
+    } else if constexpr (std::is_same_v<std::string_view, T>) {
+        return std::string{value};
     } else if constexpr (config::charconv &&
                          (std::is_same_v<double, T> || std::is_same_v<float, T> ||
                           (!std::is_same_v<bool, T> && std::is_integral_v<T>))) {
