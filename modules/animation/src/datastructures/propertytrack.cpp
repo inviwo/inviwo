@@ -59,7 +59,8 @@ std::string PropertyTrack<CameraProperty, CameraKeyframe>::classIdentifier() {
 
 template <>
 AnimationTimeState PropertyTrack<CameraProperty, CameraKeyframe>::animateSequence(
-    const KeyframeSequenceTyped<CameraKeyframe>& seq, Seconds from, Seconds to, AnimationState state) const {
+    const KeyframeSequenceTyped<CameraKeyframe>& seq, Seconds from, Seconds to,
+    AnimationState state) const {
     seq(from, to, property_->get());
     return {to, state};
 }

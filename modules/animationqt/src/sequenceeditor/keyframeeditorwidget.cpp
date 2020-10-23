@@ -50,7 +50,7 @@
 namespace inviwo {
 
 namespace animation {
-KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent)
+KeyframeEditorWidget::KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWidget* parent)
     : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
 
     setObjectName("KeyframeEditorWidget");
@@ -71,7 +71,7 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
 
     layout_->addWidget(timeSpinner_);
 
-    if (auto propTrack = dynamic_cast<BasePropertyTrack *>(&parent->getTrack())) {
+    if (auto propTrack = dynamic_cast<BasePropertyTrack*>(&parent->getTrack())) {
         auto baseProperty = propTrack->getProperty();
         property_.reset(baseProperty->clone());
         propTrack->setPropertyFromKeyframe(property_.get(), &keyframe);
@@ -82,14 +82,14 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
 
         auto propWidget =
             util::getInviwoApplication()->getPropertyWidgetFactory()->create(property_.get());
-        propertyWidget_ = static_cast<PropertyWidgetQt *>(propWidget.release());
+        propertyWidget_ = static_cast<PropertyWidgetQt*>(propWidget.release());
 
-        if (auto label = propertyWidget_->findChild<EditableLabelQt *>()) {
+        if (auto label = propertyWidget_->findChild<EditableLabelQt*>()) {
             label->setVisible(false);
         }
         layout_->addWidget(propertyWidget_);
 
-    } else if (auto ctrlKey = dynamic_cast<ControlKeyframe *>(&keyframe)) {
+    } else if (auto ctrlKey = dynamic_cast<ControlKeyframe*>(&keyframe)) {
 
         actionWidget_ = new QComboBox();
         actionWidget_->addItems({"Pause", "Jump To"});
@@ -130,12 +130,12 @@ KeyframeEditorWidget::~KeyframeEditorWidget() {
     }
 }
 
-void KeyframeEditorWidget::onKeyframeTimeChanged(Keyframe *key, Seconds) {
+void KeyframeEditorWidget::onKeyframeTimeChanged(Keyframe* key, Seconds) {
     timeSpinner_->setValue(key->getTime().count());
     sequenceEditorWidget_->setReorderNeeded();
 }
 
-void KeyframeEditorWidget::onKeyframeSelectionChanged(Keyframe *) {
+void KeyframeEditorWidget::onKeyframeSelectionChanged(Keyframe*) {
     sequenceEditorWidget_->updateVisibility();
 }
 

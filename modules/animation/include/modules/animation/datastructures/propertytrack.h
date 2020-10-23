@@ -81,6 +81,7 @@ void setPropertyFromKeyframeHelper(OrdinalProperty<T>* property, const ValueKeyf
  * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
  */
 template <typename T>
+<<<<<<< HEAD
 void setPropertyFromKeyframeHelper(MinMaxProperty<T>* property,
                                    const ValueKeyframe<glm::tvec2<T, glm::defaultp>>* keyframe) {
     property->set(keyframe->getValue());
@@ -90,6 +91,8 @@ void setPropertyFromKeyframeHelper(MinMaxProperty<T>* property,
  * Helper function for inviwo::animation::PropertyTrack::setOtherProperty
  * @see inviwo::animation::BasePropertyTrack::setOtherProperty
  */
+=======
+>>>>>>> Jenkins: Format fixes
 void setPropertyFromKeyframeHelper(OrdinalRefProperty<T>* property,
                                    const ValueKeyframe<T>* keyframe) {
     property->set(keyframe->getValue());
@@ -129,6 +132,7 @@ void setKeyframeFromPropertyHelper(const OrdinalProperty<T>* property, ValueKeyf
  * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
  */
 template <typename T>
+<<<<<<< HEAD
 void setKeyframeFromPropertyHelper(const MinMaxProperty<T>* property,
                                    ValueKeyframe<glm::tvec2<T, glm::defaultp>>* keyframe) {
     keyframe->setValue(property->get());
@@ -139,6 +143,8 @@ void setKeyframeFromPropertyHelper(const MinMaxProperty<T>* property,
  * @see inviwo::animation::BasePropertyTrack::updateKeyframeFromProperty
  */
 template <typename T>
+=======
+>>>>>>> Jenkins: Format fixes
 void setKeyframeFromPropertyHelper(const OrdinalRefProperty<T>* property,
                                    ValueKeyframe<T>* keyframe) {
     keyframe->setValue(property->get());
