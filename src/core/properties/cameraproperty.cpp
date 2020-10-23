@@ -44,8 +44,6 @@
 
 #include <limits>
 
-#include <tracy/Tracy.hpp>
-
 namespace inviwo {
 
 const std::string CameraProperty::classIdentifier = "org.inviwo.CameraProperty";
@@ -385,13 +383,11 @@ void CameraProperty::addCamerapProperty(std::unique_ptr<Property> camprop) {
 }
 
 void CameraProperty::serialize(Serializer& s) const {
-    ZoneScopedNC("CameraProperty serialize", 0xAA0000);
     CompositeProperty::serialize(s);
     s.serialize("Camera", camera_);
 }
 
 void CameraProperty::deserialize(Deserializer& d) {
-    ZoneScopedNC("CameraProperty deserialize", 0xAA0000);
     camera_->configureProperties(*this, false);
     d.deserialize("Camera", camera_);
     hideConfiguredProperties();
