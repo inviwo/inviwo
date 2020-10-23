@@ -38,6 +38,7 @@
 
 #if __has_include(<charconv>)
 #include <charconv>
+#include <array>
 #endif
 
 namespace ticpp {

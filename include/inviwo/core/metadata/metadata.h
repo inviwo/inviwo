@@ -308,7 +308,6 @@ public:
     virtual ~MetaDataPrimitiveType(){};
     virtual const std::string& getClassIdentifier() const override;
     virtual MetaDataPrimitiveType<T, N, N>* clone() const override;
-    ;
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
     virtual void set(Matrix<N, T> value);

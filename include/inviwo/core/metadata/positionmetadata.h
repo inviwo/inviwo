@@ -42,7 +42,7 @@ public:
     virtual ~PositionMetaData();
 
     virtual const std::string& getClassIdentifier() const override { return CLASS_IDENTIFIER; }
-    virtual PositionMetaData* clone() const;
+    virtual PositionMetaData* clone() const override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

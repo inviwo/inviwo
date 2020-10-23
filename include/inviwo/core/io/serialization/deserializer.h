@@ -287,23 +287,6 @@ public:
     int getInviwoWorkspaceVersion() const;
 
 private:
-    template <typename T>
-    using isDeserializable = decltype(std::declval<Deserializer>().deserialize(
-        std::declval<std::string_view>(), std::declval<T&>()));
-
-    template <typename T>
-    using isStreamable = decltype(std::declval<std::istream&>() >> std::declval<T&>());
-
-    template <typename T>
-    static constexpr bool canDeserialize() {
-        return util::is_detected_exact_v<std::istream&, isStreamable, T> ||
-               util::is_detected_v<isDeserializable, T> || std::is_enum_v<T>;
-    }
-
-    static_assert(canDeserialize<float>());
-    static_assert(canDeserialize<int>());
-    static_assert(canDeserialize<std::string>());
-
     // integers, strings
     template <typename T,
               typename std::enable_if<!util::is_floating_point<T>::value, int>::type = 0>
@@ -322,6 +305,19 @@ private:
 };
 
 namespace detail {
+
+template <typename T>
+using isDeserializable = decltype(
+    std::declval<Deserializer>().deserialize(std::declval<std::string_view>(), std::declval<T&>()));
+
+template <typename T>
+using isStreamable = decltype(std::declval<std::istream&>() >> std::declval<T&>());
+
+template <typename T>
+constexpr bool canDeserialize() {
+    return util::is_detected_exact_v<std::istream&, isStreamable, T> ||
+           util::is_detected_v<isDeserializable, T> || std::is_enum_v<T>;
+}
 
 IVW_CORE_API std::string getNodeAttribute(TxElement* node, std::string_view key);
 
@@ -727,7 +723,7 @@ template <typename T,
                                       util::is_string<T>::value,
                                   int>::type>
 void Deserializer::deserialize(std::string_view key, T& data, const SerializationTarget& target) {
-    static_assert(canDeserialize<T>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 
     try {
         if (target == SerializationTarget::Attribute) {
@@ -806,7 +802,7 @@ void Deserializer::deserialize(std::string_view key, std::bitset<N>& bits) {
 template <typename T>
 void Deserializer::deserialize(std::string_view key, std::vector<T*>& vector,
                                std::string_view itemKey) {
-    static_assert(canDeserialize<T>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
@@ -839,7 +835,7 @@ void Deserializer::deserialize(std::string_view key, std::vector<T*>& vector,
 template <typename T>
 void Deserializer::deserialize(std::string_view key, std::vector<std::unique_ptr<T>>& vector,
                                std::string_view itemKey) {
-    static_assert(canDeserialize<T>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
@@ -869,7 +865,7 @@ template <typename T, typename C>
 void Deserializer::deserialize(std::string_view key, std::vector<T*>& vector,
                                std::string_view itemKey, C identifier) {
 
-    static_assert(canDeserialize<T>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
@@ -907,7 +903,7 @@ void Deserializer::deserialize(std::string_view key, std::vector<T*>& vector,
 template <typename T>
 void Deserializer::deserialize(std::string_view key, std::vector<T>& vector,
                                std::string_view itemKey) {
-    static_assert(canDeserialize<T>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
@@ -935,7 +931,7 @@ void Deserializer::deserialize(std::string_view key, std::vector<T>& vector,
 template <typename T>
 void Deserializer::deserialize(std::string_view key, std::unordered_set<T>& set,
                                std::string_view itemKey) {
-    static_assert(canDeserialize<T>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
@@ -958,7 +954,7 @@ void Deserializer::deserialize(std::string_view key, std::unordered_set<T>& set,
 template <typename T>
 void Deserializer::deserialize(std::string_view key, std::list<T>& container,
                                std::string_view itemKey) {
-    static_assert(canDeserialize<T>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
@@ -986,7 +982,7 @@ void Deserializer::deserialize(std::string_view key, std::list<T>& container,
 template <typename T, size_t N>
 void Deserializer::deserialize(std::string_view key, std::array<T, N>& cont,
                                std::string_view itemKey) {
-    static_assert(canDeserialize<T>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
@@ -1015,7 +1011,7 @@ template <typename K, typename V, typename C, typename A>
 void Deserializer::deserialize(std::string_view key, std::map<K, V, C, A>& map,
                                std::string_view itemKey, std::string_view comparisonAttribute) {
     static_assert(isPrimitiveType<K>(), "Error: map key has to be a primitive type");
-    static_assert(canDeserialize<V>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<V>(), "Type is not serializable");
 
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
@@ -1044,7 +1040,7 @@ template <typename K, typename V, typename C, typename A>
 void Deserializer::deserialize(std::string_view key, std::map<K, V*, C, A>& map,
                                std::string_view itemKey, std::string_view comparisonAttribute) {
     static_assert(isPrimitiveType<K>(), "Error: map key has to be a primitive type");
-    static_assert(canDeserialize<V>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<V>(), "Type is not serializable");
 
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
@@ -1074,7 +1070,7 @@ template <typename K, typename V, typename C, typename A>
 void Deserializer::deserialize(std::string_view key, std::map<K, std::unique_ptr<V>, C, A>& map,
                                std::string_view itemKey, std::string_view comparisonAttribute) {
     static_assert(isPrimitiveType<K>(), "Error: map key has to be a primitive type");
-    static_assert(canDeserialize<V>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<V>(), "Type is not serializable");
 
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
@@ -1105,7 +1101,7 @@ template <typename K, typename V, typename H, typename C, typename A>
 void Deserializer::deserialize(std::string_view key, std::unordered_map<K, V, H, C, A>& map,
                                std::string_view itemKey, std::string_view comparisonAttribute) {
     static_assert(isPrimitiveType<K>(), "Error: map key has to be a primitive type");
-    static_assert(canDeserialize<V>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<V>(), "Type is not serializable");
 
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
@@ -1131,7 +1127,7 @@ void Deserializer::deserialize(std::string_view key, std::unordered_map<K, V, H,
 
 template <class T>
 void Deserializer::deserialize(std::string_view key, T*& data) {
-    static_assert(canDeserialize<T>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 
     auto keyNode = retrieveChild(key);
     if (!keyNode) return;
@@ -1177,7 +1173,7 @@ void Deserializer::deserialize(std::string_view key, T*& data) {
 
 template <class T>
 void Deserializer::deserialize(std::string_view key, std::unique_ptr<T>& data) {
-    static_assert(canDeserialize<T>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 
     auto ptr = data.release();
 
@@ -1215,7 +1211,7 @@ void Deserializer::deserialize(std::string_view key, ContainerWrapper<T, K>& con
 
 template <class Base, class T>
 void Deserializer::deserializeAs(std::string_view key, T*& data) {
-    static_assert(canDeserialize<T>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 
     static_assert(std::is_base_of<Base, T>::value, "T should be derived from Base");
 
@@ -1236,7 +1232,7 @@ void Deserializer::deserializeAs(std::string_view key, T*& data) {
 template <class Base, class T>
 void Deserializer::deserializeAs(std::string_view key, std::unique_ptr<T>& data) {
     static_assert(std::is_base_of<Base, T>::value, "T should be derived from Base");
-    static_assert(canDeserialize<T>(), "Type is not serializable");
+    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 
     if (Base* ptr = data.get()) {
         deserialize(key, ptr);

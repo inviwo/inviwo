@@ -68,8 +68,9 @@ struct InviwoDefaults<char> {
 template <>
 struct InviwoDefaults<unsigned char> {
     static constexpr auto get() {
-        return InviwoDefaultData{StaticString{"UChar"}, uvec2(1, 1),        unsigned char{0},
-                                 unsigned char{0},      unsigned char{100}, unsigned char{1}};
+        using uchar = unsigned char;
+        return InviwoDefaultData{
+            StaticString{"UChar"}, uvec2(1, 1), uchar{0}, uchar{0}, uchar{100}, uchar{1}};
     }
 };
 template <>
@@ -82,8 +83,9 @@ struct InviwoDefaults<int> {
 template <>
 struct InviwoDefaults<unsigned int> {
     static constexpr auto get() {
-        return InviwoDefaultData{StaticString{"UInt"}, uvec2(1, 1),       unsigned int{0},
-                                 unsigned int{0},      unsigned int{100}, unsigned int{1}};
+        using uint = unsigned int;
+        return InviwoDefaultData{
+            StaticString{"UInt"}, uvec2(1, 1), uint{0}, uint{0}, uint{100}, uint{1}};
     }
 };
 template <>
