@@ -90,7 +90,7 @@ struct Reghelper {
     template <typename T>
     auto operator()(animation::AnimationQtSupplier& as) {
         using namespace animation;
-        registerPropertyTrackHelper<Prop<T>, ValueKeyframe<Prop<T>::value_type>>(as);
+        registerPropertyTrackHelper<Prop<T>, ValueKeyframe<typename Prop<T>::value_type>>(as);
     }
 };
 
@@ -98,7 +98,7 @@ struct PropertyValueKeyframeReghelper {
     template <typename Prop>
     auto operator()(animation::AnimationQtSupplier& as) {
         using namespace animation;
-        registerPropertyTrackHelper<Prop, ValueKeyframe<Prop::value_type>>(as);
+        registerPropertyTrackHelper<Prop, ValueKeyframe<typename Prop::value_type>>(as);
     }
 };
 
