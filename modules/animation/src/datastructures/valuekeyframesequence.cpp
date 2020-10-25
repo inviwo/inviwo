@@ -74,8 +74,6 @@ void KeyframeSequenceTyped<CameraKeyframe>::operator()(Seconds from, Seconds to,
     }
 }
 
-template class IVW_MODULE_ANIMATION_TMPL_INST KeyframeSequenceTyped<CameraKeyframe>;
-
 }  // namespace animation
 
 }  // namespace inviwo

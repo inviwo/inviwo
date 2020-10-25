@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/propertytrack.h>
+#include <inviwo/core/util/logcentral.h>
 
 namespace inviwo {
 namespace animation {
@@ -47,23 +48,20 @@ void setKeyframeFromPropertyHelper(const CameraProperty* property, CameraKeyfram
     keyframe->updateFrom(property->get());
 }
 
+void setPropertyFromKeyframeHelper(ButtonProperty* property, const ButtonKeyframe*) {
+    property->pressButton();
+}
+
+void setKeyframeFromPropertyHelper(const ButtonProperty* property, ButtonKeyframe* key) {
+    if (&key->getValue() != property) {
+        LogWarnCustom(
+            "animation::setKeyframeFromPropertyHelper",
+            "The keyframe cannot be set to another Button. Please add a new animation track for" +
+                property->getDisplayName());
+    }
+}
+
 }  // namespace detail
-
-template <>
-std::string PropertyTrack<CameraProperty, CameraKeyframe>::classIdentifier() {
-    // Use property class identifier since multiple properties
-    // may have the same key (data type)
-    std::string id = "org.inviwo.animation.PropertyTrack.for." + CameraProperty::classIdentifier;
-    return id;
-}
-
-template <>
-AnimationTimeState PropertyTrack<CameraProperty, CameraKeyframe>::animateSequence(
-    const KeyframeSequenceTyped<CameraKeyframe>& seq, Seconds from, Seconds to,
-    AnimationState state) const {
-    seq(from, to, property_->get());
-    return {to, state};
-}
 
 }  // namespace animation
 }  // namespace inviwo

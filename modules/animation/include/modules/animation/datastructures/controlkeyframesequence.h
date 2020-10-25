@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CONTROLKEYFRAMESEQUENCE_H
-#define IVW_CONTROLKEYFRAMESEQUENCE_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 
@@ -61,4 +60,3 @@ public:
 
 }  // namespace inviwo
 
-#endif  // IVW_CONTROLKEYFRAMESEQUENCE_H

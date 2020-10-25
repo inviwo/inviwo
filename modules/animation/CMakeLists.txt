@@ -18,6 +18,8 @@ set(HEADER_FILES
     include/modules/animation/datastructures/basekeyframe.h
     include/modules/animation/datastructures/basekeyframesequence.h
     include/modules/animation/datastructures/basetrack.h
+    include/modules/animation/datastructures/buttonkeyframe.h
+    include/modules/animation/datastructures/buttonkeyframesequence.h
     include/modules/animation/datastructures/camerakeyframe.h
     include/modules/animation/datastructures/controlkeyframe.h
     include/modules/animation/datastructures/controlkeyframesequence.h
@@ -61,6 +63,8 @@ set(SOURCE_FILES
     src/datastructures/basekeyframe.cpp
     src/datastructures/basekeyframesequence.cpp
     src/datastructures/basetrack.cpp
+    src/datastructures/buttonkeyframe.cpp
+    src/datastructures/buttonkeyframesequence.cpp
     src/datastructures/camerakeyframe.cpp
     src/datastructures/controlkeyframe.cpp
     src/datastructures/controlkeyframesequence.cpp

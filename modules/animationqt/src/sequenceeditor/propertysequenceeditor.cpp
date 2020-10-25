@@ -156,7 +156,7 @@ private:
 
 PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track& track,
                                                AnimationManager& manager)
-    : SequenceEditorWidget(sequence, track) {
+    : SequenceEditorWidget(sequence, track, manager) {
 
     auto& bpt = dynamic_cast<BasePropertyTrack&>(track);
     auto& valseq = dynamic_cast<ValueKeyframeSequence&>(sequence);

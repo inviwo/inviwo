@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,49 +27,26 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/animation/datastructures/basekeyframe.h>
-#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/buttonkeyframe.h>
 
 namespace inviwo {
 
 namespace animation {
 
-enum class ControlAction { Pause, Jump };
+ButtonKeyframe::ButtonKeyframe(Seconds time, ButtonProperty* prop)
+    : BaseKeyframe(time), prop_(prop) {}
 
-/** \class ControlKeyframe
- * Base class for Keyframes that performs some type of control action.
- * @see Keyframe
- */
-class IVW_MODULE_ANIMATION_API ControlKeyframe : public BaseKeyframe {
-public:
-    using value_type = void;
-    ControlKeyframe() = default;
-    ControlKeyframe(Seconds time, ControlAction action = ControlAction::Pause,
-                    Seconds jumpTime = Seconds{0});
-    ControlKeyframe(const ControlKeyframe& rhs);
-    ControlKeyframe& operator=(const ControlKeyframe& that);
-    virtual ~ControlKeyframe();
-    virtual ControlKeyframe* clone() const override;
+void ButtonKeyframe::setProperty(ButtonProperty* prop) { prop_ = prop; }
 
-    ControlAction getAction() const;
-    void setAction(ControlAction action);
+ButtonKeyframe* ButtonKeyframe::clone() const { return new ButtonKeyframe(*this); }
 
-    Seconds getJumpTime() const;
-    void setJumpTime(Seconds jumpTime);
-
-    AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state);
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
-private:
-    ControlAction action_ = ControlAction::Pause;
-    Seconds jumpTime_ = Seconds{0};
-};
+AnimationTimeState ButtonKeyframe::operator()(Seconds from, Seconds to, AnimationState state) const {
+    if (prop_ && (from < getTime() && to >= getTime()) || (to <= getTime() && from > getTime())) {
+        // We passed over this keyframe
+        prop_->pressButton();
+    }
+    return {to, state};
+}
 
 }  // namespace animation
 

@@ -46,7 +46,7 @@
 namespace inviwo {
 
 namespace animation {
-SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& track)
+SequenceEditorWidget::SequenceEditorWidget(KeyframeSequence& sequence, Track& track, AnimationManager&)
     : QWidget(), sequence_(sequence), track_{track} {
     setObjectName("SequenceEditorWidget");
 }
@@ -60,10 +60,12 @@ void SequenceEditorWidget::onKeyframeSequenceSelectionChanged(KeyframeSequence*)
 }
 
 void SequenceEditorWidget::onKeyframeAdded(Keyframe* key, KeyframeSequence*) {
-    auto w = create(key);
-    keyframesLayout_->addWidget(w);
-    keyframeEditorWidgets_[key] = w;
-    setReorderNeeded();
+    if (auto w = create(key)) {
+        keyframesLayout_->addWidget(w);
+        keyframeEditorWidgets_[key] = w;
+        setReorderNeeded();
+    }
+
 }
 
 void SequenceEditorWidget::onKeyframeRemoved(Keyframe* key, KeyframeSequence*) {

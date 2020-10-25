@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,49 +26,42 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/animation/datastructures/basekeyframe.h>
 #include <modules/animation/datastructures/animationstate.h>
+
+#include <inviwo/core/properties/buttonproperty.h>
 
 namespace inviwo {
 
 namespace animation {
 
-enum class ControlAction { Pause, Jump };
-
-/** \class ControlKeyframe
- * Base class for Keyframes that performs some type of control action.
+/** \class ButtonKeyframe
+ * Keyframe for buttons. Button will be pressed when passing over the keyframe.
  * @see Keyframe
  */
-class IVW_MODULE_ANIMATION_API ControlKeyframe : public BaseKeyframe {
+class IVW_MODULE_ANIMATION_API ButtonKeyframe : public BaseKeyframe {
 public:
-    using value_type = void;
-    ControlKeyframe() = default;
-    ControlKeyframe(Seconds time, ControlAction action = ControlAction::Pause,
-                    Seconds jumpTime = Seconds{0});
-    ControlKeyframe(const ControlKeyframe& rhs);
-    ControlKeyframe& operator=(const ControlKeyframe& that);
-    virtual ~ControlKeyframe();
-    virtual ControlKeyframe* clone() const override;
+    //using value_type = ButtonProperty;
+    ButtonKeyframe() = default;
+    ButtonKeyframe(Seconds time, ButtonProperty* prop = nullptr);
+    ButtonKeyframe(const ButtonKeyframe& rhs) = default;
+    ButtonKeyframe& operator=(const ButtonKeyframe& that) = default;
+    virtual ~ButtonKeyframe() = default;
 
-    ControlAction getAction() const;
-    void setAction(ControlAction action);
+    void setProperty(ButtonProperty* prop);
 
-    Seconds getJumpTime() const;
-    void setJumpTime(Seconds jumpTime);
+    const ButtonProperty& getValue() const { return *prop_; }
+    ButtonProperty& getValue() { return *prop_; }
 
-    AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state);
+    virtual ButtonKeyframe* clone() const override;
 
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
+    AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
 
 private:
-    ControlAction action_ = ControlAction::Pause;
-    Seconds jumpTime_ = Seconds{0};
+    ButtonProperty* prop_ = nullptr;
 };
 
 }  // namespace animation

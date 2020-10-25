@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,49 +27,37 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/animation/datastructures/basekeyframe.h>
-#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/buttonkeyframesequence.h>
 
 namespace inviwo {
 
 namespace animation {
 
-enum class ControlAction { Pause, Jump };
+ButtonKeyframeSequence::ButtonKeyframeSequence(
+    std::vector<std::unique_ptr<ButtonKeyframe>> keyframes)
+    : BaseKeyframeSequence<ButtonKeyframe>(std::move(keyframes)) {}
 
-/** \class ControlKeyframe
- * Base class for Keyframes that performs some type of control action.
- * @see Keyframe
- */
-class IVW_MODULE_ANIMATION_API ControlKeyframe : public BaseKeyframe {
-public:
-    using value_type = void;
-    ControlKeyframe() = default;
-    ControlKeyframe(Seconds time, ControlAction action = ControlAction::Pause,
-                    Seconds jumpTime = Seconds{0});
-    ControlKeyframe(const ControlKeyframe& rhs);
-    ControlKeyframe& operator=(const ControlKeyframe& that);
-    virtual ~ControlKeyframe();
-    virtual ControlKeyframe* clone() const override;
+ButtonKeyframeSequence* ButtonKeyframeSequence::clone() const {
+    return new ButtonKeyframeSequence(*this);
+}
 
-    ControlAction getAction() const;
-    void setAction(ControlAction action);
+AnimationTimeState ButtonKeyframeSequence::operator()(Seconds from, Seconds to,
+                                                      AnimationState state) const {
+    // 'it' will be the first key. with a time larger than 'to'.
+    auto fromIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), from,
+                                   [](const auto& a, const auto& b) { return a < *b; });
+    auto toIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), to,
+                                 [](const auto& a, const auto& b) { return a < *b; });
+    if (toIt != fromIt) {
+        if (from < to) {
+            return (**fromIt)(from, to, state);
+        } else {
+            return (**toIt)(from, to, state);
+        }
+    }
 
-    Seconds getJumpTime() const;
-    void setJumpTime(Seconds jumpTime);
-
-    AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state);
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
-private:
-    ControlAction action_ = ControlAction::Pause;
-    Seconds jumpTime_ = Seconds{0};
-};
+    return {to, state};
+}
 
 }  // namespace animation
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,49 +26,33 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/animation/datastructures/basekeyframe.h>
-#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/basekeyframesequence.h>
+#include <modules/animation/datastructures/buttonkeyframe.h>
 
 namespace inviwo {
 
 namespace animation {
 
-enum class ControlAction { Pause, Jump };
-
-/** \class ControlKeyframe
- * Base class for Keyframes that performs some type of control action.
- * @see Keyframe
+/** \class ButtonKeyframeSequence
+ * KeyframeSequence for ButtonProperty. Button will be pressed when passing over keyframe.
+ * @see KeyframeSequence
  */
-class IVW_MODULE_ANIMATION_API ControlKeyframe : public BaseKeyframe {
+class IVW_MODULE_ANIMATION_API ButtonKeyframeSequence
+    : public BaseKeyframeSequence<ButtonKeyframe> {
 public:
-    using value_type = void;
-    ControlKeyframe() = default;
-    ControlKeyframe(Seconds time, ControlAction action = ControlAction::Pause,
-                    Seconds jumpTime = Seconds{0});
-    ControlKeyframe(const ControlKeyframe& rhs);
-    ControlKeyframe& operator=(const ControlKeyframe& that);
-    virtual ~ControlKeyframe();
-    virtual ControlKeyframe* clone() const override;
+    using key_type = typename BaseKeyframeSequence<ButtonKeyframe>::key_type;
+    ButtonKeyframeSequence() = default;
+    ButtonKeyframeSequence(std::vector<std::unique_ptr<ButtonKeyframe>> keyframes);
+    ButtonKeyframeSequence(const ButtonKeyframeSequence& rhs) = default;
+    ButtonKeyframeSequence& operator=(const ButtonKeyframeSequence& that) = default;
+    virtual ~ButtonKeyframeSequence() = default;
 
-    ControlAction getAction() const;
-    void setAction(ControlAction action);
+    virtual ButtonKeyframeSequence* clone() const override;
 
-    Seconds getJumpTime() const;
-    void setJumpTime(Seconds jumpTime);
-
-    AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state);
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
-private:
-    ControlAction action_ = ControlAction::Pause;
-    Seconds jumpTime_ = Seconds{0};
+    virtual AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
 };
 
 }  // namespace animation

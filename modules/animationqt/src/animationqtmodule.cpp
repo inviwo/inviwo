@@ -34,6 +34,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <modules/animation/animationmodule.h>
+#include <modules/animation/datastructures/buttonkeyframesequence.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/datastructures/track.h>
@@ -52,6 +53,7 @@
 #include <modules/animationqt/sequenceeditor/controlsequenceeditor.h>
 
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
@@ -72,11 +74,12 @@ namespace inviwo {
 
 namespace {
 
-template <typename PropertyType, typename Keyframe>
+template <typename PropertyType, typename Keyframe,
+          typename KeyframeSequence = animation::KeyframeSequenceTyped<Keyframe>>
 void registerPropertyTrackHelper(animation::AnimationQtSupplier& as) {
     using namespace animation;
 
-    using TrackType = PropertyTrack<PropertyType, Keyframe>;
+    using TrackType = PropertyTrack<PropertyType, Keyframe, KeyframeSequence>;
 
     as.registerTrackToWidgetMap(TrackType::classIdentifier(),
                                 PropertyTrackWidgetQt::classIdentifier());
@@ -204,6 +207,10 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
         PropertyValueKeyframeReghelper{}, *this);
 
     registerPropertyTrackHelper<CameraProperty, CameraKeyframe>(*this);
+
+    using ButtonTrack = PropertyTrack<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>;
+    registerTrackToWidgetMap(ButtonTrack::classIdentifier(),
+                             PropertyTrackWidgetQt::classIdentifier());
 
     registerTrackToWidgetMap(ControlTrack::classIdentifier(),
                              ControlTrackWidgetQt::classIdentifier());
