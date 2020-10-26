@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,39 +26,37 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-
-#include <modules/animation/datastructures/basetrack.h>
-#include <modules/animation/datastructures/animationtime.h>
-#include <modules/animation/datastructures/animationstate.h>
-#include <modules/animation/datastructures/controlkeyframesequence.h>
+#include <modules/animation/datastructures/basekeyframesequence.h>
+#include <modules/animation/datastructures/callbackkeyframe.h>
 
 namespace inviwo {
 
 namespace animation {
 
-/** \class ControlTrack
- * A special track for manipulating the playback.
- * Exposes functions for adding a ControlKeyFrame and ControlKeyFrameSequence
- * @see Track
+/** \class CallbackKeyframeSequence
+ * KeyframeSequence for CallbackKeyframe.
+ * Animating over a CallbackKeyframe in the sequence will call its corresponding callbacks.
+ * @see CallbackKeyframe
+ * @see CallbackTrack
  */
-class IVW_MODULE_ANIMATION_API ControlTrack : public BaseTrack<ControlKeyframeSequence> {
+class IVW_MODULE_ANIMATION_API CallbackKeyframeSequence
+    : public BaseKeyframeSequence<CallbackKeyframe> {
 public:
-    ControlTrack();
-    virtual ~ControlTrack();
+    using key_type = typename BaseKeyframeSequence<CallbackKeyframe>::key_type;
+    CallbackKeyframeSequence() = default;
+    CallbackKeyframeSequence(std::vector<std::unique_ptr<CallbackKeyframe>> keyframes);
+    CallbackKeyframeSequence(const CallbackKeyframeSequence& rhs) = default;
+    CallbackKeyframeSequence& operator=(const CallbackKeyframeSequence& that) = default;
+    virtual ~CallbackKeyframeSequence() = default;
 
-    static std::string classIdentifier();
-    virtual std::string getClassIdentifier() const override;
+    virtual CallbackKeyframeSequence* clone() const override;
 
-    virtual AnimationTimeState operator()(Seconds from, Seconds to,
-                                          AnimationState state) const override;
+    virtual AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
 };
 
 }  // namespace animation
 
 }  // namespace inviwo
-

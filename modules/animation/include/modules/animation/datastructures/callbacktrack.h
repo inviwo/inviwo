@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,31 +26,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 #include <modules/animation/datastructures/basetrack.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/animationstate.h>
-#include <modules/animation/datastructures/controlkeyframesequence.h>
+#include <modules/animation/datastructures/callbackkeyframesequence.h>
 
 namespace inviwo {
 
 namespace animation {
 
-/** \class ControlTrack
- * A special track for manipulating the playback.
- * Exposes functions for adding a ControlKeyFrame and ControlKeyFrameSequence
- * @see Track
+/** \class CallbackTrack
+ * A track for executing callbacks when animating forward/backward.
+ * Exposes functions for adding a CallbackKeyFrame and CallbackKeyFrameSequence
+ * This track is intended to be added programatically, i.e., not through the animation user interface.
+ * @see CallbackKeyframe
+ * @see CallbackKeyframeSequence
  */
-class IVW_MODULE_ANIMATION_API ControlTrack : public BaseTrack<ControlKeyframeSequence> {
+class IVW_MODULE_ANIMATION_API CallbackTrack : public BaseTrack<CallbackKeyframeSequence> {
 public:
-    ControlTrack();
-    virtual ~ControlTrack();
-
+    CallbackTrack();
+    virtual ~CallbackTrack() = default;
+    
     static std::string classIdentifier();
     virtual std::string getClassIdentifier() const override;
 
@@ -61,4 +60,3 @@ public:
 }  // namespace animation
 
 }  // namespace inviwo
-

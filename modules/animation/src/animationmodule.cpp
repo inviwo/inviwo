@@ -39,8 +39,8 @@
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 
-#include <modules/animation/datastructures/buttonkeyframe.h>
 #include <modules/animation/datastructures/buttonkeyframesequence.h>
+#include <modules/animation/datastructures/callbacktrack.h>
 #include <modules/animation/datastructures/camerakeyframe.h>
 #include <modules/animation/datastructures/controltrack.h>
 #include <modules/animation/datastructures/keyframe.h>
@@ -169,6 +169,7 @@ AnimationModule::AnimationModule(InviwoApplication* app)
 
     // Todo: Add support for TransferFunctionProperty (special interpolation)
 
+    registerTrack<CallbackTrack>();
     registerTrack<ControlTrack>();
 }
 

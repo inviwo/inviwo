@@ -35,6 +35,7 @@
 
 #include <modules/animation/animationmodule.h>
 #include <modules/animation/datastructures/buttonkeyframesequence.h>
+#include <modules/animation/datastructures/callbacktrack.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/datastructures/track.h>
@@ -210,6 +211,9 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
 
     using ButtonTrack = PropertyTrack<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>;
     registerTrackToWidgetMap(ButtonTrack::classIdentifier(),
+                             PropertyTrackWidgetQt::classIdentifier());
+
+    registerTrackToWidgetMap(CallbackTrack::classIdentifier(),
                              PropertyTrackWidgetQt::classIdentifier());
 
     registerTrackToWidgetMap(ControlTrack::classIdentifier(),

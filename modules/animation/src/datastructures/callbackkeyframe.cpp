@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,30 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-
-#include <modules/animation/datastructures/basetrack.h>
-#include <modules/animation/datastructures/animationtime.h>
-#include <modules/animation/datastructures/animationstate.h>
-#include <modules/animation/datastructures/controlkeyframesequence.h>
+#include <modules/animation/datastructures/callbackkeyframe.h>
 
 namespace inviwo {
 
 namespace animation {
 
-/** \class ControlTrack
- * A special track for manipulating the playback.
- * Exposes functions for adding a ControlKeyFrame and ControlKeyFrameSequence
- * @see Track
- */
-class IVW_MODULE_ANIMATION_API ControlTrack : public BaseTrack<ControlKeyframeSequence> {
-public:
-    ControlTrack();
-    virtual ~ControlTrack();
+CallbackKeyframe::CallbackKeyframe(Seconds time, std::function<void()> doForward,
+                                   std::function<void()> undo)
+    : BaseKeyframe(time), do_(std::move(doForward)), undo_(std::move(undo)) {}
 
-    static std::string classIdentifier();
-    virtual std::string getClassIdentifier() const override;
+CallbackKeyframe* CallbackKeyframe::clone() const { return new CallbackKeyframe(*this); }
 
-    virtual AnimationTimeState operator()(Seconds from, Seconds to,
-                                          AnimationState state) const override;
-};
+AnimationTimeState CallbackKeyframe::operator()(Seconds from, Seconds to,
+                                                AnimationState state) const {
+    if (do_ && (from < getTime() && to >= getTime())) {
+        // Animating forward, passing from left to right
+        do_();
+    } else if (undo_ && (to <= getTime() && from > getTime())) {
+        // Animating backward, passing from right to left
+        undo_();
+    }
+    return {to, state};
+}
 
 }  // namespace animation
 
 }  // namespace inviwo
-

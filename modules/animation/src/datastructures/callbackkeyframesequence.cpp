@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,37 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-
-#include <modules/animation/datastructures/basetrack.h>
-#include <modules/animation/datastructures/animationtime.h>
-#include <modules/animation/datastructures/animationstate.h>
-#include <modules/animation/datastructures/controlkeyframesequence.h>
+#include <modules/animation/datastructures/callbackkeyframesequence.h>
 
 namespace inviwo {
 
 namespace animation {
 
-/** \class ControlTrack
- * A special track for manipulating the playback.
- * Exposes functions for adding a ControlKeyFrame and ControlKeyFrameSequence
- * @see Track
- */
-class IVW_MODULE_ANIMATION_API ControlTrack : public BaseTrack<ControlKeyframeSequence> {
-public:
-    ControlTrack();
-    virtual ~ControlTrack();
+CallbackKeyframeSequence::CallbackKeyframeSequence(
+    std::vector<std::unique_ptr<CallbackKeyframe>> keyframes)
+    : BaseKeyframeSequence<CallbackKeyframe>(std::move(keyframes)) {}
 
-    static std::string classIdentifier();
-    virtual std::string getClassIdentifier() const override;
+CallbackKeyframeSequence* CallbackKeyframeSequence::clone() const {
+    return new CallbackKeyframeSequence(*this);
+}
 
-    virtual AnimationTimeState operator()(Seconds from, Seconds to,
-                                          AnimationState state) const override;
-};
+AnimationTimeState CallbackKeyframeSequence::operator()(Seconds from, Seconds to,
+                                                      AnimationState state) const {
+    // 'it' will be the first key. with a time larger than 'to'.
+    auto fromIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), from,
+                                   [](const auto& a, const auto& b) { return a < *b; });
+    auto toIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), to,
+                                 [](const auto& a, const auto& b) { return a < *b; });
+    if (toIt != fromIt) {
+        if (from < to) {
+            return (**fromIt)(from, to, state);
+        } else {
+            return (**toIt)(from, to, state);
+        }
+    }
+
+    return {to, state};
+}
 
 }  // namespace animation
 
