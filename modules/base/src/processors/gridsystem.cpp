@@ -76,16 +76,16 @@ void GridSystem::process() {
 
     auto createLines = [&](unsigned a, unsigned b, unsigned c) {
         const auto color = color_.get(a);
-        const auto extentB = extent_.get(b);
-        const auto extentC = extent_.get(c);
+        const auto extent = extent_.get(c);
+
+        vec3 start{0.0f};
+        vec3 end{0.0f};
+        start[c] = extent.x;
+        end[c] = extent.y;
 
         for (auto v : vals[b]) {
-            vec3 start{0.0f};
-            vec3 end{0.0f};
             start[b] = v;
             end[b] = v;
-            start[c] = extentC.x;
-            end[c] = extentC.y;
             auto i0 = mesh->addVertex(start, color);
             auto i1 = mesh->addVertex(end, color);
             ib.push_back(i0);
