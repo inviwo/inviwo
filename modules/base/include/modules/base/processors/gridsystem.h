@@ -41,20 +41,18 @@
 namespace inviwo {
 
 namespace detail {
-template <unsigned N, typename T>
-constexpr T passthrough_the_value_helper(const T& t) {
-    return t;
+
+template <typename T, std::size_t... Is>
+constexpr std::array<T, sizeof...(Is)> create_array(T value, std::index_sequence<Is...>) {
+    // cast Is to void to remove the warning: unused value
+    return {{(static_cast<void>(Is), value)...}};
 }
 
-template <typename T, unsigned... I>
-constexpr auto copyInitFilledArrayHelper(const T& t, std::index_sequence<I...>) {
-    return std::array<T, sizeof...(I)>{passthrough_the_value_helper<I>(t)...};
+template <std::size_t N, typename T>
+constexpr std::array<T, N> create_array(const T& value) {
+    return create_array(value, std::make_index_sequence<N>());
 }
 
-template <unsigned N, typename T, typename Indices = std::make_index_sequence<N>>
-constexpr std::array<T, N> copyInitFilledArray(const T& t) {
-    return copyInitFilledArrayHelper(t, Indices{});
-}
 }  // namespace detail
 
 enum class ListOrSingleValuePropertyState { Single, List };
@@ -68,14 +66,14 @@ public:
 
     template <typename... DefaultArgs>
     ListOrSingleValueProperty(const std::string& identifier, const std::string& displayName,
-                              State initState = State::Single, DefaultArgs... defaultArgs)
+                              State initState, DefaultArgs... defaultArgs)
         : CompositeProperty(identifier, displayName)
         , state_{"state",
                  "State",
                  {{"single", "Single", State::Single}, {"list", "List", State::List}},
-                 initState == State::Single ? 0 : 1}
+                 initState == State::Single ? size_t{0} : size_t{1}}
         , single_{"single", displayName, defaultArgs...}
-        , list_{detail::copyInitFilledArray<N, Prop>(single_)}
+        , list_{detail::create_array<N, Prop>(single_)}
 
     {
         addProperties(state_, single_);
