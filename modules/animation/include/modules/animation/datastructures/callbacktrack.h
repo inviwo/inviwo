@@ -41,7 +41,8 @@ namespace animation {
 /** \class CallbackTrack
  * A track for executing callbacks when animating forward/backward.
  * Exposes functions for adding a CallbackKeyFrame and CallbackKeyFrameSequence
- * This track is intended to be added programatically, i.e., not through the animation user interface.
+ * This track is intended to be added programatically, i.e., not through the animation user
+ * interface.
  * @see CallbackKeyframe
  * @see CallbackKeyframeSequence
  */
@@ -49,7 +50,7 @@ class IVW_MODULE_ANIMATION_API CallbackTrack : public BaseTrack<CallbackKeyframe
 public:
     CallbackTrack();
     virtual ~CallbackTrack() = default;
-    
+
     static std::string classIdentifier();
     virtual std::string getClassIdentifier() const override;
 

@@ -42,7 +42,7 @@ CallbackKeyframeSequence* CallbackKeyframeSequence::clone() const {
 }
 
 AnimationTimeState CallbackKeyframeSequence::operator()(Seconds from, Seconds to,
-                                                      AnimationState state) const {
+                                                        AnimationState state) const {
     // 'it' will be the first key. with a time larger than 'to'.
     auto fromIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), from,
                                    [](const auto& a, const auto& b) { return a < *b; });
@@ -62,4 +62,3 @@ AnimationTimeState CallbackKeyframeSequence::operator()(Seconds from, Seconds to
 }  // namespace animation
 
 }  // namespace inviwo
-
