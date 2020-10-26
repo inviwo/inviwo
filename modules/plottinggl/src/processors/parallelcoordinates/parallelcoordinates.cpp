@@ -328,9 +328,9 @@ void ParallelCoordinates::process() {
 
 void ParallelCoordinates::createOrUpdateProperties() {
     axes_.clear();
-    for (auto& p : axisProperties_.getProperties()) {
-        p->setVisible(false);
-    }
+
+    std::unordered_set<Property*> previousProperties(axisProperties_.getProperties().begin(),
+                                                     axisProperties_.getProperties().end());
 
     if (!dataFrame_.hasData()) return;
     auto data = dataFrame_.getData();
@@ -357,6 +357,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
             axisProperties_.addProperty(newProp.release());
             return ptr;
         }();
+        previousProperties.erase(prop);
         prop->setColumnId(axes_.size());
         prop->setVisible(true);
 
@@ -388,6 +389,11 @@ void ParallelCoordinates::createOrUpdateProperties() {
     for (auto& axis : axes_) {
         axis.pcp->updateFromColumn(data->getColumn(axis.pcp->columnId()));
         axis.pcp->setParallelCoordinates(this);
+    }
+
+    // Remove properties for axes that doesn't exist in the current dataframe
+    for (auto prop : previousProperties) {
+        axisProperties_.removeProperty(prop);
     }
 
     updating_ = false;
