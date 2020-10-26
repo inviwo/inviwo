@@ -126,7 +126,6 @@ void SequenceEditorPanel::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s)
         widgets_[s] = widget.get();
         sequenceEditors_->addWidget(widget.release());
     }
-
 }
 
 void SequenceEditorPanel::onKeyframeSequenceRemoved(Track*, KeyframeSequence* s) {

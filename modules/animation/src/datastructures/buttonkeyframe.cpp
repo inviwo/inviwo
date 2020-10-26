@@ -40,7 +40,8 @@ void ButtonKeyframe::setProperty(ButtonProperty* prop) { prop_ = prop; }
 
 ButtonKeyframe* ButtonKeyframe::clone() const { return new ButtonKeyframe(*this); }
 
-AnimationTimeState ButtonKeyframe::operator()(Seconds from, Seconds to, AnimationState state) const {
+AnimationTimeState ButtonKeyframe::operator()(Seconds from, Seconds to,
+                                              AnimationState state) const {
     if (prop_ && (from < getTime() && to >= getTime()) || (to <= getTime() && from > getTime())) {
         // We passed over this keyframe
         prop_->pressButton();

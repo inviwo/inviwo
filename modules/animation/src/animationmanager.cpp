@@ -117,7 +117,7 @@ Keyframe* AnimationManager::addKeyframe(Property* property) {
 
 Keyframe* AnimationManager::addKeyframe(Property* property, Seconds time) {
     auto it = trackMap_.find(property);
-        std::string interpolationErrMsg;
+    std::string interpolationErrMsg;
     try {
         std::unique_ptr<Interpolation> interpolation{nullptr};
         try {

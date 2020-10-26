@@ -44,7 +44,7 @@ namespace animation {
  */
 class IVW_MODULE_ANIMATION_API ButtonKeyframe : public BaseKeyframe {
 public:
-    //using value_type = ButtonProperty;
+    // using value_type = ButtonProperty;
     ButtonKeyframe() = default;
     ButtonKeyframe(Seconds time, ButtonProperty* prop = nullptr);
     ButtonKeyframe(const ButtonKeyframe& rhs) = default;

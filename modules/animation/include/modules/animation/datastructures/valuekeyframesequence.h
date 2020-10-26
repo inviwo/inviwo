@@ -238,17 +238,15 @@ void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
 }
 
 template <>
-IVW_MODULE_ANIMATION_API
-KeyframeSequenceTyped<CameraKeyframe>::KeyframeSequenceTyped();
+IVW_MODULE_ANIMATION_API KeyframeSequenceTyped<CameraKeyframe>::KeyframeSequenceTyped();
 template <>
-IVW_MODULE_ANIMATION_API
-KeyframeSequenceTyped<CameraKeyframe>::KeyframeSequenceTyped(
+IVW_MODULE_ANIMATION_API KeyframeSequenceTyped<CameraKeyframe>::KeyframeSequenceTyped(
     std::vector<std::unique_ptr<CameraKeyframe>> keyframes);
 
 template <>
-IVW_MODULE_ANIMATION_API
-void KeyframeSequenceTyped<CameraKeyframe>::operator()(Seconds from, Seconds to, Camera& out) const;
-
+IVW_MODULE_ANIMATION_API void KeyframeSequenceTyped<CameraKeyframe>::operator()(Seconds from,
+                                                                                Seconds to,
+                                                                                Camera& out) const;
 
 }  // namespace animation
 
