@@ -29,6 +29,8 @@
 
 #include <modules/base/processors/gridsystem.h>
 
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
