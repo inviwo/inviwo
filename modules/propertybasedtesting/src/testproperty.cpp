@@ -81,6 +81,19 @@ std::optional<util::PropertyEffect> TestPropertyComposite::getPropertyEffect(
 	return res;
 }
 
+void TestPropertyComposite::onTestPropertyChange() {
+	notifyObserversAboutChange();
+}
+
+std::string TestPropertyComposite::textualDescription(unsigned int indent) const {
+	const std::string indentation(indent, ' ');
+	std::string res = indentation + getDisplayName() + ":";
+	for(const auto& subProp : subProperties)
+		if(subProp->getBoolComp()->isChecked())
+			res += std::string("\n") + subProp->textualDescription(indent+2);
+	return res;
+}
+
 std::ostream& TestPropertyComposite::ostr(std::ostream& out,
 		std::shared_ptr<TestResult> testResult) const {
 	out << "(";
@@ -111,6 +124,8 @@ TestPropertyComposite::TestPropertyComposite(PropertyOwner* original,
 		if(auto p = testableProperty(prop); p != std::nullopt) {
 			subProperties.emplace_back(*p);
 			boolComp->addProperty((*p)->getBoolComp());
+
+			(*p)->addObserver(this);
 		}
 }
 void TestPropertyComposite::setToDefault() const {
@@ -236,8 +251,11 @@ TestPropertyTyped<T>::TestPropertyTyped(T* original)
 			return res;
 		}()){
 
-	for(auto effectOpt : effectOption)
+	for(auto effectOpt : effectOption) {
 		boolComp->addProperty(effectOpt);
+		boolComp->getBoolProperty()->onChange([this]() { this->notifyObserversAboutChange(); });
+		effectOpt->onChange([this]() { this->notifyObserversAboutChange(); });
+	}
 }
 template<typename T>
 T* TestPropertyTyped<T>::getTypedProperty() const {
@@ -254,6 +272,83 @@ auto TestPropertyTyped<T>::getDefaultValue() const -> const value_type& {
 template<typename T>
 void TestPropertyTyped<T>::storeDefault() {
 	defaultValue = typedProperty->get();
+}
+template<typename T>
+std::string TestPropertyTyped<T>::textualDescription(unsigned int indent) const {
+	const std::string indentation(indent, ' ');
+
+	static const std::string effStrings[] = {
+			"equal",
+			"different",
+			"smaller",
+			"smaller or equal",
+			"greater",
+			"greater or equal",
+			"PLACEHOLDER",
+			"not comparable"
+		};
+	
+	const auto change = [](const util::PropertyEffect& e) {
+			switch(e) {
+				case util::PropertyEffect::EQUAL:
+				case util::PropertyEffect::NOT_EQUAL:
+				case util::PropertyEffect::NOT_COMPARABLE:
+					return "Changing";
+				default:
+					return "Increasing";
+			}
+		};
+
+	const auto eff = this->selectedEffects();
+	if(numComponents == 1) {
+		if(eff[0] == util::PropertyEffect::ANY) {
+			return indentation
+				+ getDisplayName()
+				+ " will be tested with differing values, but it has no influence over the number of counted pixels.";
+		} else {
+			return indentation
+				+ change(eff[0]) + " "
+				+ getDisplayName()
+				+ "'s value should lead to a "
+				+ effStrings[static_cast<unsigned int>(eff[0])]
+				+ " number of counted pixels";
+		}
+	} else {
+		std::array<std::vector<unsigned int>, util::numPropertyEffects> comps;
+		for(unsigned int i = 0; i < numComponents; i++)
+			comps[static_cast<unsigned int>(eff[i])].emplace_back(i);
+		
+		std::string res = indentation + getDisplayName() + ":";
+		for(unsigned int eI = 0; eI < util::numPropertyEffects; eI++) {
+			if(comps[eI].empty())
+				continue;
+			const bool plural = comps[eI].size() > 1;
+			const util::PropertyEffect e = static_cast<util::PropertyEffect>(eI);
+
+			std::string line = std::string("Component") + (plural ? "s " : " ");
+			for(unsigned int i = 0; i < comps[eI].size(); i++) {
+				if(i > 0) {
+					line += (i==comps[eI].size()-1 ? " and " : ", ");
+				}
+				line += std::to_string(i);
+			}
+			if(e == util::PropertyEffect::ANY) {
+				line += std::string(" will be tested with differing values, but ")
+					+ (plural ? "they have" : "it has")
+					+ " no influence over the number of counted pixels.";
+			} else {
+				line[0] = 'c';
+				line = std::string(change(e))
+					+ " the value" + (plural ? "s" : "") + " of " 
+					+ line + " should lead to a "
+					+ effStrings[eI]
+					+ "number of counted pixels";
+			}
+
+			res += '\n' + indentation + line;
+		}
+		return res;
+	}
 }
 template<typename T>
 auto TestPropertyTyped<T>::selectedEffects() const -> std::array<util::PropertyEffect, numComponents> {

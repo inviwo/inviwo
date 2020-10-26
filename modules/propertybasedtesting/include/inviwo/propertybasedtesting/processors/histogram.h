@@ -38,6 +38,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 
+#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
@@ -68,7 +69,8 @@ namespace inviwo {
  */
 class IVW_MODULE_PROPERTYBASEDTESTING_API Histogram
 		: public Processor
-		, protected ProcessorNetworkObserver {
+		, private TestPropertyObserver 
+		, private ProcessorNetworkObserver {
 public:
     Histogram(InviwoApplication*);
     virtual ~Histogram() {
@@ -100,13 +102,17 @@ private:
 	std::optional<std::shared_ptr<Image>> outputImage;
 	ImageOutport outport_;
 	
-	DirectoryProperty reportDirectory_;
+	DirectoryProperty reportDirectory_; // TODO: create dir after deserialization
 	BoolProperty useDepth_;
     FloatVec4Property color_;
 	ButtonProperty countPixelsButton_;
 	ButtonProperty startButton_;
 	ButtonProperty condenseButton_;
 	IntSizeTProperty numTests_;
+	StringProperty description_;
+
+	// updates the textual description
+	void onTestPropertyChange() override;
 
 	void collectProperties();
 

@@ -146,6 +146,7 @@ void Histogram::updateProcessors() {
 				continue;
 
 			auto comp = TestPropertyComposite::make<Processor>(processor);
+			comp->addObserver(this);
 			processors_.emplace(processor, comp);
 
 			addProperty(comp->getBoolComp());
@@ -166,9 +167,8 @@ Histogram::Histogram(InviwoApplication* app)
 	, countPixelsButton_("cntPixelsButton", "Count number of pixels with set color")
 	, startButton_("startButton", "Update Test Results")
 	, condenseButton_("condenseButton", "Condense Failed Tests")
-	, numTests_("numTests", "Maximum number of tests", 200, 1, 10000) {
-
-	//std::cerr << "Histogram(app=" << app << ")" << std::endl;
+	, numTests_("numTests", "Maximum number of tests", 200, 1, 10000)
+	, description_("description", "Description", "", InvalidationLevel::InvalidOutput, PropertySemantics::Text) {
 
 	countPixelsButton_.onChange([this]() {
 			NetworkLock lock(this);
@@ -196,7 +196,6 @@ Histogram::Histogram(InviwoApplication* app)
 	addPort(inport_);
 
 	outport_.setHandleResizeEvents(false); // No resize-event handling
-	// TODO: maybe generate fitting image on resize event?
 	addPort(outport_);
 
 	addProperty(reportDirectory_);
@@ -210,6 +209,7 @@ Histogram::Histogram(InviwoApplication* app)
 	addProperty(numTests_);
 	addProperty(startButton_);
 	addProperty(condenseButton_);
+	addProperty(description_);
 
 	if (std::filesystem::create_directory(tempDir_.string())) {
 		std::stringstream str;
@@ -220,6 +220,16 @@ Histogram::Histogram(InviwoApplication* app)
 
 	// make this observe the processor network
 	app_->getProcessorNetwork()->addObserver(this);
+}
+
+void Histogram::onTestPropertyChange() {
+	std::string desc;
+	for(auto[proc,prop] : processors_) {
+		if(prop->getBoolComp()->isChecked())
+			desc += prop->textualDescription() + '\n';
+	}
+	std::cerr << "textual Description:\n" << desc << std::endl;
+	description_.set(desc);
 }
 
 void Histogram::serialize(Serializer& s) const {

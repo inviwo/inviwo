@@ -42,7 +42,28 @@ namespace inviwo {
 
 class TestResult;
 
-class TestProperty : public Serializable {
+class TestPropertyObservable;
+
+class TestPropertyObserver : public Observer {
+public:
+	friend TestPropertyObservable;
+	TestPropertyObserver() = default;
+	virtual void onTestPropertyChange() {}
+	virtual ~TestPropertyObserver() = default;
+};
+
+class TestPropertyObservable : public Observable<TestPropertyObserver> {
+protected:
+	TestPropertyObservable() = default;
+	void notifyObserversAboutChange() {
+		forEachObserver([](TestPropertyObserver* o) {
+				o->onTestPropertyChange();
+			});
+	}
+	virtual ~TestPropertyObservable() = default;
+};
+
+class TestProperty : public Serializable, public TestPropertyObservable {
 protected:
 	std::string displayName, identifier;
 	BoolCompositeProperty* boolComp = nullptr;
@@ -65,10 +86,12 @@ protected:
 public:
 	virtual BoolCompositeProperty* getBoolComp() const;
 
-	virtual std::string getValueString(std::shared_ptr<TestResult>) const = 0;
-
 	const std::string& getDisplayName() const;
 	const std::string& getIdentifier() const;
+
+	virtual std::string textualDescription(unsigned int indent = 0) const = 0;
+
+	virtual std::string getValueString(std::shared_ptr<TestResult>) const = 0;
 
 	virtual std::optional<util::PropertyEffect> getPropertyEffect(
 			std::shared_ptr<TestResult>, 
@@ -112,7 +135,7 @@ void makeOnChange(BoolCompositeProperty* const prop);
 
 // for PropertyOwners which support getDisplayName and getIdentifier (i.e.
 // CompositeProperties and Processors)
-class TestPropertyComposite : public TestProperty {
+class TestPropertyComposite : public TestProperty, public TestPropertyObserver {
 	PropertyOwner* propertyOwner;
 	std::vector<std::shared_ptr<TestProperty>> subProperties;
 	
@@ -123,6 +146,10 @@ public:
 		return name;
 	}
 	friend class TestPropertyFactory;
+	
+	void onTestPropertyChange() override;
+	
+	std::string textualDescription(unsigned int indent = 0) const override;
 
 	std::string getValueString(std::shared_ptr<TestResult> testResult) const override;
 
@@ -139,14 +166,12 @@ public:
 
 	TestPropertyComposite(PropertyOwner* original, const std::string& displayName,
 			const std::string& identifier);
+
+	// Constructor for all Propertyowners with a display name and an identifier
 	template<typename C, decltype(static_cast<PropertyOwner*>(std::declval<C*>()),
 			std::declval<C>().getDisplayName(),
 			std::declval<C>().getIdentifier(), int()) = 0>
-	static std::shared_ptr<TestPropertyComposite> make(C* orig) {
-		std::string ident = orig->getIdentifier();
-		std::replace(ident.begin(), ident.end(), ' ', '_');
-		return std::make_shared<TestPropertyComposite>(orig, orig->getDisplayName(), ident);
-	}
+	static std::shared_ptr<TestPropertyComposite> make(C* orig);
 
 	virtual ~TestPropertyComposite() = default;
 	void setToDefault() const override;
@@ -163,6 +188,15 @@ public:
 			std::vector<std::shared_ptr<PropertyAssignment>>>>
 		generateAssignmentsCmp() const override;
 };
+
+template<typename C, decltype(static_cast<PropertyOwner*>(std::declval<C*>()),
+			std::declval<C>().getDisplayName(),
+			std::declval<C>().getIdentifier(), int()) = 0>
+std::shared_ptr<TestPropertyComposite> TestPropertyComposite::make(C* orig) {
+		std::string ident = orig->getIdentifier();
+		std::replace(ident.begin(), ident.end(), ' ', '_');
+		return std::make_shared<TestPropertyComposite>(orig, orig->getDisplayName(), ident);
+	}
 
 template<typename T>
 class TestPropertyTyped : public TestProperty {
@@ -182,6 +216,8 @@ public:
 		return name;
 	}
 	friend class TestPropertyFactoryHelper;
+	
+	std::string textualDescription(unsigned int indent) const override;
 
 	std::string getValueString(std::shared_ptr<TestResult>) const override;
 
