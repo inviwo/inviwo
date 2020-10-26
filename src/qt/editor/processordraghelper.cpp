@@ -36,6 +36,7 @@
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/rendercontext.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/textlabeloverlay.h>
@@ -306,6 +307,7 @@ bool ProcessorDragHelper::drop(QGraphicsSceneDragDropEvent* e, const ProcessorMi
         }
         editor_.clearSelection();
 
+        RenderContext::getPtr()->activateDefaultRenderContext();
         util::setPosition(processor.get(), utilqt::toGLM(NetworkEditor::snapToGrid(e->scenePos())));
         if (connectionTarget_) {
             if (!util::addProcessorOnConnection(network, std::move(processor),
