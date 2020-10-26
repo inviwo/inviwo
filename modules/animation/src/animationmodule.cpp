@@ -55,8 +55,8 @@ namespace inviwo {
 namespace {
 
 template <typename PropertyType,
-          typename Keyframe = ValueKeyframe<typename PropertyType::value_type>,
-          typename KeyframeSeq = KeyframeSequenceTyped<Keyframe>>
+          typename Keyframe = animation::ValueKeyframe<typename PropertyType::value_type>,
+          typename KeyframeSeq = animation::KeyframeSequenceTyped<Keyframe>>
 auto propTrackRegHelper(AnimationModule& am) {
     using namespace animation;
     // Register PropertyTrack and the KeyFrame it should use
