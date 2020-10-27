@@ -27,36 +27,36 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/gridsystem.h>
+#include <modules/base/processors/gridplanes.h>
 
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo GridSystem::processorInfo_{
-    "org.inviwo.GridSystem",  // Class identifier
-    "Grid System",            // Display name
+const ProcessorInfo GridPlanes::processorInfo_{
+    "org.inviwo.GridPlanes",  // Class identifier
+    "Grid Planes",            // Display name
     "Information",            // Category
     CodeState::Experimental,  // Code state
     Tags::None,               // Tags
 };
-const ProcessorInfo GridSystem::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo GridPlanes::getProcessorInfo() const { return processorInfo_; }
 
-GridSystem::GridSystem() : Processor() {
-    transform_.setOptional(true);
-    addPort(transform_);
+GridPlanes::GridPlanes() : Processor() {
+    basis_.setOptional(true);
+    addPort(basis_);
     addPort(grid_);
 
     addProperties(enable_, spacing_, extent_, color_);
 }
 
-void GridSystem::process() {
+void GridPlanes::process() {
     auto mesh = std::make_shared<ColoredMesh>();
 
     auto& ib = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None)->getDataContainer();
 
-    if (auto transform = transform_.getData()) {
+    if (auto transform = basis_.getData()) {
         mesh->setModelMatrix(transform->getModelMatrix());
         mesh->setWorldMatrix(transform->getWorldMatrix());
     }

@@ -101,27 +101,32 @@ public:
     std::array<Prop, N> list_;
 
 private:
-    const static std::array<std::string, 4> xyzwAxisNames = {"x", "y", "z", "w"};
+    const static inline std::array<std::string, 4> xyzwAxisNames = {"x", "y", "z", "w"};
 };
 
-/** \docpage{org.inviwo.GridSystem, Grid System}
- * ![](org.inviwo.GridSystem.png?classIdentifier=org.inviwo.GridSystem)
- * Explanation of how to use the processor.
+/** \docpage{org.inviwo.GridPlanes, Grid Planes}
+ * ![](org.inviwo.GridSystem.png?classIdentifier=org.inviwo.GridPlanes)
+ *
+ * Creates a mesh that can be used to draw grid planes for the current coordinate system. 
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __transform__ Optional volume inport. If a volume is connected the grid will be aligned to that volume.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __grid__ A mesh containing the grid planes, can be rendered using, for example, the Mesh Renderer, Line Renderer or Tube Renderer.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ * Each property can be toggled between having one value for each individual plane or a single value used for all planes
+ *   * __Enable__ Toggles wether or not a given grid plane should be visible
+ *   * __Spacing__ Set the distance between the each line along the given axis
+ *   * __Extent__ Set the extent of the grid along the given axis. 
+ *   * __Color__ Set the color of each grid plane.
+ *
  */
-class IVW_MODULE_BASE_API GridSystem : public Processor {
+class IVW_MODULE_BASE_API GridPlanes : public Processor {
 public:
-    GridSystem();
-    virtual ~GridSystem() = default;
+    GridPlanes();
+    virtual ~GridPlanes() = default;
 
     virtual void process() override;
 
@@ -129,7 +134,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    VolumeInport transform_{"transform"};
+    VolumeInport basis_{"basis"};
     MeshOutport grid_{"grid"};
 
     ListOrSingleValueProperty<BoolProperty, 3> enable_{"enable", "Enable",
