@@ -38,30 +38,17 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
 
+#include <inviwo/core/util/stdextensions.h>
+
+#include <array>
+
 namespace inviwo {
-
-namespace detail {
-
-template <typename T, std::size_t... Is>
-constexpr std::array<T, sizeof...(Is)> create_array(T value, std::index_sequence<Is...>) {
-    // cast Is to void to remove the warning: unused value
-    return {{(static_cast<void>(Is), value)...}};
-}
-
-template <std::size_t N, typename T>
-constexpr std::array<T, N> create_array(const T& value) {
-    return create_array(value, std::make_index_sequence<N>());
-}
-
-}  // namespace detail
 
 enum class ListOrSingleValuePropertyState { Single, List };
 
 template <typename Prop, unsigned N>
 class ListOrSingleValueProperty : public CompositeProperty {
 public:
-    const static inline std::array<std::string, 4> xyzwAxisNames = {"x", "y", "z", "w"};
-
     using State = ListOrSingleValuePropertyState;
 
     template <typename... DefaultArgs>
@@ -73,26 +60,27 @@ public:
                  {{"single", "Single", State::Single}, {"list", "List", State::List}},
                  initState == State::Single ? size_t{0} : size_t{1}}
         , single_{"single", displayName, defaultArgs...}
-        , list_{detail::create_array<N, Prop>(single_)}
+        , list_{util::make_array<size_t{N}>([&](auto index) {
+            auto id = [](auto i) {
+                if constexpr (N <= 4) {
+                    return xyzwAxisNames[i];
+                } else {
+                    return i;
+                }
+            }(index);
+
+            return Prop(fmt::format("axis_{}", id), fmt::format("{} {}", displayName, id),
+                        defaultArgs...);
+        })}
 
     {
         addProperties(state_, single_);
 
-        auto getId = [](auto i) {
-            if constexpr (N <= 4) {
-                return xyzwAxisNames[i];
-            }
-            return toString(i);
-        };
-
-        for (unsigned i = 0; i < N; i++) {
-            const std::string id = getId(i);
-            list_[i].setIdentifier("axis_" + id);
-            list_[i].setDisplayName(displayName + " " + id);
-            addProperty(list_[i]);
-
-            list_[i].visibilityDependsOn(state_, [](auto& p) { return p.get() == State::List; });
+        for (auto& prop : list_) {
+            addProperty(prop);
+            prop.visibilityDependsOn(state_, [](auto& p) { return p.get() == State::List; });
         }
+
         single_.visibilityDependsOn(state_, [](auto& p) { return p.get() == State::Single; });
 
         setAllPropertiesCurrentStateAsDefault();
@@ -111,6 +99,9 @@ public:
     TemplateOptionProperty<State> state_;
     Prop single_;
     std::array<Prop, N> list_;
+
+private:
+    const static std::array<std::string, 4> xyzwAxisNames = {"x", "y", "z", "w"};
 };
 
 /** \docpage{org.inviwo.GridSystem, Grid System}
