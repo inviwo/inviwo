@@ -107,19 +107,22 @@ private:
 /** \docpage{org.inviwo.GridPlanes, Grid Planes}
  * ![](org.inviwo.GridSystem.png?classIdentifier=org.inviwo.GridPlanes)
  *
- * Creates a mesh that can be used to draw grid planes for the current coordinate system. 
+ * Creates a mesh that can be used to draw grid planes for the current coordinate system.
  *
  * ### Inports
- *   * __transform__ Optional volume inport. If a volume is connected the grid will be aligned to that volume.
+ *   * __transform__ Optional volume inport. If a volume is connected the grid will be aligned to
+ * that volume.
  *
  * ### Outports
- *   * __grid__ A mesh containing the grid planes, can be rendered using, for example, the Mesh Renderer, Line Renderer or Tube Renderer.
+ *   * __grid__ A mesh containing the grid planes, can be rendered using, for example, the Mesh
+ * Renderer, Line Renderer or Tube Renderer.
  *
  * ### Properties
- * Each property can be toggled between having one value for each individual plane or a single value used for all planes
+ * Each property can be toggled between having one value for each individual plane or a single value
+ * used for all planes
  *   * __Enable__ Toggles wether or not a given grid plane should be visible
  *   * __Spacing__ Set the distance between the each line along the given axis
- *   * __Extent__ Set the extent of the grid along the given axis. 
+ *   * __Extent__ Set the extent of the grid along the given axis.
  *   * __Color__ Set the color of each grid plane.
  *
  */
