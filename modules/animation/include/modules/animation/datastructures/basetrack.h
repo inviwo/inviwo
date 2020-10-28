@@ -89,16 +89,21 @@ public:
     iterator end();
     const_iterator end() const;
     /**
-     * Add a Keyframe/KeyframeSequence at time
+     * Add a Keyframe at time using default values and return the added keyframe.
+     * The Keyframe is added to a new KeyframeSequence if asNewSequence is true,
+     * otherwise it is added to the KeyframeSequence at, or before, time.
+     * A KeyframeSequence is added to the Track if none exists.
+     *
+     * Tracks should override createKeyframe(Seconds time) to customize Keyframe creation.
      */
-    virtual void add(Seconds time, bool asNewSequence) override;
+    virtual key_type* add(Seconds time, bool asNewSequence) override;
     /**
      * Add KeyframeSequence and call KeyframeSequenceObserverble::notifyKeyframeSequenceAdded
      * @throw Exception if KeyframeSequence is not compatible with BaseTrack<Seq>
      * @throw Exception if KeyframeSequence overlaps existing sequences
      * @see BaseTrack::add(std::unique_ptr<Seq> sequence)
      */
-    virtual KeyframeSequence* add(std::unique_ptr<KeyframeSequence> sequence) override;
+    virtual Seq* add(std::unique_ptr<KeyframeSequence> sequence) override;
     /**
      * Add KeyframeSequence and call KeyframeSequenceObserverble::notifyKeyframeSequenceAdded
      * @throw Exception if KeyframeSequence overlaps existing sequences
@@ -112,14 +117,16 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-protected:
     /*
      * Creates a Seq::key_type using default constructor.
-     * Override to add custom behaviour in add(Seconds time, bool asNewSequence)
+     * Provide a template specialization or override this function to add custom Keyframe creation
+     * behavior, e.g. based on Property value, instead of add(Seconds time, bool asNewSequence).
      */
-    virtual std::unique_ptr<key_type> createKeyframe(Seconds time);
+    virtual std::unique_ptr<key_type> createKeyframe(Seconds time) const;
+protected:
+
     virtual void onKeyframeSequenceMoved(KeyframeSequence* seq) override;
-    Keyframe* addToClosestSequence(std::unique_ptr<key_type> key);
+    key_type* addToClosestSequence(std::unique_ptr<key_type> key);
 
     bool enabled_{true};
     std::string identifier_;
@@ -280,36 +287,37 @@ auto BaseTrack<Seq>::end() const -> const_iterator {
  *           |-case 2a---|---------case 2b-|
  */
 template <typename Seq>
-void BaseTrack<Seq>::add(Seconds time, bool asNewSequence) {
-    auto addNew = [this](std::unique_ptr<key_type> key) {
+typename BaseTrack<Seq>::key_type* BaseTrack<Seq>::add(Seconds time, bool asNewSequence) {
+    auto addNew = [this](std::unique_ptr<key_type> key) -> key_type* {
         std::vector<std::unique_ptr<key_type>> keys;
         keys.push_back(std::move(key));
-        add(std::make_unique<Seq>(std::move(keys)));
+        auto seq = add(std::make_unique<Seq>(std::move(keys)));
+        return &seq->getLast();
     };
 
     auto key = createKeyframe(time);
     if (sequences_.empty()) {
-        addNew(std::move(key));
-        return;
+        return addNew(std::move(key));
     }
 
     // 'it' will be the first seq. with a first time larger then 'to'.
     auto it = std::upper_bound(this->begin(), this->end(), time);
     if (it == this->begin()) {  // case 1
         if (asNewSequence) {
-            addNew(std::move(key));
+            return addNew(std::move(key));
         } else {
             it->add(std::move(key));
+            return &it->getLast();
         }
     } else {  // case 2
         auto& seq1 = *std::prev(it);
         if (time < seq1.getLastTime()) {  // case 2a
-            seq1.add(std::move(key));
+            return seq1.add(std::move(key));
         } else {  // case 2b
             if (asNewSequence) {
-                addNew(std::move(key));
+                return addNew(std::move(key));
             } else {
-                addToClosestSequence(std::move(key));
+                return addToClosestSequence(std::move(key));
             }
         }
     }
@@ -322,7 +330,8 @@ void BaseTrack<Seq>::add(Seconds time, bool asNewSequence) {
  *           |-case 2a-----------|-case 2b-|
  */
 template <typename Seq>
-Keyframe* BaseTrack<Seq>::addToClosestSequence(std::unique_ptr<key_type> key) {
+typename BaseTrack<Seq>::key_type* BaseTrack<Seq>::addToClosestSequence(
+    std::unique_ptr<key_type> key) {
     // 'it' will be the first seq. with a first time larger then 'to'.
     auto it = std::upper_bound(this->begin(), this->end(), key->getTime());
 
@@ -343,7 +352,7 @@ Keyframe* BaseTrack<Seq>::addToClosestSequence(std::unique_ptr<key_type> key) {
 }
 
 template <typename Seq>
-KeyframeSequence* BaseTrack<Seq>::add(std::unique_ptr<KeyframeSequence> sequence) {
+Seq* BaseTrack<Seq>::add(std::unique_ptr<KeyframeSequence> sequence) {
     if (auto s = util::dynamic_unique_ptr_cast<Seq>(std::move(sequence))) {
         return add(std::move(s));
     } else {
@@ -411,7 +420,7 @@ std::unique_ptr<KeyframeSequence> BaseTrack<Seq>::remove(KeyframeSequence* seq) 
 }
 
 template <typename Seq>
-std::unique_ptr<typename BaseTrack<Seq>::key_type> BaseTrack<Seq>::createKeyframe(Seconds time) {
+std::unique_ptr<typename BaseTrack<Seq>::key_type> BaseTrack<Seq>::createKeyframe(Seconds time) const {
     return std::make_unique<key_type>(time);
 }
 

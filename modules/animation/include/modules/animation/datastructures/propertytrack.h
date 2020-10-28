@@ -282,12 +282,12 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    virtual Keyframe* addKeyFrameUsingPropertyValue(
+    virtual Key* addKeyFrameUsingPropertyValue(
         const Property* property, Seconds time,
         std::unique_ptr<Interpolation> interpolation) override;
-    virtual Keyframe* addKeyFrameUsingPropertyValue(
+    virtual Key* addKeyFrameUsingPropertyValue(
         Seconds time, std::unique_ptr<Interpolation> interpolation) override;
-    virtual KeyframeSequence* addSequenceUsingPropertyValue(
+    virtual Seq* addSequenceUsingPropertyValue(
         Seconds time, std::unique_ptr<Interpolation> interpolation) override;
 
     // BasePropertyTrack overload
@@ -325,6 +325,11 @@ public:
                                               static_cast<Key*>(keyframe));
     }
 
+    /*
+     * Create a Keyframe using the current property value.
+     */
+    virtual std::unique_ptr<Key> createKeyframe(Seconds time)  const override;
+
 protected:
     /*
      * Helper function for when we know that we are between keyframes within a KeyframeSequence.
@@ -334,20 +339,16 @@ protected:
      */
     AnimationTimeState animateSequence(const Seq& seq, Seconds from, Seconds to,
                                        AnimationState state) const;
-    /*
-     * Create a Key using the current property value.
-     */
-    virtual std::unique_ptr<Key> createKeyframe(Seconds time) override;
 
     /*
      * Create a Key using the provided property value.
      */
-    std::unique_ptr<Key> createKeyframe(const Prop* property, Seconds time);
+    std::unique_ptr<Key> createKeyframe(const Prop* property, Seconds time) const;
     /*
      * Create a KeyframeSequence using the provided keys and interpolation.
      */
     std::unique_ptr<Seq> createKeyframeSequence(std::vector<std::unique_ptr<Key>> keys,
-                                                std::unique_ptr<Interpolation> interpolation);
+                                                std::unique_ptr<Interpolation> interpolation) const;
 
 private:
     Prop* property_;  ///< non-owning reference
@@ -379,20 +380,20 @@ AnimationTimeState PropertyTrack<Prop, Key, Seq>::animateSequence(const Seq& seq
 }
 
 template <typename Prop, typename Key, typename Seq>
-inline std::unique_ptr<Key> PropertyTrack<Prop, Key, Seq>::createKeyframe(Seconds time) {
+inline std::unique_ptr<Key> PropertyTrack<Prop, Key, Seq>::createKeyframe(Seconds time) const {
     return createKeyframe(property_, time);
 }
 
 template <typename Prop, typename Key, typename Seq>
 inline std::unique_ptr<Key> PropertyTrack<Prop, Key, Seq>::createKeyframe(const Prop* property,
-                                                                          Seconds time) {
+                                                                          Seconds time) const {
     return std::make_unique<Key>(time, property->get());
 }
 
 template <typename Prop, typename Key, typename Seq>
 
 inline std::unique_ptr<Seq> PropertyTrack<Prop, Key, Seq>::createKeyframeSequence(
-    std::vector<std::unique_ptr<Key>> keys, std::unique_ptr<Interpolation> interpolation) {
+    std::vector<std::unique_ptr<Key>> keys, std::unique_ptr<Interpolation> interpolation) const {
     if constexpr (std::is_same<Seq, KeyframeSequenceTyped<Key>>::value) {
         if (auto ip = dynamic_cast<InterpolationTyped<Key>*>(interpolation.get())) {
             interpolation.release();
@@ -507,7 +508,7 @@ AnimationTimeState PropertyTrack<Prop, Key, Seq>::operator()(Seconds from, Secon
 }
 
 template <typename Prop, typename Key, typename Seq>
-Keyframe* PropertyTrack<Prop, Key, Seq>::addKeyFrameUsingPropertyValue(
+Key* PropertyTrack<Prop, Key, Seq>::addKeyFrameUsingPropertyValue(
     const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation) {
     auto prop = dynamic_cast<const Prop*>(property);
     if (!prop) {
@@ -525,19 +526,19 @@ Keyframe* PropertyTrack<Prop, Key, Seq>::addKeyFrameUsingPropertyValue(
             return &se->getFirst();
         }
     } else {
-        return this->addToClosestSequence(createKeyframe(prop, time));
+        return static_cast<Key*>(this->addToClosestSequence(createKeyframe(prop, time)));
     }
     return nullptr;
 }
 
 template <typename Prop, typename Key, typename Seq>
-Keyframe* PropertyTrack<Prop, Key, Seq>::addKeyFrameUsingPropertyValue(
+Key* PropertyTrack<Prop, Key, Seq>::addKeyFrameUsingPropertyValue(
     Seconds time, std::unique_ptr<Interpolation> interpolation) {
     return addKeyFrameUsingPropertyValue(property_, time, std::move(interpolation));
 }
 
 template <typename Prop, typename Key, typename Seq>
-KeyframeSequence* PropertyTrack<Prop, Key, Seq>::addSequenceUsingPropertyValue(
+Seq* PropertyTrack<Prop, Key, Seq>::addSequenceUsingPropertyValue(
     Seconds time, std::unique_ptr<Interpolation> interpolation) {
     std::vector<std::unique_ptr<Key>> keys;
     keys.push_back(createKeyframe(property_, time));
@@ -572,7 +573,7 @@ PropertyTrack<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>::animateSe
 template <>
 inline std::unique_ptr<ButtonKeyframe>
 PropertyTrack<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>::createKeyframe(
-    const ButtonProperty* property, Seconds time) {
+    const ButtonProperty* property, Seconds time) const {
     return std::make_unique<ButtonKeyframe>(time, const_cast<ButtonProperty*>(property));
 }
 }  // namespace animation

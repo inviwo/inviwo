@@ -116,9 +116,13 @@ public:
     virtual KeyframeSequence& getLast() = 0;
 
     /**
-     * Add a Keyframe/KeyframeSequence at time
+     * Add a Keyframe at time and return the added keyframe.
+     * The Keyframe is added to a new KeyframeSequence if asNewSequence is true, 
+     * otherwise it should be added to the closest KeyframeSequence at specified time.
+     * A KeyframeSequence is added to the Track if none exists.
+     * @see BaseTrack::add(Seconds time, bool asNewSequence)
      */
-    virtual void add(Seconds time, bool asNewSequence) = 0;
+    virtual Keyframe* add(Seconds time, bool asNewSequence) = 0;
 
     /**
      * Add KeyframeSequence and call TrackObserver::notifyKeyframeSequenceAdded

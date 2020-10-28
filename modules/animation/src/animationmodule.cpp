@@ -69,8 +69,6 @@ auto propTrackRegHelper(AnimationModule& am) {
 template <typename PropertyType, typename Interpolation>
 auto interpolationRegHelper(AnimationModule& am) {
     using namespace animation;
-    using ValueType = typename PropertyType::value_type;
-
     // No need to add existing interpolation method. Will produce a warning if adding a duplicate
     if (!am.getAnimationManager().getInterpolationFactory().hasKey(
             Interpolation::classIdentifier())) {
@@ -160,7 +158,6 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     util::for_each_type<std::tuple<std::string>>{}(OptionReghelper{}, *this);
 
     // Camera property
-    using CameraTrack = PropertyTrack<CameraProperty, CameraKeyframe>;
     propTrackRegHelper<CameraProperty, CameraKeyframe>(*this);
     interpolationRegHelper<CameraProperty, CameraSphericalInterpolation>(*this);
     interpolationRegHelper<CameraProperty, CameraLinearInterpolation>(*this);

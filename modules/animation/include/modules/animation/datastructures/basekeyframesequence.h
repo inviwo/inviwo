@@ -87,7 +87,7 @@ public:
      * Add Keyframe and call KeyframeObserver::notifyKeyframeAdded
      * @throw Exception if Keyframe is not compatible with BaseKeyframeSequence<Key>
      */
-    virtual Keyframe* add(std::unique_ptr<Keyframe> key) override;
+    virtual Key* add(std::unique_ptr<Keyframe> key) override;
     /**
      * Add Keyframe and call KeyframeObserver::notifyKeyframeAdded
      */
@@ -172,7 +172,7 @@ void BaseKeyframeSequence<Key>::onKeyframeTimeChanged(Keyframe* key, Seconds /*o
 }
 
 template <typename Key>
-Keyframe* BaseKeyframeSequence<Key>::add(std::unique_ptr<Keyframe> key) {
+Key* BaseKeyframeSequence<Key>::add(std::unique_ptr<Keyframe> key) {
     if (auto k = util::dynamic_unique_ptr_cast<Key>(std::move(key))) {
         return add(std::move(k));
     } else {
