@@ -1,5 +1,22 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2020-10-28 Performance refactoring
+* Serialization no longer supports use of the "allowReferences" to serialize pointer to the same object multiple times. Reasoning being that it requires all properties and ports, to always be present in the xml even if they don't have any state that needs serialization. The new solution uses "paths" (a dot separated list of identifiers) instead of pointers where needed.
+* Some of the serialization functions now supports filters and projections, to void having to create temporary objects to serialize.
+* Property now has a `virtual bool isDefaultState() const` function. Should generally be overridden by subclasses to return if they are it the default state or not.
+* Property now has a `virtual bool needsDerialization() const` function, the default implementation returns true, when the serialization mode is `All`, or `Default` and `!isDefaultState()`, otherwise false.
+* `PropertyOwner` now only serializes property that `needsDeserialization` this reduces amount of items that need serialization by a large fraction.
+* DefaultValues now uses StaticString to make the implementation constexpr
+* Many classIdentifiers now return `const std::string&` instead of `std::string` to avoid creating new strings. This can easily be done by keeping a static `std::string` around.
+* Now uses std::string_view instead of `const std::string&` in many places to avoid having to create strings with dynamic allocations.
+* StringConversion.h now has a StrBuffer class to make it easier to format string using a stack buffer. Very useful for concatenation.
+* StringConversion.h now has a `forEachStringPart` function to call a callback on parts of a string.
+* Processor identifiers now follow the same rules as other identifiers
+* `MinMaxProperty` is no longer derives from `TemplateProperty`.
+
+## 2020-09-30 FBO Asserts
+Added asserts for using the wrong context in the FBO. An FBO has to be created used and deleted in the same OpenGL context. We now have runtime checks to verify that this is the case.
+    
 ## 2020-07-17 Volume and DataFrame converter
 The `VolumeConverter` processor provides functionality for converting a `Volume` to a different data format with optional mapping of data values and custom ranges. The base module now also features a `DataRangeProperty` holding data &value ranges of a volume plus optional overrides.
 

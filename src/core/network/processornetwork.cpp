@@ -82,8 +82,10 @@ bool ProcessorNetwork::addProcessor(Processor* processor) {
     auto meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
     meta->addObserver(this);
 
-    if (auto widget = application_->getProcessorWidgetFactory()->create(processor)) {
-        processor->setProcessorWidget(std::move(widget));
+    if (application_) {
+        if (auto widget = application_->getProcessorWidgetFactory()->create(processor)) {
+            processor->setProcessorWidget(std::move(widget));
+        }
     }
 
     processor->invalidate(InvalidationLevel::InvalidResources);
@@ -134,7 +136,7 @@ void ProcessorNetwork::removeAndDeleteProcessor(Processor* processor) {
     if (!processor) return;
     NetworkLock lock(this);
 
-    RenderContext::getPtr()->activateDefaultRenderContext();
+    rendercontext::activateDefault();
     removeProcessorHelper(processor);
 
     // remove processor itself
@@ -446,14 +448,14 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     // Processors
     try {
-        RenderContext::getPtr()->activateDefaultRenderContext();
+        rendercontext::activateDefault();
 
         auto des =
             util::MapDeserializer<std::string, Processor*>("Processors", "Processor", "identifier")
                 .setIdentifierTransform(
                     [](const std::string& id) { return util::stripIdentifier(id); })
                 .setMakeNew([]() {
-                    RenderContext::getPtr()->activateDefaultRenderContext();
+                    rendercontext::activateDefault();
                     return nullptr;
                 })
                 .onNew([&](const std::string& /*id*/, Processor*& p) { addProcessor(p); })

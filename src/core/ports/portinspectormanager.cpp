@@ -126,7 +126,7 @@ PortInspectorManager::PortInspectorManager(InviwoApplication* app) : app_(app) {
 PortInspectorManager::~PortInspectorManager() { clear(); }
 
 bool PortInspectorManager::hasPortInspector(Outport* outport) const {
-    return embeddedProcessors_.count(outport->getPathStr());
+    return embeddedProcessors_.count(outport->getPath());
 }
 
 ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 pos) {
@@ -161,8 +161,8 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
             for (auto* p : portInspector->getProcessors()) {
                 processorIds.emplace_back(p->getIdentifier());
             }
-            embeddedProcessors_[outport->getPathStr()] = std::move(processorIds);
-            portInspectors_[outport->getPathStr()] = std::move(portInspector);
+            embeddedProcessors_[outport->getPath()] = std::move(processorIds);
+            portInspectors_[outport->getPath()] = std::move(portInspector);
 
             return processorWidget;
         }
@@ -178,7 +178,7 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
 void PortInspectorManager::removePortInspector(Outport* outport) {
     RenderContext::getPtr()->activateDefaultRenderContext();
 
-    const auto portId = outport->getPathStr();
+    const auto portId = outport->getPath();
     auto network = app_->getProcessorNetwork();
     NetworkLock lock(network);
     {

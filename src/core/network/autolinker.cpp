@@ -88,7 +88,7 @@ AutoLinker::AutoLinker(ProcessorNetwork* network, Processor* target, Processor* 
                          std::back_inserter(candidates), [&](Property* prop) {
                              auto proc = prop->getOwner()->getProcessor();
                              return proc && proc->getClassIdentifier() != item.first &&
-                                    joinString(prop->getPath(), ".") == item.second;
+                                    prop->getPath() == item.second;
                          });
         }
         if (!candidates.empty()) {

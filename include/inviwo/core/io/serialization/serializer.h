@@ -67,8 +67,6 @@ public:
 
     /**
      * \brief Writes serialized data to the file specified by the currently set file name.
-     *
-     * @param file File to be written to.
      * @throws SerializationException
      */
     virtual void writeFile();

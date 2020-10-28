@@ -45,7 +45,7 @@ struct IVW_MODULE_OPENGL_API LineNumberResolver {
     /**
      * Append a source file and line number
      */
-    void addLine(const std::string& file, size_t line);
+    void addLine(std::string_view file, size_t line);
 
     /**
      * Lookup up the source file and line for the given line.

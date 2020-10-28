@@ -227,10 +227,44 @@ public:
     std::vector<Property*> getPropertiesLinkedTo(Property* property);
     std::vector<PropertyLink> getLinksBetweenProcessors(Processor* p1, Processor* p2);
 
+    /**
+     * @breif Get Property by path
+     * @param path vector of identifiers starting with a processor identifier followed by property
+     * identifiers.
+     * @return the property or nullptr if not found
+     */
     Property* getProperty(std::vector<std::string> path) const;
+
+    /**
+     * @breif Get Property by path
+     * @param path string of dot separated identifiers starting with a processor identifier followed
+     * by property identifiers.
+     * @return the property or nullptr if not found
+     */
     Property* getProperty(std::string_view path) const;
+
+    /**
+     * @breif Get Port by path
+     * @param path string of dot separated identifiers starting with a processor identifier followed
+     * by a port identifier.
+     * @return the port or nullptr if not found
+     */
     Port* getPort(std::string_view path) const;
+
+    /**
+     * @breif Get Inport by path
+     * @param path string of dot separated identifiers starting with a processor identifier followed
+     * by a port identifier.
+     * @return the port or nullptr if not found
+     */
     Inport* getInport(std::string_view path) const;
+
+    /**
+     * @breif Get Outport by path
+     * @param path string of dot separated identifiers starting with a processor identifier followed
+     * by a port identifier.
+     * @return the port or nullptr if not found
+     */
     Outport* getOutport(std::string_view path) const;
 
     bool isPropertyInNetwork(Property* prop) const;

@@ -248,7 +248,8 @@ using IntSize4RefProperty = OrdinalRefProperty<size4_t>;
 template <typename T>
 struct PropertyTraits<OrdinalRefProperty<T>> {
     static const std::string& classIdentifier() {
-        static const std::string identifier = "org.inviwo." + Defaultvalues<T>::getName() + "RefProperty";
+        static const std::string identifier =
+            "org.inviwo." + Defaultvalues<T>::getName() + "RefProperty";
         return identifier;
     }
 };
@@ -283,7 +284,7 @@ OrdinalRefProperty<T>::OrdinalRefProperty(const std::string& identifier,
         throw Exception{
             fmt::format("Invalid range ({} <= {} <= {}) given for \"{}\" ({}Property, {})",
                         minValue_.value, get_(), maxValue_.value, this->getDisplayName(),
-                        Defaultvalues<T>::getName(), joinString(this->getPath(), ".")),
+                        Defaultvalues<T>::getName(), this->getPath()),
             IVW_CONTEXT};
     }
 }
@@ -396,7 +397,7 @@ void OrdinalRefProperty<T>::set(const T& value, const T& minVal, const T& maxVal
     if (!validRange(minVal, maxVal)) {
         throw Exception{
             fmt::format("Invalid range given for \"{}\" ({}Property, {})", this->getDisplayName(),
-                        Defaultvalues<T>::getName(), joinString(this->getPath(), ".")),
+                        Defaultvalues<T>::getName(), this->getPath()),
             IVW_CONTEXT};
     }
 

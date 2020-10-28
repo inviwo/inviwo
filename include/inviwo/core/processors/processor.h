@@ -192,7 +192,7 @@ public:
      * @see util::findUniqueIdentifier
      */
     void setIdentifier(std::string_view identifier);
-    const std::string& getIdentifier() const;
+    virtual const std::string& getIdentifier() const override;
 
     /**
      * Name of processor, arbitrary string. By default initialized to the ProcessorInfo displayName.
@@ -200,8 +200,6 @@ public:
      */
     void setDisplayName(std::string_view displayName);
     const std::string& getDisplayName() const;
-
-    virtual std::vector<std::string> getPath() const override;
 
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget);
     ProcessorWidget* getProcessorWidget() const;
@@ -329,6 +327,8 @@ public:
     // Override from the property owner
     virtual Processor* getProcessor() override { return this; }
     virtual const Processor* getProcessor() const override { return this; }
+    virtual const PropertyOwner* getOwner() const override { return nullptr; }
+    virtual PropertyOwner* getOwner() override { return nullptr; };
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

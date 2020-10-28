@@ -41,7 +41,7 @@ const std::pair<std::string, size_t>& LineNumberResolver::resolveLine(size_t lin
     }
 }
 
-void LineNumberResolver::addLine(const std::string& file, size_t line) {
+void LineNumberResolver::addLine(std::string_view file, size_t line) {
     lines_.emplace_back(file, line);
 }
 

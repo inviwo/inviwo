@@ -95,7 +95,7 @@ struct Eof {};
 struct State {
     std::ostream& output;
     LineNumberResolver& lnr;
-    const std::string& key;
+    std::string_view key;
     std::unordered_map<typename ShaderSegment::Type, std::vector<ShaderSegment>> replacements;
     std::function<std::optional<std::pair<std::string, std::string>>(std::string_view)> getSource;
     size_t lines = 0;
@@ -125,14 +125,16 @@ struct Psm {
             if (pathBegin == c.end) {
                 throw OpenGLException{
                     fmt::format("Invalid include found at {}({})", s.key, s.lines + 1),
-                    SourceContext(s.key, s.key, "", static_cast<int>(s.lines + 1))};
+                    SourceContext(std::string{s.key}, std::string{s.key}, "",
+                                  static_cast<int>(s.lines + 1))};
             }
 
             auto pathEnd = std::find(pathBegin + 1, c.end, '"');
             if (pathEnd == c.end) {
                 throw OpenGLException{
                     fmt::format("Invalid include found at {}({})", s.key, s.lines + 1),
-                    SourceContext(s.key, s.key, "", static_cast<int>(s.lines + 1))};
+                    SourceContext(std::string{s.key}, std::string{s.key}, "",
+                                  static_cast<int>(s.lines + 1))};
             }
 
             const auto path =
@@ -147,8 +149,9 @@ struct Psm {
                     s.lnr.addLine(s.key, ++s.lines);
                 }
             } catch (const OpenGLException& e) {
-                throw OpenGLException(
-                    e.getMessage(), SourceContext(s.key, s.key, "", static_cast<int>(s.lines + 1)));
+                throw OpenGLException(e.getMessage(),
+                                      SourceContext(std::string{s.key}, std::string{s.key}, "",
+                                                    static_cast<int>(s.lines + 1)));
             }
         };
 
@@ -245,7 +248,7 @@ void utilgl::parseShaderSource(
     std::function<std::optional<std::pair<std::string, std::string>>(std::string_view)> getSource) {
 
     size_t lines = 0;
-    psm::State state{output, lnr, std::string{key}, replacements, getSource, lines};
+    psm::State state{output, lnr, key, replacements, getSource, lines};
     psm::Errors errors;
 
     sml::sm<psm::Psm> sm{state, errors};
@@ -536,23 +539,22 @@ void ShaderObject::parseSource(std::ostringstream& output) {
 }
 
 std::string ShaderObject::resolveLog(std::string_view compileLog) const {
-    std::ostringstream result;
+    std::string result;
 
     util::forEachStringPart(compileLog, "\n", [&](std::string_view curLine) {
         if (!curLine.empty()) {
             const int origLineNumber = utilgl::getLogLineNumber(curLine);
             if (origLineNumber > 0) {
-                const auto& res = lnr_.resolveLine(origLineNumber);
-                result << "\n"
-                       << res.first << " (" << res.second
-                       << "): " << curLine.substr(curLine.find(":") + 1);
+                const auto& [source, line] = lnr_.resolveLine(origLineNumber);
+                fmt::format_to(std::back_inserter(result), "\n{} ({}): {}", source, line,
+                               curLine.substr(curLine.find(":") + 1));
             } else {
-                result << "\n" << curLine;
+                fmt::format_to(std::back_inserter(result), "\n{}", curLine);
             }
         }
     });
 
-    return std::move(result).str();
+    return result;
 }
 
 void ShaderObject::upload() {

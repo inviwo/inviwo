@@ -107,6 +107,7 @@ public:
     InviwoApplication* getInviwoApplication() override { return app_; }
 
     virtual void resetAllPoperties() override;
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 

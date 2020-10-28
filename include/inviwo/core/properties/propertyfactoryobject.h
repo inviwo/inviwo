@@ -32,16 +32,18 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/property.h>
 
+#include <string_view>
+
 namespace inviwo {
 
 class IVW_CORE_API PropertyFactoryObject {
 public:
-    PropertyFactoryObject(const std::string& className);
+    PropertyFactoryObject(std::string_view className);
     virtual ~PropertyFactoryObject();
 
     virtual std::unique_ptr<Property> create(std::string identifier, std::string displayName) = 0;
 
-    std::string getClassIdentifier() const;
+    const std::string& getClassIdentifier() const;
 
 private:
     std::string className_;

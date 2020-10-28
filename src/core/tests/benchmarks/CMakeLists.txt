@@ -13,8 +13,10 @@ target_link_libraries(bm-safecstr
 )
 set_target_properties(bm-safecstr PROPERTIES FOLDER benchmarks)
 
-set_property(TARGET bm-safecstr APPEND_STRING PROPERTY LINK_FLAGS 
-   " /SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
+if(MSVC)
+    set_property(TARGET bm-safecstr APPEND_STRING PROPERTY LINK_FLAGS 
+        " /SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
+endif()
 
 # Define defintions and properties
 ivw_define_standard_properties(bm-safecstr)

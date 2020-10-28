@@ -163,8 +163,7 @@ Property* CompositeProcessor::addSuperProperty(Property* orgProp) {
             orgProp->setMetaData<BoolMetaData>("CompositeProcessorExposed", true);
             return handlers_[orgProp]->superProperty;
         } else {
-            throw Exception("Could not find property " + joinString(orgProp->getPath(), "."),
-                            IVW_CONTEXT);
+            throw Exception("Could not find property " + orgProp->getPath(), IVW_CONTEXT);
         }
     }
 }
@@ -268,7 +267,10 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
         util::KeepTrueWhileInScope active{&onChangeActive};
         subProperty->set(superProperty);
     })} {
-    superProperty->setIdentifier(joinString(subProperty->getPath(), "-"));
+
+    auto superId = subProperty->getPath();
+    replaceInString(superId, ".", "-");
+    superProperty->setIdentifier(superId);
     superProperty->setDisplayName(subProperty->getOwner()->getProcessor()->getDisplayName() + " " +
                                   subProperty->getDisplayName());
     superProperty->setSerializationMode(PropertySerializationMode::All);
@@ -283,7 +285,9 @@ CompositeProcessor::PropertyHandler::~PropertyHandler() {
 
 void CompositeProcessor::onSetIdentifier(Property* orgProp, const std::string&) {
     if (auto superProperty = getSuperProperty(orgProp)) {
-        superProperty->setIdentifier(joinString(orgProp->getPath(), "-"));
+        auto superId = orgProp->getPath();
+        replaceInString(superId, ".", "-");
+        superProperty->setIdentifier(superId);
     }
 }
 

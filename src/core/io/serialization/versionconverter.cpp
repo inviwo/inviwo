@@ -84,8 +84,7 @@ bool xml::copyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProp
                 (p->getClassIdentifier() == type ||
                  p->getClassIdentifier() == splitString(type, '.').back())) {
                 LogInfoCustom("VersionConverter",
-                              "    Match for sub property: " + joinString(p->getPath(), ".") +
-                                      " found in type: "
+                              "    Match for sub property: " + p->getPath() + " found in type: "
                                   << type << " id: " << id);
 
                 list.InsertEndChild(*(child->Clone()));

@@ -61,20 +61,15 @@ class ContainerWrapper;
 class IVW_CORE_API Deserializer : public SerializeBase, public LogFilter {
 public:
     /**
-     * \brief Deserializer constructor
-     *
+     * \brief Deserialize content from a file
      * @param fileName path to file that is to be deserialized.
-     * @param allowReference flag to manage references to avoid multiple object creation.
      */
     Deserializer(std::string_view fileName);
+    
     /**
-     * \brief Deserializes content from the stream using refPath to calculate relative paths to
-     * data.
-     *
+     * \brief Deserialize content from a stream.
      * @param stream Stream with content that is to be deserialized.
-     * @param refPath A path that will be used to decode the location of data during
-     * deserialization.
-     * @param allowReference flag to manage references to avoid multiple object creation.
+     * @param refPath Used to calculate paths relative to the stream source if any.
      */
     Deserializer(std::istream& stream, std::string_view refPath);
 

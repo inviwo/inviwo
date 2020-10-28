@@ -40,7 +40,6 @@ namespace inviwo {
  * An abstraction for what we need from a "context".
  */
 class IVW_CORE_API ContextHolder {
-
 public:
     virtual ~ContextHolder() = default;
     virtual void activate() = 0;
@@ -73,8 +72,17 @@ public:
     bool hasDefaultRenderContext() const;
     ContextHolder* setDefaultRenderContext(Canvas* canvas);
     ContextHolder* setDefaultRenderContext(std::unique_ptr<ContextHolder> context);
+
+    /**
+     * @brief Activate the default Inviwo render context.
+     * Should only be called from the main GUI thread.
+     */
     void activateDefaultRenderContext() const;
 
+    /**
+     * @brief Activate the thread local Inviwo render context.
+     * Will activate the inviwo render context associated with the calling thread
+     */
     void activateLocalRenderContext() const;
     Canvas::ContextID activeContext() const;
 
@@ -116,5 +124,29 @@ void RenderContext::forEachContext(C callback) {
         callback(item.first, item.second.name, item.second.context.get(), item.second.threadId);
     }
 }
+
+namespace rendercontext {
+
+/**
+ * @brief Activate the default Inviwo render context.
+ * Should only be called from the main GUI thread.
+ */
+inline void activateDefault() {
+    if (RenderContext::isInitialized()) {
+        RenderContext::getPtr()->activateDefaultRenderContext();
+    }
+}
+
+/**
+ * @brief Activate the thread local Inviwo render context.
+ * Will activate the inviwo render context associated with the calling thread
+ */
+inline void activateLocal() {
+    if (RenderContext::isInitialized()) {
+        RenderContext::getPtr()->activateLocalRenderContext();
+    }
+}
+
+}  // namespace rendercontext
 
 }  // namespace inviwo

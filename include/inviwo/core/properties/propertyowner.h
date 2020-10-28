@@ -96,17 +96,17 @@ public:
      */
     virtual Property* removeProperty(size_t index);
 
-    virtual std::vector<std::string> getPath() const;
+    virtual const std::string& getIdentifier() const;
 
     const std::vector<Property*>& getProperties() const;
     const std::vector<CompositeProperty*>& getCompositeProperties() const;
     std::vector<Property*> getPropertiesRecursive() const;
     Property* getPropertyByIdentifier(std::string_view identifier,
                                       bool recursiveSearch = false) const;
-    
+
     Property* getPropertyByPath(const std::vector<std::string>& path) const;
     Property* getPropertyByPath(util::span<std::string_view> path) const;
-    
+
     template <class T>
     std::vector<T*> getPropertiesByType(bool recursiveSearch = false) const;
 
@@ -129,6 +129,9 @@ public:
     // It is used by the linking.
     virtual Processor* getProcessor();
     virtual const Processor* getProcessor() const;
+
+    virtual const PropertyOwner* getOwner() const;
+    virtual PropertyOwner* getOwner();
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

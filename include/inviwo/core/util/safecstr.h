@@ -34,6 +34,13 @@
 
 namespace inviwo {
 
+/**
+ * @brief Safe and efficient conversion of a string_view to a null terminated c-string
+ * Uses a internal char buffer of size N to store a null terminated copy of the string_view
+ * if string_view is larger than N a char[] will be heap allocated.
+ * Note: string_view.data() is _not_ null terminated and can not be passed to functions that expect
+ * a c-string
+ */
 template <size_t N = 120>
 class SafeCStr {
 public:

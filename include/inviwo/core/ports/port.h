@@ -58,7 +58,10 @@ public:
     void setIdentifier(const std::string& name);
     Processor* getProcessor() const;
 
-    std::string getPathStr() const;
+    /**
+     * @brief Get the port path i.e. '<processor identifier>.<port identifier>'
+    */
+    std::string getPath() const;
 
     virtual std::string getClassIdentifier() const = 0;
     /**

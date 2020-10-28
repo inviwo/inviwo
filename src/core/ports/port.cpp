@@ -39,7 +39,7 @@ Port::Port(std::string identifier) : identifier_(std::move(identifier)), process
 
 Processor* Port::getProcessor() const { return processor_; }
 
-std::string Port::getPathStr() const {
+std::string Port::getPath() const {
     if (!processor_) throw Exception("No processor set", IVW_CONTEXT);
     return fmt::format("{}.{}", processor_->getIdentifier(), identifier_);
 }

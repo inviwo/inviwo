@@ -37,6 +37,7 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include <unordered_map>
 
 namespace inviwo {
 

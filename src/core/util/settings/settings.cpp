@@ -51,7 +51,7 @@ void Settings::addProperty(Property* property, bool owner) {
 
 void Settings::addProperty(Property& property) { addProperty(&property, false); }
 
-std::string Settings::getIdentifier() { return identifier_; }
+const std::string& Settings::getIdentifier() const { return identifier_; }
 
 std::string Settings::getFileName() const {
     auto settingname = identifier_;

@@ -40,9 +40,13 @@ class PropertyLink;
 class PortConnection;
 class ProcessorNetwork;
 
+/**
+ * Represents a edge in the ProcesorNetwork, either a PortConnection or a PropertyLink, as a
+ * pair of paths, i.e. dot separated identifiers. 
+ */
 struct IVW_CORE_API NetworkEdge : Serializable {
     NetworkEdge() = default;
-    NetworkEdge(std::string asrc, std::string adst);
+    NetworkEdge(std::string src, std::string dst);
 
     NetworkEdge(const PropertyLink& link);
     NetworkEdge(const PortConnection& connection);
@@ -52,15 +56,17 @@ struct IVW_CORE_API NetworkEdge : Serializable {
     PortConnection toConnection(const ProcessorNetwork& net) const;
     PropertyLink toLink(const ProcessorNetwork& net) const;
 
+    /**
+     * @brief Update the processor identifiers in the srcPath and dstPath with new ids from the map
+     * @param map with replacement identifiers
+     */
     void updateProcessorID(const std::unordered_map<std::string, std::string>& map);
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    std::string src;
-    std::string dst;
-
+    std::string srcPath;
+    std::string dstPath;
 };
-
 
 }  // namespace inviwo

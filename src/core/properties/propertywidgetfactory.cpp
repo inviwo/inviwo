@@ -81,8 +81,7 @@ std::unique_ptr<PropertyWidget> PropertyWidgetFactory::create(Property* property
         if (PropertySemantics::Default == it->second->getSematics()) {
             LogWarn("Requested property widget semantics ("
                     << sematics << ") for property (" << property->getDisplayName() << ", "
-                    << joinString(property->getPath(), "/")
-                    << ") does not exist, returning default semantics.");
+                    << property->getPath() << ") does not exist, returning default semantics.");
             return it->second->create(property);
         }
     }

@@ -232,6 +232,7 @@ public:
 
     PropertyTrack(ProcessorNetwork* network);
     PropertyTrack(Prop* property);
+    PropertyTrack(Prop* property, ProcessorNetwork* network);
     /**
      * Remove all keyframe sequences and call TrackObserver::notifyKeyframeSequenceRemoved
      */
@@ -324,6 +325,13 @@ PropertyTrack<Prop, Key>::PropertyTrack(Prop* property)
                                             100}
     , property_(property)
     , network_{property->getOwner()->getProcessor()->getNetwork()} {}
+
+template <typename Prop, typename Key>
+PropertyTrack<Prop, Key>::PropertyTrack(Prop* property, ProcessorNetwork* net)
+    : BaseTrack<KeyframeSequenceTyped<Key>>{property->getIdentifier(), property->getDisplayName(),
+                                            100}
+    , property_(property)
+    , network_{net} {}
 
 template <typename Prop, typename Key>
 PropertyTrack<Prop, Key>::~PropertyTrack() = default;
@@ -465,7 +473,7 @@ void PropertyTrack<Prop, Key>::addSequenceUsingPropertyValue(
 template <typename Prop, typename Key>
 void PropertyTrack<Prop, Key>::serialize(Serializer& s) const {
     BaseTrack<KeyframeSequenceTyped<Key>>::serialize(s);
-    s.serialize("property", property_->getPathStr());
+    s.serialize("property", property_->getPath());
 }
 
 template <typename Prop, typename Key>
@@ -474,9 +482,9 @@ void PropertyTrack<Prop, Key>::deserialize(Deserializer& d) {
     std::string propertyId;
     d.deserialize("property", propertyId);
 
+    IVW_ASSERT(network_, "Property track deserialization requires a ProcessorNetwork");
     property_ = dynamic_cast<Prop*>(network_->getProperty(propertyId));
 }
-
 }  // namespace animation
 
 }  // namespace inviwo

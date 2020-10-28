@@ -507,10 +507,10 @@ void addShaderDefines(Shader& shader, const VolumeIndicatorProperty& indicator) 
     shader.getFragmentShaderObject()->setShaderDefine("PLANES_ENABLED", enabled);
 
     constexpr std::string_view key =
-        "DRAW_PLANES(result, samplePosition, rayDirection, increment, params,t,tDepth)";
+        "DRAW_PLANES(result, samplePosition, rayDirection, increment, params, t, tDepth)";
     if (enabled) {
         StrBuffer planes(
-            "drawPlanes(result, samplePosition, rayDirection, increment {}{}{}, t, tDepth)",
+            "drawPlanes(result, samplePosition, rayDirection, increment{}{}{}, t, tDepth)",
             (indicator.plane1_ ? ", params.plane1" : ""),
             (indicator.plane2_ ? ", params.plane2" : ""),
             (indicator.plane3_ ? ", params.plane3" : ""));

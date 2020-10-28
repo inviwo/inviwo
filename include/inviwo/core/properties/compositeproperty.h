@@ -59,6 +59,9 @@ public:
 
     virtual CompositeProperty* clone() const override;
     virtual ~CompositeProperty() = default;
+
+    virtual const std::string& getIdentifier() const override;
+
     virtual std::string getClassIdentifierForWidget() const override;
 
     virtual bool isCollapsed() const;
@@ -79,7 +82,6 @@ public:
 
     virtual bool needsSerialization() const override;
 
-
     virtual CompositeProperty& setReadOnly(bool value) override;
 
     // Override from the PropertyOwner
@@ -88,7 +90,9 @@ public:
 
     virtual Processor* getProcessor() override;
     virtual const Processor* getProcessor() const override;
-    virtual std::vector<std::string> getPath() const override;
+
+    virtual const PropertyOwner* getOwner() const override;
+    virtual PropertyOwner* getOwner() override;
 
     /**
      * @brief Accept a NetworkVisitor, the visitor will visit this and then each Property of the

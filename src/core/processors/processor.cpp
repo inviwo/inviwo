@@ -440,10 +440,4 @@ void Processor::propagateEvent(Event* event, Outport* source) {
     event->setUsed(used);
 }
 
-std::vector<std::string> Processor::getPath() const {
-    std::vector<std::string> path;
-    path.push_back(identifier_);
-    return path;
-}
-
 }  // namespace inviwo

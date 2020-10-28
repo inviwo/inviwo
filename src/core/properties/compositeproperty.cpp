@@ -49,6 +49,8 @@ CompositeProperty::CompositeProperty(const std::string& identifier, const std::s
 
 CompositeProperty* CompositeProperty::clone() const { return new CompositeProperty(*this); }
 
+const std::string& CompositeProperty::getIdentifier() const { return Property::getIdentifier(); }
+
 std::string CompositeProperty::getClassIdentifierForWidget() const {
     return CompositeProperty::classIdentifier;
 }
@@ -74,9 +76,9 @@ void CompositeProperty::set(const CompositeProperty* src) {
         propertyModified();
     } else {
         LogWarn("Unable to link CompositeProperties: \n"
-                << joinString(src->getPath(), ".") << "\n to \n"
-                << joinString(getPath(), ".") << ".\nNumber of sub properties differ ("
-                << subProperties.size() << " vs " << properties_.size() << ")");
+                << src->getPath() << "\n to \n"
+                << getPath() << ".\nNumber of sub properties differ (" << subProperties.size()
+                << " vs " << properties_.size() << ")");
     }
 }
 
@@ -153,14 +155,9 @@ void CompositeProperty::deserialize(Deserializer& d) {
     collapsed_.deserialize(d, serializationMode_);
 }
 
-std::vector<std::string> CompositeProperty::getPath() const {
-    std::vector<std::string> path;
-    if (const auto owner = getOwner()) {
-        path = owner->getPath();
-    }
-    path.push_back(getIdentifier());
-    return path;
-}
+const PropertyOwner* CompositeProperty::getOwner() const { return Property::getOwner(); }
+
+PropertyOwner* CompositeProperty::getOwner() { return Property::getOwner(); }
 
 void CompositeProperty::accept(NetworkVisitor& visitor) {
     if (visitor.visit(*this)) {

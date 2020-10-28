@@ -42,31 +42,30 @@
 #include <fmt/format.h>
 
 namespace inviwo {
-NetworkEdge::NetworkEdge(std::string asrc, std::string adst)
-    : src{std::move(asrc)}, dst{std::move(adst)} {}
+
+NetworkEdge::NetworkEdge(std::string src, std::string dst)
+    : srcPath{std::move(src)}, dstPath{std::move(dst)} {}
 
 NetworkEdge::NetworkEdge(const PropertyLink& link)
-    : src{link.getSource()->getPathStr()}
-    , dst{link.getDestination()->getPathStr()} {}
+    : srcPath{link.getSource()->getPath()}, dstPath{link.getDestination()->getPath()} {}
 
 NetworkEdge::NetworkEdge(const PortConnection& connection)
-    : src{connection.getOutport()->getPathStr()}
-    , dst{connection.getInport()->getPathStr()} {}
+    : srcPath{connection.getOutport()->getPath()}, dstPath{connection.getInport()->getPath()} {}
 
 PortConnection NetworkEdge::toConnection(const ProcessorNetwork& net) const {
-    auto outport = net.getOutport(src);
-    auto inport = net.getInport(dst);
+    auto outport = net.getOutport(srcPath);
+    auto inport = net.getInport(dstPath);
 
     constexpr std::string_view err =
         "Could not create Connection from:\nOutport '{}'\nto\nInport '{}'\n{}";
     if (!outport && !inport) {
-        const auto message = fmt::format(err, src, dst, "Outport and Inport not found.");
+        const auto message = fmt::format(err, srcPath, dstPath, "Outport and Inport not found.");
         throw SerializationException(message, IVW_CONTEXT, "Connection");
     } else if (!outport) {
-        const auto message = fmt::format(err, src, dst, "Outport not found.");
+        const auto message = fmt::format(err, srcPath, dstPath, "Outport not found.");
         throw SerializationException(message, IVW_CONTEXT, "Connection");
     } else if (!inport) {
-        const auto message = fmt::format(err, src, dst, "Inport not found.");
+        const auto message = fmt::format(err, srcPath, dstPath, "Inport not found.");
         throw SerializationException(message, IVW_CONTEXT, "Connection");
     }
 
@@ -74,21 +73,21 @@ PortConnection NetworkEdge::toConnection(const ProcessorNetwork& net) const {
 }
 
 PropertyLink NetworkEdge::toLink(const ProcessorNetwork& net) const {
-    auto sprop = net.getProperty(src);
-    auto dprop = net.getProperty(dst);
+    auto sprop = net.getProperty(srcPath);
+    auto dprop = net.getProperty(dstPath);
 
     constexpr std::string_view err =
         "Could not create Property Link from:\nSource '{}'\nto\nDestination '{}'\n{}";
     if (!sprop && !dprop) {
         const auto message =
-            fmt::format(err, src, dst, "Source and destination properties not found.");
+            fmt::format(err, srcPath, dstPath, "Source and destination properties not found.");
         throw SerializationException(message, IVW_CONTEXT, "PropertyLink");
     } else if (!sprop) {
-        const auto message = fmt::format(err, src, dst, "Source property not found.");
+        const auto message = fmt::format(err, srcPath, dstPath, "Source property not found.");
         throw SerializationException(message, IVW_CONTEXT, "PropertyLink");
 
     } else if (!dprop) {
-        const auto message = fmt::format(err, src, dst, "Destination property not found.");
+        const auto message = fmt::format(err, srcPath, dstPath, "Destination property not found.");
         throw SerializationException(message, IVW_CONTEXT, "PropertyLink");
     }
 
@@ -97,30 +96,30 @@ PropertyLink NetworkEdge::toLink(const ProcessorNetwork& net) const {
 
 void NetworkEdge::updateProcessorID(const std::unordered_map<std::string, std::string>& map) {
     {
-        const auto len = src.find_first_of('.');
-        std::string id = src.substr(0, len);
+        const auto len = srcPath.find_first_of('.');
+        std::string id = srcPath.substr(0, len);
         auto it = map.find(id);
         if (it != map.end()) {
-            src = fmt::format("{}.{}", it->second, src.substr(len));
+            srcPath = fmt::format("{}.{}", it->second, srcPath.substr(len));
         }
     }
     {
-        const auto len = dst.find_first_of('.');
-        const std::string id = dst.substr(0, len);
+        const auto len = dstPath.find_first_of('.');
+        const std::string id = dstPath.substr(0, len);
         auto it = map.find(id);
         if (it != map.end()) {
-            dst = fmt::format("{}.{}", it->second, dst.substr(len));
+            dstPath = fmt::format("{}.{}", it->second, dstPath.substr(len));
         }
     }
 }
 
 void NetworkEdge::serialize(Serializer& s) const {
-    s.serialize("src", src, SerializationTarget::Attribute);
-    s.serialize("dst", dst, SerializationTarget::Attribute);
+    s.serialize("src", srcPath, SerializationTarget::Attribute);
+    s.serialize("dst", dstPath, SerializationTarget::Attribute);
 }
 
 void NetworkEdge::deserialize(Deserializer& d) {
-    d.deserialize("src", src, SerializationTarget::Attribute);
-    d.deserialize("dst", dst, SerializationTarget::Attribute);
+    d.deserialize("src", srcPath, SerializationTarget::Attribute);
+    d.deserialize("dst", dstPath, SerializationTarget::Attribute);
 }
 }  // namespace inviwo

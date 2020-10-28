@@ -62,19 +62,37 @@ T stringTo(const std::string& str) {
     return result;
 }
 
+/**
+ * @brief A string formating buffer
+ * A utility for formating strings. Uses a stack buffer of 500 chars that will grow on the head if
+ * needed. The StrBuffer is implicitly convertible to a string_view.
+ */
 struct IVW_CORE_API StrBuffer {
+    /**
+     * @brief Create an empty StrBuffer
+     */
     StrBuffer() = default;
 
+    /**
+     * @brief Format args using format into a new StrBuffer
+     */
     template <typename... Args>
     explicit StrBuffer(std::string_view format, Args&&... args) {
         fmt::format_to(buff, format, std::forward<Args>(args)...);
     }
 
+    /**
+     * @brief Append new content into buffer using format and args
+     */
     template <typename... Args>
     StrBuffer& append(std::string_view format, Args&&... args) {
         fmt::format_to(buff, format, std::forward<Args>(args)...);
         return *this;
     }
+
+    /**
+     * @brief Clear buffer content and format args using format into buffer.
+     */
     template <typename... Args>
     StrBuffer& replace(std::string_view format, Args&&... args) {
         buff.clear();
@@ -82,11 +100,26 @@ struct IVW_CORE_API StrBuffer {
         return *this;
     }
 
+    /**
+     * @brief Clear the buffer
+     */
     void clear() { buff.clear(); }
+
+    /**
+     * @brief Check if buffer is empty
+     */
     bool empty() const { return buff.size() == 0; }
 
+    /**
+     * @brief Get a string_view into the buffer
+     */
     std::string_view view() const { return {buff.data(), buff.size()}; }
+
+    /**
+     * @brief Implicitly conversion to string_view
+     */
     operator std::string_view() const { return {buff.data(), buff.size()}; }
+
     fmt::memory_buffer buff;
 };
 

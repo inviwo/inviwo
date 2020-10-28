@@ -35,6 +35,7 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/safecstr.h>
 #include <sstream>
 
 namespace inviwo {
@@ -63,7 +64,7 @@ bool breakOnException() {
 }  // namespace
 
 Exception::Exception(std::string_view message, ExceptionContext context)
-    : std::runtime_error(message.data()), context_(std::move(context)), stack_{stackTrace()} {
+    : std::runtime_error(SafeCStr{message}), context_(std::move(context)), stack_{stackTrace()} {
     if (breakOnException()) util::debugBreak();
 }
 
@@ -120,7 +121,7 @@ ResourceException::ResourceException(std::string_view message, ExceptionContext 
 
 ModuleInitException::ModuleInitException(std::string_view message, ExceptionContext context,
                                          std::vector<std::string> modulesToDeregister)
-    : Exception(message, context), modulesToDeregister_(std::move(modulesToDeregister)) {}
+    : Exception(message, std::move(context)), modulesToDeregister_(std::move(modulesToDeregister)) {}
 
 const std::vector<std::string>& ModuleInitException::getModulesToDeregister() const {
     return modulesToDeregister_;

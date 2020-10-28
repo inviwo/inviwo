@@ -265,6 +265,10 @@ Processor* PropertyOwner::getProcessor() { return nullptr; }
 
 const Processor* PropertyOwner::getProcessor() const { return nullptr; }
 
+const PropertyOwner* PropertyOwner::getOwner() const { return nullptr; }
+
+PropertyOwner* PropertyOwner::getOwner() { return nullptr; }
+
 void PropertyOwner::serialize(Serializer& s) const {
     s.serialize("OwnedPropertyIdentifiers", ownedProperties_, "PropertyIdentifier",
                 util::alwaysTrue{},
@@ -314,7 +318,10 @@ void PropertyOwner::resetAllPoperties() {
     for (auto& elem : properties_) elem->resetToDefaultState();
 }
 
-std::vector<std::string> PropertyOwner::getPath() const { return std::vector<std::string>(); }
+const std::string& PropertyOwner::getIdentifier() const {
+    static std::string id;
+    return id;
+}
 
 void PropertyOwner::invokeEvent(Event* event) {
     for (auto elem : eventProperties_) {
