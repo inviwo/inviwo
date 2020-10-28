@@ -84,6 +84,11 @@ constexpr size_t static_size = static_size_t<std::remove_cv_t<std::remove_refere
 
 }  // namespace detail
 
+/**
+ * @brief A compile time string implementation.
+ * Supports compile time string concatenation and conversion to std::string, std::string_view and
+ * null terminated const char*. The stored string is null terminated.
+ */
 template <size_t N>
 struct StaticString {
     constexpr StaticString() noexcept = default;
@@ -115,6 +120,9 @@ struct StaticString {
 
     operator std::string() const { return string(); }
     std::string string() const { return {str.data(), N}; }
+
+    constexpr const char* c_str() const { return str.data(); }
+    constexpr operator const char*() const noexcept { return c_str(); }
 
     std::array<char, N + 1> str{0};
 };

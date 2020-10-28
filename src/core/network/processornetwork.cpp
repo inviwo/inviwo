@@ -584,53 +584,34 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
 bool ProcessorNetwork::isDeserializing() const { return deserializing_; }
 
-Property* ProcessorNetwork::getProperty(std::vector<std::string> path) const {
-    if (path.size() >= 2) {
-        if (auto processor = getProcessorByIdentifier(path[0])) {
-            std::vector<std::string> propPath(path.begin() + 1, path.end());
-            return processor->getPropertyByPath(propPath);
-        }
-    }
-    return nullptr;
-}
-
 Property* ProcessorNetwork::getProperty(std::string_view path) const {
-    auto items = splitStringView(path, '.');
-    if (items.size() >= 2) {
-        if (auto processor = getProcessorByIdentifier(items[0])) {
-            util::span<std::string_view> propPath(items.data(), items.size());
-            return processor->getPropertyByPath(propPath.subspan(1));
-        }
+    const auto [processorId, propertyPath] = util::divideBy(path, '.');
+    if (auto processor = getProcessorByIdentifier(processorId)) {
+        return processor->getPropertyByPath(propertyPath);
     }
     return nullptr;
 }
 
 Port* ProcessorNetwork::getPort(std::string_view path) const {
-    auto items = splitStringView(path, '.');
-    if (items.size() >= 2) {
-        if (auto processor = getProcessorByIdentifier(items[0])) {
-            return processor->getPort(items[1]);
-        }
+    const auto [processorId, portId] = util::divideBy(path, '.');
+    if (auto processor = getProcessorByIdentifier(processorId)) {
+        return processor->getPort(portId);
     }
     return nullptr;
 }
 
 Inport* ProcessorNetwork::getInport(std::string_view path) const {
-    auto items = splitStringView(path, '.');
-    if (items.size() >= 2) {
-        if (auto processor = getProcessorByIdentifier(items[0])) {
-            return processor->getInport(items[1]);
-        }
+    const auto [processorId, portId] = util::divideBy(path, '.');
+    if (auto processor = getProcessorByIdentifier(processorId)) {
+        return processor->getInport(portId);
     }
     return nullptr;
 }
 
 Outport* ProcessorNetwork::getOutport(std::string_view path) const {
-    auto items = splitStringView(path, '.');
-    if (items.size() >= 2) {
-        if (auto processor = getProcessorByIdentifier(items[0])) {
-            return processor->getOutport(items[1]);
-        }
+    const auto [processorId, portId] = util::divideBy(path, '.');
+    if (auto processor = getProcessorByIdentifier(processorId)) {
+        return processor->getOutport(portId);
     }
     return nullptr;
 }
@@ -638,9 +619,7 @@ Outport* ProcessorNetwork::getOutport(std::string_view path) const {
 bool ProcessorNetwork::isPropertyInNetwork(Property* prop) const {
     if (auto owner = prop->getOwner()) {
         if (auto processor = owner->getProcessor()) {
-            if (processor == getProcessorByIdentifier(processor->getIdentifier())) {
-                return true;
-            }
+            return processor == util::map_find_or_null(processors_, processor->getIdentifier());
         }
     }
     return false;

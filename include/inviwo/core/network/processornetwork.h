@@ -229,14 +229,6 @@ public:
 
     /**
      * @breif Get Property by path
-     * @param path vector of identifiers starting with a processor identifier followed by property
-     * identifiers.
-     * @return the property or nullptr if not found
-     */
-    Property* getProperty(std::vector<std::string> path) const;
-
-    /**
-     * @breif Get Property by path
      * @param path string of dot separated identifiers starting with a processor identifier followed
      * by property identifiers.
      * @return the property or nullptr if not found

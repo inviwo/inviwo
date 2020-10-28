@@ -104,8 +104,7 @@ public:
     Property* getPropertyByIdentifier(std::string_view identifier,
                                       bool recursiveSearch = false) const;
 
-    Property* getPropertyByPath(const std::vector<std::string>& path) const;
-    Property* getPropertyByPath(util::span<std::string_view> path) const;
+    Property* getPropertyByPath(std::string_view path) const;
 
     template <class T>
     std::vector<T*> getPropertiesByType(bool recursiveSearch = false) const;

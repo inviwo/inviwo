@@ -144,7 +144,7 @@ struct OrdinalPropertyIterator {
 
 template <typename T, typename P, typename M, typename PC>
 void addOrdinalPropertyIterator(M &m, PC &pc, const std::string &suffix) {
-    const auto itclassname = Defaultvalues<T>::getName() + suffix;
+    const auto itclassname = Defaultvalues<T>::getName().string() + suffix;
     using IT = OrdinalPropertyIterator<P, T>;
     pybind11::class_<IT>(m, itclassname.c_str())
         .def(pybind11::init<P *>())

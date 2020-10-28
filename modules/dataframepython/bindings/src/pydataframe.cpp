@@ -42,6 +42,7 @@
 #include <inviwo/dataframe/util/dataframeutil.h>
 
 #include <inviwo/core/util/defaultvalues.h>
+#include <inviwo/core/util/safecstr.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <modules/python3/pyportutils.h>
 

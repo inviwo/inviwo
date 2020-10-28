@@ -155,6 +155,12 @@ constexpr void forEachStringPart(std::string_view str, std::string_view sep, Fun
     }
 }
 
+inline std::pair<std::string_view, std::string_view> divideBy(std::string_view str,
+                                                              char delimeter = ' ') {
+    const auto pos = str.find(delimeter);
+    return {str.substr(0, pos), pos != str.npos ? str.substr(pos + 1) : std::string_view{}};
+}
+
 }  // namespace util
 
 /**
@@ -169,6 +175,7 @@ constexpr void forEachStringPart(std::string_view str, std::string_view sep, Fun
 IVW_CORE_API std::vector<std::string> splitString(std::string_view str, char delimeter = ' ');
 IVW_CORE_API std::vector<std::string_view> splitStringView(std::string_view str,
                                                            char delimeter = ' ');
+
 template <typename T>
 std::string joinString(const std::vector<T>& str, std::string delimeter = " ") {
     std::stringstream ss;

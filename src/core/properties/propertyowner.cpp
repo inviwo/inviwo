@@ -196,42 +196,21 @@ Property* PropertyOwner::getPropertyByIdentifier(std::string_view identifier,
     return nullptr;
 }
 
-Property* PropertyOwner::getPropertyByPath(const std::vector<std::string>& path) const {
+Property* PropertyOwner::getPropertyByPath(std::string_view path) const {
     if (path.empty()) return nullptr;
 
-    auto lastIt = --path.end();
-    auto* curr = this;
-    for (auto pathIt = path.begin(); pathIt != lastIt; ++pathIt) {
-        auto compIt =
-            std::find_if(curr->compositeProperties_.begin(), curr->compositeProperties_.end(),
-                         [&](auto* comp) { return comp->getIdentifier() == *pathIt; });
-        if (compIt != curr->compositeProperties_.end()) {
-            curr = *compIt;
+    const auto [first, rest] = util::divideBy(path, '.');
+    if (rest.empty()) {
+        return getPropertyByIdentifier(first);
+    } else {
+        auto it = std::find_if(compositeProperties_.begin(), compositeProperties_.end(),
+                               [&](auto* comp) { return comp->getIdentifier() == first; });
+        if (it != compositeProperties_.end()) {
+            return (*it)->getPropertyByPath(rest);
         } else {
             return nullptr;
         }
     }
-    return curr->getPropertyByIdentifier(*lastIt);
-}
-
-Property* PropertyOwner::getPropertyByPath(util::span<std::string_view> path) const {
-    if (path.empty()) return nullptr;
-
-    auto lastIt = path.end();
-    --lastIt;
-
-    auto* curr = this;
-    for (auto pathIt = path.begin(); pathIt != lastIt; ++pathIt) {
-        auto compIt =
-            std::find_if(curr->compositeProperties_.begin(), curr->compositeProperties_.end(),
-                         [&](auto* comp) { return comp->getIdentifier() == *pathIt; });
-        if (compIt != curr->compositeProperties_.end()) {
-            curr = *compIt;
-        } else {
-            return nullptr;
-        }
-    }
-    return curr->getPropertyByIdentifier(*lastIt);
 }
 
 size_t PropertyOwner::size() const { return properties_.size(); }
