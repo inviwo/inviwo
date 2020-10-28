@@ -328,7 +328,7 @@ public:
     /*
      * Create a Keyframe using the current property value.
      */
-    virtual std::unique_ptr<Key> createKeyframe(Seconds time)  const override;
+    virtual std::unique_ptr<Key> createKeyframe(Seconds time) const override;
 
 protected:
     /*

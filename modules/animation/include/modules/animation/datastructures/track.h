@@ -117,7 +117,7 @@ public:
 
     /**
      * Add a Keyframe at time and return the added keyframe.
-     * The Keyframe is added to a new KeyframeSequence if asNewSequence is true, 
+     * The Keyframe is added to a new KeyframeSequence if asNewSequence is true,
      * otherwise it should be added to the closest KeyframeSequence at specified time.
      * A KeyframeSequence is added to the Track if none exists.
      * @see BaseTrack::add(Seconds time, bool asNewSequence)

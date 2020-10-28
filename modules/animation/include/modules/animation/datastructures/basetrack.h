@@ -123,8 +123,8 @@ public:
      * behavior, e.g. based on Property value, instead of add(Seconds time, bool asNewSequence).
      */
     virtual std::unique_ptr<key_type> createKeyframe(Seconds time) const;
-protected:
 
+protected:
     virtual void onKeyframeSequenceMoved(KeyframeSequence* seq) override;
     key_type* addToClosestSequence(std::unique_ptr<key_type> key);
 
@@ -420,7 +420,8 @@ std::unique_ptr<KeyframeSequence> BaseTrack<Seq>::remove(KeyframeSequence* seq) 
 }
 
 template <typename Seq>
-std::unique_ptr<typename BaseTrack<Seq>::key_type> BaseTrack<Seq>::createKeyframe(Seconds time) const {
+std::unique_ptr<typename BaseTrack<Seq>::key_type> BaseTrack<Seq>::createKeyframe(
+    Seconds time) const {
     return std::make_unique<key_type>(time);
 }
 
