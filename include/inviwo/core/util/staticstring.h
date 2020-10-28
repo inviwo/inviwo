@@ -33,6 +33,8 @@
 #include <type_traits>
 #include <string>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 template <size_t N>
@@ -166,3 +168,12 @@ template <typename... Ts>
 StaticString(Ts&&... strs) -> StaticString<(::inviwo::detail::static_size<Ts> + ...)>;
 
 }  // namespace inviwo
+
+template <size_t N>
+struct fmt::formatter<inviwo::StaticString<N>> : formatter<string_view> {
+    // parse is inherited from formatter<string_view>.
+    template <typename FormatContext>
+    auto format(const inviwo::StaticString<N>& str, FormatContext& ctx) {
+        return formatter<string_view>::format(str.view(), ctx);
+    }
+};
