@@ -105,7 +105,7 @@ std::string fromWstring(std::wstring_view str) {
 #else
     auto state = std::mbstate_t();
     std::wstring safestr(str);
-    auto sptr = safestr.data();
+    const wchar_t* sptr = safestr.data();
     const char* loc = nullptr;
     size_t len = std::wcsrtombs(nullptr, &sptr, 0, &state);
     if (len == static_cast<std::size_t>(-1)) {

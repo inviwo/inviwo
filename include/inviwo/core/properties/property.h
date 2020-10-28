@@ -45,6 +45,9 @@
 
 #include <functional>
 #include <type_traits>
+#include <vector>
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 

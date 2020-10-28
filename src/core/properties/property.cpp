@@ -32,6 +32,7 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/networkvisitor.h>
 
@@ -99,7 +100,7 @@ std::string Property::getPath() const {
         owner = owner->getOwner();
     }
     std::reverse(ids.begin(), ids.end());
-    return fmt::format("{}", fmt::join(ids, "."));
+    return joinString(ids, ".");
 }
 
 std::string Property::getDisplayName() const { return displayName_; }

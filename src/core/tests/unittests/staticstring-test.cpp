@@ -34,6 +34,8 @@
 
 #include <inviwo/core/util/staticstring.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 TEST(StaticString, Empty) {
@@ -61,6 +63,11 @@ TEST(StaticString, Plus) {
     static_assert(str3 == "test1test2test3");
 }
 
+TEST(StaticString, Format) {
+    constexpr StaticString str1{"test2"};
+    const auto str2 = fmt::format("{}", str1);
+    EXPECT_EQ(str1, str2);
+}
 
 
 }  // namespace inviwo 

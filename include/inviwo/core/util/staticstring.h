@@ -118,11 +118,10 @@ struct StaticString {
     constexpr operator std::string_view() const noexcept { return view(); }
     constexpr std::string_view view() const noexcept { return {str.data(), N}; }
 
-    operator std::string() const { return string(); }
     std::string string() const { return {str.data(), N}; }
-
+    operator std::string() const noexcept { return string(); }
+    
     constexpr const char* c_str() const { return str.data(); }
-    constexpr operator const char*() const noexcept { return c_str(); }
 
     std::array<char, N + 1> str{0};
 };
@@ -141,21 +140,39 @@ constexpr bool operator!=(const StaticString<N1>& a, const StaticString<N2>& b) 
 }
 
 template <size_t N1, size_t N2>
-constexpr auto operator==(const char (&a)[N1], const StaticString<N2>& b) {
+constexpr bool operator==(const char (&a)[N1], const StaticString<N2>& b) {
     return StaticString{a} == b;
 }
 template <size_t N1, size_t N2>
-constexpr auto operator==(const StaticString<N1>& a, const char (&b)[N2]) {
+constexpr bool operator==(const StaticString<N1>& a, const char (&b)[N2]) {
     return a == StaticString{b};
 }
 
 template <size_t N1, size_t N2>
-constexpr auto operator!=(const char (&a)[N1], const StaticString<N2>& b) {
+constexpr bool operator!=(const char (&a)[N1], const StaticString<N2>& b) {
     return StaticString{a} != b;
 }
 template <size_t N1, size_t N2>
-constexpr auto operator!=(const StaticString<N1>& a, const char (&b)[N2]) {
+constexpr bool operator!=(const StaticString<N1>& a, const char (&b)[N2]) {
     return a != StaticString{b};
+}
+
+template <size_t N>
+bool operator==(const std::string& a, const StaticString<N>& b) {
+    return std::equal(a.begin(), a.end(), b.begin(), b.end());
+}
+template <size_t N>
+bool operator==(const StaticString<N>& a, const std::string& b) {
+    return std::equal(a.begin(), a.end(), b.begin(), b.end());
+}
+
+template <size_t N>
+bool operator!=(const std::string& a, const StaticString<N>& b) {
+    return !(a == b);
+}
+template <size_t N>
+bool operator!=(const StaticString<N>& a, const std::string& b) {
+    return !(a == b);
 }
 
 template <size_t N1, size_t N2>
@@ -177,11 +194,13 @@ StaticString(Ts&&... strs) -> StaticString<(::inviwo::detail::static_size<Ts> + 
 
 }  // namespace inviwo
 
+namespace fmt {
 template <size_t N>
-struct fmt::formatter<inviwo::StaticString<N>> : formatter<string_view> {
+struct formatter<::inviwo::StaticString<N>> : formatter<string_view> {
     // parse is inherited from formatter<string_view>.
     template <typename FormatContext>
-    auto format(const inviwo::StaticString<N>& str, FormatContext& ctx) {
+    auto format(::inviwo::StaticString<N> str, FormatContext& ctx) {
         return formatter<string_view>::format(str.view(), ctx);
     }
 };
+}
