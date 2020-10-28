@@ -168,12 +168,14 @@ void setPropertyFromKeyframeHelper(CameraProperty* property, const CameraKeyfram
 void setKeyframeFromPropertyHelper(const CameraProperty* property, CameraKeyframe* keyframe);
 
 /**
+ * Press button if the property is the same as the keyframe's.
  * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
  * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
  */
 void setPropertyFromKeyframeHelper(ButtonProperty* property, const ButtonKeyframe* keyframe);
 /**
- * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
+ * The property of a ButtonKeyframe cannot be changed since all are supposed to be the same for a
+ * ButtonTrack Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
  * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
  */
 void setKeyframeFromPropertyHelper(const ButtonProperty* property, ButtonKeyframe* keyframe);

@@ -36,8 +36,6 @@ namespace animation {
 ButtonKeyframe::ButtonKeyframe(Seconds time, ButtonProperty* prop)
     : BaseKeyframe(time), prop_(prop) {}
 
-void ButtonKeyframe::setProperty(ButtonProperty* prop) { prop_ = prop; }
-
 ButtonKeyframe* ButtonKeyframe::clone() const { return new ButtonKeyframe(*this); }
 
 AnimationTimeState ButtonKeyframe::operator()(Seconds from, Seconds to,

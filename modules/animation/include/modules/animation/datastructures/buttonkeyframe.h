@@ -39,8 +39,8 @@ namespace inviwo {
 namespace animation {
 
 /** \class ButtonKeyframe
- * Keyframe for buttons. Button will be pressed when passing over the keyframe.
- * @see Keyframe
+ * Keyframe for ButtonProperty. Button will be pressed when passing over the keyframe in any direction.
+ * @see ButtonTrack
  */
 class IVW_MODULE_ANIMATION_API ButtonKeyframe : public BaseKeyframe {
 public:
@@ -50,8 +50,6 @@ public:
     ButtonKeyframe(const ButtonKeyframe& rhs) = default;
     ButtonKeyframe& operator=(const ButtonKeyframe& that) = default;
     virtual ~ButtonKeyframe() = default;
-
-    void setProperty(ButtonProperty* prop);
 
     const ButtonProperty& getValue() const { return *prop_; }
     ButtonProperty& getValue() { return *prop_; }

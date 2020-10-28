@@ -48,9 +48,12 @@ void setKeyframeFromPropertyHelper(const CameraProperty* property, CameraKeyfram
     keyframe->updateFrom(property->get());
 }
 
-void setPropertyFromKeyframeHelper(ButtonProperty* property, const ButtonKeyframe*) {
-    property->pressButton();
+void setPropertyFromKeyframeHelper(ButtonProperty* property, const ButtonKeyframe* key) {
+    if (property == &key->getValue()) {
+        property->pressButton();
+    }
 }
+    
 
 void setKeyframeFromPropertyHelper(const ButtonProperty* property, ButtonKeyframe* key) {
     if (&key->getValue() != property) {
