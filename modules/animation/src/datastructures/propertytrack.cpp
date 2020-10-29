@@ -51,11 +51,8 @@ void setKeyframeFromPropertyHelper(const CameraProperty* property, CameraKeyfram
 void setPropertyFromKeyframeHelper(ButtonProperty* property, const ButtonKeyframe*) {
     property->pressButton();
 }
-    
 
-void setKeyframeFromPropertyHelper(const ButtonProperty*, ButtonKeyframe*) {
-
-}
+void setKeyframeFromPropertyHelper(const ButtonProperty*, ButtonKeyframe*) {}
 
 }  // namespace detail
 

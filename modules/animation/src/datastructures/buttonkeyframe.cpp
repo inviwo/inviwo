@@ -33,13 +33,11 @@ namespace inviwo {
 
 namespace animation {
 
-ButtonKeyframe::ButtonKeyframe(Seconds time)
-    : BaseKeyframe(time) {}
+ButtonKeyframe::ButtonKeyframe(Seconds time) : BaseKeyframe(time) {}
 
 ButtonKeyframe* ButtonKeyframe::clone() const { return new ButtonKeyframe(*this); }
 
-void ButtonKeyframe::operator()(Seconds from, Seconds to,
-                                              bool& pressed) const {
+void ButtonKeyframe::operator()(Seconds from, Seconds to, bool& pressed) const {
     if ((from < getTime() && to >= getTime()) || (to <= getTime() && from > getTime())) {
         // We passed over this keyframe
         pressed = true;

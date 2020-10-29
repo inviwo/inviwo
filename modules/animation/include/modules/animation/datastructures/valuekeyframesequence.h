@@ -154,7 +154,8 @@ KeyframeSequenceTyped<Key>& KeyframeSequenceTyped<Key>::operator=(
         BaseKeyframeSequence<Key>::operator=(that);
         ValueKeyframeSequence::operator=(that);
         if (that.interpolation_) {
-            setInterpolation(std::unique_ptr<InterpolationTyped<Key>>(that.interpolation_->clone()));
+            setInterpolation(
+                std::unique_ptr<InterpolationTyped<Key>>(that.interpolation_->clone()));
         } else {
             setInterpolation(nullptr);
         }

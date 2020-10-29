@@ -36,8 +36,7 @@ namespace animation {
 CameraKeyframe::CameraKeyframe(Seconds time) : BaseKeyframe{time} {}
 
 CameraKeyframe::CameraKeyframe(Seconds time, const Camera& cam)
-    : BaseKeyframe{time}
-    , value_{cam.getLookFrom(), cam.getLookTo(), cam.getLookUp()} {}
+    : BaseKeyframe{time}, value_{cam.getLookFrom(), cam.getLookTo(), cam.getLookUp()} {}
 
 CameraKeyframe* CameraKeyframe::clone() const { return new CameraKeyframe(*this); }
 

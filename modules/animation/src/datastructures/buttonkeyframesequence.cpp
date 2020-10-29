@@ -41,8 +41,7 @@ ButtonKeyframeSequence* ButtonKeyframeSequence::clone() const {
     return new ButtonKeyframeSequence(*this);
 }
 
-void ButtonKeyframeSequence::operator()(Seconds from, Seconds to,
-                                                      bool& pressed) const {
+void ButtonKeyframeSequence::operator()(Seconds from, Seconds to, bool& pressed) const {
     // 'it' will be the first key. with a time larger than 'to'.
     auto fromIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), from,
                                    [](const auto& a, const auto& b) { return a < *b; });

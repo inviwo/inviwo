@@ -66,7 +66,8 @@ public:
      * Returns linear interpolation of keyframe values at time t.
      */
     virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from,
-                            Seconds to, easing::EasingType easing, CameraKeyframe::value_type& out) const override;
+                            Seconds to, easing::EasingType easing,
+                            CameraKeyframe::value_type& out) const override;
 };
 
 }  // namespace animation

@@ -196,7 +196,7 @@ std::unique_ptr<Interpolation> AnimationManager::getDefaultInterpolation(Propert
                      "interpolation factory. @Developer: Please follow examples in "
                      "animationmodule.cpp");
         }
-    } 
+    }
     return interpolation;
 }
 
