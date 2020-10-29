@@ -207,11 +207,7 @@ inline AnimationTimeState
 AnimateSequence<CameraProperty, KeyframeSequenceTyped<CameraKeyframe>>::animate(
     CameraProperty* prop, const KeyframeSequenceTyped<CameraKeyframe>& seq, Seconds from,
     Seconds to, AnimationState state) {
-    CameraKeyframe::value_type v;
-    seq(from, to, v);
-    prop->setLookFrom(v.lookUp_);
-    prop->setLookTo(v.lookTo_);
-    prop->setLookUp(v.lookFrom_);
+    seq(from, to, prop->get());
     return {to, state};
 }
 
@@ -226,28 +222,6 @@ inline AnimationTimeState AnimateSequence<ButtonProperty, ButtonKeyframeSequence
     }
     return {to, state};
 }
-
-/*
- * Helper for compile-time check if a property, Prop, has a member function 'get' returning Ret
- * https://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature
- */
-template <typename Prop, typename Ret>
-struct property_has_get {
-private:
-    template <typename T>
-    static constexpr auto check(T*) ->
-        typename std::is_same<decltype(std::declval<T>().get()),
-                              Ret       // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                              >::type;  // attempt to call it and see if the return type is correct
-
-    template <typename>
-    static constexpr std::false_type check(...);
-
-    typedef decltype(check<Prop>(0)) type;
-
-public:
-    static constexpr bool value = type::value;
-};
 
 }  // namespace detail
 
@@ -439,7 +413,7 @@ inline std::unique_ptr<Key> PropertyTrack<Prop, Key, Seq>::createKeyframe(Second
 template <typename Prop, typename Key, typename Seq>
 inline std::unique_ptr<Key> PropertyTrack<Prop, Key, Seq>::createKeyframe(const Prop* property,
                                                                           Seconds time) const {
-    if constexpr (detail::property_has_get<Prop, typename Key::value_type>::value) {
+    if constexpr (std::is_constructible<Key, Seconds, typename Key::value_type>::value) {
         return std::make_unique<Key>(time, property->get());
     } else {
         return std::make_unique<Key>(time);
@@ -447,7 +421,6 @@ inline std::unique_ptr<Key> PropertyTrack<Prop, Key, Seq>::createKeyframe(const 
 }
 
 template <typename Prop, typename Key, typename Seq>
-
 inline std::unique_ptr<Seq> PropertyTrack<Prop, Key, Seq>::createKeyframeSequence(
     std::vector<std::unique_ptr<Key>> keys, std::unique_ptr<Interpolation> interpolation) const {
     if constexpr (std::is_same<Seq, KeyframeSequenceTyped<Key>>::value) {
