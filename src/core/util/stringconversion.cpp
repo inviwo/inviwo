@@ -269,7 +269,7 @@ std::string randomString(size_t length) {
     std::uniform_int_distribution<> dis(0, static_cast<int>(possibleValues.size()) - 1);
 
     std::string s(length, ' ');
-    for (auto& c : s) s = possibleValues[dis(gen)];
+    for (auto& c : s) c = possibleValues[dis(gen)];
 
     return s;
 }
