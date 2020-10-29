@@ -75,7 +75,7 @@ SharedLibrary::SharedLibrary(const std::string& filePath) : filePath_(filePath) 
     static auto addDirectoriesInPath = []() {  // Lambda executed once
         const char* environmentPath = std::getenv("PATH");
         if (environmentPath && util::hasAddLibrarySearchDirsFunction()) {
-            auto elems = splitString(std::string(environmentPath), ';');
+            auto elems = util::splitString(std::string_view(environmentPath), ';');
             // Reverse the order since empirically windows looks in the last one first.
             // opposite to the order in the env path.
             // According to the docs the search order for multiple calls to AddDllDirectory

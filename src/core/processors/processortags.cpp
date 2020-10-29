@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-Tag::Tag(std::string tag) : tag_(std::move(tag)) {}
+Tag::Tag(std::string_view tag) : tag_(tag) {}
 
 Tags Tag::operator|(const Tag& rhs) const { return Tags{std::vector<Tag>{*this, rhs}}; }
 
@@ -53,21 +53,17 @@ Tags::Tags(const Tag& tag) : tags_{tag} {}
 
 Tags::Tags(std::vector<Tag> tags) : tags_{std::move(tags)} {}
 
-Tags::Tags(const std::string& tags) {
-    std::vector<std::string> strings = splitString(tags, ',');
-    for (auto& strings_it : strings) {
-        addTag(Tag(trim(strings_it)));
-    }
+Tags::Tags(std::string_view tags) {
+    util::forEachStringPart(tags, ",", [&](std::string_view part) { addTag(Tag(trim(part))); });
 }
 
-Tags::Tags(const char* tags) : Tags{std::string{tags}} {}
+Tags::Tags(std::string tags) : Tags{std::string_view{tags}} {}
 
-Tags& Tags::operator=(const std::string& that) {
+Tags::Tags(const char* tags) : Tags{std::string_view{tags}} {}
+
+Tags& Tags::operator=(std::string_view that) {
     tags_.clear();
-    std::vector<std::string> strings = splitString(that, ',');
-    for (auto& strings_it : strings) {
-        addTag(Tag(trim(strings_it)));
-    }
+    util::forEachStringPart(that, ",", [&](std::string_view part) { addTag(Tag(trim(part))); });
     return *this;
 }
 

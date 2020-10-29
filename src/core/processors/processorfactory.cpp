@@ -54,7 +54,7 @@ bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
         return false;
     }
 
-    if (splitString(processor->getClassIdentifier(), '.').size() < 3) {
+    if (util::splitStringView(processor->getClassIdentifier(), '.').size() < 3) {
         LogWarn(
             fmt::format("All processor classIdentifiers should be named using reverse DNS "
                         "(org.inviwo.processor) not like: '{}' in module {}",

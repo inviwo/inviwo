@@ -35,6 +35,7 @@
 #include <inviwo/core/util/hashcombine.h>
 
 #include <string>
+#include <string_view>
 #include <iosfwd>
 
 namespace inviwo {
@@ -47,7 +48,7 @@ public:
     FileExtension& operator=(FileExtension&&) = default;
     FileExtension& operator=(const FileExtension&) = default;
 
-    FileExtension(std::string extension, std::string description);
+    FileExtension(std::string_view extension, std::string_view description);
     virtual ~FileExtension() = default;
 
     /**
@@ -57,7 +58,7 @@ public:
      * @param str Input string  formed like "Text files (*.txt)".
      * @return FileExtension object created from the information given in the input string.
      */
-    static FileExtension createFileExtensionFromString(const std::string& str);
+    static FileExtension createFileExtensionFromString(std::string_view str);
     std::string toString() const;
 
     bool empty() const;
@@ -77,7 +78,7 @@ public:
      * @param str   string to be tested
      * @return true if the string is matched by the FileExtension
      */
-    bool matches(const std::string& str) const;
+    bool matches(std::string_view str) const;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

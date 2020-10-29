@@ -117,7 +117,7 @@ void ProcessorNetworkConverter::updateProcessorType(TxElement* node) {
 
     if (key == "Processor") {
         std::string type = node->GetAttributeOrDefault("type", "");
-        if (splitString(type, '.').size() < 3) {
+        if (util::splitStringView(type, '.').size() < 3) {
             node->SetAttribute("type", "org.inviwo." + type);
         }
     }
@@ -500,7 +500,7 @@ void ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifers(TxElemen
         int size = sizeof(renamed) / sizeof(std::string);
         if (std::find(renamed, renamed + size, type) != renamed + size) {
             std::string newtype = removeFromString(type, ' ');
-            if (splitString(type, '.').size() < 3) {
+            if (util::splitStringView(type, '.').size() < 3) {
                 node->SetAttribute("type", "org.inviwo." + newtype);
             } else {
                 node->SetAttribute("type", newtype);
@@ -577,7 +577,7 @@ void ProcessorNetworkConverter::updateProcessorIdentifiersStriped(TxElement* nod
             std::string newIdentifier = identifier;
             int i = 2;
 
-            auto parts = splitString(identifier, ' ');
+            auto parts = util::splitString(identifier, ' ');
             if (parts.size() > 1 &&
                 util::all_of(parts.back(), [](const char& c) { return std::isdigit(c); })) {
                 i = std::stoi(parts.back());
@@ -783,42 +783,42 @@ void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
     std::unordered_map<std::string, std::string> ports;
     std::unordered_map<std::string, std::string> properties;
 
-    auto processorsNode = xml::getElement(root, "Processors");
+    if (auto processorsNode = xml::getElement(root, "Processors")) {
+        visit(processorsNode, "InPort", [&](TxElement* node) {
+            const auto xmlId = node->GetAttribute("id");
+            if (xmlId.empty()) return;
+            auto portId = node->GetAttribute("identifier");
+            auto processorId = util::stripIdentifier(
+                node->Parent()->Parent()->ToElement()->GetAttribute("identifier"));
+            ports[xmlId] = fmt::format("{}.{}", processorId, portId);
+        });
 
-    visit(processorsNode, "InPort", [&](TxElement* node) {
-        const auto xmlId = node->GetAttribute("id");
-        if (xmlId.empty()) return;
-        auto portId = node->GetAttribute("identifier");
-        auto processorId = util::stripIdentifier(
-            node->Parent()->Parent()->ToElement()->GetAttribute("identifier"));
-        ports[xmlId] = fmt::format("{}.{}", processorId, portId);
-    });
+        visit(processorsNode, "OutPort", [&](TxElement* node) {
+            auto xmlId = node->GetAttribute("id");
+            if (xmlId.empty()) return;
+            auto portId = node->GetAttribute("identifier");
+            auto processorId = util::stripIdentifier(
+                node->Parent()->Parent()->ToElement()->GetAttribute("identifier"));
+            ports[xmlId] = fmt::format("{}.{}", processorId, portId);
+        });
 
-    visit(processorsNode, "OutPort", [&](TxElement* node) {
-        auto xmlId = node->GetAttribute("id");
-        if (xmlId.empty()) return;
-        auto portId = node->GetAttribute("identifier");
-        auto processorId = util::stripIdentifier(
-            node->Parent()->Parent()->ToElement()->GetAttribute("identifier"));
-        ports[xmlId] = fmt::format("{}.{}", processorId, portId);
-    });
+        visit(processorsNode, "Property", [&](TxElement* node) {
+            auto xmlId = node->GetAttribute("id");
+            if (xmlId.empty()) return;
 
-    visit(processorsNode, "Property", [&](TxElement* node) {
-        auto xmlId = node->GetAttribute("id");
-        if (xmlId.empty()) return;
+            std::vector<std::string> path;
+            while (true) {
+                auto id = node->GetAttribute("identifier");
+                path.push_back(id);
+                if (node->Value() == "Processor") break;
+                node = node->Parent()->Parent()->ToElement();
+            }
+            std::reverse(path.begin(), path.end());
+            path[0] = util::stripIdentifier(path[0]);
 
-        std::vector<std::string> path;
-        while (true) {
-            auto id = node->GetAttribute("identifier");
-            path.push_back(id);
-            if (node->Value() == "Processor") break;
-            node = node->Parent()->Parent()->ToElement();
-        }
-        std::reverse(path.begin(), path.end());
-        path[0] = util::stripIdentifier(path[0]);
-
-        properties[xmlId] = joinString(path, ".");
-    });
+            properties[xmlId] = joinString(path, ".");
+        });
+    }
 
     if (auto connectionsNode = xml::getElement(root, "Connections")) {
 
@@ -844,15 +844,6 @@ void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
             child->SetAttribute("dst", properties[dst]);
         }
     }
-
-    std::stringstream ss;
-
-    TiXmlPrinter printer;
-    printer.SetIndent("    ");
-    root->Accept(&printer);
-    ss << printer.Str();
-
-    std::string s = ss.str();
 }
 
 }  // namespace inviwo

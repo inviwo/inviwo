@@ -649,9 +649,9 @@ std::string getPath(PathType pathType, const std::string& suffix, const bool cre
     return result + suffix;
 }
 
-void createDirectoryRecursively(std::string path) {
-    path = cleanupPath(path);
-    std::vector<std::string> v = splitString(path, '/');
+void createDirectoryRecursively(std::string_view pathView) {
+    auto path = cleanupPath(pathView);
+    std::vector<std::string> v = util::splitString(path, '/');
 
     std::string pathPart;
 #ifdef _WIN32
@@ -691,12 +691,12 @@ void createDirectoryRecursively(std::string path) {
     }
 }  // namespace filesystem
 
-std::string addBasePath(const std::string& url) {
+std::string addBasePath(std::string_view url) {
     if (url.empty()) return findBasePath();
-    return findBasePath() + "/" + url;
+    return fmt::format("{}/{}", findBasePath(), url);
 }
 
-std::string getFileDirectory(const std::string& url) {
+std::string getFileDirectory(std::string_view url) {
     std::string path = cleanupPath(url);
     size_t pos = path.rfind('/');
     if (pos == std::string::npos) return "";
@@ -704,7 +704,7 @@ std::string getFileDirectory(const std::string& url) {
     return fileDirectory;
 }
 
-std::string getFileNameWithExtension(const std::string& url) {
+std::string getFileNameWithExtension(std::string_view url) {
     std::string path = cleanupPath(url);
     size_t pos = path.rfind("/") + 1;
     // This relies on the fact that std::string::npos + 1 = 0
@@ -712,14 +712,14 @@ std::string getFileNameWithExtension(const std::string& url) {
     return fileNameWithExtension;
 }
 
-std::string getFileNameWithoutExtension(const std::string& url) {
+std::string getFileNameWithoutExtension(std::string_view url) {
     std::string fileNameWithExtension = getFileNameWithExtension(url);
     size_t pos = fileNameWithExtension.find_last_of(".");
     std::string fileNameWithoutExtension = fileNameWithExtension.substr(0, pos);
     return fileNameWithoutExtension;
 }
 
-std::string getFileExtension(const std::string& url) {
+std::string getFileExtension(std::string_view url) {
     std::string filename = getFileNameWithExtension(url);
     size_t pos = filename.rfind('.');
 
@@ -735,13 +735,13 @@ std::string replaceFileExtension(const std::string& url, const std::string& newF
     return newUrl;
 }
 
-std::string getRelativePath(const std::string& basePath, const std::string& absolutePath) {
+std::string getRelativePath(std::string_view basePath, std::string_view absolutePath) {
     const std::string absPath(getFileDirectory(cleanupPath(absolutePath)));
     const std::string fileName(getFileNameWithExtension(cleanupPath(absolutePath)));
 
     // path as string tokens
-    auto basePathTokens = splitString(basePath, '/');
-    auto absolutePathTokens = splitString(absPath, '/');
+    auto basePathTokens = util::splitStringView(basePath, '/');
+    auto absolutePathTokens = util::splitStringView(absPath, '/');
 
     size_t sizediff = 0;
     if (basePathTokens.size() < absolutePathTokens.size()) {
@@ -754,7 +754,8 @@ std::string getRelativePath(const std::string& basePath, const std::string& abso
     std::vector<std::string> relativePath(std::distance(start.second, basePathTokens.end()), "..");
 
     // add append the unique folders in absolutePathTokens
-    std::copy(start.first, absolutePathTokens.end(), std::back_inserter(relativePath));
+    std::for_each(start.first, absolutePathTokens.end(),
+                  [&](auto view) { relativePath.emplace_back(view); });
 
     if (!fileName.empty()) {
         relativePath.push_back(fileName);
@@ -852,9 +853,9 @@ bool sameDrive(const std::string& refPath, const std::string& queryPath) {
 #endif
 }
 
-std::string cleanupPath(const std::string& path) {
+std::string cleanupPath(std::string_view path) {
     if (path.empty()) {
-        return path;
+        return {};
     }
 
     std::string result(path);

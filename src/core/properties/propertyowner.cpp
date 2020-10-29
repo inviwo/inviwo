@@ -199,7 +199,7 @@ Property* PropertyOwner::getPropertyByIdentifier(std::string_view identifier,
 Property* PropertyOwner::getPropertyByPath(std::string_view path) const {
     if (path.empty()) return nullptr;
 
-    const auto [first, rest] = util::divideBy(path, '.');
+    const auto [first, rest] = util::splitByFirst(path, '.');
     if (rest.empty()) {
         return getPropertyByIdentifier(first);
     } else {

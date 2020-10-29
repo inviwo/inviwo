@@ -45,7 +45,7 @@ public:
     public:
         GLSLShaderVersion();
         GLSLShaderVersion(int num);
-        GLSLShaderVersion(int num, std::string pro);
+        GLSLShaderVersion(int num, std::string_view pro);
 
         const std::string& getProfile() const;
         int getVersion() const;

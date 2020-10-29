@@ -112,8 +112,8 @@ struct StaticString {
     constexpr size_t size() const noexcept { return N; }
     constexpr auto begin() const noexcept { return str.begin(); }
     constexpr auto begin() noexcept { return str.begin(); }
-    constexpr auto end() const noexcept { return str.end(); }
-    constexpr auto end() noexcept { return str.end(); }
+    constexpr auto end() const noexcept { return str.begin() + N; }
+    constexpr auto end() noexcept { return str.begin() + N; }
 
     constexpr operator std::string_view() const noexcept { return view(); }
     constexpr std::string_view view() const noexcept { return {str.data(), N}; }

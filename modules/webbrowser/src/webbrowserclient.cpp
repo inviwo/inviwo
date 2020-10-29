@@ -103,7 +103,6 @@ ProcessorCefSynchronizer::CallbackHandle WebBrowserClient::registerCallback(
                 name, browser->GetIdentifier()),
             IVW_CONTEXT);
     }
-    return nullptr;
 }
 
 bool WebBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
@@ -265,7 +264,7 @@ bool WebBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_s
         std::string file = "";
         if (src.rfind("file://", 0) == 0) {
             replaceInString(src, "\\", "/");
-            file = splitString(src, '/').back();
+            file = std::string{util::splitByLast(src, '/').second};
         }
 
         LogLevel loglevel;

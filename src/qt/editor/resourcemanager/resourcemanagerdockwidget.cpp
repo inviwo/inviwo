@@ -138,7 +138,7 @@ void ResourceManagerDockWidget::onResourceAdded(const std::string &key, const st
 
     auto keyC = key;
     replaceInString(keyC, "\\", "/");
-    auto keySplit = splitString(keyC, '/').back();
+    auto keySplit = util::splitByLast(keyC, '/').second;
 
     row.append(new QStandardItem(utilqt::toQString(keySplit)));
     row.append(new QStandardItem(utilqt::toQString(resource->typeDisplayName())));

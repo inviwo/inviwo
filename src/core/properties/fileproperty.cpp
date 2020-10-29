@@ -64,9 +64,9 @@ void FileProperty::set(const std::string& file) {
         modified |= true;
     }
 
-    if (!selectedExtension_.matches(value_)) {
+    if (!selectedExtension_.matches(value_.value)) {
         const auto it = std::find_if(nameFilters_.begin(), nameFilters_.end(), [&](const auto& f) {
-            return !f.matchesAll() && f.matches(value_);
+            return !f.matchesAll() && f.matches(value_.value);
         });
         if (it != nameFilters_.end() && selectedExtension_ != *it) {
             selectedExtension_ = *it;

@@ -297,7 +297,7 @@ IVW_CORE_API std::string findBasePath();
 IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix = "",
                                  const bool createFolder = false);
 
-IVW_CORE_API void createDirectoryRecursively(std::string path);
+IVW_CORE_API void createDirectoryRecursively(std::string_view path);
 
 /**
  * \brief Adds the InviwoApplication base path before the url
@@ -306,12 +306,12 @@ IVW_CORE_API void createDirectoryRecursively(std::string path);
  * @param url Relative path
  * @return InviwoApplication base path + url
  */
-IVW_CORE_API std::string addBasePath(const std::string& url);
+IVW_CORE_API std::string addBasePath(std::string_view url);
 
-IVW_CORE_API std::string getFileDirectory(const std::string& url);
-IVW_CORE_API std::string getFileNameWithExtension(const std::string& url);
-IVW_CORE_API std::string getFileNameWithoutExtension(const std::string& url);
-IVW_CORE_API std::string getFileExtension(const std::string& url);
+IVW_CORE_API std::string getFileDirectory(std::string_view url);
+IVW_CORE_API std::string getFileNameWithExtension(std::string_view url);
+IVW_CORE_API std::string getFileNameWithoutExtension(std::string_view url);
+IVW_CORE_API std::string getFileExtension(std::string_view url);
 
 /**
  * Replace the last file extension to newFileExtension, if no extension exists append
@@ -330,8 +330,8 @@ IVW_CORE_API std::string replaceFileExtension(const std::string& url,
  * absolutePath = "C:/foo/test/file.txt"
  * returns "../test/file.txt"
  */
-IVW_CORE_API std::string getRelativePath(const std::string& basePath,
-                                         const std::string& absolutePath);
+IVW_CORE_API std::string getRelativePath(std::string_view basePath,
+                                         std::string_view absolutePath);
 IVW_CORE_API std::string getCanonicalPath(const std::string& url);
 
 IVW_CORE_API bool isAbsolutePath(const std::string& path);
@@ -356,7 +356,7 @@ IVW_CORE_API bool sameDrive(const std::string& refPath, const std::string& query
  * @param path given path to be cleaned up
  * @return non-quoted path containing no backslashes as directory separators
  */
-IVW_CORE_API std::string cleanupPath(const std::string& path);
+IVW_CORE_API std::string cleanupPath(std::string_view path);
 
 }  // namespace filesystem
 

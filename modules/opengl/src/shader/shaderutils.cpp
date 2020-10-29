@@ -560,7 +560,7 @@ int getLogLineNumber(std::string_view compileLogLine) {
 
     // ATI parsing:
     // ATI error: "ERROR: 0:145: Call to undeclared function 'texelFetch'\n"
-    const auto elems = splitStringView(compileLogLine, ':');
+    const auto elems = util::splitStringView(compileLogLine, ':');
     if (elems.size() >= 3) {
         std::stringstream number;
         number << elems[2];

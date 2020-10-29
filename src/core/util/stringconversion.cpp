@@ -126,7 +126,7 @@ std::string fromWstring(std::wstring_view str) {
 
 }  // namespace util
 
-std::vector<std::string> splitString(std::string_view str, char delimeter) {
+std::vector<std::string> util::splitString(std::string_view str, char delimeter) {
     std::vector<std::string> output;
     size_t first = 0;
 
@@ -143,7 +143,7 @@ std::vector<std::string> splitString(std::string_view str, char delimeter) {
     return output;
 }
 
-std::vector<std::string_view> splitStringView(std::string_view str, char delimeter) {
+std::vector<std::string_view> util::splitStringView(std::string_view str, char delimeter) {
     std::vector<std::string_view> output;
     size_t first = 0;
 
@@ -177,7 +177,7 @@ std::vector<std::string> splitStringWithMultipleDelimiters(const std::string& st
     for (size_t i = 0; i < delimiters.size() - 1; i++)
         replaceInString(tempString, toString(delimiters[i]), toString(lastDelimiter));
 
-    return splitString(tempString, lastDelimiter);
+    return util::splitString(tempString, lastDelimiter);
 }
 
 std::string removeFromString(std::string str, char char_to_remove) {
@@ -288,7 +288,7 @@ std::string randomString(size_t length) {
 
 std::string dotSeperatedToPascalCase(const std::string& s) {
     std::stringstream ss;
-    for (auto elem : splitString(s, '.')) {
+    for (auto elem : util::splitString(s, '.')) {
         elem[0] = static_cast<char>(std::toupper(elem[0]));
         ss << elem;
     }

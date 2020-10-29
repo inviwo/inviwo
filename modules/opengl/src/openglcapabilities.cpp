@@ -50,7 +50,7 @@ OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion() : number_(0), profile
 
 OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion(int num) : number_(num), profile_("") {}
 
-OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion(int num, std::string pro)
+OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion(int num, std::string_view pro)
     : number_(num), profile_(pro) {}
 
 const std::string& OpenGLCapabilities::GLSLShaderVersion::getProfile() const { return profile_; }
@@ -552,7 +552,7 @@ void OpenGLCapabilities::parseAndAddShaderVersion(std::string versionStr, int co
                            [](char c) { return !(std::isspace(c) || std::isalnum(c)); }),
             versionStr.end());
 
-        auto versionSplit = splitString(versionStr);
+        const auto versionSplit = util::splitStringView(versionStr);
         if (versionSplit.size() > 1 && (versionSplit[1].compare("core") == 0 ||
                                         versionSplit[1].compare("compatibility") == 0)) {
             addShaderVersionIfEqualOrLower(
@@ -568,8 +568,8 @@ int OpenGLCapabilities::parseAndRetrieveVersion(std::string versionStr) {
     // Assumes format <version><space><desc> example "4.1 ATI-1.20.11"
     // Version to int mapping, 4.1 => 410, 4.40 => 440
     if (!versionStr.empty()) {
-        auto versionSplit = splitString(versionStr, ' ');
-        auto numberSplit = splitString(versionSplit[0], '.');
+        const auto versionSplit = util::splitStringView(versionStr, ' ');
+        const auto numberSplit = util::splitStringView(versionSplit[0], '.');
         int factor = 1;
         if (numberSplit.size() > 1) {
             if (numberSplit[1].size() == 1) {

@@ -56,13 +56,14 @@ namespace psm {
 std::string indent(std::string_view block, size_t indent) {
     std::stringstream ss;
     bool first = true;
-    for (auto&& line : splitString(block, '\n')) {
+    const auto indentStr = std::string(indent, ' ');
+    util::forEachStringPart(block, "\n", [&](std::string_view line) {
         if (!first) {
-            ss << '\n' << std::string(indent, ' ');
+            ss << '\n' << indentStr;
         }
         first = false;
         ss << line;
-    }
+    });
 
     return ss.str();
 }
@@ -704,7 +705,7 @@ std::string ShaderObject::print(bool showSource, bool showPreprocess) {
         if (showSource) {
             std::string::size_type width = 0;
             for (const auto& l : lnr_) {
-                const auto file = splitStringView(l.first, '/').back();
+                const auto file = util::splitByLast(l.first, '/').second;
                 width = std::max(width, file.length());
             }
 
@@ -714,7 +715,7 @@ std::string ShaderObject::print(bool showSource, bool showPreprocess) {
             util::forEachStringPart(sourceProcessed_, "\n", [&](std::string_view line) {
                 const auto& res = lnr_.resolveLine(i);
                 const auto file = res.first.empty() ? std::string_view{""}
-                                                    : splitStringView(res.first, '/').back();
+                                                    : util::splitByLast(res.first, '/').second;
                 const auto lineNumber = res.second;
 
                 out << std::left << std::setw(width + 1u) << file << std::right << std::setw(4)

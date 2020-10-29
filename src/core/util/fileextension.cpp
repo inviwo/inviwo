@@ -37,44 +37,45 @@ namespace inviwo {
 
 FileExtension::FileExtension() : extension_(), description_() {}
 
-FileExtension::FileExtension(std::string extension, std::string description)
-    : extension_(toLower(extension))  // Make sure that the extension is given in lower case
+FileExtension::FileExtension(std::string_view extension, std::string_view description)
+    : extension_(
+          toLower(std::string{extension}))  // Make sure that the extension is given in lower case
     , description_(description) {}
 
-FileExtension FileExtension::createFileExtensionFromString(const std::string& str) {
+FileExtension FileExtension::createFileExtensionFromString(std::string_view str) {
     // try to split extension string
     std::size_t extStart = str.find('(');
-    if (extStart == std::string::npos) {
+    if (extStart == std::string_view::npos) {
         // could not find extension inside ()
         return {};
     }
 
     std::size_t extEnd = str.rfind(')');
-    if (extEnd == std::string::npos) {
+    if (extEnd == std::string_view::npos) {
         // not matching ')' for extension string
         return {};
     }
-    std::string desc{str.substr(0, extStart)};
+    std::string_view desc{str.substr(0, extStart)};
     // trim trailing white spaces
     std::size_t whiteSpacePos = desc.find_last_not_of(" \t\n\r(");
-    if (whiteSpacePos != std::string::npos) {
+    if (whiteSpacePos != std::string_view::npos) {
         desc = desc.substr(0, whiteSpacePos + 1);
     } else {
         // description only consisted of whitespace characters
-        desc.clear();
+        desc = std::string_view{};
     }
 
-    std::string ext = toLower(str.substr(extStart + 1, extEnd - extStart - 1));
+    std::string_view ext = str.substr(extStart + 1, extEnd - extStart - 1);
     // '*.*' should not be used as it is not platform-independent
     // ('*' should be used instead of '*.*')
 
     // special case '*', i.e. '*.*', this should result in an empty string
     if ((ext == "*") || (ext == "*.*")) {
-        ext.clear();
+        ext = std::string_view{};
     }
     // get rid of '*.'
     if (ext.compare(0, 2, "*.") == 0) {
-        ext.erase(0, 2);
+        ext = ext.substr(2);
     }
 
     return {ext, desc};
@@ -90,7 +91,7 @@ bool FileExtension::empty() const { return extension_.empty() && description_.em
 
 bool FileExtension::matchesAll() const { return extension_ == "*"; }
 
-bool FileExtension::matches(const std::string& str) const {
+bool FileExtension::matches(std::string_view str) const {
     if (empty()) {
         return false;
     }

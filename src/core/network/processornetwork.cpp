@@ -585,7 +585,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 bool ProcessorNetwork::isDeserializing() const { return deserializing_; }
 
 Property* ProcessorNetwork::getProperty(std::string_view path) const {
-    const auto [processorId, propertyPath] = util::divideBy(path, '.');
+    const auto [processorId, propertyPath] = util::splitByFirst(path, '.');
     if (auto processor = getProcessorByIdentifier(processorId)) {
         return processor->getPropertyByPath(propertyPath);
     }
@@ -593,7 +593,7 @@ Property* ProcessorNetwork::getProperty(std::string_view path) const {
 }
 
 Port* ProcessorNetwork::getPort(std::string_view path) const {
-    const auto [processorId, portId] = util::divideBy(path, '.');
+    const auto [processorId, portId] = util::splitByFirst(path, '.');
     if (auto processor = getProcessorByIdentifier(processorId)) {
         return processor->getPort(portId);
     }
@@ -601,7 +601,7 @@ Port* ProcessorNetwork::getPort(std::string_view path) const {
 }
 
 Inport* ProcessorNetwork::getInport(std::string_view path) const {
-    const auto [processorId, portId] = util::divideBy(path, '.');
+    const auto [processorId, portId] = util::splitByFirst(path, '.');
     if (auto processor = getProcessorByIdentifier(processorId)) {
         return processor->getInport(portId);
     }
@@ -609,7 +609,7 @@ Inport* ProcessorNetwork::getInport(std::string_view path) const {
 }
 
 Outport* ProcessorNetwork::getOutport(std::string_view path) const {
-    const auto [processorId, portId] = util::divideBy(path, '.');
+    const auto [processorId, portId] = util::splitByFirst(path, '.');
     if (auto processor = getProcessorByIdentifier(processorId)) {
         return processor->getOutport(portId);
     }

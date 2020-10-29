@@ -93,7 +93,8 @@ AssimpReader::AssimpReader()
     size_t readers = importer.GetImporterCount();
     for (size_t i = 0; i < readers; ++i) {
         const aiImporterDesc* desc = importer.GetImporterInfo(i);
-        for (std::string e : splitString(std::string(desc->mFileExtensions), ' ')) {
+        for (std::string_view e :
+             util::splitStringView(std::string_view(desc->mFileExtensions), ' ')) {
             addExtension(FileExtension(e, desc->mName));
         }
     }

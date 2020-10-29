@@ -51,6 +51,7 @@ const ProcessorInfo CompositeProcessor::processorInfo_{
     CodeState::Stable,                // Code state
     "Composites",                     // Tags
     false};
+
 const ProcessorInfo CompositeProcessor::getProcessorInfo() const { return processorInfo_; }
 
 CompositeProcessor::CompositeProcessor(const std::string& identifier,

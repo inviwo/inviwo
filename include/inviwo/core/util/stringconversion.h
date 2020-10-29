@@ -54,10 +54,10 @@ std::string toString(T value) {
 }
 
 template <class T>
-T stringTo(const std::string& str) {
+T stringTo(std::string_view str) {
+    std::stringstream stream;
+    stream << str;
     T result;
-    std::istringstream stream;
-    stream.str(str);
     stream >> result;
     return result;
 }
@@ -145,6 +145,12 @@ IVW_CORE_API std::wstring toWstring(std::string_view str);
  */
 IVW_CORE_API std::string fromWstring(std::wstring_view str);
 
+/**
+ * @brief Call a functor on each part of the string after splitting by sep
+ * @param str The string to split
+ * @param sep The delimiter to split by
+ * @param func Function callback, should take a std::string_view as argument
+ */
 template <typename Func>
 constexpr void forEachStringPart(std::string_view str, std::string_view sep, Func&& func) {
     for (size_t first = 0; first < str.size();) {
@@ -155,13 +161,32 @@ constexpr void forEachStringPart(std::string_view str, std::string_view sep, Fun
     }
 }
 
-inline std::pair<std::string_view, std::string_view> divideBy(std::string_view str,
-                                                              char delimeter = ' ') {
+/**
+ * @brief Divide a string into two parts by the first instance of a delimiter
+ * @param str string to divide
+ * @param delimiter not include in either returned strings
+ * @return a pair of strings, if the delimiter is not found the first string will be the same as the
+ * input str, and the second one will be empty
+ */
+constexpr std::pair<std::string_view, std::string_view> splitByFirst(std::string_view str,
+                                                                     char delimeter = ' ') {
     const auto pos = str.find(delimeter);
     return {str.substr(0, pos), pos != str.npos ? str.substr(pos + 1) : std::string_view{}};
 }
 
-}  // namespace util
+/**
+ * @brief Divide a string into two parts by the last instance of a delimiter
+ * @param str string to divide
+ * @param delimiter not include in either returned strings
+ * @return a pair of strings, if the delimiter is not found the first string will empty, and the
+ * second one will be equal to the input str
+ */
+constexpr std::pair<std::string_view, std::string_view> splitByLast(std::string_view str,
+                                                                    char delimeter = ' ') {
+    const auto pos = str.rfind(delimeter);
+    return pos != str.npos ? std::pair{str.substr(0, pos), str.substr(pos + 1)}
+                           : std::pair{std::string_view{}, str};
+}
 
 /**
  * \brief Split string into substrings based on separating delimiter character.
@@ -170,11 +195,26 @@ inline std::pair<std::string_view, std::string_view> divideBy(std::string_view s
  * @note Empty substrings are not skipped, ";;" will generate an element.
  * @param str The string to split
  * @param delimeter The character use for splitting (default to space)
- * @return a vector containing the substrings
+ * @return a vector containing the substrings as std::string
  */
 IVW_CORE_API std::vector<std::string> splitString(std::string_view str, char delimeter = ' ');
+
+/**
+ * \brief Split string into substrings based on separating delimiter character.
+ * Using delimiter ';' on string "aa;bb" will result in a vector contaning aa and bb.
+ *
+ * @note Empty substrings are not skipped, ";;" will generate an element.
+ * @param str The string to split
+ * @param delimeter The character use for splitting (default to space)
+ * @return a vector containing the substrings as std::string_view
+ */
 IVW_CORE_API std::vector<std::string_view> splitStringView(std::string_view str,
                                                            char delimeter = ' ');
+
+}  // namespace util
+
+// Keep this here to avoid breaking old code
+using util::splitString;
 
 template <typename T>
 std::string joinString(const std::vector<T>& str, std::string delimeter = " ") {
