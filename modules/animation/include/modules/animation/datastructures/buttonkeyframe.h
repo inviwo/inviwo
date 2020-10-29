@@ -44,22 +44,18 @@ namespace animation {
  */
 class IVW_MODULE_ANIMATION_API ButtonKeyframe : public BaseKeyframe {
 public:
-    // using value_type = ButtonProperty;
+    using value_type = bool; // make it possible to use with KeyframeSequenceTyped
     ButtonKeyframe() = default;
-    ButtonKeyframe(Seconds time, ButtonProperty* prop = nullptr);
+    ButtonKeyframe(Seconds time);
     ButtonKeyframe(const ButtonKeyframe& rhs) = default;
     ButtonKeyframe& operator=(const ButtonKeyframe& that) = default;
     virtual ~ButtonKeyframe() = default;
 
-    const ButtonProperty& getValue() const { return *prop_; }
-    ButtonProperty& getValue() { return *prop_; }
-
     virtual ButtonKeyframe* clone() const override;
-
-    AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
-
-private:
-    ButtonProperty* prop_ = nullptr;
+    /*
+     * @param pressed will be true if passing over the key.
+     */
+    void operator()(Seconds from, Seconds to, value_type& pressed) const;
 };
 
 }  // namespace animation

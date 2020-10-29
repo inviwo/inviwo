@@ -104,7 +104,11 @@ public:
      */
     virtual size_t size() const = 0;
     virtual bool empty() const = 0;
-
+    
+    /**
+     * Animate track between times from and to 
+     * @return the playback state after performing animation.
+     */
     virtual AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const = 0;
 
     virtual KeyframeSequence& operator[](size_t i) = 0;

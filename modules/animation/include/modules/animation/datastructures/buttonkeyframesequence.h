@@ -51,8 +51,12 @@ public:
     virtual ~ButtonKeyframeSequence() = default;
 
     virtual ButtonKeyframeSequence* clone() const override;
-
-    virtual AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
+    /*
+     * Pressed will be true if any keyframe is between from and to.
+     * Calls ButtonKeyframe::operator()(Seconds from, Seconds to, bool& pressed) for the
+     * corresponding keyframe.
+     */
+    void operator()(Seconds from, Seconds to, bool& pressed) const;
 };
 
 }  // namespace animation

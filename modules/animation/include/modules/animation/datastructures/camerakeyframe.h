@@ -46,7 +46,19 @@ namespace animation {
  */
 class IVW_MODULE_ANIMATION_API CameraKeyframe : public BaseKeyframe {
 public:
-    using value_type = Camera;
+    struct IVW_MODULE_ANIMATION_API CamData {
+        CamData() = default;
+        CamData(vec3 lookFrom, vec3 lookTo, vec3 lookUp)
+            : lookFrom_{lookFrom}, lookTo_{lookTo}, lookUp_{glm::normalize(lookUp)} {}
+
+        void setLookFrom(vec3 val) { lookFrom_ = val; }
+        void setLookTo(vec3 val) { lookTo_ = val; }
+        void setLookUp(vec3 val) { lookUp_ = val; }
+        vec3 lookFrom_;
+        vec3 lookTo_;
+        vec3 lookUp_;
+    };
+    using value_type = CamData;
     CameraKeyframe() = default;
     CameraKeyframe(Seconds time);
     CameraKeyframe(Seconds time, const Camera& cam);
@@ -75,11 +87,14 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    static std::string getName() { return "Camera"; }
+    static const std::string& getName() {
+        static std::string name{"Camera"};
+        return name;
+    }
 
 private:
-    vec3 lookFrom_ = cameradefaults::lookFrom, lookTo_ = cameradefaults::lookTo,
-         lookUp_ = cameradefaults::lookUp;
+    CamData value_ =
+        CamData{cameradefaults::lookFrom, cameradefaults::lookTo, cameradefaults::lookUp};
 };
 
 IVW_MODULE_ANIMATION_API bool operator==(const CameraKeyframe& a, const CameraKeyframe& b);

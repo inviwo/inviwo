@@ -47,33 +47,6 @@ void ValueKeyframeSequenceObserverble::notifyValueKeyframeSequenceInterpolationC
     });
 }
 
-template <>
-KeyframeSequenceTyped<CameraKeyframe>::KeyframeSequenceTyped()
-    : BaseKeyframeSequence<CameraKeyframe>{}
-    , ValueKeyframeSequence{}
-    , interpolation_{std::make_unique<CameraSphericalInterpolation>()} {}
-
-template <>
-KeyframeSequenceTyped<CameraKeyframe>::KeyframeSequenceTyped(
-    std::vector<std::unique_ptr<CameraKeyframe>> keyframes)
-    : BaseKeyframeSequence<CameraKeyframe>{std::move(keyframes)}
-    , ValueKeyframeSequence()
-    , interpolation_{std::make_unique<CameraSphericalInterpolation>()} {}
-
-template <>
-void KeyframeSequenceTyped<CameraKeyframe>::operator()(Seconds from, Seconds to,
-                                                       Camera& out) const {
-    if (interpolation_) {
-        (*interpolation_)(this->keyframes_, from, to, easing_, out);
-    } else {
-        // Note: Network will be locked at this point
-        const auto& key = *this->keyframes_.front();
-        out.setLookFrom(key.getLookFrom());
-        out.setLookTo(key.getLookTo());
-        out.setLookUp(key.getLookUp());
-    }
-}
-
 }  // namespace animation
 
 }  // namespace inviwo

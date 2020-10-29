@@ -67,7 +67,7 @@ public:
      * Pan/tilt: Rotate lookAt between key frames.
      */
     virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from,
-                            Seconds to, easing::EasingType easing, Camera& out) const override;
+                            Seconds to, easing::EasingType easing, CameraKeyframe::value_type& out) const override;
 };
 
 }  // namespace animation

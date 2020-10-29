@@ -53,7 +53,7 @@ std::string CameraSphericalInterpolation::classIdentifier() {
 
 void CameraSphericalInterpolation::operator()(
     const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds /*from*/, Seconds to,
-    easing::EasingType easing, Camera& out) const {
+    easing::EasingType easing, CameraKeyframe::value_type& out) const {
 
     auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
         return time < key->getTime();

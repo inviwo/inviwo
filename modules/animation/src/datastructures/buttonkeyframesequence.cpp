@@ -41,8 +41,8 @@ ButtonKeyframeSequence* ButtonKeyframeSequence::clone() const {
     return new ButtonKeyframeSequence(*this);
 }
 
-AnimationTimeState ButtonKeyframeSequence::operator()(Seconds from, Seconds to,
-                                                      AnimationState state) const {
+void ButtonKeyframeSequence::operator()(Seconds from, Seconds to,
+                                                      bool& pressed) const {
     // 'it' will be the first key. with a time larger than 'to'.
     auto fromIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), from,
                                    [](const auto& a, const auto& b) { return a < *b; });
@@ -50,13 +50,11 @@ AnimationTimeState ButtonKeyframeSequence::operator()(Seconds from, Seconds to,
                                  [](const auto& a, const auto& b) { return a < *b; });
     if (toIt != fromIt) {
         if (from < to) {
-            return (**fromIt)(from, to, state);
+            return (**fromIt)(from, to, pressed);
         } else {
-            return (**toIt)(from, to, state);
+            return (**toIt)(from, to, pressed);
         }
     }
-
-    return {to, state};
 }
 
 }  // namespace animation
