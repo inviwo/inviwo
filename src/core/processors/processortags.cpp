@@ -54,7 +54,8 @@ Tags::Tags(const Tag& tag) : tags_{tag} {}
 Tags::Tags(std::vector<Tag> tags) : tags_{std::move(tags)} {}
 
 Tags::Tags(std::string_view tags) {
-    util::forEachStringPart(tags, ",", [&](std::string_view part) { addTag(Tag(util::trim(part))); });
+    util::forEachStringPart(tags, ",",
+                            [&](std::string_view part) { addTag(Tag(util::trim(part))); });
 }
 
 Tags::Tags(std::string tags) : Tags{std::string_view{tags}} {}
@@ -63,7 +64,8 @@ Tags::Tags(const char* tags) : Tags{std::string_view{tags}} {}
 
 Tags& Tags::operator=(std::string_view that) {
     tags_.clear();
-    util::forEachStringPart(that, ",", [&](std::string_view part) { addTag(Tag(util::trim(part))); });
+    util::forEachStringPart(that, ",",
+                            [&](std::string_view part) { addTag(Tag(util::trim(part))); });
     return *this;
 }
 

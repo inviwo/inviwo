@@ -184,7 +184,8 @@ constexpr std::pair<std::string_view, std::string_view> splitByFirst(std::string
 constexpr std::pair<std::string_view, std::string_view> splitByFirst(std::string_view str,
                                                                      std::string_view delimeter) {
     const auto pos = str.find(delimeter);
-    return {str.substr(0, pos), pos != str.npos ? str.substr(pos + delimeter.size()) : std::string_view{}};
+    return {str.substr(0, pos),
+            pos != str.npos ? str.substr(pos + delimeter.size()) : std::string_view{}};
 }
 
 /**
@@ -285,7 +286,6 @@ IVW_CORE_API std::string ltrim(std::string s);
 IVW_CORE_API std::string rtrim(std::string s);
 // trim from both ends
 IVW_CORE_API std::string trim(std::string s);
-
 
 IVW_CORE_API std::string dotSeperatedToPascalCase(std::string_view s);
 IVW_CORE_API std::string camelCaseToHeader(std::string_view s);

@@ -29,6 +29,4 @@
 
 #include <inviwo/core/io/serialization/serializeconstants.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -29,7 +29,4 @@
 
 #include <inviwo/core/util/safecstr.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

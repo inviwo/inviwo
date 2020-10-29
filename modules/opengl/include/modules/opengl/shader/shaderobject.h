@@ -50,11 +50,9 @@ namespace inviwo {
 
 namespace utilgl {
 IVW_MODULE_OPENGL_API void parseShaderSource(
-    std::string_view key, std::string_view source, std::ostream& output,
-    LineNumberResolver& lnr,
+    std::string_view key, std::string_view source, std::ostream& output, LineNumberResolver& lnr,
     std::unordered_map<typename ShaderSegment::Type, std::vector<ShaderSegment>> replacements,
-    std::function<std::optional<std::pair<std::string, std::string>>(std::string_view)>
-        getSource);
+    std::function<std::optional<std::pair<std::string, std::string>>(std::string_view)> getSource);
 }
 
 /**
@@ -194,8 +192,7 @@ public:
      * @param location  index location of the output (< MAX_RENDER_TARGETS)
      * @param type      type used for the output specifier
      */
-    void addInDeclaration(std::string_view name, int location = -1,
-                          std::string_view type = "vec4");
+    void addInDeclaration(std::string_view name, int location = -1, std::string_view type = "vec4");
     void addInDeclaration(const InDeclaration& decl);
     void clearInDeclarations();
     const std::vector<InDeclaration>& getInDeclarations() const;
@@ -247,7 +244,8 @@ private:
     using ShaderDefines = std::map<std::string, std::string, std::less<>>;
     ShaderDefines shaderDefines_;
 
-    using ShaderExtensions = std::map<std::string, bool, std::less<>>;  // extension name, enable flag
+    using ShaderExtensions =
+        std::map<std::string, bool, std::less<>>;  // extension name, enable flag
     ShaderExtensions shaderExtensions_;
 
     std::vector<ShaderSegment> shaderSegments_;

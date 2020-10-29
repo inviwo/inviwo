@@ -341,7 +341,6 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
     }
 }
 
-
 bool addProcessorOnConnection(ProcessorNetwork* network, std::unique_ptr<Processor> processor,
                               PortConnection connection) {
 

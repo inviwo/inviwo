@@ -111,7 +111,7 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
     const auto maxWidth = width - reserved - 1;
 
     std::vector<std::string_view> res;
-    util::forEachStringPart(logMsg, "\n", [&](std::string_view line){
+    util::forEachStringPart(logMsg, "\n", [&](std::string_view line) {
         if (line.size() < maxWidth) {
             res.push_back(line);
         } else {

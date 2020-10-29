@@ -330,8 +330,7 @@ IVW_CORE_API std::string replaceFileExtension(const std::string& url,
  * absolutePath = "C:/foo/test/file.txt"
  * returns "../test/file.txt"
  */
-IVW_CORE_API std::string getRelativePath(std::string_view basePath,
-                                         std::string_view absolutePath);
+IVW_CORE_API std::string getRelativePath(std::string_view basePath, std::string_view absolutePath);
 IVW_CORE_API std::string getCanonicalPath(const std::string& url);
 
 IVW_CORE_API bool isAbsolutePath(const std::string& path);

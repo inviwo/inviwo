@@ -98,8 +98,8 @@ void LogGLError(std::string_view source, std::string_view fileName, std::string_
     }
 }
 
-void LogGLError(const std::type_info& source, std::string_view fileName, std::string_view functionName,
-                int lineNumber) {
+void LogGLError(const std::type_info& source, std::string_view fileName,
+                std::string_view functionName, int lineNumber) {
 
     GLuint maxErrors = 255;
     GLenum err;

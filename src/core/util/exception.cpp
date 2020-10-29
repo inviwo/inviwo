@@ -121,7 +121,8 @@ ResourceException::ResourceException(std::string_view message, ExceptionContext 
 
 ModuleInitException::ModuleInitException(std::string_view message, ExceptionContext context,
                                          std::vector<std::string> modulesToDeregister)
-    : Exception(message, std::move(context)), modulesToDeregister_(std::move(modulesToDeregister)) {}
+    : Exception(message, std::move(context))
+    , modulesToDeregister_(std::move(modulesToDeregister)) {}
 
 const std::vector<std::string>& ModuleInitException::getModulesToDeregister() const {
     return modulesToDeregister_;

@@ -258,7 +258,7 @@ std::shared_ptr<const Image> PortInspectorManager::renderPortInspectorImage(Outp
 
 void PortInspectorManager::clear() {
     RenderContext::getPtr()->activateDefaultRenderContext();
-    
+
     auto network = app_->getProcessorNetwork();
     NetworkLock lock(network);
     for (auto it = portInspectors_.begin(); it != portInspectors_.end(); ++it) {

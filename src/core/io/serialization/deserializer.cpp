@@ -42,7 +42,6 @@
 
 #include <inviwo/core/io/serialization/ticpp.h>
 
-
 namespace inviwo {
 
 Deserializer::Deserializer(std::string_view fileName) : SerializeBase(fileName) {
@@ -91,9 +90,7 @@ void Deserializer::deserialize(std::string_view key, unsigned char& data,
 
 void Deserializer::setExceptionHandler(ExceptionHandler handler) { exceptionHandler_ = handler; }
 
-void Deserializer::convertVersion(VersionConverter* converter) {
-    converter->convert(rootElement_);
-}
+void Deserializer::convertVersion(VersionConverter* converter) { converter->convert(rootElement_); }
 
 void Deserializer::handleError(const ExceptionContext& context) {
     if (exceptionHandler_) {

@@ -52,7 +52,7 @@ struct InviwoDefaultData {
 };
 
 template <typename T, size_t N>
-InviwoDefaultData(StaticString<N>, uvec2, T, T, T, T) -> InviwoDefaultData<T, N>;
+InviwoDefaultData(StaticString<N>, uvec2, T, T, T, T)->InviwoDefaultData<T, N>;
 
 template <typename T>
 struct InviwoDefaults {};

@@ -60,7 +60,7 @@ public:
 
     /**
      * @brief Get the port path i.e. '<processor identifier>.<port identifier>'
-    */
+     */
     std::string getPath() const;
 
     virtual std::string getClassIdentifier() const = 0;

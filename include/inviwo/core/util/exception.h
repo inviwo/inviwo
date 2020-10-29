@@ -104,8 +104,7 @@ public:
 
 class IVW_CORE_API ResourceException : public Exception {
 public:
-    ResourceException(std::string_view message = "",
-                      ExceptionContext context = ExceptionContext());
+    ResourceException(std::string_view message = "", ExceptionContext context = ExceptionContext());
     virtual ~ResourceException() noexcept = default;
 };
 

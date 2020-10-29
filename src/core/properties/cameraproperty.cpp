@@ -101,8 +101,8 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
     setNearFarButton_.setSerializationMode(PropertySerializationMode::None);
     setLookRangesButton_.setSerializationMode(PropertySerializationMode::None);
 
-    settings_.setCollapsed(true).addProperties(
-        setNearFarButton_, setLookRangesButton_, updateNearFar_, updateLookRanges_, fittingRatio_);
+    settings_.setCollapsed(true).addProperties(setNearFarButton_, setLookRangesButton_,
+                                               updateNearFar_, updateLookRanges_, fittingRatio_);
     settings_.setCurrentStateAsDefault();
 
     addProperties(cameraType_, cameraActions_, lookFrom_, lookTo_, lookUp_, aspectRatio_,

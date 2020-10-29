@@ -69,5 +69,4 @@ TEST(StaticString, Format) {
     EXPECT_EQ(str1, str2);
 }
 
-
-}  // namespace inviwo 
+}  // namespace inviwo

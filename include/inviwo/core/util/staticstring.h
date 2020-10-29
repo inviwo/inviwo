@@ -120,7 +120,7 @@ struct StaticString {
 
     std::string string() const { return {str.data(), N}; }
     operator std::string() const noexcept { return string(); }
-    
+
     constexpr const char* c_str() const { return str.data(); }
 
     std::array<char, N + 1> str{0};
@@ -190,7 +190,7 @@ constexpr auto operator+(const StaticString<N1>& a, const char (&b)[N2]) {
 
 StaticString()->StaticString<0>;
 template <typename... Ts>
-StaticString(Ts&&... strs) -> StaticString<(::inviwo::detail::static_size<Ts> + ...)>;
+StaticString(Ts&&... strs)->StaticString<(::inviwo::detail::static_size<Ts> + ...)>;
 
 }  // namespace inviwo
 
@@ -203,4 +203,4 @@ struct formatter<::inviwo::StaticString<N>> : formatter<string_view> {
         return formatter<string_view>::format(str.view(), ctx);
     }
 };
-}
+}  // namespace fmt

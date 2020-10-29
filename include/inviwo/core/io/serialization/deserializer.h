@@ -65,7 +65,7 @@ public:
      * @param fileName path to file that is to be deserialized.
      */
     Deserializer(std::string_view fileName);
-    
+
     /**
      * \brief Deserialize content from a stream.
      * @param stream Stream with content that is to be deserialized.

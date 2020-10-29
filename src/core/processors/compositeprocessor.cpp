@@ -214,15 +214,13 @@ void CompositeProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
     if (auto sink = dynamic_cast<CompositeSinkBase*>(p)) {
         auto& port = sink->getSuperOutport();
         port.setIdentifier(util::findUniqueIdentifier(
-            port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; },
-            ""));
+            port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; }, ""));
         addPort(port);
         sinks_.push_back(sink);
     } else if (auto source = dynamic_cast<CompositeSourceBase*>(p)) {
         auto& port = source->getSuperInport();
         port.setIdentifier(util::findUniqueIdentifier(
-            port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; },
-            ""));
+            port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; }, ""));
         addPort(port);
         sources_.push_back(source);
     }

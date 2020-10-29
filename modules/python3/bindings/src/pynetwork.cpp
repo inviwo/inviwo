@@ -65,16 +65,15 @@ void exposeNetwork(py::module& m) {
                                py::return_value_policy::reference)
         .def("getProcessorByIdentifier", &ProcessorNetwork::getProcessorByIdentifier,
              py::return_value_policy::reference)
-        .def(
-            "__getattr__",
-            [](ProcessorNetwork& po, std::string key) {
-                auto p = po.getProcessorByIdentifier(key);
-                if (auto cp = dynamic_cast<CanvasProcessor*>(p)) {
-                    return py::cast(cp);
-                }
-                return py::cast(p);
-            },
-            py::return_value_policy::reference)
+        .def("__getattr__",
+             [](ProcessorNetwork& po, std::string key) {
+                 auto p = po.getProcessorByIdentifier(key);
+                 if (auto cp = dynamic_cast<CanvasProcessor*>(p)) {
+                     return py::cast(cp);
+                 }
+                 return py::cast(p);
+             },
+             py::return_value_policy::reference)
         .def("addProcessor",
              [](ProcessorNetwork* pn, Processor* processor) { pn->addProcessor(processor); })
         .def("removeProcessor",
@@ -82,31 +81,28 @@ void exposeNetwork(py::module& m) {
 
         .def_property_readonly("connections", &ProcessorNetwork::getConnections,
                                py::return_value_policy::reference)
-        .def(
-            "addConnection",
-            [&](ProcessorNetwork* on, Outport* sourcePort, Inport* destPort) {
-                on->addConnection(sourcePort, destPort);
-            },
-            py::arg("sourcePort"), py::arg("destPort"))
+        .def("addConnection",
+             [&](ProcessorNetwork* on, Outport* sourcePort, Inport* destPort) {
+                 on->addConnection(sourcePort, destPort);
+             },
+             py::arg("sourcePort"), py::arg("destPort"))
         .def("addConnection", [&](ProcessorNetwork* on,
                                   PortConnection& connection) { on->addConnection(connection); })
-        .def(
-            "removeConnection",
-            [&](ProcessorNetwork* on, Outport* sourcePort, Inport* destPort) {
-                on->removeConnection(sourcePort, destPort);
-            },
-            py::arg("sourcePort"), py::arg("destPort"))
+        .def("removeConnection",
+             [&](ProcessorNetwork* on, Outport* sourcePort, Inport* destPort) {
+                 on->removeConnection(sourcePort, destPort);
+             },
+             py::arg("sourcePort"), py::arg("destPort"))
         .def("removeConnection",
              [&](ProcessorNetwork* on, PortConnection& connection) {
                  on->removeConnection(connection);
              })
 
-        .def(
-            "isConnected",
-            [&](ProcessorNetwork* on, Outport* sourcePort, Inport* destPort) {
-                on->isConnected(sourcePort, destPort);
-            },
-            py::arg("sourcePort"), py::arg("destPort"))
+        .def("isConnected",
+             [&](ProcessorNetwork* on, Outport* sourcePort, Inport* destPort) {
+                 on->isConnected(sourcePort, destPort);
+             },
+             py::arg("sourcePort"), py::arg("destPort"))
         .def("isPortInNetwork", &ProcessorNetwork::isPortInNetwork)
         .def_property_readonly("links", &ProcessorNetwork::getLinks,
                                py::return_value_policy::reference)

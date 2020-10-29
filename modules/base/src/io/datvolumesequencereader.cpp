@@ -221,7 +221,8 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         textLine = trim(std::move(textLine));
 
         if (textLine == "" || textLine[0] == '#' || textLine[0] == '/') continue;
-        const auto [keyPart, valuePart] = util::splitByFirst(util::splitByFirst(textLine, '#').first, ':');
+        const auto [keyPart, valuePart] =
+            util::splitByFirst(util::splitByFirst(textLine, '#').first, ':');
         if (valuePart.empty()) continue;
 
         const auto key = toLower(std::string{util::trim(keyPart)});

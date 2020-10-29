@@ -204,7 +204,7 @@ Property* PropertyOwner::getPropertyByPath(std::string_view path) const {
         return getPropertyByIdentifier(first);
     } else {
         auto it = std::find_if(compositeProperties_.begin(), compositeProperties_.end(),
-                               [f=first](auto* comp) { return comp->getIdentifier() == f; });
+                               [f = first](auto* comp) { return comp->getIdentifier() == f; });
         if (it != compositeProperties_.end()) {
             return (*it)->getPropertyByPath(rest);
         } else {

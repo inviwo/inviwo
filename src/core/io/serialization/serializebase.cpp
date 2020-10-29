@@ -115,9 +115,10 @@ NodeSwitch::NodeSwitch(SerializeBase& serializer, std::string_view key, bool ret
     , storedNode_(serializer_->rootElement_)
     , storedRetrieveChild_(serializer_->retrieveChild_) {
 
-    serializer_->rootElement_ = serializer_->retrieveChild_
-                                    ? serializer_->rootElement_->FirstChildElement(key.data(), false)
-                                    : serializer_->rootElement_;
+    serializer_->rootElement_ =
+        serializer_->retrieveChild_
+            ? serializer_->rootElement_->FirstChildElement(key.data(), false)
+            : serializer_->rootElement_;
 
     serializer_->retrieveChild_ = retrieveChild;
 }

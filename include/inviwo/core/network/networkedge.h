@@ -42,7 +42,7 @@ class ProcessorNetwork;
 
 /**
  * Represents a edge in the ProcesorNetwork, either a PortConnection or a PropertyLink, as a
- * pair of paths, i.e. dot separated identifiers. 
+ * pair of paths, i.e. dot separated identifiers.
  */
 struct IVW_CORE_API NetworkEdge : Serializable {
     NetworkEdge() = default;

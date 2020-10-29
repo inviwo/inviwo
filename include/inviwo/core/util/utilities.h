@@ -34,7 +34,6 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <string_view>
 
-
 namespace inviwo {
 
 class ProcessorNetwork;
@@ -70,8 +69,7 @@ IVW_CORE_API std::string findUniqueIdentifier(std::string_view identifier,
                                               std::function<bool(std::string_view)> isUnique,
                                               std::string_view sep = " ");
 
-IVW_CORE_API std::string cleanIdentifier(std::string_view identifier,
-                                         std::string_view extra = "");
+IVW_CORE_API std::string cleanIdentifier(std::string_view identifier, std::string_view extra = "");
 
 /**
  * \brief Removes inviwo-module from module library file name.
