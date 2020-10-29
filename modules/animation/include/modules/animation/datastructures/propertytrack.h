@@ -439,7 +439,7 @@ inline std::unique_ptr<Key> PropertyTrack<Prop, Key, Seq>::createKeyframe(Second
 template <typename Prop, typename Key, typename Seq>
 inline std::unique_ptr<Key> PropertyTrack<Prop, Key, Seq>::createKeyframe(const Prop* property,
                                                                           Seconds time) const {
-    if constexpr (detail::property_has_get<Prop, Key::value_type>::value) {
+    if constexpr (detail::property_has_get<Prop, typename Key::value_type>::value) {
         return std::make_unique<Key>(time, property->get());
     } else {
         return std::make_unique<Key>(time);
