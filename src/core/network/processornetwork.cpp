@@ -71,7 +71,7 @@ bool ProcessorNetwork::addProcessor(Processor* processor) {
 
     processor->setIdentifier(util::findUniqueIdentifier(
         util::stripIdentifier(processor->getIdentifier()),
-        [&](const std::string& id) { return getProcessorByIdentifier(id) == nullptr; }, ""));
+        [&](std::string_view id) { return getProcessorByIdentifier(id) == nullptr; }, ""));
 
     notifyObserversProcessorNetworkWillAddProcessor(processor);
     processors_[processor->getIdentifier()] = processor;

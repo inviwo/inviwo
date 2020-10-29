@@ -175,7 +175,7 @@ Property* ListProperty::constructProperty(size_t prefabIndex) {
         property->setSerializationMode(PropertySerializationMode::All);
         property->setIdentifier(util::findUniqueIdentifier(
             property->getIdentifier(),
-            [&](const std::string& id) { return getPropertyByIdentifier(id) == nullptr; }, ""));
+            [&](std::string_view id) { return getPropertyByIdentifier(id) == nullptr; }, ""));
 
         // if prefab has a trailing number in its display name, use number of identifier
         std::string displayName = property->getDisplayName();

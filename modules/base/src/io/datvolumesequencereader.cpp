@@ -224,10 +224,11 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         const auto [keyPart, valuePart] = util::splitByFirst(util::splitByFirst(textLine, '#').first, ':');
         if (valuePart.empty()) continue;
 
-        const auto key = toLower(std::string{trim(keyPart)});
-        const auto value = trim(valuePart);
+        const auto key = toLower(std::string{util::trim(keyPart)});
+        const auto value = util::trim(valuePart);
 
-        std::stringstream ss(std::string{value});
+        std::stringstream ss;
+        ss << value;
 
         const auto it = parsers.find(key);
         if (it != parsers.end()) {

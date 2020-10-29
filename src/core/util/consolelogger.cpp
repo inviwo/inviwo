@@ -117,7 +117,7 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
         } else {
             size_t pos = 0;
             while (pos < line.size()) {
-                res.push_back(trim(line.substr(pos, maxWidth)));
+                res.push_back(util::trim(line.substr(pos, maxWidth)));
                 pos += maxWidth;
             }
         }

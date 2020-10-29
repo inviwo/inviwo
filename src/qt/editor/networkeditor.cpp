@@ -675,8 +675,9 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                     PathType::Settings, "/composites", true);
                 const auto filename = util::findUniqueIdentifier(
                     util::stripIdentifier(p->getDisplayName()),
-                    [&](const std::string& name) {
-                        return !filesystem::fileExists(compDir + "/" + name + ".inv");
+                    [&](std::string_view name) {
+                        StrBuffer path{"{}/{}.inv", compDir, name};
+                        return !filesystem::fileExists(path);
                     },
                     "");
                 filesystem::createDirectoryRecursively(compDir);

@@ -160,24 +160,23 @@ std::vector<std::string_view> util::splitStringView(std::string_view str, char d
     return output;
 }
 
-std::vector<std::string> splitStringWithMultipleDelimiters(const std::string& str,
+std::vector<std::string> splitStringWithMultipleDelimiters(std::string_view str,
                                                            std::vector<char> delimiters) {
-    if (!delimiters.size()) {
-        // adding default delimiters
-        delimiters.push_back('_');
-        delimiters.push_back('+');
-        delimiters.push_back('-');
-        delimiters.push_back('.');
-        delimiters.push_back(' ');
+    std::vector<std::string> output;
+    size_t first = 0;
+    auto delim = std::string_view{delimiters.data(), delimiters.size()};
+
+    while (first < str.size()) {
+        const auto second = str.find_first_of(delim, first);
+
+        if (first != second) output.emplace_back(str.substr(first, second - first));
+
+        if (second == std::string_view::npos) break;
+
+        first = second + 1;
     }
 
-    std::string tempString = str;
-    char lastDelimiter = delimiters[delimiters.size() - 1];
-
-    for (size_t i = 0; i < delimiters.size() - 1; i++)
-        replaceInString(tempString, toString(delimiters[i]), toString(lastDelimiter));
-
-    return util::splitString(tempString, lastDelimiter);
+    return output;
 }
 
 std::string removeFromString(std::string str, char char_to_remove) {
@@ -185,7 +184,7 @@ std::string removeFromString(std::string str, char char_to_remove) {
     return str;
 }
 
-void replaceInString(std::string& str, const std::string& oldStr, const std::string& newStr) {
+void replaceInString(std::string& str, std::string_view oldStr, std::string_view newStr) {
     size_t pos = 0;
 
     while ((pos = str.find(oldStr, pos)) != std::string::npos) {
@@ -257,46 +256,35 @@ std::string toLower(std::string str) {
     return str;
 }
 
-size_t countLines(std::string str) {
-    size_t lineCount = 1;
-    size_t position = 0;
+size_t countLines(std::string_view str) { return std::count(str.begin(), str.end(), '\n') + 1; }
 
-    while (position < str.length()) {
-        if (str.substr(position, 1) == "\n") lineCount++;
-
-        position++;
-    }
-
-    return lineCount;
-}
-
-static const std::string possibleValues =
-    "0123456789"
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "abcdefghijklmnopqrstuvwxyz";
 std::string randomString(size_t length) {
-    std::string s;
+    constexpr std::string_view possibleValues =
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz";
 
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, static_cast<int>(possibleValues.size()) - 1);
 
-    while (s.size() < length) s += possibleValues[dis(gen)];
+    std::string s(length, ' ');
+    for (auto& c : s) s = possibleValues[dis(gen)];
 
     return s;
 }
 
-std::string dotSeperatedToPascalCase(const std::string& s) {
+std::string dotSeperatedToPascalCase(std::string_view s) {
     std::stringstream ss;
-    for (auto elem : util::splitString(s, '.')) {
-        elem[0] = static_cast<char>(std::toupper(elem[0]));
-        ss << elem;
-    }
+    util::forEachStringPart(s, ".", [&](std::string_view elem) {
+        if (elem.size() > 0) ss << static_cast<char>(std::toupper(elem[0]));
+        if (elem.size() > 1) ss << elem.substr(1);
+    });
     return ss.str();
 }
 
-std::string camelCaseToHeader(const std::string& s) {
-    if (s.empty()) return s;
+std::string camelCaseToHeader(std::string_view s) {
+    if (s.empty()) return {};
     std::stringstream ss;
     char previous = ' ';
     for (auto c : s) {
@@ -310,19 +298,19 @@ std::string camelCaseToHeader(const std::string& s) {
     return str;
 }
 
-bool iCaseCmp(const std::string& l, const std::string& r) {
-    return l.size() == r.size() &&
-           std::equal(l.cbegin(), l.cend(), r.cbegin(),
-                      [](std::string::value_type l1, std::string::value_type r1) {
+bool iCaseCmp(std::string_view l, std::string_view r) {
+    return std::equal(l.cbegin(), l.cend(), r.cbegin(), r.cend(),
+                      [](std::string_view::value_type l1, std::string_view::value_type r1) {
                           return std::tolower(l1) == std::tolower(r1);
                       });
 }
 
-bool iCaseLess(const std::string& l, const std::string& r) {
-    return std::lexicographical_compare(l.cbegin(), l.cend(), r.cbegin(), r.cend(),
-                                        [](std::string::value_type l1, std::string::value_type r1) {
-                                            return std::tolower(l1) < std::tolower(r1);
-                                        });
+bool iCaseLess(std::string_view l, std::string_view r) {
+    return std::lexicographical_compare(
+        l.cbegin(), l.cend(), r.cbegin(), r.cend(),
+        [](std::string_view::value_type l1, std::string_view::value_type r1) {
+            return std::tolower(l1) < std::tolower(r1);
+        });
 }
 
 // trim from start
@@ -345,7 +333,7 @@ std::string rtrim(std::string s) {
 // trim from both ends
 std::string trim(std::string s) { return ltrim(rtrim(s)); }
 
-std::string_view trim(std::string_view s) {
+std::string_view util::trim(std::string_view s) {
     auto left = s.begin();
     for (;; ++left) {
         if (left == s.end()) return std::string_view();
@@ -357,7 +345,7 @@ std::string_view trim(std::string_view s) {
     return s.substr(std::distance(s.begin(), left), std::distance(left, right) + 1);
 }
 
-std::string removeSubString(const std::string& str, const std::string& strToRemove) {
+std::string removeSubString(std::string_view str, std::string_view strToRemove) {
     std::string newString(str);
     size_t pos;
     while ((pos = newString.find(strToRemove)) != std::string::npos) {
@@ -406,7 +394,7 @@ std::string msToString(double ms, bool includeZeros, bool spacing) {
     return ss.str();
 }
 
-bool CaseInsensitiveCompare::operator()(const std::string& a, const std::string& b) const {
+bool CaseInsensitiveCompare::operator()(std::string_view a, std::string_view b) const {
     return iCaseLess(a, b);
 }
 
