@@ -34,6 +34,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/inviwocommondefines.h>
+#include <inviwo/core/util/safecstr.h>
 
 // For directory exists
 #include <sys/types.h>
@@ -80,7 +81,7 @@ namespace detail {
 // If path contains the location of a directory, it cannot contain a trailing backslash.
 // If it does, stat will return -1 and errno will be set to ENOENT.
 // https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
-std::string removeTrailingSlash(const std::string& path) {
+std::string_view removeTrailingSlash(std::string_view path) {
     // Remove trailing backslash or slash
     if (path.size() > 1 && (path.back() == '/' || path.back() == '\\')) {
         return path.substr(0, path.size() - 1);
@@ -212,7 +213,7 @@ std::string getExecutablePath() {
     return retVal;
 }
 
-IVW_CORE_API std::string getInviwoUserSettingsPath() {
+std::string getInviwoUserSettingsPath() {
     std::stringstream ss;
 #ifdef _WIN32
     PWSTR path;
@@ -253,18 +254,18 @@ IVW_CORE_API std::string getInviwoUserSettingsPath() {
     return ss.str();
 }
 
-bool fileExists(const std::string& filePath) {
+bool fileExists(std::string_view filePath) {
 // http://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
 #if defined(_WIN32)
     struct _stat buffer;
     return (_wstat(util::toWstring(filePath).c_str(), &buffer) == 0);
 #else
     struct stat buffer;
-    return (stat(filePath.c_str(), &buffer) == 0);
+    return (stat(SafeCStr<256>{filePath}.c_str(), &buffer) == 0);
 #endif
 }
 
-bool directoryExists(const std::string& path) {
+bool directoryExists(std::string_view path) {
 // If path contains the location of a directory, it cannot contain a trailing backslash.
 // If it does, -1 will be returned and errno will be set to ENOENT.
 // https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
@@ -275,12 +276,12 @@ bool directoryExists(const std::string& path) {
     return (retVal == 0 && (buffer.st_mode & S_IFDIR));
 #else
     struct stat buffer;
-    return (stat(detail::removeTrailingSlash(path).c_str(), &buffer) == 0 &&
+    return (stat(SafeCStr<256>{detail::removeTrailingSlash(path)}.c_str(), &buffer) == 0 &&
             (buffer.st_mode & S_IFDIR));
 #endif
 }
 
-std::time_t fileModificationTime(const std::string& filePath) {
+std::time_t fileModificationTime(std::string_view filePath) {
     // If path contains the location of a directory, it cannot contain a trailing backslash.
     // If it does, -1 will be returned and errno will be set to ENOENT.
     // https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
@@ -291,7 +292,7 @@ std::time_t fileModificationTime(const std::string& filePath) {
     err = _wstat(util::toWstring(detail::removeTrailingSlash(filePath)).c_str(), &buffer);
 #else
     struct stat buffer;
-    err = stat(detail::removeTrailingSlash(filePath).c_str(), &buffer);
+    err = stat(SafeCStr<256>{detail::removeTrailingSlash(filePath)}.c_str(), &buffer);
 #endif
     if (err != -1) {
         return buffer.st_mtime;
@@ -300,12 +301,16 @@ std::time_t fileModificationTime(const std::string& filePath) {
     }
 }
 
-IVW_CORE_API bool copyFile(const std::string& src, const std::string& dst) {
+bool copyFile(std::string_view src_view, std::string_view dst_view) {
 #ifdef WIN32
     // Copy file and overwrite if it exists.
     // != 0 to get rid of bool comparison warning (C4800)
-    return CopyFileA(src.c_str(), dst.c_str(), FALSE) != 0;
+    return CopyFileW(util::toWstring(src_view).c_str(), util::toWstring(dst_view).c_str(), FALSE) !=
+           0;
 #else
+    SafeCStr<256> src{src_view};
+    SafeCStr<256> dst{dst_view};
+
     int source = open(src.c_str(), O_RDONLY, 0);
     if (source < 0) {
         return false;
@@ -580,8 +585,7 @@ std::string findBasePath() {
     }
 }
 
-IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix,
-                                 const bool createFolder) {
+std::string getPath(PathType pathType, const std::string& suffix, const bool createFolder) {
     std::string result = findBasePath();
 
     switch (pathType) {
@@ -645,9 +649,9 @@ IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix,
     return result + suffix;
 }
 
-void createDirectoryRecursively(std::string path) {
-    path = cleanupPath(path);
-    std::vector<std::string> v = splitString(path, '/');
+void createDirectoryRecursively(std::string_view pathView) {
+    auto path = cleanupPath(pathView);
+    std::vector<std::string> v = util::splitString(path, '/');
 
     std::string pathPart;
 #ifdef _WIN32
@@ -687,12 +691,12 @@ void createDirectoryRecursively(std::string path) {
     }
 }  // namespace filesystem
 
-std::string addBasePath(const std::string& url) {
+std::string addBasePath(std::string_view url) {
     if (url.empty()) return findBasePath();
-    return findBasePath() + "/" + url;
+    return fmt::format("{}/{}", findBasePath(), url);
 }
 
-std::string getFileDirectory(const std::string& url) {
+std::string getFileDirectory(std::string_view url) {
     std::string path = cleanupPath(url);
     size_t pos = path.rfind('/');
     if (pos == std::string::npos) return "";
@@ -700,7 +704,7 @@ std::string getFileDirectory(const std::string& url) {
     return fileDirectory;
 }
 
-std::string getFileNameWithExtension(const std::string& url) {
+std::string getFileNameWithExtension(std::string_view url) {
     std::string path = cleanupPath(url);
     size_t pos = path.rfind("/") + 1;
     // This relies on the fact that std::string::npos + 1 = 0
@@ -708,14 +712,14 @@ std::string getFileNameWithExtension(const std::string& url) {
     return fileNameWithExtension;
 }
 
-std::string getFileNameWithoutExtension(const std::string& url) {
+std::string getFileNameWithoutExtension(std::string_view url) {
     std::string fileNameWithExtension = getFileNameWithExtension(url);
     size_t pos = fileNameWithExtension.find_last_of(".");
     std::string fileNameWithoutExtension = fileNameWithExtension.substr(0, pos);
     return fileNameWithoutExtension;
 }
 
-std::string getFileExtension(const std::string& url) {
+std::string getFileExtension(std::string_view url) {
     std::string filename = getFileNameWithExtension(url);
     size_t pos = filename.rfind('.');
 
@@ -731,13 +735,13 @@ std::string replaceFileExtension(const std::string& url, const std::string& newF
     return newUrl;
 }
 
-std::string getRelativePath(const std::string& basePath, const std::string& absolutePath) {
+std::string getRelativePath(std::string_view basePath, std::string_view absolutePath) {
     const std::string absPath(getFileDirectory(cleanupPath(absolutePath)));
     const std::string fileName(getFileNameWithExtension(cleanupPath(absolutePath)));
 
     // path as string tokens
-    auto basePathTokens = splitString(basePath, '/');
-    auto absolutePathTokens = splitString(absPath, '/');
+    auto basePathTokens = util::splitStringView(basePath, '/');
+    auto absolutePathTokens = util::splitStringView(absPath, '/');
 
     size_t sizediff = 0;
     if (basePathTokens.size() < absolutePathTokens.size()) {
@@ -750,7 +754,8 @@ std::string getRelativePath(const std::string& basePath, const std::string& abso
     std::vector<std::string> relativePath(std::distance(start.second, basePathTokens.end()), "..");
 
     // add append the unique folders in absolutePathTokens
-    std::copy(start.first, absolutePathTokens.end(), std::back_inserter(relativePath));
+    std::for_each(start.first, absolutePathTokens.end(),
+                  [&](auto view) { relativePath.emplace_back(view); });
 
     if (!fileName.empty()) {
         relativePath.push_back(fileName);
@@ -848,9 +853,9 @@ bool sameDrive(const std::string& refPath, const std::string& queryPath) {
 #endif
 }
 
-std::string cleanupPath(const std::string& path) {
+std::string cleanupPath(std::string_view path) {
     if (path.empty()) {
-        return path;
+        return {};
     }
 
     std::string result(path);

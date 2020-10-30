@@ -30,26 +30,23 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <string>
+#include <string_view>
 
 namespace inviwo {
 
 class IVW_CORE_API SerializeConstants {
 public:
-    static const std::string XmlVersion;
-    static const std::string InviwoWorkspace;
-    static const int InviwoWorkspaceVersion;
-    static const std::string VersionAttribute;
-    static const std::string ContentAttribute;
-    static const std::string KeyAttribute;
+    static constexpr std::string_view XmlVersion = "1.0";
+    static constexpr std::string_view InviwoWorkspace = "InviwoWorkspace";
+    static constexpr int InviwoWorkspaceVersion = 2;
+    static constexpr std::string_view VersionAttribute = "version";
+    static constexpr std::string_view ContentAttribute = "content";
+    static constexpr std::string_view KeyAttribute = "key";
 
-    // For reference management
-    static const std::string TypeAttribute;
-    static const std::string RefAttribute;
-    static const std::string IDAttribute;
+    static constexpr std::string_view TypeAttribute = "type";
 
-    static const std::string VectorAttributes[4];
-    static const std::string MatrixAttributes[4];
+    static constexpr std::string_view VectorAttributes[] = {"x", "y", "z", "w"};
+    static constexpr std::string_view MatrixAttributes[] = {"col0", "col1", "col2", "col3"};
 };
 
 }  // namespace inviwo

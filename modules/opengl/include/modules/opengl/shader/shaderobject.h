@@ -50,11 +50,9 @@ namespace inviwo {
 
 namespace utilgl {
 IVW_MODULE_OPENGL_API void parseShaderSource(
-    const std::string& key, const std::string& source, std::ostream& output,
-    LineNumberResolver& lnr,
+    std::string_view key, std::string_view source, std::ostream& output, LineNumberResolver& lnr,
     std::unordered_map<typename ShaderSegment::Type, std::vector<ShaderSegment>> replacements,
-    std::function<std::optional<std::pair<std::string, std::string>>(const std::string&)>
-        getSource);
+    std::function<std::optional<std::pair<std::string, std::string>>(std::string_view)> getSource);
 }
 
 /**
@@ -127,11 +125,11 @@ public:
      * Add a define to the shader as
      *     #define name value
      */
-    void addShaderDefine(const std::string& name, const std::string& value = "");
+    void addShaderDefine(std::string_view name, std::string_view value = "");
     /**
      * Remove a previously added define
      */
-    void removeShaderDefine(const std::string& name);
+    void removeShaderDefine(std::string_view name);
 
     /**
      * Adds or removed a define with name 'name'
@@ -140,13 +138,13 @@ public:
      * removed
      * @param value Value of definition.
      */
-    void setShaderDefine(const std::string& name, bool shouldAdd, const std::string& value = "");
-    bool hasShaderDefine(const std::string& name) const;
+    void setShaderDefine(std::string_view name, bool shouldAdd, std::string_view value = "");
+    bool hasShaderDefine(std::string_view name) const;
     void clearShaderDefines();
 
-    void addShaderExtension(const std::string& extName, bool enabled);
-    void removeShaderExtension(const std::string& extName);
-    bool hasShaderExtension(const std::string& extName) const;
+    void addShaderExtension(std::string_view extName, bool enabled);
+    void removeShaderExtension(std::string_view extName);
+    bool hasShaderExtension(std::string_view extName) const;
     void clearShaderExtensions();
 
     /**
@@ -156,7 +154,7 @@ public:
     /**
      * Remove a ShaderSegement with name 'segementName'
      */
-    void removeSegments(const std::string& segementName);
+    void removeSegments(std::string_view segementName);
     /**
      * Clear all added ShaderSegment
      */
@@ -175,8 +173,8 @@ public:
      * @param location  index location of the output (< MAX_RENDER_TARGETS)
      * @param type      type used for the output specifier
      */
-    void addOutDeclaration(const std::string& name, int location = -1,
-                           const std::string& type = "vec4");
+    void addOutDeclaration(std::string_view name, int location = -1,
+                           std::string_view type = "vec4");
     void addOutDeclaration(const OutDeclaration& decl);
     void clearOutDeclarations();
     const std::vector<OutDeclaration>& getOutDeclarations() const;
@@ -194,8 +192,7 @@ public:
      * @param location  index location of the output (< MAX_RENDER_TARGETS)
      * @param type      type used for the output specifier
      */
-    void addInDeclaration(const std::string& name, int location = -1,
-                          const std::string& type = "vec4");
+    void addInDeclaration(std::string_view name, int location = -1, std::string_view type = "vec4");
     void addInDeclaration(const InDeclaration& decl);
     void clearInDeclarations();
     const std::vector<InDeclaration>& getInDeclarations() const;
@@ -234,7 +231,7 @@ private:
     static std::shared_ptr<const ShaderResource> loadResource(std::string fileName);
     void addDefines(std::ostringstream& source);
     void parseSource(std::ostringstream& output);
-    std::string resolveLog(const std::string& compileLog) const;
+    std::string resolveLog(std::string_view compileLog) const;
 
     // state variables
     ShaderType shaderType_;
@@ -244,10 +241,11 @@ private:
     std::vector<InDeclaration> inDeclarations_;
     std::vector<OutDeclaration> outDeclarations_;
 
-    using ShaderDefines = std::map<std::string, std::string>;
+    using ShaderDefines = std::map<std::string, std::string, std::less<>>;
     ShaderDefines shaderDefines_;
 
-    using ShaderExtensions = std::map<std::string, bool>;  // extension name, enable flag
+    using ShaderExtensions =
+        std::map<std::string, bool, std::less<>>;  // extension name, enable flag
     ShaderExtensions shaderExtensions_;
 
     std::vector<ShaderSegment> shaderSegments_;

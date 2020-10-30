@@ -64,9 +64,9 @@ void FileProperty::set(const std::string& file) {
         modified |= true;
     }
 
-    if (!selectedExtension_.matches(value_)) {
+    if (!selectedExtension_.matches(value_.value)) {
         const auto it = std::find_if(nameFilters_.begin(), nameFilters_.end(), [&](const auto& f) {
-            return !f.matchesAll() && f.matches(value_);
+            return !f.matchesAll() && f.matches(value_.value);
         });
         if (it != nameFilters_.end() && selectedExtension_ != *it) {
             selectedExtension_ = *it;
@@ -106,6 +106,8 @@ void FileProperty::set(const Property* property) {
         TemplateProperty<std::string>::set(property);
     }
 }
+
+FileProperty::operator std::string_view() const { return this->value_.value; }
 
 void FileProperty::serialize(Serializer& s) const {
     /*
@@ -166,8 +168,8 @@ void FileProperty::deserialize(Deserializer& d) {
                 absolutePath = oldWorkspacePath;
             }
         } else {
-            if (workspaceRelativePath
-                    .empty()) {  // on use url if "workspaceRelativePath" is not set
+            // on use url if "workspaceRelativePath" is not set
+            if (workspaceRelativePath.empty()) {
                 workspaceRelativePath = oldWorkspacePath;
             }
         }

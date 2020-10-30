@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORPORTGRAPHICSITEM_H
-#define IVW_PROCESSORPORTGRAPHICSITEM_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/editorgrapicsitem.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QEvent>
@@ -42,6 +42,8 @@
 namespace inviwo {
 
 class Port;
+class Inport;
+class Outport;
 class ConnectionGraphicsItem;
 class ProcessorGraphicsItem;
 class ProcessorPortGraphicsItem;
@@ -125,5 +127,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORPORTGRAPHICSITEM_H

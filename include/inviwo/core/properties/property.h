@@ -45,6 +45,9 @@
 
 #include <functional>
 #include <type_traits>
+#include <vector>
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 
@@ -74,7 +77,7 @@ struct PropertyTraits {
      * "T::CLASS_IDENTIFIER". In case it is not found an empty string will be returned. An empty
      * class identifier will be considered an error in various factories.
      */
-    static std::string classIdentifier() { return util::classIdentifier<T>(); }
+    static const std::string& classIdentifier() { return util::classIdentifier<T>(); }
 };
 
 // Deprecated
@@ -150,14 +153,20 @@ public:
      * of a PropertyOwner. Property identifiers should only contain alpha numeric
      * characters, "-" and "_".
      */
-    virtual Property& setIdentifier(const std::string& identifier);
-    virtual std::string getIdentifier() const;
-    virtual std::vector<std::string> getPath() const;
+    virtual Property& setIdentifier(std::string_view identifier);
+    virtual const std::string& getIdentifier() const;
+
+    /**
+     * @brief Get the property path as string
+     * @return string of dot separated identifiers starting with a processor identifier followed
+     * by property identifiers.
+     */
+    virtual std::string getPath() const;
 
     /**
      * \brief A property's name displayed to the user
      */
-    virtual Property& setDisplayName(const std::string& displayName);
+    virtual Property& setDisplayName(std::string_view displayName);
     virtual std::string getDisplayName() const;
 
     /**
@@ -227,6 +236,9 @@ public:
      */
     bool hasWidgets() const;
 
+    virtual void setSerializationMode(PropertySerializationMode mode);
+    virtual PropertySerializationMode getSerializationMode() const;
+
     /**
      * Save the current state of the property as the default. This state will then be used as a
      * reference when serializing, only state different from the default will be serialized.
@@ -243,6 +255,20 @@ public:
      * implementation.
      */
     virtual Property& resetToDefaultState();
+
+    /**
+     * Check if the property is in it's default state, i.e. resetToDefaultState would do nothing
+     * @see setCurrentStateAsDefault @see resetToDefaultState
+     */
+    virtual bool isDefaultState() const;
+
+    /**
+     * Determinate if the property should be included in the serialization
+     * Depends on the PropertySerializationMode and if the property is in the default state.
+     * If the mode is All it always return true, None always returns false, and default delegates to
+     * isDefaultState()
+     */
+    virtual bool needsSerialization() const;
 
     virtual Property& propertyModified();
     virtual void setValid();
@@ -285,9 +311,6 @@ public:
 
     virtual Property& setUsageMode(UsageMode usageMode);
     virtual UsageMode getUsageMode() const;
-
-    virtual void setSerializationMode(PropertySerializationMode mode);
-    virtual PropertySerializationMode getSerializationMode() const;
 
     virtual Property& setVisible(bool val);
     virtual bool getVisible() const;
@@ -342,7 +365,7 @@ public:
     static void setStateAsDefault(T& property, const U& state);
 
     template <typename P>
-    Property& autoLinkToProperty(const std::string& propertyPath);
+    Property& autoLinkToProperty(std::string_view propertyPath);
     const std::vector<std::pair<std::string, std::string>>& getAutoLinkToProperty() const;
 
     /**
@@ -414,9 +437,8 @@ void Property::setStateAsDefault(T& property, const U& state) {
 }
 
 template <typename P>
-Property& Property::autoLinkToProperty(const std::string& propertyPath) {
-    autoLinkTo_.push_back(
-        std::make_pair(ProcessorTraits<P>::getProcessorInfo().classIdentifier, propertyPath));
+Property& Property::autoLinkToProperty(std::string_view propertyPath) {
+    autoLinkTo_.emplace_back(ProcessorTraits<P>::getProcessorInfo().classIdentifier, propertyPath);
     return *this;
 }
 

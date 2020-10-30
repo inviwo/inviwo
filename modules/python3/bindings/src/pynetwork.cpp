@@ -45,16 +45,16 @@ namespace py = pybind11;
 
 namespace inviwo {
 
-void exposeNetwork(py::module &m) {
+void exposeNetwork(py::module& m) {
     py::class_<PortConnection>(m, "PortConnection")
-        .def(py::init<Outport *, Inport *>())
+        .def(py::init<Outport*, Inport*>())
         .def_property_readonly("inport", &PortConnection::getInport,
                                py::return_value_policy::reference)
         .def_property_readonly("outport", &PortConnection::getOutport,
                                py::return_value_policy::reference);
 
     py::class_<PropertyLink>(m, "PropertyLink")
-        .def(py::init<Property *, Property *>(), py::arg("src"), py::arg("dst"))
+        .def(py::init<Property*, Property*>(), py::arg("src"), py::arg("dst"))
         .def_property_readonly("source", &PropertyLink::getSource,
                                py::return_value_policy::reference)
         .def_property_readonly("destination", &PropertyLink::getDestination,
@@ -66,40 +66,40 @@ void exposeNetwork(py::module &m) {
         .def("getProcessorByIdentifier", &ProcessorNetwork::getProcessorByIdentifier,
              py::return_value_policy::reference)
         .def("__getattr__",
-             [](ProcessorNetwork &po, std::string key) {
+             [](ProcessorNetwork& po, std::string key) {
                  auto p = po.getProcessorByIdentifier(key);
-                 if (auto cp = dynamic_cast<CanvasProcessor *>(p)) {
+                 if (auto cp = dynamic_cast<CanvasProcessor*>(p)) {
                      return py::cast(cp);
                  }
                  return py::cast(p);
              },
              py::return_value_policy::reference)
         .def("addProcessor",
-             [](ProcessorNetwork *pn, Processor *processor) { pn->addProcessor(processor); })
+             [](ProcessorNetwork* pn, Processor* processor) { pn->addProcessor(processor); })
         .def("removeProcessor",
-             [](ProcessorNetwork *pn, Processor *processor) { pn->removeProcessor(processor); })
+             [](ProcessorNetwork* pn, Processor* processor) { pn->removeProcessor(processor); })
 
         .def_property_readonly("connections", &ProcessorNetwork::getConnections,
                                py::return_value_policy::reference)
         .def("addConnection",
-             [&](ProcessorNetwork *on, Outport *sourcePort, Inport *destPort) {
+             [&](ProcessorNetwork* on, Outport* sourcePort, Inport* destPort) {
                  on->addConnection(sourcePort, destPort);
              },
              py::arg("sourcePort"), py::arg("destPort"))
-        .def("addConnection", [&](ProcessorNetwork *on,
-                                  PortConnection &connection) { on->addConnection(connection); })
+        .def("addConnection", [&](ProcessorNetwork* on,
+                                  PortConnection& connection) { on->addConnection(connection); })
         .def("removeConnection",
-             [&](ProcessorNetwork *on, Outport *sourcePort, Inport *destPort) {
+             [&](ProcessorNetwork* on, Outport* sourcePort, Inport* destPort) {
                  on->removeConnection(sourcePort, destPort);
              },
              py::arg("sourcePort"), py::arg("destPort"))
         .def("removeConnection",
-             [&](ProcessorNetwork *on, PortConnection &connection) {
+             [&](ProcessorNetwork* on, PortConnection& connection) {
                  on->removeConnection(connection);
              })
 
         .def("isConnected",
-             [&](ProcessorNetwork *on, Outport *sourcePort, Inport *destPort) {
+             [&](ProcessorNetwork* on, Outport* sourcePort, Inport* destPort) {
                  on->isConnected(sourcePort, destPort);
              },
              py::arg("sourcePort"), py::arg("destPort"))
@@ -107,20 +107,24 @@ void exposeNetwork(py::module &m) {
         .def_property_readonly("links", &ProcessorNetwork::getLinks,
                                py::return_value_policy::reference)
         .def("addLink",
-             [](ProcessorNetwork *pn, Property *src, Property *dst) { pn->addLink(src, dst); })
-        .def("addLink", [](ProcessorNetwork *pn, PropertyLink &link) { pn->addLink(link); })
+             [](ProcessorNetwork* pn, Property* src, Property* dst) { pn->addLink(src, dst); })
+        .def("addLink", [](ProcessorNetwork* pn, PropertyLink& link) { pn->addLink(link); })
         .def("removeLink",
-             [](ProcessorNetwork *pn, Property *src, Property *dst) { pn->removeLink(src, dst); })
+             [](ProcessorNetwork* pn, Property* src, Property* dst) { pn->removeLink(src, dst); })
 
         .def("removeLink",
-             [](ProcessorNetwork *pn, Property *src, Property *dst) { pn->removeLink(src, dst); })
-        .def("isLinked", [](ProcessorNetwork *pn, PropertyLink &link) { pn->isLinked(link); })
+             [](ProcessorNetwork* pn, Property* src, Property* dst) { pn->removeLink(src, dst); })
+        .def("isLinked", [](ProcessorNetwork* pn, PropertyLink& link) { pn->isLinked(link); })
         .def("isLinkedBidirectional", &ProcessorNetwork::isLinkedBidirectional)
         .def("getLinksBetweenProcessors", &ProcessorNetwork::getLinksBetweenProcessors,
              py::return_value_policy::reference)
         .def_property_readonly("canvases", &ProcessorNetwork::getProcessorsByType<CanvasProcessor>,
                                py::return_value_policy::reference)
         .def("getProperty", &ProcessorNetwork::getProperty, py::return_value_policy::reference)
+        .def("getPort", &ProcessorNetwork::getPort, py::return_value_policy::reference)
+        .def("getInport", &ProcessorNetwork::getInport, py::return_value_policy::reference)
+        .def("getOutport", &ProcessorNetwork::getOutport, py::return_value_policy::reference)
+
         .def("getPropertiesLinkedTo", &ProcessorNetwork::getPropertiesLinkedTo,
              py::return_value_policy::reference)
         .def("isPropertyInNetwork", &ProcessorNetwork::isPropertyInNetwork)
@@ -134,16 +138,16 @@ void exposeNetwork(py::module &m) {
         .def_property_readonly("deserializing", &ProcessorNetwork::isDeserializing)
 
         .def("clear",
-             [&](ProcessorNetwork *pn) { pn->getApplication()->getWorkspaceManager()->clear(); })
+             [&](ProcessorNetwork* pn) { pn->getApplication()->getWorkspaceManager()->clear(); })
         .def("save",
-             [](ProcessorNetwork *network, std::string filename) {
+             [](ProcessorNetwork* network, std::string filename) {
                  network->getApplication()->getWorkspaceManager()->save(
                      filename, [&](ExceptionContext ec) { throw; });  // is this the correct way of
                                                                       // re throwing (we just want
                                                                       // to pass the exception on to
                                                                       // python)
              })
-        .def("load", [](ProcessorNetwork *network, std::string filename) {
+        .def("load", [](ProcessorNetwork* network, std::string filename) {
             network->clear();
             network->getApplication()->getWorkspaceManager()->load(
                 filename, [&](ExceptionContext ec) { throw; });  // is this the correct way of re

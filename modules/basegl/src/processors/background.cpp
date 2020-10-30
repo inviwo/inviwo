@@ -94,7 +94,7 @@ Background::Background()
 Background::~Background() = default;
 
 void Background::initializeResources() {
-    std::string bgStyleValue;
+    std::string_view bgStyleValue;
 
     switch (backgroundStyle_.get()) {
         default:
@@ -139,7 +139,7 @@ void Background::initializeResources() {
         hadData_ = false;
     }
 
-    std::string blendfunc = "";
+    std::string_view blendfunc = "";
     switch (blendMode_.get()) {
         case BlendMode::BackToFront:
             blendfunc = "blendBackToFront";

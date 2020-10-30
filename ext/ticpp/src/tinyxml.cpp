@@ -739,18 +739,10 @@ void TiXmlElement::SetDoubleAttribute( const char * name, double val )
 
 void TiXmlElement::SetAttribute( const char * cname, const char * cvalue )
 {
-    #ifdef TIXML_USE_STL
-	TIXML_STRING _name( cname );
-	TIXML_STRING _value( cvalue );
-	#else
-	const char* _name = cname;
-	const char* _value = cvalue;
-	#endif
-
-	TiXmlAttribute* node = attributeSet.Find( _name );
+	TiXmlAttribute* node = attributeSet.Find( cname );
 	if ( node )
 	{
-		node->SetValue( _value );
+		node->SetValue( cvalue );
 		return;
 	}
 

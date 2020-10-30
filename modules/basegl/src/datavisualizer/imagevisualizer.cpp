@@ -88,7 +88,7 @@ std::vector<Processor*> ImageVisualizer::addSourceAndVisualizerNetwork(
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     net->addLink(sourceAndOutport.first->getPropertyByIdentifier("imageDimension_"),
-                 processors.front()->getPropertyByPath({"inputSize", "dimensions"}));
+                 processors.front()->getPropertyByPath("inputSize.dimensions"));
 
     net->evaluateLinksFromProperty(
         sourceAndOutport.first->getPropertyByIdentifier("imageDimension_"));

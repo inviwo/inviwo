@@ -113,7 +113,7 @@ TEST(ShaderObject, parseSource) {
     LineNumberResolver lnr;
 
     auto getSource =
-        [](const std::string& path) -> std::optional<std::pair<std::string, std::string>> {
+        [](std::string_view path) -> std::optional<std::pair<std::string, std::string>> {
         if (path == "inc1") {
             return std::pair<std::string, std::string>{path, "Inc1"};
         }
@@ -140,13 +140,13 @@ TEST(ShaderObject, parseSource) {
     auto parsed = oss.str();
 
     std::stringstream ss;
-    for (auto&& [key, line] : util::zip(lnr, splitString(parsed, '\n'))) {
+    for (auto&& [key, line] : util::zip(lnr, util::splitStringView(parsed, '\n'))) {
         ss << fmt::format("{:<12} {:>2}: {}\n", key.first, key.second, line);
     }
     auto pre = ss.str();
 
-    auto expectedLines = splitString(code1Parsed, '\n');
-    auto parsedLines = splitString(parsed, '\n');
+    auto expectedLines = util::splitStringView(code1Parsed, '\n');
+    auto parsedLines = util::splitStringView(parsed, '\n');
 
     EXPECT_EQ(expectedLines.size(), parsedLines.size());
 
@@ -156,39 +156,39 @@ TEST(ShaderObject, parseSource) {
 
     std::vector<size_t> lineNum{1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 1,  14, 1,  2, 3,
                                 16, 17, 18, 19, 20, 21, 22, 23, 1, 2,  1,  2,  25, 26, 27, 28};
-    std::vector<std::string> names{"Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "inc1",
-                                   "Code1",
-                                   "inc2",
-                                   "inc2",
-                                   "inc2",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Repl1[MAGIC_REPLACEMENT,900]",
-                                   "Repl1[MAGIC_REPLACEMENT,900]",
-                                   "Repl2[MAGIC_REPLACEMENT,1100]",
-                                   "Repl2[MAGIC_REPLACEMENT,1100]",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1"};
+    std::vector<std::string_view> names{"Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "inc1",
+                                        "Code1",
+                                        "inc2",
+                                        "inc2",
+                                        "inc2",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Repl1[MAGIC_REPLACEMENT,900]",
+                                        "Repl1[MAGIC_REPLACEMENT,900]",
+                                        "Repl2[MAGIC_REPLACEMENT,1100]",
+                                        "Repl2[MAGIC_REPLACEMENT,1100]",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1"};
 
     for (const auto& [exp, refname, refline] : util::zip(lnr, names, lineNum)) {
         EXPECT_EQ(exp.first, refname);

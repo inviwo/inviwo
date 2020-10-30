@@ -49,6 +49,11 @@ namespace util {
 namespace detail {
 
 template <typename T>
+constexpr bool alwaysFalse() {
+    return false;
+}
+
+template <typename T>
 using upperClassIdentifierType = decltype(T::CLASS_IDENTIFIER);
 
 template <typename T>
@@ -82,13 +87,13 @@ template <class T>
 using HasClassIdentifier = std::disjunction<HasClassIdentifierUpper<T>, HasClassIdentifierLower<T>>;
 
 template <typename T>
-std::string classIdentifier() {
+const std::string& classIdentifier() {
     if constexpr (HasClassIdentifierUpper<T>::value) {
         return T::CLASS_IDENTIFIER;
     } else if constexpr (HasClassIdentifierLower<T>::value) {
         return T::classIdentifier;
     } else {
-        return {};
+        static_assert(detail::alwaysFalse<T>, "ClassIdentifier is missing for type");
     }
 }
 

@@ -31,11 +31,10 @@
 
 namespace inviwo {
 
-PropertyFactoryObject::PropertyFactoryObject(const std::string& className)
-    : className_(className) {}
+PropertyFactoryObject::PropertyFactoryObject(std::string_view className) : className_(className) {}
 
-PropertyFactoryObject::~PropertyFactoryObject() {}
+PropertyFactoryObject::~PropertyFactoryObject() = default;
 
-std::string PropertyFactoryObject::getClassIdentifier() const { return className_; }
+const std::string& PropertyFactoryObject::getClassIdentifier() const { return className_; }
 
 }  // namespace inviwo

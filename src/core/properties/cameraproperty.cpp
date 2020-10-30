@@ -97,13 +97,20 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
     , getBoundingBox_{std::move(getBoundingBox)} {
 
     aspectRatio_.setReadOnly(true).setCurrentStateAsDefault();
-    settings_.setCollapsed(true).setCurrentStateAsDefault().addProperties(
-        setNearFarButton_, setLookRangesButton_, updateNearFar_, updateLookRanges_, fittingRatio_);
+
+    setNearFarButton_.setSerializationMode(PropertySerializationMode::None);
+    setLookRangesButton_.setSerializationMode(PropertySerializationMode::None);
+
+    settings_.setCollapsed(true).addProperties(setNearFarButton_, setLookRangesButton_,
+                                               updateNearFar_, updateLookRanges_, fittingRatio_);
+    settings_.setCurrentStateAsDefault();
 
     addProperties(cameraType_, cameraActions_, lookFrom_, lookTo_, lookUp_, aspectRatio_,
                   nearPlane_, farPlane_, settings_);
     util::for_each_argument([this](auto& arg) { cameraProperties_.push_back(&arg); }, lookFrom_,
                             lookTo_, lookUp_, aspectRatio_, nearPlane_, farPlane_);
+
+    cameraActions_.setSerializationMode(PropertySerializationMode::None);
 
     camera_->configureProperties(*this, true);
     cameraType_.onChange([this]() {

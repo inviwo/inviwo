@@ -158,6 +158,7 @@ public:
 
     virtual OrdinalProperty<T>& setCurrentStateAsDefault() override;
     virtual OrdinalProperty<T>& resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -256,8 +257,10 @@ using FloatQuaternionProperty = OrdinalProperty<glm::fquat>;
 
 template <typename T>
 struct PropertyTraits<OrdinalProperty<T>> {
-    static std::string classIdentifier() {
-        return "org.inviwo." + Defaultvalues<T>::getName() + "Property";
+    static const std::string& classIdentifier() {
+        static const std::string identifier =
+            "org.inviwo." + Defaultvalues<T>::getName() + "Property";
+        return identifier;
     }
 };
 
@@ -286,7 +289,7 @@ OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::st
         throw Exception{
             fmt::format("Invalid range ({} <= {} <= {}) given for \"{}\" ({}Property, {})",
                         minValue_.value, value_.value, maxValue_.value, this->getDisplayName(),
-                        Defaultvalues<T>::getName(), joinString(this->getPath(), ".")),
+                        Defaultvalues<T>::getName(), this->getPath()),
             IVW_CONTEXT};
     }
 }
@@ -393,7 +396,7 @@ void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, c
     if (!validRange(minVal, maxVal)) {
         throw Exception{
             fmt::format("Invalid range given for \"{}\" ({}Property, {})", this->getDisplayName(),
-                        Defaultvalues<T>::getName(), joinString(this->getPath(), ".")),
+                        Defaultvalues<T>::getName(), this->getPath()),
             IVW_CONTEXT};
     }
 
@@ -481,6 +484,12 @@ OrdinalProperty<T>& OrdinalProperty<T>::resetToDefaultState() {
     modified |= value_.reset();
     if (modified) this->propertyModified();
     return *this;
+}
+
+template <typename T>
+bool OrdinalProperty<T>::isDefaultState() const {
+    return value_.isDefault() && increment_.isDefault() && minValue_.isDefault() &&
+           maxValue_.isDefault();
 }
 
 template <typename T>

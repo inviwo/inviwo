@@ -218,16 +218,18 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
     while (!f.eof()) {
         std::string textLine;
         getline(f, textLine);
-        textLine = trim(textLine);
+        textLine = trim(std::move(textLine));
 
         if (textLine == "" || textLine[0] == '#' || textLine[0] == '/') continue;
-        const auto parts = splitString(splitString(textLine, '#')[0], ':');
-        if (parts.size() != 2) continue;
+        const auto [keyPart, valuePart] =
+            util::splitByFirst(util::splitByFirst(textLine, '#').first, ':');
+        if (valuePart.empty()) continue;
 
-        const auto key = toLower(trim(parts[0]));
-        const auto value = trim(parts[1]);
+        const auto key = toLower(std::string{util::trim(keyPart)});
+        const auto value = util::trim(valuePart);
 
-        std::stringstream ss(value);
+        std::stringstream ss;
+        ss << value;
 
         const auto it = parsers.find(key);
         if (it != parsers.end()) {

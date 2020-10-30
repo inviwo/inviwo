@@ -43,6 +43,9 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/autolinker.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/rendercontext.h>
+
+#include <string_view>
 
 namespace inviwo {
 
@@ -79,10 +82,6 @@ std::unique_ptr<PortInspector> PortInspectorManager::getPortInspector(Outport* o
 bool PortInspectorManager::isPortInspectorSupported(const Outport* outport) {
     auto factory = app_->getPortInspectorFactory();
     return factory->hasKey(outport->getClassIdentifier());
-}
-
-void PortInspectorManager::returnPortInspector(std::unique_ptr<PortInspector> pi) {
-    unUsedInspectors_.push_back(std::move(pi));
 }
 
 void PortInspectorManager::insertNetwork(PortInspector* portInspector, ProcessorNetwork* network,
@@ -127,10 +126,7 @@ PortInspectorManager::PortInspectorManager(InviwoApplication* app) : app_(app) {
 PortInspectorManager::~PortInspectorManager() { clear(); }
 
 bool PortInspectorManager::hasPortInspector(Outport* outport) const {
-
-    return std::find_if(portInspectors_.begin(), portInspectors_.end(), [&](const auto& item) {
-               return item.first == getPortId(outport);
-           }) != portInspectors_.end();
+    return embeddedProcessors_.count(outport->getPath());
 }
 
 ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 pos) {
@@ -160,7 +156,14 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
                           LogLevel::Error);
                 return nullptr;
             }
-            portInspectors_[getPortId(outport)] = std::move(portInspector);
+
+            std::vector<std::string> processorIds;
+            for (auto* p : portInspector->getProcessors()) {
+                processorIds.emplace_back(p->getIdentifier());
+            }
+            embeddedProcessors_[outport->getPath()] = std::move(processorIds);
+            portInspectors_[outport->getPath()] = std::move(portInspector);
+
             return processorWidget;
         }
     } catch (Exception& exception) {
@@ -173,14 +176,29 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
 }
 
 void PortInspectorManager::removePortInspector(Outport* outport) {
+    RenderContext::getPtr()->activateDefaultRenderContext();
 
-    auto it = std::find_if(portInspectors_.begin(), portInspectors_.end(),
-                           [&](const auto& item) { return item.first == getPortId(outport); });
-    if (it != portInspectors_.end()) {
-        auto network = app_->getProcessorNetwork();
-        NetworkLock lock(network);
-        removePortInspector(it);
-        portInspectors_.erase(it);
+    const auto portId = outport->getPath();
+    auto network = app_->getProcessorNetwork();
+    NetworkLock lock(network);
+    {
+        auto it = std::find_if(portInspectors_.begin(), portInspectors_.end(),
+                               [&](const auto& item) { return item.first == portId; });
+        if (it != portInspectors_.end()) {
+            removePortInspector(it);
+            portInspectors_.erase(it);
+        }
+    }
+    {
+        auto it = embeddedProcessors_.find(portId);
+        if (it != embeddedProcessors_.end()) {
+            for (const auto& id : it->second) {
+                if (auto proc = network->getProcessorByIdentifier(id)) {
+                    network->removeAndDeleteProcessor(proc);
+                }
+            }
+            embeddedProcessors_.erase(it);
+        }
     }
 }
 
@@ -190,7 +208,8 @@ void PortInspectorManager::removePortInspector(PortInspectorMap::iterator it) {
 
     // Remove processors from the network
     removeNetwork(portInspector.get(), app_->getProcessorNetwork());
-    returnPortInspector(std::move(portInspector));
+
+    unUsedInspectors_.push_back(std::move(portInspector));
 }
 
 std::shared_ptr<const Image> PortInspectorManager::renderPortInspectorImage(Outport* outport) {
@@ -238,13 +257,24 @@ std::shared_ptr<const Image> PortInspectorManager::renderPortInspectorImage(Outp
 }
 
 void PortInspectorManager::clear() {
+    RenderContext::getPtr()->activateDefaultRenderContext();
+
     auto network = app_->getProcessorNetwork();
     NetworkLock lock(network);
     for (auto it = portInspectors_.begin(); it != portInspectors_.end(); ++it) {
         removePortInspector(it);
     }
+
+    for (const auto& item : embeddedProcessors_) {
+        for (const auto& id : item.second) {
+            if (auto proc = network->getProcessorByIdentifier(id)) {
+                network->removeAndDeleteProcessor(proc);
+            }
+        }
+    }
     portInspectors_.clear();
     unUsedInspectors_.clear();
+    embeddedProcessors_.clear();
 }
 
 void PortInspectorManager::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
@@ -252,17 +282,11 @@ void PortInspectorManager::onProcessorNetworkWillRemoveProcessor(Processor* proc
 }
 
 void PortInspectorManager::serialize(Serializer& s) const {
-    s.serialize("PortInsectors", portInspectors_, "PortInspector");
+    s.serialize("PortInsectors", embeddedProcessors_, "PortInspector");
 }
 
 void PortInspectorManager::deserialize(Deserializer& d) {
-    d.deserialize("PortInsectors", portInspectors_, "PortInspector");
-}
-
-std::string PortInspectorManager::getPortId(Outport* outport) {
-    if (!outport) return "";
-    if (!outport->getProcessor()) return outport->getIdentifier();
-    return outport->getProcessor()->getIdentifier() + "." + outport->getIdentifier();
+    d.deserialize("PortInsectors", embeddedProcessors_, "PortInspector");
 }
 
 }  // namespace inviwo

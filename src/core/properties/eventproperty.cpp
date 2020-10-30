@@ -92,6 +92,8 @@ EventProperty& EventProperty::resetToDefaultState() {
     return *this;
 }
 
+bool EventProperty::isDefaultState() const { return matcher_ ? matcher_->isDefaultState() : true; }
+
 void EventProperty::serialize(Serializer& s) const {
     Property::serialize(s);
     if (this->serializationMode_ == PropertySerializationMode::None) return;

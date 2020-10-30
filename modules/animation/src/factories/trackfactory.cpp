@@ -29,4 +29,16 @@
 
 #include <modules/animation/factories/trackfactory.h>
 
-namespace inviwo {}  // namespace inviwo
+namespace inviwo {
+namespace animation {
+
+TrackFactory::TrackFactory(ProcessorNetwork* network) : network_{network} {}
+
+bool TrackFactory::hasKey(const std::string& key) const { return Parent::hasKey(key); }
+
+std::unique_ptr<Track> TrackFactory::create(const std::string& key) const {
+    return Parent::create(key, network_);
+}
+
+}  // namespace animation
+}  // namespace inviwo

@@ -41,9 +41,11 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/network/networkvisitor.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
-Processor::Processor(const std::string& identifier, const std::string& displayName)
+Processor::Processor(std::string_view identifier, std::string_view displayName)
     : PropertyOwner()
     , ProcessorObservable()
     , processorWidget_(nullptr)
@@ -56,12 +58,15 @@ Processor::Processor(const std::string& identifier, const std::string& displayNa
     , identifier_(identifier)
     , displayName_{displayName}
     , network_(nullptr) {
+
+    util::validateIdentifier(identifier_, "Processor", IVW_CONTEXT);
+
     createMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
 }
 
 Processor::~Processor() = default;
 
-void Processor::addPortInternal(Inport* port, const std::string& portGroup) {
+void Processor::addPortInternal(Inport* port, std::string_view portGroup) {
     if (getPort(port->getIdentifier()) != nullptr) {
         throw Exception("Processor \"" + getIdentifier() + "\" Can't add inport, identifier \"" +
                             port->getIdentifier() + "\" already exist.",
@@ -83,7 +88,7 @@ void Processor::addPortInternal(Inport* port, const std::string& portGroup) {
     isReady_.update();
 }
 
-void Processor::addPortInternal(Outport* port, const std::string& portGroup) {
+void Processor::addPortInternal(Outport* port, std::string_view portGroup) {
     if (getPort(port->getIdentifier()) != nullptr) {
         throw Exception("Processor \"" + getIdentifier() + "\" Can't add outport, identifier \"" +
                             port->getIdentifier() + "\" already exist.",
@@ -103,7 +108,7 @@ void Processor::addPortInternal(Outport* port, const std::string& portGroup) {
     isReady_.update();
 }
 
-Port* Processor::removePort(const std::string& identifier) {
+Port* Processor::removePort(std::string_view identifier) {
     if (auto inport = getInport(identifier)) {
         return removePort(inport);
     }
@@ -163,9 +168,9 @@ void Processor::accept(NetworkVisitor& visitor) {
     }
 }
 
-void Processor::addPortToGroup(Port* port, const std::string& portGroup) {
+void Processor::addPortToGroup(Port* port, std::string_view portGroup) {
     portGroups_[port] = portGroup;
-    groupPorts_[portGroup].push_back(port);
+    groupPorts_[std::string(portGroup)].push_back(port);
 }
 
 void Processor::removePortFromGroups(Port* port) {
@@ -183,11 +188,11 @@ CodeState Processor::getCodeState() const { return getProcessorInfo().codeState;
 
 Tags Processor::getTags() const { return getProcessorInfo().tags; }
 
-void Processor::setIdentifier(const std::string& identifier) {
+void Processor::setIdentifier(std::string_view identifier) {
     if (identifier != identifier_) {
-        util::validateIdentifier(identifier, "Processor", IVW_CONTEXT, " ()=&");
+        util::validateIdentifier(identifier, "Processor", IVW_CONTEXT);
         if (network_ && network_->getProcessorByIdentifier(identifier) != nullptr) {
-            throw Exception("Processor identifier \"" + identifier + "\" already in use.",
+            throw Exception(fmt::format("Processor identifier \"{}\" already in use.", identifier),
                             IVW_CONTEXT);
         }
         auto old = identifier_;
@@ -199,7 +204,7 @@ void Processor::setIdentifier(const std::string& identifier) {
 const std::string& Processor::getIdentifier() const { return identifier_; }
 
 const std::string& Processor::getDisplayName() const { return displayName_; }
-void Processor::setDisplayName(const std::string& displayName) {
+void Processor::setDisplayName(std::string_view displayName) {
     if (displayName_ != displayName) {
         auto old = displayName_;
         displayName_ = displayName;
@@ -217,7 +222,7 @@ bool Processor::hasProcessorWidget() const { return (processorWidget_ != nullptr
 
 void Processor::setNetwork(ProcessorNetwork* network) { network_ = network; }
 
-Port* Processor::getPort(const std::string& identifier) const {
+Port* Processor::getPort(std::string_view identifier) const {
     for (auto port : inports_)
         if (port->getIdentifier() == identifier) return port;
     for (auto port : outports_)
@@ -225,13 +230,13 @@ Port* Processor::getPort(const std::string& identifier) const {
     return nullptr;
 }
 
-Inport* Processor::getInport(const std::string& identifier) const {
+Inport* Processor::getInport(std::string_view identifier) const {
     for (auto port : inports_)
         if (port->getIdentifier() == identifier) return port;
     return nullptr;
 }
 
-Outport* Processor::getOutport(const std::string& identifier) const {
+Outport* Processor::getOutport(std::string_view identifier) const {
     for (auto port : outports_)
         if (port->getIdentifier() == identifier) return port;
     return nullptr;
@@ -259,12 +264,12 @@ std::vector<std::string> Processor::getPortGroups() const {
     return groups;
 }
 
-const std::vector<Port*>& Processor::getPortsInGroup(const std::string& portGroup) const {
-    auto it = groupPorts_.find(portGroup);
+const std::vector<Port*>& Processor::getPortsInGroup(std::string_view portGroup) const {
+    auto it = groupPorts_.find(std::string(portGroup));
     if (it != groupPorts_.end()) {
         return it->second;
     } else {
-        throw Exception("Can't find port group: \"" + portGroup + "\".", IVW_CONTEXT);
+        throw Exception(fmt::format("Can't find port group: \"{}\".", portGroup), IVW_CONTEXT);
     }
 }
 
@@ -316,20 +321,23 @@ void Processor::serialize(Serializer& s) const {
 
     s.serialize("InteractonHandlers", interactionHandlers_, "InteractionHandler");
 
-    std::map<std::string, std::string> portGroups;
-    for (auto& item : portGroups_) portGroups[item.first->getIdentifier()] = item.second;
-    s.serialize("PortGroups", portGroups, "PortGroup");
+    s.serialize("PortGroups", portGroups_, "PortGroup",
+                [&](const auto& pair) {
+                    return util::contains_if(
+                               ownedInports_,
+                               [&](const auto& p) { return p.get() == pair.first; }) ||
+                           util::contains_if(ownedOutports_,
+                                             [&](const auto& p) { return p.get() == pair.first; });
+                },
+                util::identifier{});
 
-    auto ownedInportIds = util::transform(
-        ownedInports_, [](const std::unique_ptr<Inport>& p) { return p->getIdentifier(); });
-    s.serialize("OwnedInportIdentifiers", ownedInportIds, "InportIdentifier");
+    s.serialize("OwnedInportIdentifiers", ownedInports_, "InportIdentifier", util::alwaysTrue{},
+                util::identifier{});
+    s.serialize("OwnedOutportIdentifiers", ownedOutports_, "OutportIdentifier", util::alwaysTrue{},
+                util::identifier{});
 
-    auto ownedOutportIds = util::transform(
-        ownedOutports_, [](const std::unique_ptr<Outport>& p) { return p->getIdentifier(); });
-    s.serialize("OwnedOutportIdentifiers", ownedOutportIds, "OutportIdentifier");
-
-    s.serialize("InPorts", inports_, "InPort");
-    s.serialize("OutPorts", outports_, "OutPort");
+    s.serialize("InPorts", ownedInports_, "InPort");
+    s.serialize("OutPorts", ownedOutports_, "OutPort");
 
     PropertyOwner::serialize(s);
     MetaDataOwner::serialize(s);
@@ -337,11 +345,12 @@ void Processor::serialize(Serializer& s) const {
 
 void Processor::deserialize(Deserializer& d) {
     d.deserialize("identifier", identifier_, SerializationTarget::Attribute);
+
     d.deserialize("displayName", displayName_, SerializationTarget::Attribute);
 
     d.deserialize("InteractonHandlers", interactionHandlers_, "InteractionHandler");
 
-    std::map<std::string, std::string> portGroups;
+    std::unordered_map<std::string, std::string> portGroups;
     d.deserialize("PortGroups", portGroups, "PortGroup");
 
     {
@@ -429,12 +438,6 @@ void Processor::propagateEvent(Event* event, Outport* source) {
         }
     }
     event->setUsed(used);
-}
-
-std::vector<std::string> Processor::getPath() const {
-    std::vector<std::string> path;
-    path.push_back(util::stripIdentifier(identifier_));
-    return path;
 }
 
 }  // namespace inviwo

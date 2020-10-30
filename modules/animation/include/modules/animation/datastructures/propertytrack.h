@@ -38,6 +38,9 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/datastructures/basetrack.h>
@@ -75,6 +78,16 @@ void setOtherPropertyHelper(OrdinalProperty<T>* property, ValueKeyframe<T>* keyf
  * @see inviwo::animation::BasePropertyTrack::setOtherProperty
  */
 template <typename T>
+void setOtherPropertyHelper(MinMaxProperty<T>* property,
+                            ValueKeyframe<glm::tvec2<T, glm::defaultp>>* keyframe) {
+    property->set(keyframe->getValue());
+}
+
+/**
+ * Helper function for inviwo::animation::PropertyTrack::setOtherProperty
+ * @see inviwo::animation::BasePropertyTrack::setOtherProperty
+ */
+template <typename T>
 void setOtherPropertyHelper(OrdinalRefProperty<T>* property, ValueKeyframe<T>* keyframe) {
     property->set(keyframe->getValue());
 }
@@ -103,6 +116,16 @@ void updateKeyframeFromPropertyHelper(TemplateProperty<T>* property, ValueKeyfra
  */
 template <typename T>
 void updateKeyframeFromPropertyHelper(OrdinalProperty<T>* property, ValueKeyframe<T>* keyframe) {
+    keyframe->setValue(property->get());
+}
+
+/**
+ * Helper function for inviwo::animation::PropertyTrack::updateKeyframeFromProperty
+ * @see inviwo::animation::BasePropertyTrack::updateKeyframeFromProperty
+ */
+template <typename T>
+void updateKeyframeFromPropertyHelper(MinMaxProperty<T>* property,
+                                      ValueKeyframe<glm::tvec2<T, glm::defaultp>>* keyframe) {
     keyframe->setValue(property->get());
 }
 
@@ -207,8 +230,9 @@ public:
                                typename Key::value_type>::value,
                   "The value type of Prop has to match that of Key");
 
-    PropertyTrack();
+    PropertyTrack(ProcessorNetwork* network);
     PropertyTrack(Prop* property);
+    PropertyTrack(Prop* property, ProcessorNetwork* network);
     /**
      * Remove all keyframe sequences and call TrackObserver::notifyKeyframeSequenceRemoved
      */
@@ -266,14 +290,15 @@ public:
      * @param keyframe The keyframe to set
      */
     void updateKeyframeFromProperty(Property* srcProperty, Keyframe* keyframe) override {
-        ivwAssert(srcProperty->getClassIdentifier() == PropertyTraits<Prop>::classIdentifier(),
-                  "Incorrect Property type");
+        IVW_ASSERT(srcProperty->getClassIdentifier() == PropertyTraits<Prop>::classIdentifier(),
+                   "Incorrect Property type");
         detail::updateKeyframeFromPropertyHelper(static_cast<Prop*>(srcProperty),
                                                  static_cast<Key*>(keyframe));
     }
 
 private:
     Prop* property_;  ///< non-owning reference
+    ProcessorNetwork* network_;
 };
 
 template <typename Prop, typename Key>
@@ -291,14 +316,22 @@ Track* PropertyTrack<Prop, Key>::toTrack() {
 }
 
 template <typename Prop, typename Key>
-PropertyTrack<Prop, Key>::PropertyTrack()
-    : BaseTrack<KeyframeSequenceTyped<Key>>{"", "", 100}, property_(nullptr) {}
+PropertyTrack<Prop, Key>::PropertyTrack(ProcessorNetwork* network)
+    : BaseTrack<KeyframeSequenceTyped<Key>>{"", "", 100}, property_(nullptr), network_{network} {}
 
 template <typename Prop, typename Key>
 PropertyTrack<Prop, Key>::PropertyTrack(Prop* property)
     : BaseTrack<KeyframeSequenceTyped<Key>>{property->getIdentifier(), property->getDisplayName(),
                                             100}
-    , property_(property) {}
+    , property_(property)
+    , network_{property->getOwner()->getProcessor()->getNetwork()} {}
+
+template <typename Prop, typename Key>
+PropertyTrack<Prop, Key>::PropertyTrack(Prop* property, ProcessorNetwork* net)
+    : BaseTrack<KeyframeSequenceTyped<Key>>{property->getIdentifier(), property->getDisplayName(),
+                                            100}
+    , property_(property)
+    , network_{net} {}
 
 template <typename Prop, typename Key>
 PropertyTrack<Prop, Key>::~PropertyTrack() = default;
@@ -308,7 +341,7 @@ std::string PropertyTrack<Prop, Key>::classIdentifier() {
     // Use property class identifier since multiple properties
     // may have the same key (data type)
     std::string id =
-        "org.inviwo.animation.PropertyTrack.for. " + PropertyTraits<Prop>::classIdentifier();
+        "org.inviwo.animation.PropertyTrack.for." + PropertyTraits<Prop>::classIdentifier();
     return id;
 }
 
@@ -440,15 +473,18 @@ void PropertyTrack<Prop, Key>::addSequenceUsingPropertyValue(
 template <typename Prop, typename Key>
 void PropertyTrack<Prop, Key>::serialize(Serializer& s) const {
     BaseTrack<KeyframeSequenceTyped<Key>>::serialize(s);
-    s.serialize("property", property_);
+    s.serialize("property", property_->getPath());
 }
 
 template <typename Prop, typename Key>
 void PropertyTrack<Prop, Key>::deserialize(Deserializer& d) {
     BaseTrack<KeyframeSequenceTyped<Key>>::deserialize(d);
-    d.deserializeAs<Property>("property", property_);
-}
+    std::string propertyId;
+    d.deserialize("property", propertyId);
 
+    IVW_ASSERT(network_, "Property track deserialization requires a ProcessorNetwork");
+    property_ = dynamic_cast<Prop*>(network_->getProperty(propertyId));
+}
 }  // namespace animation
 
 }  // namespace inviwo

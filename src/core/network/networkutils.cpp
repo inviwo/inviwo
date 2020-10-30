@@ -36,6 +36,7 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/network/autolinker.h>
+#include <inviwo/core/network/networkedge.h>
 
 #include <iterator>
 #include <unordered_set>
@@ -242,6 +243,25 @@ std::vector<Processor*> detail::PartialProcessorNetwork::getAddedProcessors() co
     return addedProcessors_;
 }
 
+namespace {
+struct PathPair : Serializable {
+    PathPair() = default;
+    PathPair(std::string asrc, std::string adst) : src{std::move(asrc)}, dst{std::move(adst)} {}
+    virtual ~PathPair() = default;
+    std::string src;
+    std::string dst;
+
+    virtual void serialize(Serializer& s) const override {
+        s.serialize("src", src, SerializationTarget::Attribute);
+        s.serialize("dst", dst, SerializationTarget::Attribute);
+    }
+    virtual void deserialize(Deserializer& d) override {
+        d.deserialize("src", src, SerializationTarget::Attribute);
+        d.deserialize("dst", dst, SerializationTarget::Attribute);
+    }
+};
+}  // namespace
+
 void detail::PartialProcessorNetwork::serialize(Serializer& s) const {
     std::vector<Processor*> selected;
     util::copy_if(network_->getProcessors(), std::back_inserter(selected), [](const Processor* p) {
@@ -249,174 +269,76 @@ void detail::PartialProcessorNetwork::serialize(Serializer& s) const {
         return m->isSelected();
     });
 
-    std::vector<PortConnection> connections;
-    util::copy_if(network_->getConnections(), std::back_inserter(connections),
-                  [&selected](const PortConnection& c) {
-                      auto in = c.getInport()->getProcessor();
-                      auto out = c.getOutport()->getProcessor();
-                      return util::contains(selected, in) && util::contains(selected, out);
-                  });
+    std::vector<NetworkEdge> connections;
+    for (const auto& connection : network_->getConnections()) {
+        auto in = connection.getInport()->getProcessor();
+        if (util::contains(selected, in)) {
+            connections.emplace_back(connection);
+        }
+    }
 
-    std::vector<PortConnection> partialInConnections;
-    util::copy_if(network_->getConnections(), std::back_inserter(partialInConnections),
-                  [&selected](const PortConnection& c) {
-                      auto in = c.getInport()->getProcessor();
-                      auto out = c.getOutport()->getProcessor();
-                      return util::contains(selected, in) && !util::contains(selected, out);
-                  });
-
-    auto partialIn = util::transform(partialInConnections, [](const PortConnection& c) {
-        return detail::PartialConnection{
-            c.getOutport()->getProcessor()->getIdentifier() + "/" + c.getOutport()->getIdentifier(),
-            c.getInport()};
-    });
-
-    std::vector<PropertyLink> links;
-    util::copy_if(network_->getLinks(), std::back_inserter(links),
-                  [&selected](const PropertyLink& c) {
-                      auto src = c.getSource()->getOwner()->getProcessor();
-                      auto dst = c.getDestination()->getOwner()->getProcessor();
-                      return util::contains(selected, src) && util::contains(selected, dst);
-                  });
-
-    std::vector<PropertyLink> srcLinks;
-    util::copy_if(network_->getLinks(), std::back_inserter(srcLinks),
-                  [&selected](const PropertyLink& c) {
-                      auto src = c.getSource()->getOwner()->getProcessor();
-                      auto dst = c.getDestination()->getOwner()->getProcessor();
-                      return util::contains(selected, src) && !util::contains(selected, dst);
-                  });
-    auto partialSrcLinks = util::transform(srcLinks, [](const PropertyLink& c) {
-        return detail::PartialSrcLink{c.getSource(),
-                                      joinString(c.getDestination()->getPath(), ".")};
-    });
-
-    std::vector<PropertyLink> dstLinks;
-    util::copy_if(network_->getLinks(), std::back_inserter(dstLinks),
-                  [&selected](const PropertyLink& c) {
-                      auto src = c.getSource()->getOwner()->getProcessor();
-                      auto dst = c.getDestination()->getOwner()->getProcessor();
-                      return !util::contains(selected, src) && util::contains(selected, dst);
-                  });
-    auto partialDstLinks = util::transform(dstLinks, [](const PropertyLink& c) {
-        return detail::PartialDstLink{joinString(c.getSource()->getPath(), "."),
-                                      c.getDestination()};
-    });
+    std::vector<NetworkEdge> links;
+    for (const auto& link : network_->getLinks()) {
+        auto src = link.getSource()->getOwner()->getProcessor();
+        auto dst = link.getDestination()->getOwner()->getProcessor();
+        if (util::contains(selected, src) || util::contains(selected, dst)) {
+            links.emplace_back(link);
+        }
+    }
 
     s.serialize("ProcessorNetworkVersion", network_->getVersion());
     s.serialize("Processors", selected, "Processor");
     s.serialize("Connections", connections, "Connection");
-    s.serialize("PartialInConnections", partialIn, "Connection");
     s.serialize("PropertyLinks", links, "PropertyLink");
-    s.serialize("PartialSrcLinks", partialSrcLinks, "PropertyLink");
-    s.serialize("PartialDstLinks", partialDstLinks, "PropertyLink");
 }
 
 void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
     try {
         std::vector<std::unique_ptr<Processor>> processors;
-        std::vector<std::unique_ptr<PortConnection>> connections;
-        std::vector<std::unique_ptr<detail::PartialConnection>> partialIn;
-        std::vector<std::unique_ptr<PropertyLink>> links;
-        std::vector<std::unique_ptr<detail::PartialSrcLink>> partialSrcLinks;
-        std::vector<std::unique_ptr<detail::PartialDstLink>> partialDstLinks;
+        std::vector<NetworkEdge> connections;
+        std::vector<NetworkEdge> links;
         d.deserialize("Processors", processors, "Processor");
         d.deserialize("Connections", connections, "Connection");
-        d.deserialize("PartialInConnections", partialIn, "Connection");
         d.deserialize("PropertyLinks", links, "PropertyLink");
-        d.deserialize("PartialSrcLinks", partialSrcLinks, "PropertyLink");
-        d.deserialize("PartialDstLinks", partialDstLinks, "PropertyLink");
 
         for (auto p : network_->getProcessors()) {
             auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
             m->setSelected(false);
         }
 
+        std::unordered_map<std::string, std::string> processorIds;
         for (auto& p : processors) {
+            auto orgId = p->getIdentifier();
             network_->addProcessor(p.get());
-
+            processorIds[orgId] = p->getIdentifier();
             AutoLinker::addLinks(network_, p.get());
 
             addedProcessors_.push_back(p.get());
             p.release();
         }
         for (auto& c : connections) {
-            network_->addConnection(c->getOutport(), c->getInport());
-        }
-        for (auto& c : partialIn) {
-            auto parts = splitString(c->outportPath_, '/');
-            if (parts.size() != 2) continue;
-            if (auto p = network_->getProcessorByIdentifier(parts[0])) {
-                if (auto outport = p->getOutport(parts[1])) {
-                    network_->addConnection(outport, c->inport_);
-                }
+            try {
+                c.updateProcessorID(processorIds);
+                auto connection = c.toConnection(*network_);
+                network_->addConnection(connection);
+            } catch (...) {
+                d.handleError(IVW_CONTEXT);
             }
         }
 
         for (auto& l : links) {
-            network_->addLink(l->getSource(), l->getDestination());
-        }
-        for (auto& l : partialSrcLinks) {
-            auto path = splitString(l->dstPath_, '.');
-            if (auto dst = network_->getProperty(path)) {
-                network_->addLink(l->src_, dst);
-            }
-        }
-        for (auto& l : partialDstLinks) {
-            auto path = splitString(l->srcPath_, '.');
-            if (auto src = network_->getProperty(path)) {
-                network_->addLink(src, l->dst_);
+            try {
+                l.updateProcessorID(processorIds);
+                auto link = l.toLink(*network_);
+                network_->addLink(link.getSource(), link.getDestination());
+            } catch (...) {
+                d.handleError(IVW_CONTEXT);
             }
         }
 
     } catch (Exception& e) {
         util::log(IVW_CONTEXT_CUSTOM("Paste"), e.getMessage(), LogLevel::Warn, LogAudience::User);
     }
-}
-
-detail::PartialConnection::PartialConnection(std::string path, Inport* inport)
-    : outportPath_(path), inport_(inport) {}
-
-detail::PartialConnection::PartialConnection() {}
-
-void detail::PartialConnection::serialize(Serializer& s) const {
-    s.serialize("OutPortPath", outportPath_);
-    s.serialize("InPort", inport_);
-}
-
-void detail::PartialConnection::deserialize(Deserializer& d) {
-    d.deserialize("OutPortPath", outportPath_);
-    d.deserialize("InPort", inport_);
-}
-
-detail::PartialSrcLink::PartialSrcLink(Property* src, std::string path)
-    : src_(src), dstPath_(path) {}
-
-detail::PartialSrcLink::PartialSrcLink() {}
-
-void detail::PartialSrcLink::serialize(Serializer& s) const {
-    s.serialize("SourceProperty", src_);
-    s.serialize("DestinationPropertyPath", dstPath_);
-}
-
-void detail::PartialSrcLink::deserialize(Deserializer& d) {
-    d.deserialize("SourceProperty", src_);
-    d.deserialize("DestinationPropertyPath", dstPath_);
-}
-
-detail::PartialDstLink::PartialDstLink(std::string path, Property* dst)
-    : srcPath_(path), dst_(dst) {}
-
-detail::PartialDstLink::PartialDstLink() {}
-
-void detail::PartialDstLink::serialize(Serializer& s) const {
-    s.serialize("SourcePropertyPath", srcPath_);
-    s.serialize("DestinationProperty", dst_);
-}
-
-void detail::PartialDstLink::deserialize(Deserializer& d) {
-    d.deserialize("SourcePropertyPath", srcPath_);
-    d.deserialize("DestinationProperty", dst_);
 }
 
 bool addProcessorOnConnection(ProcessorNetwork* network, std::unique_ptr<Processor> processor,

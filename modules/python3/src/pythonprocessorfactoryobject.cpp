@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/utilities.h>
 
 #include <inviwo/core/network/networkutils.h>
 
@@ -43,6 +44,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/eval.h>
 #include <warn/pop>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -58,8 +61,8 @@ std::unique_ptr<Processor> PythonProcessorFactoryObject::create(InviwoApplicatio
     const auto pi = getProcessorInfo();
 
     try {
-        py::object proc = py::eval<py::eval_expr>(name_ + "(\"" + pi.displayName + "\", \"" +
-                                                  pi.displayName + "\")");
+        py::object proc = py::eval<py::eval_expr>(fmt::format(
+            R"({}("{}", "{}"))", name_, util::stripIdentifier(pi.displayName), pi.displayName));
         auto p = std::unique_ptr<Processor>(proc.cast<Processor*>());
         proc.release();
         return p;

@@ -109,19 +109,19 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
 
     const size_t reserved = 33;
     const auto maxWidth = width - reserved - 1;
-    auto lines = splitStringView(logMsg, '\n');
+
     std::vector<std::string_view> res;
-    for (auto line : lines) {
+    util::forEachStringPart(logMsg, "\n", [&](std::string_view line) {
         if (line.size() < maxWidth) {
             res.push_back(line);
         } else {
             size_t pos = 0;
             while (pos < line.size()) {
-                res.push_back(trim(line.substr(pos, maxWidth)));
+                res.push_back(util::trim(line.substr(pos, maxWidth)));
                 pos += maxWidth;
             }
         }
-    }
+    });
 
     std::stringstream ss;
     auto joiner = util::make_ostream_joiner(ss, "\n" + std::string(reserved, ' '));

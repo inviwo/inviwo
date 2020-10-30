@@ -182,7 +182,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
             auto copyPathAction = menu->addAction("Copy Path");
             connect(copyPathAction, &QAction::triggered, this, [this]() {
                 if (!property_) return;
-                std::string path = joinString(property_->getPath(), ".");
+                std::string path = property_->getPath();
                 QApplication::clipboard()->setText(path.c_str());
             });
         }

@@ -37,6 +37,7 @@
 #include <inviwo/core/processors/processor.h>
 
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/utilities.h>
 
 #include <type_traits>
 #include <string>
@@ -76,20 +77,20 @@ public:
 
         if constexpr (std::is_constructible_v<T, const std::string&, const std::string&,
                                               InviwoApplication*>) {
-            p = std::make_unique<T>(getDisplayName(), getDisplayName(), app);
+            p = std::make_unique<T>(util::stripIdentifier(getDisplayName()), getDisplayName(), app);
         } else if constexpr (std::is_constructible_v<T, const std::string&, const std::string&>) {
-            p = std::make_unique<T>(getDisplayName(), getDisplayName());
+            p = std::make_unique<T>(util::stripIdentifier(getDisplayName()), getDisplayName());
         } else if constexpr (std::is_constructible_v<T, const std::string&, InviwoApplication*>) {
-            p = std::make_unique<T>(getDisplayName(), app);
+            p = std::make_unique<T>(util::stripIdentifier(getDisplayName()), app);
         } else if constexpr (std::is_constructible_v<T, const std::string&>) {
-            p = std::make_unique<T>(getDisplayName());
+            p = std::make_unique<T>(util::stripIdentifier(getDisplayName()));
         } else if constexpr (std::is_constructible_v<T, InviwoApplication*>) {
             p = std::make_unique<T>(app);
         } else {
             p = std::make_unique<T>();
         }
 
-        if (p->getIdentifier().empty()) p->setIdentifier(getDisplayName());
+        if (p->getIdentifier().empty()) p->setIdentifier(util::stripIdentifier(getDisplayName()));
         if (p->getDisplayName().empty()) p->setDisplayName(getDisplayName());
         return p;
     }

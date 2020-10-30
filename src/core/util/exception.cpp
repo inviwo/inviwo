@@ -34,6 +34,8 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/safecstr.h>
 #include <sstream>
 
 namespace inviwo {
@@ -61,8 +63,8 @@ bool breakOnException() {
 
 }  // namespace
 
-Exception::Exception(const std::string& message, ExceptionContext context)
-    : std::runtime_error(message), context_(std::move(context)), stack_{stackTrace()} {
+Exception::Exception(std::string_view message, ExceptionContext context)
+    : std::runtime_error(SafeCStr{message}), context_(std::move(context)), stack_{stackTrace()} {
     if (breakOnException()) util::debugBreak();
 }
 
@@ -99,27 +101,28 @@ const ExceptionContext& Exception::getContext() const { return context_; }
 
 const std::vector<std::string>& Exception::getStack() const { return stack_; }
 
-RangeException::RangeException(const std::string& message, ExceptionContext context)
+RangeException::RangeException(std::string_view message, ExceptionContext context)
     : Exception(message, context) {}
 
-NullPointerException::NullPointerException(const std::string& message, ExceptionContext context)
+NullPointerException::NullPointerException(std::string_view message, ExceptionContext context)
     : Exception(message, context) {}
 
-IgnoreException::IgnoreException(const std::string& message, ExceptionContext context)
+IgnoreException::IgnoreException(std::string_view message, ExceptionContext context)
     : Exception(message, context) {}
 
-AbortException::AbortException(const std::string& message, ExceptionContext context)
+AbortException::AbortException(std::string_view message, ExceptionContext context)
     : Exception(message, context) {}
 
-FileException::FileException(const std::string& message, ExceptionContext context)
+FileException::FileException(std::string_view message, ExceptionContext context)
     : Exception(message, context) {}
 
-ResourceException::ResourceException(const std::string& message, ExceptionContext context)
+ResourceException::ResourceException(std::string_view message, ExceptionContext context)
     : Exception(message, context) {}
 
-ModuleInitException::ModuleInitException(const std::string& message, ExceptionContext context,
+ModuleInitException::ModuleInitException(std::string_view message, ExceptionContext context,
                                          std::vector<std::string> modulesToDeregister)
-    : Exception(message, context), modulesToDeregister_(std::move(modulesToDeregister)) {}
+    : Exception(message, std::move(context))
+    , modulesToDeregister_(std::move(modulesToDeregister)) {}
 
 const std::vector<std::string>& ModuleInitException::getModulesToDeregister() const {
     return modulesToDeregister_;

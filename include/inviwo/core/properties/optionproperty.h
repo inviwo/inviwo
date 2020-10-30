@@ -211,6 +211,7 @@ public:
      */
     virtual TemplateOptionProperty& setCurrentStateAsDefault() override;
     virtual TemplateOptionProperty& resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
 
     virtual std::string getClassIdentifierForWidget() const override;
     virtual void serialize(Serializer& s) const override;
@@ -249,9 +250,12 @@ template <typename T>
 struct PropertyTraits<TemplateOptionProperty<T>> {
     static std::string classIdentifier() {
         if constexpr (std::is_enum_v<T>) {
-            return "org.inviwo.OptionProperty" + util::enumName<T>();
+            static const std::string identifier = "org.inviwo.OptionProperty" + util::enumName<T>();
+            return identifier;
         } else {
-            return "org.inviwo.OptionProperty" + Defaultvalues<T>::getName();
+            static const std::string identifier =
+                "org.inviwo.OptionProperty" + Defaultvalues<T>::getName();
+            return identifier;
         }
     }
 };
@@ -709,6 +713,11 @@ TemplateOptionProperty<T>& TemplateOptionProperty<T>::resetToDefaultState() {
 
     if (modified) this->propertyModified();
     return *this;
+}
+
+template <typename T>
+bool TemplateOptionProperty<T>::isDefaultState() const {
+    return selectedIndex_ == defaultSelectedIndex_ && options_ == defaultOptions_;
 }
 
 template <typename T>

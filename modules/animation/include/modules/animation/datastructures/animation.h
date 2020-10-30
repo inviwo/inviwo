@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ANIMATION_H
-#define IVW_ANIMATION_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/io/serialization/serialization.h>
@@ -94,10 +93,11 @@ public:
     /**
      * Remove Keyframe if matching any of the Keyframes in the tracks.
      * Calls TrackObserver::notifyKeyframeRemoved after removing Keyframe.
-     * Removes the KeyFrameSequence owning the Keyframe if it does not contain any Keyframe after
-     * removal, thereby calling KeyFrameSequenceObserver::notifyKeyframeSequenceRemoved Does nothing
-     * if no match was found.
-     * @note Keyframe will be deleted if removed so do not use pointer after calling this function.
+     * Removes the KeyFrameSequence owning the Keyframe if it does not contain any Keyframe
+     * after removal, thereby calling KeyFrameSequenceObserver::notifyKeyframeSequenceRemoved
+     * Does nothing if no match was found.
+     * @note Keyframe will be deleted if removed so do not use pointer after calling this
+     * function.
      */
     std::unique_ptr<Keyframe> remove(Keyframe* key);
 
@@ -117,7 +117,8 @@ public:
     void clear();
 
     /**
-     * Return a sorted list, in ascending order, of all Keyframe times existing in the animation.
+     * Return a sorted list, in ascending order, of all Keyframe times existing in the
+     * animation.
      */
     std::vector<Seconds> getAllTimes() const;
 
@@ -148,5 +149,3 @@ private:
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_ANIMATION_H

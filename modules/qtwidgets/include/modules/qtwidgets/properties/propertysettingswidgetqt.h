@@ -428,7 +428,7 @@ template <typename T>
 void MinMaxPropertySettingsWidgetQt<T>::apply() {
     NetworkLock lock(property_);
 
-    using range_type = typename MinMaxProperty<T>::range_type;
+    using range_type = typename MinMaxProperty<T>::value_type;
 
     // order of values stored in setting_:
     // "Component", "Min Bound", "Start","End", "Max Bound", "MinSeparation", "Increment"

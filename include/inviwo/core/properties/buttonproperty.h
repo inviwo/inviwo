@@ -87,6 +87,8 @@ public:
     // Override Property::resetToDefaultState, to avoid calling propertyModified  on reset.
     virtual ButtonProperty& resetToDefaultState() override;
 
+    virtual bool isDefaultState() const override;
+
 private:
     bool buttonPressed_ = false;
 };

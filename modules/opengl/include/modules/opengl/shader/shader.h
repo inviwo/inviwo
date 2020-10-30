@@ -120,10 +120,10 @@ public:
     void deactivate();
 
     template <typename T>
-    void setUniform(const std::string& name, const T& value) const;
+    void setUniform(std::string_view name, const T& value) const;
 
     template <typename T>
-    void setUniform(const std::string& name, std::size_t len, const T* value) const;
+    void setUniform(std::string_view name, std::size_t len, const T* value) const;
 
     void setUniformWarningLevel(UniformWarning level);
 
@@ -146,7 +146,7 @@ private:
     void detatch();
 
     std::string shaderNames() const;
-    GLint findUniformLocation(const std::string& name) const;
+    GLint findUniformLocation(std::string_view name) const;
 
     Program program_;
 
@@ -159,20 +159,20 @@ private:
 
     UniformWarning warningLevel_;
     // Uniform location cache. Clear after linking.
-    mutable std::unordered_map<std::string, GLint> uniformLookup_;
+    mutable std::map<std::string, GLint, std::less<>> uniformLookup_;
 
     // Callback on reload.
     CallBackList onReloadCallback_;
 };
 
 template <typename T>
-void Shader::setUniform(const std::string& name, const T& value) const {
+void Shader::setUniform(std::string_view name, const T& value) const {
     GLint location = findUniformLocation(name);
     if (location != -1) utilgl::UniformSetter<T>::set(location, value);
 }
 
 template <typename T>
-void Shader::setUniform(const std::string& name, std::size_t len, const T* value) const {
+void Shader::setUniform(std::string_view name, std::size_t len, const T* value) const {
     GLint location = findUniformLocation(name);
     if (location != -1) utilgl::UniformSetter<T>::set(location, static_cast<GLsizei>(len), value);
 }

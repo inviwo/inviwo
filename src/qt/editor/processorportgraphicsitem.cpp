@@ -32,6 +32,8 @@
 #include <inviwo/qt/editor/processorstatusgraphicsitem.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/core/ports/port.h>
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/outport.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/stdextensions.h>

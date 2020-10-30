@@ -32,9 +32,9 @@
 
 namespace inviwo {
 
-SerializationException::SerializationException(std::string message, ExceptionContext context,
-                                               std::string key, std::string type, std::string id,
-                                               TxElement* node)
+SerializationException::SerializationException(std::string_view message, ExceptionContext context,
+                                               std::string_view key, std::string_view type,
+                                               std::string_view id, TxElement* node)
     : Exception(message, context), data_(key, type, id, node) {}
 
 const std::string& SerializationException::getKey() const noexcept { return data_.key; }
@@ -46,17 +46,6 @@ const std::string& SerializationException::getId() const noexcept { return data_
 const SerializationException::SerializationExceptionData& SerializationException::getData() const
     noexcept {
     return data_;
-}
-
-std::string util::formatSerializationError(const std::string& name, const std::string& src,
-                                           const std::string& dst, const std::string& err) {
-    return fmt::format(
-        "Could not create {name} from:\n"
-        "   {src}\n"
-        "to\n"
-        "   {dst}\n"
-        "{err}",
-        fmt::arg("name", name), fmt::arg("src", src), fmt::arg("dst", dst), fmt::arg("err", err));
 }
 
 }  // namespace inviwo

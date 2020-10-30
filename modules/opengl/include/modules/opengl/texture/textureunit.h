@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TEXTUREUNIT_H
-#define IVW_TEXTUREUNIT_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
@@ -45,8 +44,8 @@ public:
     TextureUnit(TextureUnit& rhs) = delete;
     TextureUnit& operator=(const TextureUnit& that) = delete;
 
-    TextureUnit(TextureUnit&& rhs);
-    TextureUnit& operator=(TextureUnit&& that);
+    TextureUnit(TextureUnit&& rhs) noexcept;
+    TextureUnit& operator=(TextureUnit&& that) noexcept;
 
     // These are called from OpenGLCapabilities retrieveStaticInfo/destructor.
     static void initialize(int numUnits);
@@ -70,8 +69,8 @@ public:
     TextureUnitContainer(size_t i = 0);
     TextureUnitContainer(const TextureUnitContainer&) = delete;
     TextureUnitContainer& operator=(const TextureUnitContainer&) = delete;
-    TextureUnitContainer(TextureUnitContainer&& rhs);
-    TextureUnitContainer& operator=(TextureUnitContainer&& that);
+    TextureUnitContainer(TextureUnitContainer&& rhs) noexcept = default;
+    TextureUnitContainer& operator=(TextureUnitContainer&& that) noexcept = default;
     ~TextureUnitContainer() = default;
 
     void push_back(TextureUnit&& unit);
@@ -88,5 +87,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TEXTUREUNIT_H

@@ -40,6 +40,7 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/network/networkvisitor.h>
+#include <inviwo/core/network/networkedge.h>
 
 #include <fmt/format.h>
 
@@ -69,11 +70,11 @@ bool ProcessorNetwork::addProcessor(Processor* processor) {
     NetworkLock lock(this);
 
     processor->setIdentifier(util::findUniqueIdentifier(
-        processor->getIdentifier(),
-        [&](const std::string& id) { return getProcessorByIdentifier(id) == nullptr; }, ""));
+        util::stripIdentifier(processor->getIdentifier()),
+        [&](std::string_view id) { return getProcessorByIdentifier(id) == nullptr; }, ""));
 
     notifyObserversProcessorNetworkWillAddProcessor(processor);
-    processors_[util::stripIdentifier(processor->getIdentifier())] = processor;
+    processors_[processor->getIdentifier()] = processor;
     processor->setNetwork(this);
     processor->ProcessorObservable::addObserver(this);
     addPropertyOwnerObservation(processor);
@@ -81,8 +82,10 @@ bool ProcessorNetwork::addProcessor(Processor* processor) {
     auto meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
     meta->addObserver(this);
 
-    if (auto widget = application_->getProcessorWidgetFactory()->create(processor)) {
-        processor->setProcessorWidget(std::move(widget));
+    if (application_) {
+        if (auto widget = application_->getProcessorWidgetFactory()->create(processor)) {
+            processor->setProcessorWidget(std::move(widget));
+        }
     }
 
     processor->invalidate(InvalidationLevel::InvalidResources);
@@ -121,7 +124,7 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
 
     // remove processor itself
     notifyObserversProcessorNetworkWillRemoveProcessor(processor);
-    processors_.erase(util::stripIdentifier(processor->getIdentifier()));
+    processors_.erase(processor->getIdentifier());
     processor->ProcessorObservable::removeObserver(this);
     removePropertyOwnerObservation(processor);
     processor->setNetwork(nullptr);
@@ -133,12 +136,12 @@ void ProcessorNetwork::removeAndDeleteProcessor(Processor* processor) {
     if (!processor) return;
     NetworkLock lock(this);
 
-    RenderContext::getPtr()->activateDefaultRenderContext();
+    rendercontext::activateDefault();
     removeProcessorHelper(processor);
 
     // remove processor itself
     notifyObserversProcessorNetworkWillRemoveProcessor(processor);
-    processors_.erase(util::stripIdentifier(processor->getIdentifier()));
+    processors_.erase(processor->getIdentifier());
     removePropertyOwnerObservation(processor);
     processor->setNetwork(nullptr);
     processor->setProcessorWidget(nullptr);
@@ -147,8 +150,8 @@ void ProcessorNetwork::removeAndDeleteProcessor(Processor* processor) {
     delete processor;
 }
 
-Processor* ProcessorNetwork::getProcessorByIdentifier(std::string identifier) const {
-    return util::map_find_or_null(processors_, util::stripIdentifier(identifier));
+Processor* ProcessorNetwork::getProcessorByIdentifier(std::string_view identifier) const {
+    return util::map_find_or_null(processors_, std::string(identifier));
 }
 
 std::vector<Processor*> ProcessorNetwork::getProcessors() const {
@@ -347,8 +350,8 @@ void ProcessorNetwork::onProcessorInvalidationEnd(Processor* p) {
 
 void ProcessorNetwork::onProcessorIdentifierChanged(Processor* processor,
                                                     const std::string& oldIdentifier) {
-    processors_.erase(util::stripIdentifier(oldIdentifier));
-    processors_[util::stripIdentifier(processor->getIdentifier())] = processor;
+    processors_.erase(oldIdentifier);
+    processors_[processor->getIdentifier()] = processor;
 }
 
 void ProcessorNetwork::onProcessorPortRemoved(Processor*, Port* port) {
@@ -388,8 +391,22 @@ void ProcessorNetwork::onProcessorMetaDataSelectionChange() {
 void ProcessorNetwork::serialize(Serializer& s) const {
     s.serialize("ProcessorNetworkVersion", processorNetworkVersion_);
     s.serialize("Processors", getProcessors(), "Processor");
-    s.serialize("Connections", getConnections(), "Connection");
-    s.serialize("PropertyLinks", getLinks(), "PropertyLink");
+
+    {
+        std::vector<NetworkEdge> connections;
+        for (auto& item : connectionsVec_) {
+            connections.emplace_back(item);
+        }
+        s.serialize("Connections", connections, "Connection");
+    }
+
+    {
+        std::vector<NetworkEdge> links;
+        for (auto& item : links_) {
+            links.emplace_back(item);
+        }
+        s.serialize("PropertyLinks", links, "PropertyLink");
+    }
 }
 
 void ProcessorNetwork::addPropertyOwnerObservation(PropertyOwner* po) {
@@ -408,7 +425,7 @@ void ProcessorNetwork::removePropertyOwnerObservation(PropertyOwner* po) {
 
 int ProcessorNetwork::getVersion() const { return processorNetworkVersion_; }
 
-const int ProcessorNetwork::processorNetworkVersion_ = 17;
+const int ProcessorNetwork::processorNetworkVersion_ = 18;
 
 void ProcessorNetwork::deserialize(Deserializer& d) {
     NetworkLock lock(this);
@@ -431,14 +448,14 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     // Processors
     try {
-        RenderContext::getPtr()->activateDefaultRenderContext();
+        rendercontext::activateDefault();
 
         auto des =
             util::MapDeserializer<std::string, Processor*>("Processors", "Processor", "identifier")
                 .setIdentifierTransform(
                     [](const std::string& id) { return util::stripIdentifier(id); })
                 .setMakeNew([]() {
-                    RenderContext::getPtr()->activateDefaultRenderContext();
+                    rendercontext::activateDefault();
                     return nullptr;
                 })
                 .onNew([&](const std::string& /*id*/, Processor*& p) { addProcessor(p); })
@@ -462,8 +479,17 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     // Connections
     try {
+        std::vector<NetworkEdge> connectionsEdges;
+        d.deserialize("Connections", connectionsEdges, "Connection");
+
         std::vector<PortConnection> connections;
-        d.deserialize("Connections", connections, "Connection");
+        for (const auto& edge : connectionsEdges) {
+            try {
+                connections.emplace_back(edge.toConnection(*this));
+            } catch (...) {
+                d.handleError(IVW_CONTEXT);
+            }
+        }
 
         // remove any already existing connections.
         PortConnections save;
@@ -504,8 +530,17 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     // Links
     try {
+        std::vector<NetworkEdge> linkEdges;
+        d.deserialize("PropertyLinks", linkEdges, "PropertyLink");
+
         std::vector<PropertyLink> links;
-        d.deserialize("PropertyLinks", links, "PropertyLink");
+        for (const auto& item : linkEdges) {
+            try {
+                links.emplace_back(item.toLink(*this));
+            } catch (...) {
+                d.handleError(IVW_CONTEXT);
+            }
+        }
 
         // remove any already existing links.
         PropertyLinks save;
@@ -549,12 +584,34 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
 bool ProcessorNetwork::isDeserializing() const { return deserializing_; }
 
-Property* ProcessorNetwork::getProperty(std::vector<std::string> path) const {
-    if (path.size() >= 2) {
-        if (auto processor = getProcessorByIdentifier(path[0])) {
-            std::vector<std::string> propPath(path.begin() + 1, path.end());
-            return processor->getPropertyByPath(propPath);
-        }
+Property* ProcessorNetwork::getProperty(std::string_view path) const {
+    const auto [processorId, propertyPath] = util::splitByFirst(path, '.');
+    if (auto processor = getProcessorByIdentifier(processorId)) {
+        return processor->getPropertyByPath(propertyPath);
+    }
+    return nullptr;
+}
+
+Port* ProcessorNetwork::getPort(std::string_view path) const {
+    const auto [processorId, portId] = util::splitByFirst(path, '.');
+    if (auto processor = getProcessorByIdentifier(processorId)) {
+        return processor->getPort(portId);
+    }
+    return nullptr;
+}
+
+Inport* ProcessorNetwork::getInport(std::string_view path) const {
+    const auto [processorId, portId] = util::splitByFirst(path, '.');
+    if (auto processor = getProcessorByIdentifier(processorId)) {
+        return processor->getInport(portId);
+    }
+    return nullptr;
+}
+
+Outport* ProcessorNetwork::getOutport(std::string_view path) const {
+    const auto [processorId, portId] = util::splitByFirst(path, '.');
+    if (auto processor = getProcessorByIdentifier(processorId)) {
+        return processor->getOutport(portId);
     }
     return nullptr;
 }
@@ -562,9 +619,7 @@ Property* ProcessorNetwork::getProperty(std::vector<std::string> path) const {
 bool ProcessorNetwork::isPropertyInNetwork(Property* prop) const {
     if (auto owner = prop->getOwner()) {
         if (auto processor = owner->getProcessor()) {
-            if (processor == getProcessorByIdentifier(processor->getIdentifier())) {
-                return true;
-            }
+            return processor == util::map_find_or_null(processors_, processor->getIdentifier());
         }
     }
     return false;

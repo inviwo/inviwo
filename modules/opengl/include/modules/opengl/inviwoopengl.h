@@ -38,6 +38,7 @@
 #include <GL/glew.h>
 
 #include <string_view>
+#include <typeinfo>
 
 namespace inviwo {
 
@@ -60,11 +61,12 @@ IVW_MODULE_OPENGL_API void LogGLError(std::string_view fileName, std::string_vie
 IVW_MODULE_OPENGL_API void LogGLError(std::string_view source, std::string_view fileName,
                                       std::string_view functionName, int lineNumber);
 
+IVW_MODULE_OPENGL_API void LogGLError(const std::type_info& source, std::string_view fileName,
+                                      std::string_view functionName, int lineNumber);
+
 #if defined(IVW_DEBUG) || defined(IVW_FORCE_ASSERTIONS)
 #define LGL_ERROR inviwo::LogGLError(__FILE__, __FUNCTION__, __LINE__)
-#define LGL_ERROR_CLASS                                                                     \
-    inviwo::LogGLError(inviwo::parseTypeIdName(std::string(typeid(this).name())), __FILE__, \
-                       __FUNCTION__, __LINE__)
+#define LGL_ERROR_CLASS inviwo::LogGLError(typeid(this), __FILE__, __FUNCTION__, __LINE__)
 #define LGL_ERROR_SUPPRESS glGetError()
 #else
 #define LGL_ERROR

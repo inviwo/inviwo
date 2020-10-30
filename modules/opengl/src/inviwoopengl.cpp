@@ -98,6 +98,20 @@ void LogGLError(std::string_view source, std::string_view fileName, std::string_
     }
 }
 
+void LogGLError(const std::type_info& source, std::string_view fileName,
+                std::string_view functionName, int lineNumber) {
+
+    GLuint maxErrors = 255;
+    GLenum err;
+    // There might be several errors, call glGetError in a loop:
+    // https://www.opengl.org/sdk/docs/man2/xhtml/glGetError.xml
+    while ((err = glGetError()) != GL_NO_ERROR && maxErrors--) {
+        LogCentral::getPtr()->log(parseTypeIdName(std::string(source.name())), LogLevel::Error,
+                                  LogAudience::Developer, fileName, functionName, lineNumber,
+                                  getGLErrorString(err));
+    }
+}
+
 void LogGLError(std::string_view fileName, std::string_view functionName, int lineNumber) {
     LogGLError("OpenGL", fileName, functionName, lineNumber);
 }

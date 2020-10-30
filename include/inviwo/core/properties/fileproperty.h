@@ -93,6 +93,8 @@ public:
     virtual void set(const std::string& file, const FileExtension& selectedExtension);
     virtual void set(const Property* property) override;
 
+    operator std::string_view() const;
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 

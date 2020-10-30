@@ -30,20 +30,22 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/util/hashcombine.h>
 
 namespace inviwo {
 
 class Property;
+class Processor;
 
-class IVW_CORE_API PropertyLink : public Serializable {
+class IVW_CORE_API PropertyLink {
 public:
     PropertyLink();
     PropertyLink(Property* srcProperty, Property* dstProperty);
     PropertyLink(const PropertyLink&) = default;
+    PropertyLink(PropertyLink&&) noexcept = default;
     PropertyLink& operator=(const PropertyLink&) = default;
-    virtual ~PropertyLink() = default;
+    PropertyLink& operator=(PropertyLink&&) noexcept = default;
+    ~PropertyLink() = default;
     /**
      * Method to test if both source and destination properties are valid, eg not nullptr
      * @return false if at least one of the properties is null
@@ -55,9 +57,6 @@ public:
 
     bool involves(Processor* processor) const;
     bool involves(Property* property) const;
-
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
 
     friend bool IVW_CORE_API operator==(const PropertyLink& lhs, const PropertyLink& rhs);
     friend bool IVW_CORE_API operator!=(const PropertyLink& lhs, const PropertyLink& rhs);

@@ -41,7 +41,7 @@ class Tags;
 class IVW_CORE_API Tag {
 public:
     Tag() = default;
-    Tag(std::string tag);
+    Tag(std::string_view tag);
     const std::string& getString() const;
 
     IVW_CORE_API friend std::ostream& operator<<(std::ostream& os, const inviwo::Tag& obj);
@@ -85,7 +85,12 @@ public:
     /*
      * Creates tags from a string. Multiple tags are delimited by ','.
      */
-    Tags(const std::string& tags);
+    Tags(std::string_view tags);
+
+    /*
+     * Creates tags from a string. Multiple tags are delimited by ','.
+     */
+    Tags(std::string tags);
 
     /*
      * Creates tags from a string. Multiple tags are delimited by ','.
@@ -95,7 +100,7 @@ public:
     /*
      * Assign tags from a string. Multiple tags are delimited by ','.
      */
-    Tags& operator=(const std::string& that);
+    Tags& operator=(std::string_view that);
 
     Tags& addTag(Tag);
     Tags& addTags(const Tags& t);

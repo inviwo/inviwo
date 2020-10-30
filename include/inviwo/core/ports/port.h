@@ -54,9 +54,14 @@ class IVW_CORE_API Port : public Serializable {
 
 public:
     virtual ~Port() = default;
-    std::string getIdentifier() const;
+    const std::string& getIdentifier() const;
     void setIdentifier(const std::string& name);
     Processor* getProcessor() const;
+
+    /**
+     * @brief Get the port path i.e. '<processor identifier>.<port identifier>'
+     */
+    std::string getPath() const;
 
     virtual std::string getClassIdentifier() const = 0;
     /**

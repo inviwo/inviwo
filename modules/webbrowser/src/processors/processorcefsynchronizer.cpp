@@ -108,7 +108,7 @@ bool ProcessorCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<
                 callback->Failure(0, "Could not find processor: " + p);
             }
         } else if (command == parentProcessorCommand) {
-            callback->Success(json{{"path", joinString(parent_->getPath(), ".")}}.dump());
+            callback->Success(json{{"path", parent_->getIdentifier()}}.dump());
             return true;
         } else if (command == callbackCommand) {
             const auto callbackName = j.at("callback").get<std::string>();
