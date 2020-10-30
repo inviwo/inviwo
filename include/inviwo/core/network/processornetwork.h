@@ -228,7 +228,7 @@ public:
     std::vector<PropertyLink> getLinksBetweenProcessors(Processor* p1, Processor* p2);
 
     /**
-     * @breif Get Property by path
+     * @brief Get Property by path
      * @param path string of dot separated identifiers starting with a processor identifier followed
      * by property identifiers.
      * @return the property or nullptr if not found
@@ -236,7 +236,7 @@ public:
     Property* getProperty(std::string_view path) const;
 
     /**
-     * @breif Get Port by path
+     * @brief Get Port by path
      * @param path string of dot separated identifiers starting with a processor identifier followed
      * by a port identifier.
      * @return the port or nullptr if not found
@@ -244,7 +244,7 @@ public:
     Port* getPort(std::string_view path) const;
 
     /**
-     * @breif Get Inport by path
+     * @brief Get Inport by path
      * @param path string of dot separated identifiers starting with a processor identifier followed
      * by a port identifier.
      * @return the port or nullptr if not found
@@ -252,7 +252,7 @@ public:
     Inport* getInport(std::string_view path) const;
 
     /**
-     * @breif Get Outport by path
+     * @brief Get Outport by path
      * @param path string of dot separated identifiers starting with a processor identifier followed
      * by a port identifier.
      * @return the port or nullptr if not found

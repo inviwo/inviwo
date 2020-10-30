@@ -126,12 +126,12 @@ std::string fromWstring(std::wstring_view str) {
 
 }  // namespace util
 
-std::vector<std::string> util::splitString(std::string_view str, char delimeter) {
+std::vector<std::string> util::splitString(std::string_view str, char delimiter) {
     std::vector<std::string> output;
     size_t first = 0;
 
     while (first < str.size()) {
-        const auto second = str.find_first_of(delimeter, first);
+        const auto second = str.find_first_of(delimiter, first);
 
         if (first != second) output.emplace_back(str.substr(first, second - first));
 
@@ -143,12 +143,12 @@ std::vector<std::string> util::splitString(std::string_view str, char delimeter)
     return output;
 }
 
-std::vector<std::string_view> util::splitStringView(std::string_view str, char delimeter) {
+std::vector<std::string_view> util::splitStringView(std::string_view str, char delimiter) {
     std::vector<std::string_view> output;
     size_t first = 0;
 
     while (first < str.size()) {
-        const auto second = str.find_first_of(delimeter, first);
+        const auto second = str.find_first_of(delimiter, first);
 
         if (first != second) output.emplace_back(str.substr(first, second - first));
 

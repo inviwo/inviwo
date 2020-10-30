@@ -169,8 +169,8 @@ constexpr void forEachStringPart(std::string_view str, std::string_view sep, Fun
  * input str, and the second one will be empty
  */
 constexpr std::pair<std::string_view, std::string_view> splitByFirst(std::string_view str,
-                                                                     char delimeter = ' ') {
-    const auto pos = str.find(delimeter);
+                                                                     char delimiter = ' ') {
+    const auto pos = str.find(delimiter);
     return {str.substr(0, pos), pos != str.npos ? str.substr(pos + 1) : std::string_view{}};
 }
 
@@ -182,10 +182,10 @@ constexpr std::pair<std::string_view, std::string_view> splitByFirst(std::string
  * input str, and the second one will be empty
  */
 constexpr std::pair<std::string_view, std::string_view> splitByFirst(std::string_view str,
-                                                                     std::string_view delimeter) {
-    const auto pos = str.find(delimeter);
+                                                                     std::string_view delimiter) {
+    const auto pos = str.find(delimiter);
     return {str.substr(0, pos),
-            pos != str.npos ? str.substr(pos + delimeter.size()) : std::string_view{}};
+            pos != str.npos ? str.substr(pos + delimiter.size()) : std::string_view{}};
 }
 
 /**
@@ -196,8 +196,8 @@ constexpr std::pair<std::string_view, std::string_view> splitByFirst(std::string
  * second one will be equal to the input str
  */
 constexpr std::pair<std::string_view, std::string_view> splitByLast(std::string_view str,
-                                                                    char delimeter = ' ') {
-    const auto pos = str.rfind(delimeter);
+                                                                    char delimiter = ' ') {
+    const auto pos = str.rfind(delimiter);
     return pos != str.npos ? std::pair{str.substr(0, pos), str.substr(pos + 1)}
                            : std::pair{std::string_view{}, str};
 }
@@ -210,9 +210,9 @@ constexpr std::pair<std::string_view, std::string_view> splitByLast(std::string_
  * second one will be equal to the input str
  */
 constexpr std::pair<std::string_view, std::string_view> splitByLast(std::string_view str,
-                                                                    std::string_view delimeter) {
-    const auto pos = str.rfind(delimeter);
-    return pos != str.npos ? std::pair{str.substr(0, pos), str.substr(pos + delimeter.size())}
+                                                                    std::string_view delimiter) {
+    const auto pos = str.rfind(delimiter);
+    return pos != str.npos ? std::pair{str.substr(0, pos), str.substr(pos + delimiter.size())}
                            : std::pair{std::string_view{}, str};
 }
 
@@ -222,10 +222,10 @@ constexpr std::pair<std::string_view, std::string_view> splitByLast(std::string_
  *
  * @note Empty substrings are not skipped, ";;" will generate an element.
  * @param str The string to split
- * @param delimeter The character use for splitting (default to space)
+ * @param delimiter The character use for splitting (default to space)
  * @return a vector containing the substrings as std::string
  */
-IVW_CORE_API std::vector<std::string> splitString(std::string_view str, char delimeter = ' ');
+IVW_CORE_API std::vector<std::string> splitString(std::string_view str, char delimiter = ' ');
 
 /**
  * \brief Split string into substrings based on separating delimiter character.
@@ -233,11 +233,11 @@ IVW_CORE_API std::vector<std::string> splitString(std::string_view str, char del
  *
  * @note Empty substrings are not skipped, ";;" will generate an element.
  * @param str The string to split
- * @param delimeter The character use for splitting (default to space)
+ * @param delimiter The character use for splitting (default to space)
  * @return a vector containing the substrings as std::string_view
  */
 IVW_CORE_API std::vector<std::string_view> splitStringView(std::string_view str,
-                                                           char delimeter = ' ');
+                                                           char delimiter = ' ');
 
 // trim from both ends
 IVW_CORE_API std::string_view trim(std::string_view s);
@@ -248,16 +248,16 @@ IVW_CORE_API std::string_view trim(std::string_view s);
 using util::splitString;
 
 template <typename T>
-std::string joinString(const std::vector<T>& str, std::string_view delimeter = " ") {
+std::string joinString(const std::vector<T>& str, std::string_view delimiter = " ") {
     std::stringstream ss;
-    std::copy(str.begin(), str.end(), util::make_ostream_joiner(ss, delimeter));
+    std::copy(str.begin(), str.end(), util::make_ostream_joiner(ss, delimiter));
     return ss.str();
 }
 
 template <typename Iterator>
-std::string joinString(Iterator begin, Iterator end, std::string_view delimeter = " ") {
+std::string joinString(Iterator begin, Iterator end, std::string_view delimiter = " ") {
     std::stringstream ss;
-    std::copy(begin, end, util::make_ostream_joiner(ss, delimeter));
+    std::copy(begin, end, util::make_ostream_joiner(ss, delimiter));
     return ss.str();
 }
 
