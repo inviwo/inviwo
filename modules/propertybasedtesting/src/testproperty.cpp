@@ -127,6 +127,7 @@ TestPropertyComposite::TestPropertyComposite(PropertyOwner* original,
 
 			(*p)->addObserver(this);
 		}
+	boolComp->onChange([this]() { this->notifyObserversAboutChange(); });
 }
 void TestPropertyComposite::setToDefault() const {
 	for(const auto& subProp : subProperties)
@@ -224,10 +225,14 @@ void TestPropertyComposite::deserialize(Deserializer& d) {
 				des.emplace_back(std::shared_ptr<TestProperty>(sp));
 			else
 				des.emplace_back(old.at(sp));
+
+			sp->addObserver(this);
 		}
 
 		subProperties = des;
 	}
+	
+	boolComp->onChange([this]() { this->notifyObserversAboutChange(); });
 }
 
 // TestPropertyTyped
@@ -253,8 +258,8 @@ TestPropertyTyped<T>::TestPropertyTyped(T* original)
 
 	for(auto effectOpt : effectOption) {
 		boolComp->addProperty(effectOpt);
-		boolComp->getBoolProperty()->onChange([this]() { this->notifyObserversAboutChange(); });
 		effectOpt->onChange([this]() { this->notifyObserversAboutChange(); });
+		boolComp->onChange([this]() { this->notifyObserversAboutChange(); });
 	}
 }
 template<typename T>
@@ -301,10 +306,13 @@ std::string TestPropertyTyped<T>::textualDescription(unsigned int indent) const 
 
 	const auto eff = this->selectedEffects();
 	if(numComponents == 1) {
-		if(eff[0] == util::PropertyEffect::ANY) {
+		if(eff[0] == util::PropertyEffect::ANY || eff[0] == util::PropertyEffect::NOT_COMPARABLE) {
 			return indentation
 				+ getDisplayName()
-				+ " will be tested with differing values, but it has no influence over the number of counted pixels.";
+				+ " will be tested with differing values, but "
+				+ (eff[0]==util::PropertyEffect::ANY
+						? "it has no influence over the number of counted pixels."
+						: "tests with different values are not comparable.");
 		} else {
 			return indentation
 				+ change(eff[0]) + " "
@@ -332,17 +340,19 @@ std::string TestPropertyTyped<T>::textualDescription(unsigned int indent) const 
 				}
 				line += std::to_string(i);
 			}
-			if(e == util::PropertyEffect::ANY) {
+			if(e == util::PropertyEffect::ANY || e == util::PropertyEffect::NOT_COMPARABLE) {
 				line += std::string(" will be tested with differing values, but ")
-					+ (plural ? "they have" : "it has")
-					+ " no influence over the number of counted pixels.";
+					+ (e==util::PropertyEffect::ANY
+						? ((plural ? "they have" : "it has")
+							+ std::string(" no influence over the number of counted pixels."))
+						: "tests with different values are not comparable.");
 			} else {
 				line[0] = 'c';
 				line = std::string(change(e))
 					+ " the value" + (plural ? "s" : "") + " of " 
 					+ line + " should lead to a "
 					+ effStrings[eI]
-					+ "number of counted pixels";
+					+ " number of counted pixels";
 			}
 
 			res += '\n' + indentation + line;
@@ -447,6 +457,12 @@ void TestPropertyTyped<T>::deserialize(Deserializer& d) {
 	d.deserialize("BoolComp", boolComp);
 	d.deserialize("EffectOption", effectOption);
 	//std::cerr << "deserialized " << getClassIdentifier() << "@" << this << " : " << typedProperty->getIdentifier() << std::endl;
+
+	for(auto effectOpt : effectOption) {
+		boolComp->addProperty(effectOpt);
+		effectOpt->onChange([this]() { this->notifyObserversAboutChange(); });
+		boolComp->onChange([this]() { this->notifyObserversAboutChange(); });
+	}
 }
 
 // Helpers
@@ -462,9 +478,11 @@ struct TestPropertyFactoryHelper {
 const std::unordered_map<std::string, std::function<std::unique_ptr<TestProperty>()>> TestPropertyFactory::members = [](){
 	using M = std::remove_const_t<decltype(TestPropertyFactory::members)>;
 	M res;
+	// add TestPropertyComposite
 	res[TestPropertyComposite::getClassIdentifier()] = [](){
 			return std::unique_ptr<TestProperty>(new TestPropertyComposite());
 		};
+	// add all TestPropertyTyped
 	util::for_each_type<PropertyTypes>{}(TestPropertyFactoryHelper{}, res);
 	return res;
 }();

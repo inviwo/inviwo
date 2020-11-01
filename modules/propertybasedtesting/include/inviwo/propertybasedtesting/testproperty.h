@@ -277,10 +277,10 @@ class TestResult {
 };
 
 class TestPropertyFactory : public Factory<TestProperty> {
-	static const std::unordered_map<std::string, std::function<std::unique_ptr<TestProperty>()>> members;
+	static const std::unordered_map<std::string,
+				 std::function<std::unique_ptr<TestProperty>()>> members;
 public:
 	std::unique_ptr<TestProperty> create(const std::string& key) const override {
-		std::cerr << "TestPropertyFactory::create(" << key << ") : " << members.count(key) << std::endl;
 		assert(members.count(key) > 0);
 		return members.at(key)();
 	}
@@ -310,10 +310,12 @@ typename T::value_type TestResult::getValue(const T* prop) const {
 			return p->getValue();
 
 	for(auto def : defaultValues) {
-		if(auto p = std::dynamic_pointer_cast<TestPropertyTyped<T>>(def); p != nullptr) {
+		if(auto p = std::dynamic_pointer_cast<TestPropertyTyped<T>>(def);
+				p != nullptr) {
 			if(p->getTypedProperty() == prop)
 				return p->getDefaultValue();
-		} else if(auto p = std::dynamic_pointer_cast<TestPropertyComposite>(def); p != nullptr) {
+		} else if(auto p = std::dynamic_pointer_cast<TestPropertyComposite>(def);
+				p != nullptr) {
 			if(auto res = p->getDefaultValue(prop); res != std::nullopt)
 				return *res;
 		}

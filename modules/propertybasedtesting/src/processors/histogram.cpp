@@ -168,7 +168,7 @@ Histogram::Histogram(InviwoApplication* app)
 	, startButton_("startButton", "Update Test Results")
 	, condenseButton_("condenseButton", "Condense Failed Tests")
 	, numTests_("numTests", "Maximum number of tests", 200, 1, 10000)
-	, description_("description", "Description", "", InvalidationLevel::InvalidOutput, PropertySemantics::Text) {
+	, description_("description", "Description", "", InvalidationLevel::InvalidOutput, PropertySemantics::Multiline) {
 
 	countPixelsButton_.onChange([this]() {
 			NetworkLock lock(this);
@@ -204,6 +204,8 @@ Histogram::Histogram(InviwoApplication* app)
 	color_.setSemantics(PropertySemantics::Color);
 	color_.visibilityDependsOn(useDepth_, [](const auto& d) -> bool { return !d; });
 	addProperty(color_);
+
+	description_.setReadOnly(true);
 
 	addProperty(countPixelsButton_);
 	addProperty(numTests_);
