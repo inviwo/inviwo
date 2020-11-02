@@ -60,38 +60,9 @@ namespace detail {
  * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
  * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
  */
-template <typename T>
-void setPropertyFromKeyframeHelper(TemplateProperty<T>* property,
-                                   const ValueKeyframe<T>* keyframe) {
-    property->set(keyframe->getValue());
-}
-
-/**
- * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
- * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
- */
-template <typename T>
-void setPropertyFromKeyframeHelper(OrdinalProperty<T>* property, const ValueKeyframe<T>* keyframe) {
-    property->set(keyframe->getValue());
-}
-
-/**
- * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
- * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
- */
-template <typename T>
-void setPropertyFromKeyframeHelper(MinMaxProperty<T>* property,
-                                   const ValueKeyframe<glm::tvec2<T, glm::defaultp>>* keyframe) {
-    property->set(keyframe->getValue());
-}
-
-/**
- * Helper function for inviwo::animation::PropertyTrack::setOtherProperty
- * @see inviwo::animation::BasePropertyTrack::setOtherProperty
- */
-template <typename T>
-void setPropertyFromKeyframeHelper(OrdinalRefProperty<T>* property,
-                                   const ValueKeyframe<T>* keyframe) {
+template <typename Prop, typename Key>
+void setPropertyFromKeyframeHelper(Prop* property,
+                                   const Key* keyframe) {
     property->set(keyframe->getValue());
 }
 
@@ -109,38 +80,9 @@ void setPropertyFromKeyframeHelper(TemplateOptionProperty<T>* property,
  * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
  * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
  */
-template <typename T>
-void setKeyframeFromPropertyHelper(const TemplateProperty<T>* property,
-                                   ValueKeyframe<T>* keyframe) {
-    keyframe->setValue(property->get());
-}
-
-/**
- * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
- * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
- */
-template <typename T>
-void setKeyframeFromPropertyHelper(const OrdinalProperty<T>* property, ValueKeyframe<T>* keyframe) {
-    keyframe->setValue(property->get());
-}
-
-/**
- * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
- * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
- */
-template <typename T>
-void setKeyframeFromPropertyHelper(const MinMaxProperty<T>* property,
-                                   ValueKeyframe<glm::tvec2<T, glm::defaultp>>* keyframe) {
-    keyframe->setValue(property->get());
-}
-
-/**
- * Helper function for inviwo::animation::PropertyTrack::updateKeyframeFromProperty
- * @see inviwo::animation::BasePropertyTrack::updateKeyframeFromProperty
- */
-template <typename T>
-void setKeyframeFromPropertyHelper(const OrdinalRefProperty<T>* property,
-                                   ValueKeyframe<T>* keyframe) {
+template <typename Prop, typename Key>
+void setKeyframeFromPropertyHelper(const Prop* property,
+                                   Key* keyframe) {
     keyframe->setValue(property->get());
 }
 
