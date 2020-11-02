@@ -41,6 +41,25 @@ namespace inviwo {
 
 namespace animation {
 
+namespace detail {
+
+/*
+ * Creates a KeyframeSequence using the provided keyframes.
+ * Provide a template specialization to add custom KeyframeSequence creation behavior.
+ */
+template <typename Seq>
+struct DefaultSequenceCreator {
+    using key_type = typename Seq::key_type;
+    static std::unique_ptr<Seq> create(std::vector<std::unique_ptr<key_type>> keys);
+};
+template <typename Seq>
+std::unique_ptr<Seq> DefaultSequenceCreator<Seq>::create( 
+    std::vector<std::unique_ptr<key_type>> keys) {
+    return std::make_unique<Seq>(std::move(keys));
+}
+
+}  // namespace detail
+
 template <typename Seq>
 class BaseTrack : public Track, public KeyframeSequenceObserver {
 public:
@@ -291,7 +310,7 @@ typename BaseTrack<Seq>::key_type* BaseTrack<Seq>::add(Seconds time, bool asNewS
     auto addNew = [this](std::unique_ptr<key_type> key) -> key_type* {
         std::vector<std::unique_ptr<key_type>> keys;
         keys.push_back(std::move(key));
-        auto seq = add(std::make_unique<Seq>(std::move(keys)));
+        auto seq = add(detail::DefaultSequenceCreator<Seq>::create(std::move(keys)));
         return &seq->getLast();
     };
 
@@ -453,6 +472,7 @@ void BaseTrack<Seq>::serialize(Serializer& s) const {
     s.serialize("priority", priority_);
     s.serialize("sequences", sequences_, "sequence");
 }
+
 template <typename Seq>
 void BaseTrack<Seq>::deserialize(Deserializer& d) {
     {

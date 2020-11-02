@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,31 @@
  *
  *********************************************************************************/
 
-#include <modules/animation/datastructures/propertytrack.h>
-#include <inviwo/core/util/logcentral.h>
+#include <modules/animation/datastructures/cameratrack.h>
 
 namespace inviwo {
+
 namespace animation {
+
 namespace detail {
 
-
+/**
+ * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
+ * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
+ */
+void setPropertyFromKeyframeHelper(CameraProperty* property, const CameraKeyframe* keyframe) {
+    property->setLook(keyframe->getLookFrom(), keyframe->getLookTo(), keyframe->getLookUp());
+}
+/**
+ * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
+ * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
+ */
+void setKeyframeFromPropertyHelper(const CameraProperty* property, CameraKeyframe* keyframe) {
+    keyframe->updateFrom(property->get());
+}
 
 }  // namespace detail
 
 }  // namespace animation
+
 }  // namespace inviwo

@@ -49,7 +49,7 @@ const vec3& CameraKeyframe::getLookUp() const { return lookUp_; }
 
 void CameraKeyframe::setLookFrom(vec3 val) { lookFrom_ = val; }
 void CameraKeyframe::setLookTo(vec3 val) { lookTo_ = val; }
-void CameraKeyframe::setLookUp(vec3 val) { lookUp_ = glm::normalize(val); }
+void CameraKeyframe::setLookUp(vec3 val) { lookUp_ = val; }
 
 vec3 CameraKeyframe::getDirection() const { return lookTo_ - lookFrom_; }
 

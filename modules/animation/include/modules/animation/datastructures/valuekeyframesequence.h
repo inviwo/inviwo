@@ -81,8 +81,14 @@ public:
     using value_type = typename Key::value_type;
     static_assert(std::is_base_of<Keyframe, Key>::value, "Key has to derive from Keyframe");
 
-    KeyframeSequenceTyped();
-    KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes);
+    /* 
+     * No default constructor. Interpolation must be specified.
+     */
+    KeyframeSequenceTyped() = delete;
+    /* 
+     * No constructor of this type. Interpolation must be specified.
+     */
+    KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes) = delete;
     KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes,
                           std::unique_ptr<InterpolationTyped<Key>> interpolation);
 
@@ -125,20 +131,12 @@ bool operator!=(const KeyframeSequenceTyped<Key>& a, const KeyframeSequenceTyped
 }
 
 template <typename Key>
-KeyframeSequenceTyped<Key>::KeyframeSequenceTyped()
-    : BaseKeyframeSequence<Key>{}, ValueKeyframeSequence{} {}
-
-template <typename Key>
-KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes)
-    : BaseKeyframeSequence<Key>{std::move(keyframes)}, ValueKeyframeSequence() {}
-
-template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(
     std::vector<std::unique_ptr<Key>> keyframes,
     std::unique_ptr<InterpolationTyped<Key>> interpolation)
     : BaseKeyframeSequence<Key>{std::move(keyframes)}
     , ValueKeyframeSequence()
-    , interpolation_{std::move(interpolation)} {}
+    , interpolation_{interpolation ? std::move(interpolation) : throw Exception("Interpolation must be specified")} {}
 template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(const KeyframeSequenceTyped<Key>& rhs)
     : BaseKeyframeSequence<Key>(rhs)
@@ -175,11 +173,7 @@ KeyframeSequenceTyped<Key>* KeyframeSequenceTyped<Key>::clone() const {
 
 template <typename Key>
 void KeyframeSequenceTyped<Key>::operator()(Seconds from, Seconds to, value_type& out) const {
-    if (interpolation_) {
-        (*interpolation_)(this->keyframes_, from, to, easing_, out);
-    } else {
-        IVW_ASSERT(true, "Interpolation must be set before animating")
-    }
+    (*interpolation_)(this->keyframes_, from, to, easing_, out);
 }
 
 template <typename Key>
@@ -190,12 +184,13 @@ const InterpolationTyped<Key>& KeyframeSequenceTyped<Key>::getInterpolation() co
 template <typename Key>
 void KeyframeSequenceTyped<Key>::setInterpolation(
     std::unique_ptr<InterpolationTyped<Key, value_type>> interpolation) {
-    if (!interpolation_ || (interpolation && !interpolation_->equal(*interpolation))) {
+    if (!interpolation) {
+        throw Exception("Interpolation cannot be null");
+    } else if (!interpolation_->equal(*interpolation)) {
         interpolation_ = std::move(interpolation);
         notifyValueKeyframeSequenceInterpolationChanged(this);
     }
 }
-
 template <typename Key>
 void KeyframeSequenceTyped<Key>::setInterpolation(std::unique_ptr<Interpolation> interpolation) {
     if (auto inter =

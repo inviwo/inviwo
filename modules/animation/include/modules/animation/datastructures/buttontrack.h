@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,17 +26,51 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
+#include <modules/animation/animationmoduledefine.h>
+#include <modules/animation/datastructures/buttonkeyframesequence.h>
 #include <modules/animation/datastructures/propertytrack.h>
-#include <inviwo/core/util/logcentral.h>
+
+#include <inviwo/core/properties/buttonproperty.h>
 
 namespace inviwo {
+
 namespace animation {
+
+using ButtonTrack = PropertyTrack<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>;
+
 namespace detail {
 
+/**
+ * Presses the button.
+ * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
+ * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
+ */
+void setPropertyFromKeyframeHelper(ButtonProperty* property, const ButtonKeyframe* keyframe);
+/**
+ * Does nothing. The property of a ButtonKeyframe cannot be changed since all are supposed to be the
+ * same for a ButtonTrack. Helper function for
+ * inviwo::animation::PropertyTrack::setKeyframeFromProperty
+ * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
+ */
+void setKeyframeFromPropertyHelper(const ButtonProperty* property, ButtonKeyframe* keyframe);
 
+template <>
+struct AnimateSequence<ButtonProperty, ButtonKeyframeSequence> {
+    static AnimationTimeState animate(ButtonProperty* prop, const ButtonKeyframeSequence& seq,
+                                      Seconds from, Seconds to, AnimationState state) {
+        bool pressed = false;
+        seq(from, to, pressed);
+        if (pressed) {
+            prop->pressButton();
+        }
+        return {to, state};
+    }
+};
 
 }  // namespace detail
 
 }  // namespace animation
+
 }  // namespace inviwo

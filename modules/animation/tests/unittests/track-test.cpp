@@ -271,7 +271,8 @@ TEST(AnimationTests, KeyframeSequenceSerializationTest) {
     d.setExceptionHandler([](ExceptionContext context) { throw; });
     d.registerFactory(&factory);
 
-    KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence2;
+    KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence2(
+        {}, std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>());
 
     doubleSequence2.deserialize(d);
 

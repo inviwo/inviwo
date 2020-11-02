@@ -41,7 +41,8 @@
 
 #include <modules/animation/datastructures/buttonkeyframesequence.h>
 #include <modules/animation/datastructures/callbacktrack.h>
-#include <modules/animation/datastructures/camerakeyframe.h>
+#include <modules/animation/datastructures/buttontrack.h>
+#include <modules/animation/datastructures/cameratrack.h>
 #include <modules/animation/datastructures/controltrack.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/track.h>

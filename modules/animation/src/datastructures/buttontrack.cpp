@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,22 @@
  *
  *********************************************************************************/
 
-#include <modules/animation/datastructures/propertytrack.h>
-#include <inviwo/core/util/logcentral.h>
+#include <modules/animation/datastructures/buttontrack.h>
 
 namespace inviwo {
+
 namespace animation {
+
 namespace detail {
 
+void setPropertyFromKeyframeHelper(ButtonProperty* property, const ButtonKeyframe*) {
+    property->pressButton();
+}
 
+void setKeyframeFromPropertyHelper(const ButtonProperty*, ButtonKeyframe*) {}
 
 }  // namespace detail
 
 }  // namespace animation
+
 }  // namespace inviwo

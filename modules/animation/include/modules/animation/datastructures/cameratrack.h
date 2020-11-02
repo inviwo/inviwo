@@ -29,107 +29,50 @@
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
-#include <modules/animation/datastructures/camerakeyframesequence.h>
 #include <modules/animation/datastructures/propertytrack.h>
+#include <modules/animation/interpolation/camerasphericalinterpolation.h>
 #include <inviwo/core/properties/cameraproperty.h>
 
 namespace inviwo {
 
 namespace animation {
 
-/** \class CameraTrack
- * Implementation of BaseCameraTrack and TrackTyped based on templates parameter types for
- * Property and KeyFrame.
- * Exposes functions for adding a KeyFrame and KeyFrameSequence
- * using the current values of the Property.
- * @see Track
- * @see CameraTrack
- * @see Property
+using CameraKeyframeSequence = KeyframeSequenceTyped<CameraKeyframe>;
+using CameraTrack = PropertyTrack<CameraProperty, KeyframeSequenceTyped<CameraKeyframe>>;
+
+namespace detail {
+
+/**
+ * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
+ * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
  */
-class IVW_MODULE_ANIMATION_API CameraTrack : public BaseTrack<CameraKeyframeSequence>,
-                                             public BasePropertyTrack {
-public:
-    CameraTrack();
-    CameraTrack(CameraProperty* property);
-    /**
-     * Remove all keyframe sequences and call TrackObserver::notifyKeyframeSequenceRemoved
-     */
-    virtual ~CameraTrack();
+void setPropertyFromKeyframeHelper(CameraProperty* property, const CameraKeyframe* keyframe);
+/**
+ * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
+ * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
+ */
+void setKeyframeFromPropertyHelper(const CameraProperty* property, CameraKeyframe* keyframe);
 
-    static std::string classIdentifier();
-    virtual std::string getClassIdentifier() const override;
-
-    virtual AnimationTimeState operator()(Seconds from, Seconds to,
-                                          AnimationState state) const override;
-
-    virtual const CameraProperty* getProperty() const override;
-    virtual CameraProperty* getProperty() override;
-    virtual void setProperty(Property* property) override;
-    virtual const std::string& getIdentifier() const override;
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
-    virtual Keyframe* addKeyFrameUsingPropertyValue(
-        const Property* property, Seconds time,
-        std::unique_ptr<Interpolation> interpolation) override;
-    virtual Keyframe* addKeyFrameUsingPropertyValue(
-        Seconds time, std::unique_ptr<Interpolation> interpolation) override;
-    virtual KeyframeSequence* addSequenceUsingPropertyValue(
-        Seconds time, std::unique_ptr<Interpolation> interpolation) override;
-
-    // BaseCameraTrack overload
-    virtual Track* toTrack() override;
-
-    /**
-     * \brief Helper function to set a property (other than the property owned by the track) from a
-     * keyframe
-     *
-     * Called from inviwo::animation::KeyframeEditorWidget when creating the widget
-     *
-     * @param dstProperty The property to set
-     * @param keyframe The keyframe to set from
-     */
-    void setOtherProperty(Property* dstProperty, Keyframe* keyframe) override {
-        IVW_ASSERT(
-            dstProperty->getClassIdentifier() == PropertyTraits<CameraProperty>::classIdentifier(),
-            "Incorrect Property type");
-        static_cast<CameraProperty*>(dstProperty)
-            ->setCamera(std::unique_ptr<Camera>(
-                static_cast<CameraKeyframe*>(keyframe)->getValue().clone()));
+template <>
+struct AnimateSequence<CameraProperty, KeyframeSequenceTyped<CameraKeyframe>> {
+    static AnimationTimeState animate(CameraProperty* prop,
+                                      const KeyframeSequenceTyped<CameraKeyframe>& seq,
+                                      Seconds from, Seconds to, AnimationState state) {
+        seq(from, to, prop->get());
+        return {to, state};
     }
-
-    /**
-     * \brief Helper function to update the value if a keyframe from a property (other than the
-     * property owned by the track)
-     *
-     * Called from inviwo::animation::KeyframeEditorWidget when the value of the keyframe is updated
-     * through the widget
-     *
-     * @param srcProperty The property to set from
-     * @param keyframe The keyframe to set
-     */
-    void updateKeyframeFromProperty(Property* srcProperty, Keyframe* keyframe) override {
-        ivwAssert(
-            srcProperty->getClassIdentifier() == PropertyTraits<CameraProperty>::classIdentifier(),
-            "Incorrect Property type");
-        static_cast<CameraKeyframe*>(keyframe)->updateFrom(
-            static_cast<CameraProperty*>(srcProperty)->get());
-    }
-
-protected:
-    /*
-     * Creates a Seq::key_type using the current property value.
-     */
-    virtual std::unique_ptr<CameraKeyframe> createKeyframe(Seconds time) override;
-
-private:
-    CameraProperty* property_;  ///< non-owning reference
 };
 
-IVW_MODULE_ANIMATION_API bool operator==(const CameraTrack& a, const CameraTrack& b);
+template <>
+struct DefaultSequenceCreator<CameraKeyframeSequence> {
+    static std::unique_ptr<CameraKeyframeSequence> create(
+        std::vector<std::unique_ptr<CameraKeyframe>> keys) {
+        return std::make_unique<KeyframeSequenceTyped<CameraKeyframe>>(
+            std::move(keys), std::make_unique<CameraSphericalInterpolation>());
+    }
+};
 
-IVW_MODULE_ANIMATION_API bool operator!=(const CameraTrack& a, const CameraTrack& b);
+}  // namespace detail
 
 }  // namespace animation
 

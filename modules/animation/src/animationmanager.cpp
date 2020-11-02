@@ -126,7 +126,7 @@ Keyframe* AnimationManager::addKeyframe(Property* property, Seconds time) {
         } else if (auto basePropertyTrack = addNewTrack(property)) {
             return basePropertyTrack->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
         } else {
-            LogWarn("No matching Track found for property \"" + property->getIdentifier() + "\"");
+            LogWarn("No matching Track found for property \"" << property->getIdentifier() << "\"");
         }
     } catch (const Exception& ex) {
         LogError(ex.getMessage());
@@ -149,7 +149,7 @@ KeyframeSequence* AnimationManager::addKeyframeSequence(Property* property, Seco
             basePropertyTrack->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
             return &basePropertyTrack->toTrack()->getFirst();
         } else {
-            LogWarn("No matching Track found for property \"" + property->getIdentifier() + "\"");
+            LogWarn("No matching Track found for property \"" << property->getIdentifier() << "\"");
         }
     } catch (const Exception& ex) {
         LogError(ex.getMessage());
@@ -191,7 +191,7 @@ std::unique_ptr<Interpolation> AnimationManager::getDefaultInterpolation(Propert
     if (interpolationIt != propertyToInterpolationMap_.end()) {
         interpolation = interpolationFactory_.create(interpolationIt->second);
         if (!interpolation) {
-            LogError("Default interpolation method for " + property->getClassIdentifier() +
+            LogError("Default interpolation method for " << property->getClassIdentifier() <<
                      " was registered but the interpolation method was not added to the "
                      "interpolation factory. @Developer: Please follow examples in "
                      "animationmodule.cpp");

@@ -34,7 +34,6 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -48,7 +47,6 @@
 #include <modules/animation/datastructures/basetrack.h>
 #include <modules/animation/datastructures/buttonkeyframesequence.h>
 #include <modules/animation/datastructures/animationtime.h>
-#include <modules/animation/datastructures/camerakeyframe.h>
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/valuekeyframesequence.h>
 #include <modules/animation/interpolation/linearinterpolation.h>
@@ -156,40 +154,32 @@ void setKeyframeFromPropertyHelper(const TemplateOptionProperty<T>* property,
     keyframe->setValue(property->getSelectedValue());
 }
 
-/**
- * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
- * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
- */
-void setPropertyFromKeyframeHelper(CameraProperty* property, const CameraKeyframe* keyframe);
-/**
- * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
- * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
- */
-void setKeyframeFromPropertyHelper(const CameraProperty* property, CameraKeyframe* keyframe);
+template <typename Seq>
+struct DefaultInterpolationCreator {
+    using key_type = typename Seq::key_type;
+    static std::unique_ptr<Interpolation> create();
+};
+template <typename Seq>
+std::unique_ptr<Interpolation> DefaultInterpolationCreator<Seq>::create() {
+    if constexpr (std::is_constructible<std::vector<std::unique_ptr<key_type>>,
+                                        std::unique_ptr<InterpolationTyped<key_type>>,
+                                        Seq>::value) {
+        std::make_unique<ConstantInterpolation<key_type>>();
+    } else {
+        // Not all properties have get functions, e.g. ButtonProperty.
+        return nullptr;
+    }
+}
 
-/**
- * Presses the button.
- * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
- * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
+/*
+ * Helper for when we know that we are between keyframes within a KeyframeSequence.
+ * Called from PropertyTrack<Prop, Key, Seq>::operator()(Seconds from, Seconds to,
+ * AnimationState state) const
+ * Provide template specialization if you want custom property/sequence behaviour.
  */
-void setPropertyFromKeyframeHelper(ButtonProperty* property, const ButtonKeyframe* keyframe);
-/**
- * Does nothing. The property of a ButtonKeyframe cannot be changed since all are supposed to be the
- * same for a ButtonTrack. Helper function for
- * inviwo::animation::PropertyTrack::setKeyframeFromProperty
- * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
- */
-void setKeyframeFromPropertyHelper(const ButtonProperty* property, ButtonKeyframe* keyframe);
-
 template <typename Prop, typename Seq>
 struct AnimateSequence {
-    /*
-     * Helper function for when we know that we are between keyframes within a KeyframeSequence.
-     * Called from PropertyTrack<Prop, Key, Seq>::operator()(Seconds from, Seconds to,
-     * AnimationState state) const
-     * Provide template specialization of this method if you want custom
-     * property/sequence behaviour.
-     */
+
     static AnimationTimeState animate(Prop* prop, const Seq& seq, Seconds from, Seconds to,
                                       AnimationState state);
 };
@@ -199,27 +189,6 @@ AnimationTimeState AnimateSequence<Prop, Seq>::animate(Prop* prop, const Seq& se
     typename Prop::value_type v;
     seq(from, to, v);
     prop->set(v);
-    return {to, state};
-}
-
-template <>
-inline AnimationTimeState
-AnimateSequence<CameraProperty, KeyframeSequenceTyped<CameraKeyframe>>::animate(
-    CameraProperty* prop, const KeyframeSequenceTyped<CameraKeyframe>& seq, Seconds from,
-    Seconds to, AnimationState state) {
-    seq(from, to, prop->get());
-    return {to, state};
-}
-
-template <>
-inline AnimationTimeState AnimateSequence<ButtonProperty, ButtonKeyframeSequence>::animate(
-    ButtonProperty* prop, const ButtonKeyframeSequence& seq, Seconds from, Seconds to,
-    AnimationState state) {
-    bool pressed = false;
-    seq(from, to, pressed);
-    if (pressed) {
-        prop->pressButton();
-    }
     return {to, state};
 }
 
@@ -593,6 +562,18 @@ void PropertyTrack<Prop, Key, Seq>::deserialize(Deserializer& d) {
     IVW_ASSERT(network_, "Property track deserialization requires a ProcessorNetwork");
     property_ = dynamic_cast<Prop*>(network_->getProperty(propertyId));
 }
+
+namespace detail {
+
+template <typename Key>
+struct DefaultSequenceCreator<KeyframeSequenceTyped<Key>> {
+    static std::unique_ptr<KeyframeSequenceTyped<Key>> create(std::vector<std::unique_ptr<Key>> keys) {
+        return std::make_unique<KeyframeSequenceTyped<Key>>(
+            std::move(keys), std::make_unique<ConstantInterpolation<Key>>());
+    }
+};
+
+}  // namespace detail
 
 }  // namespace animation
 

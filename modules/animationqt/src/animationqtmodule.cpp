@@ -34,14 +34,15 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <modules/animation/animationmodule.h>
-#include <modules/animation/datastructures/buttonkeyframesequence.h>
+#include <modules/animation/datastructures/animation.h>
+#include <modules/animation/datastructures/buttontrack.h>
+#include <modules/animation/datastructures/cameratrack.h>
 #include <modules/animation/datastructures/callbacktrack.h>
+#include <modules/animation/datastructures/controltrack.h>
 #include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/propertytrack.h>
-#include <modules/animation/datastructures/controltrack.h>
-#include <modules/animation/datastructures/animation.h>
 #include <modules/animation/animationcontroller.h>
 
 #include <modules/animationqt/animationeditordockwidgetqt.h>
@@ -209,7 +210,6 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
 
     registerPropertyTrackHelper<CameraProperty, CameraKeyframe>(*this);
 
-    using ButtonTrack = PropertyTrack<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>;
     registerTrackToWidgetMap(ButtonTrack::classIdentifier(),
                              PropertyTrackWidgetQt::classIdentifier());
 
