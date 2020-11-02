@@ -61,8 +61,7 @@ namespace detail {
  * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
  */
 template <typename Prop, typename Key>
-void setPropertyFromKeyframeHelper(Prop* property,
-                                   const Key* keyframe) {
+void setPropertyFromKeyframeHelper(Prop* property, const Key* keyframe) {
     property->set(keyframe->getValue());
 }
 
@@ -81,8 +80,7 @@ void setPropertyFromKeyframeHelper(TemplateOptionProperty<T>* property,
  * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
  */
 template <typename Prop, typename Key>
-void setKeyframeFromPropertyHelper(const Prop* property,
-                                   Key* keyframe) {
+void setKeyframeFromPropertyHelper(const Prop* property, Key* keyframe) {
     keyframe->setValue(property->get());
 }
 
