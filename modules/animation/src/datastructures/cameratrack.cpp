@@ -33,9 +33,7 @@ namespace inviwo {
 
 namespace animation {
 
-namespace detail {
-
-}  // namespace detail
+namespace detail {}  // namespace detail
 
 }  // namespace animation
 

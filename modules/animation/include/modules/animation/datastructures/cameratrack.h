@@ -46,14 +46,16 @@ namespace detail {
  * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
  * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
  */
-inline void setPropertyFromKeyframeHelper(CameraProperty* property, const CameraKeyframe* keyframe) {
+inline void setPropertyFromKeyframeHelper(CameraProperty* property,
+                                          const CameraKeyframe* keyframe) {
     property->setLook(keyframe->getLookFrom(), keyframe->getLookTo(), keyframe->getLookUp());
 }
 /**
  * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
  * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
  */
-inline void setKeyframeFromPropertyHelper(const CameraProperty* property, CameraKeyframe* keyframe) {
+inline void setKeyframeFromPropertyHelper(const CameraProperty* property,
+                                          CameraKeyframe* keyframe) {
     keyframe->updateFrom(property->get());
 }
 
