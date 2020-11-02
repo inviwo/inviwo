@@ -35,11 +35,6 @@ namespace animation {
 
 namespace detail {
 
-void setPropertyFromKeyframeHelper(ButtonProperty* property, const ButtonKeyframe*) {
-    property->pressButton();
-}
-
-void setKeyframeFromPropertyHelper(const ButtonProperty*, ButtonKeyframe*) {}
 
 }  // namespace detail
 

@@ -47,14 +47,16 @@ namespace detail {
  * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
  * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
  */
-void setPropertyFromKeyframeHelper(ButtonProperty* property, const ButtonKeyframe* keyframe);
+inline void setPropertyFromKeyframeHelper(ButtonProperty* property, const ButtonKeyframe*) {
+    property->pressButton();
+}
 /**
  * Does nothing. The property of a ButtonKeyframe cannot be changed since all are supposed to be the
  * same for a ButtonTrack. Helper function for
  * inviwo::animation::PropertyTrack::setKeyframeFromProperty
  * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
  */
-void setKeyframeFromPropertyHelper(const ButtonProperty* property, ButtonKeyframe* keyframe);
+inline void setKeyframeFromPropertyHelper(const ButtonProperty*, ButtonKeyframe*) {}
 
 template <>
 struct AnimateSequence<ButtonProperty, ButtonKeyframeSequence> {

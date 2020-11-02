@@ -35,21 +35,6 @@ namespace animation {
 
 namespace detail {
 
-/**
- * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
- * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
- */
-void setPropertyFromKeyframeHelper(CameraProperty* property, const CameraKeyframe* keyframe) {
-    property->setLook(keyframe->getLookFrom(), keyframe->getLookTo(), keyframe->getLookUp());
-}
-/**
- * Helper function for inviwo::animation::PropertyTrack::setKeyframeFromProperty
- * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
- */
-void setKeyframeFromPropertyHelper(const CameraProperty* property, CameraKeyframe* keyframe) {
-    keyframe->updateFrom(property->get());
-}
-
 }  // namespace detail
 
 }  // namespace animation
