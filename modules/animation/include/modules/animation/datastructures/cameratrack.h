@@ -38,7 +38,7 @@ namespace inviwo {
 namespace animation {
 
 using CameraKeyframeSequence = KeyframeSequenceTyped<CameraKeyframe>;
-using CameraTrack = PropertyTrack<CameraProperty, KeyframeSequenceTyped<CameraKeyframe>>;
+using CameraTrack = PropertyTrack<CameraProperty, CameraKeyframe>;
 
 namespace detail {
 
@@ -54,9 +54,9 @@ void setPropertyFromKeyframeHelper(CameraProperty* property, const CameraKeyfram
 void setKeyframeFromPropertyHelper(const CameraProperty* property, CameraKeyframe* keyframe);
 
 template <>
-struct AnimateSequence<CameraProperty, KeyframeSequenceTyped<CameraKeyframe>> {
+struct AnimateSequence<CameraProperty, CameraKeyframeSequence> {
     static AnimationTimeState animate(CameraProperty* prop,
-                                      const KeyframeSequenceTyped<CameraKeyframe>& seq,
+                                      const CameraKeyframeSequence& seq,
                                       Seconds from, Seconds to, AnimationState state) {
         seq(from, to, prop->get());
         return {to, state};
