@@ -53,7 +53,7 @@ struct DefaultSequenceCreator {
     static std::unique_ptr<Seq> create(std::vector<std::unique_ptr<key_type>> keys);
 };
 template <typename Seq>
-std::unique_ptr<Seq> DefaultSequenceCreator<Seq>::create( 
+std::unique_ptr<Seq> DefaultSequenceCreator<Seq>::create(
     std::vector<std::unique_ptr<key_type>> keys) {
     return std::make_unique<Seq>(std::move(keys));
 }

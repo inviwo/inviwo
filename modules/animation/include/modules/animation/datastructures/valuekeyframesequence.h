@@ -81,11 +81,11 @@ public:
     using value_type = typename Key::value_type;
     static_assert(std::is_base_of<Keyframe, Key>::value, "Key has to derive from Keyframe");
 
-    /* 
+    /*
      * No default constructor. Interpolation must be specified.
      */
     KeyframeSequenceTyped() = delete;
-    /* 
+    /*
      * No constructor of this type. Interpolation must be specified.
      */
     KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes) = delete;
@@ -136,7 +136,8 @@ KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(
     std::unique_ptr<InterpolationTyped<Key>> interpolation)
     : BaseKeyframeSequence<Key>{std::move(keyframes)}
     , ValueKeyframeSequence()
-    , interpolation_{interpolation ? std::move(interpolation) : throw Exception("Interpolation must be specified")} {}
+    , interpolation_{interpolation ? std::move(interpolation)
+                                   : throw Exception("Interpolation must be specified")} {}
 template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(const KeyframeSequenceTyped<Key>& rhs)
     : BaseKeyframeSequence<Key>(rhs)
