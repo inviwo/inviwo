@@ -50,6 +50,7 @@
 #include <modules/animation/interpolation/constantinterpolation.h>
 #include <modules/animation/interpolation/cameralinearinterpolation.h>
 #include <modules/animation/interpolation/camerasphericalinterpolation.h>
+#include <modules/animation/interpolation/linearinterpolation.h>
 
 namespace inviwo {
 

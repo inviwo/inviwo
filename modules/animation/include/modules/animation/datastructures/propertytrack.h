@@ -45,11 +45,10 @@
 
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/datastructures/basetrack.h>
-#include <modules/animation/datastructures/buttonkeyframesequence.h>
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/valuekeyframesequence.h>
-#include <modules/animation/interpolation/linearinterpolation.h>
+#include <modules/animation/interpolation/constantinterpolation.h>
 
 namespace inviwo {
 
@@ -90,6 +89,7 @@ void setPropertyFromKeyframeHelper(MinMaxProperty<T>* property,
  * Helper function for inviwo::animation::PropertyTrack::setOtherProperty
  * @see inviwo::animation::BasePropertyTrack::setOtherProperty
  */
+template <typename T>
 void setPropertyFromKeyframeHelper(OrdinalRefProperty<T>* property,
                                    const ValueKeyframe<T>* keyframe) {
     property->set(keyframe->getValue());
@@ -152,23 +152,6 @@ template <typename T>
 void setKeyframeFromPropertyHelper(const TemplateOptionProperty<T>* property,
                                    ValueKeyframe<T>* keyframe) {
     keyframe->setValue(property->getSelectedValue());
-}
-
-template <typename Seq>
-struct DefaultInterpolationCreator {
-    using key_type = typename Seq::key_type;
-    static std::unique_ptr<Interpolation> create();
-};
-template <typename Seq>
-std::unique_ptr<Interpolation> DefaultInterpolationCreator<Seq>::create() {
-    if constexpr (std::is_constructible<std::vector<std::unique_ptr<key_type>>,
-                                        std::unique_ptr<InterpolationTyped<key_type>>,
-                                        Seq>::value) {
-        std::make_unique<ConstantInterpolation<key_type>>();
-    } else {
-        // Not all properties have get functions, e.g. ButtonProperty.
-        return nullptr;
-    }
 }
 
 /*
@@ -273,8 +256,8 @@ public:
     static_assert(std::is_same<Key, typename Seq::key_type>::value,
                   "The KeyframeSequence must match Keyframe 'Key'");
 
-    using seq_type = typename BaseTrack<KeyframeSequenceTyped<Key>>::seq_type;
     PropertyTrack(ProcessorNetwork* network);
+    PropertyTrack(Prop* property);
     PropertyTrack(Prop* property, ProcessorNetwork* network);
 
     /**
@@ -410,19 +393,18 @@ inline std::unique_ptr<Seq> PropertyTrack<Prop, Key, Seq>::createKeyframeSequenc
 }
 
 template <typename Prop, typename Key, typename Seq>
-PropertyTrack<Prop, Key, Seq>::PropertyTrack() : BaseTrack<Seq>{"", "", 100}, property_(nullptr) {}
+PropertyTrack<Prop, Key, Seq>::PropertyTrack(ProcessorNetwork* net)
+    : BaseTrack<Seq>{"", "", 100}, property_(nullptr), network_{net} {}
 
 template <typename Prop, typename Key, typename Seq>
-PropertyTrack<Prop, Key>::PropertyTrack(Prop* property)
-    : BaseTrack<Seq>{property->getIdentifier(), property->getDisplayName(),
-                                            100}
+PropertyTrack<Prop, Key, Seq>::PropertyTrack(Prop* property)
+    : BaseTrack<Seq>{property->getIdentifier(), property->getDisplayName(), 100}
     , property_(property)
     , network_{property->getOwner()->getProcessor()->getNetwork()} {}
 
 template <typename Prop, typename Key, typename Seq>
-PropertyTrack<Prop, Key>::PropertyTrack(Prop* property, ProcessorNetwork* net)
-    : BaseTrack<Seq>{property->getIdentifier(), property->getDisplayName(),
-                                            100}
+PropertyTrack<Prop, Key, Seq>::PropertyTrack(Prop* property, ProcessorNetwork* net)
+    : BaseTrack<Seq>{property->getIdentifier(), property->getDisplayName(), 100}
     , property_(property)
     , network_{net} {}
 
@@ -567,7 +549,8 @@ namespace detail {
 
 template <typename Key>
 struct DefaultSequenceCreator<KeyframeSequenceTyped<Key>> {
-    static std::unique_ptr<KeyframeSequenceTyped<Key>> create(std::vector<std::unique_ptr<Key>> keys) {
+    static std::unique_ptr<KeyframeSequenceTyped<Key>> create(
+        std::vector<std::unique_ptr<Key>> keys) {
         return std::make_unique<KeyframeSequenceTyped<Key>>(
             std::move(keys), std::make_unique<ConstantInterpolation<Key>>());
     }
