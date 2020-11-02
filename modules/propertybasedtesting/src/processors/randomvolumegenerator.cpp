@@ -35,7 +35,6 @@
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo RandomVolumeGenerator::processorInfo_{
     "org.inviwo.RandomVolumeGenerator",      // Class identifier
     "Random Volume Generator",                // Display name
@@ -49,11 +48,11 @@ RandomVolumeGenerator::RandomVolumeGenerator()
     : Processor()
     , outport_("volume")
 	, seed_("seed", "Seed", 0, 42, INT_MAX)
-	, numSpheres_("numSpheres", "Number of Spheres", 0, 3, 500) {
+	, numPoints_("numPoints", "Number of Points", 0, 3, 500) {
 
     addPort(outport_);
     addProperty(seed_);
-    addProperty(numSpheres_);
+    addProperty(numPoints_);
 }
 
 void RandomVolumeGenerator::process() {
@@ -63,19 +62,19 @@ void RandomVolumeGenerator::process() {
 	const size3_t dimensions(1<<5);
 	const mat3 basis(1.0); // identity matrix
 
-	std::vector<dvec3> spherePositions(numSpheres_.get());
-	for(auto& pos : spherePositions) {
+	std::vector<dvec3> points(numPoints_.get());
+	for(auto& pos : points) {
 		pos = dvec3(dis(generator), dis(generator), dis(generator));
 	}
 
-	std::shared_ptr<Volume> volume = std::move(util::generateVolume(dimensions, basis, [&](const size3_t& ind) {
+	std::shared_ptr<Volume> volume = util::generateVolume(dimensions, basis, [&](const size3_t& ind) {
 				auto rel = dvec3(ind) / dvec3(dimensions); // position clamped to [0,1]^3
-				double dist = INFINITY; // distance to closest sphere
-				for(const auto& sphere : spherePositions) {
-					dist = std::min(dist, glm::length(rel - sphere));
+				double dist = INFINITY; // distance to closest point
+				for(const auto& point : points) {
+					dist = std::min(dist, glm::length(rel - point));
 				}
 				return util::glm_convert_normalized<float>(dist);
-			}));
+			});
     outport_.setData(volume);
 }
 

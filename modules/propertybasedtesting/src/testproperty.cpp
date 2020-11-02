@@ -311,7 +311,7 @@ std::string TestPropertyTyped<T>::textualDescription(unsigned int indent) const 
 				+ getDisplayName()
 				+ " will be tested with differing values, but "
 				+ (eff[0]==util::PropertyEffect::ANY
-						? "it has no influence over the number of counted pixels."
+						? "it has no influence over the score."
 						: "tests with different values are not comparable.");
 		} else {
 			return indentation
@@ -319,7 +319,7 @@ std::string TestPropertyTyped<T>::textualDescription(unsigned int indent) const 
 				+ getDisplayName()
 				+ "'s value should lead to a "
 				+ effStrings[static_cast<unsigned int>(eff[0])]
-				+ " number of counted pixels";
+				+ " score";
 		}
 	} else {
 		std::array<std::vector<unsigned int>, util::numPropertyEffects> comps;
@@ -338,13 +338,13 @@ std::string TestPropertyTyped<T>::textualDescription(unsigned int indent) const 
 				if(i > 0) {
 					line += (i==comps[eI].size()-1 ? " and " : ", ");
 				}
-				line += std::to_string(i);
+				line += std::to_string(comps[eI][i]);
 			}
 			if(e == util::PropertyEffect::ANY || e == util::PropertyEffect::NOT_COMPARABLE) {
 				line += std::string(" will be tested with differing values, but ")
 					+ (e==util::PropertyEffect::ANY
 						? ((plural ? "they have" : "it has")
-							+ std::string(" no influence over the number of counted pixels."))
+							+ std::string(" no influence over the score."))
 						: "tests with different values are not comparable.");
 			} else {
 				line[0] = 'c';
@@ -352,10 +352,10 @@ std::string TestPropertyTyped<T>::textualDescription(unsigned int indent) const 
 					+ " the value" + (plural ? "s" : "") + " of " 
 					+ line + " should lead to a "
 					+ effStrings[eI]
-					+ " number of counted pixels";
+					+ " score";
 			}
 
-			res += '\n' + indentation + line;
+			res += '\n' + indentation + "  " + line;
 		}
 		return res;
 	}

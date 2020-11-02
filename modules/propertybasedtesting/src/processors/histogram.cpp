@@ -46,34 +46,6 @@ namespace inviwo {
 
 std::mutex Histogram::mutex_;
 
-template<typename T>
-std::ostream& operator<<(std::ostream& out, const std::vector<T>& v);
-template<typename A, typename B>
-std::ostream& operator<<(std::ostream& out, const std::pair<A,B>& v) {
-    return out << "(" << v.first << ", " << v.second << ")";
-}
-
-template<class TupType, size_t... I>
-std::ostream& printTuple(std::ostream& out, const TupType& tup, std::index_sequence<I...>) {
-	out << "(";
-	(..., (out << (I==0 ? "" : ", ") << std::get<I>(tup)));
-	return out << ")";
-}
-template<class... T>
-std::ostream& operator<<(std::ostream& out, const std::tuple<T...>& tup) {
-	return printTuple(out, tup, std::make_index_sequence<sizeof...(T)>());
-}
-
-template<typename T>
-std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
-    out << "{";
-    for(size_t i = 0; i < v.size(); i++) {
-        if(i > 0) out << ", ";
-        out << v[i];
-    }
-    return out << "}";
-}
-
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo Histogram::processorInfo_{
     "org.inviwo.Histogram",      // Class identifier
@@ -166,7 +138,7 @@ Histogram::Histogram(InviwoApplication* app)
 	, color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(0.0f))
 	, countPixelsButton_("cntPixelsButton", "Count number of pixels with set color")
 	, startButton_("startButton", "Update Test Results")
-	, condenseButton_("condenseButton", "Condense Failed Tests")
+	, distillButton_("distillButton", "Distill Failed Tests")
 	, numTests_("numTests", "Maximum number of tests", 200, 1, 10000)
 	, description_("description", "Description", "", InvalidationLevel::InvalidOutput, PropertySemantics::Multiline) {
 
@@ -186,8 +158,8 @@ Histogram::Histogram(InviwoApplication* app)
 
 	startButton_.onChange([this]() { this->initTesting(); } );
 
-	condenseButton_.setVisible(false); // make visible when errors have been found
-	condenseButton_.onChange([this]() {
+	distillButton_.setVisible(false); // make visible when errors have been found
+	distillButton_.onChange([this]() {
 			this->currently_condensing = true;
 			this->checkTestResults();
 		});
@@ -210,7 +182,7 @@ Histogram::Histogram(InviwoApplication* app)
 	addProperty(countPixelsButton_);
 	addProperty(numTests_);
 	addProperty(startButton_);
-	addProperty(condenseButton_);
+	addProperty(distillButton_);
 	addProperty(description_);
 
 	if (std::filesystem::create_directory(tempDir_.string())) {
@@ -239,8 +211,6 @@ void Histogram::serialize(Serializer& s) const {
 
 	Processor::serialize(s);
 
-	//std::cerr << "Histogram::serialize()" << std::endl;
-
 	std::vector<Processor*> processors;
 	std::vector<TestProperty*> testProperties;
 	for(auto[proc, test] : processors_) {
@@ -252,9 +222,7 @@ void Histogram::serialize(Serializer& s) const {
 		testProperties.emplace_back(static_cast<TestProperty*>(test.get()));
 	}
 	s.serialize("Processors", processors);
-	//std::cerr << "\tserialized " << processors.size() << " processors" << std::endl;
 	s.serialize("TestProperties", testProperties);
-	//std::cerr << "\tserialized " << testProperties.size() << " testProperties" << std::endl;
 }
 
 void Histogram::deserialize(Deserializer& d) {
@@ -262,20 +230,15 @@ void Histogram::deserialize(Deserializer& d) {
 
 	Processor::deserialize(d);
 
-	//std::cerr << this << "->Histogram::deserialize()" << std::endl;
-
 	std::vector<Processor*> processors;
 	d.deserialize("Processors", processors);
-	//std::cerr << "\tdeserialized " << processors.size() << " processors: " << processors << std::endl;
 	std::vector<TestProperty*> testProperties;
 	d.deserialize("TestProperties", testProperties);
-	//std::cerr << "\tdeserialized " << testProperties.size() << " testProperties: " << testProperties << std::endl;
 	assert(processors.size() == testProperties.size());
 
 	inactiveProcessors.insert(processors_.begin(), processors_.end());
 	processors_.clear();
 	const auto old = inactiveProcessors;
-	std::cerr << "old.size() = " << old.size() << std::endl;
 
 	ProcessorTestPropertyMap keep;
 	for(size_t i = 0; i < processors.size(); i++) {
@@ -289,7 +252,6 @@ void Histogram::deserialize(Deserializer& d) {
 			assert(keep.at(processors[i]).get() == tmp);
 		}
 	}
-	std::cerr << "keep.size() = " << keep.size() << std::endl;
 
 	inactiveProcessors = keep;
 }
@@ -299,7 +261,7 @@ void Histogram::initTesting() {
 	deactivated.clear();
 	testResults.clear();
 
-	condenseButton_.setVisible(false);
+	distillButton_.setVisible(false);
 
 	props_.clear();
 
@@ -505,7 +467,7 @@ void Histogram::checkTestResults() {
 		util::log(IVW_CONTEXT, "Wrote report to " + reportFilePath.string(),
 				LogLevel::Info, LogAudience::User);
 
-		condenseButton_.setVisible(true);
+		distillButton_.setVisible(true);
 	} else {
 		util::log(IVW_CONTEXT, "All tests passed.", LogLevel::Info, LogAudience::User);
 	}

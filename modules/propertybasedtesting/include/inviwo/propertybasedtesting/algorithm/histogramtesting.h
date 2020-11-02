@@ -43,7 +43,7 @@ namespace inviwo {
 
 namespace util {
 
-// how the number of non-background pixels should change when the value is
+// how the number of background pixels should change when the value is
 // increased
 enum class PropertyEffect {
 	EQUAL = 0,

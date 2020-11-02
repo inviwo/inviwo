@@ -59,6 +59,8 @@ struct GenerateAssignments<OrdinalProperty<T>> {
 	}
 };
 
+// NOTE: We assume that a MinMaxProperty<T>* may be casted to
+// OrdinalProperty<T>*
 template<typename T>
 struct GenerateAssignments<MinMaxProperty<T>> {
 	std::pair<std::unique_ptr<bool>,
@@ -83,6 +85,7 @@ struct GenerateAssignments<MinMaxProperty<T>> {
 			}
 		}
 
+		// add some random values
 		for(size_t cnt = 0; cnt < randomValues; cnt++) {
 			size_t stepsFromMin = rand() % maxSteps;
 			size_t stepsFromMax = rand() % (maxSteps - stepsFromMin);

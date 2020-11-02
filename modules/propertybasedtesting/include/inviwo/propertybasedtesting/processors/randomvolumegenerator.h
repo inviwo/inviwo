@@ -39,17 +39,17 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.RandomVolumeGenerator, Random Volume Generator}
  * ![](org.inviwo.RandomVolumeGenerator.png?classIdentifier=org.inviwo.RandomVolumeGenerator)
- * Explanation of how to use the processor.
  *
- * ### Inports
- *   * __<Inport1>__ <description>.
+ * Generate a pseudo-random volume from a seed and a number of points.
+ * Each voxel in the volume has the distance to the closest point as its value.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __outport__ The generated volume.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Seed__ The seed used for the random number generator.
+ *   * __Number of Points__ The number of points to use for the volume
+ *   generation.
  */
 class IVW_MODULE_PROPERTYBASEDTESTING_API RandomVolumeGenerator : public Processor {
 public:
@@ -64,7 +64,7 @@ public:
 private:
     VolumeOutport outport_;
 	IntProperty seed_;
-	IntProperty numSpheres_;
+	IntProperty numPoints_;
 };
 
 }  // namespace inviwo

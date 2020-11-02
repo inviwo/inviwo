@@ -63,6 +63,20 @@ protected:
 	virtual ~TestPropertyObservable() = default;
 };
 
+/** \docpage{org.inviwo.Histogram, Histogram}
+ * ![](org.inviwo.TestProperty.png?classIdentifier=org.inviwo.TestProperty)
+ *
+ * A TestProperty holds a reference to a testable property and maintains the
+ * respective BoolCompositeProperty and drop-down menu.
+ * It is used to provide a general interface to all properties, regardless of
+ * their value_type.
+ * It enables
+ *	- generation of assignments,
+ *	- a textual description of the expected effects on the counted number of pixels,
+ *	- the expected effect on the counted number of pixels given two testcases, and
+ *  - storing and resetting the value of the property befor the tests have started.
+ * Instantiation happes mainly by testableProperty (see below).
+ */ 
 class TestProperty : public Serializable, public TestPropertyObservable {
 protected:
 	std::string displayName, identifier;
@@ -113,33 +127,42 @@ public:
 	virtual ~TestProperty() = default;
 };
 
+/*
+ * returns the combined expected effect (if any) of two values, given the
+ * effect of each of the components.
+ */
 template<typename T,
 	size_t numComp = DataFormat<T>::components()>
 std::optional<util::PropertyEffect> propertyEffect(const T& val_old, const T& val_new,
-		const std::array<util::PropertyEffect, numComp>& selectedEffects) {
-	
-	std::optional<util::PropertyEffect> res = {util::PropertyEffect::ANY};
-	for(size_t i = 0; res && i < numComp; i++) {
-		auto compEff = util::propertyEffect(selectedEffects[i],
-				util::GetComponent<T, numComp>::get(val_new, i),
-				util::GetComponent<T, numComp>::get(val_old, i));
-		res = util::combine(*res, compEff);
-	}
-	return res;
-	
-}
+		const std::array<util::PropertyEffect, numComp>& selectedEffects);
 
+/*
+ * Creates and returns a TestProperty for an arbitrary property, if possible.
+ * That is, if the given property derives from CompositeProperty or one of
+ * the properties in PropertyTypes (see below).
+ */
 std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop);
 
+/*
+ * Adds necessary callbacks for the proper behavior of the BoolComps of/in a
+ * BoolCompositeProperty, i.e. the BoolProperty of the BoolCompositeProperty
+ * is checked, if and only if at least one of the contained
+ * BoolCompositeProperties is checked.
+ */
 void makeOnChange(BoolCompositeProperty* const prop);
 
-// for PropertyOwners which support getDisplayName and getIdentifier (i.e.
-// CompositeProperties and Processors)
+/*
+ * Derived from TestProperty, for all PropertyOwners supporting
+ * getDisplayName and getIdentifier, i.e. CompositeProperty and Processor
+ * May only be instantiated by TestPropertyComposite::make
+ */
 class TestPropertyComposite : public TestProperty, public TestPropertyObserver {
 	PropertyOwner* propertyOwner;
 	std::vector<std::shared_ptr<TestProperty>> subProperties;
 	
 	TestPropertyComposite() = default;
+	TestPropertyComposite(PropertyOwner* original, const std::string& displayName,
+			const std::string& identifier);
 public:
 	const static std::string& getClassIdentifier() {
 		const static std::string name = "org.inviwo.TestPropertyComposite";
@@ -163,9 +186,6 @@ public:
 	std::ostream& ostr(std::ostream& out,
 			std::shared_ptr<TestResult> newTestResult,
 			std::shared_ptr<TestResult> oldTestResult) const override;
-
-	TestPropertyComposite(PropertyOwner* original, const std::string& displayName,
-			const std::string& identifier);
 
 	// Constructor for all Propertyowners with a display name and an identifier
 	template<typename C, decltype(static_cast<PropertyOwner*>(std::declval<C*>()),
@@ -195,9 +215,14 @@ template<typename C, decltype(static_cast<PropertyOwner*>(std::declval<C*>()),
 std::shared_ptr<TestPropertyComposite> TestPropertyComposite::make(C* orig) {
 		std::string ident = orig->getIdentifier();
 		std::replace(ident.begin(), ident.end(), ' ', '_');
-		return std::make_shared<TestPropertyComposite>(orig, orig->getDisplayName(), ident);
+		return std::shared_ptr<TestPropertyComposite>(
+				new TestPropertyComposite(orig, orig->getDisplayName(), ident));
 	}
 
+/*
+ * Derived from TestProperty, for all Properties having a value that is
+ * supported by DataFormat<>.
+ */
 template<typename T>
 class TestPropertyTyped : public TestProperty {
 	using value_type = typename T::value_type;
@@ -248,6 +273,11 @@ public:
 		generateAssignmentsCmp() const override;
 };
 
+/*
+ * Container for a test result.
+ * Allows access to the tested value of each property, as well as the
+ * resulted number of pixels.
+ */
 class TestResult {
 	private:
 		const std::vector<std::shared_ptr<TestProperty>>& defaultValues;
@@ -275,6 +305,22 @@ class TestResult {
 			  , imgPath(imgPath) {
 			  }
 };
+
+template<typename T,
+	size_t numComp = DataFormat<T>::components()>
+std::optional<util::PropertyEffect> propertyEffect(const T& val_old, const T& val_new,
+		const std::array<util::PropertyEffect, numComp>& selectedEffects) {
+	
+	std::optional<util::PropertyEffect> res = {util::PropertyEffect::ANY};
+	for(size_t i = 0; res && i < numComp; i++) {
+		auto compEff = util::propertyEffect(selectedEffects[i],
+				util::GetComponent<T, numComp>::get(val_new, i),
+				util::GetComponent<T, numComp>::get(val_old, i));
+		res = util::combine(*res, compEff);
+	}
+	return res;
+	
+}
 
 class TestPropertyFactory : public Factory<TestProperty> {
 	static const std::unordered_map<std::string,
@@ -324,6 +370,12 @@ typename T::value_type TestResult::getValue(const T* prop) const {
 	exit(1);
 }
 
+/*
+ * Tuple containing all testable property types except CompositeProperty.
+ * Should only contain OrdinalProperties
+ * If you want to add support for a new property type, you probably want to add
+ * it to this list.
+ */
 using PropertyTypes = std::tuple<IntProperty, FloatProperty, DoubleProperty, IntMinMaxProperty>;
 
 using TestingError = std::tuple<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>, util::PropertyEffect, size_t, size_t>;

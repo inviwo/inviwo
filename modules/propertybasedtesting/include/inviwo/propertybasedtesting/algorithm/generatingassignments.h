@@ -8,10 +8,15 @@
 
 #include <vector>
 
-#include <iostream> // TODO: remove
+#include <ostream>
 
 namespace inviwo {
 
+/*
+ * Interface to property assignments, enables to apply the assignment
+ * (if it not deactivated).
+ * Is used mainly by TestProperty
+ */
 class PropertyAssignment {
 private:
 	const bool* m_deactivated;
@@ -29,6 +34,9 @@ public:
 	virtual void print(std::ostream& out) const = 0;
 };
 
+/* 
+ * Specialization of PropertyAssignment for OrdinalProperty<T>
+ */
 template<typename T>
 class PropertyAssignmentTyped : public PropertyAssignment {
 private:
@@ -61,8 +69,17 @@ public:
 	}
 };
 
+/*
+ * A test is a set of assignments to properties. Should contain no
+ * property more than once.
+ */
 using Test = std::vector<std::shared_ptr<PropertyAssignment>>;
 
+/*
+ * Helper for generating assignments.
+ * If you want to be able to generate assignments for new properties, you
+ * probably want to add a corresponding specializaiton for this.
+ */
 template<typename T>
 struct GenerateAssignments {
 	std::pair<std::unique_ptr<bool>,

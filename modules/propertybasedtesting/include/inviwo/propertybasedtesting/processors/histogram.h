@@ -55,17 +55,106 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.Histogram, Histogram}
  * ![](org.inviwo.Histogram.png?classIdentifier=org.inviwo.Histogram)
- * Explanation of how to use the processor.
+ *
+ * Test whether changing properties of the processors generating the
+ * input image have the desired effect.
+ * Specifically, a test is a set of value assignments to properties
+ * such that there is at most one assignment per property.
+ * For each test we set each property to its respective value (regarding the
+ * assignments) and count the pixels with a given color. We call this number of
+ * pixels the score of a test.
+ * Two tests are comparable, if and only if the relations implied by the scores
+ * are non-contradictory (there are for instance no two properties, such that
+ * one implies that the score of test1 should be less than the score of test2 and the
+ * other that is should be greater).
+ * For all pairs of comparable tests we then verify that the relation of the
+ * scores matches the relation implied by the properties. All failed pairs are
+ * then exported in an HTML report.
+ * The report is also converted into an image that is available at the outport.
+ * This enables to verify the behaviour of properties by regression testing.
+ * If desired, the testing is followed by a distillation process, where a smallest set of
+ * tested properties is found such that some pair of tests still fails.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __inport__ The image that is used to determine the effects of changing
+ *   properties, i.e. the number of matching pixels is counted in this image.
+ *   Note that only properties from predecessors of this Histogram processor are
+ *   available for testing.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __outport__ The report of errors, or a completely white image if there
+ *   were no errors.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Report Directory__ The directory where the report and all generated
+ *   images are saved.
+ *   * __Use Depth__ Determines, whether the number of background pixels (i.e.
+ *   those with depth value 1) or pixels with a specific color should be
+ *   counted.
+ *   * __Color__ The color of the pixels that should be counted. Is only visible
+ *   (and relevant) when __Use Depth__ is unchecked.
+ *   * __Count number of pixels__ Counts the number of matching pixels and
+ *   prints it to the console.
+ *   * __Update Test Results__ Kicks of the testing process.
+ *   * __Distill Failed Tests__ Repeats the tests in order to find a smallest
+ *   set of properties that lead to errors._
+ *   * __Maximum number of tests__ Maximum number of tests that should be
+ *   executed
+ *   * __Description__ A textual description of the effects of properties.
+ *
+ *   For each processor that is a predecessor of this one, there is a
+ *   *CompositeBoolProperty* containing the settings for all its properties.
+ *   The settings for a property consist of *CompositeBoolProperty* and as many
+ *   drop-down lists as the property has components. The checkbox of the
+ *   *CompositeBoolProperty* dictates
+ *   whether the property shall be tested, and the drop-down menus determine the
+ *   expected change of the score when the components value is increased.
+ *
+ *   In the following example, we use a *RandomVolumeGenerator* to create a
+ *   volume from a seed and then generate an image by a network containing,
+ *   among others, a *Cube Proxy Geometry*. 
+ *   When the *Histogram*-processor just has been created, it outputs a completely white
+ *   image, since no errors have been found.
+ *   Note that the *Historam*-processor contains *CompositeProperty*s for
+ *   each preceding processor in the network.
+ *   Since we pass the output image of the network to the *Histogram*-processor
+ *   before a background is applied, we need use the __Use Depth__ option to count
+ *   the number of background pixels.
+ *   @image html 1.png width=85%
+ *   We want to test our network with varying seeds for the
+ *   *RandomVolumeGenerator* , so the respective box in the *CompositeProperty*
+ *   of the *RandomVolumeGenerator* is checked. Since different seeds allow no
+ *   meaningful comparison of the number of visible background pixels, we set
+ *   its comparator to *NOT_COMPARABLE*.
+ *   @image html 2.png width=85%
+ *   We also want to verify the *Cube Proxy Geometry* -processor. For the sake of
+ *   simplicity we only consider clipping in the X- and Y-dimensions.
+ *   The clipping options for each dimension are *MinMaxProperty* s, so we need
+ *   two comparators each, one for the lower and one for the upper setting.
+ *   When we move the lower setting up, the number of non-background pixels
+ *   should decrease or remain equal, so this comparator is set to *LESS_EQUAL*.
+ *   For the upper setting, the opposite is true.
+ *   @image html 3.png width=85%
+ *   To demonstrate this processor, we set false comparators for the clipping in
+ *   the Y-dimension.
+ *   @image html 5.png width=85%
+ *   On hitting "Update Test Results", a bunch of tests is generated and
+ *   executed.
+ *   @image html 6.png width=85%
+ *   When all tests are finished, some errors are found and the first few are
+ *   printed on the console.
+ *   @image html 9.png width=85%
+ *   All errors are documented in an HTML-report. For each error, the values
+ *   of each tested property, as well as the scores of both tests,
+ *   their expected relation and the generated images are shown.
+ *   @image html 10.png width=85%
+ *   When errors have been found, we have the option to distill the failed
+ *   tests, i.e. to find a subset of properties that - if tested - produces some
+ *   errors. This leads to the tests being run again, except that some
+ *   properties are not changed.
+ *   @image html 11.png width=85%
+ *   Afterwards a new report is generated, which now only contains the tests
+ *   that have failed with the distilled set of properties.
  */
 class IVW_MODULE_PROPERTYBASEDTESTING_API Histogram
 		: public Processor
@@ -107,7 +196,7 @@ private:
     FloatVec4Property color_;
 	ButtonProperty countPixelsButton_;
 	ButtonProperty startButton_;
-	ButtonProperty condenseButton_;
+	ButtonProperty distillButton_;
 	IntSizeTProperty numTests_;
 	StringProperty description_;
 
