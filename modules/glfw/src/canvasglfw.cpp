@@ -54,6 +54,9 @@
 #include <glm/vec2.hpp>               // for operator+, vec<>::(anonymous)
 #include <glm/vector_relational.hpp>  // for all, greaterThanEqual, lessT...
 
+#include <inviwo/tracy/tracy.h>
+#include <inviwo/tracy/tracyopengl.h>
+
 namespace inviwo {
 
 GLFWwindow* GLFWWindowHandler::sharedContext_ = nullptr;
@@ -161,11 +164,21 @@ void CanvasGLFW::update() {
     RenderContext::getPtr()->activateDefaultRenderContext();
 }
 
-void CanvasGLFW::activate() { glfwMakeContextCurrent(glWindow_); }
+void CanvasGLFW::activate() {
+    TRACY_ZONE_SCOPED_C(0x000088);
+    glfwMakeContextCurrent(glWindow_);
+}
 
 std::unique_ptr<Canvas> CanvasGLFW::createHiddenCanvas() {
     auto res = dispatchFront([&]() { return std::make_unique<CanvasGLFW>("Background"); });
-    return res.get();
+
+    auto canvas = res.get();
+
+    TRACY_GPU_CONTEXT;
+    [[maybe_unused]] static constexpr std::string_view contextName = "Background";
+    TRACY_GPU_CONTEXT_NAME(contextName.data(), contextName.size());
+
+    return canvas;
 }
 
 Canvas::ContextID CanvasGLFW::activeContext() const {
@@ -176,7 +189,10 @@ Canvas::ContextID CanvasGLFW::contextId() const { return getContextId(); }
 
 void CanvasGLFW::releaseContext() {}
 
-void CanvasGLFW::glSwapBuffers() { glfwSwapBuffers(glWindow_); }
+void CanvasGLFW::glSwapBuffers() { 
+	TRACY_ZONE_SCOPED_C(0x000088);
+	glfwSwapBuffers(glWindow_); 
+}
 
 size2_t CanvasGLFW::getCanvasDimensions() const {
     return static_cast<size2_t>(getFramebufferSize());
