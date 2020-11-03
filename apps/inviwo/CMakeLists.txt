@@ -51,6 +51,11 @@ target_link_libraries(inviwo PUBLIC
     Qt6::Widgets
 )
 
+option(IVW_CFG_TRACY_MENORY_PROFILING "Enable tracy memory profiling settings" OFF)
+if(IVW_CFG_TRACY_MENORY_PROFILING)
+    target_compile_definitions(inviwo PUBLIC IVW_CFG_TRACY_MENORY_PROFILING)
+endif()
+
 ivw_define_standard_definitions(inviwo inviwo)
 ivw_define_standard_properties(QT inviwo)
 
