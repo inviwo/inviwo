@@ -774,9 +774,9 @@ target_link_libraries(inviwo-core
         inviwo::span
         inviwo::half
         inviwo::flags
+        inviwo::tracy
         fmt::fmt
         $<$<BOOL:${IVW_USE_OPENMP}>:OpenMP::OpenMP_CXX>
-    PRIVATE
         $<$<BOOL:${IVW_USE_SIGAR}>:inviwo::sigar>
         $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
         $<$<BOOL:${WIN32}>:inviwo::stackwalker>
