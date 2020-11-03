@@ -35,6 +35,8 @@
 #include <inviwo/core/util/stringconversion.h>     // for toString
 #include <modules/opengl/openglcapabilities.h>     // for OpenGLCapabilities
 
+#include <modules/opengl/inviwoopengl.h>
+
 #include <QApplication>       // for QApplication
 #include <QCoreApplication>   // for QCoreApplication
 #include <QOffscreenSurface>  // for QOffscreenSurface
@@ -46,6 +48,8 @@
 #include <future>      // for future
 #include <string>      // for char_traits, operator+, basic_string
 #include <thread>      // for get_id
+
+#include <inviwo/tracy/tracyopengl.h>
 
 namespace inviwo {
 
@@ -98,6 +102,9 @@ std::unique_ptr<Canvas> HiddenCanvasQt::createHiddenQtCanvas() {
     // to update the registered thread id to the correct one here
     RenderContext::getPtr()->setContextThreadId(newContext->contextId(),
                                                 std::this_thread::get_id());
+
+    TRACY_GPU_CONTEXT;
+    TRACY_GPU_CONTEXT_NAME(name.data(), name.size());
 
     return newContext;
 }
