@@ -48,6 +48,8 @@
 
 #include <fmt/core.h>
 
+#include <inviwo/tracy/tracy.h>
+
 namespace inviwo {
 
 using namespace std::literals;

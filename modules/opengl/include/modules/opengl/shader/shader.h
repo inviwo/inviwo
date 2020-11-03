@@ -49,6 +49,8 @@
 #include <vector>
 #include <span>
 
+#include <inviwo/tracy/tracy.h>
+
 namespace inviwo {
 
 class OpenGLException;
