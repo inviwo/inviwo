@@ -49,6 +49,8 @@
 #include <vector>       // for vector, vector<>::const_iterator, vector...
 #include <span>         // for span
 
+#include <inviwo/tracy/tracy.h>
+
 namespace inviwo {
 
 class OpenGLException;

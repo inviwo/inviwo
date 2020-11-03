@@ -54,6 +54,9 @@
 #include <string_view>  // for string_view
 #include <vector>       // for vector
 
+#include <inviwo/tracy/tracy.h>
+#include <inviwo/tracy/tracyopengl.h>
+
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>  // for glfwGetCurrentContext, glfwInit
 
@@ -62,7 +65,10 @@ namespace inviwo {
 class GLFWContextHolder : public ContextHolder {
 public:
     GLFWContextHolder(GLFWwindow* win) : win_{win} {}
-    virtual void activate() override { glfwMakeContextCurrent(win_); }
+    virtual void activate() override {
+        TRACY_ZONE_SCOPED_C(0x000088);
+        glfwMakeContextCurrent(win_);
+    }
     virtual std::unique_ptr<Canvas> createHiddenCanvas() override {
         auto res =
             dispatchFront([&]() { return std::make_unique<CanvasGLFW>("Background", uvec2(128)); });
@@ -116,11 +122,15 @@ GLFWModule::~GLFWModule() {
 }
 
 void GLFWModule::onProcessorNetworkEvaluationBegin() {
+    TRACY_ZONE_SCOPED_C(0x000088);
+    TRACY_GPU_ZONE_C("onProcessorNetworkEvaluationBegin", 0xAA0000);
     // This is called before the network is evaluated,
     // here we make sure that the default context is active
     RenderContext::getPtr()->activateDefaultRenderContext();
 }
 void GLFWModule::onProcessorNetworkEvaluationEnd() {
+    TRACY_ZONE_SCOPED_C(0x000088);
+    TRACY_GPU_ZONE_C("onProcessorNetworkEvaluationEnd", 0xAA0000);
     // This is called after the network is evaluated, here we make sure that the gpu is done with
     // its work before we continue. This is needed to make sure that we have textures that are upto
     // data when we render the canvases.

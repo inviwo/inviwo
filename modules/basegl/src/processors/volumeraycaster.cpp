@@ -80,6 +80,9 @@
 #include <utility>        // for pair
 #include <vector>         // for vector
 
+#include <inviwo/tracy/tracy.h>
+#include <inviwo/tracy/tracyopengl.h>
+
 namespace inviwo {
 class Deserializer;
 class Event;
@@ -197,19 +200,30 @@ void VolumeRaycaster::process() {
 }
 
 void VolumeRaycaster::raycast(const Volume& volume) {
+    TRACY_ZONE_SCOPED_NC("VolumeRaycaster", 0x008800);
+
     if (!volume.getRep<kind::GL>()) {
         throw Exception("Could not find VolumeGL representation", IVW_CONTEXT);
     }
-    utilgl::activateAndClearTarget(outport_);
-    shader_.activate();
 
+    {
+        TRACY_ZONE_SCOPED_NC("Clear", 0x008800);
+        TRACY_GPU_ZONE_C("Clear", 0x008800);
+    utilgl::activateAndClearTarget(outport_);
+    }
+    shader_.activate();
     TextureUnitContainer units;
+
+    {
+        TRACY_ZONE_SCOPED_NC("BindAndSetUniforms", 0x008800);
+        TRACY_GPU_ZONE_C("BindAndSetUniforms", 0x008800);
     utilgl::bindAndSetUniforms(shader_, units, volume, "volume");
     utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
     if (backgroundPort_.hasData()) {
-        utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
+            utilgl::bindAndSetUniforms(shader_, units, backgroundPort_,
+                                       ImageType::ColorDepthPicking);
     }
     if (auto normals = entryPort_.getData()->getColorLayer(1)) {
         utilgl::bindAndSetUniforms(shader_, units,
@@ -222,8 +236,12 @@ void VolumeRaycaster::raycast(const Volume& volume) {
 
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
                         channel_, isotfComposite_);
-
+    }
+    {
+        TRACY_ZONE_SCOPED_NC("Raycast", 0x008800);
+        TRACY_GPU_ZONE_C("Raycast", 0x008800);
     utilgl::singleDrawImagePlaneRect();
+    }
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();

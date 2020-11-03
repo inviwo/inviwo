@@ -60,6 +60,9 @@
 
 #include <fmt/core.h>  // for basic_string_view, format_to
 
+#include <inviwo/tracy/tracy.h>
+#include <inviwo/tracy/tracyopengl.h>
+
 namespace inviwo {
 
 const ProcessorInfo Background::processorInfo_{"org.inviwo.Background",  // Class identifier
@@ -236,7 +239,11 @@ void Background::process() {
     }
 
     utilgl::setUniforms(shader_, outport_, bgColor1_, bgColor2_, checkerBoardSize_);
-    utilgl::singleDrawImagePlaneRect();
+    {
+        TRACY_ZONE_SCOPED_NC("Draw Background", 0x008800);
+        TRACY_GPU_ZONE_C("Draw Background", 0x008800);
+        utilgl::singleDrawImagePlaneRect();
+    }
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }

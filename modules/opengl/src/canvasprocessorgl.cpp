@@ -42,6 +42,9 @@
 #include <string>       // for string
 #include <type_traits>  // for remove_extent_t
 
+#include <inviwo/tracy/tracy.h>
+#include <inviwo/tracy/tracyopengl.h>
+
 namespace inviwo {
 
 const ProcessorInfo CanvasProcessorGL::processorInfo_{
@@ -60,6 +63,9 @@ const ProcessorInfo CanvasProcessorGL::getProcessorInfo() const { return process
 CanvasProcessorGL::CanvasProcessorGL(InviwoApplication* app) : CanvasProcessor(app) {}
 
 void CanvasProcessorGL::process() {
+    TRACY_ZONE_SCOPED_C(0x006600);
+    TRACY_GPU_ZONE_C("CanvasProcessorGL", 0x06600);
+
     // ensure that the image inport has a GL representation
     // otherwise the canvas widget will request a new one which in turn creates an fbo within the
     // context of the canvas, i.e. not the default canvas.
