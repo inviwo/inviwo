@@ -39,6 +39,8 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/properties/compositeproperty.h>
 
+#include <inviwo/tracy/tracy.h>
+
 namespace inviwo {
 
 namespace {
@@ -208,6 +210,10 @@ void LinkEvaluator::transientCacheHelper(std::vector<ConvertibleLink>& links, Pr
 bool LinkEvaluator::isLinking() const { return !visited_.empty(); }
 
 void LinkEvaluator::evaluateLinksFromProperty(Property* modifiedProperty) {
+    TRACY_ZONE_SCOPED_NC("Link", 0x880000);
+    TRACY_ZONE_TEXT(modifiedProperty->getIdentifier().data(),
+                    modifiedProperty->getIdentifier().size());
+
     if (util::contains(visited_, modifiedProperty)) return;
 
     const NetworkLock lock(network_);
