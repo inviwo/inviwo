@@ -60,7 +60,7 @@ public:
     const BaseCallBack* addLambdaCallback(std::function<void()> lambda) {
         auto cb = dispatcher_.add(std::move(lambda));
         callBackList_.push_back(cb);
-        return cb.get();
+        return callBackList_.back().get();
     }
     std::shared_ptr<std::function<void()>> addLambdaCallbackRaii(std::function<void()> lambda) {
         return dispatcher_.add(std::move(lambda));
