@@ -38,6 +38,11 @@
 #include <string>
 #include <type_traits>
 
+
+#include <modules/opengl/inviwoopengl.h>
+#include <inviwo/tracy/tracy.h>
+#include <inviwo/tracy/tracyopengl.h>
+
 namespace inviwo {
 
 const ProcessorInfo CanvasProcessorGL::processorInfo_{
