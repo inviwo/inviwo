@@ -54,6 +54,7 @@
 
 #include <QMessageBox>
 #include <QApplication>
+
 #ifdef QT_STATICPLUGIN
 #include <QtPlugin>
 Q_IMPORT_PLUGIN(QLinuxFbIntegrationPlugin)
@@ -64,6 +65,24 @@ Q_IMPORT_PLUGIN(QGifPlugin)
 Q_IMPORT_PLUGIN(QJpegPlugin)
 Q_IMPORT_PLUGIN(QSvgPlugin)
 #endif
+
+#include <inviwo/tracy/tracy.h>
+
+#ifdef IVW_CFG_TRACY_MENORY_PROFILING
+void* operator new(size_t count) {
+    void* ptr = malloc(count);
+    TRACY_ALLOC_S(ptr, count, 10);
+    // TRACY_ALLOC(ptr, count);
+    return ptr;
+}
+void operator delete(void* ptr) noexcept {
+    TRACY_FREE_S(ptr, 10);
+    // TRACY_FREE(ptr);
+    free(ptr);
+}
+#endif
+
+
 int main(int argc, char** argv) {
     inviwo::util::configureCodePage();
 
