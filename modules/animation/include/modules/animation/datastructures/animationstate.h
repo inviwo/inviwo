@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_ANIMATIONSTATE_H
-#define IVW_ANIMATIONSTATE_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <modules/animation/datastructures/animationtime.h>
@@ -112,4 +110,3 @@ protected:
 
 }  // namespace inviwo
 
-#endif  // IVW_ANIMATIONSTATE_H

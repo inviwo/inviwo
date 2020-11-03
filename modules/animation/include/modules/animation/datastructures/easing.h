@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_KEYFRAME_EASING_H
-#define IVW_KEYFRAME_EASING_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <modules/animation/datastructures/animationtime.h>
@@ -477,4 +475,3 @@ inline double ease(const double t, easing::EasingType howToEase) {
 
 }  // namespace inviwo
 
-#endif  // IVW_KEYFRAME_EASING_H

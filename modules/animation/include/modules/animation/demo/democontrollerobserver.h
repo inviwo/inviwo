@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_DEMOCONTROLLEROBSERVER_H
-#define IVW_DEMOCONTROLLEROBSERVER_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -56,4 +54,3 @@ protected:
 
 }  // namespace inviwo
 
-#endif  // IVW_DEMOCONTROLLEROBSERVER_H

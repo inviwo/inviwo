@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_BASEKEYFRAMESEQUENCE_H
-#define IVW_BASEKEYFRAMESEQUENCE_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -309,4 +307,3 @@ void BaseKeyframeSequence<Key>::deserialize(Deserializer& d) {
 
 }  // namespace inviwo
 
-#endif  // IVW_BASEKEYFRAMESEQUENCE_H

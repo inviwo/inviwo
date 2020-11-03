@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_TRACKCONTROLSWIDGETQT_H
-#define IVW_TRACKCONTROLSWIDGETQT_H
+#pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <modules/animation/animationcontroller.h>
@@ -74,4 +72,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_TRACKCONTROLSWIDGETQT_H

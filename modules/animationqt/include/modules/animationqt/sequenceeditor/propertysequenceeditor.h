@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_PROPERTYSEQUENCEEDITOR_H
-#define IVW_PROPERTYSEQUENCEEDITOR_H
+#pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -67,4 +65,3 @@ protected:
 
 }  // namespace inviwo
 
-#endif  // IVW_PROPERTYSEQUENCEEDITOR_H

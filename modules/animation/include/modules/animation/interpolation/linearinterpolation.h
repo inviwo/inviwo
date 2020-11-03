@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_LINEAR_INTERPOLATION_H
-#define IVW_LINEAR_INTERPOLATION_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -134,4 +132,3 @@ void LinearInterpolation<Key, Result>::deserialize(Deserializer&) {}
 
 }  // namespace inviwo
 
-#endif  // IVW_LINEAR_INTERPOLATION_H

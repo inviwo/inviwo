@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_PROPERTYTRACK_H
-#define IVW_PROPERTYTRACK_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -502,4 +500,3 @@ struct DefaultSequenceCreator<KeyframeSequenceTyped<Key>> {
 
 }  // namespace inviwo
 
-#endif  // IVW_PROPERTYTRACK_H

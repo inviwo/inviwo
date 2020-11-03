@@ -26,7 +26,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
@@ -62,4 +61,5 @@ public:
 };
 
 }  // namespace animation
+
 }  // namespace inviwo

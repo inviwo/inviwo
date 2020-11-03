@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_ANIMATIONMODULE_H
-#define IVW_ANIMATIONMODULE_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -59,4 +57,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_ANIMATIONMODULE_H

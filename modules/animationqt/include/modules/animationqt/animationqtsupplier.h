@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_ANIMATIONQTSUPPLIER_H
-#define IVW_ANIMATIONQTSUPPLIER_H
+#pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -98,4 +96,3 @@ void AnimationQtSupplier::registerSequenceEditor() {
 
 }  // namespace inviwo
 
-#endif  // IVW_ANIMATIONQTSUPPLIER_H

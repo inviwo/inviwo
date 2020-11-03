@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_KEYFRAMESEQUENCEOBSERVER_H
-#define IVW_KEYFRAMESEQUENCEOBSERVER_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/util/observer.h>
@@ -61,4 +59,3 @@ protected:
 
 }  // namespace inviwo
 
-#endif  // IVW_KEYFRAMESEQUENCEOBSERVER_H

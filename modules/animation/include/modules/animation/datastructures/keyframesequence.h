@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_KEYFRAMESEQUENCE_H
-#define IVW_KEYFRAMESEQUENCE_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -112,5 +110,3 @@ IVW_MODULE_ANIMATION_API bool operator>=(const Seconds& a, const KeyframeSequenc
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_KEYFRAMESEQUENCE_H

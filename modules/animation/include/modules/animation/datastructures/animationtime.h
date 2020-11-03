@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_ANIMATIONTIME_H
-#define IVW_ANIMATIONTIME_H
+#pragma once
 
 #include <chrono>
 
@@ -42,4 +40,3 @@ using Seconds = std::chrono::duration<double, std::ratio<1>>;
 
 }  // namespace inviwo
 
-#endif  // IVW_ANIMATIONTIME_H
