@@ -50,6 +50,9 @@
 #include <fmt/base.h>
 #include <fmt/format.h>
 
+#include <inviwo/tracy/tracy.h>
+#include <inviwo/tracy/tracyopengl.h>
+
 namespace inviwo {
 class Property;
 class ShaderResource;
@@ -112,6 +115,11 @@ void ShaderComponentProcessorBase::initializeResources() {
 }
 
 void ShaderComponentProcessorBase::process() {
+    TRACY_GPU_ZONE_C("Raycaster", 0x008800);
+    TRACY_ZONE_SCOPED_NC("Raycaster", 0x008800);
+    TRACY_ZONE_TEXT(getIdentifier().data(), getIdentifier().size());
+
+
     utilgl::activateAndClearTarget(outport_);
     shader_.activate();
 
@@ -126,7 +134,11 @@ void ShaderComponentProcessorBase::process() {
         }
     }
 
-    utilgl::singleDrawImagePlaneRect();
+    {
+        TRACY_GPU_ZONE_C("Draw", 0x008800);
+        TRACY_ZONE_SCOPED_NC("Draw", 0x008800);
+        utilgl::singleDrawImagePlaneRect();
+    }
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
