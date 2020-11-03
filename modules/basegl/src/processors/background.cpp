@@ -29,6 +29,8 @@
 
 #include <modules/basegl/processors/background.h>
 
+#include <inviwo/core/util/stringconversion.h>
+
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/image/imagegl.h>
@@ -94,8 +96,9 @@ Background::Background()
 Background::~Background() = default;
 
 void Background::initializeResources() {
-    std::string_view bgStyleValue;
+    auto fs = shader_.getFragmentShaderObject();
 
+    std::string_view bgStyleValue;
     switch (backgroundStyle_.get()) {
         default:
         case BackgroundStyle::LinearVertical:  // linear gradient
@@ -119,38 +122,36 @@ void Background::initializeResources() {
             checkerBoardSize_.setVisible(true);
             break;
     }
-    shader_.getFragmentShaderObject()->addShaderDefine("BACKGROUND_STYLE_FUNCTION", bgStyleValue);
+    fs->addShaderDefine("BACKGROUND_STYLE_FUNCTION", bgStyleValue);
 
     if (inport_.isReady()) {
-        shader_.getFragmentShaderObject()->addShaderDefine("SRC_COLOR",
-                                                           "texture(inportColor, texCoord)");
+        fs->addShaderDefine("SRC_COLOR", "texture(inportColor, texCoord)");
         // set shader inputs to match number of available color layers
         updateShaderInputs();
 
-        shader_.getFragmentShaderObject()->addShaderDefine("PICKING_LAYER");
-        shader_.getFragmentShaderObject()->addShaderDefine("DEPTH_LAYER");
+        fs->addShaderDefine("PICKING_LAYER");
+        fs->addShaderDefine("DEPTH_LAYER");
 
         hadData_ = true;
     } else {
-        shader_.getFragmentShaderObject()->addShaderDefine("SRC_COLOR", "vec4(0)");
-        shader_.getFragmentShaderObject()->removeShaderDefine("PICKING_LAYER");
-        shader_.getFragmentShaderObject()->removeShaderDefine("DEPTH_LAYER");
+        fs->addShaderDefine("SRC_COLOR", "vec4(0)");
+        fs->removeShaderDefine("PICKING_LAYER");
+        fs->removeShaderDefine("DEPTH_LAYER");
 
         hadData_ = false;
     }
 
-    std::string_view blendfunc = "";
+    const std::string_view blendfunc = [&]() {
     switch (blendMode_.get()) {
         case BlendMode::BackToFront:
-            blendfunc = "blendBackToFront";
-            break;
-        default:
+                return "blendBackToFront";
         case BlendMode::AlphaMixing:
-            blendfunc = "blendAlphaCompositing";
-            break;
+                [[fallthrough]];
+            default:
+                return "blendAlphaCompositing";
     }
-
-    shader_.getFragmentShaderObject()->addShaderDefine("BLENDFUNC", blendfunc);
+    }();
+    fs->addShaderDefine("BLENDFUNC", blendfunc);
 
     shader_.build();
 }
@@ -200,39 +201,35 @@ void Background::process() {
 
 void Background::updateShaderInputs() {
     const auto numColorLayers = inport_.getData()->getNumberOfColorLayers();
+    auto fs = shader_.getFragmentShaderObject();
 
     if (numColorLayers > 1) {
+        fs->addShaderDefine("ADDITIONAL_COLOR_LAYERS");
+
         // location 0 is reserved for FragData0, location 1 for PickingData
         size_t outputLocation = 2;
-        std::stringstream ssUniform;
-        ssUniform << "\n";
-        for (size_t i = 1; i < numColorLayers; ++i) {
-            ssUniform << "layout(location = " << outputLocation++ << ") out vec4 FragData" << i
-                      << ";\n";
-        }
-        for (size_t i = 1; i < numColorLayers; ++i) {
-            ssUniform << "uniform sampler2D color" << i << ";\n";
-        }
-        shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS",
-                                                           ssUniform.str());
 
-        std::stringstream ssWrite;
+        StrBuffer buff;
+        buff.append("\n");
         for (size_t i = 1; i < numColorLayers; ++i) {
-            ssWrite << "FragData" << i << " = texture(color" << i << ", texCoord.xy);";
-            if (i < numColorLayers - 1) {
-                ssWrite << " \\";
-            }
-            ssWrite << "\n";
+            buff.append("layout(location = {}) out vec4 FragData{};\n", outputLocation++, i);
         }
-        shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE",
-                                                           ssWrite.str());
+        for (size_t i = 1; i < numColorLayers; ++i) {
+            buff.append("uniform sampler2D color{};\n", i);
+        }
+        fs->addShaderDefine("ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS", buff);
 
-        shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYERS");
+        buff.clear();
+        for (size_t i = 1; i < numColorLayers - 1; ++i) {
+            buff.append("FragData{0} = texture(color{0}, texCoord.xy); \\\n", i);
+        }
+        buff.append("FragData{0} = texture(color{0}, texCoord.xy); \n", numColorLayers - 1);
+        fs->addShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE", buff);
+
     } else {
-        shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYERS");
-        shader_.getFragmentShaderObject()->removeShaderDefine(
-            "ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS");
-        shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE");
+        fs->removeShaderDefine("ADDITIONAL_COLOR_LAYERS");
+        fs->removeShaderDefine("ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS");
+        fs->removeShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE");
     }
 }
 

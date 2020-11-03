@@ -32,7 +32,7 @@
 #include <inviwo/core/io/serialization/serializable.h>
 
 #include <string>
-#include <unordered_map>
+#include <map>
 
 namespace inviwo {
 
@@ -57,10 +57,20 @@ struct IVW_CORE_API NetworkEdge : Serializable {
     PropertyLink toLink(const ProcessorNetwork& net) const;
 
     /**
+     * @brief Update the processor identifier in the srcPath with new ids from the map
+     * @param map with replacement identifiers
+     */
+    void updateSrcProcessorID(const std::map<std::string, std::string, std::less<>>& map);
+    /**
+     * @brief Update the processor identifier in the dstPath with new ids from the map
+     * @param map with replacement identifiers
+     */
+    void updateDstProcessorID(const std::map<std::string, std::string, std::less<>>& map);
+    /**
      * @brief Update the processor identifiers in the srcPath and dstPath with new ids from the map
      * @param map with replacement identifiers
      */
-    void updateProcessorID(const std::unordered_map<std::string, std::string>& map);
+    void updateProcessorID(const std::map<std::string, std::string, std::less<>>& map);
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
