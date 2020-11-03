@@ -131,4 +131,3 @@ void LinearInterpolation<Key, Result>::deserialize(Deserializer&) {}
 }  // namespace animation
 
 }  // namespace inviwo
-

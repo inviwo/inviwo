@@ -306,4 +306,3 @@ void BaseKeyframeSequence<Key>::deserialize(Deserializer& d) {
 }  // namespace animation
 
 }  // namespace inviwo
-

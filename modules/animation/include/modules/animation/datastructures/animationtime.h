@@ -39,4 +39,3 @@ using Seconds = std::chrono::duration<double, std::ratio<1>>;
 }  // namespace animation
 
 }  // namespace inviwo
-

@@ -71,4 +71,3 @@ private:
 }  // namespace animation
 
 }  // namespace inviwo
-

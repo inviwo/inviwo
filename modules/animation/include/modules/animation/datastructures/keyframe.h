@@ -77,4 +77,3 @@ IVW_MODULE_ANIMATION_API bool operator>=(const Seconds& a, const Keyframe& b);
 }  // namespace animation
 
 }  // namespace inviwo
-

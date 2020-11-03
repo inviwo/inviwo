@@ -95,4 +95,3 @@ void AnimationQtSupplier::registerSequenceEditor() {
 }  // namespace animation
 
 }  // namespace inviwo
-

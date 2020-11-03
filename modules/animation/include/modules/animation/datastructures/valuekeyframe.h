@@ -123,4 +123,3 @@ void ValueKeyframe<T>::deserialize(Deserializer& d) {
 }  // namespace animation
 
 }  // namespace inviwo
-

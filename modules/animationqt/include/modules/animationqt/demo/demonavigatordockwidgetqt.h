@@ -62,4 +62,3 @@ protected:
 }  // namespace animation
 
 }  // namespace inviwo
-

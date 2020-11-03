@@ -152,4 +152,3 @@ void ConstantInterpolation<Key, Result>::deserialize(Deserializer& d) {
 }  // namespace animation
 
 }  // namespace inviwo
-

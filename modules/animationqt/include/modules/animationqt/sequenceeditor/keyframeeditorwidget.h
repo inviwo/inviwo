@@ -55,28 +55,27 @@ class SequenceEditorWidget;
 
 class IVW_MODULE_ANIMATIONQT_API KeyframeEditorWidget : public QWidget, public KeyframeObserver {
 public:
-    KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent);
+    KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWidget* parent);
     virtual ~KeyframeEditorWidget();
 
-    virtual void onKeyframeTimeChanged(Keyframe *key, Seconds oldTime) override;
+    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) override;
 
-    Keyframe &getKeyframe() { return keyframe_; }
+    Keyframe& getKeyframe() { return keyframe_; }
 
-    virtual void onKeyframeSelectionChanged(Keyframe *seq) override;
+    virtual void onKeyframeSelectionChanged(Keyframe* seq) override;
 
 private:
-    Keyframe &keyframe_;
-    SequenceEditorWidget *sequenceEditorWidget_{nullptr};
+    Keyframe& keyframe_;
+    SequenceEditorWidget* sequenceEditorWidget_{nullptr};
 
     std::unique_ptr<Property> property_{nullptr};
-    PropertyWidgetQt *propertyWidget_{nullptr};
-    QComboBox *actionWidget_{nullptr};
-    QDoubleSpinBox *jumpToWidget_{nullptr};
-    QHBoxLayout *layout_{nullptr};
-    QDoubleSpinBox *timeSpinner_{nullptr};
+    PropertyWidgetQt* propertyWidget_{nullptr};
+    QComboBox* actionWidget_{nullptr};
+    QDoubleSpinBox* jumpToWidget_{nullptr};
+    QHBoxLayout* layout_{nullptr};
+    QDoubleSpinBox* timeSpinner_{nullptr};
 };
 
 }  // namespace animation
 
 }  // namespace inviwo
-

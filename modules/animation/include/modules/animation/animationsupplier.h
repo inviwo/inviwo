@@ -115,4 +115,3 @@ void AnimationSupplier::registerTrack() {
 }  // namespace animation
 
 }  // namespace inviwo
-

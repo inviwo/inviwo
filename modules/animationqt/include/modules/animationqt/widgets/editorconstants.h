@@ -71,4 +71,3 @@ IVW_MODULE_ANIMATIONQT_API FindDivisionsResult findDivisions(double start, doubl
 }  // namespace animation
 
 }  // namespace inviwo
-

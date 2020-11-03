@@ -499,4 +499,3 @@ struct DefaultSequenceCreator<KeyframeSequenceTyped<Key>> {
 }  // namespace animation
 
 }  // namespace inviwo
-

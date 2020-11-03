@@ -91,12 +91,12 @@ enum class EasingType {
 constexpr const EasingType FirstEasingType = EasingType::None;
 constexpr const EasingType LastEasingType = EasingType::InOutBounce;
 
-IVW_MODULE_ANIMATION_API EasingType &operator++(EasingType &e);
+IVW_MODULE_ANIMATION_API EasingType& operator++(EasingType& e);
 
-IVW_MODULE_ANIMATION_API EasingType operator++(EasingType &e, int);
+IVW_MODULE_ANIMATION_API EasingType operator++(EasingType& e, int);
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os,
                                              EasingType type) {
     switch (type) {
         case inviwo::animation::easing::EasingType::None:
@@ -474,4 +474,3 @@ inline double ease(const double t, easing::EasingType howToEase) {
 }  // namespace animation
 
 }  // namespace inviwo
-
