@@ -36,6 +36,8 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/clock.h>
 
+#include <inviwo/tracy/tracy.h>
+
 namespace inviwo {
 
 ProcessorNetworkEvaluator::ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork)
@@ -110,6 +112,9 @@ void ProcessorNetworkEvaluator::evaluate() {
     for (auto processor : processorsSorted_) {
         if (!processor->isValid()) {
             if (processor->isReady()) {
+                TRACY_ZONE_SCOPED_NC("Process", 0x009900);
+                TRACY_ZONE_TEXT(processor->getIdentifier().data(),
+                                processor->getIdentifier().size());
                 try {
                     // re-initialize resources (e.g., shaders) if necessary
                     if (processor->getInvalidationLevel() >= InvalidationLevel::InvalidResources) {
@@ -133,7 +138,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                 processor->notifyObserversAboutToProcess(processor);
 
                 try {
-                    IVW_CPU_PROFILING_IF(500, "Processed " << processor->getIdentifier());
+                    // IVW_CPU_PROFILING_IF(500, "Processed " << processor->getIdentifier());
                     // do the actual processing
                     processor->process();
 
@@ -157,8 +162,10 @@ void ProcessorNetworkEvaluator::evaluate() {
             }
         }
     }
-
-    notifyObserversProcessorNetworkEvaluationEnd();
+    {
+        TRACY_ZONE_SCOPED_NC("EvaluationEnd", 0x006600);
+        notifyObserversProcessorNetworkEvaluationEnd();
+    }
 }
 
 void ProcessorNetworkEvaluator::onProcessorSinkChanged(Processor*) { needsSorting_ = true; }
