@@ -71,11 +71,9 @@ struct AnimateSequence<CameraProperty, CameraKeyframeSequence> {
 };
 
 template <>
-struct DefaultSequenceCreator<CameraKeyframeSequence> {
-    static std::unique_ptr<CameraKeyframeSequence> create(
-        std::vector<std::unique_ptr<CameraKeyframe>> keys) {
-        return std::make_unique<KeyframeSequenceTyped<CameraKeyframe>>(
-            std::move(keys), std::make_unique<CameraSphericalInterpolation>());
+struct DefaultInterpolationCreator<CameraKeyframe> {
+    static std::unique_ptr<CameraSphericalInterpolation> create() {
+        return std::make_unique<CameraSphericalInterpolation>();
     }
 };
 

@@ -492,7 +492,7 @@ struct DefaultSequenceCreator<KeyframeSequenceTyped<Key>> {
     static std::unique_ptr<KeyframeSequenceTyped<Key>> create(
         std::vector<std::unique_ptr<Key>> keys) {
         return std::make_unique<KeyframeSequenceTyped<Key>>(
-            std::move(keys), std::make_unique<ConstantInterpolation<Key>>());
+            std::move(keys), std::move(DefaultInterpolationCreator<Key>::create()));
     }
 };
 

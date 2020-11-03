@@ -43,6 +43,17 @@ namespace inviwo {
 
 namespace animation {
 
+namespace detail {
+
+template <typename Key>
+struct DefaultInterpolationCreator {
+    static std::unique_ptr<InterpolationTyped<Key>> create() {
+        return std::make_unique<ConstantInterpolation<Key>>();
+    }
+};
+
+}  // namespace detail
+
 class ValueKeyframeSequence;
 
 class IVW_MODULE_ANIMATION_API ValueKeyframeSequenceObserver : public Observer {
@@ -72,6 +83,8 @@ public:
 
 /** \class KeyframeSequenceTyped
  * KeyframeSequence for a given type of KeyFames.
+ * Keyframes are expected to be interpolated so a InterpolationTyped<Key> must be defined for the
+ * given Keyframe.
  * @see KeyframeSequence
  */
 template <typename Key>
@@ -82,13 +95,16 @@ public:
     static_assert(std::is_base_of<Keyframe, Key>::value, "Key has to derive from Keyframe");
 
     /*
-     * No default constructor. Interpolation must be specified.
+     * Uses ConstantInterpolation<Key> unless DefaultInterpolationCreator is
+     * specialized.
      */
-    KeyframeSequenceTyped() = delete;
+    KeyframeSequenceTyped();
     /*
-     * No constructor of this type. Interpolation must be specified.
+     * Initialize with given keyframes.
+     * Uses ConstantInterpolation<Key> unless DefaultInterpolationCreator is
+     * specialized.
      */
-    KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes) = delete;
+    KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes);
     KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes,
                           std::unique_ptr<InterpolationTyped<Key>> interpolation);
 
@@ -129,6 +145,18 @@ template <typename Key>
 bool operator!=(const KeyframeSequenceTyped<Key>& a, const KeyframeSequenceTyped<Key>& b) {
     return !(a == b);
 }
+
+template <typename Key>
+KeyframeSequenceTyped<Key>::KeyframeSequenceTyped()
+    : BaseKeyframeSequence<Key>{}
+    , ValueKeyframeSequence()
+    , interpolation_{std::move(detail::DefaultInterpolationCreator<Key>::create())} {}
+
+template <typename Key>
+KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(std::vector<std::unique_ptr<Key>> keyframes)
+    : BaseKeyframeSequence<Key>{std::move(keyframes)}
+    , ValueKeyframeSequence()
+    , interpolation_{std::move(detail::DefaultInterpolationCreator<Key>::create())} {}
 
 template <typename Key>
 KeyframeSequenceTyped<Key>::KeyframeSequenceTyped(
