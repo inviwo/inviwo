@@ -50,6 +50,7 @@
 #include <thread>      // for get_id
 
 #include <fmt/std.h>
+#include <inviwo/tracy/tracyopengl.h>
 
 namespace inviwo {
 
@@ -107,6 +108,9 @@ std::unique_ptr<Canvas> HiddenCanvasQt::createHiddenQtCanvas() {
     // to update the registered thread id to the correct one here
     RenderContext::getPtr()->setContextThreadId(newContext->contextId(),
                                                 std::this_thread::get_id());
+
+    TRACY_GPU_CONTEXT;
+    TRACY_GPU_CONTEXT_NAME(name.data(), name.size());
 
     return newContext;
 }

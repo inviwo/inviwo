@@ -65,6 +65,10 @@
 #include <string_view>  // for string_view
 #include <type_traits>  // for remove_extent_t
 
+
+#include <inviwo/tracy/tracy.h>
+#include <inviwo/tracy/tracyopengl.h>
+
 namespace inviwo {
 
 const ProcessorInfo MeshRenderProcessorGL::processorInfo_{
@@ -178,6 +182,8 @@ void MeshRenderProcessorGL::process() {
 
     utilgl::setUniforms(shader_, camera_, lightingProperty_, overrideColor_);
     for (auto mesh : inport_) {
+        TRACY_ZONE_SCOPED_NC("Draw Mesh", 0x008800);
+        TRACY_GPU_ZONE_C("Draw Mesh", 0x008800);
         utilgl::setShaderUniforms(shader_, *mesh, "geometry");
         shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
         MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
