@@ -54,6 +54,9 @@
 #include <type_traits>  // for remove_extent_t
 #include <utility>      // for pair
 
+#include <inviwo/tracy/tracy.h>
+#include <inviwo/tracy/tracyopengl.h>
+
 namespace inviwo {
 class Deserializer;
 
@@ -119,7 +122,8 @@ void EntryExitPoints::process() {
     if (!exitImg_ || !exitImg_->isValid()) {
         exitImg_ = exitPort_.getEditableData()->getEditableRepresentation<ImageGL>();
     }
-
+    TRACY_ZONE_SCOPED_NC("Draw EntryExit", 0x008800);
+    TRACY_GPU_ZONE_C("Draw EntryExit", 0x008800);
     const bool addNormals = inport_.getData()->hasBuffer(BufferType::NormalAttrib);
     entryExitHelper_(*entryImg_, *exitImg_, camera_.get(), *inport_.getData(),
                      capNearClipping_ ? algorithm::CapNearClip::Yes : algorithm::CapNearClip::No,
