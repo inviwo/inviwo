@@ -47,6 +47,7 @@ namespace detail {
  * Helper function for inviwo::animation::PropertyTrack::setPropertyFromKeyframe
  * @see inviwo::animation::BasePropertyTrack::setPropertyFromKeyframe
  */
+template<>
 inline void setPropertyFromKeyframeHelper(ButtonProperty* property, const ButtonKeyframe*) {
     property->pressButton();
 }
@@ -56,6 +57,7 @@ inline void setPropertyFromKeyframeHelper(ButtonProperty* property, const Button
  * inviwo::animation::PropertyTrack::setKeyframeFromProperty
  * @see inviwo::animation::BasePropertyTrack::setKeyframeFromProperty
  */
+template<>
 inline void setKeyframeFromPropertyHelper(const ButtonProperty*, ButtonKeyframe*) {}
 
 template <>
