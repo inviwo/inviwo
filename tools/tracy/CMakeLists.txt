@@ -20,11 +20,17 @@ target_sources(
 )
 
 option(IVW_ENABLE_TRACY "Enable profiling using Tracy" OFF)
+option(IVW_CFG_TRACY_PROFILING "Custom tracy profiling settings" OFF)
+
 if(IVW_ENABLE_TRACY)
     find_package(Threads REQUIRED)
     find_package(Tracy CONFIG REQUIRED)
     target_compile_definitions(tracywrap INTERFACE TRACY_ENABLE)
     target_link_libraries(tracywrap INTERFACE Tracy::TracyClient)
+
+    if(IVW_CFG_TRACY_PROFILING)
+        target_compile_definitions(tracywrap INTERFACE IVW_CFG_TRACY_PROFILING)
+    endif()
 endif()
 
 add_custom_target(tracywrap_dummy SOURCES ${HEADER_FILES})
