@@ -55,11 +55,14 @@
 #include <glm/vec3.hpp>                  // for operator/
 #include <glm/vec4.hpp>                  // for operator*
 
+#include <inviwo/tracy/tracy.h>
+
 namespace inviwo {
 
 namespace utilgl {
 
 void setShaderUniforms(Shader& shader, const Volume& volume, std::string_view samplerID) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     const auto& ct = volume.getCoordinateTransformer();
 
     StrBuffer buff;
@@ -109,6 +112,7 @@ void setShaderUniforms(Shader& shader, const VolumeInport& port, std::string_vie
 
 void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
                         const VolumeInport& volumePort) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     TextureUnit unit;
     utilgl::bindTexture(volumePort, unit);
     shader.setUniform(volumePort.getIdentifier(), unit.getUnitNumber());
@@ -120,6 +124,7 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
 
 void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Volume& volume,
                         std::string_view samplerID) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     TextureUnit unit;
     utilgl::bindTexture(volume, unit);
     shader.setUniform(samplerID, unit.getUnitNumber());
