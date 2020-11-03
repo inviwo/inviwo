@@ -68,6 +68,9 @@
 #include <QMenu>         // for QMenu
 #include <QMenuBar>      // for QMenuBar
 
+#include <inviwo/tracy/tracy.h>
+#include <inviwo/tracy/tracyopengl.h>
+
 namespace inviwo {
 
 OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
@@ -95,6 +98,10 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
 
     CanvasGL::defaultGLState();
     holder_ = RenderContext::getPtr()->setDefaultRenderContext(&sharedCanvas_);
+
+    TRACY_GPU_CONTEXT;
+    [[maybe_unused]] static constexpr std::string_view contextName = "DefaultContext";
+    TRACY_GPU_CONTEXT_NAME(contextName.data(), contextName.size());
 
     registerProcessorWidget<CanvasProcessorWidgetQt, CanvasProcessorGL>();
     registerCapabilities(std::make_unique<OpenGLQtCapabilities>());
