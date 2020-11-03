@@ -49,13 +49,14 @@
 #include <inviwo/core/util/glmvec.h>                                    // for vec2
 #include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogEr...
 #include <inviwo/core/util/stringconversion.h>                          // for StrBuffer
-#include <modules/opengl/buffer/framebufferobject.h>                    // for FrameBufferObject
-#include <modules/opengl/geometry/meshgl.h>                             // for MeshGL
-#include <modules/opengl/image/imagegl.h>                               // for ImageGL
-#include <modules/opengl/image/layergl.h>                               // for LayerGL
-#include <modules/opengl/inviwoopengl.h>                                // for GLenum, glActiveT...
-#include <modules/opengl/openglutils.h>                                 // for DepthFuncState
-#include <modules/opengl/shader/shader.h>                               // for Shader
+#include <inviwo/tracy/tracyopengl.h>
+#include <modules/opengl/buffer/framebufferobject.h>  // for FrameBufferObject
+#include <modules/opengl/geometry/meshgl.h>           // for MeshGL
+#include <modules/opengl/image/imagegl.h>             // for ImageGL
+#include <modules/opengl/image/layergl.h>             // for LayerGL
+#include <modules/opengl/inviwoopengl.h>              // for GLenum, glActiveT...
+#include <modules/opengl/openglutils.h>               // for DepthFuncState
+#include <modules/opengl/shader/shader.h>             // for Shader
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/sharedopenglresources.h>  // for SharedOpenGLResou...
 #include <modules/opengl/texture/texture.h>        // for Texture
@@ -76,11 +77,13 @@
 namespace inviwo::utilgl {
 
 void activateTarget(Image& targetImage, ImageType type) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     auto* outImageGL = targetImage.getEditableRepresentation<ImageGL>();
     outImageGL->activateBuffer(type);
 }
 
 void activateTarget(ImageOutport& targetOutport, ImageType type) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     if (!targetOutport.hasEditableData()) {
         targetOutport.setData(
             std::make_shared<Image>(targetOutport.getDimensions(), targetOutport.getDataFormat()));
@@ -90,16 +93,19 @@ void activateTarget(ImageOutport& targetOutport, ImageType type) {
 }
 
 void activateAndClearTarget(Image& targetImage, ImageType type) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     activateTarget(targetImage, type);
     clearCurrentTarget();
 }
 
 void activateAndClearTarget(ImageOutport& targetOutport, ImageType type) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     activateTarget(targetOutport, type);
     clearCurrentTarget();
 }
 
 void activateTargetAndCopySource(Image& targetImage, const Image& sourceImage, ImageType type) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     auto* outImageGL = targetImage.getEditableRepresentation<ImageGL>();
     sourceImage.getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
     outImageGL->activateBuffer(type);
@@ -107,6 +113,7 @@ void activateTargetAndCopySource(Image& targetImage, const Image& sourceImage, I
 
 void activateTargetAndCopySource(ImageOutport& targetOutport, const Image& sourceImage,
                                  ImageType type) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     if (!targetOutport.hasEditableData()) {
         targetOutport.setData(
             std::make_shared<Image>(targetOutport.getDimensions(), targetOutport.getDataFormat()));
@@ -117,6 +124,7 @@ void activateTargetAndCopySource(ImageOutport& targetOutport, const Image& sourc
 
 void activateTargetAndCopySource(Image& targetImage, const ImageInport& sourceInport,
                                  ImageType type) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     auto* outImageGL = targetImage.getEditableRepresentation<ImageGL>();
 
     if (auto inImage = sourceInport.getData()) {
@@ -130,6 +138,7 @@ void activateTargetAndCopySource(Image& targetImage, const ImageInport& sourceIn
 
 void activateTargetAndCopySource(ImageOutport& targetOutport, const ImageInport& sourceInport,
                                  ImageType type) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     if (!targetOutport.hasEditableData()) {
         targetOutport.setData(
             std::make_shared<Image>(targetOutport.getDimensions(), targetOutport.getDataFormat()));
@@ -140,6 +149,7 @@ void activateTargetAndCopySource(ImageOutport& targetOutport, const ImageInport&
 
 void activateTargetAndClearOrCopySource(Image& targetImage, const ImageInport& sourceInport,
                                         ImageType type) {
+    TRACY_ZONE_SCOPED_C(0x000088);
 
     if (sourceInport.isReady()) {
         utilgl::activateTargetAndCopySource(targetImage, sourceInport, type);
@@ -150,6 +160,8 @@ void activateTargetAndClearOrCopySource(Image& targetImage, const ImageInport& s
 
 void activateTargetAndClearOrCopySource(ImageOutport& targetOutport,
                                         const ImageInport& sourceInport, ImageType type) {
+    TRACY_ZONE_SCOPED_C(0x000088);
+    TRACY_GPU_ZONE_C("Activate and Cleanr Or Copy", 0x000088);
     if (sourceInport.isReady()) {
         utilgl::activateTargetAndCopySource(targetOutport, sourceInport, type);
     } else {
@@ -157,11 +169,19 @@ void activateTargetAndClearOrCopySource(ImageOutport& targetOutport,
     }
 }
 
-void clearCurrentTarget() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
+void clearCurrentTarget() {
+    TRACY_ZONE_SCOPED_C(0x000088);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
 
-void deactivateCurrentTarget() { FrameBufferObject::deactivateFBO(); }
+void deactivateCurrentTarget() {
+    TRACY_ZONE_SCOPED_C(0x000088);
+    TRACY_GPU_ZONE_C("Deactivate FBO", 0x000088);
+    FrameBufferObject::deactivateFBO();
+}
 
 void updateAndActivateTarget(ImageOutport& targetOutport, ImageInport& sourceInport) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     if (!targetOutport.hasEditableData()) {
         targetOutport.setData(
             std::make_shared<Image>(targetOutport.getDimensions(), targetOutport.getDataFormat()));
@@ -185,6 +205,7 @@ void bindTexture(const LayerOutport& outport, GLenum texUnit) {
 
 void bindTextures(const Image& image, bool color, bool depth, bool picking, GLenum colorTexUnit,
                   GLenum depthTexUnit, GLenum pickingTexUnit) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     if (color) {
         if (const auto* layer = image.getColorLayer()) {
             layer->getRepresentation<LayerGL>()->bindTexture(colorTexUnit);
@@ -340,6 +361,7 @@ void unbindTexture(const LayerInport& inport) { unbindTexture(*inport.getData())
 void unbindTexture(const LayerOutport& outport) { unbindTexture(*outport.getData()); }
 
 void unbindTextures(const Image& image, bool color, bool depth, bool picking) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     if (color) {
         if (const auto* layer = image.getColorLayer()) {
             layer->getRepresentation<LayerGL>()->unbindTexture();
@@ -475,26 +497,30 @@ std::unique_ptr<Mesh> planeRect() {
 }
 
 void singleDrawImagePlaneRect() {
-    const auto* rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
-    const utilgl::Enable<MeshGL> enable(rect);
-    const utilgl::DepthFuncState depth(GL_ALWAYS);
+    TRACY_ZONE_SCOPED_C(0x000088);
+    auto* rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
+    utilgl::Enable<MeshGL> enable(rect);
+    utilgl::DepthFuncState depth(GL_ALWAYS);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
 void multiDrawImagePlaneRect(int instances) {
-    const auto* rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
-    const utilgl::Enable<MeshGL> enable(rect);
-    const utilgl::DepthFuncState depth(GL_ALWAYS);
+    TRACY_ZONE_SCOPED_C(0x000088);
+    auto* rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
+    utilgl::Enable<MeshGL> enable(rect);
+    utilgl::DepthFuncState depth(GL_ALWAYS);
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, instances);
 }
 
 void bindTexture(const TextureBase& texture, GLenum texUnit) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     glActiveTexture(texUnit);
     texture.bind();
     glActiveTexture(GL_TEXTURE0);
 }
 
 void bindTexture(const TextureBase& texture, const TextureUnit& texUnit) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     glActiveTexture(texUnit.getEnum());
     texture.bind();
     glActiveTexture(GL_TEXTURE0);
@@ -502,6 +528,7 @@ void bindTexture(const TextureBase& texture, const TextureUnit& texUnit) {
 
 void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const TextureBase& texture,
                         std::string_view samplerID) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     TextureUnit unit;
     bindTexture(texture, unit);
     shader.setUniform(samplerID, unit);
@@ -509,6 +536,7 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Textur
 }
 
 void bindTexture(TransferFunctionProperty& tfp, const TextureUnit& texUnit) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     if (const auto* tfLayer = tfp.getRepresentation<LayerGL>()) {
         tfLayer->bindTexture(texUnit.getEnum());
     }
@@ -522,6 +550,7 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, TransferFunc
 }
 
 void bindTexture(IsoTFProperty& property, const TextureUnit& texUnit) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     if (const auto* tfLayer = property.tf_.getRepresentation<LayerGL>()) {
         tfLayer->bindTexture(texUnit.getEnum());
     }
@@ -535,6 +564,7 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, IsoTFPropert
 }
 
 void bindTexture(const Volume& volume, const TextureUnit& texUnit) {
+    TRACY_ZONE_SCOPED_C(0x000088);
     if (const auto* volumeGL = volume.getRepresentation<VolumeGL>()) {
         volumeGL->bindTexture(texUnit.getEnum());
     } else {
@@ -567,6 +597,7 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const LayerO
 
 void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image& image,
                         std::string_view id, ImageType type) {
+    TRACY_ZONE_SCOPED_C(0x000088);
 
     StrBuffer buff;
 
