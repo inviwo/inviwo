@@ -38,6 +38,9 @@
 #include <string>       // for string
 #include <type_traits>  // for remove_extent_t
 
+#include <inviwo/tracy/tracy.h>
+#include <inviwo/tracy/tracyopengl.h>
+
 namespace inviwo {
 
 const ProcessorInfo CanvasProcessorGL::processorInfo_{
