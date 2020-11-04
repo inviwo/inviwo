@@ -63,12 +63,12 @@ else()
     ivw_vcpkg_install(freetype MODULE FontRendering)
 endif()
 
-find_package(utfcpp REQUIRED)
+find_package(utf8cpp CONFIG REQUIRED)
 target_link_libraries(inviwo-module-fontrendering 
     PUBLIC 
         freetype
     PRIVATE
-        utf8::cpp # Add dependency to ext/utf
+        utf8cpp
 )
 
 ivw_make_package(InviwoFontRenderingModule inviwo-module-fontrendering)

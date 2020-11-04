@@ -22,6 +22,7 @@
         "libpng",
         "minizip",
         "nlohmann-json",
+        "nifticlib"
         "openexr",
         "pybind11",
         "python3",

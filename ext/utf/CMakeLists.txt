@@ -23,4 +23,4 @@ add_custom_target(utfcpp_dummy SOURCES ${HEADER_FILES} ${DOC_FILES})
 ivw_folder(utfcpp_dummy ext)
 
 ivw_default_install_targets(utf8cpp)
-ivw_register_package(utfcpp utf8cpp)
+ivw_register_package(utf8cpp utf8cpp)
