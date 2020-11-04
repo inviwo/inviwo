@@ -326,7 +326,7 @@ void HDF5ToVolume::makeVolume() {
                     case 4:
                         return DataUInt16::get();
                     default:
-                        break;
+                        return nullptr;
                 }
             }();
 
