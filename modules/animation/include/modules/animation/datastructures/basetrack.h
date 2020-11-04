@@ -348,8 +348,7 @@ typename BaseTrack<Seq>::key_type* BaseTrack<Seq>::add(Seconds time, bool asNewS
  *           |-case 2a-----------|-case 2b-|
  */
 template <typename Seq>
-auto BaseTrack<Seq>::addToClosestSequence(
-    std::unique_ptr<key_type> key) ->key_type* {
+auto BaseTrack<Seq>::addToClosestSequence(std::unique_ptr<key_type> key) -> key_type* {
     // 'it' will be the first seq. with a first time larger then 'to'.
     auto it = std::upper_bound(this->begin(), this->end(), key->getTime());
 

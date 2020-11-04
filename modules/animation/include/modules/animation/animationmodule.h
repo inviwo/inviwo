@@ -65,8 +65,6 @@ private:
     };
     animation::AnimationManager manager_;
     animation::DemoController demoController_;
-
-
 };
 
 }  // namespace inviwo
