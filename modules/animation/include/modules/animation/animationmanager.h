@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_ANIMATIONMANAGER_H
-#define IVW_ANIMATIONMANAGER_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -107,24 +105,28 @@ public:
 
     /**
      * Add keyframe at current time given by AnimationController.
-     * @see addKeyframeCallback(Property* property, Seconds time)
+     * @see addKeyframe(Property* property, Seconds time)
+     * @return Keyframe if successsfully added, nullptr otherwise.
      */
-    void addKeyframeCallback(Property* property);
+    Keyframe* addKeyframe(Property* property);
     /**
      * Add keyframe at specified time.
      * Creates a new track if no track with the supplied property exists.
+     * @return Keyframe if successsfully added, nullptr otherwise.
      */
-    void addKeyframeCallback(Property* property, Seconds time);
+    Keyframe* addKeyframe(Property* property, Seconds time);
     /**
      * Add sequence at current time given by AnimationController.
-     * @see addSequenceCallback(Property* property, Seconds time)
+     * @return KeyframeSequence if successsfully added, nullptr otherwise.
+     * @see addSequence(Property* property, Seconds time)
      */
-    void addSequenceCallback(Property* property);
+    KeyframeSequence* addKeyframeSequence(Property* property);
     /**
      * Add sequence at specified time.
      * Creates a new track if no track with the supplied property exists.
+     * @return KeyframeSequence if successsfully added, nullptr otherwise.
      */
-    void addSequenceCallback(Property* property, Seconds time);
+    KeyframeSequence* addKeyframeSequence(Property* property, Seconds time);
 
     /**
      * Lookup the default interpolation to use for a property.
@@ -135,6 +137,17 @@ public:
     const std::unordered_multimap<std::string, std::string>& getInterpolationMapping() const;
 
 private:
+    /**
+     * Module callbacks must return void
+     * @see addKeyframe(Property* property, Seconds time)
+     */
+    void addKeyframeCallback(Property* property);
+    /**
+     * Module callbacks must return void
+     * @see addSequence(Property* property, Seconds time)
+     */
+    void addKeyframeSequenceCallback(Property* property);
+
     BasePropertyTrack* addNewTrack(Property* property);
 
     // PropertyOwnerObserver overload
@@ -172,5 +185,3 @@ private:
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_ANIMATIONMANAGER_H

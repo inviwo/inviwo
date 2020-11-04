@@ -45,7 +45,8 @@
 #include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/valuekeyframe.h>
-#include <modules/animation/interpolation/interpolation.h>
+#include <modules/animation/interpolation/constantinterpolation.h>
+#include <modules/animation/interpolation/linearinterpolation.h>
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/animation.h>
 
@@ -271,7 +272,8 @@ TEST(AnimationTests, KeyframeSequenceSerializationTest) {
     d.setExceptionHandler([](ExceptionContext context) { throw; });
     d.registerFactory(&factory);
 
-    KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence2;
+    KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence2(
+        {}, std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>());
 
     doubleSequence2.deserialize(d);
 

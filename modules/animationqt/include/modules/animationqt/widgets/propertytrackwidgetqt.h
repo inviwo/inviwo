@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_PROPERTYTRACKWIDGETQT_H
-#define IVW_PROPERTYTRACKWIDGETQT_H
+#pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -55,5 +53,3 @@ public:
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_PROPERTYTRACKWIDGETQT_H

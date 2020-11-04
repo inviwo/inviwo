@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_CONTROLTRACK_H
-#define IVW_CONTROLTRACK_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -62,5 +60,3 @@ public:
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_CONTROLTRACK_H

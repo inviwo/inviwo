@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_TRACK_H
-#define IVW_TRACK_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -105,6 +103,10 @@ public:
     virtual size_t size() const = 0;
     virtual bool empty() const = 0;
 
+    /**
+     * Animate track between times from and to
+     * @return the playback state after performing animation.
+     */
     virtual AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const = 0;
 
     virtual KeyframeSequence& operator[](size_t i) = 0;
@@ -116,14 +118,18 @@ public:
     virtual KeyframeSequence& getLast() = 0;
 
     /**
-     * Add a Keyframe/KeyframeSequence at time
+     * Add a Keyframe at time and return the added keyframe.
+     * The Keyframe is added to a new KeyframeSequence if asNewSequence is true,
+     * otherwise it should be added to the closest KeyframeSequence at specified time.
+     * A KeyframeSequence is added to the Track if none exists.
+     * @see BaseTrack::add(Seconds time, bool asNewSequence)
      */
-    virtual void add(Seconds time, bool asNewSequence) = 0;
+    virtual Keyframe* add(Seconds time, bool asNewSequence) = 0;
 
     /**
      * Add KeyframeSequence and call TrackObserver::notifyKeyframeSequenceAdded
      */
-    virtual void add(std::unique_ptr<KeyframeSequence> sequence) = 0;
+    virtual KeyframeSequence* add(std::unique_ptr<KeyframeSequence> sequence) = 0;
 
     /**
      * Remove KeyframeSequence at index i and call TrackObserver::notifyKeyframeSequenceRemoved
@@ -171,5 +177,3 @@ public:
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_TRACK_H

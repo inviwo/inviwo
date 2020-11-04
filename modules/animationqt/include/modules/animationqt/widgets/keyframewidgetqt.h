@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_KEYFRAMEWIDGETQT_H
-#define IVW_KEYFRAMEWIDGETQT_H
+#pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -100,5 +98,3 @@ private:
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_KEYFRAMEWIDGETQT_H

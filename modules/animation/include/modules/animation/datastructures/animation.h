@@ -26,7 +26,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
@@ -89,6 +88,13 @@ public:
      * Calls TrackObserver::notifyTrackRemoved after removing track.
      */
     std::unique_ptr<Track> remove(const std::string& id);
+
+    /**
+     * Remove Track if matching any of the tracks.
+     * Calls AnimationObservable::notifyTrackRemoved after removing Track.
+     * @note Track will be deleted if removed so do not use pointer after calling this function.
+     */
+    std::unique_ptr<Track> remove(Track* track);
 
     /**
      * Remove Keyframe if matching any of the Keyframes in the tracks.

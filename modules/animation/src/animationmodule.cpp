@@ -29,50 +29,58 @@
 
 #include <modules/animation/animationmodule.h>
 
-#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
 
-#include <modules/animation/interpolation/constantinterpolation.h>
+#include <modules/animation/datastructures/buttonkeyframesequence.h>
+#include <modules/animation/datastructures/callbacktrack.h>
+#include <modules/animation/datastructures/buttontrack.h>
+#include <modules/animation/datastructures/cameratrack.h>
+#include <modules/animation/datastructures/controltrack.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/propertytrack.h>
+#include <modules/animation/interpolation/constantinterpolation.h>
+#include <modules/animation/interpolation/cameralinearinterpolation.h>
+#include <modules/animation/interpolation/camerasphericalinterpolation.h>
+#include <modules/animation/interpolation/linearinterpolation.h>
 
 namespace inviwo {
 
 namespace {
 
-template <typename PropertyType>
-auto trackRegHelper(AnimationModule& am) {
+template <typename PropertyType,
+          typename Keyframe = animation::ValueKeyframe<typename PropertyType::value_type>,
+          typename KeyframeSeq = animation::KeyframeSequenceTyped<Keyframe>>
+auto propTrackRegHelper(AnimationModule& am) {
     using namespace animation;
-    using ValueType = typename PropertyType::value_type;
     // Register PropertyTrack and the KeyFrame it should use
-    am.registerTrack<PropertyTrack<PropertyType, ValueKeyframe<ValueType>>>();
+    am.registerTrack<PropertyTrack<PropertyType, Keyframe, KeyframeSeq>>();
     am.registerPropertyTrackConnection(
         PropertyTraits<PropertyType>::classIdentifier(),
-        PropertyTrack<PropertyType, ValueKeyframe<ValueType>>::classIdentifier());
+        PropertyTrack<PropertyType, Keyframe, KeyframeSeq>::classIdentifier());
 }
 
-template <typename PropertyType, template <class> class Interpolation>
+template <typename PropertyType, typename Interpolation>
 auto interpolationRegHelper(AnimationModule& am) {
     using namespace animation;
-    using ValueType = typename PropertyType::value_type;
-
     // No need to add existing interpolation method. Will produce a warning if adding a duplicate
     if (!am.getAnimationManager().getInterpolationFactory().hasKey(
-            Interpolation<ValueKeyframe<ValueType>>::classIdentifier())) {
-        am.registerInterpolation<Interpolation<ValueKeyframe<ValueType>>>();
+            Interpolation::classIdentifier())) {
+        am.registerInterpolation<Interpolation>();
     }
 
     // Default interpolation for this property
-    am.registerPropertyInterpolationConnection(
-        PropertyTraits<PropertyType>::classIdentifier(),
-        Interpolation<ValueKeyframe<ValueType>>::classIdentifier());
+    am.registerPropertyInterpolationConnection(PropertyTraits<PropertyType>::classIdentifier(),
+                                               Interpolation::classIdentifier());
 }
 
 struct OrdinalReghelper {
@@ -80,13 +88,15 @@ struct OrdinalReghelper {
     auto operator()(AnimationModule& am) {
         using namespace animation;
         using PropertyType = OrdinalProperty<T>;
-        trackRegHelper<PropertyType>(am);
-        interpolationRegHelper<PropertyType, LinearInterpolation>(am);
-        interpolationRegHelper<PropertyType, ConstantInterpolation>(am);
+        using ValueType = typename PropertyType::value_type;
+        propTrackRegHelper<PropertyType>(am);
+        interpolationRegHelper<PropertyType, LinearInterpolation<ValueKeyframe<ValueType>>>(am);
+        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
         using PropertyRefType = OrdinalRefProperty<T>;
-        trackRegHelper<PropertyRefType>(am);
-        interpolationRegHelper<PropertyRefType, LinearInterpolation>(am);
-        interpolationRegHelper<PropertyRefType, ConstantInterpolation>(am);
+        propTrackRegHelper<PropertyRefType>(am);
+        interpolationRegHelper<PropertyRefType, LinearInterpolation<ValueKeyframe<ValueType>>>(am);
+        interpolationRegHelper<PropertyRefType, ConstantInterpolation<ValueKeyframe<ValueType>>>(
+            am);
     }
 };
 
@@ -95,10 +105,10 @@ struct MinMaxReghelper {
     auto operator()(AnimationModule& am) {
         using namespace animation;
         using PropertyType = MinMaxProperty<T>;
-
-        trackRegHelper<PropertyType>(am);
-        interpolationRegHelper<PropertyType, LinearInterpolation>(am);
-        interpolationRegHelper<PropertyType, ConstantInterpolation>(am);
+        using ValueType = typename PropertyType::value_type;
+        propTrackRegHelper<PropertyType>(am);
+        interpolationRegHelper<PropertyType, LinearInterpolation<ValueKeyframe<ValueType>>>(am);
+        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
     }
 };
 
@@ -107,8 +117,9 @@ struct OptionReghelper {
     auto operator()(AnimationModule& am) {
         using namespace animation;
         using PropertyType = TemplateOptionProperty<T>;
-        trackRegHelper<PropertyType>(am);
-        interpolationRegHelper<PropertyType, ConstantInterpolation>(am);
+        using ValueType = typename PropertyType::value_type;
+        propTrackRegHelper<PropertyType>(am);
+        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
     }
 };
 
@@ -116,8 +127,9 @@ struct ConstantInterpolationReghelper {
     template <typename PropertyType>
     auto operator()(AnimationModule& am) {
         using namespace animation;
-        trackRegHelper<PropertyType>(am);
-        interpolationRegHelper<PropertyType, ConstantInterpolation>(am);
+        propTrackRegHelper<PropertyType>(am);
+        using ValueType = typename PropertyType::value_type;
+        interpolationRegHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>(am);
     }
 };
 
@@ -147,8 +159,18 @@ AnimationModule::AnimationModule(InviwoApplication* app)
         ConstantInterpolationReghelper{}, *this);
     util::for_each_type<ScalarTypes>{}(OptionReghelper{}, *this);
     util::for_each_type<std::tuple<std::string>>{}(OptionReghelper{}, *this);
-    // Todo: Add ButtonProperty. Have not tested but might work out of the box with constant
-    // interpolation? Todo: Add support for TransferFunctionProperty (special interpolation)
+
+    // Camera property
+    propTrackRegHelper<CameraProperty, CameraKeyframe>(*this);
+    interpolationRegHelper<CameraProperty, CameraSphericalInterpolation>(*this);
+    interpolationRegHelper<CameraProperty, CameraLinearInterpolation>(*this);
+
+    propTrackRegHelper<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>(*this);
+
+    // Todo: Add support for TransferFunctionProperty (special interpolation)
+
+    registerTrack<CallbackTrack>();
+    registerTrack<ControlTrack>();
 }
 
 AnimationModule::~AnimationModule() {
@@ -156,6 +178,12 @@ AnimationModule::~AnimationModule() {
     // of AnimationSupplier. Other modules that implement AnimationSupplier will not have this
     // problem.
     unRegisterAll();
+}
+
+int AnimationModule::getVersion() const { return 1; }
+
+std::unique_ptr<VersionConverter> AnimationModule::getConverter(int version) const {
+    return std::make_unique<Converter>(version);
 }
 
 animation::AnimationManager& AnimationModule::getAnimationManager() { return manager_; }
@@ -166,6 +194,29 @@ animation::DemoController& AnimationModule::getDemoController() { return demoCon
 
 const animation::DemoController& AnimationModule::getDemoController() const {
     return demoController_;
+}
+
+bool AnimationModule::Converter::convert(TxElement* root) {
+    using namespace xml;
+    std::vector<ElementMatcher> selector{{ElementMatcher{"Animation", {}}},
+                                         {ElementMatcher{"tracks", {}}},
+                                         {ElementMatcher{"track", {}}}};
+    bool res = false;
+    switch (version_) {
+        case 0: {
+            xml::visitMatchingNodes(root, selector, [&res](TxElement* n) {
+                auto attr = n->GetAttribute("type");
+                replaceInString(attr, "org.inviwo.animation.PropertyTrack.for. ",
+                                "org.inviwo.animation.PropertyTrack.for.");
+
+                n->SetAttribute("type", attr);
+                res |= true;
+            });
+            return res;
+        }
+        default:
+            return false;  // No changes
+    }
 }
 
 }  // namespace inviwo

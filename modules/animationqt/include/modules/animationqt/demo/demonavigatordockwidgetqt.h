@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_DEMONAVIGATORDOCKWIDGETQT_H
-#define IVW_DEMONAVIGATORDOCKWIDGETQT_H
+#pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <modules/animation/demo/democontrollerobserver.h>
@@ -64,5 +62,3 @@ protected:
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_DEMONAVIGATORDOCKWIDGETQT_H
