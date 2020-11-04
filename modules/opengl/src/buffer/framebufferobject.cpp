@@ -427,7 +427,7 @@ void FrameBufferObject::performAttachTexture(GLenum attachmentID, GLuint texId) 
         // check whether given ID is already attached
         if (!attachedColorIds_[attachmentID - colorAttachmentEnums_[0]]) {
             drawBuffers_.push_back(attachmentID);
-            attachedColorIds_[attachmentID - colorAttachmentEnums_[0]] = attachedStencilId_;
+            attachedColorIds_[attachmentID - colorAttachmentEnums_[0]] = texId;
         }
     }
 }

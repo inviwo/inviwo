@@ -236,7 +236,7 @@ public:
      */
     bool hasWidgets() const;
 
-    virtual void setSerializationMode(PropertySerializationMode mode);
+    virtual Property& setSerializationMode(PropertySerializationMode mode);
     virtual PropertySerializationMode getSerializationMode() const;
 
     /**
