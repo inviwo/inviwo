@@ -341,7 +341,6 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
             p.release();
         }
 
-
         for (auto& c : internalConnections) {
             try {
                 c.updateProcessorID(processorIds);

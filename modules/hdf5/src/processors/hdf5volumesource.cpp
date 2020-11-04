@@ -270,7 +270,7 @@ void HDF5ToVolume::onDataChange() {
         volumeSelection_.clearOptions();
     }
 
-    onSelectionChange(); 
+    onSelectionChange();
     onBasisSelecionChange();
 }
 

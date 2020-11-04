@@ -174,7 +174,7 @@ void FrameBufferObject::attachTexture(Texture2D* texture, GLenum attachmentID) {
 GLenum FrameBufferObject::attachColorTexture(Texture2D* texture) {
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID = performAttachColorTexture(texture->getID());
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_2D, texture->getID(), 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_2D, texture->getID(), 0);
     return attachmentID;
 }
 
@@ -183,7 +183,7 @@ GLenum FrameBufferObject::attachColorTexture(Texture2D* texture, int attachmentN
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID = performAttachColorTexture(texture->getID(), attachmentNumber,
                                                     attachFromRear, forcedLocation);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_2D, texture->getID(), 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_2D, texture->getID(), 0);
 
     return attachmentID;
 }
@@ -199,7 +199,7 @@ void FrameBufferObject::attachTexture(Texture2DArray* texture, GLenum attachment
 GLenum FrameBufferObject::attachColorTexture(Texture2DArray* texture) {
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID = performAttachColorTexture(texture->getID());
-        glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
     return attachmentID;
 }
 
@@ -208,7 +208,7 @@ GLenum FrameBufferObject::attachColorTexture(Texture2DArray* texture, int attach
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID = performAttachColorTexture(texture->getID(), attachmentNumber,
                                                     attachFromRear, forcedLocation);
-        glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
     return attachmentID;
 }
 
@@ -222,7 +222,7 @@ void FrameBufferObject::attachTextureLayer(Texture2DArray* texture, GLenum attac
 GLenum FrameBufferObject::attachColorTextureLayer(Texture2DArray* texture, int layer) {
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID = performAttachColorTexture(texture->getID());
-        glFramebufferTextureLayer(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0, layer);
+    glFramebufferTextureLayer(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0, layer);
     return attachmentID;
 }
 
@@ -232,7 +232,7 @@ GLenum FrameBufferObject::attachColorTextureLayer(Texture2DArray* texture, int a
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID = performAttachColorTexture(texture->getID(), attachmentNumber,
                                                     attachFromRear, forcedLocation);
-        glFramebufferTextureLayer(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0, layer);
+    glFramebufferTextureLayer(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0, layer);
 
     return attachmentID;
 }
@@ -246,7 +246,7 @@ void FrameBufferObject::attachTexture(Texture3D* texture, GLenum attachmentID) {
 GLenum FrameBufferObject::attachColorTexture(Texture3D* texture) {
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID = performAttachColorTexture(texture->getID());
-        glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
     return attachmentID;
 }
 
@@ -255,7 +255,7 @@ GLenum FrameBufferObject::attachColorTexture(Texture3D* texture, int attachmentN
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID = performAttachColorTexture(texture->getID(), attachmentNumber,
                                                     attachFromRear, forcedLocation);
-        glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
 
     return attachmentID;
 }
@@ -455,7 +455,7 @@ void FrameBufferObject::validateAttachmentId(GLenum attachmentID) const {
 }
 
 GLenum FrameBufferObject::performAttachColorTexture(GLuint texId, int attachmentNumber,
-                                                  bool attachFromRear, int forcedLocation) {
+                                                    bool attachFromRear, int forcedLocation) {
     if (static_cast<long>(drawBuffers_.size()) == maxColorattachments_) {
         throw OpenGLException("Maximum number of color attachments reached.", IVW_CONTEXT);
     }
