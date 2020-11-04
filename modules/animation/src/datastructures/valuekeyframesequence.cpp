@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/valuekeyframesequence.h>
-#include <modules/animation/interpolation/camerasphericalinterpolation.h>
 
 namespace inviwo {
 

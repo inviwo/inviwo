@@ -29,7 +29,6 @@
 
 #include <modules/animation/animationmodule.h>
 
-#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
@@ -38,6 +37,8 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <modules/animation/datastructures/buttonkeyframesequence.h>
 #include <modules/animation/datastructures/callbacktrack.h>
@@ -179,6 +180,12 @@ AnimationModule::~AnimationModule() {
     unRegisterAll();
 }
 
+int AnimationModule::getVersion() const { return 1; }
+
+std::unique_ptr<VersionConverter> AnimationModule::getConverter(int version) const {
+    return std::make_unique<Converter>(version);
+}
+
 animation::AnimationManager& AnimationModule::getAnimationManager() { return manager_; }
 
 const animation::AnimationManager& AnimationModule::getAnimationManager() const { return manager_; }
@@ -187,6 +194,29 @@ animation::DemoController& AnimationModule::getDemoController() { return demoCon
 
 const animation::DemoController& AnimationModule::getDemoController() const {
     return demoController_;
+}
+
+bool AnimationModule::Converter::convert(TxElement* root) {
+    using namespace xml;
+    std::vector<ElementMatcher> selector{{ElementMatcher{"Animation", {}}},
+                                         {ElementMatcher{"tracks", {}}},
+                                         {ElementMatcher{"track", {}}}};
+    bool res = false;
+    switch (version_) {
+        case 0: {
+            xml::visitMatchingNodes(root, selector, [&res](TxElement* n) {
+                auto attr = n->GetAttribute("type");
+                replaceInString(attr, "org.inviwo.animation.PropertyTrack.for. ",
+                                "org.inviwo.animation.PropertyTrack.for.");
+
+                n->SetAttribute("type", attr);
+                res |= true;
+            });
+            return res;
+        }
+        default:
+            return false;  // No changes
+    }
 }
 
 }  // namespace inviwo
