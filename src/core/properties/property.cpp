@@ -340,7 +340,10 @@ void Property::set(const Property* /*src*/) { propertyModified(); }
 const std::vector<PropertyWidget*>& Property::getWidgets() const { return propertyWidgets_; }
 
 PropertySerializationMode Property::getSerializationMode() const { return serializationMode_; }
-void Property::setSerializationMode(PropertySerializationMode mode) { serializationMode_ = mode; }
+Property& Property::setSerializationMode(PropertySerializationMode mode) {
+    serializationMode_ = mode;
+    return *this;
+}
 
 std::shared_ptr<std::function<void()>> Property::onChangeScoped(std::function<void()> callback) {
     return onChangeCallback_.addLambdaCallbackRaii(std::move(callback));

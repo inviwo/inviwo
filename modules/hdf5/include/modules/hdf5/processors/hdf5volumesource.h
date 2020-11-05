@@ -95,7 +95,7 @@ protected:
 private:
     class DimSelection : public CompositeProperty {
     public:
-        DimSelection(std::string identifier, std::string displayName,
+        DimSelection(const std::string& identifier, const std::string& displayName,
                      InvalidationLevel = InvalidationLevel::InvalidOutput);
 
         DimSelection(const DimSelection& rhs) = default;
@@ -109,7 +109,7 @@ private:
 
     class DimSelections : public CompositeProperty {
     public:
-        DimSelections(std::string identifier, std::string displayName, size_t maxRank,
+        DimSelections(const std::string& identifier, const std::string& displayName, size_t maxRank,
                       InvalidationLevel = InvalidationLevel::InvalidOutput);
 
         DimSelections(const DimSelections& rhs) = default;

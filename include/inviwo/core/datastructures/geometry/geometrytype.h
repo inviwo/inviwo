@@ -35,6 +35,9 @@
 
 #include <iterator>
 #include <ostream>
+#include <string_view>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -202,3 +205,41 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 }  // namespace inviwo
+
+namespace fmt {
+template <>
+struct formatter<::inviwo::BufferType> : formatter<string_view> {
+    // parse is inherited from formatter<string_view>.
+    template <typename FormatContext>
+    auto format(::inviwo::BufferType bt, FormatContext& ctx) {
+        using namespace std::literals;
+        const std::string_view str = [&]() {
+            switch (bt) {
+                case ::inviwo::BufferType::PositionAttrib:
+                    return "Position"sv;
+                case ::inviwo::BufferType::NormalAttrib:
+                    return "Normal"sv;
+                case ::inviwo::BufferType::ColorAttrib:
+                    return "Color"sv;
+                case ::inviwo::BufferType::TexcoordAttrib:
+                    return "Texture"sv;
+                case ::inviwo::BufferType::CurvatureAttrib:
+                    return "Curvature"sv;
+                case ::inviwo::BufferType::IndexAttrib:
+                    return "Index"sv;
+                case ::inviwo::BufferType::RadiiAttrib:
+                    return "Radii"sv;
+                case ::inviwo::BufferType::PickingAttrib:
+                    return "Picking"sv;
+                case ::inviwo::BufferType::ScalarMetaAttrib:
+                    return "ScalarMeta"sv;
+                case ::inviwo::BufferType::NumberOfBufferTypes:
+                    return "NumberOfBufferTypes"sv;
+                default:
+                    return "Type not specified"sv;
+            }
+        }();
+        return formatter<string_view>::format(str, ctx);
+    }
+};
+}  // namespace fmt

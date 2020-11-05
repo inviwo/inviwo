@@ -75,15 +75,14 @@ option(IVW_USE_EXTERNAL_OPENEXR  "OpenEXR is provided externaly" OFF)
 if(IVW_USE_OPENEXR)
     target_compile_definitions(inviwo-module-cimg PRIVATE cimg_use_openexr)
     if(IVW_USE_EXTERNAL_OPENEXR)
-        set(CMAKE_FIND_PACKAGE_PREFER_CONFIG OFF)
-        find_package(OpenEXR REQUIRED)
-        target_link_libraries(inviwo-module-cimg PRIVATE ${OpenEXR_LIBRARIES})
-        set(extraIncDir ${OpenEXR_INCLUDE_DIRS})
-        list(TRANSFORM extraIncDir APPEND "/OpenEXR") # CImg uses includes without OpenEXR
-        target_include_directories(inviwo-module-cimg PRIVATE ${OpenEXR_INCLUDE_DIRS} ${extraIncDir})
+        find_package(IlmBase CONFIG REQUIRED)
+        find_package(OpenEXR CONFIG REQUIRED)
+        target_link_libraries(inviwo-module-cimg PRIVATE 
+            IlmBase::Iex IlmBase::Half IlmBase::Imath IlmBase::IexMath
+            OpenEXR::IlmImf OpenEXR::IlmImfUtil OpenEXR::IlmImfConfig
+        )
+
         ivw_vcpkg_install(openexr MODULE CImg)
-        # OpenEXR from vcpkg is missing this define
-        target_compile_definitions(inviwo-module-cimg PRIVATE OPENEXR_DLL)
     else()
         add_subdirectory(ext/openexr)
         ivw_register_license_file(NAME "OpenEXR" TARGET OpenEXR::IlmImf MODULE CImg

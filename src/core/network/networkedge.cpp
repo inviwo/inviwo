@@ -94,23 +94,25 @@ PropertyLink NetworkEdge::toLink(const ProcessorNetwork& net) const {
     return {sprop, dprop};
 }
 
-void NetworkEdge::updateProcessorID(const std::unordered_map<std::string, std::string>& map) {
-    {
-        const auto len = srcPath.find_first_of('.');
-        std::string id = srcPath.substr(0, len);
-        auto it = map.find(id);
-        if (it != map.end()) {
-            srcPath = fmt::format("{}.{}", it->second, srcPath.substr(len));
-        }
+void NetworkEdge::updateSrcProcessorID(const std::map<std::string, std::string, std::less<>>& map) {
+    const auto [pid, path] = util::splitByFirst(srcPath, ".");
+    const auto it = map.find(pid);
+    if (it != map.end()) {
+        srcPath = fmt::format("{}.{}", it->second, path);
     }
-    {
-        const auto len = dstPath.find_first_of('.');
-        const std::string id = dstPath.substr(0, len);
-        auto it = map.find(id);
-        if (it != map.end()) {
-            dstPath = fmt::format("{}.{}", it->second, dstPath.substr(len));
-        }
+}
+
+void NetworkEdge::updateDstProcessorID(const std::map<std::string, std::string, std::less<>>& map) {
+    const auto [pid, path] = util::splitByFirst(dstPath, ".");
+    const auto it = map.find(pid);
+    if (it != map.end()) {
+        dstPath = fmt::format("{}.{}", it->second, path);
     }
+}
+
+void NetworkEdge::updateProcessorID(const std::map<std::string, std::string, std::less<>>& map) {
+    updateSrcProcessorID(map);
+    updateDstProcessorID(map);
 }
 
 void NetworkEdge::serialize(Serializer& s) const {

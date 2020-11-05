@@ -175,14 +175,9 @@ if(NOT IVW_USE_EXTERNAL_UTFCPP)
         TYPE "Boost Software License"
         FILES ${IVW_EXTENSIONS_DIR}/utf/LICENSE
     )
-else()
-    ivw_vcpkg_paths(INCLUDE vcpkgInclude)  # get the vcpkg include path as a hint if available
-    find_path(UTFCPP_INCLUDE_DIR NAMES utf8.h utf8/core.h HINTS ${vcpkgInclude} REQUIRED)
-    add_library(utf8cpp INTERFACE)
-    add_library(utf8::cpp ALIAS utf8cpp)
-    target_include_directories(utf8cpp INTERFACE $<BUILD_INTERFACE:${UTFCPP_INCLUDE_DIR}>)
+else()  
+    find_package(utf8cpp CONFIG REQUIRED)
     ivw_vcpkg_install(utfcpp MODULE Core EXT)
-    ivw_register_package(utfcpp utf8cpp)
 endif()
 
 # nlohmann json

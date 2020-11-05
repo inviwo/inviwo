@@ -269,44 +269,68 @@ void detail::PartialProcessorNetwork::serialize(Serializer& s) const {
         return m->isSelected();
     });
 
-    std::vector<NetworkEdge> connections;
+    std::vector<NetworkEdge> internalConnections;
+    std::vector<NetworkEdge> externalConnections;
     for (const auto& connection : network_->getConnections()) {
-        auto in = connection.getInport()->getProcessor();
+        const auto in = connection.getInport()->getProcessor();
+        const auto out = connection.getOutport()->getProcessor();
         if (util::contains(selected, in)) {
-            connections.emplace_back(connection);
+            if (util::contains(selected, out)) {
+                internalConnections.emplace_back(connection);
+            } else {
+                externalConnections.emplace_back(connection);
+            }
         }
     }
 
-    std::vector<NetworkEdge> links;
+    std::vector<NetworkEdge> internalLinks;
+    std::vector<NetworkEdge> outLinks;
+    std::vector<NetworkEdge> inLinks;
     for (const auto& link : network_->getLinks()) {
-        auto src = link.getSource()->getOwner()->getProcessor();
-        auto dst = link.getDestination()->getOwner()->getProcessor();
-        if (util::contains(selected, src) || util::contains(selected, dst)) {
-            links.emplace_back(link);
+        const auto src = link.getSource()->getOwner()->getProcessor();
+        const auto dst = link.getDestination()->getOwner()->getProcessor();
+        const auto srcInt = util::contains(selected, src);
+        const auto dstInt = util::contains(selected, dst);
+
+        if (srcInt && dstInt) {
+            internalLinks.emplace_back(link);
+        } else if (srcInt) {
+            outLinks.emplace_back(link);
+        } else if (dstInt) {
+            inLinks.emplace_back(link);
         }
     }
 
     s.serialize("ProcessorNetworkVersion", network_->getVersion());
     s.serialize("Processors", selected, "Processor");
-    s.serialize("Connections", connections, "Connection");
-    s.serialize("PropertyLinks", links, "PropertyLink");
+    s.serialize("InternalConnections", internalConnections, "Connection");
+    s.serialize("ExternalConnections", externalConnections, "Connection");
+    s.serialize("InternalPropertyLinks", internalLinks, "PropertyLink");
+    s.serialize("OutPropertyLinks", outLinks, "PropertyLink");
+    s.serialize("InPropertyLinks", inLinks, "PropertyLink");
 }
 
 void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
     try {
         std::vector<std::unique_ptr<Processor>> processors;
-        std::vector<NetworkEdge> connections;
-        std::vector<NetworkEdge> links;
+        std::vector<NetworkEdge> internalConnections;
+        std::vector<NetworkEdge> externalConnections;
+        std::vector<NetworkEdge> internalLinks;
+        std::vector<NetworkEdge> outLinks;
+        std::vector<NetworkEdge> inLinks;
         d.deserialize("Processors", processors, "Processor");
-        d.deserialize("Connections", connections, "Connection");
-        d.deserialize("PropertyLinks", links, "PropertyLink");
+        d.deserialize("InternalConnections", internalConnections, "Connection");
+        d.deserialize("ExternalConnections", externalConnections, "Connection");
+        d.deserialize("InternalPropertyLinks", internalLinks, "PropertyLink");
+        d.deserialize("OutPropertyLinks", outLinks, "PropertyLink");
+        d.deserialize("InPropertyLinks", inLinks, "PropertyLink");
 
         for (auto p : network_->getProcessors()) {
             auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
             m->setSelected(false);
         }
 
-        std::unordered_map<std::string, std::string> processorIds;
+        std::map<std::string, std::string, std::less<>> processorIds;
         for (auto& p : processors) {
             auto orgId = p->getIdentifier();
             network_->addProcessor(p.get());
@@ -316,7 +340,8 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
             addedProcessors_.push_back(p.get());
             p.release();
         }
-        for (auto& c : connections) {
+
+        for (auto& c : internalConnections) {
             try {
                 c.updateProcessorID(processorIds);
                 auto connection = c.toConnection(*network_);
@@ -325,10 +350,37 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
                 d.handleError(IVW_CONTEXT);
             }
         }
+        for (auto& c : externalConnections) {
+            try {
+                c.updateDstProcessorID(processorIds);
+                auto connection = c.toConnection(*network_);
+                network_->addConnection(connection);
+            } catch (...) {
+                d.handleError(IVW_CONTEXT);
+            }
+        }
 
-        for (auto& l : links) {
+        for (auto& l : internalLinks) {
             try {
                 l.updateProcessorID(processorIds);
+                auto link = l.toLink(*network_);
+                network_->addLink(link.getSource(), link.getDestination());
+            } catch (...) {
+                d.handleError(IVW_CONTEXT);
+            }
+        }
+        for (auto& l : outLinks) {
+            try {
+                l.updateSrcProcessorID(processorIds);
+                auto link = l.toLink(*network_);
+                network_->addLink(link.getSource(), link.getDestination());
+            } catch (...) {
+                d.handleError(IVW_CONTEXT);
+            }
+        }
+        for (auto& l : inLinks) {
+            try {
+                l.updateDstProcessorID(processorIds);
                 auto link = l.toLink(*network_);
                 network_->addLink(link.getSource(), link.getDestination());
             } catch (...) {

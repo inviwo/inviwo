@@ -33,14 +33,15 @@ uniform sampler2D inportColor;
 
 #ifdef ADDITIONAL_COLOR_LAYERS
 ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS
-#endif // ADDITIONAL_COLOR_LAYERS
+#endif
+
 #ifdef PICKING_LAYER
 uniform sampler2D inportPicking;
-#endif // PICKING_LAYER
+#endif 
+
 #ifdef DEPTH_LAYER
 uniform sampler2D inportDepth;
-#endif // PICKING_LAYER
-
+#endif
 
 uniform ImageParameters outportParameters;
 uniform ivec2 checkerBoardSize = ivec2(10, 10);
@@ -50,15 +51,16 @@ uniform vec4 bgColor2 = vec4(1, 1, 1, 1);
 
 #if !defined(SRC_COLOR) 
 #  define SRC_COLOR vec4(0);
-#endif // SRC_COLOR
+#endif
 
 #if !defined(BACKGROUND_STYLE_FUNCTION)
 #  define BACKGROUND_STYLE_FUNCTION linearGradientVertical(texCoord)
-#endif // BACKGROUND_STYLE_FUNCTION
+#endif 
 
 #if !defined(BLENDFUNC)
 #  define BLENDFUNC blendBackToFront
-#endif // BLENDFUNC
+#endif 
+
 
 vec4 checkerBoard(vec2 texCoord) {
     vec2 t = floor(ivec2(gl_FragCoord.x, outportParameters.dimensions.y - gl_FragCoord.y) /
@@ -75,8 +77,8 @@ vec4 linearGradientVertical(vec2 texCoord) {
 }
 
 vec4 linearGradientSpherical(vec2 texCoord) {
-	// bgColor1: inner color in circle
-	// bgColor2: outer color
+    // bgColor1: inner color in circle
+    // bgColor2: outer color
     return mix(bgColor1, bgColor2, distance(vec2(0.5), texCoord) / sqrt(0.5));
 }
 
@@ -109,12 +111,12 @@ void main() {
     PickingData = texture(inportPicking, texCoord.xy);
 #else
     PickingData = vec4(0);
-#endif // PICKING_LAYER
+#endif
 
 #ifdef DEPTH_LAYER
     gl_FragDepth = texture(inportDepth, texCoord.xy).r;
 #else
     // no depth input, reset depth to largest value
     gl_FragDepth = 1.0;
-#endif // DEPTH_LAYER
+#endif
 }

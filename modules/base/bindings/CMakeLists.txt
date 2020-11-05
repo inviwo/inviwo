@@ -1,5 +1,7 @@
-#--------------------------------------------------------------------
 # Create python module
+
+find_package(pybind11 CONFIG REQUIRED)
+
 set(HEADER_FILES
     include/modules/base/pythonbindings/io/volumewriting.h
     include/modules/base/pythonbindings/algorithm/volumeoperations.h

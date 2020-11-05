@@ -101,11 +101,16 @@ template <class T>
 using HasDataName = is_detected_exact<const std::string, detail::dataNameType, T>;
 
 template <typename T>
-std::string dataName() {
+const std::string& dataName() {
     if constexpr (HasDataName<T>::value) {
         return T::dataName;
+    } else if constexpr (HasClassIdentifierUpper<T>::value) {
+        return T::CLASS_IDENTIFIER;
+    } else if constexpr (HasClassIdentifierLower<T>::value) {
+        return T::classIdentifier;
     } else {
-        return classIdentifier<T>();
+        static std::string unknown{"Unknown"};
+        return unknown;
     }
 }
 

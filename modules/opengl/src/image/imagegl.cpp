@@ -239,8 +239,8 @@ bool ImageGL::updateFrom(const ImageGL* source) {
     const Texture2D& sTex = *source->getColorLayerGL()->getTexture();
     Texture2D& tTex = *target->getColorLayerGL()->getTexture();
 
-    const std::vector<bool>& srcBuffers = srcFBO->getDrawBuffersInUse();
-    const std::vector<bool>& targetBuffers = tgtFBO->getDrawBuffersInUse();
+    const std::vector<GLuint>& srcBuffers = srcFBO->getDrawBuffersInUse();
+    const std::vector<GLuint>& targetBuffers = tgtFBO->getDrawBuffersInUse();
     srcFBO->setRead_Blit();
     tgtFBO->setDraw_Blit();
     GLbitfield mask = GL_COLOR_BUFFER_BIT;
@@ -257,7 +257,7 @@ bool ImageGL::updateFrom(const ImageGL* source) {
     bool pickingCopied = false;
 
     for (int i = 1; i < srcFBO->getMaxColorAttachments(); i++) {
-        if (srcBuffers[i] && targetBuffers[i]) {
+        if (srcBuffers[i] != 0 && targetBuffers[i] != 0) {
             glReadBuffer(GL_COLOR_ATTACHMENT0_EXT + i);
             glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT + i);
             glBlitFramebufferEXT(
@@ -281,20 +281,20 @@ bool ImageGL::updateFrom(const ImageGL* source) {
 
     // Depth texture
     if ((mask & GL_DEPTH_BUFFER_BIT) == 0) {
-        auto* sDepth = source->getDepthLayerGL()->getTexture().get();
-        auto* tDepth = target->getDepthLayerGL()->getTexture().get();
+        auto sDepth = source->getDepthLayerGL()->getTexture();
+        auto tDepth = target->getDepthLayerGL()->getTexture();
 
-        if (sDepth && tDepth) tDepth->loadFromPBO(sDepth);
+        if (sDepth && tDepth) tDepth->loadFromPBO(sDepth.get());
     }
 
     LGL_ERROR;
 
     // Picking texture
     if (!pickingCopied && pickingAttachmentID_ != 0) {
-        auto* sPicking = source->getPickingLayerGL()->getTexture().get();
-        auto* tPicking = target->getPickingLayerGL()->getTexture().get();
+        auto sPicking = source->getPickingLayerGL()->getTexture();
+        auto tPicking = target->getPickingLayerGL()->getTexture();
 
-        if (sPicking && tPicking) tPicking->loadFromPBO(sPicking);
+        if (sPicking && tPicking) tPicking->loadFromPBO(sPicking.get());
     }
 
     LGL_ERROR;

@@ -584,61 +584,48 @@ bool TemplateOptionProperty<T>::setSelectedValue(const T& val) {
 
 template <typename T>
 TemplateOptionProperty<T>& TemplateOptionProperty<T>::replaceOptions(
-    const std::vector<std::string>& ids, const std::vector<std::string>& displayNames,
-    const std::vector<T>& values) {
-    std::string selectId{};
-    if (!options_.empty()) selectId = getSelectedIdentifier();
+    std::vector<OptionPropertyOption<T>> options) {
+    if (options != options_) {
 
-    options_.clear();
-    for (size_t i = 0; i < ids.size(); i++)
-        options_.emplace_back(ids[i], displayNames[i], values[i]);
+        std::string selectId{};
+        if (!options_.empty()) selectId = getSelectedIdentifier();
 
-    auto it = util::find_if(options_, [&](auto& opt) { return opt.id_ == selectId; });
-    if (it != options_.end()) {
-        selectedIndex_ = std::distance(options_.begin(), it);
-    } else {
-        selectedIndex_ = 0;
+        options_ = std::move(options);
+        auto it = util::find_if(options_, [&](auto& opt) { return opt.id_ == selectId; });
+        if (it != options_.end()) {
+            selectedIndex_ = std::distance(options_.begin(), it);
+        } else {
+            selectedIndex_ = 0;
+        }
+        propertyModified();
     }
-    propertyModified();
     return *this;
 }
 
 template <typename T>
 TemplateOptionProperty<T>& TemplateOptionProperty<T>::replaceOptions(
-    std::vector<OptionPropertyOption<T>> options) {
-    std::string selectId{};
-    if (!options_.empty()) selectId = getSelectedIdentifier();
+    const std::vector<std::string>& ids, const std::vector<std::string>& displayNames,
+    const std::vector<T>& values) {
 
-    options_ = std::move(options);
-    auto it = util::find_if(options_, [&](auto& opt) { return opt.id_ == selectId; });
-    if (it != options_.end()) {
-        selectedIndex_ = std::distance(options_.begin(), it);
-    } else {
-        selectedIndex_ = 0;
+    IVW_ASSERT(ids.size() == displayNames.size(), "Arguments has to have the same size");
+    IVW_ASSERT(ids.size() == values.size(), "Arguments has to have the same size");
+
+    std::vector<OptionPropertyOption<T>> options;
+    for (size_t i = 0; i < ids.size(); i++) {
+        options.emplace_back(ids[i], displayNames[i], values[i]);
     }
-    propertyModified();
-    return *this;
+    return replaceOptions(std::move(options));
 }
 
 template <typename T>
 template <typename U, class>
-TemplateOptionProperty<T>& TemplateOptionProperty<T>::replaceOptions(
-    const std::vector<T>& options) {
+TemplateOptionProperty<T>& TemplateOptionProperty<T>::replaceOptions(const std::vector<T>& values) {
 
-    std::string selectId{};
-    if (!options_.empty()) selectId = getSelectedIdentifier();
-
-    options_.clear();
-    for (size_t i = 0; i < options.size(); i++) options_.emplace_back(options[i]);
-
-    auto it = util::find_if(options_, [&](auto& opt) { return opt.id_ == selectId; });
-    if (it != options_.end()) {
-        selectedIndex_ = std::distance(options_.begin(), it);
-    } else {
-        selectedIndex_ = 0;
+    std::vector<OptionPropertyOption<T>> options;
+    for (size_t i = 0; i < values.size(); i++) {
+        options.emplace_back(values[i]);
     }
-    propertyModified();
-    return *this;
+    return replaceOptions(std::move(options));
 }
 
 // Is...

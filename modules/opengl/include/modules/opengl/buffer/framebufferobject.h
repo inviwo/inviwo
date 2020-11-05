@@ -149,7 +149,7 @@ public:
     /**
      * Returns a boolean field indicating whether attachment i has an attached texture
      */
-    const std::vector<bool>& getDrawBuffersInUse() const { return buffersInUse_; }
+    const std::vector<GLuint>& getDrawBuffersInUse() const { return attachedColorIds_; }
     const GLenum* getDrawBuffersDeprecated() const;
     int getMaxColorAttachments() const;
 
@@ -163,6 +163,10 @@ public:
     bool hasDepthAttachment() const;
     bool hasStencilAttachment() const;
 
+    const std::vector<GLuint>& attachedColorTextureIds() const { return attachedColorIds_; }
+    GLuint attachedDepthTextureId() const { return attachedDepthId_; }
+    GLuint attachedStencilTextureId() const { return attachedStencilId_; }
+
     void checkStatus();
 
     void setRead_Blit(bool set = true) const;
@@ -170,9 +174,11 @@ public:
 
     bool isActive() const;
 
-protected:
-    void performAttachTexture(GLenum attachmentID);
-    bool performAttachColorTexture(GLenum& outAttachNumber);
+private:
+    void validateAttachmentId(GLenum attachmentID) const;
+
+    void performAttachTexture(GLenum attachmentID, GLuint texId);
+    GLenum performAttachColorTexture(GLuint texId);
 
     /**
      * If forcedLocation is > -1, this will enforce to position the color attachment at the given
@@ -180,19 +186,18 @@ protected:
      * affects subsequent buffer locations of already attached color buffers. NOTE: if
      * forcedLocation is larger than the number of attachments, it will not be considered
      */
-    bool performAttachColorTexture(GLenum& outAttachNumber, int attachmentNumber,
-                                   bool attachFromRear = false, int forcedLocation = -1);
+    GLuint performAttachColorTexture(GLuint texId, int attachmentNumber,
+                                     bool attachFromRear = false, int forcedLocation = -1);
 
     std::string printBuffers() const;
     static std::string getAttachmentStr(GLenum attachmentID);
 
-private:
     unsigned int id_;
-    bool hasDepthAttachment_;
-    bool hasStencilAttachment_;
+    GLuint attachedDepthId_;
+    GLuint attachedStencilId_;
+    std::vector<GLuint> attachedColorIds_;
 
     std::vector<GLenum> drawBuffers_;
-    std::vector<bool> buffersInUse_;
     int maxColorattachments_;
 
     static const std::array<GLenum, 16> colorAttachmentEnums_;

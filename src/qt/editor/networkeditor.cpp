@@ -241,6 +241,8 @@ ConnectionGraphicsItem* NetworkEditor::addConnectionGraphicsItem(const PortConne
 void NetworkEditor::removeConnection(ConnectionGraphicsItem* connectionGraphicsItem) {
     Outport* outport = connectionGraphicsItem->getOutport();
     Inport* inport = connectionGraphicsItem->getInport();
+
+    RenderContext::getPtr()->activateDefaultRenderContext();
     network_->removeConnection(outport, inport);
 }
 
@@ -270,6 +272,7 @@ void NetworkEditor::removeLink(LinkConnectionGraphicsItem* linkGraphicsItem) {
         linkGraphicsItem->getSrcProcessorGraphicsItem()->getProcessor(),
         linkGraphicsItem->getDestProcessorGraphicsItem()->getProcessor());
 
+    RenderContext::getPtr()->activateDefaultRenderContext();
     NetworkLock lock(network_);
     for (auto& link : links) {
         network_->removeLink(link.getSource(), link.getDestination());
@@ -552,6 +555,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             QAction* delprocessor = menu.addAction(QIcon(":/svgicons/edit-delete.svg"),
                                                    tr("Delete && &Keep Connections"));
             connect(delprocessor, &QAction::triggered, [this, processor]() {
+                RenderContext::getPtr()->activateDefaultRenderContext();
+
                 auto p = processor->getProcessor();
                 for (auto& prop : p->getPropertiesRecursive()) {
                     auto links = network_->getPropertiesLinkedTo(prop);
@@ -642,8 +647,10 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         menu.addSeparator();
         auto compAction = menu.addAction(QIcon(":/svgicons/composite-create-enabled.svg"),
                                          tr("&Create Composite"));
-        connect(compAction, &QAction::triggered, this,
-                [this]() { util::replaceSelectionWithCompositeProcessor(*network_); });
+        connect(compAction, &QAction::triggered, this, [this]() {
+            RenderContext::getPtr()->activateDefaultRenderContext();
+            util::replaceSelectionWithCompositeProcessor(*network_);
+        });
         compAction->setEnabled(selectedProcessors.size() > 1);
 
         auto expandAction = menu.addAction(QIcon(":/svgicons/composite-expand-enabled.svg"),
@@ -771,6 +778,7 @@ void NetworkEditor::deleteSelection() {
 
 void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
     NetworkLock lock(network_);
+    RenderContext::getPtr()->activateDefaultRenderContext();
 
     // Remove Connections
     util::erase_remove_if(items, [&](QGraphicsItem* item) {

@@ -77,7 +77,7 @@ struct DataTraits {
      * In case it is not found an empty string will be returned. An empty class identifier will be
      * considered an error in various factories.
      */
-    static std::string classIdentifier() { return util::classIdentifier<T>(); }
+    static const std::string& classIdentifier() { return util::classIdentifier<T>(); }
 
     /**
      * Should return a user friendly version of the above identifier, "MyDataType" for example.
@@ -86,7 +86,7 @@ struct DataTraits {
      * In case it is not found the classIdentifier will be returned.
      */
 
-    static std::string dataName() { return util::dataName<T>(); }
+    static const std::string& dataName() { return util::dataName<T>(); }
     /**
      * Should return a color that will be used to identify ports of this data type
      * The default implementation will look for a static uvec3 member T::colorCode.

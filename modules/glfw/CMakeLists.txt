@@ -44,5 +44,3 @@ endif()
 
 target_link_libraries(inviwo-module-glfw PUBLIC glfw)
 
-
-ivw_make_package(InviwoGLFWModule inviwo-module-glfw)

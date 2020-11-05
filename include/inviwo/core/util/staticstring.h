@@ -199,7 +199,7 @@ template <size_t N>
 struct formatter<::inviwo::StaticString<N>> : formatter<string_view> {
     // parse is inherited from formatter<string_view>.
     template <typename FormatContext>
-    auto format(::inviwo::StaticString<N> str, FormatContext& ctx) {
+    auto format(const ::inviwo::StaticString<N>& str, FormatContext& ctx) {
         return formatter<string_view>::format(str.view(), ctx);
     }
 };
