@@ -41,6 +41,7 @@
 #include <inviwo/core/util/stdextensions.h>
 
 #include <array>
+#include <string_view>
 
 namespace inviwo {
 
@@ -101,7 +102,7 @@ public:
     std::array<Prop, N> list_;
 
 private:
-    const static inline std::array<std::string, 4> xyzwAxisNames = {"x", "y", "z", "w"};
+    const static constexpr std::array<std::string_view, 4> xyzwAxisNames = {"x", "y", "z", "w"};
 };
 
 /** \docpage{org.inviwo.GridPlanes, Grid Planes}
