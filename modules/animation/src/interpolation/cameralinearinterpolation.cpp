@@ -65,7 +65,6 @@ void CameraLinearInterpolation::operator()(const std::vector<std::unique_ptr<Cam
     const auto& t2 = (*it)->getTime();
 
     auto t = easing::ease((to - t1) / (t2 - t1), easing);
-    auto fromDir = glm::normalize(v1.getDirection());
 
     auto lookTo = glm::mix(dvec3(v1.getLookTo()), dvec3(v2.getLookTo()), t);
     auto lookFrom = glm::mix(dvec3(v1.getLookFrom()), dvec3(v2.getLookFrom()), t);
