@@ -214,14 +214,10 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
     // background points and including the current value.
     const float* inputDepthData = static_cast<const float*>(
         img->getRepresentation<ImageRAM>()->getDepthLayerRAM()->getData());
-    std::pair<float, float> minmax(1, 0);
-    minmax = std::accumulate(
-        inputDepthData, inputDepthData + dim.x * dim.y, minmax,
+    const auto minmax = std::accumulate(
+        inputDepthData, inputDepthData + dim.x * dim.y, std::make_pair(1.0f, 0.0f),
         [](const std::pair<float, float>& acc, const float v) -> std::pair<float, float> {
-            std::pair<float, float> res;
-            res.first = std::min(acc.first, v);
-            res.second = (v < 1) ? std::max(acc.second, v) : acc.second;
-            return res;
+            return {std::min(acc.first, v), (v < 1) ? std::max(acc.second, v) : acc.second};
         });
     const auto minDepthWorld = ndcToWorldDepth(minmax.first);
     const auto maxDepthWorld = ndcToWorldDepth(minmax.second);

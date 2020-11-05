@@ -86,7 +86,7 @@ LineRasterizer::LineRasterizer()
                 shader[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY", toString(mode));
                 invalidate(InvalidationLevel::InvalidResources);
             }}},
-          [this](Shader& shader) -> void { invalidate(InvalidationLevel::InvalidResources); })) {
+          [this](Shader&) -> void { invalidate(InvalidationLevel::InvalidResources); })) {
 
     addPort(inport_);
     addPort(outport_);
