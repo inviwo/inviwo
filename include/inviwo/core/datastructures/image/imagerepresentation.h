@@ -77,7 +77,7 @@ public:
     virtual void update(bool) override = 0;
 
 protected:
-    Image* owner_;
+    Image* owner_= nullptr;
 };
 
 }  // namespace inviwo

@@ -70,7 +70,7 @@ TextRenderer::TextRenderer(TextRenderer&& rhs) noexcept
     , lineSpacing_(rhs.lineSpacing_)
     , shader_(std::move(rhs.shader_))
     , fbo_(std::move(rhs.fbo_))
-    , prevTexture_(std::move(rhs.prevTexture_)) {
+    , currTexture_(std::move(rhs.currTexture_)) {
     rhs.fontlib_ = nullptr;
     rhs.fontface_ = nullptr;
 }
@@ -88,7 +88,7 @@ TextRenderer& TextRenderer::operator=(TextRenderer&& rhs) noexcept {
         lineSpacing_ = rhs.lineSpacing_;
         shader_ = std::move(rhs.shader_);
         fbo_ = std::move(rhs.fbo_);
-        prevTexture_ = std::move(rhs.prevTexture_);
+        currTexture_ = std::move(rhs.currTexture_);
 
         rhs.fontlib_ = nullptr;
         rhs.fontface_ = nullptr;
@@ -300,22 +300,18 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const siz
     renderToTexture({texture, computeBoundingBox(str)}, origin, size, str, color, clearTexture);
 }
 
-std::tuple<utilgl::DepthMaskState, utilgl::GlBoolState, utilgl::BlendModeState,
-           utilgl::Activate<FrameBufferObject>>
+std::tuple<utilgl::DepthMaskState, utilgl::GlBoolState, utilgl::BlendModeState, utilgl::ActivateFBO>
 TextRenderer::setupRenderState(std::shared_ptr<Texture2D> texture, bool clearTexture) {
     // disable depth test and writing depth
     utilgl::DepthMaskState depthMask(GL_FALSE);
     utilgl::GlBoolState depth(GL_DEPTH_TEST, GL_FALSE);
-
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    utilgl::ActivateFBO fbo(fbo_);
 
-    utilgl::Activate<FrameBufferObject> fbo(&fbo_);
-
-    if (prevTexture_ != texture) {
-        // detach previous texture and attach new texture as a render target, no depth texture
-        fbo_.detachTexture(GL_COLOR_ATTACHMENT0);
+    if (texture != currTexture_) {
+        // attach new texture as a render target, no depth texture
         fbo_.attachTexture(texture.get(), GL_COLOR_ATTACHMENT0);
-        prevTexture_ = texture;
+        currTexture_ = texture;
     }
     if (clearTexture) {
         glClear(GL_COLOR_BUFFER_BIT);

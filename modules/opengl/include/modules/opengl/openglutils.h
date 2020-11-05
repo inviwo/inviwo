@@ -27,14 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENGLUTILS_H
-#define IVW_OPENGLUTILS_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/opengl/texture/textureunit.h>
+#include <inviwo/core/util/moveonlyvalue.h>
 
 #include <functional>
 #include <array>
@@ -64,10 +64,8 @@ std::array<Wrapping, N> convertWrappingFromGL(const std::array<GLenum, N>& wrapp
 }
 
 /**
- * \struct TexParameter
- * \brief RAII object for texture parameters of a texture bound to a given texture unit
- *
- * \see glTexParameteri
+ * @brief RAII object for texture parameters of a texture bound to a given texture unit
+ * @see glTexParameteri
  */
 struct IVW_MODULE_OPENGL_API TexParameter {
     TexParameter() = delete;
@@ -89,10 +87,8 @@ private:
 };
 
 /**
- * \struct TexEnv
- * \brief RAII object for texture environments of a texture bound to a given texture unit
- *
- * \see glTexEnvi
+ * @brief RAII object for texture environments of a texture bound to a given texture unit
+ * @see glTexEnvi
  */
 struct IVW_MODULE_OPENGL_API TexEnv {
     TexEnv() = delete;
@@ -114,18 +110,15 @@ private:
 };
 
 /**
- * \struct GlBoolState
- * \brief RAII object for OpenGL bool states
- *
- * \see glIsEnabled, glEnable, glDisable
+ * @brief RAII object for OpenGL bool states
+ * @see glIsEnabled, glEnable, glDisable
  */
 struct IVW_MODULE_OPENGL_API GlBoolState {
+    GlBoolState(GLenum target, bool state);
+
     GlBoolState() = delete;
     GlBoolState(GlBoolState const&) = delete;
     GlBoolState& operator=(GlBoolState const& that) = delete;
-
-    GlBoolState(GLenum target, bool state);
-
     GlBoolState(GlBoolState&& rhs);
     GlBoolState& operator=(GlBoolState&& that);
 
@@ -140,21 +133,17 @@ protected:
 };
 
 /**
- * \struct CullFaceState
- * \brief RAII object for OpenGL cull face state, which enables GL_CULL_FACE if
+ * @brief RAII object for OpenGL cull face state, which enables GL_CULL_FACE if
  * mode is different from GL_NONE
- *
- * \see glCullFace, GL_CULL_FACE
+ * @see glCullFace, GL_CULL_FACE
  */
 struct IVW_MODULE_OPENGL_API CullFaceState : protected GlBoolState {
+    CullFaceState(GLint mode);
+
     CullFaceState() = delete;
     CullFaceState(CullFaceState const&) = delete;
     CullFaceState& operator=(CullFaceState const& that) = delete;
-
-    CullFaceState(GLint mode);
-
     CullFaceState(CullFaceState&& rhs);
-
     CullFaceState& operator=(CullFaceState&& that);
 
     ~CullFaceState();
@@ -167,22 +156,18 @@ protected:
 };
 
 /**
- * \struct CullFaceState
- * \brief RAII object for OpenGL polygon mode as well as line width and point size
+ * @brief RAII object for OpenGL polygon mode as well as line width and point size
  * Will set the polygon mode for GL_FRONT_AND_BACK since this is the only mode supported by the
  * OpenGL core profile.
- *
- * \see glPolygonMode, glPointSize, glLineWidth
+ * @see glPolygonMode, glPointSize, glLineWidth
  */
 struct IVW_MODULE_OPENGL_API PolygonModeState {
+    PolygonModeState(GLenum mode, GLfloat lineWidth, GLfloat pointSize);
+
     PolygonModeState() = delete;
     PolygonModeState(PolygonModeState const&) = delete;
     PolygonModeState& operator=(PolygonModeState const& that) = delete;
-
-    PolygonModeState(GLenum mode, GLfloat lineWidth, GLfloat pointSize);
-
     PolygonModeState(PolygonModeState&& rhs);
-
     PolygonModeState& operator=(PolygonModeState&& that);
 
     ~PolygonModeState();
@@ -198,19 +183,17 @@ protected:
 };
 
 /**
- * \struct BlendModeState
- * \brief RAII object for OpenGL blending and blend mode, enables blending if source mode is
+ * @brief RAII object for OpenGL blending and blend mode, enables blending if source mode is
  * different from GL_NONE
- *
- * \see glBlendFunc, GL_BLEND
+ * @see glBlendFunc, GL_BLEND
  */
 struct IVW_MODULE_OPENGL_API BlendModeState : protected GlBoolState {
+    BlendModeState(GLenum srcMode, GLenum dstMode);
+    BlendModeState(GLenum srcRGB, GLenum srcAlpha, GLenum dstRGB, GLenum dstAlpha);
+
     BlendModeState() = delete;
     BlendModeState(BlendModeState const&) = delete;
     BlendModeState& operator=(BlendModeState const& that) = delete;
-
-    BlendModeState(GLenum srcMode, GLenum dstMode);
-    BlendModeState(GLenum srcRGB, GLenum srcAlpha, GLenum dstRGB, GLenum dstAlpha);
     BlendModeState(BlendModeState&& rhs);
     BlendModeState& operator=(BlendModeState&& that);
 
@@ -230,23 +213,19 @@ protected:
 };
 
 /**
- * \struct BlendModeEquationState
- * \brief RAII object for OpenGL blend equation
- *
- * \see glBlendEquation, GL_BLEND_EQUATION_RGB
+ * @brief RAII object for OpenGL blend equation
+ * @see glBlendEquation, GL_BLEND_EQUATION_RGB
  */
 struct IVW_MODULE_OPENGL_API BlendModeEquationState : protected BlendModeState {
-    BlendModeEquationState() = delete;
-    BlendModeEquationState(BlendModeEquationState const&) = delete;
-    BlendModeEquationState& operator=(BlendModeEquationState const& that) = delete;
-
     BlendModeEquationState(GLenum srcMode, GLenum dstMode, GLenum eqn);
     BlendModeEquationState(GLenum srcRGB, GLenum srcAlpha, GLenum dstRGB, GLenum dstAlpha,
                            GLenum eqnRGB, GLenum eqnAlpha);
 
+    BlendModeEquationState() = delete;
+    BlendModeEquationState(BlendModeEquationState const&) = delete;
+    BlendModeEquationState& operator=(BlendModeEquationState const& that) = delete;
     BlendModeEquationState(BlendModeEquationState&& rhs);
     BlendModeEquationState& operator=(BlendModeEquationState&& that);
-
     ~BlendModeEquationState();
 
 protected:
@@ -260,54 +239,44 @@ protected:
 };
 
 /**
- * \struct ClearColor
- * \brief RAII object for OpenGL clear color used when calling glClear(GL_COLOR_BUFFER_BIT)
- *
- * \see glClearColor
+ * @brief RAII object for OpenGL clear color used when calling glClear(GL_COLOR_BUFFER_BIT)
+ * @see glClearColor
  */
 struct IVW_MODULE_OPENGL_API ClearColor {
+    ClearColor(vec4 color);
+
     ClearColor() = delete;
     ClearColor(ClearColor const&) = delete;
     ClearColor& operator=(ClearColor const& that) = delete;
-
-    ClearColor(vec4 color);
-    ClearColor(ClearColor&& rhs);
-    ClearColor& operator=(ClearColor&& that);
-
+    ClearColor(ClearColor&& rhs) = default;
+    ClearColor& operator=(ClearColor&& that) = default;
     ~ClearColor();
 
 protected:
-    vec4 color_;
-    vec4 oldColor_;
+    MoveOnlyValue<vec4> oldColor_;
 };
 
 /**
- * \struct ClearColor
- * \brief RAII object for OpenGL clear depth used when calling glClear(GL_DEPTH_BUFFER_BIT)
- *
- * \see glClearDepth
+ * @brief RAII object for OpenGL clear depth used when calling glClear(GL_DEPTH_BUFFER_BIT)
+ * @see glClearDepth
  */
 struct IVW_MODULE_OPENGL_API ClearDepth {
+    ClearDepth(float depth);
+
     ClearDepth() = delete;
     ClearDepth(ClearDepth const&) = delete;
     ClearDepth& operator=(ClearDepth const& that) = delete;
-
-    ClearDepth(float depth);
-    ClearDepth(ClearDepth&& rhs);
-    ClearDepth& operator=(ClearDepth&& that);
-
+    ClearDepth(ClearDepth&& rhs) = default;
+    ClearDepth& operator=(ClearDepth&& that) = default;
     ~ClearDepth();
 
 protected:
-    float depth_;
-    float oldDepth_;
+    MoveOnlyValue<float> oldDepth_;
 };
 
 /**
- * \struct Viewport
- * \brief representation of an OpenGL viewport with setter and getter
- *
- * \see glViewport, GL_VIEWPORT
+ * @brief representation of an OpenGL viewport with setter and getter
+ * @see glViewport, GL_VIEWPORT
  */
 struct IVW_MODULE_OPENGL_API Viewport {
     Viewport() : view_({{0, 0, 0, 0}}) {}
@@ -334,34 +303,25 @@ inline bool IVW_MODULE_OPENGL_API operator!=(const Viewport& lhs, const Viewport
 }
 
 /**
- * \struct ClearColor
- * \brief RAII object for OpenGL viewports
- *
- * \see glViewport
+ * @brief RAII object for OpenGL viewports
+ * @see glViewport
  */
 struct IVW_MODULE_OPENGL_API ViewportState {
-    ViewportState() = delete;
-    ViewportState(ViewportState const&) = delete;
-    ViewportState& operator=(ViewportState const& that) = delete;
-
     ViewportState(GLint x, GLint y, GLsizei width, GLsizei height);
     ViewportState(const ivec4& coords);
 
-    ViewportState(ViewportState&& rhs);
-    ViewportState& operator=(ViewportState&& that);
-
+    ViewportState() = delete;
+    ViewportState(ViewportState&&) noexcept = default;
+    ViewportState& operator=(ViewportState&&) noexcept = default;
     ~ViewportState();
 
 private:
-    Viewport coords_;
-    Viewport oldCoords_;
+    MoveOnlyValue<Viewport> oldCoords_;
 };
 
 /**
- * \struct ScissorBox
- * \brief representation of an OpenGL viewport with setter and getter
- *
- * \see glScissor, GL_SCISSOR_BOX
+ * @brief representation of an OpenGL viewport with setter and getter
+ * @see glScissor, GL_SCISSOR_BOX
  */
 struct IVW_MODULE_OPENGL_API ScissorBox {
     ScissorBox() : box_({{0, 0, 0, 0}}) {}
@@ -388,34 +348,25 @@ inline bool IVW_MODULE_OPENGL_API operator!=(const ScissorBox& lhs, const Scisso
 }
 
 /**
- * \struct ScissorState
- * \brief RAII object for OpenGL scissor state
- *
- * \see glScissor
+ * @brief RAII object for OpenGL scissor state
+ * @see glScissor
  */
 struct IVW_MODULE_OPENGL_API ScissorState {
-    ScissorState() = delete;
-    ScissorState(ScissorState const&) = delete;
-    ScissorState& operator=(ScissorState const& that) = delete;
-
     ScissorState(GLint x, GLint y, GLsizei width, GLsizei height);
     ScissorState(const ivec4& coords);
 
-    ScissorState(ScissorState&& rhs);
-    ScissorState& operator=(ScissorState&& that);
-
+    ScissorState() = delete;
+    ScissorState(ScissorState&&) noexcept = default;
+    ScissorState& operator=(ScissorState&&) noexcept = default;
     ~ScissorState();
 
 private:
-    ScissorBox box_;
-    ScissorBox oldBox_;
+    MoveOnlyValue<ScissorBox> oldBox_;
 };
 
 /**
- * \struct ColorMask
- * \brief representation of the OpenGL color write mask
- *
- * \see glColorMask, GL_COLOR_WRITE_MASK
+ * @brief representation of the OpenGL color write mask
+ * @see glColorMask, GL_COLOR_WRITE_MASK
  */
 struct IVW_MODULE_OPENGL_API ColorMask {
     ColorMask() : mask_({{0, 0, 0, 0}}) {}
@@ -443,10 +394,8 @@ inline bool IVW_MODULE_OPENGL_API operator!=(const ColorMask& lhs, const ColorMa
 }
 
 /**
- * \struct ColorMaski
- * \brief representation of the OpenGL color write mask of a specific buffer
- *
- * \see glColorMaski, GL_COLOR_WRITE_MASK
+ * @brief representation of the OpenGL color write mask of a specific buffer
+ * @see glColorMaski, GL_COLOR_WRITE_MASK
  */
 struct IVW_MODULE_OPENGL_API ColorMaski {
     ColorMaski() : buf_(0), mask_({{0, 0, 0, 0}}) {}
@@ -476,52 +425,38 @@ inline bool IVW_MODULE_OPENGL_API operator!=(const ColorMaski& lhs, const ColorM
 }
 
 /**
- * \struct ColorMaskState
- * \brief RAII object for OpenGL color mask state, sets the color mask for _all_ draw buffers
- *
- * \see glColorMask
+ * @brief RAII object for OpenGL color mask state, sets the color mask for _all_ draw buffers
+ * @see glColorMask
  */
 struct IVW_MODULE_OPENGL_API ColorMaskState {
-    ColorMaskState() = delete;
-    ColorMaskState(ColorMaskState const&) = delete;
-    ColorMaskState& operator=(ColorMaskState const& that) = delete;
-
     ColorMaskState(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
     ColorMaskState(const bvec4& mask);
 
-    ColorMaskState(ColorMaskState&& rhs);
-    ColorMaskState& operator=(ColorMaskState&& that);
-
+    ColorMaskState() = delete;
+    ColorMaskState(ColorMaskState&&) noexcept = default;
+    ColorMaskState& operator=(ColorMaskState&&) noexcept = default;
     ~ColorMaskState();
 
 private:
-    ColorMask mask_;
-    ColorMask oldMask_;
+    MoveOnlyValue<ColorMask> oldMask_;
 };
 
 /**
- * \struct ColorMaskiState
- * \brief RAII object for OpenGL color mask state, sets the color mask for a specific draw buffer
- *
- * \see glColorMaski
+ * @brief RAII object for OpenGL color mask state, sets the color mask for a specific draw buffer
+ * @see glColorMaski
  */
 struct IVW_MODULE_OPENGL_API ColorMaskiState {
-    ColorMaskiState() = delete;
-    ColorMaskiState(ColorMaskiState const&) = delete;
-    ColorMaskiState& operator=(ColorMaskiState const& that) = delete;
-
     ColorMaskiState(GLuint buf, GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
     ColorMaskiState(GLuint buf, const bvec4& mask);
 
-    ColorMaskiState(ColorMaskiState&& rhs);
-    ColorMaskiState& operator=(ColorMaskiState&& that);
-
+    ColorMaskiState() = delete;
+    ColorMaskiState(ColorMaskiState&&) noexcept = default;
+    ColorMaskiState& operator=(ColorMaskiState&&) noexcept = default;
     ~ColorMaskiState();
 
 private:
     GLuint buf_;
-    ColorMask mask_;
-    ColorMask oldMask_;
+    MoveOnlyValue<ColorMask> oldMask_;
 };
 
 template <typename T>
@@ -598,38 +533,30 @@ SimpleState<T1, T2, Entity, Getter, Setter, Validator>::SimpleState(
 IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width);
 
 /**
- * \struct inviwo::DepthFuncState
- * \brief RAII object for OpenGL depth func state
- *
- * \see glDepthFunc, GL_DEPTH_FUNC
+ * @brief RAII object for OpenGL depth func state
+ * @see glDepthFunc, GL_DEPTH_FUNC
  */
 using DepthFuncState = SimpleState<GLint, GLenum, GL_DEPTH_FUNC, glGetIntegerv, glDepthFunc>;
 
 /**
- * \struct inviwo::DepthMaskState
- * \brief RAII object for OpenGL depth mask to enable/disable writing depth
- *
- * \see glDepthMask, GL_DEPTH_WRITEMASK
+ * @brief RAII object for OpenGL depth mask to enable/disable writing depth
+ * @see glDepthMask, GL_DEPTH_WRITEMASK
  */
 using DepthMaskState =
     SimpleState<GLboolean, GLboolean, GL_DEPTH_WRITEMASK, glGetBooleanv, glDepthMask>;
 
 /**
- * \struct inviwo::LineWidthState
- * \brief RAII object for OpenGL line width
- *
- * \see glLineWidth, GL_LINE_WIDTH
+ * @brief RAII object for OpenGL line width
+ * @see glLineWidth, GL_LINE_WIDTH
  */
 
-using LineWidthState[[deprecated(
+using LineWidthState [[deprecated(
     "glLineWidth is not supported by all OpenGL implementations for widths different from 1.0")]] =
     SimpleState<GLfloat, GLfloat, GL_LINE_WIDTH, glGetFloatv, glLineWidth, validateLineWidth>;
 
 /**
- * \struct inviwo::PointSizeState
- * \brief RAII object for OpenGL point size
- *
- * \see glPointSize, GL_POINT_SIZE
+ * @brief RAII object for OpenGL point size
+ * @see glPointSize, GL_POINT_SIZE
  */
 using PointSizeState = SimpleState<GLfloat, GLfloat, GL_POINT_SIZE, glGetFloatv, glPointSize>;
 
@@ -686,5 +613,3 @@ private:
 }  // namespace utilgl
 
 }  // namespace inviwo
-
-#endif  // IVW_OPENGLUTILS_H
