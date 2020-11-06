@@ -35,9 +35,9 @@ namespace inviwo {
 const ProcessorInfo FancyGadgetProcessor::processorInfo_{
     "org.inviwo.FancyGadgetProcessor",  // Class identifier
     "Fancy Gadget Processor",           // Display name
-    "Undefined",                        // Category
-    CodeState::Experimental,            // Code state
-    Tags::None,                         // Tags
+    "Example",                          // Category
+    CodeState::Stable,                  // Code state
+    Tags::CPU,                          // Tags
 };
 const ProcessorInfo FancyGadgetProcessor::getProcessorInfo() const { return processorInfo_; }
 
