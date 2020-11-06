@@ -67,8 +67,8 @@ FancyGadgetModule::FancyGadgetModule(InviwoApplication* app) : InviwoModule(app,
     // registerSettings(std::make_unique<FancyGadgetSettings>());
     // registerMetaData(std::make_unique<FancyGadgetMetaData>());
     // registerPortInspector("FancyGadgetOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(util::make_unique_ptr<FancyGadgetDrawer>());
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
+    // processorWidget); registerDrawer(util::make_unique_ptr<FancyGadgetDrawer>());
 }
 
 }  // namespace inviwo

@@ -51,4 +51,4 @@ TEST(FancyMethod, Fibo3) {
     EXPECT_EQ(2, res);
 }
 
-}  // namespace inviwo 
+}  // namespace inviwo

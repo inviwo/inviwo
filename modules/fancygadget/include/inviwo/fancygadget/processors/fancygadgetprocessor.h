@@ -37,21 +37,21 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.FancyGadgetProcessor, Fancy Gadget Processor}
-* ![](org.inviwo.FancyGadgetProcessor.png?classIdentifier=org.inviwo.FancyGadgetProcessor)
-* 
-* Description of the processor
-* 
-* 
-* ### Inports
-*   * __inport__ Describe port.
-* 
-* ### Outports
-*   * __outport__ Describe port.
-* 
-* ### Properties
-*   * __Position__ Describe property.
-* 
-*/
+ * ![](org.inviwo.FancyGadgetProcessor.png?classIdentifier=org.inviwo.FancyGadgetProcessor)
+ *
+ * Description of the processor
+ *
+ *
+ * ### Inports
+ *   * __inport__ Describe port.
+ *
+ * ### Outports
+ *   * __outport__ Describe port.
+ *
+ * ### Properties
+ *   * __Position__ Describe property.
+ *
+ */
 class IVW_MODULE_FANCYGADGET_API FancyGadgetProcessor : public Processor {
 public:
     FancyGadgetProcessor();
