@@ -1,5 +1,7 @@
 #pragma once
 
+// clang-format off
+
 #ifndef TRACY_ENABLE
 
 #define TRACY_ZONE_NAMED(x,y)

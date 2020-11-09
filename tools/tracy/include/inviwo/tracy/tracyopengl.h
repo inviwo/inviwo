@@ -1,5 +1,7 @@
 #pragma once
 
+// clang-format off
+
 #if !defined GL_TIMESTAMP && !defined GL_TIMESTAMP_EXT
 #  error "You must include OpenGL 3.2 headers before including TracyOpenGL.hpp"
 #endif
