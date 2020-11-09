@@ -35,6 +35,7 @@
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/geometry/meshgl.h>
 
 #include <functional>
 #include <array>
