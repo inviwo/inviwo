@@ -44,6 +44,8 @@
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <fmt/format.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMenu>
@@ -55,7 +57,7 @@ namespace inviwo {
 namespace util {
 
 void importFromFile(TFPrimitiveSet& primitiveSet, QWidget* parent) {
-    InviwoFileDialog importFileDialog(parent, "Import " + primitiveSet.getTitle(),
+    InviwoFileDialog importFileDialog(parent, fmt::format("Import {}", primitiveSet.getTitle()),
                                       "transferfunction");
     importFileDialog.setAcceptMode(AcceptMode::Open);
     importFileDialog.setFileMode(FileMode::ExistingFile);
@@ -76,7 +78,7 @@ void importFromFile(TFPrimitiveSet& primitiveSet, QWidget* parent) {
 }
 
 void exportToFile(const TFPrimitiveSet& primitiveSet, QWidget* parent) {
-    InviwoFileDialog exportFileDialog(parent, "Export " + primitiveSet.getTitle(),
+    InviwoFileDialog exportFileDialog(parent, fmt::format("Export {}", primitiveSet.getTitle()),
                                       "transferfunction");
     exportFileDialog.setAcceptMode(AcceptMode::Save);
     exportFileDialog.setFileMode(FileMode::AnyFile);

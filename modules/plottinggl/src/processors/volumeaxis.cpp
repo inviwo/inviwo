@@ -103,11 +103,6 @@ VolumeAxis::VolumeAxis()
     addPort(imageInport_);
     addPort(outport_);
 
-    customRanges_.addProperty(rangeXaxis_);
-    customRanges_.addProperty(rangeYaxis_);
-    customRanges_.addProperty(rangeZaxis_);
-    customRanges_.setCollapsed(true);
-
     rangeXaxis_.setSemantics(PropertySemantics::Text);
     rangeYaxis_.setSemantics(PropertySemantics::Text);
     rangeZaxis_.setSemantics(PropertySemantics::Text);
@@ -115,6 +110,9 @@ VolumeAxis::VolumeAxis()
     xAxis_.setCaption("x");
     yAxis_.setCaption("y");
     zAxis_.setCaption("z");
+
+    customRanges_.addProperties(rangeXaxis_, rangeYaxis_, rangeZaxis_);
+    customRanges_.setCollapsed(true);
 
     presets_.setSerializationMode(PropertySerializationMode::None);
     presets_.onChange([&]() {
@@ -160,12 +158,10 @@ VolumeAxis::VolumeAxis()
         property->majorTicks_.tickLength_.set(majorTick);
         property->majorTicks_.tickWidth_.set(1.5f);
         property->majorTicks_.style_.set(TickStyle::Outside);
-        property->majorTicks_.setCurrentStateAsDefault();
-
+        
         property->minorTicks_.tickLength_.set(minorTick);
         property->minorTicks_.tickWidth_.set(1.3f);
         property->minorTicks_.style_.set(TickStyle::Outside);
-        property->minorTicks_.setCurrentStateAsDefault();
     }
 
     auto linkAxisRanges = [this](DoubleMinMaxProperty& from, DoubleMinMaxProperty& to) {
@@ -191,6 +187,8 @@ VolumeAxis::VolumeAxis()
     rangeMode_.onChange([this]() { adjustRanges(); });
 
     customRanges_.setVisible(rangeMode_.getSelectedValue() == AxisRangeMode::Custom);
+
+    setAllPropertiesCurrentStateAsDefault();
 }
 
 void VolumeAxis::process() {

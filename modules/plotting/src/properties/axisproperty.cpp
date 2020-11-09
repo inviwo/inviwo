@@ -69,12 +69,8 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
     , majorTicks_{"majorTicks", "Major Ticks"}
     , minorTicks_{"minorTicks", "Minor Ticks"} {
 
-    color_.setSemantics(PropertySemantics::Color);
-
-    addProperties(color_, width_, useDataRange_, range_, flipped_, orientation_, placement_);
-
-    range_.setReadOnly(useDataRange_.get());
-    useDataRange_.onChange([this]() { range_.setReadOnly(useDataRange_.get()); });
+    color_.setSemantics(PropertySemantics::Color).setCurrentStateAsDefault();
+    range_.readonlyDependsOn(useDataRange_, [](const auto& p) { return p.get(); });
 
     // change default fonts, make axis labels slightly less pronounced
     captionSettings_.font_.fontFace_.setSelectedIdentifier("Montserrat-Regular");
@@ -86,15 +82,15 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
     labelSettings_.title_.setDisplayName("Format");
     labelSettings_.title_.set("%.1f");
     labelSettings_.position_.setVisible(false);
-    labelSettings_.setCurrentStateAsDefault();
-
-    addProperties(captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 
     captionSettings_.setCollapsed(true);
     labelSettings_.setCollapsed(true);
-
     majorTicks_.setCollapsed(true);
     minorTicks_.setCollapsed(true);
+
+
+    addProperties(color_, width_, useDataRange_, range_, flipped_, orientation_, placement_,
+                  captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 
     setCollapsed(true);
 
@@ -106,6 +102,8 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
     // update label alignment to match current status
     adjustAlignment();
     updateLabels();
+
+    setCurrentStateAsDefault();
 }
 
 AxisProperty::AxisProperty(const AxisProperty& rhs)
@@ -141,15 +139,19 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
 
 AxisProperty* AxisProperty::clone() const { return new AxisProperty(*this); }
 
-void AxisProperty::setCaption(const std::string& title) { captionSettings_.title_.set(title); }
+AxisProperty& AxisProperty::setCaption(std::string_view title) {
+    captionSettings_.title_.set(title);
+    return *this;
+}
 
 const std::string& AxisProperty::getCaption() const { return captionSettings_.title_.get(); }
 
-void AxisProperty::setLabelFormat(const std::string& formatStr) {
+AxisProperty& AxisProperty::setLabelFormat(std::string_view formatStr) {
     labelSettings_.title_.set(formatStr);
+    return *this;
 }
 
-void AxisProperty::setRange(const dvec2& range) {
+AxisProperty& AxisProperty::setRange(const dvec2& range) {
     NetworkLock lock(&range_);
     if (range_.getRangeMin() > range.x) {
         range_.setRangeMin(range.x);
@@ -160,35 +162,42 @@ void AxisProperty::setRange(const dvec2& range) {
     if (useDataRange_) {
         range_.set(range);
     }
+    return *this;
 }
 
-void AxisProperty::setColor(const vec4& c) {
+AxisProperty& AxisProperty::setColor(const vec4& c) {
     color_.set(c);
     captionSettings_.color_.set(c);
     labelSettings_.color_.set(c);
     majorTicks_.color_.set(c);
     minorTicks_.color_.set(c);
+
+    return *this;
 }
 
-void AxisProperty::setFontFace(const std::string& fontFace) {
+AxisProperty& AxisProperty::setFontFace(std::string_view fontFace) {
     captionSettings_.font_.fontFace_.set(fontFace);
     labelSettings_.font_.fontFace_.set(fontFace);
+    return *this;
 }
 
-void AxisProperty::setFontSize(int fontsize) {
+AxisProperty& AxisProperty::setFontSize(int fontsize) {
     captionSettings_.font_.fontSize_.set(fontsize);
     labelSettings_.font_.fontSize_.set(fontsize);
+    return *this;
 }
 
-void AxisProperty::setTickLength(float major, float minor) {
+AxisProperty& AxisProperty::setTickLength(float major, float minor) {
     majorTicks_.tickLength_.set(major);
     minorTicks_.tickLength_.set(minor);
+    return *this;
 }
 
-void AxisProperty::setLineWidth(float width) {
+AxisProperty& AxisProperty::setLineWidth(float width) {
     width_.set(width);
     majorTicks_.tickWidth_.set(width);
     minorTicks_.tickWidth_.set(width * 0.66667f);
+    return *this;
 }
 
 void AxisProperty::updateLabels() {

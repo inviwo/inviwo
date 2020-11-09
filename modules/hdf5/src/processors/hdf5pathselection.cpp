@@ -67,7 +67,8 @@ void PathSelection::onDataChange() {
     std::vector<OptionPropertyStringOption> options;
     for (const auto& meta : util::getMetaData(data->getGroup())) {
         if (meta.type_ == MetaData::HDFType::Group) {
-            options.emplace_back(meta.path_, meta.path_, meta.path_);
+            const auto path = meta.path_.toString();
+            options.emplace_back(path, path, path);
         }
     }
     selection_.replaceOptions(options);

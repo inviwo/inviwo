@@ -27,11 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STRINGPROPERTY_H
-#define IVW_STRINGPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/templateproperty.h>
+
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 
@@ -66,9 +68,11 @@ public:
     virtual StringProperty* clone() const override;
     virtual ~StringProperty() = default;
 
+    StringProperty& set(std::string_view value);
+
+    operator std::string_view() const;
+
     virtual Document getDescription() const override;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_STRINGPROPERTY_H

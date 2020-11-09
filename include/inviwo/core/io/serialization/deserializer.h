@@ -421,22 +421,17 @@ public:
 
     template <typename C>
     void operator()(Deserializer& d, C& container) {
-        T tmp{};
         size_t count = 0;
-        ContainerWrapper<T> cont(itemKey_,
-                                 [&](std::string_view /*id*/, size_t ind) ->
-                                 typename ContainerWrapper<T>::Item {
-                                     ++count;
-                                     if (ind < container.size()) {
-                                         return {true, container[ind], [&](T& /*val*/) {}};
-                                     } else {
-                                         tmp = makeNewItem_();
-                                         return {true, tmp, [&](T& /*val*/) {
-                                                     container.push_back(std::move(tmp));
-                                                     onNewItem_(container.back());
-                                                 }};
-                                     }
-                                 });
+        ContainerWrapper<T> cont(
+            itemKey_, [&](std::string_view, size_t ind) -> typename ContainerWrapper<T>::Item {
+                ++count;
+                if (ind < container.size()) {
+                    return {true, container[ind], [&](T&) {}};
+                } else {
+                    container.emplace_back(makeNewItem_());
+                    return {true, container.back(), [&](T&) { onNewItem_(container.back()); }};
+                }
+            });
 
         d.deserialize(key_, cont);
 
@@ -1170,23 +1165,26 @@ template <class T>
 void Deserializer::deserialize(std::string_view key, std::unique_ptr<T>& data) {
     static_assert(detail::canDeserialize<T>(), "Type is not serializable");
 
-    auto ptr = data.release();
-
     if constexpr (util::HasGetClassIdentifier<T>::value) {
-        auto keyNode = retrieveChild(key);
-        if (!keyNode) return;
-
-        const std::string type_attr{
-            detail::getNodeAttribute(keyNode, SerializeConstants::TypeAttribute)};
-
-        if (ptr && !type_attr.empty() && type_attr != ptr->getClassIdentifier()) {
-            delete ptr;
-            ptr = nullptr;
+        if (auto keyNode = retrieveChild(key)) {
+            const std::string type_attr{
+                detail::getNodeAttribute(keyNode, SerializeConstants::TypeAttribute)};
+            if (data && !type_attr.empty() && type_attr != data->getClassIdentifier()) {
+                // object has wrong type, delete it and let the deserialization create a new object
+                // with the correct type
+                data.reset();
+            }
         }
     }
 
-    deserialize(key, ptr);
-    data.reset(ptr);
+    
+    if (data) {
+        deserialize(key, *data);
+    } else {
+        T* ptr = nullptr;
+        deserialize(key, ptr);
+        data.reset(ptr);
+    }
 }
 
 template <typename T, typename K>

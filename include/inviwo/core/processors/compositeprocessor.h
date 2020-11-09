@@ -98,8 +98,8 @@ public:
      * is deserialized as the CompositeProcessors sub network. otherwise the network is left empty.
      * getSubNetwork can then be use to add processors etc.
      */
-    CompositeProcessor(const std::string& identifier, const std::string& displayName,
-                       InviwoApplication* app, const std::string& filename = "");
+    CompositeProcessor(std::string_view identifier, std::string_view displayName,
+                       InviwoApplication* app, std::string_view filename = "");
     virtual ~CompositeProcessor();
 
     /**
@@ -117,7 +117,7 @@ public:
      * display name will be used as filename. Saved networks will automatically appear as Processors
      * in the processor list, with the same display name.
      */
-    void saveSubNetwork(const std::string& file);
+    void saveSubNetwork(std::string_view file);
 
     /**
      * Get access to the sub network to add or remove processors etc
@@ -165,7 +165,7 @@ private:
         bool onChangeActive = false;
     };
 
-    void loadSubNetwork(const std::string& file);
+    void loadSubNetwork(std::string_view file);
 
     void registerProperty(Property* prop);
     void unregisterProperty(Property* prop);

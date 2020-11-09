@@ -38,6 +38,8 @@
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/transformiterator.h>
 
+#include <string_view>
+
 namespace inviwo {
 
 enum class TFPrimitiveSetType {
@@ -91,7 +93,7 @@ public:
     void setType(TFPrimitiveSetType type);
     TFPrimitiveSetType getType() const;
 
-    virtual std::string getTitle() const;
+    virtual std::string_view getTitle() const;
 
     /**
      * returns the range of the TF.  For a relative TF this will return [0,1]. In case of an
@@ -266,8 +268,8 @@ protected:
      */
     vec4 interpolateColor(double t) const;
 
-    virtual std::string serializationKey() const;
-    virtual std::string serializationItemKey() const;
+    virtual std::string_view serializationKey() const;
+    virtual std::string_view serializationItemKey() const;
 
     std::vector<std::unique_ptr<TFPrimitive>> values_;
     std::vector<TFPrimitive*> sorted_;

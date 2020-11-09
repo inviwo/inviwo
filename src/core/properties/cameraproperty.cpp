@@ -64,26 +64,29 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
     , camera_{factory_->create(cameraType_)}
     , defaultCamera_{}
     , cameraActions_("actions", "Actions", buttons())
-    , lookFrom_("lookFrom", "Look from", []() { return vec3{}; }, [](const vec3&) {},
-                {-vec3(100.0f), ConstraintBehavior::Ignore},
-                {vec3(100.0f), ConstraintBehavior::Ignore}, vec3(0.1f),
-                InvalidationLevel::InvalidOutput, PropertySemantics{"SphericalSpinBox"})
-    , lookTo_("lookTo", "Look to", []() { return vec3{}; }, [](const vec3&) {},
-              {-vec3(100.0f), ConstraintBehavior::Ignore},
-              {vec3(100.0f), ConstraintBehavior::Ignore}, vec3(0.1f),
-              InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
-    , lookUp_("lookUp", "Look up", []() { return vec3(1.0f, 1.0f, 1.0f); }, [](const vec3&) {},
-              {-vec3(1.0f), ConstraintBehavior::Immutable},
-              {vec3(1.0f), ConstraintBehavior::Immutable}, vec3(0.1f),
-              InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
-    , aspectRatio_("aspectRatio", "Aspect Ratio", []() { return 1.0f; }, [](const float&) {},
-                   {0.0f, ConstraintBehavior::Immutable},
-                   {std::numeric_limits<float>::max(), ConstraintBehavior::Immutable}, 0.01f,
-                   InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , nearPlane_("near", "Near Plane", []() { return 0.001f; }, [](const float&) {},
-                 {0.001f, ConstraintBehavior::Ignore}, {10.0f, ConstraintBehavior::Ignore}, 0.001f)
-    , farPlane_("far", "Far Plane", []() { return 1.0f; }, [](const float&) {},
-                {1.0f, ConstraintBehavior::Ignore}, {1000.0f, ConstraintBehavior::Ignore}, 1.0f)
+    , lookFrom_(
+          "lookFrom", "Look from", []() { return vec3{}; }, [](const vec3&) {},
+          {-vec3(100.0f), ConstraintBehavior::Ignore}, {vec3(100.0f), ConstraintBehavior::Ignore},
+          vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics{"SphericalSpinBox"})
+    , lookTo_(
+          "lookTo", "Look to", []() { return vec3{}; }, [](const vec3&) {},
+          {-vec3(100.0f), ConstraintBehavior::Ignore}, {vec3(100.0f), ConstraintBehavior::Ignore},
+          vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
+    , lookUp_(
+          "lookUp", "Look up", []() { return vec3(1.0f, 1.0f, 1.0f); }, [](const vec3&) {},
+          {-vec3(1.0f), ConstraintBehavior::Immutable}, {vec3(1.0f), ConstraintBehavior::Immutable},
+          vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
+    , aspectRatio_(
+          "aspectRatio", "Aspect Ratio", []() { return 1.0f; }, [](const float&) {},
+          {0.0f, ConstraintBehavior::Immutable},
+          {std::numeric_limits<float>::max(), ConstraintBehavior::Immutable}, 0.01f,
+          InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , nearPlane_(
+          "near", "Near Plane", []() { return 0.001f; }, [](const float&) {},
+          {0.001f, ConstraintBehavior::Ignore}, {10.0f, ConstraintBehavior::Ignore}, 0.001f)
+    , farPlane_(
+          "far", "Far Plane", []() { return 1.0f; }, [](const float&) {},
+          {1.0f, ConstraintBehavior::Ignore}, {1000.0f, ConstraintBehavior::Ignore}, 1.0f)
 
     , settings_("settings", "Settings")
     , updateNearFar_("updateNearFar", "Update Near/Far Distances", true)
@@ -127,17 +130,18 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
 CameraProperty::CameraProperty(const std::string& identifier, const std::string& displayName,
                                vec3 eye, vec3 center, vec3 lookUp, Inport* inport,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CameraProperty(identifier, displayName,
-                     [&]() -> std::function<std::optional<mat4>()> {
-                         if (auto vp = dynamic_cast<VolumeInport*>(inport)) {
-                             return util::boundingBox(*vp);
-                         } else if (auto mp = dynamic_cast<MeshInport*>(inport)) {
-                             return util::boundingBox(*mp);
-                         } else {
-                             return nullptr;
-                         }
-                     }(),
-                     eye, center, lookUp, invalidationLevel, semantics) {}
+    : CameraProperty(
+          identifier, displayName,
+          [&]() -> std::function<std::optional<mat4>()> {
+              if (auto vp = dynamic_cast<VolumeInport*>(inport)) {
+                  return util::boundingBox(*vp);
+              } else if (auto mp = dynamic_cast<MeshInport*>(inport)) {
+                  return util::boundingBox(*mp);
+              } else {
+                  return nullptr;
+              }
+          }(),
+          eye, center, lookUp, invalidationLevel, semantics) {}
 
 CameraProperty::CameraProperty(const CameraProperty& rhs)
     : CompositeProperty(rhs)
@@ -236,26 +240,6 @@ CameraProperty& CameraProperty::setCamera(std::unique_ptr<Camera> newCamera) {
         camera_ = std::move(newCamera);
 
         cameraType_.setSelectedIdentifier(camera_->getClassIdentifier());
-    }
-    return *this;
-}
-
-CameraProperty& CameraProperty::setCurrentStateAsDefault() {
-    defaultCamera_.reset(camera_->clone());
-    Property::setCurrentStateAsDefault();
-    for (auto& elem : properties_) {
-        elem->setCurrentStateAsDefault();
-    }
-    return *this;
-}
-
-CameraProperty& CameraProperty::resetToDefaultState() {
-    NetworkLock lock(this);
-    setCamera(std::unique_ptr<Camera>(defaultCamera_->clone()));
-    for (auto& elem : properties_) {
-        if (elem != &aspectRatio_) {  // We never want to reset the aspect
-            elem->resetToDefaultState();
-        }
     }
     return *this;
 }
@@ -382,16 +366,50 @@ void CameraProperty::addCamerapProperty(std::unique_ptr<Property> camprop) {
     ownedCameraProperties_.emplace_back(std::move(camprop));
 }
 
+CameraProperty& CameraProperty::setCurrentStateAsDefault() {
+    defaultCamera_.reset(camera_->clone());
+    Property::setCurrentStateAsDefault();
+    for (auto& elem : properties_) {
+        elem->setCurrentStateAsDefault();
+    }
+    return *this;
+}
+
+CameraProperty& CameraProperty::resetToDefaultState() {
+    NetworkLock lock(this);
+    setCamera(std::unique_ptr<Camera>(defaultCamera_->clone()));
+    for (auto& elem : properties_) {
+        if (elem != &aspectRatio_) {  // We never want to reset the aspect
+            elem->resetToDefaultState();
+        }
+    }
+    return *this;
+}
+
+bool CameraProperty::isDefaultState() const {
+    // We always consider the camera to be changed. It will almost always be true and handling the
+    // deserialization will be expensive if we have to take the default camera into account
+    return false;
+}
+
+bool CameraProperty::needsSerialization() const {
+    return serializationMode_ != PropertySerializationMode::None;
+}
+
 void CameraProperty::serialize(Serializer& s) const {
     CompositeProperty::serialize(s);
-    s.serialize("Camera", camera_);
+    if (serializationMode_ != PropertySerializationMode::None) {
+        s.serialize("Camera", camera_);
+    }
 }
 
 void CameraProperty::deserialize(Deserializer& d) {
-    camera_->configureProperties(*this, false);
-    d.deserialize("Camera", camera_);
-    hideConfiguredProperties();
-    camera_->configureProperties(*this, true);
+    if (serializationMode_ != PropertySerializationMode::None) {
+        camera_->configureProperties(*this, false);
+        d.deserialize("Camera", camera_);
+        hideConfiguredProperties();
+        camera_->configureProperties(*this, true);
+    }
     CompositeProperty::deserialize(d);
 }
 

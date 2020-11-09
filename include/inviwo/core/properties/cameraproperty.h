@@ -88,9 +88,6 @@ public:
     CameraProperty& setCamera(const std::string& cameraIdentifier);
     CameraProperty& setCamera(std::unique_ptr<Camera> camera);
 
-    virtual CameraProperty& setCurrentStateAsDefault() override;
-    virtual CameraProperty& resetToDefaultState() override;
-
     virtual const vec3& getLookFrom() const override;
     virtual CameraProperty& setLookFrom(vec3 lookFrom) override;
     virtual const vec3& getLookTo() const override;
@@ -157,6 +154,11 @@ public:
 
     Property* getCameraProperty(const std::string& identifier) const;
     void addCamerapProperty(std::unique_ptr<Property> camprop);
+
+    virtual CameraProperty& setCurrentStateAsDefault() override;
+    virtual CameraProperty& resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
+    virtual bool needsSerialization() const;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

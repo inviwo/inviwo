@@ -495,11 +495,11 @@ void TFPrimitiveSet::equalizeAlpha(const std::vector<TFPrimitive*>& primitives) 
     }
 }
 
-std::string TFPrimitiveSet::getTitle() const { return "TFPrimitiveSet"; }
+std::string_view TFPrimitiveSet::getTitle() const { return "TFPrimitiveSet"; }
 
-std::string TFPrimitiveSet::serializationKey() const { return "TFPrimitives"; }
+std::string_view TFPrimitiveSet::serializationKey() const { return "TFPrimitives"; }
 
-std::string TFPrimitiveSet::serializationItemKey() const { return "TFPrimitive"; }
+std::string_view TFPrimitiveSet::serializationItemKey() const { return "TFPrimitive"; }
 
 bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs) {
     return std::equal(rhs.sorted_.begin(), rhs.sorted_.end(), lhs.sorted_.begin(),

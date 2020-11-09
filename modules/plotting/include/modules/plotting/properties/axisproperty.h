@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_AXISPROPERTY_H
-#define IVW_AXISPROPERTY_H
+#pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -44,6 +43,8 @@
 #include <modules/plotting/properties/plottextproperty.h>
 
 #include <modules/plotting/datastructures/axissettings.h>
+
+#include <string_view>
 
 namespace inviwo {
 
@@ -62,37 +63,37 @@ public:
     virtual AxisProperty* clone() const override;
     virtual ~AxisProperty() = default;
 
-    virtual void setCaption(const std::string& title);
+    virtual AxisProperty& setCaption(std::string_view title);
 
-    void setLabelFormat(const std::string& formatStr);
+    AxisProperty& setLabelFormat(std::string_view formatStr);
     /**
      * \brief sets range property of axis and ensures the min/max limits are adjusted accordingly
      * @param range   new axis range
      */
-    void setRange(const dvec2& range);
+    AxisProperty& setRange(const dvec2& range);
 
     /**
      * \brief set all colors to \p c, i.e. axis, ticks, labels, and caption
      */
-    void setColor(const vec4& c);
+    AxisProperty& setColor(const vec4& c);
 
     /**
      * \brief set font face of labels and caption to \p fontFace
      */
-    void setFontFace(const std::string& fontFace);
+    AxisProperty& setFontFace(std::string_view fontFace);
 
     /**
      * \brief set font size for caption and labels
      */
-    void setFontSize(int fontsize);
+    AxisProperty& setFontSize(int fontsize);
 
-    void setTickLength(float major, float minor);
+    AxisProperty& setTickLength(float major, float minor);
 
     /**
      * \brief set the line width of the axis, major, and minor ticks. Minor ticks will be 2/3 the
      * width.
      */
-    void setLineWidth(float width);
+    AxisProperty& setLineWidth(float width);
 
     // Inherited via AxisSettings
     virtual dvec2 getRange() const override;
@@ -142,5 +143,3 @@ private:
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_AXISPROPERTY_H

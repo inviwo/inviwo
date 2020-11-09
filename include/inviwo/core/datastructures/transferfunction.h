@@ -100,7 +100,7 @@ public:
     virtual void load(const std::string& filename,
                       const FileExtension& ext = FileExtension()) override;
 
-    virtual std::string getTitle() const override;
+    virtual std::string_view getTitle() const override;
 
     /**
      * Simplify a vector of TF points by removing points that can be replaced by interpolating
@@ -113,8 +113,8 @@ public:
 protected:
     void calcTransferValues() const;
 
-    virtual std::string serializationKey() const override;
-    virtual std::string serializationItemKey() const override;
+    virtual std::string_view serializationKey() const override;
+    virtual std::string_view serializationItemKey() const override;
 
 private:
     double maskMin_;
