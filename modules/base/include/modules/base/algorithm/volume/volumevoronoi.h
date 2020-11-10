@@ -29,17 +29,19 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
+#include <modules/base/datastructures/kdtree.h>
 
 namespace inviwo {
+namespace util {
 
 /**
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_BASE_API volumevoronoi {
-public:
-    volumevoronoi();
-    virtual ~volumevoronoi() = default;
-};
 
+IVW_MODULE_BASE_API std::shared_ptr<Volume> voronoiSegmentation(
+    std::shared_ptr<const Volume> volume,
+    const std::unordered_map<dvec3, uint32_t> seedPointsWithIndices);
+
+}  // namespace util
 }  // namespace inviwo

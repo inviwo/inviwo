@@ -30,9 +30,52 @@
 #include <modules/base/algorithm/volume/volumevoronoi.h>
 
 namespace inviwo {
+namespace util {
 
-volumevoronoi::volumevoronoi() {
+std::shared_ptr<Volume> voronoiSegmentation(
+    std::shared_ptr<const Volume> volume,
+    const std::unordered_map<dvec3, uint32_t> seedPointsWithIndices) {
 
-}
+    // TODO: check that the seed points are inside the volume (after scaling with basis vectors)??
 
+    auto newVolumeRep = std::make_shared<VolumeRAMPrecision<float>>(volume->getDimensions());
+    auto newVolume = std::make_shared<Volume>(newVolumeRep);
+    newVolume->setModelMatrix(volume->getModelMatrix());
+    newVolume->setWorldMatrix(volume->getWorldMatrix());
+    newVolume->dataMap_.dataRange = dvec2(0.0, (double)seedPointsWithIndices.size());
+    newVolume->dataMap_.valueRange = newVolume->dataMap_.dataRange;
+
+    auto newData = newVolumeRep->getDataTyped();
+    util::IndexMapper3D index(volume->getDimensions());
+
+    const auto basis = volume->getBasis();
+    const auto dimensions = volume->getDimensions();
+    const auto scaledBasis =
+        mat3{basis[0] / dimensions.x, basis[1] / dimensions.y, basis[2] / dimensions.z};
+
+    volume->getRepresentation<VolumeRAM>()->dispatch<void>([&](auto vrprecision) {
+        util::forEachVoxelParallel(*vrprecision, [&](const size3_t& voxelPos) {
+            const auto scaledVoxelPos = scaledBasis * voxelPos;
+            auto minDist = std::numeric_limits<double>::max();
+
+            std::for_each(
+                seedPointsWithIndices.cbegin(), seedPointsWithIndices.cend(),
+                [&](const std::pair<dvec3, uint32_t>& point) {
+                    // Squared distance
+                    auto dist =
+                        (point.first.x - scaledVoxelPos.x) * (point.first.x - scaledVoxelPos.x) +
+                        (point.first.y - scaledVoxelPos.y) * (point.first.y - scaledVoxelPos.y) +
+                        (point.first.z - scaledVoxelPos.z) * (point.first.z - scaledVoxelPos.z);
+                    if (dist < minDist) {
+                        newData[index(voxelPos)] = point.second;
+                        minDist = dist;
+                    }
+                });
+        });
+    });
+
+    return newVolume;
+};
+
+}  // namespace util
 }  // namespace inviwo

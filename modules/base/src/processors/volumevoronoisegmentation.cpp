@@ -28,30 +28,67 @@
  *********************************************************************************/
 
 #include <modules/base/processors/volumevoronoisegmentation.h>
+#include <modules/base/algorithm/volume/volumevoronoi.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeVoronoiSegmentation::processorInfo_{
-    "org.inviwo.VolumeVoronoiSegmentation",      // Class identifier
-    "Volume Voronoi Segmentation",                // Display name
-    "Undefined",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.VolumeVoronoiSegmentation",  // Class identifier
+    "Volume Voronoi Segmentation",           // Display name
+    "Undefined",                             // Category
+    CodeState::Experimental,                 // Code state
+    Tags::None,                              // Tags
 };
 const ProcessorInfo VolumeVoronoiSegmentation::getProcessorInfo() const { return processorInfo_; }
 
 VolumeVoronoiSegmentation::VolumeVoronoiSegmentation()
-    : Processor()
-    , outport_("outport")
-    , position_("position", "Position", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
+    : Processor(), volume_("inputVolume"), inputMesh_("inputPositions"), outport_("outport") {
 
+    addPort(volume_);
+    addPort(inputMesh_);
     addPort(outport_);
-    addProperty(position_);
 }
 
 void VolumeVoronoiSegmentation::process() {
-    // outport_.setData(myImage);
+    auto inputMesh = inputMesh_.getData();
+
+    // Get seed points
+    auto posIt = util::find_if(inputMesh->getBuffers(), [](const auto& buf) {
+        return buf.first.type == BufferType::PositionAttrib;
+    });
+    if (posIt == inputMesh->getBuffers().end()) {
+        return;
+    }
+    const auto positionRam = posIt->second->getRepresentation<BufferRAM>();
+    std::vector<dvec3> positions;
+    for (std::size_t i = 0; i < positionRam->getSize(); ++i) {
+        positions.push_back(positionRam->getAsDVec3(i));
+    }
+
+    // Get indices for seed points (if exists??)
+    auto indexIt = util::find_if(inputMesh->getBuffers(), [](const auto& buf) {
+        return buf.first.type == BufferType::IndexAttrib;
+    });
+    // TODO: should probably have some fallback solution if there are no indices...?
+    if (indexIt == inputMesh->getBuffers().end()) {
+        return;
+    }
+    const auto& indices = static_cast<const BufferRAMPrecision<uint32_t, BufferTarget::Data>*>(
+                              indexIt->second->getRepresentation<BufferRAM>())
+                              ->getDataContainer();
+
+    if (positions.size() != indices.size()) {
+        return;
+    }
+
+    // Assuming the positions and indices come in the same order...
+    std::unordered_map<dvec3, uint32_t> seedPointsWithIndices;
+    for (std::size_t i = 0; i < positions.size(); ++i) {
+        seedPointsWithIndices.emplace(positions[i], indices[i]);
+    }
+
+    outport_.setData(util::voronoiSegmentation(volume_.getData(), seedPointsWithIndices));
 }
 
 }  // namespace inviwo
