@@ -158,7 +158,7 @@ public:
     virtual CameraProperty& setCurrentStateAsDefault() override;
     virtual CameraProperty& resetToDefaultState() override;
     virtual bool isDefaultState() const override;
-    virtual bool needsSerialization() const;
+    virtual bool needsSerialization() const override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

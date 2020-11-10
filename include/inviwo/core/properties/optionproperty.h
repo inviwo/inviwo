@@ -189,7 +189,18 @@ public:
     virtual bool setSelectedIdentifier(std::string_view identifier) override;
     virtual bool setSelectedDisplayName(std::string_view name) override;
 
+    /**
+     * @brief Set the selected index to that of the value provided if found in the list of options
+     * @param value to set
+     * @return True if the value was found in the list of options else false.
+     */
     bool setSelectedValue(const T& val);
+
+    /**
+     * @brief Set the selected index to that of the value provided if found in the list of options
+     * @param value to set
+     * @return True if the value was found in the list of options else false.
+     */
     template <typename U = T,
               class = typename std::enable_if<std::is_same_v<U, std::string>, void>::type>
     bool setSelectedValue(std::string_view value);
@@ -212,7 +223,18 @@ public:
     const T& operator*() const;
     const T* operator->() const;
 
+    /**
+     * @brief Set the selected index to that of the value provided if found in the list of options
+     * @param value to set
+     * @return True if the value was found in the list of options else false.
+     */
     bool set(const T& value);
+
+    /**
+     * @brief Set the selected index to that of the value provided if found in the list of options
+     * @param value to set
+     * @return True if the value was found in the list of options else false.
+     */
     template <typename U = T,
               class = typename std::enable_if<std::is_same_v<U, std::string>, void>::type>
     bool set(std::string_view value);

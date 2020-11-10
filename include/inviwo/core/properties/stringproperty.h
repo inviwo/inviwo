@@ -69,6 +69,9 @@ public:
     virtual ~StringProperty() = default;
 
     StringProperty& set(std::string_view value);
+    StringProperty& set(const char* value);
+    using TemplateProperty<std::string>::set;
+
 
     operator std::string_view() const;
 
