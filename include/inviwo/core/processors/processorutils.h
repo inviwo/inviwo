@@ -105,7 +105,7 @@ std::unique_ptr<T> makeProcessor(ivec2 pos, Args&&... args) {
         p = std::make_unique<T>(std::forward<Args>(args)..., InviwoApplication::getPtr());
     }
 
-    if (p->getIdentifier().empty()) p->setIdentifier(name);
+    if (p->getIdentifier().empty()) p->setIdentifier(util::stripIdentifier(name));
     if (p->getDisplayName().empty()) p->setDisplayName(name);
 
     setPosition(p.get(), pos);
