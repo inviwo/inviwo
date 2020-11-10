@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/utilities.h>
 
 #include <type_traits>
 #include <string_view>
@@ -105,7 +106,7 @@ std::unique_ptr<T> makeProcessor(ivec2 pos, Args&&... args) {
         p = std::make_unique<T>(std::forward<Args>(args)..., InviwoApplication::getPtr());
     }
 
-    if (p->getIdentifier().empty()) p->setIdentifier(name);
+    if (p->getIdentifier().empty()) p->setIdentifier(util::stripIdentifier(name));
     if (p->getDisplayName().empty()) p->setDisplayName(name);
 
     setPosition(p.get(), pos);
