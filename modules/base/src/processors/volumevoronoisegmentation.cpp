@@ -54,6 +54,7 @@ void VolumeVoronoiSegmentation::process() {
     auto inputMesh = inputMesh_.getData();
 
     // Get seed points
+    // TODO: see if this can be done in a better way
     auto posIt = util::find_if(inputMesh->getBuffers(), [](const auto& buf) {
         return buf.first.type == BufferType::PositionAttrib;
     });
@@ -67,13 +68,14 @@ void VolumeVoronoiSegmentation::process() {
     }
 
     // Get indices for seed points (if exists??)
+    // TODO: should probably have some fallback solution if there are no indices...?
     auto indexIt = util::find_if(inputMesh->getBuffers(), [](const auto& buf) {
         return buf.first.type == BufferType::IndexAttrib;
     });
-    // TODO: should probably have some fallback solution if there are no indices...?
     if (indexIt == inputMesh->getBuffers().end()) {
         return;
     }
+    // TODO: see if this can be done in a better way
     const auto& indices = static_cast<const BufferRAMPrecision<uint32_t, BufferTarget::Data>*>(
                               indexIt->second->getRepresentation<BufferRAM>())
                               ->getDataContainer();
@@ -88,7 +90,15 @@ void VolumeVoronoiSegmentation::process() {
         seedPointsWithIndices.emplace(positions[i], indices[i]);
     }
 
-    outport_.setData(util::voronoiSegmentation(volume_.getData(), seedPointsWithIndices));
+    // In the case of the cube data volume,
+    // the voxel positions needs to be divided with the dimensions of the volume
+    const auto volume = volume_.getData();
+    const auto basis = volume->getBasis();
+    const auto dimensions = volume->getDimensions();
+    const auto scaledBasis =
+        mat3{basis[0] / dimensions.x, basis[1] / dimensions.y, basis[2] / dimensions.z};
+
+    outport_.setData(util::voronoiSegmentation(volume, scaledBasis, seedPointsWithIndices));
 }
 
 }  // namespace inviwo

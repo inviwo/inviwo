@@ -33,44 +33,47 @@ namespace inviwo {
 namespace util {
 
 std::shared_ptr<Volume> voronoiSegmentation(
-    std::shared_ptr<const Volume> volume,
-    const std::unordered_map<dvec3, uint32_t> seedPointsWithIndices) {
+    std::shared_ptr<const Volume> volume, const mat3& voxelTransformation,
+    const std::unordered_map<dvec3, uint32_t>& seedPointsWithIndices) {
 
-    // TODO: check that the seed points are inside the volume (after scaling with basis vectors)??
+    // TODO: check that the seed points are inside the volume (after transforming voxel pos)??
 
+    // Need to have this as float (otherwise I could not get it to be visible in the canvas)
+    // Why??
     auto newVolumeRep = std::make_shared<VolumeRAMPrecision<float>>(volume->getDimensions());
     auto newVolume = std::make_shared<Volume>(newVolumeRep);
     newVolume->setModelMatrix(volume->getModelMatrix());
     newVolume->setWorldMatrix(volume->getWorldMatrix());
+
+    // Should this really be the same as for the input volume? 
+    newVolume->setInterpolation(volume->getInterpolation());
+    newVolume->setWrapping(volume->getWrapping());
+
     newVolume->dataMap_.dataRange = dvec2(0.0, (double)seedPointsWithIndices.size());
     newVolume->dataMap_.valueRange = newVolume->dataMap_.dataRange;
 
     auto newData = newVolumeRep->getDataTyped();
     util::IndexMapper3D index(volume->getDimensions());
 
-    const auto basis = volume->getBasis();
-    const auto dimensions = volume->getDimensions();
-    const auto scaledBasis =
-        mat3{basis[0] / dimensions.x, basis[1] / dimensions.y, basis[2] / dimensions.z};
-
     volume->getRepresentation<VolumeRAM>()->dispatch<void>([&](auto vrprecision) {
         util::forEachVoxelParallel(*vrprecision, [&](const size3_t& voxelPos) {
-            const auto scaledVoxelPos = scaledBasis * voxelPos;
+            const auto transformedVoxelPos = voxelTransformation * voxelPos;
             auto minDist = std::numeric_limits<double>::max();
 
-            std::for_each(
-                seedPointsWithIndices.cbegin(), seedPointsWithIndices.cend(),
-                [&](const std::pair<dvec3, uint32_t>& point) {
-                    // Squared distance
-                    auto dist =
-                        (point.first.x - scaledVoxelPos.x) * (point.first.x - scaledVoxelPos.x) +
-                        (point.first.y - scaledVoxelPos.y) * (point.first.y - scaledVoxelPos.y) +
-                        (point.first.z - scaledVoxelPos.z) * (point.first.z - scaledVoxelPos.z);
-                    if (dist < minDist) {
-                        newData[index(voxelPos)] = point.second;
-                        minDist = dist;
-                    }
-                });
+            std::for_each(seedPointsWithIndices.cbegin(), seedPointsWithIndices.cend(),
+                          [&](const std::pair<dvec3, uint32_t>& point) {
+                              // Squared distance
+                              auto dist = (point.first.x - transformedVoxelPos.x) *
+                                              (point.first.x - transformedVoxelPos.x) +
+                                          (point.first.y - transformedVoxelPos.y) *
+                                              (point.first.y - transformedVoxelPos.y) +
+                                          (point.first.z - transformedVoxelPos.z) *
+                                              (point.first.z - transformedVoxelPos.z);
+                              if (dist < minDist) {
+                                  newData[index(voxelPos)] = point.second;
+                                  minDist = dist;
+                              }
+                          });
         });
     });
 

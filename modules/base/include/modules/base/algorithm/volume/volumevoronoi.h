@@ -40,8 +40,8 @@ namespace util {
  */
 
 IVW_MODULE_BASE_API std::shared_ptr<Volume> voronoiSegmentation(
-    std::shared_ptr<const Volume> volume,
-    const std::unordered_map<dvec3, uint32_t> seedPointsWithIndices);
+    std::shared_ptr<const Volume> volume, const mat3& voxelTransformation,
+    const std::unordered_map<dvec3, uint32_t>& seedPointsWithIndices);
 
 }  // namespace util
 }  // namespace inviwo
