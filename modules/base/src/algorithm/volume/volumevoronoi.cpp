@@ -45,7 +45,7 @@ std::shared_ptr<Volume> voronoiSegmentation(
     newVolume->setModelMatrix(volume->getModelMatrix());
     newVolume->setWorldMatrix(volume->getWorldMatrix());
 
-    // Should this really be the same as for the input volume? 
+    // Should this really be the same as for the input volume?
     newVolume->setInterpolation(volume->getInterpolation());
     newVolume->setWrapping(volume->getWrapping());
 

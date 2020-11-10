@@ -34,8 +34,6 @@
 
 namespace inviwo {
 
-TEST(Base, volumevoronoi_test) {
-    EXPECT_EQ(1, 1);
-}
+TEST(Base, volumevoronoi_test) { EXPECT_EQ(1, 1); }
 
-}  // namespace inviwo 
+}  // namespace inviwo
