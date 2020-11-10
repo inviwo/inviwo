@@ -43,6 +43,7 @@
 #include <inviwo/qt/editor/filetreewidget.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
+#include <inviwo/qt/editor/lineediteventfilter.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
@@ -77,48 +78,6 @@
 #include <warn/pop>
 
 namespace inviwo {
-
-namespace {
-
-class LineEditEventFilter : public QObject {
-public:
-    explicit LineEditEventFilter(QWidget* w, QObject* parent = nullptr)
-        : QObject(parent), widget_(w) {}
-    virtual ~LineEditEventFilter() = default;
-
-    bool eventFilter(QObject* obj, QEvent* e) {
-        switch (e->type()) {
-            case QEvent::KeyPress: {
-                QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);
-                switch (keyEvent->key()) {
-                    case Qt::Key_Down: {
-                        // set focus to the tree widget
-                        widget_->setFocus(Qt::ShortcutFocusReason);
-                        // move cursor down one row
-                        QKeyEvent* keydown =
-                            new QKeyEvent(QKeyEvent::KeyPress, Qt::Key_Down, Qt::NoModifier);
-                        QCoreApplication::postEvent(widget_, keydown);
-                        break;
-                    }
-                    case Qt::Key_Escape:
-                        reinterpret_cast<QLineEdit*>(parent())->clear();
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            }
-            default:
-                break;
-        }
-        return QObject::eventFilter(obj, e);
-    }
-
-private:
-    QWidget* widget_;
-};
-
-}  // namespace
 
 WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
     : QSplitter(parent), mainWindow_(window) {

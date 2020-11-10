@@ -29,6 +29,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwoeditmenu.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwomainwindow.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/inviwoqteditordefine.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/lineediteventfilter.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialog.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h
@@ -77,6 +78,7 @@ set(SOURCE_FILES
     inviwoeditmenu.cpp
     inviwoeditmenu.cpp
     inviwomainwindow.cpp
+    lineediteventfilter.cpp
     linkdialog/linkdialog.cpp
     linkdialog/linkdialogcurvegraphicsitems.cpp
     linkdialog/linkdialogprocessorgraphicsitems.cpp
@@ -179,8 +181,8 @@ if(IVW_CFG_BUILD_CHANGELOG)
         file(GENERATE 
             OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/CopyIfFound.cmake"
             CONTENT 
-                "if (EXISTS \"${buildFile}\")
-                    file(COPY \"${buildFile}\" DESTINATION \"${destDir}\")
+                "if (EXISTS \"${buildFile}\")
+                    file(COPY \"${buildFile}\" DESTINATION \"${destDir}\")
                 endif()"
         )
 

@@ -42,6 +42,7 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/qt/editor/processorpreview.h>
 #include <inviwo/qt/editor/processormimedata.h>
+#include <inviwo/qt/editor/lineediteventfilter.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -214,6 +215,8 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     processorTree_->header()->setSectionResizeMode(1, QHeaderView::Fixed);
     processorTree_->header()->setDefaultSectionSize(utilqt::emToPx(this, 4.0));
 
+    lineEdit_->installEventFilter(new LineEditEventFilter(processorTree_, lineEdit_, false));
+
     connect(processorTree_, &ProcessorTree::currentItemChanged, this,
             &ProcessorTreeWidget::currentItemChanged);
 
@@ -321,12 +324,16 @@ void ProcessorTreeWidget::addProcessor(QString className) {
 }
 
 bool ProcessorTreeWidget::processorFits(ProcessorFactoryObject* processor, const QString& filter) {
-    return (
-        QString::fromStdString(processor->getDisplayName()).contains(filter, Qt::CaseInsensitive) ||
-        QString::fromStdString(processor->getClassIdentifier())
-            .contains(filter, Qt::CaseInsensitive) ||
-        QString::fromStdString(processor->getTags().getString())
-            .contains(filter, Qt::CaseInsensitive));
+    for (auto& substr : filter.splitRef(' ')) {
+        if (!(utilqt::toQString(processor->getDisplayName())
+                  .contains(substr, Qt::CaseInsensitive) ||
+              utilqt::toQString(processor->getClassIdentifier())
+                  .contains(substr, Qt::CaseInsensitive) ||
+              utilqt::toQString(processor->getTags().getString())
+                  .contains(substr, Qt::CaseInsensitive)))
+            return false;
+    }
+    return true;
 }
 
 const QIcon* ProcessorTreeWidget::getCodeStateIcon(CodeState state) const {
@@ -447,7 +454,7 @@ void ProcessorTreeWidget::extractInfoAndAddProcessor(ProcessorFactoryObject* pro
     std::string categoryName;
     std::string categoryDesc;
     QList<QVariant> sortVal;
-    sortVal.append(QString::fromStdString(processor->getDisplayName()));
+    sortVal.append(utilqt::toQString(processor->getDisplayName()));
 
     switch (listView_->currentData().value<Grouping>()) {
         case Grouping::Alphabetical:
@@ -495,7 +502,7 @@ void ProcessorTreeWidget::extractInfoAndAddProcessor(ProcessorFactoryObject* pro
 
     QTreeWidgetItem* item = nullptr;
     if (!categoryName.empty()) {
-        QString category = QString::fromStdString(categoryName);
+        QString category = utilqt::toQString(categoryName);
         auto items = processorTree_->findItems(category, Qt::MatchFixedString, 0);
 
         if (items.empty()) items.push_back(addToplevelItemTo(category, categoryDesc));
@@ -505,11 +512,11 @@ void ProcessorTreeWidget::extractInfoAndAddProcessor(ProcessorFactoryObject* pro
 
     auto newItem = new ProcessorTreeItem();
     newItem->setIcon(0, *getCodeStateIcon(processor->getCodeState()));
-    newItem->setText(0, QString::fromStdString(processor->getDisplayName()));
+    newItem->setText(0, utilqt::toQString(processor->getDisplayName()));
 
     newItem->setTextAlignment(1, Qt::AlignRight);
     newItem->setData(0, ProcessorTree::identifierRole,
-                     QString::fromStdString(processor->getClassIdentifier()));
+                     utilqt::toQString(processor->getClassIdentifier()));
     newItem->setData(0, ProcessorTree::sortRole, sortVal);
     newItem->setData(0, ProcessorTree::viewRole, listView_->currentIndex());
     newItem->setData(0, ProcessorTree::typeRole, ProcessorTree::ProcessoorType);
