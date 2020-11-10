@@ -1,5 +1,9 @@
 #pragma once
 
+// This file is a modified copy of TracyOpenGL.hpp from tracy
+// We have renamed all macros to use SCREAMING_SNAKE_CASE which is the inviwo macro style
+// We have also prepended TRACY_ to all macro that did not already have that prefix
+
 // clang-format off
 
 #if !defined GL_TIMESTAMP && !defined GL_TIMESTAMP_EXT

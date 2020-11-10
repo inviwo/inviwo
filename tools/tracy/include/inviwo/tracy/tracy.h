@@ -1,5 +1,10 @@
 #pragma once
 
+// This file is a modified copy of Tracy.hpp from tracy
+// We have renamed all macros to use SCREAMING_SNAKE_CASE which is the inviwo macro style
+// We have also prepended TRACY_ to all macro that did not already have that prefix
+// We have TRACY_HAS_CALLSTACK as defined and TRACY_CALLSTACK as undefined
+
 // clang-format off
 
 #ifndef TRACY_ENABLE
