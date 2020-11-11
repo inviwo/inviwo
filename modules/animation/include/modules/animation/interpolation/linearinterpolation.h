@@ -114,8 +114,8 @@ void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_
 
     // We have to take special care here since we might have unsigned types.
     // Lets just convert everything to doubles.
-    const auto dv1 = static_cast<DT>(v1);
-    const auto dv2 = static_cast<DT>(v2);
+    const auto& dv1 = static_cast<DT>(v1);
+    const auto& dv2 = static_cast<DT>(v2);
 
     out = static_cast<VT>(glm::mix(dv1, dv2, easing::ease((to - t1) / (t2 - t1), easing)));
 }

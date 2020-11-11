@@ -433,7 +433,7 @@ Key* PropertyTrack<Prop, Key, Seq>::addKeyFrameUsingPropertyValue(
     auto prop = dynamic_cast<const Prop*>(property);
     if (!prop) {
         throw Exception("Cannot add key frame from property type " +
-                            property->getClassIdentifier() + " for " +
+                            (property ? property->getClassIdentifier() : "null") + " for " +
                             property_->getClassIdentifier(),
                         IVW_CONTEXT);
     }
@@ -468,6 +468,9 @@ Seq* PropertyTrack<Prop, Key, Seq>::addSequenceUsingPropertyValue(
 
 template <typename Prop, typename Key, typename Seq>
 void PropertyTrack<Prop, Key, Seq>::serialize(Serializer& s) const {
+    if (!property_) {
+        throw SerializationException("No property set for the PropertyTrack");
+    }
     BaseTrack<Seq>::serialize(s);
     s.serialize("property", property_->getPath());
 }
@@ -481,6 +484,9 @@ void PropertyTrack<Prop, Key, Seq>::deserialize(Deserializer& d) {
 
     IVW_ASSERT(network_, "Property track deserialization requires a ProcessorNetwork");
     property_ = dynamic_cast<Prop*>(network_->getProperty(propertyId));
+    if (!property_) {
+        throw SerializationException("Could not find property " + propertyId);
+    }
 }
 
 namespace detail {

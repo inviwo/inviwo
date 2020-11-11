@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/controlkeyframesequence.h>
+#include <modules/animation/algorithm/animationrange.h>
 
 namespace inviwo {
 
@@ -52,20 +53,31 @@ ControlKeyframeSequence* ControlKeyframeSequence::clone() const {
 
 AnimationTimeState ControlKeyframeSequence::operator()(Seconds from, Seconds to,
                                                        AnimationState state) const {
-    // 'it' will be the first key. with a time larger then 'to'.
-    auto fromIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), from,
-                                   [](const auto& a, const auto& b) { return a < *b; });
-    auto toIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), to,
-                                 [](const auto& a, const auto& b) { return a < *b; });
-    if (toIt != fromIt) {
-        if (from < to) {
-            return (**fromIt)(from, to, state);
-        } else {
-            return (**toIt)(from, to, state);
-        }
-    }
+    auto animate = [](auto begin, auto end, Seconds from, Seconds to,
+                      AnimationState state) -> AnimationTimeState {
+        auto direction = from <= to ? PlaybackDirection::Forward : PlaybackDirection::Backward;
+        AnimationTimeState res{to, state};
+        while (begin != end && res.state != AnimationState::Paused) {
+            res = (**begin)(from, to, state);
+            if ((direction == PlaybackDirection::Forward && res.time <= (**begin)) ||
+                (direction == PlaybackDirection::Backward && res.time >= (**begin))) {
+                // We jumped in the opposite direction
+                break;
+            }
+            // Use jump-to-time if set, previous keyframe time otherwise
+            from = res.time != to ? res.time : (*begin)->getTime();
 
-    return {to, state};
+            ++begin;
+        }
+        return res;
+    };
+    auto [fromIt, toIt] = getRange(keyframes_.begin(), keyframes_.end(), from, to);
+    if (from <= to) {
+        return animate(fromIt, toIt, from, to, state);
+    } else {
+        return animate(std::make_reverse_iterator(toIt), std::make_reverse_iterator(fromIt), from,
+                       to, state);
+    }
 }
 
 }  // namespace animation

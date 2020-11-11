@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/callbacktrack.h>
+#include <modules/animation/algorithm/animationrange.h>
 
 namespace inviwo {
 
@@ -47,32 +48,22 @@ std::string CallbackTrack::getClassIdentifier() const { return classIdentifier()
  */
 AnimationTimeState CallbackTrack::operator()(Seconds from, Seconds to, AnimationState state) const {
     if (!isEnabled() || empty()) return {to, state};
-
-    // 'it' will be the first seq. with a first time larger then 'to'.
-    auto it = std::upper_bound(sequences_.begin(), sequences_.end(), to,
-                               [](const auto& a, const auto& b) { return a < *b; });
-
-    if (it == sequences_.begin()) {
-        if (from > (*it)->getFirstTime()) {  // case 1
-            return (**it)(from, to, state);
+    auto animate = [](auto begin, auto end, Seconds from, Seconds to,
+                      AnimationState state) -> AnimationTimeState {
+        AnimationTimeState res{to, state};
+        while (begin != end) {
+            res = (**begin)(from, to, state);
+            ++begin;
         }
-    } else {  // case 2
-        auto& seq1 = *std::prev(it);
-
-        if (to < seq1->getLastTime()) {  // case 2a
-            return (*seq1)(from, to, state);
-        } else {  // case 2b
-            if (from < seq1->getLastTime()) {
-                // We came from before the previous key
-                return (*seq1)(from, to, state);
-            } else if (it != sequences_.end() && from > (*it)->getFirstTime()) {
-                // We came form after the next key
-                return (**it)(from, to, state);
-            }
-            // we moved in an unmarked region, do nothing.
-        }
+        return res;
+    };
+    auto [fromIt, toIt] = getRange(sequences_.begin(), sequences_.end(), from, to);
+    if (from <= to) {
+        return animate(fromIt, toIt, from, to, state);
+    } else {
+        return animate(std::make_reverse_iterator(toIt), std::make_reverse_iterator(fromIt), from,
+                       to, state);
     }
-    return {to, state};
 }
 
 }  // namespace animation

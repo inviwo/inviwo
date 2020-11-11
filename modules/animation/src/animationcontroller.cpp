@@ -79,6 +79,10 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
                 {"Loop", "Loop animation", PlaybackMode::Loop},
                 {"Swing", "Swing animation", PlaybackMode::Swing}},
                0)
+    , playbackDirection("PlayDirection", "Direction",
+                    {{"Forward", "Forward", PlaybackDirection::Forward},
+                     {"Backward", "Backward", PlaybackDirection::Backward}},
+                    0)
     , renderOptions("RenderOptions", "Render Animation")
     , renderWindowMode("RenderFirstLastTimeOption", "Time",
                        {{"FullTimeWindow", "Render full animation", 0},
@@ -125,10 +129,8 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
     playWindowMode.onChange([&]() { playWindow.setVisible(playWindowMode.get() == 1); });
     playWindow.setVisible(playWindowMode.get() == 1);
 
-    playOptions.addProperty(playWindowMode);
-    playOptions.addProperty(playWindow);
-    playOptions.addProperty(framesPerSecond);
-    playOptions.addProperty(playMode);
+    playOptions.addProperties(playWindowMode, playWindow, framesPerSecond, playMode,
+                              playbackDirection);
     playOptions.setCollapsed(true);
     addProperty(playOptions);
 
@@ -209,12 +211,8 @@ void AnimationController::setState(AnimationState newState) {
     notifyStateChanged(this, oldState, state_);
 }
 
-void AnimationController::setPlaybackSettings(const AnimationPlaySettings& newSettings) {
-    if (settingsPlay_ != newSettings) {
-        auto oldSettings = settingsPlay_;
-        settingsPlay_ = newSettings;
-        notifyPlaybackSettingsChanged(this, oldSettings, settingsPlay_);
-    }
+Seconds AnimationController::getTickDeltaTime() const {
+    return playbackDirection.get() == PlaybackDirection::Forward ? deltaTime_ : -deltaTime_;
 }
 
 void AnimationController::setTime(Seconds time) {
@@ -295,7 +293,9 @@ void AnimationController::render() {
                     desiredDims = renderSize.get();
                     break;
                 }
-                default: { ivwAssert(false, "Should not happen."); }
+                default: {
+                    ivwAssert(false, "Should not happen.");
+                }
             }
             // - adjust basic dimensions to the aspect ratio
             if (renderAspectRatio.get() > 0) {
@@ -362,7 +362,7 @@ void AnimationController::tick() {
     // What to do when network cannot be evaluated in the speed that is given by deltaTime?
     // Initial solution: Don't care about that, and let it evaluate fully in the speed that it can
     // muster.
-    auto newTime = currentTime_ + deltaTime_;
+    auto newTime = currentTime_ + getTickDeltaTime();
 
     // Get active time window for playing
     // init with sub-window, overwrite with full window if necessary
@@ -387,8 +387,8 @@ void AnimationController::tick() {
                 break;
             }
             case PlaybackMode::Swing: {
-                deltaTime_ = -deltaTime_;
-                newTime = lastTime + deltaTime_;
+                setPlaybackDirection(PlaybackDirection::Backward);
+                newTime = lastTime + getTickDeltaTime();
                 break;
             }
             default:
@@ -409,8 +409,8 @@ void AnimationController::tick() {
                 break;
             }
             case PlaybackMode::Swing: {
-                deltaTime_ = -deltaTime_;
-                newTime = firstTime + deltaTime_;
+                setPlaybackDirection(PlaybackDirection::Forward);
+                newTime = firstTime + getTickDeltaTime();
                 break;
             }
             default:
@@ -490,6 +490,14 @@ const Animation& AnimationController::getAnimation() const { return *animation_;
 Animation& AnimationController::getAnimation() { return *animation_; }
 
 const AnimationState& AnimationController::getState() const { return state_; }
+
+const PlaybackDirection& AnimationController::getPlaybackDirection() const {
+    return playbackDirection.get();
+}
+
+void AnimationController::setPlaybackDirection(PlaybackDirection newDirection) {
+    playbackDirection.set(newDirection);
+}
 
 Seconds AnimationController::getCurrentTime() const { return currentTime_; }
 

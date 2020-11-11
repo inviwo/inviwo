@@ -27,30 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/animation/datastructures/callbackkeyframe.h>
+#include <modules/animation/algorithm/animationrange.h>
 
 namespace inviwo {
 
-namespace animation {
-
-CallbackKeyframe::CallbackKeyframe(Seconds time, std::function<void()> doForward,
-                                   std::function<void()> undo)
-    : BaseKeyframe(time), do_(std::move(doForward)), undo_(std::move(undo)) {}
-
-CallbackKeyframe* CallbackKeyframe::clone() const { return new CallbackKeyframe(*this); }
-
-AnimationTimeState CallbackKeyframe::operator()(Seconds from, Seconds to,
-                                                AnimationState state) const {
-    if (do_ && (from <= getTime() && to >= getTime())) {
-        // Animating forward, passing from left to right
-        do_();
-    } else if (undo_ && (to <= getTime() && from >= getTime())) {
-        // Animating backward, passing from right to left
-        undo_();
-    }
-    return {to, state};
-}
-
-}  // namespace animation
 
 }  // namespace inviwo

@@ -43,20 +43,31 @@ CallbackKeyframeSequence* CallbackKeyframeSequence::clone() const {
 
 AnimationTimeState CallbackKeyframeSequence::operator()(Seconds from, Seconds to,
                                                         AnimationState state) const {
-    // 'it' will be the first key. with a time larger than 'to'.
-    auto fromIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), from,
-                                   [](const auto& a, const auto& b) { return a < *b; });
-    auto toIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), to,
-                                 [](const auto& a, const auto& b) { return a < *b; });
-    if (toIt != fromIt) {
-        if (from < to) {
-            return (**fromIt)(from, to, state);
-        } else {
-            return (**toIt)(from, to, state);
+    auto animate = [](auto begin, auto end, Seconds from, Seconds to,
+                      AnimationState state) -> AnimationTimeState {
+        AnimationTimeState res{to, state};
+        while (begin != end) {
+            res = (**begin)(from, to, state);
+            ++begin;
         }
-    }
+        return res;
+    };
+    auto direction = from <= to ? PlaybackDirection::Forward : PlaybackDirection::Backward;
+    auto first = direction == PlaybackDirection::Forward ? from : to;
+    auto last = direction == PlaybackDirection::Forward ? to : from;
+    // 'fromIt' will be the first key with a time larger than or equal to 'from'
+    auto fromIt = std::lower_bound(keyframes_.begin(), keyframes_.end(), first,
+                                   [](const auto& a, const auto& b) { return *a < b; });
+    // 'toIt' will be the first key with a time larger than 'to'
+    auto toIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), last,
+                                 [](const auto& a, const auto& b) { return a < *b; });
 
-    return {to, state};
+    if (direction == PlaybackDirection::Forward) {
+        return animate(fromIt, toIt, from, to, state);
+    } else {
+        return animate(std::make_reverse_iterator(toIt), std::make_reverse_iterator(fromIt), from,
+                       to, state);
+    }
 }
 
 }  // namespace animation

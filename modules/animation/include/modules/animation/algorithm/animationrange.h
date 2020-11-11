@@ -26,29 +26,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/animation/datastructures/callbackkeyframe.h>
+#include <modules/animation/animationmoduledefine.h>
+#include <modules/animation/datastructures/animationtime.h>
+
+#include <algorithm>
+#include <iterator>
 
 namespace inviwo {
 
 namespace animation {
 
-CallbackKeyframe::CallbackKeyframe(Seconds time, std::function<void()> doForward,
-                                   std::function<void()> undo)
-    : BaseKeyframe(time), do_(std::move(doForward)), undo_(std::move(undo)) {}
-
-CallbackKeyframe* CallbackKeyframe::clone() const { return new CallbackKeyframe(*this); }
-
-AnimationTimeState CallbackKeyframe::operator()(Seconds from, Seconds to,
-                                                AnimationState state) const {
-    if (do_ && (from <= getTime() && to >= getTime())) {
-        // Animating forward, passing from left to right
-        do_();
-    } else if (undo_ && (to <= getTime() && from >= getTime())) {
-        // Animating backward, passing from right to left
-        undo_();
-    }
-    return {to, state};
+/*
+ * Returns iterators for elements in the range [from, to].
+ * Deals with cases where from > to.
+ * @return One iterator to first item >= min(from, to) and one iterator to item > max(from, to)
+ */
+template <typename Iterator>
+auto getRange(Iterator begin, Iterator end, Seconds from, Seconds to)
+    -> std::tuple<decltype(begin), decltype(end)> {
+    auto first = std::min(from, to);
+    auto last = std::max(from, to);
+    // 'fromIt' will be the first item with a time larger than or equal to 'from'
+    auto fromIt =
+        std::lower_bound(begin, end, first, [](const auto& it, const auto& val) { return *it < val; });
+    // 'toIt' will be the first key with a time larger than 'to'
+    auto toIt =
+        std::upper_bound(begin, end, last, [](const auto& val, const auto& it) { return val < *it; });
+    return {fromIt, toIt};
 }
 
 }  // namespace animation
