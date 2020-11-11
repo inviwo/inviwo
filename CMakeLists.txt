@@ -123,6 +123,7 @@ add_custom_target(uninstall COMMENT "Dummy target to prevent other uninstalls")
 
 add_subdirectory(ext)                        # Add external libraries.
 add_subdirectory(tools/meta)                 # Add inviwo meta library, used in the qt editor
+add_subdirectory(tools/tracy)                # Add tracy wrapper, used for profiling
 if(IVW_TEST_INTEGRATION_TESTS OR IVW_TEST_UNIT_TESTS)
     add_subdirectory(tests/testutil)         # Add test utils, used in the module unit tests
 endif()                    
