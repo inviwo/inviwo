@@ -46,7 +46,7 @@ namespace inviwo {
  */
 class IVW_QTEDITOR_API LineEditEventFilter : public QObject {
 public:
-    explicit LineEditEventFilter(QWidget* w, QObject* parent = nullptr, bool focusAndDown = true);
+    explicit LineEditEventFilter(QWidget* w, QLineEdit* parent, bool focusAndDown = true);
     virtual ~LineEditEventFilter() = default;
 
     bool eventFilter(QObject* obj, QEvent* e);

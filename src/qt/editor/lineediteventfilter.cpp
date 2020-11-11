@@ -33,11 +33,12 @@
 #include <warn/ignore/all>
 #include <QKeyEvent>
 #include <QCoreApplication>
+#include <QLineEdit>
 #include <warn/pop>
 
 namespace inviwo {
 
-LineEditEventFilter::LineEditEventFilter(QWidget* w, QObject* parent, bool focusAndDown)
+LineEditEventFilter::LineEditEventFilter(QWidget* w, QLineEdit* parent, bool focusAndDown)
     : QObject(parent), widget_(w), focusAndDown_(focusAndDown) {}
 
 bool LineEditEventFilter::eventFilter(QObject* obj, QEvent* e) {
@@ -57,7 +58,9 @@ bool LineEditEventFilter::eventFilter(QObject* obj, QEvent* e) {
                     break;
                 }
                 case Qt::Key_Escape:
-                    reinterpret_cast<QLineEdit*>(parent())->clear();
+                    if (auto w = dynamic_cast<QLineEdit*>(parent())) {
+                        w->clear();
+                    }
                     break;
                 default:
                     break;
