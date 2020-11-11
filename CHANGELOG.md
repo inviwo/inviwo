@@ -1,5 +1,9 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2020-11-10 Improved Filtering in Processor List Widget
+ Filtering in the Processor List Widget is now based on matching substrings (space is the separator). For example, searching for `Vol Source` will return `Volume Source`, `Volume Sequence Source`, and `Image Stack Volume Source`.
+ This also enables searching for processor names and tags at the same time, e.g. `Slice GL`.
+
 ## 2020-10-28 Performance refactoring
 * Serialization no longer supports use of the "allowReferences" to serialize pointer to the same object multiple times. Reasoning being that it requires all properties and ports to always be present in the xml even if they don't have any state that needs serialization. The new solution uses "paths" (a dot separated list of identifiers) instead of pointers where needed.
 * Some of the serialization functions now supports filters and projections to avoid having to create temporary objects to serialize.
