@@ -36,6 +36,7 @@
 #include <warn/pop>
 
 class QWidget;
+class QLineEdit;
 class QEvent;
 
 namespace inviwo {
