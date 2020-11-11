@@ -88,7 +88,6 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
     majorTicks_.setCollapsed(true);
     minorTicks_.setCollapsed(true);
 
-
     addProperties(color_, width_, useDataRange_, range_, flipped_, orientation_, placement_,
                   captionSettings_, labelSettings_, majorTicks_, minorTicks_);
 

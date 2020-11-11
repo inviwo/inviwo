@@ -125,8 +125,6 @@ ScatterPlotProcessor::ScatterPlotProcessor()
             scatterPlot_.setIndexColumn(dataFramePort_.getData()->getIndexColumn());
         }
     });
-
-
 }
 
 void ScatterPlotProcessor::process() {

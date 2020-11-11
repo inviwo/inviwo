@@ -158,7 +158,7 @@ VolumeAxis::VolumeAxis()
         property->majorTicks_.tickLength_.set(majorTick);
         property->majorTicks_.tickWidth_.set(1.5f);
         property->majorTicks_.style_.set(TickStyle::Outside);
-        
+
         property->minorTicks_.tickLength_.set(minorTick);
         property->minorTicks_.tickWidth_.set(1.3f);
         property->minorTicks_.style_.set(TickStyle::Outside);

@@ -1177,7 +1177,6 @@ void Deserializer::deserialize(std::string_view key, std::unique_ptr<T>& data) {
         }
     }
 
-    
     if (data) {
         deserialize(key, *data);
     } else {

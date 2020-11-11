@@ -72,7 +72,6 @@ public:
     StringProperty& set(const char* value);
     using TemplateProperty<std::string>::set;
 
-
     operator std::string_view() const;
 
     virtual Document getDescription() const override;

@@ -64,29 +64,26 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
     , camera_{factory_->create(cameraType_)}
     , defaultCamera_{}
     , cameraActions_("actions", "Actions", buttons())
-    , lookFrom_(
-          "lookFrom", "Look from", []() { return vec3{}; }, [](const vec3&) {},
-          {-vec3(100.0f), ConstraintBehavior::Ignore}, {vec3(100.0f), ConstraintBehavior::Ignore},
-          vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics{"SphericalSpinBox"})
-    , lookTo_(
-          "lookTo", "Look to", []() { return vec3{}; }, [](const vec3&) {},
-          {-vec3(100.0f), ConstraintBehavior::Ignore}, {vec3(100.0f), ConstraintBehavior::Ignore},
-          vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
-    , lookUp_(
-          "lookUp", "Look up", []() { return vec3(1.0f, 1.0f, 1.0f); }, [](const vec3&) {},
-          {-vec3(1.0f), ConstraintBehavior::Immutable}, {vec3(1.0f), ConstraintBehavior::Immutable},
-          vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
-    , aspectRatio_(
-          "aspectRatio", "Aspect Ratio", []() { return 1.0f; }, [](const float&) {},
-          {0.0f, ConstraintBehavior::Immutable},
-          {std::numeric_limits<float>::max(), ConstraintBehavior::Immutable}, 0.01f,
-          InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , nearPlane_(
-          "near", "Near Plane", []() { return 0.001f; }, [](const float&) {},
-          {0.001f, ConstraintBehavior::Ignore}, {10.0f, ConstraintBehavior::Ignore}, 0.001f)
-    , farPlane_(
-          "far", "Far Plane", []() { return 1.0f; }, [](const float&) {},
-          {1.0f, ConstraintBehavior::Ignore}, {1000.0f, ConstraintBehavior::Ignore}, 1.0f)
+    , lookFrom_("lookFrom", "Look from", []() { return vec3{}; }, [](const vec3&) {},
+                {-vec3(100.0f), ConstraintBehavior::Ignore},
+                {vec3(100.0f), ConstraintBehavior::Ignore}, vec3(0.1f),
+                InvalidationLevel::InvalidOutput, PropertySemantics{"SphericalSpinBox"})
+    , lookTo_("lookTo", "Look to", []() { return vec3{}; }, [](const vec3&) {},
+              {-vec3(100.0f), ConstraintBehavior::Ignore},
+              {vec3(100.0f), ConstraintBehavior::Ignore}, vec3(0.1f),
+              InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
+    , lookUp_("lookUp", "Look up", []() { return vec3(1.0f, 1.0f, 1.0f); }, [](const vec3&) {},
+              {-vec3(1.0f), ConstraintBehavior::Immutable},
+              {vec3(1.0f), ConstraintBehavior::Immutable}, vec3(0.1f),
+              InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
+    , aspectRatio_("aspectRatio", "Aspect Ratio", []() { return 1.0f; }, [](const float&) {},
+                   {0.0f, ConstraintBehavior::Immutable},
+                   {std::numeric_limits<float>::max(), ConstraintBehavior::Immutable}, 0.01f,
+                   InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , nearPlane_("near", "Near Plane", []() { return 0.001f; }, [](const float&) {},
+                 {0.001f, ConstraintBehavior::Ignore}, {10.0f, ConstraintBehavior::Ignore}, 0.001f)
+    , farPlane_("far", "Far Plane", []() { return 1.0f; }, [](const float&) {},
+                {1.0f, ConstraintBehavior::Ignore}, {1000.0f, ConstraintBehavior::Ignore}, 1.0f)
 
     , settings_("settings", "Settings")
     , updateNearFar_("updateNearFar", "Update Near/Far Distances", true)
@@ -130,18 +127,17 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
 CameraProperty::CameraProperty(const std::string& identifier, const std::string& displayName,
                                vec3 eye, vec3 center, vec3 lookUp, Inport* inport,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CameraProperty(
-          identifier, displayName,
-          [&]() -> std::function<std::optional<mat4>()> {
-              if (auto vp = dynamic_cast<VolumeInport*>(inport)) {
-                  return util::boundingBox(*vp);
-              } else if (auto mp = dynamic_cast<MeshInport*>(inport)) {
-                  return util::boundingBox(*mp);
-              } else {
-                  return nullptr;
-              }
-          }(),
-          eye, center, lookUp, invalidationLevel, semantics) {}
+    : CameraProperty(identifier, displayName,
+                     [&]() -> std::function<std::optional<mat4>()> {
+                         if (auto vp = dynamic_cast<VolumeInport*>(inport)) {
+                             return util::boundingBox(*vp);
+                         } else if (auto mp = dynamic_cast<MeshInport*>(inport)) {
+                             return util::boundingBox(*mp);
+                         } else {
+                             return nullptr;
+                         }
+                     }(),
+                     eye, center, lookUp, invalidationLevel, semantics) {}
 
 CameraProperty::CameraProperty(const CameraProperty& rhs)
     : CompositeProperty(rhs)
