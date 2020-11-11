@@ -69,10 +69,10 @@ void IsoValueCollection::load(const std::string& filename, const FileExtension& 
     }
 }
 
-std::string IsoValueCollection::getTitle() const { return "Isovalues"; }
+std::string_view IsoValueCollection::getTitle() const { return "Isovalues"; }
 
-std::string IsoValueCollection::serializationKey() const { return "IsoValues"; }
+std::string_view IsoValueCollection::serializationKey() const { return "IsoValues"; }
 
-std::string IsoValueCollection::serializationItemKey() const { return "IsoValue"; }
+std::string_view IsoValueCollection::serializationItemKey() const { return "IsoValue"; }
 
 }  // namespace inviwo

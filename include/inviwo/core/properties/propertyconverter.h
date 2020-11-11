@@ -117,7 +117,7 @@ protected:
         if (src->size() > 0) {
             dst->set(src->getSelectedDisplayName());
         } else {
-            dst->set("");
+            dst->set(std::string_view{});
         }
     }
 };

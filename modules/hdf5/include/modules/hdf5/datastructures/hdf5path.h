@@ -32,6 +32,7 @@
 #include <modules/hdf5/hdf5moduledefine.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 #include <ostream>
 

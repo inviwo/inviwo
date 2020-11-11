@@ -325,7 +325,8 @@ struct OptionPropertyHelper {
             .def("removeOption", py::overload_cast<const std::string&>(&P::removeOption))
 
             .def_property("value", [](P* p) { return p->get(); }, [](P* p, T& t) { p->set(t); })
-            .def_property("selectedValue", &P::getSelectedValue, &P::setSelectedValue)
+            .def_property("selectedValue", &P::getSelectedValue,
+                          [](P* p, const T& val) { p->setSelectedValue(val); })
 
             .def("replaceOptions",
                  [](P* p, const std::vector<std::string>& ids,

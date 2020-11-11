@@ -240,26 +240,6 @@ CameraProperty& CameraProperty::setCamera(std::unique_ptr<Camera> newCamera) {
     return *this;
 }
 
-CameraProperty& CameraProperty::setCurrentStateAsDefault() {
-    defaultCamera_.reset(camera_->clone());
-    Property::setCurrentStateAsDefault();
-    for (auto& elem : properties_) {
-        elem->setCurrentStateAsDefault();
-    }
-    return *this;
-}
-
-CameraProperty& CameraProperty::resetToDefaultState() {
-    NetworkLock lock(this);
-    setCamera(std::unique_ptr<Camera>(defaultCamera_->clone()));
-    for (auto& elem : properties_) {
-        if (elem != &aspectRatio_) {  // We never want to reset the aspect
-            elem->resetToDefaultState();
-        }
-    }
-    return *this;
-}
-
 CameraProperty& CameraProperty::setLookFrom(vec3 lookFrom) {
     lookFrom_.set(lookFrom);
     return *this;
@@ -382,16 +362,50 @@ void CameraProperty::addCamerapProperty(std::unique_ptr<Property> camprop) {
     ownedCameraProperties_.emplace_back(std::move(camprop));
 }
 
+CameraProperty& CameraProperty::setCurrentStateAsDefault() {
+    defaultCamera_.reset(camera_->clone());
+    Property::setCurrentStateAsDefault();
+    for (auto& elem : properties_) {
+        elem->setCurrentStateAsDefault();
+    }
+    return *this;
+}
+
+CameraProperty& CameraProperty::resetToDefaultState() {
+    NetworkLock lock(this);
+    setCamera(std::unique_ptr<Camera>(defaultCamera_->clone()));
+    for (auto& elem : properties_) {
+        if (elem != &aspectRatio_) {  // We never want to reset the aspect
+            elem->resetToDefaultState();
+        }
+    }
+    return *this;
+}
+
+bool CameraProperty::isDefaultState() const {
+    // We always consider the camera to be changed. It will almost always be true and handling the
+    // deserialization will be expensive if we have to take the default camera into account
+    return false;
+}
+
+bool CameraProperty::needsSerialization() const {
+    return serializationMode_ != PropertySerializationMode::None;
+}
+
 void CameraProperty::serialize(Serializer& s) const {
     CompositeProperty::serialize(s);
-    s.serialize("Camera", camera_);
+    if (serializationMode_ != PropertySerializationMode::None) {
+        s.serialize("Camera", camera_);
+    }
 }
 
 void CameraProperty::deserialize(Deserializer& d) {
-    camera_->configureProperties(*this, false);
-    d.deserialize("Camera", camera_);
-    hideConfiguredProperties();
-    camera_->configureProperties(*this, true);
+    if (serializationMode_ != PropertySerializationMode::None) {
+        camera_->configureProperties(*this, false);
+        d.deserialize("Camera", camera_);
+        hideConfiguredProperties();
+        camera_->configureProperties(*this, true);
+    }
     CompositeProperty::deserialize(d);
 }
 

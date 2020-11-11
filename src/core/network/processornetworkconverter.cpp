@@ -802,6 +802,26 @@ void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
             ports[xmlId] = fmt::format("{}.{}", processorId, portId);
         });
 
+        // Composite networks
+        visit(processorsNode, "SuperInport", [&](TxElement* node) {
+            const auto xmlId = node->GetAttribute("id");
+            if (xmlId.empty()) return;
+            auto portId = node->GetAttribute("identifier");
+            auto processorId = util::stripIdentifier(
+                node->Parent()->Parent()->Parent()->Parent()->ToElement()->GetAttribute(
+                    "identifier"));
+            ports[xmlId] = fmt::format("{}.{}", processorId, portId);
+        });
+        visit(processorsNode, "SuperOutport", [&](TxElement* node) {
+            const auto xmlId = node->GetAttribute("id");
+            if (xmlId.empty()) return;
+            auto portId = node->GetAttribute("identifier");
+            auto processorId = util::stripIdentifier(
+                node->Parent()->Parent()->Parent()->Parent()->ToElement()->GetAttribute(
+                    "identifier"));
+            ports[xmlId] = fmt::format("{}.{}", processorId, portId);
+        });
+
         visit(processorsNode, "Property", [&](TxElement* node) {
             auto xmlId = node->GetAttribute("id");
             if (xmlId.empty()) return;

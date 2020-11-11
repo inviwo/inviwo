@@ -117,7 +117,8 @@ CompositeProperty& CompositeProperty::resetToDefaultState() {
 }
 
 bool CompositeProperty::isDefaultState() const {
-    return std::all_of(properties_.begin(), properties_.end(),
+    return collapsed_.isDefault() &&
+           std::all_of(properties_.begin(), properties_.end(),
                        [](const Property* p) { return p->isDefaultState(); });
 }
 

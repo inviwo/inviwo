@@ -138,19 +138,13 @@ Inport& CompositeSource<InportType, OutportType>::getSuperInport() {
 template <typename InportType, typename OutportType>
 void CompositeSource<InportType, OutportType>::serialize(Serializer& s) const {
     CompositeSourceBase::serialize(s);
-    // Need to use pointers here, since the port will be serialized in portconnections etc and we
-    // want the serialization to know they are the same object.
-    auto ptr = &superInport_;
-    s.serialize("SuperInport", ptr);
+    s.serialize("SuperInport", superInport_);
 }
 
 template <typename InportType, typename OutportType>
 void CompositeSource<InportType, OutportType>::deserialize(Deserializer& d) {
     CompositeSourceBase::deserialize(d);
-    // Need to use pointers here, since the port will be deserialized in portconnections etc and we
-    // want the serialization to know they are the same object.
-    auto ptr = &superInport_;
-    d.deserialize("SuperInport", ptr);
+    d.deserialize("SuperInport", superInport_);
 }
 
 template <typename InportType, typename OutportType>
