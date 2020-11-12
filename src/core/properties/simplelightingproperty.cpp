@@ -49,18 +49,16 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
                     {"phong", "Phong", ShadingMode::Phong}},
                    5, InvalidationLevel::InvalidResources)
     , referenceFrame_("referenceFrame", "Space")
-    , lightPosition_("lightPosition", "Position", vec3(0.0f, 5.0f, 5.0f), vec3(-10, -10, -10),
-                     vec3(10, 10, 10), vec3(0.1f), InvalidationLevel::InvalidOutput,
-                     PropertySemantics::LightPosition)
+    , lightPosition_("lightPosition", "Position", vec3{0.0f, 5.0f, 5.0f},
+                     {-vec3{100.0f}, ConstraintBehavior::Ignore},
+                     {vec3{100.0f}, ConstraintBehavior::Ignore}, vec3{0.1f},
+                     InvalidationLevel::InvalidOutput, PropertySemantics::LightPosition)
     , lightAttenuation_("lightAttenuation", "Attenuation", vec3(1.0f, 0.0f, 0.0f))
     , applyLightAttenuation_("applyLightAttenuation", "Enable Light Attenuation", false)
 
-    , ambientColor_("lightColorAmbient", "Ambient color", vec3(0.15f), vec3(0), vec3(1), vec3(0.1f),
-                    InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , diffuseColor_("lightColorDiffuse", "Diffuse color", vec3(0.6f), vec3(0), vec3(1), vec3(0.1f),
-                    InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , specularColor_("lightColorSpecular", "Specular color", vec3(0.4f), vec3(0), vec3(1),
-                     vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , ambientColor_("lightColorAmbient", "Ambient color", util::ordinalColor(vec3{0.15f}))
+    , diffuseColor_("lightColorDiffuse", "Diffuse color", util::ordinalColor(vec3{0.6f}))
+    , specularColor_("lightColorSpecular", "Specular color", util::ordinalColor(vec3{0.4f}))
     , specularExponent_("materialShininess", "Shininess", 60.0f, 1.0f, 180.0f)
     , camera_(camera) {
 
@@ -72,9 +70,8 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
     }
     referenceFrame_.setCurrentStateAsDefault();
 
-    addProperties(shadingMode_, referenceFrame_, lightPosition_);
-    addProperties(ambientColor_, diffuseColor_, specularColor_);
-    addProperties(specularExponent_, applyLightAttenuation_, lightAttenuation_);
+    addProperties(shadingMode_, referenceFrame_, lightPosition_, ambientColor_, diffuseColor_,
+                  specularColor_, specularExponent_, applyLightAttenuation_, lightAttenuation_);
 }
 
 SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs)
@@ -87,18 +84,11 @@ SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs
     , ambientColor_(rhs.ambientColor_)
     , diffuseColor_(rhs.diffuseColor_)
     , specularColor_(rhs.specularColor_)
-    , specularExponent_(rhs.specularExponent_) {
+    , specularExponent_(rhs.specularExponent_)
+    , camera_(rhs.camera_) {
 
-    // add properties
-    addProperty(shadingMode_);
-    addProperty(referenceFrame_);
-    addProperty(lightPosition_);
-    addProperty(ambientColor_);
-    addProperty(diffuseColor_);
-    addProperty(specularColor_);
-    addProperty(specularExponent_);
-    addProperty(applyLightAttenuation_);
-    addProperty(lightAttenuation_);
+    addProperties(shadingMode_, referenceFrame_, lightPosition_, ambientColor_, diffuseColor_,
+                  specularColor_, specularExponent_, applyLightAttenuation_, lightAttenuation_);
 }
 
 SimpleLightingProperty* SimpleLightingProperty::clone() const {
@@ -107,7 +97,7 @@ SimpleLightingProperty* SimpleLightingProperty::clone() const {
 
 SimpleLightingProperty::~SimpleLightingProperty() {}
 
-inviwo::vec3 SimpleLightingProperty::getTransformedPosition() const {
+vec3 SimpleLightingProperty::getTransformedPosition() const {
     switch (static_cast<Space>(referenceFrame_.getSelectedValue())) {
         case Space::VIEW:
             return camera_ ? vec3(camera_->inverseViewMatrix() * vec4(lightPosition_.get(), 1.0f))
