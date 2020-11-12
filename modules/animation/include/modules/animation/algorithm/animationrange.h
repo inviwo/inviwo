@@ -49,11 +49,11 @@ auto getRange(Iterator begin, Iterator end, Seconds from, Seconds to)
     auto first = std::min(from, to);
     auto last = std::max(from, to);
     // 'fromIt' will be the first item with a time larger than or equal to 'from'
-    auto fromIt =
-        std::lower_bound(begin, end, first, [](const auto& it, const auto& val) { return *it < val; });
+    auto fromIt = std::lower_bound(begin, end, first,
+                                   [](const auto& it, const auto& val) { return *it < val; });
     // 'toIt' will be the first key with a time larger than 'to'
-    auto toIt =
-        std::upper_bound(begin, end, last, [](const auto& val, const auto& it) { return val < *it; });
+    auto toIt = std::upper_bound(begin, end, last,
+                                 [](const auto& val, const auto& it) { return val < *it; });
     return {fromIt, toIt};
 }
 

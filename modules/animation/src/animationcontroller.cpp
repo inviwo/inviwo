@@ -80,9 +80,9 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
                 {"Swing", "Swing animation", PlaybackMode::Swing}},
                0)
     , playbackDirection("PlayDirection", "Direction",
-                    {{"Forward", "Forward", PlaybackDirection::Forward},
-                     {"Backward", "Backward", PlaybackDirection::Backward}},
-                    0)
+                        {{"Forward", "Forward", PlaybackDirection::Forward},
+                         {"Backward", "Backward", PlaybackDirection::Backward}},
+                        0)
     , renderOptions("RenderOptions", "Render Animation")
     , renderWindowMode("RenderFirstLastTimeOption", "Time",
                        {{"FullTimeWindow", "Render full animation", 0},
@@ -293,9 +293,7 @@ void AnimationController::render() {
                     desiredDims = renderSize.get();
                     break;
                 }
-                default: {
-                    ivwAssert(false, "Should not happen.");
-                }
+                default: { ivwAssert(false, "Should not happen."); }
             }
             // - adjust basic dimensions to the aspect ratio
             if (renderAspectRatio.get() > 0) {

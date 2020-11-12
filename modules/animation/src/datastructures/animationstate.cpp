@@ -34,8 +34,6 @@
 
 namespace inviwo {
 
-namespace animation {
-
-}  // namespace animation
+namespace animation {}  // namespace animation
 
 }  // namespace inviwo

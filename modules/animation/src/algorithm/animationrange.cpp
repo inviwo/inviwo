@@ -29,7 +29,4 @@
 
 #include <modules/animation/algorithm/animationrange.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo
