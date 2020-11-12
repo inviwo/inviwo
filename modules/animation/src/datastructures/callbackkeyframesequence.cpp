@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/callbackkeyframesequence.h>
+#include <modules/animation/algorithm/animationrange.h>
 
 namespace inviwo {
 
@@ -52,17 +53,9 @@ AnimationTimeState CallbackKeyframeSequence::operator()(Seconds from, Seconds to
         }
         return res;
     };
-    auto direction = from <= to ? PlaybackDirection::Forward : PlaybackDirection::Backward;
-    auto first = direction == PlaybackDirection::Forward ? from : to;
-    auto last = direction == PlaybackDirection::Forward ? to : from;
-    // 'fromIt' will be the first key with a time larger than or equal to 'from'
-    auto fromIt = std::lower_bound(keyframes_.begin(), keyframes_.end(), first,
-                                   [](const auto& a, const auto& b) { return *a < b; });
-    // 'toIt' will be the first key with a time larger than 'to'
-    auto toIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), last,
-                                 [](const auto& a, const auto& b) { return a < *b; });
 
-    if (direction == PlaybackDirection::Forward) {
+    auto [fromIt, toIt] = getRange(keyframes_.begin(), keyframes_.end(), from, to);
+    if (from <= to) {
         return animate(fromIt, toIt, from, to, state);
     } else {
         return animate(std::make_reverse_iterator(toIt), std::make_reverse_iterator(fromIt), from,
