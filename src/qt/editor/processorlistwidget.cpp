@@ -273,7 +273,9 @@ void ProcessorTreeWidget::addSelectedProcessor() {
         auto count = processorTree_->topLevelItemCount();
         if (count == 1) {
             auto item = processorTree_->topLevelItem(0);
-            if (item->childCount() == 1) {
+            if (item->childCount() == 0) {
+                id = item->data(0, ProcessorTree::identifierRole).toString();
+            } else if (item->childCount() == 1) {
                 id = item->child(0)->data(0, ProcessorTree::identifierRole).toString();
             }
         }
@@ -283,7 +285,11 @@ void ProcessorTreeWidget::addSelectedProcessor() {
         processorTree_->clearSelection();
     } else {
         processorTree_->setFocus();
-        processorTree_->topLevelItem(0)->child(0)->setSelected(true);
+        if (processorTree_->topLevelItem(0)->childCount() == 0) {
+            processorTree_->topLevelItem(0)->setSelected(true);
+        } else {
+            processorTree_->topLevelItem(0)->child(0)->setSelected(true);
+        }
     }
 }
 
