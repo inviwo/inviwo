@@ -72,6 +72,11 @@
 #include <QAction>
 #include <warn/pop>
 
+// This has to be in the global namespace
+static void initializeQtResources() {
+    Q_INIT_RESOURCE(animation);
+}
+
 namespace inviwo {
 
 namespace {
@@ -114,6 +119,8 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
     , animation::AnimationQtSupplier(*this)
     , trackWidgetQtFactory_{}
     , sequenceEditorFactory_{} {
+
+    initializeQtResources();
 
     using namespace animation;
 
