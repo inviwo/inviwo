@@ -47,6 +47,17 @@ set(HEADER_FILES
     include/modules/opengl/texture/textureobserver.h
     include/modules/opengl/texture/textureunit.h
     include/modules/opengl/texture/textureutils.h
+    include/modules/opengl/uniform/camerauniforms.h
+    include/modules/opengl/uniform/imageuniforms.h
+    include/modules/opengl/uniform/isotfuniforms.h
+    include/modules/opengl/uniform/layeruniforms.h
+    include/modules/opengl/uniform/propertyuniforms.h
+    include/modules/opengl/uniform/raycastinguniform.h
+    include/modules/opengl/uniform/sctuniforms.h
+    include/modules/opengl/uniform/simplelightinguniforms.h
+    include/modules/opengl/uniform/uniform.h
+    include/modules/opengl/uniform/volumeindicatoruniforms.h
+    include/modules/opengl/uniform/volumeuniforms.h
     include/modules/opengl/volume/volumegl.h
     include/modules/opengl/volume/volumeglconverter.h
     include/modules/opengl/volume/volumeutils.h
@@ -95,6 +106,17 @@ set(SOURCE_FILES
     src/texture/texture3d.cpp
     src/texture/textureunit.cpp
     src/texture/textureutils.cpp
+    src/uniform/camerauniforms.cpp
+    src/uniform/imageuniforms.cpp
+    src/uniform/isotfuniforms.cpp
+    src/uniform/layeruniforms.cpp
+    src/uniform/propertyuniforms.cpp
+    src/uniform/raycastinguniform.cpp
+    src/uniform/sctuniforms.cpp
+    src/uniform/simplelightinguniforms.cpp
+    src/uniform/uniform.cpp
+    src/uniform/volumeindicatoruniforms.cpp
+    src/uniform/volumeuniforms.cpp
     src/volume/volumegl.cpp
     src/volume/volumeglconverter.cpp
     src/volume/volumeutils.cpp
