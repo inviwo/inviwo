@@ -1,0 +1,78 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2020 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+#pragma once
+
+#include <modules/opengl/openglmoduledefine.h>
+#include <modules/opengl/uniform/uniform.h>
+#include <inviwo/core/properties/volumeindicatorproperty.h>
+#include <inviwo/core/properties/planeproperty.h>
+
+#include <tuple>
+#include <utility>
+#include <string_view>
+
+namespace inviwo::uniform {
+using namespace std::literals;
+
+template <>
+struct UniformTraits<PlaneProperty> {
+    // Using constexpr here will crash MSVC or result in runtime errors,
+    // https://godbolt.org/z/WGa9o3
+    inline static const auto uniforms = std::tuple{std::pair{"position"sv, &PlaneProperty::position_},
+                                                   std::pair{"normal"sv, &PlaneProperty::normal_},
+                                                   std::pair{"color"sv, &PlaneProperty::color_}};
+};
+
+template <>
+struct UniformTraits<VolumeIndicatorProperty> {
+    // Using constexpr here will crash MSVC or result in runtime errors,
+    // https://godbolt.org/z/WGa9o3
+    inline static const auto uniforms = std::tuple_cat(
+        tupleMap(
+            [](auto&& item) {
+                return std::pair{fmt::format("plane1.{}"sv, item.first),
+                                 composition(item.second, &VolumeIndicatorProperty::plane1_)};
+            },
+            UniformTraits<PlaneProperty>::uniforms),
+        tupleMap(
+            [](auto&& item) {
+                return std::pair{fmt::format("plane2.{}"sv, item.first),
+                                 composition(item.second, &VolumeIndicatorProperty::plane2_)};
+            },
+            UniformTraits<PlaneProperty>::uniforms),
+        tupleMap(
+            [](auto&& item) {
+                return std::pair{fmt::format("plane3.{}"sv, item.first),
+                                 composition(item.second, &VolumeIndicatorProperty::plane3_)};
+            },
+            UniformTraits<PlaneProperty>::uniforms)
+    );
+};
+
+}  // namespace inviwo::uniform
