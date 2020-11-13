@@ -41,22 +41,20 @@ namespace inviwo {
 namespace animation {
 
 namespace detail {
+
 template <typename T>
-struct GetTimeHelper {
-
-    static Seconds getTime(const T& elem, PlaybackDirection direction) {
-        if constexpr (std::is_base_of_v<KeyframeSequence, T>) {
-            if (direction == PlaybackDirection::Forward) {
-                return elem.getLast().getTime();
-            } else {
-                return elem.getFirst().getTime();
-            }
-
+Seconds getTimeHelper(const T& elem, PlaybackDirection direction) {
+    if constexpr (std::is_base_of_v<KeyframeSequence, T>) {
+        if (direction == PlaybackDirection::Forward) {
+            return elem.getLast().getTime();
         } else {
-            return elem.getTime();
-        };
-    }
-};
+            return elem.getFirst().getTime();
+        }
+
+    } else {
+        return elem.getTime();
+    };
+}
 
 }  // namespace detail
 /*
@@ -84,12 +82,8 @@ AnimationTimeState animateRange(Iterator begin, Iterator end, Seconds from, Seco
                 // We jumped in the opposite direction
                 break;
             }
-            // Use jump-to-time if set, previous keyframe time otherwise
-            from = res.time != to
-                       ? res.time
-                       : detail::GetTimeHelper<
-                             std::remove_reference<decltype(**begin)>::type>::getTime(**begin,
-                                                                                      direction);
+            // Use jump-to-time if set, previous Keyframe/KeyframeSequence time otherwise
+            from = res.time != to ? res.time : detail::getTimeHelper(**begin, direction);
 
             ++begin;
         }
