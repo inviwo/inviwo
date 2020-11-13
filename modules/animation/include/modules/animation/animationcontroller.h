@@ -113,7 +113,6 @@ public:
     DoubleMinMaxProperty playWindow;
     DoubleProperty framesPerSecond;
     TemplateOptionProperty<PlaybackMode> playMode;
-    TemplateOptionProperty<PlaybackDirection> playbackDirection;
 
     CompositeProperty renderOptions;
     OptionPropertyInt renderWindowMode;
@@ -132,8 +131,6 @@ public:
     ButtonProperty controlInsertPauseFrame;
 
 protected:
-    /// Return duration to advance. Negative if PlaybackDirection is backward, positive otherwise.
-    Seconds getTickDeltaTime() const;
     /// Low-level setting of currentTime_. Use eval() to set time in the public interface.
     void setTime(Seconds time);
 

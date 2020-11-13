@@ -79,10 +79,6 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
                 {"Loop", "Loop animation", PlaybackMode::Loop},
                 {"Swing", "Swing animation", PlaybackMode::Swing}},
                0)
-    , playbackDirection("PlayDirection", "Direction",
-                        {{"Forward", "Forward", PlaybackDirection::Forward},
-                         {"Backward", "Backward", PlaybackDirection::Backward}},
-                        0)
     , renderOptions("RenderOptions", "Render Animation")
     , renderWindowMode("RenderFirstLastTimeOption", "Time",
                        {{"FullTimeWindow", "Render full animation", 0},
@@ -129,8 +125,7 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
     playWindowMode.onChange([&]() { playWindow.setVisible(playWindowMode.get() == 1); });
     playWindow.setVisible(playWindowMode.get() == 1);
 
-    playOptions.addProperties(playWindowMode, playWindow, framesPerSecond, playMode,
-                              playbackDirection);
+    playOptions.addProperties(playWindowMode, playWindow, framesPerSecond, playMode);
     playOptions.setCollapsed(true);
     addProperty(playOptions);
 
@@ -211,10 +206,6 @@ void AnimationController::setState(AnimationState newState) {
     notifyStateChanged(this, oldState, state_);
 }
 
-Seconds AnimationController::getTickDeltaTime() const {
-    return playbackDirection.get() == PlaybackDirection::Forward ? deltaTime_ : -deltaTime_;
-}
-
 void AnimationController::setTime(Seconds time) {
     // No upper boundary check since you might want to set the time after the last keyframe of
     // animation when creating new ones
@@ -293,7 +284,9 @@ void AnimationController::render() {
                     desiredDims = renderSize.get();
                     break;
                 }
-                default: { ivwAssert(false, "Should not happen."); }
+                default: {
+                    ivwAssert(false, "Should not happen.");
+                }
             }
             // - adjust basic dimensions to the aspect ratio
             if (renderAspectRatio.get() > 0) {
@@ -346,7 +339,7 @@ void AnimationController::pause() { setState(AnimationState::Paused); }
 
 void AnimationController::stop() {
     setState(AnimationState::Paused);
-    deltaTime_ = Seconds(fabs(deltaTime_.count()));  // Make sure we play forward.
+    deltaTime_ = std::chrono::abs(deltaTime_);  // Make sure we play forward.
     eval(currentTime_, Seconds(0));
 }
 
@@ -360,7 +353,7 @@ void AnimationController::tick() {
     // What to do when network cannot be evaluated in the speed that is given by deltaTime?
     // Initial solution: Don't care about that, and let it evaluate fully in the speed that it can
     // muster.
-    auto newTime = currentTime_ + getTickDeltaTime();
+    auto newTime = currentTime_ + deltaTime_;
 
     // Get active time window for playing
     // init with sub-window, overwrite with full window if necessary
@@ -386,7 +379,7 @@ void AnimationController::tick() {
             }
             case PlaybackMode::Swing: {
                 setPlaybackDirection(PlaybackDirection::Backward);
-                newTime = lastTime + getTickDeltaTime();
+                newTime = lastTime + deltaTime_;
                 break;
             }
             default:
@@ -408,7 +401,7 @@ void AnimationController::tick() {
             }
             case PlaybackMode::Swing: {
                 setPlaybackDirection(PlaybackDirection::Forward);
-                newTime = firstTime + getTickDeltaTime();
+                newTime = firstTime + deltaTime_;
                 break;
             }
             default:
@@ -480,7 +473,8 @@ void AnimationController::setAnimation(Animation& animation) {
 
 void AnimationController::setPlaySpeed(double fps) {
     deltaTime_ = Seconds(1.0 / fps);
-    timer_.setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_));
+    timer_.setInterval(
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::abs(deltaTime_)));
 }
 
 const Animation& AnimationController::getAnimation() const { return *animation_; }
@@ -490,11 +484,15 @@ Animation& AnimationController::getAnimation() { return *animation_; }
 const AnimationState& AnimationController::getState() const { return state_; }
 
 const PlaybackDirection& AnimationController::getPlaybackDirection() const {
-    return playbackDirection.get();
+    return deltaTime_ < Seconds(0) ? PlaybackDirection::Backward : PlaybackDirection::Forward;
 }
 
 void AnimationController::setPlaybackDirection(PlaybackDirection newDirection) {
-    playbackDirection.set(newDirection);
+    if (newDirection == PlaybackDirection::Forward) {
+        deltaTime_ = std::chrono::abs(deltaTime_);
+    } else {
+        deltaTime_ = -std::chrono::abs(deltaTime_);
+    }
 }
 
 Seconds AnimationController::getCurrentTime() const { return currentTime_; }

@@ -44,23 +44,7 @@ CallbackKeyframeSequence* CallbackKeyframeSequence::clone() const {
 
 AnimationTimeState CallbackKeyframeSequence::operator()(Seconds from, Seconds to,
                                                         AnimationState state) const {
-    auto animate = [](auto begin, auto end, Seconds from, Seconds to,
-                      AnimationState state) -> AnimationTimeState {
-        AnimationTimeState res{to, state};
-        while (begin != end) {
-            res = (**begin)(from, to, state);
-            ++begin;
-        }
-        return res;
-    };
-
-    auto [fromIt, toIt] = getRange(keyframes_.begin(), keyframes_.end(), from, to);
-    if (from <= to) {
-        return animate(fromIt, toIt, from, to, state);
-    } else {
-        return animate(std::make_reverse_iterator(toIt), std::make_reverse_iterator(fromIt), from,
-                       to, state);
-    }
+    return animateRange(keyframes_.begin(), keyframes_.end(), from, to, state);
 }
 
 }  // namespace animation

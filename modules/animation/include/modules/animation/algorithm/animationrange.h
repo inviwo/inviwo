@@ -30,6 +30,8 @@
 
 #include <modules/animation/animationmoduledefine.h>
 #include <modules/animation/datastructures/animationtime.h>
+#include <modules/animation/datastructures/animationstate.h>
+#include <modules/animation/datastructures/keyframesequence.h>
 
 #include <algorithm>
 #include <iterator>
@@ -38,23 +40,76 @@ namespace inviwo {
 
 namespace animation {
 
+namespace detail {
+template <typename T>
+struct GetTimeHelper {
+
+    static Seconds getTime(const T& elem, PlaybackDirection direction) {
+        if constexpr (std::is_base_of_v<KeyframeSequence, T>) {
+            if (direction == PlaybackDirection::Forward) {
+                return elem.getLast().getTime();
+            } else {
+                return elem.getFirst().getTime();
+            }
+
+        } else {
+            return elem.getTime();
+        };
+    }
+};
+
+}  // namespace detail
 /*
- * Returns iterators for elements in the range [from, to].
- * Deals with cases where from > to.
- * @return One iterator to first item >= min(from, to) and one iterator to item > max(from, to)
+ * Calls operator(Seconds from, Seconds to,
+                      AnimationState state) -> AnimationTimeState for each element [begin, end) in
+ the time range [from, to].
+ * The elements are processed in the order given by from and to, e.g. reverse order if from > to.
+ * The function is currently designed for Dirac delta Keyframe and KeyframeSequence, i.e. no
+ interpolation (such as ControlKeyframe, ControlKeyframeSequence).
+ * @param begin, end iterator range to types std::unique_ptr<Keyframe> or
+ std::unique_ptr<KeyframeSequence>.
+ * @return AnimationTimeState after processing the elements.
  */
 template <typename Iterator>
-auto getRange(Iterator begin, Iterator end, Seconds from, Seconds to)
-    -> std::tuple<decltype(begin), decltype(end)> {
+AnimationTimeState animateRange(Iterator begin, Iterator end, Seconds from, Seconds to,
+                                AnimationState state) {
+    auto animate = [](auto begin, auto end, Seconds from, Seconds to,
+                      AnimationState state) -> AnimationTimeState {
+        auto direction = from <= to ? PlaybackDirection::Forward : PlaybackDirection::Backward;
+        AnimationTimeState res{to, state};
+        while (begin != end && res.state != AnimationState::Paused) {
+            res = (**begin)(from, to, state);
+            if ((direction == PlaybackDirection::Forward && res.time <= (**begin)) ||
+                (direction == PlaybackDirection::Backward && res.time >= (**begin))) {
+                // We jumped in the opposite direction
+                break;
+            }
+            // Use jump-to-time if set, previous keyframe time otherwise
+            from = res.time != to
+                       ? res.time
+                       : detail::GetTimeHelper<
+                             std::remove_reference<decltype(**begin)>::type>::getTime(**begin,
+                                                                                      direction);
+
+            ++begin;
+        }
+        return res;
+    };
     auto first = std::min(from, to);
     auto last = std::max(from, to);
+
     // 'fromIt' will be the first item with a time larger than or equal to 'first'
     auto fromIt = std::lower_bound(begin, end, first,
                                    [](const auto& it, const auto& val) { return *it < val; });
     // 'toIt' will be the first key with a time larger than 'last'
-    auto toIt = std::upper_bound(begin, end, last,
+    auto toIt = std::upper_bound(fromIt, end, last,
                                  [](const auto& val, const auto& it) { return val < *it; });
-    return {fromIt, toIt};
+    if (from <= to) {
+        return animate(fromIt, toIt, from, to, state);
+    } else {
+        return animate(std::make_reverse_iterator(toIt), std::make_reverse_iterator(fromIt), from,
+                       to, state);
+    }
 }
 
 }  // namespace animation

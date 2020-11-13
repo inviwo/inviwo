@@ -53,31 +53,7 @@ ControlKeyframeSequence* ControlKeyframeSequence::clone() const {
 
 AnimationTimeState ControlKeyframeSequence::operator()(Seconds from, Seconds to,
                                                        AnimationState state) const {
-    auto animate = [](auto begin, auto end, Seconds from, Seconds to,
-                      AnimationState state) -> AnimationTimeState {
-        auto direction = from <= to ? PlaybackDirection::Forward : PlaybackDirection::Backward;
-        AnimationTimeState res{to, state};
-        while (begin != end && res.state != AnimationState::Paused) {
-            res = (**begin)(from, to, state);
-            if ((direction == PlaybackDirection::Forward && res.time <= (**begin)) ||
-                (direction == PlaybackDirection::Backward && res.time >= (**begin))) {
-                // We jumped in the opposite direction
-                break;
-            }
-            // Use jump-to-time if set, previous keyframe time otherwise
-            from = res.time != to ? res.time : (*begin)->getTime();
-
-            ++begin;
-        }
-        return res;
-    };
-    auto [fromIt, toIt] = getRange(keyframes_.begin(), keyframes_.end(), from, to);
-    if (from <= to) {
-        return animate(fromIt, toIt, from, to, state);
-    } else {
-        return animate(std::make_reverse_iterator(toIt), std::make_reverse_iterator(fromIt), from,
-                       to, state);
-    }
+    return animateRange(keyframes_.begin(), keyframes_.end(), from, to, state);
 }
 
 }  // namespace animation

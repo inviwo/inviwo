@@ -40,30 +40,9 @@ CallbackTrack::CallbackTrack()
 std::string CallbackTrack::classIdentifier() { return "org.inviwo.animation.CallbackTrack"; }
 std::string CallbackTrack::getClassIdentifier() const { return classIdentifier(); }
 
-/**
- * Track of sequences
- * ----------X======X====X-----------X=========X-------X=====X--------
- * |- case 1-|-case 2----------------|-case 2----------|-case 2------|
- *           |-case 2a---|-case 2b---|
- */
 AnimationTimeState CallbackTrack::operator()(Seconds from, Seconds to, AnimationState state) const {
     if (!isEnabled() || empty()) return {to, state};
-    auto animate = [](auto begin, auto end, Seconds from, Seconds to,
-                      AnimationState state) -> AnimationTimeState {
-        AnimationTimeState res{to, state};
-        while (begin != end) {
-            res = (**begin)(from, to, state);
-            ++begin;
-        }
-        return res;
-    };
-    auto [fromIt, toIt] = getRange(sequences_.begin(), sequences_.end(), from, to);
-    if (from <= to) {
-        return animate(fromIt, toIt, from, to, state);
-    } else {
-        return animate(std::make_reverse_iterator(toIt), std::make_reverse_iterator(fromIt), from,
-                       to, state);
-    }
+    return animateRange(sequences_.begin(), sequences_.end(), from, to, state);
 }
 
 }  // namespace animation
