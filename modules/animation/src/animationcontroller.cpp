@@ -284,9 +284,7 @@ void AnimationController::render() {
                     desiredDims = renderSize.get();
                     break;
                 }
-                default: {
-                    ivwAssert(false, "Should not happen.");
-                }
+                default: { ivwAssert(false, "Should not happen."); }
             }
             // - adjust basic dimensions to the aspect ratio
             if (renderAspectRatio.get() > 0) {
