@@ -208,5 +208,19 @@ public:
 	}
 };
 
+class TreeChildren : public Element<TreeChildren> {
+public:
+	TreeChildren()
+		: Element("ul") {
+	}
+};
+class Tree : public Element<Tree> {
+public:
+	Tree(const BaseElement& content)
+			: Element("ul") {
+		*this << (Element("span") << content);
+	}
+};
+
 } // namespace HTML
 }  // namespace inviwo

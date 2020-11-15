@@ -106,6 +106,10 @@ public:
 	virtual std::string textualDescription(unsigned int indent = 0) const = 0;
 
 	virtual std::string getValueString(std::shared_ptr<TestResult>) const = 0;
+	void traverse(std::function<void(const TestProperty*, const TestProperty*)>)
+		const;
+	virtual void traverse(std::function<void(const TestProperty*, const TestProperty*)>,
+			const TestProperty*) const = 0;
 
 	virtual std::optional<util::PropertyEffect> getPropertyEffect(
 			std::shared_ptr<TestResult>, 
@@ -163,6 +167,9 @@ class TestPropertyComposite : public TestProperty, public TestPropertyObserver {
 	TestPropertyComposite() = default;
 	TestPropertyComposite(PropertyOwner* original, const std::string& displayName,
 			const std::string& identifier);
+	
+	void traverse(std::function<void(const TestProperty*, const TestProperty*)>,
+			const TestProperty*) const override;
 public:
 	const static std::string& getClassIdentifier() {
 		const static std::string name = "org.inviwo.TestPropertyComposite";
@@ -235,6 +242,9 @@ class TestPropertyTyped : public TestProperty {
 	TestPropertyTyped() = default;
 
 	std::array<util::PropertyEffect, numComponents> selectedEffects() const;
+	
+	void traverse(std::function<void(const TestProperty*, const TestProperty*)>,
+			const TestProperty*) const override;
 public:
 	const static std::string& getClassIdentifier() {
 		const static std::string name = std::string("org.inviwo.TestPropertyTyped") + PropertyTraits<T>::classIdentifier();

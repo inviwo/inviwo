@@ -49,6 +49,11 @@ const std::string& TestProperty::getDisplayName() const {
 const std::string& TestProperty::getIdentifier() const {
 	return identifier;
 }
+	
+void TestProperty::traverse(
+		std::function<void(const TestProperty*, const TestProperty*)> f) const {
+	traverse(f, nullptr);
+}
 
 // TestPropertyComposite
 
@@ -60,6 +65,15 @@ std::string TestPropertyComposite::getValueString(std::shared_ptr<TestResult> te
 		str << (n++ > 0 ? ", " : "") << subProp->getValueString(testResult);
 	str << ")";
 	return str.str();
+}
+
+void TestPropertyComposite::traverse(
+				std::function<void(const TestProperty*, const TestProperty*)> f,
+				const TestProperty* pa
+			) const {
+	f(this, pa);
+	for(auto prop : subProperties)
+		prop->traverse(f, this);
 }
 	
 std::optional<util::PropertyEffect> TestPropertyComposite::getPropertyEffect(
@@ -412,6 +426,13 @@ std::string TestPropertyTyped<T>::getValueString(std::shared_ptr<TestResult> tes
 	std::stringstream str;
 	str << testResult->getValue(this->typedProperty);
 	return str.str();
+}
+template<typename T>
+void TestPropertyTyped<T>::traverse(
+				std::function<void(const TestProperty*, const TestProperty*)> f,
+				const TestProperty* pa
+			) const {
+	f(this, pa);
 }
 
 template<typename T>

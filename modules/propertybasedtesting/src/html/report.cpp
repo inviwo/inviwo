@@ -115,10 +115,28 @@ HTML::BaseElement PropertyBasedTestingReport::generateHTML
 			<< HTML::Text("Identifier")
 			<< HTML::Text("Value"));
 	for(auto prop : props) {
-		res << (HTML::Row()
-				<< HTML::Text(prop->getDisplayName())
-				<< HTML::Text(prop->getIdentifier())
-				<< HTML::Text(prop->getValueString(testResult)));
+		HTML::Row r;
+		r	<< HTML::Text(prop->getDisplayName())
+			<< HTML::Text(prop->getIdentifier());
+		std::map<const TestProperty*, std::vector<const TestProperty*>> tree;
+		prop->traverse([&](const TestProperty* p, const TestProperty* pa) {
+					tree[pa].emplace_back(p);
+				});
+
+		std::function<HTML::Tree(const TestProperty*)> dfs = [&](const TestProperty* p) {
+				HTML::Tree res(HTML::Text(p->getDisplayName()));
+				HTML::TreeChildren children;
+				if(tree[p].empty()) // leaf
+					children << HTML::Text(p->getValueString(testResult));
+				else
+					for(auto c : tree[p])
+						children << dfs(c);
+				res << children;
+				return res;
+			};
+
+		r << dfs(prop.get());
+		res << r;
 	}
 	return res;
 }

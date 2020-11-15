@@ -103,6 +103,16 @@ std::vector<Test> optCoveringArray(const Test& init,
 	}
 	assert(vars.size() > 0);
 
+	// special case
+	if(vars.size() == 1) {
+		std::vector<Test> res(vars[0].second.size(), init);
+		for(size_t i = 0; i < vars[0].second.size(); i++) {
+			res[i].emplace_back(vars[0].second[i]);
+		}
+		std::cerr << "special case : res.size() = " << res.size() << std::endl;
+		return res;
+	}
+
 	using TestConf = std::map<size_t, size_t>; // {var, var_idx}, vars[var][var_idx]
 	std::vector<TestConf> unused;
 	
