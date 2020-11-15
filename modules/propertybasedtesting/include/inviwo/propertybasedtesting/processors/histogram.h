@@ -205,6 +205,7 @@ private:
 
 	void collectProperties();
 
+	void onProcessorNetworkWillRemoveProcessor(Processor*) override;
 	void onProcessorNetworkDidAddConnection(const PortConnection&) override;
 	void onProcessorNetworkDidRemoveConnection(const PortConnection&) override;
 

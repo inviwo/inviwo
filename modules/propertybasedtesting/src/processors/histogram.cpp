@@ -64,6 +64,10 @@ void Histogram::resetAllProps() {
 	}
 }
 
+void Histogram::onProcessorNetworkWillRemoveProcessor(Processor* proc) {
+	processors_.erase(proc);
+	inactiveProcessors.erase(proc);
+}
 void Histogram::onProcessorNetworkDidAddConnection(const PortConnection& conn) {
 	const std::lock_guard<std::mutex> lock(mutex_);
 
