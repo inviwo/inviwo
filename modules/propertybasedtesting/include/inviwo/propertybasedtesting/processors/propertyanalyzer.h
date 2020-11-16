@@ -32,7 +32,7 @@
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
 #include <inviwo/propertybasedtesting/testproperty.h>
 #include <inviwo/propertybasedtesting/algorithm/coveringarray.h>
-#include <inviwo/propertybasedtesting/algorithm/histogramtesting.h>
+#include <inviwo/propertybasedtesting/algorithm/propertyanalyzing.h>
 #include <inviwo/propertybasedtesting/algorithm/generatingassignments.h>
 
 #include <inviwo/core/common/inviwo.h>
@@ -53,8 +53,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.Histogram, Histogram}
- * ![](org.inviwo.Histogram.png?classIdentifier=org.inviwo.Histogram)
+/** \docpage{org.inviwo.PropertyAnalyzer, PropertyAnalyzer}
+ * ![](org.inviwo.PropertyAnalyzer.png?classIdentifier=org.inviwo.PropertyAnalyzer)
  *
  * Test whether changing properties of the processors generating the
  * input image have the desired effect.
@@ -78,7 +78,7 @@ namespace inviwo {
  * ### Inports
  *   * __inport__ The image that is used to determine the effects of changing
  *   properties, i.e. the number of matching pixels is counted in this image.
- *   Note that only properties from predecessors of this Histogram processor are
+ *   Note that only properties from predecessors of this PropertyAnalyzer processor are
  *   available for testing.
  *
  * ### Outports
@@ -113,11 +113,11 @@ namespace inviwo {
  *   In the following example, we use a *RandomVolumeGenerator* to create a
  *   volume from a seed and then generate an image by a network containing,
  *   among others, a *Cube Proxy Geometry*. 
- *   When the *Histogram*-processor just has been created, it outputs a completely white
+ *   When the *PropertyAnalyzer*-processor just has been created, it outputs a completely white
  *   image, since no errors have been found.
- *   Note that the *Historam*-processor contains *CompositeProperty*s for
+ *   Note that the *PropertyAnalyzer*-processor contains *CompositeProperty*s for
  *   each preceding processor in the network.
- *   Since we pass the output image of the network to the *Histogram*-processor
+ *   Since we pass the output image of the network to the *PropertyAnalyzer*-processor
  *   before a background is applied, we need use the __Use Depth__ option to count
  *   the number of background pixels.
  *   @image html 1.png width=85%
@@ -156,13 +156,13 @@ namespace inviwo {
  *   Afterwards a new report is generated, which now only contains the tests
  *   that have failed with the distilled set of properties.
  */
-class IVW_MODULE_PROPERTYBASEDTESTING_API Histogram
+class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyAnalyzer
 		: public Processor
 		, private TestPropertyObserver 
 		, private ProcessorNetworkObserver {
 public:
-    Histogram(InviwoApplication*);
-    virtual ~Histogram() {
+    PropertyAnalyzer(InviwoApplication*);
+    virtual ~PropertyAnalyzer() {
 		std::filesystem::remove_all(tempDir_);
 	}
 

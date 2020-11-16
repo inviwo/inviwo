@@ -1,4 +1,4 @@
-#include <inviwo/propertybasedtesting/algorithm/histogramtesting.h>
+#include <inviwo/propertybasedtesting/algorithm/propertyanalyzing.h>
 
 namespace inviwo {
 

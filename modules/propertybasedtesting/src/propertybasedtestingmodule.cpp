@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/propertybasedtesting/processors/faultycubeproxyprocessor.h>
-#include <inviwo/propertybasedtesting/processors/histogram.h>
+#include <inviwo/propertybasedtesting/processors/propertyanalyzer.h>
 #include <inviwo/propertybasedtesting/processors/imagecomparator.h>
 #include <inviwo/propertybasedtesting/processors/randomvolumegenerator.h>
 #include <inviwo/propertybasedtesting/propertybasedtestingmodule.h>
@@ -44,7 +44,7 @@ PropertyBasedTestingModule::PropertyBasedTestingModule(InviwoApplication* app) :
 	app->getWorkspaceManager()->registerFactory(&testPropertyFactory_);
 
     // Processors
-    registerProcessor<Histogram>();
+    registerProcessor<PropertyAnalyzer>();
     registerProcessor<FaultyCubePoxyGeometry>();
     registerProcessor<ImageComparator>();
     registerProcessor<RandomVolumeGenerator>();

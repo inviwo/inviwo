@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/propertybasedtesting/processors/histogram.h>
+#include <inviwo/propertybasedtesting/processors/propertyanalyzer.h>
 #include <inviwo/propertybasedtesting/html/report.h>
 #include <inviwo/propertybasedtesting/algorithm/reservoirsampling.h>
 
@@ -44,19 +44,19 @@
 
 namespace inviwo {
 
-std::mutex Histogram::mutex_;
+std::mutex PropertyAnalyzer::mutex_;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo Histogram::processorInfo_{
-    "org.inviwo.Histogram",      // Class identifier
-    "Histogram",                // Display name
+const ProcessorInfo PropertyAnalyzer::processorInfo_{
+    "org.inviwo.PropertyAnalyzer",      // Class identifier
+    "PropertyAnalyzer",                // Display name
     "Undefined",              // Category
     CodeState::Experimental,  // Code state
     Tags::None,               // Tags
 };
-const ProcessorInfo Histogram::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo PropertyAnalyzer::getProcessorInfo() const { return processorInfo_; }
 
-void Histogram::resetAllProps() {
+void PropertyAnalyzer::resetAllProps() {
 	const std::lock_guard<std::mutex> lock(mutex_);
 
 	for(auto prop : props_) {
@@ -64,23 +64,23 @@ void Histogram::resetAllProps() {
 	}
 }
 
-void Histogram::onProcessorNetworkWillRemoveProcessor(Processor* proc) {
+void PropertyAnalyzer::onProcessorNetworkWillRemoveProcessor(Processor* proc) {
 	processors_.erase(proc);
 	inactiveProcessors.erase(proc);
 }
-void Histogram::onProcessorNetworkDidAddConnection(const PortConnection& conn) {
+void PropertyAnalyzer::onProcessorNetworkDidAddConnection(const PortConnection& conn) {
 	const std::lock_guard<std::mutex> lock(mutex_);
 
 	ProcessorNetworkObserver::onProcessorNetworkDidAddConnection(conn);
 	updateProcessors();
 }
-void Histogram::onProcessorNetworkDidRemoveConnection(const PortConnection& conn) {
+void PropertyAnalyzer::onProcessorNetworkDidRemoveConnection(const PortConnection& conn) {
 	const std::lock_guard<std::mutex> lock(mutex_);
 
 	ProcessorNetworkObserver::onProcessorNetworkDidRemoveConnection(conn);
 	updateProcessors();
 }
-void Histogram::updateProcessors() {
+void PropertyAnalyzer::updateProcessors() {
 	processors_.insert(inactiveProcessors.begin(), inactiveProcessors.end());
 	inactiveProcessors.clear();
 
@@ -105,7 +105,7 @@ void Histogram::updateProcessors() {
 		inactiveProcessors.emplace(processor, testProp);
 		processors_.erase(processor);
 	}
-	
+
 	// add newly connected processors
 	for(const auto& processor : visitedProcessors) {
 		if(processors_.count(processor) == 0) {
@@ -130,11 +130,11 @@ void Histogram::updateProcessors() {
 	}
 }
 
-Histogram::Histogram(InviwoApplication* app)
+PropertyAnalyzer::PropertyAnalyzer(InviwoApplication* app)
 	: Processor()
 	, testingState(TestingState::NONE)
 	, app_(app)
-	, tempDir_{std::filesystem::temp_directory_path() / ("inviwo_histogram_" + std::to_string(rand()))}
+	, tempDir_{std::filesystem::temp_directory_path() / ("inviwo_propertyanalyzer_" + std::to_string(rand()))}
 	, inport_("imageInport")
 	, outport_("imageOutport")
 	, reportDirectory_("reportDirectory", "Report Directory", tempDir_.string())
@@ -200,7 +200,7 @@ Histogram::Histogram(InviwoApplication* app)
 	app_->getProcessorNetwork()->addObserver(this);
 }
 
-void Histogram::onTestPropertyChange() {
+void PropertyAnalyzer::onTestPropertyChange() {
 	std::string desc;
 	for(auto[proc,prop] : processors_) {
 		if(prop->getBoolComp()->isChecked())
@@ -210,7 +210,7 @@ void Histogram::onTestPropertyChange() {
 	description_.set(desc);
 }
 
-void Histogram::serialize(Serializer& s) const {
+void PropertyAnalyzer::serialize(Serializer& s) const {
 	const std::lock_guard<std::mutex> lock(mutex_);
 
 	Processor::serialize(s);
@@ -229,7 +229,7 @@ void Histogram::serialize(Serializer& s) const {
 	s.serialize("TestProperties", testProperties);
 }
 
-void Histogram::deserialize(Deserializer& d) {
+void PropertyAnalyzer::deserialize(Deserializer& d) {
 	const std::lock_guard<std::mutex> lock(mutex_);
 
 	Processor::deserialize(d);
@@ -260,7 +260,7 @@ void Histogram::deserialize(Deserializer& d) {
 	inactiveProcessors = keep;
 }
 
-void Histogram::initTesting() {
+void PropertyAnalyzer::initTesting() {
 	assert(remainingTests.empty());
 	deactivated.clear();
 	testResults.clear();
@@ -317,9 +317,9 @@ void Histogram::initTesting() {
 	}
 
 
-	allTests = util::optCoveringArray(Test{}, assignmentsComp); 
+	allTests = util::optCoveringArray(Test{}, assignmentsComp);
 	//auto allTests = util::coveringArray(Test{}, assignments);
-	
+
 	{
 		const auto sample = reservoirSampling(allTests.size(), numTests_.get());
 		const auto tmp = allTests;
@@ -402,7 +402,7 @@ auto generateImageFromData(const std::vector<unsigned char>& data) {
 	return std::make_shared<Image>(errLayer);
 }
 
-void Histogram::checkTestResults() {
+void PropertyAnalyzer::checkTestResults() {
 	std::cerr << "checking test results" << std::endl;
 	assert(remainingTests.empty());
 	std::vector< TestingError > errors;
@@ -488,7 +488,7 @@ void Histogram::checkTestResults() {
 		this->invalidate(InvalidationLevel::InvalidOutput);
 	}
 
-	
+
 	if(currently_condensing) {
 		if(errors.empty()) {
 			assert(last_deactivated != -1);
@@ -519,13 +519,13 @@ void Histogram::checkTestResults() {
 	}
 }
 
-bool Histogram::testIsSetUp(const Test& test) const {
+bool PropertyAnalyzer::testIsSetUp(const Test& test) const {
 	for(const auto& assignment : test)
 		if(!assignment->isApplied())
 			return false;
 	return true;
 }
-void Histogram::setupTest(const Test& test) {
+void PropertyAnalyzer::setupTest(const Test& test) {
 	NetworkLock lock(this);
 
 	resetAllProps();
@@ -572,7 +572,7 @@ size_t countPixels(std::shared_ptr<const Image> img, const dvec4& col, const boo
 	return res;
 }
 
-void Histogram::process() {
+void PropertyAnalyzer::process() {
 	const std::lock_guard<std::mutex> lock(mutex_);
 
 	auto img = inport_.getData();
@@ -601,7 +601,7 @@ void Histogram::process() {
 			assert(testIsSetUp(test));
 
 			const size_t pixelCount = countPixels(img, color_.get(), useDepth_);
-		
+
 			static size_t num = 0;
 			const auto imagePath = tempDir_ /
 				(std::string("img_") + std::to_string(num++) + std::string(".png"));

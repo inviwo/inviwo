@@ -30,7 +30,7 @@
 #pragma once
 
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
-#include <inviwo/propertybasedtesting/algorithm/histogramtesting.h>
+#include <inviwo/propertybasedtesting/algorithm/propertyanalyzing.h>
 
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
@@ -63,7 +63,7 @@ protected:
 	virtual ~TestPropertyObservable() = default;
 };
 
-/** \docpage{org.inviwo.Histogram, Histogram}
+/** \docpage{org.inviwo.PropertyAnalyzer, PropertyAnalyzer}
  * ![](org.inviwo.TestProperty.png?classIdentifier=org.inviwo.TestProperty)
  *
  * A TestProperty holds a reference to a testable property and maintains the
