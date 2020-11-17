@@ -29,6 +29,8 @@
 
 #include <inviwo/propertybasedtesting/processors/imagecomparator.h>
 
+#include <inviwo/propertybasedtesting/html/html.h>
+
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/io/imagewriterutil.h>
@@ -55,6 +57,7 @@ ImageComparator::ImageComparator()
     , differencePort_("difference")
     , maskPort_("mask")
     , maxDeviation_("maxDeviation", "Maximum deviation", 0, 0, std::numeric_limits<float>::max(), 1, InvalidationLevel::Valid, PropertySemantics::Text)
+	, maxPixelwiseDeviation_("maxPixelwiseDeviation", "Maximum pixelwise deviation (%)", 0, 0, 1)
     , comparisonType_("comparisonType", "Comparison Type (dummy)",
                      {{"diff", "Sum of ARGB differences", ComparisonType::Diff},
                       {"perceptual", "Perceptual Difference", ComparisonType::Perceptual},
@@ -72,6 +75,7 @@ ImageComparator::ImageComparator()
   addPort(maskPort_);
   addProperty(reportDir_);
   addProperty(maxDeviation_);
+  addProperty(maxPixelwiseDeviation_);
   addProperty(comparisonType_);
 
   isReady_.setUpdate([&]() {
@@ -142,11 +146,15 @@ void ImageComparator::process() {
       const auto col1 = colorLayerRAM1->getAsDVec3(size2_t(x,y));
       const auto col2 = colorLayerRAM2->getAsDVec3(size2_t(x,y));
       const double diff = glm::length(col1 - col2);
+	  const bool pixelDifferent =
+		  (diff / std::max({1.0, glm::length(col1), glm::length(col2)}))
+			  <= maxPixelwiseDeviation_.get();
+	  const double c = pixelDifferent * 255.0;
+
       diffSum += diff;
       colorLayerDiff->setFromDVec3(size2_t(x, y), 128.0 + (col1 - col2) / 2.0);
-      double c = col1 == col2 ? 255.0 : 0.0;
       colorLayerMask->setFromDVec3(size2_t(x, y), dvec3(c, c, c));
-      if(col1 != col2) {
+      if(pixelDifferent) {
         diffPixels++;
       }
     }
@@ -184,68 +192,62 @@ void ImageComparator::process() {
   createReport();
 }
 
+const std::string& reportCssFile =
+R""""(
+.comparison { background: #f2f2f2; padding: 1em; margin-bottom: 3em; width: 80% }
+.data td:nth-child(1) { width: 10em; }"
+.data tr:nth-child(even) { background: #e2e2e2; }"
+.data { border-collapse: collapse; width: 100%; }"
+.data td { border-top: 1px solid black; border-bottom: 1px solid black;}"
+.images { width: 100%; padding-top: 1em;}"
+img { width: 100%; border: 1px solid black;}"
+th { font-weight: normal; width: 25%}"
+)"""";
+
 void ImageComparator::createReport() {
+	HTML::Body body;
+	
+	for(const auto& comp : comparisons_) {
+		char timeBuffer[sizeof "2012-12-24 12:34:56"];
+		strftime(timeBuffer, sizeof timeBuffer, "%F %T", localtime(&comp.timestamp));
+
+		body << (HTML::Div("comparison")
+				<< (HTML::Table().addAttribute("class", "data")
+					<< (HTML::Row()
+						<< HTML::Text("Date")
+						<< HTML::Text(timeBuffer))
+					<< (HTML::Row()
+						<< HTML::Text("Difference sum")
+						<< HTML::Text(std::to_string(comp.diffSum)))
+					<< (HTML::Row()
+						<< HTML::Text("Pixel count")
+						<< HTML::Text(std::to_string(comp.pixelCount)))
+					<< (HTML::Row()
+						<< HTML::Text("Different pixels")
+						<< HTML::Text(std::to_string(comp.differentPixels)))
+					<< (HTML::Row()
+						<< HTML::Text("Percent difference")
+						<< HTML::Text(std::to_string(100 * comp.differentPixels / comp.pixelCount))))
+				<< (HTML::Table().addAttribute("class", "images")
+					<< (HTML::HeadRow()
+						<< HTML::Text("diff")
+						<< HTML::Text("mask")
+						<< HTML::Text("img1")
+						<< HTML::Text("img2"))
+					<< (HTML::Row()
+						<< HTML::Image(comp.diff).addAttribute("title", comp.diff)
+						<< HTML::Image(comp.mask).addAttribute("title", comp.mask)
+						<< HTML::Image(comp.img1).addAttribute("title", comp.img1)
+						<< HTML::Image(comp.img2).addAttribute("title", comp.img2))));
+
+	}
+
   std::ofstream report;
   report.open(reportDir_.get() + "/report.html");
-  report << "<html>" << std::endl;
-  report << "<head>" << std::endl;
-  report << "<meta charset=\"utf8\"/>" << std::endl;
-  report << "<style>" << std::endl;
-    report << ".comparison { background: #f2f2f2; padding: 1em; margin-bottom: 3em; width: 80% }" << std::endl;
-    report << ".data td:nth-child(1) { width: 10em; }" << std::endl;
-    report << ".data tr:nth-child(even) { background: #e2e2e2; }" << std::endl;
-    report << ".data { border-collapse: collapse; width: 100%; }" << std::endl;
-    report << ".data td { border-top: 1px solid black; border-bottom: 1px solid black;}" << std::endl;
-    report << ".images { width: 100%; padding-top: 1em;}" << std::endl;
-    report << "img { width: 100%; border: 1px solid black;}" << std::endl;
-    report << "th { font-weight: normal; width: 25%}" << std::endl;
-  report << "</style>" << std::endl;
-  report << "</head>" << std::endl;
-  report << "<body>" << std::endl;
-  for(auto &comp : comparisons_) {
-    report << "<div class=\"comparison\">" << std::endl;
-      report << "<table class=\"data\">" << std::endl;
-        report << "<tr>" << std::endl;
-          report << "<td>Date</td>" << std::endl;
-          char timeBuffer[sizeof "2012-12-24 12:34:56"];
-          strftime(timeBuffer, sizeof timeBuffer, "%F %T", localtime(&comp.timestamp));
-          report << "<td>" << timeBuffer << "</td>" << std::endl;
-        report << "</tr>" << std::endl;
-        report << "<tr>" << std::endl;
-          report << "<td>Difference sum</td>" << std::endl;
-          report << "<td>" << comp.diffSum << "</td>" << std::endl;
-        report << "</tr>" << std::endl;
-        report << "<tr>" << std::endl;
-          report << "<td>Pixel count</td>" << std::endl;
-          report << "<td>" << comp.pixelCount << "</td>" << std::endl;
-        report << "</tr>" << std::endl;
-        report << "<tr>" << std::endl;
-          report << "<td>Different pixels</td>" << std::endl;
-          report << "<td>" << comp.differentPixels << "</td>" << std::endl;
-        report << "</tr>" << std::endl;
-        report << "<tr>" << std::endl;
-          report << "<td>Percent difference</td>" << std::endl;
-          report << "<td>" << (100 * comp.differentPixels / comp.pixelCount) << "</td>" << std::endl;
-        report << "</tr>" << std::endl;
-      report << "</table>" << std::endl;
-      report << "<table class=\"images\">" << std::endl;
-        report << "<tr>" << std::endl;
-          report << "<th>diff</th>" << std::endl;
-          report << "<th>mask</th>" << std::endl;
-          report << "<th>img1</th>" << std::endl;
-          report << "<th>img2</th>" << std::endl;
-        report << "</tr>" << std::endl;
-        report << "<tr>" << std::endl;
-          report << "<td><img src=\"" << comp.diff << "\" title=\"" << comp.diff << "\"/></td>" << std::endl;
-          report << "<td><img src=\"" << comp.mask << "\" title=\"" << comp.mask << "\"/></td>" << std::endl;
-          report << "<td><img src=\"" << comp.img1 << "\" title=\"" << comp.img1 << "\"/></td>" << std::endl;
-          report << "<td><img src=\"" << comp.img2 << "\" title=\"" << comp.img2 << "\"/></td>" << std::endl;
-        report << "</tr>" << std::endl;
-      report << "</table>" << std::endl;
-    report << "</div>" << std::endl;
-  }
-  report << "</body>" << std::endl;
-  report << "</html>" << std::endl;
+  report << (HTML::HTML()
+			<< (HTML::Head() << HTML::Style(reportCssFile)
+				<< HTML::Meta().addAttribute("charset","utf-8"))
+			<< body);
   report.close();
 }
 

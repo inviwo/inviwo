@@ -76,6 +76,7 @@ private:
     ImageOutport maskPort_;
 
     FloatProperty maxDeviation_;
+	FloatProperty maxPixelwiseDeviation_;
     TemplateOptionProperty<ComparisonType> comparisonType_;
     DirectoryProperty reportDir_;
     int imageCompCount_ = 0;

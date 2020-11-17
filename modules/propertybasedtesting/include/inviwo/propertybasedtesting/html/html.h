@@ -127,12 +127,20 @@ public:
 	}
 };
 
+class Div : public Element<Div> {
+public:
+	Div(const std::string& mclass)
+			: Element("div") {
+		this->addAttribute("class",mclass);
+	}
+};
+
 class TableCell : public Element<TableCell> {
-	public:
-		TableCell(const BaseElement& el)
+public:
+	TableCell(const BaseElement& el)
 			: Element("td") {
-				*this << el;
-			}
+		*this << el;
+	}
 };
 class Row : public Element<Row> {
 public:
