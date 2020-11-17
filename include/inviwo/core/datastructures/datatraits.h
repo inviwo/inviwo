@@ -49,10 +49,10 @@ namespace inviwo {
  *
  *     template <>
  *     struct DataTraits<MyDataType> {
- *         static std::string classIdentifier() {
+ *         static const std::string& classIdentifier() {
  *             return "org.something.mydatatype";
  *         }
- *         static std::string dataName() {
+ *         static const std::string& dataName() {
  *             return "MyDataType";
  *         }
  *         static uvec3 colorCode() {
