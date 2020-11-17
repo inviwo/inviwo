@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
+#include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <inviwo/core/util/fileextension.h>
 
@@ -127,5 +128,32 @@ private:
 
 bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
 bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs);
+
+template <>
+struct DataTraits<TransferFunction> {
+    static std::string classIdentifier() { return "org.inviwo.transferfunction"; }
+    static std::string dataName() { return "Transfer function"; }
+    static uvec3 colorCode() { return uvec3{55, 66, 77}; }
+    static Document info(const TransferFunction& data) {
+        using H = utildoc::TableBuilder::Header;
+        using P = Document::PathComponent;
+        Document doc;
+        doc.append("b", "TransferFunction", {{"style", "color:white;"}});
+        utildoc::TableBuilder tb(doc.handle(), P::end());
+        tb(H("Number of primitives: "), data.size());
+        utildoc::TableBuilder tb2(doc.handle(), P::end());
+        tb2(H("Index"), H("Pos"), H("Color"));
+        // abbreviate list if there are more than 20 items
+        const size_t ncols = (data.size() > 20) ? 10 : data.size();
+        for (size_t i = 0; i < ncols; i++) {
+            tb2(std::to_string(i + 1), data[i].getPosition(), data[i].getColor());
+        }
+        if (ncols != data.size()) {
+            doc.append("span",
+                       "... (" + std::to_string(data.size() - ncols) + " additional primitives)");
+        }
+        return doc;
+    }
+};
 
 }  // namespace inviwo
