@@ -234,8 +234,8 @@ auto DataFrame::addColumn(const std::string& header, std::vector<T> data) {
 
 template <>
 struct DataTraits<DataFrame> {
-    static std::string classIdentifier() { return "org.inviwo.DataFrame"; }
-    static std::string dataName() { return "DataFrame"; }
+    static const std::string& classIdentifier() { return "org.inviwo.DataFrame"; }
+    static const std::string& dataName() { return "DataFrame"; }
     static uvec3 colorCode() { return uvec3(153, 76, 0); }
     static Document info(const DataFrame& data) {
         using H = utildoc::TableBuilder::Header;
