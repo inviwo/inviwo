@@ -131,8 +131,14 @@ bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs);
 
 template <>
 struct DataTraits<TransferFunction> {
-    static const std::string& classIdentifier() { return "org.inviwo.transferfunction"; }
-    static const std::string& dataName() { return "Transfer function"; }
+    static const std::string& classIdentifier() {
+        static const std::string id{"org.inviwo.transferfunction"};
+        return id;
+    }
+    static const std::string& dataName() {
+        static const std::string name{"Transfer function"};
+        return name;
+    }
     static uvec3 colorCode() { return uvec3{55, 66, 77}; }
     static Document info(const TransferFunction& data) {
         using H = utildoc::TableBuilder::Header;
