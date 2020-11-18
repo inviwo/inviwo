@@ -41,6 +41,8 @@
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
 
+#include <modules/animation/datastructures/callbacktrack.h>
+#include <modules/animation/datastructures/controltrack.h>
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/datastructures/keyframe.h>
@@ -198,6 +200,76 @@ TEST(AnimationTests, AnimationTest) {
 
     EXPECT_EQ(0.0f, floatProperty.get());
     EXPECT_EQ(dvec3(0.5), doubleProperty.get());
+}
+
+TEST(AnimationTests, ControlTrackTest) {
+    Animation animation;
+    {
+        auto controlTrack = std::make_unique<ControlTrack>();
+        std::vector<std::unique_ptr<ControlKeyframe>> controlKeys;
+        controlKeys.push_back(std::make_unique<ControlKeyframe>(Seconds(0), ControlAction::Pause));
+        controlKeys.push_back(
+            std::make_unique<ControlKeyframe>(Seconds(1), ControlAction::Jump, Seconds(5)));
+        controlKeys.push_back(std::make_unique<ControlKeyframe>(Seconds(8), ControlAction::Pause));
+        auto controlSequence = std::make_unique<ControlKeyframeSequence>(std::move(controlKeys));
+        controlTrack->add(std::move(controlSequence));
+        animation.add(std::move(controlTrack));
+    }
+    {
+        auto state1 = animation(Seconds{0.0}, Seconds{1.0}, AnimationState::Playing);
+        EXPECT_EQ(AnimationState::Paused, state1.state);
+        EXPECT_EQ(Seconds{0.0}, state1.time);
+
+        auto state2 = animation(Seconds{1.0}, Seconds{2.0}, AnimationState::Playing);
+        EXPECT_EQ(AnimationState::Playing, state2.state);
+        EXPECT_EQ(Seconds{5}, state2.time);
+
+        auto state3 = animation(Seconds{1.0}, animation.getLastTime(), AnimationState::Playing);
+        EXPECT_EQ(AnimationState::Paused, state3.state);
+        EXPECT_EQ(animation.getLastTime(), state3.time);
+    }
+    {
+        // Reverse
+        // Time-jump to 5 seconds, skipping the pause-control keyframe at 0
+        // This behaviour might be debatable, but taking time-jumping into consideration makes
+        // evaluation complex and
+        auto state1 = animation(Seconds{1.0}, Seconds{0.0}, AnimationState::Playing);
+        EXPECT_EQ(AnimationState::Playing, state1.state);
+        EXPECT_EQ(Seconds{5}, state1.time);
+
+        auto state2 = animation(Seconds{2.0}, Seconds{1.0}, AnimationState::Playing);
+        EXPECT_EQ(AnimationState::Playing, state2.state);
+        EXPECT_EQ(Seconds{5}, state2.time);
+
+        auto state3 = animation(Seconds(8), Seconds{1.0}, AnimationState::Playing);
+        EXPECT_EQ(AnimationState::Paused, state3.state);
+        EXPECT_EQ(animation.getLastTime(), state3.time);
+    }
+}
+
+TEST(AnimationTests, CallbackTrackTest) {
+    Animation animation;
+    bool calledForward = false;
+    bool calledBackward = false;
+
+    {
+        auto track = std::make_unique<CallbackTrack>();
+        std::vector<std::unique_ptr<CallbackKeyframe>> keys;
+        keys.push_back(std::make_unique<CallbackKeyframe>(
+            Seconds(0), [&calledForward]() { calledForward = true; },
+            [&calledBackward]() { calledBackward = true; }));
+        auto seq = std::make_unique<CallbackKeyframeSequence>(std::move(keys));
+        track->add(std::move(seq));
+        animation.add(std::move(track));
+    }
+    animation(Seconds{0.0}, Seconds{1.0}, AnimationState::Playing);
+    EXPECT_EQ(true, calledForward);
+    EXPECT_EQ(false, calledBackward);
+
+    calledForward = false;
+    animation(Seconds{1.0}, Seconds{0.0}, AnimationState::Playing);
+    EXPECT_EQ(false, calledForward);
+    EXPECT_EQ(true, calledBackward);
 }
 
 TEST(AnimationTests, KeyframeSerializationTest) {

@@ -95,12 +95,10 @@ public:
     /// Returns the current state of the controller, whether it is playing, or pausing, and such.
     const AnimationState& getState() const;
 
-    /// Returns playback mode such as loop or swing and such.
-    const AnimationPlaySettings& getPlaybackSettings() const { return settingsPlay_; }
-    AnimationPlaySettings& getPlaybackSettings() { return settingsPlay_; }
-    void setPlaybackSettings(const AnimationPlaySettings& newSettings);
+    /// Returns the playback direction used during tick.
+    const PlaybackDirection& getPlaybackDirection() const;
+    void setPlaybackDirection(PlaybackDirection newDirection);
 
-    const AnimationPlaySettings& getRenderingSettings() const { return settingsRendering_; }
     Seconds getCurrentTime() const;
 
     InviwoApplication* getInviwoApplication() override { return app_; }
@@ -147,12 +145,6 @@ protected:
 
     /// State of the animation, such as paused or playing or rendering
     AnimationState state_;
-
-    /// If in playback state, how fast we play the animation and whether we loop, or swing, etc.
-    AnimationPlaySettings settingsPlay_;
-
-    /// If in rendering state, how many frames we render.
-    AnimationPlaySettings settingsRendering_;
 
     /// Current time of the animation. This is an important variable to keep consistent!
     Seconds currentTime_;

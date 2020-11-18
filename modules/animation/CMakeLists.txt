@@ -5,6 +5,7 @@ ivw_module(Animation)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    include/modules/animation/algorithm/animationrange.h
     include/modules/animation/animationcontroller.h
     include/modules/animation/animationcontrollerobserver.h
     include/modules/animation/animationmanager.h
@@ -56,6 +57,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/algorithm/animationrange.cpp
     src/animationcontroller.cpp
     src/animationcontrollerobserver.cpp
     src/animationmanager.cpp

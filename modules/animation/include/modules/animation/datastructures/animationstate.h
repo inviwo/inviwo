@@ -39,71 +39,11 @@ enum class AnimationState { Paused = 0, Playing, Rendering };
 
 enum class PlaybackMode { Once = 0, Loop, Swing };
 
+enum class PlaybackDirection { Forward = 0, Backward };
+
 struct AnimationTimeState {
     Seconds time;
     AnimationState state;
-};
-
-/** Keeps animation settings related to playing or rendering.
- *
- *   The settings allow to work either with numFrames or framesPerSecond.
- *   If one is set, the other is computed accordingly in order to stay consistent.
- *
- *   The parameters firstTime and lastTime do not need to coincide
- *   with the corresponding parameters of the animation.
- *   We can choose a smaller time window here,
- *   or a larger one just as well. No harm in doing the latter.
- *
- *   The smallest numFrames is 2, since we will visit at least
- *   firstTime and lastTime during an animation or rendering.
- *   The smallest framesPerSecond is 1e-3, as an arbitrary but positive, non-zero minimum.
- */
-class IVW_MODULE_ANIMATION_API AnimationPlaySettings {
-public:
-    AnimationPlaySettings();
-
-    Seconds getFirstTime() const;
-    void setFirstTime(const Seconds timeValue);
-
-    Seconds getLastTime() const;
-    void setLastTime(const Seconds timeValue);
-
-    /// Returns the number of frames to be rendered between firstTime and lastTime given the
-    /// current framesPerSecond.
-    int getNumFrames() const;
-
-    /** Sets the number of frames to be rendered between firstTime and lastTime, and adjusts
-     *  framesPerSecond accordingly.
-     *
-     *   The smallest numFrames is 2, since we will visit at least
-     *   firstTime and lastTime during an animation or rendering.
-     *
-     *   @returns true on success.
-     */
-    bool setNumFrames(const int desiredFrames);
-
-    /// Returns the frames per second.
-    double getFramesPerSecond() const;
-
-    /** Sets the frames per second for the animation playback, and adjusts numFrames accordingly.
-     *  The smallest framesPerSecond is 1e-3, as an arbitrary but positive, non-zero minimum.
-     *  @returns true on success.
-     */
-    bool setFramesPerSecond(const double desiredFPS);
-
-    bool operator!=(const AnimationPlaySettings& other) const;
-
-    PlaybackMode mode;
-
-protected:
-    Seconds firstTime;
-    Seconds lastTime;
-
-    /// Number of frames to generate between firstTime and lastTime
-    int numFrames;
-
-    /// Frames per second.
-    double framesPerSecond;
 };
 
 }  // namespace animation

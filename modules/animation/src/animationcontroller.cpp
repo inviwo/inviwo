@@ -125,10 +125,7 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
     playWindowMode.onChange([&]() { playWindow.setVisible(playWindowMode.get() == 1); });
     playWindow.setVisible(playWindowMode.get() == 1);
 
-    playOptions.addProperty(playWindowMode);
-    playOptions.addProperty(playWindow);
-    playOptions.addProperty(framesPerSecond);
-    playOptions.addProperty(playMode);
+    playOptions.addProperties(playWindowMode, playWindow, framesPerSecond, playMode);
     playOptions.setCollapsed(true);
     addProperty(playOptions);
 
@@ -207,14 +204,6 @@ void AnimationController::setState(AnimationState newState) {
             break;
     }
     notifyStateChanged(this, oldState, state_);
-}
-
-void AnimationController::setPlaybackSettings(const AnimationPlaySettings& newSettings) {
-    if (settingsPlay_ != newSettings) {
-        auto oldSettings = settingsPlay_;
-        settingsPlay_ = newSettings;
-        notifyPlaybackSettingsChanged(this, oldSettings, settingsPlay_);
-    }
 }
 
 void AnimationController::setTime(Seconds time) {
@@ -348,7 +337,7 @@ void AnimationController::pause() { setState(AnimationState::Paused); }
 
 void AnimationController::stop() {
     setState(AnimationState::Paused);
-    deltaTime_ = Seconds(fabs(deltaTime_.count()));  // Make sure we play forward.
+    deltaTime_ = std::chrono::abs(deltaTime_);  // Make sure we play forward.
     eval(currentTime_, Seconds(0));
 }
 
@@ -387,7 +376,7 @@ void AnimationController::tick() {
                 break;
             }
             case PlaybackMode::Swing: {
-                deltaTime_ = -deltaTime_;
+                setPlaybackDirection(PlaybackDirection::Backward);
                 newTime = lastTime + deltaTime_;
                 break;
             }
@@ -409,7 +398,7 @@ void AnimationController::tick() {
                 break;
             }
             case PlaybackMode::Swing: {
-                deltaTime_ = -deltaTime_;
+                setPlaybackDirection(PlaybackDirection::Forward);
                 newTime = firstTime + deltaTime_;
                 break;
             }
@@ -482,7 +471,8 @@ void AnimationController::setAnimation(Animation& animation) {
 
 void AnimationController::setPlaySpeed(double fps) {
     deltaTime_ = Seconds(1.0 / fps);
-    timer_.setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_));
+    timer_.setInterval(
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::abs(deltaTime_)));
 }
 
 const Animation& AnimationController::getAnimation() const { return *animation_; }
@@ -490,6 +480,18 @@ const Animation& AnimationController::getAnimation() const { return *animation_;
 Animation& AnimationController::getAnimation() { return *animation_; }
 
 const AnimationState& AnimationController::getState() const { return state_; }
+
+const PlaybackDirection& AnimationController::getPlaybackDirection() const {
+    return deltaTime_ < Seconds(0) ? PlaybackDirection::Backward : PlaybackDirection::Forward;
+}
+
+void AnimationController::setPlaybackDirection(PlaybackDirection newDirection) {
+    if (newDirection == PlaybackDirection::Forward) {
+        deltaTime_ = std::chrono::abs(deltaTime_);
+    } else {
+        deltaTime_ = -std::chrono::abs(deltaTime_);
+    }
+}
 
 Seconds AnimationController::getCurrentTime() const { return currentTime_; }
 

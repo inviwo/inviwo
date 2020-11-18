@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/callbacktrack.h>
+#include <modules/animation/algorithm/animationrange.h>
 
 namespace inviwo {
 
@@ -39,40 +40,9 @@ CallbackTrack::CallbackTrack()
 std::string CallbackTrack::classIdentifier() { return "org.inviwo.animation.CallbackTrack"; }
 std::string CallbackTrack::getClassIdentifier() const { return classIdentifier(); }
 
-/**
- * Track of sequences
- * ----------X======X====X-----------X=========X-------X=====X--------
- * |- case 1-|-case 2----------------|-case 2----------|-case 2------|
- *           |-case 2a---|-case 2b---|
- */
 AnimationTimeState CallbackTrack::operator()(Seconds from, Seconds to, AnimationState state) const {
     if (!isEnabled() || empty()) return {to, state};
-
-    // 'it' will be the first seq. with a first time larger then 'to'.
-    auto it = std::upper_bound(sequences_.begin(), sequences_.end(), to,
-                               [](const auto& a, const auto& b) { return a < *b; });
-
-    if (it == sequences_.begin()) {
-        if (from > (*it)->getFirstTime()) {  // case 1
-            return (**it)(from, to, state);
-        }
-    } else {  // case 2
-        auto& seq1 = *std::prev(it);
-
-        if (to < seq1->getLastTime()) {  // case 2a
-            return (*seq1)(from, to, state);
-        } else {  // case 2b
-            if (from < seq1->getLastTime()) {
-                // We came from before the previous key
-                return (*seq1)(from, to, state);
-            } else if (it != sequences_.end() && from > (*it)->getFirstTime()) {
-                // We came form after the next key
-                return (**it)(from, to, state);
-            }
-            // we moved in an unmarked region, do nothing.
-        }
-    }
-    return {to, state};
+    return animateRange(sequences_.begin(), sequences_.end(), from, to, state);
 }
 
 }  // namespace animation

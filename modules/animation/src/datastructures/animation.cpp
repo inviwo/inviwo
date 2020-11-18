@@ -64,6 +64,9 @@ auto Animation::end() const -> const_iterator {
 }
 
 void Animation::add(std::unique_ptr<Track> track) {
+    if (!track) {
+        return;
+    }
     tracks_.push_back(std::move(track));
     priorityTracks_.push_back(tracks_.back().get());
     doPrioritySort();

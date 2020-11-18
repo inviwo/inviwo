@@ -27,26 +27,6 @@
  *
  *********************************************************************************/
 
-#include <modules/animation/datastructures/callbackkeyframesequence.h>
 #include <modules/animation/algorithm/animationrange.h>
 
-namespace inviwo {
-
-namespace animation {
-
-CallbackKeyframeSequence::CallbackKeyframeSequence(
-    std::vector<std::unique_ptr<CallbackKeyframe>> keyframes)
-    : BaseKeyframeSequence<CallbackKeyframe>(std::move(keyframes)) {}
-
-CallbackKeyframeSequence* CallbackKeyframeSequence::clone() const {
-    return new CallbackKeyframeSequence(*this);
-}
-
-AnimationTimeState CallbackKeyframeSequence::operator()(Seconds from, Seconds to,
-                                                        AnimationState state) const {
-    return animateRange(keyframes_.begin(), keyframes_.end(), from, to, state);
-}
-
-}  // namespace animation
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

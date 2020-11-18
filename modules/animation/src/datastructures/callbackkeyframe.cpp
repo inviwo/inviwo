@@ -41,10 +41,10 @@ CallbackKeyframe* CallbackKeyframe::clone() const { return new CallbackKeyframe(
 
 AnimationTimeState CallbackKeyframe::operator()(Seconds from, Seconds to,
                                                 AnimationState state) const {
-    if (do_ && (from < getTime() && to >= getTime())) {
+    if (do_ && (from <= getTime() && to >= getTime())) {
         // Animating forward, passing from left to right
         do_();
-    } else if (undo_ && (to <= getTime() && from > getTime())) {
+    } else if (undo_ && (to <= getTime() && from >= getTime())) {
         // Animating backward, passing from right to left
         undo_();
     }
