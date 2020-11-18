@@ -235,10 +235,10 @@ void ImageComparator::createReport() {
 						<< HTML::Text("img1")
 						<< HTML::Text("img2"))
 					<< (HTML::Row()
-						<< HTML::Image(comp.diff).addAttribute("title", comp.diff)
-						<< HTML::Image(comp.mask).addAttribute("title", comp.mask)
-						<< HTML::Image(comp.img1).addAttribute("title", comp.img1)
-						<< HTML::Image(comp.img2).addAttribute("title", comp.img2))));
+						<< HTML::Image(comp.diff).addAttribute("title", comp.diff.string())
+						<< HTML::Image(comp.mask).addAttribute("title", comp.mask.string())
+						<< HTML::Image(comp.img1).addAttribute("title", comp.img1.string())
+						<< HTML::Image(comp.img2).addAttribute("title", comp.img2.string()))));
 
 	}
 
