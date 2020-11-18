@@ -96,7 +96,7 @@ public:
     const AnimationState& getState() const;
 
     /// Returns the playback direction used during tick.
-    const PlaybackDirection& getPlaybackDirection() const;
+    PlaybackDirection getPlaybackDirection() const;
     void setPlaybackDirection(PlaybackDirection newDirection);
 
     Seconds getCurrentTime() const;

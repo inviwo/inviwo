@@ -481,7 +481,7 @@ Animation& AnimationController::getAnimation() { return *animation_; }
 
 const AnimationState& AnimationController::getState() const { return state_; }
 
-const PlaybackDirection& AnimationController::getPlaybackDirection() const {
+PlaybackDirection AnimationController::getPlaybackDirection() const {
     return deltaTime_ < Seconds(0) ? PlaybackDirection::Backward : PlaybackDirection::Forward;
 }
 
