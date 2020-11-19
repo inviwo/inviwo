@@ -301,11 +301,6 @@ void bindTextures(const ImageOutport& outport, const TextureUnit& colorTexUnit,
 }
 
 void unbindTextures(const Image& image, bool color, bool depth, bool picking) {
-<<<<<<< HEAD
-    auto imageGL = image.getRepresentation<ImageGL>();
-=======
-    TRACY_ZONE_SCOPED_C(0x000088);
->>>>>>> 0b0fc4187... Animation: add resources in static build
     if (color) {
         if (auto layer = image.getColorLayer()) {
             layer->getRepresentation<LayerGL>()->unbindTexture();
