@@ -82,7 +82,7 @@ std::vector<Test> coveringArray(const Test& init, const std::vector<std::vector<
 	return res;
 }
 
-std::vector<Test> optCoveringArray(const Test& init,
+std::vector<Test> optCoveringArray(const size_t num, const Test& init,
 		const std::vector<
 				std::pair<
 					std::function<std::optional<util::PropertyEffect>(
@@ -122,8 +122,11 @@ std::vector<Test> optCoveringArray(const Test& init,
 			for(size_t var2 = 0; var2 < var; var2++)
 				for(size_t i2 = 0; i2 < vars[var2].second.size(); i2++)
 					unused.emplace_back(std::map<size_t,size_t>{{{var,i}, {var2,i2}}});
+	std::random_shuffle(unused.begin(), unused.end(), [](int i) { return rand()%i; });
 
-	std::vector<std::pair<TestConf,size_t>> finished;
+	std::vector<std::pair<TestConf,size_t>> finished; // {TestConf, current num of other finished comparables}
+
+	size_t comparisons = 0; // just for debugging
 
 	// note: assumes that all keys of the second argument are also present in
 	// the first
@@ -133,6 +136,7 @@ std::vector<Test> optCoveringArray(const Test& init,
 			for(const auto&[var,i] : vs) {
 				const auto& j = ref.at(var);
 				const auto& expect = vars[var].first( vars[var].second[i], vars[var].second[j] );
+				comparisons++;
 				if(!expect)
 					return false;
 				res = util::combine(*expect, *res);
@@ -152,35 +156,44 @@ std::vector<Test> optCoveringArray(const Test& init,
 				}
 			return comparables;
 		};
-	const std::function<size_t(const std::vector<size_t>&, TestConf, const TestConf&)> cmp =
-		[&](const auto& comparables, auto gen, const auto& ref) {
-			gen.insert(ref.begin(), ref.end());
+	// combined score of finished comparables when merging ref into gen
+	const std::function<size_t(const bool, const std::vector<size_t>&, const TestConf&, const TestConf&)> cmp =
+		[&](const bool disjoint, const auto& comparables, const auto& gen, const auto& ref) {
+			if(disjoint) {
+				for(const auto&[k,v] : gen)
+					if(ref.count(k) > 0)
+						return static_cast<size_t>(0);
+			}
+			auto test = ref;
+			test.insert(gen.begin(), gen.end());
 			
-			size_t res = 0;
-			for(const size_t i : filterComparables(comparables, gen))
+			size_t res = 1;
+			for(const size_t i : filterComparables(comparables, test))
 				res += 1 + (finished.size() - finished[i].second) * 2;
 			return res;
 		};
 
-	while(!unused.empty()) {
+	while(!unused.empty() && finished.size() < num) {
 		TestConf gen{{unused.back()}};
 		unused.pop_back();
 		std::vector<size_t> comparables(finished.size());
 		std::iota(comparables.begin(), comparables.end(), 0);
+	
+		std::cerr << unused.size() << std::endl;
 
 		while(gen.size() < vars.size()) {
 			int opt = -1, idx;
 			bool is_unused = false;
 
-			for(size_t i = 0; i < finished.size(); i++) {
-				const int val = cmp(comparables, gen, finished[i].first);
-				if(val > opt)
-					opt = val, idx = i, is_unused = false;
-			}
 			for(size_t i = 0; i < unused.size(); i++) {
-				const int val = cmp(comparables, gen, unused[i]);
+				const int val = cmp(true, comparables, gen, unused[i]);
 				if(val > opt)
 					opt = val, idx = i, is_unused = true;
+			}
+			for(size_t i = 0; i < finished.size(); i++) {
+				const int val = cmp(false, comparables, gen, finished[i].first);
+				if(val > opt)
+					opt = val, idx = i, is_unused = false;
 			}
 
 			assert(opt != -1);
@@ -199,6 +212,8 @@ std::vector<Test> optCoveringArray(const Test& init,
 			finished[i].second++;
 		finished.emplace_back(gen, comparables.size());
 	}
+
+	std::cerr << comparisons << " comparisons" << std::endl;
 	
 	// build tests
 	std::vector<Test> res;

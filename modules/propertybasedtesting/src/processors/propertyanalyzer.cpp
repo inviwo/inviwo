@@ -317,7 +317,7 @@ void PropertyAnalyzer::initTesting() {
 	}
 
 
-	allTests = util::optCoveringArray(Test{}, assignmentsComp);
+	allTests = util::optCoveringArray(numTests_.get(), Test{}, assignmentsComp);
 	//auto allTests = util::coveringArray(Test{}, assignments);
 
 	{

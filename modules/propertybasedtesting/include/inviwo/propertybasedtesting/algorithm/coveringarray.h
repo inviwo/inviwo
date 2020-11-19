@@ -43,7 +43,7 @@ namespace util {
 std::vector<Test> coveringArray(const Test& init,
 		const std::vector<std::vector< std::shared_ptr<PropertyAssignment> >>& vars);
 
-std::vector<Test> optCoveringArray(const Test& init,
+std::vector<Test> optCoveringArray(const size_t num, const Test& init,
 		const std::vector<
 				std::pair<
 					util::AssignmentComparator,
