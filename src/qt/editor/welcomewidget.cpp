@@ -77,233 +77,162 @@
 
 #include <warn/pop>
 
+#ifndef INVIWO_ALL_DYN_LINK
+struct InitQtChangelogResources {
+    // Needed for loading of resources when building statically
+    // see https://wiki.qt.io/QtResources#Q_INIT_RESOURCE
+    InitQtChangelogResources() { Q_INIT_RESOURCE(changelog); }
+    ~InitQtChangelogResources() { Q_CLEANUP_RESOURCE(changelog); }
+} initQtChangelogResources;
+#endif
+
 namespace inviwo {
 
 WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
     : QSplitter(parent), mainWindow_(window) {
-
     setObjectName("WelcomeWidget");
 
     setOrientation(Qt::Horizontal);
     setHandleWidth(5);
 
     auto leftWidget = new QWidget(this);
-
     auto gridLayout = new QGridLayout();
     const auto space = utilqt::refSpacePx(this);
     gridLayout->setContentsMargins(static_cast<int>(space * 1.5), 0, 0,
                                    static_cast<int>(space * 1.5));
     gridLayout->setSpacing(space);
 
-    // heading: logo + "get started"
-    auto horizontalLayout = new QHBoxLayout();
-    auto label_2 = new QLabel(leftWidget);
-    label_2->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+    auto captionLayout = new QHBoxLayout();  // caption: logo + "get started"
 
-    label_2->setPixmap(QPixmap(":/inviwo/inviwo_light.png"));
-    label_2->setScaledContents(false);
+    {
+        auto inviwoLogo = new QLabel(leftWidget);
+        inviwoLogo->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+        inviwoLogo->setPixmap(QPixmap(":/inviwo/inviwo_light.png"));
+        inviwoLogo->setScaledContents(false);
+        captionLayout->addWidget(inviwoLogo);
+    }
+    {
+        auto title = new QLabel("Get Started", leftWidget);
+        title->setObjectName("WelcomeHeader");
+        title->setAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignTop);
+        captionLayout->addWidget(title);
+    }
 
-    horizontalLayout->addWidget(label_2);
-
-    auto label_6 = new QLabel("Get Started", leftWidget);
-    label_6->setObjectName("WelcomeHeader");
-    label_6->setAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignTop);
-
-    horizontalLayout->addWidget(label_6);
-
-    gridLayout->addLayout(horizontalLayout, 0, 0, 1, 2);
-
-    auto updateDetails = [this](const QString& filename) {
-        QFileInfo info(filename);
-        if (filename.isEmpty() || !info.exists()) {
-            details_->clear();
-            loadWorkspaceBtn_->setEnabled(false);
-            return;
-        }
-
-        loadWorkspaceBtn_->setEnabled(true);
-
-        // extract annotations including network screenshot and canvas images from workspace
-        WorkspaceAnnotationsQt annotations;
-        bool fileBroken = false;
-        try {
-            auto istream = filesystem::ifstream(utilqt::fromQString(filename));
-            if (istream.is_open()) {
-                LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
-                auto d = mainWindow_->getInviwoApplication()
-                             ->getWorkspaceManager()
-                             ->createWorkspaceDeserializer(istream, utilqt::fromQString(filename),
-                                                           &logger);
-                d.setExceptionHandler([](const ExceptionContext) {});
-                d.deserialize("WorkspaceAnnotations", annotations);
-            } else {
-                fileBroken = true;
-            }
-        } catch (Exception& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
-            fileBroken = "true";
-        }
-
-        const auto dateformat = "yyyy-MM-dd hh:mm:ss";
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-        auto createdStr = utilqt::fromQString(info.created().toString(dateformat));
-#else
-        auto createdStr = utilqt::fromQString(info.birthTime().toString(dateformat));
-#endif
-        auto modifiedStr = utilqt::fromQString(info.lastModified().toString(dateformat));
-
-        const bool hasTitle = !annotations.getTitle().empty();
-        const auto titleStr =
-            hasTitle ? annotations.getTitle() : utilqt::fromQString(info.completeBaseName());
-        auto description = htmlEncode(annotations.getDescription());
-        replaceInString(description, "\n", "<br/>");
-
-        Document doc;
-        using P = Document::PathComponent;
-        using H = utildoc::TableBuilder::Header;
-        auto body = doc.append("html").append("body");
-        body.append("h1", titleStr, {{"style", "font-size:20pt; color:#268bd2"}});
-
-        auto t = body.append("p").append("table", "", {{"style", "margin-bottom:20px;"}});
-        auto pi = t.append("tr").append("td");
-        utildoc::TableBuilder tb(pi, P::end());
-        tb(H("File Name"), htmlEncode(utilqt::fromQString(info.fileName())));
-        tb(H("Last Modified"), modifiedStr);
-        tb(H("Created"), createdStr);
-        tb(H("Author"), htmlEncode(annotations.getAuthor()));
-        tb(H("Tags"), htmlEncode(annotations.getTags()));
-        tb(H("Categories"), htmlEncode(annotations.getCategories()));
-        tb(H("Description"), description);
-
-        if (fileBroken) {
-            body.append("h3", "Workspace file could not be opened!",
-                        {{"style", "color:firebrick;font-weight:600;margin-top:20px"}});
-        }
-        auto addImage = [&body](auto item) {
-            const int fixedImgHeight = 256;
-
-            if (!item.isValid()) return;
-            body.append("h3", item.name, {{"style", "font-weight:600;margin-top:20px"}});
-            body.append("p").append(
-                "img", "",
-                {{"height", std::to_string(std::min(fixedImgHeight, item.size.y))},
-                 {"src", "data:image/jpeg;base64," + item.base64jpeg}});
-        };
-
-        for (auto& elem : annotations.getCanvasImages()) {
-            addImage(elem);
-        }
-        addImage(annotations.getNetworkImage());
-
-        details_->setHtml(utilqt::toQString(doc));
-    };
+    gridLayout->addLayout(captionLayout, 0, 0, 1, 2);
 
     // left column: workspace filter, list of recently used workspaces, and examples
-    filetree_ = new FileTreeWidget(window->getInviwoApplication(), leftWidget);
-    filetree_->setObjectName("FileTreeWidget");
-    filetree_->setMinimumWidth(200);
-    filetree_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    QObject::connect(filetree_, &FileTreeWidget::selectedFileChanged, this,
-                     [this, updateDetails](const QString& filename, bool isExample) {
-                         updateDetails(filename);
+    {
+        filetree_ = new FileTreeWidget(window->getInviwoApplication(), leftWidget);
+        filetree_->setObjectName("FileTreeWidget");
+        filetree_->setMinimumWidth(200);
+        filetree_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        QObject::connect(filetree_, &FileTreeWidget::selectedFileChanged, this,
+                         [this](const QString& filename, bool isExample) {
+                             updateDetails(filename);
 
-                         loadWorkspaceBtn_->disconnect();
-                         QObject::connect(
-                             loadWorkspaceBtn_, &QToolButton::clicked, this,
-                             [this, filename, isExample]() { loadWorkspace(filename, isExample); });
-                     });
-    QObject::connect(filetree_, &FileTreeWidget::loadFile, this, &WelcomeWidget::loadWorkspace);
+                             loadWorkspaceBtn_->disconnect();
+                             QObject::connect(loadWorkspaceBtn_, &QToolButton::clicked, this,
+                                              [this, filename, isExample]() {
+                                                  loadWorkspace(filename, isExample);
+                                              });
+                         });
+        QObject::connect(filetree_, &FileTreeWidget::loadFile, this, &WelcomeWidget::loadWorkspace);
 
-    filterLineEdit_ = new QLineEdit(leftWidget);
-    filterLineEdit_->setPlaceholderText("Search for Workspace...");
-    filterLineEdit_->installEventFilter(new LineEditEventFilter(filetree_, filterLineEdit_));
+        filterLineEdit_ = new QLineEdit(leftWidget);
+        filterLineEdit_->setPlaceholderText("Search for Workspace...");
+        filterLineEdit_->installEventFilter(new LineEditEventFilter(filetree_, filterLineEdit_));
 
-    QIcon clearIcon;
-    clearIcon.addFile(":/svgicons/lineedit-clear.svg", utilqt::emToPx(this, QSizeF(0.3, 0.3)),
-                      QIcon::Normal);
-    clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
-                      utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Active);
-    clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
-                      utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Selected);
-    auto clearAction = filterLineEdit_->addAction(clearIcon, QLineEdit::TrailingPosition);
-    clearAction->setVisible(false);
-    connect(clearAction, &QAction::triggered, filterLineEdit_, &QLineEdit::clear);
-    connect(filterLineEdit_, &QLineEdit::textChanged, this,
-            [this, clearAction](const QString& str) {
-                filetree_->setFilter(str);
-                clearAction->setVisible(!str.isEmpty());
-            });
+        QIcon clearIcon;
+        clearIcon.addFile(":/svgicons/lineedit-clear.svg", utilqt::emToPx(this, QSizeF(0.3, 0.3)),
+                          QIcon::Normal);
+        clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
+                          utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Active);
+        clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
+                          utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Selected);
+        auto clearAction = filterLineEdit_->addAction(clearIcon, QLineEdit::TrailingPosition);
+        clearAction->setVisible(false);
+        connect(clearAction, &QAction::triggered, filterLineEdit_, &QLineEdit::clear);
+        connect(filterLineEdit_, &QLineEdit::textChanged, this,
+                [this, clearAction](const QString& str) {
+                    filetree_->setFilter(str);
+                    clearAction->setVisible(!str.isEmpty());
+                });
+    }
     gridLayout->addWidget(filterLineEdit_, 1, 0, 1, 1);
     gridLayout->addWidget(filetree_, 2, 0, 2, 1);
 
     // center column: workspace details and buttons for loading workspaces
-
-    // workspace details
-    details_ = new QTextEdit(leftWidget);
-    details_->setObjectName("NetworkDetails");
-    details_->setReadOnly(true);
-    details_->setFrameShape(QFrame::NoFrame);
-    details_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-
+    {  // workspace details
+        details_ = new QTextEdit(leftWidget);
+        details_->setObjectName("NetworkDetails");
+        details_->setReadOnly(true);
+        details_->setFrameShape(QFrame::NoFrame);
+        details_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    }
     gridLayout->addWidget(details_, 1, 1, 2, 1);
 
-    // tool buttons
-    auto buttonLayout = new QHBoxLayout();
-    buttonLayout->setSpacing(6);
+    {  // tool buttons
+        auto buttonLayout = new QHBoxLayout();
+        buttonLayout->setSpacing(6);
+        auto createButton = [leftWidget, this](const QString& str, auto iconpath) {
+            auto button = new QToolButton(leftWidget);
+            button->setText(str);
+            button->setIcon(QIcon(iconpath));
+            button->setIconSize(utilqt::emToPx(this, QSize(7, 7)));
+            button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+            return button;
+        };
 
-    auto createButton = [leftWidget, this](const QString& str, auto iconpath) {
-        auto button = new QToolButton(leftWidget);
-        button->setText(str);
-        button->setIcon(QIcon(iconpath));
-        button->setIconSize(utilqt::emToPx(this, QSize(7, 7)));
-        button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-        return button;
-    };
+        loadWorkspaceBtn_ = createButton("Load", ":/svgicons/open.svg");
+        loadWorkspaceBtn_->setToolTip("Open selected workspace");
+        loadWorkspaceBtn_->setObjectName("LoadWorkspaceToolButton");
+        buttonLayout->addWidget(loadWorkspaceBtn_);
 
-    loadWorkspaceBtn_ = createButton("Load", ":/svgicons/open.svg");
-    loadWorkspaceBtn_->setToolTip("Open selected workspace");
-    loadWorkspaceBtn_->setObjectName("LoadWorkspaceToolButton");
-    buttonLayout->addWidget(loadWorkspaceBtn_);
+        auto horizontalSpacer =
+            new QSpacerItem(utilqt::emToPx(this, 2.0), utilqt::emToPx(this, 2.0),
+                            QSizePolicy::Expanding, QSizePolicy::Minimum);
+        buttonLayout->addItem(horizontalSpacer);
 
-    auto horizontalSpacer = new QSpacerItem(utilqt::emToPx(this, 2.0), utilqt::emToPx(this, 2.0),
-                                            QSizePolicy::Expanding, QSizePolicy::Minimum);
-    buttonLayout->addItem(horizontalSpacer);
+        auto newButton = createButton("New", ":/svgicons/newfile.svg");
+        newButton->setObjectName("NewWorkspaceToolButton");
+        newButton->setToolTip("Create an empty workspace");
+        QObject::connect(newButton, &QToolButton::clicked, this, [window]() {
+            if (window->newWorkspace()) {
+                window->hideWelcomeScreen();
+            }
+        });
+        buttonLayout->addWidget(newButton);
 
-    auto newButton = createButton("New", ":/svgicons/newfile.svg");
-    newButton->setObjectName("NewWorkspaceToolButton");
-    newButton->setToolTip("Create an empty workspace");
-    QObject::connect(newButton, &QToolButton::clicked, this, [window]() {
-        if (window->newWorkspace()) {
+        auto openFileButton = createButton("Open...", ":/svgicons/open.svg");
+        openFileButton->setObjectName("OpenWorkspaceToolButton");
+        openFileButton->setToolTip("Open workspace from disk");
+        QObject::connect(openFileButton, &QToolButton::clicked, this, [window]() {
+            if (window->openWorkspace()) {
+                window->hideWelcomeScreen();
+            }
+        });
+        buttonLayout->addWidget(openFileButton);
+
+        auto restoreButton = createButton("Restore", ":/svgicons/revert.svg");
+        restoreButton->setObjectName("OpenWorkspaceToolButton");
+        restoreButton->setEnabled(window->hasRestoreWorkspace());
+        restoreButton->setToolTip("Restore last automatically saved workspace if available");
+        QObject::connect(restoreButton, &QToolButton::clicked, this, [window]() {
+            window->restoreWorkspace();
             window->hideWelcomeScreen();
-        }
-    });
-    buttonLayout->addWidget(newButton);
+        });
+        buttonLayout->addWidget(restoreButton);
+        gridLayout->addLayout(buttonLayout, 3, 1, 1, 1);
 
-    auto openFileButton = createButton("Open...", ":/svgicons/open.svg");
-    openFileButton->setObjectName("OpenWorkspaceToolButton");
-    openFileButton->setToolTip("Open workspace from disk");
-    QObject::connect(openFileButton, &QToolButton::clicked, this, [window]() {
-        if (window->openWorkspace()) {
-            window->hideWelcomeScreen();
-        }
-    });
-    buttonLayout->addWidget(openFileButton);
-
-    auto restoreButton = createButton("Restore", ":/svgicons/revert.svg");
-    restoreButton->setObjectName("OpenWorkspaceToolButton");
-    restoreButton->setEnabled(window->hasRestoreWorkspace());
-    restoreButton->setToolTip("Restore last automatically saved workspace if available");
-    QObject::connect(restoreButton, &QToolButton::clicked, this, [window]() {
-        window->restoreWorkspace();
-        window->hideWelcomeScreen();
-    });
-    buttonLayout->addWidget(restoreButton);
-
-    gridLayout->addLayout(buttonLayout, 3, 1, 1, 1);
+        setTabOrder(loadWorkspaceBtn_, newButton);
+        setTabOrder(newButton, openFileButton);
+        setTabOrder(openFileButton, restoreButton);
+        setTabOrder(restoreButton, details_);
+    }
 
     // add some space between center and right column
-    auto horizontalSpacer_2 = new QSpacerItem(utilqt::emToPx(this, 2.0), utilqt::emToPx(this, 2.0),
-                                              QSizePolicy::Fixed, QSizePolicy::Minimum);
+    auto horizontalSpacer_2 =
+        new QSpacerItem(space, space, QSizePolicy::Fixed, QSizePolicy::Minimum);
     gridLayout->addItem(horizontalSpacer_2, 1, 2, 1, 1);
 
     leftWidget->setLayout(gridLayout);
@@ -313,54 +242,67 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
     gridLayout->setColumnStretch(0, 1);
     gridLayout->setColumnStretch(1, 2);
 
-    // right column: changelog and options
+    {  // right column: changelog and options
+        auto rightColumn = new QFrame(this);
+        rightColumn->setObjectName("WelcomeRightColumn");
+        auto rightColumnLayout = new QVBoxLayout(rightColumn);
+        rightColumnLayout->setContentsMargins(space, 0, 0, 2 * space);
 
-    auto rightColumn = new QFrame(this);
-    rightColumn->setObjectName("WelcomeRightColumn");
-    auto verticalLayout_3 = new QVBoxLayout(rightColumn);
-    verticalLayout_3->setContentsMargins(utilqt::emToPx(this, 2.0), 0, 0,
-                                         utilqt::emToPx(this, 1.0));
-    changelog_ = new QTextEdit(rightColumn);
-    changelog_->setObjectName("Changelog");
-    QSizePolicy sizePolicy1(changelog_->sizePolicy());
-    sizePolicy1.setVerticalStretch(100);
-    changelog_->setSizePolicy(sizePolicy1);
-    changelog_->setFrameShape(QFrame::NoFrame);
-    changelog_->setTextInteractionFlags(Qt::TextBrowserInteraction);
+        {
+            auto title = new QLabel("Latest Changes", rightColumn);
+            title->setAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignTop);
+            title->setObjectName("ChangeLog");
+            rightColumnLayout->addWidget(title);
+        }
 
-    verticalLayout_3->addWidget(changelog_);
+        {
+            changelog_ = new QTextEdit(rightColumn);
+            changelog_->setObjectName("Changelog");
+            QSizePolicy sizePolicy1(changelog_->sizePolicy());
+            sizePolicy1.setVerticalStretch(100);
+            changelog_->setSizePolicy(sizePolicy1);
+            changelog_->setFrameShape(QFrame::NoFrame);
+            changelog_->setTextInteractionFlags(Qt::TextBrowserInteraction);
+            changelog_->document()->setIndentWidth(utilqt::emToPx(this, 1.5));
+            rightColumnLayout->addWidget(changelog_);
+        }
 
-    auto verticalSpacer_2 = new QSpacerItem(utilqt::emToPx(this, 2.0), utilqt::emToPx(this, 3.0),
-                                            QSizePolicy::Minimum, QSizePolicy::Fixed);
-    verticalLayout_3->addItem(verticalSpacer_2);
+        rightColumnLayout->addItem(
+            new QSpacerItem(space, space, QSizePolicy::Minimum, QSizePolicy::Fixed));
 
-    QSettings settings;
-    settings.beginGroup("InviwoMainWindow");
+        {
+            QSettings settings;
+            settings.beginGroup("InviwoMainWindow");
 
-    auto autoloadWorkspace =
-        new QCheckBox("&Automatically load most recently used workspace", rightColumn);
-    autoloadWorkspace->setChecked(settings.value("autoloadLastWorkspace", true).toBool());
-    QObject::connect(autoloadWorkspace, &QCheckBox::toggled, this, [](bool checked) {
-        QSettings settings;
-        settings.beginGroup("InviwoMainWindow");
-        settings.setValue("autoloadLastWorkspace", checked);
-        settings.endGroup();
-    });
-    verticalLayout_3->addWidget(autoloadWorkspace);
+            auto autoloadWorkspace =
+                new QCheckBox("&Automatically load most recently used workspace", rightColumn);
+            autoloadWorkspace->setChecked(settings.value("autoloadLastWorkspace", true).toBool());
+            QObject::connect(autoloadWorkspace, &QCheckBox::toggled, this, [](bool checked) {
+                QSettings settings;
+                settings.beginGroup("InviwoMainWindow");
+                settings.setValue("autoloadLastWorkspace", checked);
+                settings.endGroup();
+            });
+            rightColumnLayout->addWidget(autoloadWorkspace);
 
-    auto showOnStartup = new QCheckBox("&Show this page on startup", rightColumn);
-    showOnStartup->setChecked(settings.value("showWelcomePage", true).toBool());
-    QObject::connect(showOnStartup, &QCheckBox::toggled, this, [](bool checked) {
-        QSettings settings;
-        settings.beginGroup("InviwoMainWindow");
-        settings.setValue("showWelcomePage", checked);
-        settings.endGroup();
-    });
-    verticalLayout_3->addWidget(showOnStartup);
+            auto showOnStartup = new QCheckBox("&Show this page on startup", rightColumn);
+            showOnStartup->setChecked(settings.value("showWelcomePage", true).toBool());
+            QObject::connect(showOnStartup, &QCheckBox::toggled, this, [](bool checked) {
+                QSettings settings;
+                settings.beginGroup("InviwoMainWindow");
+                settings.setValue("showWelcomePage", checked);
+                settings.endGroup();
+            });
+            rightColumnLayout->addWidget(showOnStartup);
 
-    settings.endGroup();
+            settings.endGroup();
 
-    addWidget(rightColumn);
+            setTabOrder(changelog_, autoloadWorkspace);
+            setTabOrder(autoloadWorkspace, showOnStartup);
+        }
+
+        addWidget(rightColumn);
+    }
 
     // ensure that the splitter handle responds to hover events
     // see https://bugreports.qt.io/browse/QTBUG-13768
@@ -381,13 +323,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
 
     setTabOrder(filterLineEdit_, filetree_);
     setTabOrder(filetree_, loadWorkspaceBtn_);
-    setTabOrder(loadWorkspaceBtn_, newButton);
-    setTabOrder(newButton, openFileButton);
-    setTabOrder(openFileButton, restoreButton);
-    setTabOrder(restoreButton, details_);
     setTabOrder(details_, changelog_);
-    setTabOrder(changelog_, autoloadWorkspace);
-    setTabOrder(autoloadWorkspace, showOnStartup);
 
     initChangelog();
 }
@@ -474,12 +410,109 @@ void WelcomeWidget::initChangelog() {
 </style>
 </head>
 <body >
-<h1>Latest Changes</h1>
 <p>For latest changes see <a href='https://github.com/inviwo/inviwo/blob/master/CHANGELOG.md'>https://github.com/inviwo/inviwo/blob/master/CHANGELOG.md</a>.
 </body>
 </html>
     )");
     }
+}
+
+void WelcomeWidget::updateDetails(const QString& filename) {
+    QFileInfo info(filename);
+    if (filename.isEmpty() || !info.exists()) {
+        details_->clear();
+        loadWorkspaceBtn_->setEnabled(false);
+        return;
+    }
+
+    loadWorkspaceBtn_->setEnabled(true);
+
+    // extract annotations including network screenshot and canvas images from workspace
+    WorkspaceAnnotationsQt annotations;
+    bool fileBroken = false;
+    try {
+        auto istream = filesystem::ifstream(utilqt::fromQString(filename));
+        if (istream.is_open()) {
+            LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
+            auto d =
+                mainWindow_->getInviwoApplication()
+                    ->getWorkspaceManager()
+                    ->createWorkspaceDeserializer(istream, utilqt::fromQString(filename), &logger);
+            d.setExceptionHandler([](const ExceptionContext) {});
+            d.deserialize("WorkspaceAnnotations", annotations);
+        } else {
+            fileBroken = true;
+        }
+    } catch (Exception& e) {
+        util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
+        fileBroken = "true";
+    }
+
+    const auto dateformat = "yyyy-MM-dd hh:mm:ss";
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+    auto createdStr = utilqt::fromQString(info.created().toString(dateformat));
+#else
+    auto createdStr = utilqt::fromQString(info.birthTime().toString(dateformat));
+#endif
+    auto modifiedStr = utilqt::fromQString(info.lastModified().toString(dateformat));
+
+    const bool hasTitle = !annotations.getTitle().empty();
+    auto titleStr =
+        hasTitle ? annotations.getTitle() : utilqt::fromQString(info.completeBaseName());
+    auto description = htmlEncode(annotations.getDescription());
+    replaceInString(description, "\n", "<br/>");
+
+    if (titleStr.size() > 0) titleStr[0] = static_cast<char>(std::toupper(titleStr[0]));
+    replaceInString(titleStr, "-", " ");
+    replaceInString(titleStr, "_", " ");
+
+    Document doc;
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+
+    auto body = doc.append("html").append("body");
+    body.append("h1", titleStr, {{"style", "font-size:25pt; color:#268bd2"}});
+
+    auto table = body.append("table", "", {{"style", "margin-bottom:1em;"}});
+    auto addrow = [&](std::string_view name, std::string_view value) {
+        if (value.empty()) return;
+        auto tr = table.append("tr");
+        tr.append("td", name, {{"style", "text-align:right;"}});
+        tr.append("td", htmlEncode(value), {{"style", "color:#ebe5df; font-weight:500;"}});
+    };
+
+    addrow("File", utilqt::fromQString(info.fileName()));
+    addrow("Modified", modifiedStr);
+    addrow("Created", createdStr);
+    addrow("Author", annotations.getAuthor());
+    addrow("Tags", annotations.getTags());
+    addrow("Categories", annotations.getCategories());
+    addrow("Description", description);
+
+    if (fileBroken) {
+        body.append("h3", "Workspace file could not be opened!",
+                    {{"style", "color:firebrick;font-weight:600;"}});
+    }
+    auto content = body.append("span");
+    auto addImage = [&content](auto item) {
+        const int fixedImgHeight = 256;
+        if (!item.isValid()) return;
+        auto img = content.append("table", "", {{"style", "float: left;"}});
+        img.append("tr").append("td").append("h3", item.name, {{"style", "font-weight:600;"}});
+        img.append("tr").append("td").append(
+            "img", "",
+            {{"height", std::to_string(std::min(fixedImgHeight, item.size.y))},
+             {"src", "data:image/jpeg;base64," + item.base64jpeg}});
+    };
+
+    for (auto& elem : annotations.getCanvasImages()) {
+        addImage(elem);
+    }
+    addImage(annotations.getNetworkImage());
+
+    std::string txt = doc;
+
+    details_->setHtml(utilqt::toQString(doc));
 }
 
 }  // namespace inviwo

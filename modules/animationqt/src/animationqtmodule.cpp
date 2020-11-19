@@ -72,10 +72,14 @@
 #include <QAction>
 #include <warn/pop>
 
-// This has to be in the global namespace
-static void initializeQtResources() {
-    Q_INIT_RESOURCE(animation);
-}
+#ifndef INVIWO_ALL_DYN_LINK
+struct InitQtAnimationResources {
+    // Needed for loading of resources when building statically
+    // see https://wiki.qt.io/QtResources#Q_INIT_RESOURCE
+    InitQtAnimationResources() { Q_INIT_RESOURCE(animation); }
+    ~InitQtAnimationResources() { Q_CLEANUP_RESOURCE(animation); }
+} initQtAnimationResources;
+#endif
 
 namespace inviwo {
 
@@ -119,8 +123,6 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
     , animation::AnimationQtSupplier(*this)
     , trackWidgetQtFactory_{}
     , sequenceEditorFactory_{} {
-
-    initializeQtResources();
 
     using namespace animation;
 

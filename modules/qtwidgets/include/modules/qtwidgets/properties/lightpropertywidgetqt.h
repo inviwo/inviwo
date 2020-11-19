@@ -31,13 +31,19 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/qtwidgets/editablelabelqt.h>
-#include <modules/qtwidgets/lightpositionwidgetqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/properties/propertysettingswidgetqt.h>
+
+class QMenu;
+class QCheckBox;
 
 namespace inviwo {
 
-class NumberLineEdit;
+class LightPositionWidgetQt;
+class EditableLabelQt;
+
+template<typename T>
+class OrdinalSpinBoxWidget;
 
 class IVW_MODULE_QTWIDGETS_API LightPropertyWidgetQt : public PropertyWidgetQt {
 public:
@@ -45,15 +51,17 @@ public:
     virtual ~LightPropertyWidgetQt();
 
     virtual void updateFromProperty() override;
+    virtual std::unique_ptr<QMenu> getContextMenu() override;
 
 private:
     FloatVec3Property* property_;
-    LightPositionWidgetQt* lightWidget_;
-    NumberLineEdit* radiusSpinBox_;
-    EditableLabelQt* label_;
+    LightPositionWidgetQt* halfSphere_;
+    OrdinalSpinBoxWidget<float>* radius_;
+    QCheckBox* inFront_;
+    std::array<OrdinalSpinBoxWidget<float>*, 3> cartesian_;
 
-    void onPositionLightWidgetChanged();
-    void onRadiusSpinBoxChanged(double radius);
+    EditableLabelQt* label_;
+    OrdinalLikePropertySettingsWidgetQt<FloatVec3Property>* settings_;
 };
 
 }  // namespace inviwo

@@ -147,7 +147,7 @@ std::tuple<QRect, QRect, QRect> SectionDelegate::getTextBoundingBox(
 
     const int marginLeft = utilqt::emToPx(fm, 6.0 / utilqt::refEm());
     const int textSpacing = utilqt::emToPx(fm, 4.0 / utilqt::refEm());
-    const int margin = utilqt::emToPx(fm, 10.0 / utilqt::refEm());
+    const int margin = utilqt::emToPx(fm, 5.0 / utilqt::refEm());
     const int marginRight = utilqt::emToPx(fm, 6.0 / utilqt::refEm());
 
     auto textRect = (option.rect.isValid() ? option.rect : QRect());
@@ -227,7 +227,7 @@ FileTreeWidget::FileTreeWidget(InviwoApplication* app, QWidget* parent)
 
     setHeaderHidden(true);
     setSelectionBehavior(QAbstractItemView::SelectRows);
-    setIconSize(utilqt::emToPx(this, QSize(3, 3)));
+    setIconSize(utilqt::emToPx(this, QSizeF(2.5, 2.5)));
     setIndentation(utilqt::emToPx(this, 1.0));
     setItemDelegate(new SectionDelegate(this));
 

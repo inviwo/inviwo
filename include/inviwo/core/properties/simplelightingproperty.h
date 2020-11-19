@@ -75,8 +75,6 @@ public:
     OptionPropertyInt shadingMode_;
     OptionPropertyInt referenceFrame_;
     FloatVec3Property lightPosition_;
-    FloatVec3Property lightAttenuation_;
-    BoolProperty applyLightAttenuation_;
 
     // Material properties
     // Diffuse color often come from the object

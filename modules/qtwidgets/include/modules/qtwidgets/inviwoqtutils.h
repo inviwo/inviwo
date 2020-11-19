@@ -30,7 +30,7 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 
 #include <locale>

@@ -62,6 +62,8 @@ private:
     void loadWorkspace(const QString &filename, bool isExample) const;
     void initChangelog();
 
+    void updateDetails(const QString& filename);
+
     InviwoMainWindow *mainWindow_;
 
     FileTreeWidget *filetree_;

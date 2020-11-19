@@ -64,9 +64,9 @@ bool Document::Element::isText() const { return type_ == ElementType::Text; }
 
 bool Document::Element::isNode() const { return type_ == ElementType::Node; }
 
-Document::Element::Element(ElementType type, const std::string& content)
+Document::Element::Element(ElementType type, std::string_view content)
     : type_{type}, data_{content} {}
-Document::Element::Element(const std::string& name, const std::string& content,
+Document::Element::Element(std::string_view name, std::string_view content,
                            const std::unordered_map<std::string, std::string>& attributes)
     : type_{ElementType::Node}, data_{name}, attributes_{attributes} {
     if (!content.empty()) {
@@ -88,7 +88,7 @@ Document::PathComponent Document::PathComponent::first() {
 }
 
 Document::PathComponent::PathComponent(
-    const std::string strrep, std::function<ElemVec::const_iterator(const ElemVec&)> matcher)
+    std::string_view strrep, std::function<ElemVec::const_iterator(const ElemVec&)> matcher)
     : strrep_(strrep), matcher_(matcher) {}
 
 Document::PathComponent::PathComponent(int index)
@@ -101,7 +101,7 @@ Document::PathComponent::PathComponent(int index)
             return elements.end();
     }} {}
 
-Document::PathComponent::PathComponent(const std::string name)
+Document::PathComponent::PathComponent(std::string_view name)
     : strrep_(name), matcher_{[name](const ElemVec& elements) -> ElemVec::const_iterator {
         return std::find_if(elements.begin(), elements.end(),
                             [name](const auto& e) { return e->isNode() && e->name() == name; });
@@ -122,7 +122,7 @@ Document::PathComponent::PathComponent(
     }} {}
 
 Document::PathComponent::PathComponent(
-    const std::string name, const std::unordered_map<std::string, std::string>& attributes)
+    std::string_view name, const std::unordered_map<std::string, std::string>& attributes)
     : strrep_("attr")
     , matcher_{[name, attributes](const ElemVec& elements) -> ElemVec::const_iterator {
         return std::find_if(elements.begin(), elements.end(), [name, attributes](const auto& e) {
@@ -173,7 +173,7 @@ Document::DocumentHandle Document::DocumentHandle::get(const std::vector<PathCom
 }
 
 Document::DocumentHandle Document::DocumentHandle::insert(
-    PathComponent pos, const std::string& name, const std::string content,
+    PathComponent pos, std::string_view name, std::string_view content,
     const std::unordered_map<std::string, std::string>& attributes) {
     auto iter = pos(elem_->children_);
 
@@ -183,7 +183,7 @@ Document::DocumentHandle Document::DocumentHandle::insert(
 }
 
 Document::DocumentHandle Document::DocumentHandle::append(
-    const std::string& name, const std::string content,
+    std::string_view name, std::string_view content,
     const std::unordered_map<std::string, std::string>& attributes) {
     return insert(PathComponent::end(), name, content, attributes);
 }
@@ -203,7 +203,7 @@ const Document::Element& Document::DocumentHandle::element() const { return *ele
 
 Document::DocumentHandle::operator bool() const { return elem_ != nullptr; }
 
-Document::DocumentHandle& Document::DocumentHandle::operator+=(const std::string& content) {
+Document::DocumentHandle& Document::DocumentHandle::operator+=(std::string_view content) {
     if (elem_->isText()) {
         elem_->content() += content;
     } else if (!elem_->children_.empty() && elem_->children_.back()->isText()) {
@@ -224,13 +224,13 @@ Document::DocumentHandle Document::get(const std::vector<PathComponent>& path) {
 }
 
 Document::DocumentHandle Document::insert(
-    PathComponent pos, const std::string& name, const std::string content,
+    PathComponent pos, std::string_view name, std::string_view content,
     const std::unordered_map<std::string, std::string>& attributes) {
     return handle().insert(pos, name, content, attributes);
 }
 
 Document::DocumentHandle Document::append(
-    const std::string& name, const std::string content,
+    std::string_view name, std::string_view content,
     const std::unordered_map<std::string, std::string>& attributes) {
     return handle().append(name, content, attributes);
 }
@@ -285,6 +285,8 @@ void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, const std::
 }
 
 utildoc::TableBuilder::Wrapper::Wrapper(const char* const data) : data_(data) {}
+
+utildoc::TableBuilder::Wrapper::Wrapper(std::string_view data) : data_{data} {}
 
 utildoc::TableBuilder::Wrapper::Wrapper(const std::string& data) : data_(data) {}
 

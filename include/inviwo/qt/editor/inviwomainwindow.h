@@ -210,7 +210,7 @@ private:
     QTabWidget* centralWidget_;
     NetworkEditorView* networkEditorView_;
 
-    SettingsWidget* settingsWidget_;
+    SettingsWidget* settings_;
     ProcessorTreeWidget* processorTreeWidget_;
     ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;

@@ -49,16 +49,10 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
                     {"phong", "Phong", ShadingMode::Phong}},
                    5, InvalidationLevel::InvalidResources)
     , referenceFrame_("referenceFrame", "Space")
-    , lightPosition_("lightPosition", "Position", vec3{0.0f, 5.0f, 5.0f},
-                     {-vec3{100.0f}, ConstraintBehavior::Ignore},
-                     {vec3{100.0f}, ConstraintBehavior::Ignore}, vec3{0.1f},
-                     InvalidationLevel::InvalidOutput, PropertySemantics::LightPosition)
-    , lightAttenuation_("lightAttenuation", "Attenuation", vec3(1.0f, 0.0f, 0.0f))
-    , applyLightAttenuation_("applyLightAttenuation", "Enable Light Attenuation", false)
-
-    , ambientColor_("lightColorAmbient", "Ambient color", util::ordinalColor(vec3{0.15f}))
-    , diffuseColor_("lightColorDiffuse", "Diffuse color", util::ordinalColor(vec3{0.6f}))
-    , specularColor_("lightColorSpecular", "Specular color", util::ordinalColor(vec3{0.4f}))
+    , lightPosition_("lightPosition", "Position", util::ordinalLight(vec3(0.0f, 5.0f, 5.0f)))
+    , ambientColor_("lightColorAmbient", "Ambient color", util::ordinalColor(vec3(0.15f)))
+    , diffuseColor_("lightColorDiffuse", "Diffuse color", util::ordinalColor(vec3(0.6f)))
+    , specularColor_("lightColorSpecular", "Specular color", util::ordinalColor(vec3(0.4f)))
     , specularExponent_("materialShininess", "Shininess", 60.0f, 1.0f, 180.0f)
     , camera_(camera) {
 
@@ -71,7 +65,7 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
     referenceFrame_.setCurrentStateAsDefault();
 
     addProperties(shadingMode_, referenceFrame_, lightPosition_, ambientColor_, diffuseColor_,
-                  specularColor_, specularExponent_, applyLightAttenuation_, lightAttenuation_);
+                  specularColor_, specularExponent_);
 }
 
 SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs)
@@ -79,8 +73,6 @@ SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs
     , shadingMode_(rhs.shadingMode_)
     , referenceFrame_(rhs.referenceFrame_)
     , lightPosition_(rhs.lightPosition_)
-    , lightAttenuation_(rhs.lightAttenuation_)
-    , applyLightAttenuation_(rhs.applyLightAttenuation_)
     , ambientColor_(rhs.ambientColor_)
     , diffuseColor_(rhs.diffuseColor_)
     , specularColor_(rhs.specularColor_)
@@ -88,14 +80,14 @@ SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs
     , camera_(rhs.camera_) {
 
     addProperties(shadingMode_, referenceFrame_, lightPosition_, ambientColor_, diffuseColor_,
-                  specularColor_, specularExponent_, applyLightAttenuation_, lightAttenuation_);
+                  specularColor_, specularExponent_);
 }
 
 SimpleLightingProperty* SimpleLightingProperty::clone() const {
     return new SimpleLightingProperty(*this);
 }
 
-SimpleLightingProperty::~SimpleLightingProperty() {}
+SimpleLightingProperty::~SimpleLightingProperty() = default;
 
 vec3 SimpleLightingProperty::getTransformedPosition() const {
     switch (static_cast<Space>(referenceFrame_.getSelectedValue())) {

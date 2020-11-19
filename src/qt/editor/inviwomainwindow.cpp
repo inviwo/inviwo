@@ -239,13 +239,13 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     centralWidget_->addTab(networkEditorView_, "Network Editor");
     setCentralWidget(centralWidget_);
 
-    settingsWidget_ = new SettingsWidget(this);
-    addDockWidget(Qt::RightDockWidgetArea, settingsWidget_);
-    settingsWidget_->setVisible(false);
-    settingsWidget_->loadState();
+    settings_ = new SettingsWidget(this);
+    addDockWidget(Qt::RightDockWidgetArea, settings_);
+    settings_->setVisible(false);
+    settings_->loadState();
 
     annotationsWidget_ = new AnnotationsWidget(this);
-    tabifyDockWidget(settingsWidget_, annotationsWidget_);
+    tabifyDockWidget(settings_, annotationsWidget_);
     annotationsWidget_->setVisible(true);
     annotationsWidget_->loadState();
 
@@ -684,7 +684,7 @@ void InviwoMainWindow::addActions() {
     // View
     {
         // dock widget visibility menu entries
-        viewMenuItem->addAction(settingsWidget_->toggleViewAction());
+        viewMenuItem->addAction(settings_->toggleViewAction());
         processorTreeWidget_->toggleViewAction()->setText(tr("&Processor List"));
         viewMenuItem->addAction(processorTreeWidget_->toggleViewAction());
         propertyListWidget_->toggleViewAction()->setText(tr("&Property List"));
@@ -1308,7 +1308,7 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
     return continueOperation;
 }
 
-SettingsWidget* InviwoMainWindow::getSettingsWidget() const { return settingsWidget_; }
+SettingsWidget* InviwoMainWindow::getSettingsWidget() const { return settings_; }
 
 ProcessorTreeWidget* InviwoMainWindow::getProcessorTreeWidget() const {
     return processorTreeWidget_;

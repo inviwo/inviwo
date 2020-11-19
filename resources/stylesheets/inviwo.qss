@@ -993,7 +993,12 @@ QDockWidget#ResourceManager QTableView QHeaderView::section {
 WelcomeWidget
 ************************/
 QLabel#WelcomeHeader {
-    font-size: 50pt;
+    font-size: 60pt;
+    color: #268bd2;
+}
+
+QLabel#ChangeLog {
+    font-size: 30pt;
     color: #268bd2;
 }
 

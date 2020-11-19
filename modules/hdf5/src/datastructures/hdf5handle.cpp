@@ -91,7 +91,7 @@ Handle* Handle::getHandleForPath(const std::string& path) const {
 
 Document Handle::getInfo() const {
     Document doc;
-    doc.append("p", "File: " + filename_ + path_);
+    doc.append("p", "File: " + filename_ + path_.toString());
     return doc;
 }
 
