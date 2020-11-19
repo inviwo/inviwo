@@ -53,7 +53,7 @@ class SequenceEditorFactory;
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget,
                                                                public AnimationControllerObserver {
 public:
-    AnimationEditorDockWidgetQt(AnimationManager& controller, const std::string& widgetName,
+    AnimationEditorDockWidgetQt(AnimationController& controller, AnimationManager& manager, const std::string& widgetName,
                                 TrackWidgetQtFactory& widgetFactory,
                                 SequenceEditorFactory& editorFactory, QWidget* parent);
     AnimationEditorDockWidgetQt(const AnimationEditorDockWidgetQt&) = delete;

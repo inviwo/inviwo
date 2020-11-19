@@ -46,9 +46,9 @@
 namespace inviwo {
 
 namespace animation {
-SequenceEditorPanel::SequenceEditorPanel(AnimationManager& manager,
+SequenceEditorPanel::SequenceEditorPanel(Animation& animation, AnimationManager& manager,
                                          SequenceEditorFactory& editorFactory, QWidget* parent)
-    : QScrollArea(parent), manager_(manager), factory_{editorFactory} {
+    : QScrollArea(parent), animation_(animation), manager_(manager), factory_{editorFactory} {
     setObjectName("SequenceEditorPanel");
 
     setWidgetResizable(true);
@@ -86,11 +86,10 @@ SequenceEditorPanel::SequenceEditorPanel(AnimationManager& manager,
     baseLayout->addWidget(lower);
     setWidget(widget);
 
-    auto& ani = manager_.getAnimationController().getAnimation();
-    for (auto& track : ani) {
+    for (auto& track : animation_) {
         onTrackAdded(&track);
     }
-    ani.addObserver(this);
+    animation_.addObserver(this);
 }
 
 QLayout* SequenceEditorPanel::getOptionLayout() { return optionLayout_; }

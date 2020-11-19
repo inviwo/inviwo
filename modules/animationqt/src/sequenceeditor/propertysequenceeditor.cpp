@@ -30,6 +30,7 @@
 #include <modules/animationqt/sequenceeditor/propertysequenceeditor.h>
 #include <modules/animationqt/sequenceeditor/keyframeeditorwidget.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/property.h>

@@ -31,6 +31,8 @@
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/util/indirectiterator.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertyownerobserver.h>
 
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/track.h>
@@ -45,19 +47,33 @@ namespace inviwo {
 
 namespace animation {
 
+class AnimationManager;
+class BasePropertyTrack;
+
 /** \class Animation
  * Animation data structure, owns a list of tracks.
  * Each Track usually represents a value to be animated.
  */
 class IVW_MODULE_ANIMATION_API Animation : public AnimationObservable,
                                            public Serializable,
-                                           public TrackObserver {
+                                           public TrackObserver,
+                                           public PropertyOwnerObserver {
 public:
     using iterator = util::IndirectIterator<typename std::vector<std::unique_ptr<Track>>::iterator>;
     using const_iterator =
         util::IndirectIterator<typename std::vector<std::unique_ptr<Track>>::const_iterator>;
-
-    Animation();
+    /**
+     * Creates an empty Animation.
+     * AnimationManager is required only for the Property-based adding convenience functions:
+     * add(Property* property)
+     * addKeyframe(Property* property, Seconds time)
+     * addKeyframeSequence(Property* property, Seconds time)
+     * Trying to use these functions with an invalid AnimationManager will throw Exceptions.
+     * 
+     * @note nullptr to AnimationManager should mainly be used for unit testing and the likes.
+     * @param animationManager used for creating PropertyTrack/KeyframeSequence/Keyframe.
+     */
+    Animation(AnimationManager* animationManager = nullptr);
     Animation(const Animation&) = delete;
     Animation& operator=(const Animation& that) = delete;
 
@@ -74,6 +90,32 @@ public:
     const_iterator end() const;
 
     void add(std::unique_ptr<Track> track);
+
+    /**
+     * Adds a PropertyTrack, or returns an existing it has one for the property.
+     * The added PropertyTrack will be removed if the property is removed.
+     * @return BasePropertyTrack if added, nullptr otherwise.
+     * @see BasePropertyTrack
+     * @throws Exception if no AnimationManager has been supplied.
+     */
+    BasePropertyTrack* add(Property* property);
+    /**
+     * Add keyframe at specified time.
+     * Creates a new track if no track with the supplied property exists.
+     * The PropertyTrack will be removed if the property is removed.
+     * @return Keyframe if successsfully added, nullptr otherwise.
+     * @throws Exception if no AnimationManager has been supplied.
+     */
+    Keyframe* addKeyframe(Property* property, Seconds time);
+    /**
+     * Add sequence at specified time.
+     * Creates a new track if no track with the supplied property exists.
+     * The PropertyTrack will be removed if the property is removed.
+     * @return KeyframeSequence if successsfully added, nullptr otherwise.
+     * @throws Exception if no AnimationManager has been supplied.
+     */
+    KeyframeSequence* addKeyframeSequence(Property* property, Seconds time);
+
     /**
      * Remove tracks at index i, indicating the order in which the track was added,
      * not the order in which they are sorted by Track priority.
@@ -118,6 +160,14 @@ public:
     std::unique_ptr<KeyframeSequence> remove(KeyframeSequence* seq);
 
     /**
+     * Find PropertyTrack containing the property.
+     * @return iterator to the first PropertyTrack containing the specified property,
+     * or end() if not found.
+     * @see BasePropertyTrack
+     */
+    iterator findTrack(Property* withMe);
+
+    /**
      * Remove all tracks. Calls TrackObserver::notifyTrackRemoved for each removed track.
      */
     void clear();
@@ -141,7 +191,11 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    // PropertyOwnerObserver overload. Removes its corresponding Track
+    virtual void onWillRemoveProperty(Property* property, size_t index) override;
+
 private:
+    AnimationManager* getManager();
     virtual void onPriorityChanged(Track* t) override;
     void doPrioritySort();
 
@@ -150,6 +204,7 @@ private:
 
     std::vector<std::unique_ptr<Track>> tracks_;
     std::vector<Track*> priorityTracks_;
+    AnimationManager* am_;
 };
 
 }  // namespace animation

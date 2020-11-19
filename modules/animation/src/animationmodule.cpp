@@ -138,7 +138,8 @@ struct ConstantInterpolationReghelper {
 AnimationModule::AnimationModule(InviwoApplication* app)
     : InviwoModule(app, "Animation")
     , animation::AnimationSupplier(manager_)
-    , manager_(app, this)
+    , manager_(app)
+    , mainAnimation_(app, this, manager_)
     , demoController_(app) {
 
     using namespace animation;
@@ -185,6 +186,10 @@ int AnimationModule::getVersion() const { return 1; }
 std::unique_ptr<VersionConverter> AnimationModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
 }
+
+animation::MainAnimation& AnimationModule::getMainAnimation() { return mainAnimation_; }
+
+const animation::MainAnimation& AnimationModule::getMainAnimation() const { return mainAnimation_; }
 
 animation::AnimationManager& AnimationModule::getAnimationManager() { return manager_; }
 

@@ -28,12 +28,14 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/animation.h>
+#include <modules/animation/datastructures/propertytrack.h>
+#include <modules/animation/animationmanager.h>
 
 namespace inviwo {
 
 namespace animation {
 
-Animation::Animation() = default;
+Animation::Animation(AnimationManager* am) : am_(am){};
 
 AnimationTimeState Animation::operator()(Seconds from, Seconds to, AnimationState state) const {
     AnimationTimeState ts{to, state};
@@ -74,8 +76,82 @@ void Animation::add(std::unique_ptr<Track> track) {
     notifyTrackAdded(tracks_.back().get());
 }
 
+Keyframe* Animation::addKeyframe(Property* property, Seconds time) {
+    auto it = findTrack(property);
+    try {
+
+        std::unique_ptr<Interpolation> interpolation = getManager()->getDefaultInterpolation(property);
+        if (it != end()) {
+            // Note: interpolation will only be used if a new sequence is created.
+            return reinterpret_cast<BasePropertyTrack*>(&(*it))->addKeyFrameUsingPropertyValue(
+                time, std::move(interpolation));
+        } else if (auto basePropertyTrack = add(property)) {
+            return basePropertyTrack->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
+        } else {
+            LogWarn("No matching Track found for property \"" << property->getIdentifier() << "\"");
+        }
+    } catch (const Exception& ex) {
+        LogError(ex.getMessage());
+    }
+    return nullptr;
+}
+
+KeyframeSequence* Animation::addKeyframeSequence(Property* property, Seconds time) {
+    auto it = findTrack(property);
+    std::string interpolationErrMsg;
+    try {
+        std::unique_ptr<Interpolation> interpolation = getManager()->getDefaultInterpolation(property);
+        if (it != end()) {
+            return reinterpret_cast<BasePropertyTrack*>(&(*it))->addSequenceUsingPropertyValue(
+                time, std::move(interpolation));
+        } else if (auto basePropertyTrack = add(property)) {
+            basePropertyTrack->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
+            return &basePropertyTrack->toTrack()->getFirst();
+        } else {
+            LogWarn("No matching Track found for property \"" << property->getIdentifier() << "\"");
+        }
+    } catch (const Exception& ex) {
+        LogError(ex.getMessage());
+    }
+    return nullptr;
+}
+
+Animation::iterator Animation::findTrack(Property* property) {
+    return std::find_if(begin(), end(), [property](auto& track) {
+        if (auto pTrack = reinterpret_cast<BasePropertyTrack*>(&track)) {
+            return pTrack->getProperty() == property;
+        } else {
+            return false;
+        }
+    });
+}
+
+BasePropertyTrack* Animation::add(Property* property) {
+    auto it = findTrack(property);
+    if (it != end()) {
+        return reinterpret_cast<BasePropertyTrack*>(&(*it));
+    } else {
+        if (auto track = getManager()->getTrackFactory().create(property)) {
+            if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
+                try {
+                    basePropertyTrack->setProperty(const_cast<Property*>(property));
+                } catch (const Exception& e) {
+                    LogWarn(e.getMessage() << " Invalid property class identified?") return nullptr;
+                }
+                add(std::move(track));
+                property->getOwner()->addObserver(this);
+                return basePropertyTrack;
+            }
+        }
+        return nullptr;
+    }
+}
+
 std::unique_ptr<Track> Animation::remove(size_t i) {
     auto track = std::move(tracks_[i]);
+    if (auto propertyTrack = reinterpret_cast<BasePropertyTrack*>(track.get())) {
+        propertyTrack->getProperty()->getOwner()->removeObserver(this);
+    }
     tracks_.erase(tracks_.begin() + i);
     util::erase_remove(priorityTracks_, track.get());
     notifyTrackRemoved(track.get());
@@ -168,6 +244,21 @@ void Animation::deserialize(Deserializer& d) {
         .setMakeNew([]() { return std::unique_ptr<Track>(); })
         .onNew([&](std::unique_ptr<Track>& t) { add(std::move(t)); })
         .onRemove([&](const std::string& id) { remove(id); })(d, tracks_);
+}
+
+void Animation::onWillRemoveProperty(Property* property, size_t) {
+    auto it = findTrack(property);
+    if (it != end()) {
+        remove(&(*it));
+    }
+}
+
+AnimationManager* Animation::getManager() {
+    if (am_) {
+        return am_;
+    } else {
+        throw Exception("AnimationManager must be set to use this functionality", IVW_CONTEXT);
+    }
 }
 
 void Animation::onPriorityChanged(Track*) { doPrioritySort(); }

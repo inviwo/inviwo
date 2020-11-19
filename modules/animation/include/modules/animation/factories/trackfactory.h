@@ -38,6 +38,7 @@
 namespace inviwo {
 
 class ProcessorNetwork;
+class Property;
 
 namespace animation {
 
@@ -56,8 +57,21 @@ public:
 
     virtual bool hasKey(const std::string& key) const override;
     virtual std::unique_ptr<Track> create(const std::string& key) const override;
+    virtual std::unique_ptr<Track> create(Property* property) const;
+
+    /**
+     * Register connection between a property and a track.
+     * Used to create typed tracks for a property.
+     * @param propertyClassID Property::getClassIdentifier
+     * @param trackClassID PropertyTrack::getIdentifier()
+     */
+    void registerPropertyTrackConnection(const std::string& propertyClassID,
+                                         const std::string& trackClassID);
 
     ProcessorNetwork* network_;
+
+protected:
+    std::unordered_map<std::string, std::string> propertyToTrackMap_;
 };
 
 }  // namespace animation

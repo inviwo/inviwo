@@ -145,10 +145,10 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
             win->connect(action, &QAction::triggered, [this, win, app]() {
                 if (!editor_) {
                     auto animationModule = app->getModuleByType<AnimationModule>();
-                    auto& manager = animationModule->getAnimationManager();
                     editor_ = std::make_unique<AnimationEditorDockWidgetQt>(
-                        manager, "Animation Editor", getTrackWidgetQtFactory(),
-                        getSequenceEditorFactory(), win);
+                        animationModule->getMainAnimation().getAnimationController(),
+                        animationModule->getAnimationManager(), "Animation Editor",
+                        getTrackWidgetQtFactory(), getSequenceEditorFactory(), win);
                     win->addDockWidget(Qt::BottomDockWidgetArea, editor_.get());
                     editor_->hide();
                     editor_->loadState();

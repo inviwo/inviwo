@@ -35,8 +35,12 @@
 #include <modules/animation/datastructures/trackobserver.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/keyframeobserver.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QWidget>
 #include <QStandardItem>
+#include <warn/pop>
 
 class QHBoxLayout;
 class QToolButton;

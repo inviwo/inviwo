@@ -187,7 +187,6 @@ void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent* event) {
     auto source = dynamic_cast<PropertyWidget*>(event->source());
     if (source) {
         auto property = source->getProperty();
-        auto app = controller_.getInviwoApplication();
 
         // Get time
         QGraphicsView* pView = views().empty() ? nullptr : views().first();
@@ -195,12 +194,10 @@ void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent* event) {
             getSnapTime(event->scenePos().x(), pView ? pView->transform().m11() : 1);
         const qreal time = snapX / static_cast<double>(widthPerSecond);
 
-        // Use AnimationManager for adding keyframe or keyframe sequence.
-        auto& am = app->template getModuleByType<AnimationModule>()->getAnimationManager();
         if (event->modifiers() & Qt::ControlModifier) {
-            am.addKeyframeSequence(property, Seconds(time));
+            controller_.getAnimation().addKeyframeSequence(property, Seconds(time));
         } else {
-            am.addKeyframe(property, Seconds(time));
+            controller_.getAnimation().addKeyframe(property, Seconds(time));
         }
 
         event->acceptProposedAction();

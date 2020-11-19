@@ -28,59 +28,22 @@
  *********************************************************************************/
 
 #include <modules/animation/animationmanager.h>
-#include <modules/animation/animationmodule.h>
-
-#include <inviwo/core/common/modulecallback.h>
-#include <inviwo/core/common/moduleaction.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
-
-#include <modules/animation/datastructures/propertytrack.h>
+#include <inviwo/core/properties/property.h>
 
 namespace inviwo {
 
 namespace animation {
 
-AnimationManager::AnimationManager(InviwoApplication* app, AnimationModule* animationModule)
+AnimationManager::AnimationManager(InviwoApplication* app)
     : app_(app)
     , trackFactory_{app_->getProcessorNetwork()}
-    , interpolationFactory_{}
-    , animation_{}
-    , controller_{animation_, app} {
-
-    {
-        auto callbackAction = new ModuleCallbackAction("Add Key Frame", animationModule,
-                                                       ModuleCallBackActionState::Enabled);
-
-        callbackAction->getCallBack().addMemberFunction(this,
-                                                        &AnimationManager::addKeyframeCallback);
-        app->addCallbackAction(callbackAction);
-    }
-    {
-        auto callbackAction = new ModuleCallbackAction("Add Sequence", animationModule,
-                                                       ModuleCallBackActionState::Enabled);
-        callbackAction->getCallBack().addMemberFunction(
-            this, &AnimationManager::addKeyframeSequenceCallback);
-        app->addCallbackAction(callbackAction);
-    }
+    , interpolationFactory_{} {
 
     app_->getWorkspaceManager()->registerFactory(&trackFactory_);
     app_->getWorkspaceManager()->registerFactory(&interpolationFactory_);
 
-    app_->getProcessorNetwork()->addObserver(this);
-    animation_.addObserver(this);
-
-    animationClearHandle_ = app_->getWorkspaceManager()->onClear([&]() { animation_.clear(); });
-    animationSerializationHandle_ = app_->getWorkspaceManager()->onSave(
-        [&](Serializer& s) { s.serialize("Animation", animation_); });
-    animationDeserializationHandle_ = app_->getWorkspaceManager()->onLoad(
-        [&](Deserializer& d) { d.deserialize("Animation", animation_); });
-
-    animationControllerClearHandle_ =
-        app_->getWorkspaceManager()->onClear([&]() { controller_.resetAllPoperties(); });
-    animationControllerSerializationHandle_ = app_->getWorkspaceManager()->onSave(
-        [&](Serializer& s) { s.serialize("AnimationController", controller_); });
-    animationControllerDeserializationHandle_ = app_->getWorkspaceManager()->onLoad(
-        [&](Deserializer& d) { d.deserialize("AnimationController", controller_); });
 }
 
 TrackFactory& AnimationManager::getTrackFactory() { return trackFactory_; }
@@ -95,7 +58,7 @@ const InterpolationFactory& AnimationManager::getInterpolationFactory() const {
 
 void AnimationManager::registerPropertyTrackConnection(const std::string& propertyClassID,
                                                        const std::string& trackClassID) {
-    propertyToTrackMap_[propertyClassID] = trackClassID;
+    trackFactory_.registerPropertyTrackConnection(propertyClassID, trackClassID);
 }
 
 void AnimationManager::registerPropertyInterpolationConnection(
@@ -103,86 +66,7 @@ void AnimationManager::registerPropertyInterpolationConnection(
     propertyToInterpolationMap_.emplace(propertyClassID, interpolationClassID);
 }
 
-Animation& AnimationManager::getAnimation() { return animation_; }
 
-const Animation& AnimationManager::getAnimation() const { return animation_; }
-
-AnimationController& AnimationManager::getAnimationController() { return controller_; }
-
-const AnimationController& AnimationManager::getAnimationController() const { return controller_; }
-
-Keyframe* AnimationManager::addKeyframe(Property* property) {
-    return addKeyframe(property, controller_.getCurrentTime());
-}
-
-Keyframe* AnimationManager::addKeyframe(Property* property, Seconds time) {
-    auto it = trackMap_.find(property);
-    std::string interpolationErrMsg;
-    try {
-        std::unique_ptr<Interpolation> interpolation = getDefaultInterpolation(property);
-        if (it != trackMap_.end()) {
-            // Note: interpolation will only be used if a new sequence is created.
-            return it->second->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
-        } else if (auto basePropertyTrack = addNewTrack(property)) {
-            return basePropertyTrack->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
-        } else {
-            LogWarn("No matching Track found for property \"" << property->getIdentifier() << "\"");
-        }
-    } catch (const Exception& ex) {
-        LogError(ex.getMessage());
-    }
-    return nullptr;
-}
-
-KeyframeSequence* AnimationManager::addKeyframeSequence(Property* property) {
-    return addKeyframeSequence(property, controller_.getCurrentTime());
-}
-
-KeyframeSequence* AnimationManager::addKeyframeSequence(Property* property, Seconds time) {
-    auto it = trackMap_.find(property);
-    std::string interpolationErrMsg;
-    try {
-        std::unique_ptr<Interpolation> interpolation = getDefaultInterpolation(property);
-        if (it != trackMap_.end()) {
-            return it->second->addSequenceUsingPropertyValue(time, std::move(interpolation));
-        } else if (auto basePropertyTrack = addNewTrack(property)) {
-            basePropertyTrack->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
-            return &basePropertyTrack->toTrack()->getFirst();
-        } else {
-            LogWarn("No matching Track found for property \"" << property->getIdentifier() << "\"");
-        }
-    } catch (const Exception& ex) {
-        LogError(ex.getMessage());
-    }
-    return nullptr;
-}
-
-void AnimationManager::addKeyframeCallback(Property* property) {
-    addKeyframe(property, controller_.getCurrentTime());
-}
-
-void AnimationManager::addKeyframeSequenceCallback(Property* property) {
-    addKeyframeSequence(property, controller_.getCurrentTime());
-}
-
-BasePropertyTrack* AnimationManager::addNewTrack(Property* property) {
-    auto it = propertyToTrackMap_.find(property->getClassIdentifier());
-    if (it != propertyToTrackMap_.end()) {
-        if (auto track = trackFactory_.create(it->second)) {
-            if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
-                try {
-                    basePropertyTrack->setProperty(const_cast<Property*>(property));
-                } catch (const Exception& e) {
-                    LogWarn(e.getMessage() << " Invalid property class identified?") return nullptr;
-                }
-                animation_.add(std::move(track));  // Callback will add track to trackMap_
-                property->getOwner()->addObserver(this);
-                return basePropertyTrack;
-            }
-        }
-    }
-    return nullptr;
-}
 
 std::unique_ptr<Interpolation> AnimationManager::getDefaultInterpolation(Property* property) {
     // Check if there is an interpolation associated with this property
@@ -206,39 +90,6 @@ const std::unordered_multimap<std::string, std::string>& AnimationManager::getIn
     return propertyToInterpolationMap_;
 }
 
-void AnimationManager::onWillRemoveProperty(Property* property, size_t) {
-    auto it = trackMap_.find(property);
-    if (it != trackMap_.end()) {
-        animation_.remove(it->second->getIdentifier());
-    }
-}
-
-void AnimationManager::onTrackRemoved(Track* track) {
-    util::map_erase_remove_if(trackMap_,
-                              [&](const auto& elem) { return elem.second->toTrack() == track; });
-}
-
-void AnimationManager::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
-    std::vector<std::string> toRemove;  // Save id to remove to avoid invalidating iterators.
-    util::map_erase_remove_if(trackMap_, [&](const auto& elem) {
-        if (elem.first->getOwner()->getProcessor() == processor) {
-            toRemove.push_back(elem.second->getIdentifier());
-            return true;
-        } else {
-            return false;
-        }
-    });
-
-    for (const auto& item : toRemove) {
-        animation_.remove(item);
-    }
-}
-
-void AnimationManager::onTrackAdded(Track* track) {
-    if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track)) {
-        trackMap_[basePropertyTrack->getProperty()] = basePropertyTrack;
-    }
-}
 
 }  // namespace animation
 
