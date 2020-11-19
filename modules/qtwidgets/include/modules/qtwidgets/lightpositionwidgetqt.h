@@ -82,7 +82,7 @@ private:
     QPixmap pixmap_;
     QRadialGradient gradient_;
 
-    dvec2 pos_; // norm(pos) should always be less <= 1.0
+    dvec2 pos_;  // norm(pos) should always be less <= 1.0
     double radius_;
 };
 

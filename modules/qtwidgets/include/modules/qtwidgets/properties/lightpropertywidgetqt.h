@@ -42,7 +42,7 @@ namespace inviwo {
 class LightPositionWidgetQt;
 class EditableLabelQt;
 
-template<typename T>
+template <typename T>
 class OrdinalSpinBoxWidget;
 
 class IVW_MODULE_QTWIDGETS_API LightPropertyWidgetQt : public PropertyWidgetQt {

@@ -260,8 +260,8 @@ void OrdinalLikePropertySettingsWidgetQt<Prop>::apply() {
         if (util::glmcomp(vals[0], i) > util::glmcomp(vals[1], i) ||
             util::glmcomp(vals[1], i) > util::glmcomp(vals[2], i)) {
             LogError(fmt::format("Invalid range found elem {}: {} <= {} <= {}", i,
-                                util::glmcomp(vals[0], i), util::glmcomp(vals[1], i),
-                                util::glmcomp(vals[1], i)));
+                                 util::glmcomp(vals[0], i), util::glmcomp(vals[1], i),
+                                 util::glmcomp(vals[1], i)));
             return;
         }
     }

@@ -167,8 +167,10 @@ void LightPropertyWidgetQt::updateFromProperty() {
 
     for (auto&& [i, coordinate] : util::enumerate(cartesian_)) {
         QSignalBlocker block(coordinate);
-        coordinate->setMinValue(property_->getMinValue()[i], property_->getMinConstraintBehaviour());
-        coordinate->setMaxValue(property_->getMaxValue()[i], property_->getMaxConstraintBehaviour());
+        coordinate->setMinValue(property_->getMinValue()[i],
+                                property_->getMinConstraintBehaviour());
+        coordinate->setMaxValue(property_->getMaxValue()[i],
+                                property_->getMaxConstraintBehaviour());
         coordinate->initValue(property_->get()[i]);
         coordinate->setIncrement(property_->getIncrement()[i]);
     }
