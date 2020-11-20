@@ -61,8 +61,8 @@ class IVW_MODULE_ANIMATIONQT_API SequenceEditorPanel : public QScrollArea,
                                                        public AnimationObserver,
                                                        public TrackObserver {
 public:
-    SequenceEditorPanel(Animation& animation, AnimationManager& manager, SequenceEditorFactory& editorFactory,
-                        QWidget* parent = nullptr);
+    SequenceEditorPanel(Animation& animation, AnimationManager& manager,
+                        SequenceEditorFactory& editorFactory, QWidget* parent = nullptr);
     virtual ~SequenceEditorPanel() = default;
 
     virtual void onAnimationChanged(AnimationController* controller, Animation* oldAnim,

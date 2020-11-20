@@ -80,7 +80,8 @@ Keyframe* Animation::addKeyframe(Property* property, Seconds time) {
     auto it = findTrack(property);
     try {
 
-        std::unique_ptr<Interpolation> interpolation = getManager()->getDefaultInterpolation(property);
+        std::unique_ptr<Interpolation> interpolation =
+            getManager()->getDefaultInterpolation(property);
         if (it != end()) {
             // Note: interpolation will only be used if a new sequence is created.
             return reinterpret_cast<BasePropertyTrack*>(&(*it))->addKeyFrameUsingPropertyValue(
@@ -100,7 +101,8 @@ KeyframeSequence* Animation::addKeyframeSequence(Property* property, Seconds tim
     auto it = findTrack(property);
     std::string interpolationErrMsg;
     try {
-        std::unique_ptr<Interpolation> interpolation = getManager()->getDefaultInterpolation(property);
+        std::unique_ptr<Interpolation> interpolation =
+            getManager()->getDefaultInterpolation(property);
         if (it != end()) {
             return reinterpret_cast<BasePropertyTrack*>(&(*it))->addSequenceUsingPropertyValue(
                 time, std::move(interpolation));

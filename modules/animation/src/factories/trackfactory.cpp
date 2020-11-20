@@ -49,8 +49,7 @@ std::unique_ptr<Track> TrackFactory::create(Property* property) const {
                 try {
                     basePropertyTrack->setProperty(property);
                 } catch (const Exception& e) {
-                    LogWarn(e.getMessage() << " Invalid property class identified?") 
-                    return nullptr;
+                    LogWarn(e.getMessage() << " Invalid property class identified?") return nullptr;
                 }
 
                 return track;

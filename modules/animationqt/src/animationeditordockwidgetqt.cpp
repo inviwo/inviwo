@@ -70,11 +70,9 @@ namespace inviwo {
 
 namespace animation {
 
-AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& controller, AnimationManager& manager,
-                                                         const std::string& widgetName,
-                                                         TrackWidgetQtFactory& widgetFactory,
-                                                         SequenceEditorFactory& editorFactory,
-                                                         QWidget* parent)
+AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
+    AnimationController& controller, AnimationManager& manager, const std::string& widgetName,
+    TrackWidgetQtFactory& widgetFactory, SequenceEditorFactory& editorFactory, QWidget* parent)
     : InviwoDockWidget(utilqt::toQString(widgetName), parent, "AnimationEditorWidget")
     , controller_{controller} {
 
@@ -88,7 +86,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationController& co
         QIcon(":/animation/icons/arrow_next_player_previous_recording_right_icon_128.png"));
 
     // right part
-    sequenceEditorView_ = new SequenceEditorPanel(controller.getAnimation(), manager, editorFactory, this);
+    sequenceEditorView_ =
+        new SequenceEditorPanel(controller.getAnimation(), manager, editorFactory, this);
 
     auto optionLayout = sequenceEditorView_->getOptionLayout();
     // Settings for the controller

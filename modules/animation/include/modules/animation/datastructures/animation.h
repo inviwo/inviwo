@@ -69,7 +69,7 @@ public:
      * addKeyframe(Property* property, Seconds time)
      * addKeyframeSequence(Property* property, Seconds time)
      * Trying to use these functions with an invalid AnimationManager will throw Exceptions.
-     * 
+     *
      * @note nullptr to AnimationManager should mainly be used for unit testing and the likes.
      * @param animationManager used for creating PropertyTrack/KeyframeSequence/Keyframe.
      */

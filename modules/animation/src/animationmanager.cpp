@@ -37,13 +37,10 @@ namespace inviwo {
 namespace animation {
 
 AnimationManager::AnimationManager(InviwoApplication* app)
-    : app_(app)
-    , trackFactory_{app_->getProcessorNetwork()}
-    , interpolationFactory_{} {
+    : app_(app), trackFactory_{app_->getProcessorNetwork()}, interpolationFactory_{} {
 
     app_->getWorkspaceManager()->registerFactory(&trackFactory_);
     app_->getWorkspaceManager()->registerFactory(&interpolationFactory_);
-
 }
 
 TrackFactory& AnimationManager::getTrackFactory() { return trackFactory_; }
@@ -66,8 +63,6 @@ void AnimationManager::registerPropertyInterpolationConnection(
     propertyToInterpolationMap_.emplace(propertyClassID, interpolationClassID);
 }
 
-
-
 std::unique_ptr<Interpolation> AnimationManager::getDefaultInterpolation(Property* property) {
     // Check if there is an interpolation associated with this property
     auto interpolationIt = propertyToInterpolationMap_.find(property->getClassIdentifier());
@@ -89,7 +84,6 @@ const std::unordered_multimap<std::string, std::string>& AnimationManager::getIn
     const {
     return propertyToInterpolationMap_;
 }
-
 
 }  // namespace animation
 

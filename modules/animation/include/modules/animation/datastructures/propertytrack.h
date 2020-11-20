@@ -155,7 +155,8 @@ public:
      * @throw Exception If Interpolation type is invalid for property value.
      */
     virtual Keyframe* addKeyFrameUsingPropertyValue(
-        const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation = nullptr) = 0;
+        const Property* property, Seconds time,
+        std::unique_ptr<Interpolation> interpolation = nullptr) = 0;
     /*
      * Add KeyFrame at specified time using the current value of the property.
      * @see addKeyFrameUsingPropertyValue(const Property* property, Seconds time,
