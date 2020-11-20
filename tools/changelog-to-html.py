@@ -31,34 +31,11 @@ import sys
 import argparse
 import pathlib
 from distutils.version import StrictVersion
+import urllib.request
+import json
 
 import ivwpy.util
 from ivwpy.colorprint import *
-
-# Requirements:
-# python3
-# markdown for parsing markdown files and encoding them in HTML
-# gfm, a markdown extension for parsing github-flavored markdown (GFM)
-
-missing_modules = {}
-downgradeMarkdown = False
-
-try:
-	import markdown
-	if hasattr(markdown, 'version'):
-		# version check, py-gfm has not yet been updated to markdown >3.0.0
-		if StrictVersion(markdown.version) > StrictVersion("3.0.0"):
-			downgradeMarkdown = True
-			raise ImportError # need to downgrade markdown module, do NOT check for gfm module!
-except ImportError:
-	missing_modules['"markdown<3.0"'] = "needed for markdown parsing (requires version prior 3 due to py-gfm dependency)"
-
-if not downgradeMarkdown:
-	try:
-		import gfm
-	except ImportError:
-		missing_modules['py-gfm'] = "extension for markdown, needed for parsing github-flavored markdown (GFM)"
-
 
 def makeCmdParser():
 	parser = argparse.ArgumentParser(
@@ -67,12 +44,11 @@ def makeCmdParser():
 	)
 	parser.add_argument('-i', '--input', type=str, required=True, action="store", dest="input",
 						help='Markdown input file (GFM)')
-	parser.add_argument('-o', '--output', type=str, required=True, action="store", dest="output", help='Output HTML file')
-		
+	parser.add_argument('-o', '--output', type=str, required=True, action="store", dest="output",
+						help='Output HTML file')	
 	return parser.parse_args()
 
-
-htmlHeader = """<!DOCTYPE html>
+htmlHeader= """<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -83,97 +59,30 @@ htmlHeader = """<!DOCTYPE html>
 	h1 { font-size:  xx-large; color: #268bd2; margin-bottom:1em; }
 	h2 { font-size: large; color: #268bd2; margin-top:1em; margin-bottom:0em; }
 	p { margin-bottom: 0.2em; margin-top: 0.1em; }
+	li { margin-bottom: 0.2em; }
 	div { margin: 0; padding: 0; }
-	pre { margin-top: 0.3em; margin-bottom: 0.3em; }
-	code { color: #E0E0DB; background-color: #4a4a4f; padding-left: 0.4em; padding-right: 0.4em; }
-	div.highlight { background-color: #4a4a4f; padding-top: 0.1em; padding-bottom: 0.1em; }
-	.hll { background-color: #49483e }
-	.c { color: #75715e } /* Comment */
-	.err { color: #960050; background-color: #1e0010 } /* Error */
-	.k { color: #66d9ef } /* Keyword */
-	.l { color: #ae81ff } /* Literal */
-	.n { color: #f8f8f2 } /* Name */
-	.o { color: #f92672 } /* Operator */
-	.p { color: #f8f8f2 } /* Punctuation */
-	.ch { color: #75715e } /* Comment.Hashbang */
-	.cm { color: #75715e } /* Comment.Multiline */
-	.cp { color: #E22453; font-weight: bold } /* Comment.Preproc */
-	.cpf { color: #E6DB74; font-style: italic } /* Comment.PreprocFile */
-	.c1 { color: #75715e } /* Comment.Single */
-	.cs { color: #75715e } /* Comment.Special */
-	.gd { color: #f92672 } /* Generic.Deleted */
-	.ge { font-style: italic } /* Generic.Emph */
-	.gi { color: #a6e22e } /* Generic.Inserted */
-	.gs { font-weight: bold } /* Generic.Strong */
-	.gu { color: #75715e } /* Generic.Subheading */
-	.kc { color: #66d9ef } /* Keyword.Constant */
-	.kd { color: #66d9ef } /* Keyword.Declaration */
-	.kn { color: #f92672 } /* Keyword.Namespace */
-	.kp { color: #66d9ef } /* Keyword.Pseudo */
-	.kr { color: #66d9ef } /* Keyword.Reserved */
-	.kt { color: #66d9ef } /* Keyword.Type */
-	.ld { color: #e6db74 } /* Literal.Date */
-	.m { color: #ae81ff } /* Literal.Number */
-	.s { color: #e6db74 } /* Literal.String */
-	.na { color: #a6e22e } /* Name.Attribute */
-	.nb { color: #f8f8f2 } /* Name.Builtin */
-	.nc { color: #a6e22e } /* Name.Class */
-	.no { color: #66d9ef } /* Name.Constant */
-	.nd { color: #a6e22e } /* Name.Decorator */
-	.ni { color: #f8f8f2 } /* Name.Entity */
-	.ne { color: #a6e22e } /* Name.Exception */
-	.nf { color: #a6e22e } /* Name.Function */
-	.nl { color: #f8f8f2 } /* Name.Label */
-	.nn { color: #f8f8f2 } /* Name.Namespace */
-	.nx { color: #a6e22e } /* Name.Other */
-	.py { color: #f8f8f2 } /* Name.Property */
-	.nt { color: #f92672 } /* Name.Tag */
-	.nv { color: #f8f8f2 } /* Name.Variable */
-	.ow { color: #f92672 } /* Operator.Word */
-	.w { color: #f8f8f2 } /* Text.Whitespace */
-	.mb { color: #ae81ff } /* Literal.Number.Bin */
-	.mf { color: #ae81ff } /* Literal.Number.Float */
-	.mh { color: #ae81ff } /* Literal.Number.Hex */
-	.mi { color: #ae81ff } /* Literal.Number.Integer */
-	.mo { color: #ae81ff } /* Literal.Number.Oct */
-	.sa { color: #e6db74 } /* Literal.String.Affix */
-	.sb { color: #e6db74 } /* Literal.String.Backtick */
-	.sc { color: #e6db74 } /* Literal.String.Char */
-	.dl { color: #e6db74 } /* Literal.String.Delimiter */
-	.sd { color: #e6db74 } /* Literal.String.Doc */
-	.s2 { color: #e6db74 } /* Literal.String.Double */
-	.se { color: #ae81ff } /* Literal.String.Escape */
-	.sh { color: #e6db74 } /* Literal.String.Heredoc */
-	.si { color: #e6db74 } /* Literal.String.Interpol */
-	.sx { color: #e6db74 } /* Literal.String.Other */
-	.sr { color: #e6db74 } /* Literal.String.Regex */
-	.s1 { color: #e6db74 } /* Literal.String.Single */
-	.ss { color: #e6db74 } /* Literal.String.Symbol */
-	.bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
-	.fm { color: #a6e22e } /* Name.Function.Magic */
-	.vc { color: #f8f8f2 } /* Name.Variable.Class */
-	.vg { color: #f8f8f2 } /* Name.Variable.Global */
-	.vi { color: #f8f8f2 } /* Name.Variable.Instance */
-	.vm { color: #f8f8f2 } /* Name.Variable.Magic */
-	.il { color: #ae81ff } /* Literal.Number.Integer.Long */
+	pre { margin-top: 0.3em; margin-bottom: 0.3em; line-height:120%;}
+	code { color: #f8f8f2; background-color: #4a4a4f; padding-left: 0.4em; padding-right: 0.4em; }
+	div.highlight { color: #f8f8f2; background-color: #4a4a4f; padding-top: 0.1em; padding-bottom: 0.1em; }
+	.pl-s, .pl-pds, .pl-sr { color: #e6db74; }
+	.pl-k { color: #66d9ef; } /* keyword, storage, storage.type */
+	.pl-s1 { color: #a6e22e; } /* string source */
+	.pl-kos { color: #f8f8f2; }
+	.pl-en, .pl-e{ color: #a6e22e; } /* entity.name */
+	.pl-c1 { color: #f92672; }
+	.pl-smi { color: #f6f8fa; } /* variable.parameter.function, storage.modifier.package, storage.modifier.import, storage.type.java, variable.other */
+	.pl-v {color: #a6e22e; } /* variable */
+	.pl-c {	color: #f6f8fa; } /* comment, punctuation.definition.comment, string.comment */ 
 </style>
 </head>
-<body >
-<h1>Latest Changes</h1>
+<body>
 """
+
 htmlBody = "</body></html>\n"
 changelogBegin = "Here we document changes"
 
 def main(args):
 	args = makeCmdParser();
-
-	if len(missing_modules)>0: 
-		print_error("Warning: Cannot generate HTML changelog. Missing python modules:")
-		for k,v in missing_modules.items():
-			print_error("    {:20s} {}".format(k,v))
-		print_info("    To install run: 'python -m pip install {}'".format(" ".join(missing_modules.keys())))
-		
-		sys.exit(1)
 
 	if not os.path.exists(args.input):
 		print_error("changelog-to-html.py was unable to locate the input file " + args.input)
@@ -186,9 +95,15 @@ def main(args):
 	if text.startswith(changelogBegin):
 		text = text.split('\n', 2)[2]
 
-	md = markdown.Markdown(extensions=['gfm'])
-	body = md.convert(text);
-
+	url = "https://api.github.com/markdown"
+	headers = {
+		'Accept': 'application/vnd.github.v3+json', 
+		'Content-type' : 'application/json'
+	}
+	data = json.dumps({'text': text, 'mode' : 'gfm'}).encode("utf-8")
+	req = urllib.request.Request(url, data, headers)
+	with urllib.request.urlopen(req) as f:
+		body = f.read().decode('utf-8')
 	html = htmlHeader + body + htmlBody
 
 	(path, filename)  = os.path.split(os.path.abspath(args.output))

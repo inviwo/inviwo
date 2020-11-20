@@ -94,6 +94,8 @@ const std::string& classIdentifier() {
         return T::classIdentifier;
     } else {
         static_assert(detail::alwaysFalse<T>, "ClassIdentifier is missing for type");
+        static std::string unknown{"Unknown"};
+        return unknown;
     }
 }
 

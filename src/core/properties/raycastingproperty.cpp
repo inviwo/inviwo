@@ -82,11 +82,9 @@ RaycastingProperty::RaycastingProperty(const RaycastingProperty& rhs)
     , compositing_(rhs.compositing_)
     , gradientComputation_(rhs.gradientComputation_)
     , samplingRate_(rhs.samplingRate_) {
-    addProperty(renderingType_);
-    addProperty(classification_);
-    addProperty(compositing_);
-    addProperty(gradientComputation_);
-    addProperty(samplingRate_);
+
+    addProperties(renderingType_, classification_, compositing_, gradientComputation_,
+                  samplingRate_);
 }
 
 RaycastingProperty* RaycastingProperty::clone() const { return new RaycastingProperty(*this); }

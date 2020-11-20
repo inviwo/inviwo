@@ -28,8 +28,14 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/lightpropertywidgetqt.h>
-#include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
+
+#include <inviwo/core/util/zip.h>
+
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/numberlineedit.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/lightpositionwidgetqt.h>
+#include <modules/qtwidgets/properties/ordinalspinboxwidget.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -37,6 +43,8 @@
 #include <QtCore/qmath.h>
 #include <QSpinBox>
 #include <QSignalBlocker>
+#include <QMenu>
+#include <QCheckBox>
 #include <warn/pop>
 
 namespace inviwo {
@@ -44,26 +52,68 @@ namespace inviwo {
 LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
     : PropertyWidgetQt(property)
     , property_(property)
-    , lightWidget_{new LightPositionWidgetQt()}
-    , radiusSpinBox_{new NumberLineEdit(this)}
-    , label_{new EditableLabelQt(this, property_)} {
+    , halfSphere_{new LightPositionWidgetQt()}
+    , radius_{new OrdinalSpinBoxWidget<float>()}
+    , inFront_{new QCheckBox("In front:", this)}
+    , cartesian_{new OrdinalSpinBoxWidget<float>(), new OrdinalSpinBoxWidget<float>(),
+                 new OrdinalSpinBoxWidget<float>()}
+    , label_{new EditableLabelQt(this, property_)}
+    , settings_(nullptr) {
 
-    setFocusPolicy(radiusSpinBox_->focusPolicy());
-    setFocusProxy(radiusSpinBox_);
+    setFocusPolicy(radius_->focusPolicy());
+    setFocusProxy(radius_);
 
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(7);
 
-    connect(lightWidget_, &LightPositionWidgetQt::positionChanged, this,
-            &LightPropertyWidgetQt::onPositionLightWidgetChanged);
+    connect(halfSphere_, &LightPositionWidgetQt::positionChanged, this, [this]() {
+        const auto pos = static_cast<vec3>(halfSphere_->getPosition());
+        property_->setInitiatingWidget(this);
+        property_->set(pos);
+        property_->clearInitiatingWidget();
 
-    radiusSpinBox_->setSingleStep(0.1);
-    // don't emit the valueChanged() signal while typing
-    radiusSpinBox_->setKeyboardTracking(false);
-    connect(radiusSpinBox_,
-            static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
-            &LightPropertyWidgetQt::onRadiusSpinBoxChanged);
+        QSignalBlocker s0{cartesian_[0]};
+        QSignalBlocker s1{cartesian_[1]};
+        QSignalBlocker s2{cartesian_[2]};
+
+        cartesian_[0]->setValue(pos.x);
+        cartesian_[1]->setValue(pos.y);
+        cartesian_[2]->setValue(pos.z);
+    });
+
+    radius_->setIncrement(0.1f);
+    connect(radius_, &OrdinalSpinBoxWidget<float>::valueChanged, this, [this]() {
+        halfSphere_->setRadius((inFront_->isChecked() ? 1.0 : -1.0) * radius_->getValue());
+    });
+
+    connect(inFront_, &QCheckBox::toggled, this, [this](bool front) {
+        halfSphere_->setRadius((front ? 1.0 : -1.0) * std::abs(halfSphere_->getRadius()));
+    });
+
+    for (auto&& [i, coordinate] : util::enumerate(cartesian_)) {
+        connect(coordinate, &OrdinalSpinBoxWidget<float>::valueChanged, this, [this, i = i]() {
+            auto newPos = halfSphere_->getPosition();
+            newPos[i] = cartesian_[i]->getValue();
+
+            QSignalBlocker lblocker(halfSphere_);
+            QSignalBlocker rblocker(radius_);
+            QSignalBlocker fblocker(inFront_);
+
+            inFront_->setChecked(newPos.z > 0);
+
+            const auto r = glm::length(newPos);
+            radius_->setValue(static_cast<float>(r));
+
+            if (halfSphere_->getPosition() != newPos) {
+                halfSphere_->setPosition(newPos);
+            }
+
+            property_->setInitiatingWidget(this);
+            property_->set(static_cast<vec3>(newPos));
+            property_->clearInitiatingWidget();
+        });
+    }
 
     // Assuming that minimum value is negative and maximum value is positive
     if (glm::any(glm::greaterThan(property_->getMinValue(), vec3(0.0f)))) {
@@ -73,20 +123,29 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
         LogWarn("Maximum value is assumed to be positive. Widget may produce values out of range.")
     }
 
-    vec3 maxVal = glm::abs(property_->getMaxValue());
-    radiusSpinBox_->setMinimum(-glm::length(maxVal));
-    radiusSpinBox_->setMaximum(glm::length(maxVal));
+    radius_->setMinValue(0, ConstraintBehavior::Immutable);
+    radius_->setMaxValue(glm::length(property_->getMaxValue()),
+                         property_->getMaxConstraintBehaviour());
 
     QWidget* groupBox = new QWidget(this);
+    auto sp = groupBox->sizePolicy();
+    sp.setHorizontalStretch(3);
+    groupBox->setSizePolicy(sp);
+
     QGridLayout* layout = new QGridLayout();
     groupBox->setLayout(layout);
 
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(3);
-    layout->addWidget(new QLabel("Direction", this), 0, 0);
-    layout->addWidget(lightWidget_, 0, 1);
-    layout->addWidget(new QLabel("Distance", this), 1, 0);
-    layout->addWidget(radiusSpinBox_, 1, 1);
+    layout->addWidget(inFront_, 0, 0, 1, 1, Qt::AlignTop | Qt::AlignLeft);
+    layout->addWidget(new QLabel("Distance:", this), 1, 0, 1, 1, Qt::AlignBottom);
+    layout->addWidget(radius_, 2, 0, 1, 1, Qt::AlignTop);
+
+    layout->addWidget(halfSphere_, 0, 1, 3, 1);
+
+    layout->addWidget(cartesian_[0], 0, 2);
+    layout->addWidget(cartesian_[1], 1, 2);
+    layout->addWidget(cartesian_[2], 2, 2);
 
     hLayout->addWidget(label_);
     hLayout->addWidget(groupBox);
@@ -98,30 +157,49 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
 
 LightPropertyWidgetQt::~LightPropertyWidgetQt() = default;
 
-void LightPropertyWidgetQt::onPositionLightWidgetChanged() {
-    property_->setInitiatingWidget(this);
-    property_->set(lightWidget_->getPosition());
-    property_->clearInitiatingWidget();
-}
-
-void LightPropertyWidgetQt::onRadiusSpinBoxChanged(double radius) {
-    lightWidget_->setRadius(static_cast<float>(radius));
-}
-
 void LightPropertyWidgetQt::updateFromProperty() {
     // Prevent widgets from signaling changes just after setting them
-    QSignalBlocker lblocker(lightWidget_);
-    QSignalBlocker rblocker(radiusSpinBox_);
+    QSignalBlocker lblocker(halfSphere_);
+    QSignalBlocker rblocker(radius_);
+    QSignalBlocker fblocker(inFront_);
 
-    float r = glm::length(property_->get());
-    r *= property_->get().z < 0.0f ? -1.0f : 1.0f;
-    if (radiusSpinBox_->value() != r) {
-        radiusSpinBox_->setValue(r);
-    }
+    const auto newPos = dvec3{property_->get()};
 
-    if (lightWidget_->getPosition() != property_->get()) {
-        lightWidget_->setPosition(property_->get());
+    for (auto&& [i, coordinate] : util::enumerate(cartesian_)) {
+        QSignalBlocker block(coordinate);
+        coordinate->setMinValue(property_->getMinValue()[i],
+                                property_->getMinConstraintBehaviour());
+        coordinate->setMaxValue(property_->getMaxValue()[i],
+                                property_->getMaxConstraintBehaviour());
+        coordinate->initValue(property_->get()[i]);
+        coordinate->setIncrement(property_->getIncrement()[i]);
     }
+    inFront_->setChecked(newPos.z > 0);
+
+    const auto r = glm::length(newPos);
+    radius_->setValue(static_cast<float>(r));
+
+    if (halfSphere_->getPosition() != newPos) {
+        halfSphere_->setPosition(newPos);
+    }
+}
+
+std::unique_ptr<QMenu> LightPropertyWidgetQt::getContextMenu() {
+    auto menu = PropertyWidgetQt::getContextMenu();
+    auto settingsAction = menu->addAction(tr("&Property settings..."));
+    settingsAction->setToolTip(
+        tr("&Open the property settings dialog to adjust min bound, start, end, max bound, "
+           "minSepration and increment values"));
+
+    connect(settingsAction, &QAction::triggered, this, [this]() {
+        if (!settings_) {
+            settings_ = new OrdinalLikePropertySettingsWidgetQt<FloatVec3Property>(property_, this);
+        }
+        settings_->showWidget();
+    });
+    settingsAction->setEnabled(!property_->getReadOnly());
+    settingsAction->setVisible(getApplicationUsageMode() == UsageMode::Development);
+    return menu;
 }
 
 }  // namespace inviwo

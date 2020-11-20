@@ -94,7 +94,7 @@ private:
 
     Prop* ordinal_;
     EditableLabelQt* label_;
-    OrdinalLikePropertySettingsWidgetQt<Prop>* settingsWidget_;
+    OrdinalLikePropertySettingsWidgetQt<Prop>* settings_;
 
     std::vector<OrdinalBaseWidget<BT>*> editors_;
 };
@@ -110,7 +110,7 @@ OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* proper
     : PropertyWidgetQt(property)
     , ordinal_(property)
     , label_{new EditableLabelQt(this, property)}
-    , settingsWidget_(nullptr) {
+    , settings_(nullptr) {
 
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
@@ -276,10 +276,10 @@ void OrdinalLikePropertyWidgetQt<Prop, Sem>::setPropertyValue(size_t editorId) {
 
 template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>
 void OrdinalLikePropertyWidgetQt<Prop, Sem>::showSettings() {
-    if (!settingsWidget_) {
-        settingsWidget_ = new OrdinalLikePropertySettingsWidgetQt<Prop>(ordinal_, this);
+    if (!settings_) {
+        settings_ = new OrdinalLikePropertySettingsWidgetQt<Prop>(ordinal_, this);
     }
-    settingsWidget_->showWidget();
+    settings_->showWidget();
 }
 
 template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>

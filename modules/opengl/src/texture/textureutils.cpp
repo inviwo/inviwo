@@ -160,20 +160,19 @@ void updateAndActivateTarget(ImageOutport& targetOutport, ImageInport& sourceInp
 
 void bindTextures(const Image& image, bool color, bool depth, bool picking, GLenum colorTexUnit,
                   GLenum depthTexUnit, GLenum pickingTexUnit) {
-    auto imageGL = image.getRepresentation<ImageGL>();
     if (color) {
-        if (auto layer = imageGL->getColorLayerGL()) {
-            layer->bindTexture(colorTexUnit);
+        if (auto layer = image.getColorLayer()) {
+            layer->getRepresentation<LayerGL>()->bindTexture(colorTexUnit);
         }
     }
     if (depth) {
-        if (auto layer = imageGL->getDepthLayerGL()) {
-            layer->bindTexture(depthTexUnit);
+        if (auto layer = image.getDepthLayer()) {
+            layer->getRepresentation<LayerGL>()->bindTexture(depthTexUnit);
         }
     }
     if (picking) {
-        if (auto layer = imageGL->getPickingLayerGL()) {
-            layer->bindTexture(pickingTexUnit);
+        if (auto layer = image.getPickingLayer()) {
+            layer->getRepresentation<LayerGL>()->bindTexture(pickingTexUnit);
         }
     }
 }
@@ -302,20 +301,19 @@ void bindTextures(const ImageOutport& outport, const TextureUnit& colorTexUnit,
 }
 
 void unbindTextures(const Image& image, bool color, bool depth, bool picking) {
-    auto imageGL = image.getRepresentation<ImageGL>();
     if (color) {
-        if (auto layer = imageGL->getColorLayerGL()) {
-            layer->unbindTexture();
+        if (auto layer = image.getColorLayer()) {
+            layer->getRepresentation<LayerGL>()->unbindTexture();
         }
     }
     if (depth) {
-        if (auto layer = imageGL->getDepthLayerGL()) {
-            layer->unbindTexture();
+        if (auto layer = image.getDepthLayer()) {
+            layer->getRepresentation<LayerGL>()->unbindTexture();
         }
     }
     if (picking) {
-        if (auto layer = imageGL->getPickingLayerGL()) {
-            layer->unbindTexture();
+        if (auto layer = image.getPickingLayer()) {
+            layer->getRepresentation<LayerGL>()->unbindTexture();
         }
     }
 }

@@ -91,4 +91,14 @@ OrdinalPropertyState<vec3> util::ordinalColor(const vec3& value,
             PropertySemantics::Color};
 }
 
+OrdinalPropertyState<vec3> util::ordinalLight(const vec3& pos, float min, float max,
+                                              InvalidationLevel invalidationLevel) {
+    return {pos,
+            {vec3{min}, ConstraintBehavior::Ignore},
+            {vec3{max}, ConstraintBehavior::Ignore},
+            vec3{0.1f},
+            invalidationLevel,
+            PropertySemantics::LightPosition};
+}
+
 }  // namespace inviwo

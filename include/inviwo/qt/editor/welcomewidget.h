@@ -48,27 +48,29 @@ class InviwoMainWindow;
 
 class IVW_QTEDITOR_API WelcomeWidget : public QSplitter {
 public:
-    WelcomeWidget(InviwoMainWindow *w, QWidget *parent);
+    WelcomeWidget(InviwoMainWindow* w, QWidget* parent);
     virtual ~WelcomeWidget() = default;
 
     void updateRecentWorkspaces();
     void setFilterFocus();
 
 protected:
-    virtual void showEvent(QShowEvent *event) override;
-    virtual void keyPressEvent(QKeyEvent *event) override;
+    virtual void showEvent(QShowEvent* event) override;
+    virtual void keyPressEvent(QKeyEvent* event) override;
 
 private:
-    void loadWorkspace(const QString &filename, bool isExample) const;
+    void loadWorkspace(const QString& filename, bool isExample) const;
     void initChangelog();
 
-    InviwoMainWindow *mainWindow_;
+    void updateDetails(const QString& filename);
 
-    FileTreeWidget *filetree_;
-    QLineEdit *filterLineEdit_;
-    QTextEdit *details_;
-    QTextEdit *changelog_;
-    QToolButton *loadWorkspaceBtn_;
+    InviwoMainWindow* mainWindow_;
+
+    FileTreeWidget* filetree_;
+    QLineEdit* filterLineEdit_;
+    QTextEdit* details_;
+    QTextEdit* changelog_;
+    QToolButton* loadWorkspaceBtn_;
 };
 
 }  // namespace inviwo

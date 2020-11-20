@@ -217,6 +217,10 @@ IVW_CORE_API OrdinalPropertyState<vec4> ordinalColor(
 IVW_CORE_API OrdinalPropertyState<vec3> ordinalColor(
     const vec3& value, InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
 
+IVW_CORE_API OrdinalPropertyState<vec3> ordinalLight(
+    const vec3& pos, float min = -100.0, float max = 100.0,
+    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
+
 }  // namespace util
 
 // Scalar properties

@@ -120,6 +120,15 @@ struct IVW_CORE_API StrBuffer {
      */
     operator std::string_view() const { return {buff.data(), buff.size()}; }
 
+    /**
+     * @brief return a null-terminated c-style string. Will always append a '0' at the end of the
+     * buffer
+     */
+    const char* c_str() {
+        buff.push_back(0);
+        return buff.data();
+    }
+
     fmt::memory_buffer buff;
 };
 
