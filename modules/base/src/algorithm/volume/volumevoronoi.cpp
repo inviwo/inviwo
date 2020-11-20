@@ -34,25 +34,23 @@ namespace util {
 
 std::shared_ptr<Volume> voronoiSegmentation(
     std::shared_ptr<const Volume> volume, const mat3& voxelTransformation,
-    const std::unordered_map<dvec3, uint32_t>& seedPointsWithIndices) {
+    const std::vector<std::pair<dvec3, uint32_t>>& seedPointsWithIndices) {
 
     // TODO: check that the seed points are inside the volume (after transforming voxel pos)??
 
-    // Need to have this as float (otherwise I could not get it to be visible in the canvas)
-    // Why??
-    auto newVolumeRep = std::make_shared<VolumeRAMPrecision<float>>(volume->getDimensions());
+    auto newVolumeRep =
+        std::make_shared<VolumeRAMPrecision<unsigned short>>(volume->getDimensions());
     auto newVolume = std::make_shared<Volume>(newVolumeRep);
     newVolume->setModelMatrix(volume->getModelMatrix());
     newVolume->setWorldMatrix(volume->getWorldMatrix());
 
-    // Should this really be the same as for the input volume?
-    newVolume->setInterpolation(volume->getInterpolation());
-    newVolume->setWrapping(volume->getWrapping());
+    newVolume->setInterpolation(InterpolationType::Nearest);
+    newVolume->setWrapping(wrapping3d::clampAll);
 
-    newVolume->dataMap_.dataRange = dvec2(0.0, (double)seedPointsWithIndices.size());
+    newVolume->dataMap_.dataRange = dvec2(0.0, static_cast<double>(seedPointsWithIndices.size()));
     newVolume->dataMap_.valueRange = newVolume->dataMap_.dataRange;
 
-    auto newData = newVolumeRep->getDataTyped();
+    auto volumeIndices = newVolumeRep->getDataTyped();
     util::IndexMapper3D index(volume->getDimensions());
 
     volume->getRepresentation<VolumeRAM>()->dispatch<void>([&](auto vrprecision) {
@@ -63,14 +61,10 @@ std::shared_ptr<Volume> voronoiSegmentation(
             std::for_each(seedPointsWithIndices.cbegin(), seedPointsWithIndices.cend(),
                           [&](const std::pair<dvec3, uint32_t>& point) {
                               // Squared distance
-                              auto dist = (point.first.x - transformedVoxelPos.x) *
-                                              (point.first.x - transformedVoxelPos.x) +
-                                          (point.first.y - transformedVoxelPos.y) *
-                                              (point.first.y - transformedVoxelPos.y) +
-                                          (point.first.z - transformedVoxelPos.z) *
-                                              (point.first.z - transformedVoxelPos.z);
+                              auto dist = glm::distance2(static_cast<vec3>(point.first),
+                                                         transformedVoxelPos);
                               if (dist < minDist) {
-                                  newData[index(voxelPos)] = point.second;
+                                  volumeIndices[index(voxelPos)] = point.second;
                                   minDist = dist;
                               }
                           });

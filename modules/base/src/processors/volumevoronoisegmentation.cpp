@@ -36,9 +36,9 @@ namespace inviwo {
 const ProcessorInfo VolumeVoronoiSegmentation::processorInfo_{
     "org.inviwo.VolumeVoronoiSegmentation",  // Class identifier
     "Volume Voronoi Segmentation",           // Display name
-    "Undefined",                             // Category
+    "Volume Operation",                      // Category
     CodeState::Experimental,                 // Code state
-    Tags::None,                              // Tags
+    Tags::CPU,                               // Tags
 };
 const ProcessorInfo VolumeVoronoiSegmentation::getProcessorInfo() const { return processorInfo_; }
 
@@ -81,13 +81,13 @@ void VolumeVoronoiSegmentation::process() {
                               ->getDataContainer();
 
     if (positions.size() != indices.size()) {
-        return;
+        throw Exception("Unexpected dimension missmatch", IVW_CONTEXT);
     }
 
     // Assuming the positions and indices come in the same order...
-    std::unordered_map<dvec3, uint32_t> seedPointsWithIndices;
+    std::vector<std::pair<dvec3, uint32_t>> seedPointsWithIndices;
     for (std::size_t i = 0; i < positions.size(); ++i) {
-        seedPointsWithIndices.emplace(positions[i], indices[i]);
+        seedPointsWithIndices.push_back({positions[i], indices[i]});
     }
 
     // In the case of the cube data volume,

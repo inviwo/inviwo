@@ -30,6 +30,8 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <modules/base/datastructures/kdtree.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <vector>
 
 namespace inviwo {
 namespace util {
@@ -41,7 +43,7 @@ namespace util {
 
 IVW_MODULE_BASE_API std::shared_ptr<Volume> voronoiSegmentation(
     std::shared_ptr<const Volume> volume, const mat3& voxelTransformation,
-    const std::unordered_map<dvec3, uint32_t>& seedPointsWithIndices);
+    const std::vector<std::pair<dvec3, uint32_t>>& seedPointsWithIndices);
 
 }  // namespace util
 }  // namespace inviwo
