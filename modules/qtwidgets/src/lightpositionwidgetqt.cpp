@@ -134,7 +134,7 @@ double LightPositionWidgetQt::getX() const { return pos_.x; }
 double LightPositionWidgetQt::getY() const { return -pos_.y; }
 
 double LightPositionWidgetQt::getZ() const {
-    return (radius_ < 0.0f ? -1.0f : 1.0f) * std::sqrt(1.0 - glm::length(pos_));
+    return (radius_ < 0.0 ? -1.0 : 1.0) * std::sqrt(1.0 - glm::length(pos_));
 }
 
 void LightPositionWidgetQt::mouseDoubleClickEvent(QMouseEvent*) {

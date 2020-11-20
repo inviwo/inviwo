@@ -467,9 +467,6 @@ void WelcomeWidget::updateDetails(const QString& filename) {
     replaceInString(titleStr, "_", " ");
 
     Document doc;
-    using P = Document::PathComponent;
-    using H = utildoc::TableBuilder::Header;
-
     auto body = doc.append("html").append("body");
     body.append("h1", titleStr, {{"style", "font-size:25pt; color:#268bd2"}});
 
