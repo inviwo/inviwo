@@ -191,10 +191,12 @@ void RangeSliderQt::resizeEvent(QResizeEvent *event) {
 void RangeSliderQt::updateStateFromSliders() {
     QList<int> sizes = QSplitter::sizes();
     int range = sizes[0] + sizes[1] + sizes[2];
-
+    if (range <= 0) {
+        // invisible
+        return;
+    }
     int pos1 = sizes[0];
     int pos2 = sizes[0] + sizes[1];
-
     value_.x = range_.x + (range_.y - range_.x) * pos1 / range;
     value_.y = range_.x + (range_.y - range_.x) * pos2 / range;
 }

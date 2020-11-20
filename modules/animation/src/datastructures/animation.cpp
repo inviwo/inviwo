@@ -73,6 +73,9 @@ void Animation::add(std::unique_ptr<Track> track) {
     priorityTracks_.push_back(tracks_.back().get());
     doPrioritySort();
     tracks_.back()->addObserver(this);
+    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(tracks_.back().get())) {
+        propertyTrack->getProperty()->getOwner()->addObserver(this);
+    }
     notifyTrackAdded(tracks_.back().get());
 }
 
@@ -84,7 +87,7 @@ Keyframe* Animation::addKeyframe(Property* property, Seconds time) {
             getManager()->getDefaultInterpolation(property);
         if (it != end()) {
             // Note: interpolation will only be used if a new sequence is created.
-            return reinterpret_cast<BasePropertyTrack*>(&(*it))->addKeyFrameUsingPropertyValue(
+            return dynamic_cast<BasePropertyTrack*>(&(*it))->addKeyFrameUsingPropertyValue(
                 time, std::move(interpolation));
         } else if (auto basePropertyTrack = add(property)) {
             return basePropertyTrack->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
@@ -104,7 +107,7 @@ KeyframeSequence* Animation::addKeyframeSequence(Property* property, Seconds tim
         std::unique_ptr<Interpolation> interpolation =
             getManager()->getDefaultInterpolation(property);
         if (it != end()) {
-            return reinterpret_cast<BasePropertyTrack*>(&(*it))->addSequenceUsingPropertyValue(
+            return dynamic_cast<BasePropertyTrack*>(&(*it))->addSequenceUsingPropertyValue(
                 time, std::move(interpolation));
         } else if (auto basePropertyTrack = add(property)) {
             basePropertyTrack->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
@@ -120,7 +123,7 @@ KeyframeSequence* Animation::addKeyframeSequence(Property* property, Seconds tim
 
 Animation::iterator Animation::findTrack(Property* property) {
     return std::find_if(begin(), end(), [property](auto& track) {
-        if (auto pTrack = reinterpret_cast<BasePropertyTrack*>(&track)) {
+        if (auto pTrack = dynamic_cast<BasePropertyTrack*>(&track)) {
             return pTrack->getProperty() == property;
         } else {
             return false;
@@ -131,7 +134,7 @@ Animation::iterator Animation::findTrack(Property* property) {
 BasePropertyTrack* Animation::add(Property* property) {
     auto it = findTrack(property);
     if (it != end()) {
-        return reinterpret_cast<BasePropertyTrack*>(&(*it));
+        return dynamic_cast<BasePropertyTrack*>(&(*it));
     } else {
         if (auto track = getManager()->getTrackFactory().create(property)) {
             if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
@@ -151,7 +154,7 @@ BasePropertyTrack* Animation::add(Property* property) {
 
 std::unique_ptr<Track> Animation::remove(size_t i) {
     auto track = std::move(tracks_[i]);
-    if (auto propertyTrack = reinterpret_cast<BasePropertyTrack*>(track.get())) {
+    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
         propertyTrack->getProperty()->getOwner()->removeObserver(this);
     }
     tracks_.erase(tracks_.begin() + i);
