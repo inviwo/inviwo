@@ -52,9 +52,9 @@ PropertyBasedTestingReport::PropertyBasedTestingReport
 	HTML::Table errorTable;
 	errorTable << (HTML::HeadRow()
 			<< HTML::Text("Test1")
-			<< HTML::Text("Test1 background pixels")
+			<< HTML::Text("Test1 score")
 			<< HTML::Text("Expected relation")
-			<< HTML::Text("Test2 background pixels")
+			<< HTML::Text("Test2 score")
 			<< HTML::Text("Test2")
 			<< HTML::Text("Equal Properties"));
 	for(const auto& err : errors)
@@ -112,12 +112,10 @@ HTML::BaseElement PropertyBasedTestingReport::generateHTML
 	HTML::Table res;
 	res << (HTML::HeadRow()
 			<< HTML::Text("DisplayName")
-			<< HTML::Text("Identifier")
 			<< HTML::Text("Value"));
 	for(auto prop : props) {
 		HTML::Row r;
-		r	<< HTML::Text(prop->getDisplayName())
-			<< HTML::Text(prop->getIdentifier());
+		r << HTML::Text(prop->getDisplayName());
 		std::map<const TestProperty*, std::vector<const TestProperty*>> tree;
 		prop->traverse([&](const TestProperty* p, const TestProperty* pa) {
 					tree[pa].emplace_back(p);

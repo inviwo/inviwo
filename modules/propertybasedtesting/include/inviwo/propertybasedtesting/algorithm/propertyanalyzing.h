@@ -99,14 +99,14 @@ std::optional<PropertyEffect> combine(const PropertyEffect& a, const PropertyEff
 const PropertyEffect& reverseEffect(const PropertyEffect& pe);
 
 /**
- * returns the desired effect on the number of non-background pixels,
+ * returns the desired effect on the number of counted pixels,
  * ANY if no preference
  */
 template<typename T>
 PropertyEffect propertyEffect(const PropertyEffect& selectedEffect,
 		const T& newVal,
 		const T& oldVal) {
-	if(newVal < oldVal)
+	if(newVal > oldVal)
 		return selectedEffect;
 	else if(newVal == oldVal)
 		return PropertyEffect::ANY;

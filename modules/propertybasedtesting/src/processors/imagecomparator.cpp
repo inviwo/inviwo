@@ -63,7 +63,13 @@ ImageComparator::ImageComparator()
                       {"perceptual", "Perceptual Difference", ComparisonType::Perceptual},
                       {"global", "Global Difference", ComparisonType::Global},
                       {"local", "Local Difference", ComparisonType::Local}},
-                     0, InvalidationLevel::InvalidResources)
+                     0, InvalidationLevel::InvalidOutput)
+	, reductionType_("reductionType", "Reduction",
+					{{"mean", "Mean", ReductionType::MEAN},
+					 {"max", "Maximum", ReductionType::MAX},
+					 {"min", "Minimum", ReductionType::MIN},
+					 {"sum", "Sum", ReductionType::SUM}},
+					 0, InvalidationLevel::InvalidOutput)
     , reportDir_("reportDir",
                  "Report Directory",
                  "")
@@ -77,6 +83,7 @@ ImageComparator::ImageComparator()
   addProperty(maxDeviation_);
   addProperty(maxPixelwiseDeviation_);
   addProperty(comparisonType_);
+  addProperty(reductionType_);
 
   isReady_.setUpdate([&]() {
       if(!allInportsAreReady())
@@ -125,6 +132,7 @@ void ImageComparator::process() {
     util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
     return;
   }
+  const size_t numPixels = dim1.x * dim1.y;
 
   auto diffImg = std::make_shared<Image>(dim1, DataVec3UInt8::get());
   auto maskImg = std::make_shared<Image>(dim1, DataVec3UInt8::get());
@@ -139,8 +147,10 @@ void ImageComparator::process() {
   auto colorLayerDiff = diffRAM->getColorLayerRAM();
   auto colorLayerMask = maskRAM->getColorLayerRAM();
 
-  double diffSum = 0;
-  double diffPixels = 0;
+  const ReductionType reduction = reductionType_.get();
+
+  double result = getUnitForReduction<double>(reduction);
+  size_t diffPixels = 0;
   for(size_t x = 0; x < dim1.x; x++) {
     for(size_t y = 0; y < dim1.y; y++) {
       const auto col1 = colorLayerRAM1->getAsDVec3(size2_t(x,y));
@@ -151,7 +161,7 @@ void ImageComparator::process() {
 			  <= maxPixelwiseDeviation_.get();
 	  const double c = pixelDifferent * 255.0;
 
-      diffSum += diff;
+	  result = combine(reduction, result, diff);
       colorLayerDiff->setFromDVec3(size2_t(x, y), 128.0 + (col1 - col2) / 2.0);
       colorLayerMask->setFromDVec3(size2_t(x, y), dvec3(c, c, c));
       if(pixelDifferent) {
@@ -159,10 +169,14 @@ void ImageComparator::process() {
       }
     }
   }
+  if(reduction == ReductionType::MEAN) {
+	result /= numPixels;
+  }
+
   differencePort_.setData(diffImg);
   maskPort_.setData(maskImg);
 
-  if(diffSum > maxDeviation_.get()) {
+  if(result > maxDeviation_.get()) {
     if(reportDir_.get() != "" && std::filesystem::exists(reportDir_.get())) {
 
       imageCompCount_++;
@@ -179,10 +193,11 @@ void ImageComparator::process() {
       inviwo::util::saveLayer(*maskImg->getColorLayer(), maskPath.string(), pngExt);
 
       comparisons_.push_back(
-        { time(0)
-        , diffSum
+		{ time(0)
+        , result
+		, reduction
         , diffPixels
-        , (double) dim1.x * (double) dim1.y
+		, numPixels
         , img1Path
         , img2Path
         , diffPath
@@ -217,8 +232,8 @@ void ImageComparator::createReport() {
 						<< HTML::Text("Date")
 						<< HTML::Text(timeBuffer))
 					<< (HTML::Row()
-						<< HTML::Text("Difference sum")
-						<< HTML::Text(std::to_string(comp.diffSum)))
+						<< HTML::Text("Difference result (" + reductionTypeName(comp.reduction) + ")")
+						<< HTML::Text(std::to_string(comp.result)))
 					<< (HTML::Row()
 						<< HTML::Text("Pixel count")
 						<< HTML::Text(std::to_string(comp.pixelCount)))

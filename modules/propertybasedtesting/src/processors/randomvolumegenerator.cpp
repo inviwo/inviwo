@@ -47,8 +47,8 @@ const ProcessorInfo RandomVolumeGenerator::getProcessorInfo() const { return pro
 RandomVolumeGenerator::RandomVolumeGenerator()
     : Processor()
     , outport_("volume")
-	, seed_("seed", "Seed", 0, 42, INT_MAX)
-	, numPoints_("numPoints", "Number of Points", 0, 3, 500) {
+	, seed_("seed", "Seed", 42, 0, INT_MAX)
+	, numPoints_("numPoints", "Number of Points", 5, 1, 500) {
 
     addPort(outport_);
     addProperty(seed_);

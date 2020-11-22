@@ -29,6 +29,9 @@
 
 #pragma once
 
+#include <queue>
+
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
 #include <inviwo/propertybasedtesting/testproperty.h>
 #include <inviwo/propertybasedtesting/algorithm/coveringarray.h>
@@ -120,39 +123,38 @@ namespace inviwo {
  *   Since we pass the output image of the network to the *PropertyAnalyzer*-processor
  *   before a background is applied, we need use the __Use Depth__ option to count
  *   the number of background pixels.
- *   @image html 1.png width=85%
+ *   @image html prop_analyzer_1.png width=85%
  *   We want to test our network with varying seeds for the
  *   *RandomVolumeGenerator* , so the respective box in the *CompositeProperty*
  *   of the *RandomVolumeGenerator* is checked. Since different seeds allow no
  *   meaningful comparison of the number of visible background pixels, we set
  *   its comparator to *NOT_COMPARABLE*.
- *   @image html 2.png width=85%
+ *   @image html prop_analyzer_2.png width=85%
  *   We also want to verify the *Cube Proxy Geometry* -processor. For the sake of
  *   simplicity we only consider clipping in the X- and Y-dimensions.
  *   The clipping options for each dimension are *MinMaxProperty* s, so we need
  *   two comparators each, one for the lower and one for the upper setting.
- *   When we move the lower setting up, the number of non-background pixels
- *   should decrease or remain equal, so this comparator is set to *LESS_EQUAL*.
+ *   When we move the lower setting up, the score (i.e. the number of background pixels)
+ *   should increase or remain equal, so this comparator is set to *GREATER_EQUAL*.
  *   For the upper setting, the opposite is true.
- *   @image html 3.png width=85%
+ *   @image html prop_analyzer_3.png width=85%
  *   To demonstrate this processor, we set false comparators for the clipping in
  *   the Y-dimension.
- *   @image html 5.png width=85%
+ *   @image html prop_analyzer_4.png width=85%
  *   On hitting "Update Test Results", a bunch of tests is generated and
  *   executed.
- *   @image html 6.png width=85%
+ *   @image html prop_analyzer_5.png width=85%
  *   When all tests are finished, some errors are found and the first few are
  *   printed on the console.
- *   @image html 9.png width=85%
+ *   @image html prop_analyzer_6.png width=85%
  *   All errors are documented in an HTML-report. For each error, the values
  *   of each tested property, as well as the scores of both tests,
  *   their expected relation and the generated images are shown.
- *   @image html 10.png width=85%
+ *   @image html prop_analyzer_7.png width=85%
  *   When errors have been found, we have the option to distill the failed
  *   tests, i.e. to find a subset of properties that - if tested - produces some
  *   errors. This leads to the tests being run again, except that some
  *   properties are not changed.
- *   @image html 11.png width=85%
  *   Afterwards a new report is generated, which now only contains the tests
  *   that have failed with the distilled set of properties.
  */

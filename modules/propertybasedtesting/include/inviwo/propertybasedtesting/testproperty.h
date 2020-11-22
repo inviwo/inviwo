@@ -361,7 +361,7 @@ std::optional<typename T::value_type> TestPropertyComposite::getDefaultValue(con
 template<typename T>
 typename T::value_type TestResult::getValue(const T* prop) const {
 	for(const auto& t : test)
-		if(auto p = std::dynamic_pointer_cast<PropertyAssignmentTyped<typename T::value_type>>(t);
+		if(auto p = std::dynamic_pointer_cast<PropertyAssignmentTyped<T>>(t);
 				p && reinterpret_cast<T*>(p->getProperty()) == prop)
 			return p->getValue();
 

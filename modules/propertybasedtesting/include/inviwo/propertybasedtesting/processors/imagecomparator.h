@@ -55,8 +55,9 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_PROPERTYBASEDTESTING_API ImageComparator : public Processor,
-															public ProcessorNetworkObserver {
+class IVW_MODULE_PROPERTYBASEDTESTING_API ImageComparator
+	: public Processor
+	, public ProcessorNetworkObserver {
 public:
     ImageComparator();
 
@@ -67,9 +68,45 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-
-    enum class ComparisonType { Diff, Perceptual, Local, Global };
 private:
+    enum class ComparisonType { Diff, Perceptual, Local, Global };
+	enum class ReductionType { MEAN, MAX, MIN, SUM };
+	std::string reductionTypeName(const ReductionType& r) {
+		#define CASE_VAL(p) case(ReductionType::p): return #p;
+		switch(r) {
+		CASE_VAL(MEAN)
+		CASE_VAL(MAX)
+		CASE_VAL(MIN)
+		CASE_VAL(SUM)
+		};
+	}
+
+	template<typename T>
+	T getUnitForReduction(const ReductionType& r) {
+		switch(r) {
+		case ReductionType::MEAN:
+			return 0;
+		case ReductionType::MAX:
+			return Defaultvalues<T>::getMin();
+		case ReductionType::MIN:
+			return Defaultvalues<T>::getMax();
+		case ReductionType::SUM:
+			return 0;
+		};
+	}
+	template<typename T>
+	T combine(const ReductionType& r, const T& a, const T& b) {
+		switch(r) {
+			case ReductionType::MEAN:
+			case ReductionType::SUM:
+				return a+b;
+			case ReductionType::MIN:
+				return std::min(a,b);
+			case ReductionType::MAX:
+				return std::max(a,b);
+		}
+	}
+
     ImageInport inport1_;
     ImageInport inport2_;
     ImageOutport differencePort_;
@@ -78,14 +115,16 @@ private:
     FloatProperty maxDeviation_;
 	FloatProperty maxPixelwiseDeviation_;
     TemplateOptionProperty<ComparisonType> comparisonType_;
+	TemplateOptionProperty<ReductionType> reductionType_;
     DirectoryProperty reportDir_;
     int imageCompCount_ = 0;
 
     struct Comparison {
         time_t timestamp;
-        double diffSum;
-        double differentPixels;
-        double pixelCount;
+        double result;
+		ReductionType reduction;
+        size_t differentPixels;
+        size_t pixelCount;
         std::filesystem::path img1;
         std::filesystem::path img2;
         std::filesystem::path diff;

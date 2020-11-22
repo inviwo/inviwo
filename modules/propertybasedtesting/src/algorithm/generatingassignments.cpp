@@ -8,8 +8,10 @@ bool PropertyAssignment::isDeactivated() const {
 	return *m_deactivated;
 }
 void PropertyAssignment::apply() const {
-	if(!isDeactivated())
+	if(!isDeactivated()) {
 		m_apply();
+		assert(isApplied());
+	}
 }
 bool PropertyAssignment::isApplied() const {
 	return isDeactivated() || m_isApplied();

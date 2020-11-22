@@ -387,12 +387,12 @@ std::vector<std::tuple<std::unique_ptr<bool>,
 		std::vector<std::shared_ptr<PropertyAssignment>>>>
 	TestPropertyTyped<T>::generateAssignmentsCmp() const {
 
-	static const GenerateAssignments<T> tmp;
+	const GenerateAssignments<T> tmp;
 	static const util::AssignmentComparator cmp = [this](const auto& oldA, const auto& newA) {
-			const PropertyAssignmentTyped<value_type>* oldAptr =
-				dynamic_cast<PropertyAssignmentTyped<value_type>*>(oldA.get());
-			const PropertyAssignmentTyped<value_type>* newAptr =
-				dynamic_cast<PropertyAssignmentTyped<value_type>*>(newA.get());
+			const PropertyAssignmentTyped<T>* oldAptr =
+				dynamic_cast<const PropertyAssignmentTyped<T>*>(oldA.get());
+			const PropertyAssignmentTyped<T>* newAptr =
+				dynamic_cast<const PropertyAssignmentTyped<T>*>(newA.get());
 			assert(oldAptr != nullptr);
 			assert(newAptr != nullptr);
 
@@ -537,7 +537,6 @@ void makeOnChange(BoolCompositeProperty* const prop) {
 			for(auto boolProp : prop->getPropertiesByType<BoolProperty>())
 				if(boolProp != prop->getBoolProperty())
 					subProps.emplace_back(boolProp);
-			//prop->getBoolProperty()->setReadOnly(subProps.size() > 0);
 
 			if(subProps.size() > 0) {
 				bool checked = false;
