@@ -115,7 +115,6 @@ set(HEADER_FILES
     include/modules/base/processors/volumesubsample.h
     include/modules/base/processors/volumesubset.h
     include/modules/base/processors/volumetospatialsampler.h
-    include/modules/base/processors/volumevoronoisegmentation.h
     include/modules/base/processors/worldtransformdeprecated.h
     include/modules/base/properties/basisproperty.h
     include/modules/base/properties/bufferinformationproperty.h
@@ -236,7 +235,6 @@ set(SOURCE_FILES
     src/processors/volumesubsample.cpp
     src/processors/volumesubset.cpp
     src/processors/volumetospatialsampler.cpp
-    src/processors/volumevoronoisegmentation.cpp
     src/properties/basisproperty.cpp
     src/properties/bufferinformationproperty.cpp
     src/properties/datarangeproperty.cpp

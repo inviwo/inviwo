@@ -96,7 +96,6 @@
 #include <modules/base/processors/volumesequencesingletimestepsampler.h>
 
 // Properties
-#include <modules/base/processors/volumevoronoisegmentation.h>
 #include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/datarangeproperty.h>
 #include <modules/base/properties/gaussianproperty.h>
@@ -206,7 +205,6 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeInformation>();
     registerProcessor<TFSelector>();
     registerProcessor<VolumeShifter>();
-    registerProcessor<VolumeVoronoiSegmentation>();
 
     // input selectors
     registerProcessor<InputSelector<MultiDataInport<Volume>, VolumeOutport>>();

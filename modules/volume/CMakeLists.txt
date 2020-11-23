@@ -1,12 +1,14 @@
 ivw_module(Volume)
 
 set(HEADER_FILES
+    include/inviwo/volume/processors/volumevoronoisegmentation.h
     include/inviwo/volume/volumemodule.h
     include/inviwo/volume/volumemoduledefine.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
+    src/processors/volumevoronoisegmentation.cpp
     src/volumemodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

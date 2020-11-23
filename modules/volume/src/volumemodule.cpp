@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <inviwo/volume/processors/volumevoronoisegmentation.h>
 #include <inviwo/volume/volumemodule.h>
 
 namespace inviwo {
@@ -39,6 +40,7 @@ VolumeModule::VolumeModule(InviwoApplication* app) : InviwoModule(app, "Volume")
 
     // Processors
     // registerProcessor<VolumeProcessor>();
+    registerProcessor<VolumeVoronoiSegmentation>();
 
     // Properties
     // registerProperty<VolumeProperty>();

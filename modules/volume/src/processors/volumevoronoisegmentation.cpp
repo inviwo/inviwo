@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/volumevoronoisegmentation.h>
+#include <inviwo/volume/processors/volumevoronoisegmentation.h>
 #include <modules/base/algorithm/volume/volumevoronoi.h>
 
 namespace inviwo {
@@ -43,7 +43,10 @@ const ProcessorInfo VolumeVoronoiSegmentation::processorInfo_{
 const ProcessorInfo VolumeVoronoiSegmentation::getProcessorInfo() const { return processorInfo_; }
 
 VolumeVoronoiSegmentation::VolumeVoronoiSegmentation()
-    : Processor(), volume_("inputVolume"), inputMesh_("inputPositions"), outport_("outport") {
+    : Processor()
+    , volume_("inputVolume")
+    , inputMesh_("inputPositions")
+    , outport_("outport") {
 
     addPort(volume_);
     addPort(inputMesh_);

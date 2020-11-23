@@ -29,10 +29,11 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
+#include <inviwo/volume/volumemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/meshport.h>
 
 namespace inviwo {
 
@@ -50,7 +51,7 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_BASE_API VolumeVoronoiSegmentation : public Processor {
+class IVW_MODULE_VOLUME_API VolumeVoronoiSegmentation : public Processor {
 public:
     VolumeVoronoiSegmentation();
     virtual ~VolumeVoronoiSegmentation() = default;
