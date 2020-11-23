@@ -226,7 +226,7 @@ private:
 	bool testIsSetUp(const Test& test) const;
 	void setupTest(const Test& test);
 
-	std::vector<std::unique_ptr<bool>> deactivated;
+	std::vector<bool*> deactivated;
 	int last_deactivated;
 
 	std::vector<Test> allTests;

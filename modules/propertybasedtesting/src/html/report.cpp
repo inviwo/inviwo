@@ -80,25 +80,16 @@ std::vector<HTML::Row> PropertyBasedTestingReport::generateHTML
 			return str.str();
 		}();
 
-	std::vector<std::shared_ptr<TestProperty>> sameProperties, differentProperties;
-	// find properties which are (not) equal in the test results
-	for(auto prop : props) {
-		if(prop->getValueString(testResult1) == prop->getValueString(testResult2))
-			sameProperties.emplace_back(prop);
-		else
-			differentProperties.emplace_back(prop);
-	}
-
 	HTML::Row row1;
 	row1 << HTML::Details(HTML::Text("Property Values"),
-			generateHTML(testResult1, differentProperties));
+			generateHTML(std::make_tuple(testResult2, testResult1, true), props));
 	row1 << HTML::Text(std::to_string(num1));
 	row1 << HTML::Text(expectedEffectString);
 	row1 << HTML::Text(std::to_string(num2));
 	row1 << HTML::Details(HTML::Text("Property Values"),
-			generateHTML(testResult2, differentProperties));
+			generateHTML(std::make_tuple(testResult1, testResult2, true), props));
 	row1 << HTML::Details(HTML::Text("Equal Properties"),
-			generateHTML(testResult1, sameProperties));
+			generateHTML(std::make_tuple(testResult1, testResult2, false), props));
 	HTML::Row row2;
 	row2 << HTML::TableCell(HTML::Details(HTML::Text("Image1"),
 				HTML::Image(testResult1->getImagePath()))).addAttribute("colspan","3");
@@ -107,8 +98,11 @@ std::vector<HTML::Row> PropertyBasedTestingReport::generateHTML
 	return {row1, row2};
 }
 HTML::BaseElement PropertyBasedTestingReport::generateHTML
-		( std::shared_ptr<TestResult> testResult
+		( const std::tuple<std::shared_ptr<TestResult>,
+				std::shared_ptr<TestResult>,
+				bool>& testResults
 		, const std::vector<std::shared_ptr<TestProperty>>& props) {
+	const auto&[t1, t2, different] = testResults;
 	HTML::Table res;
 	res << (HTML::HeadRow()
 			<< HTML::Text("DisplayName")
@@ -117,18 +111,21 @@ HTML::BaseElement PropertyBasedTestingReport::generateHTML
 		HTML::Row r;
 		r << HTML::Text(prop->getDisplayName());
 		std::map<const TestProperty*, std::vector<const TestProperty*>> tree;
+		std::map<const TestProperty*, bool>	isInner;
 		prop->traverse([&](const TestProperty* p, const TestProperty* pa) {
-					tree[pa].emplace_back(p);
+					isInner[pa] = true;
+					if(different == (p->getValueString(t1) != p->getValueString(t2)))
+						tree[pa].emplace_back(p);
 				});
 
 		std::function<HTML::Tree(const TestProperty*)> dfs = [&](const TestProperty* p) {
 				HTML::Tree res(HTML::Text(p->getDisplayName()));
 				HTML::TreeChildren children;
-				if(tree[p].empty()) // leaf
-					children << HTML::Text(p->getValueString(testResult));
-				else
+				if(isInner[p])
 					for(auto c : tree[p])
 						children << dfs(c);
+				else // leaf
+					children << HTML::Text(p->getValueString(t1));
 				res << children;
 				return res;
 			};

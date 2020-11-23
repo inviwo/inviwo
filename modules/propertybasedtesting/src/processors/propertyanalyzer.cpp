@@ -298,10 +298,12 @@ void PropertyAnalyzer::initTesting() {
 
 			for(const auto prop : props_) {
 				auto why = prop->generateAssignmentsCmp();
-				for(auto& [deac, cmp, prop_assignments] : why) {
+				for(auto& [cmp, prop_assignments] : why) {
 					resComp.emplace_back(cmp, prop_assignments);
 					res.emplace_back(prop_assignments);
-					deactivated.emplace_back(std::move(deac));
+				}
+				for(size_t i = 0; i < prop->totalCheckedComponents(); i++) {
+					deactivated.emplace_back(prop->deactivated(i));
 				}
 			}
 			return std::make_pair(res, resComp);
@@ -341,7 +343,7 @@ void PropertyAnalyzer::initTesting() {
 			LogLevel::Info, LogAudience::User);
 
 	if(remainingTests.size() > 0) {
-		app_->dispatchFront([this]() {
+		app_->dispatchFrontAndForget([this]() {
 				setupTest(remainingTests.front());
 			});
 	}
@@ -492,6 +494,7 @@ void PropertyAnalyzer::checkTestResults() {
 	if(currently_condensing) {
 		if(errors.empty()) {
 			assert(last_deactivated != -1);
+			
 			(*deactivated[last_deactivated]) = false;
 			last_deactivated++;
 		} else {
@@ -505,18 +508,31 @@ void PropertyAnalyzer::checkTestResults() {
 		} else {
 			(*deactivated[last_deactivated]) = true;
 
+			for(auto& prop : props_)
+				prop->traverse([&](const TestProperty* p, const TestProperty* pa) {
+						std::cout << p->getDisplayName() << " : ";
+						if(p->totalCheckedComponents() > 1) {
+							std::cout << "inner node with " << p->totalCheckedComponents() << " sub components";
+						} else {
+							std::cout << (*(p->deactivated(0)) ? "deactivated" : "active");
+						}
+						std::cout << std::endl;
+					});
+
 			// copy tests to 'remainingTests'
 			for(const auto& test : allTests) {
 				remainingTests.emplace(test);
 			}
 
+			testResults.clear();
 			// kick off testing
 			if(remainingTests.size() > 0)
-				app_->dispatchFront([this]() {
+				app_->dispatchFrontAndForget([this]() {
 						setupTest(remainingTests.front());
 					});
 		}
 	}
+	std::cout << "done checking Test results" << std::endl;
 }
 
 bool PropertyAnalyzer::testIsSetUp(const Test& test) const {
@@ -527,6 +543,7 @@ bool PropertyAnalyzer::testIsSetUp(const Test& test) const {
 }
 void PropertyAnalyzer::setupTest(const Test& test) {
 	NetworkLock lock(this);
+	assert(testingState == TestingState::NONE);
 
 	resetAllProps();
 
@@ -538,16 +555,16 @@ void PropertyAnalyzer::setupTest(const Test& test) {
 	// TODO: find better solution
 	app_->getProcessorNetwork()->forEachProcessor([](auto proc) {
 			proc->invalidate(InvalidationLevel::InvalidOutput);
-			});
+		});
 
-	app_->dispatchPool([this]() {
+	app_->dispatchFrontAndForget([this]() {
 			// necessary because of synchronicity issues, TODO: find better solution
 			std::this_thread::sleep_for(std::chrono::milliseconds(20));
 			app_->dispatchFrontAndForget([this]() {
 					testingState = TestingState::GATHERING;
 					this->invalidate(InvalidationLevel::InvalidOutput);
 				});
-			});
+		});
 }
 
 size_t countPixels(std::shared_ptr<const Image> img, const dvec4& col, const bool useDepth) {
@@ -611,8 +628,10 @@ void PropertyAnalyzer::process() {
 			testResults.push_back(std::make_shared<TestResult>(props_, test, pixelCount, imagePath));
 
 			if(remainingTests.empty()) { // there are no more tests to do
-				this->checkTestResults();
-				app_->dispatchFrontAndForget([this]() { resetAllProps(); });
+				app_->dispatchFrontAndForget([this]() {
+						resetAllProps();
+						this->checkTestResults();
+					});
 			} else {
 				app_->dispatchFrontAndForget([this]() { setupTest(remainingTests.front()); });
 			}

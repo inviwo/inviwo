@@ -45,8 +45,10 @@ private:
 	
 	void m_apply() const override {
 		prop->set(value);
+		std::cerr << prop->getDisplayName() << " : " << value << " (" << prop->get() << ")" << std::endl;
 	}
 	bool m_isApplied() const override {
+		std::cerr << prop->getDisplayName() << " : " << prop->get() << " vs. " << value << std::endl;
 		return prop->get() == value;
 	}
 public:
@@ -82,8 +84,7 @@ using Test = std::vector<std::shared_ptr<PropertyAssignment>>;
  */
 template<typename T>
 struct GenerateAssignments {
-	std::pair<std::unique_ptr<bool>,
-		std::vector<std::shared_ptr<PropertyAssignment>>> operator()(T* const) const;
+	std::vector<std::shared_ptr<PropertyAssignment>> operator()(T* const, const bool*) const;
 };
 
 
@@ -92,13 +93,10 @@ constexpr size_t randomValues = 3;
 
 template<typename T>
 struct GenerateAssignments<OrdinalProperty<T>> {
-	std::pair<std::unique_ptr<bool>,
-		std::vector<std::shared_ptr<PropertyAssignment>>> operator()(
-				OrdinalProperty<T>* const prop) const {
+	std::vector<std::shared_ptr<PropertyAssignment>> operator()(
+				OrdinalProperty<T>* const prop, const bool* deactivated) const {
 
 		using P = OrdinalProperty<T>;
-
-		std::unique_ptr<bool> deactivated = std::make_unique<bool>(false);
 
 		std::vector<std::shared_ptr<PropertyAssignment>> res;
 
@@ -107,26 +105,26 @@ struct GenerateAssignments<OrdinalProperty<T>> {
 
 		for(size_t stepsFromMin = 0; stepsFromMin < std::min(maxSteps, maxStepsPerVal); stepsFromMin++)
 			res.emplace_back(std::make_shared<PropertyAssignmentTyped<P>>(
-						deactivated.get(),
+						deactivated,
 						prop, 
 						prop->getMinValue() + stepsFromMin * increment));
 
 		for(size_t stepsFromMax = 0; stepsFromMax < std::min(maxSteps, maxStepsPerVal); stepsFromMax++)
 			res.emplace_back(std::make_shared<PropertyAssignmentTyped<P>>(
-						deactivated.get(),
+						deactivated,
 						prop, 
 						prop->getMaxValue() - stepsFromMax * increment));
 
 		if(maxSteps > 0) {
 			for(size_t cnt = 0; cnt < randomValues; cnt++) {
 				res.emplace_back(std::make_shared<PropertyAssignmentTyped<P>>(
-							deactivated.get(),
+							deactivated,
 							prop, 
 							prop->getMinValue() + (rand() % maxSteps) * increment));
 			}
 		}
 
-		return std::make_pair(std::move(deactivated), res);
+		return res;
 	}
 };
 
@@ -134,11 +132,8 @@ struct GenerateAssignments<OrdinalProperty<T>> {
 // OrdinalProperty<T>*
 template<typename T>
 struct GenerateAssignments<MinMaxProperty<T>> {
-	std::pair<std::unique_ptr<bool>,
-		std::vector<std::shared_ptr<PropertyAssignment>>> operator()(
-				MinMaxProperty<T>* const prop) const {
-
-		std::unique_ptr<bool> deactivated = std::make_unique<bool>(false);
+	std::vector<std::shared_ptr<PropertyAssignment>> operator()(
+				MinMaxProperty<T>* const prop, const bool* deactivated) const {
 
 		using P = MinMaxProperty<T>;
 		using value_type = typename P::value_type;
@@ -150,7 +145,7 @@ struct GenerateAssignments<MinMaxProperty<T>> {
 		for(size_t stepsFromMin = 0; stepsFromMin < std::min(maxSteps, maxStepsPerVal); stepsFromMin++) {
 			for(size_t stepsFromMax = 0; stepsFromMax + stepsFromMin < std::min(maxSteps, maxStepsPerVal); stepsFromMax++) {
 				res.emplace_back(std::make_shared<PropertyAssignmentTyped<P>>(
-							deactivated.get(),
+							deactivated,
 							prop, 
 							value_type(	prop->getRangeMin() + stepsFromMin * minSeparation,
 								prop->getRangeMax() - stepsFromMax * minSeparation)));
@@ -162,13 +157,13 @@ struct GenerateAssignments<MinMaxProperty<T>> {
 			size_t stepsFromMin = rand() % maxSteps;
 			size_t stepsFromMax = rand() % (maxSteps - stepsFromMin);
 			res.emplace_back(std::make_shared<PropertyAssignmentTyped<P>>(
-						deactivated.get(),
+						deactivated,
 						prop,
 						value_type( prop->getRangeMin() + stepsFromMin * minSeparation,
 							prop->getRangeMax() - stepsFromMax * minSeparation)));
 		}
 
-		return std::make_pair(std::move(deactivated), res);
+		return res;
 	}
 };
 

@@ -79,8 +79,8 @@ protected:
  */ 
 class TestProperty : public Serializable, public TestPropertyObservable {
 protected:
-	std::string displayName, identifier;
-	BoolCompositeProperty* boolComp = nullptr;
+	std::string displayName_, identifier_;
+	BoolCompositeProperty* boolComp_ = nullptr;
 	TestProperty() = default;
 	TestProperty(const std::string& displayName, const std::string& identifier);
 
@@ -98,6 +98,10 @@ protected:
 		return options;
 	}
 public:
+	virtual size_t totalCheckedComponents() const = 0;
+	virtual bool* deactivated(size_t) = 0;
+	virtual const bool* deactivated(size_t) const = 0;
+
 	virtual BoolCompositeProperty* getBoolComp() const;
 
 	const std::string& getDisplayName() const;
@@ -124,7 +128,7 @@ public:
 
 	virtual void setToDefault() const = 0;
 	virtual void storeDefault() = 0;
-	virtual std::vector<std::tuple<std::unique_ptr<bool>,
+	virtual std::vector<std::pair<
 			util::AssignmentComparator,
 			std::vector<std::shared_ptr<PropertyAssignment>>>>
 		generateAssignmentsCmp() const = 0;
@@ -171,6 +175,13 @@ class TestPropertyComposite : public TestProperty, public TestPropertyObserver {
 	void traverse(std::function<void(const TestProperty*, const TestProperty*)>,
 			const TestProperty*) const override;
 public:
+	template<typename F>
+	void for_each_checked(F) const;
+
+	size_t totalCheckedComponents() const override;
+	bool* deactivated(size_t) override;
+	const bool* deactivated(size_t) const override;
+
 	const static std::string& getClassIdentifier() {
 		const static std::string name = "org.inviwo.TestPropertyComposite";
 		return name;
@@ -210,7 +221,7 @@ public:
 	std::optional<typename T::value_type> getDefaultValue(const T* prop) const;
 
 	void storeDefault();
-	std::vector<std::tuple<std::unique_ptr<bool>,
+	std::vector<std::pair<
 			util::AssignmentComparator,
 			std::vector<std::shared_ptr<PropertyAssignment>>>>
 		generateAssignmentsCmp() const override;
@@ -235,17 +246,22 @@ class TestPropertyTyped : public TestProperty {
 	using value_type = typename T::value_type;
 	static constexpr size_t numComponents = DataFormat<value_type>::components();
 
-	T* typedProperty;
-	value_type defaultValue;
-	std::array<OptionPropertyInt*, numComponents> effectOption;
+	T* typedProperty_;
+	value_type defaultValue_;
+	std::array<OptionPropertyInt*, numComponents> effectOption_;
 	
 	TestPropertyTyped() = default;
 
 	std::array<util::PropertyEffect, numComponents> selectedEffects() const;
+	std::unique_ptr<bool> deactivated_;
 	
 	void traverse(std::function<void(const TestProperty*, const TestProperty*)>,
 			const TestProperty*) const override;
 public:
+	size_t totalCheckedComponents() const override;
+	bool* deactivated(size_t) override;
+	const bool* deactivated(size_t) const override;
+
 	const static std::string& getClassIdentifier() {
 		const static std::string name = std::string("org.inviwo.TestPropertyTyped") + PropertyTraits<T>::classIdentifier();
 		return name;
@@ -277,7 +293,7 @@ public:
 	void deserialize(Deserializer& s) override;
 	
 	void storeDefault();
-	std::vector<std::tuple<std::unique_ptr<bool>,
+	std::vector<std::pair<
 			util::AssignmentComparator,
 			std::vector<std::shared_ptr<PropertyAssignment>>>>
 		generateAssignmentsCmp() const override;
@@ -345,6 +361,13 @@ public:
 	}
 };
 
+template<typename F>
+void TestPropertyComposite::for_each_checked(F f) const {
+	for(const auto& prop : subProperties)
+		if(prop->getBoolComp()->isChecked())
+			f(prop);
+}
+
 template<typename T>
 std::optional<typename T::value_type> TestPropertyComposite::getDefaultValue(const T* prop) const {
 	for(auto subProp : subProperties) {
@@ -362,7 +385,9 @@ template<typename T>
 typename T::value_type TestResult::getValue(const T* prop) const {
 	for(const auto& t : test)
 		if(auto p = std::dynamic_pointer_cast<PropertyAssignmentTyped<T>>(t);
-				p && reinterpret_cast<T*>(p->getProperty()) == prop)
+				p &&
+				reinterpret_cast<T*>(p->getProperty()) == prop
+				&& !(p->isDeactivated()))
 			return p->getValue();
 
 	for(auto def : defaultValues) {
