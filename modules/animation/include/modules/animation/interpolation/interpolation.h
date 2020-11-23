@@ -73,6 +73,8 @@ IVW_MODULE_ANIMATION_API bool operator!=(const Interpolation& a, const Interpola
 template <typename Key, typename Result = typename Key::value_type>
 class InterpolationTyped : public Interpolation {
 public:
+    using key_type = Key;
+    using result_type = Result;
     InterpolationTyped() = default;
     virtual ~InterpolationTyped() = default;
 

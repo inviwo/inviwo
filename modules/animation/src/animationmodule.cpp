@@ -77,10 +77,6 @@ auto interpolationRegHelper(AnimationModule& am) {
             Interpolation::classIdentifier())) {
         am.registerInterpolation<Interpolation>();
     }
-
-    // Default interpolation for this property
-    am.registerPropertyInterpolationConnection(PropertyTraits<PropertyType>::classIdentifier(),
-                                               Interpolation::classIdentifier());
 }
 
 struct OrdinalReghelper {

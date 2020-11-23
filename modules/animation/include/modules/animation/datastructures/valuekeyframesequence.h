@@ -34,8 +34,12 @@
 
 #include <modules/animation/datastructures/basekeyframesequence.h>
 #include <modules/animation/datastructures/camerakeyframe.h>
+#include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/interpolation/interpolation.h>
 #include <modules/animation/interpolation/constantinterpolation.h>
+#include <modules/animation/interpolation/linearinterpolation.h>
+#include <modules/animation/factories/interpolationfactory.h>
+#include <modules/animation/factories/interpolationfactoryobject.h>
 
 namespace inviwo {
 
@@ -47,6 +51,22 @@ template <typename Key>
 struct DefaultInterpolationCreator {
     static std::unique_ptr<InterpolationTyped<Key>> create() {
         return std::make_unique<ConstantInterpolation<Key>>();
+    }
+};
+
+
+template <glm::length_t L, typename T, glm::qualifier Q>
+struct DefaultInterpolationCreator<ValueKeyframe<glm::vec<L, T, Q>>> {
+    static std::unique_ptr<InterpolationTyped<ValueKeyframe<glm::vec<L, T, Q>>>> create() {
+        return std::make_unique<LinearInterpolation<ValueKeyframe<glm::vec<L, T, Q>>>>();
+    }
+};
+
+
+template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+struct DefaultInterpolationCreator<ValueKeyframe<glm::mat<C, R, T, Q>>> {
+    static std::unique_ptr<InterpolationTyped<ValueKeyframe<glm::mat<C, R, T, Q>>>> create() {
+        return std::make_unique<LinearInterpolation<ValueKeyframe<glm::mat<C, R, T, Q>>>>();
     }
 };
 
@@ -74,6 +94,9 @@ public:
 
     virtual const Interpolation& getInterpolation() const = 0;
     virtual void setInterpolation(std::unique_ptr<Interpolation> interpolation) = 0;
+
+    virtual std::vector<InterpolationFactoryObject*> getSupportedInterpolations(
+        InterpolationFactory& factory) const = 0;
 
     virtual easing::EasingType getEasingType() const = 0;
     virtual void setEasingType(easing::EasingType easing) = 0;
@@ -121,6 +144,9 @@ public:
     virtual const InterpolationTyped<Key>& getInterpolation() const override;
     virtual void setInterpolation(std::unique_ptr<Interpolation> interpolation) override;
     void setInterpolation(std::unique_ptr<InterpolationTyped<Key, value_type>> interpolation);
+
+    virtual std::vector<InterpolationFactoryObject*> getSupportedInterpolations(
+        InterpolationFactory& factory) const override;
 
     virtual easing::EasingType getEasingType() const override;
     virtual void setEasingType(easing::EasingType easing) override;
@@ -226,6 +252,12 @@ void KeyframeSequenceTyped<Key>::setInterpolation(std::unique_ptr<Interpolation>
     } else {
         throw Exception("Interpolation type does not match key", IVW_CONTEXT);
     }
+}
+
+template <typename Key>
+std::vector<InterpolationFactoryObject*> KeyframeSequenceTyped<Key>::getSupportedInterpolations(
+    InterpolationFactory& factory) const {
+    return factory.getSupportedInterpolations<Key>();
 }
 
 template <typename Key>

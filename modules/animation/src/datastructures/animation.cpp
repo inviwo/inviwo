@@ -82,15 +82,11 @@ void Animation::add(std::unique_ptr<Track> track) {
 Keyframe* Animation::addKeyframe(Property* property, Seconds time) {
     auto it = findTrack(property);
     try {
-
-        std::unique_ptr<Interpolation> interpolation =
-            getManager()->getDefaultInterpolation(property);
         if (it != end()) {
             // Note: interpolation will only be used if a new sequence is created.
-            return dynamic_cast<BasePropertyTrack*>(&(*it))->addKeyFrameUsingPropertyValue(
-                time, std::move(interpolation));
+            return dynamic_cast<BasePropertyTrack*>(&(*it))->addKeyFrameUsingPropertyValue(time);
         } else if (auto basePropertyTrack = add(property)) {
-            return basePropertyTrack->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
+            return basePropertyTrack->addKeyFrameUsingPropertyValue(time);
         } else {
             LogWarn("No matching Track found for property \"" << property->getIdentifier() << "\"");
         }
@@ -104,13 +100,10 @@ KeyframeSequence* Animation::addKeyframeSequence(Property* property, Seconds tim
     auto it = findTrack(property);
     std::string interpolationErrMsg;
     try {
-        std::unique_ptr<Interpolation> interpolation =
-            getManager()->getDefaultInterpolation(property);
         if (it != end()) {
-            return dynamic_cast<BasePropertyTrack*>(&(*it))->addSequenceUsingPropertyValue(
-                time, std::move(interpolation));
+            return dynamic_cast<BasePropertyTrack*>(&(*it))->addSequenceUsingPropertyValue(time);
         } else if (auto basePropertyTrack = add(property)) {
-            basePropertyTrack->addKeyFrameUsingPropertyValue(time, std::move(interpolation));
+            basePropertyTrack->addKeyFrameUsingPropertyValue(time);
             return &basePropertyTrack->toTrack()->getFirst();
         } else {
             LogWarn("No matching Track found for property \"" << property->getIdentifier() << "\"");
@@ -144,7 +137,6 @@ BasePropertyTrack* Animation::add(Property* property) {
                     LogWarn(e.getMessage() << " Invalid property class identified?") return nullptr;
                 }
                 add(std::move(track));
-                property->getOwner()->addObserver(this);
                 return basePropertyTrack;
             }
         }
@@ -154,11 +146,22 @@ BasePropertyTrack* Animation::add(Property* property) {
 
 std::unique_ptr<Track> Animation::remove(size_t i) {
     auto track = std::move(tracks_[i]);
-    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
-        propertyTrack->getProperty()->getOwner()->removeObserver(this);
-    }
     tracks_.erase(tracks_.begin() + i);
     util::erase_remove(priorityTracks_, track.get());
+    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
+        // Only stop observing property owner if no other track needs it
+        auto owner = propertyTrack->getProperty()->getOwner();
+        auto sameOwnerIt = std::find_if(tracks_.begin(), tracks_.end(), [owner](const auto& elem) {
+            if (auto ptrck = dynamic_cast<BasePropertyTrack*>(elem.get())) {
+                return ptrck->getProperty()->getOwner() == owner;
+            } else {
+                return false;
+            }
+        });
+        if (sameOwnerIt == tracks_.end()) {
+            owner->removeObserver(this);
+        }
+    }
     notifyTrackRemoved(track.get());
     return track;
 }
@@ -254,7 +257,7 @@ void Animation::deserialize(Deserializer& d) {
 void Animation::onWillRemoveProperty(Property* property, size_t) {
     auto it = findTrack(property);
     if (it != end()) {
-        remove(&(*it));
+        remove(std::distance(tracks_.begin(), it.base()));
     }
 }
 

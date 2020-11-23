@@ -58,33 +58,6 @@ void AnimationManager::registerPropertyTrackConnection(const std::string& proper
     trackFactory_.registerPropertyTrackConnection(propertyClassID, trackClassID);
 }
 
-void AnimationManager::registerPropertyInterpolationConnection(
-    const std::string& propertyClassID, const std::string& interpolationClassID) {
-    propertyToInterpolationMap_.emplace(propertyClassID, interpolationClassID);
-}
-
-std::unique_ptr<Interpolation> AnimationManager::getDefaultInterpolation(Property* property) {
-    // Check if there is an interpolation associated with this property
-    auto interpolationIt = propertyToInterpolationMap_.find(property->getClassIdentifier());
-    std::unique_ptr<Interpolation> interpolation(nullptr);
-    if (interpolationIt != propertyToInterpolationMap_.end()) {
-        interpolation = interpolationFactory_.create(interpolationIt->second);
-        if (!interpolation) {
-            LogError("Default interpolation method for "
-                     << property->getClassIdentifier()
-                     << " was registered but the interpolation method was not added to the "
-                        "interpolation factory. @Developer: Please follow examples in "
-                        "animationmodule.cpp");
-        }
-    }
-    return interpolation;
-}
-
-const std::unordered_multimap<std::string, std::string>& AnimationManager::getInterpolationMapping()
-    const {
-    return propertyToInterpolationMap_;
-}
-
 }  // namespace animation
 
 }  // namespace inviwo

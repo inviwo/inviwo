@@ -72,30 +72,11 @@ public:
     void registerPropertyTrackConnection(const std::string& propertyClassID,
                                          const std::string& trackClassID);
 
-    /**
-     * Register connection between a property and an interpolation.
-     * Used to get the preferred interpolation method for a property.
-     * @param propertyClassID Property::getClassIdentifier
-     * @param interpolationClassID Interpolation::getIdentifier()
-     */
-    void registerPropertyInterpolationConnection(const std::string& propertyClassID,
-                                                 const std::string& interpolationClassID);
-
-    /**
-     * Lookup the default interpolation to use for a property.
-     * @throw Exception if none is found.
-     */
-    std::unique_ptr<Interpolation> getDefaultInterpolation(Property* property);
-
-    const std::unordered_multimap<std::string, std::string>& getInterpolationMapping() const;
-
 private:
     InviwoApplication* app_;
 
     TrackFactory trackFactory_;
     InterpolationFactory interpolationFactory_;
-
-    std::unordered_multimap<std::string, std::string> propertyToInterpolationMap_;
 };
 
 }  // namespace animation
