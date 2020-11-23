@@ -72,10 +72,11 @@ public:
     using result_type = typename InterpTyped::result_type;
     // Requiers a static classIdentifier() method on InterpolationType
     InterpolationFactoryObjectTemplate()
-        : InterpolationFactoryObjectKeyframe(InterpTyped::classIdentifier()) {}
+        : InterpolationFactoryObjectKeyframe<key_type>(InterpTyped::classIdentifier()) {}
 
     InterpolationFactoryObjectTemplate(const std::string& classIdentifier)
-        : InterpolationFactoryObjectKeyframe(classIdentifier){};
+        : InterpolationFactoryObjectKeyframe<key_type>(classIdentifier){};
+
     virtual ~InterpolationFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<Interpolation> create() const override {
