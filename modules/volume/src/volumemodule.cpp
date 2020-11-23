@@ -67,8 +67,8 @@ VolumeModule::VolumeModule(InviwoApplication* app) : InviwoModule(app, "Volume")
     // registerSettings(std::make_unique<VolumeSettings>());
     // registerMetaData(std::make_unique<VolumeMetaData>());
     // registerPortInspector("VolumeOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(util::make_unique_ptr<VolumeDrawer>());
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
+    // processorWidget); registerDrawer(util::make_unique_ptr<VolumeDrawer>());
 }
 
 }  // namespace inviwo
