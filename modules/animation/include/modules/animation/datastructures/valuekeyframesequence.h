@@ -54,14 +54,12 @@ struct DefaultInterpolationCreator {
     }
 };
 
-
 template <glm::length_t L, typename T, glm::qualifier Q>
 struct DefaultInterpolationCreator<ValueKeyframe<glm::vec<L, T, Q>>> {
     static std::unique_ptr<InterpolationTyped<ValueKeyframe<glm::vec<L, T, Q>>>> create() {
         return std::make_unique<LinearInterpolation<ValueKeyframe<glm::vec<L, T, Q>>>>();
     }
 };
-
 
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 struct DefaultInterpolationCreator<ValueKeyframe<glm::mat<C, R, T, Q>>> {
