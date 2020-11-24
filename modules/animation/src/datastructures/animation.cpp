@@ -73,8 +73,8 @@ void Animation::add(std::unique_ptr<Track> track) {
     priorityTracks_.push_back(tracks_.back().get());
     doPrioritySort();
     tracks_.back()->addObserver(this);
-    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(tracks_.back().get()) &&
-        auto propertyOwner = propertyTrack->getProperty()->getOwner()) {
+    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(
+            tracks_.back().get())&& auto propertyOwner = propertyTrack->getProperty()->getOwner()) {
         propertyOwner->addObserver(this);
     }
     notifyTrackAdded(tracks_.back().get());
