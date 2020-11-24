@@ -83,7 +83,6 @@ Keyframe* Animation::addKeyframe(Property* property, Seconds time) {
     auto it = findTrack(property);
     try {
         if (it != end()) {
-            // Note: interpolation will only be used if a new sequence is created.
             return dynamic_cast<BasePropertyTrack*>(&(*it))->addKeyFrameUsingPropertyValue(time);
         } else if (auto basePropertyTrack = add(property)) {
             return basePropertyTrack->addKeyFrameUsingPropertyValue(time);
@@ -132,7 +131,7 @@ BasePropertyTrack* Animation::add(Property* property) {
         if (auto track = getManager()->getTrackFactory().create(property)) {
             if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
                 try {
-                    basePropertyTrack->setProperty(const_cast<Property*>(property));
+                    basePropertyTrack->setProperty(property);
                 } catch (const Exception& e) {
                     LogWarn(e.getMessage() << " Invalid property class identified?") return nullptr;
                 }
