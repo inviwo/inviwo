@@ -57,11 +57,6 @@ void AnimationSupplier::registerPropertyTrackConnection(const std::string& prope
     manager_.registerPropertyTrackConnection(propertyClassID, trackClassID);
 }
 
-void AnimationSupplier::registerPropertyInterpolationConnection(
-    const std::string& propertyClassID, const std::string& interpolationClassID) {
-    manager_.registerPropertyInterpolationConnection(propertyClassID, interpolationClassID);
-}
-
 void AnimationSupplier::unRegisterAll() {
     for (auto& elem : tracks_) {
         manager_.getTrackFactory().unRegisterObject(elem.get());

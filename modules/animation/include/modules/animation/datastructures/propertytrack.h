@@ -150,29 +150,30 @@ public:
      *
      * @param proprty Property to create key frame value from.
      * @param time at which KeyFrame should be added.
-     * @param interpolation to use if a new sequence is created
+     * @param interpolation to use if a new sequence is created, nullptr for default constructor
      * @throw Exception If supplied property is not of same type as BasePropertyTrack::getProperty
      * @throw Exception If Interpolation type is invalid for property value.
      */
     virtual Keyframe* addKeyFrameUsingPropertyValue(
-        const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation) = 0;
+        const Property* property, Seconds time,
+        std::unique_ptr<Interpolation> interpolation = nullptr) = 0;
     /*
      * Add KeyFrame at specified time using the current value of the property.
      * @see addKeyFrameUsingPropertyValue(const Property* property, Seconds time,
      * std::unique_ptr<Interpolation> interpolation)
      * @param time at which KeyFrame should be added.
-     * @param interpolation to use if a new sequence is created
+     * @param interpolation to use if a new sequence is created, nullptr for default constructor
      */
     virtual Keyframe* addKeyFrameUsingPropertyValue(
-        Seconds time, std::unique_ptr<Interpolation> interpolation) = 0;
+        Seconds time, std::unique_ptr<Interpolation> interpolation = nullptr) = 0;
     /*
      * Add KeyFrameSequence at specified time using the current value of the property.
      * @param time at which KeyFrame should be added.
-     * @param interpolation to use for the new sequence.
+     * @param interpolation to use for the new sequence, nullptr for default constructor.
      * @throw Exception If a sequence already exist at time
      */
     virtual KeyframeSequence* addSequenceUsingPropertyValue(
-        Seconds time, std::unique_ptr<Interpolation> interpolation) = 0;
+        Seconds time, std::unique_ptr<Interpolation> interpolation = nullptr) = 0;
     virtual Track* toTrack() = 0;
 
     virtual void setPropertyFromKeyframe(Property* dst, const Keyframe* src) const = 0;
@@ -219,11 +220,11 @@ public:
 
     virtual Key* addKeyFrameUsingPropertyValue(
         const Property* property, Seconds time,
-        std::unique_ptr<Interpolation> interpolation) override;
+        std::unique_ptr<Interpolation> interpolation = nullptr) override;
     virtual Key* addKeyFrameUsingPropertyValue(
-        Seconds time, std::unique_ptr<Interpolation> interpolation) override;
+        Seconds time, std::unique_ptr<Interpolation> interpolation = nullptr) override;
     virtual Seq* addSequenceUsingPropertyValue(
-        Seconds time, std::unique_ptr<Interpolation> interpolation) override;
+        Seconds time, std::unique_ptr<Interpolation> interpolation = nullptr) override;
 
     // BasePropertyTrack overload
     virtual Track* toTrack() override;
@@ -318,6 +319,9 @@ inline std::unique_ptr<Seq> PropertyTrack<Prop, Key, Seq>::createKeyframeSequenc
             interpolation.release();
             return std::make_unique<Seq>(std::move(keys),
                                          std::unique_ptr<InterpolationTyped<Key>>(ip));
+        } else if (!interpolation) {
+            // No interpolation specified, use default
+            return std::make_unique<Seq>(std::move(keys));
         } else {
             throw Exception("Invalid interpolation " + interpolation->getClassIdentifier() +
                                 " for " + getClassIdentifier() +

@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/animation/factories/trackfactory.h>
+#include <modules/animation/datastructures/propertytrack.h>
 
 namespace inviwo {
 namespace animation {
@@ -38,6 +39,29 @@ bool TrackFactory::hasKey(const std::string& key) const { return Parent::hasKey(
 
 std::unique_ptr<Track> TrackFactory::create(const std::string& key) const {
     return Parent::create(key, network_);
+}
+
+std::unique_ptr<Track> TrackFactory::create(Property* property) const {
+    auto it = propertyToTrackMap_.find(property->getClassIdentifier());
+    if (it != propertyToTrackMap_.end()) {
+        if (auto track = create(it->second)) {
+            if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
+                try {
+                    basePropertyTrack->setProperty(property);
+                } catch (const Exception& e) {
+                    LogWarn(e.getMessage() << " Invalid property class identified?") return nullptr;
+                }
+
+                return track;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void TrackFactory::registerPropertyTrackConnection(const std::string& propertyClassID,
+                                                   const std::string& trackClassID) {
+    propertyToTrackMap_[propertyClassID] = trackClassID;
 }
 
 }  // namespace animation

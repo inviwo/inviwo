@@ -30,6 +30,7 @@
 #include <modules/animationqt/sequenceeditor/propertysequenceeditor.h>
 #include <modules/animationqt/sequenceeditor/keyframeeditorwidget.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/property.h>
@@ -158,9 +159,6 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
                                                AnimationManager& manager)
     : SequenceEditorWidget(sequence, track, manager) {
 
-    auto& bpt = dynamic_cast<BasePropertyTrack&>(track);
-    auto& valseq = dynamic_cast<ValueKeyframeSequence&>(sequence);
-
     sequence.addObserver(this);
 
     const auto space = utilqt::refSpacePx(this);
@@ -192,17 +190,16 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
     sublayout->addWidget(new QLabel("Interpolation"), 0, 0);
     sublayout->addWidget(interpolation_, 0, 1);
 
-    auto map = manager.getInterpolationMapping();
-
-    for (auto range = map.equal_range(bpt.getProperty()->getClassIdentifier());
-         range.first != range.second; ++range.first) {
-        auto ip = manager.getInterpolationFactory().create(range.first->second);
+    auto& valseq = dynamic_cast<ValueKeyframeSequence&>(sequence);
+    for (auto interpObj : valseq.getSupportedInterpolations(manager.getInterpolationFactory())) {
+        auto ip = interpObj->create();
         interpolation_->addItem(utilqt::toQString(ip->getName()),
                                 QVariant(utilqt::toQString(ip->getClassIdentifier())));
         if (valseq.getInterpolation().getClassIdentifier() == ip->getClassIdentifier()) {
             interpolation_->setCurrentIndex(interpolation_->count() - 1);
         }
     }
+
     connect(interpolation_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, [this, &valseq, &manager](int) {
                 const auto id = utilqt::fromQString(interpolation_->currentData().toString());

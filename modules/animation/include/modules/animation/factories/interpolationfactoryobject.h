@@ -48,17 +48,40 @@ protected:
     const std::string classIdentifier_;
 };
 
-template <typename T>
-class InterpolationFactoryObjectTemplate : public InterpolationFactoryObject {
+/*
+ * Base for Keyframe-based interpolations.
+ * Required for InterpolationFactory::getSupportedInterpolations to find interpolations for a
+ * specific Keyframe type.
+ */
+template <typename Keyframe>
+class InterpolationFactoryObjectKeyframe : public InterpolationFactoryObject {
 public:
-    // Requiers a static classIdentifier() method on T
-    InterpolationFactoryObjectTemplate() : InterpolationFactoryObject(T::classIdentifier()) {}
+    InterpolationFactoryObjectKeyframe(const std::string& classIdentifier)
+        : InterpolationFactoryObject(classIdentifier) {}
+    virtual ~InterpolationFactoryObjectKeyframe() = default;
+};
+
+/*
+ * Factory object for InterpolationTyped interpolations
+ */
+template <typename InterpTyped>
+class InterpolationFactoryObjectTemplate
+    : public InterpolationFactoryObjectKeyframe<typename InterpTyped::key_type> {
+public:
+    using key_type = typename InterpTyped::key_type;
+    using result_type = typename InterpTyped::result_type;
+    // Requiers a static classIdentifier() method on InterpolationType
+    InterpolationFactoryObjectTemplate()
+        : InterpolationFactoryObjectKeyframe<key_type>(InterpTyped::classIdentifier()) {}
 
     InterpolationFactoryObjectTemplate(const std::string& classIdentifier)
-        : InterpolationFactoryObject(classIdentifier){};
+        : InterpolationFactoryObjectKeyframe<key_type>(classIdentifier){};
+
     virtual ~InterpolationFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Interpolation> create() const override { return std::make_unique<T>(); }
+    virtual std::unique_ptr<Interpolation> create() const override {
+        return std::make_unique<InterpTyped>();
+    }
 };
 
 }  // namespace animation

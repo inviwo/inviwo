@@ -51,6 +51,7 @@ namespace inviwo {
 namespace animation {
 
 class AnimationManager;
+class Animation;
 class SequenceEditorWidget;
 class SequenceEditorFactory;
 class EditorWidgetFactory;
@@ -60,8 +61,8 @@ class IVW_MODULE_ANIMATIONQT_API SequenceEditorPanel : public QScrollArea,
                                                        public AnimationObserver,
                                                        public TrackObserver {
 public:
-    SequenceEditorPanel(AnimationManager& manager, SequenceEditorFactory& editorFactory,
-                        QWidget* parent = nullptr);
+    SequenceEditorPanel(Animation& animation, AnimationManager& manager,
+                        SequenceEditorFactory& editorFactory, QWidget* parent = nullptr);
     virtual ~SequenceEditorPanel() = default;
 
     virtual void onAnimationChanged(AnimationController* controller, Animation* oldAnim,
@@ -76,6 +77,7 @@ public:
     QLayout* getOptionLayout();
 
 private:
+    Animation& animation_;
     AnimationManager& manager_;
     SequenceEditorFactory& factory_;
 

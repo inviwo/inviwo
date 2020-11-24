@@ -63,7 +63,7 @@ public:
     void registerTrack();
 
     /**
-     * Register a Interpolation with the Interpolation Factory
+     * Register an Interpolation with the Interpolation Factory
      */
     template <typename T>
     void registerInterpolation();
@@ -77,16 +77,6 @@ public:
      */
     void registerPropertyTrackConnection(const std::string& propertyClassID,
                                          const std::string& trackClassID);
-
-    /**
-     * Register connection between a property and an interpolation.
-     * Used to get the preferred interpolation method for a property.
-     * @param propertyClassID Property::getClassIdentifier
-     * @param interpolationClassID Interpolation::getIdentifier()
-     * @see AnimationManager
-     */
-    void registerPropertyInterpolationConnection(const std::string& propertyClassID,
-                                                 const std::string& interpolationClassID);
 
     void unRegisterAll();
 

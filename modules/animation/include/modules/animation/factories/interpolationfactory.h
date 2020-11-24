@@ -46,6 +46,17 @@ public:
     virtual ~InterpolationFactory() = default;
 
     using StandardFactory<Interpolation, InterpolationFactoryObject>::create;
+
+    template <typename Keyframe>
+    std::vector<InterpolationFactoryObject*> getSupportedInterpolations() const {
+        std::vector<InterpolationFactoryObject*> interps;
+        for (auto interp : map_) {
+            if (dynamic_cast<InterpolationFactoryObjectKeyframe<Keyframe>*>(interp.second)) {
+                interps.push_back(interp.second);
+            }
+        }
+        return interps;
+    };
 };
 
 }  // namespace animation
