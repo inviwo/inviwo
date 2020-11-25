@@ -230,7 +230,7 @@ CefKeyEvent CEFInteractionHandler::mapKeyEvent(const KeyboardEvent* e) {
     // According to this:
     // https://chromium.googlesource.com/chromium/src/+/master/ui/events/keycodes/dom/dom_key_data.inc
     // Note: native_key_code currently has no effect on text input fields, so text input will
-    // display correctly. 
+    // display correctly.
     // cefEvent.native_key_code = TODO;
 
 #ifdef _WINDOWS
