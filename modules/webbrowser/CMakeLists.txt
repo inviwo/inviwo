@@ -4,7 +4,7 @@
 # See https://bitbucket.org/chromiumembedded/cef-project
 
 # Specify the CEF distribution version.
-# http://opensource.spotify.com/cefbuilds/index.html
+# https://cef-builds.spotifycdn.com/index.html
 # Test before upgrading version since they are sometimes unstable:
 # 3.3202.1680.g700054b Problems with event handling of html-range elements (sliders)
 # 3.3359.1774.gd49d25f Crashes when creating browsers
@@ -16,7 +16,7 @@
 # FATAL:async_layer_tree_frame_sink.cc
 # Known issue: Dropdown does not work.
 # Probably due to https://magpcss.org/ceforum/viewtopic.php?f=6&t=11618
-set(CEF_VERSION "78.3.9+gc7345f2+chromium-78.0.3904.108")
+set(CEF_VERSION "87.1.6+g315d248+chromium-87.0.4280.66")
 
 # Determine the platform.
 include("cmake/cef_platform.cmake")
