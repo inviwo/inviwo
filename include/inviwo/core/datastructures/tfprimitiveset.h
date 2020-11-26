@@ -146,7 +146,37 @@ public:
      * @return vectors of TFPrimitives' position and color sorted increasingly regarding position
      */
     std::pair<std::vector<double>, std::vector<vec4>> getVectors() const;
+
+    /**
+     * Access TFPrimitives as pair of vectors which can be used, e.g., for setting uniforms of a
+     * shader.
+     *
+     * @return vectors of TFPrimitives' position and color sorted increasingly regarding position
+     */
     std::pair<std::vector<float>, std::vector<vec4>> getVectorsf() const;
+
+    /**
+     * Access TFPrimitives positions as a vector which can be used, e.g., for setting uniforms of a
+     * shader.
+     *
+     * @return vector of TFPrimitives' positions sorted increasingly regarding position
+     */
+    std::vector<double> getPositions() const;
+    /**
+     * Access TFPrimitives positions as a vector which can be used, e.g., for setting uniforms of a
+     * shader.
+     *
+     * @return vector of TFPrimitives' positions sorted increasingly regarding position
+     */
+    std::vector<float> getPositionsf() const;
+
+    /**
+     * Access TFPrimitives colors as a vector which can be used, e.g., for setting uniforms of a
+     * shader.
+     *
+     * @return vector of TFPrimitives' colors sorted increasingly regarding position
+     */
+    std::vector<vec4> getColors() const;
 
     /**
      * Add a TFPrimitive
