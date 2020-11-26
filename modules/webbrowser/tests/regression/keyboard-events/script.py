@@ -11,7 +11,7 @@ key_A = inviwopy.KeyboardEvent(key = inviwopy.IvwKey.A, state = inviwopy.KeyStat
 browser.invokeEvent(key_A)
 
 # HACK: Wait for as little as possible while ensuring that the webpage has re-rendered. 
-#time.sleep(0.1);
+time.sleep(0.1);
 
 canvas = network.Canvas;
 ivw.regression.saveCanvas(canvas, "Canvas");
