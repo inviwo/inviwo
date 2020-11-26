@@ -1,0 +1,564 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0059)https://dvcs.w3.org/hg/d4e/raw-file/tip/key-event-test.html -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Keyboard Events</title>
+
+
+<style type="text/css">
+#options {
+	display: none;
+	margin: 20px;
+}
+#optionstoggle {
+	font-size: 10pt;
+}
+.opttable {
+	border: 1px solid black;
+}
+.optcell {
+	vertical-align: top;
+	padding: 0 10px;
+}
+.opttitle {
+	font-weight: bold;
+}
+.empty {
+	background-color: #ffffff;
+}
+.etype_header {
+	background-color: #d0d0d0;
+	font-weight: bold;
+	border: 1px solid black;
+}
+.legacy_header {
+	background-color: #80ff80;
+	font-weight: bold;
+	border: 1px solid black;
+}
+.modifiers_header {
+	background-color: #ff80ff;
+	font-weight: bold;
+	border: 1px solid black;
+}
+.olddom3_header {
+	background-color: #ffff80;
+	font-weight: bold;
+	border: 1px solid black;
+}
+.dom3_header {
+	background-color: #80ffff;
+	font-weight: bold;
+	border: 1px solid black;
+}
+.uievents_header {
+	background-color: #ffc080;
+	font-weight: bold;
+	border: 1px solid black;
+}
+.inputbox_header {
+	background-color: #d0d0d0;
+	font-weight: bold;
+	border: 1px solid black;
+}
+.keycell {
+	padding: 0 5px 0 5px;
+}
+.modOff {
+	color: #ffd0d0;
+}
+.modOn {
+	color: green;
+}
+.undef {
+	color: #a0a0a0;
+}
+.showfieldoption {
+	font-weight: normal;
+	padding: 0 5px 0 5px;
+	display: inline-block;
+	min-width: 90px;
+	text-align: center;
+}
+#output tr:hover, tr.highlight {
+	background-color: #e0e0e0;
+}
+body {
+	margin: 10px;
+	padding: 0 20px;
+}
+</style>
+
+<script language="javascript">
+
+var MAX_OUTPUT_ROWS = 100;
+var NUM_HEADER_ROWS = 2;
+
+function clearChildren(e) {
+	while (e.firstChild !== null) {
+		e.removeChild(e.firstChild);
+	}
+}
+
+function setText(e, text) {
+	clearChildren(e);
+	e.appendChild(document.createTextNode(text));
+}
+
+function setUserAgent() {
+	var userAgent = navigator.userAgent;
+	uaDiv = document.getElementById("useragent");
+	setText(uaDiv, userAgent);
+}
+
+function isOldIE() {
+	var ieIndex = navigator.userAgent.indexOf("MSIE");
+	if (ieIndex == -1) {
+		return false;
+	}
+	var ver = parseFloat(navigator.userAgent.substring(ieIndex+5));
+	return ver < 10.0;
+}
+
+function addEventListener(obj, etype, handler) {
+	if (obj.addEventListener) {
+		obj.addEventListener(etype, handler, false);
+	} else if (obj.attachEvent) {
+		obj.attachEvent("on"+etype, handler);
+	} else {
+		obj["on"+etype] = handler;
+	}
+}
+
+function init() {
+	setUserAgent();
+	resetTable();
+
+	var input = document.getElementById("input");
+	addEventListener(input, "keydown", onKeyDown);
+	addEventListener(input, "keypress", onKeyPress);
+	addEventListener(input, "keyup", onKeyUp);
+	addEventListener(input, "textInput", onTextInput);
+	addEventListener(input, "textinput", onTextInput);	// For IE9
+	addEventListener(input, "beforeInput", onBeforeInput);
+	addEventListener(input, "input", onInput);
+	addEventListener(input, "compositionstart", onCompositionStart);
+	addEventListener(input, "compositionupdate", onCompositionUpdate);
+	addEventListener(input, "compositionend", onCompositionEnd);
+}
+
+function onKeyDown(e) {
+	handleKeyEvent("keydown", e);
+}
+
+function onKeyPress(e) {
+	handleKeyEvent("keypress", e);
+}
+
+function onKeyUp(e) {
+	handleKeyEvent("keyup", e);
+}
+
+function onTextInput(e) {
+	handleInputEvent("textinput", e);
+}
+
+function onBeforeInput(e) {
+	handleInputEvent("beforeinput", e);
+}
+
+function onInput(e) {
+	handleInputEvent("input", e);
+}
+
+function onCompositionStart(e) {
+	handleCompositionEvent("compositionstart", e);
+}
+
+function onCompositionUpdate(e) {
+	handleCompositionEvent("compositionupdate", e);
+}
+
+function onCompositionEnd(e) {
+	handleCompositionEvent("compositionend", e);
+}
+
+function addOutputRow() {
+	var table = document.getElementById("output");
+	
+	while (table.rows.length > MAX_OUTPUT_ROWS) {
+		table.deleteRow(-1);
+	}
+	return table.insertRow(NUM_HEADER_ROWS);
+}
+
+function handleInputEvent(etype, e) {
+	var show = document.getElementById("show_"+etype);
+	if (show.checked) {
+		addInputEvent(etype, e);
+	}
+	handleDefaultPropagation(etype, e);
+}
+
+function handleKeyEvent(etype, e) {
+	var show = document.getElementById("show_"+etype);
+	if (show.checked) {
+		addKeyEvent(etype, e);
+	}
+	handleDefaultPropagation(etype, e);
+}
+
+function handleCompositionEvent(etype, e) {
+	var show = document.getElementById("show_"+etype);
+	if (show.checked) {
+		addCompositionEvent(etype, e);
+	}
+	handleDefaultPropagation(etype, e);
+}
+
+function handleDefaultPropagation(etype, e) {
+	var preventDefault = document.getElementById("pd_"+etype);
+	if (preventDefault.checked && e.preventDefault) {
+		e.preventDefault();
+	}
+	var stopPropagation = document.getElementById("sp_"+etype);
+	if (stopPropagation.checked && e.stopPropagation) {
+		e.stopPropagation();
+    }
+}
+
+function addInputEvent(etype, e) {
+	if (!e) {
+		e = window.event;
+	}
+
+	var eventinfo = {};
+	eventinfo["etype"] = e.type;
+	eventinfo["data"] = calcString(e.data);
+	addEvent(eventinfo);
+}
+
+function addKeyEvent(etype, e) {
+	if (!e) {
+		e = window.event;
+	}
+
+	var eventinfo = {};
+	eventinfo["etype"] = e.type;
+	eventinfo["charCode"] = calcKeyVal(e.charCode);
+	eventinfo["keyCode"] = calcKeyVal(e.keyCode);
+	eventinfo["which"] = calcKeyVal(e.which);
+	eventinfo["shift"] = e.shiftKey;
+	eventinfo["ctrl"] = e.ctrlKey;
+	eventinfo["alt"] = e.altKey;
+	eventinfo["meta"] = e.metaKey;
+	eventinfo["keyIdentifier"] = e.keyIdentifier;
+	eventinfo["keyLocation"] = calcLocation(e.keyLocation);
+	eventinfo["char"] = calcString(e.char);
+	eventinfo["key"] = calcString(e.key);
+	eventinfo["location"] = calcLocation(e.location);
+	eventinfo["repeat"] = e.repeat;
+	eventinfo["code"] = e.code;
+	addEvent(eventinfo);
+}
+
+function addCompositionEvent(etype, e) {
+	if (!e) {
+		e = window.event;
+	}
+
+	var eventinfo = {};
+	eventinfo["etype"] = e.type;
+	eventinfo["data"] = calcString(e.data);
+	addEvent(eventinfo);
+}
+
+function addEvent(eventinfo) {
+	var row = addOutputRow();
+	
+	addTableCell(row, eventinfo["etype"], "etype");
+
+	addTableCell(row, eventinfo["charCode"], "legacy");
+	addTableCell(row, eventinfo["keyCode"], "legacy");
+	addTableCell(row, eventinfo["which"], "legacy");
+
+	addTableCellModifierKey(row, eventinfo["shift"], "modifiers");
+	addTableCellModifierKey(row, eventinfo["ctrl"], "modifiers");
+	addTableCellModifierKey(row, eventinfo["alt"], "modifiers");
+	addTableCellModifierKey(row, eventinfo["meta"], "modifiers");
+
+	addTableCell(row, eventinfo["keyIdentifier"], "olddom3");
+	addTableCell(row, eventinfo["keyLocation"], "olddom3");
+	addTableCell(row, eventinfo["char"], "olddom3");
+
+	addTableCell(row, eventinfo["key"], "dom3");
+	addTableCell(row, eventinfo["code"], "dom3");
+	addTableCell(row, eventinfo["location"], "dom3");
+	addTableCell(row, eventinfo["repeat"], "dom3");
+	addTableCell(row, eventinfo["data"], "dom3");
+
+	addTableCell(row, eventinfo["locale"], "uievents");
+	
+	addInputCell(row);
+}
+
+function calcLocation(loc) {
+	if (loc == 1) return "LEFT";
+	if (loc == 2) return "RIGHT";
+	if (loc == 3) return "NUMPAD";
+	return loc;
+}
+
+function calcKeyVal(key) {
+    if (key === undefined) {
+		return key;
+	}
+    if (key >= 32 && key < 127) {
+		return key + " '" + String.fromCharCode(key) + "'";
+	}
+    return key;
+}
+
+function calcModifierKey(key) {
+	return key ? "✓" : "✗";
+}
+
+function calcString(data) {
+    if (data === undefined) {
+		return data;
+	}
+	return "'" + data + "'";
+}
+
+function addClass(obj, className) {
+	if (!isOldIE()) {
+		obj.classList.add(className);
+	}
+}
+
+function addInnerText(obj, text) {
+	if (!isOldIE()) {
+		obj.appendChild(document.createTextNode(text));
+	} else {
+		obj.innerText = text;
+	}
+}
+
+function resetTable() {
+	clearTable();
+	createTableHeader();
+}
+
+function clearTable() {
+	clearChildren(document.getElementById("output"));
+}
+
+function addInputCell(row) {
+	var value = document.getElementById("input").value;
+	addTableCell(row, "'" + value + "'", "inputbox", undefined, undefined, "left");
+}
+
+function addTableCell(row, data, celltype, style, span, align) {
+	var cell = row.insertCell(-1);
+	if (data === undefined) {
+		data = "-";
+		addClass(cell, "undef");
+	}
+	addInnerText(cell, data);
+	if (align === undefined) {
+		align = "center";
+	}
+	cell.setAttribute("align", align);
+	if (span !== undefined) {
+		cell.setAttribute("colspan", span);
+	}
+	addClass(cell, "keycell");
+	addClass(cell, celltype);
+	if (style !== undefined) {
+		if (style instanceof Array) {
+			for (var i = 0; i < style.length; i++) {
+				addClass(cell, style[i]);
+			}
+		} else {
+			addClass(cell, style);
+		}
+	}
+	if (celltype == "etype" || celltype == "empty") {
+		return;
+	}
+	// Hide this cell if it belongs to a hidden celltype.
+	var show = document.getElementById("show_" + celltype).checked;
+	if (!show) {
+		cell.style.display = "none";
+	}
+}
+
+function addTableCellModifierKey(row, key, celltype) {
+	var modstyle = key ? "modOn" : "modOff";
+	addTableCell(row, calcModifierKey(key), celltype, modstyle);
+}
+
+function createTableHeader() {
+	var table = document.getElementById("output");
+	var head = table.createTHead();
+	var row1 = head.insertRow(-1);
+	var row2 = head.insertRow(-1);
+
+	addTableCell(row1, "", "empty");
+	addTableCell(row2, "Event type", "etype", "etype_header");
+
+	// KeyboardEvent - Legacy
+	addTableCell(row1, "Legacy", "legacy", "legacy_header", 3);
+	addTableCell(row2, "charCode", "legacy", "legacy_header");
+	addTableCell(row2, "keyCode", "legacy", "legacy_header");
+	addTableCell(row2, "which", "legacy", "legacy_header");
+
+	// KeyboardEvent - Modifiers
+	addTableCell(row1, "Modifiers", "modifiers", "modifiers_header", 4);
+	addTableCell(row2, "shift", "modifiers", "modifiers_header");
+	addTableCell(row2, "ctrl", "modifiers", "modifiers_header");
+	addTableCell(row2, "alt", "modifiers", "modifiers_header");
+	addTableCell(row2, "meta", "modifiers", "modifiers_header");
+
+	// KeyboardEvent - Old DOM3
+	addTableCell(row1, "Old DOM3", "olddom3", "olddom3_header", 3);
+	addTableCell(row2, "keyIdentifier", "olddom3", "olddom3_header");
+	addTableCell(row2, "keyLocation", "olddom3", "olddom3_header");
+	addTableCell(row2, "char", "olddom3", "olddom3_header");
+
+	// KeyboardEvent - DOM3
+	addTableCell(row1, "DOM3", "dom3", "dom3_header", 5);
+	addTableCell(row2, "key", "dom3", "dom3_header");
+	addTableCell(row2, "code", "dom3", "dom3_header");
+	addTableCell(row2, "location", "dom3", "dom3_header");
+	addTableCell(row2, "repeat", "dom3", "dom3_header");
+	addTableCell(row2, "data", "dom3", "dom3_header");
+
+	// KeyboardEvent - UI Events
+	addTableCell(row1, "UI Events", "uievents", "uievents_header", 1);
+	addTableCell(row2, "locale", "uievents", "uievents_header");
+	
+	addTableCell(row1, "", "inputbox", "empty");
+	addTableCell(row2, "Input field", "inputbox", "inputbox_header");
+}
+
+function toggleOptions() {
+	var link = document.getElementById("optionstoggle");
+	var options = document.getElementById("options");
+	clearChildren(link);
+	if (options.style.display == "block") {
+		options.style.display = "none";
+		addInnerText(link, "Show Options");
+	}
+	else {
+		options.style.display = "block";
+		addInnerText(link, "Hide Options");
+	}
+}
+
+function showFieldClick(cb) {
+	if (isOldIE()) {
+		return;
+	}
+	var celltype = cb.id.split('_')[1];
+	var show = cb.checked;
+	
+	var table = document.getElementById("output");
+	for (var ir = 0, row; row = table.rows[ir]; ir++) {
+		for (var ic = 0, cell; cell = row.cells[ic]; ic++) {
+			if (cell.classList.contains(celltype)) {
+				if (show) {
+					cell.style.display = "";
+				} else {
+					cell.style.display = "none";
+				}
+			}
+		}
+	}
+}
+
+</script>
+</head>
+
+<body>
+
+<h1>Keyboard Events</h1><p>
+
+</p><p>UserAgent: <span id="useragent">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36</span>
+</p>
+
+<p>Input: <input id="input" type="text" size="80" autofocus="">
+<input type="button" onclick="resetTable();return false" value="Clear Table">
+<a id="optionstoggle" href="javascript:toggleOptions()">Show Options</a>
+<i>-- Note: The most recent event is at the top.</i>
+</p>
+
+<div id="options">
+<table class="opttable"><tbody><tr>
+<td class="optcell">
+	<span class="opttitle">preventDefault</span><br>
+	<label><input type="checkbox" id="pd_keydown"> keydown</label><br>
+	<label><input type="checkbox" id="pd_keypress"> keypress</label><br>
+	<label><input type="checkbox" id="pd_keyup"> keyup</label><br>
+	<label><input type="checkbox" id="pd_textinput"> textinput</label><br>
+	<label><input type="checkbox" id="pd_beforeinput"> beforeinput</label><br>
+	<label><input type="checkbox" id="pd_input"> input</label><br>
+	<label><input type="checkbox" id="pd_compositionstart"> compositionstart</label><br>
+	<label><input type="checkbox" id="pd_compositionupdate"> compositionupdate</label><br>
+	<label><input type="checkbox" id="pd_compositionend"> compositionend</label><br>
+</td><td class="optcell">
+	<span class="opttitle">stopPropagation</span><br>
+	<label><input type="checkbox" id="sp_keydown" checked=""> keydown</label><br>
+	<label><input type="checkbox" id="sp_keypress" checked=""> keypress</label><br>
+	<label><input type="checkbox" id="sp_keyup" checked=""> keyup</label><br>
+	<label><input type="checkbox" id="sp_textinput" checked=""> textinput</label><br>
+	<label><input type="checkbox" id="sp_beforeinput" checked=""> beforeinput</label><br>
+	<label><input type="checkbox" id="sp_input" checked=""> input</label><br>
+	<label><input type="checkbox" id="sp_compositionstart" checked=""> compositionstart</label><br>
+	<label><input type="checkbox" id="sp_compositionupdate" checked=""> compositionupdate</label><br>
+	<label><input type="checkbox" id="sp_compositionend" checked=""> compositionend</label><br>
+</td><td class="optcell">
+	<span class="opttitle">Show Events</span><br>
+	<label><input type="checkbox" id="show_keydown" checked=""> keydown</label><br>
+	<label><input type="checkbox" id="show_keypress" checked=""> keypress</label><br>
+	<label><input type="checkbox" id="show_keyup" checked=""> keyup</label><br>
+	<label><input type="checkbox" id="show_textinput" checked=""> textinput</label><br>
+	<label><input type="checkbox" id="show_beforeinput" checked=""> beforeinput</label><br>
+	<label><input type="checkbox" id="show_input" checked=""> input</label><br>
+	<label><input type="checkbox" id="show_compositionstart" checked=""> compositionstart</label><br>
+	<label><input type="checkbox" id="show_compositionupdate" checked=""> compositionupdate</label><br>
+	<label><input type="checkbox" id="show_compositionend" checked=""> compositionend</label><br>
+	<i>Applies only to<br>new events</i>
+</td><td class="optcell">
+	<span class="opttitle">Show Fields</span><br>
+	<label><input type="checkbox" onclick="showFieldClick(this)" id="show_legacy" checked="">
+		<span class="legacy_header showfieldoption">Legacy</span>
+	</label><br>
+	<label><input type="checkbox" onclick="showFieldClick(this)" id="show_modifiers" checked="">
+		<span class="modifiers_header showfieldoption">Modifiers</span>
+	</label><br>
+	<label><input type="checkbox" onclick="showFieldClick(this)" id="show_olddom3">
+		<span class="olddom3_header showfieldoption">Old DOM3</span>
+	</label><br>
+	<label><input type="checkbox" onclick="showFieldClick(this)" id="show_dom3" checked="">
+		<span class="dom3_header showfieldoption">DOM3</span>
+	</label><br>
+	<label><input type="checkbox" onclick="showFieldClick(this)" id="show_uievents" checked="">
+		<span class="uievents_header showfieldoption">UI Events</span>
+	</label><br>
+	<label><input type="checkbox" onclick="showFieldClick(this)" id="show_inputbox" checked="">
+		<span class="inputbox_header showfieldoption">Input</span>
+	</label><br>
+</td>
+</tr></tbody></table>
+</div>
+
+<table id="output"><thead><tr><td align="center" class="keycell empty"></td><td align="center" colspan="3" class="keycell legacy legacy_header">Legacy</td><td align="center" colspan="4" class="keycell modifiers modifiers_header">Modifiers</td><td align="center" colspan="3" class="keycell olddom3 olddom3_header" style="display: none;">Old DOM3</td><td align="center" colspan="5" class="keycell dom3 dom3_header">DOM3</td><td align="center" colspan="1" class="keycell uievents uievents_header">UI Events</td><td align="center" class="keycell inputbox empty"></td></tr><tr><td align="center" class="keycell etype etype_header">Event type</td><td align="center" class="keycell legacy legacy_header">charCode</td><td align="center" class="keycell legacy legacy_header">keyCode</td><td align="center" class="keycell legacy legacy_header">which</td><td align="center" class="keycell modifiers modifiers_header">shift</td><td align="center" class="keycell modifiers modifiers_header">ctrl</td><td align="center" class="keycell modifiers modifiers_header">alt</td><td align="center" class="keycell modifiers modifiers_header">meta</td><td align="center" class="keycell olddom3 olddom3_header" style="display: none;">keyIdentifier</td><td align="center" class="keycell olddom3 olddom3_header" style="display: none;">keyLocation</td><td align="center" class="keycell olddom3 olddom3_header" style="display: none;">char</td><td align="center" class="keycell dom3 dom3_header">key</td><td align="center" class="keycell dom3 dom3_header">code</td><td align="center" class="keycell dom3 dom3_header">location</td><td align="center" class="keycell dom3 dom3_header">repeat</td><td align="center" class="keycell dom3 dom3_header">data</td><td align="center" class="keycell uievents uievents_header">locale</td><td align="center" class="keycell inputbox inputbox_header">Input field</td></tr></thead></table>
+
+<script language="javascript">
+init();
+</script>
+
+
+
+</body></html>
