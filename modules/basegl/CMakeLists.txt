@@ -173,7 +173,6 @@ set(SHADER_FILES
     glsl/axisalignedcutplaneboundingbox.frag
     glsl/axisalignedcutplaneslice.frag
     glsl/background.frag
-    glsl/capnearclipping.frag
     glsl/cubeglyph.frag
     glsl/cubeglyph.geom
     glsl/cubeglyph.vert
@@ -207,7 +206,6 @@ set(SHADER_FILES
     glsl/linerenderer.vert
     glsl/mesh2drendering.frag
     glsl/mesh2drendering.vert
-    glsl/meshentryexit.vert
     glsl/meshrendering.frag
     glsl/meshrendering.vert
     glsl/multichannelraycaster.frag

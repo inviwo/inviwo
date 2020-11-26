@@ -49,6 +49,7 @@ uniform ImageParameters entryParameters;
 uniform sampler2D entryColor;
 uniform sampler2D entryDepth;
 uniform sampler2D entryPicking;
+uniform sampler2D entryNormal;
 
 uniform ImageParameters exitParameters;
 uniform sampler2D exitColor;
@@ -67,6 +68,8 @@ uniform VolumeIndicatorParameters positionindicator;
 uniform RaycastingParameters raycaster;
 uniform IsovalueParameters isovalues;
 
+uniform bool useNormals = false;
+
 uniform int channel;
 
 #define ERT_THRESHOLD 0.99  // threshold for early ray termination
@@ -76,7 +79,7 @@ uniform int channel;
 #endif
 
 
-vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgroundDepth) {
+vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgroundDepth, vec3 startNormal) {
     vec4 result = vec4(0.0);
     vec3 rayDirection = exitPoint - entryPoint;
     float tEnd = length(rayDirection);
@@ -110,6 +113,8 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
     // used for isosurface computation
     voxel = getNormalizedVoxel(volume, volumeParameters, entryPoint + t * rayDirection);
 
+
+    bool first = true;
     while (t < tEnd) {
         samplePos = entryPoint + t * rayDirection;
         vec4 previousVoxel = voxel;
@@ -135,10 +140,14 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
 #if defined(INCLUDE_DVR)
         color = APPLY_CHANNEL_CLASSIFICATION(transferFunction, voxel, channel);
         if (color.a > 0) {
-            vec3 gradient =
-                COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, samplePos, channel);
-            gradient = normalize(gradient);
-
+            
+            vec3 gradient;
+            if (first && useNormals) {
+                gradient = -startNormal;
+            } else {
+                gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, samplePos, channel);
+                gradient = normalize(gradient);
+            }
             // World space position
             vec3 worldSpacePosition = (volumeParameters.textureToWorld * vec4(samplePos, 1.0)).xyz;
             // Note that the gradient is reversed since we define the normal of a surface as
@@ -146,6 +155,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
             // direction)
             color.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0),
                                        worldSpacePosition, -gradient, toCameraDir);
+            
 
             result = APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera,
                                        raycaster.isoValue, t, tDepth, tIncr);
@@ -162,6 +172,8 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
 #endif // ISOSURFACE_ENABLED
             t += tIncr;
         }
+        first = false;
+        //t = tEnd;
     }
 
     // composite background if lying beyond the last volume sample, which is located at tEnd - tIncr*0.5
@@ -201,8 +213,10 @@ void main() {
         discard;
     }
 #endif // BACKGROUND_AVAILABLE
+
+    vec3 normal = useNormals?texture(entryNormal, texCoords).xyz : vec3(0,0,0);
     if (entryPoint != exitPoint) {
-        color = rayTraversal(entryPoint, exitPoint, texCoords, backgroundDepth);
+        color = rayTraversal(entryPoint, exitPoint, texCoords, backgroundDepth, normal);
     }
     FragData0 = color;
 }

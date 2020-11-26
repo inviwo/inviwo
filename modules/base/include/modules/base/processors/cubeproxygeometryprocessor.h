@@ -53,6 +53,7 @@ namespace inviwo {
  *   * __Outport__ Output proxy geometry.
  *
  * ### Properties
+ *   * __Enable Normals__ Face normals are included in the mesh
  *   * __Enable Clipping__ Enable axis aligned clipping of the mesh
  *   * __Clip X Slices__ Clip X axis
  *   * __Clip Y Slices__ Clip Y axis
@@ -74,6 +75,7 @@ private:
     VolumeInport inport_;
     MeshOutport outport_;
 
+    BoolProperty normalsEnabled_;
     BoolProperty clippingEnabled_;
 
     IntMinMaxProperty clipX_;

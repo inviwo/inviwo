@@ -1,4 +1,4 @@
-/*********************************************************************************
+﻿/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -102,6 +102,57 @@ IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> torus(const vec3& center,
 IVW_MODULE_BASE_API std::shared_ptr<ColoredMesh> cameraFrustum(
     const Camera& camera, vec4 color,
     std::shared_ptr<ColoredMesh> mesh = std::make_shared<ColoredMesh>());
+
+enum class IncludeNormals { Yes, No };
+
+/**
+ * @breif Create parallelepiped mesh
+ *
+ * The parallelepiped is anchored at origin and spanned by p1, p2, and p2
+ *
+ * @verbatim
+ *
+ *        6───────────────────▶7
+ *       ▲ ▲                  ▲ ▲
+ *      ╱   ╲                ╱   ╲
+ *     ╱     ╲              ╱     ╲
+ *    ╱       ╲            ╱       ╲
+ *   ╱         ╲          ╱         ╲
+ *  4───────────────────▶5           ╲
+ *   ▲           ╲        ▲           ╲
+ *    ╲           ╲        ╲           ╲
+ *     ╲           2────────╲──────────▶3
+ *      ╲         ▲          ╲         ▲
+ *    p3 ╲       ╱            ╲       ╱
+ *        ╲     ╱p2            ╲     ╱
+ *         ╲   ╱                ╲   ╱
+ *          ╲ ╱                  ╲ ╱
+ *           0───────────────────▶1
+ *          ▲         p1
+ *         ╱
+ *        ╱
+ *       ╱ Origin
+ *      ╱
+ *     ╱
+ *    ╱
+ * @endverbatim'
+ *
+ * @param origin position
+ * @param p1 basis vector 1
+ * @param p2 basis vector 2
+ * @param p3 basis vector 3
+ * @param color at origin
+ * @param c1 color at p1
+ * @param c2 color at p2
+ * @param c3 color at p3
+ * @param includeNormals Include a face normals
+ * @return parallelepiped mesh
+ */
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> parallelepiped(glm::vec3 origin, glm::vec3 p1,
+                                                         glm::vec3 p2, glm::vec3 p3,
+                                                         glm::vec4 color, glm::vec4 c1,
+                                                         glm::vec4 c2, glm::vec4 c3,
+                                                         IncludeNormals includeNormals);
 
 template <typename Callback>
 void forEachTriangle(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback callback) {

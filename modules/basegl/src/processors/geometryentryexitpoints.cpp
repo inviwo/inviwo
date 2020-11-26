@@ -59,15 +59,15 @@ GeometryEntryExitPoints::GeometryEntryExitPoints()
     addProperty(camera_);
     addProperty(trackball_);
 
-    for (auto& shader : entryExitHelper_.getShaders()) {
-        shader.get().onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    }
+    callback_ =
+        entryExitHelper_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 void GeometryEntryExitPoints::process() {
     entryExitHelper_(*entryPort_.getEditableData().get(), *exitPort_.getEditableData().get(),
                      camera_.get(), *volumeInport_.getData().get(), *meshInport_.getData().get(),
-                     capNearClipping_.get());
+                     capNearClipping_ ? algorithm::CapNearClip::Yes : algorithm::CapNearClip::No,
+                     algorithm::IncludeNormals::Yes);
 }
 
 }  // namespace inviwo

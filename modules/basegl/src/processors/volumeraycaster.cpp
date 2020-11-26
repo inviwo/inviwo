@@ -31,7 +31,9 @@
 #include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
+#include <modules/opengl/image/layergl.h>
 #include <modules/opengl/volume/volumegl.h>
+#include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
@@ -65,8 +67,8 @@ VolumeRaycaster::VolumeRaycaster()
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , lighting_("lighting", "Lighting", &camera_)
     , positionIndicator_("positionindicator", "Position Indicator")
-    , toggleShading_("toggleShading", "Toggle Shading", [this](Event* e) { toggleShading(e); },
-                     IvwKey::L) {
+    , toggleShading_(
+          "toggleShading", "Toggle Shading", [this](Event* e) { toggleShading(e); }, IvwKey::L) {
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
@@ -162,6 +164,15 @@ void VolumeRaycaster::raycast(const Volume& volume) {
     if (backgroundPort_.hasData()) {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
     }
+    if (auto normals = entryPort_.getData()->getColorLayer(1)) {
+        utilgl::bindAndSetUniforms(shader_, units,
+                                   *normals->getRepresentation<LayerGL>()->getTexture(),
+                                   std::string_view{"entryNormal"});
+        shader_.setUniform("useNormals", true);
+    } else {
+        shader_.setUniform("useNormals", false);
+    }
+
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
                         channel_, isotfComposite_);
 
