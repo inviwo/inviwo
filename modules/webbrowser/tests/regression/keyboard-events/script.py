@@ -8,7 +8,7 @@ browser = network.Webbrowser
 
 # HACK: Wait for as little as possible while ensuring that the webpage has re-rendered. 
 inviwopy.qt.update();
-time.sleep(1.2);
+time.sleep(1.5);
 inviwopy.qt.update();
 # Send key events
 key_a = inviwopy.KeyboardEvent(key = inviwopy.IvwKey.A, state = inviwopy.KeyState.Press, nativeVirtualKey = 65, utfText = 'a')
