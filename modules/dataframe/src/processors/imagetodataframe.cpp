@@ -52,7 +52,7 @@ const ProcessorInfo ImageToDataFrame::getProcessorInfo() const { return processo
 
 ImageToDataFrame::ImageToDataFrame()
     : Processor()
-    , inport_("image")
+    , inport_("image", true)
     , outport_("dataframe")
     , mode_{"mode",
             "Mode",
