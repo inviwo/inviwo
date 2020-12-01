@@ -10,9 +10,9 @@ canvas = network.Canvas;
 
 # HACK: Wait for as little as possible while ensuring that the webpage has rendered. 
 while canvas.image.colorLayers[0].data[80, 67, 0] == 255:
-    print(canvas.image.colorLayers[0].data[80, 67, 0])
+    time.sleep(0.15);
+    print("Waiting for pixel [80, 67] to change color.")
     inviwopy.qt.update();
-    time.sleep(0.1);
 # Send key events
 network.lock()
 key_a = inviwopy.KeyboardEvent(key = inviwopy.IvwKey.A, state = inviwopy.KeyState.Press, nativeVirtualKey = 65, utfText = 'a')
