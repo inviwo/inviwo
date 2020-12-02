@@ -88,9 +88,12 @@ body {
 	padding: 0 20px;
 }
 </style>
-
+<!-- inviwo://yourmodulename will be rediredcted to the module directory on the harddrive -->
+<!-- inviwo://app will be rediredcted to the application (InviwoApplication::getBasePath()) directory on the harddrive -->
+<script src="inviwo://webbrowser/data/js/inviwoapi.js"></script>
 <script language="javascript">
-
+// Initialize Inviwo API so that we can use it to synchronize properties
+var inviwo = new InviwoAPI();
 var MAX_OUTPUT_ROWS = 100;
 var NUM_HEADER_ROWS = 2;
 
@@ -557,6 +560,8 @@ function showFieldClick(cb) {
 
 <script language="javascript">
 init();
+
+inviwo.setProperty("Background.bgColor2", {value: [1.0, 1.0, 1.0, 1.0]});
 </script>
 
 
