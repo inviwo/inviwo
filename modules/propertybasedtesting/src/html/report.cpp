@@ -48,7 +48,7 @@ body {
 PropertyBasedTestingReport::PropertyBasedTestingReport
 		( std::ostream& out
 		, const std::vector< TestingError >& errors
-		, const std::vector<std::shared_ptr<TestProperty>>& props) {
+		, const std::vector<TestProperty*>& props) {
 	HTML::Table errorTable;
 	errorTable << (HTML::HeadRow()
 			<< HTML::Text("Test1")
@@ -70,7 +70,7 @@ PropertyBasedTestingReport::PropertyBasedTestingReport
 
 std::vector<HTML::Row> PropertyBasedTestingReport::generateHTML
 		( const TestingError& e
-		, const std::vector<std::shared_ptr<TestProperty>>& props) {
+		, const std::vector<TestProperty*>& props) {
     const auto& [testResult1, testResult2, _expectedEffect, num1, num2] = e;
     const auto& expectedEffect = _expectedEffect;
 
@@ -101,7 +101,7 @@ HTML::BaseElement PropertyBasedTestingReport::generateHTML
 		( const std::tuple<std::shared_ptr<TestResult>,
 				std::shared_ptr<TestResult>,
 				bool>& testResults
-		, const std::vector<std::shared_ptr<TestProperty>>& props) {
+		, const std::vector<TestProperty*>& props) {
 	const auto&[t1, t2, different] = testResults;
 	HTML::Table res;
 	res << (HTML::HeadRow()
@@ -130,7 +130,7 @@ HTML::BaseElement PropertyBasedTestingReport::generateHTML
 				return res;
 			};
 
-		r << dfs(prop.get());
+		r << dfs(prop);
 		res << r;
 	}
 	return res;

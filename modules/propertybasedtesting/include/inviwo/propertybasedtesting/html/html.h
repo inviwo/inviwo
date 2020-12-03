@@ -54,7 +54,7 @@ protected:
 
 	bool printClosing = true;
 
-	virtual void print(std::ostream& out, const size_t indent) const;
+	void print(std::ostream& out, const size_t indent) const;
 public:
 	BaseElement(const std::string& name, const std::string& content = "");
 	virtual ~BaseElement() = default;
@@ -63,7 +63,7 @@ public:
 };
 
 template<class Derived>
-class Element : public BaseElement	 {
+class Element : public BaseElement {
 public:
 	Element(const std::string& name, const std::string& content = "")
 			: BaseElement(name, content) {

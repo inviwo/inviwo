@@ -59,10 +59,7 @@ ImageComparator::ImageComparator()
     , maxDeviation_("maxDeviation", "Maximum deviation", 0, 0, std::numeric_limits<float>::max(), 1, InvalidationLevel::Valid, PropertySemantics::Text)
 	, maxPixelwiseDeviation_("maxPixelwiseDeviation", "Maximum pixelwise deviation (%)", 0, 0, 1)
     , comparisonType_("comparisonType", "Comparison Type (dummy)",
-                     {{"diff", "Sum of ARGB differences", ComparisonType::Diff},
-                      {"perceptual", "Perceptual Difference", ComparisonType::Perceptual},
-                      {"global", "Global Difference", ComparisonType::Global},
-                      {"local", "Local Difference", ComparisonType::Local}},
+                     {{"diff", "Absolute ARGB differences", ComparisonType::AbsARGB}},
                      0, InvalidationLevel::InvalidOutput)
 	, reductionType_("reductionType", "Reduction",
 					{{"mean", "Mean", ReductionType::MEAN},
@@ -109,6 +106,20 @@ void ImageComparator::setNetwork(ProcessorNetwork* network) {
     Processor::setNetwork(network);
 }
 
+double ImageComparator::difference(const ComparisonType& comp,
+			const glm::dvec4& col1, const glm::dvec4& col2) {
+	switch(comp) {
+		case ComparisonType::AbsARGB:
+			return absoluteARGBdifference(col1, col2);
+	}
+}
+double ImageComparator::absoluteARGBdifference(const glm::dvec4& col1, const glm::dvec4& col2) {
+	double res = 0;
+	for(size_t i = 0; i < DataFormat<decltype(col1)>::components(); i++)
+		res += abs(col1[i] - col2[i]);
+	return res;
+}
+
 void ImageComparator::process() {
   if(reportDir_.get() != "") {
     if (! std::filesystem::exists(reportDir_.get())) {
@@ -153,9 +164,9 @@ void ImageComparator::process() {
   size_t diffPixels = 0;
   for(size_t x = 0; x < dim1.x; x++) {
     for(size_t y = 0; y < dim1.y; y++) {
-      const auto col1 = colorLayerRAM1->getAsDVec3(size2_t(x,y));
-      const auto col2 = colorLayerRAM2->getAsDVec3(size2_t(x,y));
-      const double diff = glm::length(col1 - col2);
+      const auto col1 = colorLayerRAM1->getAsDVec4(size2_t(x,y));
+      const auto col2 = colorLayerRAM2->getAsDVec4(size2_t(x,y));
+      const double diff = difference(comparisonType_.get(), col1, col2);
 	  const bool pixelDifferent =
 		  (diff / std::max({1.0, glm::length(col1), glm::length(col2)}))
 			  <= maxPixelwiseDeviation_.get();

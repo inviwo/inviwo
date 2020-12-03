@@ -42,6 +42,7 @@ PropertyBasedTestingModule::PropertyBasedTestingModule(InviwoApplication* app) :
     // Register objects that can be shared with the rest of inviwo here:
 	
 	app->getWorkspaceManager()->registerFactory(&testPropertyFactory_);
+	app->getWorkspaceManager()->registerFactory(&testPropertyCompositeFactory_);
 
     // Processors
     registerProcessor<PropertyAnalyzer>();

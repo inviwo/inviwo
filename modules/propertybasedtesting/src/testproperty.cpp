@@ -31,9 +31,6 @@
 
 namespace inviwo {
 
-BoolCompositeProperty* TestProperty::getBoolComp() const {
-	return boolComp_;
-}
 TestProperty::TestProperty(const std::string& displayName, const std::string& identifier)
 		: displayName_(displayName)
 		, identifier_(identifier)
@@ -41,6 +38,18 @@ TestProperty::TestProperty(const std::string& displayName, const std::string& id
 	boolComp_->setSerializationMode(PropertySerializationMode::All);
 	boolComp_->setCollapsed(true);
 	makeOnChange(boolComp_);
+}
+void TestProperty::setNetwork(ProcessorNetwork* pn) {
+	for(auto f : onNetwork)
+		f(pn);
+}
+void TestProperty::onNetworkReceive(std::function<void(ProcessorNetwork*)> f) {
+	onNetwork.emplace_back(f);
+}
+
+BoolCompositeProperty* TestProperty::getBoolComp() const {
+	assert(boolComp_.get() != nullptr);
+	return boolComp_;
 }
 
 const std::string& TestProperty::getDisplayName() const {
@@ -55,7 +64,40 @@ void TestProperty::traverse(
 	traverse(f, nullptr);
 }
 
+void TestProperty::serialize(Serializer& s) const {
+	s.serialize("DisplayName", displayName_);
+	s.serialize("Identifier", identifier_);
+	s.serialize("BoolComp", boolComp_);
+}
+void TestProperty::deserialize(Deserializer& d) {
+	d.deserialize("DisplayName", displayName_);
+	d.deserialize("Identifier", identifier_);
+	d.deserialize("BoolComp", boolComp_);
+	onNetworkReceive([this](ProcessorNetwork* pn) {
+			boolComp_.setNetwork(pn);
+		});
+}
+
 // TestPropertyComposite
+
+TestPropertyComposite::TestPropertyComposite(PropertyOwner* original,
+	const std::string& displayName, const std::string& identifier)
+		: TestProperty(displayName, identifier) {
+	if(auto p = dynamic_cast<Property*>(original); p != nullptr)
+		p->setSerializationMode(PropertySerializationMode::All);
+	propertyOwner_ = original;
+	for(Property* prop : original->getProperties())
+		if(auto p = testableProperty(prop); p != std::nullopt) {
+			getBoolComp()->addProperty((*p)->getBoolComp());
+			(*p)->addObserver(this);
+			subProperties.emplace_back(std::move(*p));
+		}
+	getBoolComp()->onChange([this]() { this->notifyObserversAboutChange(); });
+}
+
+PropertyOwner* TestPropertyComposite::getPropertyOwner() const {
+	return propertyOwner_;
+}
 
 std::string TestPropertyComposite::getValueString(std::shared_ptr<TestResult> testResult) const {
 	std::stringstream str;
@@ -72,7 +114,7 @@ void TestPropertyComposite::traverse(
 				const TestProperty* pa
 			) const {
 	f(this, pa);
-	for(auto prop : subProperties)
+	for(const auto& prop : subProperties)
 		prop->traverse(f, this);
 }
 	
@@ -156,21 +198,6 @@ std::ostream& TestPropertyComposite::ostr(std::ostream& out,
 	return out;
 }
 
-TestPropertyComposite::TestPropertyComposite(PropertyOwner* original,
-	const std::string& displayName, const std::string& identifier)
-		: TestProperty(displayName, identifier)
-		, propertyOwner(original) {
-	if(auto p = dynamic_cast<Property*>(propertyOwner); p != nullptr)
-		p->setSerializationMode(PropertySerializationMode::All);
-	for(Property* prop : original->getProperties())
-		if(auto p = testableProperty(prop); p != std::nullopt) {
-			subProperties.emplace_back(*p);
-			boolComp_->addProperty((*p)->getBoolComp());
-
-			(*p)->addObserver(this);
-		}
-	boolComp_->onChange([this]() { this->notifyObserversAboutChange(); });
-}
 void TestPropertyComposite::setToDefault() const {
 	for(const auto& subProp : subProperties)
 		subProp->setToDefault();
@@ -199,81 +226,37 @@ std::vector<std::pair<
 }
 
 void TestPropertyComposite::serialize(Serializer& s) const {
-	//std::cerr << "\tserializing TestPropertyComposite: " << getIdentifier() << std::endl;
-
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-	s.serialize("identifier", identifier_, SerializationTarget::Attribute);
+
+	TestProperty::serialize(s);
+
+	s.serialize("PropertyOwner", propertyOwner_);
 
 	{
-		const Processor* propertyOwnerProc = dynamic_cast<Processor*>(propertyOwner);
-		const bool propertyOwnerIsProcessor = (propertyOwnerProc != nullptr);
-		s.serialize("PropertyOwnerIsProcessor", propertyOwnerIsProcessor);
-		if(propertyOwnerIsProcessor) {
-			s.serialize("PropertyOwner", propertyOwnerProc);
-		} else {
-			const Property* propertyOwnerProp = dynamic_cast<Property*>(propertyOwner);
-			assert(propertyOwnerProp != nullptr);
-			s.serialize("PropertyOwner", propertyOwnerProp);
-		}
-	}
-
-	s.serialize("DisplayName", displayName_);
-	assert(boolComp_ != nullptr);
-	s.serialize("BoolComp", boolComp_);
-
-	{
-		std::vector<TestProperty*> subProps;
-		for(const auto& sp : subProperties) {
-			subProps.emplace_back(sp.get());
-			assert(subProps.back() != nullptr);
-		}
-		s.serialize("SubProperties", subProps);
+		//std::vector<TestProperty*> subProps;
+		//for(const auto& sp : subProperties) {
+		//	assert(sp.get() != nullptr);
+		//	subProps.emplace_back(sp.get());
+		//}
+		s.serialize("SubProperties", subProperties);
 	}
 }
 void TestPropertyComposite::deserialize(Deserializer& d) {
-	d.deserialize("identifier", identifier_, SerializationTarget::Attribute);
+	TestProperty::deserialize(d);
 
-	bool propertyOwnerIsProcessor;
-	d.deserialize("PropertyOwnerIsProcessor", propertyOwnerIsProcessor);
-	if(propertyOwnerIsProcessor) {
-		Processor* tmp = nullptr;
-		d.deserialize("PropertyOwner", tmp);
-		propertyOwner = static_cast<PropertyOwner*>(tmp);
-	} else {
-		Property* tmp = nullptr; // required for proper deserialization of properties
-		d.deserialize("PropertyOwner", tmp);
-		propertyOwner = dynamic_cast<PropertyOwner*>(tmp);
-		assert((propertyOwner == nullptr) == (tmp == nullptr));
-	}
-	assert(propertyOwner != nullptr);
+	d.deserialize("PropertyOwner", propertyOwner_);
+	d.deserialize("SubProperties", subProperties);
+    
+	onNetworkReceive([this](ProcessorNetwork* pn) {
+			propertyOwner_.setNetwork(pn);
 
-	d.deserialize("DisplayName", displayName_);
-	d.deserialize("BoolComp", boolComp_);
-	assert(boolComp_ != nullptr);
-	makeOnChange(boolComp_);
-
-	{
-		std::vector<TestProperty*> subProps;
-		std::map<TestProperty*, decltype(subProperties)::value_type> old;
-		std::transform(subProperties.begin(), subProperties.end(), std::inserter(old, old.end()),
-				[](const auto& a) { return std::make_pair(a.get(), a); });
-		std::vector<decltype(subProperties)::value_type> des;
-
-		d.deserialize("SubProperties", subProps);
-		for(TestProperty* const sp : subProps) {
-			if(old.count(sp) == 0)
-				des.emplace_back(std::shared_ptr<TestProperty>(sp));
-			else
-				des.emplace_back(old.at(sp));
-
-			sp->addObserver(this);
-		}
-
-		subProperties = des;
-	}
-	
-	boolComp_->onChange([this]() { this->notifyObserversAboutChange(); });
+			for(const auto& subProp : subProperties)
+				subProp->setNetwork(pn);
+			if(pn != nullptr)
+				makeOnChange(getBoolComp());
+		});
 }
+
 
 // TestPropertyTyped
 
@@ -283,33 +266,33 @@ TestPropertyTyped<T>::TestPropertyTyped(T* original)
 	, typedProperty_(original)
 	, defaultValue_(original->get())
 	, effectOption_([this,original](){
-			std::array<OptionPropertyInt*, numComponents> res;
+			std::array<NetworkPath<OptionPropertyInt>, numComponents> res;
 			for(size_t i = 0; i < numComponents; i++) {
-				std::string identifier = original->getIdentifier() + "_selector_" + std::to_string(i);
+				const std::string identifier = original->getIdentifier() + "_selector_" + std::to_string(i);
 				res[i] = new OptionPropertyInt(
 					identifier,
 					"Comparator for increasing values",
 					options(),
 					options().size() - 1);
-				res[i]->setSerializationMode(PropertySerializationMode::All);
 			}
 			return res;
 		}())
 	, deactivated_(std::make_unique<bool>(false)) {
 
-	for(auto effectOpt : effectOption_) {
-		boolComp_->addProperty(effectOpt);
-		effectOpt->onChange([this]() { this->notifyObserversAboutChange(); });
-		boolComp_->onChange([this]() { this->notifyObserversAboutChange(); });
+	for(size_t i = 0; i < numComponents; i++) {
+		getBoolComp()->addProperty(getEffectOption(i));
+		getEffectOption(i)->onChange([this]() { this->notifyObserversAboutChange(); });
+		getBoolComp()->onChange([this]() { this->notifyObserversAboutChange(); });
 	}
 }
 template<typename T>
 T* TestPropertyTyped<T>::getTypedProperty() const {
+	assert(typedProperty_ != nullptr);
 	return typedProperty_;
 }
 template<typename T>
 void TestPropertyTyped<T>::setToDefault() const {
-	typedProperty_->set(defaultValue_);
+	getTypedProperty()->set(defaultValue_);
 }
 template<typename T>
 auto TestPropertyTyped<T>::getDefaultValue() const -> const value_type& {
@@ -317,7 +300,7 @@ auto TestPropertyTyped<T>::getDefaultValue() const -> const value_type& {
 }
 template<typename T>
 void TestPropertyTyped<T>::storeDefault() {
-	defaultValue_ = typedProperty_->get();
+	defaultValue_ = getTypedProperty()->get();
 }
 template<typename T>
 size_t TestPropertyTyped<T>::totalCheckedComponents() const {
@@ -415,11 +398,18 @@ std::string TestPropertyTyped<T>::textualDescription(unsigned int indent) const 
 		return res;
 	}
 }
+
+template<typename T>
+OptionPropertyInt* TestPropertyTyped<T>::getEffectOption(size_t i) const {
+	assert(effectOption_[i] != nullptr);
+	return effectOption_[i];
+}
+
 template<typename T>
 auto TestPropertyTyped<T>::selectedEffects() const -> std::array<util::PropertyEffect, numComponents> {
 	std::array<util::PropertyEffect, numComponents> selectedEffects;
 	for(size_t i = 0; i < numComponents; i++)
-		selectedEffects[i] = util::PropertyEffect(effectOption_[i]->getSelectedValue());
+		selectedEffects[i] = util::PropertyEffect(getEffectOption(i)->getSelectedValue());
 	return selectedEffects;
 }
 template<typename T>
@@ -442,7 +432,7 @@ std::vector<std::pair<
 
 			return propertyEffect<value_type>(oldV, newV, selectedEffects());
 		};
-	auto assignments = tmp(typedProperty_, deactivated_.get());
+	auto assignments = tmp(getTypedProperty(), deactivated_.get());
 
 	std::vector<std::pair<
 			util::AssignmentComparator,
@@ -456,8 +446,8 @@ template<typename T>
 std::optional<util::PropertyEffect> TestPropertyTyped<T>::getPropertyEffect(
 		std::shared_ptr<TestResult> newTestResult,
 		std::shared_ptr<TestResult> oldTestResult) const {
-	const value_type& valNew = newTestResult->getValue(this->typedProperty_);
-	const value_type& valOld = oldTestResult->getValue(this->typedProperty_);
+	const value_type& valNew = newTestResult->getValue(getTypedProperty());
+	const value_type& valOld = oldTestResult->getValue(getTypedProperty());
 
 	return propertyEffect<value_type>(valOld, valNew, selectedEffects());
 }
@@ -465,7 +455,7 @@ std::optional<util::PropertyEffect> TestPropertyTyped<T>::getPropertyEffect(
 template<typename T>
 std::string TestPropertyTyped<T>::getValueString(std::shared_ptr<TestResult> testResult) const {
 	std::stringstream str;
-	str << testResult->getValue(this->typedProperty_);
+	str << testResult->getValue(getTypedProperty());
 	return str.str();
 }
 template<typename T>
@@ -479,7 +469,7 @@ void TestPropertyTyped<T>::traverse(
 template<typename T>
 std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 			std::shared_ptr<TestResult> testResult) const {
-	const value_type& val = testResult->getValue(this->typedProperty_);
+	const value_type& val = testResult->getValue(getTypedProperty());
 	
 	return out << '\"' << getDisplayName() << "\" with identifier \"" << getIdentifier() << "\": "
 				<< val;
@@ -488,8 +478,8 @@ template<typename T>
 std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 			std::shared_ptr<TestResult> newTestResult,
 			std::shared_ptr<TestResult> oldTestResult) const {
-	const value_type& valNew = newTestResult->getValue(this->typedProperty_);
-	const value_type& valOld = oldTestResult->getValue(this->typedProperty_);
+	const value_type& valNew = newTestResult->getValue(getTypedProperty());
+	const value_type& valOld = oldTestResult->getValue(getTypedProperty());
 	
 	return out << '\"' << getDisplayName() << "\" with identifier \"" << getIdentifier() << "\": "
 				<< valNew << ", " << valOld << " ; comparator set to  "
@@ -498,33 +488,31 @@ std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 
 template<typename T>
 void TestPropertyTyped<T>::serialize(Serializer& s) const {
-	//std::cerr << "\tserializing " << getClassIdentifier() << ": " << getIdentifier() << std::endl;
+	s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
 
-    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-	s.serialize("identifier", identifier_, SerializationTarget::Attribute);
-
+	TestProperty::serialize(s);
+	
 	s.serialize("TypedProperty", typedProperty_);
+
 	s.serialize("DefaultValue", defaultValue_);
-	s.serialize("DisplayName", displayName_);
-	s.serialize("BoolComp", boolComp_);
-	s.serialize("EffectOption", effectOption_);
+	s.serialize("EffectOptions", effectOption_);
 }
 template<typename T>
 void TestPropertyTyped<T>::deserialize(Deserializer& d) {
-	d.deserialize("identifier", identifier_, SerializationTarget::Attribute);
+	TestProperty::deserialize(d);
 
 	d.deserialize("TypedProperty", typedProperty_);
-	d.deserialize("DefaultValue", defaultValue_);
-	d.deserialize("DisplayName", displayName_);
-	d.deserialize("BoolComp", boolComp_);
-	d.deserialize("EffectOption", effectOption_);
-	//std::cerr << "deserialized " << getClassIdentifier() << "@" << this << " : " << typedProperty_->getIdentifier() << std::endl;
 
-	for(auto effectOpt : effectOption_) {
-		boolComp_->addProperty(effectOpt);
-		effectOpt->onChange([this]() { this->notifyObserversAboutChange(); });
-		boolComp_->onChange([this]() { this->notifyObserversAboutChange(); });
-	}
+	d.deserialize("DefaultValue", defaultValue_);
+	d.deserialize("EffectOptions", effectOption_);
+
+	onNetworkReceive([this](ProcessorNetwork* pn) {
+			typedProperty_.setNetwork(pn);
+			for(auto& e : effectOption_)
+				e.setNetwork(pn);
+		});
+
+	deactivated_ = std::make_unique<bool>(false);
 }
 
 // Helpers
@@ -548,20 +536,34 @@ const std::unordered_map<std::string, std::function<std::unique_ptr<TestProperty
 	util::for_each_type<PropertyTypes>{}(TestPropertyFactoryHelper{}, res);
 	return res;
 }();
+std::unique_ptr<TestProperty> TestPropertyFactory::create(const std::string& key) const {
+	assert(hasKey(key));
+	return members.at(key)();
+}
+bool TestPropertyFactory::hasKey(const std::string& key) const {
+	return members.find(key) != members.end();
+}
+
+std::unique_ptr<TestPropertyComposite> TestPropertyCompositeFactory::create(const std::string& key) const {
+	return std::unique_ptr<TestPropertyComposite>(new TestPropertyComposite());
+}
+bool TestPropertyCompositeFactory::hasKey(const std::string& key) const {
+	return key == TestPropertyComposite::getClassIdentifier();
+}
 
 struct TestablePropertyHelper {
 	// for Properties with values
 	template<typename T>
-	auto operator()(std::optional<std::shared_ptr<TestProperty>>& res, Property* prop) -> decltype((typename T::value_type*)(nullptr), void()) {
+	auto operator()(std::optional<std::unique_ptr<TestProperty>>& res, Property* prop) -> decltype((typename T::value_type*)(nullptr), void()) {
 		if(res != std::nullopt)
 			return;
 		if(auto tmp = dynamic_cast<T*>(prop); tmp != nullptr)
-			res = {std::make_shared<TestPropertyTyped<T>>(tmp)};
+			res = {std::make_unique<TestPropertyTyped<T>>(tmp)};
 	}
 };
 
-std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop) {
-	std::optional<std::shared_ptr<TestProperty>> res = std::nullopt;
+std::optional<std::unique_ptr<TestProperty>> testableProperty(Property* prop) {
+	std::optional<std::unique_ptr<TestProperty>> res = std::nullopt;
 	util::for_each_type<PropertyTypes>{}(TestablePropertyHelper{}, res, prop);
 	if(!res) {
 		if(auto tmp = dynamic_cast<CompositeProperty*>(prop); tmp != nullptr)
@@ -579,6 +581,7 @@ void makeOnChange(BoolCompositeProperty* const prop) {
 				if(boolProp != prop->getBoolProperty())
 					subProps.emplace_back(boolProp);
 
+			std::cerr << "onChange::" << prop->getIdentifier() << " " << subProps.size() << std::endl;
 			if(subProps.size() > 0) {
 				bool checked = false;
 				for(auto* boolProp : subProps)
@@ -589,7 +592,7 @@ void makeOnChange(BoolCompositeProperty* const prop) {
 }
 
 void testingErrorToBinary(std::vector<unsigned char>& output,
-		const std::vector<std::shared_ptr<TestProperty>>& props,
+		const std::vector<TestProperty*>& props,
 		const TestingError& err) {
 	const auto&[testResult1, testResult2, effect, res1, res2] = err;
 

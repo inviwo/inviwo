@@ -1,5 +1,7 @@
 #include <inviwo/propertybasedtesting/algorithm/coveringarray.h>
 
+#include <random>
+
 namespace inviwo {
 
 namespace util {
@@ -122,7 +124,7 @@ std::vector<Test> optCoveringArray(const size_t num, const Test& init,
 			for(size_t var2 = 0; var2 < var; var2++)
 				for(size_t i2 = 0; i2 < vars[var2].second.size(); i2++)
 					unused.emplace_back(std::map<size_t,size_t>{{{var,i}, {var2,i2}}});
-	std::random_shuffle(unused.begin(), unused.end(), [](int i) { return rand()%i; });
+	std::shuffle(unused.begin(), unused.end(), std::default_random_engine(rand()));
 
 	std::vector<std::pair<TestConf,size_t>> finished; // {TestConf, current num of other finished comparables}
 

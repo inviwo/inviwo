@@ -45,6 +45,7 @@
 namespace inviwo {
 
 std::mutex PropertyAnalyzer::mutex_;
+std::set<size_t> PropertyAnalyzer::curr_alive;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo PropertyAnalyzer::processorInfo_{
@@ -65,73 +66,107 @@ void PropertyAnalyzer::resetAllProps() {
 }
 
 void PropertyAnalyzer::onProcessorNetworkWillRemoveProcessor(Processor* proc) {
-	processors_.erase(proc);
-	inactiveProcessors.erase(proc);
+	processors_.erase(proc->getIdentifier());
+	inactiveProcessors_.erase(proc->getIdentifier());
 }
 void PropertyAnalyzer::onProcessorNetworkDidAddConnection(const PortConnection& conn) {
 	const std::lock_guard<std::mutex> lock(mutex_);
-
 	ProcessorNetworkObserver::onProcessorNetworkDidAddConnection(conn);
-	updateProcessors();
+	dispatchFrontAndForget([this]() {
+			updateProcessors();
+		});
 }
 void PropertyAnalyzer::onProcessorNetworkDidRemoveConnection(const PortConnection& conn) {
 	const std::lock_guard<std::mutex> lock(mutex_);
-
 	ProcessorNetworkObserver::onProcessorNetworkDidRemoveConnection(conn);
-	updateProcessors();
+	dispatchFrontAndForget([this]() {
+			updateProcessors();
+		});
 }
 void PropertyAnalyzer::updateProcessors() {
-	processors_.insert(inactiveProcessors.begin(), inactiveProcessors.end());
-	inactiveProcessors.clear();
+	const std::lock_guard<std::mutex> lock(mutex_);
+	std::cerr << "PropertyAnalyzer::updateProcessors() @ " << this << std::endl;
 
-	std::unordered_set<Processor*> visitedProcessors;
+	processors_.insert(
+			std::make_move_iterator(inactiveProcessors_.begin()),
+			std::make_move_iterator(inactiveProcessors_.end()));
+	inactiveProcessors_.clear();
+
+	//for(const auto&[proc,tp] : processors_) {
+	//	std::cerr << "\t" << proc << " " << proc->getDisplayName() << std::endl;
+	//}
+
+	std::unordered_set<std::string> visitedProcessors;
 	for(Processor* const processor : util::getPredecessors(this)) {
 		if(processor == this) continue;
-		visitedProcessors.insert(processor);
+		visitedProcessors.insert(processor->getIdentifier());
 	}
 
+	std::unordered_set<std::string> usedIdentifiers;
 	// remove no longer connected processors
-	std::unordered_set<Processor*> processorsToRemove;
+	std::unordered_set<std::string> processorsToRemove;
 	for(const auto& [processor,testProp] : processors_) {
 		if(!visitedProcessors.count(processor)) { // processor no longer visited
 			processorsToRemove.insert(processor);
 		} else { // make visible again
 			testProp->getBoolComp()->setVisible(true);
 		}
+		usedIdentifiers.emplace(testProp->getBoolComp()->getIdentifier());
 	}
 	for(const auto& processor : processorsToRemove) {
-		const auto& testProp = processors_.at(processor);
+		auto& testProp = processors_[processor];
 
-		inactiveProcessors.emplace(processor, testProp);
+		std::cerr << "inactive "
+			<< processor << " "
+			<< getNetwork()->getProcessorByIdentifier(processor)->getDisplayName()
+			<< std::endl;
+		testProp->getBoolComp()->setVisible(false);
+
+		assert(inactiveProcessors_.count(processor) == 0);
+		inactiveProcessors_.emplace(processor, std::move(testProp));
 		processors_.erase(processor);
 	}
 
 	// add newly connected processors
-	for(const auto& processor : visitedProcessors) {
-		if(processors_.count(processor) == 0) {
-			std::vector<std::shared_ptr<TestProperty>> props;
+	for(const auto& procId : visitedProcessors) {
+		if(processors_.count(procId) == 0) {
+			Processor* const processor = getNetwork()->getProcessorByIdentifier(procId);
+			assert(processor != nullptr);
+
+			size_t numTestableProperties = 0;
 			for(Property* prop : processor->getProperties()) {
-				if(std::optional<std::shared_ptr<TestProperty>> p = testableProperty(prop);
+				if(std::optional<std::unique_ptr<TestProperty>> p = testableProperty(prop);
 						p != std::nullopt) {
-					props.emplace_back(*p);
+					numTestableProperties++;
 				}
 			}
 
 			// Skip processors with no testable property
-			if(props.empty())
+			if(numTestableProperties == 0)
 				continue;
+			std::cerr << "constructing " << processor << " " << processor->getDisplayName() << std::endl;
 
-			auto comp = TestPropertyComposite::make<Processor>(processor);
-			comp->addObserver(this);
-			processors_.emplace(processor, comp);
+			auto comp_ = TestPropertyComposite::make<Processor>(processor);
+			TestPropertyComposite* const comp = comp_.get();
+			processors_.emplace(procId, std::move(comp_));
 
+			comp->setNetwork(getNetwork());
+			static_cast<TestPropertyObservable*>(comp)->addObserver(this);
+
+			while(usedIdentifiers.count(comp->getBoolComp()->getIdentifier())) {
+				comp->getBoolComp()->setIdentifier(comp->getBoolComp()->getIdentifier() + "_");
+			}
+			usedIdentifiers.emplace(comp->getBoolComp()->getIdentifier());
 			addProperty(comp->getBoolComp());
 		}
 	}
 }
 
+size_t curr_id = 0;
+
 PropertyAnalyzer::PropertyAnalyzer(InviwoApplication* app)
 	: Processor()
+	, m_id(curr_id++)
 	, testingState(TestingState::NONE)
 	, app_(app)
 	, tempDir_{std::filesystem::temp_directory_path() / ("inviwo_propertyanalyzer_" + std::to_string(rand()))}
@@ -145,6 +180,8 @@ PropertyAnalyzer::PropertyAnalyzer(InviwoApplication* app)
 	, distillButton_("distillButton", "Distill Failed Tests")
 	, numTests_("numTests", "Maximum number of tests", 200, 1, 10000)
 	, description_("description", "Description", "", InvalidationLevel::InvalidOutput, PropertySemantics::Multiline) {
+
+	curr_alive.emplace(m_id);
 
 	countPixelsButton_.onChange([this]() {
 			NetworkLock lock(this);
@@ -202,7 +239,7 @@ PropertyAnalyzer::PropertyAnalyzer(InviwoApplication* app)
 
 void PropertyAnalyzer::onTestPropertyChange() {
 	std::string desc;
-	for(auto[proc,prop] : processors_) {
+	for(const auto&[proc,prop] : processors_) {
 		if(prop->getBoolComp()->isChecked())
 			desc += prop->textualDescription() + '\n';
 	}
@@ -215,49 +252,50 @@ void PropertyAnalyzer::serialize(Serializer& s) const {
 
 	Processor::serialize(s);
 
-	std::vector<Processor*> processors;
-	std::vector<TestProperty*> testProperties;
-	for(auto[proc, test] : processors_) {
-		processors.emplace_back(proc);
-		testProperties.emplace_back(static_cast<TestProperty*>(test.get()));
+	s.serialize("NumProcs", processors_.size() + inactiveProcessors_.size());
+	size_t i = 0;
+	for(const auto&[proc,tp] : processors_) {
+		s.serialize("Proc" + std::to_string(i), proc);
+		s.serialize("Tp" + std::to_string(i), tp);
+		i++;
 	}
-	for(auto[proc, test] : inactiveProcessors) {
-		processors.emplace_back(proc);
-		testProperties.emplace_back(static_cast<TestProperty*>(test.get()));
+	for(const auto&[proc,tp] : inactiveProcessors_) {
+		s.serialize("Proc" + std::to_string(i), proc);
+		s.serialize("Tp" + std::to_string(i), tp);
+		i++;
 	}
-	s.serialize("Processors", processors);
-	s.serialize("TestProperties", testProperties);
 }
 
 void PropertyAnalyzer::deserialize(Deserializer& d) {
+	std::cerr << "deserializing PropertyAnalyzer" << std::endl;
 	const std::lock_guard<std::mutex> lock(mutex_);
 
 	Processor::deserialize(d);
 
-	std::vector<Processor*> processors;
-	d.deserialize("Processors", processors);
-	std::vector<TestProperty*> testProperties;
-	d.deserialize("TestProperties", testProperties);
-	assert(processors.size() == testProperties.size());
+	size_t num;
+	d.deserialize("NumProcs", num);
 
-	inactiveProcessors.insert(processors_.begin(), processors_.end());
-	processors_.clear();
-	const auto old = inactiveProcessors;
-
-	ProcessorTestPropertyMap keep;
-	for(size_t i = 0; i < processors.size(); i++) {
-		TestPropertyComposite* tmp = dynamic_cast<TestPropertyComposite*>(testProperties[i]);
-		assert(tmp != nullptr);
-		assert(keep.count(processors[i]) == 0);
-		if(old.count(processors[i]) == 0) {
-			keep.emplace(processors[i], std::shared_ptr<TestPropertyComposite>(tmp));
-		} else {
-			keep.emplace(processors[i], old.at(processors[i]));
-			assert(keep.at(processors[i]).get() == tmp);
-		}
+	ProcessorTestPropertyMap tmp;
+	for(size_t i = 0; i < num; i++) {
+		std::string proc;
+		d.deserialize("Proc" + std::to_string(i), proc);
+		std::unique_ptr<TestPropertyComposite> tp;
+		d.deserialize("Tp" + std::to_string(i), tp);
+		tmp.emplace(proc, std::move(tp));
 	}
+	inactiveProcessors_ = std::move(tmp);
+	processors_.clear();
 
-	inactiveProcessors = keep;
+	std::cerr << "PropertyAnalyzer::deserialize() DONE" << std::endl;
+}
+
+void PropertyAnalyzer::setNetwork(ProcessorNetwork* pn) {
+	std::cerr << "PropertyAnalyzer::setNetwork(" << pn << ")" << std::endl;
+	Processor::setNetwork(pn);
+	for(const auto&[proc,tp] : processors_)
+		tp->setNetwork(pn);
+	for(const auto&[proc,tp] : inactiveProcessors_)
+		tp->setNetwork(pn);
 }
 
 void PropertyAnalyzer::initTesting() {
@@ -271,8 +309,8 @@ void PropertyAnalyzer::initTesting() {
 
 	for(const auto&[processor,comp] : processors_) {
 		if(comp->getBoolComp()->isChecked()) {
-			props_.emplace_back(comp);
-			std::cerr << "Checked: " << comp->getIdentifier() << " @ " << processor->getIdentifier() << std::endl;
+			props_.emplace_back(comp.get());
+			//std::cerr << "Checked: " << comp->getIdentifier() << " @ " << processor->getIdentifier() << std::endl;
 		}
 	}
 
@@ -343,14 +381,14 @@ void PropertyAnalyzer::initTesting() {
 			LogLevel::Info, LogAudience::User);
 
 	if(remainingTests.size() > 0) {
-		app_->dispatchFrontAndForget([this]() {
+		dispatchFrontAndForget([this]() {
 				setupTest(remainingTests.front());
 			});
 	}
 }
 
 std::ostream& printError(std::ostream& out,
-		const std::vector<std::shared_ptr<TestProperty>>& props, const TestingError& err) {
+		const std::vector<TestProperty*>& props, const TestingError& err) {
 	const auto&[testResult1, testResult2, effect, res1, res2] = err;
 	out << "Tests with values" << std::endl;
 	for(auto prop : props)
@@ -508,7 +546,7 @@ void PropertyAnalyzer::checkTestResults() {
 		} else {
 			(*deactivated[last_deactivated]) = true;
 
-			for(auto& prop : props_)
+			for(auto prop : props_)
 				prop->traverse([&](const TestProperty* p, const TestProperty* pa) {
 						std::cout << p->getDisplayName() << " : ";
 						if(p->totalCheckedComponents() > 1) {
@@ -527,7 +565,7 @@ void PropertyAnalyzer::checkTestResults() {
 			testResults.clear();
 			// kick off testing
 			if(remainingTests.size() > 0)
-				app_->dispatchFrontAndForget([this]() {
+				dispatchFrontAndForget([this]() {
 						setupTest(remainingTests.front());
 					});
 		}
@@ -557,10 +595,10 @@ void PropertyAnalyzer::setupTest(const Test& test) {
 			proc->invalidate(InvalidationLevel::InvalidOutput);
 		});
 
-	app_->dispatchFrontAndForget([this]() {
+	dispatchFrontAndForget([this]() {
 			// necessary because of synchronicity issues, TODO: find better solution
 			std::this_thread::sleep_for(std::chrono::milliseconds(20));
-			app_->dispatchFrontAndForget([this]() {
+			dispatchFrontAndForget([this]() {
 					testingState = TestingState::GATHERING;
 					this->invalidate(InvalidationLevel::InvalidOutput);
 				});
@@ -599,7 +637,7 @@ void PropertyAnalyzer::process() {
 			if(!outputImage && remainingTests.empty()) {
 				// output image does not exist and we are currently not testing
 				//	   generate output image
-				app_->dispatchFrontAndForget([this]() { initTesting(); });
+				dispatchFrontAndForget([this]() { initTesting(); });
 			}
 			break;
 		case TestingState::SINGLE_COUNT:
@@ -628,12 +666,12 @@ void PropertyAnalyzer::process() {
 			testResults.push_back(std::make_shared<TestResult>(props_, test, pixelCount, imagePath));
 
 			if(remainingTests.empty()) { // there are no more tests to do
-				app_->dispatchFrontAndForget([this]() {
+				dispatchFrontAndForget([this]() {
 						resetAllProps();
 						this->checkTestResults();
 					});
 			} else {
-				app_->dispatchFrontAndForget([this]() { setupTest(remainingTests.front()); });
+				dispatchFrontAndForget([this]() { setupTest(remainingTests.front()); });
 			}
 			break;
 	}

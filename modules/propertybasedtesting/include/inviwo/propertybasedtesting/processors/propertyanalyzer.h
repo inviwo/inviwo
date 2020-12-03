@@ -165,7 +165,9 @@ class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyAnalyzer
 public:
     PropertyAnalyzer(InviwoApplication*);
     virtual ~PropertyAnalyzer() {
-		std::filesystem::remove_all(tempDir_);
+		const std::lock_guard<std::mutex> lock(mutex_);
+		std::cerr << "~PropertyAnalyzer() @ " << this << std::endl;
+		curr_alive.erase(m_id);
 	}
 
     virtual void process() override;
@@ -176,7 +178,13 @@ public:
     virtual void serialize(Serializer& d) const override;
     virtual void deserialize(Deserializer& d) override;
 
+	virtual void setNetwork(ProcessorNetwork*) override;
 private:
+	static std::set<size_t> curr_alive;
+	size_t m_id;
+	template<typename F>
+	void dispatchFrontAndForget(F);
+
 	static std::mutex mutex_;
 	enum TestingState {
 		NONE,
@@ -213,11 +221,11 @@ private:
 
 	void updateProcessors();
 	using ProcessorTestPropertyMap =
-		std::map<Processor*, std::shared_ptr<TestPropertyComposite>>;
+		std::map<std::string, std::unique_ptr<TestPropertyComposite>>;
 	ProcessorTestPropertyMap processors_; // currently connected processors
-	ProcessorTestPropertyMap inactiveProcessors; // currently disconnected processors
+	ProcessorTestPropertyMap inactiveProcessors_; // currently disconnected processors
 
-	std::vector<std::shared_ptr<TestProperty>> props_; // Properties to test
+	std::vector<TestProperty*> props_; // Properties to test
 	void resetAllProps();
 
 	// Testing stuff
@@ -234,5 +242,14 @@ private:
 	std::vector<std::shared_ptr<TestResult>> testResults;
 	void checkTestResults();
 };
+
+template<typename F>
+void PropertyAnalyzer::dispatchFrontAndForget(F f) {
+	const size_t id = m_id;
+	app_->dispatchFrontAndForget([id,f]() {
+			if(PropertyAnalyzer::curr_alive.count(id))
+				f();
+		});
+}
 
 }  // namespace inviwo

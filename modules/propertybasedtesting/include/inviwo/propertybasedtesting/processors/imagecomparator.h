@@ -69,7 +69,7 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 private:
-    enum class ComparisonType { Diff, Perceptual, Local, Global };
+    enum class ComparisonType { AbsARGB };
 	enum class ReductionType { MEAN, MAX, MIN, SUM };
 	std::string reductionTypeName(const ReductionType& r) {
 		#define CASE_VAL(p) case(ReductionType::p): return #p;
@@ -118,6 +118,9 @@ private:
 	TemplateOptionProperty<ReductionType> reductionType_;
     DirectoryProperty reportDir_;
     int imageCompCount_ = 0;
+
+	double difference(const ComparisonType&, const glm::dvec4&, const glm::dvec4&);
+	double absoluteARGBdifference(const glm::dvec4&, const glm::dvec4&);
 
     struct Comparison {
         time_t timestamp;

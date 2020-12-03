@@ -32,11 +32,13 @@
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
 #include <inviwo/propertybasedtesting/algorithm/propertyanalyzing.h>
 
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 
 #include <filesystem>
+#include <fstream>
 
 namespace inviwo {
 
@@ -63,6 +65,99 @@ protected:
 	virtual ~TestPropertyObservable() = default;
 };
 
+template<typename T>
+class NetworkPath : public Serializable{
+private:
+	std::unique_ptr<std::string> path_;
+	std::unique_ptr<T*> ptrPtr_;
+	bool isProcessor_;
+
+	ProcessorNetwork* pn_;
+
+	const std::string& path() const {
+		if(*ptrPtr_ == nullptr) {
+			assert(!path_->empty());
+			return *path_;
+		} else {
+			if(auto p = dynamic_cast<Processor*>(*ptrPtr_); p != nullptr) {
+				assert(isProcessor_);
+				return *path_ = p->getIdentifier();
+			} else {
+				assert(!isProcessor_);
+				auto p2 = dynamic_cast<Property*>(*ptrPtr_);
+				assert(p2 != nullptr);
+				return *path_ = p2->getPath();
+			}
+		}
+	}
+public:
+	bool operator<(const NetworkPath& other) const {
+		return path() < other.path();
+	}
+	// only for deserialization
+	NetworkPath() = default;
+
+	NetworkPath(const std::string& path,
+			ProcessorNetwork* pn,
+			bool isProcessor = std::is_same_v<T,Processor>)
+		: path_(std::make_unique<std::string>(path))
+		, ptrPtr_(std::make_unique<T*>(nullptr))
+		, isProcessor_(isProcessor)
+		, pn_(pn) {
+	}
+
+	NetworkPath(T* ptr, ProcessorNetwork* pn = nullptr)
+		: path_(std::make_unique<std::string>(""))
+		, ptrPtr_(std::make_unique<T*>(ptr))
+		, isProcessor_(dynamic_cast<Processor*>(ptr) != nullptr)
+		, pn_(pn) {
+	}
+	void setNetwork(ProcessorNetwork* pn) {
+		if(pn == nullptr) {
+			*path_ = path();
+			*ptrPtr_ = nullptr;
+		}
+		pn_ = pn;
+	}
+
+	T* get() const {
+		if(*ptrPtr_ == nullptr) {
+			assert(pn_ != nullptr);
+			if(isProcessor_) {
+				return *ptrPtr_ = reinterpret_cast<T*>(pn_->getProcessorByIdentifier(*path_));
+			} else {
+				Property* tmp = pn_->getProperty(*path_);
+				assert(tmp != nullptr);
+				*ptrPtr_ = dynamic_cast<T*>(tmp);
+				assert(*ptrPtr_ != nullptr);
+			}
+		}
+		return *ptrPtr_;
+	}
+	operator T*() const {
+		return get();
+	}
+	T* operator->() const {
+		return get();
+	}
+	T& operator*() const {
+		return *get();
+	}
+
+	void serialize(Serializer& s) const override {
+		s.serialize("Path", path());
+		s.serialize("IsProcessor", isProcessor_);
+	}
+	void deserialize(Deserializer& d) override {
+		std::string path;
+		d.deserialize("Path", path);
+		path_ = std::make_unique<std::string>(path);
+		d.deserialize("IsProcessor", isProcessor_);
+		pn_ = nullptr;
+		ptrPtr_ = std::make_unique<T*>(nullptr);
+	}
+};
+
 /** \docpage{org.inviwo.PropertyAnalyzer, PropertyAnalyzer}
  * ![](org.inviwo.TestProperty.png?classIdentifier=org.inviwo.TestProperty)
  *
@@ -76,11 +171,16 @@ protected:
  *	- the expected effect on the counted number of pixels given two testcases, and
  *  - storing and resetting the value of the property befor the tests have started.
  * Instantiation happes mainly by testableProperty (see below).
- */ 
-class TestProperty : public Serializable, public TestPropertyObservable {
-protected:
+ */
+class TestProperty
+		: public Serializable
+		, public TestPropertyObservable {
+private:
 	std::string displayName_, identifier_;
-	BoolCompositeProperty* boolComp_ = nullptr;
+	NetworkPath<BoolCompositeProperty> boolComp_ = nullptr;
+	std::vector<std::function<void(ProcessorNetwork*)>> onNetwork;
+protected:
+	void onNetworkReceive(std::function<void(ProcessorNetwork*)>);
 	TestProperty() = default;
 	TestProperty(const std::string& displayName, const std::string& identifier);
 
@@ -98,9 +198,13 @@ protected:
 		return options;
 	}
 public:
+	void setNetwork(ProcessorNetwork*);
 	virtual size_t totalCheckedComponents() const = 0;
 	virtual bool* deactivated(size_t) = 0;
 	virtual const bool* deactivated(size_t) const = 0;
+
+	virtual void serialize(Serializer&) const override;
+	virtual void deserialize(Deserializer&) override;
 
 	virtual BoolCompositeProperty* getBoolComp() const;
 
@@ -116,7 +220,7 @@ public:
 			const TestProperty*) const = 0;
 
 	virtual std::optional<util::PropertyEffect> getPropertyEffect(
-			std::shared_ptr<TestResult>, 
+			std::shared_ptr<TestResult>,
 			std::shared_ptr<TestResult>) const = 0;
 
 	virtual std::ostream& ostr(std::ostream&,
@@ -149,7 +253,7 @@ std::optional<util::PropertyEffect> propertyEffect(const T& val_old, const T& va
  * That is, if the given property derives from CompositeProperty or one of
  * the properties in PropertyTypes (see below).
  */
-std::optional<std::shared_ptr<TestProperty>> testableProperty(Property* prop);
+std::optional<std::unique_ptr<TestProperty>> testableProperty(Property* prop);
 
 /*
  * Adds necessary callbacks for the proper behavior of the BoolComps of/in a
@@ -165,16 +269,18 @@ void makeOnChange(BoolCompositeProperty* const prop);
  * May only be instantiated by TestPropertyComposite::make
  */
 class TestPropertyComposite : public TestProperty, public TestPropertyObserver {
-	PropertyOwner* propertyOwner;
-	std::vector<std::shared_ptr<TestProperty>> subProperties;
-	
+	NetworkPath<PropertyOwner> propertyOwner_;
+	std::vector<std::unique_ptr<TestProperty>> subProperties;
+
 	TestPropertyComposite() = default;
 	TestPropertyComposite(PropertyOwner* original, const std::string& displayName,
 			const std::string& identifier);
-	
+
 	void traverse(std::function<void(const TestProperty*, const TestProperty*)>,
 			const TestProperty*) const override;
 public:
+	PropertyOwner* getPropertyOwner() const;
+
 	template<typename F>
 	void for_each_checked(F) const;
 
@@ -187,9 +293,10 @@ public:
 		return name;
 	}
 	friend class TestPropertyFactory;
-	
+	friend class TestPropertyCompositeFactory;
+
 	void onTestPropertyChange() override;
-	
+
 	std::string textualDescription(unsigned int indent = 0) const override;
 
 	std::string getValueString(std::shared_ptr<TestResult> testResult) const override;
@@ -209,7 +316,7 @@ public:
 	template<typename C, decltype(static_cast<PropertyOwner*>(std::declval<C*>()),
 			std::declval<C>().getDisplayName(),
 			std::declval<C>().getIdentifier(), int()) = 0>
-	static std::shared_ptr<TestPropertyComposite> make(C* orig);
+	static std::unique_ptr<TestPropertyComposite> make(C* orig);
 
 	virtual ~TestPropertyComposite() = default;
 	void setToDefault() const override;
@@ -229,11 +336,11 @@ public:
 
 template<typename C, decltype(static_cast<PropertyOwner*>(std::declval<C*>()),
 			std::declval<C>().getDisplayName(),
-			std::declval<C>().getIdentifier(), int()) = 0>
-std::shared_ptr<TestPropertyComposite> TestPropertyComposite::make(C* orig) {
+			std::declval<C>().getIdentifier(), int())>
+std::unique_ptr<TestPropertyComposite> TestPropertyComposite::make(C* orig) {
 		std::string ident = orig->getIdentifier();
 		std::replace(ident.begin(), ident.end(), ' ', '_');
-		return std::shared_ptr<TestPropertyComposite>(
+		return std::unique_ptr<TestPropertyComposite>(
 				new TestPropertyComposite(orig, orig->getDisplayName(), ident));
 	}
 
@@ -246,18 +353,21 @@ class TestPropertyTyped : public TestProperty {
 	using value_type = typename T::value_type;
 	static constexpr size_t numComponents = DataFormat<value_type>::components();
 
-	T* typedProperty_;
+	NetworkPath<T> typedProperty_;
 	value_type defaultValue_;
-	std::array<OptionPropertyInt*, numComponents> effectOption_;
-	
+	std::array<NetworkPath<OptionPropertyInt>, numComponents> effectOption_;
+
 	TestPropertyTyped() = default;
 
 	std::array<util::PropertyEffect, numComponents> selectedEffects() const;
 	std::unique_ptr<bool> deactivated_;
-	
+
 	void traverse(std::function<void(const TestProperty*, const TestProperty*)>,
 			const TestProperty*) const override;
 public:
+	OptionPropertyInt* getEffectOption(size_t) const;
+	T* getTypedProperty() const;
+
 	size_t totalCheckedComponents() const override;
 	bool* deactivated(size_t) override;
 	const bool* deactivated(size_t) const override;
@@ -267,7 +377,7 @@ public:
 		return name;
 	}
 	friend class TestPropertyFactoryHelper;
-	
+
 	std::string textualDescription(unsigned int indent) const override;
 
 	std::string getValueString(std::shared_ptr<TestResult>) const override;
@@ -285,13 +395,12 @@ public:
 
 	TestPropertyTyped(T* original);
 	virtual ~TestPropertyTyped() = default;
-	T* getTypedProperty() const;
 	void setToDefault() const override;
 	const value_type& getDefaultValue() const;
 
 	void serialize(Serializer& s) const override;
 	void deserialize(Deserializer& s) override;
-	
+
 	void storeDefault();
 	std::vector<std::pair<
 			util::AssignmentComparator,
@@ -306,7 +415,7 @@ public:
  */
 class TestResult {
 	private:
-		const std::vector<std::shared_ptr<TestProperty>>& defaultValues;
+		const std::vector<TestProperty*>& defaultValues;
 		const Test test;
 		const size_t pixels;
 		const std::filesystem::path imgPath;
@@ -321,7 +430,7 @@ class TestResult {
 		template<typename T>
 		typename T::value_type getValue(const T* prop) const;
 
-		TestResult(const std::vector<std::shared_ptr<TestProperty>>& defaultValues
+		TestResult(const std::vector<TestProperty*>& defaultValues
 				, const Test& t
 				, size_t val
 				, const std::filesystem::path& imgPath)
@@ -336,7 +445,7 @@ template<typename T,
 	size_t numComp = DataFormat<T>::components()>
 std::optional<util::PropertyEffect> propertyEffect(const T& val_old, const T& val_new,
 		const std::array<util::PropertyEffect, numComp>& selectedEffects) {
-	
+
 	std::optional<util::PropertyEffect> res = {util::PropertyEffect::ANY};
 	for(size_t i = 0; res && i < numComp; i++) {
 		auto compEff = util::propertyEffect(selectedEffects[i],
@@ -345,36 +454,38 @@ std::optional<util::PropertyEffect> propertyEffect(const T& val_old, const T& va
 		res = util::combine(*res, compEff);
 	}
 	return res;
-	
+
+}
+
+template<typename F>
+void TestPropertyComposite::for_each_checked(F f) const {
+	for(const auto& prop : subProperties)
+		if(prop->getBoolComp()->isChecked())
+			f(prop.get());
 }
 
 class TestPropertyFactory : public Factory<TestProperty> {
 	static const std::unordered_map<std::string,
 				 std::function<std::unique_ptr<TestProperty>()>> members;
 public:
-	std::unique_ptr<TestProperty> create(const std::string& key) const override {
-		assert(members.count(key) > 0);
-		return members.at(key)();
-	}
-	bool hasKey(const std::string& key) const override {
-		return members.find(key) != members.end();
-	}
-};
+	std::unique_ptr<TestProperty> create(const std::string& key) const override;
+	bool hasKey(const std::string& key) const override;
 
-template<typename F>
-void TestPropertyComposite::for_each_checked(F f) const {
-	for(const auto& prop : subProperties)
-		if(prop->getBoolComp()->isChecked())
-			f(prop);
-}
+	friend class TestPropertyCompositeFactory;
+};
+class TestPropertyCompositeFactory : public Factory<TestPropertyComposite> {
+public:
+	std::unique_ptr<TestPropertyComposite> create(const std::string& key) const override;
+	bool hasKey(const std::string& key) const override;
+};
 
 template<typename T>
 std::optional<typename T::value_type> TestPropertyComposite::getDefaultValue(const T* prop) const {
-	for(auto subProp : subProperties) {
-		if(auto p = std::dynamic_pointer_cast<TestPropertyTyped<T>>(subProp); p != nullptr) {
+	for(const auto& subProp : subProperties) {
+		if(auto p = dynamic_cast<TestPropertyTyped<T>*>(subProp.get()); p != nullptr) {
 			if(p->getTypedProperty() == prop)
 				return p->getDefaultValue();
-		} else if(auto p = std::dynamic_pointer_cast<TestPropertyComposite>(subProp); p != nullptr) {
+		} else if(auto p = dynamic_cast<TestPropertyComposite*>(subProp.get()); p != nullptr) {
 			if(auto res = p->getDefaultValue(prop); res != std::nullopt)
 				return res;
 		}
@@ -391,11 +502,11 @@ typename T::value_type TestResult::getValue(const T* prop) const {
 			return p->getValue();
 
 	for(auto def : defaultValues) {
-		if(auto p = std::dynamic_pointer_cast<TestPropertyTyped<T>>(def);
+		if(auto p = dynamic_cast<TestPropertyTyped<T>*>(def);
 				p != nullptr) {
 			if(p->getTypedProperty() == prop)
 				return p->getDefaultValue();
-		} else if(auto p = std::dynamic_pointer_cast<TestPropertyComposite>(def);
+		} else if(auto p = dynamic_cast<TestPropertyComposite*>(def);
 				p != nullptr) {
 			if(auto res = p->getDefaultValue(prop); res != std::nullopt)
 				return *res;
@@ -407,7 +518,6 @@ typename T::value_type TestResult::getValue(const T* prop) const {
 
 /*
  * Tuple containing all testable property types except CompositeProperty.
- * Should only contain OrdinalProperties
  * If you want to add support for a new property type, you probably want to add
  * it to this list.
  */
@@ -415,6 +525,6 @@ using PropertyTypes = std::tuple<IntProperty, FloatProperty, DoubleProperty, Int
 
 using TestingError = std::tuple<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>, util::PropertyEffect, size_t, size_t>;
 
-void testingErrorToBinary(std::vector<unsigned char>&, const std::vector<std::shared_ptr<TestProperty>>&, const TestingError&);
+void testingErrorToBinary(std::vector<unsigned char>&, const std::vector<TestProperty*>&, const TestingError&);
 
 } // namespace inviwo
