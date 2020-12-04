@@ -245,7 +245,7 @@ private:
     TCLAP::ValueArg<std::string> screenGrabArg_;
     TCLAP::ValueArg<std::string> saveProcessorPreviews_;
     TCLAP::ValueArg<std::string> openData_;
-    TCLAP::SwitchArg updateWorkspaces_;
+    TCLAP::SwitchArg updateExampleWorkspaces_;
     TCLAP::SwitchArg updateRegressionWorkspaces_;
     TCLAP::ValueArg<std::string> updateWorkspacesInPath_;
 
