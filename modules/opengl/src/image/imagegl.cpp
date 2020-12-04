@@ -105,9 +105,7 @@ void ImageGL::activateBuffer(ImageType type) {
     glViewport(0, 0, dim.x, dim.y);
 }
 
-void ImageGL::deactivateBuffer() {
-    frameBufferObject_.deactivate();
-}
+void ImageGL::deactivateBuffer() { frameBufferObject_.deactivate(); }
 
 size2_t ImageGL::getDimensions() const { return colorLayersGL_.front()->getDimensions(); }
 

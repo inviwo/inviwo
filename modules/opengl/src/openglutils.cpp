@@ -283,7 +283,6 @@ GlBoolState::~GlBoolState() {
     }
 }
 
-
 TexParameter::TexParameter(const TextureUnit& unit, GLenum target, GLenum name, GLint value)
     : unit_(unit.getEnum()), target_(target), name_(name), oldValue_{} {
     glActiveTexture(unit_);
@@ -308,7 +307,6 @@ TexParameter::TexParameter(TexParameter&& rhs)
     : unit_(rhs.unit_), target_(rhs.target_), name_(rhs.name_), oldValue_(rhs.oldValue_) {
     rhs.target_ = 0;
 }
-
 
 TexParameter::~TexParameter() {
     if (unit_ != 0 && target_ != 0) {

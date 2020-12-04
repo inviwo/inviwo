@@ -550,7 +550,7 @@ using DepthMaskState =
  * @see glLineWidth, GL_LINE_WIDTH
  */
 
-using LineWidthState [[deprecated(
+using LineWidthState[[deprecated(
     "glLineWidth is not supported by all OpenGL implementations for widths different from 1.0")]] =
     SimpleState<GLfloat, GLfloat, GL_LINE_WIDTH, glGetFloatv, glLineWidth, validateLineWidth>;
 

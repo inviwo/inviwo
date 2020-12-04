@@ -46,7 +46,7 @@ class Image;
 /**
  * \ingroup datastructures
  * @brief OpenGL representation of a Image as a OpenGL framebuffer
- * 
+ *
  * Handles attaching all the image layers to the framebuffer
  * @see Image, ImageRepresentation
  */
@@ -98,7 +98,7 @@ public:
 
     /**
      * @brief Copies this into the target using a copy shader
-     * 
+     *
      * The image content is scaled to the target dimensions. If the aspects are different the target
      * image will get padding to preserve the aspect of the source content.
      * @param target image to copy into.
@@ -115,7 +115,7 @@ public:
 
     /**
      * @brief Copies @p source into this using Blitting and PBOs if needed.
-     * 
+     *
      * Does not care about aspect ratios, copies the source image into the this using "nearest"
      * interpolation. If some layers are not attached to the FBO they will be copies using PBO
      * instead.

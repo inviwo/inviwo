@@ -42,7 +42,7 @@ namespace inviwo {
 
 /**
  * @brief Inviwo framebuffer wrapper.
- * 
+ *
  * Handles creation and deletion of OpenGL framebuffer objects. Has functions for attachment and
  * detachment of textures to the framebuffer. It Also keeps track of all attached texture ids. The
  * wapper is a move only type.
@@ -100,7 +100,7 @@ public:
 
     /**
      * @brief Attach a 2D Color Texture to the framebuffer.
-     * 
+     *
      * Will use the first available attachment point.
      * @pre The framebuffer must be active.
      * @param texture to attach
@@ -127,7 +127,7 @@ public:
 
     /**
      * @brief Attach a 2D Color Texture Array to the framebuffer.
-     * 
+     *
      * Will use the first available attachment point.
      * @pre The framebuffer must be active.
      * @param texture to attach
@@ -156,7 +156,7 @@ public:
 
     /**
      * @brief Attach a layer of a 2D Color Texture Array to the framebuffer.
-     * 
+     *
      * Will use the first available attachment point.
      * @pre The framebuffer must be active.
      * @param texture to attach
@@ -185,7 +185,7 @@ public:
 
     /**
      * @brief Attach a 3D Color Texture to the framebuffer.
-     * 
+     *
      * Will use the first available attachment point.
      * @pre The framebuffer must be active.
      * @param texture to attach
@@ -267,7 +267,7 @@ public:
 
     /**
      * @brief Get the current list of attached colors texture id.
-     * 
+     *
      * Returns a list of all color attachments points, for unused points the value will be 0, for
      * used points the value will be the attached texture id.
      * @return List of attached texture ids.

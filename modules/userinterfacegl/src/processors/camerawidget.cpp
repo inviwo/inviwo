@@ -207,7 +207,6 @@ void CameraWidget::process() {
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
     drawWidgetTexture();
     utilgl::deactivateCurrentTarget();
 }
