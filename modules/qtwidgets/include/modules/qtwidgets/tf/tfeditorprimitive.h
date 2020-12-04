@@ -152,7 +152,7 @@ protected:
      *
      * @param newPos   new, normalized position of the primitive
      */
-    virtual void onItemPositionChange(const vec2& /*newPos*/) {}
+    virtual void onItemPositionChange([[maybe_unused]] const vec2& newPos) {}
 
     /**
      * gets called in itemChange() when a scene change has happend

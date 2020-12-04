@@ -54,6 +54,7 @@ namespace util {
  * @param offset   subregion offset in input layer
  * @param extent   extent (width and height) of subregion
  * @param clampBorderOutsideImage    if true, the output region is clamped to the layer boundaries
+ *
  * @return std::shared_ptr<LayerRAM>
  */
 IVW_MODULE_BASE_API std::shared_ptr<LayerRAM> layerSubSet(const Layer* in, ivec2 offset,
@@ -73,6 +74,7 @@ IVW_MODULE_BASE_API std::shared_ptr<LayerRAM> layerSubSet(const Layer* in, ivec2
  * @param offset   subregion offset in input layer
  * @param extent   extent (width and height) of subregion
  * @param clampBorderOutsideImage    if true, the output region is clamped to the layer boundaries
+ *
  * @return std::shared_ptr<LayerRAMPrecision<T>>
  */
 template <typename T>

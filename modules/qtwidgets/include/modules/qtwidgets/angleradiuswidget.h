@@ -84,16 +84,14 @@ signals:
 
 private:
     /**
-     * \brief Outer bounds of circle.
-     *
+     * @brief Outer bounds of circle.
      * @return int Radius in pixes
      */
     int getMaxPixelSpaceRadius() const;
     /**
      * Calculates and sets the angle and radius from the center
      * of the widget to the position.
-     *
-     * @param const QPoint & pos given in pixels
+     * @param pos given in pixels
      */
     void setAngleRadiusAtPosition(const QPoint& pos);
 

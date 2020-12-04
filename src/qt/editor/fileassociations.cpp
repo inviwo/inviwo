@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-// ————————————————————————————————-
-/**
+/*
  * @file
  * @brief
  * @author Gerolf Reinwardt
@@ -62,7 +61,6 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Gerolf Reinwardt.
  */
-// ————————————————————————————————-
 
 #include <inviwo/qt/editor/fileassociations.h>
 #include <modules/qtwidgets/inviwoqtutils.h>

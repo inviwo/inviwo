@@ -197,7 +197,7 @@ private:
 /**
  * Utility function to change a xml tag matching oldName.
  * @param root The xml node to start from.
- * @param path The elements that you want to change (@See Kind).
+ * @param path The elements that you want to change (@see Kind).
  * @param oldName The old tag value. This is also used for identifying the elements.
  * @param newName The new tag value
  */
@@ -208,17 +208,17 @@ IVW_CORE_API bool changeTag(TxElement* root, const std::vector<Kind>& path,
  * Utility function to change a attribute processor network element, i.e a processor, port, or
  * property.
  * @param root The xml node to start from.
- * @param path The elements that you want to change (@See Kind).
+ * @param path The elements that you want to change (@see Kind).
  * @param attribute The name of the attribute to change
  * @param oldValue The old attribute value. This is also used for identifying the elements.
- * @param newValye The new attribute value
+ * @param newValue The new attribute value
  */
 IVW_CORE_API bool changeAttribute(TxElement* root, const std::vector<Kind>& path,
                                   const std::string& attribute, const std::string& oldValue,
                                   const std::string& newValue);
 
 /**
- *	Change identifier attribute. @See changeAttribute
+ *	Change identifier attribute. @see changeAttribute
  */
 IVW_CORE_API bool changeIdentifier(TxElement* root, const std::vector<Kind>& path,
                                    const std::string& oldId, const std::string& newId);

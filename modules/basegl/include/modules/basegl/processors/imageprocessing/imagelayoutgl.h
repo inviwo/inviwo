@@ -107,10 +107,10 @@ public:
 
     /**
      * Return true if dimensions of connected port is greater than zero.
-     * @param This processor's inport
-     * @param Another processor's outport
+     * @param inport This processor's inport
+     * @param outport Another processor's outport
      */
-    virtual bool isConnectionActive(Inport*, Outport*) const override;
+    virtual bool isConnectionActive(Inport* inport, Outport* outport) const override;
 
 protected:
     virtual void process() override;

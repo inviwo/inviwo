@@ -70,6 +70,7 @@ public:
      * @param files   list of file names representing the following states:
      *                  texture:   normal, pressed, checked
      *                  halo:      normal, pressed, checked
+     * @param sourcePath
      * @return pointer to texture array
      * @throws Exception if not successful.
      */

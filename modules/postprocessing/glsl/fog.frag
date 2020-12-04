@@ -27,10 +27,12 @@
  *
  *********************************************************************************/
 
+/// @cond
 //! #version 330
 //! layout(location = 0) out vec4 FragData0;
 //! #include "../../opengl/glsl/utils/structs.glsl"
 //! #include "../../opengl/glsl/utils/depth.glsl"
+/// @endcond
 
 #include "utils/structs.glsl"
 #include "utils/depth.glsl"

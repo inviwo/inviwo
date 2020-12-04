@@ -57,6 +57,20 @@ struct IsovalueParameters {
  * @param isosurfaceColor  color of the isosurface used for blending
  * @param voxel            scalar values of current sampling position
  * @param previousVoxel    scalar values of previous sample
+ * @param volume
+ * @param volumeParameters
+ * @param channel
+ * @param transferFunction
+ * @param camera
+ * @param lighting
+ * @param rayPosition
+ * @param rayDirection
+ * @param toCameraDir
+ * @param t
+ * @param raySegmentLen
+ * @param tIncr
+ * @param tDepth
+ * 
  * @return in case of an isosurface, curResult is blended with the color of the isosurface. 
  *       Otherwise curResult is returned
  */

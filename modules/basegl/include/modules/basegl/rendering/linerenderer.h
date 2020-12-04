@@ -60,6 +60,7 @@ public:
      * @param mesh to render as lines, must
      * @param camera for projection
      * @param screenDim width, height in pixels
+     * @param settings @see LineSettingsInterface
      */
     void render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
                 const LineSettingsInterface* settings);

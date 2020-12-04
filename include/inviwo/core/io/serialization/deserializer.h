@@ -161,10 +161,12 @@ public:
      *         where, "enableMIP" & "enableShading" are keys.
      *         address of a property is a value
      *
-     * Note: If children has attribute "type", then comparisonAttribute becomes meaningless.
+     * \note If children has attribute "type", then comparisonAttribute becomes meaningless.
      *       Because deserializer always allocates a new instance of type using registered
      *       factories. eg.,
+     *       \code{.xml}
      *           <Processor type="EntryExitPoints" identifier="EntryExitPoints" reference="ref2" />
+     *       \endcode
      *
      * @param key Map key or parent node of itemKey.
      * @param sMap  map to be deserialized - source / input map.

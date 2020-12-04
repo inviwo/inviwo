@@ -30,8 +30,7 @@
 // Windows implementation based on
 // https://wiki.qt.io/Assigning_a_file_type_to_an_Application_on_Windows
 
-// ————————————————————————————————-
-/**
+/*
  * @file
  * @brief
  * @author Gerolf Reinwardt
@@ -65,7 +64,6 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Gerolf Reinwardt.
  */
-// ————————————————————————————————-
 
 #ifndef IVW_FILEASSOCIATIONS_H
 #define IVW_FILEASSOCIATIONS_H
@@ -132,7 +130,7 @@ public:
      * @param fileExtension  File extension, including the dot (e.g. ".inv")
      * @param appIconIndex   Index of the app icon to use for the file in the windows explorer,
      *                       typically the application icon
-     * @param commands       Vector FileAssociationCommands see @FileAssociationCommand
+     * @param commands       Vector FileAssociationCommands @see FileAssociationCommand
      */
     void registerFileType(const std::string& documentId, const std::string& fileTypeName,
                           const std::string& fileExtension, int appIconIndex = 0,

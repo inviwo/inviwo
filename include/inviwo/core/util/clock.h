@@ -186,7 +186,6 @@ void ScopedClock<Clock>::printAndReset() {
 }
 
 /**
- * \class inviwo::ScopedClockCPU
  * scoped clock for CPU time measurements
  *
  * \see IVW_CPU_PROFILING(message), IVW_CPU_PROFILING_CUSTOM(src, message)
@@ -202,7 +201,7 @@ using ScopedClockCPU = ScopedClock<Clock>;
  * \def IVW_CPU_PROFILING(message)
  * creates a scoped CPU clock with the given message.
  *
- * @param src      source of the log message
+ * @param message  log message
  */
 
 /**

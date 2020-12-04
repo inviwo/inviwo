@@ -87,8 +87,9 @@ IVW_CORE_API std::map<Family, std::vector<dvec4>> getColormaps(const Category &c
  *
  * @param category according to ColorBrewer2
  * @param family color scheme name
+ * @param nColors number or requested colors
  * @param discrete will make each color constant instead of linearly varying inbetween colors.
- * @param divergenceMidpoint in [0 1]. Only used when category is Diverging
+ * @param divergenceMidPoint in [0 1]. Only used when category is Diverging
  **/
 IVW_CORE_API TransferFunction getTransferFunction(const Category &category, const Family &family,
                                                   glm::uint8 nColors, bool discrete,

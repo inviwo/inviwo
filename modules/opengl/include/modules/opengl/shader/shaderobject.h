@@ -123,7 +123,7 @@ public:
 
     /**
      * Add a define to the shader as
-     *     #define name value
+     *     \#define name value
      */
     void addShaderDefine(std::string_view name, std::string_view value = "");
     /**

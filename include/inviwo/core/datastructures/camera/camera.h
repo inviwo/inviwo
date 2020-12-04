@@ -60,7 +60,9 @@ class CameraProperty;
 class IVW_CORE_API Camera : public Serializable {
 public:
     /**
-     * \brief Default parameters creates a right handed coordinate system
+     * @brief Create a camera
+     * 
+     * Default parameters creates a right handed coordinate system
      * with camera looking towards the negative z-axis.
      * with X = (1, 0, 0), Y = (0, 1, 0), Z = (0, 0, -1)
      *
@@ -69,6 +71,7 @@ public:
      * @param lookUp Camera up direction
      * @param nearPlane Camera near clip-plane
      * @param farPlane Camera far clip-plane
+     * @param aspectRatio Camera aspect ratio
      */
     Camera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane,
            float aspectRatio);

@@ -56,7 +56,6 @@ namespace inviwo {
  */
 
 /**
- * \class InputSelector
  * \brief processor for selecting one of n connected inputs
  */
 template <typename InportType, typename OutportType>

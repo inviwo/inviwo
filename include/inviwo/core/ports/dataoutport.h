@@ -66,7 +66,7 @@ public:
     virtual std::shared_ptr<const T> detachData();
 
     /**
-     * \copydoc Outport::clear
+     * \copydoc inviwo::Outport::clear
      */
     virtual void clear() override;
 

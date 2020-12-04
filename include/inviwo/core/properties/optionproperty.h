@@ -191,7 +191,7 @@ public:
 
     /**
      * @brief Set the selected index to that of the value provided if found in the list of options
-     * @param value to set
+     * @param val to set
      * @return True if the value was found in the list of options else false.
      */
     bool setSelectedValue(const T& val);
@@ -877,6 +877,7 @@ TemplateOptionProperty<T>* TemplateOptionProperty<T>::clone() const {
     return new TemplateOptionProperty<T>(*this);
 }
 
+/// @cond
 extern template class IVW_CORE_TMPL_EXP OptionPropertyOption<unsigned int>;
 extern template class IVW_CORE_TMPL_EXP OptionPropertyOption<int>;
 extern template class IVW_CORE_TMPL_EXP OptionPropertyOption<size_t>;
@@ -890,5 +891,6 @@ extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<size_t>;
 extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<float>;
 extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<double>;
 extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<std::string>;
+/// @endcond
 
 }  // namespace inviwo

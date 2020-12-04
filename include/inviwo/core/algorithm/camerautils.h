@@ -55,7 +55,7 @@ enum class UpdateLookRanges { Yes, No };
  * @param boundingBox the basis and offset of the bounding box that will fit inside the new
  *                    view frustum
  * @param viewDir    the view direction of when viewing the bounding box
- * @param lookDir    the up direction of when viewing the bounding box
+ * @param lookUp     the up direction of when viewing the bounding box
  * @param fitRatio   determines the spacing between volume and the boundaries of the view frustum. A
  *                   fit ratio of 1 means a perfect fit, no space between frustum and volume. The
  *                   aspect ratio is taken into account.
