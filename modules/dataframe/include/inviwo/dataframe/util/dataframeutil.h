@@ -114,7 +114,7 @@ std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
 leftJoin(const DataFrame& left, const DataFrame& right, const std::string& keyColumn = "index");
 std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
 leftJoin(const DataFrame& left, const DataFrame& right, const std::vector<std::string>& keyColumns);
-///@\
+///@}
 
 std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
 combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataframes, bool skipIndexColumn = false,
