@@ -61,6 +61,9 @@ void CEFInteractionHandler::invokeEvent(Event* event) {
             auto isCharacter = std::iscntrl(cefEvent.character) == 0;
             if (isCharacter && (keyEvent->state() & KeyState::Press)) {
                 cefEvent.type = KEYEVENT_CHAR;
+                // Fixes 'Legacy' key codes for keypress events at
+                // https://dvcs.w3.org/hg/d4e/raw-file/tip/key-event-test.html
+                cefEvent.windows_key_code = cefEvent.character;
                 host_->SendKeyEvent(cefEvent);
             }
             event->markAsUsed();
@@ -211,7 +214,24 @@ CefKeyEvent CEFInteractionHandler::mapKeyEvent(const KeyboardEvent* e) {
         cefEvent.character = 0;
     }
 
-    cefEvent.native_key_code = e->getNativeVirtualKey();
+    // Tested on Windows. You can test keys at
+    // https://dvcs.w3.org/hg/d4e/raw-file/tip/key-event-test.html
+    // Compare the result with typing in Chrome
+    cefEvent.windows_key_code = e->getNativeVirtualKey();
+    // TODO: Get correct native_key_code, i.e. event LParam on Windows.
+    // We might need the ScanCode sent by the system/Qt to get this.
+    // An alternative would be to convert our the KeyEvent according to the Java KeyEvent, which
+    // seem to be used by Chromium. See
+    // https://docs.oracle.com/javase/6/docs/api/java/awt/event/KeyEvent.html and
+    // https://www.w3.org/TR/uievents-key/#named-key-attribute-values
+    //
+    // The native_key_code will be translated to DOM3 'code'
+    // https://chromium.googlesource.com/chromium/src/+/master/ui/events/keycodes/dom/keycode_converter.h
+    // According to this:
+    // https://chromium.googlesource.com/chromium/src/+/master/ui/events/keycodes/dom/dom_key_data.inc
+    // Note: native_key_code currently has no effect on text input fields, so text input will
+    // display correctly.
+    // cefEvent.native_key_code = TODO;
 
 #ifdef _WINDOWS
     // F10 or ALT
