@@ -219,7 +219,7 @@ bool ImageGL::updateFrom(const ImageGL* source) {
                       GL_NEAREST);
 
     bool pickingCopied = false;
-    for (int i = 1; i < sourceFBO->getMaxColorAttachments(); i++) {
+    for (GLuint i = 1; i < sourceFBO->maxColorAttachments(); i++) {
         if (sourceBuffers[i] != 0 && targetBuffers[i] != 0) {
             glReadBuffer(GL_COLOR_ATTACHMENT0 + i);
             glDrawBuffer(GL_COLOR_ATTACHMENT0 + i);
@@ -227,8 +227,9 @@ bool ImageGL::updateFrom(const ImageGL* source) {
                               GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
             if (pickingAttachmentID_ &&
-                GL_COLOR_ATTACHMENT0 + i == static_cast<int>(*pickingAttachmentID_))
+                GL_COLOR_ATTACHMENT0 + i == static_cast<GLuint>(*pickingAttachmentID_)) {
                 pickingCopied = true;
+            }
         }
     }
 
@@ -369,13 +370,16 @@ void ImageGL::reAttachAllLayers() {
     if (pickingLayerGL_) {
         pickingLayerGL_->getTexture()->bind();
         pickingAttachmentID_ = frameBufferObject_.attachColorTexture(
-            pickingLayerGL_->getTexture().get(), frameBufferObject_.getMaxColorAttachments() - 1);
+            pickingLayerGL_->getTexture().get(), frameBufferObject_.maxColorAttachments() - 1);
         colorAndPickingAttachmentIDs_.insert(colorAndPickingAttachmentIDs_.begin() + 1,
                                              *pickingAttachmentID_);
     }
-    glBindTexture(GL_TEXTURE_2D, 0);
 
-    frameBufferObject_.checkStatus();
+    if (auto status = frameBufferObject_.status(); status != GL_FRAMEBUFFER_COMPLETE) {
+        throw OpenGLException(fmt::format("Framebuffer ({}) incomplete: {}",
+                                          frameBufferObject_.getID(),
+                                          utilgl::framebufferStatusToString(status)));
+    }
 }
 
 std::type_index ImageGL::getTypeIndex() const { return std::type_index(typeid(ImageGL)); }

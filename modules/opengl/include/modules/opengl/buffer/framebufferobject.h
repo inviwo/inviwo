@@ -80,15 +80,19 @@ public:
     static void deactivateFBO();
 
     /**
-     * @brief Check it this framebuffer is currently bound
+     * @brief Check if this framebuffer is currently bound
      */
     bool isActive() const;
 
     /**
-     * @brief Check the framebuffer status. Log a warning if it is not Complete.
-     * @return true if the framebuffer is complete otherwise false.
+     * @brief Get the framebuffer status.
+     * GL_FRAMEBUFFER_COMPLETE represents a complete framebuffer.
+     * see glCheckFramebufferStatus for more details of the return value.
+     * @see utilgl::framebufferStatusToString(GLenum)
+     * @pre The framebuffer must be active.
+     * @return the framebuffer status.
      */
-    bool checkStatus() const;
+    GLenum status() const;
 
     /**
      * @brief Attach a 2D Texture to the framebuffer
@@ -248,7 +252,7 @@ public:
      * @brief Get the maximal number of color attachments
      * Queries @c GL_MAX_COLOR_ATTACHMENTS
      */
-    static int getMaxColorAttachments();
+    static GLuint maxColorAttachments();
 
     /**
      * @brief Check if there is any color attachments
@@ -303,8 +307,6 @@ private:
     void registerAttachment(GLenum attachmentID, GLuint texId);
     void deregisterAttachment(GLenum attachmentID);
     GLenum firstFreeAttachmentID() const;
-
-    static GLuint maxColorattachments();
 
     unsigned int id_;
     GLuint attachedDepthId_;

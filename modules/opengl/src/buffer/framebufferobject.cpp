@@ -52,7 +52,7 @@ inline void checkContext(std::string_view error, Canvas::ContextID org, SourceLo
     }
 }
 
-GLuint FrameBufferObject::maxColorattachments() {
+GLuint FrameBufferObject::maxColorAttachments() {
     static GLint max = []() {
         glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max);
         return static_cast<GLuint>(max);
@@ -68,7 +68,7 @@ FrameBufferObject::FrameBufferObject()
 
     glGenFramebuffers(1, &id_);
 
-    attachedColorIds_.resize(maxColorattachments(), 0);
+    attachedColorIds_.resize(maxColorAttachments(), 0);
 }
 
 FrameBufferObject::FrameBufferObject(FrameBufferObject&& rhs) noexcept
@@ -123,6 +123,11 @@ bool FrameBufferObject::isActive() const {
     return (static_cast<GLint>(id_) == currentFbo);
 }
 
+GLenum FrameBufferObject::status() const {
+    IVW_ASSERT(isActive(), "FBO not active when checking status");
+    return glCheckFramebufferStatus(GL_FRAMEBUFFER);
+}
+
 /******************************* Attachments *****************************************/
 
 void FrameBufferObject::registerAttachment(GLenum attachmentID, GLuint texId) {
@@ -135,7 +140,7 @@ void FrameBufferObject::registerAttachment(GLenum attachmentID, GLuint texId) {
         attachedStencilId_ = texId;
     } else {
         const auto num = enumToNumber(attachmentID);
-        if (num < 0 || num >= maxColorattachments()) {
+        if (num < 0 || num >= maxColorAttachments()) {
             throw OpenGLException(fmt::format("Invalid attachment id: {}", attachmentID),
                                   IVW_CONTEXT);
         }
@@ -256,14 +261,14 @@ GLenum FrameBufferObject::attachColorTexture(Texture3D* texture, int attachmentN
 void FrameBufferObject::attachTextureLayer(Texture3D* texture, GLenum attachmentID, int layer) {
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     registerAttachment(attachmentID, texture->getID());
-    glFramebufferTexture3D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_3D, texture->getID(), 0, layer);
+    glFramebufferTextureLayer(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0, layer);
 }
 
 GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int layer) {
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     const auto attachmentID = firstFreeAttachmentID();
     registerAttachment(attachmentID, texture->getID());
-    glFramebufferTexture3D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_3D, texture->getID(), 0, layer);
+    glFramebufferTextureLayer(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0, layer);
     return attachmentID;
 }
 
@@ -272,7 +277,7 @@ GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int attach
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
     GLenum attachmentID = numberToEnum(attachmentNumber);
     registerAttachment(attachmentID, texture->getID());
-    glFramebufferTexture3D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_3D, texture->getID(), 0, layer);
+    glFramebufferTextureLayer(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0, layer);
     return attachmentID;
 }
 
@@ -300,8 +305,6 @@ void FrameBufferObject::detachAllTextures() {
 
 unsigned int FrameBufferObject::getID() const { return id_; }
 
-int FrameBufferObject::getMaxColorAttachments() { return maxColorattachments(); }
-
 bool FrameBufferObject::hasColorAttachment() const {
     return util::any_of(attachedColorIds_, [](auto id) { return id != 0; });
 }
@@ -309,17 +312,6 @@ bool FrameBufferObject::hasColorAttachment() const {
 bool FrameBufferObject::hasDepthAttachment() const { return attachedDepthId_ != 0; }
 
 bool FrameBufferObject::hasStencilAttachment() const { return attachedStencilId_ != 0; }
-
-bool FrameBufferObject::checkStatus() const {
-    const GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if (status != GL_FRAMEBUFFER_COMPLETE) {
-        LogWarn("Framebuffer (" << id_
-                                << ") incomplete: " << utilgl::framebufferStatusToString(status));
-        return false;
-    } else {
-        return true;
-    }
-}
 
 void FrameBufferObject::setReadBlit(bool set) const {
     if (set) {  // store currently bound draw FBO

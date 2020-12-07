@@ -34,7 +34,7 @@
 namespace inviwo {
 
 /**
- * @brief Hold a "unique" value, the value will not be copied and when mowing the moved from
+ * @brief Hold a "unique" value, the value will not be copied and when moving the moved from
  * optional will be left empty
  */
 template <typename T>

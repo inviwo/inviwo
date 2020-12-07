@@ -84,8 +84,8 @@ public:
      * additional layers will be at the following locations. If \p imageType contains depth the
      * depth test is enabled and the depth mask is set to true, otherwise the depth test is disabled
      * and the depth mask is set to false. Finally the viewport is the to the image dimensions.
+     * @note In the case of nested calls where the state needs to be maintained @see activate(ImageType)
      * @param imageType The layers that should be active.
-     * @return An RAII object that will restore the old state on destruction.
      */
     void activateBuffer(ImageType imageType = ImageType::AllLayers);
 
@@ -117,7 +117,7 @@ public:
      * @brief Copies @p source into this using Blitting and PBOs if needed.
      *
      * Does not care about aspect ratios, copies the source image into the this using "nearest"
-     * interpolation. If some layers are not attached to the FBO they will be copies using PBO
+     * interpolation. If some layers are not attached to the FBO they will be copied using PBO
      * instead.
      * @param source Image to copy from
      * @return true
