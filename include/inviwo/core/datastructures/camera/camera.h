@@ -61,7 +61,7 @@ class IVW_CORE_API Camera : public Serializable {
 public:
     /**
      * @brief Create a camera
-     * 
+     *
      * Default parameters creates a right handed coordinate system
      * with camera looking towards the negative z-axis.
      * with X = (1, 0, 0), Y = (0, 1, 0), Z = (0, 0, -1)

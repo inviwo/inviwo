@@ -121,8 +121,8 @@ combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataframes, bool skipI
                   std::string skipcol = "index");
 
 /**
- * \brief apply predicate \p pred to each value of column \p col and return the row indices where the
- * predicate evaluates to true.
+ * \brief apply predicate \p pred to each value of column \p col and return the row indices where
+ * the predicate evaluates to true.
  *
  * Note: the predicate function needs to take care of the different column datatypes
  * \code{.cpp}

@@ -42,14 +42,14 @@ namespace colorbrewer {
 
 class IVW_CORE_API ColorBrewerException : public Exception {
 public:
-    ColorBrewerException(const std::string &message, ExceptionContext context)
+    ColorBrewerException(const std::string& message, ExceptionContext context)
         : Exception(message, context) {}
     virtual ~ColorBrewerException() throw() {}
 };
 
 class IVW_CORE_API UnsupportedNumberOfColorsException : public Exception {
 public:
-    UnsupportedNumberOfColorsException(const std::string &message, ExceptionContext context)
+    UnsupportedNumberOfColorsException(const std::string& message, ExceptionContext context)
         : Exception(message, context) {}
     virtual ~UnsupportedNumberOfColorsException() throw() {}
 };
@@ -59,27 +59,27 @@ public:
  * reference see http://colorbrewer2.org/. If the colormap is not available for the given number of
  * colors, a ColorBrewerException is thrown.
  **/
-IVW_CORE_API const std::vector<dvec4> &getColormap(const Family &family, glm::uint8 numberOfColors);
+IVW_CORE_API const std::vector<dvec4>& getColormap(const Family& family, glm::uint8 numberOfColors);
 
 /**
  * Returns all colormaps of a family. For example, if family Blues is requested, 6 cololormaps will
  * be returned since the family contains 6 levels of detail (Blues_3 - Blues_9).
  **/
-IVW_CORE_API std::vector<std::vector<dvec4>> getColormaps(const Family &family);
+IVW_CORE_API std::vector<std::vector<dvec4>> getColormaps(const Family& family);
 
 /**
  * Returns all colormaps of a category. Returns a map with one entry per family storing all
  * colormaps for that family.
  **/
 IVW_CORE_API std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(
-    const Category &category);
+    const Category& category);
 
 /**
  * Returns all colormaps of a category with given number of colors. If a colormap is not available
  * for the given number of colors, it is omitted. If none of the colormaps are available for the
  * whole category and the given number of colors, a ColorBrewerException is thrown.
  **/
-IVW_CORE_API std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
+IVW_CORE_API std::map<Family, std::vector<dvec4>> getColormaps(const Category& category,
                                                                glm::uint8 numberOfColors);
 
 /**
@@ -91,7 +91,7 @@ IVW_CORE_API std::map<Family, std::vector<dvec4>> getColormaps(const Category &c
  * @param discrete will make each color constant instead of linearly varying inbetween colors.
  * @param divergenceMidPoint in [0 1]. Only used when category is Diverging
  **/
-IVW_CORE_API TransferFunction getTransferFunction(const Category &category, const Family &family,
+IVW_CORE_API TransferFunction getTransferFunction(const Category& category, const Family& family,
                                                   glm::uint8 nColors, bool discrete,
                                                   double divergenceMidPoint);
 
