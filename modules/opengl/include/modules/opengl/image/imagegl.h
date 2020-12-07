@@ -84,7 +84,8 @@ public:
      * additional layers will be at the following locations. If \p imageType contains depth the
      * depth test is enabled and the depth mask is set to true, otherwise the depth test is disabled
      * and the depth mask is set to false. Finally the viewport is the to the image dimensions.
-     * @note In the case of nested calls where the state needs to be maintained @see activate(ImageType)
+     * @note In the case of nested calls where the state needs to be maintained @see
+     * activate(ImageType)
      * @param imageType The layers that should be active.
      */
     void activateBuffer(ImageType imageType = ImageType::AllLayers);
