@@ -55,7 +55,7 @@ namespace inviwo {
  *      * __NoWeighting__ no weighting of the normals, simple average
  *      * __WeightArea__  Weight = area of the triangle
  *      * __WeightAngle__ Weight based on the angle. As defined in "Computing vertex normals
- *                        from polygonal facets" by Grit Thürmer and Charles A. Wüthrich 1998.
+ *                        from polygonal facets" by Grit ThÃ¼rmer and Charles A. WÃ¼thrich 1998.
  *      * __WeightNMax__  Based on "Weights for Computing Vertex Normals from Facet Normals",
  *                        N. Max, 1999. This gives the best results in most cases.
  *
