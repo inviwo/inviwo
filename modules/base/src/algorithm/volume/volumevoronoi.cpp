@@ -34,7 +34,7 @@ namespace util {
 
 std::shared_ptr<Volume> voronoiSegmentation(
     std::shared_ptr<const Volume> volume, const mat3& voxelTransformation,
-    const std::vector<std::pair<dvec3, uint32_t>>& seedPointsWithIndices) {
+    const std::vector<std::pair<dvec3, uint32_t>>& seedPointsWithIndices, bool weightedVoronoi) {
 
     // TODO: check that the seed points are inside the volume (after transforming voxel pos)??
 

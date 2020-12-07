@@ -29,7 +29,6 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <modules/base/datastructures/kdtree.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <vector>
 
@@ -43,7 +42,7 @@ namespace util {
 
 IVW_MODULE_BASE_API std::shared_ptr<Volume> voronoiSegmentation(
     std::shared_ptr<const Volume> volume, const mat3& voxelTransformation,
-    const std::vector<std::pair<dvec3, uint32_t>>& seedPointsWithIndices);
+    const std::vector<std::pair<dvec3, uint32_t>>& seedPointsWithIndices, bool weightedVoronoi);
 
 }  // namespace util
 }  // namespace inviwo

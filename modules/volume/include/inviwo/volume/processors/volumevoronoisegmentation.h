@@ -31,7 +31,7 @@
 
 #include <inviwo/volume/volumemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
 
@@ -65,6 +65,8 @@ private:
     VolumeInport volume_;
     MeshInport inputMesh_;
     VolumeOutport outport_;
+
+    BoolProperty weighted_;
 };
 
 }  // namespace inviwo

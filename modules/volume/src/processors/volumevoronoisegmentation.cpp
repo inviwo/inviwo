@@ -43,11 +43,17 @@ const ProcessorInfo VolumeVoronoiSegmentation::processorInfo_{
 const ProcessorInfo VolumeVoronoiSegmentation::getProcessorInfo() const { return processorInfo_; }
 
 VolumeVoronoiSegmentation::VolumeVoronoiSegmentation()
-    : Processor(), volume_("inputVolume"), inputMesh_("inputPositions"), outport_("outport") {
+    : Processor()
+    , volume_("inputVolume")
+    , inputMesh_("inputPositions")
+    , outport_("outport")
+    , weighted_("weighted", "Weighted voronoi", true) {
 
     addPort(volume_);
     addPort(inputMesh_);
     addPort(outport_);
+
+    addProperty(weighted_);
 }
 
 void VolumeVoronoiSegmentation::process() {
@@ -98,7 +104,8 @@ void VolumeVoronoiSegmentation::process() {
     const auto scaledBasis =
         mat3{basis[0] / dimensions.x, basis[1] / dimensions.y, basis[2] / dimensions.z};
 
-    outport_.setData(util::voronoiSegmentation(volume, scaledBasis, seedPointsWithIndices));
+    outport_.setData(
+        util::voronoiSegmentation(volume, scaledBasis, seedPointsWithIndices, weighted_));
 }
 
 }  // namespace inviwo
