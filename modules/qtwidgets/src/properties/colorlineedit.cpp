@@ -253,13 +253,4 @@ void ColorLineEdit::updateRegExp() {
             .arg(decimalPoint)));
 }
 
-template <>
-dvec3 ColorLineEdit::getColor<dvec3>() const {
-    return color_;
-}
-template <>
-dvec4 ColorLineEdit::getColor<dvec4>() const {
-    return color_;
-}
-
 }  // namespace inviwo

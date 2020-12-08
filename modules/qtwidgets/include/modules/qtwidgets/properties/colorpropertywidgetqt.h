@@ -282,7 +282,7 @@ std::unique_ptr<QMenu> ColorPropertyWidgetQt<T>::getContextMenu() {
         ordinalProperty_->template getMetaData<IntMetaData>(
             "representation", static_cast<int>(util::DefaultColorRepresentation<T>::value)));
 
-    auto actionGroup = new QActionGroup(menu.get());
+    auto actionGroup = new QActionGroup(representationMenu);
 
     auto createAction = [&](const QString& title, ColorLineEdit::ColorRepresentation colorRep) {
         auto action = representationMenu->addAction(title);
