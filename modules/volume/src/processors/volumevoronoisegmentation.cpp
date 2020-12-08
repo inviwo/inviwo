@@ -45,13 +45,11 @@ const ProcessorInfo VolumeVoronoiSegmentation::getProcessorInfo() const { return
 VolumeVoronoiSegmentation::VolumeVoronoiSegmentation()
     : Processor()
     , volume_("inputVolume")
-    , inputMesh_("inputPositions")
-    , weighted_("weighted", "Weighted voronoi", false)
-    , dataFrame_("dataFrame")
-    , outport_("outport") {
+    , dataFrame_("seedPoints")
+    , outport_("outport")
+    , weighted_("weighted", "Weighted voronoi", false) {
 
     addPort(volume_);
-    addPort(inputMesh_);
     addPort(dataFrame_);
     addPort(outport_);
 
@@ -59,7 +57,6 @@ VolumeVoronoiSegmentation::VolumeVoronoiSegmentation()
 }
 
 void VolumeVoronoiSegmentation::process() {
-    auto inputMesh = inputMesh_.getData();
     auto dataFrame = dataFrame_.getData();
 
     auto indices =

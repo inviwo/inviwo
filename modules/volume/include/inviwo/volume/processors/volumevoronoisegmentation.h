@@ -64,7 +64,6 @@ public:
 
 private:
     VolumeInport volume_;
-    MeshInport inputMesh_;
     DataFrameInport dataFrame_;
     VolumeOutport outport_;
 
