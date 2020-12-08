@@ -33,7 +33,7 @@ namespace inviwo {
 namespace util {
 
 std::shared_ptr<Volume> voronoiSegmentation(
-    std::shared_ptr<const Volume> volume, const mat3& voxelTransformation,
+    std::shared_ptr<const Volume> volume,
     const std::vector<std::pair<uint32_t, vec3>>& seedPointsWithIndices,
     const std::optional<std::vector<float>>& weights, bool weightedVoronoi) {
 
@@ -49,12 +49,13 @@ std::shared_ptr<Volume> voronoiSegmentation(
     newVolume->dataMap_.dataRange = dvec2(0.0, static_cast<double>(seedPointsWithIndices.size()));
     newVolume->dataMap_.valueRange = newVolume->dataMap_.dataRange;
 
+    const auto indexToModel = mat3(volume->getCoordinateTransformer().getIndexToModelMatrix());
     auto volumeIndices = newVolumeRep->getDataTyped();
     util::IndexMapper3D index(volume->getDimensions());
 
     volume->getRepresentation<VolumeRAM>()->dispatch<void>([&](auto vrprecision) {
         util::forEachVoxelParallel(*vrprecision, [&](const size3_t& voxelPos) {
-            const auto transformedVoxelPos = voxelTransformation * voxelPos;
+            const auto transformedVoxelPos = indexToModel * voxelPos;
             auto minDist = std::numeric_limits<double>::max();
 
             for (size_t i = 0; i < seedPointsWithIndices.size(); i++) {

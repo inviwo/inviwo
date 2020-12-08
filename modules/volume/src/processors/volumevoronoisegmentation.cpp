@@ -98,15 +98,9 @@ void VolumeVoronoiSegmentation::process() {
         seedPointsWithIndices.push_back({indices[i], vec3{xPos[i], yPos[i], zPos[i]}});
     }
 
-    // In the case of the cube data volume,
-    // the voxel positions needs to be divided with the dimensions of the volume
-    const auto volume = volume_.getData();
-    const auto basis = volume->getBasis();
-    const auto dimensions = volume->getDimensions();
-    const auto scaledBasis =
-        mat3{basis[0] / dimensions.x, basis[1] / dimensions.y, basis[2] / dimensions.z};
-
-    outport_.setData(
-        util::voronoiSegmentation(volume, scaledBasis, seedPointsWithIndices, radii, weighted_));
+    // TODO: make sure the voxel positions and seed positions are in the same space?
+   
+    outport_.setData(util::voronoiSegmentation(volume_.getData(), seedPointsWithIndices, radii,
+                                               weighted_.get()));
 }
 }  // namespace inviwo
