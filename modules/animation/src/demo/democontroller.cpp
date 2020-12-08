@@ -52,8 +52,6 @@ DemoController::DemoController(InviwoApplication* app)
 
 DemoController::~DemoController() = default;
 
-void loadWorkspaceApp(const std::string& path);
-
 void DemoController::setFileOptions() {
 
     std::string selectedPath = filesystem::cleanupPath(demoFolder_.get());
@@ -123,14 +121,11 @@ void DemoController::onChangeSelection(Offset offset) {
 void DemoController::setFolder(const std::string& path) { demoFolder_.set(path); }
 
 // Copied from InviwoMainWindow::openWorkspace
-void loadWorkspaceApp(const std::string& fileName) {
-
-    InviwoApplication* app = InviwoApplication::getPtr();
-
-    NetworkLock lock(app->getProcessorNetwork());
-    app->getWorkspaceManager()->clear();
+void DemoController::loadWorkspaceApp(const std::string& fileName) {
+    NetworkLock lock(app_->getProcessorNetwork());
+    app_->getWorkspaceManager()->clear();
     try {
-        app->getWorkspaceManager()->load(fileName, [&](ExceptionContext ec) {
+        app_->getWorkspaceManager()->load(fileName, [&](ExceptionContext ec) {
             try {
                 throw;
             } catch (const IgnoreException& e) {
@@ -143,9 +138,11 @@ void loadWorkspaceApp(const std::string& fileName) {
         util::log(e.getContext(),
                   "Unable to load network " + fileName + " due to " + e.getMessage(),
                   LogLevel::Error);
-        app->getWorkspaceManager()->clear();
+        app_->getWorkspaceManager()->clear();
     }
 }
+
+InviwoApplication* DemoController::getInviwoApplication() { return app_; }
 
 }  // namespace animation
 

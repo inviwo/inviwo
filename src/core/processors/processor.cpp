@@ -314,6 +314,10 @@ const std::vector<InteractionHandler*>& Processor::getInteractionHandlers() cons
     return interactionHandlers_;
 }
 
+InviwoApplication* Processor::getInviwoApplication() {
+    return network_ ? network_->getApplication() : nullptr;
+}
+
 void Processor::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("identifier", identifier_, SerializationTarget::Attribute);

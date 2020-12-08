@@ -140,7 +140,7 @@ public:
 
     virtual void invokeEvent(Event* event) override;
 
-    virtual InviwoApplication* getInviwoApplication();
+    virtual InviwoApplication* getInviwoApplication() = 0;
 
 protected:
     PropertyOwner();

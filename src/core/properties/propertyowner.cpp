@@ -313,8 +313,4 @@ void PropertyOwner::invokeEvent(Event* event) {
     }
 }
 
-InviwoApplication* PropertyOwner::getInviwoApplication() {
-    return util::getInviwoApplication(getProcessor());
-}
-
 }  // namespace inviwo

@@ -168,6 +168,14 @@ void CompositeProperty::accept(NetworkVisitor& visitor) {
     }
 }
 
+InviwoApplication* CompositeProperty::getInviwoApplication() {
+    if (auto owner = getOwner()) {
+        return getOwner()->getInviwoApplication();
+    } else {
+        return nullptr;
+    }
+}
+
 Processor* CompositeProperty::getProcessor() {
     if (auto owner = getOwner()) {
         return owner->getProcessor();
