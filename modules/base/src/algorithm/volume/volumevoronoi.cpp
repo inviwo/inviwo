@@ -35,9 +35,7 @@ namespace util {
 std::shared_ptr<Volume> voronoiSegmentation(
     std::shared_ptr<const Volume> volume, const mat3& voxelTransformation,
     const std::vector<std::pair<uint32_t, vec3>>& seedPointsWithIndices,
-    const std::vector<float> weights, bool weightedVoronoi) {
-
-    // TODO: check that the seed points are inside the volume (after transforming voxel pos)??
+    const std::optional<std::vector<float>>& weights, bool weightedVoronoi) {
 
     auto newVolumeRep =
         std::make_shared<VolumeRAMPrecision<unsigned short>>(volume->getDimensions());
@@ -63,8 +61,8 @@ std::shared_ptr<Volume> voronoiSegmentation(
                 // Squared distance
                 auto dist = glm::distance2(seedPointsWithIndices[i].second, transformedVoxelPos);
 
-                if (weightedVoronoi) {
-                    dist = dist - weights[i] * weights[i];
+                if (weightedVoronoi && weights.has_value()) {
+                    dist = dist - weights.value()[i] * weights.value()[i];
                 }
 
                 if (dist < minDist) {
