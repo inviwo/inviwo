@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 
 namespace inviwo {
 
@@ -64,6 +65,7 @@ public:
 private:
     VolumeInport volume_;
     MeshInport inputMesh_;
+    DataFrameInport dataFrame_;
     VolumeOutport outport_;
 
     BoolProperty weighted_;

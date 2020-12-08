@@ -34,7 +34,8 @@ namespace util {
 
 std::shared_ptr<Volume> voronoiSegmentation(
     std::shared_ptr<const Volume> volume, const mat3& voxelTransformation,
-    const std::vector<std::pair<dvec3, uint32_t>>& seedPointsWithIndices, bool weightedVoronoi) {
+    const std::vector<std::pair<uint32_t, vec3>>& seedPointsWithIndices,
+    const std::vector<float> weights, bool weightedVoronoi) {
 
     // TODO: check that the seed points are inside the volume (after transforming voxel pos)??
 
@@ -58,16 +59,19 @@ std::shared_ptr<Volume> voronoiSegmentation(
             const auto transformedVoxelPos = voxelTransformation * voxelPos;
             auto minDist = std::numeric_limits<double>::max();
 
-            std::for_each(seedPointsWithIndices.cbegin(), seedPointsWithIndices.cend(),
-                          [&](const std::pair<dvec3, uint32_t>& point) {
-                              // Squared distance
-                              auto dist = glm::distance2(static_cast<vec3>(point.first),
-                                                         transformedVoxelPos);
-                              if (dist < minDist) {
-                                  volumeIndices[index(voxelPos)] = point.second;
-                                  minDist = dist;
-                              }
-                          });
+            for (size_t i = 0; i < seedPointsWithIndices.size(); i++) {
+                // Squared distance
+                auto dist = glm::distance2(seedPointsWithIndices[i].second, transformedVoxelPos);
+
+                if (weightedVoronoi) {
+                    dist = dist - weights[i] * weights[i];
+                }
+
+                if (dist < minDist) {
+                    volumeIndices[index(voxelPos)] = seedPointsWithIndices[i].first;
+                    minDist = dist;
+                }
+            }
         });
     });
 

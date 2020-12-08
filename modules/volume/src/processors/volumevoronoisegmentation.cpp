@@ -46,11 +46,13 @@ VolumeVoronoiSegmentation::VolumeVoronoiSegmentation()
     : Processor()
     , volume_("inputVolume")
     , inputMesh_("inputPositions")
-    , outport_("outport")
-    , weighted_("weighted", "Weighted voronoi", true) {
+    , weighted_("weighted", "Weighted voronoi", false)
+    , dataFrame_("dataFrame")
+    , outport_("outport") {
 
     addPort(volume_);
     addPort(inputMesh_);
+    addPort(dataFrame_);
     addPort(outport_);
 
     addProperty(weighted_);
@@ -58,42 +60,45 @@ VolumeVoronoiSegmentation::VolumeVoronoiSegmentation()
 
 void VolumeVoronoiSegmentation::process() {
     auto inputMesh = inputMesh_.getData();
+    auto dataFrame = dataFrame_.getData();
 
-    // Get seed points
-    // TODO: see if this can be done in a better way
-    auto posIt = util::find_if(inputMesh->getBuffers(), [](const auto& buf) {
-        return buf.first.type == BufferType::PositionAttrib;
-    });
-    if (posIt == inputMesh->getBuffers().end()) {
-        return;
-    }
-    const auto positionRam = posIt->second->getRepresentation<BufferRAM>();
-    std::vector<dvec3> positions;
-    for (std::size_t i = 0; i < positionRam->getSize(); ++i) {
-        positions.push_back(positionRam->getAsDVec3(i));
-    }
+    auto indices =
+        dataFrame->getIndexColumn()
+            ->getBuffer()
+            ->getRepresentation<BufferRAM>()
+            ->dispatch<std::vector<uint32_t>, dispatching::filter::Scalars>([](auto buf) {
+                auto& data = buf->getDataContainer();
+                std::vector<uint32_t> dst(data.size(), 0.0f);
+                std::transform(data.begin(), data.end(), dst.begin(),
+                               [&](auto v) { return static_cast<uint32_t>(v); });
+                return dst;
+            });
 
-    // Get indices for seed points (if exists??)
-    // TODO: should probably have some fallback solution if there are no indices...?
-    auto indexIt = util::find_if(inputMesh->getBuffers(), [](const auto& buf) {
-        return buf.first.type == BufferType::IndexAttrib;
-    });
-    if (indexIt == inputMesh->getBuffers().end()) {
-        return;
-    }
-    // TODO: see if this can be done in a better way
-    const auto& indices = static_cast<const BufferRAMPrecision<uint32_t, BufferTarget::Data>*>(
-                              indexIt->second->getRepresentation<BufferRAM>())
-                              ->getDataContainer();
+    auto getColumnDataAsFloats = [dataFrame](const std::string columnName) {
+        return dataFrame->getColumn(columnName)
+            ->getBuffer()
+            ->getRepresentation<BufferRAM>()
+            ->dispatch<std::vector<float>, dispatching::filter::Scalars>([](auto buf) {
+                auto& data = buf->getDataContainer();
+                std::vector<float> dst(data.size(), 0.0f);
+                std::transform(data.begin(), data.end(), dst.begin(),
+                               [&](auto v) { return static_cast<float>(v); });
+                return dst;
+            });
+    };
 
-    if (positions.size() != indices.size()) {
+    auto xPos = getColumnDataAsFloats("x");
+    auto yPos = getColumnDataAsFloats("y");
+    auto zPos = getColumnDataAsFloats("z");
+    auto radii = getColumnDataAsFloats("r");
+
+    if (xPos.size() != yPos.size() || xPos.size() != zPos.size() || xPos.size() != radii.size()) {
         throw Exception("Unexpected dimension missmatch", IVW_CONTEXT);
     }
 
-    // Assuming the positions and indices come in the same order...
-    std::vector<std::pair<dvec3, uint32_t>> seedPointsWithIndices;
-    for (std::size_t i = 0; i < positions.size(); ++i) {
-        seedPointsWithIndices.push_back({positions[i], indices[i]});
+    std::vector<std::pair<uint32_t, vec3>> seedPointsWithIndices;
+    for (std::size_t i = 0; i < xPos.size(); ++i) {
+        seedPointsWithIndices.push_back({indices[i], vec3{xPos[i], yPos[i], zPos[i]}});
     }
 
     // In the case of the cube data volume,
@@ -105,7 +110,6 @@ void VolumeVoronoiSegmentation::process() {
         mat3{basis[0] / dimensions.x, basis[1] / dimensions.y, basis[2] / dimensions.z};
 
     outport_.setData(
-        util::voronoiSegmentation(volume, scaledBasis, seedPointsWithIndices, weighted_));
+        util::voronoiSegmentation(volume, scaledBasis, seedPointsWithIndices, radii, weighted_));
 }
-
 }  // namespace inviwo
