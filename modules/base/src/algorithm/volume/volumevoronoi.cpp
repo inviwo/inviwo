@@ -42,6 +42,11 @@ std::shared_ptr<Volume> voronoiSegmentation(
                         IVW_CONTEXT_CUSTOM("VoronoiSegmentation"));
     }
 
+    if (weightedVoronoi && !weights.has_value()) {
+        throw Exception("Cannot use weighted voronoi when no weights are provided",
+                        IVW_CONTEXT_CUSTOM("VoronoiSegmentation"));
+    }
+
     if (weightedVoronoi && weights.has_value() &&
         weights.value().size() != seedPointsWithIndices.size()) {
         throw Exception(
