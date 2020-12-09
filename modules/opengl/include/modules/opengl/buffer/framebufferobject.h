@@ -43,9 +43,9 @@ namespace inviwo {
 /**
  * @brief Inviwo framebuffer wrapper.
  *
- * Handles creation and deletion of OpenGL framebuffer objects. Has functions for attachment and
- * detachment of textures to the framebuffer. It Also keeps track of all attached texture ids. The
- * wapper is a move only type.
+ * Handles creation and deletion of OpenGL framebuffer objects. Has functions for attaching and
+ * detaching of textures to the framebuffer. It also keeps track of all attached texture ids. The
+ * wrapper is a move only type.
  */
 class IVW_MODULE_OPENGL_API FrameBufferObject {
 public:
@@ -180,7 +180,9 @@ public:
     GLenum attachColorTextureLayer(Texture2DArray* texture, int attachmentNumber, int layer);
 
     /**
-     * @brief Attach a 3D Texture to the framebuffer
+     * @brief Attach a 3D Texture to the framebuffer.
+     *
+     * Use @c gl_Layer in the geometry shader to set target z slice.
      * @pre The framebuffer must be active.
      * @param texture to attach
      * @param attachmentID attachment point to use (@c GL_COLOR_ATTACHMENT0, ... )
@@ -191,6 +193,7 @@ public:
      * @brief Attach a 3D Color Texture to the framebuffer.
      *
      * Will use the first available attachment point.
+     * Use @c gl_Layer in the geometry shader to set target z slice.
      * @pre The framebuffer must be active.
      * @param texture to attach
      * @return The used attachment point (@c GL_COLOR_ATTACHMENT0, ... )
@@ -199,6 +202,8 @@ public:
 
     /**
      * @brief Attach a 3D Color Texture to the framebuffer.
+     *
+     * Use @c gl_Layer in the geometry shader to set target z slice.
      * @pre The framebuffer must be active.
      * @param texture to attach
      * @param attachmentNumber number of attachment point to use (0, 1, ...)
@@ -211,7 +216,7 @@ public:
      * @pre The framebuffer must be active.
      * @param texture to attach
      * @param attachmentID attachment point to use (@c GL_COLOR_ATTACHMENT0, ... )
-     * @param layer index of the layer to attach
+     * @param layer index of the z layer to attach
      */
     void attachTextureLayer(Texture3D* texture, GLenum attachmentID, int layer);
 
@@ -220,7 +225,7 @@ public:
      * Will use the first available attachment point.
      * @pre The framebuffer must be active.
      * @param texture to attach
-     * @param layer index of the layer to attach
+     * @param layer index of the z layer to attach
      * @return The used attachment point (@c GL_COLOR_ATTACHMENT0, ... )
      */
     GLenum attachColorTextureLayer(Texture3D* texture, int layer);
@@ -230,7 +235,7 @@ public:
      * @pre The framebuffer must be active.
      * @param texture to attach
      * @param attachmentNumber number of attachment point to use (0, 1, ...)
-     * @param layer index of the layer to attach
+     * @param layer index of the z layer to attach
      * @return the attachment point used (@c GL_COLOR_ATTACHMENT0, ... )
      */
     GLenum attachColorTextureLayer(Texture3D* texture, int attachmentNumber, int layer);
@@ -255,7 +260,7 @@ public:
     static GLuint maxColorAttachments();
 
     /**
-     * @brief Check if there is any color attachments
+     * @brief Check if there are any color attachments
      */
 
     bool hasColorAttachment() const;

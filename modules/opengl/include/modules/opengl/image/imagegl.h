@@ -45,7 +45,7 @@ class Image;
 
 /**
  * \ingroup datastructures
- * @brief OpenGL representation of a Image as a OpenGL framebuffer
+ * @brief OpenGL representation of an Image as a framebuffer
  *
  * Handles attaching all the image layers to the framebuffer
  * @see Image, ImageRepresentation
@@ -62,7 +62,7 @@ public:
                                    utilgl::ViewportState>;
 
     /**
-     * @brief Store the current "state" and active the FBO.
+     * @brief Store the current "state" and activate the FBO.
      *
      * Stores the currently bound FBO, the current depth test, depth mask, and viewport.
      * Binds the framebuffer.
@@ -98,7 +98,7 @@ public:
     virtual size2_t getDimensions() const override;
 
     /**
-     * @brief Copies this into the target using a copy shader
+     * @brief Copies this instance into the target using a copy shader
      *
      * The image content is scaled to the target dimensions. If the aspects are different the target
      * image will get padding to preserve the aspect of the source content.
@@ -115,11 +115,11 @@ public:
     bool copyRepresentationsTo(ImageGL* target) const;
 
     /**
-     * @brief Copies @p source into this using Blitting and PBOs if needed.
+     * @brief Copies @p source into this instance using Blitting and PBOs if needed.
      *
-     * Does not care about aspect ratios, copies the source image into the this using "nearest"
-     * interpolation. If some layers are not attached to the FBO they will be copied using PBO
-     * instead.
+     * Does not care about aspect ratios, copies the source image into the this instance using
+     * "nearest" interpolation. If some layers are not attached to the FBO they will be copied using
+     * PBO instead.
      * @param source Image to copy from
      * @return true
      */
