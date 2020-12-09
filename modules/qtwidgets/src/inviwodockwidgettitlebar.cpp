@@ -92,7 +92,8 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     layout->addWidget(floatBtn_);
     layout->addWidget(closeBtn_);
     layout->setSpacing(0);
-    layout->setMargin(utilqt::emToPx(this, 0.2));
+    auto margin = utilqt::emToPx(this, 0.2);
+    layout->setContentsMargins(margin, margin, margin, margin);
 
     setLayout(layout);
 
@@ -111,7 +112,7 @@ InviwoDockWidgetTitleBar::~InviwoDockWidgetTitleBar() = default;
 
 void InviwoDockWidgetTitleBar::paintEvent(QPaintEvent *) {
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
     QPainter p(this);
     // style()->drawControl(QStyle::CE_DockWidgetTitle, &opt, &p, this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);

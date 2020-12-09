@@ -47,7 +47,6 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QPixmap>
-#include <QDesktopWidget>
 #include <QMenu>
 #include <QAction>
 #include <QMenuBar>
@@ -57,6 +56,7 @@
 #include <QByteArray>
 #include <QStyle>
 #include <QScreen>
+#include <QFontDatabase>
 #include <warn/pop>
 
 #include <ios>
@@ -608,6 +608,30 @@ int emToPx(const QWidget* w, double em) {
 int emToPx(const QFontMetrics& m, double em) {
     const auto pxPerEm = m.boundingRect(QString(100, 'M')).width() / 100.0;
     return static_cast<int>(std::round(pxPerEm * em));
+}
+
+std::vector<std::string> getMonoSpaceFonts() {
+    std::vector<std::string> fonts;
+    QFontDatabase fontdb;
+
+    for (auto& font : fontdb.families()) {
+        if (fontdb.isFixedPitch(font)) {
+            fonts.push_back(utilqt::fromQString(font));
+        }
+    }
+
+    return fonts;
+}
+
+size_t getDefaultFontIndex() {
+    const auto fonts = getMonoSpaceFonts();
+    const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    auto it = std::find(fonts.begin(), fonts.end(), utilqt::fromQString(fixedFont.family()));
+    if (it != fonts.end()) {
+        return it - fonts.begin();
+    } else {
+        return 0;
+    }
 }
 
 WidgetCloseEventFilter::WidgetCloseEventFilter(QObject* parent) : QObject(parent) {}

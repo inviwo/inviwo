@@ -47,7 +47,7 @@ ValueDragSpinBox::ValueDragSpinBox(QWidget *parent)
 
     auto layout = new QHBoxLayout();
     layout->setSpacing(0);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(valueDragger_);
     layout->addWidget(spinBox_);
 

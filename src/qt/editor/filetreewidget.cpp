@@ -384,7 +384,7 @@ bool FileTreeWidget::selectRecentWorkspace(int index) {
 }
 
 void FileTreeWidget::setFilter(const QString& str) {
-    proxyModel_->setFilterRegExp(str);
+    proxyModel_->setFilterRegularExpression(str);
 
     expandItems();
 
@@ -398,7 +398,7 @@ void FileTreeWidget::setFilter(const QString& str) {
 
 void FileTreeWidget::expandItems() {
     // fold/unfold all tree items based on filtering
-    if (proxyModel_->filterRegExp().isEmpty()) {
+    if (proxyModel_->filterRegularExpression().pattern().isEmpty()) {
         defaultExpand();
     } else {
         expandAll();

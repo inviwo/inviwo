@@ -65,7 +65,6 @@ protected:
     void save();
     void saveToFile(const std::string& filename);
 
-private:
     FileProperty* fileProperty_;
     StringProperty* stringProperty_;
     CodeEdit* editor_;

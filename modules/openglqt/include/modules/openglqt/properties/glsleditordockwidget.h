@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,48 +26,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/openglqt/openglqtmoduledefine.h>
 
-class QDropEvent;
-class QDragEnterEvent;
-class QDragMoveEvent;
-class QHBoxLayout;
+#include <modules/qtwidgets/properties/texteditorwidgetqt.h>
+
+#include <functional>
+#include <memory>
+#include <vector>
 
 namespace inviwo {
 
-class FilePathLineEditQt;
-class TextEditorDockWidget;
-
-class IVW_MODULE_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt,
-                                                      public FileRequestable {
+class IVW_MODULE_OPENGLQT_API GLSLEditorDockWidget : public TextEditorDockWidget {
 public:
-    FilePropertyWidgetQt(FileProperty* property);
-    virtual ~FilePropertyWidgetQt() = default;
+    GLSLEditorDockWidget(Property* property);
 
-    virtual void updateFromProperty() override;
-    virtual bool requestFile() override;
-
-    virtual PropertyEditorWidget* getEditorWidget() const override;
-    virtual bool hasEditorWidget() const override;
-
-protected:
-    virtual void dropEvent(QDropEvent*) override;
-    virtual void dragEnterEvent(QDragEnterEvent*) override;
-    virtual void dragMoveEvent(QDragMoveEvent*) override;
-
-    virtual void initEditor();
-    void addEditor();
-    void setPropertyValue();
-
-    FileProperty* property_;
-    FilePathLineEditQt* lineEdit_;
-    QHBoxLayout* hWidgetLayout_;
-    std::unique_ptr<TextEditorDockWidget> editor_;
+private:
+    std::vector<std::shared_ptr<std::function<void()>>> callbacks_;
 };
 
 }  // namespace inviwo

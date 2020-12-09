@@ -41,11 +41,11 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
-#include <modules/qtwidgets/qtwidgetssettings.h>
 
 #include <modules/python3/python3module.h>
 #include <modules/python3qt/python3qtmodule.h>
 #include <modules/python3/pythoninterpreter.h>
+#include <modules/python3qt/pythonsyntaxhighlight.h>
 
 #include <modules/qtwidgets/codeedit.h>
 
@@ -96,12 +96,21 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
 
     QSplitter* splitter = new QSplitter(nullptr);
     splitter->setOrientation(Qt::Vertical);
-    pythonCode_ = new CodeEdit{Python};
-    setDefaultText();
 
-    pythonOutput_ = new CodeEdit(None, nullptr);
-    pythonOutput_->setReadOnly(true);
-    pythonOutput_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    auto settings = InviwoApplication::getPtr()->getSettingsByType<PythonSyntaxHighlight>();
+    {
+        auto sh = new SyntaxHighligther(this);
+        codeCallbacks_ = utilqt::setPythonSyntaxHighlight(*sh, *settings);
+        pythonCode_ = new CodeEdit{sh, this};
+        setDefaultText();
+    }
+    {
+        auto shOut = new SyntaxHighligther(this);
+        outputCallbacks_ = utilqt::setPythonOutputSyntaxHighlight(*shOut, *settings);
+        pythonOutput_ = new CodeEdit{shOut, this};
+        pythonOutput_->setReadOnly(true);
+        pythonOutput_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    }
 
     splitter->addWidget(pythonCode_);
     splitter->addWidget(pythonOutput_);
@@ -191,7 +200,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         icon.addFile(":/svgicons/log-clear-on-run.svg", QSize(), QIcon::Normal, QIcon::Off);
 
         appendLog_ = toolBar->addAction(icon, "Append Log");
-        appendLog_->setShortcut(Qt::ControlModifier + Qt::Key_A);
+        appendLog_->setShortcut(Qt::CTRL | Qt::Key_A);
         appendLog_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         appendLog_->setCheckable(true);
         appendLog_->setChecked(true);
@@ -206,7 +215,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     }
     {
         auto action = toolBar->addAction(QIcon(":/svgicons/log-clear.svg"), "Clear Log Output");
-        action->setShortcut(Qt::ControlModifier + Qt::Key_E);
+        action->setShortcut(Qt::CTRL | Qt::Key_E);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Clear Log Output");
         mainWindow_->addAction(action);

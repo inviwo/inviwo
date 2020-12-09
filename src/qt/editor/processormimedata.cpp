@@ -34,6 +34,7 @@
 #include <warn/ignore/all>
 #include <QByteArray>
 #include <QDataStream>
+#include <QIODevice>
 #include <warn/pop>
 
 namespace inviwo {

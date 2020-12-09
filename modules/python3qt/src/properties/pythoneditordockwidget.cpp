@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,47 +27,20 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/python3qt/properties/pythoneditordockwidget.h>
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
-class QDropEvent;
-class QDragEnterEvent;
-class QDragMoveEvent;
-class QHBoxLayout;
+#include <modules/python3qt/pythonsyntaxhighlight.h>
 
 namespace inviwo {
 
-class FilePathLineEditQt;
-class TextEditorDockWidget;
+PythonEditorDockWidget::PythonEditorDockWidget(Property* property)
+    : TextEditorDockWidget(property) {
 
-class IVW_MODULE_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt,
-                                                      public FileRequestable {
-public:
-    FilePropertyWidgetQt(FileProperty* property);
-    virtual ~FilePropertyWidgetQt() = default;
-
-    virtual void updateFromProperty() override;
-    virtual bool requestFile() override;
-
-    virtual PropertyEditorWidget* getEditorWidget() const override;
-    virtual bool hasEditorWidget() const override;
-
-protected:
-    virtual void dropEvent(QDropEvent*) override;
-    virtual void dragEnterEvent(QDragEnterEvent*) override;
-    virtual void dragMoveEvent(QDragMoveEvent*) override;
-
-    virtual void initEditor();
-    void addEditor();
-    void setPropertyValue();
-
-    FileProperty* property_;
-    FilePathLineEditQt* lineEdit_;
-    QHBoxLayout* hWidgetLayout_;
-    std::unique_ptr<TextEditorDockWidget> editor_;
-};
+    auto app = util::getInviwoApplication(property);
+    callbacks_ = utilqt::setPythonSyntaxHighlight(*syntaxHighligther_,
+                                                  *app->getSettingsByType<PythonSyntaxHighlight>());
+}
 
 }  // namespace inviwo

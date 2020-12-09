@@ -15,14 +15,18 @@ set(MOC_FILES
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${MOC_FILES}
     include/modules/openglqt/canvasqopenglwidget.h
     include/modules/openglqt/canvasqt.h
+    include/modules/openglqt/glslsyntaxhighlight.h
     include/modules/openglqt/hiddencanvasqt.h
     include/modules/openglqt/openglqtcapabilities.h
     include/modules/openglqt/openglqtmodule.h
     include/modules/openglqt/openglqtmoduledefine.h
+    include/modules/openglqt/properties/glsleditordockwidget.h
+    include/modules/openglqt/properties/glslfilepropertywidgetqt.h
+    include/modules/openglqt/properties/glslpropertywidgetqt.h
     include/modules/openglqt/shaderwidget.h
-    ${MOC_FILES}
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -30,12 +34,16 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     src/canvasprocessorwidgetqt.cpp
-    src/canvasqt.cpp
     src/canvasqopenglwidget.cpp
+    src/canvasqt.cpp
+    src/glslsyntaxhighlight.cpp
     src/hiddencanvasqt.cpp
     src/openglqtcapabilities.cpp
     src/openglqtmenu.cpp
     src/openglqtmodule.cpp
+    src/properties/glsleditordockwidget.cpp
+    src/properties/glslfilepropertywidgetqt.cpp
+    src/properties/glslpropertywidgetqt.cpp
     src/shaderwidget.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

@@ -15,10 +15,14 @@ set(MOC_FILES
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    include/modules/python3qt/properties/pythoneditordockwidget.h
+    include/modules/python3qt/properties/pythonfilepropertywidgetqt.h
+    include/modules/python3qt/properties/pythonpropertywidgetqt.h
     include/modules/python3qt/python3qtmodule.h
     include/modules/python3qt/python3qtmoduledefine.h
     include/modules/python3qt/pythoneditorwidget.h
     include/modules/python3qt/pythonmenu.h
+    include/modules/python3qt/pythonsyntaxhighlight.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -28,9 +32,13 @@ source_group("MOC Files" FILES ${MOCED_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/properties/pythoneditordockwidget.cpp
+    src/properties/pythonfilepropertywidgetqt.cpp
+    src/properties/pythonpropertywidgetqt.cpp
     src/python3qtmodule.cpp
     src/pythoneditorwidget.cpp
     src/pythonmenu.cpp
+    src/pythonsyntaxhighlight.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

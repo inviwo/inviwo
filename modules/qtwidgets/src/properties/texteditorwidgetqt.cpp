@@ -36,7 +36,7 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <modules/qtwidgets/properties/syntaxhighlighter.h>
+#include <modules/qtwidgets/syntaxhighlighter.h>
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/filepropertywidgetqt.h>
@@ -78,13 +78,9 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     toolBar->setMovable(false);
     setWidget(mainWindow);
 
-    if (property->getSemantics() == PropertySemantics::ShaderEditor) {
-        editor_ = new CodeEdit{GLSL};
-    } else if (property->getSemantics() == PropertySemantics::PythonEditor) {
-        editor_ = new CodeEdit{Python};
-    } else {
-        editor_ = new CodeEdit{None};
-    }
+    syntaxHighligther_ = new SyntaxHighligther(this);
+    editor_ = new CodeEdit{syntaxHighligther_, this};
+
     mainWindow->setCentralWidget(editor_);
 
     QObject::connect(editor_, &CodeEdit::modificationChanged, this,
@@ -105,7 +101,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     if (fileProperty_) {
         propertyCallback_ = fileProperty_->onChangeScoped([this]() { propertyModified(); });
 
-        auto saveas = toolBar->addAction(QIcon(":/svgicons/saveas.svg"), tr("&Save Script As..."));
+        auto saveas = toolBar->addAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Script As..."));
         saveas->setShortcut(QKeySequence::SaveAs);
         saveas->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         saveas->setToolTip("Save Script As...");

@@ -77,7 +77,6 @@
 #include <inviwo/core/io/rawvolumereader.h>
 #include <modules/qtwidgets/rawdatareaderdialogqt.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
-#include <modules/qtwidgets/qtwidgetssettings.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -156,7 +155,6 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
         throw ModuleInitException("QApplication must be constructed before QtWidgetsModule",
                                   IVW_CONTEXT);
     }
-    registerSettings(std::make_unique<QtWidgetsSettings>());
 
     // Register bool property widgets
     registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Default");
@@ -170,8 +168,6 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     // Register file property widgets
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>("Default");
     registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::TextEditor);
-    registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::ShaderEditor);
-    registerPropertyWidget<FilePropertyWidgetQt, FileProperty>(PropertySemantics::PythonEditor);
 
     registerPropertyWidget<MultiFilePropertyWidgetQt, MultiFileProperty>("Default");
 
@@ -205,8 +201,7 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>("Default");
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>("Password");
     registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::TextEditor);
-    registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::ShaderEditor);
-    registerPropertyWidget<StringPropertyWidgetQt, StringProperty>(PropertySemantics::PythonEditor);
+
     registerPropertyWidget<StringMultilinePropertyWidgetQt, StringProperty>("Multiline");
 
     // Register TF property widgets

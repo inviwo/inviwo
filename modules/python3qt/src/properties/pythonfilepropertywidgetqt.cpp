@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,47 +27,27 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/properties/syntaxhighlighter.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/util/filesystem.h>
-#include <modules/qtwidgets/qtwidgetssettings.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <modules/python3qt/properties/pythonfilepropertywidgetqt.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QTextDocument>
-#include <QTextBlock>
-#include <warn/pop>
+#include <modules/python3qt/properties/pythoneditordockwidget.h>
+
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 
-SyntaxHighligther::SyntaxHighligther(QTextDocument* parent) : QSyntaxHighlighter(parent) {}
+PythonFilePropertyWidgetQt::PythonFilePropertyWidgetQt(FileProperty* property)
+    : FilePropertyWidgetQt(property) {
 
-SyntaxHighligther::~SyntaxHighligther() = default;
+    IVW_ASSERT(property->getSemantics() == PropertySemantics::PythonEditor, "Wrong semantics");
 
-const QColor& SyntaxHighligther::getBackgroundColor() const { return backgroundColor_; }
-
-void SyntaxHighligther::highlightBlock(const QString& text) {
-    setFormat(0, text.size(), defaultFormat_);
-
-    for (auto it = formaters_.begin(); it != formaters_.end(); ++it) {
-        SyntaxFormater::Result res = (*it)->eval(text, previousBlockState());
-
-        for (size_t i = 0; i < res.start.size(); i++) {
-            setFormat(res.start[i], res.length[i], *res.format);
-            setCurrentBlockState(res.outgoingState);
-        }
-    }
+    addEditor();
 }
 
-template <>
-void SyntaxHighligther::loadConfig<None>() {
-    auto ivec4toQtColor = [](const ivec4& i) { return QColor(i.r, i.g, i.b, i.a); };
-    auto settings = InviwoApplication::getPtr()->getSettingsByType<QtWidgetsSettings>();
-    QColor textColor = ivec4toQtColor(settings->pyTextColor_.get());
-    backgroundColor_ = ivec4toQtColor(settings->pyBGColor_.get());
-    defaultFormat_.setBackground(backgroundColor_);
-    defaultFormat_.setForeground(textColor);
+PythonFilePropertyWidgetQt::~PythonFilePropertyWidgetQt() = default;
+
+void PythonFilePropertyWidgetQt::initEditor() {
+    editor_ = std::make_unique<PythonEditorDockWidget>(property_);
 }
 
 }  // namespace inviwo

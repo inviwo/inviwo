@@ -71,7 +71,7 @@ QSize PropertyListFrame::minimumSizeHint() const {
 
 void PropertyListFrame::paintEvent(QPaintEvent*) {
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }

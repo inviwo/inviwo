@@ -189,7 +189,7 @@ QSize NumberLineEdit::minimumSizeHint() const {
             sizeContents.setWidth(sizeContents.width() -
                                   static_cast<int>(sizeContents.height() / 1.2));
         }
-        cachedMinimumSizeHint_ = sizeContents.expandedTo(QApplication::globalStrut());
+        cachedMinimumSizeHint_ = sizeContents;
     }
     return cachedMinimumSizeHint_;
 }

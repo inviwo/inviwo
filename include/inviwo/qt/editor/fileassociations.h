@@ -117,8 +117,14 @@ class FileAssociationData;
 
 class IVW_QTEDITOR_API FileAssociations : public QAbstractNativeEventFilter {
     friend FileAssociationData;
-
 public:
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    using ResultType = long;
+#else
+    using ResultType = qintptr;
+#endif
+
     FileAssociations(QMainWindow* win);
     virtual ~FileAssociations();
 
@@ -137,7 +143,7 @@ public:
                           std::vector<FileAssociationCommand> commands = {});
 
     // QAbstractNativeEventFilter overrides
-    bool nativeEventFilter(const QByteArray& eventType, void* message, long* result) override;
+    bool nativeEventFilter(const QByteArray& eventType, void* message, ResultType* result) override;
 
 private:
     /**

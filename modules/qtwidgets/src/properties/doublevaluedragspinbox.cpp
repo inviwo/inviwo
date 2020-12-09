@@ -51,7 +51,7 @@ DoubleValueDragSpinBox::DoubleValueDragSpinBox(QWidget *parent)
 
     auto layout = new QHBoxLayout();
     layout->setSpacing(utilqt::emToPx(this, 0.2));
-    layout->setMargin(0);
+    layout->setContentsMargins(0,0,0,0);
     layout->addWidget(spinBox_);
     layout->addWidget(valueDragger_);
 

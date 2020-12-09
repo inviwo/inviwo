@@ -84,7 +84,7 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 #include <QApplication>
 #include <QDir>
 #include <QFileInfo>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <warn/pop>
 
 namespace inviwo {
@@ -116,7 +116,7 @@ public:
         }
     }
 
-    bool nativeEvent(void* message, long* result) {
+    bool nativeEvent(void* message, FileAssociations::ResultType* result) {
         auto m = static_cast<MSG*>(message);
         switch (m->message) {
             case WM_DDE_INITIATE:
@@ -207,7 +207,7 @@ public:
 
 private:
     // implementation of the WM_DDE_INITIATE windows message
-    bool ddeInitiate(MSG* message, long* result) {
+    bool ddeInitiate(MSG* message, FileAssociations::ResultType* result) {
         if ((0 != LOWORD(message->lParam)) && (0 != HIWORD(message->lParam)) &&
             (LOWORD(message->lParam) == appAtom_) &&
             (HIWORD(message->lParam) == systemTopicAtom_)) {
@@ -227,7 +227,7 @@ private:
         return true;
     }
 
-    bool ddeExecute(MSG* message, long* result) {
+    bool ddeExecute(MSG* message, FileAssociations::ResultType* result) {
         // unpack the DDE message
         [[maybe_unused]] UINT_PTR unused;
         HGLOBAL hData = nullptr;
@@ -250,16 +250,17 @@ private:
             return true;
         }
 
-        QRegExp re("^\\[(\\w+)\\((.*)\\)\\]$");
-        if (re.exactMatch(command)) {
-            fa_.executeCommand(utilqt::fromQString(re.cap(1)), utilqt::fromQString(re.cap(2)));
+        QRegularExpression re("^\\[(\\w+)\\((.*)\\)\\]$");
+        if (auto m = re.match(command); m.hasMatch()) {
+            fa_.executeCommand(utilqt::fromQString(m.captured(1)),
+                               utilqt::fromQString(m.captured(2)));
         }
 
         if (result) *result = 0;
         return true;
     }
 
-    bool ddeTerminate(MSG* message, long*) {
+    bool ddeTerminate(MSG* message, FileAssociations::ResultType*) {
         // The client or server application should respond by posting a WM_DDE_TERMINATE message.
         ::PostMessageW((HWND)message->wParam, WM_DDE_TERMINATE, (WPARAM)win_->winId(),
                        message->lParam);
@@ -314,7 +315,7 @@ class FileAssociationData {
 public:
     FileAssociationData(FileAssociations& fa, QMainWindow* win) {}
 
-    bool nativeEvent(void* message, long* result) { return false; }
+    bool nativeEvent(void* message, qintptr* result) { return false; }
     void registerFileType(const std::string& documentId, const std::string& fileTypeName,
                           const std::string& fileExtension, int appIconIndex,
                           const std::vector<FileAssociationCommand>& commands) {}
@@ -327,7 +328,8 @@ FileAssociations::FileAssociations(QMainWindow* win)
 
 FileAssociations::~FileAssociations() = default;
 
-bool FileAssociations::nativeEventFilter(const QByteArray& eventType, void* message, long* result) {
+bool FileAssociations::nativeEventFilter(const QByteArray& eventType, void* message,
+                                         ResultType* result) {
     /*
      * The type of event eventType is specific to the platform plugin chosen at run-time, and can
      * be used to cast message to the right type.

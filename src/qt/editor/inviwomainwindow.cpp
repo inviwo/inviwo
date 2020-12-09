@@ -83,7 +83,6 @@
 #include <QGridLayout>
 #include <QActionGroup>
 #include <QClipboard>
-#include <QDesktopWidget>
 #include <QFileDialog>
 #include <QList>
 #include <QMessageBox>
@@ -96,6 +95,7 @@
 #include <QDragEnterEvent>
 #include <QBuffer>
 #include <QTabWidget>
+#include <QScreen>
 #include <QToolButton>
 
 #include <warn/pop>
@@ -178,20 +178,20 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
               util::insertNetworkForData(file, net);
           }}});
 
-    const QDesktopWidget dw;
-    auto screen = dw.screenGeometry(this);
+    auto screen = QGuiApplication::primaryScreen();
     const float maxRatio = 0.8f;
-
+    const auto ssize = screen->availableSize();
+        
     QSize size = utilqt::emToPx(this, QSizeF(192, 108));
-    size.setWidth(std::min(size.width(), static_cast<int>(screen.width() * maxRatio)));
-    size.setHeight(std::min(size.height(), static_cast<int>(screen.height() * maxRatio)));
+    size.setWidth(std::min(size.width(), static_cast<int>(ssize.width() * maxRatio)));
+    size.setHeight(std::min(size.height(), static_cast<int>(ssize.height() * maxRatio)));
 
     // Center Window
-    QPoint pos{screen.width() / 2 - size.width() / 2, screen.height() / 2 - size.height() / 2};
+    QPoint pos{ssize.width() / 2 - size.width() / 2, ssize.height() / 2 - size.height() / 2};
 
     resize(size);
     move(pos);
-
+    
     app->getCommandLineParser().add(&openData_,
                                     [this]() {
                                         auto net = app_->getProcessorNetwork();
@@ -648,7 +648,7 @@ void InviwoMainWindow::addActions() {
         editMenu_->addSeparator();
         auto searchNetwork =
             editMenu_->addAction(QIcon(":/svgicons/find-network.svg"), tr("&Search Network"));
-        searchNetwork->setShortcut(Qt::ShiftModifier + Qt::ControlModifier + Qt::Key_F);
+        searchNetwork->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_F);
         connect(searchNetwork, &QAction::triggered, [this]() {
             networkEditorView_->getNetworkSearch().setVisible(true);
             networkEditorView_->getNetworkSearch().setFocus();
@@ -664,7 +664,7 @@ void InviwoMainWindow::addActions() {
 
         auto addProcessorAction =
             editMenu_->addAction(QIcon(":/svgicons/processor-add.svg"), tr("&Add Processor"));
-        addProcessorAction->setShortcut(Qt::ControlModifier + Qt::Key_D);
+        addProcessorAction->setShortcut(Qt::CTRL | Qt::Key_D);
         connect(addProcessorAction, &QAction::triggered, this,
                 [this]() { processorTreeWidget_->addSelectedProcessor(); });
 
@@ -738,7 +738,7 @@ void InviwoMainWindow::addActions() {
         disableEvalAction->setCheckable(true);
         disableEvalAction->setChecked(false);
 
-        disableEvalAction->setShortcut(Qt::ControlModifier + Qt::Key_L);
+        disableEvalAction->setShortcut(Qt::CTRL | Qt::Key_L);
         networkMenuItem->addAction(disableEvalAction);
         networkToolBar->addAction(disableEvalAction);
         connect(disableEvalAction, &QAction::triggered, this, [disableEvalAction, this]() {
@@ -757,7 +757,7 @@ void InviwoMainWindow::addActions() {
             QIcon(":/svgicons/composite-create-enabled.svg"), tr("&Create Composite"));
         compAction->setEnabled(false);
         networkToolBar->addAction(compAction);
-        compAction->setShortcut(Qt::ControlModifier + Qt::Key_G);
+        compAction->setShortcut(Qt::CTRL | Qt::Key_G);
         connect(compAction, &QAction::triggered, this, [this]() {
             util::replaceSelectionWithCompositeProcessor(*(app_->getProcessorNetwork()));
         });
@@ -765,7 +765,7 @@ void InviwoMainWindow::addActions() {
         auto expandAction = networkMenuItem->addAction(
             QIcon(":/svgicons/composite-expand-enabled.svg"), tr("&Expand Composite"));
         networkToolBar->addAction(expandAction);
-        expandAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_G);
+        expandAction->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_G);
         expandAction->setEnabled(false);
         connect(expandAction, &QAction::triggered, this, [this]() {
             std::unordered_set<CompositeProcessor*> selectedComposites;

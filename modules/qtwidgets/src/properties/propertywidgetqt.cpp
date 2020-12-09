@@ -44,7 +44,6 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QStyleOption>
 #include <QPainter>
 #include <QToolTip>
@@ -56,6 +55,7 @@
 #include <QLayout>
 #include <QMimeData>
 #include <QMessageBox>
+#include <QActionGroup>
 #include <warn/pop>
 
 namespace inviwo {
