@@ -131,7 +131,6 @@ std::vector<std::shared_ptr<std::function<void()>>> utilqt::setPythonOutputSynta
     QColor bgColor = utilqt::toQColor(settings.backgroundColor);
 
     QTextCharFormat defaultFormat;
-    QColor textColor = utilqt::toQColor(settings.textColor);
     defaultFormat.setBackground(bgColor);
     defaultFormat.setForeground(utilqt::toQColor(settings.textColor));
 
