@@ -37,6 +37,18 @@ std::shared_ptr<Volume> voronoiSegmentation(
     const std::vector<std::pair<uint32_t, vec3>>& seedPointsWithIndices,
     const std::optional<std::vector<float>>& weights, bool weightedVoronoi) {
 
+    if (seedPointsWithIndices.size() == 0) {
+        throw Exception("No seed points, cannot create volume voronoi segmentation",
+                        IVW_CONTEXT_CUSTOM("VoronoiSegmentation"));
+    }
+
+    if (weightedVoronoi && weights.has_value() &&
+        weights.value().size() != seedPointsWithIndices.size()) {
+        throw Exception(
+            "Cannot use weighted voronoi when dimensions do not match (weights and seed positions)",
+            IVW_CONTEXT_CUSTOM("VoronoiSegmentation"));
+    }
+
     auto newVolumeRep = std::make_shared<VolumeRAMPrecision<unsigned short>>(volumeDimensions);
     auto newVolume = std::make_shared<Volume>(newVolumeRep);
 
@@ -48,20 +60,26 @@ std::shared_ptr<Volume> voronoiSegmentation(
 
     util::forEachVoxelParallel(volumeDimensions, [&](const size3_t& voxelPos) {
         const auto transformedVoxelPos = mat3(indexToModelMatrix) * voxelPos;
-        auto minDist = std::numeric_limits<double>::max();
 
-        for (size_t i = 0; i < seedPointsWithIndices.size(); i++) {
-            // Squared distance
-            auto dist = glm::distance2(seedPointsWithIndices[i].second, transformedVoxelPos);
+        if (weightedVoronoi && weights.has_value()) {
+            auto zipped = util::zip(seedPointsWithIndices, weights.value());
 
-            if (weightedVoronoi && weights.has_value()) {
-                dist = dist - weights.value()[i] * weights.value()[i];
-            }
+            auto&& [posWithIndex, weight] = *std::min_element(
+                zipped.begin(), zipped.end(), [transformedVoxelPos](auto&& i1, auto&& i2) {
+                    auto&& [p1, w1] = i1;
+                    auto&& [p2, w2] = i2;
 
-            if (dist < minDist) {
-                volumeIndices[index(voxelPos)] = seedPointsWithIndices[i].first;
-                minDist = dist;
-            }
+                    return glm::distance2(p1.second, transformedVoxelPos) - w1 * w1 <
+                           glm::distance2(p2.second, transformedVoxelPos) - w2 * w2;
+                });
+            volumeIndices[index(voxelPos)] = posWithIndex.first;
+        } else {
+            auto it = std::min_element(seedPointsWithIndices.cbegin(), seedPointsWithIndices.cend(),
+                                       [transformedVoxelPos](const auto& p1, const auto& p2) {
+                                           return glm::distance2(p1.second, transformedVoxelPos) <
+                                                  glm::distance2(p2.second, transformedVoxelPos);
+                                       });
+            volumeIndices[index(voxelPos)] = it->first;
         }
     });
 

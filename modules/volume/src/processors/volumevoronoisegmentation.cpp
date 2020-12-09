@@ -57,9 +57,14 @@ VolumeVoronoiSegmentation::VolumeVoronoiSegmentation()
 }
 
 void VolumeVoronoiSegmentation::process() {
-    auto dataFrame = dataFrame_.getData();
+    const auto dataFrame = dataFrame_.getData();
+    const auto volume = volume_.getData();
 
-    auto indices =
+    if (volume->getWrapping() != wrapping3d::clampAll) {
+        throw Exception("Incompatible volume wrapping (should be clamped)", IVW_CONTEXT);
+    }
+
+    const auto indices =
         dataFrame->getIndexColumn()
             ->getBuffer()
             ->getRepresentation<BufferRAM>()
@@ -71,7 +76,7 @@ void VolumeVoronoiSegmentation::process() {
                 return dst;
             });
 
-    auto getColumnDataAsFloats = [dataFrame](const std::string columnName) {
+    const auto getColumnDataAsFloats = [dataFrame](const std::string columnName) {
         return dataFrame->getColumn(columnName)
             ->getBuffer()
             ->getRepresentation<BufferRAM>()
@@ -84,23 +89,22 @@ void VolumeVoronoiSegmentation::process() {
             });
     };
 
-    auto xPos = getColumnDataAsFloats("x");
-    auto yPos = getColumnDataAsFloats("y");
-    auto zPos = getColumnDataAsFloats("z");
-    auto radii = getColumnDataAsFloats("r");
+    const auto xPos = getColumnDataAsFloats("x");
+    const auto yPos = getColumnDataAsFloats("y");
+    const auto zPos = getColumnDataAsFloats("z");
+    const auto radii = getColumnDataAsFloats("r");
 
-    if (xPos.size() != yPos.size() || xPos.size() != zPos.size() || xPos.size() != radii.size()) {
+    if (indices.size() != xPos.size() || indices.size() != yPos.size() ||
+        indices.size() != zPos.size() || indices.size() != radii.size()) {
         throw Exception("Unexpected dimension missmatch", IVW_CONTEXT);
     }
 
-    std::vector<std::pair<uint32_t, vec3>> seedPointsWithIndices;
+    std::vector<std::pair<uint32_t, vec3>> seedPointsWithIndices = {};
     for (std::size_t i = 0; i < xPos.size(); ++i) {
         seedPointsWithIndices.push_back({indices[i], vec3{xPos[i], yPos[i], zPos[i]}});
     }
 
     // TODO: make sure the voxel positions and seed positions are in the same space?
-
-    const auto volume = volume_.getData();
 
     const auto voronoiVolume = util::voronoiSegmentation(
         volume->getDimensions(), volume->getCoordinateTransformer().getIndexToModelMatrix(),
@@ -108,13 +112,7 @@ void VolumeVoronoiSegmentation::process() {
 
     voronoiVolume->setModelMatrix(volume->getModelMatrix());
     voronoiVolume->setWorldMatrix(volume->getWorldMatrix());
-
     voronoiVolume->setInterpolation(InterpolationType::Nearest);
-
-    // probably move to top to make this check early
-    if (volume->getWrapping() != wrapping3d::clampAll) {
-        // Throw error or print warning
-    }
     voronoiVolume->setWrapping(volume->getWrapping());
 
     outport_.setData(voronoiVolume);
