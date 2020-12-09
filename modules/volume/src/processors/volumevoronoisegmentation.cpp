@@ -99,7 +99,7 @@ void VolumeVoronoiSegmentation::process() {
     }
 
     // TODO: make sure the voxel positions and seed positions are in the same space?
-    
+
     const auto volume = volume_.getData();
 
     const auto voronoiVolume = util::voronoiSegmentation(
