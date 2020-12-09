@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGEGL_H
-#define IVW_IMAGEGL_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -46,6 +45,10 @@ class Image;
 
 /**
  * \ingroup datastructures
+ * @brief OpenGL representation of an Image as a framebuffer
+ *
+ * Handles attaching all the image layers to the framebuffer
+ * @see Image, ImageRepresentation
  */
 class IVW_MODULE_OPENGL_API ImageGL : public ImageRepresentation {
 
@@ -53,20 +56,74 @@ public:
     ImageGL();
     ImageGL(const ImageGL& rhs);
     virtual ~ImageGL();
-
     virtual ImageGL* clone() const override;
 
-    void reAttachAllLayers(ImageType type = ImageType::AllLayers);
+    using ActiveState = std::tuple<utilgl::ActivateFBO, utilgl::GlBoolState, utilgl::DepthMaskState,
+                                   utilgl::ViewportState>;
 
-    void activateBuffer(ImageType type = ImageType::AllLayers);
+    /**
+     * @brief Store the current "state" and activate the FBO.
+     *
+     * Stores the currently bound FBO, the current depth test, depth mask, and viewport.
+     * Binds the framebuffer.
+     * Sets the draw buffers. Color layer 0 will be at location 0, if picking is included in the \p
+     * imageType the picking layer will be at location 1. Any additional layers will be at the
+     * following locations. If \p imageType contains depth the depth test is enabled and the depth
+     * mask is set to true, otherwise the depth test is disabled and the depth mask is set to false.
+     * Finally the viewport is the to the image dimensions.
+     * @param imageType The layers that should be active.
+     * @return An RAII object that will restore the old state on destruction.
+     */
+    ActiveState activate(ImageType imageType = ImageType::AllLayers);
+
+    /**
+     * @brief Active the FBO.
+     *
+     * Binds the framebuffer, and set the draw buffers. Color layer 0 will be at location 0, if
+     * picking is included in the \p imageType the picking layer will be at location 1. Any
+     * additional layers will be at the following locations. If \p imageType contains depth the
+     * depth test is enabled and the depth mask is set to true, otherwise the depth test is disabled
+     * and the depth mask is set to false. Finally the viewport is the to the image dimensions.
+     * @note In the case of nested calls where the state needs to be maintained @see
+     * activate(ImageType)
+     * @param imageType The layers that should be active.
+     */
+    void activateBuffer(ImageType imageType = ImageType::AllLayers);
+
+    /**
+     * @brief Deactivate the framebuffer (bind 0)
+     */
     void deactivateBuffer();
 
     virtual size2_t getDimensions() const override;
+
+    /**
+     * @brief Copies this instance into the target using a copy shader
+     *
+     * The image content is scaled to the target dimensions. If the aspects are different the target
+     * image will get padding to preserve the aspect of the source content.
+     * @param target image to copy into.
+     * @return true
+     */
     virtual bool copyRepresentationsTo(ImageRepresentation* target) const override;
+
     virtual size_t priority() const override;
 
+    /**
+     * @copydoc copyRepresentationsTo(ImageRepresentation* target) const
+     */
     bool copyRepresentationsTo(ImageGL* target) const;
-    bool updateFrom(const ImageGL*);
+
+    /**
+     * @brief Copies @p source into this instance using Blitting and PBOs if needed.
+     *
+     * Does not care about aspect ratios, copies the source image into the this instance using
+     * "nearest" interpolation. If some layers are not attached to the FBO they will be copied using
+     * PBO instead.
+     * @param source Image to copy from
+     * @return true
+     */
+    bool updateFrom(const ImageGL* source);
 
     FrameBufferObject* getFBO();
     const FrameBufferObject* getFBO() const;
@@ -86,9 +143,6 @@ public:
 
     GLenum getPickingAttachmentID() const;
 
-    void updateExistingLayers() const;
-    void renderImagePlaneRect() const;
-
     /**
      * Read a single pixel value out of the specified layer at pos. Should only be used to read
      * single values not entire images.
@@ -100,23 +154,20 @@ public:
     virtual void update(bool editable) override;
 
 private:
+    void reAttachAllLayers();
+
     std::vector<LayerGL*> colorLayersGL_;  //< non-owning reference
     LayerGL* depthLayerGL_;                //< non-owning reference
     LayerGL* pickingLayerGL_;              //< non-owning reference
 
     FrameBufferObject frameBufferObject_;
-    GLenum pickingAttachmentID_;
+
+    std::vector<GLenum> colorAttachmentIDs_;
+    std::optional<GLenum> pickingAttachmentID_;
+    std::vector<GLenum> colorAndPickingAttachmentIDs_;
 
     mutable Shader* shader_ = nullptr;  //< non-owning reference
     mutable size_t colorLayerCopyCount_;
-
-    GLboolean prevDepthTest_;
-    GLboolean prevDepthMask_;
-
-    utilgl::Viewport prevViewport_;
-    std::vector<GLenum> drawBuffers_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGEGL_H

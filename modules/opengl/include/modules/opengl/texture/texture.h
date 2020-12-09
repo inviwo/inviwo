@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TEXTURE_H
-#define IVW_TEXTURE_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
@@ -131,5 +130,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TEXTURE_H

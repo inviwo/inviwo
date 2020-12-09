@@ -526,19 +526,22 @@ void setShaderUniforms(Shader& shader, const VolumeIndicatorProperty& indicator,
 
     if (indicator) {
         if (indicator.plane1_) {
-            shader.setUniform(buff.replace("{}.plane1position", name), indicator.plane1_.position_);
-            shader.setUniform(buff.replace("{}.plane1normal", name), indicator.plane1_.normal_);
-            shader.setUniform(buff.replace("{}.plane1color", name), indicator.plane1_.color_);
+            shader.setUniform(buff.replace("{}.plane1.position", name),
+                              indicator.plane1_.position_);
+            shader.setUniform(buff.replace("{}.plane1.normal", name), indicator.plane1_.normal_);
+            shader.setUniform(buff.replace("{}.plane1.color", name), indicator.plane1_.color_);
         }
         if (indicator.plane2_) {
-            shader.setUniform(buff.replace("{}.plane2position", name), indicator.plane2_.position_);
-            shader.setUniform(buff.replace("{}.plane2normal", name), indicator.plane2_.normal_);
-            shader.setUniform(buff.replace("{}.plane2color", name), indicator.plane2_.color_);
+            shader.setUniform(buff.replace("{}.plane2.position", name),
+                              indicator.plane2_.position_);
+            shader.setUniform(buff.replace("{}.plane2.normal", name), indicator.plane2_.normal_);
+            shader.setUniform(buff.replace("{}.plane2.color", name), indicator.plane2_.color_);
         }
         if (indicator.plane3_) {
-            shader.setUniform(buff.replace("{}.plane3position", name), indicator.plane3_.position_);
-            shader.setUniform(buff.replace("{}.plane3normal", name), indicator.plane3_.normal_);
-            shader.setUniform(buff.replace("{}.plane3color", name), indicator.plane3_.color_);
+            shader.setUniform(buff.replace("{}.plane3.position", name),
+                              indicator.plane3_.position_);
+            shader.setUniform(buff.replace("{}.plane3.normal", name), indicator.plane3_.normal_);
+            shader.setUniform(buff.replace("{}.plane3.color", name), indicator.plane3_.color_);
         }
     }
 }

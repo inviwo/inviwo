@@ -93,7 +93,7 @@ const std::string& classIdentifier() {
     } else if constexpr (HasClassIdentifierLower<T>::value) {
         return T::classIdentifier;
     } else {
-        static_assert(detail::alwaysFalse<T>, "ClassIdentifier is missing for type");
+        static_assert(detail::alwaysFalse<T>(), "ClassIdentifier is missing for type");
         static std::string unknown{"Unknown"};
         return unknown;
     }

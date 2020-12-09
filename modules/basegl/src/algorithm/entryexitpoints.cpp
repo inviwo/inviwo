@@ -132,7 +132,6 @@ void EntryExitPointsHelper::createEntryExitPoints(ImageGL& entryPoints, ImageGL&
         utilgl::clearCurrentTarget();
         utilgl::CullFaceState cull(righthanded ? GL_BACK : GL_FRONT);
         drawer.draw();
-        utilgl::deactivateCurrentTarget();
     }
 
     {
@@ -143,8 +142,8 @@ void EntryExitPointsHelper::createEntryExitPoints(ImageGL& entryPoints, ImageGL&
 
         utilgl::CullFaceState cull(righthanded ? GL_FRONT : GL_BACK);
         drawer.draw();
-        utilgl::deactivateCurrentTarget();
     }
+    utilgl::deactivateCurrentTarget();
     shader.deactivate();
 }
 
@@ -173,7 +172,6 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
         utilgl::clearCurrentTarget();
         utilgl::CullFaceState cull(righthanded ? GL_BACK : GL_FRONT);
         drawer.draw();
-        utilgl::deactivateCurrentTarget();
     }
 
     {
@@ -196,7 +194,6 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
 
         utilgl::CullFaceState cull(righthanded ? GL_FRONT : GL_BACK);
         drawer.draw();
-        utilgl::deactivateCurrentTarget();
     }
 
     // render an image plane aligned quad to cap the proxy geometry

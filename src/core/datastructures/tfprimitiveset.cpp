@@ -177,40 +177,50 @@ TFPrimitive& TFPrimitiveSet::back() { return *sorted_.back(); }
 const TFPrimitive& TFPrimitiveSet::back() const { return *sorted_.back(); }
 
 std::vector<TFPrimitiveData> TFPrimitiveSet::get() const {
-    std::vector<TFPrimitiveData> values;
-    std::transform(sorted_.begin(), sorted_.end(), std::back_inserter(values),
+    std::vector<TFPrimitiveData> result;
+    result.reserve(sorted_.size());
+    std::transform(sorted_.begin(), sorted_.end(), std::back_inserter(result),
                    [](auto& v) { return v->getData(); });
-    return values;
-}
-
-std::vector<TFPrimitiveData> TFPrimitiveSet::getUnsorted() const {
-    std::vector<TFPrimitiveData> values;
-    std::transform(values_.begin(), values_.end(), std::back_inserter(values),
-                   [](auto& v) { return v->getData(); });
-    return values;
-}
-
-std::pair<std::vector<double>, std::vector<vec4>> TFPrimitiveSet::getVectors() const {
-    std::pair<std::vector<double>, std::vector<vec4>> result;
-    result.first.reserve(sorted_.size());
-    result.second.reserve(sorted_.size());
-    for (auto& v : sorted_) {
-        result.first.push_back(static_cast<float>(v->getPosition()));
-        result.second.push_back(v->getColor());
-    }
-
     return result;
 }
 
-std::pair<std::vector<float>, std::vector<vec4>> TFPrimitiveSet::getVectorsf() const {
-    std::pair<std::vector<float>, std::vector<vec4>> result;
-    result.first.reserve(sorted_.size());
-    result.second.reserve(sorted_.size());
-    for (auto& v : sorted_) {
-        result.first.push_back(static_cast<float>(v->getPosition()));
-        result.second.push_back(v->getColor());
-    }
+std::vector<TFPrimitiveData> TFPrimitiveSet::getUnsorted() const {
+    std::vector<TFPrimitiveData> result;
+    result.reserve(values_.size());
+    std::transform(values_.begin(), values_.end(), std::back_inserter(result),
+                   [](auto& v) { return v->getData(); });
+    return result;
+}
 
+std::pair<std::vector<double>, std::vector<vec4>> TFPrimitiveSet::getVectors() const {
+    return {getPositions(), getColors()};
+}
+
+std::pair<std::vector<float>, std::vector<vec4>> TFPrimitiveSet::getVectorsf() const {
+    return {getPositionsf(), getColors()};
+}
+
+std::vector<double> TFPrimitiveSet::getPositions() const {
+    std::vector<double> result;
+    result.reserve(sorted_.size());
+    std::transform(sorted_.begin(), sorted_.end(), std::back_inserter(result),
+                   [](const TFPrimitive* p) { return p->getPosition(); });
+    return result;
+}
+
+std::vector<float> TFPrimitiveSet::getPositionsf() const {
+    std::vector<float> result;
+    result.reserve(sorted_.size());
+    std::transform(sorted_.begin(), sorted_.end(), std::back_inserter(result),
+                   [](const TFPrimitive* p) { return static_cast<float>(p->getPosition()); });
+    return result;
+}
+
+std::vector<vec4> TFPrimitiveSet::getColors() const {
+    std::vector<vec4> result;
+    result.reserve(sorted_.size());
+    std::transform(sorted_.begin(), sorted_.end(), std::back_inserter(result),
+                   [](const TFPrimitive* p) { return p->getColor(); });
     return result;
 }
 

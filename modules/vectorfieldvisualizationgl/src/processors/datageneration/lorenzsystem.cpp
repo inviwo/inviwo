@@ -124,16 +124,18 @@ void LorenzSystem::process() {
     fbo_.activate();
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
+    std::array<GLenum, 3> drawBuffers{0};
+
     VolumeGL* volGL = volume->getEditableRepresentation<VolumeGL>();
-    fbo_.attachColorTexture(volGL->getTexture().get(), 0);
+    drawBuffers[0] = fbo_.attachColorTexture(volGL->getTexture().get(), 0);
 
     VolumeGL* curlGL = curlvolume->getEditableRepresentation<VolumeGL>();
-    fbo_.attachColorTexture(curlGL->getTexture().get(), 1);
+    drawBuffers[1] = fbo_.attachColorTexture(curlGL->getTexture().get(), 1);
 
     VolumeGL* divGL = divvolume->getEditableRepresentation<VolumeGL>();
-    fbo_.attachColorTexture(divGL->getTexture().get(), 2);
+    drawBuffers[2] = fbo_.attachColorTexture(divGL->getTexture().get(), 2);
 
-    fbo_.defineDrawBuffers();
+    glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
 
     utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
 

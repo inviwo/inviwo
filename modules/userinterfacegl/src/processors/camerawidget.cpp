@@ -190,6 +190,13 @@ void CameraWidget::process() {
         loadMesh();
     }
 
+    // determine size of the widget
+    const vec2 referenceSize(
+        300.0f);  // reference size (width/height) in pixel for scale equal to 1.0
+    ivec2 widgetSize(scaling_.get() * referenceSize);
+
+    updateWidgetTexture(widgetSize);
+
     // combine the previously rendered widget image with the input
     if (inport_.isReady()) {
         utilgl::activateTargetAndCopySource(outport_, inport_);
@@ -200,12 +207,6 @@ void CameraWidget::process() {
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // determine size of the widget
-    const vec2 referenceSize(
-        300.0f);  // reference size (width/height) in pixel for scale equal to 1.0
-    ivec2 widgetSize(scaling_.get() * referenceSize);
-
-    updateWidgetTexture(widgetSize);
     drawWidgetTexture();
     utilgl::deactivateCurrentTarget();
 }
