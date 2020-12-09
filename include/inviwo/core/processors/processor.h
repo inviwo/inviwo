@@ -47,6 +47,7 @@ class InteractionHandler;
 class ProcessorWidget;
 class ProcessorNetwork;
 class NetworkVisitor;
+class InviwoApplication;
 
 /**
  * \defgroup processors Processors
@@ -329,6 +330,8 @@ public:
     virtual const Processor* getProcessor() const override { return this; }
     virtual const PropertyOwner* getOwner() const override { return nullptr; }
     virtual PropertyOwner* getOwner() override { return nullptr; };
+
+    virtual InviwoApplication* getInviwoApplication() override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

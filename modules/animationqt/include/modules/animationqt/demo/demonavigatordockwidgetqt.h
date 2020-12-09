@@ -31,9 +31,10 @@
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <modules/animation/demo/democontrollerobserver.h>
 #include <modules/animation/demo/democontroller.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
 
 class QToolButton;
 
@@ -46,13 +47,16 @@ class IVW_MODULE_ANIMATIONQT_API DemoNavigatorDockWidgetQt : public InviwoDockWi
                                                              public PropertyOwner {
 public:
     DemoNavigatorDockWidgetQt(DemoController& controller, const std::string& widgetName,
-                              QWidget* parent);
+                              QWidget* parent,
+                              InviwoApplication* app = InviwoApplication::getPtr());
     virtual ~DemoNavigatorDockWidgetQt();
+
+    virtual InviwoApplication* getInviwoApplication() override;
 
 protected:
     DemoController& controller_;
+    InviwoApplication* app_;
 
-    // GUI-stuff
     QAction* btnLast_;
     QAction* btnNext_;
     QAction* btnBegin_;

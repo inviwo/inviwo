@@ -39,6 +39,8 @@
 
 namespace inviwo {
 
+class InviwoApplication;
+
 /**
  * \ingroup properties
  * A grouping property for collecting properties in a hierarchy, CompositeProperties can be nested
@@ -93,6 +95,8 @@ public:
 
     virtual const PropertyOwner* getOwner() const override;
     virtual PropertyOwner* getOwner() override;
+
+    virtual InviwoApplication* getInviwoApplication() override;
 
     /**
      * @brief Accept a NetworkVisitor, the visitor will visit this and then each Property of the

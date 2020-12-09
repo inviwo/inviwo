@@ -59,7 +59,11 @@ public:
 
     void setFolder(const std::string& path);
 
+    virtual InviwoApplication* getInviwoApplication() override;
+
 protected:
+    void loadWorkspaceApp(const std::string& fileName);
+
     InviwoApplication* app_;
     FileProperty demoFolder_;
     OptionPropertyInt demoFile_;
