@@ -31,9 +31,32 @@
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
 #include <warn/pop>
+#include <modules/base/algorithm/volume/volumevoronoi.h>
 
 namespace inviwo {
 
-TEST(Base, volumevoronoi_test) { EXPECT_EQ(1, 1); }
+TEST(VolumeVoronoi, Voronoi_NoSeedPoints_ThrowsException) {
+    const std::vector<std::pair<uint32_t, vec3>> seedPoints = {};
 
+    EXPECT_THROW(
+        util::voronoiSegmentation(size3_t{3, 3, 3}, mat4(), seedPoints, std::nullopt, false),
+        inviwo::Exception);
+}
+
+TEST(VolumeVoronoi, WeightedVoronoi_WeightsHasNoValue_ThrowsException) {
+    const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{0.3, 0.2, 0.1}},
+                                                               {2, vec3{0.1, 0.2, 0.3}}};
+    const auto weights = std::nullopt;
+
+    EXPECT_THROW(util::voronoiSegmentation(size3_t{3, 3, 3}, mat4(), seedPoints, weights, true),
+                 inviwo::Exception);
+}
+TEST(VolumeVoronoi, WeightedVoronoi_WeightsAndSeedPointsDimensionMissmatch_ThrowsException) {
+    const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{0.3, 0.2, 0.1}},
+                                                               {2, vec3{0.1, 0.2, 0.3}}};
+    const std::vector<float> weights = {3.0, 4.0, 5.0, 6.0, 7.0};
+
+    EXPECT_THROW(util::voronoiSegmentation(size3_t{3, 3, 3}, mat4(), seedPoints, weights, true),
+                 inviwo::Exception);
+}
 }  // namespace inviwo
