@@ -99,15 +99,16 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
 
     auto settings = InviwoApplication::getPtr()->getSettingsByType<PythonSyntaxHighlight>();
     {
-        auto sh = new SyntaxHighligther(this);
-        codeCallbacks_ = utilqt::setPythonSyntaxHighlight(*sh, *settings);
-        pythonCode_ = new CodeEdit{sh, this};
+
+        pythonCode_ = new CodeEdit{this};
+        codeCallbacks_ =
+            utilqt::setPythonSyntaxHighlight(pythonCode_->syntaxHighligther(), *settings);
         setDefaultText();
     }
     {
-        auto shOut = new SyntaxHighligther(this);
-        outputCallbacks_ = utilqt::setPythonOutputSyntaxHighlight(*shOut, *settings);
-        pythonOutput_ = new CodeEdit{shOut, this};
+        pythonOutput_ = new CodeEdit{this};
+        outputCallbacks_ =
+            utilqt::setPythonOutputSyntaxHighlight(pythonOutput_->syntaxHighligther(), *settings);
         pythonOutput_->setReadOnly(true);
         pythonOutput_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     }

@@ -78,9 +78,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     toolBar->setMovable(false);
     setWidget(mainWindow);
 
-    syntaxHighligther_ = new SyntaxHighligther(this);
-    editor_ = new CodeEdit{syntaxHighligther_, this};
-
+    editor_ = new CodeEdit{this};
     mainWindow->setCentralWidget(editor_);
 
     QObject::connect(editor_, &CodeEdit::modificationChanged, this,
@@ -167,7 +165,9 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     loadState();
 }
 
-SyntaxHighligther* TextEditorDockWidget::getSyntaxHighligther() { return syntaxHighligther_; }
+SyntaxHighligther& TextEditorDockWidget::getSyntaxHighligther() {
+    return editor_->syntaxHighligther();
+}
 
 TextEditorDockWidget::~TextEditorDockWidget() = default;
 

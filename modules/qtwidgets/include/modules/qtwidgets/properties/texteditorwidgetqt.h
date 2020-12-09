@@ -49,7 +49,7 @@ class SyntaxHighligther;
 class IVW_MODULE_QTWIDGETS_API TextEditorDockWidget : public PropertyEditorWidgetQt {
 public:
     TextEditorDockWidget(Property* property);
-    SyntaxHighligther* getSyntaxHighligther();
+    SyntaxHighligther& getSyntaxHighligther();
     virtual ~TextEditorDockWidget();
     void updateFromProperty();
 
@@ -68,7 +68,6 @@ protected:
     FileProperty* fileProperty_;
     StringProperty* stringProperty_;
     CodeEdit* editor_;
-    SyntaxHighligther* syntaxHighligther_;
     std::shared_ptr<std::function<void()>> propertyCallback_;
     utilqt::EditorFileObserver fileObserver_;
 };

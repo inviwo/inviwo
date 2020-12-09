@@ -37,7 +37,7 @@ namespace inviwo {
 
 GLSLEditorDockWidget::GLSLEditorDockWidget(Property* property) : TextEditorDockWidget(property) {
     auto app = util::getInviwoApplication(property);
-    callbacks_ = utilqt::setGLSLSyntaxHighlight(*syntaxHighligther_,
+    callbacks_ = utilqt::setGLSLSyntaxHighlight(getSyntaxHighligther(),
                                                 *app->getSettingsByType<GLSLSyntaxHighlight>());
 }
 

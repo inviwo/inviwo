@@ -30,8 +30,6 @@
 #include <modules/qtwidgets/syntaxhighlighter.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/filesystem.h>
-#include <modules/qtwidgets/qtwidgetssettings.h>
-#include <inviwo/core/common/inviwoapplication.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -46,8 +44,8 @@ using namespace std::literals;
 
 namespace inviwo {
 
-SyntaxHighligther::SyntaxHighligther(QObject* parent)
-    : QSyntaxHighlighter(parent)
+SyntaxHighligther::SyntaxHighligther(QTextDocument* document)
+    : QSyntaxHighlighter(document)
     , defaultFormat_{}
     , fontSize_{syntax::fontSize}
     , font_{utilqt::getMonoSpaceFonts()[utilqt::getDefaultFontIndex()]}

@@ -46,9 +46,11 @@ class LineNumberArea;
 
 namespace inviwo {
 
+class SyntaxHighligther;
+
 class IVW_MODULE_QTWIDGETS_API CodeEdit : public QPlainTextEdit {
 public:
-    CodeEdit(SyntaxHighligther* sh, QWidget* parent = nullptr);
+    CodeEdit(QWidget* parent = nullptr);
     virtual ~CodeEdit() = default;
 
     // QPlainTextEdit overrides
@@ -56,6 +58,8 @@ public:
 
     void setLineAnnotation(std::function<std::string(int)>);
     void setAnnotationSpace(std::function<int(int)>);
+
+    SyntaxHighligther& syntaxHighligther();
 
 protected:
     void lineNumberAreaPaintEvent(QPaintEvent* event);
@@ -78,9 +82,9 @@ protected:
     void updateLineNumberArea(const QRect&, int);
 
     QWidget* lineNumberArea_;
-    std::vector<std::shared_ptr<std::function<void()>>> callbacks_;
     vec4 textColor_;
     vec4 highLightColor_;
+    SyntaxHighligther* sh_;
     std::function<std::string(int)> annotateLine_;
     std::function<int(int)> annotationSpace_;
 };

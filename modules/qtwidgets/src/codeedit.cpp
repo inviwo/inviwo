@@ -30,6 +30,8 @@
 #include <modules/qtwidgets/codeedit.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <modules/qtwidgets/syntaxhighlighter.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QtWidgets>
@@ -39,11 +41,12 @@
 
 namespace inviwo {
 
-CodeEdit::CodeEdit(SyntaxHighligther* sh, QWidget* parent)
+CodeEdit::CodeEdit(QWidget* parent)
     : QPlainTextEdit(parent)
     , lineNumberArea_{new LineNumberArea(this)}
     , textColor_{syntax::text}
     , highLightColor_{1.0f}
+    , sh_{new SyntaxHighligther(document())}
     , annotateLine_{[](int line) { return std::to_string(line); }}
     , annotationSpace_{[](int maxDigits) { return maxDigits; }} {
 
@@ -61,28 +64,26 @@ CodeEdit::CodeEdit(SyntaxHighligther* sh, QWidget* parent)
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
 
-    sh->setDocument(document());
-
-    auto updateSyntax = [this, sh]() {
-        auto color = utilqt::toivec3(sh->defaultFormat().background().color());
+    auto updateSyntax = [this]() {
+        auto color = utilqt::toivec3(sh_->defaultFormat().background().color());
 
         auto css = fmt::format("background-color: rgb({}, {}, {});font-size: {}pt;font-family: {};",
-                               color.r, color.g, color.b, sh->fontSize(), sh->font());
+                               color.r, color.g, color.b, sh_->fontSize(), sh_->font());
         setStyleSheet(utilqt::toQString(css));
 
-        textColor_ = utilqt::tovec4(sh->defaultFormat().foreground().color());
-        highLightColor_ = sh->highlight();
+        textColor_ = utilqt::tovec4(sh_->defaultFormat().foreground().color());
+        highLightColor_ = sh_->highlight();
 
-        QFontMetrics metrics(QFont(utilqt::toQString(sh->font()), sh->fontSize()));
+        QFontMetrics metrics(QFont(utilqt::toQString(sh_->font()), sh_->fontSize()));
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
         setTabStopWidth(4 * metrics.width(' '));
 #else
         setTabStopDistance(static_cast<qreal>(4 * metrics.horizontalAdvance(' ')));
 #endif
-        sh->rehighlight();
+        sh_->rehighlight();
     };
 
-    connect(sh, &SyntaxHighligther::update, this, updateSyntax);
+    connect(sh_, &SyntaxHighligther::update, this, updateSyntax);
     updateSyntax();
 }
 
@@ -94,6 +95,8 @@ void CodeEdit::setAnnotationSpace(std::function<int(int)> func) {
     annotationSpace_ = std::move(func);
     updateLineNumberAreaWidth(0);
 }
+
+SyntaxHighligther& CodeEdit::syntaxHighligther() { return *sh_; }
 
 void CodeEdit::keyPressEvent(QKeyEvent* keyEvent) {
     if (keyEvent->key() == Qt::Key_Tab) {

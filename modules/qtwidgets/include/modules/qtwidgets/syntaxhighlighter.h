@@ -101,7 +101,7 @@ class IVW_MODULE_QTWIDGETS_API SyntaxHighligther : public QSyntaxHighlighter {
 #include <warn/pop>
 
 public:
-    SyntaxHighligther(QObject* parent);
+    SyntaxHighligther(QTextDocument* parent);
     virtual ~SyntaxHighligther();
 
     const QTextCharFormat& defaultFormat() const;
