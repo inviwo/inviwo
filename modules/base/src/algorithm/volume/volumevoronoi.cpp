@@ -33,45 +33,46 @@ namespace inviwo {
 namespace util {
 
 std::shared_ptr<Volume> voronoiSegmentation(
-    std::shared_ptr<const Volume> volume,
+    const size3_t volumeDimensions, const mat4& modelMatrix, const mat4& worldMatrix,
+    const mat4& indexToModelMatrix, const Wrapping3D& wrapping,
     const std::vector<std::pair<uint32_t, vec3>>& seedPointsWithIndices,
     const std::optional<std::vector<float>>& weights, bool weightedVoronoi) {
 
-    auto newVolumeRep =
-        std::make_shared<VolumeRAMPrecision<unsigned short>>(volume->getDimensions());
+    auto newVolumeRep = std::make_shared<VolumeRAMPrecision<unsigned short>>(volumeDimensions);
     auto newVolume = std::make_shared<Volume>(newVolumeRep);
-    newVolume->setModelMatrix(volume->getModelMatrix());
-    newVolume->setWorldMatrix(volume->getWorldMatrix());
+    newVolume->setModelMatrix(modelMatrix);
+    newVolume->setWorldMatrix(worldMatrix);
 
     newVolume->setInterpolation(InterpolationType::Nearest);
-    newVolume->setWrapping(wrapping3d::clampAll);
+
+    if (wrapping != wrapping3d::clampAll) {
+        // Throw error or print warning
+    }
+    newVolume->setWrapping(wrapping);
 
     newVolume->dataMap_.dataRange = dvec2(0.0, static_cast<double>(seedPointsWithIndices.size()));
     newVolume->dataMap_.valueRange = newVolume->dataMap_.dataRange;
 
-    const auto indexToModel = mat3(volume->getCoordinateTransformer().getIndexToModelMatrix());
     auto volumeIndices = newVolumeRep->getDataTyped();
-    util::IndexMapper3D index(volume->getDimensions());
+    util::IndexMapper3D index(volumeDimensions);
 
-    volume->getRepresentation<VolumeRAM>()->dispatch<void>([&](auto vrprecision) {
-        util::forEachVoxelParallel(*vrprecision, [&](const size3_t& voxelPos) {
-            const auto transformedVoxelPos = indexToModel * voxelPos;
-            auto minDist = std::numeric_limits<double>::max();
+    util::forEachVoxelParallel(volumeDimensions, [&](const size3_t& voxelPos) {
+        const auto transformedVoxelPos = mat3(indexToModelMatrix) * voxelPos;
+        auto minDist = std::numeric_limits<double>::max();
 
-            for (size_t i = 0; i < seedPointsWithIndices.size(); i++) {
-                // Squared distance
-                auto dist = glm::distance2(seedPointsWithIndices[i].second, transformedVoxelPos);
+        for (size_t i = 0; i < seedPointsWithIndices.size(); i++) {
+            // Squared distance
+            auto dist = glm::distance2(seedPointsWithIndices[i].second, transformedVoxelPos);
 
-                if (weightedVoronoi && weights.has_value()) {
-                    dist = dist - weights.value()[i] * weights.value()[i];
-                }
-
-                if (dist < minDist) {
-                    volumeIndices[index(voxelPos)] = seedPointsWithIndices[i].first;
-                    minDist = dist;
-                }
+            if (weightedVoronoi && weights.has_value()) {
+                dist = dist - weights.value()[i] * weights.value()[i];
             }
-        });
+
+            if (dist < minDist) {
+                volumeIndices[index(voxelPos)] = seedPointsWithIndices[i].first;
+                minDist = dist;
+            }
+        }
     });
 
     return newVolume;

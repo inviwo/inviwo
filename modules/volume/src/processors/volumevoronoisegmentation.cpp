@@ -99,8 +99,10 @@ void VolumeVoronoiSegmentation::process() {
     }
 
     // TODO: make sure the voxel positions and seed positions are in the same space?
-   
-    outport_.setData(util::voronoiSegmentation(volume_.getData(), seedPointsWithIndices, radii,
-                                               weighted_.get()));
+    const auto volume = volume_.getData();
+    outport_.setData(util::voronoiSegmentation(
+        volume->getDimensions(), volume->getModelMatrix(), volume->getWorldMatrix(),
+        volume->getCoordinateTransformer().getIndexToModelMatrix(), volume->getWrapping(),
+        seedPointsWithIndices, radii, weighted_.get()));
 }
 }  // namespace inviwo
