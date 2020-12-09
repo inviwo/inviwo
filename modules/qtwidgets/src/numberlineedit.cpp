@@ -54,10 +54,10 @@ public:
 
     void clear();
 
-    int getPrecision(int availableWidth, uint fontHash, const QFontMetrics &fm);
+    int getPrecision(int availableWidth, uint fontHash, const QFontMetrics& fm);
 
     QString formatAsScientific(double value, int availableWidth, uint fontHash,
-                               const QFontMetrics &fm);
+                               const QFontMetrics& fm);
     QString formatAsScientific(double value, int precision);
     QString formatAsNonscientific(double v) const;
     QString formatAsInt(double value) const;
@@ -77,7 +77,7 @@ NumberLineEditPrivate::NumberLineEditPrivate() { updateLocale(); }
 
 void NumberLineEditPrivate::clear() { widthToDigits_.clear(); }
 
-int NumberLineEditPrivate::getPrecision(int availableWidth, uint fontHash, const QFontMetrics &fm) {
+int NumberLineEditPrivate::getPrecision(int availableWidth, uint fontHash, const QFontMetrics& fm) {
     availableWidth = std::min(std::max(availableWidth, 0), 512);
     auto it = widthToDigits_.find(fontHash);
     if (it == widthToDigits_.end()) {
@@ -107,7 +107,7 @@ int NumberLineEditPrivate::getPrecision(int availableWidth, uint fontHash, const
 }
 
 QString NumberLineEditPrivate::formatAsScientific(double value, int availableWidth, uint fontHash,
-                                                  const QFontMetrics &fm) {
+                                                  const QFontMetrics& fm) {
     return formatAsScientific(value, getPrecision(availableWidth, fontHash, fm));
 }
 
@@ -155,9 +155,9 @@ QLocale NumberLineEditPrivate::getLocale() const { return locale_; }
 
 std::unique_ptr<NumberLineEditPrivate> NumberLineEdit::nlePrivate_(new NumberLineEditPrivate);
 
-NumberLineEdit::NumberLineEdit(QWidget *parent) : NumberLineEdit(false, parent) {}
+NumberLineEdit::NumberLineEdit(QWidget* parent) : NumberLineEdit(false, parent) {}
 
-NumberLineEdit::NumberLineEdit(bool intMode, QWidget *parent)
+NumberLineEdit::NumberLineEdit(bool intMode, QWidget* parent)
     : QDoubleSpinBox(parent), integerMode_(intMode) {
     validator_ = new QDoubleValidator(this);
     validator_->setNotation(QDoubleValidator::ScientificNotation);
@@ -233,13 +233,13 @@ QString NumberLineEdit::textFromValue(double value) const {
     return formatNumber(value);
 }
 
-double NumberLineEdit::valueFromText(const QString &str) const {
+double NumberLineEdit::valueFromText(const QString& str) const {
     bool ok = false;
     double value = nlePrivate_->getLocale().toDouble(str, &ok);
     return ok ? value : QDoubleSpinBox::value();
 }
 
-QValidator::State NumberLineEdit::validate(QString &text, int &pos) const {
+QValidator::State NumberLineEdit::validate(QString& text, int& pos) const {
     return validator_->validate(text, pos);
 }
 
@@ -251,25 +251,25 @@ void NumberLineEdit::setMaximum(double max) { QDoubleSpinBox::setMaximum(max); }
 
 void NumberLineEdit::setRange(double min, double max) { QDoubleSpinBox::setRange(min, max); }
 
-void NumberLineEdit::timerEvent(QTimerEvent *event) { event->accept(); }
+void NumberLineEdit::timerEvent(QTimerEvent* event) { event->accept(); }
 
-void NumberLineEdit::focusInEvent(QFocusEvent *e) {
+void NumberLineEdit::focusInEvent(QFocusEvent* e) {
     abbreviated_ = false;
     lineEdit()->setText(textFromValue(value()));
     QDoubleSpinBox::focusInEvent(e);
 }
 
-void NumberLineEdit::focusOutEvent(QFocusEvent *e) {
+void NumberLineEdit::focusOutEvent(QFocusEvent* e) {
     abbreviated_ = true;
     QDoubleSpinBox::focusOutEvent(e);
 }
 
-void NumberLineEdit::resizeEvent(QResizeEvent *e) {
+void NumberLineEdit::resizeEvent(QResizeEvent* e) {
     QDoubleSpinBox::resizeEvent(e);
     setSpecialValueText(specialValueText());
 }
 
-void NumberLineEdit::changeEvent(QEvent *e) {
+void NumberLineEdit::changeEvent(QEvent* e) {
     if (e->type() == QEvent::LocaleChange) {
         nlePrivate_->updateLocale();
     } else if (e->type() == QEvent::StyleChange) {
@@ -279,7 +279,7 @@ void NumberLineEdit::changeEvent(QEvent *e) {
     QDoubleSpinBox::changeEvent(e);
 }
 
-void NumberLineEdit::wheelEvent(QWheelEvent *e) {
+void NumberLineEdit::wheelEvent(QWheelEvent* e) {
     if (hasFocus() && !invalid_) QDoubleSpinBox::wheelEvent(e);
 }
 

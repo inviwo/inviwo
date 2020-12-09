@@ -111,10 +111,9 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
 
     registerSettings(std::make_unique<PythonSyntaxHighlight>());
 
-    registerPropertyWidget<PythonFilePropertyWidgetQt, FileProperty>(PropertySemantics::PythonEditor);
+    registerPropertyWidget<PythonFilePropertyWidgetQt, FileProperty>(
+        PropertySemantics::PythonEditor);
     registerPropertyWidget<PythonPropertyWidgetQt, StringProperty>(PropertySemantics::PythonEditor);
-
-
 }
 
 Python3QtModule::~Python3QtModule() = default;

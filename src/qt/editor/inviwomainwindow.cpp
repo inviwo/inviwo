@@ -181,7 +181,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     auto screen = QGuiApplication::primaryScreen();
     const float maxRatio = 0.8f;
     const auto ssize = screen->availableSize();
-        
+
     QSize size = utilqt::emToPx(this, QSizeF(192, 108));
     size.setWidth(std::min(size.width(), static_cast<int>(ssize.width() * maxRatio)));
     size.setHeight(std::min(size.height(), static_cast<int>(ssize.height() * maxRatio)));
@@ -191,7 +191,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 
     resize(size);
     move(pos);
-    
+
     app->getCommandLineParser().add(&openData_,
                                     [this]() {
                                         auto net = app_->getProcessorNetwork();

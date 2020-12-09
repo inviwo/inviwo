@@ -235,7 +235,8 @@ constexpr std::array operators = {"\\+"sv, "-"sv, "\\*"sv, "\\/"sv, "<"sv, ">"sv
 
 }  // namespace
 
-std::vector<std::shared_ptr<std::function<void()>>> utilqt::setGLSLSyntaxHighlight(SyntaxHighligther& sh, GLSLSyntaxHighlight& settings) {
+std::vector<std::shared_ptr<std::function<void()>>> utilqt::setGLSLSyntaxHighlight(
+    SyntaxHighligther& sh, GLSLSyntaxHighlight& settings) {
 
     QColor bgColor = utilqt::toQColor(settings.backgroundColor);
 

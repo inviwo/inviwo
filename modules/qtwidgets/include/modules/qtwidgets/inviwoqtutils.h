@@ -258,11 +258,9 @@ int decimals([[maybe_unused]] double inc) {
     }
 }
 
-
 IVW_MODULE_QTWIDGETS_API std::vector<std::string> getMonoSpaceFonts();
 
 IVW_MODULE_QTWIDGETS_API size_t getDefaultFontIndex();
-
 
 }  // namespace utilqt
 

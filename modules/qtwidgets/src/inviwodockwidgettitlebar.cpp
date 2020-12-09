@@ -47,9 +47,9 @@
 
 namespace inviwo {
 
-InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
+InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget* parent)
     : QWidget(parent)
-    , parent_(dynamic_cast<QDockWidget *>(parent))
+    , parent_(dynamic_cast<QDockWidget*>(parent))
     , allowedDockAreas_(parent_->allowedAreas())
     , internalStickyFlagUpdate_(false) {
     label_ = new QLabel(parent->windowTitle());
@@ -86,7 +86,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
         closeBtn_->setIconSize(iconsize);
     }
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    QHBoxLayout* layout = new QHBoxLayout(this);
     layout->addWidget(label_, 1);
     layout->addWidget(stickyBtn_);
     layout->addWidget(floatBtn_);
@@ -110,7 +110,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
 
 InviwoDockWidgetTitleBar::~InviwoDockWidgetTitleBar() = default;
 
-void InviwoDockWidgetTitleBar::paintEvent(QPaintEvent *) {
+void InviwoDockWidgetTitleBar::paintEvent(QPaintEvent*) {
     QStyleOption opt;
     opt.initFrom(this);
     QPainter p(this);
@@ -130,7 +130,7 @@ void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {
     emit stickyFlagChanged(toggle);
 }
 
-void InviwoDockWidgetTitleBar::showEvent(QShowEvent *) {
+void InviwoDockWidgetTitleBar::showEvent(QShowEvent*) {
     if (isSticky()) {
         // docking allowed, restore docking areas
         parent_->setAllowedAreas(allowedDockAreas_);
@@ -140,7 +140,7 @@ void InviwoDockWidgetTitleBar::showEvent(QShowEvent *) {
     }
 }
 
-bool InviwoDockWidgetTitleBar::eventFilter(QObject *obj, QEvent *event) {
+bool InviwoDockWidgetTitleBar::eventFilter(QObject* obj, QEvent* event) {
     if ((event->type() == QEvent::ModifiedChange) || (event->type() == QEvent::WindowTitleChange)) {
         label_->setText(utilqt::windowTitleHelper(parent_->windowTitle(), parent_));
     }
@@ -154,7 +154,7 @@ void InviwoDockWidgetTitleBar::setIconSize(double size) {
     const auto iconsize = utilqt::emToPx(this, QSizeF(iconSize_, iconSize_));
 
     if (auto theLayout = layout()) {
-        for (auto tb : theLayout->findChildren<QToolButton *>()) {
+        for (auto tb : theLayout->findChildren<QToolButton*>()) {
             tb->setIconSize(iconsize);
         }
     }
