@@ -58,10 +58,9 @@ std::shared_ptr<Volume> voronoiSegmentation(
     auto volumeIndices = newVolumeRep->getDataTyped();
     util::IndexMapper3D index(volumeDimensions);
 
-    util::forEachVoxelParallel(volumeDimensions, [&](const size3_t& voxelPos) {
-        const auto transformedVoxelPos = mat3(indexToModelMatrix) * voxelPos;
-
-        if (weightedVoronoi && weights.has_value()) {
+    if (weightedVoronoi && weights.has_value()) {
+        util::forEachVoxelParallel(volumeDimensions, [&](const size3_t& voxelPos) {
+            const auto transformedVoxelPos = mat3(indexToModelMatrix) * voxelPos;
             auto zipped = util::zip(seedPointsWithIndices, weights.value());
 
             auto&& [posWithIndex, weight] = *std::min_element(
@@ -73,15 +72,18 @@ std::shared_ptr<Volume> voronoiSegmentation(
                            glm::distance2(p2.second, transformedVoxelPos) - w2 * w2;
                 });
             volumeIndices[index(voxelPos)] = posWithIndex.first;
-        } else {
+        });
+    } else {
+        util::forEachVoxelParallel(volumeDimensions, [&](const size3_t& voxelPos) {
+            const auto transformedVoxelPos = mat3(indexToModelMatrix) * voxelPos;
             auto it = std::min_element(seedPointsWithIndices.cbegin(), seedPointsWithIndices.cend(),
                                        [transformedVoxelPos](const auto& p1, const auto& p2) {
                                            return glm::distance2(p1.second, transformedVoxelPos) <
                                                   glm::distance2(p2.second, transformedVoxelPos);
                                        });
             volumeIndices[index(voxelPos)] = it->first;
-        }
-    });
+        });
+    }
 
     return newVolume;
 };
