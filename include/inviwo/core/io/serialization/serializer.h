@@ -54,11 +54,10 @@ class IVW_CORE_API Serializer : public SerializeBase {
 public:
     /**
      * \brief Initializes serializer with a file name that will be used to set relative paths to
-     *data.
-     * The specified file name will not be used to write any content until writeFile() is called.
+     * data.
      *
+     * The specified file name will not be used to write any content until writeFile() is called.
      * @param fileName full path to xml file.
-     * @param allowReference disables or enables reference management schemes.
      * @throws SerializationException
      */
     Serializer(std::string_view fileName);
@@ -70,6 +69,7 @@ public:
      * @throws SerializationException
      */
     virtual void writeFile();
+
     /**
      * \brief Writes serialized data to stream.
      *

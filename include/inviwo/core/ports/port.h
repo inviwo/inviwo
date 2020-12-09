@@ -59,7 +59,7 @@ public:
     Processor* getProcessor() const;
 
     /**
-     * @brief Get the port path i.e. '<processor identifier>.<port identifier>'
+     * @brief Get the port path i.e. ```<processor identifier>.<port identifier>```
      */
     std::string getPath() const;
 

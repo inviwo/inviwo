@@ -375,11 +375,14 @@ public:
      * ProcessorNetwork traversal. An inactive connection will propagate invalidations and events
      * but will not be processed. Useful if the Processor has states in which it does not use an
      * inport.
-     * @param This processor's inport
-     * @param Another processor's outport
+     * @param inport This processor's inport
+     * @param outport Another processor's outport
      * @see InputSelector for an example
      */
-    virtual bool isConnectionActive(Inport*, Outport*) const { return true; }
+    virtual bool isConnectionActive([[maybe_unused]] Inport* inport,
+                                    [[maybe_unused]] Outport* outport) const {
+        return true;
+    }
 
     /**
      * @brief Accept a NetworkVisitor, the visitor will visit this and then each Property of the

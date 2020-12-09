@@ -33,6 +33,11 @@ p.definition {
 
 /* @group Heading Levels */
 
+p {
+    margin-top: 0.7em;
+    margin-bottom: 0.3em;
+}
+
 h1.groupheader {
     font-size: 150%;
 }
@@ -70,7 +75,9 @@ h6 {
     -ms-transition: none;
     -o-transition: none;
     transition: none;
-    margin-right: 0px;
+    margin-right: 0em;
+    margin-top: 0.7em;
+    margin-bottom: 0.3em;
 }
 
 h1.glow,
@@ -156,7 +163,7 @@ div.navtab {
 /* @group Link Styling */
 
 a {
-    color: #626267;
+    color: #258bd2;
     font-weight: normal;
     text-decoration: none;
 }
@@ -218,6 +225,7 @@ dl.el {
 ul {
     overflow: hidden;
     /*Fixed: list item bullets overlap floating elements*/
+    margin: 0 0 0 0;
 }
 
 #side-nav ul {
@@ -1202,6 +1210,7 @@ div.headertitle {
 
 dl {
     padding: 0 0 0 0;
+    margin: 0 0 0 0;
 }
 
 /* dl.note, dl.warning, dl.attention, dl.pre, dl.post, dl.invariant, dl.deprecated, dl.todo, dl.test, dl.bug, dl.examples */
@@ -1341,7 +1350,7 @@ dl.bug.DocNodeRTL {
 }
 
 dl.section dd {
-    margin-bottom: 6px;
+    margin-bottom: 0px;
 }
 
 

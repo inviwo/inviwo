@@ -52,8 +52,7 @@ public:
 };
 
 /**
- * \class Column
- * \brief pure interface for representing a data column, i.e. a Buffer with a name
+ * @brief pure interface for representing a data column, i.e. a Buffer with a name
  */
 class IVW_MODULE_DATAFRAME_API Column {
 public:
@@ -66,8 +65,7 @@ public:
 
     virtual void add(const std::string& value) = 0;
     /**
-     * \brief appends all rows from column \p col
-     *
+     * @brief appends all rows from column \p col
      * @param col
      */
     virtual void append(const Column& col) = 0;
@@ -90,8 +88,7 @@ protected:
 };
 
 /**
- * \class TemplateColumn
- * \brief Data column used for plotting which represents a named buffer of type T. The name
+ * @brief Data column used for plotting which represents a named buffer of type T. The name
  * is used as column header.
  */
 template <typename T>
@@ -127,7 +124,7 @@ public:
     virtual void add(const std::string& value) override;
 
     /**
-     * \copydoc Column::append(col)
+     * \copydoc Column::append(const Column&)
      * @throws Exception if data format does not match
      */
     virtual void append(const Column& col) override;
@@ -222,7 +219,8 @@ public:
     virtual void add(const std::string& value) override;
 
     /**
-     * \brief \copybrief and builds a union of all categorical values
+     * \brief \copybrief Column::append(const Column&) and builds a union of all
+     * categorical values
      *
      * @param col
      * @throws Exception if data format does not match

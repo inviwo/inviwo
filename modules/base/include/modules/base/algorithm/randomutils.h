@@ -186,7 +186,7 @@ struct RandomNumberRangeValues {
  * I.e when used with e.g. std::mt19937 it generates uniformly distributed number between \p min
  * and \p max.
  * \p min/\p max defaults to 0 and 1 for floating point types otherwise default to
- * std::numeric_limits::lowest()/::max()
+ * std::numeric_limits::lowest()/std::numeric_limits::max()
  */
 template <typename T, typename RNG,
           typename F = std::conditional_t<std::is_same_v<float, T>, float, double>>

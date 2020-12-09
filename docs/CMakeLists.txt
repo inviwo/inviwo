@@ -355,7 +355,7 @@ function(ivw_private_make_help)
         GENERATE_QHP
     )
 
-    find_program(IVW_DOXY_QHELPGENERATOR "qhelpgenerator")
+    find_program(IVW_DOXYGEN_QHELPGENERATOR "qhelpgenerator")
 
     add_custom_target("DOXY-HELP-${HARG_NAME}"
         COMMAND ${CMAKE_COMMAND} -E echo "Running Doxygen for ${HARG_NAME}"
@@ -367,9 +367,9 @@ function(ivw_private_make_help)
                                  -P "${ivw_doxy_dir}/strip-qhp.cmake"
 
         COMMAND ${CMAKE_COMMAND} -E echo "Building ${name_lower}.qch"
-        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXY_QHELPGENERATOR} -o ${HARG_OUTPUT_DIR}/${name_lower}.qch \
+        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXYGEN_QHELPGENERATOR} -o ${HARG_OUTPUT_DIR}/${name_lower}.qch \
                                  ${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
-        COMMAND ${IVW_DOXY_QHELPGENERATOR} "-o" "${HARG_OUTPUT_DIR}/${name_lower}.qch"
+        COMMAND ${IVW_DOXYGEN_QHELPGENERATOR} "-o" "${HARG_OUTPUT_DIR}/${name_lower}.qch"
                                             "${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
 
         COMMAND ${CMAKE_COMMAND} -E make_directory "${HARG_DOC_DIR}"
@@ -528,8 +528,8 @@ add_custom_target("DOXY-generate-processor-previews"
 add_dependencies("DOXY-generate-processor-previews" "DOXY-Clear")
 set_target_properties("DOXY-generate-processor-previews"
                         PROPERTIES FOLDER "docs" EXCLUDE_FROM_ALL TRUE)
-option(IVW_ENFORCE_PROCESSOR_PREVIEWS "Turn on to enforce generating processor previews when building doxygen documentation (DOXY-Inviwo)" ON)
-if(${IVW_ENFORCE_PROCESSOR_PREVIEWS})
+option(IVW_DOXYGEN_ENFORCE_PROCESSOR_PREVIEWS "Turn on to enforce generating processor previews when building doxygen documentation (DOXY-Inviwo)" ON)
+if(${IVW_DOXYGEN_ENFORCE_PROCESSOR_PREVIEWS})
     add_dependencies("DOXY-Inviwo" "DOXY-generate-processor-previews" "DOXY-Clear")
 else()
     add_dependencies("DOXY-Inviwo" "DOXY-Clear")

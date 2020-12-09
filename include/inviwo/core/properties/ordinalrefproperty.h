@@ -612,6 +612,7 @@ Document OrdinalRefProperty<T>::getDescription() const {
     return doc;
 }
 
+/// @cond
 // Scalar properties
 extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<float>;
 extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<int>;
@@ -647,5 +648,6 @@ extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<dmat4>;
 
 extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<glm::dquat>;
 extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<glm::fquat>;
+/// @endcond
 
 }  // namespace inviwo

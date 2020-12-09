@@ -104,7 +104,7 @@ private:
 
     /**
      * Compiles the script source to byte code, which speeds up script execution. This function
-     * is called by ::run when needed (eg. the source code has changed)
+     * is called by run when needed (eg. the source code has changed)
      *
      * @return true, if script compilation has been successful
      */

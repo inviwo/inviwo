@@ -170,6 +170,7 @@ private:
      * loads the workspace \p workspaceFileName. In case there are unsaved changes, the user will
      * be asked to save or discard them, or cancel the loading.
      *
+     * @param workspaceFileName
      * @param isExample    if true, the workspace file name will not be set. Thereby preventing
      *                     the user from accidentally overwriting the original file. In addition,
      *                     the workspace is _not_ added to the recent file list.
