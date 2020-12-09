@@ -33,22 +33,12 @@ namespace inviwo {
 namespace util {
 
 std::shared_ptr<Volume> voronoiSegmentation(
-    const size3_t volumeDimensions, const mat4& modelMatrix, const mat4& worldMatrix,
-    const mat4& indexToModelMatrix, const Wrapping3D& wrapping,
+    const size3_t volumeDimensions, const mat4& indexToModelMatrix,
     const std::vector<std::pair<uint32_t, vec3>>& seedPointsWithIndices,
     const std::optional<std::vector<float>>& weights, bool weightedVoronoi) {
 
     auto newVolumeRep = std::make_shared<VolumeRAMPrecision<unsigned short>>(volumeDimensions);
     auto newVolume = std::make_shared<Volume>(newVolumeRep);
-    newVolume->setModelMatrix(modelMatrix);
-    newVolume->setWorldMatrix(worldMatrix);
-
-    newVolume->setInterpolation(InterpolationType::Nearest);
-
-    if (wrapping != wrapping3d::clampAll) {
-        // Throw error or print warning
-    }
-    newVolume->setWrapping(wrapping);
 
     newVolume->dataMap_.dataRange = dvec2(0.0, static_cast<double>(seedPointsWithIndices.size()));
     newVolume->dataMap_.valueRange = newVolume->dataMap_.dataRange;

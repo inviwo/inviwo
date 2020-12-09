@@ -42,8 +42,7 @@ namespace util {
  */
 
 IVW_MODULE_BASE_API std::shared_ptr<Volume> voronoiSegmentation(
-    const size3_t volumeDimensions, const mat4& modelMatrix, const mat4& worldMatrix,
-    const mat4& indexToModelMatrix, const Wrapping3D& wrapping,
+    const size3_t volumeDimensions, const mat4& indexToModelMatrix,
     const std::vector<std::pair<uint32_t, vec3>>& seedPointsWithIndices,
     const const std::optional<std::vector<float>>& weights, bool weightedVoronoi);
 
