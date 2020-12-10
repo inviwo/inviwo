@@ -32,23 +32,26 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 #include <modules/base/algorithm/volume/volumevoronoi.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/util/indexmapper.h>
 
 namespace inviwo {
 
 TEST(VolumeVoronoi, Voronoi_NoSeedPoints_ThrowsException) {
-    const std::vector<std::pair<uint32_t, vec3>> seedPoints = {};
-
-    EXPECT_THROW(
-        util::voronoiSegmentation(size3_t{3, 3, 3}, mat4(), seedPoints, std::nullopt, false),
-        inviwo::Exception);
+    EXPECT_THROW(util::voronoiSegmentation(/*volumeDimensions*/ size3_t{3, 3, 3},
+                                           /*indexToModelMatrix*/ mat4(), /*seedPoints*/ {},
+                                           /*weights*/ std::nullopt, /*weightedVoronoi*/ false),
+                 inviwo::Exception);
 }
 
 TEST(VolumeVoronoi, WeightedVoronoi_WeightsHasNoValue_ThrowsException) {
     const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{0.3, 0.2, 0.1}},
                                                                {2, vec3{0.1, 0.2, 0.3}}};
-    const auto weights = std::nullopt;
 
-    EXPECT_THROW(util::voronoiSegmentation(size3_t{3, 3, 3}, mat4(), seedPoints, weights, true),
+    EXPECT_THROW(util::voronoiSegmentation(/*volumeDimensions*/ size3_t{3, 3, 3},
+                                           /*indexToModelMatrix*/ mat4(), seedPoints,
+                                           /*weights*/ std::nullopt, /*weightedVoronoi*/ true),
                  inviwo::Exception);
 }
 TEST(VolumeVoronoi, WeightedVoronoi_WeightsAndSeedPointsDimensionMissmatch_ThrowsException) {
@@ -56,7 +59,193 @@ TEST(VolumeVoronoi, WeightedVoronoi_WeightsAndSeedPointsDimensionMissmatch_Throw
                                                                {2, vec3{0.1, 0.2, 0.3}}};
     const std::vector<float> weights = {3.0, 4.0, 5.0, 6.0, 7.0};
 
-    EXPECT_THROW(util::voronoiSegmentation(size3_t{3, 3, 3}, mat4(), seedPoints, weights, true),
+    EXPECT_THROW(util::voronoiSegmentation(/*volumeDimensions*/ size3_t{3, 3, 3},
+                                           /*indexToModelMatrix*/ mat4(), seedPoints, weights,
+                                           /*weightedVoronoi*/ true),
                  inviwo::Exception);
 }
+
+TEST(VolumeVoronoi, Voronoi_OneSeedPoint_WholeVolumeHasSameIndex) {
+    const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{1, 1, 1}}};
+    const auto dimensions = size3_t{3, 3, 3};
+
+    auto volumeVoronoi =
+        util::voronoiSegmentation(dimensions,
+                                  /*indexToModelMatrix*/
+                                  mat4{vec4{1.0, 0.0, 0.0, 0.0}, vec4{0.0, 1.0, 0.0, 0.0},
+                                       vec4{0.0, 0.0, 1.0, 0.0}, vec4{0.0, 0.0, 0.0, 1.0}},
+                                  seedPoints, /*weights*/ std::nullopt, /*weightedVoronoi*/ false);
+
+    const VolumeRAMPrecision<unsigned short>* ramtyped =
+        dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
+            volumeVoronoi->getRepresentation<VolumeRAM>());
+
+    EXPECT_TRUE(ramtyped != nullptr);
+
+    const auto data = ramtyped->getDataTyped();
+    const util::IndexMapper3D im(dimensions);
+
+    for (size_t z = 0; z < dimensions.z; z++) {
+        for (size_t y = 0; y < dimensions.y; y++) {
+            for (size_t x = 0; x < dimensions.x; x++) {
+                const auto val = static_cast<unsigned short>(data[im(x, y, z)]);
+                EXPECT_EQ(val, seedPoints[0].first);
+            }
+        }
+    }
+}
+
+TEST(VolumeVoronoi, Voronoi_TwoSeedPoints_PartitionsVolumeInTwo) {
+    const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{1, 2, 2}},
+                                                               {2, vec3{2, 2, 2}}};
+    const auto dimensions = size3_t{4, 4, 4};
+
+    auto volumeVoronoi =
+        util::voronoiSegmentation(dimensions,
+                                  /*indexToModelMatrix*/
+                                  mat4{vec4{1.0, 0.0, 0.0, 0.0}, vec4{0.0, 1.0, 0.0, 0.0},
+                                       vec4{0.0, 0.0, 1.0, 0.0}, vec4{0.0, 0.0, 0.0, 1.0}},
+                                  seedPoints, /*weights*/ std::nullopt, /*weightedVoronoi*/ false);
+
+    const VolumeRAMPrecision<unsigned short>* ramtyped =
+        dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
+            volumeVoronoi->getRepresentation<VolumeRAM>());
+
+    EXPECT_TRUE(ramtyped != nullptr);
+
+    const auto data = ramtyped->getDataTyped();
+    const util::IndexMapper3D im(dimensions);
+
+    for (size_t z = 0; z < dimensions.z; z++) {
+        for (size_t y = 0; y < dimensions.y; y++) {
+            // First half of volume
+            for (size_t x1 = 0; x1 < dimensions.x / 2; x1++) {
+                const auto val1 = static_cast<unsigned short>(data[im(x1, y, z)]);
+                EXPECT_EQ(val1, seedPoints[0].first);
+            }
+            // Second half of volume
+            for (size_t x2 = dimensions.x / 2; x2 < dimensions.x; x2++) {
+                const auto val2 = static_cast<unsigned short>(data[im(x2, y, z)]);
+                EXPECT_EQ(val2, seedPoints[1].first);
+            }
+        }
+    }
+}
+
+TEST(VolumeVoronoi, WeightedVoronoi_TwoSeedPointsWithWeights_PartitionsVolumeInTwoWeightedParts) {
+    const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{1, 2, 2}},
+                                                               {2, vec3{2, 2, 2}}};
+    const auto dimensions = size3_t{4, 4, 4};
+
+    auto volumeVoronoi = util::voronoiSegmentation(
+        dimensions,
+        /*indexToModelMatrix*/
+        mat4{vec4{1.0, 0.0, 0.0, 0.0}, vec4{0.0, 1.0, 0.0, 0.0}, vec4{0.0, 0.0, 1.0, 0.0},
+             vec4{0.0, 0.0, 0.0, 1.0}},
+        seedPoints, /*weights*/ std::vector<float>{1.0, 2.0}, /*weightedVoronoi*/ true);
+
+    const VolumeRAMPrecision<unsigned short>* ramtyped =
+        dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
+            volumeVoronoi->getRepresentation<VolumeRAM>());
+
+    EXPECT_TRUE(ramtyped != nullptr);
+
+    const auto data = ramtyped->getDataTyped();
+    const util::IndexMapper3D im(dimensions);
+
+    for (size_t z = 0; z < dimensions.z; z++) {
+        for (size_t y = 0; y < dimensions.y; y++) {
+            // First part (smaller due to smaller weight)
+            for (size_t x1 = 0; x1 < dimensions.x / 4; x1++) {
+                const auto val1 = static_cast<unsigned short>(data[im(x1, y, z)]);
+                EXPECT_EQ(val1, seedPoints[0].first);
+            }
+            // Second part (larger due to larger weight)
+            for (size_t x2 = dimensions.x / 4; x2 < dimensions.x; x2++) {
+                const auto val2 = static_cast<unsigned short>(data[im(x2, y, z)]);
+                EXPECT_EQ(val2, seedPoints[1].first);
+            }
+        }
+    }
+}
+
+TEST(VolumeVoronoi, Voronoi_TwoSeedPointsWithWeightsButWeightedVoronoiFalse_PartitionsVolumeInTwo) {
+    const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{1, 2, 2}},
+                                                               {2, vec3{2, 2, 2}}};
+    const auto dimensions = size3_t{4, 4, 4};
+
+    auto volumeVoronoi = util::voronoiSegmentation(
+        dimensions,
+        /*indexToModelMatrix*/
+        mat4{vec4{1.0, 0.0, 0.0, 0.0}, vec4{0.0, 1.0, 0.0, 0.0}, vec4{0.0, 0.0, 1.0, 0.0},
+             vec4{0.0, 0.0, 0.0, 1.0}},
+        seedPoints, /*weights*/ std::vector<float>{1.0, 2.0}, /*weightedVoronoi*/ false);
+
+    const VolumeRAMPrecision<unsigned short>* ramtyped =
+        dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
+            volumeVoronoi->getRepresentation<VolumeRAM>());
+
+    EXPECT_TRUE(ramtyped != nullptr);
+
+    const auto data = ramtyped->getDataTyped();
+    const util::IndexMapper3D im(dimensions);
+
+    for (size_t z = 0; z < dimensions.z; z++) {
+        for (size_t y = 0; y < dimensions.y; y++) {
+            // First half of volume
+            for (size_t x1 = 0; x1 < dimensions.x / 2; x1++) {
+                const auto val1 = static_cast<unsigned short>(data[im(x1, y, z)]);
+                EXPECT_EQ(val1, seedPoints[0].first);
+            }
+            // Second half of volume
+            for (size_t x2 = dimensions.x / 2; x2 < dimensions.x; x2++) {
+                const auto val2 = static_cast<unsigned short>(data[im(x2, y, z)]);
+                EXPECT_EQ(val2, seedPoints[1].first);
+            }
+        }
+    }
+}
+
+TEST(VolumeVoronoi, Voronoi_ThreeSeedPoints_PartitionsVolumeInThree) {
+    const std::vector<std::pair<uint32_t, vec3>> seedPoints = {
+        {1, vec3{0, 1, 1}}, {2, vec3{1, 1, 1}}, {3, vec3{2, 1, 1}}};
+    const auto dimensions = size3_t{3, 3, 3};
+
+    auto volumeVoronoi =
+        util::voronoiSegmentation(dimensions,
+                                  /*indexToModelMatrix*/
+                                  mat4{vec4{1.0, 0.0, 0.0, 0.0}, vec4{0.0, 1.0, 0.0, 0.0},
+                                       vec4{0.0, 0.0, 1.0, 0.0}, vec4{0.0, 0.0, 0.0, 1.0}},
+                                  seedPoints, /*weights*/ std::nullopt, /*weightedVoronoi*/ false);
+
+    const VolumeRAMPrecision<unsigned short>* ramtyped =
+        dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
+            volumeVoronoi->getRepresentation<VolumeRAM>());
+
+    EXPECT_TRUE(ramtyped != nullptr);
+
+    const auto data = ramtyped->getDataTyped();
+    const util::IndexMapper3D im(dimensions);
+
+    for (size_t z = 0; z < dimensions.z; z++) {
+        for (size_t y = 0; y < dimensions.y; y++) {
+            // First part
+            for (size_t x1 = 0; x1 < dimensions.x / 3; x1++) {
+                const auto val1 = static_cast<unsigned short>(data[im(x1, y, z)]);
+                EXPECT_EQ(val1, seedPoints[0].first);
+            }
+            // Second part
+            for (size_t x2 = dimensions.x / 3; x2 < 2 * dimensions.x / 3; x2++) {
+                const auto val2 = static_cast<unsigned short>(data[im(x2, y, z)]);
+                EXPECT_EQ(val2, seedPoints[1].first);
+            }
+            // Third part
+            for (size_t x3 = 2 * dimensions.x / 3; x3 < dimensions.x; x3++) {
+                const auto val3 = static_cast<unsigned short>(data[im(x3, y, z)]);
+                EXPECT_EQ(val3, seedPoints[2].first);
+            }
+        }
+    }
+}
+
 }  // namespace inviwo
