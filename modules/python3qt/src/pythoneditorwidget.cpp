@@ -97,18 +97,18 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     QSplitter* splitter = new QSplitter(nullptr);
     splitter->setOrientation(Qt::Vertical);
 
-    auto settings = InviwoApplication::getPtr()->getSettingsByType<PythonSyntaxHighlight>();
+    auto settings = app->getSettingsByType<PythonSyntaxHighlight>();
     {
 
         pythonCode_ = new CodeEdit{this};
         codeCallbacks_ =
-            utilqt::setPythonSyntaxHighlight(pythonCode_->syntaxHighligther(), *settings);
+            utilqt::setPythonSyntaxHighlight(pythonCode_->syntaxHighlighter(), *settings);
         setDefaultText();
     }
     {
         pythonOutput_ = new CodeEdit{this};
         outputCallbacks_ =
-            utilqt::setPythonOutputSyntaxHighlight(pythonOutput_->syntaxHighligther(), *settings);
+            utilqt::setPythonOutputSyntaxHighlight(pythonOutput_->syntaxHighlighter(), *settings);
         pythonOutput_->setReadOnly(true);
         pythonOutput_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     }

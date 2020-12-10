@@ -623,7 +623,7 @@ std::vector<std::string> getMonoSpaceFonts() {
     return fonts;
 }
 
-size_t getDefaultFontIndex() {
+size_t getDefaultMonoSpaceFontIndex() {
     const auto fonts = getMonoSpaceFonts();
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     auto it = std::find(fonts.begin(), fonts.end(), utilqt::fromQString(fixedFont.family()));

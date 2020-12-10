@@ -165,8 +165,8 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     loadState();
 }
 
-SyntaxHighligther& TextEditorDockWidget::getSyntaxHighligther() {
-    return editor_->syntaxHighligther();
+SyntaxHighlighter& TextEditorDockWidget::getSyntaxHighlighter() {
+    return editor_->syntaxHighlighter();
 }
 
 TextEditorDockWidget::~TextEditorDockWidget() = default;

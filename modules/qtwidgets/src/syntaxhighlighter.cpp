@@ -44,11 +44,11 @@ using namespace std::literals;
 
 namespace inviwo {
 
-SyntaxHighligther::SyntaxHighligther(QTextDocument* document)
+SyntaxHighlighter::SyntaxHighlighter(QTextDocument* document)
     : QSyntaxHighlighter(document)
     , defaultFormat_{}
     , fontSize_{syntax::fontSize}
-    , font_{utilqt::getMonoSpaceFonts()[utilqt::getDefaultFontIndex()]}
+    , font_{utilqt::getMonoSpaceFonts()[utilqt::getDefaultMonoSpaceFontIndex()]}
     , highlight_{syntax::highLight}
     , rules_{}
     , multiblockRules_{} {
@@ -56,11 +56,11 @@ SyntaxHighligther::SyntaxHighligther(QTextDocument* document)
     defaultFormat_.setBackground(utilqt::toQColor(syntax::background));
 }
 
-SyntaxHighligther::~SyntaxHighligther() = default;
+SyntaxHighlighter::~SyntaxHighlighter() = default;
 
-const QTextCharFormat& SyntaxHighligther::defaultFormat() const { return defaultFormat_; }
+const QTextCharFormat& SyntaxHighlighter::defaultFormat() const { return defaultFormat_; }
 
-void SyntaxHighligther::highlightBlock(const QString& text) {
+void SyntaxHighlighter::highlightBlock(const QString& text) {
     setFormat(0, text.size(), defaultFormat_);
 
     for (auto& rule : rules_) {
@@ -113,7 +113,7 @@ void SyntaxHighligther::highlightBlock(const QString& text) {
     }
 }
 
-void SyntaxHighligther::addMultBlockPattern(QTextCharFormat format, std::string_view startPattern,
+void SyntaxHighlighter::addMultBlockPattern(QTextCharFormat format, std::string_view startPattern,
                                             std::string_view endPattern) {
     multiblockRules_.push_back(MultiBlockRule{format,
                                               QRegularExpression{utilqt::toQString(startPattern)},
@@ -123,20 +123,20 @@ void SyntaxHighligther::addMultBlockPattern(QTextCharFormat format, std::string_
     });
 }
 
-void SyntaxHighligther::setDefaultFormat(QTextCharFormat format) { defaultFormat_ = format; }
+void SyntaxHighlighter::setDefaultFormat(QTextCharFormat format) { defaultFormat_ = format; }
 
-void SyntaxHighligther::addPattern(QTextCharFormat format, std::string_view pattern) {
+void SyntaxHighlighter::addPattern(QTextCharFormat format, std::string_view pattern) {
     rules_.push_back(Rule{format, QRegularExpression{utilqt::toQString(pattern)}});
 }
 
-void SyntaxHighligther::addPatterns(QTextCharFormat format,
+void SyntaxHighlighter::addPatterns(QTextCharFormat format,
                                     util::span<const std::string_view> patterns) {
     for (auto pattern : patterns) {
         rules_.push_back(Rule{format, QRegularExpression{utilqt::toQString(pattern)}});
     }
 }
 
-void SyntaxHighligther::addPatternWithFormatStr(QTextCharFormat format,
+void SyntaxHighlighter::addPatternWithFormatStr(QTextCharFormat format,
                                                 util::span<const std::string_view> patterns,
                                                 std::string_view formatStr) {
     for (auto pattern : patterns) {
@@ -145,12 +145,12 @@ void SyntaxHighligther::addPatternWithFormatStr(QTextCharFormat format,
     }
 }
 
-void SyntaxHighligther::addWordBoundaryPattern(QTextCharFormat format,
+void SyntaxHighlighter::addWordBoundaryPattern(QTextCharFormat format,
                                                util::span<const std::string_view> patterns) {
     addPatternWithFormatStr(format, patterns, "\\b{}\\b");
 }
 
-void SyntaxHighligther::clear() {
+void SyntaxHighlighter::clear() {
     rules_.clear();
     multiblockRules_.clear();
 }

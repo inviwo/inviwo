@@ -30,11 +30,6 @@
 #include <modules/openglqt/glslsyntaxhighlight.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QFontDatabase>
-#include <warn/pop>
-
 #include <array>
 #include <string_view>
 
@@ -44,7 +39,7 @@ namespace inviwo {
 
 GLSLSyntaxHighlight::GLSLSyntaxHighlight()
     : Settings("GLSL Syntax Highlighting")
-    , font("font", "Font", utilqt::getMonoSpaceFonts(), utilqt::getDefaultFontIndex())
+    , font("font", "Font", utilqt::getMonoSpaceFonts(), utilqt::getDefaultMonoSpaceFontIndex())
     , fontSize("fontSize", "Size", syntax::fontSize, 1, 72)
 
     , textColor("text", "Text", util::ordinalColor(syntax::text))
@@ -70,95 +65,117 @@ GLSLSyntaxHighlight::GLSLSyntaxHighlight()
 namespace {
 
 // define GLSL types and keywords using regular expressions. \b indicates word boundaries.
-constexpr std::array types = {"float"sv,         "[bi]?vec[2-4]"sv, "int"sv,
-                              "bool"sv,          "mat[2-4]"sv,      "void"sv,
-                              "sampler[1-3]D"sv, "samplerCube"sv,   "sampler[1-2]DShadow"sv};
+// https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)
+// https://www.khronos.org/opengl/wiki/Sampler_(GLSL)
+constexpr std::array types = {
+    "double"sv,
+    "float"sv,
+    "[biud]?vec[2-4]"sv,
+    "u?int"sv,
+    "bool"sv,
+    "mat[2-4]"sv,
+    "void"sv,
+    "[iu]?sampler[1-3]D"sv,
+    "[iu]?sampler[1-2]DArray"sv,
+    "[iu]?sampler2DRect"sv,
+    "[iu]?samplerCube"sv,
+    "[iu]?samplerCubeArray"sv,
+    "[iu]?samplerBuffer"sv,
+    "[iu]?sampler2DMS"sv,
+    "[iu]?sampler2DMSArray"sv,
+    "sampler[1-2]DShadow"sv,
+    "samplerCubeShadow"sv,
+    "samplerCubeArrayShadow"sv,
+    "sampler2DRectShadow"sv,
+    "sampler[1-2]DArrayShadow"sv,
+};
 
-constexpr std::array qualifiers = {"struct"sv, "uniform"sv, "attribute"sv, "varying"sv, "in"sv,
-                                   "out"sv,    "inout"sv,   "const"sv,     "discard"sv, "if"sv,
-                                   "const"sv,  "while"sv,   "continue"sv,  "break"sv,   "return"sv,
-                                   "layout"sv, "flat"sv};
+constexpr std::array qualifiers = {
+    "struct"sv,   "uniform"sv, "attribute"sv, "varying"sv, "in"sv,    "out"sv, "inout"sv,
+    "const"sv,    "discard"sv, "if"sv,        "const"sv,   "while"sv, "for"sv, "else"sv,
+    "continue"sv, "break"sv,   "return"sv,    "layout"sv,  "flat"sv};
 
-constexpr std::array builtinsVars = {"gl_ModelViewMatrix"sv,
-                                     "gl_ModelViewProjectionMatrix"sv,
-                                     "gl_ProjectionMatrix"sv,
-                                     "gl_TextureMatrix"sv,
-                                     "gl_ModelViewMatrixInverse"sv,
-                                     "gl_ModelViewProjectionMatrixInverse"sv,
-                                     "gl_ProjectionMatrixInverse"sv,
-                                     "gl_TextureMatrixInverse"sv,
-                                     "gl_ModelViewMatrixTranspose"sv,
-                                     "gl_ModelViewProjectionMatrixTranspose"sv,
-                                     "gl_ProjectionMatrixTranspose"sv,
-                                     "gl_TextureMatrixTranspose"sv,
-                                     "gl_ModelViewMatrixInverseTranspose"sv,
-                                     "gl_ModelViewProjectionMatrixInverseTranspose"sv,
-                                     "gl_ProjectionMatrixInverseTranspose"sv,
-                                     "gl_TextureMatrixInverseTranspose"sv,
-                                     "gl_NormalMatrix"sv,
-                                     "gl_NormalScale"sv,
-                                     "gl_DepthRangeParameters"sv,
-                                     "gl_DepthRangeParameters"sv,
-                                     "gl_DepthRange"sv,
-                                     "gl_FogParameters"sv,
-                                     "gl_Fog"sv,
-                                     "gl_LightSourceParameters"sv,
-                                     "gl_LightSource"sv,
-                                     "gl_LightModelParameters"sv,
-                                     "gl_LightModel"sv,
-                                     "gl_LightModelProducts"sv,
-                                     "gl_FrontLightModelProduct"sv,
+constexpr std::array builtinsVars = {"gl_BackColor"sv,
                                      "gl_BackLightModelProduct"sv,
-                                     "gl_LightProducts"sv,
-                                     "gl_FrontLightProduct"sv,
                                      "gl_BackLightProduct"sv,
-                                     "gl_MaterialParameters"sv,
-                                     "gl_FrontMaterial"sv,
                                      "gl_BackMaterial"sv,
-                                     "gl_PointParameters"sv,
-                                     "gl_Point"sv,
-                                     "gl_TextureEnvColor"sv,
+                                     "gl_BackSecondaryColor"sv,
                                      "gl_ClipPlane"sv,
+                                     "gl_ClipVertex"sv,
+                                     "gl_Color"sv,
+                                     "gl_DepthRange"sv,
+                                     "gl_DepthRangeParameters"sv,
+                                     "gl_DepthRangeParameters"sv,
+                                     "gl_EyePlaneQ"sv,
+                                     "gl_EyePlaneR"sv,
                                      "gl_EyePlaneS"sv,
                                      "gl_EyePlaneT"sv,
-                                     "gl_EyePlaneR"sv,
-                                     "gl_EyePlaneQ"sv,
-                                     "gl_ObjectPlaneS"sv,
-                                     "gl_ObjectPlaneT"sv,
-                                     "gl_ObjectPlaneR"sv,
-                                     "gl_ObjectPlaneQ"sv,
-                                     "gl_Position"sv,
-                                     "gl_PointSize"sv,
-                                     "gl_ClipVertex"sv,
-                                     "gl_Vertex"sv,
-                                     "gl_Normal"sv,
-                                     "gl_Color"sv,
-                                     "gl_SecondaryColor"sv,
-                                     "gl_MultiTexCoord[0-7]"sv,
+                                     "gl_Fog"sv,
                                      "gl_FogCoord"sv,
-                                     "gl_FrontColor"sv,
-                                     "gl_BackColor"sv,
-                                     "gl_FrontSecondaryColor"sv,
-                                     "gl_BackSecondaryColor"sv,
-                                     "gl_TexCoord"sv,
                                      "gl_FogFragCoord"sv,
-                                     "gl_FragData"sv,
-                                     "gl_FragDepth"sv,
+                                     "gl_FogParameters"sv,
                                      "gl_FragColor"sv,
                                      "gl_FragCoord"sv,
+                                     "gl_FragData"sv,
+                                     "gl_FragDepth"sv,
+                                     "gl_FrontColor"sv,
                                      "gl_FrontFacing"sv,
-                                     "gl_MaxVertexUniformComponents"sv,
-                                     "gl_MaxFragmentUniformComponents"sv,
-                                     "gl_MaxVertexAttribs"sv,
-                                     "gl_MaxVaryingFloats"sv,
-                                     "gl_MaxDrawBuffers "sv,
-                                     "gl_MaxTextureCoords"sv,
-                                     "gl_MaxTextureUnits"sv,
-                                     "gl_MaxTextureImageUnits"sv,
-                                     "gl_MaxVertexTextureImageUnits"sv,
+                                     "gl_FrontLightModelProduct"sv,
+                                     "gl_FrontLightProduct"sv,
+                                     "gl_FrontMaterial"sv,
+                                     "gl_FrontSecondaryColor"sv,
+                                     "gl_Layer"sv,
+                                     "gl_LightModel"sv,
+                                     "gl_LightModelParameters"sv,
+                                     "gl_LightModelProducts"sv,
+                                     "gl_LightProducts"sv,
+                                     "gl_LightSource"sv,
+                                     "gl_LightSourceParameters"sv,
+                                     "gl_MaterialParameters"sv,
+                                     "gl_MaxClipPlanes"sv,
                                      "gl_MaxCombinedTextureImageUnits"sv,
+                                     "gl_MaxDrawBuffers "sv,
+                                     "gl_MaxFragmentUniformComponents"sv,
                                      "gl_MaxLights"sv,
-                                     "gl_MaxClipPlanes"sv};
+                                     "gl_MaxTextureCoords"sv,
+                                     "gl_MaxTextureImageUnits"sv,
+                                     "gl_MaxTextureUnits"sv,
+                                     "gl_MaxVaryingFloats"sv,
+                                     "gl_MaxVertexAttribs"sv,
+                                     "gl_MaxVertexTextureImageUnits"sv,
+                                     "gl_MaxVertexUniformComponents"sv,
+                                     "gl_ModelViewMatrix"sv,
+                                     "gl_ModelViewMatrixInverse"sv,
+                                     "gl_ModelViewMatrixInverseTranspose"sv,
+                                     "gl_ModelViewMatrixTranspose"sv,
+                                     "gl_ModelViewProjectionMatrix"sv,
+                                     "gl_ModelViewProjectionMatrixInverse"sv,
+                                     "gl_ModelViewProjectionMatrixInverseTranspose"sv,
+                                     "gl_ModelViewProjectionMatrixTranspose"sv,
+                                     "gl_MultiTexCoord[0-7]"sv,
+                                     "gl_Normal"sv,
+                                     "gl_NormalMatrix"sv,
+                                     "gl_NormalScale"sv,
+                                     "gl_ObjectPlaneQ"sv,
+                                     "gl_ObjectPlaneR"sv,
+                                     "gl_ObjectPlaneS"sv,
+                                     "gl_ObjectPlaneT"sv,
+                                     "gl_Point"sv,
+                                     "gl_PointParameters"sv,
+                                     "gl_PointSize"sv,
+                                     "gl_Position"sv,
+                                     "gl_ProjectionMatrix"sv,
+                                     "gl_ProjectionMatrixInverse"sv,
+                                     "gl_ProjectionMatrixInverseTranspose"sv,
+                                     "gl_ProjectionMatrixTranspose"sv,
+                                     "gl_SecondaryColor"sv,
+                                     "gl_TexCoord"sv,
+                                     "gl_TextureEnvColor"sv,
+                                     "gl_TextureMatrix"sv,
+                                     "gl_TextureMatrixInverse"sv,
+                                     "gl_TextureMatrixInverseTranspose"sv,
+                                     "gl_TextureMatrixTranspose"sv,
+                                     "gl_Vertex"sv};
 constexpr std::array builtinsFuncs = {"sin"sv,
                                       "cos"sv,
                                       "tab"sv,
@@ -208,6 +225,7 @@ constexpr std::array builtinsFuncs = {"sin"sv,
                                       "lessThanEqual"sv,
                                       "not"sv,
                                       "notEqual"sv,
+                                      "texture"sv
                                       "texture[1-3]D"sv,
                                       "texture1DProj"sv,
                                       "texture[1-3]DProj"sv,
@@ -230,13 +248,27 @@ constexpr std::array preprocessor = {
 
 constexpr std::array preprocessorAdditional = {"__LINE__"sv, "__FILE__"sv, "__VERSION__"sv};
 
-constexpr std::array operators = {"\\+"sv, "-"sv, "\\*"sv, "\\/"sv, "<"sv, ">"sv,   "="sv,
-                                  "!"sv,   "&"sv, "\\|"sv, "\\^"sv, "%"sv, "\\?"sv, ":"sv};
+constexpr std::array operators = {"\\+"sv,
+                                  "\\+\\+"sv
+                                  "-"sv,
+                                  "--"sv
+                                  "\\*"sv,
+                                  "\\/"sv,
+                                  "<"sv,
+                                  ">"sv,
+                                  "="sv,
+                                  "!"sv,
+                                  "&"sv,
+                                  "\\|"sv,
+                                  "\\^"sv,
+                                  "%"sv,
+                                  "\\?"sv,
+                                  ":"sv};
 
 }  // namespace
 
 std::vector<std::shared_ptr<std::function<void()>>> utilqt::setGLSLSyntaxHighlight(
-    SyntaxHighligther& sh, GLSLSyntaxHighlight& settings) {
+    SyntaxHighlighter& sh, GLSLSyntaxHighlight& settings) {
 
     QColor bgColor = utilqt::toQColor(settings.backgroundColor);
 

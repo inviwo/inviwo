@@ -34,6 +34,10 @@
 
 namespace inviwo {
 
+/**
+ * @brief Widget for a FileProperty with ShaderEditor semantics
+ * @see GLSLEditorDockWidget
+ */
 class IVW_MODULE_OPENGLQT_API GLSLFilePropertyWidgetQt : public FilePropertyWidgetQt {
 public:
     GLSLFilePropertyWidgetQt(FileProperty* property);

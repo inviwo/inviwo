@@ -76,7 +76,7 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
 
     shadercode_ = new CodeEdit{this};
     auto settings = InviwoApplication::getPtr()->getSettingsByType<GLSLSyntaxHighlight>();
-    codeCallbacks_ = utilqt::setGLSLSyntaxHighlight(shadercode_->syntaxHighligther(), *settings);
+    codeCallbacks_ = utilqt::setGLSLSyntaxHighlight(shadercode_->syntaxHighlighter(), *settings);
 
     shadercode_->setObjectName("shaderwidgetcode");
     shadercode_->setPlainText(utilqt::toQString(obj->print(false, false)));

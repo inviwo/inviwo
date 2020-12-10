@@ -38,8 +38,16 @@
 
 namespace inviwo {
 
+/**
+ * @brief A text editor with Python syntax highlighting
+ * @see TextEditorDockWidget
+ * @see PythonSyntaxHighlight
+ */
 class IVW_MODULE_PYTHON3QT_API PythonEditorDockWidget : public TextEditorDockWidget {
 public:
+    /**
+     * @copydoc TextEditorDockWidget::TextEditorDockWidget(Property*) 
+    */
     PythonEditorDockWidget(Property* property);
 
 private:

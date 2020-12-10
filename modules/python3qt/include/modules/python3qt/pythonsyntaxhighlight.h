@@ -39,6 +39,9 @@
 
 namespace inviwo {
 
+/**
+ * @brief Font and syntax highlight colors for python code
+*/
 class IVW_MODULE_PYTHON3QT_API PythonSyntaxHighlight : public Settings {
 public:
     PythonSyntaxHighlight();
@@ -58,10 +61,10 @@ public:
 namespace utilqt {
 
 IVW_MODULE_PYTHON3QT_API std::vector<std::shared_ptr<std::function<void()>>>
-setPythonSyntaxHighlight(SyntaxHighligther& sh, PythonSyntaxHighlight& settings);
+setPythonSyntaxHighlight(SyntaxHighlighter& sh, PythonSyntaxHighlight& settings);
 
 IVW_MODULE_PYTHON3QT_API std::vector<std::shared_ptr<std::function<void()>>>
-setPythonOutputSyntaxHighlight(SyntaxHighligther& sh, PythonSyntaxHighlight& settings);
+setPythonOutputSyntaxHighlight(SyntaxHighlighter& sh, PythonSyntaxHighlight& settings);
 
 }  // namespace utilqt
 

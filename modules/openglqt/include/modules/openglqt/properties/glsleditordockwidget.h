@@ -38,6 +38,11 @@
 
 namespace inviwo {
 
+/**
+ * @brief A text editor with GLSL syntax highlighting
+ * @see TextEditorDockWidget
+ * @see GLSLSyntaxHighlight
+ */
 class IVW_MODULE_OPENGLQT_API GLSLEditorDockWidget : public TextEditorDockWidget {
 public:
     GLSLEditorDockWidget(Property* property);

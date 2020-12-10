@@ -34,6 +34,10 @@
 
 namespace inviwo {
 
+/**
+ * @brief Widget for a StringProperty with PythonEditor semantics
+ * @see PythonEditorDockWidget
+*/
 class IVW_MODULE_PYTHON3QT_API PythonPropertyWidgetQt : public StringPropertyWidgetQt {
 public:
     PythonPropertyWidgetQt(StringProperty* property);

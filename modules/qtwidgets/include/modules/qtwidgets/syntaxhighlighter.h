@@ -94,15 +94,15 @@ constexpr vec4 main = sea_green;
 
 }  // namespace syntax
 
-class IVW_MODULE_QTWIDGETS_API SyntaxHighligther : public QSyntaxHighlighter {
+class IVW_MODULE_QTWIDGETS_API SyntaxHighlighter : public QSyntaxHighlighter {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
 
 public:
-    SyntaxHighligther(QTextDocument* parent);
-    virtual ~SyntaxHighligther();
+    SyntaxHighlighter(QTextDocument* parent);
+    virtual ~SyntaxHighlighter();
 
     const QTextCharFormat& defaultFormat() const;
     void setDefaultFormat(QTextCharFormat format);

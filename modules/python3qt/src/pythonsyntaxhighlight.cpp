@@ -31,11 +31,6 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QFontDatabase>
-#include <warn/pop>
-
 #include <array>
 #include <string_view>
 
@@ -47,7 +42,7 @@ namespace {}  // namespace
 
 PythonSyntaxHighlight::PythonSyntaxHighlight()
     : Settings("Python Syntax Highlighting")
-    , font("font", "Font", utilqt::getMonoSpaceFonts(), utilqt::getDefaultFontIndex())
+    , font("font", "Font", utilqt::getMonoSpaceFonts(), utilqt::getDefaultMonoSpaceFontIndex())
     , fontSize("fontSize", "Size", syntax::fontSize, 1, 72)
     , textColor("text", "Text", util::ordinalColor(syntax::text))
     , backgroundColor("background", "Background", util::ordinalColor(syntax::background))
@@ -73,7 +68,7 @@ constexpr const std::array pythonKeywords = {
 }  // namespace
 
 std::vector<std::shared_ptr<std::function<void()>>> utilqt::setPythonSyntaxHighlight(
-    SyntaxHighligther& sh, PythonSyntaxHighlight& settings) {
+    SyntaxHighlighter& sh, PythonSyntaxHighlight& settings) {
 
     QColor bgColor = utilqt::toQColor(settings.backgroundColor);
 
@@ -111,8 +106,8 @@ std::vector<std::shared_ptr<std::function<void()>>> utilqt::setPythonSyntaxHighl
     sh.addPattern(litteralFormat, R"('([^'\\]|\\.)*')");
 
     sh.addPattern(commentformat, "#.*$");
-    sh.addMultBlockPattern(commentformat, R"(""")"sv, R"(""")"sv);
-    sh.addMultBlockPattern(commentformat, R"(''')"sv, R"(''')"sv);
+    sh.addMultBlockPattern(litteralFormat, R"(""")"sv, R"(""")"sv);
+    sh.addMultBlockPattern(litteralFormat, R"(''')"sv, R"(''')"sv);
 
     sh.update();
 
@@ -125,7 +120,7 @@ std::vector<std::shared_ptr<std::function<void()>>> utilqt::setPythonSyntaxHighl
 }
 
 std::vector<std::shared_ptr<std::function<void()>>> utilqt::setPythonOutputSyntaxHighlight(
-    SyntaxHighligther& sh, PythonSyntaxHighlight& settings) {
+    SyntaxHighlighter& sh, PythonSyntaxHighlight& settings) {
 
     QColor bgColor = utilqt::toQColor(settings.backgroundColor);
 

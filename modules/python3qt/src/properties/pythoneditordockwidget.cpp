@@ -39,7 +39,7 @@ PythonEditorDockWidget::PythonEditorDockWidget(Property* property)
     : TextEditorDockWidget(property) {
 
     auto app = util::getInviwoApplication(property);
-    callbacks_ = utilqt::setPythonSyntaxHighlight(getSyntaxHighligther(),
+    callbacks_ = utilqt::setPythonSyntaxHighlight(getSyntaxHighlighter(),
                                                   *app->getSettingsByType<PythonSyntaxHighlight>());
 }
 

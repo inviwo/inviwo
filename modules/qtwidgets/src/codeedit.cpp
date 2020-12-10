@@ -45,8 +45,8 @@ CodeEdit::CodeEdit(QWidget* parent)
     : QPlainTextEdit(parent)
     , lineNumberArea_{new LineNumberArea(this)}
     , textColor_{syntax::text}
-    , highLightColor_{1.0f}
-    , sh_{new SyntaxHighligther(document())}
+    , highlightColor_{1.0f}
+    , sh_{new SyntaxHighlighter(document())}
     , annotateLine_{[](int line) { return std::to_string(line); }}
     , annotationSpace_{[](int maxDigits) { return maxDigits; }} {
 
@@ -72,7 +72,7 @@ CodeEdit::CodeEdit(QWidget* parent)
         setStyleSheet(utilqt::toQString(css));
 
         textColor_ = utilqt::tovec4(sh_->defaultFormat().foreground().color());
-        highLightColor_ = sh_->highlight();
+        highlightColor_ = sh_->highlight();
 
         QFontMetrics metrics(QFont(utilqt::toQString(sh_->font()), sh_->fontSize()));
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
@@ -83,7 +83,7 @@ CodeEdit::CodeEdit(QWidget* parent)
         sh_->rehighlight();
     };
 
-    connect(sh_, &SyntaxHighligther::update, this, updateSyntax);
+    connect(sh_, &SyntaxHighlighter::update, this, updateSyntax);
     updateSyntax();
 }
 
@@ -96,7 +96,7 @@ void CodeEdit::setAnnotationSpace(std::function<int(int)> func) {
     updateLineNumberAreaWidth(0);
 }
 
-SyntaxHighligther& CodeEdit::syntaxHighligther() { return *sh_; }
+SyntaxHighlighter& CodeEdit::syntaxHighlighter() { return *sh_; }
 
 void CodeEdit::keyPressEvent(QKeyEvent* keyEvent) {
     if (keyEvent->key() == Qt::Key_Tab) {
@@ -151,7 +151,7 @@ void CodeEdit::highlightCurrentLine() {
 
     if (!isReadOnly()) {
         QTextEdit::ExtraSelection selection;
-        selection.format.setBackground(utilqt::toQColor(highLightColor_));
+        selection.format.setBackground(utilqt::toQColor(highlightColor_));
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
         selection.cursor = textCursor();
         selection.cursor.clearSelection();

@@ -35,6 +35,7 @@
 #include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
+
 GLSLPropertyWidgetQt::GLSLPropertyWidgetQt(StringProperty* property)
     : StringPropertyWidgetQt(property) {
 
