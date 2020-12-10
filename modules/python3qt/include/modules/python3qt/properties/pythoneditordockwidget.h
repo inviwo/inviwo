@@ -46,8 +46,8 @@ namespace inviwo {
 class IVW_MODULE_PYTHON3QT_API PythonEditorDockWidget : public TextEditorDockWidget {
 public:
     /**
-     * @copydoc TextEditorDockWidget::TextEditorDockWidget(Property*) 
-    */
+     * @copydoc TextEditorDockWidget::TextEditorDockWidget(Property*)
+     */
     PythonEditorDockWidget(Property* property);
 
 private:

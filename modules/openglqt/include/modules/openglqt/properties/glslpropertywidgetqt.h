@@ -41,8 +41,8 @@ namespace inviwo {
 class IVW_MODULE_OPENGLQT_API GLSLPropertyWidgetQt : public StringPropertyWidgetQt {
 public:
     /**
-     * @copydoc TextEditorDockWidget::TextEditorDockWidget(Property*) 
-    */
+     * @copydoc TextEditorDockWidget::TextEditorDockWidget(Property*)
+     */
     GLSLPropertyWidgetQt(StringProperty* property);
     virtual ~GLSLPropertyWidgetQt();
 

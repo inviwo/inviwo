@@ -41,7 +41,7 @@ namespace inviwo {
 
 /**
  * @brief Font and syntax highlight colors for python code
-*/
+ */
 class IVW_MODULE_PYTHON3QT_API PythonSyntaxHighlight : public Settings {
 public:
     PythonSyntaxHighlight();

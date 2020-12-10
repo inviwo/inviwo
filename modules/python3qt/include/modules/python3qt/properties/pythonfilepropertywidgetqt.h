@@ -37,7 +37,7 @@ namespace inviwo {
 /**
  * @brief Widget for a FileProperty with PythonEditor semantics
  * @see PythonEditorDockWidget
-*/
+ */
 class IVW_MODULE_PYTHON3QT_API PythonFilePropertyWidgetQt : public FilePropertyWidgetQt {
 public:
     PythonFilePropertyWidgetQt(FileProperty* property);
