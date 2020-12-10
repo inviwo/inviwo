@@ -33,8 +33,8 @@
 #include <warn/ignore/all>
 #include <QCheckBox>
 #include <QLineEdit>
-#include <QRegExp>
-#include <QRegExpValidator>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 #include <QHBoxLayout>
 #include <warn/pop>
 
@@ -62,7 +62,8 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
 
         lineEdit_->setEnabled(!property_->getReadOnly());
         // set up a validator accepting "true"/1 and "false"/0
-        lineEdit_->setValidator(new QRegExpValidator(QRegExp("true|false|1|0"), lineEdit_));
+        lineEdit_->setValidator(
+            new QRegularExpressionValidator(QRegularExpression("true|false|1|0"), lineEdit_));
 
         setFocusPolicy(lineEdit_->focusPolicy());
         setFocusProxy(lineEdit_);

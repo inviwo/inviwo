@@ -41,7 +41,6 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QMatrix>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QScrollBar>

@@ -32,7 +32,7 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <modules/qtwidgets/properties/syntaxhighlighter.h>
+#include <modules/qtwidgets/syntaxhighlighter.h>
 
 #include <QPlainTextEdit>
 #include <QObject>
@@ -46,18 +46,20 @@ class LineNumberArea;
 
 namespace inviwo {
 
+class SyntaxHighlighter;
+
 class IVW_MODULE_QTWIDGETS_API CodeEdit : public QPlainTextEdit {
 public:
-    CodeEdit(SyntaxType type = None, QWidget* parent = nullptr);
+    CodeEdit(QWidget* parent = nullptr);
     virtual ~CodeEdit() = default;
-
-    void setSyntax(SyntaxType type);
 
     // QPlainTextEdit overrides
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
 
     void setLineAnnotation(std::function<std::string(int)>);
     void setAnnotationSpace(std::function<int(int)>);
+
+    SyntaxHighlighter& syntaxHighlighter();
 
 protected:
     void lineNumberAreaPaintEvent(QPaintEvent* event);
@@ -80,9 +82,9 @@ protected:
     void updateLineNumberArea(const QRect&, int);
 
     QWidget* lineNumberArea_;
-    std::vector<std::shared_ptr<std::function<void()>>> callbacks_;
-    ivec4 textColor_;
-    ivec4 highLightColor_;
+    vec4 textColor_;
+    vec4 highlightColor_;
+    SyntaxHighlighter* sh_;
     std::function<std::string(int)> annotateLine_;
     std::function<int(int)> annotationSpace_;
 };

@@ -56,12 +56,12 @@ StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
     setLayout(hLayout);
     hLayout->addWidget(new EditableLabelQt(this, property_));
 
-    auto hWidgetLayout = new QHBoxLayout();
+    hWidgetLayout_ = new QHBoxLayout();
 
     {
-        hWidgetLayout->setContentsMargins(0, 0, 0, 0);
+        hWidgetLayout_->setContentsMargins(0, 0, 0, 0);
         auto widget = new QWidget();
-        widget->setLayout(hWidgetLayout);
+        widget->setLayout(hWidgetLayout_);
         auto sp = widget->sizePolicy();
         sp.setHorizontalStretch(3);
         widget->setSizePolicy(sp);
@@ -76,7 +76,7 @@ StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
         QSizePolicy sp = lineEdit_->sizePolicy();
         sp.setHorizontalStretch(3);
         lineEdit_->setSizePolicy(sp);
-        hWidgetLayout->addWidget(lineEdit_);
+        hWidgetLayout_->addWidget(lineEdit_);
 
         connect(lineEdit_, &LineEditQt::editingFinished, this,
                 &StringPropertyWidgetQt::setPropertyValue);
@@ -88,20 +88,8 @@ StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
         });
     }
 
-    if (property_->getSemantics() == PropertySemantics::TextEditor ||
-        property_->getSemantics() == PropertySemantics::ShaderEditor ||
-        property_->getSemantics() == PropertySemantics::PythonEditor) {
-        auto edit = new QToolButton();
-        edit->setIcon(QIcon(":/svgicons/edit.svg"));
-        edit->setToolTip("Edit text");
-        hWidgetLayout->addWidget(edit);
-        connect(edit, &QToolButton::clicked, this, [this]() {
-            if (!editor_) {
-                editor_ = std::make_unique<TextEditorDockWidget>(property_);
-            }
-            editor_->updateFromProperty();
-            editor_->setVisible(true);
-        });
+    if (property_->getSemantics() == PropertySemantics::TextEditor) {
+        addEditor();
     }
 
     updateFromProperty();
@@ -117,6 +105,22 @@ void StringPropertyWidgetQt::setPropertyValue() {
 PropertyEditorWidget* StringPropertyWidgetQt::getEditorWidget() const { return editor_.get(); }
 
 bool StringPropertyWidgetQt::hasEditorWidget() const { return editor_ != nullptr; }
+
+void StringPropertyWidgetQt::initEditor() {
+    editor_ = std::make_unique<TextEditorDockWidget>(property_);
+}
+
+void StringPropertyWidgetQt::addEditor() {
+    auto edit = new QToolButton();
+    edit->setIcon(QIcon(":/svgicons/edit.svg"));
+    edit->setToolTip("Edit text");
+    hWidgetLayout_->addWidget(edit);
+    connect(edit, &QToolButton::clicked, this, [this]() {
+        if (!editor_) initEditor();
+        editor_->updateFromProperty();
+        editor_->setVisible(true);
+    });
+}
 
 void StringPropertyWidgetQt::updateFromProperty() {
     QSignalBlocker blocker(lineEdit_);

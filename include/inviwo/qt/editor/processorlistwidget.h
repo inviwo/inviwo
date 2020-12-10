@@ -43,6 +43,7 @@
 #include <QMouseEvent>
 #include <QTreeWidget>
 #include <QDrag>
+#include <QString>
 #include <warn/pop>
 
 namespace inviwo {

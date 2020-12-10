@@ -56,7 +56,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
     layout_ = new QHBoxLayout();
 
     layout_->setSpacing(1);
-    layout_->setMargin(0);
+    layout_->setContentsMargins(0, 0, 0, 0);
 
     QSize iconSize = QSize(8, 8);
 

@@ -258,6 +258,22 @@ int decimals([[maybe_unused]] double inc) {
     }
 }
 
+/**
+ * @brief Get a list of all available mono space font
+ *
+ * Queries the @c QFontDatabase for all font that @c isFixedPitch
+ */
+IVW_MODULE_QTWIDGETS_API std::vector<std::string> getMonoSpaceFonts();
+
+/**
+ * @brief Index of the system mono space font
+ *
+ * Returns the index of the default system mono space font in the list given by getMonoSpaceFonts
+ * @see getMonoSpaceFonts()
+ * @return the index or 0 if the default font was not found
+ */
+IVW_MODULE_QTWIDGETS_API size_t getDefaultMonoSpaceFontIndex();
+
 }  // namespace utilqt
 
 template <class T>

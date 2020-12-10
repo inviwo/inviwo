@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,48 +26,44 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/openglqt/openglqtmoduledefine.h>
 
-class QDropEvent;
-class QDragEnterEvent;
-class QDragMoveEvent;
-class QHBoxLayout;
+#include <inviwo/core/util/settings/settings.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+
+#include <modules/qtwidgets/syntaxhighlighter.h>
 
 namespace inviwo {
 
-class FilePathLineEditQt;
-class TextEditorDockWidget;
-
-class IVW_MODULE_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt,
-                                                      public FileRequestable {
+class IVW_MODULE_OPENGLQT_API GLSLSyntaxHighlight : public Settings {
 public:
-    FilePropertyWidgetQt(FileProperty* property);
-    virtual ~FilePropertyWidgetQt() = default;
+    GLSLSyntaxHighlight();
 
-    virtual void updateFromProperty() override;
-    virtual bool requestFile() override;
+    OptionPropertyString font;
+    IntProperty fontSize;
 
-    virtual PropertyEditorWidget* getEditorWidget() const override;
-    virtual bool hasEditorWidget() const override;
-
-protected:
-    virtual void dropEvent(QDropEvent*) override;
-    virtual void dragEnterEvent(QDragEnterEvent*) override;
-    virtual void dragMoveEvent(QDragMoveEvent*) override;
-
-    virtual void initEditor();
-    void addEditor();
-    void setPropertyValue();
-
-    FileProperty* property_;
-    FilePathLineEditQt* lineEdit_;
-    QHBoxLayout* hWidgetLayout_;
-    std::unique_ptr<TextEditorDockWidget> editor_;
+    FloatVec4Property textColor;
+    FloatVec4Property backgroundColor;
+    FloatVec4Property highLightColor;
+    FloatVec4Property keywordColor;
+    FloatVec4Property builtinVarColor;
+    FloatVec4Property typeColor;
+    FloatVec4Property builtinFuncColor;
+    FloatVec4Property commentColor;
+    FloatVec4Property preProcessorColor;
+    FloatVec4Property litteralColor;
+    FloatVec4Property constantColor;
+    FloatVec4Property mainColor;
 };
+
+namespace utilqt {
+
+IVW_MODULE_OPENGLQT_API std::vector<std::shared_ptr<std::function<void()>>> setGLSLSyntaxHighlight(
+    SyntaxHighlighter& sh, GLSLSyntaxHighlight& settings);
+}
 
 }  // namespace inviwo

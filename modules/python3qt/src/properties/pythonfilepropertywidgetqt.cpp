@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,47 +27,27 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/python3qt/properties/pythonfilepropertywidgetqt.h>
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/python3qt/properties/pythoneditordockwidget.h>
+
 #include <inviwo/core/properties/fileproperty.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-
-class QDropEvent;
-class QDragEnterEvent;
-class QDragMoveEvent;
-class QHBoxLayout;
+#include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 
-class FilePathLineEditQt;
-class TextEditorDockWidget;
+PythonFilePropertyWidgetQt::PythonFilePropertyWidgetQt(FileProperty* property)
+    : FilePropertyWidgetQt(property) {
 
-class IVW_MODULE_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt,
-                                                      public FileRequestable {
-public:
-    FilePropertyWidgetQt(FileProperty* property);
-    virtual ~FilePropertyWidgetQt() = default;
+    IVW_ASSERT(property->getSemantics() == PropertySemantics::PythonEditor, "Wrong semantics");
 
-    virtual void updateFromProperty() override;
-    virtual bool requestFile() override;
+    addEditor();
+}
 
-    virtual PropertyEditorWidget* getEditorWidget() const override;
-    virtual bool hasEditorWidget() const override;
+PythonFilePropertyWidgetQt::~PythonFilePropertyWidgetQt() = default;
 
-protected:
-    virtual void dropEvent(QDropEvent*) override;
-    virtual void dragEnterEvent(QDragEnterEvent*) override;
-    virtual void dragMoveEvent(QDragMoveEvent*) override;
-
-    virtual void initEditor();
-    void addEditor();
-    void setPropertyValue();
-
-    FileProperty* property_;
-    FilePathLineEditQt* lineEdit_;
-    QHBoxLayout* hWidgetLayout_;
-    std::unique_ptr<TextEditorDockWidget> editor_;
-};
+void PythonFilePropertyWidgetQt::initEditor() {
+    editor_ = std::make_unique<PythonEditorDockWidget>(property_);
+}
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,49 +26,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <modules/python3qt/python3qtmoduledefine.h>
+
+#include <modules/qtwidgets/properties/stringpropertywidgetqt.h>
 
 namespace inviwo {
 
 /**
- * \class QtWidgetsSettings
- * \brief Text editor syntax highlighting settings
+ * @brief Widget for a StringProperty with PythonEditor semantics
+ * @see PythonEditorDockWidget
  */
-class IVW_MODULE_QTWIDGETS_API QtWidgetsSettings : public Settings {
+class IVW_MODULE_PYTHON3QT_API PythonPropertyWidgetQt : public StringPropertyWidgetQt {
 public:
-    QtWidgetsSettings();
-    virtual ~QtWidgetsSettings() = default;
+    PythonPropertyWidgetQt(StringProperty* property);
+    virtual ~PythonPropertyWidgetQt();
 
-    OptionPropertyString font_;
-    IntProperty fontSize_;
-
-    CompositeProperty glslSyntax_;
-    IntVec4Property glslTextColor_;
-    IntVec4Property glslBackgroundColor_;
-    IntVec4Property glslBackgroundHighLightColor_;
-    IntVec4Property glslQualifierColor_;
-    IntVec4Property glslBuiltinsColor_;
-    IntVec4Property glslTypeColor_;
-    IntVec4Property glslGlslBuiltinsColor_;
-    IntVec4Property glslCommentColor_;
-    IntVec4Property glslPreProcessorColor_;
-    IntVec4Property glslConstantsColor_;
-    IntVec4Property glslVoidMainColor_;
-
-    CompositeProperty pythonSyntax_;
-    IntVec4Property pyBGColor_;
-    IntVec4Property pyBGHighLightColor_;
-    IntVec4Property pyTextColor_;
-    IntVec4Property pyTypeColor_;
-    IntVec4Property pyCommentsColor_;
+protected:
+    virtual void initEditor() override;
 };
 
 }  // namespace inviwo

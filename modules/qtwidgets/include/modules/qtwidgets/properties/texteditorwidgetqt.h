@@ -44,12 +44,19 @@ class CodeEdit;
 class Property;
 class FileProperty;
 class StringProperty;
-class SyntaxHighligther;
+class SyntaxHighlighter;
 
+/**
+ * @brief Text Editor for a FileProperty or a StringProperty
+ */
 class IVW_MODULE_QTWIDGETS_API TextEditorDockWidget : public PropertyEditorWidgetQt {
 public:
+    /**
+     * @brief Create a text editor for @p property
+     * @pre Property has to be of type FileProperty or StringProperty
+     */
     TextEditorDockWidget(Property* property);
-    SyntaxHighligther* getSyntaxHighligther();
+    SyntaxHighlighter& getSyntaxHighlighter();
     virtual ~TextEditorDockWidget();
     void updateFromProperty();
 
@@ -65,11 +72,9 @@ protected:
     void save();
     void saveToFile(const std::string& filename);
 
-private:
     FileProperty* fileProperty_;
     StringProperty* stringProperty_;
     CodeEdit* editor_;
-    SyntaxHighligther* syntaxHighligther_;
     std::shared_ptr<std::function<void()>> propertyCallback_;
     utilqt::EditorFileObserver fileObserver_;
 };

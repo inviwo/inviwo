@@ -134,7 +134,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     tableView_->setContextMenuPolicy(Qt::ActionsContextMenu);
     clearAction_ = new QAction(QIcon(":/svgicons/log-clear.svg"), tr("&Clear Log"), this);
-    clearAction_->setShortcut(Qt::ControlModifier + Qt::Key_E);
+    clearAction_->setShortcut(Qt::CTRL | Qt::Key_E);
     connect(clearAction_, &QAction::triggered, [&]() { clear(); });
 
     tableView_->hideColumn(static_cast<int>(LogTableModelEntry::ColumnID::Date));
@@ -225,7 +225,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     auto levelCallback = [this, updateRowsHeights](bool /*checked*/) {
         if (util::all_of(levels, [](const auto& level) { return level.action->isChecked(); })) {
-            levelFilter_->setFilterRegExp("");
+            levelFilter_->setFilterRegularExpression("");
         } else {
             std::stringstream ss;
             auto joiner = util::make_ostream_joiner(ss, "|");
@@ -233,7 +233,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
             for (const auto& level : levels) {
                 if (level.action->isChecked()) joiner = level.level;
             }
-            levelFilter_->setFilterRegExp(QString::fromStdString(ss.str()));
+            levelFilter_->setFilterRegularExpression(QString::fromStdString(ss.str()));
         }
         updateRowsHeights();
     };
@@ -283,7 +283,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     connect(filterPattern_, &QLineEdit::textChanged,
             [this, updateRowsHeights, clearFilter](const QString& text) {
-                filter_->setFilterRegExp(text);
+                filter_->setFilterRegularExpression(text);
                 updateRowsHeights();
                 clearFilter->setEnabled(!text.isEmpty());
             });
@@ -291,7 +291,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     connect(clearFilter, &QAction::triggered, [this]() { filterPattern_->setText(""); });
 
     auto filterAction = new QAction(makeIcon("find"), "&Filter", this);
-    filterAction->setShortcut(Qt::ControlModifier + Qt::AltModifier + Qt::Key_F);
+    filterAction->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_F);
     connect(filterAction, &QAction::triggered, [this]() {
         raise();
         filterPattern_->setFocus();

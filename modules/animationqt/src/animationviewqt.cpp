@@ -177,7 +177,7 @@ AnimationViewQt::AnimationViewQt(AnimationController& controller, AnimationEdito
 
     QGridLayout* gridLayout = new QGridLayout();
     gridLayout->setSpacing(0);
-    gridLayout->setMargin(0);
+    gridLayout->setContentsMargins(0, 0, 0, 0);
 
     gridLayout->addWidget(timeline_, 0, 0);
     gridLayout->addWidget(viewport(), 1, 0);

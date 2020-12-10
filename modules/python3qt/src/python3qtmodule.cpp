@@ -29,11 +29,19 @@
  *********************************************************************************/
 
 #include <modules/python3qt/python3qtmodule.h>
+
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
+
 #include <modules/python3qt/pythoneditorwidget.h>
 #include <modules/python3qt/pythonmenu.h>
+#include <modules/python3qt/pythonsyntaxhighlight.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/propertylistwidget.h>
+
+#include <modules/python3qt/properties/pythonfilepropertywidgetqt.h>
+#include <modules/python3qt/properties/pythonpropertywidgetqt.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -100,6 +108,12 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
     } catch (const std::exception& e) {
         throw ModuleInitException(e.what(), IVW_CONTEXT);
     }
+
+    registerSettings(std::make_unique<PythonSyntaxHighlight>());
+
+    registerPropertyWidget<PythonFilePropertyWidgetQt, FileProperty>(
+        PropertySemantics::PythonEditor);
+    registerPropertyWidget<PythonPropertyWidgetQt, StringProperty>(PropertySemantics::PythonEditor);
 }
 
 Python3QtModule::~Python3QtModule() = default;

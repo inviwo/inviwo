@@ -37,7 +37,6 @@
 #include <QPainter>
 #include <QSplashScreen>
 #include <QTextStream>
-#include <QDesktopWidget>
 #include <warn/pop>
 
 namespace inviwo {

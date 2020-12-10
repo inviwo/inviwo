@@ -39,7 +39,6 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QFile>
 #include <QCursor>
 #include <QMouseEvent>

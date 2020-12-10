@@ -31,6 +31,9 @@
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/util/rendercontext.h>
 
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
+
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <modules/opengl/canvasprocessorgl.h>
@@ -42,6 +45,9 @@
 #include <modules/openglqt/canvasprocessorwidgetqt.h>
 #include <modules/openglqt/canvasqt.h>
 #include <modules/openglqt/openglqtmenu.h>
+#include <modules/openglqt/glslsyntaxhighlight.h>
+#include <modules/openglqt/properties/glslpropertywidgetqt.h>
+#include <modules/openglqt/properties/glslfilepropertywidgetqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -88,6 +94,11 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     }
 
     app->getProcessorNetworkEvaluator()->addObserver(this);
+
+    registerSettings(std::make_unique<GLSLSyntaxHighlight>());
+
+    registerPropertyWidget<GLSLFilePropertyWidgetQt, FileProperty>(PropertySemantics::ShaderEditor);
+    registerPropertyWidget<GLSLPropertyWidgetQt, StringProperty>(PropertySemantics::ShaderEditor);
 }
 
 OpenGLQtModule::~OpenGLQtModule() {

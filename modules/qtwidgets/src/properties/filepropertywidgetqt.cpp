@@ -66,12 +66,12 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
     setAcceptDrops(true);
 
     hLayout->addWidget(new EditableLabelQt(this, property_));
-    auto hWidgetLayout = new QHBoxLayout();
+    hWidgetLayout_ = new QHBoxLayout();
 
     {
-        hWidgetLayout->setContentsMargins(0, 0, 0, 0);
+        hWidgetLayout_->setContentsMargins(0, 0, 0, 0);
         auto widget = new QWidget();
-        widget->setLayout(hWidgetLayout);
+        widget->setLayout(hWidgetLayout_);
         auto sp = widget->sizePolicy();
         sp.setHorizontalStretch(3);
         widget->setSizePolicy(sp);
@@ -91,13 +91,13 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
         auto sp = lineEdit_->sizePolicy();
         sp.setHorizontalStretch(3);
         lineEdit_->setSizePolicy(sp);
-        hWidgetLayout->addWidget(lineEdit_);
+        hWidgetLayout_->addWidget(lineEdit_);
     }
 
     {
         auto revealButton = new QToolButton(this);
         revealButton->setIcon(QIcon(":/svgicons/about-enabled.svg"));
-        hWidgetLayout->addWidget(revealButton);
+        hWidgetLayout_->addWidget(revealButton);
         connect(revealButton, &QToolButton::pressed, this, [&]() {
             auto dir = filesystem::directoryExists(property_->get())
                            ? property_->get()
@@ -111,27 +111,31 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
     {
         auto openButton = new QToolButton(this);
         openButton->setIcon(QIcon(":/svgicons/open.svg"));
-        hWidgetLayout->addWidget(openButton);
+        hWidgetLayout_->addWidget(openButton);
         connect(openButton, &QToolButton::pressed, this, &FilePropertyWidgetQt::setPropertyValue);
     }
 
-    if (property_->getSemantics() == PropertySemantics::TextEditor ||
-        property_->getSemantics() == PropertySemantics::ShaderEditor ||
-        property_->getSemantics() == PropertySemantics::PythonEditor) {
-        auto edit = new QToolButton();
-        edit->setIcon(QIcon(":/svgicons/edit.svg"));
-        edit->setToolTip("Edit String");
-        hWidgetLayout->addWidget(edit);
-        connect(edit, &QToolButton::clicked, this, [this]() {
-            if (!editor_) {
-                editor_ = std::make_unique<TextEditorDockWidget>(property_);
-            }
-            editor_->updateFromProperty();
-            editor_->setVisible(true);
-        });
+    if (property_->getSemantics() == PropertySemantics::TextEditor) {
+        addEditor();
     }
 
     updateFromProperty();
+}
+
+void FilePropertyWidgetQt::initEditor() {
+    editor_ = std::make_unique<TextEditorDockWidget>(property_);
+}
+
+void FilePropertyWidgetQt::addEditor() {
+    auto edit = new QToolButton();
+    edit->setIcon(QIcon(":/svgicons/edit.svg"));
+    edit->setToolTip("Edit String");
+    hWidgetLayout_->addWidget(edit);
+    connect(edit, &QToolButton::clicked, this, [this]() {
+        if (!editor_) initEditor();
+        editor_->updateFromProperty();
+        editor_->setVisible(true);
+    });
 }
 
 void FilePropertyWidgetQt::setPropertyValue() {
