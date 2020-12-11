@@ -30,6 +30,8 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/util/glm.h>
 #include <vector>
 
