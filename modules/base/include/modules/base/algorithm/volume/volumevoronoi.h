@@ -47,7 +47,8 @@ namespace util {
  * (according to the power distance with or without weights).
  *
  *     * volumeDimensions is the dimensions for the volume.
- *     * indexToModelMatrix is the matrix to transform the voxel positions from index to model space.
+ *     * indexToModelMatrix is the matrix to transform the voxel positions from index to model
+ *       space.
  *     * seedPointsWithIndices is a vector containing the seed points for the algorithm together
  *       with their index number on the form {index, position}. The positions are expected be in
  *       model space.
