@@ -92,10 +92,15 @@ void VolumeVoronoiSegmentation::process() {
     const auto xPos = getColumnDataAsFloats("x");
     const auto yPos = getColumnDataAsFloats("y");
     const auto zPos = getColumnDataAsFloats("z");
-    const auto radii = getColumnDataAsFloats("r");
+
+    std::optional<std::vector<float>> radii = std::nullopt;
+    if (dataFrame->getColumn("r") != nullptr) {
+        radii = getColumnDataAsFloats("r");
+    }
 
     if (indices.size() != xPos.size() || indices.size() != yPos.size() ||
-        indices.size() != zPos.size() || indices.size() != radii.size()) {
+        indices.size() != zPos.size() ||
+        (radii.has_value() && indices.size() != radii.value().size())) {
         throw Exception("Unexpected dimension missmatch", IVW_CONTEXT);
     }
 
@@ -103,8 +108,6 @@ void VolumeVoronoiSegmentation::process() {
     for (std::size_t i = 0; i < xPos.size(); ++i) {
         seedPointsWithIndices.push_back({indices[i], vec3{xPos[i], yPos[i], zPos[i]}});
     }
-
-    // TODO: make sure the voxel positions and seed positions are in the same space?
 
     const auto voronoiVolume = util::voronoiSegmentation(
         volume->getDimensions(), volume->getCoordinateTransformer().getIndexToModelMatrix(),
