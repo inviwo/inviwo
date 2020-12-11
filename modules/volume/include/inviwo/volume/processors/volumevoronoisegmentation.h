@@ -35,23 +35,32 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
+#include <optional>
 
 namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeVoronoiSegmentation, Volume Voronoi Segmentation}
  * ![](org.inviwo.VolumeVoronoiSegmentation.png?classIdentifier=org.inviwo.VolumeVoronoiSegmentation)
- * Explanation of how to use the processor.
+ *
+ * Processor which calculates the voronoi segmentation of a volume, given the volume together with
+ * seed points (and optional weights) as input.
+ *
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __inputVolume__ The input volume.
+ *   * __seedPoints__ Seed points together with indices and optional weights. The seed points are
+ *                    expected to be in the model space. The column with the weights should have
+ *                    header name "r".
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __outport__ Volume where each voxel has the value of the closest seed point, according to the
+ *                 voronoi algorithm.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Weighted voronoi__ Choose whether the weighted version of voronoi should be used or not.
+ *
  */
+
 class IVW_MODULE_VOLUME_API VolumeVoronoiSegmentation : public Processor {
 public:
     VolumeVoronoiSegmentation();
