@@ -37,14 +37,25 @@ namespace inviwo {
 namespace util {
 
 /**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ * Implementation of Voronoi segmentation.
+ *
+ * The function returns a volume with each voxel containing the index for the closest seed point
+ * (according to the power distance with or without weights).
+ *
+ *     * volumeDimensions is the dimensions for the volume.
+ *     * indexToModelMatrix is the matrix to transform the voxel positions from index to model space.
+ *     * seedPointsWithIndices is a vector containing the seed points for the algorithm together
+ *       with their index number on the form {index, position}. The positions are expected be in
+ *       model space.
+ *     * weigths is an optional vector containing the weights for each seed point.
+ *     * weightedVoronoi is a boolean deciding if the weighted version of voronoi should be used.
+ *       If true, the weights must be provided.
  */
 
 IVW_MODULE_BASE_API std::shared_ptr<Volume> voronoiSegmentation(
     const size3_t volumeDimensions, const mat4& indexToModelMatrix,
     const std::vector<std::pair<uint32_t, vec3>>& seedPointsWithIndices,
-    const const std::optional<std::vector<float>>& weights, bool weightedVoronoi);
+    const std::optional<std::vector<float>>& weights, bool weightedVoronoi);
 
 }  // namespace util
 }  // namespace inviwo
