@@ -3,7 +3,7 @@
     url = https://github.com/eigenteam/eigen-git-mirror.git
 [submodule "modules/hdf5/ext/hdf5"]
     path = modules/hdf5/ext/hdf5
-    url = https://github.com/live-clones/hdf5.git
+    url = https://github.com/HDFGroup/hdf5.git
 [submodule "ext/pybind11"]
     path = ext/pybind11
     url = https://github.com/pybind/pybind11.git

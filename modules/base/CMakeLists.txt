@@ -31,6 +31,7 @@ set(HEADER_FILES
     include/modules/base/algorithm/volume/volumeramsubsample.h
     include/modules/base/algorithm/volume/volumeramsubset.h
     include/modules/base/algorithm/volume/volumesignificantvoxels.h
+    include/modules/base/algorithm/volume/volumevoronoi.h
     include/modules/base/basemodule.h
     include/modules/base/basemoduledefine.h
     include/modules/base/datastructures/disjointsets.h
@@ -157,6 +158,7 @@ set(SOURCE_FILES
     src/algorithm/volume/volumeramsubsample.cpp
     src/algorithm/volume/volumeramsubset.cpp
     src/algorithm/volume/volumesignificantvoxels.cpp
+    src/algorithm/volume/volumevoronoi.cpp
     src/basemodule.cpp
     src/datastructures/disjointsets.cpp
     src/datastructures/imagereusecache.cpp
@@ -255,6 +257,7 @@ set(TEST_FILES
     tests/unittests/kdtree-test.cpp
     tests/unittests/marchingcubes-test.cpp
     tests/unittests/meshcutting-test.cpp
+    tests/unittests/volumevoronoi-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
