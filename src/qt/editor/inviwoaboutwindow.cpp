@@ -171,7 +171,8 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         h.append("span",
                  "This work was supported by Linköping University, KTH Royal Institute of "
                  "Technology, Ulm University, and through grants from the Swedish e-Science "
-                 "Research Centre (SeRC).");
+                 "Research Centre (SeRC) and the Excellence Center at Linköping - Lund in "
+                 "Information Technology (ELLIIT)");
         h.append("br");
         auto p = h.append("p");
 
@@ -186,6 +187,9 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
 
         auto uulm = p.append("a", "", {{"href", "http://www.uni-ulm.de/en/"}});
         uulm.append("img", "", makeImg(":/images/uulm.png", 50));
+
+        auto elliit = p.append("a", "", {{"href", "https://old.liu.se/elliit?l=en"}});
+        elliit.append("img", "", makeImg(":/images/elliit.png", 50));
     }
     {
         const auto& bi = syscap.getBuildInfo();
