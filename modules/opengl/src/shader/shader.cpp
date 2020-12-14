@@ -301,10 +301,14 @@ bool Shader::checkLinkStatus() const {
 void Shader::bindAttributes() {
     for (const auto& obj : getShaderObjects()) {
         for (const auto& item : obj.getInDeclarations()) {
-            glBindAttribLocation(program_.id, item.location, item.name.c_str());
+            if (item.location >= 0) {
+                glBindAttribLocation(program_.id, item.location, item.name.c_str());
+            }
         }
         for (const auto& item : obj.getOutDeclarations()) {
-            glBindFragDataLocation(program_.id, item.location, item.name.c_str());
+            if (item.location >= 0) {
+                glBindFragDataLocation(program_.id, item.location, item.name.c_str());
+            }
         }
     }
 }
