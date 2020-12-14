@@ -50,6 +50,4 @@ target_link_libraries(inviwo-module-python3qt PRIVATE Qt5::Core Qt5::Gui Qt5::Wi
 # Add templates directory to packaging
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/templates)
 
-ivw_compile_optimize_on_target(inviwo-module-python3qt)
-
 ivw_make_package(InviwoPython3QtModule inviwo-module-python3qt)
