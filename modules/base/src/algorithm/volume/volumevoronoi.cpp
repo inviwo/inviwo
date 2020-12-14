@@ -76,7 +76,7 @@ std::shared_ptr<Volume> voronoiSegmentation(
                     return glm::distance2(p1.second, transformedVoxelPos) - w1 * w1 <
                            glm::distance2(p2.second, transformedVoxelPos) - w2 * w2;
                 });
-            volumeIndices[index(voxelPos)] = posWithIndex.first;
+            volumeIndices[index(voxelPos)] = static_cast<unsigned short>(posWithIndex.first);
         });
     } else {
         util::forEachVoxelParallel(volumeDimensions, [&](const size3_t& voxelPos) {
@@ -86,7 +86,7 @@ std::shared_ptr<Volume> voronoiSegmentation(
                                            return glm::distance2(p1.second, transformedVoxelPos) <
                                                   glm::distance2(p2.second, transformedVoxelPos);
                                        });
-            volumeIndices[index(voxelPos)] = it->first;
+            volumeIndices[index(voxelPos)] = static_cast<unsigned short>(it->first);
         });
     }
 
