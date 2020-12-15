@@ -44,9 +44,10 @@ Below follow some general information about the framework:
 For help and general discussion join us on our [Slack](https://join.slack.com/t/inviwo/shared_invite/enQtNTc2Nzc2NDQwNzIxLTRiMWM1ZWJiYjljZjkwNWE3OTk3MzYxODZlMDUyMzRmZjUzMzBiZjVhNTM3NWUyNzU1MjI4OWJjMzdkODViMzM) server
 
 #### Sponsors
-This work was supported by Linköping University,  KTH Royal Institute of Technology, Ulm University, and through grants from the Swedish e-Science Research Centre (SeRC).
+This work was supported by Linköping University,  KTH Royal Institute of Technology, Ulm University, and through grants from the Swedish e-Science Research Centre (SeRC) and the Excellence Center at Linköping - Lund in Information Technology (ELLIIT).
 
-<a href='http://www.liu.se'><img src="docs/images/liu-600x600.png" width="200" style="margin-right:10px;"></a>
-<a href='http://www.kth.se'><img src="docs/images/kth-600x600.png" width="200" style="margin-right:10px;"></a>
-<a href='http://e-science.se'><img src="docs/images/serc-600x600.png" width="200" style="margin-right:10px;"></a>
-<a href='http://www.uni-ulm.de/en/'><img src="docs/images/uulm-600x600.png" width="200" style="margin-right:10px;"></a>
+<a href='http://www.liu.se'><img src="docs/images/liu-600x600.png" width="150" style="margin-right:10px;"></a>
+<a href='http://www.kth.se'><img src="docs/images/kth-600x600.png" width="150" style="margin-right:10px;"></a>
+<a href='http://e-science.se'><img src="docs/images/serc-600x600.png" width="150" style="margin-right:10px;"></a>
+<a href='http://www.uni-ulm.de/en/'><img src="docs/images/uulm-600x600.png" width="150" style="margin-right:10px;"></a>
+<a href='https://old.liu.se/elliit?l=en'><img src="docs/images/elliit_logo.jpg" width="150" style="margin-right:10px;"></a>
