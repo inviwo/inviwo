@@ -102,7 +102,7 @@ MeshRasterizer::MeshRasterizer()
           3, InvalidationLevel::InvalidResources)
     , faceSettings_{true, false}
     , shader_(std::make_shared<Shader>("fancymeshrenderer.vert", "fancymeshrenderer.geom",
-                                       "fancymeshrenderer.frag", false)) {
+                                       "fancymeshrenderer.frag", Shader::Build::No)) {
     // input and output ports
     addPort(inport_).onChange([this]() { updateMeshes(); });
     addPort(outport_);

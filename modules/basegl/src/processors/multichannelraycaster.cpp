@@ -51,7 +51,7 @@ const ProcessorInfo MultichannelRaycaster::getProcessorInfo() const { return pro
 
 MultichannelRaycaster::MultichannelRaycaster()
     : Processor()
-    , shader_("multichannelraycaster.frag", false)
+    , shader_("multichannelraycaster.frag", Shader::Build::No)
     , volumePort_("volume")
     , entryPort_("entry")
     , exitPort_("exit")

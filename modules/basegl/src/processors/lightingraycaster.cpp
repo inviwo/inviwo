@@ -53,7 +53,7 @@ const ProcessorInfo LightingRaycaster::getProcessorInfo() const { return process
 
 LightingRaycaster::LightingRaycaster()
     : Processor()
-    , shader_("lighting/lightingraycasting.frag", false)
+    , shader_("lighting/lightingraycasting.frag", Shader::Build::No)
     , volumePort_("volume")
     , entryPort_("entry-points")
     , exitPort_("exit-points")

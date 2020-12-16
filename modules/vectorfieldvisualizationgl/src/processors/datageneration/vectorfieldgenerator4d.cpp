@@ -59,7 +59,7 @@ VectorFieldGenerator4D::VectorFieldGenerator4D()
     , yRange_("yRange", "Y Range", -1, 1, -10, 10)
     , zRange_("zRange", "Z Range", -1, 1, -10, 10)
     , tRange_("tRange", "T Range", 0, 1, -10, 10)
-    , shader_("volume_gpu.vert", "volume_gpu.geom", "vectorfieldgenerator4d.frag", false)
+    , shader_("volume_gpu.vert", "volume_gpu.geom", "vectorfieldgenerator4d.frag", Shader::Build::No)
     , fbo_() {
     addPort(outport_);
 

@@ -76,7 +76,7 @@ SplitImage::SplitImage()
     , triColor_("triColor", "Hover Color", vec4(1.0f, 0.666f, 0.0f, 1.0f), vec4(0.0f), vec4(1.0f))
     , width_("width", "Width (pixel)", 9.0f, 0.0f, 50.0f, 0.1f)
     , triSize_("triSize", "Triangle Size", 10.0f, 0.0f, 50.0f)
-    , shader_("splitter.vert", "linerenderer.geom", "linerenderer.frag", false)
+    , shader_("splitter.vert", "linerenderer.geom", "linerenderer.frag", Shader::Build::No)
     , triShader_("standard.vert", "standard.frag")
     , pickingMapper_(this, 1, [&](PickingEvent *e) { handlePickingEvent(e); }) {
     inport0_.setOptional(true);

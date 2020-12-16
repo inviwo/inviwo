@@ -43,6 +43,34 @@
 
 namespace inviwo {
 
+namespace detail {
+class IVW_MODULE_OPENGL_API Build {
+    bool value_ = true;
+    Build() = default;
+    Build(nullptr_t) : value_{false} {}
+
+public:
+    // Allow explicit conversion from anything bool like
+    template <
+        typename T,
+        std::enable_if_t<!std::is_same_v<T, bool> && std::is_constructible_v<bool, T>, int> = 0>
+    explicit constexpr Build(T value) noexcept : value_{value} {}
+
+    // Allow implicit construction only from bool
+    template <typename T, std::enable_if_t<std::is_same_v<T, bool>, int> = 0>
+    [[deprecated("Use Build::Yes of Build::No")]] constexpr Build(T value) noexcept
+        : value_{value} {}
+
+    explicit constexpr operator bool() { return value_; }
+
+    static const Build Yes;
+    static const Build No;
+
+    friend constexpr bool operator==(Build a, Build b) { return b.value_ == a.value_; }
+    friend constexpr bool operator!=(Build a, Build b) { return b.value_ != a.value_; }
+};
+}  // namespace detail
+
 class IVW_MODULE_OPENGL_API Shader {
     struct Program {
         Program();
@@ -56,29 +84,24 @@ class IVW_MODULE_OPENGL_API Shader {
 
 public:
     enum class OnError { Warn, Throw };
-    enum class Build { Yes, No };
     enum class UniformWarning { Ignore, Warn, Throw };
+    using Build = detail::Build;
 
     Shader(const std::vector<std::pair<ShaderType, std::string>>& items,
            Build buildShader = Build::Yes);
-
     Shader(const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>>& items,
            Build buildShader = Build::Yes);
+    Shader(std::vector<std::unique_ptr<ShaderObject>>& shaderObjects,
+           Build buildShader = Build::Yes);
+
     /*
      * Will add utilgl::imgIdentityVert() as vertex shader.
      */
-    Shader(std::string fragmentFilename, bool buildShader = true);
-    Shader(std::string vertexFilename, std::string fragmentFilename, bool buildShader = true);
-    Shader(std::string vertexFilename, std::string geometryFilename, std::string fragmentFilename,
-           bool buildShader = true);
-
-    // We need these to avoid strange implicit conversions...
-    Shader(const char* fragmentFilename, bool buildShader = true);
-    Shader(const char* vertexFilename, const char* fragmentFilename, bool buildShader = true);
-    Shader(const char* vertexFilename, const char* geometryFilename, const char* fragmentFilename,
-           bool buildShader = true);
-
-    Shader(std::vector<std::unique_ptr<ShaderObject>>& shaderObjects, bool buildShader = true);
+    Shader(std::string_view fragmentFilename, Build buildShader = Build::Yes);
+    Shader(std::string_view vertexFilename, std::string_view fragmentFilename,
+           Build buildShader = Build::Yes);
+    Shader(std::string_view vertexFilename, std::string_view geometryFilename,
+           std::string_view fragmentFilename, Build buildShader = Build::Yes);
 
     Shader(const Shader& rhs);
     Shader(Shader&& rhs);

@@ -114,11 +114,11 @@ SSAO::SSAO()
     , enableBlur_("enable-blur", "Enable Blur", true)
     , blurSharpness_("blur-sharpness", "Blur Sharpness", 40.f, 0.f, 200.f)
     , camera_("camera", "Camera")
-    , depthLinearize_("fullscreenquad.vert", "depthlinearize.frag", false)
-    , hbaoCalc_("fullscreenquad.vert", "hbao.frag", false)
-    , hbaoCalcBlur_("fullscreenquad.vert", "hbao.frag", false)
-    , hbaoBlurHoriz_("fullscreenquad.vert", "hbao_blur.frag", false)
-    , hbaoBlurVert_("fullscreenquad.vert", "hbao_blur.frag", false)
+    , depthLinearize_("fullscreenquad.vert", "depthlinearize.frag", Shader::Build::No)
+    , hbaoCalc_("fullscreenquad.vert", "hbao.frag", Shader::Build::No)
+    , hbaoCalcBlur_("fullscreenquad.vert", "hbao.frag", Shader::Build::No)
+    , hbaoBlurHoriz_("fullscreenquad.vert", "hbao_blur.frag", Shader::Build::No)
+    , hbaoBlurVert_("fullscreenquad.vert", "hbao_blur.frag", Shader::Build::No)
     , hbaoUbo_(0) {
 
     technique_.addOption("hbao-classic", "HBAO Classic", 1);

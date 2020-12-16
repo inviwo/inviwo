@@ -73,8 +73,8 @@ FXAA::FXAA()
     , enable_("enable", "Enable Operation", true)
     , dither_("dither", "Dither")
     , quality_("quality", "Quality", 0.5f, 0.f, 1.f, 0.1f)
-    , fxaa_("fullscreenquad.vert", "fxaa.frag", false)
-    , prepass_("fullscreenquad.vert", "rgbl.frag", true) {
+    , fxaa_("fullscreenquad.vert", "fxaa.frag", Shader::Build::No)
+    , prepass_("fullscreenquad.vert", "rgbl.frag", Shader::Build::Yes) {
     addPort(inport_);
     addPort(outport_);
 

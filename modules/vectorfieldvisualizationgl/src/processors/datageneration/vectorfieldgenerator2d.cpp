@@ -54,7 +54,7 @@ VectorFieldGenerator2D::VectorFieldGenerator2D()
     , yRange_("yRange", "Y Range", -1, 1, -10, 10)
     , xValue_("x", "X", "-x", InvalidationLevel::InvalidResources)
     , yValue_("y", "Y", "y", InvalidationLevel::InvalidResources)
-    , shader_("vectorfieldgenerator2d.frag", false) {
+    , shader_("vectorfieldgenerator2d.frag", Shader::Build::No) {
     addPort(outport_);
 
     addProperties(size_, xValue_, yValue_, xRange_, yRange_);

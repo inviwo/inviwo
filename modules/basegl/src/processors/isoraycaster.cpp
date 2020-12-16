@@ -49,7 +49,7 @@ const ProcessorInfo ISORaycaster::getProcessorInfo() const { return processorInf
 
 ISORaycaster::ISORaycaster()
     : Processor()
-    , shader_("isoraycasting.frag", false)
+    , shader_("isoraycasting.frag", Shader::Build::No)
     , volumePort_("volume")
     , entryPort_("entry")
     , exitPort_("exit")

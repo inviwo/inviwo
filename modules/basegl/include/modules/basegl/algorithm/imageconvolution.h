@@ -44,7 +44,7 @@ public:
     ImageConvolution(Callback C) : ImageConvolution() {
         shader_.onReload(C);
     }
-    ImageConvolution() : shader_("img_convolution.frag", false) {}
+    ImageConvolution() : shader_("img_convolution.frag", Shader::Build::No) {}
     virtual ~ImageConvolution() {}
 
     std::shared_ptr<Image> convolution(const Layer &layer, std::function<float(vec2)> kernelWeight,
