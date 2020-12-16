@@ -147,7 +147,13 @@ Layer* Image::getLayer(LayerType type, size_t idx) {
     return nullptr;
 }
 
-const Layer* Image::getColorLayer(size_t idx) const { return colorLayers_[idx].get(); }
+const Layer* Image::getColorLayer(size_t idx) const {
+    if (idx < colorLayers_.size()) {
+        return colorLayers_[idx].get();
+    } else {
+        return nullptr;
+    }
+}
 
 Layer* Image::getColorLayer(size_t idx) { return colorLayers_[idx].get(); }
 
