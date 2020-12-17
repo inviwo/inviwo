@@ -52,7 +52,7 @@ const ProcessorInfo VolumeRaycaster::processorInfo_{
 
 VolumeRaycaster::VolumeRaycaster()
     : PoolProcessor()
-    , shader_("raycasting.frag", false)
+    , shader_("raycasting.frag", Shader::Build::No)
     , volumePort_("volume")
     , entryPort_("entry")
     , exitPort_("exit")
