@@ -56,7 +56,8 @@ VectorFieldGenerator3D::VectorFieldGenerator3D()
     , xValue_("x", "X", "-y", InvalidationLevel::InvalidResources)
     , yValue_("y", "Y", "x", InvalidationLevel::InvalidResources)
     , zValue_("z", "Z", "(1-sqrt(x*x+y*y))*0.4", InvalidationLevel::InvalidResources)
-    , shader_("volume_gpu.vert", "volume_gpu.geom", "vectorfieldgenerator3d.frag", Shader::Build::No)
+    , shader_("volume_gpu.vert", "volume_gpu.geom", "vectorfieldgenerator3d.frag",
+              Shader::Build::No)
     , fbo_() {
     addPort(outport_);
 

@@ -35,12 +35,12 @@
 #include <modules/opengl/geometry/meshgl.h>
 #include <random>
 
-static void newTexture(GLuint &id) {
+static void newTexture(GLuint& id) {
     if (id) glDeleteTextures(1, &id);
     glGenTextures(1, &id);
 }
 
-static void newFramebuffer(GLuint &id) {
+static void newFramebuffer(GLuint& id) {
     if (id) glDeleteFramebuffers(1, &id);
     glGenFramebuffers(1, &id);
 }
@@ -96,13 +96,13 @@ FXAA::FXAA()
     dither_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
     quality_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
     inport_.onChange([this]() {
-        const DataFormatBase *format = inport_.getData()->getDataFormat();
+        const DataFormatBase* format = inport_.getData()->getDataFormat();
         const auto swizzleMask = inport_.getData()->getColorLayer()->getSwizzleMask();
 
         if (!outport_.hasEditableData() || format != outport_.getData()->getDataFormat() ||
             swizzleMask != outport_.getData()->getColorLayer()->getSwizzleMask()) {
             auto dim = outport_.getData()->getDimensions();
-            Image *img = new Image(dim, format);
+            Image* img = new Image(dim, format);
             img->copyMetaDataFrom(*inport_.getData());
             // forward swizzle mask of the input
             img->getColorLayer()->setSwizzleMask(swizzleMask);
