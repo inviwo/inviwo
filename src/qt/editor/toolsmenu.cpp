@@ -185,8 +185,12 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
 #endif
 
     auto workspaceMenu = addMenu("Workspaces");
+    workspaceMenu->setToolTipsVisible(true);
 
     auto loadExampleWorkspaces = workspaceMenu->addAction("Load Example Workspaces");
+    loadExampleWorkspaces->setToolTip(
+        "Load each workspace after each other, useful to see if there are any problems when load "
+        "the workspaces");
     connect(loadExampleWorkspaces, &QAction::triggered, [win]() {
         try {
             util::updateExampleWorkspaces(win->getInviwoApplication(), util::DryRun::Yes);
@@ -196,6 +200,8 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
     });
 
     auto updateExampleWorkspaces = workspaceMenu->addAction("Update Example Workspaces");
+    updateExampleWorkspaces->setToolTip(
+        "Load and save each workspace after each other, useful to update workspace versions");
     connect(updateExampleWorkspaces, &QAction::triggered, [win]() {
         try {
             util::updateExampleWorkspaces(win->getInviwoApplication(), util::DryRun::No);
@@ -205,6 +211,9 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
     });
 
     auto loadRegressionWorkspaces = workspaceMenu->addAction("Load Regression Workspaces");
+    loadRegressionWorkspaces->setToolTip(
+        "Load each workspace after each other, useful to see if there are any problems when load "
+        "the workspaces");
     connect(loadRegressionWorkspaces, &QAction::triggered, [win]() {
         try {
             util::updateRegressionWorkspaces(win->getInviwoApplication(), util::DryRun::Yes);
@@ -214,6 +223,9 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
     });
 
     auto updateRegressionWorkspaces = workspaceMenu->addAction("Update Regression Workspaces");
+    updateRegressionWorkspaces->setToolTip(
+        "Load and save each workspace after each other, useful to update workspace versions");
+
     connect(updateRegressionWorkspaces, &QAction::triggered, [win]() {
         try {
             util::updateRegressionWorkspaces(win->getInviwoApplication(), util::DryRun::No);
@@ -223,6 +235,9 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
     });
 
     auto loadWorkspaces = workspaceMenu->addAction("Load Workspaces In Folder...");
+    loadWorkspaces->setToolTip(
+        "Load each workspace after each other, useful to see if there are any problems when load "
+        "the workspaces. Loads all workspace found in the folder recursively.");
     connect(loadWorkspaces, &QAction::triggered, [win]() {
         InviwoFileDialog dialog(nullptr, "workspace", "Workspace Directory");
         dialog.setFileMode(FileMode::DirectoryOnly);
@@ -240,6 +255,10 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
     });
 
     auto updateWorkspaces = workspaceMenu->addAction("Update Workspaces In Folder...");
+    updateWorkspaces->setToolTip(
+        "Load and save each workspace after each other, useful to update workspace versions. Loads "
+        "all workspace found in the folder recursively.");
+
     connect(updateWorkspaces, &QAction::triggered, [win]() {
         InviwoFileDialog dialog(nullptr, "workspace", "Workspace Directory");
         dialog.setFileMode(FileMode::DirectoryOnly);

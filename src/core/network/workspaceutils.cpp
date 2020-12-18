@@ -44,21 +44,13 @@ namespace util {
 
 void forEachWorkspaceInDirRecusive(std::string_view path,
                                    std::function<void(std::string_view)> callback) {
-    std::function<void(const std::string&)> traverse = [&](const std::string& path) {
-        for (const auto& file :
-             filesystem::getDirectoryContents(path, filesystem::ListMode::Files)) {
-            if (filesystem::wildcardStringMatch("*.inv", file)) {
-                const auto workspace = path + "/" + file;
-                callback(workspace);
-            }
-        }
-        for (const auto& dir :
-             filesystem::getDirectoryContents(path, filesystem::ListMode::Directories)) {
-            if (dir != "." && dir != "..") traverse(path + "/" + dir);
-        }
-    };
 
-    traverse(std::string(path));
+    for (const auto& file : filesystem::getDirectoryContentsRecursively(
+             std::string(path), filesystem::ListMode::Files)) {
+        if (filesystem::wildcardStringMatch("*.inv", file)) {
+            callback(fmt::format("{}/{}", path, file));
+        }
+    }
 }
 
 void updateWorkspaces(InviwoApplication* app, std::string_view path, DryRun dryRun) {
