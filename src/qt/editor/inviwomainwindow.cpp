@@ -135,8 +135,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                              "path"}
     , openData_{"d", "data", "Try and open a data file", false, "", "file name"}
     , updateExampleWorkspaces_{"", "update-workspaces",
-                        "Update workspaces of all modules to the latest version "
-                        "(located in '<module>/data/workspaces/*')"}
+                               "Update workspaces of all modules to the latest version "
+                               "(located in '<module>/data/workspaces/*')"}
     , updateRegressionWorkspaces_{"", "update-regression-workspaces",
                                   "Update regression workspaces of all modules to the latest "
                                   "version "
@@ -192,34 +192,34 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     resize(size);
     move(pos);
 
-    app->getCommandLineParser().add(
-        &openData_,
-        [this]() {
-            auto net = app_->getProcessorNetwork();
-            util::insertNetworkForData(openData_.getValue(), net, true);
-        },
-        900);
+    app->getCommandLineParser().add(&openData_,
+                                    [this]() {
+                                        auto net = app_->getProcessorNetwork();
+                                        util::insertNetworkForData(openData_.getValue(), net, true);
+                                    },
+                                    900);
 
-    app->getCommandLineParser().add(
-        &snapshotArg_,
-        [this]() {
-            saveCanvases(app_->getCommandLineParser().getOutputPath(), snapshotArg_.getValue());
-        },
-        1000);
+    app->getCommandLineParser().add(&snapshotArg_,
+                                    [this]() {
+                                        saveCanvases(app_->getCommandLineParser().getOutputPath(),
+                                                     snapshotArg_.getValue());
+                                    },
+                                    1000);
 
-    app->getCommandLineParser().add(
-        &screenGrabArg_,
-        [this]() {
-            getScreenGrab(app_->getCommandLineParser().getOutputPath(), screenGrabArg_.getValue());
-        },
-        1000);
+    app->getCommandLineParser().add(&screenGrabArg_,
+                                    [this]() {
+                                        getScreenGrab(app_->getCommandLineParser().getOutputPath(),
+                                                      screenGrabArg_.getValue());
+                                    },
+                                    1000);
 
     app->getCommandLineParser().add(
         &saveProcessorPreviews_,
         [this]() { utilqt::saveProcessorPreviews(app_, saveProcessorPreviews_.getValue()); }, 1200);
 
     app->getCommandLineParser().add(
-        &updateExampleWorkspaces_, [this]() { util::updateExampleWorkspaces(app_, util::DryRun::No); }, 1250);
+        &updateExampleWorkspaces_,
+        [this]() { util::updateExampleWorkspaces(app_, util::DryRun::No); }, 1250);
 
     app->getCommandLineParser().add(
         &updateRegressionWorkspaces_,
