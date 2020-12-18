@@ -333,18 +333,6 @@ std::string rtrim(std::string s) {
 // trim from both ends
 std::string trim(std::string s) { return ltrim(rtrim(s)); }
 
-std::string_view util::trim(std::string_view s) {
-    auto left = s.begin();
-    for (;; ++left) {
-        if (left == s.end()) return std::string_view();
-        if (!std::isspace(*left)) break;
-    }
-    auto right = s.end() - 1;
-    for (; right > left && std::isspace(*right); --right)
-        ;
-    return s.substr(std::distance(s.begin(), left), std::distance(left, right) + 1);
-}
-
 std::string removeSubString(std::string_view str, std::string_view strToRemove) {
     std::string newString(str);
     size_t pos;

@@ -248,8 +248,18 @@ IVW_CORE_API std::vector<std::string> splitString(std::string_view str, char del
 IVW_CORE_API std::vector<std::string_view> splitStringView(std::string_view str,
                                                            char delimiter = ' ');
 
-// trim from both ends
-IVW_CORE_API std::string_view trim(std::string_view s);
+/**
+ * \brief constexpr function for trimming \p str from beginning and end by removing white spaces
+ *
+ * @param str   input string
+ * @return trimmed stringview without leading/trailing white space
+ */
+constexpr std::string_view trim(std::string_view str) noexcept {
+    const auto idx1 = str.find_first_not_of(" \f\n\r\t\v");
+    if (idx1 == std::string_view::npos) return {};
+    const auto idx2 = str.find_last_not_of(" \f\n\r\t\v");
+    return str.substr(idx1, idx2 + 1 - idx1);
+}
 
 }  // namespace util
 
