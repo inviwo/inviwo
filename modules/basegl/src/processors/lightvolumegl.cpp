@@ -102,9 +102,9 @@ LightVolumeGL::LightVolumeGL()
     , transferFunction_("transferFunction", "Transfer function", &inport_)
     , floatPrecision_("floatPrecision", "Float Precision", false)
     , propagationShader_("lighting/lightpropagation.vert", "lighting/lightpropagation.geom",
-                         "lighting/lightpropagation.frag", Shader::Build::Yes)
+                         "lighting/lightpropagation.frag")
     , mergeShader_("lighting/lightvolumeblend.vert", "lighting/lightvolumeblend.geom",
-                   "lighting/lightvolumeblend.frag", Shader::Build::Yes)
+                   "lighting/lightvolumeblend.frag")
     , lightColor_(1.f)
     , propParams_{{{supportColoredLight_ ? lightColor_ : borderColor_},
                    {supportColoredLight_ ? lightColor_ : borderColor_}}}

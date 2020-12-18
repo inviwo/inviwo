@@ -167,8 +167,8 @@ private:
     void linkShader(bool notifyRebuild = false);
     bool checkLinkStatus() const;
 
-    void attatch();
-    void detatch();
+    void attach();
+    void detach();
 
     std::string shaderNames() const;
     GLint findUniformLocation(std::string_view name) const;

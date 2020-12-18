@@ -155,7 +155,13 @@ const Layer* Image::getColorLayer(size_t idx) const {
     }
 }
 
-Layer* Image::getColorLayer(size_t idx) { return colorLayers_[idx].get(); }
+Layer* Image::getColorLayer(size_t idx) {
+    if (idx < colorLayers_.size()) {
+        return colorLayers_[idx].get();
+    } else {
+        return nullptr;
+    }
+}
 
 void Image::addColorLayer(std::shared_ptr<Layer> layer) { colorLayers_.push_back(layer); }
 

@@ -160,7 +160,7 @@ Shader& Shader::operator=(const Shader& that) {
     if (this != &that) {
         program_ = that.program_;
 
-        detatch();
+        detach();
 
         callbacks_.clear();
         attached_.clear();
@@ -188,7 +188,7 @@ Shader& Shader::operator=(Shader&& that) {
         if (ShaderManager::getPtr()->isRegistered(this)) {
             ShaderManager::getPtr()->unregisterShader(this);
         }
-        detatch();
+        detach();
         callbacks_.clear();
         attached_.clear();
         shaderObjects_.clear();
@@ -213,12 +213,12 @@ Shader& Shader::operator=(Shader&& that) {
 }
 
 Shader::~Shader() {
-    detatch();
+    detach();
     if (ShaderManager::isInitialized() && ShaderManager::getPtr()->isRegistered(this)) {
         ShaderManager::getPtr()->unregisterShader(this);
     }
 }
-void Shader::attatch() {
+void Shader::attach() {
     for (size_t i = 0; i < shaderObjects_.size(); ++i) {
         if (!attached_[i]) {
             glAttachShader(program_.id, shaderObjects_[i].getID());
@@ -226,7 +226,7 @@ void Shader::attatch() {
         }
     }
 }
-void Shader::detatch() {
+void Shader::detach() {
     for (size_t i = 0; i < shaderObjects_.size(); ++i) {
         if (attached_[i]) {
             glDetachShader(program_.id, shaderObjects_[i].getID());
@@ -255,7 +255,7 @@ void Shader::link() {
 }
 
 void Shader::linkShader(bool notifyRebuild) {
-    attatch();
+    attach();
 
     uniformLookup_.clear();  // clear uniform location cache.
     bindAttributes();

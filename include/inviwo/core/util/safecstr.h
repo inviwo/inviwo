@@ -31,6 +31,7 @@
 #include <string_view>
 #include <array>
 #include <memory>
+#include <cstring>
 
 namespace inviwo {
 
