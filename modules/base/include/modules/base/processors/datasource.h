@@ -134,7 +134,10 @@ DataSource<DataType, PortType>::DataSource(InviwoApplication* app, const std::st
     , port_("data")
     , file_("filename", "File", file, content)
     , reader_("reader", "Data Reader")
-    , reload_("reload", "Reload data") {
+    , reload_("reload", "Reload data", [this]() {
+        loadingFailed_ = false;
+        isReady_.update();
+    }) {
 
     addPort(port_);
     addProperties(file_, reader_, reload_);
