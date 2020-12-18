@@ -71,7 +71,7 @@ Background::Background()
                  {{"backtofront", "Back To Front (Pre-multiplied)", BlendMode::BackToFront},
                   {"alphamixing", "Alpha Mixing", BlendMode::AlphaMixing}},
                  0, InvalidationLevel::InvalidResources)
-    , shader_("background.frag", false) {
+    , shader_("background.frag", Shader::Build::No) {
     addPort(inport_);
     addPort(outport_);
     inport_.setOptional(true);

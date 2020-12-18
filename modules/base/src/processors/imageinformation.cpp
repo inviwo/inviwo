@@ -43,7 +43,7 @@ const ProcessorInfo ImageInformation::getProcessorInfo() const { return processo
 
 ImageInformation::ImageInformation()
     : Processor()
-    , image_("image")
+    , image_("image", true)
     , imageInfo_("dataInformation", "Data Information")
     , metaDataProperty_("metaData", "Meta Data") {
 

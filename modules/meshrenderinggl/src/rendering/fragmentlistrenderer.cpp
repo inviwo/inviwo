@@ -54,10 +54,10 @@ FragmentListRenderer::Illustration::Illustration(size2_t screenSize, size_t frag
                  {fragmentSize * 2 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 2),
                   GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER}}}
     , activeSmoothing{0}
-    , fill{"oit/simplequad.vert", "illustration/sortandfill.frag", false}
-    , neighbors{"oit/simplequad.vert", "illustration/neighbors.frag", false}
-    , draw{"oit/simplequad.vert", "illustration/display.frag", false}
-    , smooth{"oit/simplequad.vert", "illustration/smooth.frag", false}
+    , fill{"oit/simplequad.vert", "illustration/sortandfill.frag", Shader::Build::No}
+    , neighbors{"oit/simplequad.vert", "illustration/neighbors.frag", Shader::Build::No}
+    , draw{"oit/simplequad.vert", "illustration/display.frag", Shader::Build::No}
+    , smooth{"oit/simplequad.vert", "illustration/smooth.frag", Shader::Build::No}
     , settings{} {
 
     index.initialize(nullptr);
@@ -80,8 +80,8 @@ FragmentListRenderer::FragmentListRenderer()
     , pixelBuffer_{fragmentSize_ * 4 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 4),
                    GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER}
     , totalFragmentQuery_{0}
-    , clear_("oit/simplequad.vert", "oit/clear.frag", false)
-    , display_("oit/simplequad.vert", "oit/display.frag", false)
+    , clear_("oit/simplequad.vert", "oit/clear.frag", Shader::Build::No)
+    , display_("oit/simplequad.vert", "oit/display.frag", Shader::Build::No)
     , illustration_{screenSize_, fragmentSize_} {
 
     LGL_ERROR_CLASS;

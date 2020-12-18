@@ -74,7 +74,7 @@ HeightFieldProcessor::HeightFieldProcessor()
     , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , lightingProperty_("lighting", "Lighting", &camera_)
-    , shader_("heightfield.vert", "heightfield.frag", false) {
+    , shader_("heightfield.vert", "heightfield.frag", Shader::Build::No) {
 
     addPort(inport_);
     addPort(inportHeightfield_).setOptional(true);

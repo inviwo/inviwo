@@ -183,7 +183,7 @@ ImageOverlayGL::ImageOverlayGL()
     , border_("border", "Border", true)
     , borderColor_("borderColor", "Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f), vec4(1.0f))
     , borderWidth_("borderWidth", "Width", 2, 0, 100)
-    , shader_("img_identity.vert", "img_overlay.frag", false)
+    , shader_("img_identity.vert", "img_overlay.frag", Shader::Build::No)
     , viewManager_()
     , currentDim_(0u, 0u) {
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });

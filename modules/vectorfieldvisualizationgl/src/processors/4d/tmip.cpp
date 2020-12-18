@@ -55,8 +55,8 @@ TMIP::TMIP()
     , outputType_("outputType", "Output type",
                   {{"scalar", "Maximum Scalar", OutputType::Scalar},
                    {"velocity", "Vector with maximum velocity", OutputType::HighestVelocity}})
-    , shader_("volume_gpu.vert", "volume_gpu.geom", "tmip.frag", false)
-    , shaderLast_("volume_gpu.vert", "volume_gpu.geom", "tmip.frag", false)
+    , shader_("volume_gpu.vert", "volume_gpu.geom", "tmip.frag", Shader::Build::No)
+    , shaderLast_("volume_gpu.vert", "volume_gpu.geom", "tmip.frag", Shader::Build::No)
     , fbo_() {
 
     addPort(inport_);

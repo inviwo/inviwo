@@ -41,6 +41,9 @@
 
 namespace inviwo {
 
+const detail::Build detail::Build::Yes{};
+const detail::Build detail::Build::No{nullptr};
+
 // glCreateProgram This function returns 0 if an error occurs creating the program object.
 Shader::Program::Program() : id{glCreateProgram()} {}
 Shader::Program::Program(const Program&) : Program() {}
@@ -73,7 +76,7 @@ Shader::Shader(const std::vector<std::pair<ShaderType, std::string>>& items, Bui
             shaderObjects_.back().onChange([this](ShaderObject* o) { rebuildShader(o); }));
     }
 
-    if (buildShader == Build::Yes) build();
+    if (buildShader) build();
     ShaderManager::getPtr()->registerShader(this);
 }
 
@@ -88,11 +91,11 @@ Shader::Shader(
         callbacks_.emplace_back(
             shaderObjects_.back().onChange([this](ShaderObject* o) { rebuildShader(o); }));
     }
-    if (buildShader == Build::Yes) build();
+    if (buildShader) build();
     ShaderManager::getPtr()->registerShader(this);
 }
 
-Shader::Shader(std::vector<std::unique_ptr<ShaderObject>>& shaderObjects, bool buildShader)
+Shader::Shader(std::vector<std::unique_ptr<ShaderObject>>& shaderObjects, Build buildShader)
     : warningLevel_{UniformWarning::Ignore} {
 
     for (auto& obj : shaderObjects) {
@@ -106,32 +109,23 @@ Shader::Shader(std::vector<std::unique_ptr<ShaderObject>>& shaderObjects, bool b
     ShaderManager::getPtr()->registerShader(this);
 }
 
-Shader::Shader(std::string vertexFilename, std::string geometryFilename,
-               std::string fragmentFilename, bool buildShader)
-    : Shader({{ShaderType::Vertex, vertexFilename},
-              {ShaderType::Geometry, geometryFilename},
-              {ShaderType::Fragment, fragmentFilename}},
-             buildShader ? Build::Yes : Build::No) {}
+Shader::Shader(std::string_view vertexFilename, std::string_view geometryFilename,
+               std::string_view fragmentFilename, Build buildShader)
+    : Shader({{ShaderType::Vertex, utilgl::findShaderResource(vertexFilename)},
+              {ShaderType::Geometry, utilgl::findShaderResource(geometryFilename)},
+              {ShaderType::Fragment, utilgl::findShaderResource(fragmentFilename)}},
+             buildShader) {}
 
-Shader::Shader(std::string vertexFilename, std::string fragmentFilename, bool buildShader)
-    : Shader({{ShaderType::Vertex, vertexFilename}, {ShaderType::Fragment, fragmentFilename}},
-             buildShader ? Build::Yes : Build::No) {}
+Shader::Shader(std::string_view vertexFilename, std::string_view fragmentFilename,
+               Build buildShader)
+    : Shader({{ShaderType::Vertex, utilgl::findShaderResource(vertexFilename)},
+              {ShaderType::Fragment, utilgl::findShaderResource(fragmentFilename)}},
+             buildShader) {}
 
-Shader::Shader(std::string fragmentFilename, bool buildShader)
+Shader::Shader(std::string_view fragmentFilename, Build buildShader)
     : Shader({utilgl::imgIdentityVert(),
               {ShaderType::Fragment, utilgl::findShaderResource(fragmentFilename)}},
-             buildShader ? Build::Yes : Build::No) {}
-
-Shader::Shader(const char* fragmentFilename, bool buildShader)
-    : Shader(std::string(fragmentFilename), buildShader) {}
-
-Shader::Shader(const char* vertexFilename, const char* fragmentFilename, bool buildShader)
-    : Shader(std::string(vertexFilename), std::string(fragmentFilename), buildShader) {}
-
-Shader::Shader(const char* vertexFilename, const char* geometryFilename,
-               const char* fragmentFilename, bool buildShader)
-    : Shader(std::string(vertexFilename), std::string(geometryFilename),
-             std::string(fragmentFilename), buildShader) {}
+             buildShader) {}
 
 Shader::Shader(const Shader& rhs) : program_{rhs.program_}, warningLevel_{rhs.warningLevel_} {
     for (auto& elem : rhs.shaderObjects_) {
@@ -166,7 +160,7 @@ Shader& Shader::operator=(const Shader& that) {
     if (this != &that) {
         program_ = that.program_;
 
-        detatch();
+        detach();
 
         callbacks_.clear();
         attached_.clear();
@@ -194,7 +188,7 @@ Shader& Shader::operator=(Shader&& that) {
         if (ShaderManager::getPtr()->isRegistered(this)) {
             ShaderManager::getPtr()->unregisterShader(this);
         }
-        detatch();
+        detach();
         callbacks_.clear();
         attached_.clear();
         shaderObjects_.clear();
@@ -219,12 +213,12 @@ Shader& Shader::operator=(Shader&& that) {
 }
 
 Shader::~Shader() {
-    detatch();
+    detach();
     if (ShaderManager::isInitialized() && ShaderManager::getPtr()->isRegistered(this)) {
         ShaderManager::getPtr()->unregisterShader(this);
     }
 }
-void Shader::attatch() {
+void Shader::attach() {
     for (size_t i = 0; i < shaderObjects_.size(); ++i) {
         if (!attached_[i]) {
             glAttachShader(program_.id, shaderObjects_[i].getID());
@@ -232,7 +226,7 @@ void Shader::attatch() {
         }
     }
 }
-void Shader::detatch() {
+void Shader::detach() {
     for (size_t i = 0; i < shaderObjects_.size(); ++i) {
         if (attached_[i]) {
             glDetachShader(program_.id, shaderObjects_[i].getID());
@@ -261,7 +255,7 @@ void Shader::link() {
 }
 
 void Shader::linkShader(bool notifyRebuild) {
-    attatch();
+    attach();
 
     uniformLookup_.clear();  // clear uniform location cache.
     bindAttributes();

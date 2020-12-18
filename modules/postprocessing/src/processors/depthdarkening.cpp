@@ -67,7 +67,7 @@ DepthDarkening::DepthDarkening()
     , cam_("camera", "Camera")
 
     , depthDarkeningShader_("depthdarkening.frag")
-    , linearizeDepthShader_("depthlinearize.frag", false)
+    , linearizeDepthShader_("depthlinearize.frag", Shader::Build::No)
 
     , convolution_([&]() { this->invalidate(InvalidationLevel::InvalidOutput); })
 

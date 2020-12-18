@@ -86,7 +86,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
                     InvalidationLevel::InvalidResources)
     , viewNormalsLayer_("viewNormalsLayer", "Normals (View space)", false,
                         InvalidationLevel::InvalidResources)
-    , shader_("meshrendering.vert", "meshrendering.frag", false) {
+    , shader_("meshrendering.vert", "meshrendering.frag", Shader::Build::No) {
 
     addPort(inport_);
     addPort(imageInport_).setOptional(true);

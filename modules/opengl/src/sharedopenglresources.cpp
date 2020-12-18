@@ -63,7 +63,7 @@ Shader* SharedOpenGLResources::getNoiseShader() {
 Shader* SharedOpenGLResources::getImageCopyShader(size_t colorLayers) {
     auto& elem = imgCopyShaders_[colorLayers];
     if (!elem) {
-        auto shader = std::make_unique<Shader>("standard.vert", "img_copy.frag", false);
+        auto shader = std::make_unique<Shader>("standard.vert", "img_copy.frag", Shader::Build::No);
 
         std::stringstream ssUniform;
         for (size_t i = 1; i < colorLayers; ++i) {
