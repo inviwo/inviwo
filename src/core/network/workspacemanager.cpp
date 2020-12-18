@@ -93,7 +93,7 @@ private:
 };
 
 struct ErrorHandle {
-    ErrorHandle(const InviwoSetupInfo& info, const std::string& filename)
+    ErrorHandle(const InviwoSetupInfo& info, std::string_view filename)
         : info_(info), filename_(filename) {}
 
     ~ErrorHandle() {
@@ -142,7 +142,7 @@ void WorkspaceManager::clear() {
     clears_.invoke();
 }
 
-void WorkspaceManager::save(std::ostream& stream, const std::string& refPath,
+void WorkspaceManager::save(std::ostream& stream, std::string_view refPath,
                             const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
     Serializer serializer(refPath);
 
@@ -155,7 +155,7 @@ void WorkspaceManager::save(std::ostream& stream, const std::string& refPath,
     serializer.writeFile(stream, true);
 }
 
-void WorkspaceManager::load(std::istream& stream, const std::string& refPath,
+void WorkspaceManager::load(std::istream& stream, std::string_view refPath,
                             const ExceptionHandler& exceptionHandler) {
     RenderContext::getPtr()->activateDefaultRenderContext();
 
@@ -169,22 +169,22 @@ void WorkspaceManager::load(std::istream& stream, const std::string& refPath,
     deserializers_.invoke(deserializer, exceptionHandler);
 }
 
-void WorkspaceManager::save(const std::string& path, const ExceptionHandler& exceptionHandler,
+void WorkspaceManager::save(std::string_view path, const ExceptionHandler& exceptionHandler,
                             WorkspaceSaveMode mode) {
-    auto ostream = filesystem::ofstream(path);
+    auto ostream = filesystem::ofstream(std::string(path));
     if (ostream.is_open()) {
         save(ostream, path, exceptionHandler, mode);
     } else {
-        throw AbortException("Could not open workspace file: " + path, IVW_CONTEXT);
+        throw AbortException(fmt::format("Could not open workspace file: {}", path), IVW_CONTEXT);
     }
 }
 
-void WorkspaceManager::load(const std::string& path, const ExceptionHandler& exceptionHandler) {
-    auto istream = filesystem::ifstream(path);
+void WorkspaceManager::load(std::string_view path, const ExceptionHandler& exceptionHandler) {
+    auto istream = filesystem::ifstream(std::string(path));
     if (istream.is_open()) {
         load(istream, path, exceptionHandler);
     } else {
-        throw AbortException("Could not open workspace file: " + path, IVW_CONTEXT);
+        throw AbortException(fmt::format("Could not open workspace file: {}", path), IVW_CONTEXT);
     }
 }
 
@@ -193,7 +193,7 @@ void WorkspaceManager::registerFactory(FactoryBase* factory) {
 }
 
 Deserializer WorkspaceManager::createWorkspaceDeserializer(std::istream& stream,
-                                                           const std::string& refPath,
+                                                           std::string_view refPath,
                                                            Logger* logger) const {
 
     Deserializer deserializer(stream, refPath);

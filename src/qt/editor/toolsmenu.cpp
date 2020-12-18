@@ -41,7 +41,9 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/workspaceutils.h>
 
+#include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #ifdef IVW_INVIWO_META
@@ -66,23 +68,23 @@ namespace inviwo {
 
 namespace {
 
-void createProcessorDocMenu(InviwoApplication *app, QMenu *docsMenu) {
+void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
     auto factory = app->getProcessorFactory();
 
-    for (auto &m : app->getModules()) {
-        auto &processors = m->getProcessors();
+    for (auto& m : app->getModules()) {
+        auto& processors = m->getProcessors();
         if (processors.empty()) continue;
 
         auto modMenu = docsMenu->addMenu(utilqt::toQString(m->getIdentifier()));
-        for (auto &pfo : processors) {
+        for (auto& pfo : processors) {
             auto action = modMenu->addAction(utilqt::toQString(pfo->getDisplayName()));
             docsMenu->connect(action, &QAction::triggered, [pfo, factory]() {
                 const auto processor = factory->create(pfo->getClassIdentifier());
-                const auto &inports = processor->getInports();
-                const auto &outports = processor->getOutports();
-                const auto &properties = processor->getPropertiesRecursive();
+                const auto& inports = processor->getInports();
+                const auto& outports = processor->getOutports();
+                const auto& properties = processor->getPropertiesRecursive();
                 const auto classID = processor->getClassIdentifier();
-                const auto &dispName = processor->getDisplayName();
+                const auto& dispName = processor->getDisplayName();
 
                 std::ostringstream oss;
                 oss << "/** \\docpage{" << classID << ", " << dispName << "}" << std::endl;
@@ -94,7 +96,7 @@ void createProcessorDocMenu(InviwoApplication *app, QMenu *docsMenu) {
                 oss << "* " << std::endl;
                 if (!inports.empty()) {
                     oss << "* ### Inports" << std::endl;
-                    for (const auto &port : inports) {
+                    for (const auto& port : inports) {
                         oss << "*   * __" << port->getIdentifier() << "__ Describe port.\n";
                     }
                     oss << "* \n";
@@ -102,7 +104,7 @@ void createProcessorDocMenu(InviwoApplication *app, QMenu *docsMenu) {
 
                 if (!outports.empty()) {
                     oss << "* ### Outports" << std::endl;
-                    for (const auto &port : outports) {
+                    for (const auto& port : outports) {
                         oss << "*   * __" << port->getIdentifier() << "__ Describe port.\n";
                     }
                     oss << "* \n";
@@ -110,7 +112,7 @@ void createProcessorDocMenu(InviwoApplication *app, QMenu *docsMenu) {
 
                 if (!properties.empty()) {
                     oss << "* ### Properties" << std::endl;
-                    for (const auto &prop : properties) {
+                    for (const auto& prop : properties) {
                         oss << "*   * __" << prop->getDisplayName() << "__ Describe property.\n";
                     }
                     oss << "* \n";
@@ -126,8 +128,8 @@ void createProcessorDocMenu(InviwoApplication *app, QMenu *docsMenu) {
     }
 }
 
-void createRegressionActions(QWidget *parent, InviwoApplication *app, QMenu *menu) {
-    for (const auto &module : app->getModules()) {
+void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* menu) {
+    for (const auto& module : app->getModules()) {
         auto action = menu->addAction(utilqt::toQString(module->getIdentifier()));
 
         QObject::connect(
@@ -164,7 +166,7 @@ void createRegressionActions(QWidget *parent, InviwoApplication *app, QMenu *men
 
 }  // namespace
 
-ToolsMenu::ToolsMenu(InviwoMainWindow *win) : QMenu(tr("&Tools"), win) {
+ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
     auto docsMenu = addMenu("Create &Processors Docs");
     connect(docsMenu, &QMenu::aboutToShow, [docsMenu, win]() {
         docsMenu->clear();
@@ -181,6 +183,97 @@ ToolsMenu::ToolsMenu(InviwoMainWindow *win) : QMenu(tr("&Tools"), win) {
     auto sourceMenu = addMenu("Create &Sources");
     addInviwoMetaAction(sourceMenu);
 #endif
-}
+
+    auto workspaceMenu = addMenu("Workspaces");
+    workspaceMenu->setToolTipsVisible(true);
+
+    auto loadExampleWorkspaces = workspaceMenu->addAction("Load Example Workspaces");
+    loadExampleWorkspaces->setToolTip(
+        "Load each workspace after each other, useful to see if there are any problems when load "
+        "the workspaces");
+    connect(loadExampleWorkspaces, &QAction::triggered, [win]() {
+        try {
+            util::updateExampleWorkspaces(win->getInviwoApplication(), util::DryRun::Yes);
+        } catch (const Exception& e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+        }
+    });
+
+    auto updateExampleWorkspaces = workspaceMenu->addAction("Update Example Workspaces");
+    updateExampleWorkspaces->setToolTip(
+        "Load and save each workspace after each other, useful to update workspace versions");
+    connect(updateExampleWorkspaces, &QAction::triggered, [win]() {
+        try {
+            util::updateExampleWorkspaces(win->getInviwoApplication(), util::DryRun::No);
+        } catch (const Exception& e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+        }
+    });
+
+    auto loadRegressionWorkspaces = workspaceMenu->addAction("Load Regression Workspaces");
+    loadRegressionWorkspaces->setToolTip(
+        "Load each workspace after each other, useful to see if there are any problems when load "
+        "the workspaces");
+    connect(loadRegressionWorkspaces, &QAction::triggered, [win]() {
+        try {
+            util::updateRegressionWorkspaces(win->getInviwoApplication(), util::DryRun::Yes);
+        } catch (const Exception& e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+        }
+    });
+
+    auto updateRegressionWorkspaces = workspaceMenu->addAction("Update Regression Workspaces");
+    updateRegressionWorkspaces->setToolTip(
+        "Load and save each workspace after each other, useful to update workspace versions");
+
+    connect(updateRegressionWorkspaces, &QAction::triggered, [win]() {
+        try {
+            util::updateRegressionWorkspaces(win->getInviwoApplication(), util::DryRun::No);
+        } catch (const Exception& e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+        }
+    });
+
+    auto loadWorkspaces = workspaceMenu->addAction("Load Workspaces In Folder...");
+    loadWorkspaces->setToolTip(
+        "Load each workspace after each other, useful to see if there are any problems when load "
+        "the workspaces. Loads all workspace found in the folder recursively.");
+    connect(loadWorkspaces, &QAction::triggered, [win]() {
+        InviwoFileDialog dialog(nullptr, "workspace", "Workspace Directory");
+        dialog.setFileMode(FileMode::DirectoryOnly);
+        dialog.setAcceptMode(AcceptMode::Open);
+
+        if (dialog.exec()) {
+            QString qpath = dialog.selectedFiles().at(0);
+            const auto path = utilqt::fromQString(qpath);
+            try {
+                util::updateWorkspaces(win->getInviwoApplication(), path, util::DryRun::Yes);
+            } catch (const Exception& e) {
+                util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+            }
+        }
+    });
+
+    auto updateWorkspaces = workspaceMenu->addAction("Update Workspaces In Folder...");
+    updateWorkspaces->setToolTip(
+        "Load and save each workspace after each other, useful to update workspace versions. Loads "
+        "all workspace found in the folder recursively.");
+
+    connect(updateWorkspaces, &QAction::triggered, [win]() {
+        InviwoFileDialog dialog(nullptr, "workspace", "Workspace Directory");
+        dialog.setFileMode(FileMode::DirectoryOnly);
+        dialog.setAcceptMode(AcceptMode::Open);
+
+        if (dialog.exec()) {
+            QString qpath = dialog.selectedFiles().at(0);
+            const auto path = utilqt::fromQString(qpath);
+            try {
+                util::updateWorkspaces(win->getInviwoApplication(), path, util::DryRun::No);
+            } catch (const Exception& e) {
+                util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+            }
+        }
+    });
+}  // namespace inviwo
 
 }  // namespace inviwo

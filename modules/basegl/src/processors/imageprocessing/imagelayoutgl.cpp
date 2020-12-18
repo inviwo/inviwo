@@ -33,6 +33,7 @@
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <modules/opengl/shader/shader.h>
 #include <inviwo/core/interaction/interactionhandler.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
@@ -262,6 +263,7 @@ void ImageLayoutGL::onStatusChange(bool propagate) {
     bottomMinMax_.setVisible(bVisible);
 
     if (propagate) {
+        RenderContext::getPtr()->activateDefaultRenderContext();
         ResizeEvent e(currentDim_);
         propagateEvent(&e, &outport_);
     }
