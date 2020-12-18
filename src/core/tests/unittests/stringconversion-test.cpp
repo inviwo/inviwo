@@ -35,6 +35,9 @@
 #include <inviwo/core/util/stringconversion.h>
 
 #include <string>
+#include <string_view>
+
+using namespace std::string_view_literals;
 
 namespace inviwo {
 
@@ -50,6 +53,91 @@ TEST(StringConversion, toWstring) {
     const std::string u8str = u8"widestr\U000000E5\U000000E4\U000000F6\U0001F609";
     const auto conv = util::toWstring(u8str);
     EXPECT_EQ(wstr, conv);
+}
+
+TEST(String, ltrim) {
+    EXPECT_EQ(std::string(""), ltrim("  "));
+    EXPECT_EQ(std::string(""), ltrim("\t"));
+    EXPECT_EQ(std::string(""), ltrim("\t  "));
+    EXPECT_EQ(std::string(""), ltrim("\t  \t"));
+
+    EXPECT_EQ(std::string("a"), ltrim("a"));
+    EXPECT_EQ(std::string("a  b"), ltrim("a  b"));
+
+    EXPECT_EQ(std::string("a"), ltrim("  a"));
+    EXPECT_EQ(std::string("a  b"), ltrim("  a  b"));
+    EXPECT_EQ(std::string("a  "), ltrim("  a  "));
+    EXPECT_EQ(std::string("a  b  "), ltrim("  a  b  "));
+
+    EXPECT_EQ(std::string("a"), ltrim("\ta"));
+    EXPECT_EQ(std::string("a  "), ltrim("\ta  "));
+    EXPECT_EQ(std::string("a"), ltrim("\ra"));
+    EXPECT_EQ(std::string("a"), ltrim("  \r a"));
+}
+
+TEST(String, rtrim) {
+    EXPECT_EQ(std::string(""), trim("  "));
+    EXPECT_EQ(std::string(""), trim("\t"));
+    EXPECT_EQ(std::string(""), trim("\t  "));
+    EXPECT_EQ(std::string(""), trim("\t  \t"));
+
+    EXPECT_EQ(std::string("a"), rtrim("a"));
+    EXPECT_EQ(std::string("a  b"), rtrim("a  b"));
+
+    EXPECT_EQ(std::string("a"), rtrim("a  "));
+    EXPECT_EQ(std::string("a  b"), rtrim("a  b  "));
+    EXPECT_EQ(std::string("  a"), rtrim("  a  "));
+    EXPECT_EQ(std::string("  a  b"), rtrim("  a  b  "));
+
+    EXPECT_EQ(std::string("a"), rtrim("a\t"));
+    EXPECT_EQ(std::string("  a"), rtrim("  a\t"));
+    EXPECT_EQ(std::string("a"), rtrim("a\r"));
+    EXPECT_EQ(std::string("a"), rtrim("a  \r "));
+}
+
+TEST(String, trim) {
+    EXPECT_EQ(std::string(""), trim("  "));
+    EXPECT_EQ(std::string(""), trim("\t"));
+    EXPECT_EQ(std::string(""), trim("\t  "));
+    EXPECT_EQ(std::string(""), trim("\t  \t"));
+
+    EXPECT_EQ(std::string("a"), trim("a"));
+    EXPECT_EQ(std::string("a  b"), trim("a  b"));
+
+    EXPECT_EQ(std::string("a"), trim("  a"));
+    EXPECT_EQ(std::string("a  b"), trim("  a  b"));
+    EXPECT_EQ(std::string("a"), trim("  a  "));
+    EXPECT_EQ(std::string("a  b"), trim("  a  b  "));
+
+    EXPECT_EQ(std::string("a"), trim("\ta"));
+    EXPECT_EQ(std::string("a"), trim("\ta  "));
+    EXPECT_EQ(std::string("a"), trim("\ra\t"));
+    EXPECT_EQ(std::string("a"), trim("  \r a  \r"));
+}
+
+TEST(StringView, constexpr_trim) {
+    constexpr std::string_view result(util::trim(std::string_view("  a  b   "sv)));
+    EXPECT_EQ("a  b"sv, result);
+}
+
+TEST(StringView, trim) {
+    EXPECT_EQ(""sv, util::trim("  "sv));
+    EXPECT_EQ(""sv, util::trim("\t"sv));
+    EXPECT_EQ(""sv, util::trim("\t  "sv));
+    EXPECT_EQ(""sv, util::trim("\t  \t"sv));
+
+    EXPECT_EQ("a"sv, util::trim("a"sv));
+    EXPECT_EQ("a  b"sv, util::trim("a  b"sv));
+
+    EXPECT_EQ("a"sv, util::trim("  a"sv));
+    EXPECT_EQ("a  b"sv, util::trim("  a  b"sv));
+    EXPECT_EQ("a"sv, util::trim("  a  "sv));
+    EXPECT_EQ("a  b"sv, util::trim("  a  b  "sv));
+
+    EXPECT_EQ("a"sv, util::trim("\ta"sv));
+    EXPECT_EQ("a"sv, util::trim("\ta  "sv));
+    EXPECT_EQ("a"sv, util::trim("\ra\t"sv));
+    EXPECT_EQ("a"sv, util::trim("  \r a  \r"sv));
 }
 
 }  // namespace inviwo
