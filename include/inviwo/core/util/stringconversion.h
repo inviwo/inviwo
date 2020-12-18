@@ -249,7 +249,7 @@ IVW_CORE_API std::vector<std::string_view> splitStringView(std::string_view str,
                                                            char delimiter = ' ');
 
 /**
- * \brief constexpr function for trimming \p str from beginning and end by removing white spaces
+ * \brief trims \p str from beginning and end by removing white spaces
  *
  * @param str   input string
  * @return trimmed stringview without leading/trailing white space
