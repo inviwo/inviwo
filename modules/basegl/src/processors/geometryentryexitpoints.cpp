@@ -59,7 +59,7 @@ GeometryEntryExitPoints::GeometryEntryExitPoints()
     addProperty(camera_);
     addProperty(trackball_);
 
-    callback_ =
+    onReloadCallback_ =
         entryExitHelper_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 

@@ -242,27 +242,27 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
     nearClipShader.deactivate();
     utilgl::deactivateCurrentTarget();
 }
+
 Shader& EntryExitPointsHelper::getEntryExitShader(IncludeNormals includeNormals,
                                                   ApplyTransformation applyTrafo) {
-
-    if (!entryExitShader_ || includeNormals != includeNormals_ || applyTrafo != applyTrafo_) {
-        entryExitShader_ = createEntryExitShader(includeNormals, applyTrafo);
-        includeNormals_ = includeNormals;
-        applyTrafo_ = applyTrafo;
+    if (!ees_.shader || includeNormals != ees_.includeNormals || applyTrafo != ees_.applyTrafo) {
+        ees_.shader = createEntryExitShader(includeNormals, applyTrafo);
+        ees_.includeNormals = includeNormals;
+        ees_.applyTrafo = applyTrafo;
+        ees_.reloadCallback = ees_.shader->onReloadScoped([this]() { onReloadCallback_.invoke(); });
     }
-
-    entryExitCallback_ = entryExitShader_->onReloadScoped([this]() { onReloadCallback_.invoke(); });
-
-    return *entryExitShader_;
+    return *ees_.shader;
 }
+
 Shader& EntryExitPointsHelper::getNearClipShader(IncludeNormals includeNormals) {
-    if (!nearClipShader_) {
-        nearClipShader_ = createNearClipShader(includeNormals);
+    if (!ncs_.shader || includeNormals != ncs_.includeNormals) {
+        ncs_.shader = createNearClipShader(includeNormals);
+        ncs_.includeNormals = includeNormals;
+        ncs_.reloadCallback = ncs_.shader->onReloadScoped([this]() { onReloadCallback_.invoke(); });
     }
-
-    nearClipCallback_ = nearClipShader_->onReloadScoped([this]() { onReloadCallback_.invoke(); });
-    return *nearClipShader_;
+    return *ncs_.shader;
 }
+
 namespace {
 
 // Standard
@@ -313,13 +313,7 @@ void main() {
     gl_Position = dataToClip * in_Vertex;
 }
 )";
-constexpr std::string_view meshEntryExitFrag = R"(
-in vec4 color;
-void main() {
-    FragData0 = color;
-    PickingData = vec4(0);
-}
-)";
+constexpr std::string_view meshEntryExitFrag = entryExitFrag;
 
 // Mesh + Normals
 constexpr std::string_view meshEntryExitNormalVert = R"(
@@ -333,15 +327,7 @@ void main() {
     gl_Position = dataToClip * in_Vertex;
 }
 )";
-constexpr std::string_view meshEntryExitNormalFrag = R"(
-in vec4 color;
-in vec3 normal;
-void main() {
-    FragData0 = color;
-    PickingData = vec4(0);
-    NormalData = normal;
-}
-)";
+constexpr std::string_view meshEntryExitNormalFrag = entryExitNormalFrag;
 
 }  // namespace
 
@@ -417,12 +403,12 @@ void main() {
         // entry points are clipped by near plane
         // Convert texture coordinates to normalized device coordinates (ndc).
         // The z value will always be -1 on the clipping plane
-        vec4 cameraCoordinates = vec4(2.0f*texCoord.xy - 1.0f, -1.0f, 1.0f);
+        vec4 cameraCoordinates = vec4(2.0f * texCoord.xy - 1.0f, -1.0f, 1.0f);
         // convert the ndc back to the volume texture coordinates
         color = NDCToTextureMat * cameraCoordinates * nearDist;
         entry = 0.0f;
     } else {
-        color = texture(entryColor, texCoord_.xy);
+        color = texture(entryColor, texCoord.xy);
     }
 
     FragData0 = color;
@@ -453,7 +439,7 @@ void main() {
         // entry points are clipped by near plane
         // Convert texture coordinates to normalized device coordinates (ndc).
         // The z value will always be -1 on the clipping plane
-        vec4 cameraCoordinates = vec4(2.0f*texCoord.xy - 1.0f, -1.0f, 1.0f);
+        vec4 cameraCoordinates = vec4(2.0f * texCoord.xy - 1.0f, -1.0f, 1.0f);
         // convert the ndc back to the volume texture coordinates
         color = NDCToTextureMat * cameraCoordinates * nearDist;
         entry = 0.0f;

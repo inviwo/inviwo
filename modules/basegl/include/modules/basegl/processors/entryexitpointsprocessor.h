@@ -84,7 +84,7 @@ private:
     CameraTrackball trackball_;
 
     algorithm::EntryExitPointsHelper entryExitHelper_;
-    std::shared_ptr<std::function<void()>> callback_;
+    std::shared_ptr<std::function<void()>> onReloadCallback_;
 
     ImageGL* entryImg_ = nullptr;
     ImageGL* exitImg_ = nullptr;

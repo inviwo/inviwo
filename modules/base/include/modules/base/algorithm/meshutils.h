@@ -145,7 +145,7 @@ enum class IncludeNormals { Yes, No };
  * @param c1 color at p1
  * @param c2 color at p2
  * @param c3 color at p3
- * @param includeNormals Include a face normals
+ * @param includeNormals Add face normals to the mesh
  * @return parallelepiped mesh
  */
 IVW_MODULE_BASE_API std::shared_ptr<Mesh> parallelepiped(glm::vec3 origin, glm::vec3 p1,

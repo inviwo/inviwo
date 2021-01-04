@@ -58,7 +58,7 @@ EntryExitPoints::EntryExitPoints()
     addProperty(camera_);
     addProperty(trackball_);
 
-    callback_ =
+    onReloadCallback_ =
         entryExitHelper_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
@@ -71,6 +71,7 @@ void EntryExitPoints::process() {
         entry->getNumberOfColorLayers() != 2) {
 
         entry = std::make_shared<Image>(entry->getDimensions(), DataVec4UInt16::get());
+        // Add a layer for the normals
         entry->addColorLayer(
             std::make_shared<Layer>(entry->getDimensions(), DataVec4Int8::get(), LayerType::Color));
         entryPort_.setData(entry);

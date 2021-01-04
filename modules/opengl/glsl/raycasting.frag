@@ -79,7 +79,7 @@ uniform int channel;
 #endif
 
 
-vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgroundDepth, vec3 startNormal) {
+vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgroundDepth, vec3 entryNormal) {
     vec4 result = vec4(0.0);
     vec3 rayDirection = exitPoint - entryPoint;
     float tEnd = length(rayDirection);
@@ -143,7 +143,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
             
             vec3 gradient;
             if (first && useNormals) {
-                gradient = -startNormal;
+                gradient = -entryNormal;
             } else {
                 gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, samplePos, channel);
                 gradient = normalize(gradient);
@@ -173,7 +173,6 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
             t += tIncr;
         }
         first = false;
-        //t = tEnd;
     }
 
     // composite background if lying beyond the last volume sample, which is located at tEnd - tIncr*0.5
@@ -214,7 +213,7 @@ void main() {
     }
 #endif // BACKGROUND_AVAILABLE
 
-    vec3 normal = useNormals?texture(entryNormal, texCoords).xyz : vec3(0,0,0);
+    vec3 normal = useNormals ? texture(entryNormal, texCoords).xyz : vec3(0,0,0);
     if (entryPoint != exitPoint) {
         color = rayTraversal(entryPoint, exitPoint, texCoords, backgroundDepth, normal);
     }

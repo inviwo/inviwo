@@ -48,7 +48,7 @@ CubeProxyGeometry::CubeProxyGeometry()
     : Processor()
     , inport_("volume")
     , outport_("proxyGeometry")
-    , normalsEnabled_("normalsEnabled", "Enable Normals", true)
+    , addFaceNormals_("addFaceNormals", "Add Face Normals", true)
     , clippingEnabled_("clippingEnabled", "Enable Clipping", true)
     , clipX_("clipX", "Clip X Slices", 0, 256, 0, 256, 1, 1)
     , clipY_("clipY", "Clip Y Slices", 0, 256, 0, 256, 1, 1)
@@ -56,7 +56,7 @@ CubeProxyGeometry::CubeProxyGeometry()
 
     addPort(inport_);
     addPort(outport_);
-    addProperties(normalsEnabled_, clippingEnabled_, clipX_, clipY_, clipZ_);
+    addProperties(addFaceNormals_, clippingEnabled_, clipX_, clipY_, clipZ_);
 
     // Since the clips depend on the input volume dimensions, we make sure to always
     // serialize them so we can do a proper renormalization when we load new data.
@@ -88,7 +88,7 @@ CubeProxyGeometry::CubeProxyGeometry()
 CubeProxyGeometry::~CubeProxyGeometry() {}
 
 void CubeProxyGeometry::process() {
-    auto normals = normalsEnabled_ ? meshutil::IncludeNormals::Yes : meshutil::IncludeNormals::No;
+    auto normals = addFaceNormals_ ? meshutil::IncludeNormals::Yes : meshutil::IncludeNormals::No;
     std::shared_ptr<Mesh> mesh;
     if (clippingEnabled_.get()) {
         const size3_t clipMin(clipX_->x, clipY_->x, clipZ_->x);

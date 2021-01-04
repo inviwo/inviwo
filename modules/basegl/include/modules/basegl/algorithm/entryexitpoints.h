@@ -152,13 +152,22 @@ private:
     std::unique_ptr<Image> tmpEntry_;
     ImageGL* tmpEntryGL_ = nullptr;
 
-    IncludeNormals includeNormals_ = IncludeNormals::No;
-    ApplyTransformation applyTrafo_ = ApplyTransformation::No;
-    std::shared_ptr<Shader> entryExitShader_{nullptr};
-    std::shared_ptr<Shader> nearClipShader_{nullptr};
+    // Shaders are shared among all instances, hence one has to set all uniforms at every use.
+    struct EntryExitShader {
+        IncludeNormals includeNormals = IncludeNormals::No;
+        ApplyTransformation applyTrafo = ApplyTransformation::No;
+        std::shared_ptr<Shader> shader{nullptr};
+        std::shared_ptr<std::function<void()>> reloadCallback;
+    };
+    EntryExitShader ees_;
 
-    std::shared_ptr<std::function<void()>> entryExitCallback_;
-    std::shared_ptr<std::function<void()>> nearClipCallback_;
+    struct NearCapShader {
+        IncludeNormals includeNormals = IncludeNormals::No;
+        std::shared_ptr<Shader> shader{nullptr};
+        std::shared_ptr<std::function<void()>> reloadCallback;
+    };
+    NearCapShader ncs_;
+
     Dispatcher<void()> onReloadCallback_;
 };
 

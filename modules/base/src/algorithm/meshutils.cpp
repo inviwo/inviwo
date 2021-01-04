@@ -800,6 +800,10 @@ IVW_MODULE_BASE_API std::shared_ptr<Mesh> parallelepiped(glm::vec3 origin, glm::
     std::vector<vec4> colorVertices;
     std::vector<vec3> normalVertices;
 
+    positionVertices.reserve(faces.size() * faces[0].size());
+    colorVertices.reserve(faces.size() * faces[0].size());
+    normalVertices.reserve(faces.size() * faces[0].size());
+
     for (auto& face : faces) {
         const auto normal = calcNnormal(face);
         const auto ind = static_cast<uint32_t>(positionVertices.size());
