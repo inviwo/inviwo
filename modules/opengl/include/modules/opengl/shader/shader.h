@@ -47,7 +47,7 @@ namespace detail {
 class IVW_MODULE_OPENGL_API Build {
     bool value_ = true;
     Build() = default;
-    Build(nullptr_t) : value_{false} {}
+    Build(std::nullptr_t) : value_{false} {}
 
 public:
     // Allow explicit conversion from anything bool like

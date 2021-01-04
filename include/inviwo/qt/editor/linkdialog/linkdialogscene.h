@@ -39,6 +39,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <warn/pop>
+#include <memory>
 
 class QGraphicsSceneWheelEvent;
 class QGraphicsSceneMouseEvent;
