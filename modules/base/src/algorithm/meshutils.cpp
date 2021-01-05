@@ -33,6 +33,8 @@
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 
+#include <inviwo/core/util/zip.h>
+
 #ifdef WIN32
 #define _USE_MATH_DEFINES
 #endif
@@ -759,6 +761,83 @@ std::shared_ptr<ColoredMesh> cameraFrustum(const Camera& camera, vec4 color,
     return mesh;
 }
 //! [Using Colored Mesh]
+
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> parallelepiped(glm::vec3 origin, glm::vec3 p1,
+                                                         glm::vec3 p2, glm::vec3 p3,
+                                                         glm::vec4 color, glm::vec4 c1,
+                                                         glm::vec4 c2, glm::vec4 c3,
+                                                         IncludeNormals includeNormals) {
+
+    // create a mesh with positions (vec3), normals (vec3), textures(vec3),
+    auto mesh = std::make_shared<Mesh>();
+
+    // Set identity matrix
+    mesh->setModelMatrix(mat4(1.f));
+
+    auto corners = [](const auto& origin, const auto& v1, const auto& v2, const auto& v3) {
+        return std::array{
+            origin,      origin + v1,      origin + v2,      origin + v1 + v2,
+            origin + v3, origin + v1 + v3, origin + v2 + v3, origin + v1 + v2 + v3,
+        };
+    };
+
+    const auto positions = corners(origin, p1, p2, p3);
+    const auto colors = corners(color, c1, c2, c3);
+
+    constexpr std::array<std::array<size_t, 4>, 6> faces = {
+        {{0, 2, 3, 1}, {4, 5, 7, 6}, {0, 1, 5, 4}, {1, 3, 7, 5}, {3, 2, 6, 7}, {0, 4, 6, 2}}};
+
+    auto calcNnormal = [&](const std::array<size_t, 4>& inds) {
+        const auto a = positions[inds[1]] - positions[inds[0]];
+        const auto b = positions[inds[3]] - positions[inds[0]];
+        return glm::normalize(glm::cross(a, b));
+    };
+
+    auto indexBuffer = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+    auto& indices = indexBuffer->getDataContainer();
+
+    std::vector<vec3> positionVertices;
+    std::vector<vec4> colorVertices;
+    std::vector<vec3> normalVertices;
+
+    positionVertices.reserve(faces.size() * faces[0].size());
+    colorVertices.reserve(faces.size() * faces[0].size());
+    normalVertices.reserve(faces.size() * faces[0].size());
+
+    for (auto& face : faces) {
+        const auto normal = calcNnormal(face);
+        const auto ind = static_cast<uint32_t>(positionVertices.size());
+        for (auto i : face) {
+            positionVertices.emplace_back(positions[i]);
+            colorVertices.emplace_back(colors[i]);
+            normalVertices.emplace_back(normal);
+        }
+
+        indices.push_back(ind + 0);
+        indices.push_back(ind + 1);
+        indices.push_back(ind + 2);
+
+        indices.push_back(ind + 0);
+        indices.push_back(ind + 2);
+        indices.push_back(ind + 3);
+    }
+
+    mesh->addBuffer(BufferType::PositionAttrib,
+                    std::make_shared<Buffer<vec3>>(
+                        std::make_shared<BufferRAMPrecision<vec3>>(std::move(positionVertices))));
+
+    mesh->addBuffer(BufferType::ColorAttrib,
+                    std::make_shared<Buffer<vec4>>(
+                        std::make_shared<BufferRAMPrecision<vec4>>(std::move(colorVertices))));
+
+    if (includeNormals == IncludeNormals::Yes) {
+        mesh->addBuffer(BufferType::NormalAttrib,
+                        std::make_shared<Buffer<vec3>>(
+                            std::make_shared<BufferRAMPrecision<vec3>>(std::move(normalVertices))));
+    }
+
+    return mesh;
+}
 
 }  // namespace meshutil
 

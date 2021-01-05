@@ -82,6 +82,7 @@ private:
     CameraTrackball trackball_;
 
     algorithm::EntryExitPointsHelper entryExitHelper_;
+    std::shared_ptr<std::function<void()>> onReloadCallback_;
 };
 
 }  // namespace inviwo
