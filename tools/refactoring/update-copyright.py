@@ -7,7 +7,7 @@ colorama.init()
 import refactoring # Note: refactoring.py need to be in the current working directory
 
 paths = [
-	"C:/Users/petst55.AD/Documents/Inviwo/inviwo" #,
+	"C:/Users/petst55.AD/Documents/Inviwo/inviwo-stage" #,
 	#"C:/Users/petst55/Work/Inviwo/Inviwo-research",
 	#"C:/Users/petst55/Work/Inviwo/Inviwo-modules"
 ]
@@ -22,24 +22,22 @@ excludespatterns = ["*/ext/*", "*moc_*", "*/proteindocking/*", "*/proteindocking
 					"*moduledefine.h", "*moduledefine.hpp", "*/config.json", "*.js", "*/CMakeLists.txt"]
 
 copyright_replacements  = {
-	r"(\s*[*#]\s+Copyright \(c\) 201\d-)201[123456789]( Inviwo Foundation\s*)" : r"\g<1>2020\g<2>",
-	r"(\s*[*#]\s+Copyright \(c\) )(201[123456789])( Inviwo Foundation\s*)" : r"\g<1>\g<2>-2020\g<3>"
+	r"(\s*[*#]\s+Copyright \(c\) 201\d-)20(?:1\d|2[0])( Inviwo Foundation\s*)" : r"\g<1>2021\g<2>",
+	r"(\s*[*#]\s+Copyright \(c\) )(20(?:1\d|2[0]))( Inviwo Foundation\s*)" : r"\g<1>\g<2>-2021\g<3>"
 }
 
 files = refactoring.find_files(paths, ['*'], excludes=excludespatterns)
+print("Looking in {} files".format(len(files)))
 
-def replace(pattern, replacement) :
-	print("Matches:")
+summary = "";
+for pattern, replacement in copyright_replacements.items():
+	print("Matches: {}".format(pattern))
 	matches = refactoring.find_matches(files, pattern)
 	
-	print("\n")
-	print("Replacing:")
+	print("\nReplacing:")
 	refactoring.replace_matches(matches, pattern, replacement)
+	summary += "Replaced {} matches of {}\n".format(len(matches), pattern)
 
-print("Looking in " + str(len(files)) + " files")
-
-for k,v in copyright_replacements.items():
-	replace(k, v)
-
-
+print("\n")
+print(summary)
 
