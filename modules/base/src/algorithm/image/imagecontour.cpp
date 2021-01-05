@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-std::shared_ptr<Mesh> ImageContour::apply(const LayerRepresentation *in, size_t channel,
+std::shared_ptr<Mesh> ImageContour::apply(const LayerRepresentation* in, size_t channel,
                                           double isoValue, vec4 color) {
     detail::ImageContourDispatcher disp;
     auto df = in->getDataFormat();

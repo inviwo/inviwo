@@ -69,13 +69,13 @@ void DataFrameColumnToColorVector::process() {
             ->dispatch<std::shared_ptr<std::vector<vec4>>, dispatching::filter::Scalars>(
                 [&](auto buf) {
                     auto colors = std::make_shared<std::vector<vec4>>();
-                    auto &vec = buf->getDataContainer();
+                    auto& vec = buf->getDataContainer();
                     auto minMax = std::minmax_element(vec.begin(), vec.end());
                     double minV = static_cast<double>(*minMax.first);
                     double maxV = static_cast<double>(*minMax.second);
                     const double range = (maxV - minV);
 
-                    for (const auto &v : vec) {
+                    for (const auto& v : vec) {
                         colors->push_back(tf_.get().sample((v - minV) / range));
                     }
 

@@ -45,10 +45,10 @@ namespace inviwo {
 
 namespace glui {
 
-Element::Element(const std::string &label, Processor &processor, Renderer &uiRenderer,
+Element::Element(const std::string& label, Processor& processor, Renderer& uiRenderer,
                  UIOrientation orientation)
     : action_([]() {})
-    , moveAction_([](const dvec2 &) { return false; })
+    , moveAction_([](const dvec2&) { return false; })
     , hovered_(false)
     , pushed_(false)
     , checked_(false)
@@ -62,14 +62,14 @@ Element::Element(const std::string &label, Processor &processor, Renderer &uiRen
     , labelDirty_(true)
     , processor_(&processor)
     , uiRenderer_(&uiRenderer)
-    , pickingMapper_(&processor, 1, [&](PickingEvent *e) { handlePickingEvent(e); })
+    , pickingMapper_(&processor, 1, [&](PickingEvent* e) { handlePickingEvent(e); })
     , currentPickingID_(0u) {
     setLabel(label);
 }
 
 Element::~Element() = default;
 
-void Element::setLabel(const std::string &str) {
+void Element::setLabel(const std::string& str) {
     if (str != labelStr_) {
         labelStr_ = str;
 
@@ -84,7 +84,7 @@ void Element::setLabel(const std::string &str) {
     }
 }
 
-const std::string &Element::getLabel() const { return labelStr_; }
+const std::string& Element::getLabel() const { return labelStr_; }
 
 void Element::setFontSize(int size) {
     if (labelFontSize_ != size) {
@@ -156,7 +156,7 @@ void Element::setLabelBold(bool bold) {
 
 bool Element::isLabelBold() const { return boldLabel_; }
 
-const ivec2 &Element::getExtent() {
+const ivec2& Element::getExtent() {
     if (labelDirty_) {
         updateExtent();
     }
@@ -165,7 +165,7 @@ const ivec2 &Element::getExtent() {
 
 bool Element::isDirty() const { return labelDirty_; }
 
-void Element::setWidgetExtent(const ivec2 &extent) {
+void Element::setWidgetExtent(const ivec2& extent) {
     if (extent != widgetExtent_) {
         labelDirty_ = true;
         // label might need repositioning
@@ -174,9 +174,9 @@ void Element::setWidgetExtent(const ivec2 &extent) {
     }
 }
 
-const ivec2 &Element::getWidgetExtent() const { return widgetExtent_; }
+const ivec2& Element::getWidgetExtent() const { return widgetExtent_; }
 
-void Element::setWidgetExtentScaled(const ivec2 &extent) {
+void Element::setWidgetExtentScaled(const ivec2& extent) {
     ivec2 newExtent(extent);
     if (std::abs(1.0 - scalingFactor_) > glm::epsilon<double>()) {
         // consider scaling
@@ -199,11 +199,11 @@ ivec2 Element::getWidgetExtentScaled() const {
     }
 }
 
-void Element::render(const ivec2 &origin, const size2_t &canvasDim) {
+void Element::render(const ivec2& origin, const size2_t& canvasDim) {
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::BlendModeState blendMode(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    auto &uiShader = uiRenderer_->getShader();
+    auto& uiShader = uiRenderer_->getShader();
     uiShader.activate();
 
     uiShader.setUniform("outportParameters.dimensions", vec2(canvasDim));
@@ -263,9 +263,9 @@ void Element::setChecked(bool checked) {
 
 bool Element::isChecked() const { return checked_; }
 
-void Element::setAction(const std::function<void()> &action) { action_ = action; }
+void Element::setAction(const std::function<void()>& action) { action_ = action; }
 
-void Element::setPickingEventAction(std::function<void(PickingEvent *e)> pickingAction) {
+void Element::setPickingEventAction(std::function<void(PickingEvent* e)> pickingAction) {
     pickingAction_ = pickingAction;
 }
 
@@ -276,11 +276,11 @@ void Element::triggerAction() {
     }
 }
 
-void Element::setMouseMoveAction(const std::function<bool(const dvec2 &)> &action) {
+void Element::setMouseMoveAction(const std::function<bool(const dvec2&)>& action) {
     moveAction_ = action;
 }
 
-bool Element::moveAction(const dvec2 &delta) {
+bool Element::moveAction(const dvec2& delta) {
     if (enabled_) {
         return moveAction_(delta);
     }
@@ -334,7 +334,7 @@ void Element::updateLabel() {
     labelDirty_ = false;
 }
 
-void Element::handlePickingEvent(PickingEvent *e) {
+void Element::handlePickingEvent(PickingEvent* e) {
     bool triggerUpdate = false;
 
     if (e->getState() == PickingState::Started) {
@@ -373,7 +373,7 @@ void Element::handlePickingEvent(PickingEvent *e) {
     if (triggerUpdate) processor_->invalidate(InvalidationLevel::InvalidOutput);
 }
 
-vec4 Element::adjustColor(const vec4 &color) {
+vec4 Element::adjustColor(const vec4& color) {
     const float lumDiff = 0.15f;
     vec3 hsv(color::rgb2hsv(color));
     // darken color
@@ -383,14 +383,14 @@ vec4 Element::adjustColor(const vec4 &color) {
     return vec4(color::hsv2rgb(hsv), color.a);
 }
 
-TextRenderer &Element::getCurrentTextRenderer() const {
+TextRenderer& Element::getCurrentTextRenderer() const {
     // set font size first
-    auto &textRenderer = uiRenderer_->getTextRenderer(boldLabel_);
+    auto& textRenderer = uiRenderer_->getTextRenderer(boldLabel_);
     textRenderer.setFontSize(std::max(1, static_cast<int>(scalingFactor_ * labelFontSize_)));
     return textRenderer;
 }
 
-void Element::renderLabel(const ivec2 &origin, const size2_t &canvasDim) {
+void Element::renderLabel(const ivec2& origin, const size2_t& canvasDim) {
     if (!labelVisible_) {
         return;
     }

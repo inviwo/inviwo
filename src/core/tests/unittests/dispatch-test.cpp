@@ -41,15 +41,15 @@ namespace inviwo {
 
 struct RamDispatcher {
     template <typename Result, typename Format, typename Callable, typename... Args>
-    Result operator()(Callable &&obj, BufferRAM *bufferram, Args... args) {
+    Result operator()(Callable&& obj, BufferRAM* bufferram, Args... args) {
         return obj(
-            static_cast<BufferRAMPrecision<typename Format::type, BufferTarget::Data> *>(bufferram),
+            static_cast<BufferRAMPrecision<typename Format::type, BufferTarget::Data>*>(bufferram),
             std::forward<Args>(args)...);
     }
 };
 template <typename Result, template <class> class Predicate = dispatching::filter::All,
           typename Callable, typename... Args>
-Result dispatch(BufferRAM *bufferram, Callable &&obj, Args... args) {
+Result dispatch(BufferRAM* bufferram, Callable&& obj, Args... args) {
     RamDispatcher disp;
     return dispatching::dispatch<Result, Predicate>(bufferram->getDataFormatId(), disp,
                                                     std::forward<Callable>(obj), bufferram,

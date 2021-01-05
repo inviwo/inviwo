@@ -46,7 +46,7 @@ namespace inviwo {
 
 namespace util {
 
-IvwKey mapKeyFromQt(const QKeyEvent *keyevent) {
+IvwKey mapKeyFromQt(const QKeyEvent* keyevent) {
 
 #ifdef _WIN32
     // handle special keys here first, examples include numpad keys and left/right modifier keys.

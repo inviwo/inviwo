@@ -58,7 +58,7 @@ class IVW_CORE_API VolumeSequenceSampler : public Spatial4DSampler<3, double> {
             }
         }
 
-        bool operator<(const Wrapper &w) const { return timestamp_ < w.timestamp_; }
+        bool operator<(const Wrapper& w) const { return timestamp_ < w.timestamp_; }
     };
 
 public:
@@ -70,8 +70,8 @@ public:
     void setAllowedLooping(bool allowed = true) { allowLooping_ = allowed; }
 
 protected:
-    virtual dvec3 sampleDataSpace(const dvec4 &pos) const;
-    virtual bool withinBoundsDataSpace(const dvec4 &pos) const;
+    virtual dvec3 sampleDataSpace(const dvec4& pos) const;
+    virtual bool withinBoundsDataSpace(const dvec4& pos) const;
 
 private:
     std::vector<std::shared_ptr<Wrapper>> wrappers_;

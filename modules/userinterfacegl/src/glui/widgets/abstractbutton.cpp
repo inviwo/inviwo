@@ -43,8 +43,8 @@ namespace inviwo {
 
 namespace glui {
 
-AbstractButton::AbstractButton(const std::string &label, Processor &processor, Renderer &uiRenderer,
-                               const ivec2 &extent)
+AbstractButton::AbstractButton(const std::string& label, Processor& processor, Renderer& uiRenderer,
+                               const ivec2& extent)
     : Element(label, processor, uiRenderer) {
     widgetExtent_ = extent;
     setLabelBold(true);

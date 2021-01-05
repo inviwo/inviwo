@@ -34,13 +34,13 @@ namespace animation {
 
 namespace easing {
 
-EasingType &operator++(EasingType &e) {
+EasingType& operator++(EasingType& e) {
     using IntType = typename std::underlying_type<EasingType>::type;
     e = static_cast<EasingType>(static_cast<IntType>(e) + 1);
     return e;
 }
 
-EasingType operator++(EasingType &e, int) {
+EasingType operator++(EasingType& e, int) {
     EasingType result = e;
     ++e;
     return result;

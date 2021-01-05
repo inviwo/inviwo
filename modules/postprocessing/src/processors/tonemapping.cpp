@@ -86,7 +86,7 @@ void Tonemapping::initializeResources() {
     ImageGLProcessor::initializeResources();
 }
 
-void Tonemapping::preProcess(TextureUnitContainer &) {
+void Tonemapping::preProcess(TextureUnitContainer&) {
     utilgl::setUniforms(shader_, exposure_, gamma_);
 }
 

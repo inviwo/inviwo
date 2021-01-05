@@ -31,18 +31,18 @@
 
 namespace inviwo {
 namespace util {
-IntegralLine curvature(const IntegralLine &line, dmat4 toWorld) {
+IntegralLine curvature(const IntegralLine& line, dmat4 toWorld) {
     IntegralLine copy(line);
     curvature(copy, toWorld);
     return copy;
 }
-IntegralLineSet curvature(const IntegralLineSet &lines) {
+IntegralLineSet curvature(const IntegralLineSet& lines) {
     IntegralLineSet copy(lines);
     curvature(copy);
     return copy;
 }
 
-void curvature(IntegralLine &line, dmat4 toWorld) {
+void curvature(IntegralLine& line, dmat4 toWorld) {
     if (line.hasMetaData("curvature")) return;
     if (line.getPositions().size() <= 1) return;
     auto positions = line.getPositions();  // note, this creates a copy, we modify it below
@@ -53,8 +53,8 @@ void curvature(IntegralLine &line, dmat4 toWorld) {
     });
 
     auto md = line.createMetaData<double>("curvature");
-    auto &K = md->getEditableRAMRepresentation()->getDataContainer();
-    const auto &V = line.getMetaData<dvec3>("velocity");
+    auto& K = md->getEditableRAMRepresentation()->getDataContainer();
+    const auto& V = line.getMetaData<dvec3>("velocity");
 
     auto cur = positions.begin();
     auto vel = V.begin();
@@ -93,24 +93,24 @@ void curvature(IntegralLine &line, dmat4 toWorld) {
     }
     K[0] = K[1];  // Copy second to first
 }
-void curvature(IntegralLineSet &lines) {
-    for (auto &line : lines) {
+void curvature(IntegralLineSet& lines) {
+    for (auto& line : lines) {
         curvature(line, dmat4(lines.getModelMatrix()));
     }
 }
 
-IntegralLine tortuosity(const IntegralLine &line, dmat4 toWorld) {
+IntegralLine tortuosity(const IntegralLine& line, dmat4 toWorld) {
     IntegralLine copy(line);
     tortuosity(copy, toWorld);
     return copy;
 }
-IntegralLineSet tortuosity(const IntegralLineSet &lines) {
+IntegralLineSet tortuosity(const IntegralLineSet& lines) {
     IntegralLineSet copy(lines);
     tortuosity(copy);
     return copy;
 }
 
-void tortuosity(IntegralLine &line, dmat4 toWorld) {
+void tortuosity(IntegralLine& line, dmat4 toWorld) {
     if (line.hasMetaData("tortuosity")) return;
     auto positions = line.getPositions();  // note, this creates a copy, we modify it below
     if (positions.size() <= 1) return;
@@ -123,13 +123,13 @@ void tortuosity(IntegralLine &line, dmat4 toWorld) {
     });
 
     auto md = line.createMetaData<double>("tortuosity");
-    auto &K = md->getEditableRAMRepresentation()->getDataContainer();
+    auto& K = md->getEditableRAMRepresentation()->getDataContainer();
     double acuDist = 0;
 
     dvec3 start = positions.front();
     dvec3 prev = start;
 
-    for (auto &p : positions) {
+    for (auto& p : positions) {
         auto div = [](auto a, auto b) {
             if (b == 0) return 1.0;
             return a / b;
@@ -140,8 +140,8 @@ void tortuosity(IntegralLine &line, dmat4 toWorld) {
         K.emplace_back(div(acuDist, glm::distance(start, p)));
     }
 }
-void tortuosity(IntegralLineSet &lines) {
-    for (auto &line : lines) {
+void tortuosity(IntegralLineSet& lines) {
+    for (auto& line : lines) {
         tortuosity(line, dmat4(lines.getModelMatrix()));
     }
 }

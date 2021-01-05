@@ -61,9 +61,9 @@ SeedsFromMaskSequence::SeedsFromMaskSequence()
 
 void SeedsFromMaskSequence::process() {
     auto inSequence = sequence_.getData();
-    auto &volumes = *inSequence;
+    auto& volumes = *inSequence;
     auto outvec = std::make_shared<SeedPoint4DVector>();
-    auto &points = *outvec;
+    auto& points = *outvec;
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -82,7 +82,7 @@ void SeedsFromMaskSequence::process() {
             auto dim = typedVol->getDimensions();
             vec3 invDim = vec3(1.0f) / vec3(dim);
             util::IndexMapper3D index(dim);
-            util::forEachVoxel(*typedVol, [&](const size3_t &pos) {
+            util::forEachVoxel(*typedVol, [&](const size3_t& pos) {
                 if (dis(gen) > randomSampling_.get()) return;
                 auto v = util::glm_convert<float>(data[index(pos)]);
                 if (v > 0) {

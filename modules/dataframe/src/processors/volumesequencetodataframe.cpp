@@ -102,7 +102,7 @@ void VolumeSequenceToDataFrame::recomputeReduceBuffer() {
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dis(0.0f, 1.0f);
 
-    std::vector<const glm::f32 *> volumeData;
+    std::vector<const glm::f32*> volumeData;
 
     const auto probability = probability_.get();
     const auto omitOutliers = omitOutliers_.get();
@@ -114,7 +114,7 @@ void VolumeSequenceToDataFrame::recomputeReduceBuffer() {
             if (vol->getDataFormat()->getComponents() != 1)
                 LogWarn("This volume is omitted because it has more than one channel.");
             volumeData.push_back(
-                static_cast<const glm::f32 *>(vol->getRepresentation<VolumeRAM>()->getData()));
+                static_cast<const glm::f32*>(vol->getRepresentation<VolumeRAM>()->getData()));
         }
     }
 
@@ -147,7 +147,7 @@ void VolumeSequenceToDataFrame::recomputeReduceBuffer() {
     }
 
     for (size_t j = 0; j < volumeData.size(); j++) {
-        const auto &minMax = minMaxes[j];
+        const auto& minMax = minMaxes[j];
         bool foundMin = false;
         bool foundMax = false;
 
@@ -185,7 +185,7 @@ void VolumeSequenceToDataFrame::process() {
     for (const auto volume : volumeSequence) {
         const auto numericType = volume->getDataFormat()->getNumericType();
         if (numericType != NumericType::Float) continue;
-        std::vector<std::vector<float> *> channelBuffer_;
+        std::vector<std::vector<float>*> channelBuffer_;
         auto volumeRAM = volume->getRepresentation<VolumeRAM>();
         const auto numCh = volume->getDataFormat()->getComponents();
         for (size_t c = 0; c < numCh; c++) {
@@ -197,7 +197,7 @@ void VolumeSequenceToDataFrame::process() {
         }
         volumeNumber++;
 
-        util::forEachVoxelParallel(*volumeRAM, [&, this](const size3_t &pos) {
+        util::forEachVoxelParallel(*volumeRAM, [&, this](const size3_t& pos) {
             const auto idx = indexMapper(pos);
             if (filteredIDs_.find(idx) == filteredIDs_.end()) return;
             const auto v = volumeRAM->getAsDVec4(pos);

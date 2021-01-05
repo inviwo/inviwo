@@ -50,7 +50,7 @@ namespace util {
  *     and the full path. Fonts are sorted alphabetically
  */
 std::vector<std::pair<std::string, std::string>> IVW_MODULE_FONTRENDERING_API
-getAvailableFonts(const std::string &fontPath = std::string());
+getAvailableFonts(const std::string& fontPath = std::string());
 
 /**
  * \brief returns the default font directory of Inviwo

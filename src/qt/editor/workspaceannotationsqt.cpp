@@ -33,26 +33,26 @@
 
 namespace inviwo {
 
-WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(const QImage &network,
-                                               const QImageVector &canvasImages) {
+WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(const QImage& network,
+                                               const QImageVector& canvasImages) {
     setNetworkImage(network);
     setCanvasImages(canvasImages);
 }
 
-void WorkspaceAnnotationsQt::serialize(Serializer &s) const {
+void WorkspaceAnnotationsQt::serialize(Serializer& s) const {
     WorkspaceAnnotations::serialize(s);
 
     s.serialize("Network", network_);
 }
 
-void WorkspaceAnnotationsQt::deserialize(Deserializer &d) {
+void WorkspaceAnnotationsQt::deserialize(Deserializer& d) {
     WorkspaceAnnotations::deserialize(d);
 
     network_ = Base64Image{"Network"};
     d.deserialize("Network", network_);
 }
 
-void WorkspaceAnnotationsQt::setNetworkImage(const QImage &network) {
+void WorkspaceAnnotationsQt::setNetworkImage(const QImage& network) {
     network_ = Base64Image{"Network"};
 
     if (!network.isNull()) {
@@ -61,18 +61,18 @@ void WorkspaceAnnotationsQt::setNetworkImage(const QImage &network) {
     }
 }
 
-void WorkspaceAnnotationsQt::setCanvasImages(const QImageVector &canvasImages) {
+void WorkspaceAnnotationsQt::setCanvasImages(const QImageVector& canvasImages) {
     ImageVector images;
     images.reserve(canvasImages.size());
 
-    for (auto &elem : canvasImages) {
+    for (auto& elem : canvasImages) {
         images.push_back({elem.first, utilqt::toBase64(elem.second, "JPEG", 90),
                           elem.second.width(), elem.second.height()});
     }
     setCanvasImages(images);
 }
 
-const WorkspaceAnnotationsQt::Base64Image &WorkspaceAnnotationsQt::getNetworkImage() const {
+const WorkspaceAnnotationsQt::Base64Image& WorkspaceAnnotationsQt::getNetworkImage() const {
     return network_;
 }
 

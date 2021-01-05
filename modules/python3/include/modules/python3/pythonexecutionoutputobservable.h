@@ -40,13 +40,13 @@ enum class PythonOutputType { sysstdout, sysstderr };
 
 class IVW_MODULE_PYTHON3_API PythonExecutionOutputObeserver : public Observer {
 public:
-    virtual void onPyhonExecutionOutput(const std::string &msg, PythonOutputType outputType) = 0;
+    virtual void onPyhonExecutionOutput(const std::string& msg, PythonOutputType outputType) = 0;
 };
 
 class IVW_MODULE_PYTHON3_API PythonExecutionOutputObservable
     : public Observable<PythonExecutionOutputObeserver> {
 public:
-    void pythonExecutionOutputEvent(const std::string &msg, PythonOutputType outputType);
+    void pythonExecutionOutputEvent(const std::string& msg, PythonOutputType outputType);
 };
 
 }  // namespace inviwo

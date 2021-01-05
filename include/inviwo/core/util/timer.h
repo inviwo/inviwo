@@ -80,10 +80,10 @@ private:
     struct TimerInfo {
         TimerInfo(clock_t::time_point tp, std::weak_ptr<ControlBlock> controlBlock);
 
-        TimerInfo(const TimerInfo &) = default;
-        TimerInfo &operator=(const TimerInfo &) = default;
-        TimerInfo(TimerInfo &&) = default;
-        TimerInfo &operator=(TimerInfo &&) = default;
+        TimerInfo(const TimerInfo&) = default;
+        TimerInfo& operator=(const TimerInfo&) = default;
+        TimerInfo(TimerInfo&&) = default;
+        TimerInfo& operator=(TimerInfo&&) = default;
 
         clock_t::time_point timePoint_;
         std::weak_ptr<ControlBlock> controlBlock_;
@@ -104,7 +104,7 @@ namespace util {
 /**
  *	Utility function to get the default TimerThread from the app.
  */
-IVW_CORE_API TimerThread &getDefaultTimerThread();
+IVW_CORE_API TimerThread& getDefaultTimerThread();
 }  // namespace util
 
 /**
@@ -115,7 +115,7 @@ public:
     using Milliseconds = std::chrono::milliseconds;
 
     Timer(Milliseconds interval, std::function<void()> callback,
-          TimerThread &thread = util::getDefaultTimerThread());
+          TimerThread& thread = util::getDefaultTimerThread());
     ~Timer();
 
     void start(Milliseconds interval, std::function<void()> callback);
@@ -136,7 +136,7 @@ private:
     std::function<void()> callback_;
     std::shared_ptr<TimerThread::ControlBlock> controlblock_;
     Milliseconds interval_{0};
-    TimerThread &thread_;
+    TimerThread& thread_;
 };
 
 /**
@@ -146,7 +146,7 @@ class IVW_CORE_API Delay {
 public:
     using Milliseconds = std::chrono::milliseconds;
     Delay(Milliseconds defaultDelay, std::function<void()> defaltCallback,
-          TimerThread &thread = util::getDefaultTimerThread());
+          TimerThread& thread = util::getDefaultTimerThread());
     ~Delay();
 
     void start(Milliseconds delay, std::function<void()> callback);
@@ -165,7 +165,7 @@ private:
     std::function<void()> defaultCallback_;
     std::shared_ptr<TimerThread::ControlBlock> controlblock_;
     Milliseconds defaultDelay_;
-    TimerThread &thread_;
+    TimerThread& thread_;
 };
 
 }  // namespace inviwo

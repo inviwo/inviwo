@@ -56,15 +56,15 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    RangeSlider(const std::string &label, const ivec2 &value, int minValue, int maxValue,
-                int minSeparation, Processor &processor, Renderer &uiRenderer,
-                const ivec2 &extent = ivec2(100, 24),
+    RangeSlider(const std::string& label, const ivec2& value, int minValue, int maxValue,
+                int minSeparation, Processor& processor, Renderer& uiRenderer,
+                const ivec2& extent = ivec2(100, 24),
                 UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~RangeSlider() = default;
 
-    void set(const ivec2 &value);
-    void set(const ivec2 &value, int minValue, int maxValue, int minSeparation);
-    const ivec2 &get() const;
+    void set(const ivec2& value);
+    void set(const ivec2& value, int minValue, int maxValue, int minSeparation);
+    const ivec2& get() const;
 
     void setStart(int start);
     void setEnd(int stop);
@@ -84,9 +84,9 @@ public:
     bool getFlipped() const;
 
 protected:
-    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override;
+    virtual void renderWidget(const ivec2& origin, const size2_t& canvasDim) override;
 
-    const ivec2 &getPreviousValue() const;
+    const ivec2& getPreviousValue() const;
 
     /**
      * \brief transform mouse movements from pixel to normalized slider range while also
@@ -105,9 +105,9 @@ private:
 
     vec2 getSliderPos() const;
 
-    Texture2DArray *uiTextures_;
-    Texture2DArray *centerTextures_;
-    Texture2DArray *grooveTextures_;
+    Texture2DArray* uiTextures_;
+    Texture2DArray* centerTextures_;
+    Texture2DArray* grooveTextures_;
     std::array<int, 9> uiTextureMap_;
 
     bool showGroove_ = true;

@@ -31,8 +31,8 @@
 
 namespace inviwo {
 
-TextBoundingBox::TextBoundingBox(const size2_t &textExt, const ivec2 &glyphsOrigin,
-                                 const size2_t &glyphsExt, int baselineOffset)
+TextBoundingBox::TextBoundingBox(const size2_t& textExt, const ivec2& glyphsOrigin,
+                                 const size2_t& glyphsExt, int baselineOffset)
     : textExtent(textExt), glyphsOrigin(glyphsOrigin), glyphsExtent(glyphsExt) {
     updateGlyphPenOffset(baselineOffset);
 }

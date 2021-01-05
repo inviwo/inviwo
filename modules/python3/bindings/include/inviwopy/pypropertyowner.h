@@ -38,6 +38,6 @@
 
 namespace inviwo {
 
-void exposePropertyOwner(pybind11::module &m);
+void exposePropertyOwner(pybind11::module& m);
 
 }  // namespace inviwo

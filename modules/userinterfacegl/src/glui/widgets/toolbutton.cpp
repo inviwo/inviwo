@@ -52,23 +52,23 @@ namespace glui {
 const std::string ToolButton::classIdentifier = "org.inviwo.glui.ToolButton";
 std::string ToolButton::getClassIdentifier() const { return classIdentifier; }
 
-ToolButton::ToolButton(const std::string &filename, Processor &processor, Renderer &uiRenderer,
-                       const ivec2 &extent)
+ToolButton::ToolButton(const std::string& filename, Processor& processor, Renderer& uiRenderer,
+                       const ivec2& extent)
     : AbstractButton("", processor, uiRenderer, extent)
     , labelImage_(loadImage(filename))
     , quadRenderer_(Shader("rendertexturequad.vert", "labelui.frag")) {
     setLabelVisible(false);
 }
 
-ToolButton::ToolButton(std::shared_ptr<Texture2D> labelImage, Processor &processor,
-                       Renderer &uiRenderer, const ivec2 &extent)
+ToolButton::ToolButton(std::shared_ptr<Texture2D> labelImage, Processor& processor,
+                       Renderer& uiRenderer, const ivec2& extent)
     : AbstractButton("", processor, uiRenderer, extent)
     , labelImage_(labelImage)
     , quadRenderer_(Shader("rendertexturequad.vert", "labelui.frag")) {
     setLabelVisible(false);
 }
 
-void ToolButton::setImage(const std::string &filename) { labelImage_ = loadImage(filename); }
+void ToolButton::setImage(const std::string& filename) { labelImage_ = loadImage(filename); }
 
 void ToolButton::setImage(std::shared_ptr<Texture2D> texture) { labelImage_ = texture; }
 
@@ -76,15 +76,15 @@ void ToolButton::setMargins(int top, int left, int bottom, int right) {
     margins_ = ivec4(top, left, bottom, right);
 }
 
-const ivec4 &ToolButton::getMargins() const { return margins_; }
+const ivec4& ToolButton::getMargins() const { return margins_; }
 
-void ToolButton::renderWidget(const ivec2 &origin, const size2_t &canvasDim) {
+void ToolButton::renderWidget(const ivec2& origin, const size2_t& canvasDim) {
     TextureUnit texUnit;
     texUnit.activate();
     uiTextures_->bind();
 
     // bind textures
-    auto &uiShader = uiRenderer_->getShader();
+    auto& uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
 
     uiShader.setUniform("origin", vec2(origin + widgetPos_));
@@ -105,7 +105,7 @@ void ToolButton::renderWidget(const ivec2 &origin, const size2_t &canvasDim) {
         const ivec2 imageExtent =
             getWidgetExtentScaled() - ivec2(margins_.y + margins_.w, margins_.x + margins_.z);
 
-        auto &shader = quadRenderer_.getShader();
+        auto& shader = quadRenderer_.getShader();
         shader.activate();
         vec4 color(uiRenderer_->getSecondaryUIColor());
         if (!isEnabled()) {
@@ -116,7 +116,7 @@ void ToolButton::renderWidget(const ivec2 &origin, const size2_t &canvasDim) {
     }
 }
 
-std::shared_ptr<Texture2D> ToolButton::loadImage(const std::string &filename) {
+std::shared_ptr<Texture2D> ToolButton::loadImage(const std::string& filename) {
     auto ext = filesystem::getFileExtension(filename);
     auto factory = InviwoApplication::getPtr()->getDataReaderFactory();
     if (auto reader = factory->getReaderForTypeAndExtension<Layer>(ext)) {
@@ -124,7 +124,7 @@ std::shared_ptr<Texture2D> ToolButton::loadImage(const std::string &filename) {
             // try to load texture data from current file
             auto layer = reader->readData(filename);
             return layer->getRepresentation<LayerGL>()->getTexture();
-        } catch (DataReaderException const &e) {
+        } catch (DataReaderException const& e) {
             util::log(e.getContext(),
                       "Could not load texture data: " + filename + ", " + e.getMessage(),
                       LogLevel::Error);

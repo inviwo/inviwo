@@ -50,7 +50,7 @@ struct IVW_MODULE_FONTRENDERING_API TextBoundingBox {
 
     TextBoundingBox() = default;
 
-    TextBoundingBox(const size2_t &textExt, const ivec2 &glyphsOrigin, const size2_t &glyphsExt,
+    TextBoundingBox(const size2_t& textExt, const ivec2& glyphsOrigin, const size2_t& glyphsExt,
                     int baselineOffset);
 
     size2_t textExtent{0};  //<! extent of textual bounding box

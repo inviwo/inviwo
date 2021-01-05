@@ -89,7 +89,7 @@ void SeedPointsFromMask::process() {
 
     auto points = std::make_shared<std::vector<vec3>>();
 
-    for (const auto &v : volumes_) {
+    for (const auto& v : volumes_) {
         v->getRepresentation<VolumeRAM>()->dispatch<void>([&](auto volPrecision) {
             auto dim = volPrecision->getDimensions();
             auto data = volPrecision->getDataTyped();
@@ -106,7 +106,7 @@ void SeedPointsFromMask::process() {
                 }
             };
 
-            util::forEachVoxel(*volPrecision, [&](const size3_t &pos) {
+            util::forEachVoxel(*volPrecision, [&](const size3_t& pos) {
                 if (util::glm_convert_normalized<double>(data[index(pos)]) > threshold_.get()) {
                     if (enableSuperSample_.get()) {
                         for (int j = 0; j < superSample_.get(); j++) {

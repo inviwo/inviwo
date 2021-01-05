@@ -69,7 +69,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    virtual void preProcess(TextureUnitContainer &cont) override;
+    virtual void preProcess(TextureUnitContainer& cont) override;
 
 private:
     FloatProperty brightness_;

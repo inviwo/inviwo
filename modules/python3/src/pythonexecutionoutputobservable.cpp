@@ -30,9 +30,9 @@
 #include <modules/python3/pythonexecutionoutputobservable.h>
 
 namespace inviwo {
-void PythonExecutionOutputObservable::pythonExecutionOutputEvent(const std::string &msg,
+void PythonExecutionOutputObservable::pythonExecutionOutputEvent(const std::string& msg,
                                                                  PythonOutputType outputType) {
     forEachObserver(
-        [&](PythonExecutionOutputObeserver *o) { o->onPyhonExecutionOutput(msg, outputType); });
+        [&](PythonExecutionOutputObeserver* o) { o->onPyhonExecutionOutput(msg, outputType); });
 }
 }  // namespace inviwo

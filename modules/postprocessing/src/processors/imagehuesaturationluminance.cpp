@@ -53,7 +53,7 @@ ImageHueSaturationLuminance::ImageHueSaturationLuminance()
     addProperty(luminance_);
 }
 
-void ImageHueSaturationLuminance::preProcess(TextureUnitContainer &) {
+void ImageHueSaturationLuminance::preProcess(TextureUnitContainer&) {
     utilgl::setUniforms(shader_, hue_, saturation_, luminance_);
 }
 

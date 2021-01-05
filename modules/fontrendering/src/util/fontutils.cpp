@@ -40,7 +40,7 @@ namespace inviwo {
 
 namespace util {
 
-std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::string &fontPath) {
+std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::string& fontPath) {
     const std::vector<std::string> supportedExt = {"ttf", "otf", "cff", "pcf"};
 
     const std::string path = (fontPath.empty() ? getDefaultFontPath() : fontPath);
@@ -49,7 +49,7 @@ std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::st
     auto fonts = filesystem::getDirectoryContents(path, filesystem::ListMode::Files);
 
     // remove unsupported files
-    util::erase_remove_if(fonts, [supportedExt](const std::string &str) {
+    util::erase_remove_if(fonts, [supportedExt](const std::string& str) {
         return !util::contains(supportedExt, filesystem::getFileExtension(str));
     });
 
@@ -59,7 +59,7 @@ std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::st
 
     // capitalize the first letter and each one following a space.
     // Also replace '-' with space for improved readability
-    auto makeReadable = [](const std::string &str) {
+    auto makeReadable = [](const std::string& str) {
         std::string dst(str);
         auto it = dst.begin();
         *it = static_cast<char>(std::toupper(*it));
@@ -79,7 +79,7 @@ std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::st
     // create readable font names from file names and add full path to each file
     std::transform(
         fonts.begin(), fonts.end(), std::back_inserter(result),
-        [path, makeReadable](const std::string &str) -> std::pair<std::string, std::string> {
+        [path, makeReadable](const std::string& str) -> std::pair<std::string, std::string> {
             return {makeReadable(filesystem::getFileNameWithoutExtension(str)), path + '/' + str};
         });
 

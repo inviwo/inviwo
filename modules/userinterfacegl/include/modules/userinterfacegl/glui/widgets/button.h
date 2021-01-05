@@ -53,12 +53,12 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    Button(const std::string &label, Processor &processor, Renderer &uiRenderer,
-           const ivec2 &extent = ivec2(100, 24));
+    Button(const std::string& label, Processor& processor, Renderer& uiRenderer,
+           const ivec2& extent = ivec2(100, 24));
     virtual ~Button() = default;
 
 protected:
-    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override;
+    virtual void renderWidget(const ivec2& origin, const size2_t& canvasDim) override;
 };
 
 }  // namespace glui

@@ -39,21 +39,21 @@
 
 namespace inviwo {
 
-std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer &layer, int kernelSize) {
+std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer& layer, int kernelSize) {
     float sigma =
         kernelSize / (2.f * 2.576f);  // 99% of samples are within +- 2.576 standard deviations
                                       // https://de.wikipedia.org/wiki/Normalverteilung
     return gaussianLowpass(layer, kernelSize, sigma);
 }
 
-std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer &layer, float sigma) {
+std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer& layer, float sigma) {
     int kernelSize = static_cast<int>(
         sigma * 2 * 2.576);  // 99% of samples are within +- 2.576 standard deviations
                              // https://de.wikipedia.org/wiki/Normalverteilung
     return gaussianLowpass(layer, kernelSize, sigma);
 }
 
-std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer &layer, int kernelSize,
+std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer& layer, int kernelSize,
                                                          float sigma) {
     float sigmaSq2 = 2.0f * sigma * sigma;
     float a = 1.0f / (sigmaSq2 * glm::pi<float>());
@@ -68,14 +68,14 @@ std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer &layer, int
     return convolution_separable(layer, kernelFunc, kernelSize, totWeight);
 }
 
-std::shared_ptr<Image> ImageConvolution::lowpass(const Layer &layer, int kernelSize) {
+std::shared_ptr<Image> ImageConvolution::lowpass(const Layer& layer, int kernelSize) {
     return convolution_separable(layer, [](float /*p*/) { return 1.f; }, kernelSize,
                                  static_cast<float>(kernelSize));
 }
 
-std::shared_ptr<Image> ImageConvolution::convolution(const Layer &layer,
+std::shared_ptr<Image> ImageConvolution::convolution(const Layer& layer,
                                                      std::function<float(vec2)> kernelWeight,
-                                                     const float &kernelScale, ivec2 kernelSize) {
+                                                     const float& kernelScale, ivec2 kernelSize) {
 
     auto kernel1DSize = kernelSize.x * kernelSize.y;
     if (kernel1DSize == 1) {
@@ -99,8 +99,8 @@ std::shared_ptr<Image> ImageConvolution::convolution(const Layer &layer,
 }
 
 std::shared_ptr<Image> ImageConvolution::convolution_separable(
-    const Layer &layer, std::function<float(float)> kernelWeight, int kernelSize,
-    const float &kernelScale) {
+    const Layer& layer, std::function<float(float)> kernelWeight, int kernelSize,
+    const float& kernelScale) {
 
     std::vector<float> kernel(kernelSize);
     float kernelCenter = (kernelSize - 1) / 2.0f;
@@ -113,9 +113,9 @@ std::shared_ptr<Image> ImageConvolution::convolution_separable(
     return convolution(*hori->getColorLayer(), 1, kernelSize, kernel, kernelScale);
 }
 
-std::shared_ptr<Image> ImageConvolution::convolution(const Layer &layer, int kw, int kh,
-                                                     const std::vector<float> &kernel,
-                                                     const float &kernelScale) {
+std::shared_ptr<Image> ImageConvolution::convolution(const Layer& layer, int kw, int kh,
+                                                     const std::vector<float>& kernel,
+                                                     const float& kernelScale) {
     shader_.getFragmentShaderObject()->addShaderDefine("KERNELWIDTH", std::to_string(kw));
     shader_.getFragmentShaderObject()->addShaderDefine("KERNELHEIGHT", std::to_string(kh));
     shader_.getFragmentShaderObject()->addShaderDefine("KERNELSIZE", std::to_string(kw * kh));

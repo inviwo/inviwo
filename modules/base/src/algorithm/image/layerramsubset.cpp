@@ -33,7 +33,7 @@ namespace inviwo {
 
 namespace util {
 
-std::shared_ptr<LayerRAM> layerSubSet(const Layer *in, ivec2 offset, size2_t extent,
+std::shared_ptr<LayerRAM> layerSubSet(const Layer* in, ivec2 offset, size2_t extent,
                                       bool clampBorderOutsideImage) {
 
     return in->getRepresentation<LayerRAM>()->dispatch<std::shared_ptr<LayerRAM>>(

@@ -186,7 +186,7 @@ GLUITestProcessor::GLUITestProcessor()
     widgets_.emplace_back(
         std::make_unique<glui::Button>("button 2", *this, uiRenderer_, ivec2(80, 50)));
 
-    for (auto &widget : widgets_) {
+    for (auto& widget : widgets_) {
         layout_.addElement(*widget);
     }
 
@@ -253,7 +253,7 @@ void GLUITestProcessor::process() {
         propertyLayout_.setSpacing(layoutSpacing_.get());
     }
     if (layoutMargins_.isModified()) {
-        const ivec4 &m(layoutMargins_.get());
+        const ivec4& m(layoutMargins_.get());
         layout_.setMargins(m.x, m.y, m.z, m.w);
         propertyLayout_.setMargins(m.x, m.y, m.z, m.w);
     }

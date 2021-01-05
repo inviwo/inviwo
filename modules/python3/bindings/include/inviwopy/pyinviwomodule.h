@@ -36,6 +36,6 @@
 
 namespace inviwo {
 
-void exposeInviwoModule(pybind11::module &m);
+void exposeInviwoModule(pybind11::module& m);
 
 }  // namespace inviwo

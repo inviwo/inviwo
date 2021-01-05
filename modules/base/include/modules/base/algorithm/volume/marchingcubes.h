@@ -62,9 +62,9 @@ namespace util {
  */
 
 IVW_MODULE_BASE_API std::shared_ptr<Mesh> marchingcubes(
-    std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert, bool enclose,
+    std::shared_ptr<const Volume> volume, double iso, const vec4& color, bool invert, bool enclose,
     std::function<void(float)> progressCallback = std::function<void(float)>(),
-    std::function<bool(const size3_t &)> maskingCallback = [](const size3_t &) { return true; });
+    std::function<bool(const size3_t&)> maskingCallback = [](const size3_t&) { return true; });
 }  // namespace util
 
 }  // namespace inviwo

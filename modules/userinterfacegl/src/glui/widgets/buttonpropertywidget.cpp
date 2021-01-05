@@ -36,8 +36,8 @@ namespace glui {
 const std::string ButtonPropertyWidget::classIdentifier = "org.inviwo.glui.ButtonPropertyWidget";
 std::string ButtonPropertyWidget::getClassIdentifier() const { return classIdentifier; }
 
-ButtonPropertyWidget::ButtonPropertyWidget(ButtonProperty &property, Processor &processor,
-                                           Renderer &uiRenderer, const ivec2 &extent)
+ButtonPropertyWidget::ButtonPropertyWidget(ButtonProperty& property, Processor& processor,
+                                           Renderer& uiRenderer, const ivec2& extent)
     : Button(property.getDisplayName(), processor, uiRenderer, extent)
     , PropertyWidget(&property)
     , property_(&property) {
@@ -56,18 +56,18 @@ void ButtonPropertyWidget::updateFromProperty() {
     setEnabled(!property_->getReadOnly());
 }
 
-void ButtonPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
+void ButtonPropertyWidget::onSetVisible(Property*, bool visible) { setVisible(visible); }
 
-void ButtonPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
+void ButtonPropertyWidget::onSetDisplayName(Property*, const std::string& displayName) {
     setLabel(displayName);
     property_->propertyModified();
 }
 
-void ButtonPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
+void ButtonPropertyWidget::onSetReadOnly(Property*, bool readonly) { setEnabled(!readonly); }
 
-ToolButtonPropertyWidget::ToolButtonPropertyWidget(const std::string &imageFileName,
-                                                   ButtonProperty &property, Processor &processor,
-                                                   Renderer &uiRenderer, const ivec2 &extent)
+ToolButtonPropertyWidget::ToolButtonPropertyWidget(const std::string& imageFileName,
+                                                   ButtonProperty& property, Processor& processor,
+                                                   Renderer& uiRenderer, const ivec2& extent)
     : ToolButton(imageFileName, processor, uiRenderer, extent)
     , PropertyWidget(&property)
     , property_(&property) {
@@ -81,10 +81,10 @@ ToolButtonPropertyWidget::ToolButtonPropertyWidget(const std::string &imageFileN
     updateFromProperty();
 }
 
-ToolButtonPropertyWidget::ToolButtonPropertyWidget(ButtonProperty &property,
+ToolButtonPropertyWidget::ToolButtonPropertyWidget(ButtonProperty& property,
                                                    std::shared_ptr<Texture2D> image,
-                                                   Processor &processor, Renderer &uiRenderer,
-                                                   const ivec2 &extent)
+                                                   Processor& processor, Renderer& uiRenderer,
+                                                   const ivec2& extent)
     : ToolButton(image, processor, uiRenderer, extent)
     , PropertyWidget(&property)
     , property_(&property) {
@@ -103,14 +103,14 @@ void ToolButtonPropertyWidget::updateFromProperty() {
     setEnabled(!property_->getReadOnly());
 }
 
-void ToolButtonPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
+void ToolButtonPropertyWidget::onSetVisible(Property*, bool visible) { setVisible(visible); }
 
-void ToolButtonPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
+void ToolButtonPropertyWidget::onSetDisplayName(Property*, const std::string& displayName) {
     setLabel(displayName);
     property_->propertyModified();
 }
 
-void ToolButtonPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
+void ToolButtonPropertyWidget::onSetReadOnly(Property*, bool readonly) { setEnabled(!readonly); }
 
 }  // namespace glui
 

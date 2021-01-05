@@ -43,11 +43,11 @@
 
 namespace inviwo {
 
-LinkDragHelper::LinkDragHelper(NetworkEditor &editor) : QObject(&editor), editor_{editor} {}
+LinkDragHelper::LinkDragHelper(NetworkEditor& editor) : QObject(&editor), editor_{editor} {}
 
 LinkDragHelper::~LinkDragHelper() = default;
 
-void LinkDragHelper::start(ProcessorLinkGraphicsItem *item, QPointF endPos) {
+void LinkDragHelper::start(ProcessorLinkGraphicsItem* item, QPointF endPos) {
     link_ = std::make_unique<LinkConnectionDragGraphicsItem>(item, endPos);
     editor_.addItem(link_.get());
     link_->setZValue(DRAGING_ITEM_DEPTH);
@@ -56,14 +56,14 @@ void LinkDragHelper::start(ProcessorLinkGraphicsItem *item, QPointF endPos) {
 
 void LinkDragHelper::reset() { link_.reset(); }
 
-bool LinkDragHelper::eventFilter(QObject *, QEvent *event) {
+bool LinkDragHelper::eventFilter(QObject*, QEvent* event) {
     if (link_ && event->type() == QEvent::GraphicsSceneMouseMove) {
-        auto e = static_cast<QGraphicsSceneMouseEvent *>(event);
+        auto e = static_cast<QGraphicsSceneMouseEvent*>(event);
         link_->setEndPoint(e->scenePos());
         link_->reactToProcessorHover(editor_.getProcessorGraphicsItemAt(e->scenePos()));
         e->accept();
     } else if (link_ && event->type() == QEvent::GraphicsSceneMouseRelease) {
-        auto e = static_cast<QGraphicsSceneMouseEvent *>(event);
+        auto e = static_cast<QGraphicsSceneMouseEvent*>(event);
         // link drag mode
         auto startProcessor =
             link_->getSrcProcessorLinkGraphicsItem()->getProcessorGraphicsItem()->getProcessor();
@@ -71,7 +71,7 @@ bool LinkDragHelper::eventFilter(QObject *, QEvent *event) {
         reset();
 
         if (auto endProcessorItem = editor_.getProcessorGraphicsItemAt(e->scenePos())) {
-            Processor *endProcessor = endProcessorItem->getProcessor();
+            Processor* endProcessor = endProcessorItem->getProcessor();
             if (startProcessor != endProcessor) {
                 editor_.showLinkDialog(startProcessor, endProcessor);
             }

@@ -64,7 +64,7 @@ public:
 protected:
     TransferFunctionProperty tfProperty_;
 
-    virtual void preProcess(TextureUnitContainer &cont) override;
+    virtual void preProcess(TextureUnitContainer& cont) override;
 };
 
 }  // namespace inviwo

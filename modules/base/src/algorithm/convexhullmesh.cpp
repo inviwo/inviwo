@@ -38,7 +38,7 @@ namespace inviwo {
 
 namespace util {
 
-std::shared_ptr<Mesh> convertHullToMesh(const std::vector<vec2> &hull, bool useIndices) {
+std::shared_ptr<Mesh> convertHullToMesh(const std::vector<vec2>& hull, bool useIndices) {
     auto mesh = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::Loop);
 
     if (hull.empty()) {

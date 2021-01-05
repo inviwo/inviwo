@@ -30,7 +30,7 @@
 #include <modules/basegl/datastructures/linesettings.h>
 
 namespace inviwo {
-LineSettings::LineSettings(const LineSettingsInterface *other)
+LineSettings::LineSettings(const LineSettingsInterface* other)
     : lineWidth(other->getWidth())
     , antialiasing(other->getAntialiasingWidth())
     , miterLimit(other->getMiterLimit())
@@ -51,6 +51,6 @@ bool LineSettings::getPseudoLighting() const { return pseudoLighting; }
 
 bool LineSettings::getRoundDepthProfile() const { return roundDepthProfile; }
 
-const StipplingSettingsInterface &LineSettings::getStippling() const { return stippling; }
+const StipplingSettingsInterface& LineSettings::getStippling() const { return stippling; }
 
 }  // namespace inviwo

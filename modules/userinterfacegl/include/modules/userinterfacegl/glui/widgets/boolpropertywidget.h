@@ -54,19 +54,19 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    BoolPropertyWidget(BoolProperty &property, Processor &processor, Renderer &uiRenderer,
-                       const ivec2 &extent = ivec2(24, 24));
+    BoolPropertyWidget(BoolProperty& property, Processor& processor, Renderer& uiRenderer,
+                       const ivec2& extent = ivec2(24, 24));
     virtual ~BoolPropertyWidget() = default;
 
     virtual void updateFromProperty() override;
 
     // PropertyObservable overrides
-    virtual void onSetVisible(Property *property, bool visible) override;
-    virtual void onSetDisplayName(Property *property, const std::string &displayName) override;
-    virtual void onSetReadOnly(Property *property, bool readonly) override;
+    virtual void onSetVisible(Property* property, bool visible) override;
+    virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
+    virtual void onSetReadOnly(Property* property, bool readonly) override;
 
 private:
-    BoolProperty *property_;
+    BoolProperty* property_;
 };
 
 }  // namespace glui

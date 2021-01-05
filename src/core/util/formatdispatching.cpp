@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-dispatching::DispatchException::DispatchException(const std::string &message,
+dispatching::DispatchException::DispatchException(const std::string& message,
                                                   ExceptionContext context)
     : Exception(message, context) {}
 

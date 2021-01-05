@@ -56,8 +56,8 @@ public:
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
 
-    MarginProperty(const MarginProperty &rhs);
-    virtual MarginProperty *clone() const override;
+    MarginProperty(const MarginProperty& rhs);
+    virtual MarginProperty* clone() const override;
 
     virtual ~MarginProperty() = default;
     /*

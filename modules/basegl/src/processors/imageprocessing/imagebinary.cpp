@@ -47,6 +47,6 @@ ImageBinary::ImageBinary()
     addProperty(threshold_);
 }
 
-void ImageBinary::preProcess(TextureUnitContainer &) { utilgl::setUniforms(shader_, threshold_); }
+void ImageBinary::preProcess(TextureUnitContainer&) { utilgl::setUniforms(shader_, threshold_); }
 
 }  // namespace inviwo

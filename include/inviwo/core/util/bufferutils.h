@@ -40,7 +40,7 @@ namespace util {
  * Utility function to reverse the orders of the elements in a buffer.
  * @param b the buffer to reverse
  */
-IVW_CORE_API void reverse(BufferBase &b);
+IVW_CORE_API void reverse(BufferBase& b);
 
 }  // namespace util
 

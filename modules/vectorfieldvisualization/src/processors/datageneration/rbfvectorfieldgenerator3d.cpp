@@ -116,7 +116,7 @@ void RBFVectorFieldGenerator3D::process() {
 
     if (mesh_.isConnected()) {
         auto mesh = std::make_shared<BasicMesh>();
-        for (auto &p : samples) {
+        for (auto& p : samples) {
             vec3 p0 = vec3(p.first);
             vec3 p1 = p0 + glm::normalize(vec3(p.second)) * arrowLength_.get();
             auto sphere = meshutil::colorsphere(p0, sphereRadius_.get());
@@ -133,9 +133,9 @@ void RBFVectorFieldGenerator3D::process() {
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(seeds_.get()), xy(seeds_.get()), xz(seeds_.get());
 
     int row = 0;
-    for (auto &a : samples) {
+    for (auto& a : samples) {
         int col = 0;
-        for (auto &b : samples) {
+        for (auto& b : samples) {
             auto r = glm::distance(a.first, b.first);
             A(row, col++) = shape_.get() + gaussian_.evaluate(r);
         }
@@ -158,7 +158,7 @@ void RBFVectorFieldGenerator3D::process() {
     volume->setBasis(basis);
     volume->setOffset(offset);
 
-    auto data = static_cast<vec3 *>(volume->getEditableRepresentation<VolumeRAM>()->getData());
+    auto data = static_cast<vec3*>(volume->getEditableRepresentation<VolumeRAM>()->getData());
 
     int i = 0;
     for (size_t z = 0; z < size_.get().z; z++) {

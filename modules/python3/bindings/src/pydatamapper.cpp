@@ -40,14 +40,14 @@ namespace py = pybind11;
 
 namespace inviwo {
 
-void exposeDataMapper(py::module &m) {
+void exposeDataMapper(py::module& m) {
 
     py::class_<DataMapper>(m, "DataMapper")
         .def(py::init())
         .def_readwrite("dataRange", &DataMapper::dataRange)
         .def_readwrite("valueRange", &DataMapper::valueRange)
         .def_readwrite("valueUnit", &DataMapper::valueUnit)
-        .def("__repr__", [](const DataMapper &datamapper) {
+        .def("__repr__", [](const DataMapper& datamapper) {
             std::ostringstream oss;
             oss << "<DataMapper:  dataRange = " << datamapper.dataRange
                 << ",  valueRange = " << datamapper.valueRange << ",  valueUnit = \""

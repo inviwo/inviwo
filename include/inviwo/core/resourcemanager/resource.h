@@ -43,14 +43,14 @@ namespace inviwo {
  */
 class IVW_CORE_API Resource {
 public:
-    Resource(const std::string &key);
+    Resource(const std::string& key);
     virtual ~Resource() = default;
 
-    Resource(const Resource &r) = delete;
-    Resource(Resource &&r) = delete;
+    Resource(const Resource& r) = delete;
+    Resource(Resource&& r) = delete;
 
-    Resource &operator=(const Resource &r) = delete;
-    Resource &operator=(const Resource &&r) = delete;
+    Resource& operator=(const Resource& r) = delete;
+    Resource& operator=(const Resource&& r) = delete;
 
     virtual std::string typeDisplayName() = 0;
     virtual Document info() = 0;
@@ -69,7 +69,7 @@ private:
 template <typename T>
 class TypedResource : public Resource {
 public:
-    TypedResource(std::shared_ptr<T> resource, const std::string &key)
+    TypedResource(std::shared_ptr<T> resource, const std::string& key)
         : Resource(key), resource_(resource) {}
     virtual ~TypedResource() = default;
 

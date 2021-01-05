@@ -51,37 +51,36 @@ namespace detail {
 using namespace inviwo;
 
 template <typename T>
-using ListCasterBase = pybind11::detail::list_caster<std::vector<T *>, T *>;
+using ListCasterBase = pybind11::detail::list_caster<std::vector<T*>, T*>;
 
 template <>
-struct type_caster<std::vector<Processor *>> : ListCasterBase<Processor> {
-    static handle cast(const std::vector<Processor *> &src, return_value_policy, handle parent) {
+struct type_caster<std::vector<Processor*>> : ListCasterBase<Processor> {
+    static handle cast(const std::vector<Processor*>& src, return_value_policy, handle parent) {
         return ListCasterBase<Processor>::cast(src, return_value_policy::reference, parent);
     }
-    static handle cast(const std::vector<Processor *> *src, return_value_policy pol,
-                       handle parent) {
+    static handle cast(const std::vector<Processor*>* src, return_value_policy pol, handle parent) {
         return cast(*src, pol, parent);
     }
 };
 
 template <>
-struct type_caster<std::vector<CanvasProcessor *>> : ListCasterBase<CanvasProcessor> {
-    static handle cast(const std::vector<CanvasProcessor *> &src, return_value_policy,
+struct type_caster<std::vector<CanvasProcessor*>> : ListCasterBase<CanvasProcessor> {
+    static handle cast(const std::vector<CanvasProcessor*>& src, return_value_policy,
                        handle parent) {
         return ListCasterBase<CanvasProcessor>::cast(src, return_value_policy::reference, parent);
     }
-    static handle cast(const std::vector<CanvasProcessor *> *src, return_value_policy pol,
+    static handle cast(const std::vector<CanvasProcessor*>* src, return_value_policy pol,
                        handle parent) {
         return cast(*src, pol, parent);
     }
 };
 
 template <>
-struct type_caster<std::vector<Layer *>> : ListCasterBase<Layer> {
-    static handle cast(const std::vector<Layer *> &src, return_value_policy, handle parent) {
+struct type_caster<std::vector<Layer*>> : ListCasterBase<Layer> {
+    static handle cast(const std::vector<Layer*>& src, return_value_policy, handle parent) {
         return ListCasterBase<Layer>::cast(src, return_value_policy::reference, parent);
     }
-    static handle cast(const std::vector<Layer *> *src, return_value_policy pol, handle parent) {
+    static handle cast(const std::vector<Layer*>* src, return_value_policy pol, handle parent) {
         return cast(*src, pol, parent);
     }
 };

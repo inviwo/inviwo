@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-LineEditQt::LineEditQt(QWidget *parent) : QLineEdit(parent) {
+LineEditQt::LineEditQt(QWidget* parent) : QLineEdit(parent) {
     connect(this, &QLineEdit::returnPressed, [this]() {
         // loose focus when return is pressed
         this->clearFocus();
@@ -44,7 +44,7 @@ LineEditQt::LineEditQt(QWidget *parent) : QLineEdit(parent) {
     // do nothing when editing is finished (either return pressed or focus lost)
 }
 
-void LineEditQt::keyPressEvent(QKeyEvent *e) {
+void LineEditQt::keyPressEvent(QKeyEvent* e) {
     // check whether pressed key is escape, if yes then trigger undo
     if (e->key() == Qt::Key_Escape) {
         emit editingCanceled();

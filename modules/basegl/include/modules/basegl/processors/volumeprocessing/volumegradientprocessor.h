@@ -70,7 +70,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    virtual void preProcess(TextureUnitContainer &cont) override;
+    virtual void preProcess(TextureUnitContainer& cont) override;
     virtual void postProcess() override;
 
     virtual void initializeResources() override;

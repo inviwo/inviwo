@@ -39,5 +39,5 @@
 
 namespace inviwo {
 
-void exposeGLMMatTypes(pybind11::module &m);
+void exposeGLMMatTypes(pybind11::module& m);
 }

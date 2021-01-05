@@ -532,9 +532,9 @@ std::array<std::vector<Triangle>, 256> cases = {
     std::vector<Triangle>{Triangle{0, 1, 3, 0, 0, 4}},
     std::vector<Triangle>{}};
 
-void evaluateCube(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
-                  std::vector<vec3> &positions, std::vector<vec3> &normals,
-                  const std::array<vec3, 8> &pos, const std::array<double, 8> &values) {
+void evaluateCube(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer,
+                  std::vector<vec3>& positions, std::vector<vec3>& normals,
+                  const std::array<vec3, 8>& pos, const std::array<double, 8>& values) {
     int index = 0;
 
     //  v7 ----- v6
@@ -572,9 +572,9 @@ void evaluateCube(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffe
 
 namespace util {
 std::shared_ptr<Mesh> marchingcubes(std::shared_ptr<const Volume> volume, double iso,
-                                    const vec4 &color, bool invert, bool enclose,
+                                    const vec4& color, bool invert, bool enclose,
                                     std::function<void(float)> progressCallback,
-                                    std::function<bool(const size3_t &)> maskingCallback) {
+                                    std::function<bool(const size3_t&)> maskingCallback) {
 
     return volume->getRepresentation<VolumeRAM>()->dispatch<std::shared_ptr<Mesh>>([&](auto ram) {
         using T = util::PrecisionValueType<decltype(ram)>;
@@ -595,7 +595,7 @@ std::shared_ptr<Mesh> marchingcubes(std::shared_ptr<const Volume> volume, double
         mesh->setModelMatrix(volume->getModelMatrix());
         mesh->setWorldMatrix(volume->getWorldMatrix());
 
-        const T *src = ram->getDataTyped();
+        const T* src = ram->getDataTyped();
 
         const size3_t dim{volume->getDimensions()};
         double dx, dy, dz;
@@ -620,7 +620,7 @@ std::shared_ptr<Mesh> marchingcubes(std::shared_ptr<const Volume> volume, double
                     std::array<double, 8> values;
 
                     for (int l = 0; l < 8; l++) {
-                        const auto &o = marchingcubes::offs[l];
+                        const auto& o = marchingcubes::offs[l];
                         pos[l] = glm::vec3(x + dx * o.x, y + dy * o.y, z + dz * o.z);
                         values[l] = marching::getValue(src, size3_t(i, j, k) + o, dim, iso, invert);
                     }

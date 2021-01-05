@@ -39,8 +39,8 @@ namespace inviwo {
 TEST(StatsUtilsTest, init) {
     Buffer<double> X;
     Buffer<double> Y;
-    auto &vecX = X.getEditableRAMRepresentation()->getDataContainer();
-    auto &vecY = Y.getEditableRAMRepresentation()->getDataContainer();
+    auto& vecX = X.getEditableRAMRepresentation()->getDataContainer();
+    auto& vecY = Y.getEditableRAMRepresentation()->getDataContainer();
     vecX.emplace_back(95);
     vecX.emplace_back(85);
     vecX.emplace_back(80);

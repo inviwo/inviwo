@@ -42,11 +42,11 @@ struct IndexMapper {};
 
 template <typename IndexType>
 struct IndexMapper<2, IndexType> {
-    constexpr IndexMapper(const Vector<2, IndexType> &dim) : dimx(dim.x){};
+    constexpr IndexMapper(const Vector<2, IndexType>& dim) : dimx(dim.x){};
     constexpr IndexType operator()(const IndexType x, const IndexType y) const noexcept {
         return x + y * dimx;
     }
-    constexpr IndexType operator()(const Vector<2, IndexType> &pos) const noexcept {
+    constexpr IndexType operator()(const Vector<2, IndexType>& pos) const noexcept {
         return pos.x + pos.y * dimx;
     }
     constexpr Vector<2, IndexType> operator()(const IndexType index) const noexcept {
@@ -59,13 +59,13 @@ private:
 
 template <typename IndexType>
 struct IndexMapper<3, IndexType> {
-    constexpr IndexMapper(const Vector<3, IndexType> &dim) noexcept
+    constexpr IndexMapper(const Vector<3, IndexType>& dim) noexcept
         : dimx(dim.x), dimxy(dim.x * dim.y){};
     constexpr IndexType operator()(const IndexType x, const IndexType y, const IndexType z) const
         noexcept {
         return x + y * dimx + z * dimxy;
     }
-    constexpr IndexType operator()(const Vector<3, IndexType> &pos) const noexcept {
+    constexpr IndexType operator()(const Vector<3, IndexType>& pos) const noexcept {
         return pos.x + pos.y * dimx + pos.z * dimxy;
     }
     constexpr Vector<3, IndexType> operator()(const IndexType index) const noexcept {
@@ -81,7 +81,7 @@ using IndexMapper2D = IndexMapper<2, size_t>;
 using IndexMapper3D = IndexMapper<3, size_t>;
 
 template <size_t N, typename IndexType = size_t>
-auto makeIndexMapper(const Vector<N, IndexType> &dim) {
+auto makeIndexMapper(const Vector<N, IndexType>& dim) {
     return IndexMapper<N, IndexType>(dim);
 }
 

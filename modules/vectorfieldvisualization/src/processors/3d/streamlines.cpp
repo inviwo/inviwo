@@ -144,8 +144,8 @@ void StreamLinesDeprecated::process() {
     if (useMutliThreading_) {
         size_t startID = 0;
 
-        for (const auto &seeds : seedPoints_) {
-            util::forEachParallel(*seeds, [&](const auto &p, size_t i) {
+        for (const auto& seeds : seedPoints_) {
+            util::forEachParallel(*seeds, [&](const auto& p, size_t i) {
                 vec4 P = m * vec4(p, 1.0f);
                 IntegralLine line = tracer.traceFrom(vec3(P));
                 auto size = line.getPositions().size();
@@ -158,8 +158,8 @@ void StreamLinesDeprecated::process() {
         }
     } else {
         size_t startID = 0;
-        for (const auto &seeds : seedPoints_) {
-            for (const auto &p : *seeds.get()) {
+        for (const auto& seeds : seedPoints_) {
+            for (const auto& p : *seeds.get()) {
                 vec4 P = m * vec4(p, 1.0f);
                 IntegralLine line = tracer.traceFrom(vec3(P));
                 auto size = line.getPositions().size();
@@ -171,7 +171,7 @@ void StreamLinesDeprecated::process() {
         }
     }
 
-    for (auto &line : *lines) {
+    for (auto& line : *lines) {
         auto position = line.getPositions().begin();
         auto velocity = line.getMetaData<dvec3>("velocity").begin();
 

@@ -42,8 +42,8 @@ class DataFrameColumnToOptionConverter
     : public TemplatePropertyConverter<DataFrameColumnProperty, OptionProperty> {
 protected:
 protected:
-    virtual void convertimpl(const DataFrameColumnProperty *src,
-                             OptionProperty *dst) const override {
+    virtual void convertimpl(const DataFrameColumnProperty* src,
+                             OptionProperty* dst) const override {
         dst->setSelectedIndex(glm::clamp<size_t>(0, dst->size() - 1, src->getSelectedIndex()));
     }
 };
@@ -53,8 +53,8 @@ class OptionToDataFrameColumnConverter
     : public TemplatePropertyConverter<OptionProperty, DataFrameColumnProperty> {
 protected:
 protected:
-    virtual void convertimpl(const OptionProperty *src,
-                             DataFrameColumnProperty *dst) const override {
+    virtual void convertimpl(const OptionProperty* src,
+                             DataFrameColumnProperty* dst) const override {
         dst->setSelectedIndex(glm::clamp<size_t>(0, dst->size() - 1, src->getSelectedIndex()));
     }
 };

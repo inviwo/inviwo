@@ -46,17 +46,17 @@ public:
     size_t getSize() const;
     bool has(size_t idx) const;
 
-    void set(const BrushingAndLinkingInport *src, const std::unordered_set<size_t> &incices);
-    void remove(const BrushingAndLinkingInport *src);
+    void set(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& incices);
+    void remove(const BrushingAndLinkingInport* src);
 
     std::shared_ptr<std::function<void()>> onChange(std::function<void()> V);
 
     void update();
     void clear();
-    const std::unordered_set<size_t> &getIndices() const { return indices_; }
+    const std::unordered_set<size_t>& getIndices() const { return indices_; }
 
 private:
-    std::unordered_map<const BrushingAndLinkingInport *, std::unordered_set<size_t>>
+    std::unordered_map<const BrushingAndLinkingInport*, std::unordered_set<size_t>>
         indicesBySource_;
     std::unordered_set<size_t> indices_;
     Dispatcher<void()> onUpdate_;

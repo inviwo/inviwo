@@ -43,7 +43,7 @@
 
 namespace inviwo {
 
-void exposePickingMapper(pybind11::module &m) {
+void exposePickingMapper(pybind11::module& m) {
     namespace py = pybind11;
 
     py::enum_<PickingState>(m, "PickingState")
@@ -80,7 +80,7 @@ void exposePickingMapper(pybind11::module &m) {
     exposeFlags<PickingHoverState>(m, "PickingHoverStates");
 
     py::class_<PickingEvent, Event>(m, "PickingEvent")
-        .def(py::init<const PickingAction *, InteractionEvent *, PickingState, PickingPressState,
+        .def(py::init<const PickingAction*, InteractionEvent*, PickingState, PickingPressState,
                       PickingPressItem, PickingHoverState, PickingPressItems, size_t, size_t,
                       size_t, size_t, dvec3, dvec3>(),
              py::arg("pickingAction"), py::arg("event"), py::arg("state"), py::arg("pressState"),
@@ -121,11 +121,11 @@ void exposePickingMapper(pybind11::module &m) {
         .def_property_readonly_static("chash", &PickingEvent::chash);
 
     py::class_<PickingMapper>(m, "PickingMapper")
-        .def(py::init([](Processor *p, size_t size, pybind11::function callback) {
-            return new PickingMapper(p, size, [callback](PickingEvent *e) {
+        .def(py::init([](Processor* p, size_t size, pybind11::function callback) {
+            return new PickingMapper(p, size, [callback](PickingEvent* e) {
                 try {
                     callback(py::cast(e));
-                } catch (const py::error_already_set &e) {
+                } catch (const py::error_already_set& e) {
                     LogErrorCustom("pybind11", e.what());
                 }
             });

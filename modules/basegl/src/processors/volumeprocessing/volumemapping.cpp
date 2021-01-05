@@ -57,7 +57,7 @@ VolumeMapping::VolumeMapping()
 
 VolumeMapping::~VolumeMapping() {}
 
-void VolumeMapping::preProcess(TextureUnitContainer &cont) {
+void VolumeMapping::preProcess(TextureUnitContainer& cont) {
     utilgl::bindAndSetUniforms(shader_, cont, tfProperty_);
 }
 

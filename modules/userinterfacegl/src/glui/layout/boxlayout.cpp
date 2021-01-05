@@ -45,7 +45,7 @@ BoxLayout::LayoutDirection BoxLayout::getDirection() const { return direction_; 
 ivec2 BoxLayout::getExtent() const {
     ivec2 extent(0, 0);
     if (direction_ == LayoutDirection::Vertical) {
-        for (Element &elem : uiElements_) {
+        for (Element& elem : uiElements_) {
             if (elem.isVisible()) {
                 extent.x = std::max(extent.x, elem.getExtent().x);
                 extent.y += elem.getExtent().y + spacing_;
@@ -57,7 +57,7 @@ ivec2 BoxLayout::getExtent() const {
         }
     } else {
         // horizontal layout
-        for (Element &elem : uiElements_) {
+        for (Element& elem : uiElements_) {
             if (elem.isVisible()) {
                 extent.x += elem.getExtent().x + spacing_;
                 extent.y = std::max(extent.y, elem.getExtent().y);
@@ -80,17 +80,17 @@ void BoxLayout::setSpacing(int spacing) { spacing_ = spacing; }
 int BoxLayout::getSpacing() const { return spacing_; }
 
 void BoxLayout::setScalingFactor(double factor) {
-    for (Element &elem : uiElements_) {
+    for (Element& elem : uiElements_) {
         elem.setScalingFactor(factor);
     }
 }
 
-void BoxLayout::render(const ivec2 &topLeft, const size2_t &canvasDim) {
+void BoxLayout::render(const ivec2& topLeft, const size2_t& canvasDim) {
     ivec2 pos(topLeft + ivec2(margins_.y, -margins_.x));
 
     if (direction_ == LayoutDirection::Vertical) {
         // vertical layout
-        for (Element &elem : uiElements_) {
+        for (Element& elem : uiElements_) {
             if (elem.isVisible()) {
                 // consider vertical extent of UI element (lower left corner)
                 pos.y -= elem.getExtent().y;
@@ -105,7 +105,7 @@ void BoxLayout::render(const ivec2 &topLeft, const size2_t &canvasDim) {
         // reference position is in the lower left corner
         pos.y -= extent.y;
 
-        for (Element &elem : uiElements_) {
+        for (Element& elem : uiElements_) {
             if (elem.isVisible()) {
                 // compute vertical offset
                 ivec2 offset(0);
@@ -118,9 +118,9 @@ void BoxLayout::render(const ivec2 &topLeft, const size2_t &canvasDim) {
     }
 }
 
-void BoxLayout::addElement(Element &element) { uiElements_.push_back(std::ref(element)); }
+void BoxLayout::addElement(Element& element) { uiElements_.push_back(std::ref(element)); }
 
-void BoxLayout::insertElement(int index, Element &element) {
+void BoxLayout::insertElement(int index, Element& element) {
     if ((index < 0) || (index >= static_cast<int>(uiElements_.size()))) {
         addElement(element);
     } else {
@@ -128,7 +128,7 @@ void BoxLayout::insertElement(int index, Element &element) {
     }
 }
 
-void BoxLayout::removeElement(Element &element) {
+void BoxLayout::removeElement(Element& element) {
     auto it = uiElements_.begin();
     while (it != uiElements_.end()) {
         if (&(*it).get() == &element) {

@@ -36,6 +36,6 @@
 
 namespace inviwo {
 
-void exposePickingMapper(pybind11::module &m);
+void exposePickingMapper(pybind11::module& m);
 
 }  // namespace inviwo

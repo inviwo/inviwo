@@ -36,6 +36,6 @@
 
 namespace inviwo {
 
-void exposeDataMapper(pybind11::module &m);
+void exposeDataMapper(pybind11::module& m);
 
 }  // namespace inviwo

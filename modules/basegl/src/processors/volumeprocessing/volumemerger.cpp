@@ -90,7 +90,7 @@ VolumeMerger::VolumeMerger()
     vol4_.onChange(changeFormat);
 }
 
-void VolumeMerger::preProcess(TextureUnitContainer &cont) {
+void VolumeMerger::preProcess(TextureUnitContainer& cont) {
     if (vol2_.isReady()) {
         utilgl::bindAndSetUniforms(shader_, cont, *vol2_.getData(), "vol2");
     }

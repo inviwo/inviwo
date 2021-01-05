@@ -60,7 +60,7 @@ public:
 
 protected:
     VolumeInport vol2_;
-    virtual void preProcess(TextureUnitContainer &cont) override;
+    virtual void preProcess(TextureUnitContainer& cont) override;
 };
 
 }  // namespace inviwo

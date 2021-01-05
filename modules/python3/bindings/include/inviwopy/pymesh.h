@@ -36,6 +36,6 @@
 
 namespace inviwo {
 
-void exposeMesh(pybind11::module &m);
+void exposeMesh(pybind11::module& m);
 
 }  // namespace inviwo

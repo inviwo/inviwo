@@ -50,7 +50,7 @@ ImageHighPass::ImageHighPass()
     addProperty(sharpen_);
 }
 
-void ImageHighPass::preProcess(TextureUnitContainer &) {
+void ImageHighPass::preProcess(TextureUnitContainer&) {
     utilgl::setUniforms(shader_, kernelSize_, sharpen_);
 }
 

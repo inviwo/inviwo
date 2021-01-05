@@ -48,16 +48,16 @@
 
 namespace inviwo {
 
-TFPrimitiveSetWidgetQt::TFPrimitiveSetWidgetQt(IsoValueProperty *property)
+TFPrimitiveSetWidgetQt::TFPrimitiveSetWidgetQt(IsoValueProperty* property)
     : PropertyWidgetQt(property)
-    , propertyPtr_(std::make_unique<PropertyModel<IsoValueProperty *>>(property)) {
+    , propertyPtr_(std::make_unique<PropertyModel<IsoValueProperty*>>(property)) {
 
     initializeWidget();
 }
 
-TFPrimitiveSetWidgetQt::TFPrimitiveSetWidgetQt(TransferFunctionProperty *property)
+TFPrimitiveSetWidgetQt::TFPrimitiveSetWidgetQt(TransferFunctionProperty* property)
     : PropertyWidgetQt(property)
-    , propertyPtr_(std::make_unique<PropertyModel<TransferFunctionProperty *>>(property)) {
+    , propertyPtr_(std::make_unique<PropertyModel<TransferFunctionProperty*>>(property)) {
 
     initializeWidget();
 }
@@ -77,7 +77,7 @@ void TFPrimitiveSetWidgetQt::setPropertyValue() {
         const dvec2 range = port->getData()->dataMap_.valueRange;
 
         auto renormalizePos = [range](double pos) { return (pos - range.x) / (range.y - range.x); };
-        for (auto &elem : primitives) {
+        for (auto& elem : primitives) {
             elem.pos = renormalizePos(elem.pos);
         }
     }
@@ -108,7 +108,7 @@ void TFPrimitiveSetWidgetQt::updateFromProperty() {
 
     // convert TF primitives to "position alpha #RRGGBB"
     std::ostringstream ss;
-    for (const auto &elem : propertyPtr_->get()) {
+    for (const auto& elem : propertyPtr_->get()) {
         // write color as HTML color code
         auto pos = elem.getPosition();
         if (performMapping) {
@@ -126,7 +126,7 @@ void TFPrimitiveSetWidgetQt::updateFromProperty() {
 }
 
 void TFPrimitiveSetWidgetQt::initializeWidget() {
-    QHBoxLayout *hLayout = new QHBoxLayout;
+    QHBoxLayout* hLayout = new QHBoxLayout;
     setSpacingAndMargins(hLayout);
 
     label_ = new EditableLabelQt(this, property_);
@@ -148,11 +148,11 @@ void TFPrimitiveSetWidgetQt::initializeWidget() {
 }
 
 std::vector<TFPrimitiveData> TFPrimitiveSetWidgetQt::extractPrimitiveData(
-    const std::string &str) const {
+    const std::string& str) const {
     std::string errorMsg;
 
-    auto convertToDouble = [&errorMsg](double &retVal, const std::string &str,
-                                       const std::string &errSource, size_t line) {
+    auto convertToDouble = [&errorMsg](double& retVal, const std::string& str,
+                                       const std::string& errSource, size_t line) {
         try {
             size_t idx;
             retVal = std::stod(str, &idx);
@@ -160,7 +160,7 @@ std::vector<TFPrimitiveData> TFPrimitiveSetWidgetQt::extractPrimitiveData(
                 // there was some excess data after the number
                 throw std::invalid_argument("excess information");
             }
-        } catch (std::invalid_argument &) {
+        } catch (std::invalid_argument&) {
             errorMsg += "\n(" + std::to_string(line) + ") Invalid " + errSource + ": '" + str +
                         "'. Expected a double value.";
             return false;
@@ -169,7 +169,7 @@ std::vector<TFPrimitiveData> TFPrimitiveSetWidgetQt::extractPrimitiveData(
     };
 
     // tokenize line using space or tab (multiple spaces will be collapsed)
-    auto tokenize = [](const std::string &str) {
+    auto tokenize = [](const std::string& str) {
         std::vector<std::string> tokens;
         size_t tokenStart = str.find_first_not_of(" \t");
         while (tokenStart != std::string::npos) {
@@ -205,7 +205,7 @@ std::vector<TFPrimitiveData> TFPrimitiveSetWidgetQt::extractPrimitiveData(
             try {
                 primitives.push_back(
                     {pos, vec4(vec3(color::hex2rgba(tokens[2])), static_cast<float>(alpha))});
-            } catch (Exception &e) {
+            } catch (Exception& e) {
                 errorMsg += "\n(" + std::to_string(lineCount) + ") " + e.getMessage();
             }
         }

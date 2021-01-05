@@ -51,30 +51,30 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    DoubleMinMaxPropertyWidget(DoubleMinMaxProperty &property, Processor &processor,
-                               Renderer &uiRenderer, const ivec2 &extent = ivec2(100, 24),
+    DoubleMinMaxPropertyWidget(DoubleMinMaxProperty& property, Processor& processor,
+                               Renderer& uiRenderer, const ivec2& extent = ivec2(100, 24),
                                UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~DoubleMinMaxPropertyWidget() = default;
 
     virtual void updateFromProperty() override;
 
     // PropertyObservable overrides
-    virtual void onSetVisible(Property *property, bool visible) override;
-    virtual void onSetDisplayName(Property *property, const std::string &displayName) override;
-    virtual void onSetReadOnly(Property *property, bool readonly) override;
+    virtual void onSetVisible(Property* property, bool visible) override;
+    virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
+    virtual void onSetReadOnly(Property* property, bool readonly) override;
 
 private:
     double sliderToRepr(int val) const;
     int reprToSlider(double val) const;
 
-    dvec2 sliderToRepr(const ivec2 &val) const;
-    ivec2 reprToSlider(const dvec2 &val) const;
+    dvec2 sliderToRepr(const ivec2& val) const;
+    ivec2 reprToSlider(const dvec2& val) const;
 
     int reprSeparationToSlider() const;
 
     const int sliderMax_;
 
-    DoubleMinMaxProperty *property_;
+    DoubleMinMaxProperty* property_;
 };
 
 }  // namespace glui

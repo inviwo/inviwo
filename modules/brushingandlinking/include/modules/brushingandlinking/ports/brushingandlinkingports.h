@@ -49,20 +49,20 @@ public:
     BrushingAndLinkingInport(std::string identifier);
     virtual ~BrushingAndLinkingInport() = default;
 
-    void sendFilterEvent(const std::unordered_set<size_t> &indices);
+    void sendFilterEvent(const std::unordered_set<size_t>& indices);
 
-    void sendSelectionEvent(const std::unordered_set<size_t> &indices);
+    void sendSelectionEvent(const std::unordered_set<size_t>& indices);
 
-    void sendColumnSelectionEvent(const std::unordered_set<size_t> &indices);
+    void sendColumnSelectionEvent(const std::unordered_set<size_t>& indices);
 
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
 
     bool isColumnSelected(size_t idx) const;
 
-    const std::unordered_set<size_t> &getSelectedIndices() const;
-    const std::unordered_set<size_t> &getFilteredIndices() const;
-    const std::unordered_set<size_t> &getSelectedColumns() const;
+    const std::unordered_set<size_t>& getSelectedIndices() const;
+    const std::unordered_set<size_t>& getFilteredIndices() const;
+    const std::unordered_set<size_t>& getSelectedColumns() const;
 
     virtual std::string getClassIdentifier() const override;
 
@@ -95,7 +95,7 @@ struct DataTraits<BrushingAndLinkingManager> {
     static std::string classIdentifier() { return "BrushingAndLinkingManager"; }
     static std::string dataName() { return "BrushingAndLinkingManager"; }
     static uvec3 colorCode() { return uvec3(160, 182, 240); }
-    static Document info(const BrushingAndLinkingManager &data) {
+    static Document info(const BrushingAndLinkingManager& data) {
         using P = Document::PathComponent;
         using H = utildoc::TableBuilder::Header;
         Document doc;

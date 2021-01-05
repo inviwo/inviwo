@@ -33,7 +33,7 @@ namespace inviwo {
 
 namespace module {
 
-std::string getModulePath(const std::string &identifier, ModulePath pathType) {
+std::string getModulePath(const std::string& identifier, ModulePath pathType) {
     std::string path;
     if (auto m = InviwoApplication::getPtr()->getModuleByIdentifier(identifier)) {
         path = m->getPath(pathType);

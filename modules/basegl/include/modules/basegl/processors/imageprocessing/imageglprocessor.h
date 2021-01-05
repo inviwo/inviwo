@@ -54,7 +54,7 @@ namespace inviwo {
 class IVW_MODULE_BASEGL_API ImageGLProcessor : public Processor {
 public:
     ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader, bool buildShader = true);
-    ImageGLProcessor(const std::string &fragmentShader, bool buildShader = true);
+    ImageGLProcessor(const std::string& fragmentShader, bool buildShader = true);
     virtual ~ImageGLProcessor();
 
     virtual void initializeResources() override;
@@ -69,7 +69,7 @@ protected:
      *
      * overwrite this function in the derived class to perform things like custom shader setup
      */
-    virtual void preProcess(TextureUnitContainer &cont);
+    virtual void preProcess(TextureUnitContainer& cont);
 
     /*! \brief this function gets called at the end of the process function
      *
@@ -83,18 +83,18 @@ protected:
      */
     virtual void afterInportChanged();
 
-    static void createCustomImage(const size2_t &dim, const DataFormatBase *dataFormat,
-                                  const SwizzleMask &swizzleMask, ImageInport &inport,
-                                  ImageOutport &outport);
+    static void createCustomImage(const size2_t& dim, const DataFormatBase* dataFormat,
+                                  const SwizzleMask& swizzleMask, ImageInport& inport,
+                                  ImageOutport& outport);
 
-    static void createDefaultImage(const size2_t &dim, ImageInport &inport, ImageOutport &outport);
+    static void createDefaultImage(const size2_t& dim, ImageInport& inport, ImageOutport& outport);
 
     size2_t calcOutputDimensions() const;
 
     ImageInport inport_;
     ImageOutport outport_;
 
-    const DataFormatBase *dataFormat_;
+    const DataFormatBase* dataFormat_;
     // if a custom data format is specified, i.e. dataFormat_ != nullptr, this swizzle mask is used
     SwizzleMask swizzleMask_;
 

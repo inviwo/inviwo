@@ -50,7 +50,7 @@ VolumeDiff::VolumeDiff() : VolumeGLProcessor("volume_difference.frag"), vol2_("v
     addPort(vol2_);
 }
 
-void VolumeDiff::preProcess(TextureUnitContainer &cont) {
+void VolumeDiff::preProcess(TextureUnitContainer& cont) {
     utilgl::bindAndSetUniforms(shader_, cont, *vol2_.getData(), "volume2");
 }
 

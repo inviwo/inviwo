@@ -68,12 +68,12 @@ DiscardShortLines::DiscardShortLines()
     linesIn_.onChange([&]() {
         if (!linesIn_.hasData()) return;
         auto linesPtr = linesIn_.getData();
-        auto &lines = *linesPtr;
+        auto& lines = *linesPtr;
         if (lines.size() == 0) return;
 
         double maxL = 0;
         double minL = std::numeric_limits<double>::max();
-        for (const auto &line : lines) {
+        for (const auto& line : lines) {
             auto l = line.getLength();
             maxL = std::max(maxL, l);
             minL = std::min(minL, l);
@@ -93,14 +93,14 @@ DiscardShortLines::DiscardShortLines()
 void DiscardShortLines::process() {
 
     auto linesData = linesIn_.getData();
-    auto &lines = *linesData;
+    auto& lines = *linesData;
 
     auto outLinesData = std::make_shared<IntegralLineSet>(lines.getModelMatrix());
     auto filteredLinesData = std::make_shared<IntegralLineSet>(lines.getModelMatrix());
-    auto &outLines = *outLinesData;
-    auto &filteredLines = *filteredLinesData;
+    auto& outLines = *outLinesData;
+    auto& filteredLines = *filteredLinesData;
 
-    for (const auto &line : lines) {
+    for (const auto& line : lines) {
         bool keep = line.getLength() >= minLength_.get();
 
         if (keep) {

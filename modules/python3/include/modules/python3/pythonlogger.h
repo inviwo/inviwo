@@ -44,7 +44,7 @@ public:
     PythonLogger() = default;
     virtual ~PythonLogger() = default;
 
-    virtual void onPyhonExecutionOutput(const std::string &msg,
+    virtual void onPyhonExecutionOutput(const std::string& msg,
                                         PythonOutputType outputType) override;
 };
 

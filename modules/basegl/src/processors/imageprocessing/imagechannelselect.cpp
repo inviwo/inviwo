@@ -50,7 +50,7 @@ ImageChannelSelect::ImageChannelSelect()
     addProperty(channelSelector_);
 }
 
-void ImageChannelSelect::preProcess(TextureUnitContainer &) {
+void ImageChannelSelect::preProcess(TextureUnitContainer&) {
     auto inDF = inport_.getData()->getDataFormat();
     dataFormat_ = DataFormatBase::get(inDF->getNumericType(), 1, inDF->getPrecision());
     shader_.setUniform("channel", channelSelector_.get());

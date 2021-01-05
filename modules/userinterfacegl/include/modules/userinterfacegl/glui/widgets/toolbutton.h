@@ -54,22 +54,22 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    ToolButton(const std::string &filename, Processor &processor, Renderer &uiRenderer,
-               const ivec2 &extent = ivec2(24, 24));
-    ToolButton(std::shared_ptr<Texture2D> labelImage, Processor &processor, Renderer &uiRenderer,
-               const ivec2 &extent = ivec2(24, 24));
+    ToolButton(const std::string& filename, Processor& processor, Renderer& uiRenderer,
+               const ivec2& extent = ivec2(24, 24));
+    ToolButton(std::shared_ptr<Texture2D> labelImage, Processor& processor, Renderer& uiRenderer,
+               const ivec2& extent = ivec2(24, 24));
     virtual ~ToolButton() = default;
 
-    void setImage(const std::string &filename);
+    void setImage(const std::string& filename);
     void setImage(std::shared_ptr<Texture2D> texture);
 
     void setMargins(int top, int left, int bottom, int right);
-    const ivec4 &getMargins() const;
+    const ivec4& getMargins() const;
 
 private:
-    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override;
+    virtual void renderWidget(const ivec2& origin, const size2_t& canvasDim) override;
 
-    static std::shared_ptr<Texture2D> loadImage(const std::string &filename);
+    static std::shared_ptr<Texture2D> loadImage(const std::string& filename);
 
     std::shared_ptr<Texture2D> labelImage_;
     ivec4 margins_ = ivec4(6, 6, 6, 6);  //!< top, left, bottom, right

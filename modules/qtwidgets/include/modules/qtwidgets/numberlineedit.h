@@ -52,8 +52,8 @@ class NumberLineEditPrivate;
  */
 class IVW_MODULE_QTWIDGETS_API NumberLineEdit : public QDoubleSpinBox {
 public:
-    explicit NumberLineEdit(QWidget *parent = nullptr);
-    explicit NumberLineEdit(bool intMode, QWidget *parent = nullptr);
+    explicit NumberLineEdit(QWidget* parent = nullptr);
+    explicit NumberLineEdit(bool intMode, QWidget* parent = nullptr);
 
     virtual ~NumberLineEdit() override;
 
@@ -63,7 +63,7 @@ public:
     // consider the current size of the widget in order to determine the best suitable number
     // representation, i.e. either regular floating point notation or scientific
     virtual QString textFromValue(double value) const override;
-    virtual double valueFromText(const QString &str) const override;
+    virtual double valueFromText(const QString& str) const override;
 
     void setDecimals(int decimals);
     void setMinimum(double min);
@@ -75,24 +75,24 @@ public:
      * spinbox to be updated twice in case of
      * calculations being slow
      */
-    virtual void timerEvent(QTimerEvent *event) override;
+    virtual void timerEvent(QTimerEvent* event) override;
 
     bool isValid() const;
     void setInvalid(bool invalid = true);
 
 protected:
-    virtual QValidator::State validate(QString &text, int &pos) const override;
-    virtual void focusInEvent(QFocusEvent *e) override;
-    virtual void focusOutEvent(QFocusEvent *e) override;
-    virtual void resizeEvent(QResizeEvent *e) override;
-    virtual void changeEvent(QEvent *e) override;
-    virtual void wheelEvent(QWheelEvent *e) override;
+    virtual QValidator::State validate(QString& text, int& pos) const override;
+    virtual void focusInEvent(QFocusEvent* e) override;
+    virtual void focusOutEvent(QFocusEvent* e) override;
+    virtual void resizeEvent(QResizeEvent* e) override;
+    virtual void changeEvent(QEvent* e) override;
+    virtual void wheelEvent(QWheelEvent* e) override;
 
 private:
     bool integerMode_;
     int minimumWidth_ = 40;
 
-    QDoubleValidator *validator_;
+    QDoubleValidator* validator_;
     mutable QSize cachedMinimumSizeHint_;
     int visibleDecimals_ = 2;
     bool abbreviated_ = true;

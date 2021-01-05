@@ -39,7 +39,7 @@ namespace inviwo {
 namespace detail {
 template <typename P>
 struct ProcessorDelete {
-    void operator()(P *p) {
+    void operator()(P* p) {
         if (p && p->getNetwork() == nullptr) delete p;
     }
 };
@@ -48,6 +48,6 @@ struct ProcessorDelete {
 template <typename P>
 using ProcessorPtr = std::unique_ptr<P, detail::ProcessorDelete<P>>;
 
-void exposeProcessors(pybind11::module &m);
+void exposeProcessors(pybind11::module& m);
 
 }  // namespace inviwo

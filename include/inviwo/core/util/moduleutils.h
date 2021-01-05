@@ -45,7 +45,7 @@ namespace module {
  * @param pathType     type of the requested path
  * @return subdirectory of the module matching the type
  */
-IVW_CORE_API std::string getModulePath(const std::string &identifier, ModulePath pathType);
+IVW_CORE_API std::string getModulePath(const std::string& identifier, ModulePath pathType);
 
 /**
  * \brief return the path for a specific type located within the requested module of type T

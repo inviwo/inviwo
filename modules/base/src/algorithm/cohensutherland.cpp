@@ -33,15 +33,15 @@ namespace inviwo {
 
 namespace algorithm {
 
-std::tuple<bool, vec2, vec2> clipLineCohenSutherland(vec2 p1, vec2 p2, const vec2 &rectMin,
-                                                     const vec2 &rectMax) {
+std::tuple<bool, vec2, vec2> clipLineCohenSutherland(vec2 p1, vec2 p2, const vec2& rectMin,
+                                                     const vec2& rectMax) {
     // outcodes used by algorithm:
     //    0x0000: inside
     //    0x0001: left
     //    0x0010: right
     //    0x0100: bottom
     //    0x1000: top
-    auto getOutcode = [&](const vec2 &pos) {
+    auto getOutcode = [&](const vec2& pos) {
         int outcode = 0;
         if (pos.x < rectMin.x) {
             outcode |= 0x0001;  // on left outside
@@ -98,7 +98,7 @@ std::tuple<bool, vec2, vec2> clipLineCohenSutherland(vec2 p1, vec2 p2, const vec
     return std::make_tuple(acceptLine, p1, p2);
 }
 
-bool insideRect(const vec2 &p, const vec2 &rectMin, const vec2 &rectMax) {
+bool insideRect(const vec2& p, const vec2& rectMin, const vec2& rectMax) {
     vec2 s = glm::step(rectMin, p) - (1.0f - glm::step(p, rectMax));
     return s.x * s.y > 0.0;
 }

@@ -37,9 +37,9 @@ const std::string DoubleMinMaxPropertyWidget::classIdentifier =
     "org.inviwo.glui.DoubleMinMaxPropertyWidget";
 std::string DoubleMinMaxPropertyWidget::getClassIdentifier() const { return classIdentifier; }
 
-DoubleMinMaxPropertyWidget::DoubleMinMaxPropertyWidget(DoubleMinMaxProperty &property,
-                                                       Processor &processor, Renderer &uiRenderer,
-                                                       const ivec2 &extent,
+DoubleMinMaxPropertyWidget::DoubleMinMaxPropertyWidget(DoubleMinMaxProperty& property,
+                                                       Processor& processor, Renderer& uiRenderer,
+                                                       const ivec2& extent,
                                                        UIOrientation orientation)
     : RangeSlider(property.getDisplayName(), ivec2(0), 0, 100, 0, processor, uiRenderer, extent,
                   orientation)
@@ -49,7 +49,7 @@ DoubleMinMaxPropertyWidget::DoubleMinMaxPropertyWidget(DoubleMinMaxProperty &pro
 
     property_->addObserver(this);
 
-    moveAction_ = [this](const dvec2 &delta) {
+    moveAction_ = [this](const dvec2& delta) {
         bool triggerUpdate = false;
         if (!property_->getReadOnly()) {
             auto calcNewValue = [this, delta](int prev) {
@@ -93,14 +93,14 @@ void DoubleMinMaxPropertyWidget::updateFromProperty() {
     setEnabled(!property_->getReadOnly());
 }
 
-void DoubleMinMaxPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
+void DoubleMinMaxPropertyWidget::onSetVisible(Property*, bool visible) { setVisible(visible); }
 
-void DoubleMinMaxPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
+void DoubleMinMaxPropertyWidget::onSetDisplayName(Property*, const std::string& displayName) {
     setLabel(displayName);
     property_->propertyModified();
 }
 
-void DoubleMinMaxPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
+void DoubleMinMaxPropertyWidget::onSetReadOnly(Property*, bool readonly) { setEnabled(!readonly); }
 
 double DoubleMinMaxPropertyWidget::sliderToRepr(int val) const {
     return property_->getRangeMin() +
@@ -112,11 +112,11 @@ int DoubleMinMaxPropertyWidget::reprToSlider(double val) const {
                             (property_->getRangeMax() - property_->getRangeMin()) * sliderMax_);
 }
 
-dvec2 DoubleMinMaxPropertyWidget::sliderToRepr(const ivec2 &val) const {
+dvec2 DoubleMinMaxPropertyWidget::sliderToRepr(const ivec2& val) const {
     return dvec2(sliderToRepr(val.x), sliderToRepr(val.y));
 }
 
-ivec2 DoubleMinMaxPropertyWidget::reprToSlider(const dvec2 &val) const {
+ivec2 DoubleMinMaxPropertyWidget::reprToSlider(const dvec2& val) const {
     return ivec2(reprToSlider(val.x), reprToSlider(val.y));
 }
 

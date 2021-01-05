@@ -66,7 +66,7 @@ public:
     virtual ~ImageBinary() {}
 
 protected:
-    virtual void preProcess(TextureUnitContainer &cont) override;
+    virtual void preProcess(TextureUnitContainer& cont) override;
 
     FloatProperty threshold_;
 

@@ -39,7 +39,7 @@ class Mesh;
 
 namespace util {
 
-std::shared_ptr<Mesh> IVW_MODULE_BASE_API convertHullToMesh(const std::vector<vec2> &hull,
+std::shared_ptr<Mesh> IVW_MODULE_BASE_API convertHullToMesh(const std::vector<vec2>& hull,
                                                             bool useIndices = false);
 
 }  // namespace util

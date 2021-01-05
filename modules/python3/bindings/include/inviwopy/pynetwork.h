@@ -38,6 +38,6 @@
 
 namespace inviwo {
 
-void exposeNetwork(pybind11::module &m);
+void exposeNetwork(pybind11::module& m);
 
 }  // namespace inviwo

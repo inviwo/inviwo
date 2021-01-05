@@ -42,7 +42,7 @@
 
 namespace inviwo {
 
-FilePathLineEditQt::FilePathLineEditQt(QWidget *parent)
+FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
     : LineEditQt(parent), editingEnabled_(false), cursorPos_(-1), cursorPosDirty_(false) {
     // warning icon at the right side of the line edit for indication of "file not found"
     warningLabel_ = new QLabel(this);
@@ -91,7 +91,7 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget *parent)
     });
 }
 
-void FilePathLineEditQt::setPath(const std::string &path) {
+void FilePathLineEditQt::setPath(const std::string& path) {
     if (path_ != path) {
         path_ = path;
         cursorPos_ = -1;
@@ -100,7 +100,7 @@ void FilePathLineEditQt::setPath(const std::string &path) {
     }
 }
 
-const std::string &FilePathLineEditQt::getPath() const { return path_; }
+const std::string& FilePathLineEditQt::getPath() const { return path_; }
 
 void FilePathLineEditQt::setEditing(bool editing) {
     if (editing != editingEnabled_) {
@@ -111,13 +111,13 @@ void FilePathLineEditQt::setEditing(bool editing) {
 
 bool FilePathLineEditQt::isEditingEnabled() const { return editingEnabled_; }
 
-void FilePathLineEditQt::resizeEvent(QResizeEvent *) {
+void FilePathLineEditQt::resizeEvent(QResizeEvent*) {
     // adjust position of warning label to be on the right side
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
     warningLabel_->move(width() - warningLabel_->width() - frameWidth, 0);
 }
 
-void FilePathLineEditQt::focusInEvent(QFocusEvent *event) {
+void FilePathLineEditQt::focusInEvent(QFocusEvent* event) {
     if (event->reason() == Qt::MouseFocusReason) {
         // user has used the mouse to click into this widget
         auto cursor = QCursor::pos();
@@ -138,7 +138,7 @@ void FilePathLineEditQt::focusInEvent(QFocusEvent *event) {
     }
 }
 
-void FilePathLineEditQt::mousePressEvent(QMouseEvent *event) {
+void FilePathLineEditQt::mousePressEvent(QMouseEvent* event) {
     LineEditQt::mousePressEvent(event);
     if (cursorPosDirty_) {
         // adjust cursor position since the text has changed

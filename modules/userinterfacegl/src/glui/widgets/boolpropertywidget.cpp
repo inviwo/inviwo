@@ -36,8 +36,8 @@ namespace glui {
 const std::string BoolPropertyWidget::classIdentifier = "org.inviwo.glui.BoolPropertyWidget";
 std::string BoolPropertyWidget::getClassIdentifier() const { return classIdentifier; }
 
-BoolPropertyWidget::BoolPropertyWidget(BoolProperty &property, Processor &processor,
-                                       Renderer &uiRenderer, const ivec2 &extent)
+BoolPropertyWidget::BoolPropertyWidget(BoolProperty& property, Processor& processor,
+                                       Renderer& uiRenderer, const ivec2& extent)
     : CheckBox(property.getDisplayName(), processor, uiRenderer, extent)
     , PropertyWidget(&property)
     , property_(&property) {
@@ -55,13 +55,13 @@ void BoolPropertyWidget::updateFromProperty() {
     setEnabled(!property_->getReadOnly());
 }
 
-void BoolPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
+void BoolPropertyWidget::onSetVisible(Property*, bool visible) { setVisible(visible); }
 
-void BoolPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
+void BoolPropertyWidget::onSetDisplayName(Property*, const std::string& displayName) {
     setLabel(displayName);
 }
 
-void BoolPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
+void BoolPropertyWidget::onSetReadOnly(Property*, bool readonly) { setEnabled(!readonly); }
 
 }  // namespace glui
 

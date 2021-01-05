@@ -50,7 +50,7 @@ namespace {
 class Slider : public QSlider {
     using QSlider::QSlider;
 
-    virtual void wheelEvent(QWheelEvent *e) override {
+    virtual void wheelEvent(QWheelEvent* e) override {
         if (hasFocus()) QSlider::wheelEvent(e);
     }
 };
@@ -66,7 +66,7 @@ BaseSliderWidgetQt::BaseSliderWidgetQt(bool intMode)
     , minCB_{ConstraintBehavior::Editable}
     , maxCB_{ConstraintBehavior::Editable} {
 
-    QHBoxLayout *hLayout = new QHBoxLayout();
+    QHBoxLayout* hLayout = new QHBoxLayout();
 
     slider_->setOrientation(Qt::Horizontal);
     slider_->setPageStep(1);
@@ -189,9 +189,9 @@ void BaseSliderWidgetQt::updateOutOfBounds() {
     }
 }
 
-bool BaseSliderWidgetQt::eventFilter(QObject *watched, QEvent *event) {
+bool BaseSliderWidgetQt::eventFilter(QObject* watched, QEvent* event) {
     if (watched == slider_ && event->type() == QEvent::MouseButtonRelease) {
-        QMouseEvent *me = static_cast<QMouseEvent *>(event);
+        QMouseEvent* me = static_cast<QMouseEvent*>(event);
         if (me->button() == Qt::LeftButton && !slider_->isSliderDown() && isEnabled()) {
             auto newPos = slider_->minimum() + static_cast<double>(me->pos().x()) *
                                                    (slider_->maximum() - slider_->minimum()) /

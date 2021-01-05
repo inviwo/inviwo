@@ -35,6 +35,6 @@
 #include <warn/pop>
 namespace inviwo {
 
-void exposeDataFormat(pybind11::module &m);
+void exposeDataFormat(pybind11::module& m);
 
 }  // namespace inviwo

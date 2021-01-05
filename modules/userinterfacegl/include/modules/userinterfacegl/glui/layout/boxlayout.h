@@ -77,14 +77,14 @@ public:
      * @param topLeft         defines the top left corner where the UI is positioned
      * @param canvasDim      dimensions of the output canvas
      */
-    virtual void render(const ivec2 &topLeft, const size2_t &canvasDim) override;
+    virtual void render(const ivec2& topLeft, const size2_t& canvasDim) override;
 
     /**
      * \brief add a glui::Element to the layout at the end of the layout
      *
      * @param element  glui::Element to be added
      */
-    virtual void addElement(Element &element) override;
+    virtual void addElement(Element& element) override;
 
     /**
      * \brief insert a glui::Element to the layout at the given index. If the index is negative, the
@@ -93,14 +93,14 @@ public:
      * @param index    index position of where to insert the glui::Element
      * @param element  glui::Element to be added
      */
-    void insertElement(int index, Element &element);
+    void insertElement(int index, Element& element);
 
     /**
      * \brief remove the given glui::Element from the layout
      *
      * @param element  glui::Element to be removed
      */
-    void removeElement(Element &element) override;
+    void removeElement(Element& element) override;
 
 private:
     LayoutDirection direction_;

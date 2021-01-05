@@ -32,10 +32,10 @@
 
 namespace inviwo {
 
-const std::vector<dvec3> &IntegralLine::getPositions() const { return positions_; }
-std::vector<dvec3> &IntegralLine::getPositions() { return positions_; }
+const std::vector<dvec3>& IntegralLine::getPositions() const { return positions_; }
+std::vector<dvec3>& IntegralLine::getPositions() { return positions_; }
 
-std::shared_ptr<const BufferBase> IntegralLine::getMetaDataBuffer(const std::string &name) const {
+std::shared_ptr<const BufferBase> IntegralLine::getMetaDataBuffer(const std::string& name) const {
     auto it = metaData_.find(name);
     if (it == metaData_.end()) {
         throw Exception("No meta data with name: " + name, IVW_CONTEXT);
@@ -43,7 +43,7 @@ std::shared_ptr<const BufferBase> IntegralLine::getMetaDataBuffer(const std::str
     return it->second;
 }
 
-std::shared_ptr<BufferBase> IntegralLine::getMetaDataBuffer(const std::string &name) {
+std::shared_ptr<BufferBase> IntegralLine::getMetaDataBuffer(const std::string& name) {
     auto it = metaData_.find(name);
     if (it == metaData_.end()) {
         throw Exception("No meta data with name: " + name, IVW_CONTEXT);
@@ -51,7 +51,7 @@ std::shared_ptr<BufferBase> IntegralLine::getMetaDataBuffer(const std::string &n
     return it->second;
 }
 
-void IntegralLine::addMetaDataBuffer(const std::string &name, std::shared_ptr<BufferBase> buffer) {
+void IntegralLine::addMetaDataBuffer(const std::string& name, std::shared_ptr<BufferBase> buffer) {
     auto it = metaData_.find(name);
     if (it != metaData_.end()) {
         throw Exception("Meta data with name already exists: " + name, IVW_CONTEXT);
@@ -61,23 +61,23 @@ void IntegralLine::addMetaDataBuffer(const std::string &name, std::shared_ptr<Bu
 
 void IntegralLine::reverse() {
     std::reverse(positions_.begin(), positions_.end());
-    for (auto &m : metaData_) {
+    for (auto& m : metaData_) {
         util::reverse(*m.second);
     }
 }
 
-const std::map<std::string, std::shared_ptr<BufferBase>> &IntegralLine::getMetaDataBuffers() const {
+const std::map<std::string, std::shared_ptr<BufferBase>>& IntegralLine::getMetaDataBuffers() const {
     return metaData_;
 }
 
-bool IntegralLine::hasMetaData(const std::string &name) const {
+bool IntegralLine::hasMetaData(const std::string& name) const {
     auto it = metaData_.find(name);
     return it != metaData_.end();
 }
 
 std::vector<std::string> IntegralLine::getMetaDataKeys() const {
     std::vector<std::string> keys;
-    for (auto &m : metaData_) {
+    for (auto& m : metaData_) {
         keys.push_back(m.first);
     }
     return keys;

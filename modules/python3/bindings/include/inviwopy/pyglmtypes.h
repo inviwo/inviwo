@@ -150,5 +150,5 @@ using namespace inviwo;
 }  // namespace pybind11
 
 namespace inviwo {
-void exposeGLMTypes(pybind11::module &m);
+void exposeGLMTypes(pybind11::module& m);
 }

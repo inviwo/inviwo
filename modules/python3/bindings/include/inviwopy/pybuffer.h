@@ -37,6 +37,6 @@
 
 namespace inviwo {
 
-void exposeBuffer(pybind11::module &m);
+void exposeBuffer(pybind11::module& m);
 
 }  // namespace inviwo

@@ -81,7 +81,7 @@ LIC3D::LIC3D()
     this->dataFormat_ = DataVec4UInt8::get();
 }
 
-void LIC3D::preProcess(TextureUnitContainer &cont) {
+void LIC3D::preProcess(TextureUnitContainer& cont) {
 
     utilgl::bindAndSetUniforms(shader_, cont, *vectorField_.getData().get(), "vectorField");
     utilgl::setUniforms(shader_, samples_, stepLength_, normalizeVectors_, intensityMapping_,

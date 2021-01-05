@@ -51,7 +51,7 @@ ImageBrightnessContrast::ImageBrightnessContrast()
     addProperty(contrast_);
 }
 
-void ImageBrightnessContrast::preProcess(TextureUnitContainer &) {
+void ImageBrightnessContrast::preProcess(TextureUnitContainer&) {
     utilgl::setUniforms(shader_, brightness_, contrast_);
 }
 

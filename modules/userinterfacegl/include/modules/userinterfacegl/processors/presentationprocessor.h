@@ -85,8 +85,8 @@ private:
     void updateProperties();
     void updateFileName();
 
-    void nextSlide(Event *e);
-    void previousSlide(Event *e);
+    void nextSlide(Event* e);
+    void previousSlide(Event* e);
 
     ImageInport inport_;
     ImageOutport outport_;

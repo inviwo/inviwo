@@ -69,7 +69,7 @@ public:
     virtual void initializeResources() override;
 
 protected:
-    virtual void preProcess(TextureUnitContainer &cont) override;
+    virtual void preProcess(TextureUnitContainer& cont) override;
 
 private:
     OptionPropertyInt method_;

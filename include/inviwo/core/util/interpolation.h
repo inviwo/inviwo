@@ -39,36 +39,36 @@ class Interpolation {
 public:
     Interpolation() = delete;
 
-    static inline T linear(const T &a, const T &b, P x);
+    static inline T linear(const T& a, const T& b, P x);
 
-    static inline T linearVector(const T &a, const T &b, P x);
+    static inline T linearVector(const T& a, const T& b, P x);
 
-    static inline T bilinear(const T &a, const T &b, const T &c, const T &d,
-                             const Vector<2, P> &interpolants);
+    static inline T bilinear(const T& a, const T& b, const T& c, const T& d,
+                             const Vector<2, P>& interpolants);
 
-    static inline T bilinear(const T samples[4], const Vector<2, P> &interpolants);
+    static inline T bilinear(const T samples[4], const Vector<2, P>& interpolants);
 
-    static inline T trilinear(const T &a, const T &b, const T &c, const T &d, const T &e,
-                              const T &f, const T &g, const T &h, const Vector<3, P> &interpolants);
+    static inline T trilinear(const T& a, const T& b, const T& c, const T& d, const T& e,
+                              const T& f, const T& g, const T& h, const Vector<3, P>& interpolants);
 
-    static inline T trilinear(const T samples[8], const Vector<3, P> &interpolants);
+    static inline T trilinear(const T samples[8], const Vector<3, P>& interpolants);
 
-    static inline T quadlinear(const T &a, const T &b, const T &c, const T &d, const T &e,
-                               const T &f, const T &g, const T &h, const T &i, const T &j,
-                               const T &k, const T &l, const T &m, const T &n, const T &o,
-                               const T &p, const Vector<4, P> &interpolants);
+    static inline T quadlinear(const T& a, const T& b, const T& c, const T& d, const T& e,
+                               const T& f, const T& g, const T& h, const T& i, const T& j,
+                               const T& k, const T& l, const T& m, const T& n, const T& o,
+                               const T& p, const Vector<4, P>& interpolants);
 
-    static inline T quadlinear(const T samples[16], const Vector<4, P> &interpolants);
+    static inline T quadlinear(const T samples[16], const Vector<4, P>& interpolants);
 };
 
 namespace {
 template <typename T, typename P, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
-inline T linearVectorInterpolation(const T &a, const T &b, P x) {
+inline T linearVectorInterpolation(const T& a, const T& b, P x) {
     return Interpolation<T, P>::linear(a, b, x);
 }
 
 template <typename T, typename P, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
-inline T linearVectorInterpolation(const T &a, const T &b, P x) {
+inline T linearVectorInterpolation(const T& a, const T& b, P x) {
     auto la = glm::length(a);
     auto lb = glm::length(b);
     auto l = Interpolation<P, P>::linear(la, lb, x);
@@ -82,18 +82,18 @@ inline T linearVectorInterpolation(const T &a, const T &b, P x) {
 }  // namespace
 
 template <typename T, typename P>
-inline T Interpolation<T, P>::linear(const T &a, const T &b, P x) {
+inline T Interpolation<T, P>::linear(const T& a, const T& b, P x) {
     return glm::mix(a, b, x);
 }
 
 template <typename T, typename P>
-inline T Interpolation<T, P>::linearVector(const T &a, const T &b, P x) {
+inline T Interpolation<T, P>::linearVector(const T& a, const T& b, P x) {
     return linearVectorInterpolation<T, P>(a, b, x);
 }
 
 template <typename T, typename P>
-inline T Interpolation<T, P>::bilinear(const T &a, const T &b, const T &c, const T &d,
-                                       const Vector<2, P> &interpolants) {
+inline T Interpolation<T, P>::bilinear(const T& a, const T& b, const T& c, const T& d,
+                                       const Vector<2, P>& interpolants) {
     const T l1 = glm::mix(a, b, interpolants.x);
     const T l2 = glm::mix(c, d, interpolants.x);
 
@@ -101,7 +101,7 @@ inline T Interpolation<T, P>::bilinear(const T &a, const T &b, const T &c, const
 }
 
 template <typename T, typename P>
-inline T Interpolation<T, P>::bilinear(const T samples[4], const Vector<2, P> &interpolants) {
+inline T Interpolation<T, P>::bilinear(const T samples[4], const Vector<2, P>& interpolants) {
     const T l1 = glm::mix(samples[0], samples[1], interpolants.x);
     const T l2 = glm::mix(samples[2], samples[3], interpolants.x);
 
@@ -109,9 +109,9 @@ inline T Interpolation<T, P>::bilinear(const T samples[4], const Vector<2, P> &i
 }
 
 template <typename T, typename P>
-inline T Interpolation<T, P>::trilinear(const T &a, const T &b, const T &c, const T &d, const T &e,
-                                        const T &f, const T &g, const T &h,
-                                        const Vector<3, P> &interpolants) {
+inline T Interpolation<T, P>::trilinear(const T& a, const T& b, const T& c, const T& d, const T& e,
+                                        const T& f, const T& g, const T& h,
+                                        const Vector<3, P>& interpolants) {
     const T l1 = glm::mix(a, b, interpolants.x);
     const T l2 = glm::mix(c, d, interpolants.x);
     const T l3 = glm::mix(e, f, interpolants.x);
@@ -124,7 +124,7 @@ inline T Interpolation<T, P>::trilinear(const T &a, const T &b, const T &c, cons
 }
 
 template <typename T, typename P>
-inline T Interpolation<T, P>::trilinear(const T samples[8], const Vector<3, P> &interpolants) {
+inline T Interpolation<T, P>::trilinear(const T samples[8], const Vector<3, P>& interpolants) {
     const T l1 = glm::mix(samples[0], samples[1], interpolants.x);
     const T l2 = glm::mix(samples[2], samples[3], interpolants.x);
     const T l3 = glm::mix(samples[4], samples[5], interpolants.x);
@@ -137,16 +137,16 @@ inline T Interpolation<T, P>::trilinear(const T samples[8], const Vector<3, P> &
 }
 
 template <typename T, typename P>
-inline T Interpolation<T, P>::quadlinear(const T &a, const T &b, const T &c, const T &d, const T &e,
-                                         const T &f, const T &g, const T &h, const T &i, const T &j,
-                                         const T &k, const T &l, const T &m, const T &n, const T &o,
-                                         const T &p, const Vector<4, P> &interpolants) {
+inline T Interpolation<T, P>::quadlinear(const T& a, const T& b, const T& c, const T& d, const T& e,
+                                         const T& f, const T& g, const T& h, const T& i, const T& j,
+                                         const T& k, const T& l, const T& m, const T& n, const T& o,
+                                         const T& p, const Vector<4, P>& interpolants) {
     return linear(trilinear(a, b, c, d, e, f, g, h, Vector<3, P>(interpolants)),
                   trilinear(i, j, k, l, m, n, o, p, Vector<3, P>(interpolants)), interpolants.w);
 }
 
 template <typename T, typename P>
-inline T Interpolation<T, P>::quadlinear(const T samples[16], const Vector<4, P> &interpolants) {
+inline T Interpolation<T, P>::quadlinear(const T samples[16], const Vector<4, P>& interpolants) {
     return quadlinear(samples[0], samples[1], samples[2], samples[3], samples[4], samples[5],
                       samples[6], samples[7], samples[8], samples[9], samples[10], samples[11],
                       samples[12], samples[13], samples[14], samples[15], interpolants);

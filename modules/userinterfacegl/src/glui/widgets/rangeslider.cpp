@@ -46,9 +46,9 @@ namespace glui {
 const std::string RangeSlider::classIdentifier = "org.inviwo.glui.RangeSlider";
 std::string RangeSlider::getClassIdentifier() const { return classIdentifier; }
 
-RangeSlider::RangeSlider(const std::string &label, const ivec2 &value, int minValue, int maxValue,
-                         int minSeparation, Processor &processor, Renderer &uiRenderer,
-                         const ivec2 &extent, UIOrientation orientation)
+RangeSlider::RangeSlider(const std::string& label, const ivec2& value, int minValue, int maxValue,
+                         int minSeparation, Processor& processor, Renderer& uiRenderer,
+                         const ivec2& extent, UIOrientation orientation)
     : Element(label, processor, uiRenderer, orientation)
     , value_(value)
     , min_(minValue)
@@ -56,7 +56,7 @@ RangeSlider::RangeSlider(const std::string &label, const ivec2 &value, int minVa
     , minSeparation_(minSeparation)
     , prevValue_(0) {
     widgetExtent_ = extent;
-    moveAction_ = [this](const dvec2 &delta) {
+    moveAction_ = [this](const dvec2& delta) {
         if (!enabled_) {
             return false;
         }
@@ -119,16 +119,16 @@ RangeSlider::RangeSlider(const std::string &label, const ivec2 &value, int minVa
     uiTextureMap_ = {{0, 1, 2, 3, 3, 3, 4, 4, 4}};
 }
 
-void RangeSlider::set(const ivec2 &value, int minValue, int maxValue, int minSeparation) {
+void RangeSlider::set(const ivec2& value, int minValue, int maxValue, int minSeparation) {
     value_ = value;
     min_ = minValue;
     max_ = maxValue;
     minSeparation_ = minSeparation;
 }
 
-void RangeSlider::set(const ivec2 &value) { value_ = value; }
+void RangeSlider::set(const ivec2& value) { value_ = value; }
 
-const ivec2 &RangeSlider::get() const { return value_; }
+const ivec2& RangeSlider::get() const { return value_; }
 
 int RangeSlider::getMinValue() const { return min_; }
 
@@ -170,12 +170,12 @@ void RangeSlider::setEnd(int stop) {
     }
 }
 
-void RangeSlider::renderWidget(const ivec2 &origin, const size2_t &) {
+void RangeSlider::renderWidget(const ivec2& origin, const size2_t&) {
     TextureUnit texUnit;
     texUnit.activate();
 
     // bind textures
-    auto &uiShader = uiRenderer_->getShader();
+    auto& uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
     uiShader.setUniform("arrayTexMap", 9, uiTextureMap_.data());
 
@@ -267,7 +267,7 @@ void RangeSlider::renderWidget(const ivec2 &origin, const size2_t &) {
     }
 }
 
-const ivec2 &RangeSlider::getPreviousValue() const { return prevValue_; }
+const ivec2& RangeSlider::getPreviousValue() const { return prevValue_; }
 
 ivec2 RangeSlider::computeLabelPos(int descent) const {
     const int labelSpacing = 5;

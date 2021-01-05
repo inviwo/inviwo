@@ -37,7 +37,7 @@ IvfSequenceVolumeReader::IvfSequenceVolumeReader() {
     addExtension({"ivfs", "Sequence of Inviwo ivf volumes"});
 }
 
-std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(const std::string &filePath) {
+std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(const std::string& filePath) {
     std::string fileName = filePath;
     if (!filesystem::fileExists(fileName)) {
         std::string newPath = filesystem::addBasePath(fileName);

@@ -36,7 +36,7 @@ namespace inviwo {
 
 namespace util {
 
-void reverse(BufferBase &b) {
+void reverse(BufferBase& b) {
     b.getEditableRepresentation<BufferRAM>()->dispatch<void>([](auto bufRam) {
         std::reverse(bufRam->getDataContainer().begin(), bufRam->getDataContainer().end());
     });

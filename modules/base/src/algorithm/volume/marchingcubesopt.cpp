@@ -88,14 +88,14 @@ marching::Config::Config()
     })}
     , edgeIdToFaceIds{util::make_array<12, EdgeId>([&](EdgeId edge) -> std::array<FaceId, 2> {
         auto it1 = std::find_if(faces.begin(), faces.end(),
-                                [&](auto &face) { return util::contains(face, edge); });
+                                [&](auto& face) { return util::contains(face, edge); });
         auto it2 = std::find_if(it1 + 1, faces.end(),
-                                [&](auto &face) { return util::contains(face, edge); });
+                                [&](auto& face) { return util::contains(face, edge); });
         return {static_cast<FaceId>(std::distance(faces.begin(), it1)),
                 static_cast<FaceId>(std::distance(faces.begin(), it2))};
     })}
     , nodeNeighbours{util::make_array<8>([&](size_t i) -> std::array<NodeId, 3> {
-        auto distance2 = [](const size3_t &a, const size3_t &b) {
+        auto distance2 = [](const size3_t& a, const size3_t& b) {
             return glm::compAdd((a - b) * (a - b));
         };
         std::array<NodeId, 3> nn{};
@@ -150,15 +150,15 @@ std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bit
     std::vector<Triangle> triangles;
     for (auto item : edgeGroups) {
         NodeId groupId = item.first;
-        std::vector<EdgeId> &edgeGroup = item.second;
+        std::vector<EdgeId>& edgeGroup = item.second;
 
         // Sort edges in a circle by following the cube faces, needed for the triangulation
         auto it = edgeGroup.begin();
         while (it + 1 != edgeGroup.end()) {
             // find an edge that share a face with *it
             auto nit = std::find_if(it + 1, edgeGroup.end(), [&](auto edge) {
-                auto &faces1 = edgeIdToFaceIds[*it];
-                auto &faces2 = edgeIdToFaceIds[edge];
+                auto& faces1 = edgeIdToFaceIds[*it];
+                auto& faces2 = edgeIdToFaceIds[edge];
                 return faces1[0] == faces2[0] || faces1[0] == faces2[1] || faces1[1] == faces2[0] ||
                        faces1[1] == faces2[1];
             });
@@ -171,7 +171,7 @@ std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bit
         }
 
         // apply the triangulations
-        for (auto &triangle : triangulations.at(edgeGroup.size())) {
+        for (auto& triangle : triangulations.at(edgeGroup.size())) {
             auto e0 = edgeGroup[triangle[0]];
             auto e1 = edgeGroup[triangle[1]];
             auto e2 = edgeGroup[triangle[2]];
@@ -244,7 +244,7 @@ class VCache {
 public:
     enum CacheName { xCacheCurr, xCacheNext, yCacheCurr, yCacheNext, zCacheCurr, zCacheNext };
     enum CachePosName { xCurr0, xCurr1, xNext0, xNext1, yCurr, yNext, zCurr, zNext };
-    VCache(const size2_t &dim) : cIm{dim} {
+    VCache(const size2_t& dim) : cIm{dim} {
         cache[xCacheCurr].resize(dim.x * dim.y);
         cache[xCacheNext].resize(dim.x * dim.y);
         cache[yCacheCurr].resize(dim.x * dim.y);
@@ -253,7 +253,7 @@ public:
         cache[zCacheNext].resize(dim.x);
     }
 
-    std::pair<size_t, bool> find(const size3_t &ind, int edge, const size_t &val) {
+    std::pair<size_t, bool> find(const size3_t& ind, int edge, const size_t& val) {
         switch (edge) {
             case 0:
                 if (ind.z == 0 && ind.y == 0) {
@@ -332,7 +332,7 @@ public:
         }
         return {0, false};
     }
-    void incX(const std::array<size_t, 8> &increments) {
+    void incX(const std::array<size_t, 8>& increments) {
         for (int i = 0; i < 8; ++i) {
             pos[i] += increments[i];
         }
@@ -370,16 +370,16 @@ struct OffsetIndexMasks {
 template <typename T, typename IsoTest>
 class Index {
 public:
-    Index(const T *src, const util::IndexMapper3D &im, const IsoTest &test)
+    Index(const T* src, const util::IndexMapper3D& im, const IsoTest& test)
         : offsets0_{[&]() {
             std::array<size_t, 4> tmp;
             std::transform(oim_.begin(), oim_.end(), tmp.begin(),
-                           [&](const auto &item) { return im(item.offset); });
+                           [&](const auto& item) { return im(item.offset); });
             return tmp;
         }()}
         , offsets1_{[&]() {
             std::array<size_t, 4> tmp;
-            std::transform(oim_.begin(), oim_.end(), tmp.begin(), [&](const auto &item) {
+            std::transform(oim_.begin(), oim_.end(), tmp.begin(), [&](const auto& item) {
                 return im(item.offset + size3_t{1, 0, 0});
             });
             return tmp;
@@ -387,7 +387,7 @@ public:
         , src_{src}
         , test_{test} {}
 
-    void init(const size_t &gridIndex) {
+    void init(const size_t& gridIndex) {
         int next = 0;
         for (int v = 0; v < 4; ++v) {
             const auto val = src_[gridIndex + offsets0_[v]];
@@ -398,7 +398,7 @@ public:
         next_ = next;
     }
 
-    void update(const size_t &gridIndex) {
+    void update(const size_t& gridIndex) {
         int curr = next_;
         int next = 0;
         for (int v = 0; v < 4; ++v) {
@@ -419,8 +419,8 @@ private:
     const std::array<size_t, 4> offsets0_;
     const std::array<size_t, 4> offsets1_;
 
-    const T *src_;
-    const IsoTest &test_;
+    const T* src_;
+    const IsoTest& test_;
     int next_;
     int curr_;
 };
@@ -433,9 +433,9 @@ const std::array<OffsetIndexMasks, 4> Index<T, IsoTest>::oim_ = {
 
 namespace util {
 std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, double iso,
-                                       const vec4 &color, bool invert, bool enclose,
+                                       const vec4& color, bool invert, bool enclose,
                                        std::function<void(float)> progressCallback,
-                                       std::function<bool(const size3_t &)> maskingCallback) {
+                                       std::function<bool(const size3_t&)> maskingCallback) {
 
     auto indexBuffer = std::make_shared<IndexBuffer>();
     auto vertexBuffer = std::make_shared<Buffer<vec3>>();
@@ -444,11 +444,11 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
     auto normalBuffer = std::make_shared<Buffer<vec3>>();
 
     auto indexRAM = indexBuffer->getEditableRAMRepresentation();
-    auto &indices = indexRAM->getDataContainer();
-    auto &positions = vertexBuffer->getEditableRAMRepresentation()->getDataContainer();
-    auto &textures = textureBuffer->getEditableRAMRepresentation()->getDataContainer();
-    auto &colors = colorBuffer->getEditableRAMRepresentation()->getDataContainer();
-    auto &normals = normalBuffer->getEditableRAMRepresentation()->getDataContainer();
+    auto& indices = indexRAM->getDataContainer();
+    auto& positions = vertexBuffer->getEditableRAMRepresentation()->getDataContainer();
+    auto& textures = textureBuffer->getEditableRAMRepresentation()->getDataContainer();
+    auto& colors = colorBuffer->getEditableRAMRepresentation()->getDataContainer();
+    auto& normals = normalBuffer->getEditableRAMRepresentation()->getDataContainer();
 
     if (progressCallback) progressCallback(0.0f);
 
@@ -456,7 +456,7 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
         using T = util::PrecisionValueType<decltype(ram)>;
         static const marching::Config cube{};
 
-        const T *src = ram->getDataTyped();
+        const T* src = ram->getDataTyped();
         const size3_t dim{volume->getDimensions()};
         const size3_t dim1 = dim - size3_t{1, 1, 1};
         const util::IndexMapper3D im(dim);
@@ -465,11 +465,11 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
         const auto doffs = [&]() {
             std::array<dvec3, 8> tmp;
             std::transform(cube.vertices.begin(), cube.vertices.end(), tmp.begin(),
-                           [dr](auto &v) { return dr * dvec3{v}; });
+                           [dr](auto& v) { return dr * dvec3{v}; });
             return tmp;
         }();
 
-        const auto interpolate = [src, im, &mapValue, &doffs](const size3_t &ind, const dvec3 &pos,
+        const auto interpolate = [src, im, &mapValue, &doffs](const size3_t& ind, const dvec3& pos,
                                                               marching::Config::EdgeId e) {
             const auto a = cube.edges[e][0];
             const auto b = cube.edges[e][1];
@@ -514,7 +514,7 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
                             normals.emplace_back(0.0f, 0.0f, 0.0f);
                         }
                     }
-                    for (const auto &tri : cube.caseTriangles[index]) {
+                    for (const auto& tri : cube.caseTriangles[index]) {
                         const auto side0 = positions[inds[tri[1]]] - positions[inds[tri[0]]];
                         const auto side1 = positions[inds[tri[2]]] - positions[inds[tri[0]]];
                         auto n = glm::cross(side0, side1);
@@ -545,23 +545,23 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
             [&](auto ram) {
                 using ValueType = util::PrecisionValueType<decltype(ram)>;
                 mc(ram,
-                   [tiso = util::glm_convert<ValueType>(iso)](auto &&val) { return val > tiso; },
-                   [iso](auto &&val) { return util::glm_convert<double>(val) - iso; });
+                   [tiso = util::glm_convert<ValueType>(iso)](auto&& val) { return val > tiso; },
+                   [iso](auto&& val) { return util::glm_convert<double>(val) - iso; });
             });
     } else {
         volume->getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](auto ram) {
                 using ValueType = util::PrecisionValueType<decltype(ram)>;
                 mc(ram,
-                   [tiso = util::glm_convert<ValueType>(iso)](auto &&val) { return val < tiso; },
-                   [iso](auto &&val) { return -(util::glm_convert<double>(val) - iso); });
+                   [tiso = util::glm_convert<ValueType>(iso)](auto&& val) { return val < tiso; },
+                   [iso](auto&& val) { return -(util::glm_convert<double>(val) - iso); });
             });
     }
 
     ivwAssert(positions.size() == normals.size(), "positions and normals must be equal size");
 
     std::transform(normals.begin(), normals.end(), normals.begin(),
-                   [](const vec3 &n) { return glm::normalize(n); });
+                   [](const vec3& n) { return glm::normalize(n); });
     textures.insert(textures.begin(), positions.begin(), positions.end());
     colors.reserve(positions.size());
     std::fill_n(std::back_inserter(colors), positions.size(), color);

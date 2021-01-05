@@ -44,16 +44,16 @@ namespace inviwo {
 namespace {
 
 template <typename T>
-T try_cast(pybind11::handle obj, const std::string &errorMsg) {
+T try_cast(pybind11::handle obj, const std::string& errorMsg) {
     try {
         return obj.cast<T>();
-    } catch (const pybind11::cast_error &) {
+    } catch (const pybind11::cast_error&) {
         throw(pybind11::value_error(errorMsg));
     }
 }
 
-void addPoints(TFPrimitiveSet *ps, pybind11::list values) {
-    for (auto &item : values) {
+void addPoints(TFPrimitiveSet* ps, pybind11::list values) {
+    for (auto& item : values) {
         const auto data = try_cast<pybind11::list>(
             item, "expected a list of [pos, hex color] and/or [pos, alpha, hex color]");
         if (data.size() == 2) {
@@ -78,7 +78,7 @@ void addPoints(TFPrimitiveSet *ps, pybind11::list values) {
 
 }  // namespace
 
-void exposeTFPrimitiveSet(pybind11::module &m) {
+void exposeTFPrimitiveSet(pybind11::module& m) {
     namespace py = pybind11;
 
     py::enum_<TFPrimitiveSetType>(m, "TFPrimitiveSetType")
@@ -88,13 +88,13 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
     py::class_<TFPrimitiveData>(m, "TFPrimitiveData")
         .def(py::init())
         .def(py::init<double, vec4>())
-        .def(py::init([](double iso, const std::string &color) {
+        .def(py::init([](double iso, const std::string& color) {
             return new TFPrimitiveData{iso, color::hex2rgba(color)};
         }))
         .def_readwrite("pos", &TFPrimitiveData::pos)
         .def_readwrite("color", &TFPrimitiveData::color)
         .def("__repr__",
-             [](const TFPrimitiveData &p) {
+             [](const TFPrimitiveData& p) {
                  std::ostringstream oss;
                  oss << "TFPrimitiveData: [" << p.pos << ", " << color::rgba2hex(p.color) << "]";
                  return oss.str();
@@ -104,24 +104,24 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
         .def(py::self != py::self);
 
     py::class_<TFPrimitive>(m, "TFPrimitive")
-        .def(py::init([](double pos, const vec4 &color) { return new TFPrimitive(pos, color); }),
+        .def(py::init([](double pos, const vec4& color) { return new TFPrimitive(pos, color); }),
              py::arg("pos") = 0.0, py::arg("color") = vec4(0.0f))
-        .def(py::init([](double iso, const std::string &color) {
+        .def(py::init([](double iso, const std::string& color) {
             return new TFPrimitive{iso, color::hex2rgba(color)};
         }))
         .def_property("data", &TFPrimitive::getData, &TFPrimitive::setData)
         .def_property("pos", &TFPrimitive::getPosition, &TFPrimitive::setPosition)
         .def_property("alpha", &TFPrimitive::getAlpha, &TFPrimitive::setAlpha)
         .def_property("color", &TFPrimitive::getColor,
-                      py::overload_cast<const vec3 &>(&TFPrimitive::setColor))
+                      py::overload_cast<const vec3&>(&TFPrimitive::setColor))
         .def_property("color", &TFPrimitive::getColor,
-                      py::overload_cast<const vec4 &>(&TFPrimitive::setColor))
+                      py::overload_cast<const vec4&>(&TFPrimitive::setColor))
         .def("setPositionAlpha",
-             [](TFPrimitive &ps, double pos, float alpha) { ps.setPositionAlpha(pos, alpha); })
+             [](TFPrimitive& ps, double pos, float alpha) { ps.setPositionAlpha(pos, alpha); })
         .def("setPositionAlpha",
-             [](TFPrimitive &ps, const dvec2 &pos) { ps.setPositionAlpha(pos); })
+             [](TFPrimitive& ps, const dvec2& pos) { ps.setPositionAlpha(pos); })
         .def("__repr__",
-             [](const TFPrimitive &ps) {
+             [](const TFPrimitive& ps) {
                  std::ostringstream oss;
                  oss << "<TFPrimitive: " << ps.getPosition() << ", "
                      << color::rgba2hex(ps.getColor()) << ">";
@@ -134,7 +134,7 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
     // py::bind_vector<std::vector<TFPrimitiveData>>(m, " TFPrimitiveDataVector");
 
     py::class_<TFPrimitiveSet>(m, "TFPrimitiveSet")
-        .def(py::init([](const std::vector<TFPrimitiveData> &values, TFPrimitiveSetType type) {
+        .def(py::init([](const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type) {
                  return new TFPrimitiveSet(values, type);
              }),
              py::arg("values") = std::vector<TFPrimitiveData>{},
@@ -145,34 +145,34 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
         .def_property_readonly("empty", &TFPrimitiveSet::empty)
         // interface for operator[]
         .def("__getitem__",
-             [](const TFPrimitiveSet &ps, size_t i) {
+             [](const TFPrimitiveSet& ps, size_t i) {
                  if (i >= ps.size()) throw py::index_error();
                  return &ps[i];
              },
              py::return_value_policy::reference_internal)
         .def("__setitem__",
-             [](TFPrimitiveSet &ps, size_t i, const TFPrimitiveData &primitive) {
+             [](TFPrimitiveSet& ps, size_t i, const TFPrimitiveData& primitive) {
                  if (i >= ps.size()) throw py::index_error();
                  ps[i].setData(primitive);
              })
         // sequence protocol operations
         .def("__iter__",
-             [](const TFPrimitiveSet &ps) { return py::make_iterator(ps.begin(), ps.end()); },
+             [](const TFPrimitiveSet& ps) { return py::make_iterator(ps.begin(), ps.end()); },
              py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
         //
-        .def("clear", [](TFPrimitiveSet &ps) { ps.clear(); })
-        .def("add", py::overload_cast<const TFPrimitive &>(&TFPrimitiveSet::add))
+        .def("clear", [](TFPrimitiveSet& ps) { ps.clear(); })
+        .def("add", py::overload_cast<const TFPrimitive&>(&TFPrimitiveSet::add))
 
-        .def("add", py::overload_cast<double, const vec4 &>(&TFPrimitiveSet::add))
-        .def("add", py::overload_cast<const dvec2 &>(&TFPrimitiveSet::add))
-        .def("add", py::overload_cast<const TFPrimitiveData &>(&TFPrimitiveSet::add))
-        .def("add", py::overload_cast<const std::vector<TFPrimitiveData> &>(&TFPrimitiveSet::add))
+        .def("add", py::overload_cast<double, const vec4&>(&TFPrimitiveSet::add))
+        .def("add", py::overload_cast<const dvec2&>(&TFPrimitiveSet::add))
+        .def("add", py::overload_cast<const TFPrimitiveData&>(&TFPrimitiveSet::add))
+        .def("add", py::overload_cast<const std::vector<TFPrimitiveData>&>(&TFPrimitiveSet::add))
 
-        .def("remove", [](TFPrimitiveSet &ps, TFPrimitive &primitive) { ps.remove(primitive); })
-        .def("__repr__", [](const TFPrimitiveSet &ps) {
+        .def("remove", [](TFPrimitiveSet& ps, TFPrimitive& primitive) { ps.remove(primitive); })
+        .def("__repr__", [](const TFPrimitiveSet& ps) {
             std::ostringstream oss;
             oss << "<TFPrimitiveSet:  " << ps.size() << " primitives";
-            for (auto &p : ps) {
+            for (auto& p : ps) {
                 oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";
@@ -182,11 +182,11 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
     py::class_<TransferFunction, TFPrimitiveSet>(m, "TransferFunction")
         .def(py::init([](size_t textureSize) { return TransferFunction(textureSize); }),
              py::arg("textureSize") = 1024)
-        .def(py::init([](const std::vector<TFPrimitiveData> &values, size_t textureSize) {
+        .def(py::init([](const std::vector<TFPrimitiveData>& values, size_t textureSize) {
                  return new TransferFunction(values, textureSize);
              }),
              py::arg("values") = std::vector<TFPrimitiveData>{}, py::arg("textureSize") = 1024)
-        .def(py::init([](const std::vector<TFPrimitiveData> &values, TFPrimitiveSetType type,
+        .def(py::init([](const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type,
                          size_t textureSize) {
                  return new TransferFunction(values, type, textureSize);
              }),
@@ -201,19 +201,19 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
              py::arg("textureSize") = 1024)
         .def_property_readonly("textureSize", &TransferFunction::getTextureSize)
         .def_property("mask",
-                      [](TransferFunction &tf) { return dvec2(tf.getMaskMin(), tf.getMaskMax()); },
-                      [](TransferFunction &tf, const dvec2 &mask) {
+                      [](TransferFunction& tf) { return dvec2(tf.getMaskMin(), tf.getMaskMax()); },
+                      [](TransferFunction& tf, const dvec2& mask) {
                           tf.setMaskMin(mask.x);
                           tf.setMaskMax(mask.y);
                       })
         .def("clearMask", &TransferFunction::clearMask)
-        .def("sample", [](TransferFunction &tf, double v) -> vec4 { return tf.sample(v); })
-        .def("save", [](TransferFunction &tf, std::string filename) { tf.save(filename); })
-        .def("load", [](TransferFunction &tf, std::string filename) { tf.load(filename); })
-        .def("__repr__", [](const TransferFunction &tf) {
+        .def("sample", [](TransferFunction& tf, double v) -> vec4 { return tf.sample(v); })
+        .def("save", [](TransferFunction& tf, std::string filename) { tf.save(filename); })
+        .def("load", [](TransferFunction& tf, std::string filename) { tf.load(filename); })
+        .def("__repr__", [](const TransferFunction& tf) {
             std::ostringstream oss;
             oss << "<TransferFunction:  " << tf.size() << " points";
-            for (auto &p : tf) {
+            for (auto& p : tf) {
                 oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";
@@ -221,7 +221,7 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
         });
 
     py::class_<IsoValueCollection, TFPrimitiveSet>(m, "IsoValueCollection")
-        .def(py::init([](const std::vector<TFPrimitiveData> &values, TFPrimitiveSetType type) {
+        .def(py::init([](const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type) {
                  return new IsoValueCollection(values, type);
              }),
              py::arg("values") = std::vector<TFPrimitiveData>{},
@@ -232,12 +232,12 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
                  return tf;
              }),
              py::arg("values"), py::arg("type") = TFPrimitiveSetType::Relative)
-        .def("save", [](IsoValueCollection &ivc, std::string filename) { ivc.save(filename); })
-        .def("load", [](IsoValueCollection &ivc, std::string filename) { ivc.load(filename); })
-        .def("__repr__", [](const IsoValueCollection &ivc) {
+        .def("save", [](IsoValueCollection& ivc, std::string filename) { ivc.save(filename); })
+        .def("load", [](IsoValueCollection& ivc, std::string filename) { ivc.load(filename); })
+        .def("__repr__", [](const IsoValueCollection& ivc) {
             std::ostringstream oss;
             oss << "<IsoValueCollection:  " << ivc.size() << " isovalues";
-            for (auto &p : ivc) {
+            for (auto& p : ivc) {
                 oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";

@@ -47,6 +47,6 @@ ImageOpacity::ImageOpacity()
     addProperty(alpha_);
 }
 
-void ImageOpacity::preProcess(TextureUnitContainer &) { utilgl::setUniforms(shader_, alpha_); }
+void ImageOpacity::preProcess(TextureUnitContainer&) { utilgl::setUniforms(shader_, alpha_); }
 
 }  // namespace inviwo

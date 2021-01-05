@@ -70,7 +70,7 @@ ImageGradient::ImageGradient()
     addProperty(renormalization_);
 }
 
-void ImageGradient::preProcess(TextureUnitContainer &) {
+void ImageGradient::preProcess(TextureUnitContainer&) {
     shader_.setUniform("channel", channel_.getSelectedValue());
     shader_.setUniform("renormalization_", renormalization_.get() ? 1 : 0);
 }

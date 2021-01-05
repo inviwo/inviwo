@@ -37,9 +37,9 @@ const std::string FloatMinMaxPropertyWidget::classIdentifier =
     "org.inviwo.glui.FloatMinMaxPropertyWidget";
 std::string FloatMinMaxPropertyWidget::getClassIdentifier() const { return classIdentifier; }
 
-FloatMinMaxPropertyWidget::FloatMinMaxPropertyWidget(FloatMinMaxProperty &property,
-                                                     Processor &processor, Renderer &uiRenderer,
-                                                     const ivec2 &extent, UIOrientation orientation)
+FloatMinMaxPropertyWidget::FloatMinMaxPropertyWidget(FloatMinMaxProperty& property,
+                                                     Processor& processor, Renderer& uiRenderer,
+                                                     const ivec2& extent, UIOrientation orientation)
     : RangeSlider(property.getDisplayName(), ivec2(0), 0, 100, 0, processor, uiRenderer, extent,
                   orientation)
     , PropertyWidget(&property)
@@ -48,7 +48,7 @@ FloatMinMaxPropertyWidget::FloatMinMaxPropertyWidget(FloatMinMaxProperty &proper
 
     property_->addObserver(this);
 
-    moveAction_ = [this](const dvec2 &delta) {
+    moveAction_ = [this](const dvec2& delta) {
         bool triggerUpdate = false;
         if (!property_->getReadOnly()) {
             auto calcNewValue = [this, delta](int prev) {
@@ -92,14 +92,14 @@ void FloatMinMaxPropertyWidget::updateFromProperty() {
     setEnabled(!property_->getReadOnly());
 }
 
-void FloatMinMaxPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
+void FloatMinMaxPropertyWidget::onSetVisible(Property*, bool visible) { setVisible(visible); }
 
-void FloatMinMaxPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
+void FloatMinMaxPropertyWidget::onSetDisplayName(Property*, const std::string& displayName) {
     setLabel(displayName);
     property_->propertyModified();
 }
 
-void FloatMinMaxPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
+void FloatMinMaxPropertyWidget::onSetReadOnly(Property*, bool readonly) { setEnabled(!readonly); }
 
 float FloatMinMaxPropertyWidget::sliderToRepr(int val) const {
     return property_->getRangeMin() +
@@ -111,11 +111,11 @@ int FloatMinMaxPropertyWidget::reprToSlider(float val) const {
                             (property_->getRangeMax() - property_->getRangeMin()) * sliderMax_);
 }
 
-vec2 FloatMinMaxPropertyWidget::sliderToRepr(const ivec2 &val) const {
+vec2 FloatMinMaxPropertyWidget::sliderToRepr(const ivec2& val) const {
     return vec2(sliderToRepr(val.x), sliderToRepr(val.y));
 }
 
-ivec2 FloatMinMaxPropertyWidget::reprToSlider(const vec2 &val) const {
+ivec2 FloatMinMaxPropertyWidget::reprToSlider(const vec2& val) const {
     return ivec2(reprToSlider(val.x), reprToSlider(val.y));
 }
 

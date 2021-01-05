@@ -63,9 +63,9 @@ namespace util {
  */
 
 IVW_MODULE_BASE_API std::shared_ptr<Mesh> marchingCubesOpt(
-    std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert, bool enclose,
+    std::shared_ptr<const Volume> volume, double iso, const vec4& color, bool invert, bool enclose,
     std::function<void(float)> progressCallback = nullptr,
-    std::function<bool(const size3_t &)> maskingCallback = nullptr);
+    std::function<bool(const size3_t&)> maskingCallback = nullptr);
 }  // namespace util
 
 namespace marching {

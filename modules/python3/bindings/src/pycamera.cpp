@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-void exposeCamera(pybind11::module &m) {
+void exposeCamera(pybind11::module& m) {
     namespace py = pybind11;
 
     py::class_<Camera>(m, "Camera")

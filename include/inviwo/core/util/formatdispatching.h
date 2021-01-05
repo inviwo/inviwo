@@ -45,7 +45,7 @@ namespace dispatching {
  */
 class IVW_CORE_API DispatchException : public Exception {
 public:
-    DispatchException(const std::string &message = "",
+    DispatchException(const std::string& message = "",
                       ExceptionContext context = ExceptionContext());
     virtual ~DispatchException() throw() = default;
 };
@@ -103,7 +103,7 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
     using Format = typename std::tuple_element<M, std::tuple<Formats...>>::type;
 
     template <typename Callable, typename... Args>
-    static Result dispatch(DataFormatId id, Callable &&obj, Args &&... args) {
+    static Result dispatch(DataFormatId id, Callable&& obj, Args&&... args) {
         if (B > E)
             throw DispatchException(
                 "Format " + std::string(DataFormatBase::get(id)->getString()) + " not supported",
@@ -148,7 +148,7 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
  * the list of formats after the filtering.
  */
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
-auto dispatch(DataFormatId format, Callable &&obj, Args &&... args) -> Result {
+auto dispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Result {
     // Has to be in order of increasing id
 
     using Formats = DefaultDataFormats;
