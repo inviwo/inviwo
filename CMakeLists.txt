@@ -68,18 +68,10 @@ set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/pkg)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/modules)
 
-# Make sure we do look for python 3 here, before it is done in any subdirectory or external library.
-# If we do not specify version number on our first call to find_package(PythonLibs) it returns the
-# first python version that is found on the system and then set the PYTHON_FOUND variable, this
-# version may be 2.x and not 3.x and later when we find_package(PythonLibsNew 3) (or find_package(PythonLibs 3))
-# it will detected that PYTHON_FOUND is set and reuse the paths found before and not look for python
-# again resulting in Python 2.x binaries will be used.
-set(PythonLibsNew_FIND_VERSION 3)
-set(Python_ADDITIONAL_VERSIONS 3.5 3.6 3.7 3.8 3.9)
 if(IVW_MODULE_PYTHON3)
-    find_package(PythonLibsNew 3 REQUIRED)
+    find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 else()
-    find_package(PythonLibsNew 3)
+    find_package(Python3 COMPONENTS Interpreter Development)
 endif()
 
 include(cmake/globalconfig.cmake)

@@ -110,7 +110,7 @@ if(BUILD_SHARED_LIBS AND IVW_PACKAGE_EMBED_PYTHON)
             set(show "")
         endif()
 
-        set(py_version "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}")
+        set(py_version "${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}.${Python3_VERSION_PATCH}")
         set(py_url "https://www.python.org/ftp/python/${py_version}/python-${py_version}-embed-amd64.zip")
         set(py_dir "${CMAKE_BINARY_DIR}/py_embedd")
         set(py_file "${py_dir}/py_embedd.${py_version}.zip")
@@ -126,7 +126,7 @@ if(BUILD_SHARED_LIBS AND IVW_PACKAGE_EMBED_PYTHON)
         file(MAKE_DIRECTORY "${py_dir}/python")
         execute_process(COMMAND ${CMAKE_COMMAND} -E tar "xf" ${py_file}
                         WORKING_DIRECTORY "${py_dir}/python")
-        file(APPEND ${py_dir}/python/python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}._pth 
+        file(APPEND ${py_dir}/python/python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}._pth 
             "import site")
 
         set(pip_file "${py_dir}/python/get-pip.py")
