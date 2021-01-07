@@ -85,11 +85,10 @@ ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
 
 find_package(pybind11 CONFIG REQUIRED)
 target_link_libraries(inviwo-module-python3 PUBLIC 
-    pybind11::embed 
-    $<BUILD_INTERFACE:${PYTHON_LIBRARIES}>
+    pybind11::embed
+    Python3::Python
 )
 target_include_directories(inviwo-module-python3 PUBLIC
-    ${PYTHON_INCLUDE_DIR}
     ${IVW_EXTENSIONS_DIR}/pybind11/include
 )
 

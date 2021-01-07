@@ -29,7 +29,6 @@
 import os
 import sys
 import argparse
-import pathlib
 from distutils.version import StrictVersion
 import urllib.request
 import json

@@ -391,7 +391,7 @@ ivw_mod_name_to_mod_dep(modules ${reg_modules})
 
 find_package(Doxygen QUIET)         # sets: DOXYGEN_FOUND, DOXYGEN_EXECUTABLE,
                                     # DOXYGEN_DOT_FOUND, DOXYGEN_DOT_EXECUTABLE
-find_package(PythonInterp QUIET)    # sets: PYTHONINTERP_FOUND PYTHON_EXECUTABLE
+find_package(Python3 COMPONENTS Interpreter QUIET)    # sets: Python3_Interpreter_FOUND Python3_EXECUTABLE
 if(NOT ${DOXYGEN_FOUND})
 message(WARNING "Tried to create doxygen project, but doxygen was not found")
     return()
@@ -404,7 +404,7 @@ set(output_dir ${CMAKE_CURRENT_BINARY_DIR})
 set(tag_files "")
 set(dependency_list "")
 set(GENERATE_IMG "YES")
-if(PYTHONINTERP_FOUND)
+if(Python3_Interpreter_FOUND)
     if(${MSVC})
         set(PREFIX_PYTHON "python ")
     else()

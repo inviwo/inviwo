@@ -111,7 +111,7 @@ function(ivw_vcpkg_install name)
         NOT ivw_vcpkg_info_${lowercase_name}_sha STREQUAL ivw_vcpkg_sha)
         message(STATUS "Vcpkg fetching metadata for: ${name}")
         execute_process(
-            COMMAND "${PYTHON_EXECUTABLE}" "${IVW_TOOLS_DIR}/vcpkginfo.py"
+            COMMAND "${Python3_EXECUTABLE}" "${IVW_TOOLS_DIR}/vcpkginfo.py"
                 --vcpkg "${_VCPKG_EXECUTABLE}" 
                 ${overlay}
                 --pkg ${lowercase_name}
