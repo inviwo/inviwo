@@ -141,17 +141,18 @@ void exposeProperties(py::module& m) {
              py::arg("semantics") = PropertySemantics::Default)
         .def("setCollapsed", &CompositeProperty::setCollapsed)
         .def("isCollapsed", &CompositeProperty::isCollapsed)
-        .def("__getattr__",
-             [](CompositeProperty& po, const std::string& key) {
-                 if (auto prop = po.getPropertyByIdentifier(key)) {
-                     return prop;
-                 } else {
-                     throw py::attribute_error{"CompositeProperty (" + po.getPath() +
-                                               ") does not have a property with identifier: '" +
-                                               key + "'"};
-                 }
-             },
-             py::return_value_policy::reference);
+        .def(
+            "__getattr__",
+            [](CompositeProperty& po, const std::string& key) {
+                if (auto prop = po.getPropertyByIdentifier(key)) {
+                    return prop;
+                } else {
+                    throw py::attribute_error{"CompositeProperty (" + po.getPath() +
+                                              ") does not have a property with identifier: '" +
+                                              key + "'"};
+                }
+            },
+            py::return_value_policy::reference);
 
     PyPropertyClass<BaseOptionProperty, Property>(m, "BaseOptionProperty")
         .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)
@@ -198,15 +199,18 @@ void exposeProperties(py::module& m) {
                                static_cast<Camera& (CameraProperty::*)()>(&CameraProperty::get))
         .def_property_readonly("value",
                                static_cast<Camera& (CameraProperty::*)()>(&CameraProperty::get))
-        .def_property("lookFrom", &CameraProperty::getLookFrom,
-                      [](CameraProperty* cam, vec3 val) { cam->setLookFrom(val); },
-                      py::return_value_policy::copy)
-        .def_property("lookTo", &CameraProperty::getLookTo,
-                      [](CameraProperty* cam, vec3 val) { cam->setLookTo(val); },
-                      py::return_value_policy::copy)
-        .def_property("lookUp", &CameraProperty::getLookUp,
-                      [](CameraProperty* cam, vec3 val) { cam->setLookUp(val); },
-                      py::return_value_policy::copy)
+        .def_property(
+            "lookFrom", &CameraProperty::getLookFrom,
+            [](CameraProperty* cam, vec3 val) { cam->setLookFrom(val); },
+            py::return_value_policy::copy)
+        .def_property(
+            "lookTo", &CameraProperty::getLookTo,
+            [](CameraProperty* cam, vec3 val) { cam->setLookTo(val); },
+            py::return_value_policy::copy)
+        .def_property(
+            "lookUp", &CameraProperty::getLookUp,
+            [](CameraProperty* cam, vec3 val) { cam->setLookUp(val); },
+            py::return_value_policy::copy)
         .def_property_readonly("lookRight", &CameraProperty::getLookRight)
         .def_property("aspectRatio", &CameraProperty::getAspectRatio,
                       &CameraProperty::setAspectRatio)

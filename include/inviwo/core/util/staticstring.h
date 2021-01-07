@@ -190,7 +190,7 @@ constexpr auto operator+(const StaticString<N1>& a, const char (&b)[N2]) {
 
 StaticString()->StaticString<0>;
 template <typename... Ts>
-StaticString(Ts&&... strs)->StaticString<(::inviwo::detail::static_size<Ts> + ...)>;
+StaticString(Ts&&... strs) -> StaticString<(::inviwo::detail::static_size<Ts> + ...)>;
 
 }  // namespace inviwo
 

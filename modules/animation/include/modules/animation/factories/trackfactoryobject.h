@@ -61,8 +61,8 @@ public:
         : TrackFactoryObject(classIdentifier){};
     virtual ~TrackFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Track> create([
-        [maybe_unused]] ProcessorNetwork* network) const override {
+    virtual std::unique_ptr<Track> create(
+        [[maybe_unused]] ProcessorNetwork* network) const override {
 
         if constexpr (std::is_constructible_v<T, ProcessorNetwork*>) {
             return std::make_unique<T>(network);

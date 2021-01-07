@@ -322,7 +322,7 @@ template <typename T>
 using PrecisionType = typename std::remove_pointer<typename std::remove_const<T>::type>::type;
 
 template <typename T>
-using PrecsionType[[deprecated("Use `PrecisionType` instead")]] =
+using PrecsionType [[deprecated("Use `PrecisionType` instead")]] =
     typename std::remove_pointer<typename std::remove_const<T>::type>::type;
 
 /**
@@ -340,7 +340,7 @@ template <typename T>
 using PrecisionValueType = typename PrecisionType<T>::type;
 
 template <typename T>
-using PrecsionValueType[[deprecated("Use `PrecisionValueType` instead")]] =
+using PrecsionValueType [[deprecated("Use `PrecisionValueType` instead")]] =
     typename PrecisionType<T>::type;
 
 }  // namespace util

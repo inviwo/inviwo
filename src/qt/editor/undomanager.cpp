@@ -163,8 +163,9 @@ void UndoManager::pushState() {
 
     std::stringstream stream;
     try {
-        manager_->save(stream, refPath_, [](ExceptionContext context) -> void { throw; },
-                       WorkspaceSaveMode::Undo);
+        manager_->save(
+            stream, refPath_, [](ExceptionContext context) -> void { throw; },
+            WorkspaceSaveMode::Undo);
     } catch (...) {
         return;
     }

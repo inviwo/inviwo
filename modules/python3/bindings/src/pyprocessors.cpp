@@ -240,26 +240,28 @@ void exposeProcessors(pybind11::module& m) {
         .def("getPort", &Processor::getPort, py::return_value_policy::reference)
         .def("getInport", &Processor::getInport, py::return_value_policy::reference)
         .def("getOutport", &Processor::getOutport, py::return_value_policy::reference)
-        .def("addInport",
-             [](Processor& p, Inport* port, const std::string& group, bool owner) {
-                 if (owner) {
-                     p.addPort(std::unique_ptr<Inport>(port), group);
-                 } else {
-                     p.addPort(*port, group);
-                 }
-             },
-             py::arg("inport"), py::arg("group") = "default", py::arg("owner") = true,
-             py::keep_alive<1, 2>{})
-        .def("addOutport",
-             [](Processor& p, Outport* port, const std::string& group, bool owner) {
-                 if (owner) {
-                     p.addPort(std::unique_ptr<Outport>(port), group);
-                 } else {
-                     p.addPort(*port, group);
-                 }
-             },
-             py::arg("outport"), py::arg("group") = "default", py::arg("owner") = true,
-             py::keep_alive<1, 2>{})
+        .def(
+            "addInport",
+            [](Processor& p, Inport* port, const std::string& group, bool owner) {
+                if (owner) {
+                    p.addPort(std::unique_ptr<Inport>(port), group);
+                } else {
+                    p.addPort(*port, group);
+                }
+            },
+            py::arg("inport"), py::arg("group") = "default", py::arg("owner") = true,
+            py::keep_alive<1, 2>{})
+        .def(
+            "addOutport",
+            [](Processor& p, Outport* port, const std::string& group, bool owner) {
+                if (owner) {
+                    p.addPort(std::unique_ptr<Outport>(port), group);
+                } else {
+                    p.addPort(*port, group);
+                }
+            },
+            py::arg("outport"), py::arg("group") = "default", py::arg("owner") = true,
+            py::keep_alive<1, 2>{})
         .def("removeInport", [](Processor& p, Inport* port) { return p.removePort(port); })
         .def("removeOutport", [](Processor& p, Outport* port) { return p.removePort(port); })
         .def("getPortGroup", &Processor::getPortGroup)
@@ -292,8 +294,9 @@ void exposeProcessors(pybind11::module& m) {
         .def_property("size", &CanvasProcessor::getCanvasSize, &CanvasProcessor::setCanvasSize)
         .def("getUseCustomDimensions", &CanvasProcessor::getUseCustomDimensions)
         .def_property_readonly("customDimensions", &CanvasProcessor::getCustomDimensions)
-        .def_property_readonly("image", [](CanvasProcessor* cp) { return cp->getImage().get(); },
-                               py::return_value_policy::reference)
+        .def_property_readonly(
+            "image", [](CanvasProcessor* cp) { return cp->getImage().get(); },
+            py::return_value_policy::reference)
         .def_property_readonly("ready", &CanvasProcessor::isReady)
         .def("snapshot",
              [](CanvasProcessor* canvas, std::string filepath) {

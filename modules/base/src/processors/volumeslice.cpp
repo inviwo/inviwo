@@ -62,15 +62,17 @@ VolumeSlice::VolumeSlice()
     , sliceNumber_("sliceNumber", "Slice Number", 4, 1, 8)
     , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
                                InvalidationLevel::Valid)
-    , mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
-                       [this](Event* e) { eventShiftSlice(e); },
-                       std::make_unique<WheelEventMatcher>())
+    , mouseShiftSlice_(
+          "mouseShiftSlice", "Mouse Slice Shift", [this](Event* e) { eventShiftSlice(e); },
+          std::make_unique<WheelEventMatcher>())
 
-    , stepSliceUp_("stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); },
-                   IvwKey::W, KeyState::Press)
+    , stepSliceUp_(
+          "stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); }, IvwKey::W,
+          KeyState::Press)
 
-    , stepSliceDown_("stepSliceDown", "Key Slice Down", [this](Event* e) { eventStepSliceDown(e); },
-                     IvwKey::S, KeyState::Press)
+    , stepSliceDown_(
+          "stepSliceDown", "Key Slice Down", [this](Event* e) { eventStepSliceDown(e); }, IvwKey::S,
+          KeyState::Press)
 
     , gestureShiftSlice_(
           "gestureShiftSlice", "Gesture Slice Shift",

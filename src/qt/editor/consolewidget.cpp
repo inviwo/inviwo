@@ -368,36 +368,36 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     settings.endGroup();
 
     auto editmenu = mainwindow_->getInviwoEditMenu();
-    editActionsHandle_ = editmenu->registerItem(
-        std::make_shared<MenuItem>(this,
-                                   [this](MenuItemType t) -> bool {
-                                       switch (t) {
-                                           case MenuItemType::copy:
-                                               return tableView_->selectionModel()->hasSelection();
-                                           case MenuItemType::cut:
-                                           case MenuItemType::paste:
-                                           case MenuItemType::del:
-                                           case MenuItemType::select:
-                                           default:
-                                               return false;
-                                       }
-                                   },
-                                   [this](MenuItemType t) -> void {
-                                       switch (t) {
-                                           case MenuItemType::copy: {
-                                               if (tableView_->selectionModel()->hasSelection()) {
-                                                   copy();
-                                               }
-                                               break;
-                                           }
-                                           case MenuItemType::cut:
-                                           case MenuItemType::paste:
-                                           case MenuItemType::del:
-                                           case MenuItemType::select:
-                                           default:
-                                               break;
-                                       }
-                                   }));
+    editActionsHandle_ = editmenu->registerItem(std::make_shared<MenuItem>(
+        this,
+        [this](MenuItemType t) -> bool {
+            switch (t) {
+                case MenuItemType::copy:
+                    return tableView_->selectionModel()->hasSelection();
+                case MenuItemType::cut:
+                case MenuItemType::paste:
+                case MenuItemType::del:
+                case MenuItemType::select:
+                default:
+                    return false;
+            }
+        },
+        [this](MenuItemType t) -> void {
+            switch (t) {
+                case MenuItemType::copy: {
+                    if (tableView_->selectionModel()->hasSelection()) {
+                        copy();
+                    }
+                    break;
+                }
+                case MenuItemType::cut:
+                case MenuItemType::paste:
+                case MenuItemType::del:
+                case MenuItemType::select:
+                default:
+                    break;
+            }
+        }));
 }
 
 ConsoleWidget::~ConsoleWidget() = default;

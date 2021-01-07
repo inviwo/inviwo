@@ -544,17 +544,19 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
         volume->getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](auto ram) {
                 using ValueType = util::PrecisionValueType<decltype(ram)>;
-                mc(ram,
-                   [tiso = util::glm_convert<ValueType>(iso)](auto&& val) { return val > tiso; },
-                   [iso](auto&& val) { return util::glm_convert<double>(val) - iso; });
+                mc(
+                    ram,
+                    [tiso = util::glm_convert<ValueType>(iso)](auto&& val) { return val > tiso; },
+                    [iso](auto&& val) { return util::glm_convert<double>(val) - iso; });
             });
     } else {
         volume->getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](auto ram) {
                 using ValueType = util::PrecisionValueType<decltype(ram)>;
-                mc(ram,
-                   [tiso = util::glm_convert<ValueType>(iso)](auto&& val) { return val < tiso; },
-                   [iso](auto&& val) { return -(util::glm_convert<double>(val) - iso); });
+                mc(
+                    ram,
+                    [tiso = util::glm_convert<ValueType>(iso)](auto&& val) { return val < tiso; },
+                    [iso](auto&& val) { return -(util::glm_convert<double>(val) - iso); });
             });
     }
 

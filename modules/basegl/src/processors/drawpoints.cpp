@@ -53,10 +53,12 @@ DrawPoints::DrawPoints()
     , pointSize_("pointSize", "Point Size", 5, 1, 10)
     , pointColor_("pointColor", "Point Color", vec4(1.f))
     , clearButton_("clearButton", "Clear Drawing")
-    , mouseDraw_("mouseDraw", "Draw Point", [this](Event* e) { eventDraw(e); }, MouseButton::Left,
-                 MouseStates(flags::any), KeyModifier::Control)
-    , keyEnableDraw_("keyEnableDraw", "Enable Draw", [this](Event* e) { eventEnableDraw(e); },
-                     IvwKey::D, KeyStates(flags::any), KeyModifier::Control)
+    , mouseDraw_(
+          "mouseDraw", "Draw Point", [this](Event* e) { eventDraw(e); }, MouseButton::Left,
+          MouseStates(flags::any), KeyModifier::Control)
+    , keyEnableDraw_(
+          "keyEnableDraw", "Enable Draw", [this](Event* e) { eventEnableDraw(e); }, IvwKey::D,
+          KeyStates(flags::any), KeyModifier::Control)
     , points_(DrawType::Points, ConnectivityType::None)
     , pointDrawer_(&points_)
     , pointShader_("img_color.frag")

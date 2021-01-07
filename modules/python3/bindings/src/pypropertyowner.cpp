@@ -45,23 +45,25 @@ void exposePropertyOwner(pybind11::module& m) {
     exposeVectorIdentifierWrapper<std::vector<Property*>>(m, "PropertyVecWrapper");
 
     py::class_<PropertyOwner, std::unique_ptr<PropertyOwner, py::nodelete>>(m, "PropertyOwner")
-        .def("__getattr__",
-             [](PropertyOwner& po, const std::string& key) {
-                 if (auto prop = po.getPropertyByIdentifier(key)) {
-                     return prop;
-                 } else {
-                     throw py::attribute_error{"PropertyOwner (" + po.getIdentifier() +
-                                               ") does not have a property with identifier: '" +
-                                               key + "'"};
-                 }
-             },
-             py::return_value_policy::reference)
+        .def(
+            "__getattr__",
+            [](PropertyOwner& po, const std::string& key) {
+                if (auto prop = po.getPropertyByIdentifier(key)) {
+                    return prop;
+                } else {
+                    throw py::attribute_error{"PropertyOwner (" + po.getIdentifier() +
+                                              ") does not have a property with identifier: '" +
+                                              key + "'"};
+                }
+            },
+            py::return_value_policy::reference)
         .def_property_readonly(
             "properties", [](PropertyOwner& po) { return PropertyVecWrapper(po.getProperties()); })
         .def("getPropertiesRecursive", &PropertyOwner::getPropertiesRecursive)
-        .def("addProperty",
-             [](PropertyOwner& po, Property* prop, bool owner) { po.addProperty(prop, owner); },
-             py::arg("prop"), py::arg("owner") = true, py::keep_alive<1, 2>{})
+        .def(
+            "addProperty",
+            [](PropertyOwner& po, Property* prop, bool owner) { po.addProperty(prop, owner); },
+            py::arg("prop"), py::arg("owner") = true, py::keep_alive<1, 2>{})
         .def("removeProperty",
              [](PropertyOwner& po, Property* prop) { return po.removeProperty(prop); })
         .def("getPropertyByIdentifier", &PropertyOwner::getPropertyByIdentifier,
@@ -70,15 +72,17 @@ void exposePropertyOwner(pybind11::module& m) {
         .def("getPropertyByPath", &PropertyOwner::getPropertyByPath,
              py::return_value_policy::reference)
         .def("getIdentifier", &PropertyOwner::getIdentifier)
-        .def("getOwner", [](PropertyOwner* po) { return po->getOwner(); },
-             py::return_value_policy::reference)
+        .def(
+            "getOwner", [](PropertyOwner* po) { return po->getOwner(); },
+            py::return_value_policy::reference)
         .def("size", &PropertyOwner::size)
         .def("setValid", &PropertyOwner::setValid)
         .def("getInvalidationLevel", &PropertyOwner::getInvalidationLevel)
         .def("invalidate",
              [](PropertyOwner* po) { po->invalidate(InvalidationLevel::InvalidOutput); })
-        .def_property_readonly("processor", [](PropertyOwner& p) { return p.getProcessor(); },
-                               py::return_value_policy::reference)
+        .def_property_readonly(
+            "processor", [](PropertyOwner& p) { return p.getProcessor(); },
+            py::return_value_policy::reference)
         .def("setAllPropertiesCurrentStateAsDefault",
              &PropertyOwner::setAllPropertiesCurrentStateAsDefault)
         .def("resetAllPoperties", &PropertyOwner::resetAllPoperties);

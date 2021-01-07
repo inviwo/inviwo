@@ -43,8 +43,8 @@ const std::string& SerializationException::getType() const noexcept { return dat
 
 const std::string& SerializationException::getId() const noexcept { return data_.id; }
 
-const SerializationException::SerializationExceptionData& SerializationException::getData() const
-    noexcept {
+const SerializationException::SerializationExceptionData& SerializationException::getData()
+    const noexcept {
     return data_;
 }
 

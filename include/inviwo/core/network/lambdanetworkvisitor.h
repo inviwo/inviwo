@@ -108,5 +108,5 @@ struct LambdaNetworkVisitor : NetworkVisitor, Funcs... {
     }
 };
 template <class... Funcs>
-LambdaNetworkVisitor(Funcs...)->LambdaNetworkVisitor<Funcs...>;
+LambdaNetworkVisitor(Funcs...) -> LambdaNetworkVisitor<Funcs...>;
 }  // namespace inviwo

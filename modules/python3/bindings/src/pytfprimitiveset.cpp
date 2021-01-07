@@ -144,21 +144,23 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .def_property_readonly("size", &TFPrimitiveSet::size)
         .def_property_readonly("empty", &TFPrimitiveSet::empty)
         // interface for operator[]
-        .def("__getitem__",
-             [](const TFPrimitiveSet& ps, size_t i) {
-                 if (i >= ps.size()) throw py::index_error();
-                 return &ps[i];
-             },
-             py::return_value_policy::reference_internal)
+        .def(
+            "__getitem__",
+            [](const TFPrimitiveSet& ps, size_t i) {
+                if (i >= ps.size()) throw py::index_error();
+                return &ps[i];
+            },
+            py::return_value_policy::reference_internal)
         .def("__setitem__",
              [](TFPrimitiveSet& ps, size_t i, const TFPrimitiveData& primitive) {
                  if (i >= ps.size()) throw py::index_error();
                  ps[i].setData(primitive);
              })
         // sequence protocol operations
-        .def("__iter__",
-             [](const TFPrimitiveSet& ps) { return py::make_iterator(ps.begin(), ps.end()); },
-             py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
+        .def(
+            "__iter__",
+            [](const TFPrimitiveSet& ps) { return py::make_iterator(ps.begin(), ps.end()); },
+            py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
         //
         .def("clear", [](TFPrimitiveSet& ps) { ps.clear(); })
         .def("add", py::overload_cast<const TFPrimitive&>(&TFPrimitiveSet::add))
@@ -200,12 +202,12 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
              py::arg("values"), py::arg("type") = TFPrimitiveSetType::Relative,
              py::arg("textureSize") = 1024)
         .def_property_readonly("textureSize", &TransferFunction::getTextureSize)
-        .def_property("mask",
-                      [](TransferFunction& tf) { return dvec2(tf.getMaskMin(), tf.getMaskMax()); },
-                      [](TransferFunction& tf, const dvec2& mask) {
-                          tf.setMaskMin(mask.x);
-                          tf.setMaskMax(mask.y);
-                      })
+        .def_property(
+            "mask", [](TransferFunction& tf) { return dvec2(tf.getMaskMin(), tf.getMaskMax()); },
+            [](TransferFunction& tf, const dvec2& mask) {
+                tf.setMaskMin(mask.x);
+                tf.setMaskMax(mask.y);
+            })
         .def("clearMask", &TransferFunction::clearMask)
         .def("sample", [](TransferFunction& tf, double v) -> vec4 { return tf.sample(v); })
         .def("save", [](TransferFunction& tf, std::string filename) { tf.save(filename); })

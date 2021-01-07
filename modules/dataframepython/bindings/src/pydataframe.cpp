@@ -59,17 +59,19 @@ struct DataFrameAddColumnReg {
     auto operator()(py::class_<DataFrame, std::shared_ptr<DataFrame>>& d) {
         auto classname = Defaultvalues<T>::getName();
 
-        d.def(fmt::format("add{}Column", classname).c_str(),
-              [](DataFrame& d, const std::string& header, const size_t size = 0) {
-                  return d.addColumn<T>(header, size);
-              },
-              py::arg("header"), py::arg("size") = 0);
+        d.def(
+            fmt::format("add{}Column", classname).c_str(),
+            [](DataFrame& d, const std::string& header, const size_t size = 0) {
+                return d.addColumn<T>(header, size);
+            },
+            py::arg("header"), py::arg("size") = 0);
 
-        d.def(fmt::format("add{}Column", classname).c_str(),
-              [](DataFrame& d, std::string header, std::vector<T> data) {
-                  return d.addColumn(std::move(header), std::move(data));
-              },
-              py::arg("header"), py::arg("data"));
+        d.def(
+            fmt::format("add{}Column", classname).c_str(),
+            [](DataFrame& d, std::string header, std::vector<T> data) {
+                return d.addColumn(std::move(header), std::move(data));
+            },
+            py::arg("header"), py::arg("data"));
     }
 };
 
@@ -100,18 +102,20 @@ struct TemplateColumnReg {
             .def("add", py::overload_cast<const std::string&>(&C::add))
             .def("append", [](C& c, C& src) { c.append(src); })
             .def("set", &C::set)
-            .def("get",
-                 [](const C& c, size_t i) {
-                     if (i >= c.getSize()) throw py::index_error();
-                     return c.get(i);
-                 },
-                 py::arg("i"))
-            .def("get",
-                 [](const C& c, size_t i, bool asString) {
-                     if (i >= c.getSize()) throw py::index_error();
-                     return c.get(i, asString);
-                 },
-                 py::arg("i"), py::arg("asString"))
+            .def(
+                "get",
+                [](const C& c, size_t i) {
+                    if (i >= c.getSize()) throw py::index_error();
+                    return c.get(i);
+                },
+                py::arg("i"))
+            .def(
+                "get",
+                [](const C& c, size_t i, bool asString) {
+                    if (i >= c.getSize()) throw py::index_error();
+                    return c.get(i, asString);
+                },
+                py::arg("i"), py::arg("asString"))
             .def("__repr__", [classname](C& c) {
                 return fmt::format("<{}: '{}', {}, {}>", classname, c.getHeader(), c.getSize(),
                                    c.getBuffer()->getDataFormat()->getString());
@@ -148,12 +152,13 @@ void exposeDataFrame(pybind11::module& m) {
         .def("append", [](CategoricalColumn& c, CategoricalColumn& src) { c.append(src); })
         .def("set", [](CategoricalColumn& c, size_t idx, const std::uint32_t& v) { c.set(idx, v); })
         .def("set", py::overload_cast<size_t, const std::string&>(&CategoricalColumn::set))
-        .def("get",
-             [](const CategoricalColumn& c, size_t i, bool asString) {
-                 if (i >= c.getSize()) throw py::index_error();
-                 return c.get(i, asString);
-             },
-             py::arg("i"), py::arg("asString") = true)
+        .def(
+            "get",
+            [](const CategoricalColumn& c, size_t i, bool asString) {
+                if (i >= c.getSize()) throw py::index_error();
+                return c.get(i, asString);
+            },
+            py::arg("i"), py::arg("asString") = true)
         .def("__repr__", [](CategoricalColumn& c) {
             return fmt::format("<CategoricalColumn: '{}', {}, {} categories>", c.getHeader(),
                                c.getSize(), c.getCategories().size());
@@ -178,15 +183,17 @@ void exposeDataFrame(pybind11::module& m) {
         .def("updateIndex", [](DataFrame& d) { d.updateIndexBuffer(); })
 
         // interface for operator[]
-        .def("__getitem__",
-             [](const DataFrame& d, size_t i) {
-                 if (i >= d.getNumberOfColumns()) throw py::index_error();
-                 return *(d.begin() + i);
-             },
-             py::return_value_policy::reference_internal)
+        .def(
+            "__getitem__",
+            [](const DataFrame& d, size_t i) {
+                if (i >= d.getNumberOfColumns()) throw py::index_error();
+                return *(d.begin() + i);
+            },
+            py::return_value_policy::reference_internal)
         // sequence protocol operations
-        .def("__iter__", [](const DataFrame& d) { return py::make_iterator(d.begin(), d.end()); },
-             py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
+        .def(
+            "__iter__", [](const DataFrame& d) { return py::make_iterator(d.begin(), d.end()); },
+            py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
 
         .def("__repr__", [](const DataFrame& d) {
             std::string str = fmt::format("<DataFrame: {} column(s), {} rows",

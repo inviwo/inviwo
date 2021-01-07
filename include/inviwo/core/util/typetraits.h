@@ -120,14 +120,15 @@ public:
 };
 
 template <typename F, typename... Args>
-using is_invocable[[deprecated("Use `std::is_invocable` instead")]] = std::is_invocable<F, Args...>;
+using is_invocable [[deprecated("Use `std::is_invocable` instead")]] =
+    std::is_invocable<F, Args...>;
 
 template <typename R, typename F, typename... Args>
-using is_invocable_r[[deprecated("Use `std::is_invocable_r` instead")]] =
+using is_invocable_r [[deprecated("Use `std::is_invocable_r` instead")]] =
     std::is_invocable_r<F, Args...>;
 
 template <typename F, typename... Args>
-using is_callable[[deprecated("Use `std::is_invocable` instead")]] = std::is_invocable<F, Args...>;
+using is_callable [[deprecated("Use `std::is_invocable` instead")]] = std::is_invocable<F, Args...>;
 
 /**
  * A type trait to determine if type "callback" can be called with certain arguments.

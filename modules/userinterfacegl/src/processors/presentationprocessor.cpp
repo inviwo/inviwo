@@ -61,31 +61,38 @@ PresentationProcessor::PresentationProcessor()
     , slideIndex_("slideIndex", "Slide Index", 1, 1, 1, 1)
     , imageFileName_("imageFileName", "Image File Name")
     , interactions_("interactions", "Interactions")
-    , toggleMode_("toggleMode", "Toggle Mode",
-                  [this](Event* e) {
-                      presentationMode_.set(!presentationMode_.get());
-                      e->markAsUsed();
-                  },
-                  IvwKey::P, KeyState::Press)
-    , quitPresentation_("quitPresentation", "Quit Presentation",
-                        [this](Event* e) {
-                            presentationMode_.set(false);
-                            e->markAsUsed();
-                        },
-                        IvwKey::Escape, KeyState::Press)
-    , nextSlide_("nextSlide", "Next Slide", [this](Event* e) { nextSlide(e); }, IvwKey::Space,
-                 KeyState::Press)
-    , prevSlide_("prevSlide", "Previous Slide", [this](Event* e) { previousSlide(e); },
-                 IvwKey::Backspace, KeyState::Press)
-    , nextSlideAlt_("nextSlideAlt", "Next Slide (alternative)", [this](Event* e) { nextSlide(e); },
-                    IvwKey::Right, KeyState::Press)
-    , prevSlideAlt_("prevSlideAlt", "Previous Slide (alternative)",
-                    [this](Event* e) { previousSlide(e); }, IvwKey::Left, KeyState::Press)
-    , mouseNextSlide_("mouseNextSlide", "Next Slide (Mouse)", [this](Event* e) { nextSlide(e); },
-                      MouseButton::Left, MouseState::Press)
-    , mousePrevSlide_("mousePrevSlide", "Previous Slide (Mouse)",
-                      [this](Event* e) { previousSlide(e); }, MouseButton::Right,
-                      MouseState::Press) {
+    , toggleMode_(
+          "toggleMode", "Toggle Mode",
+          [this](Event* e) {
+              presentationMode_.set(!presentationMode_.get());
+              e->markAsUsed();
+          },
+          IvwKey::P, KeyState::Press)
+    , quitPresentation_(
+          "quitPresentation", "Quit Presentation",
+          [this](Event* e) {
+              presentationMode_.set(false);
+              e->markAsUsed();
+          },
+          IvwKey::Escape, KeyState::Press)
+    , nextSlide_(
+          "nextSlide", "Next Slide", [this](Event* e) { nextSlide(e); }, IvwKey::Space,
+          KeyState::Press)
+    , prevSlide_(
+          "prevSlide", "Previous Slide", [this](Event* e) { previousSlide(e); }, IvwKey::Backspace,
+          KeyState::Press)
+    , nextSlideAlt_(
+          "nextSlideAlt", "Next Slide (alternative)", [this](Event* e) { nextSlide(e); },
+          IvwKey::Right, KeyState::Press)
+    , prevSlideAlt_(
+          "prevSlideAlt", "Previous Slide (alternative)", [this](Event* e) { previousSlide(e); },
+          IvwKey::Left, KeyState::Press)
+    , mouseNextSlide_(
+          "mouseNextSlide", "Next Slide (Mouse)", [this](Event* e) { nextSlide(e); },
+          MouseButton::Left, MouseState::Press)
+    , mousePrevSlide_(
+          "mousePrevSlide", "Previous Slide (Mouse)", [this](Event* e) { previousSlide(e); },
+          MouseButton::Right, MouseState::Press) {
 
     isReady_.setUpdate([this]() {
         if (!presentationMode_) {

@@ -473,9 +473,9 @@ void MeshRasterization::rasterize(const ivec2& imageSize, const mat4& worldMatri
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, forceOpaque_);
         utilgl::DepthMaskState depthMask(forceOpaque_ ? GL_TRUE : GL_FALSE);
 
-        utilgl::CullFaceState culling(!showFace_[0] && showFace_[1]
-                                          ? GL_FRONT
-                                          : showFace_[0] && !showFace_[1] ? GL_BACK : GL_NONE);
+        utilgl::CullFaceState culling(!showFace_[0] && showFace_[1]   ? GL_FRONT
+                                      : showFace_[0] && !showFace_[1] ? GL_BACK
+                                                                      : GL_NONE);
         utilgl::BlendModeState blendModeState(forceOpaque_ ? GL_ONE : GL_SRC_ALPHA,
                                               forceOpaque_ ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
 

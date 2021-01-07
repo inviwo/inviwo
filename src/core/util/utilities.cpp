@@ -147,8 +147,9 @@ std::string findUniqueIdentifier(std::string_view identifier,
 
 std::string cleanIdentifier(std::string_view identifier, std::string_view extra) {
     std::string str{identifier};
-    std::replace_if(str.begin(), str.end(),
-                    [&](char c) { return !util::isValidIdentifierCharacter(c, extra); }, ' ');
+    std::replace_if(
+        str.begin(), str.end(), [&](char c) { return !util::isValidIdentifierCharacter(c, extra); },
+        ' ');
     util::erase_remove_if(str, [s = false](char c) mutable {
         if (s && c == ' ') return true;
         s = c == ' ';

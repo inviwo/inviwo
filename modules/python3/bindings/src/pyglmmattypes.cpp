@@ -121,8 +121,9 @@ void matxx(py::module& m, const std::string& prefix, const std::string& name,
         .def(py::self *= T())
         .def(py::self /= T())
 
-        .def("__getitem__", [](Mat& v, int idx) { return &v[idx]; },
-             py::return_value_policy::reference_internal)
+        .def(
+            "__getitem__", [](Mat& v, int idx) { return &v[idx]; },
+            py::return_value_policy::reference_internal)
         .def("__getitem__", [](Mat& m, int idx, int idy) { return m[idx][idy]; })
         .def("__setitem__", [](Mat& m, int idx, ColumnVector& t) { return m[idx] = t; })
         .def("__setitem__", [](Mat& m, int idx, int idy, T& t) { return m[idx][idy] = t; })

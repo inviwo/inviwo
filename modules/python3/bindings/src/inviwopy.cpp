@@ -114,8 +114,8 @@ PYBIND11_MODULE(inviwopy, m) {
         m.attr("app") = py::cast(InviwoApplication::getPtr(), py::return_value_policy::reference);
     }
 
-    m.def("getApp", []() { return InviwoApplication::getPtr(); },
-          py::return_value_policy::reference);
+    m.def(
+        "getApp", []() { return InviwoApplication::getPtr(); }, py::return_value_policy::reference);
 
     m.def("handlePythonOutput", [](const std::string& msg, int isStderr) {
         if (auto module = InviwoApplication::getPtr()->getModuleByType<Python3Module>()) {

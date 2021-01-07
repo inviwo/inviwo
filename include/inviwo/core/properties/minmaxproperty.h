@@ -241,7 +241,7 @@ auto MinMaxProperty<T>::operator*() const -> const value_type& {
 }
 
 template <typename T>
-auto MinMaxProperty<T>::operator-> () const -> const value_type* {
+auto MinMaxProperty<T>::operator->() const -> const value_type* {
     return &value_.value;
 }
 

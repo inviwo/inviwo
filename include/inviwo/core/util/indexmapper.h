@@ -61,8 +61,8 @@ template <typename IndexType>
 struct IndexMapper<3, IndexType> {
     constexpr IndexMapper(const Vector<3, IndexType>& dim) noexcept
         : dimx(dim.x), dimxy(dim.x * dim.y){};
-    constexpr IndexType operator()(const IndexType x, const IndexType y, const IndexType z) const
-        noexcept {
+    constexpr IndexType operator()(const IndexType x, const IndexType y,
+                                   const IndexType z) const noexcept {
         return x + y * dimx + z * dimxy;
     }
     constexpr IndexType operator()(const Vector<3, IndexType>& pos) const noexcept {

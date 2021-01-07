@@ -69,8 +69,8 @@ std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer& layer, int
 }
 
 std::shared_ptr<Image> ImageConvolution::lowpass(const Layer& layer, int kernelSize) {
-    return convolution_separable(layer, [](float /*p*/) { return 1.f; }, kernelSize,
-                                 static_cast<float>(kernelSize));
+    return convolution_separable(
+        layer, [](float /*p*/) { return 1.f; }, kernelSize, static_cast<float>(kernelSize));
 }
 
 std::shared_ptr<Image> ImageConvolution::convolution(const Layer& layer,
