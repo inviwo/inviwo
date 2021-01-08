@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2020-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,8 +86,8 @@ void PerspectiveCamera::zoom(float factor, std::optional<mat4> boundingBox) {
 void PerspectiveCamera::configureProperties(CameraProperty& cp, bool attach) {
     Camera::configureProperties(cp, attach);
     if (attach) {
-        util::updateOrCreateCameraFovProperty(cp, [this]() { return getFovy(); },
-                                              [this](const float& val) { setFovy(val); });
+        util::updateOrCreateCameraFovProperty(
+            cp, [this]() { return getFovy(); }, [this](const float& val) { setFovy(val); });
 
     } else if (auto fov = util::getCameraFovProperty(cp)) {
         fov->setGetAndSet([val = fov->get()]() { return val; }, [](const float&) {});

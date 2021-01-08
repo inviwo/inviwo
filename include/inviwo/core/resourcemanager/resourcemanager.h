@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,7 +76,7 @@ public:
      * @throw inviwo::ResourceException if resource with key and type T could not be found
      */
     template <typename T>
-    std::shared_ptr<T> getResource(const std::string &key);
+    std::shared_ptr<T> getResource(const std::string& key);
 
     /**
      * \brief Adds a resource to the manager
@@ -88,7 +88,7 @@ public:
      * to false
      */
     template <typename T>
-    void addResource(const std::string &key, std::shared_ptr<T> resource, bool overwrite = false);
+    void addResource(const std::string& key, std::shared_ptr<T> resource, bool overwrite = false);
 
     /**
      * \brief Checks if a resource of type T with given key exists
@@ -97,7 +97,7 @@ public:
      * @return bool true if such a resource exists, otherwise false.
      */
     template <typename T>
-    bool hasResource(const std::string &key) const;
+    bool hasResource(const std::string& key) const;
 
     /**
      * \brief Removes a resource from the manager.
@@ -107,7 +107,7 @@ public:
      * @param key the key of the resource to remove
      */
     template <typename T>
-    void removeResource(const std::string &key);
+    void removeResource(const std::string& key);
 
     /**
      * \brief Removes a resource from the manager.
@@ -119,7 +119,7 @@ public:
      * @param key the key of the resource to remove
      * @param type the type as a string of the resource to remove
      */
-    void removeResource(const std::string &key, const std::type_index &type);
+    void removeResource(const std::string& key, const std::type_index& type);
 
     /**
      * \brief Clears the resource manager.
@@ -153,7 +153,7 @@ private:
      * @param key the key to be used in the pair
      */
     template <typename T>
-    static std::pair<std::string, std::type_index> keyTypePair(const std::string &key);
+    static std::pair<std::string, std::type_index> keyTypePair(const std::string& key);
 
     std::unordered_map<std::pair<std::string, std::type_index>, std::shared_ptr<Resource>>
         resources_;
@@ -162,17 +162,17 @@ private:
 };
 
 template <typename T>
-std::shared_ptr<T> ResourceManager::getResource(const std::string &key) {
+std::shared_ptr<T> ResourceManager::getResource(const std::string& key) {
     IVW_ASSERT(!key.empty(), "Key should not be empty string");
     auto it = resources_.find(keyTypePair<T>(key));
     if (it == resources_.end()) {
         throw inviwo::ResourceException("No resource with " + key + " registered", IVW_CONTEXT);
     }
-    return static_cast<TypedResource<T> *>(it->second.get())->getData();
+    return static_cast<TypedResource<T>*>(it->second.get())->getData();
 }
 
 template <typename T>
-void ResourceManager::addResource(const std::string &key, std::shared_ptr<T> resource,
+void ResourceManager::addResource(const std::string& key, std::shared_ptr<T> resource,
                                   bool overwrite) {
     if (!enabled_) {
         return;
@@ -193,7 +193,7 @@ void ResourceManager::addResource(const std::string &key, std::shared_ptr<T> res
 }
 
 template <typename T>
-bool ResourceManager::hasResource(const std::string &key) const {
+bool ResourceManager::hasResource(const std::string& key) const {
     IVW_ASSERT(!key.empty(), "Key should not be empty string");
     auto tk = keyTypePair<T>(key);
     auto it = resources_.find(tk);
@@ -201,12 +201,12 @@ bool ResourceManager::hasResource(const std::string &key) const {
 }
 
 template <typename T>
-void ResourceManager::removeResource(const std::string &key) {
+void ResourceManager::removeResource(const std::string& key) {
     removeResource(key, typeid(T));
 }
 
 template <typename T>
-std::pair<std::string, std::type_index> ResourceManager::keyTypePair(const std::string &key) {
+std::pair<std::string, std::type_index> ResourceManager::keyTypePair(const std::string& key) {
     return {key, typeid(T)};
 }
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ ImageChannelSelect::ImageChannelSelect()
     addProperty(channelSelector_);
 }
 
-void ImageChannelSelect::preProcess(TextureUnitContainer &) {
+void ImageChannelSelect::preProcess(TextureUnitContainer&) {
     auto inDF = inport_.getData()->getDataFormat();
     dataFormat_ = DataFormatBase::get(inDF->getNumericType(), 1, inDF->getPrecision());
     shader_.setUniform("channel", channelSelector_.get());

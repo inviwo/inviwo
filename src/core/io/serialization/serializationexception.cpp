@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,8 +43,8 @@ const std::string& SerializationException::getType() const noexcept { return dat
 
 const std::string& SerializationException::getId() const noexcept { return data_.id; }
 
-const SerializationException::SerializationExceptionData& SerializationException::getData() const
-    noexcept {
+const SerializationException::SerializationExceptionData& SerializationException::getData()
+    const noexcept {
     return data_;
 }
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,8 +76,9 @@ namespace inviwo {
 
 class IVW_CORE_API ThreadPool {
 public:
-    ThreadPool(size_t threads, std::function<void()> onThreadStart = []() {},
-               std::function<void()> onThreadStop = []() {});
+    ThreadPool(
+        size_t threads, std::function<void()> onThreadStart = []() {},
+        std::function<void()> onThreadStop = []() {});
     ~ThreadPool();
 
     /**

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ public:
 
     virtual bool show() = 0;
 
-    virtual void setTitle(const std::string &title) = 0;
+    virtual void setTitle(const std::string& title) = 0;
 
     virtual void setAcceptMode(AcceptMode mode) = 0;
     virtual AcceptMode getAcceptMode() const = 0;
@@ -51,7 +51,7 @@ public:
     virtual void setFileMode(FileMode mode) = 0;
     virtual FileMode getFileMode() const = 0;
 
-    virtual void setContentType(const std::string &contentType) = 0;
+    virtual void setContentType(const std::string& contentType) = 0;
     virtual std::string getContentType() const = 0;
 
     /**
@@ -62,7 +62,7 @@ public:
      * @param filename  path and name of the file (can be either a file name or directory name
      * including the full path)
      */
-    virtual void setCurrentFile(const std::string &filename) = 0;
+    virtual void setCurrentFile(const std::string& filename) = 0;
     std::string getSelectedFile() const;
     virtual std::vector<std::string> getSelectedFiles() const = 0;
     /**
@@ -70,15 +70,15 @@ public:
      *
      * @param path  given path, must not contain a file name
      */
-    virtual void setCurrentDirectory(const std::string &path) = 0;
+    virtual void setCurrentDirectory(const std::string& path) = 0;
 
-    virtual void setSelectedExtension(const FileExtension &ext) = 0;
+    virtual void setSelectedExtension(const FileExtension& ext) = 0;
     virtual FileExtension getSelectedFileExtension() const = 0;
 
-    virtual void addExtension(const FileExtension &fileExt) = 0;
-    virtual void addExtension(const std::string &ext, const std::string &description) = 0;
-    virtual void addExtension(const std::string &extString) = 0;
-    virtual void addExtensions(const std::vector<FileExtension> &extensions) = 0;
+    virtual void addExtension(const FileExtension& fileExt) = 0;
+    virtual void addExtension(const std::string& ext, const std::string& description) = 0;
+    virtual void addExtension(const std::string& extString) = 0;
+    virtual void addExtensions(const std::vector<FileExtension>& extensions) = 0;
 };
 
 }  // namespace inviwo

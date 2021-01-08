@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,27 +44,27 @@ Common functions used in MarchingCubes and MarchingTetrahedron
 */
 namespace marching {
 template <typename T>
-double getValue(const T *src, size3_t pos, size3_t dim, double iso, bool invert) {
+double getValue(const T* src, size3_t pos, size3_t dim, double iso, bool invert) {
     double v = util::glm_convert<double>(src[VolumeRAM::posToIndex(pos, dim)]);
     return invert ? v - iso : -(v - iso);
 }
 
-glm::vec3 interpolate(const glm::vec3 &p0, double v0, const glm::vec3 &p1, double v1);
+glm::vec3 interpolate(const glm::vec3& p0, double v0, const glm::vec3& p1, double v1);
 
-void evaluateTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
-                      std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &p0,
-                      double v0, const glm::vec3 &p1, double v1, const glm::vec3 &p2, double v2);
+void evaluateTriangle(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer,
+                      std::vector<vec3>& positions, std::vector<vec3>& normals, const glm::vec3& p0,
+                      double v0, const glm::vec3& p1, double v1, const glm::vec3& p2, double v2);
 
-size_t addVertex(K3DTree<size_t, float> &vertexTree, std::vector<vec3> &positions,
-                 std::vector<vec3> &normals, const vec3 pos);
+size_t addVertex(K3DTree<size_t, float>& vertexTree, std::vector<vec3>& positions,
+                 std::vector<vec3>& normals, const vec3 pos);
 
-void addTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
-                 std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &a,
-                 const glm::vec3 &b, const glm::vec3 &c);
+void addTriangle(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer,
+                 std::vector<vec3>& positions, std::vector<vec3>& normals, const glm::vec3& a,
+                 const glm::vec3& b, const glm::vec3& c);
 
 template <typename T>
-void encloseSurfce(const T *src, const size3_t &dim, IndexBufferRAM *indexBuffer,
-                   std::vector<vec3> &positions, std::vector<vec3> &normals, double iso,
+void encloseSurfce(const T* src, const size3_t& dim, IndexBufferRAM* indexBuffer,
+                   std::vector<vec3>& positions, std::vector<vec3>& normals, double iso,
                    bool invert, double dx, double dy, double dz) {
     auto cubeEdgeIndices = [](size_t n) -> std::vector<size_t> {
         if (n == 1) return {size_t(0)};
@@ -77,7 +77,7 @@ void encloseSurfce(const T *src, const size3_t &dim, IndexBufferRAM *indexBuffer
     {
         K3DTree<size_t, float> sideVertexTree;
         // Z axis
-        for (auto &k : cubeEdgeIndices(dim.z)) {
+        for (auto& k : cubeEdgeIndices(dim.z)) {
             for (size_t j = 0; j < dim.y - 1; ++j) {
                 for (size_t i = 0; i < dim.x - 1; ++i) {
                     double x = dx * i;
@@ -113,7 +113,7 @@ void encloseSurfce(const T *src, const size3_t &dim, IndexBufferRAM *indexBuffer
         K3DTree<size_t, float> sideVertexTree;
         // Y axis
         for (size_t k = 0; k < dim.z - 1; ++k) {
-            for (auto &j : cubeEdgeIndices(dim.y)) {
+            for (auto& j : cubeEdgeIndices(dim.y)) {
                 for (size_t i = 0; i < dim.x - 1; ++i) {
                     double x = dx * i;
                     double y = dy * j;
@@ -149,7 +149,7 @@ void encloseSurfce(const T *src, const size3_t &dim, IndexBufferRAM *indexBuffer
         // X axis
         for (size_t k = 0; k < dim.z - 1; ++k) {
             for (size_t j = 0; j < dim.y - 1; ++j) {
-                for (auto &i : cubeEdgeIndices(dim.x)) {
+                for (auto& i : cubeEdgeIndices(dim.x)) {
                     double x = dx * i;
                     double y = dy * j;
                     double z = dz * k;

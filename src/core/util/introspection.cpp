@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2020-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ const std::string ClassWithClassIdentifierUpper::CLASS_IDENTIFIER = "id";
 struct Empty {};
 
 template <typename T>
-struct [[deprecated("Type in warning")]] printType {};
+struct [[deprecated("Type in warning")]] printType{};
 
 }  // namespace
 

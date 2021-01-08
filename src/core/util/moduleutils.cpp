@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@ namespace inviwo {
 
 namespace module {
 
-std::string getModulePath(const std::string &identifier, ModulePath pathType) {
+std::string getModulePath(const std::string& identifier, ModulePath pathType) {
     std::string path;
     if (auto m = InviwoApplication::getPtr()->getModuleByIdentifier(identifier)) {
         path = m->getPath(pathType);

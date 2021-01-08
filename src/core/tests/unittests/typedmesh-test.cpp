@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@
 namespace inviwo {
 
 template <typename... BufferTraits>
-bool operator==(const TypedMesh<BufferTraits...> &a, const TypedMesh<BufferTraits...> &b) {
+bool operator==(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTraits...>& b) {
     if (a.getDefaultMeshInfo() != b.getDefaultMeshInfo()) {
         return false;
     }
@@ -52,10 +52,10 @@ bool operator==(const TypedMesh<BufferTraits...> &a, const TypedMesh<BufferTrait
         (a.getNumberOfIndicies() != b.getNumberOfIndicies())) {
         return false;
     }
-    auto compareBuffers = [](const auto &buffersA, const auto &buffersB) {
-        for (auto &&elem : util::zip(buffersA, buffersB)) {
-            auto &bufA = get<0>(elem);
-            auto &bufB = get<1>(elem);
+    auto compareBuffers = [](const auto& buffersA, const auto& buffersB) {
+        for (auto&& elem : util::zip(buffersA, buffersB)) {
+            auto& bufA = get<0>(elem);
+            auto& bufB = get<1>(elem);
             if (bufA.first != bufB.first) {
                 return false;
             }
@@ -79,7 +79,7 @@ bool operator==(const TypedMesh<BufferTraits...> &a, const TypedMesh<BufferTrait
 }
 
 template <typename... BufferTraits>
-bool operator!=(const TypedMesh<BufferTraits...> &a, const TypedMesh<BufferTraits...> &b) {
+bool operator!=(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTraits...>& b) {
     return !(a == b);
 }
 
@@ -92,7 +92,7 @@ TEST(buffertraits, positionsbuffer) {
     posbuf.getEditableVertices()->setSize(1);
     posbuf.setVertexPosition(0, vec3(1.0f));
 
-    const auto &data = posbuf.getTypedDataContainer();
+    const auto& data = posbuf.getTypedDataContainer();
     ASSERT_EQ(1, data.size()) << "position buffer size != 1";
     EXPECT_EQ(vec3(1.0f), data[0]);
 }
@@ -106,7 +106,7 @@ TEST(buffertraits, colorsbuffer) {
     colorbuf.getEditableColors()->setSize(1);
     colorbuf.setVertexColor(0, vec4(0.5f, 0.25f, 0.0f, 1.0f));
 
-    const auto &data = colorbuf.getTypedDataContainer();
+    const auto& data = colorbuf.getTypedDataContainer();
     ASSERT_EQ(1, data.size()) << "color buffer size != 1";
     EXPECT_EQ(vec4(0.5f, 0.25f, 0.0f, 1.0f), data[0]);
 }
@@ -120,7 +120,7 @@ TEST(buffertraits, normalbuffer) {
     normalbuf.getEditableNormals()->setSize(1);
     normalbuf.setVertexNormal(0, vec3(0.0f, 1.0f, 0.0f));
 
-    const auto &data = normalbuf.getTypedDataContainer();
+    const auto& data = normalbuf.getTypedDataContainer();
     ASSERT_EQ(1, data.size()) << "normal buffer size != 1";
     EXPECT_EQ(vec3(0.0f, 1.0f, 0.0f), data[0]);
 }
@@ -134,7 +134,7 @@ TEST(buffertraits, texcoordbuffer2) {
     texcoordbuf.getEditableTexCoords()->setSize(1);
     texcoordbuf.setVertexTexCoord(0, vec2(0.25f, 1.0f));
 
-    const auto &data = texcoordbuf.getTypedDataContainer();
+    const auto& data = texcoordbuf.getTypedDataContainer();
     ASSERT_EQ(1, data.size()) << "texcoord buffer size != 1";
     EXPECT_EQ(vec2(0.25f, 1.0f), data[0]);
 }
@@ -148,7 +148,7 @@ TEST(buffertraits, radiibuffer) {
     radiibuf.getEditableRadii()->setSize(1);
     radiibuf.setVertexRadius(0, 3.14f);
 
-    const auto &data = radiibuf.getTypedDataContainer();
+    const auto& data = radiibuf.getTypedDataContainer();
     ASSERT_EQ(1, data.size()) << "radius buffer size != 1";
     EXPECT_FLOAT_EQ(3.14f, data[0]);
 }
@@ -250,13 +250,13 @@ TEST(vertexop, addVertexTraits) {
 
     MyMesh mesh;
     uint32_t vertexCount = 0;
-    for (auto &&elem : util::zip(vertices, colors)) {
+    for (auto&& elem : util::zip(vertices, colors)) {
         uint32_t index = mesh.addVertex(get<0>(elem), get<1>(elem));
         EXPECT_EQ(vertexCount++, index);
     }
 
-    const auto &posbuf = mesh.getTypedDataContainer<buffertraits::PositionsBuffer>();
-    const auto &colorbuf = mesh.getTypedDataContainer<buffertraits::ColorsBuffer>();
+    const auto& posbuf = mesh.getTypedDataContainer<buffertraits::PositionsBuffer>();
+    const auto& colorbuf = mesh.getTypedDataContainer<buffertraits::ColorsBuffer>();
 
     ASSERT_EQ(vertices.size(), posbuf.size()) << "number of vertices do not match";
     ASSERT_EQ(colors.size(), colorbuf.size()) << "number of colors do not match";
@@ -275,14 +275,14 @@ TEST(vertexop, addVertex) {
 
     MyMesh mesh;
     uint32_t vertexCount = 0;
-    for (auto &&elem : util::zip(vertices, colors)) {
+    for (auto&& elem : util::zip(vertices, colors)) {
         MyMesh::Vertex v = {get<0>(elem), get<1>(elem)};
         uint32_t index = mesh.addVertex(v);
         EXPECT_EQ(vertexCount++, index);
     }
 
-    const auto &posbuf = mesh.getTypedDataContainer<buffertraits::PositionsBuffer>();
-    const auto &colorbuf = mesh.getTypedDataContainer<buffertraits::ColorsBuffer>();
+    const auto& posbuf = mesh.getTypedDataContainer<buffertraits::PositionsBuffer>();
+    const auto& colorbuf = mesh.getTypedDataContainer<buffertraits::ColorsBuffer>();
 
     ASSERT_EQ(vertices.size(), posbuf.size()) << "number of vertices do not match";
     ASSERT_EQ(colors.size(), colorbuf.size()) << "number of colors do not match";
@@ -300,14 +300,14 @@ TEST(vertexop, addVertices) {
     std::array<vec4, 2> colors = {{vec4(1, 0, 0, 1), vec4(0, 1, 0, 1)}};
 
     std::vector<MyMesh::Vertex> vertexData;
-    for (auto &&elem : util::zip(vertices, colors)) {
+    for (auto&& elem : util::zip(vertices, colors)) {
         vertexData.emplace_back(get<0>(elem), get<1>(elem));
     }
     MyMesh mesh;
     mesh.addVertices(vertexData);
 
-    const auto &posbuf = mesh.getTypedDataContainer<buffertraits::PositionsBuffer>();
-    const auto &colorbuf = mesh.getTypedDataContainer<buffertraits::ColorsBuffer>();
+    const auto& posbuf = mesh.getTypedDataContainer<buffertraits::PositionsBuffer>();
+    const auto& colorbuf = mesh.getTypedDataContainer<buffertraits::ColorsBuffer>();
 
     ASSERT_EQ(vertices.size(), posbuf.size()) << "number of vertices do not match";
     ASSERT_EQ(colors.size(), colorbuf.size()) << "number of colors do not match";
@@ -328,8 +328,8 @@ TEST(vertexop, setVertexTraits) {
     mesh.addVertex(vertices[0], colors[0]);
     mesh.setVertex(0, vertices[1], colors[1]);
 
-    const auto &posbuf = mesh.getTypedDataContainer<buffertraits::PositionsBuffer>();
-    const auto &colorbuf = mesh.getTypedDataContainer<buffertraits::ColorsBuffer>();
+    const auto& posbuf = mesh.getTypedDataContainer<buffertraits::PositionsBuffer>();
+    const auto& colorbuf = mesh.getTypedDataContainer<buffertraits::ColorsBuffer>();
     EXPECT_EQ(vertices[1], posbuf[0]) << "position mismatch";
     EXPECT_EQ(colors[1], colorbuf[0]) << "color mismatch";
 }
@@ -345,8 +345,8 @@ TEST(vertexop, setVertex) {
     MyMesh::Vertex v = {vertices[1], colors[1]};
     mesh.setVertex(0, v);
 
-    const auto &posbuf = mesh.getTypedDataContainer<buffertraits::PositionsBuffer>();
-    const auto &colorbuf = mesh.getTypedDataContainer<buffertraits::ColorsBuffer>();
+    const auto& posbuf = mesh.getTypedDataContainer<buffertraits::PositionsBuffer>();
+    const auto& colorbuf = mesh.getTypedDataContainer<buffertraits::ColorsBuffer>();
     EXPECT_EQ(vertices[1], posbuf[0]) << "position mismatch";
     EXPECT_EQ(colors[1], colorbuf[0]) << "color mismatch";
 }
@@ -361,8 +361,8 @@ TEST(vertexop, setVertexPos) {
     mesh.addVertex(vertices[0], colors[0]);
     mesh.setVertex<buffertraits::PositionsBuffer>(0, vertices[1]);
 
-    const auto &posbuf = mesh.getTypedDataContainer<buffertraits::PositionsBuffer>();
-    const auto &colorbuf = mesh.getTypedDataContainer<buffertraits::ColorsBuffer>();
+    const auto& posbuf = mesh.getTypedDataContainer<buffertraits::PositionsBuffer>();
+    const auto& colorbuf = mesh.getTypedDataContainer<buffertraits::ColorsBuffer>();
     EXPECT_EQ(vertices[1], posbuf[0]) << "position mismatch";
     EXPECT_EQ(colors[0], colorbuf[0]) << "color mismatch";
 }

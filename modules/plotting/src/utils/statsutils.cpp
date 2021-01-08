@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,14 +34,14 @@ namespace inviwo {
 namespace statsutil {
 namespace detail {
 template <typename Tx, typename Ty>
-RegresionResult linearRegresion(const Tx &X, const Ty &Y) {
+RegresionResult linearRegresion(const Tx& X, const Ty& Y) {
     RegresionResult res;
     if (X.getSize() != Y.getSize()) {
         throw Exception("Buffers are not of equal length",
                         IVW_CONTEXT_CUSTOM("statsutil::detail::linearRegresion"));
     }
-    auto &xvec = X.getDataContainer();
-    auto &yvec = Y.getDataContainer();
+    auto& xvec = X.getDataContainer();
+    auto& yvec = Y.getDataContainer();
 
     // Ax = b;
     // Minimize the sum of squares of individual errors
@@ -52,7 +52,7 @@ RegresionResult linearRegresion(const Tx &X, const Ty &Y) {
     double sumY = 0;
 
     // Iterate over containers in sync
-    for (auto &&i : util::zip(xvec, yvec)) {
+    for (auto&& i : util::zip(xvec, yvec)) {
         auto x = get<0>(i);
         auto y = get<1>(i);
         if (std::isnan(static_cast<double>(x)) || std::isnan(static_cast<double>(y))) {
@@ -76,7 +76,7 @@ RegresionResult linearRegresion(const Tx &X, const Ty &Y) {
     double stdX = 0;
     double stdY = 0;
 
-    for (auto &&i : util::zip(xvec, yvec)) {
+    for (auto&& i : util::zip(xvec, yvec)) {
         if (std::isnan(static_cast<double>(get<0>(i))) ||
             std::isnan(static_cast<double>(get<1>(i)))) {
             continue;
@@ -108,7 +108,7 @@ RegresionResult linearRegresion(const Tx &X, const Ty &Y) {
 
 }  // namespace detail
 
-RegresionResult linearRegresion(const BufferBase &X, const BufferBase &Y) {
+RegresionResult linearRegresion(const BufferBase& X, const BufferBase& Y) {
     return X.getRepresentation<BufferRAM>()
         ->dispatch<RegresionResult, dispatching::filter::Scalars>([&](auto Xbuf) {
             return Y.getRepresentation<BufferRAM>()

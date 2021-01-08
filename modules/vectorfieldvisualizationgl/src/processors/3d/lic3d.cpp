@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,7 +81,7 @@ LIC3D::LIC3D()
     this->dataFormat_ = DataVec4UInt8::get();
 }
 
-void LIC3D::preProcess(TextureUnitContainer &cont) {
+void LIC3D::preProcess(TextureUnitContainer& cont) {
 
     utilgl::bindAndSetUniforms(shader_, cont, *vectorField_.getData().get(), "vectorField");
     utilgl::setUniforms(shader_, samples_, stepLength_, normalizeVectors_, intensityMapping_,

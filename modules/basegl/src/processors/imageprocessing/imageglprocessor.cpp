@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-ImageGLProcessor::ImageGLProcessor(const std::string &fragmentShader, bool buildShader)
+ImageGLProcessor::ImageGLProcessor(const std::string& fragmentShader, bool buildShader)
     : ImageGLProcessor(utilgl::findShaderResource(fragmentShader), buildShader) {}
 
 ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
@@ -106,19 +106,19 @@ void ImageGLProcessor::process() {
 
 void ImageGLProcessor::markInvalid() { internalInvalid_ = true; }
 
-void ImageGLProcessor::preProcess(TextureUnitContainer &) {}
+void ImageGLProcessor::preProcess(TextureUnitContainer&) {}
 
 void ImageGLProcessor::postProcess() {}
 
 void ImageGLProcessor::afterInportChanged() {}
 
-void ImageGLProcessor::createCustomImage(const size2_t &dim, const DataFormatBase *dataFormat,
-                                         const SwizzleMask &swizzleMask, ImageInport &inport,
-                                         ImageOutport &outport) {
+void ImageGLProcessor::createCustomImage(const size2_t& dim, const DataFormatBase* dataFormat,
+                                         const SwizzleMask& swizzleMask, ImageInport& inport,
+                                         ImageOutport& outport) {
 
     if (!outport.hasEditableData() || dataFormat != outport.getData()->getDataFormat() ||
         dim != outport.getData()->getDimensions()) {
-        Image *img = new Image(dim, dataFormat);
+        Image* img = new Image(dim, dataFormat);
         img->copyMetaDataFrom(*inport.getData());
         img->getColorLayer()->setSwizzleMask(swizzleMask);
         outport.setData(img);
@@ -128,16 +128,16 @@ void ImageGLProcessor::createCustomImage(const size2_t &dim, const DataFormatBas
     }
 }
 
-void ImageGLProcessor::createDefaultImage(const size2_t &dim, ImageInport &inport,
-                                          ImageOutport &outport) {
-    const DataFormatBase *format = inport.getData()->getDataFormat();
+void ImageGLProcessor::createDefaultImage(const size2_t& dim, ImageInport& inport,
+                                          ImageOutport& outport) {
+    const DataFormatBase* format = inport.getData()->getDataFormat();
 
     const auto swizzleMask = inport.getData()->getColorLayer()->getSwizzleMask();
 
     if (!outport.hasEditableData() || format != outport.getData()->getDataFormat() ||
         dim != outport.getData()->getDimensions() ||
         swizzleMask != outport.getData()->getColorLayer()->getSwizzleMask()) {
-        Image *img = new Image(dim, format);
+        Image* img = new Image(dim, format);
         img->copyMetaDataFrom(*inport.getData());
         // forward swizzle mask of the input
         img->getColorLayer()->setSwizzleMask(swizzleMask);

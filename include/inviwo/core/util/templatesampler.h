@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -64,17 +64,17 @@ public:
     TemplateVolumeSampler(std::shared_ptr<const Volume> sharedVolume,
                           CoordinateSpace space = CoordinateSpace::Data);
 
-    TemplateVolumeSampler(const Volume &sharedVolume,
+    TemplateVolumeSampler(const Volume& sharedVolume,
                           CoordinateSpace space = CoordinateSpace::Data);
     virtual ~TemplateVolumeSampler() = default;
 
-    virtual Vector<DataDims, T> sampleDataSpace(const dvec3 &pos) const override;
+    virtual Vector<DataDims, T> sampleDataSpace(const dvec3& pos) const override;
 
 private:
-    Vector<DataDims, T> getVoxel(const size3_t &pos) const;
-    virtual bool withinBoundsDataSpace(const dvec3 &pos) const override;
+    Vector<DataDims, T> getVoxel(const size3_t& pos) const;
+    virtual bool withinBoundsDataSpace(const dvec3& pos) const override;
 
-    const DataType *data_;
+    const DataType* data_;
     size3_t dims_;
     util::IndexMapper3D ic_;
     std::shared_ptr<const Volume> sharedVolume_;
@@ -88,16 +88,16 @@ TemplateVolumeSampler<DataType, P, T, DataDims>::TemplateVolumeSampler(
 }
 
 template <typename DataType, typename P, typename T, unsigned int DataDims>
-TemplateVolumeSampler<DataType, P, T, DataDims>::TemplateVolumeSampler(const Volume &volume,
+TemplateVolumeSampler<DataType, P, T, DataDims>::TemplateVolumeSampler(const Volume& volume,
                                                                        CoordinateSpace space)
     : SpatialSampler<3, DataDims, T>(volume, space)
-    , data_(static_cast<const DataType *>(volume.getRepresentation<VolumeRAM>()->getData()))
+    , data_(static_cast<const DataType*>(volume.getRepresentation<VolumeRAM>()->getData()))
     , dims_(volume.getRepresentation<VolumeRAM>()->getDimensions())
     , ic_(dims_) {}
 
 template <typename DataType, typename P, typename T, unsigned int DataDims>
 bool TemplateVolumeSampler<DataType, P, T, DataDims>::withinBoundsDataSpace(
-    const dvec3 &pos) const {
+    const dvec3& pos) const {
     if (glm::any(glm::lessThan(pos, dvec3(0.0)))) {
         return false;
     }
@@ -109,7 +109,7 @@ bool TemplateVolumeSampler<DataType, P, T, DataDims>::withinBoundsDataSpace(
 
 template <typename DataType, typename P, typename T, unsigned int DataDims>
 Vector<DataDims, T> TemplateVolumeSampler<DataType, P, T, DataDims>::sampleDataSpace(
-    const dvec3 &pos) const {
+    const dvec3& pos) const {
     if (!withinBoundsDataSpace(pos)) {
         return Vector<DataDims, T>{0};
     }
@@ -137,7 +137,7 @@ Vector<DataDims, T> TemplateVolumeSampler<DataType, P, T, DataDims>::sampleDataS
 
 template <typename DataType, typename P, typename T, unsigned int DataDims>
 Vector<DataDims, T> TemplateVolumeSampler<DataType, P, T, DataDims>::getVoxel(
-    const size3_t &pos) const {
+    const size3_t& pos) const {
     return static_cast<const Vector<DataDims, T>>(data_[ic_(pos)]);
 }
 

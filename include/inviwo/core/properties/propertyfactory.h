@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,20 +37,19 @@
 namespace inviwo {
 
 class IVW_CORE_API PropertyFactory
-    : public StandardFactory<Property, PropertyFactoryObject, const std::string & /*key*/,
-                             const std::string & /*identifier*/,
-                             const std::string & /*displayName*/>,
-      public Factory<Property, const std::string & /*key*/> {
+    : public StandardFactory<Property, PropertyFactoryObject, const std::string& /*key*/,
+                             const std::string& /*identifier*/, const std::string& /*displayName*/>,
+      public Factory<Property, const std::string& /*key*/> {
 public:
-    using Parent = StandardFactory<Property, PropertyFactoryObject, const std::string &,
-                                   const std::string &, const std::string &>;
+    using Parent = StandardFactory<Property, PropertyFactoryObject, const std::string&,
+                                   const std::string&, const std::string&>;
 
     PropertyFactory() = default;
     virtual ~PropertyFactory() = default;
 
     using Parent::create;
-    virtual std::unique_ptr<Property> create(const std::string &className) const override;
-    virtual bool hasKey(const std::string &key) const override;
+    virtual std::unique_ptr<Property> create(const std::string& className) const override;
+    virtual bool hasKey(const std::string& key) const override;
 };
 
 }  // namespace inviwo

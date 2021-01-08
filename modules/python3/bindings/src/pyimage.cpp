@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -108,10 +108,12 @@ void exposeImage(py::module& m) {
         .def(py::init<std::shared_ptr<Layer>>())
         .def("clone", [](Image& self) { return self.clone(); })
         .def_property_readonly("dimensions", &Image::getDimensions)
-        .def_property_readonly("depth", [](Image& img) { return img.getDepthLayer(); },
-                               py::return_value_policy::reference_internal)
-        .def_property_readonly("picking", [](Image& img) { return img.getPickingLayer(); },
-                               py::return_value_policy::reference_internal)
+        .def_property_readonly(
+            "depth", [](Image& img) { return img.getDepthLayer(); },
+            py::return_value_policy::reference_internal)
+        .def_property_readonly(
+            "picking", [](Image& img) { return img.getPickingLayer(); },
+            py::return_value_policy::reference_internal)
         .def_property_readonly("colorLayers", getLayers)
         .def("__repr__", [](const Image& self) {
             const auto dims = self.getDimensions();

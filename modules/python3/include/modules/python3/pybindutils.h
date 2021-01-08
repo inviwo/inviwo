@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,15 +54,15 @@ class Volume;
 
 namespace pyutil {
 
-IVW_MODULE_PYTHON3_API pybind11::dtype toNumPyFormat(const DataFormatBase *df);
-IVW_MODULE_PYTHON3_API const DataFormatBase *getDataFormat(size_t components, pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::unique_ptr<BufferBase> createBuffer(pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::unique_ptr<Layer> createLayer(pybind11::array &arr);
-IVW_MODULE_PYTHON3_API std::unique_ptr<Volume> createVolume(pybind11::array &arr);
+IVW_MODULE_PYTHON3_API pybind11::dtype toNumPyFormat(const DataFormatBase* df);
+IVW_MODULE_PYTHON3_API const DataFormatBase* getDataFormat(size_t components, pybind11::array& arr);
+IVW_MODULE_PYTHON3_API std::unique_ptr<BufferBase> createBuffer(pybind11::array& arr);
+IVW_MODULE_PYTHON3_API std::unique_ptr<Layer> createLayer(pybind11::array& arr);
+IVW_MODULE_PYTHON3_API std::unique_ptr<Volume> createVolume(pybind11::array& arr);
 
 template <int Dim>
-void checkDataFormat(const DataFormatBase *format, const Vector<Dim, size_t> &dim,
-                     const pybind11::array &data) {
+void checkDataFormat(const DataFormatBase* format, const Vector<Dim, size_t>& dim,
+                     const pybind11::array& data) {
     namespace py = pybind11;
     const auto expectedType = pyutil::toNumPyFormat(format);
     if (!data.dtype().is(expectedType)) {
@@ -98,17 +98,17 @@ pybind11::dtype toNumPyFormat() {
     return toNumPyFormat(DataFormat<T>::get());
 }
 template <typename T>
-T toPyBindObjectBorrow(PyObject *obj) {
+T toPyBindObjectBorrow(PyObject* obj) {
     return pybind11::reinterpret_borrow<T>(pybind11::handle(obj));
 }
 
 template <typename T>
-T toPyBindObjectSteal(PyObject *obj) {
+T toPyBindObjectSteal(PyObject* obj) {
     return pybind11::reinterpret_steal<T>(pybind11::handle(obj));
 }
 
 template <typename T>
-pybind11::array toNpArray(const std::vector<T> &v) {
+pybind11::array toNpArray(const std::vector<T>& v) {
     auto df = DataFormat<T>::get();
     auto componentSize = df->getSize();
 

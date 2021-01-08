@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
 
 namespace inviwo {
 namespace util {
-bool hasTimestamps(const VolumeSequence &seq, bool checkfirstonly) {
+bool hasTimestamps(const VolumeSequence& seq, bool checkfirstonly) {
     if (seq.empty()) {
         return false;
     }
@@ -46,7 +46,7 @@ bool hasTimestamps(const VolumeSequence &seq, bool checkfirstonly) {
     return true;
 }
 
-std::pair<double, double> getTimestampRange(const VolumeSequence &seq, bool sorted) {
+std::pair<double, double> getTimestampRange(const VolumeSequence& seq, bool sorted) {
     if (!hasTimestamps(seq)) {
         return std::make_pair(0.0, 1.0);
     }
@@ -65,7 +65,7 @@ std::pair<double, double> getTimestampRange(const VolumeSequence &seq, bool sort
     return std::make_pair(start, end);
 }
 
-bool isSorted(const VolumeSequence &seq) {
+bool isSorted(const VolumeSequence& seq) {
     if (seq.size() <= 1) {
         return true;
     }
@@ -79,9 +79,9 @@ bool isSorted(const VolumeSequence &seq) {
     return true;
 }
 
-VolumeSequence sortSequence(const VolumeSequence &seq) {
+VolumeSequence sortSequence(const VolumeSequence& seq) {
     VolumeSequence sorted = seq;
-    std::sort(sorted.begin(), sorted.end(), [](const SharedVolume &a, const SharedVolume &b) {
+    std::sort(sorted.begin(), sorted.end(), [](const SharedVolume& a, const SharedVolume& b) {
         auto t1 = getTimestamp(a);
         auto t2 = getTimestamp(b);
         return t1 < t2;
@@ -89,7 +89,7 @@ VolumeSequence sortSequence(const VolumeSequence &seq) {
     return sorted;
 }
 
-std::pair<SharedVolume, SharedVolume> getVolumesForTimestep(const VolumeSequence &seq, double t,
+std::pair<SharedVolume, SharedVolume> getVolumesForTimestep(const VolumeSequence& seq, double t,
                                                             bool sorted) {
     if (seq.size() == 1) {
         return std::make_pair(seq.front(), seq.front());
@@ -106,7 +106,7 @@ std::pair<SharedVolume, SharedVolume> getVolumesForTimestep(const VolumeSequence
         return std::make_pair(seq[i], seq[i2]);
     } else if (sorted) {
         // find first volume with timestamp greater than t
-        auto it = std::find_if(seq.begin(), seq.end(), [t](const SharedVolume &v) {
+        auto it = std::find_if(seq.begin(), seq.end(), [t](const SharedVolume& v) {
             auto vt = getTimestamp(v);
             return t < vt;
         });

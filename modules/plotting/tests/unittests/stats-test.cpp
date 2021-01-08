@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,8 +39,8 @@ namespace inviwo {
 TEST(StatsUtilsTest, init) {
     Buffer<double> X;
     Buffer<double> Y;
-    auto &vecX = X.getEditableRAMRepresentation()->getDataContainer();
-    auto &vecY = Y.getEditableRAMRepresentation()->getDataContainer();
+    auto& vecX = X.getEditableRAMRepresentation()->getDataContainer();
+    auto& vecY = Y.getEditableRAMRepresentation()->getDataContainer();
     vecX.emplace_back(95);
     vecX.emplace_back(85);
     vecX.emplace_back(80);

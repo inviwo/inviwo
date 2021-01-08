@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,23 +86,25 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
               return it == exts.end() ? 0 : std::distance(exts.begin(), it);
           }())
     , saveLayerDirectory_("layerDir", "Output Directory", "", "image")
-    , saveLayerButton_("saveLayer", "Save Image Layer", [this]() { saveImageLayer(); },
-                       InvalidationLevel::Valid)
-    , saveLayerToFileButton_("saveLayerToFile", "Save Image Layer to File...",
-                             [this]() {
-                                 if (auto layer = getVisibleLayer()) {
-                                     util::saveLayer(*layer);
-                                 } else {
-                                     LogError("Could not find visible layer");
-                                 }
-                             },
-                             InvalidationLevel::Valid)
+    , saveLayerButton_(
+          "saveLayer", "Save Image Layer", [this]() { saveImageLayer(); }, InvalidationLevel::Valid)
+    , saveLayerToFileButton_(
+          "saveLayerToFile", "Save Image Layer to File...",
+          [this]() {
+              if (auto layer = getVisibleLayer()) {
+                  util::saveLayer(*layer);
+              } else {
+                  LogError("Could not find visible layer");
+              }
+          },
+          InvalidationLevel::Valid)
     , fullScreen_("fullscreen", "Toggle Full Screen", false)
-    , fullScreenEvent_("fullscreenEvent", "FullScreen",
-                       [this](Event*) { fullScreen_.set(!fullScreen_); }, IvwKey::F,
-                       KeyState::Press, KeyModifier::Shift)
-    , saveLayerEvent_("saveLayerEvent", "Save Image Layer", [this](Event*) { saveImageLayer(); },
-                      IvwKey::Undefined, KeyState::Press)
+    , fullScreenEvent_(
+          "fullscreenEvent", "FullScreen", [this](Event*) { fullScreen_.set(!fullScreen_); },
+          IvwKey::F, KeyState::Press, KeyModifier::Shift)
+    , saveLayerEvent_(
+          "saveLayerEvent", "Save Image Layer", [this](Event*) { saveImageLayer(); },
+          IvwKey::Undefined, KeyState::Press)
     , allowContextMenu_("allowContextMenu", "Allow Context Menu", true)
     , evaluateWhenHidden_("evaluateWhenHidden", "Evaluate When Hidden", false)
     , previousImageSize_(customInputDimensions_)

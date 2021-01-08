@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@
 namespace inviwo {
 namespace colorbrewer {
 
-const std::vector<dvec4> &getColormap(const Family &family, glm::uint8 numberOfColors) {
+const std::vector<dvec4>& getColormap(const Family& family, glm::uint8 numberOfColors) {
     const auto minColors = getMinNumberOfColorsForFamily(family);
     const auto maxColors = getMaxNumberOfColorsForFamily(family);
     if (numberOfColors < minColors || numberOfColors > maxColors) {
@@ -61,7 +61,7 @@ const std::vector<dvec4> &getColormap(const Family &family, glm::uint8 numberOfC
     return getColormap(c);
 }
 
-std::vector<std::vector<dvec4>> getColormaps(const Family &family) {
+std::vector<std::vector<dvec4>> getColormaps(const Family& family) {
     // Calculate offset into the std::vector<dvec4> enum class
     auto familyIndex = static_cast<int>(family);
     int accumulated = 0;
@@ -80,33 +80,33 @@ std::vector<std::vector<dvec4>> getColormaps(const Family &family) {
         v.emplace_back(static_cast<Colormap>(accumulated + i));
 
     std::vector<std::vector<dvec4>> ret;
-    for (const auto &c : v) {
+    for (const auto& c : v) {
         ret.emplace_back(getColormap(c));
     }
 
     return ret;
 }
 
-std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(const Category &category) {
+std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(const Category& category) {
     std::map<Family, std::vector<std::vector<dvec4>>> v;
 
-    for (const auto &family : getFamiliesForCategory(category))
+    for (const auto& family : getFamiliesForCategory(category))
         v.emplace(family, getColormaps(family));
 
     return v;
 }
 
-std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
+std::map<Family, std::vector<dvec4>> getColormaps(const Category& category,
                                                   glm::uint8 numberOfColors) {
     std::map<Family, std::vector<dvec4>> v;
 
-    for (const auto &family : getFamiliesForCategory(category)) {
+    for (const auto& family : getFamiliesForCategory(category)) {
         // We catch the exceptions here because otherwise, the method would just throw an
         // exception if one of the requested colormaps is not available, even if the others were.
         // This way, if 3 out of 4 requested colormaps exist, they are returned.
         try {
             v.emplace(family, getColormap(family, numberOfColors));
-        } catch (UnsupportedNumberOfColorsException &e) {
+        } catch (UnsupportedNumberOfColorsException& e) {
             LogWarnCustom("colorbrewer", "Family " << family << " omitted, reason: \n"
                                                    << e.getMessage(););
         }
@@ -120,7 +120,7 @@ std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
     return v;
 }
 
-TransferFunction getTransferFunction(const Category &category, const Family &family,
+TransferFunction getTransferFunction(const Category& category, const Family& family,
                                      glm::uint8 nColors, bool discrete, double midPoint) {
     TransferFunction tf;
     auto colors = colorbrewer::getColormap(family, nColors);
@@ -171,7 +171,7 @@ TransferFunction getTransferFunction(const Category &category, const Family &fam
         if (discrete) {
             double dt = 1.0 / (colors.size());
             double start = 0, end = dt - std::numeric_limits<double>::epsilon();
-            for (const auto &c : colors) {
+            for (const auto& c : colors) {
                 tf.add(start, vec4(c));
                 tf.add(end, vec4(c));
                 start += dt;
@@ -180,7 +180,7 @@ TransferFunction getTransferFunction(const Category &category, const Family &fam
         } else {
             auto dt = 1.0 / (colors.size() - 1.0);
             size_t idx = 0;
-            for (const auto &c : colors) {
+            for (const auto& c : colors) {
                 tf.add(idx++ * dt, vec4(c));
             }
         }

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,13 +43,13 @@ namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API IndicatorWidget : public QWidget {
 public:
-    explicit IndicatorWidget(QWidget *parent = nullptr);
+    explicit IndicatorWidget(QWidget* parent = nullptr);
 
     void setBasePoint(QPoint p);
     void setLength(int len);
 
 protected:
-    virtual void paintEvent(QPaintEvent *e) override;
+    virtual void paintEvent(QPaintEvent* e) override;
 
 private:
     void set(QPoint base, int len);

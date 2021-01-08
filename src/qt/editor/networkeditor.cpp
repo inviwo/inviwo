@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -680,13 +680,13 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             for (auto& p : selectedComposites) {
                 const auto compDir = mainwindow_->getInviwoApplication()->getPath(
                     PathType::Settings, "/composites", true);
-                const auto filename =
-                    util::findUniqueIdentifier(util::stripIdentifier(p->getDisplayName()),
-                                               [&](std::string_view name) {
-                                                   StrBuffer path{"{}/{}.inv", compDir, name};
-                                                   return !filesystem::fileExists(path);
-                                               },
-                                               "");
+                const auto filename = util::findUniqueIdentifier(
+                    util::stripIdentifier(p->getDisplayName()),
+                    [&](std::string_view name) {
+                        StrBuffer path{"{}/{}.inv", compDir, name};
+                        return !filesystem::fileExists(path);
+                    },
+                    "");
                 filesystem::createDirectoryRecursively(compDir);
                 const auto path = compDir + "/" + filename + ".inv";
                 p->saveSubNetwork(path);

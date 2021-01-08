@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,7 +61,7 @@ public:
     // coordinates. Return true if the rectangle was provided.
     ///
     /*--cef()--*/
-    virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
+    virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
 
     ///
     // Called when the browser wants to show or hide the popup widget. The popup
@@ -75,10 +75,10 @@ public:
     // contains the new location and size in view coordinates.
     ///
     /*--cef()--*/
-    virtual void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect &rect) override;
+    virtual void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) override;
 
     virtual void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
-                         const RectList &dirtyRects, const void *buffer, int width,
+                         const RectList& dirtyRects, const void* buffer, int width,
                          int height) override;
     /*
      * Get data containing the web page.
@@ -88,7 +88,7 @@ public:
      *   |        |
      * (0,1) -- (1,1)
      */
-    Texture2D &getTexture2D(CefRefPtr<CefBrowser> browser);
+    Texture2D& getTexture2D(CefRefPtr<CefBrowser> browser);
 
     void ClearPopupRects(CefRefPtr<CefBrowser> browser);
 
@@ -98,7 +98,7 @@ private:
         CefRect popupRect;
         CefRect originalPopupRect;
     };
-    CefRect GetPopupRectInWebView(CefRefPtr<CefBrowser> browser, const CefRect &original_rect);
+    CefRect GetPopupRectInWebView(CefRefPtr<CefBrowser> browser, const CefRect& original_rect);
 
     std::map<int, BrowserData> browserData_;  /// Per browser data
 

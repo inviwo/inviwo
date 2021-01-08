@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ struct IVW_MODULE_FONTRENDERING_API TextBoundingBox {
 
     TextBoundingBox() = default;
 
-    TextBoundingBox(const size2_t &textExt, const ivec2 &glyphsOrigin, const size2_t &glyphsExt,
+    TextBoundingBox(const size2_t& textExt, const ivec2& glyphsOrigin, const size2_t& glyphsExt,
                     int baselineOffset);
 
     size2_t textExtent{0};  //<! extent of textual bounding box

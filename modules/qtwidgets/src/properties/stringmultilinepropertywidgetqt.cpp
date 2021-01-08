@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,10 +39,10 @@
 
 namespace inviwo {
 
-StringMultilinePropertyWidgetQt::StringMultilinePropertyWidgetQt(StringProperty *property)
+StringMultilinePropertyWidgetQt::StringMultilinePropertyWidgetQt(StringProperty* property)
     : PropertyWidgetQt(property), property_(property) {
 
-    QHBoxLayout *hLayout = new QHBoxLayout;
+    QHBoxLayout* hLayout = new QHBoxLayout;
     setSpacingAndMargins(hLayout);
 
     label_ = new EditableLabelQt(this, property_);
@@ -84,7 +84,7 @@ void StringMultilinePropertyWidgetQt::updateFromProperty() {
     }
 }
 
-MultilineTextEdit::MultilineTextEdit(QWidget *parent)
+MultilineTextEdit::MultilineTextEdit(QWidget* parent)
     : QPlainTextEdit(parent), minLineCount_(2), maxLineCount_(10), showContextMenu_(false) {
     QFontMetrics fontMetric(font());
     lineHeight_ = static_cast<int>(fontMetric.lineSpacing() * 1.5);
@@ -103,7 +103,7 @@ MultilineTextEdit::MultilineTextEdit(QWidget *parent)
 
 MultilineTextEdit::~MultilineTextEdit() = default;
 
-void MultilineTextEdit::focusOutEvent(QFocusEvent *e) {
+void MultilineTextEdit::focusOutEvent(QFocusEvent* e) {
     if (showContextMenu_) {
         return;
     }
@@ -118,12 +118,12 @@ void MultilineTextEdit::focusOutEvent(QFocusEvent *e) {
     QPlainTextEdit::focusOutEvent(e);
 }
 
-void MultilineTextEdit::resizeEvent(QResizeEvent *e) {
+void MultilineTextEdit::resizeEvent(QResizeEvent* e) {
     QPlainTextEdit::resizeEvent(e);
     adjustHeight();
 }
 
-void MultilineTextEdit::keyPressEvent(QKeyEvent *e) {
+void MultilineTextEdit::keyPressEvent(QKeyEvent* e) {
     // commit text changes when pressing CTRL + Return or Enter
     if (((e->key() == Qt::Key_Return) || (e->key() == Qt::Key_Enter)) &&
         (e->modifiers() & Qt::ControlModifier)) {
@@ -135,7 +135,7 @@ void MultilineTextEdit::keyPressEvent(QKeyEvent *e) {
     }
 }
 
-void MultilineTextEdit::contextMenuEvent(QContextMenuEvent *e) {
+void MultilineTextEdit::contextMenuEvent(QContextMenuEvent* e) {
     showContextMenu_ = true;
     QPlainTextEdit::contextMenuEvent(e);
     showContextMenu_ = false;

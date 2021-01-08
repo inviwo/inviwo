@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ namespace inviwo {
 
 namespace pyutil {
 
-pybind11::dtype toNumPyFormat(const DataFormatBase *df) {
+pybind11::dtype toNumPyFormat(const DataFormatBase* df) {
     std::string format;
     switch (df->getNumericType()) {
         case inviwo::NumericType::Float:
@@ -72,7 +72,7 @@ pybind11::dtype toNumPyFormat(const DataFormatBase *df) {
     return pybind11::dtype(format);
 }
 
-const DataFormatBase *getDataFormat(size_t components, pybind11::array &arr) {
+const DataFormatBase* getDataFormat(size_t components, pybind11::array& arr) {
     auto k = arr.dtype().kind();
     auto numType = [&]() {
         if (k == 'f')
@@ -94,7 +94,7 @@ struct BufferFromArrayDispatcher {
     using type = std::unique_ptr<BufferBase>;
 
     template <typename Result, typename T>
-    std::unique_ptr<BufferBase> operator()(pybind11::array &arr) {
+    std::unique_ptr<BufferBase> operator()(pybind11::array& arr) {
         using Type = typename T::type;
         auto buf = std::make_unique<Buffer<Type>>(arr.shape(0));
         memcpy(buf->getEditableRAMRepresentation()->getData(), arr.data(0), arr.nbytes());
@@ -106,7 +106,7 @@ struct LayerFromArrayDispatcher {
     using type = std::unique_ptr<Layer>;
 
     template <typename Result, typename T>
-    std::unique_ptr<Layer> operator()(pybind11::array &arr) {
+    std::unique_ptr<Layer> operator()(pybind11::array& arr) {
         using Type = typename T::type;
         size2_t dims(arr.shape(0), arr.shape(1));
         auto layerRAM = std::make_shared<LayerRAMPrecision<Type>>(dims);
@@ -119,7 +119,7 @@ struct VolumeFromArrayDispatcher {
     using type = std::unique_ptr<Volume>;
 
     template <typename Result, typename T>
-    std::unique_ptr<Volume> operator()(pybind11::array &arr) {
+    std::unique_ptr<Volume> operator()(pybind11::array& arr) {
         using Type = typename T::type;
         size3_t dims(arr.shape(0), arr.shape(1), arr.shape(2));
         auto volumeRAM = std::make_shared<VolumeRAMPrecision<Type>>(dims);
@@ -128,7 +128,7 @@ struct VolumeFromArrayDispatcher {
     }
 };
 
-std::unique_ptr<BufferBase> createBuffer(pybind11::array &arr) {
+std::unique_ptr<BufferBase> createBuffer(pybind11::array& arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 1 || ndim == 2, "ndims must be either 1 or 2");
     auto df = pyutil::getDataFormat(ndim == 1 ? 1 : arr.shape(1), arr);
@@ -137,7 +137,7 @@ std::unique_ptr<BufferBase> createBuffer(pybind11::array &arr) {
         df->getId(), dispatcher, arr);
 }
 
-std::unique_ptr<Layer> createLayer(pybind11::array &arr) {
+std::unique_ptr<Layer> createLayer(pybind11::array& arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 2 || ndim == 3, "Ndims must be either 2 or 3");
     auto df = pyutil::getDataFormat(ndim == 2 ? 1 : arr.shape(2), arr);
@@ -146,7 +146,7 @@ std::unique_ptr<Layer> createLayer(pybind11::array &arr) {
                                                                                    dispatcher, arr);
 }
 
-std::unique_ptr<Volume> createVolume(pybind11::array &arr) {
+std::unique_ptr<Volume> createVolume(pybind11::array& arr) {
     auto ndim = arr.ndim();
     ivwAssert(ndim == 3 || ndim == 4, "Ndims must be either 3 or 4");
     auto df = pyutil::getDataFormat(ndim == 3 ? 1 : arr.shape(3), arr);

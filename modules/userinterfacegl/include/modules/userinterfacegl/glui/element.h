@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -78,7 +78,7 @@ public:
 
     virtual std::string getClassIdentifier() const = 0;
 
-    Element(const std::string &label, Processor &processor, Renderer &uiRenderer,
+    Element(const std::string& label, Processor& processor, Renderer& uiRenderer,
             UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~Element();
 
@@ -88,8 +88,8 @@ public:
     void setEnabled(bool enable = true);
     bool isEnabled() const;
 
-    void setLabel(const std::string &str);
-    const std::string &getLabel() const;
+    void setLabel(const std::string& str);
+    const std::string& getLabel() const;
 
     void setFontSize(int size);
     int getFontSize() const;
@@ -112,14 +112,14 @@ public:
      * \brief sets the extent of the widget
      * @param extent   new extent of the widget
      */
-    void setWidgetExtent(const ivec2 &extent);
-    const ivec2 &getWidgetExtent() const;
+    void setWidgetExtent(const ivec2& extent);
+    const ivec2& getWidgetExtent() const;
 
     /**
      * \brief sets the extent of the widget
      * @param extent   new extent of the widget (including scaling)
      */
-    void setWidgetExtentScaled(const ivec2 &extent);
+    void setWidgetExtentScaled(const ivec2& extent);
     /**
      * \brief returns the true widget extent including scaling
      * @return widget extent
@@ -130,7 +130,7 @@ public:
      *
      * @return total element extent
      */
-    const ivec2 &getExtent();
+    const ivec2& getExtent();
 
     /**
      * \brief render the widget and its label at the given position
@@ -138,7 +138,7 @@ public:
      * @param origin         defines the lower left corner where the widget is positioned
      * @param canvasDim      dimensions of the output canvas
      */
-    void render(const ivec2 &origin, const size2_t &canvasDim);
+    void render(const ivec2& origin, const size2_t& canvasDim);
 
     void setHoverState(bool enable);
     bool isHovered() const { return hovered_; }
@@ -152,14 +152,14 @@ public:
     /**
      * \brief sets the callback action when the user releases the mouse button
      */
-    void setAction(const std::function<void()> &action);
+    void setAction(const std::function<void()>& action);
 
     /**
      * Sets a callback function for picking events to enable custom behaviors
      * This function is called (if set) in the picking event handling after the internal event
      * handling is done.
      */
-    void setPickingEventAction(std::function<void(PickingEvent *e)> pickingAction);
+    void setPickingEventAction(std::function<void(PickingEvent* e)> pickingAction);
 
 protected:
     /**
@@ -177,7 +177,7 @@ protected:
      * @param action   function taking one argument (2D delta position in screen coords) returning
      * true if the movement triggers an update of the element
      */
-    void setMouseMoveAction(const std::function<bool(const dvec2 &)> &action);
+    void setMouseMoveAction(const std::function<bool(const dvec2&)>& action);
 
     /**
      * \brief gets called on mouse move events
@@ -186,7 +186,7 @@ protected:
      * position
      * @return true if the movement triggers an update of the element
      */
-    bool moveAction(const dvec2 &delta);
+    bool moveAction(const dvec2& delta);
 
     void updateExtent();
     void updateLabelPos();
@@ -206,14 +206,14 @@ protected:
      */
     virtual void pushStateChanged(){};
 
-    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) = 0;
+    virtual void renderWidget(const ivec2& origin, const size2_t& canvasDim) = 0;
 
-    void renderLabel(const ivec2 &origin, const size2_t &canvasDim);
+    void renderLabel(const ivec2& origin, const size2_t& canvasDim);
 
-    void handlePickingEvent(PickingEvent *e);
+    void handlePickingEvent(PickingEvent* e);
 
     // reduce saturation and darken color
-    static vec4 adjustColor(const vec4 &color);
+    static vec4 adjustColor(const vec4& color);
 
     /**
      * \brief set up text renderer for rendering the label using current settings,
@@ -221,13 +221,13 @@ protected:
      *
      * @return reference to the set-up text renderer
      */
-    TextRenderer &getCurrentTextRenderer() const;
+    TextRenderer& getCurrentTextRenderer() const;
 
     std::function<void()>
         action_;  //<! is called by triggerAction() after the internal state has been updated
-    std::function<bool(const dvec2 &)> moveAction_;  //!< is called by mouseMoved()
+    std::function<bool(const dvec2&)> moveAction_;  //!< is called by mouseMoved()
 
-    std::function<void(PickingEvent *e)> pickingAction_;
+    std::function<void(PickingEvent* e)> pickingAction_;
 
     // UI interaction states
     bool hovered_;  // true as long as the element is under the mouse and element is enabled
@@ -257,8 +257,8 @@ protected:
 
     std::shared_ptr<Texture2D> labelTexture_;
 
-    Processor *processor_;
-    Renderer *uiRenderer_;
+    Processor* processor_;
+    Renderer* uiRenderer_;
 
     PickingMapper pickingMapper_;
     size_t currentPickingID_;

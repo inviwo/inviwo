@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ class IVW_MODULE_BASEGL_API AxisAlignedCutPlane : public Processor {
     template <Axis axis>
     class SliceProperty : public BoolCompositeProperty {
     public:
-        SliceProperty(const std::string &identifier, const std::string &displayName);
+        SliceProperty(const std::string& identifier, const std::string& displayName);
 
         IntProperty slice_;
 
@@ -67,7 +67,7 @@ class IVW_MODULE_BASEGL_API AxisAlignedCutPlane : public Processor {
 
         void createDrawer(std::shared_ptr<const Volume> vol);
 
-        void draw(Shader &shader);
+        void draw(Shader& shader);
 
     private:
         static vec3 forSlice(int axes, double a, double b, double t);
@@ -123,8 +123,8 @@ protected:
 };
 
 template <AxisAlignedCutPlane::Axis axis>
-AxisAlignedCutPlane::SliceProperty<axis>::SliceProperty(const std::string &identifier,
-                                                        const std::string &displayName)
+AxisAlignedCutPlane::SliceProperty<axis>::SliceProperty(const std::string& identifier,
+                                                        const std::string& displayName)
     : BoolCompositeProperty(identifier, displayName, true)
     , slice_("slice", "Slice", 50, 1, 100)
     , mesh_(nullptr)
@@ -165,7 +165,7 @@ void AxisAlignedCutPlane::SliceProperty<axis>::createDrawer(std::shared_ptr<cons
 }
 
 template <AxisAlignedCutPlane::Axis axis>
-void AxisAlignedCutPlane::SliceProperty<axis>::draw(Shader &shader) {
+void AxisAlignedCutPlane::SliceProperty<axis>::draw(Shader& shader) {
     if (!isChecked()) return;
     utilgl::setShaderUniforms(shader, *mesh_, "geometry");
     drawer_->draw();

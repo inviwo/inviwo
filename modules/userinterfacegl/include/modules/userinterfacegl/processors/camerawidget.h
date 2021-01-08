@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -109,10 +109,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    void updateWidgetTexture(const ivec2 &widgetSize);
+    void updateWidgetTexture(const ivec2& widgetSize);
     void drawWidgetTexture();
 
-    void objectPicked(PickingEvent *p);
+    void objectPicked(PickingEvent* p);
     void saveInitialCameraState();
     void loadMesh();
 
@@ -124,11 +124,11 @@ private:
     void zoom(dvec2 delta);
     void singleStepZoom(bool zoomIn);
 
-    void updateOutput(const mat4 &rotation);
+    void updateOutput(const mat4& rotation);
 
     static int interactionDirectionToInt(Interaction dir);
     static Interaction intToInteractionDirection(int dir);
-    vec3 getObjectRotationAxis(const vec3 &rotAxis) const;
+    vec3 getObjectRotationAxis(const vec3& rotAxis) const;
 
     ImageInport inport_;
     ImageOutport outport_;
@@ -208,7 +208,7 @@ private:
 
     std::unique_ptr<Image> widgetImage_;  //!< the widget is rendered into this image, which is then
                                           //!< drawn on top of the input image
-    ImageGL *widgetImageGL_;  //!< keep an ImageGL representation around to avoid overhead
+    ImageGL* widgetImageGL_;  //!< keep an ImageGL representation around to avoid overhead
 };
 
 }  // namespace inviwo

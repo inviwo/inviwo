@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,8 +43,8 @@ namespace inviwo {
 
 namespace glui {
 
-AbstractButton::AbstractButton(const std::string &label, Processor &processor, Renderer &uiRenderer,
-                               const ivec2 &extent)
+AbstractButton::AbstractButton(const std::string& label, Processor& processor, Renderer& uiRenderer,
+                               const ivec2& extent)
     : Element(label, processor, uiRenderer) {
     widgetExtent_ = extent;
     setLabelBold(true);

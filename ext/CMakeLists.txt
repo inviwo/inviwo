@@ -257,11 +257,11 @@ if(WIN32 AND MSVC)
     endif()
 endif()
 
-if(PYTHONLIBS_FOUND)
+if(Python3_FOUND)
     option(IVW_USE_EXTERNAL_PYBIND11 "Pybind11 is provided externaly" OFF)
     if(NOT IVW_USE_EXTERNAL_PYBIND11)
         add_subdirectory(pybind11)
-        ivw_register_license_file(NAME "PyBind11" VERSION 2.2.4 MODULE Core EXT
+        ivw_register_license_file(NAME "PyBind11" VERSION 2.6.1 MODULE Core EXT
             URL "https://github.com/pybind/pybind11"
             TYPE "BSD-style"
             FILES ${IVW_EXTENSIONS_DIR}/pybind11/LICENSE

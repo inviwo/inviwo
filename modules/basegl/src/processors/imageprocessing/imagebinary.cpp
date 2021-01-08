@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,6 @@ ImageBinary::ImageBinary()
     addProperty(threshold_);
 }
 
-void ImageBinary::preProcess(TextureUnitContainer &) { utilgl::setUniforms(shader_, threshold_); }
+void ImageBinary::preProcess(TextureUnitContainer&) { utilgl::setUniforms(shader_, threshold_); }
 
 }  // namespace inviwo

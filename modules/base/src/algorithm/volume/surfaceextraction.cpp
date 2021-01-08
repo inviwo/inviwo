@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@
 namespace inviwo {
 namespace marching {
 
-glm::vec3 interpolate(const glm::vec3 &p0, double v0, const glm::vec3 &p1, double v1) {
+glm::vec3 interpolate(const glm::vec3& p0, double v0, const glm::vec3& p1, double v1) {
     if (v0 == v1) {
         return p0;
     }
@@ -40,9 +40,9 @@ glm::vec3 interpolate(const glm::vec3 &p0, double v0, const glm::vec3 &p1, doubl
     return p0 + t * (p1 - p0);
 }
 
-void evaluateTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
-                      std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &p0,
-                      double v0, const glm::vec3 &p1, double v1, const glm::vec3 &p2, double v2) {
+void evaluateTriangle(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer,
+                      std::vector<vec3>& positions, std::vector<vec3>& normals, const glm::vec3& p0,
+                      double v0, const glm::vec3& p1, double v1, const glm::vec3& p2, double v2) {
     int index = 0;
     if (v0 <= 0.0) index += 1;
     if (v1 <= 0.0) index += 2;
@@ -82,8 +82,8 @@ void evaluateTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexB
     }
 }
 
-size_t addVertex(K3DTree<size_t, float> &vertexTree, std::vector<vec3> &positions,
-                 std::vector<vec3> &normals, const vec3 pos) {
+size_t addVertex(K3DTree<size_t, float>& vertexTree, std::vector<vec3>& positions,
+                 std::vector<vec3>& normals, const vec3 pos) {
     auto nearest = vertexTree.findNearest(vec3(pos));
     const auto nearestPos = [&]() {
         return vec3{nearest->getPosition()[0], nearest->getPosition()[1],
@@ -97,9 +97,9 @@ size_t addVertex(K3DTree<size_t, float> &vertexTree, std::vector<vec3> &position
     return nearest->get();
 }
 
-void addTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
-                 std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &a,
-                 const glm::vec3 &b, const glm::vec3 &c) {
+void addTriangle(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer,
+                 std::vector<vec3>& positions, std::vector<vec3>& normals, const glm::vec3& a,
+                 const glm::vec3& b, const glm::vec3& c) {
     size_t i0 = addVertex(vertexTree, positions, normals, a);
     size_t i1 = addVertex(vertexTree, positions, normals, b);
     size_t i2 = addVertex(vertexTree, positions, normals, c);

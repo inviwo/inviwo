@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -114,8 +114,8 @@ PYBIND11_MODULE(inviwopy, m) {
         m.attr("app") = py::cast(InviwoApplication::getPtr(), py::return_value_policy::reference);
     }
 
-    m.def("getApp", []() { return InviwoApplication::getPtr(); },
-          py::return_value_policy::reference);
+    m.def(
+        "getApp", []() { return InviwoApplication::getPtr(); }, py::return_value_policy::reference);
 
     m.def("handlePythonOutput", [](const std::string& msg, int isStderr) {
         if (auto module = InviwoApplication::getPtr()->getModuleByType<Python3Module>()) {

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -75,7 +75,7 @@ VolumeLowPass::VolumeLowPass()
 
 VolumeLowPass::~VolumeLowPass() {}
 
-void VolumeLowPass::preProcess(TextureUnitContainer &) {
+void VolumeLowPass::preProcess(TextureUnitContainer&) {
     utilgl::setUniforms(shader_, kernelSize_);
 
     float sigmaSq2 = 2.0f * sigma_.get() * sigma_.get();

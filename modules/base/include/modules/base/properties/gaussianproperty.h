@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ namespace inviwo {
 template <typename T>
 class GaussianProperty : public CompositeProperty {
 public:
-    GaussianProperty(const std::string &identifier, const std::string &displayName,
+    GaussianProperty(const std::string& identifier, const std::string& displayName,
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                      PropertySemantics semantics = PropertySemantics::Default)
         : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
@@ -57,7 +57,7 @@ public:
         addProperty(sigma_);
         addProperty(center_);
     }
-    GaussianProperty(const GaussianProperty &rhs)
+    GaussianProperty(const GaussianProperty& rhs)
         : CompositeProperty(rhs), height_{rhs.height_}, sigma_{rhs.sigma_}, center_{rhs.center_} {
 
         addProperty(height_);
@@ -65,13 +65,13 @@ public:
         addProperty(center_);
     }
 
-    virtual GaussianProperty<T> *clone() const override { return new GaussianProperty<T>(*this); }
+    virtual GaussianProperty<T>* clone() const override { return new GaussianProperty<T>(*this); }
 
     virtual ~GaussianProperty() = default;
 
-    double operator()(const T &r) const { return eveluate(r); }
+    double operator()(const T& r) const { return eveluate(r); }
 
-    double evaluate(const T &r) const {
+    double evaluate(const T& r) const {
         // TODO This definition seems strange, should be verified
         const double s =
             0.5 * glm::distance2(r, center_.get()) / (sigma_.get() * sigma_.get()) / M_PI;

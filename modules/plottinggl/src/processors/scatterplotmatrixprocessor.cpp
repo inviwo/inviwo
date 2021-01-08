@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -75,20 +75,20 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     , textRenderer_()
     , textureQuadRenderer_()
 
-    , mouseEvent_("mouseEvent", "Mouse Event",
-                  [&](Event* e) {
-                      if (auto me = dynamic_cast<MouseEvent*>(e)) {
-                          auto p =
-                              ivec2(me->posNormalized() * dvec2(static_cast<double>(numParams_)));
-                          if (p.x == p.y) {
-                              color_.setSelectedValue(visibleIDToColumnID_[p.x]);
-                          } else {
-                              selectedX_.setSelectedValue(visibleIDToColumnID_[p.x]);
-                              selectedY_.setSelectedValue(visibleIDToColumnID_[p.y]);
-                          }
-                      }
-                  },
-                  MouseButton::Left, MouseState::Press)
+    , mouseEvent_(
+          "mouseEvent", "Mouse Event",
+          [&](Event* e) {
+              if (auto me = dynamic_cast<MouseEvent*>(e)) {
+                  auto p = ivec2(me->posNormalized() * dvec2(static_cast<double>(numParams_)));
+                  if (p.x == p.y) {
+                      color_.setSelectedValue(visibleIDToColumnID_[p.x]);
+                  } else {
+                      selectedX_.setSelectedValue(visibleIDToColumnID_[p.x]);
+                      selectedY_.setSelectedValue(visibleIDToColumnID_[p.y]);
+                  }
+              }
+          },
+          MouseButton::Left, MouseState::Press)
 
 {
     addPort(dataFrame_);

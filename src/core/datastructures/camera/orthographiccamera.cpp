@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2020-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -84,8 +84,8 @@ void OrthographicCamera::updateFrom(const Camera& source) {
 void OrthographicCamera::configureProperties(CameraProperty& cp, bool attach) {
     Camera::configureProperties(cp, attach);
     if (attach) {
-        util::updateOrCreateCameraWidthProperty(cp, [this]() { return getWidth(); },
-                                                [this](const float& val) { setWidth(val); });
+        util::updateOrCreateCameraWidthProperty(
+            cp, [this]() { return getWidth(); }, [this](const float& val) { setWidth(val); });
     } else if (auto width = util::getCameraWidthProperty(cp)) {
         width->setGetAndSet([val = width->get()]() { return val; }, [](const float&) {});
     }

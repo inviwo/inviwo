@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -192,26 +192,27 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     resize(size);
     move(pos);
 
-    app->getCommandLineParser().add(&openData_,
-                                    [this]() {
-                                        auto net = app_->getProcessorNetwork();
-                                        util::insertNetworkForData(openData_.getValue(), net, true);
-                                    },
-                                    900);
+    app->getCommandLineParser().add(
+        &openData_,
+        [this]() {
+            auto net = app_->getProcessorNetwork();
+            util::insertNetworkForData(openData_.getValue(), net, true);
+        },
+        900);
 
-    app->getCommandLineParser().add(&snapshotArg_,
-                                    [this]() {
-                                        saveCanvases(app_->getCommandLineParser().getOutputPath(),
-                                                     snapshotArg_.getValue());
-                                    },
-                                    1000);
+    app->getCommandLineParser().add(
+        &snapshotArg_,
+        [this]() {
+            saveCanvases(app_->getCommandLineParser().getOutputPath(), snapshotArg_.getValue());
+        },
+        1000);
 
-    app->getCommandLineParser().add(&screenGrabArg_,
-                                    [this]() {
-                                        getScreenGrab(app_->getCommandLineParser().getOutputPath(),
-                                                      screenGrabArg_.getValue());
-                                    },
-                                    1000);
+    app->getCommandLineParser().add(
+        &screenGrabArg_,
+        [this]() {
+            getScreenGrab(app_->getCommandLineParser().getOutputPath(), screenGrabArg_.getValue());
+        },
+        1000);
 
     app->getCommandLineParser().add(
         &saveProcessorPreviews_,

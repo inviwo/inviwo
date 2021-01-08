@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ VectorMagnitudeProcessor::VectorMagnitudeProcessor()
 
 VectorMagnitudeProcessor::~VectorMagnitudeProcessor() = default;
 
-void VectorMagnitudeProcessor::preProcess(TextureUnitContainer &) {
+void VectorMagnitudeProcessor::preProcess(TextureUnitContainer&) {
     int numChannels = 3;
     if (inport_.hasData()) {
         numChannels = static_cast<int>(inport_.getData()->getDataFormat()->getComponents());

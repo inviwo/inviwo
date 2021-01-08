@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -194,9 +194,9 @@ TEST(Python3Scripts, OptionPropertyTest) {
 
     bool status = false;
     script.run([&](pybind11::dict dict) {
-        auto prop = dict["p"].cast<Property *>();
+        auto prop = dict["p"].cast<Property*>();
         ASSERT_TRUE(prop != nullptr);
-        auto optionProperty = static_cast<OptionPropertyInt *>(prop);
+        auto optionProperty = static_cast<OptionPropertyInt*>(prop);
         ASSERT_TRUE(optionProperty != nullptr);
 
         EXPECT_STREQ("test", optionProperty->getIdentifier().c_str());

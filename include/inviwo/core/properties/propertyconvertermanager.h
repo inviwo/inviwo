@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,22 +43,22 @@ public:
     PropertyConverterManager();
     virtual ~PropertyConverterManager();
 
-    bool registerObject(PropertyConverter *converter);
-    bool unRegisterObject(PropertyConverter *converter);
+    bool registerObject(PropertyConverter* converter);
+    bool unRegisterObject(PropertyConverter* converter);
 
-    bool canConvert(const std::string &srcClassIdentifier,
-                    const std::string &dstClassIdentifier) const;
-    bool canConvert(const Property *srcProperty, const Property *dstProperty) const;
+    bool canConvert(const std::string& srcClassIdentifier,
+                    const std::string& dstClassIdentifier) const;
+    bool canConvert(const Property* srcProperty, const Property* dstProperty) const;
 
-    const PropertyConverter *getConverter(const std::string &srcClassIdentifier,
-                                          const std::string &dstClassIdentifier) const;
+    const PropertyConverter* getConverter(const std::string& srcClassIdentifier,
+                                          const std::string& dstClassIdentifier) const;
 
-    const PropertyConverter *getConverter(const Property *srcProperty,
-                                          const Property *dstProperty) const;
+    const PropertyConverter* getConverter(const Property* srcProperty,
+                                          const Property* dstProperty) const;
 
 private:
     PropertyConverter identityConverter_;
-    std::unordered_map<std::pair<std::string, std::string>, PropertyConverter *> converters_;
+    std::unordered_map<std::pair<std::string, std::string>, PropertyConverter*> converters_;
 };
 
 }  // namespace inviwo

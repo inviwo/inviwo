@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,8 +54,8 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    Slider(const std::string &label, int value, int minValue, int maxValue, Processor &processor,
-           Renderer &uiRenderer, const ivec2 &extent = ivec2(100, 24),
+    Slider(const std::string& label, int value, int minValue, int maxValue, Processor& processor,
+           Renderer& uiRenderer, const ivec2& extent = ivec2(100, 24),
            UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~Slider() = default;
 
@@ -66,7 +66,7 @@ public:
     int getMaxValue() const;
 
 protected:
-    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override;
+    virtual void renderWidget(const ivec2& origin, const size2_t& canvasDim) override;
 
     int getPreviousValue() const;
 
@@ -77,7 +77,7 @@ protected:
      * @param delta   (in screen coords, i.e. pixel)
      * @return delta movement normalized to slider range
      */
-    double convertDeltaToSlider(const dvec2 &delta) const;
+    double convertDeltaToSlider(const dvec2& delta) const;
 
 private:
     virtual ivec2 computeLabelPos(int descent) const override;
@@ -88,8 +88,8 @@ private:
     double getHandleWidth() const;
     double getSliderPos() const;
 
-    Texture2DArray *uiTextures_;
-    Texture2DArray *grooveTextures_;
+    Texture2DArray* uiTextures_;
+    Texture2DArray* grooveTextures_;
     std::array<int, 9> uiTextureMap_;
 
     int value_;

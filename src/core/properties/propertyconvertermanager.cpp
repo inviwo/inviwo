@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@ PropertyConverterManager::PropertyConverterManager() : identityConverter_("", ""
 
 PropertyConverterManager::~PropertyConverterManager() {}
 
-bool PropertyConverterManager::registerObject(PropertyConverter *converter) {
+bool PropertyConverterManager::registerObject(PropertyConverter* converter) {
     std::string src = converter->getSourcePropertyClassIdenetifier();
     std::string dst = converter->getDestinationPropertyClassIdenetifier();
     if (canConvert(src, dst)) {
@@ -49,7 +49,7 @@ bool PropertyConverterManager::registerObject(PropertyConverter *converter) {
     return true;
 }
 
-bool PropertyConverterManager::unRegisterObject(PropertyConverter *converter) {
+bool PropertyConverterManager::unRegisterObject(PropertyConverter* converter) {
     auto it = converters_.find(std::make_pair(converter->getSourcePropertyClassIdenetifier(),
                                               converter->getDestinationPropertyClassIdenetifier()));
     if (it != converters_.end()) {
@@ -60,19 +60,19 @@ bool PropertyConverterManager::unRegisterObject(PropertyConverter *converter) {
     }
 }
 
-bool PropertyConverterManager::canConvert(const std::string &srcClassIdentifier,
-                                          const std::string &dstClassIdentifier) const {
+bool PropertyConverterManager::canConvert(const std::string& srcClassIdentifier,
+                                          const std::string& dstClassIdentifier) const {
     return getConverter(srcClassIdentifier, dstClassIdentifier) != nullptr;
 }
 
-bool PropertyConverterManager::canConvert(const Property *srcProperty,
-                                          const Property *dstProperty) const {
+bool PropertyConverterManager::canConvert(const Property* srcProperty,
+                                          const Property* dstProperty) const {
     return getConverter(srcProperty->getClassIdentifier(), dstProperty->getClassIdentifier()) !=
            nullptr;
 }
 
-const PropertyConverter *PropertyConverterManager::getConverter(
-    const std::string &srcClassIdentifier, const std::string &dstClassIdentifier) const {
+const PropertyConverter* PropertyConverterManager::getConverter(
+    const std::string& srcClassIdentifier, const std::string& dstClassIdentifier) const {
     if (srcClassIdentifier == dstClassIdentifier) return &identityConverter_;
 
     auto converter = converters_.find(std::make_pair(srcClassIdentifier, dstClassIdentifier));
@@ -82,8 +82,8 @@ const PropertyConverter *PropertyConverterManager::getConverter(
     return nullptr;
 }
 
-const PropertyConverter *PropertyConverterManager::getConverter(const Property *srcProperty,
-                                                                const Property *dstProperty) const {
+const PropertyConverter* PropertyConverterManager::getConverter(const Property* srcProperty,
+                                                                const Property* dstProperty) const {
     return getConverter(srcProperty->getClassIdentifier(), dstProperty->getClassIdentifier());
 }
 

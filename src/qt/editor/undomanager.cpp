@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -99,7 +99,7 @@ public:
         saver_.join();
     }
 
-    const std::optional<std::string> &getRestored() const { return restored_; }
+    const std::optional<std::string>& getRestored() const { return restored_; }
 
     void save(std::shared_ptr<const std::string> str) {
         {
@@ -120,7 +120,7 @@ private:
     std::thread saver_;
 };
 
-UndoManager::UndoManager(InviwoMainWindow *mainWindow)
+UndoManager::UndoManager(InviwoMainWindow* mainWindow)
     : mainWindow_(mainWindow)
     , manager_{mainWindow_->getInviwoApplication()->getWorkspaceManager()}
     , refPath_{filesystem::findBasePath()}
@@ -141,7 +141,7 @@ UndoManager::UndoManager(InviwoMainWindow *mainWindow)
         clear();
         pushState();
     });
-    loadHandle_ = manager_->onLoad([&](Deserializer &) {
+    loadHandle_ = manager_->onLoad([&](Deserializer&) {
         if (isRestoring) return;
         clear();
         pushState();
@@ -163,8 +163,9 @@ void UndoManager::pushState() {
 
     std::stringstream stream;
     try {
-        manager_->save(stream, refPath_, [](ExceptionContext context) -> void { throw; },
-                       WorkspaceSaveMode::Undo);
+        manager_->save(
+            stream, refPath_, [](ExceptionContext context) -> void { throw; },
+            WorkspaceSaveMode::Undo);
     } catch (...) {
         return;
     }
@@ -215,19 +216,19 @@ void UndoManager::clear() {
     undoBuffer_.clear();
 }
 
-QAction *UndoManager::getUndoAction() const { return undoAction_; }
+QAction* UndoManager::getUndoAction() const { return undoAction_; }
 
-QAction *UndoManager::getRedoAction() const { return redoAction_; }
+QAction* UndoManager::getRedoAction() const { return redoAction_; }
 
 bool UndoManager::hasRestore() const {
-    if (auto &str = autoSaver_->getRestored()) {
+    if (auto& str = autoSaver_->getRestored()) {
         return !str->empty();
     }
     return false;
 }
 
 void UndoManager::restore() {
-    if (const auto &str = autoSaver_->getRestored()) {
+    if (const auto& str = autoSaver_->getRestored()) {
         std::stringstream stream;
         if (!str->empty()) {
             stream << *str;
@@ -242,10 +243,10 @@ void UndoManager::updateActions() {
 }
 
 void UndoManager::onProcessorNetworkChange() { dirty_ = true; }
-void UndoManager::onProcessorNetworkDidAddProcessor(Processor *) { dirty_ = true; }
-void UndoManager::onProcessorNetworkDidRemoveProcessor(Processor *) { dirty_ = true; }
-void UndoManager::onProcessorNetworkDidAddConnection(const PortConnection &) { dirty_ = true; }
-void UndoManager::onProcessorNetworkDidRemoveConnection(const PortConnection &) { dirty_ = true; }
-void UndoManager::onProcessorNetworkDidAddLink(const PropertyLink &) { dirty_ = true; }
-void UndoManager::onProcessorNetworkDidRemoveLink(const PropertyLink &) { dirty_ = true; }
+void UndoManager::onProcessorNetworkDidAddProcessor(Processor*) { dirty_ = true; }
+void UndoManager::onProcessorNetworkDidRemoveProcessor(Processor*) { dirty_ = true; }
+void UndoManager::onProcessorNetworkDidAddConnection(const PortConnection&) { dirty_ = true; }
+void UndoManager::onProcessorNetworkDidRemoveConnection(const PortConnection&) { dirty_ = true; }
+void UndoManager::onProcessorNetworkDidAddLink(const PropertyLink&) { dirty_ = true; }
+void UndoManager::onProcessorNetworkDidRemoveLink(const PropertyLink&) { dirty_ = true; }
 }  // namespace inviwo

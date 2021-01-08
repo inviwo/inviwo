@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -98,7 +98,8 @@ using PropertyPtr = std::unique_ptr<T, detail::PropertyDeleter<T>>;
 
 template <typename T, typename P, typename C>
 void pyTemplateProperty(C& prop) {
-    prop.def_property("value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
+    prop.def_property(
+            "value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
         .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
 }
 
@@ -194,7 +195,8 @@ struct OrdinalPropertyHelper {
                  py::arg("increment") = Defaultvalues<T>::getInc(),
                  py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
                  py::arg("semantics") = PropertySemantics::Default)
-            .def_property("value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
+            .def_property(
+                "value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
             .def_property("minValue", &P::getMinValue, &P::setMinValue)
             .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
             .def_property("increment", &P::getIncrement, &P::setIncrement)
@@ -234,7 +236,8 @@ struct OrdinalRefPropertyHelper {
                  py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
                  py::arg("semantics") = PropertySemantics::Default)
 
-            .def_property("value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
+            .def_property(
+                "value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
             .def_property("minValue", &P::getMinValue, &P::setMinValue)
             .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
             .def_property("increment", &P::getIncrement, &P::setIncrement)
@@ -324,7 +327,8 @@ struct OptionPropertyHelper {
             .def("removeOption", py::overload_cast<size_t>(&P::removeOption))
             .def("removeOption", py::overload_cast<const std::string&>(&P::removeOption))
 
-            .def_property("value", [](P* p) { return p->get(); }, [](P* p, T& t) { p->set(t); })
+            .def_property(
+                "value", [](P* p) { return p->get(); }, [](P* p, T& t) { p->set(t); })
             .def_property("selectedValue", &P::getSelectedValue,
                           [](P* p, const T& val) { p->setSelectedValue(val); })
 

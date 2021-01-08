@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,31 +61,38 @@ PresentationProcessor::PresentationProcessor()
     , slideIndex_("slideIndex", "Slide Index", 1, 1, 1, 1)
     , imageFileName_("imageFileName", "Image File Name")
     , interactions_("interactions", "Interactions")
-    , toggleMode_("toggleMode", "Toggle Mode",
-                  [this](Event *e) {
-                      presentationMode_.set(!presentationMode_.get());
-                      e->markAsUsed();
-                  },
-                  IvwKey::P, KeyState::Press)
-    , quitPresentation_("quitPresentation", "Quit Presentation",
-                        [this](Event *e) {
-                            presentationMode_.set(false);
-                            e->markAsUsed();
-                        },
-                        IvwKey::Escape, KeyState::Press)
-    , nextSlide_("nextSlide", "Next Slide", [this](Event *e) { nextSlide(e); }, IvwKey::Space,
-                 KeyState::Press)
-    , prevSlide_("prevSlide", "Previous Slide", [this](Event *e) { previousSlide(e); },
-                 IvwKey::Backspace, KeyState::Press)
-    , nextSlideAlt_("nextSlideAlt", "Next Slide (alternative)", [this](Event *e) { nextSlide(e); },
-                    IvwKey::Right, KeyState::Press)
-    , prevSlideAlt_("prevSlideAlt", "Previous Slide (alternative)",
-                    [this](Event *e) { previousSlide(e); }, IvwKey::Left, KeyState::Press)
-    , mouseNextSlide_("mouseNextSlide", "Next Slide (Mouse)", [this](Event *e) { nextSlide(e); },
-                      MouseButton::Left, MouseState::Press)
-    , mousePrevSlide_("mousePrevSlide", "Previous Slide (Mouse)",
-                      [this](Event *e) { previousSlide(e); }, MouseButton::Right,
-                      MouseState::Press) {
+    , toggleMode_(
+          "toggleMode", "Toggle Mode",
+          [this](Event* e) {
+              presentationMode_.set(!presentationMode_.get());
+              e->markAsUsed();
+          },
+          IvwKey::P, KeyState::Press)
+    , quitPresentation_(
+          "quitPresentation", "Quit Presentation",
+          [this](Event* e) {
+              presentationMode_.set(false);
+              e->markAsUsed();
+          },
+          IvwKey::Escape, KeyState::Press)
+    , nextSlide_(
+          "nextSlide", "Next Slide", [this](Event* e) { nextSlide(e); }, IvwKey::Space,
+          KeyState::Press)
+    , prevSlide_(
+          "prevSlide", "Previous Slide", [this](Event* e) { previousSlide(e); }, IvwKey::Backspace,
+          KeyState::Press)
+    , nextSlideAlt_(
+          "nextSlideAlt", "Next Slide (alternative)", [this](Event* e) { nextSlide(e); },
+          IvwKey::Right, KeyState::Press)
+    , prevSlideAlt_(
+          "prevSlideAlt", "Previous Slide (alternative)", [this](Event* e) { previousSlide(e); },
+          IvwKey::Left, KeyState::Press)
+    , mouseNextSlide_(
+          "mouseNextSlide", "Next Slide (Mouse)", [this](Event* e) { nextSlide(e); },
+          MouseButton::Left, MouseState::Press)
+    , mousePrevSlide_(
+          "mousePrevSlide", "Previous Slide (Mouse)", [this](Event* e) { previousSlide(e); },
+          MouseButton::Right, MouseState::Press) {
 
     isReady_.setUpdate([this]() {
         if (!presentationMode_) {
@@ -136,7 +143,7 @@ void PresentationProcessor::process() {
         fileList_ = imageFilePattern_.getFileList();
         const auto numElems = fileList_.size();
         util::erase_remove_if(fileList_,
-                              [this](std::string &file) { return !isValidImageFile(file); });
+                              [this](std::string& file) { return !isValidImageFile(file); });
         if (numElems != fileList_.size()) {
             // number of valid files has changed, need to update properties
             updateProperties();
@@ -180,7 +187,7 @@ void PresentationProcessor::updateSlideImage() {
         auto layer = reader->readData(currentFileName);
 
         currentSlide_ = std::make_shared<Image>(layer);
-    } catch (DataReaderException const &e) {
+    } catch (DataReaderException const& e) {
         LogError(e.getMessage());
     }
 }
@@ -228,10 +235,10 @@ void PresentationProcessor::updateFileName() {
 bool PresentationProcessor::isValidImageFile(std::string fileName) {
     std::string fileExtension = toLower(filesystem::getFileExtension(fileName));
     return util::contains_if(validExtensions_,
-                             [&](const FileExtension &f) { return f.extension_ == fileExtension; });
+                             [&](const FileExtension& f) { return f.extension_ == fileExtension; });
 }
 
-void PresentationProcessor::nextSlide(Event *e) {
+void PresentationProcessor::nextSlide(Event* e) {
     if (presentationMode_.get()) {
         if (slideIndex_.get() < slideIndex_.getMaxValue()) {
             slideIndex_.set(slideIndex_.get() + 1);
@@ -240,7 +247,7 @@ void PresentationProcessor::nextSlide(Event *e) {
     }
 }
 
-void PresentationProcessor::previousSlide(Event *e) {
+void PresentationProcessor::previousSlide(Event* e) {
     if (presentationMode_.get()) {
         if (slideIndex_.get() > slideIndex_.getMinValue()) {
             slideIndex_.set(slideIndex_.get() - 1);

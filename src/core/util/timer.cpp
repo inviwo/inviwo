@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ std::optional<TimerThread::clock_t::time_point> TimerThread::lastDelay() {
 
     return std::accumulate(timers_.begin(), timers_.end(), std::optional<clock_t::time_point>{},
                            [](std::optional<clock_t::time_point> a,
-                              TimerInfo &item) -> std::optional<clock_t::time_point> {
+                              TimerInfo& item) -> std::optional<clock_t::time_point> {
                                std::optional<clock_t::time_point> b;
                                if (auto cb = item.controlBlock_.lock()) {
                                    if (!cb->repeating_) {
@@ -109,7 +109,7 @@ void TimerThread::TimerLoop() {
             // Sort could be done at insert
             // but probably this thread has time to do
             std::sort(timers_.begin(), timers_.end(),
-                      [](const TimerInfo &ti1, const TimerInfo &ti2) {
+                      [](const TimerInfo& ti1, const TimerInfo& ti2) {
                           return ti1.timePoint_ > ti2.timePoint_;
                       });
             sort_ = false;
@@ -163,7 +163,7 @@ TimerThread::ControlBlock::ControlBlock(std::function<void()> callback, Millisec
 TimerThread::TimerInfo::TimerInfo(clock_t::time_point tp, std::weak_ptr<ControlBlock> controlBlock)
     : timePoint_(tp), controlBlock_(std::move(controlBlock)) {}
 
-Timer::Timer(Milliseconds interval, std::function<void()> callback, TimerThread &thread)
+Timer::Timer(Milliseconds interval, std::function<void()> callback, TimerThread& thread)
     : callback_{std::move(callback)}, interval_{interval}, thread_{thread} {}
 
 Timer::~Timer() { stop(); }
@@ -208,7 +208,7 @@ bool Timer::isRunning() const { return controlblock_ != nullptr; }
 
 void Timer::stop() { controlblock_.reset(); }
 
-Delay::Delay(Milliseconds defaultDelay, std::function<void()> callback, TimerThread &thread)
+Delay::Delay(Milliseconds defaultDelay, std::function<void()> callback, TimerThread& thread)
     : defaultCallback_{std::move(callback)}, defaultDelay_{defaultDelay}, thread_{thread} {}
 
 Delay::~Delay() { cancel(); }
@@ -231,7 +231,7 @@ std::function<void()> Delay::getDefaultCallback() const { return defaultCallback
 
 namespace util {
 
-TimerThread &getDefaultTimerThread() {
+TimerThread& getDefaultTimerThread() {
     if (auto app = InviwoApplication::getPtr()) {
         return app->getTimerThread();
     } else {

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,14 +55,14 @@ namespace inviwo {
 
 TinyDirInterface::TinyDirInterface(ListMode mode) : mode_{mode}, resource_{} {}
 
-TinyDirInterface::TinyDirInterface(const std::string &path, ListMode mode)
+TinyDirInterface::TinyDirInterface(const std::string& path, ListMode mode)
     : mode_{mode}, resource_{} {
     open(path);
 }
 
 TinyDirInterface::~TinyDirInterface() { close(); }
 
-void TinyDirInterface::open(const std::string &inpath) {
+void TinyDirInterface::open(const std::string& inpath) {
     // close previous directory
     close();
 
@@ -118,7 +118,7 @@ std::vector<std::string> TinyDirInterface::getContents() {
     }
 
     // ascending sort based on file name and then on the extension
-    std::sort(files.begin(), files.end(), [](const std::string &a, const std::string &b) {
+    std::sort(files.begin(), files.end(), [](const std::string& a, const std::string& b) {
         std::size_t pos = a.rfind(".");
         bool extFound = (pos != std::string::npos);
         std::string filenameA{extFound ? a.substr(0, pos) : a};

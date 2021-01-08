@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,6 +49,6 @@ ImageGamma::ImageGamma()
 
 ImageGamma::~ImageGamma() = default;
 
-void ImageGamma::preProcess(TextureUnitContainer &) { shader_.setUniform("gamma_", gamma_.get()); }
+void ImageGamma::preProcess(TextureUnitContainer&) { shader_.setUniform("gamma_", gamma_.get()); }
 
 }  // namespace inviwo

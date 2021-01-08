@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,18 +51,18 @@ class Renderer;
  */
 class IVW_MODULE_USERINTERFACEGL_API AbstractButton : public Element {
 public:
-    AbstractButton(const std::string &label, Processor &processor, Renderer &uiRenderer,
-                   const ivec2 &extent = ivec2(100, 24));
+    AbstractButton(const std::string& label, Processor& processor, Renderer& uiRenderer,
+                   const ivec2& extent = ivec2(100, 24));
     virtual ~AbstractButton() = default;
 
 protected:
-    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override = 0;
+    virtual void renderWidget(const ivec2& origin, const size2_t& canvasDim) override = 0;
 
     virtual ivec2 computeLabelPos(int descent) const override;
     virtual UIState uiState() const override;
     virtual vec2 marginScale() const override;
 
-    Texture2DArray *uiTextures_;
+    Texture2DArray* uiTextures_;
     std::array<int, 9> uiTextureMap_;
 };
 

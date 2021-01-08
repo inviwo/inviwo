@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ ImageGrayscale::ImageGrayscale()
 
 ImageGrayscale::~ImageGrayscale() {}
 
-void ImageGrayscale::preProcess(TextureUnitContainer &) {
+void ImageGrayscale::preProcess(TextureUnitContainer&) {
     vec3 lumScale(1.0f);
     switch (luminanceModel_.get()) {
         case LuminanceModels::PerceivedLum:

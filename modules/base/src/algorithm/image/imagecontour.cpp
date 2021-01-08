@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-std::shared_ptr<Mesh> ImageContour::apply(const LayerRepresentation *in, size_t channel,
+std::shared_ptr<Mesh> ImageContour::apply(const LayerRepresentation* in, size_t channel,
                                           double isoValue, vec4 color) {
     detail::ImageContourDispatcher disp;
     auto df = in->getDataFormat();

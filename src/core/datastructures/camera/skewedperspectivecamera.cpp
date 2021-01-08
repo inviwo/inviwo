@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2020-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -116,11 +116,11 @@ void SkewedPerspectiveCamera::configureProperties(CameraProperty& cp, bool attac
     Camera::configureProperties(cp, attach);
 
     if (attach) {
-        util::updateOrCreateCameraFovProperty(cp, [this]() { return getFovy(); },
-                                              [this](const float& val) { setFovy(val); });
+        util::updateOrCreateCameraFovProperty(
+            cp, [this]() { return getFovy(); }, [this](const float& val) { setFovy(val); });
 
-        util::updateOrCreateCameraEyeOffsetProperty(cp, [this]() { return getOffset(); },
-                                                    [this](const vec2& val) { setOffset(val); });
+        util::updateOrCreateCameraEyeOffsetProperty(
+            cp, [this]() { return getOffset(); }, [this](const vec2& val) { setOffset(val); });
 
     } else {
         if (auto fov = util::getCameraFovProperty(cp)) {

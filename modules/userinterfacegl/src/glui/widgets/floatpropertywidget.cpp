@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,8 +36,8 @@ namespace glui {
 const std::string FloatPropertyWidget::classIdentifier = "org.inviwo.glui.FloatPropertyWidget";
 std::string FloatPropertyWidget::getClassIdentifier() const { return classIdentifier; }
 
-FloatPropertyWidget::FloatPropertyWidget(FloatProperty &property, Processor &processor,
-                                         Renderer &uiRenderer, const ivec2 &extent,
+FloatPropertyWidget::FloatPropertyWidget(FloatProperty& property, Processor& processor,
+                                         Renderer& uiRenderer, const ivec2& extent,
                                          UIOrientation orientation)
     : Slider(property.getDisplayName(), 0, 0, 100, processor, uiRenderer, extent, orientation)
     , PropertyWidget(&property)
@@ -46,7 +46,7 @@ FloatPropertyWidget::FloatPropertyWidget(FloatProperty &property, Processor &pro
 
     property_->addObserver(this);
 
-    moveAction_ = [this](const dvec2 &delta) {
+    moveAction_ = [this](const dvec2& delta) {
         bool triggerUpdate = false;
         if (!property_->getReadOnly()) {
             // delta in pixel (screen coords),
@@ -71,14 +71,14 @@ void FloatPropertyWidget::updateFromProperty() {
     setEnabled(!property_->getReadOnly());
 }
 
-void FloatPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
+void FloatPropertyWidget::onSetVisible(Property*, bool visible) { setVisible(visible); }
 
-void FloatPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
+void FloatPropertyWidget::onSetDisplayName(Property*, const std::string& displayName) {
     setLabel(displayName);
     property_->propertyModified();
 }
 
-void FloatPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
+void FloatPropertyWidget::onSetReadOnly(Property*, bool readonly) { setEnabled(!readonly); }
 
 float FloatPropertyWidget::sliderToRepr(int val) const {
     return property_->getMinValue() +

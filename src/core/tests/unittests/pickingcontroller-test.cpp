@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -264,8 +264,10 @@ const auto ndc = [](uvec2 pos) { return dvec3{2.0 * dvec2{pos} / dvec2{10.0} - d
 
 TEST(PickingControllerTest, IdleMove) {
     PickingManager pm;
-    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
     PickingControllerMouseState ms(&pm);
     {
         uvec2 pos{1, 2};  // id = 0
@@ -286,8 +288,10 @@ TEST(PickingControllerTest, IdleMove) {
 
 TEST(PickingControllerTest, MoveMouseAround) {
     PickingManager pm;
-    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
     PickingControllerMouseState ms(&pm);
     {
         uvec2 pos{1, 1};  // id = 0
@@ -398,8 +402,10 @@ void doMousePress(PickingControllerMouseState& ms) {
 
 TEST(PickingControllerTest, MousePressRelease) {
     PickingManager pm;
-    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
     PickingControllerMouseState ms(&pm);
     {
         SCOPED_TRACE("Press-Release");
@@ -445,8 +451,10 @@ TEST(PickingControllerTest, MousePressRelease) {
 
 TEST(PickingControllerTest, MouseDrag1to2) {
     PickingManager pm;
-    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
     PickingControllerMouseState ms(&pm);
     {
         SCOPED_TRACE("Drag");
@@ -468,8 +476,10 @@ TEST(PickingControllerTest, MouseDrag1to2) {
 
 TEST(PickingControllerTest, MouseDrag1to0) {
     PickingManager pm;
-    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
     PickingControllerMouseState ms(&pm);
     {
         SCOPED_TRACE("Drag");
@@ -505,8 +515,10 @@ TEST(PickingControllerTest, MouseDrag1to0) {
 
 TEST(PickingControllerTest, MouseDrag0to1) {
     PickingManager pm;
-    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
-    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(
+        nullptr, [](PickingEvent*) {}, 3);
     PickingControllerMouseState ms(&pm);
     {
         uvec2 pos{1, 1};  // id = 0

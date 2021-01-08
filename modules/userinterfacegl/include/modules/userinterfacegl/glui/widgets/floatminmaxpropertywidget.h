@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,30 +54,30 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    FloatMinMaxPropertyWidget(FloatMinMaxProperty &property, Processor &processor,
-                              Renderer &uiRenderer, const ivec2 &extent = ivec2(100, 24),
+    FloatMinMaxPropertyWidget(FloatMinMaxProperty& property, Processor& processor,
+                              Renderer& uiRenderer, const ivec2& extent = ivec2(100, 24),
                               UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~FloatMinMaxPropertyWidget() = default;
 
     virtual void updateFromProperty() override;
 
     // PropertyObservable overrides
-    virtual void onSetVisible(Property *property, bool visible) override;
-    virtual void onSetDisplayName(Property *property, const std::string &displayName) override;
-    virtual void onSetReadOnly(Property *property, bool readonly) override;
+    virtual void onSetVisible(Property* property, bool visible) override;
+    virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
+    virtual void onSetReadOnly(Property* property, bool readonly) override;
 
 private:
     float sliderToRepr(int val) const;
     int reprToSlider(float val) const;
 
-    vec2 sliderToRepr(const ivec2 &val) const;
-    ivec2 reprToSlider(const vec2 &val) const;
+    vec2 sliderToRepr(const ivec2& val) const;
+    ivec2 reprToSlider(const vec2& val) const;
 
     int reprSeparationToSlider() const;
 
     const int sliderMax_;
 
-    FloatMinMaxProperty *property_;
+    FloatMinMaxProperty* property_;
 };
 
 }  // namespace glui

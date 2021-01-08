@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,15 +42,15 @@ using VolumeSequence = std::vector<SharedVolume>;
 
 namespace util {
 
-bool IVW_CORE_API hasTimestamps(const VolumeSequence &seq, bool checkfirstonly = true);
+bool IVW_CORE_API hasTimestamps(const VolumeSequence& seq, bool checkfirstonly = true);
 
-std::pair<double, double> IVW_CORE_API getTimestampRange(const VolumeSequence &seq,
+std::pair<double, double> IVW_CORE_API getTimestampRange(const VolumeSequence& seq,
                                                          bool sorted = true);
 
-bool IVW_CORE_API isSorted(const VolumeSequence &seq);
-VolumeSequence IVW_CORE_API sortSequence(const VolumeSequence &seq);
+bool IVW_CORE_API isSorted(const VolumeSequence& seq);
+VolumeSequence IVW_CORE_API sortSequence(const VolumeSequence& seq);
 
-std::pair<SharedVolume, SharedVolume> IVW_CORE_API getVolumesForTimestep(const VolumeSequence &seq,
+std::pair<SharedVolume, SharedVolume> IVW_CORE_API getVolumesForTimestep(const VolumeSequence& seq,
                                                                          double t,
                                                                          bool sorted = true);
 

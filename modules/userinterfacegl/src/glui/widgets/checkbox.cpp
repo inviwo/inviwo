@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,8 @@ namespace glui {
 const std::string CheckBox::classIdentifier = "org.inviwo.glui.CheckBox";
 std::string CheckBox::getClassIdentifier() const { return classIdentifier; }
 
-CheckBox::CheckBox(const std::string &label, Processor &processor, Renderer &uiRenderer,
-                   const ivec2 &extent)
+CheckBox::CheckBox(const std::string& label, Processor& processor, Renderer& uiRenderer,
+                   const ivec2& extent)
     : Element(label, processor, uiRenderer) {
     widgetExtent_ = extent;
     action_ = [&]() { LogInfo("UI checkbox " << getLabel() << " toggled: " << getValue()); };
@@ -63,13 +63,13 @@ CheckBox::CheckBox(const std::string &label, Processor &processor, Renderer &uiR
     uiTextureMap_ = {{0, 0, 0, 3, 4, 4, 1, 2, 2}};
 }
 
-void CheckBox::renderWidget(const ivec2 &origin, const size2_t &) {
+void CheckBox::renderWidget(const ivec2& origin, const size2_t&) {
     TextureUnit texUnit;
     texUnit.activate();
     uiTextures_->bind();
 
     // bind textures
-    auto &uiShader = uiRenderer_->getShader();
+    auto& uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
     uiShader.setUniform("arrayTexMap", 9, uiTextureMap_.data());
 

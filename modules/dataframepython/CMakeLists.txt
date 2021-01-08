@@ -33,7 +33,7 @@ ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 find_package(pybind11 CONFIG REQUIRED)
 target_link_libraries(inviwo-module-dataframepython PUBLIC 
     pybind11::embed 
-    $<BUILD_INTERFACE:${PYTHON_LIBRARIES}>
+    Python3::Python
 )
 
 add_subdirectory(bindings)

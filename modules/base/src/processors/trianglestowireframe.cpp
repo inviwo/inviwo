@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,16 +53,16 @@ void TrianglesToWireframe::process() {
     wireframe->setModelMatrix(mesh->getModelMatrix());
     wireframe->setWorldMatrix(mesh->getWorldMatrix());
 
-    for (auto &buf : mesh->getBuffers()) {
+    for (auto& buf : mesh->getBuffers()) {
         wireframe->addBuffer(buf.first, std::shared_ptr<BufferBase>(buf.second->clone()));
     }
 
     auto indicesRam = std::make_shared<IndexBufferRAM>();
-    auto &vec = indicesRam->getDataContainer();
+    auto& vec = indicesRam->getDataContainer();
     wireframe->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
                           std::make_shared<IndexBuffer>(indicesRam));
 
-    for (auto &ib : mesh->getIndexBuffers()) {
+    for (auto& ib : mesh->getIndexBuffers()) {
         if (ib.first.dt == DrawType::Triangles) {
             meshutil::forEachTriangle(ib.first, *ib.second,
                                       [&vec](uint32_t i0, uint32_t i1, uint32_t i2) {

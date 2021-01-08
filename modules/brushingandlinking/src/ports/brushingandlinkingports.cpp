@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,14 +41,14 @@ BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
     });
 }
 
-void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t> &indices) {
+void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t>& indices) {
     if (filterCache_.size() == 0 && indices.size() == 0) return;
     filterCache_ = indices;
     FilteringEvent event(this, filterCache_);
     propagateEvent(&event, nullptr);
 }
 
-void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t> &indices) {
+void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t>& indices) {
     bool noRemoteSelections = false;
     if (isConnected() && hasData()) {
         noRemoteSelections = getData()->getSelectedIndices().empty();
@@ -61,7 +61,7 @@ void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_
     propagateEvent(&event, nullptr);
 }
 
-void BrushingAndLinkingInport::sendColumnSelectionEvent(const std::unordered_set<size_t> &indices) {
+void BrushingAndLinkingInport::sendColumnSelectionEvent(const std::unordered_set<size_t>& indices) {
     bool noRemoteSelections = false;
     if (isConnected() && hasData()) {
         noRemoteSelections = getData()->getSelectedColumns().empty();
@@ -82,7 +82,7 @@ bool BrushingAndLinkingInport::isColumnSelected(size_t idx) const {
     }
 }
 
-const std::unordered_set<size_t> &BrushingAndLinkingInport::getSelectedIndices() const {
+const std::unordered_set<size_t>& BrushingAndLinkingInport::getSelectedIndices() const {
     if (isConnected()) {
         return getData()->getSelectedIndices();
     } else {
@@ -90,7 +90,7 @@ const std::unordered_set<size_t> &BrushingAndLinkingInport::getSelectedIndices()
     }
 }
 
-const std::unordered_set<size_t> &BrushingAndLinkingInport::getFilteredIndices() const {
+const std::unordered_set<size_t>& BrushingAndLinkingInport::getFilteredIndices() const {
     if (isConnected()) {
         return getData()->getFilteredIndices();
     } else {
@@ -98,7 +98,7 @@ const std::unordered_set<size_t> &BrushingAndLinkingInport::getFilteredIndices()
     }
 }
 
-const std::unordered_set<size_t> &BrushingAndLinkingInport::getSelectedColumns() const {
+const std::unordered_set<size_t>& BrushingAndLinkingInport::getSelectedColumns() const {
     if (isConnected()) {
         return getData()->getSelectedColumns();
     } else {

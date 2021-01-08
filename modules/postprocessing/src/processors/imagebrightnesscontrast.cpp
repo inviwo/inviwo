@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ ImageBrightnessContrast::ImageBrightnessContrast()
     addProperty(contrast_);
 }
 
-void ImageBrightnessContrast::preProcess(TextureUnitContainer &) {
+void ImageBrightnessContrast::preProcess(TextureUnitContainer&) {
     utilgl::setUniforms(shader_, brightness_, contrast_);
 }
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ namespace inviwo {
 
 namespace util {
 
-void reverse(BufferBase &b) {
+void reverse(BufferBase& b) {
     b.getEditableRepresentation<BufferRAM>()->dispatch<void>([](auto bufRam) {
         std::reverse(bufRam->getDataContainer().begin(), bufRam->getDataContainer().end());
     });

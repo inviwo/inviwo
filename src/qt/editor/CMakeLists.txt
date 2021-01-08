@@ -153,11 +153,11 @@ ivw_define_standard_properties(inviwo-qteditor)
 ivw_compile_optimize_on_target(inviwo-qteditor)
 
 # Generate html version of changelog (for the welcome widget), if python is available
-find_package(PythonInterp)
-set(IVW_CFG_BUILD_CHANGELOG ${PYTHONINTERP_FOUND} CACHE BOOL 
+find_package(Python3 COMPONENTS Interpreter)
+set(IVW_CFG_BUILD_CHANGELOG ${Python3_Interpreter_FOUND} CACHE BOOL 
     "Generate html version of changelog (for the welcome widget)")
 if(IVW_CFG_BUILD_CHANGELOG)
-    find_package(PythonInterp REQUIRED)
+    find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
     set(srcFile ${IVW_ROOT_DIR}/CHANGELOG.md)
     set(buildFile ${CMAKE_CURRENT_BINARY_DIR}/changelog.html)
@@ -171,7 +171,7 @@ if(IVW_CFG_BUILD_CHANGELOG)
     )
 
     add_custom_command(OUTPUT ${buildFile}
-        COMMAND ${PYTHON_EXECUTABLE} 
+        COMMAND ${Python3_EXECUTABLE} 
              ${IVW_ROOT_DIR}/tools/changelog-to-html.py 
             -i ${srcFile}
             -o ${buildFile}

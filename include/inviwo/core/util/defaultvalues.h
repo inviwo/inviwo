@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ struct InviwoDefaultData {
 };
 
 template <typename T, size_t N>
-InviwoDefaultData(StaticString<N>, uvec2, T, T, T, T)->InviwoDefaultData<T, N>;
+InviwoDefaultData(StaticString<N>, uvec2, T, T, T, T) -> InviwoDefaultData<T, N>;
 
 template <typename T>
 struct InviwoDefaults {};

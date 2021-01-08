@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ public:
     PythonLogger() = default;
     virtual ~PythonLogger() = default;
 
-    virtual void onPyhonExecutionOutput(const std::string &msg,
+    virtual void onPyhonExecutionOutput(const std::string& msg,
                                         PythonOutputType outputType) override;
 };
 

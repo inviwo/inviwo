@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,8 +37,8 @@ const std::string IntMinMaxPropertyWidget::classIdentifier =
     "org.inviwo.glui.IntMinMaxPropertyWidget";
 std::string IntMinMaxPropertyWidget::getClassIdentifier() const { return classIdentifier; }
 
-IntMinMaxPropertyWidget::IntMinMaxPropertyWidget(IntMinMaxProperty &property, Processor &processor,
-                                                 Renderer &uiRenderer, const ivec2 &extent,
+IntMinMaxPropertyWidget::IntMinMaxPropertyWidget(IntMinMaxProperty& property, Processor& processor,
+                                                 Renderer& uiRenderer, const ivec2& extent,
                                                  UIOrientation orientation)
     : RangeSlider(property.getDisplayName(), property.get(), property.getRangeMin(),
                   property.getRangeMax(), property.getMinSeparation(), processor, uiRenderer,
@@ -47,7 +47,7 @@ IntMinMaxPropertyWidget::IntMinMaxPropertyWidget(IntMinMaxProperty &property, Pr
     , property_(&property) {
     property_->addObserver(this);
 
-    moveAction_ = [this](const dvec2 &delta) {
+    moveAction_ = [this](const dvec2& delta) {
         bool triggerUpdate = false;
         if (!property_->getReadOnly()) {
             auto calcNewValue = [this, delta](int prev) {
@@ -92,14 +92,14 @@ void IntMinMaxPropertyWidget::updateFromProperty() {
     setEnabled(!property_->getReadOnly());
 }
 
-void IntMinMaxPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
+void IntMinMaxPropertyWidget::onSetVisible(Property*, bool visible) { setVisible(visible); }
 
-void IntMinMaxPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
+void IntMinMaxPropertyWidget::onSetDisplayName(Property*, const std::string& displayName) {
     setLabel(displayName);
     property_->propertyModified();
 }
 
-void IntMinMaxPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
+void IntMinMaxPropertyWidget::onSetReadOnly(Property*, bool readonly) { setEnabled(!readonly); }
 
 }  // namespace glui
 

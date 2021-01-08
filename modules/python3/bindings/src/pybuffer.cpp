@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ namespace inviwo {
 
 struct BufferRAMHelper {
     template <typename DataFormat>
-    auto operator()(pybind11::module &m) {
+    auto operator()(pybind11::module& m) {
         namespace py = pybind11;
         using T = typename DataFormat::type;
 
@@ -89,7 +89,7 @@ struct BufferRAMHelper {
     }
 };
 
-void exposeBuffer(pybind11::module &m) {
+void exposeBuffer(pybind11::module& m) {
     namespace py = pybind11;
 
     py::enum_<BufferType>(m, "BufferType")
@@ -128,30 +128,30 @@ void exposeBuffer(pybind11::module &m) {
 
     py::class_<BufferBase, std::shared_ptr<BufferBase>>(m, "Buffer")
         .def(py::init([](py::array data) { return pyutil::createBuffer(data).release(); }))
-        .def("clone", [](BufferBase &self) { return self.clone(); })
+        .def("clone", [](BufferBase& self) { return self.clone(); })
         .def_property("size", &BufferBase::getSize, &BufferBase::setSize)
-        .def_property("data",
-                      [&](BufferBase *buffer) -> py::array {
-                          auto df = buffer->getDataFormat();
-                          std::vector<size_t> shape = {buffer->getSize()};
-                          std::vector<size_t> strides = {df->getSize()};
+        .def_property(
+            "data",
+            [&](BufferBase* buffer) -> py::array {
+                auto df = buffer->getDataFormat();
+                std::vector<size_t> shape = {buffer->getSize()};
+                std::vector<size_t> strides = {df->getSize()};
 
-                          if (df->getComponents() > 1) {
-                              shape.push_back(df->getComponents());
-                              strides.push_back(df->getSize() / df->getComponents());
-                          }
+                if (df->getComponents() > 1) {
+                    shape.push_back(df->getComponents());
+                    strides.push_back(df->getSize() / df->getComponents());
+                }
 
-                          auto data = buffer->getEditableRepresentation<BufferRAM>()->getData();
-                          return py::array(pyutil::toNumPyFormat(df), shape, strides, data,
-                                           py::cast<>(1));
-                      },
-                      [](BufferBase *buffer, py::array data) {
-                          auto rep = buffer->getEditableRepresentation<BufferRAM>();
-                          pyutil::checkDataFormat<1>(rep->getDataFormat(), rep->getSize(), data);
+                auto data = buffer->getEditableRepresentation<BufferRAM>()->getData();
+                return py::array(pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1));
+            },
+            [](BufferBase* buffer, py::array data) {
+                auto rep = buffer->getEditableRepresentation<BufferRAM>();
+                pyutil::checkDataFormat<1>(rep->getDataFormat(), rep->getSize(), data);
 
-                          memcpy(rep->getData(), data.data(0), data.nbytes());
-                      })
-        .def("__repr__", [](const BufferBase &self) {
+                memcpy(rep->getData(), data.data(0), data.nbytes());
+            })
+        .def("__repr__", [](const BufferBase& self) {
             return fmt::format("<Buffer: target = {} usage = {} format = {} size = {}>",
                                toString(self.getBufferTarget()), toString(self.getBufferUsage()),
                                self.getDataFormat()->getString(), self.getSize());

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -241,7 +241,7 @@ auto MinMaxProperty<T>::operator*() const -> const value_type& {
 }
 
 template <typename T>
-auto MinMaxProperty<T>::operator-> () const -> const value_type* {
+auto MinMaxProperty<T>::operator->() const -> const value_type* {
     return &value_.value;
 }
 

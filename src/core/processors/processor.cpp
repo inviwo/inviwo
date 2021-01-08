@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -325,15 +325,15 @@ void Processor::serialize(Serializer& s) const {
 
     s.serialize("InteractonHandlers", interactionHandlers_, "InteractionHandler");
 
-    s.serialize("PortGroups", portGroups_, "PortGroup",
-                [&](const auto& pair) {
-                    return util::contains_if(
-                               ownedInports_,
-                               [&](const auto& p) { return p.get() == pair.first; }) ||
-                           util::contains_if(ownedOutports_,
-                                             [&](const auto& p) { return p.get() == pair.first; });
-                },
-                util::identifier{});
+    s.serialize(
+        "PortGroups", portGroups_, "PortGroup",
+        [&](const auto& pair) {
+            return util::contains_if(ownedInports_,
+                                     [&](const auto& p) { return p.get() == pair.first; }) ||
+                   util::contains_if(ownedOutports_,
+                                     [&](const auto& p) { return p.get() == pair.first; });
+        },
+        util::identifier{});
 
     s.serialize("OwnedInportIdentifiers", ownedInports_, "InportIdentifier", util::alwaysTrue{},
                 util::identifier{});

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -148,8 +148,8 @@ void StreamRibbonsDeprecated::process() {
     bool hasColors = colors_.hasData();
     size_t lineId = 0;
 
-    for (const auto &seeds : seedPoints_) {
-        for (auto &p : (*seeds)) {
+    for (const auto& seeds : seedPoints_) {
+        for (auto& p : (*seeds)) {
             vec4 P = m * vec4(p, 1.0f);
             IntegralLine line = tracer.traceFrom(vec3(P));
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2020-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,11 +57,12 @@ DepthOfField::DepthOfField()
     , viewCountExact_("viewCountExact", "View count", 40, 10, 200)
     , viewCountApprox_("viewCountApprox", "Rendered view count", 5, 1, 12)
     , simViewCountApprox_("simViewCountApprox", "Simulated view count", 40, 10, 200)
-    , clickToFocus_("clickToFocus", "Click to focus",
-                    [this](Event* e) {
-                        if (manualFocus_) clickToFocus(e);
-                    },
-                    MouseButton::Left, MouseState::Press, KeyModifier::Control)
+    , clickToFocus_(
+          "clickToFocus", "Click to focus",
+          [this](Event* e) {
+              if (manualFocus_) clickToFocus(e);
+          },
+          MouseButton::Left, MouseState::Press, KeyModifier::Control)
     , camera_("camera", "Camera")
     , evalCount_(-1)
     , useComputeShaders_(OpenGLCapabilities::getOpenGLVersion() >= 430)

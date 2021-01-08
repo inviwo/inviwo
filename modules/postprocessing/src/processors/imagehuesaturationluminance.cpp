@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ ImageHueSaturationLuminance::ImageHueSaturationLuminance()
     addProperty(luminance_);
 }
 
-void ImageHueSaturationLuminance::preProcess(TextureUnitContainer &) {
+void ImageHueSaturationLuminance::preProcess(TextureUnitContainer&) {
     utilgl::setUniforms(shader_, hue_, saturation_, luminance_);
 }
 

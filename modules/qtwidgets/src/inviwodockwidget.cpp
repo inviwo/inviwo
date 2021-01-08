@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-InviwoDockWidget::InviwoDockWidget(QString title, QWidget *parent) : QDockWidget(title, parent) {
+InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent) : QDockWidget(title, parent) {
 
     setObjectName(title);
 #ifdef __APPLE__
@@ -55,19 +55,19 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget *parent) : QDockWidget
                      &InviwoDockWidgetTitleBar::allowedAreasChanged);
 }
 
-InviwoDockWidget::InviwoDockWidget(QString title, QWidget *parent, QString objName)
+InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent, QString objName)
     : InviwoDockWidget(title, parent) {
     setObjectName(objName);
 }
 
 InviwoDockWidget::~InviwoDockWidget() = default;
 
-void InviwoDockWidget::showEvent(QShowEvent *showEvent) {
+void InviwoDockWidget::showEvent(QShowEvent* showEvent) {
     raise();
     QDockWidget::showEvent(showEvent);
 }
 
-void InviwoDockWidget::keyPressEvent(QKeyEvent *keyEvent) {
+void InviwoDockWidget::keyPressEvent(QKeyEvent* keyEvent) {
     if (keyEvent->key() == Qt::Key_Escape && isFloating()) {
         hide();
     } else {
@@ -80,8 +80,8 @@ void InviwoDockWidget::setSticky(bool sticky) { dockWidgetTitleBar_->setSticky(s
 
 bool InviwoDockWidget::isSticky() const { return dockWidgetTitleBar_->isSticky(); }
 
-void InviwoDockWidget::setContents(QWidget *widget) {
-    QWidget *oldWidget = this->widget();
+void InviwoDockWidget::setContents(QWidget* widget) {
+    QWidget* oldWidget = this->widget();
     if (oldWidget) {
         this->setWidget(nullptr);
         delete oldWidget;
@@ -90,14 +90,14 @@ void InviwoDockWidget::setContents(QWidget *widget) {
     this->setWidget(widget);
 }
 
-void InviwoDockWidget::setContents(QLayout *layout) {
-    QWidget *oldWidget = this->widget();
+void InviwoDockWidget::setContents(QLayout* layout) {
+    QWidget* oldWidget = this->widget();
     if (oldWidget) {
         this->setWidget(nullptr);
         delete oldWidget;
     }
 
-    QWidget *centralWidget = new QWidget();
+    QWidget* centralWidget = new QWidget();
     centralWidget->setLayout(layout);
     this->setWidget(centralWidget);
 }
@@ -174,7 +174,7 @@ void InviwoDockWidget::loadState() {
     settings.endGroup();
 }
 
-void InviwoDockWidget::closeEvent(QCloseEvent *event) {
+void InviwoDockWidget::closeEvent(QCloseEvent* event) {
     saveState();
     QDockWidget::closeEvent(event);
 }
