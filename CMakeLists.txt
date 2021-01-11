@@ -68,11 +68,7 @@ set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/pkg)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/modules)
 
-if(IVW_MODULE_PYTHON3)
-    find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
-else()
-    find_package(Python3 COMPONENTS Interpreter Development)
-endif()
+find_package(Python3 COMPONENTS Interpreter Development NumPy)
 
 include(cmake/globalconfig.cmake)
 

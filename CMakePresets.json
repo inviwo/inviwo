@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "cmakeMinimumRequired": { "major": 3, "minor": 19, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "develop",
+      "hidden": true,
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS":                { "type": "BOOL", "value": "ON"},
+        "IVW_CFG_CMAKE_DEBUG":              { "type": "BOOL", "value": "ON"},
+        "IVW_CFG_PROFILING":                { "type": "BOOL", "value": "ON"},
+        "IVW_CFG_PRECOMPILED_HEADERS":      { "type": "BOOL", "value": "OFF"},
+        "IVW_CFG_FORCE_ASSERTIONS":         { "type": "BOOL", "value": "ON"},
+        "IVW_CFG_BUILD_CHANGELOG":          { "type": "BOOL", "value": "ON"},
+
+        "IVW_APP_MINIMAL_GLFW":             { "type": "BOOL", "value": "ON"},
+        "IVW_APP_MINIMAL_QT":               { "type": "BOOL", "value": "ON"},
+
+        "IVW_TEST_UNIT_TESTS_RUN_ON_BUILD": { "type": "BOOL", "value": "OFF"},
+        "IVW_TEST_BENCHMARKS":              { "type": "BOOL", "value": "ON"},
+        "IVW_TEST_INTEGRATION_TESTS":       { "type": "BOOL", "value": "ON"},
+
+        "IVW_PACKAGE_INSTALLER":            { "type": "BOOL", "value": "ON"},
+        "IVW_USE_OPENMP":                   { "type": "BOOL", "value": "OFF"},
+        "IVW_USE_OPENEXR":                  { "type": "BOOL", "value": "ON"}
+      }
+    },
+    {
+      "name": "vcpkg",
+      "hidden": true,
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET" : "x64-windows",
+        "IVW_CFG_VCPKG_OVERLAYS": "${sourceDir}/tools/vcpkg",
+        "IVW_USE_EXTERNAL_ASSIMP":    { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_BENCHMARK": { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_EIGEN":     { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_FMT":       { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_FREETYPE":  { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_GLFW":      { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_GLM":       { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_GTEST":     { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_HDF5":      { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_IMG":       { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_JSON":      { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_CIMG":      { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_GLEW":      { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_TCLAP":     { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_UTFCPP":    { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_TINYDIR":   { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_PYBIND11":  { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_OPENEXR":   { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_SGCT":      { "type": "BOOL", "value": "ON"},
+        "IVW_USE_EXTERNAL_NIFTI":     { "type": "BOOL", "value": "ON"}
+      }
+    },
+
+    {
+      "name": "modules",
+      "hidden": true,
+      "cacheVariables": {
+        "IVW_EXTERNAL_MODULES" : "${sourceParentDir}/modules/misc;${sourceParentDir}/modules/medvis;${sourceParentDir}/modules/molvis;${sourceParentDir}/modules/tensorvis;${sourceParentDir}/modules/topovis;${sourceParentDir}/modules/vectorvis"
+      }
+    },
+
+    {
+      "name": "msvc-dev",
+      "displayName": "MSVC Development",
+      "description": "MSVC Development configuration",
+      "generator": "Visual Studio 16 2019",
+      "architecture" : "x64",
+      "binaryDir": "${sourceParentDir}/builds/msvc-dev",
+      "inherits" : ["vcpkg", "modules", "develop"]
+    }
+  ]
+}
