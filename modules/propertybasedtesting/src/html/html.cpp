@@ -33,49 +33,44 @@ namespace inviwo {
 
 namespace HTML {
 void BaseElement::printOpen(std::ostream& out, const size_t indent) const {
-	std::fill_n(std::ostream_iterator<char>(out), indent, ' ');
-	out << '<' << name;
-	for(const auto&[aname, avalue] : attributes) {
-		out << ' ' << aname;
-		if(!avalue.empty()) {
-			out << "=\"" << avalue << "\"";
-		}
-	}
-	if(content.empty() && children.empty() && printClosing)
-		out << '/';
-	out << ">\n";
+    std::fill_n(std::ostream_iterator<char>(out), indent, ' ');
+    out << '<' << name;
+    for (const auto& [aname, avalue] : attributes) {
+        out << ' ' << aname;
+        if (!avalue.empty()) {
+            out << "=\"" << avalue << "\"";
+        }
+    }
+    if (content.empty() && children.empty() && printClosing) out << '/';
+    out << ">\n";
 }
 void BaseElement::printContent(std::ostream& out, const size_t indent) const {
-	if(!content.empty()) {
-		std::fill_n(std::ostream_iterator<char>(out), indent, ' ');
-		out << content << '\n';
-	}
-	for(const auto& child : children)
-		child.print(out, indent+2);
+    if (!content.empty()) {
+        std::fill_n(std::ostream_iterator<char>(out), indent, ' ');
+        out << content << '\n';
+    }
+    for (const auto& child : children) child.print(out, indent + 2);
 }
 void BaseElement::printClose(std::ostream& out, const size_t indent) const {
-	if(content.empty() && children.empty())
-		return;
+    if (content.empty() && children.empty()) return;
 
-	std::fill_n(std::ostream_iterator<char>(out), indent, ' ');
-	out << "</" << name << ">\n";
+    std::fill_n(std::ostream_iterator<char>(out), indent, ' ');
+    out << "</" << name << ">\n";
 }
 void BaseElement::print(std::ostream& out, const size_t indent) const {
-	if(name.empty()) {
-		printContent(out, indent);
-	} else {
-		printOpen(out, indent);
-		printContent(out, indent);
-		printClose(out, indent);
-	}
+    if (name.empty()) {
+        printContent(out, indent);
+    } else {
+        printOpen(out, indent);
+        printContent(out, indent);
+        printClose(out, indent);
+    }
 }
 BaseElement::BaseElement(const std::string& name, const std::string& content)
-		: name(name)
-		, content(content) {
-}
+    : name(name), content(content) {}
 std::ostream& operator<<(std::ostream& out, const BaseElement& element) {
-	element.print(out, 0);
-	return out;
+    element.print(out, 0);
+    return out;
 }
-} // namespace HTML
+}  // namespace HTML
 }  // namespace inviwo

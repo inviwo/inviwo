@@ -63,8 +63,8 @@ public:
 
 private:
     VolumeOutport outport_;
-	IntProperty seed_;
-	IntProperty numPoints_;
+    IntProperty seed_;
+    IntProperty numPoints_;
 };
 
 }  // namespace inviwo

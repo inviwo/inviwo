@@ -37,11 +37,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo FaultyCubePoxyGeometry::processorInfo_{
-    "org.inviwo.FaultyCubePoxyGeometry",      // Class identifier
-    "Faulty Cube Proxy Geometry",             // Display name
-    "Undefined",                              // Category
-    CodeState::Experimental,                  // Code state
-    Tags::None,                               // Tags
+    "org.inviwo.FaultyCubePoxyGeometry",  // Class identifier
+    "Faulty Cube Proxy Geometry",         // Display name
+    "Undefined",                          // Category
+    CodeState::Experimental,              // Code state
+    Tags::None,                           // Tags
 };
 const ProcessorInfo FaultyCubePoxyGeometry::getProcessorInfo() const { return processorInfo_; }
 
@@ -93,9 +93,8 @@ void FaultyCubePoxyGeometry::process() {
         const size3_t clipMin(std::min(clipX_->x, clipY_->x), clipY_->x, clipZ_->x);
         const size3_t clipMax(clipX_->y, clipY_->y, std::min(clipY_->y, clipZ_->y));
         mesh = algorithm::createCubeProxyGeometry(inport_.getData(), clipMin, clipMax);
-    } else {
+    } else
         mesh = algorithm::createCubeProxyGeometry(inport_.getData());
-    }
     outport_.setData(mesh);
 }
 

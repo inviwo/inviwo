@@ -115,7 +115,7 @@ namespace inviwo {
  *
  *   In the following example, we use a *RandomVolumeGenerator* to create a
  *   volume from a seed and then generate an image by a network containing,
- *   among others, a *Cube Proxy Geometry*. 
+ *   among others, a *Cube Proxy Geometry*.
  *   When the *PropertyAnalyzer*-processor just has been created, it outputs a completely white
  *   image, since no errors have been found.
  *   Note that the *PropertyAnalyzer*-processor contains *CompositeProperty*s for
@@ -158,98 +158,92 @@ namespace inviwo {
  *   Afterwards a new report is generated, which now only contains the tests
  *   that have failed with the distilled set of properties.
  */
-class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyAnalyzer
-		: public Processor
-		, private TestPropertyObserver 
-		, private ProcessorNetworkObserver {
+class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyAnalyzer : public Processor,
+                                                             private TestPropertyObserver,
+                                                             private ProcessorNetworkObserver {
 public:
     PropertyAnalyzer(InviwoApplication*);
     virtual ~PropertyAnalyzer() {
-		const std::lock_guard<std::mutex> lock(mutex_);
-		std::cerr << "~PropertyAnalyzer() @ " << this << std::endl;
-		curr_alive.erase(m_id);
-	}
+        const std::lock_guard<std::mutex> lock(mutex_);
+        std::cerr << "~PropertyAnalyzer() @ " << this << std::endl;
+        curr_alive.erase(m_id);
+    }
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    
+
     virtual void serialize(Serializer& d) const override;
     virtual void deserialize(Deserializer& d) override;
 
-	virtual void setNetwork(ProcessorNetwork*) override;
+    virtual void setNetwork(ProcessorNetwork*) override;
+
 private:
-	static std::set<size_t> curr_alive;
-	size_t m_id;
-	template<typename F>
-	void dispatchFrontAndForget(F);
+    static std::set<size_t> curr_alive;
+    size_t m_id;
+    template <typename F>
+    void dispatchFrontAndForget(F);
 
-	static std::mutex mutex_;
-	enum TestingState {
-		NONE,
-		GATHERING,
-		SINGLE_COUNT
-	};
-	TestingState testingState;
-	bool currently_condensing = false;
+    static std::mutex mutex_;
+    enum TestingState { NONE, GATHERING, SINGLE_COUNT };
+    TestingState testingState;
+    bool currently_condensing = false;
 
-	InviwoApplication* const app_;
+    InviwoApplication* const app_;
     std::filesystem::path tempDir_;
 
-	ImageInport inport_;
-	std::optional<std::shared_ptr<Image>> outputImage;
-	ImageOutport outport_;
-	
-	DirectoryProperty reportDirectory_; // TODO: create dir after deserialization
-	BoolProperty useDepth_;
+    ImageInport inport_;
+    std::optional<std::shared_ptr<Image>> outputImage;
+    ImageOutport outport_;
+
+    DirectoryProperty reportDirectory_;  // TODO: create dir after deserialization
+    BoolProperty useDepth_;
     FloatVec4Property color_;
-	ButtonProperty countPixelsButton_;
-	ButtonProperty startButton_;
-	ButtonProperty distillButton_;
-	IntSizeTProperty numTests_;
-	StringProperty description_;
+    ButtonProperty countPixelsButton_;
+    ButtonProperty startButton_;
+    ButtonProperty distillButton_;
+    IntSizeTProperty numTests_;
+    StringProperty description_;
 
-	// updates the textual description
-	void onTestPropertyChange() override;
+    // updates the textual description
+    void onTestPropertyChange() override;
 
-	void collectProperties();
+    void collectProperties();
 
-	void onProcessorNetworkWillRemoveProcessor(Processor*) override;
-	void onProcessorNetworkDidAddConnection(const PortConnection&) override;
-	void onProcessorNetworkDidRemoveConnection(const PortConnection&) override;
+    void onProcessorNetworkWillRemoveProcessor(Processor*) override;
+    void onProcessorNetworkDidAddConnection(const PortConnection&) override;
+    void onProcessorNetworkDidRemoveConnection(const PortConnection&) override;
 
-	void updateProcessors();
-	using ProcessorTestPropertyMap =
-		std::map<std::string, std::unique_ptr<TestPropertyComposite>>;
-	ProcessorTestPropertyMap processors_; // currently connected processors
-	ProcessorTestPropertyMap inactiveProcessors_; // currently disconnected processors
+    void updateProcessors();
+    using ProcessorTestPropertyMap = std::map<std::string, std::unique_ptr<TestPropertyComposite>>;
+    ProcessorTestPropertyMap processors_;          // currently connected processors
+    ProcessorTestPropertyMap inactiveProcessors_;  // currently disconnected processors
 
-	std::vector<TestProperty*> props_; // Properties to test
-	void resetAllProps();
+    std::vector<TestProperty*> props_;  // Properties to test
+    void resetAllProps();
 
-	// Testing stuff
-	void initTesting();
+    // Testing stuff
+    void initTesting();
 
-	bool testIsSetUp(const Test& test) const;
-	void setupTest(const Test& test);
+    bool testIsSetUp(const Test& test) const;
+    void setupTest(const Test& test);
 
-	std::vector<bool*> deactivated;
-	int last_deactivated;
+    std::vector<bool*> deactivated;
+    int last_deactivated;
 
-	std::vector<Test> allTests;
-	std::queue<Test> remainingTests;
-	std::vector<std::shared_ptr<TestResult>> testResults;
-	void checkTestResults();
+    std::vector<Test> allTests;
+    std::queue<Test> remainingTests;
+    std::vector<std::shared_ptr<TestResult>> testResults;
+    void checkTestResults();
 };
 
-template<typename F>
+template <typename F>
 void PropertyAnalyzer::dispatchFrontAndForget(F f) {
-	const size_t id = m_id;
-	app_->dispatchFrontAndForget([id,f]() {
-			if(PropertyAnalyzer::curr_alive.count(id))
-				f();
-		});
+    const size_t id = m_id;
+    app_->dispatchFrontAndForget([id, f]() {
+        if (PropertyAnalyzer::curr_alive.count(id)) f();
+    });
 }
 
 }  // namespace inviwo

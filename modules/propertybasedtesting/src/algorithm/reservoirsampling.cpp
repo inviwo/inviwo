@@ -32,23 +32,22 @@
 namespace inviwo {
 
 std::vector<size_t> reservoirSampling(const size_t n, const size_t k) {
-	if(k > n)
-		return reservoirSampling(n, n);
+    if (k > n) return reservoirSampling(n, n);
 
-	std::vector<size_t> result(k);
-	std::iota(result.begin(), result.end(), 0); // start with the first k values
+    std::vector<size_t> result(k);
+    std::iota(result.begin(), result.end(), 0);  // start with the first k values
 
-	double w = exp(log((double(rand()) / RAND_MAX)) / k);
+    double w = exp(log((double(rand()) / RAND_MAX)) / k);
 
-	for(size_t i = k; i < n; ) {
-		i += log((double(rand()) / RAND_MAX)) / log(1 - w);
-		if(i < n) {
-			result[ rand()%k ] = i;
-			w *= exp(log((double(rand()) / RAND_MAX)) / k);
-		}
-	}
-	
-	return result;
+    for (size_t i = k; i < n;) {
+        i += log((double(rand()) / RAND_MAX)) / log(1 - w);
+        if (i < n) {
+            result[rand() % k] = i;
+            w *= exp(log((double(rand()) / RAND_MAX)) / k);
+        }
+    }
+
+    return result;
 }
 
 }  // namespace inviwo

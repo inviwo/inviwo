@@ -55,9 +55,8 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_PROPERTYBASEDTESTING_API ImageComparator
-	: public Processor
-	, public ProcessorNetworkObserver {
+class IVW_MODULE_PROPERTYBASEDTESTING_API ImageComparator : public Processor,
+                                                            public ProcessorNetworkObserver {
 public:
     ImageComparator();
 
@@ -68,9 +67,10 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     enum class ComparisonType { AbsARGB };
-	enum class ReductionType { MEAN, MAX, MIN, SUM };
+    enum class ReductionType { MEAN, MAX, MIN, SUM };
     std::string reductionTypeName(const ReductionType& r) {
         switch (r) {
             case ReductionType::MEAN:
@@ -84,31 +84,31 @@ private:
         };
     }
 
-	template<typename T>
-	T getUnitForReduction(const ReductionType& r) {
-		switch(r) {
-		case ReductionType::MEAN:
-			return 0;
-		case ReductionType::MAX:
-			return Defaultvalues<T>::getMin();
-		case ReductionType::MIN:
-			return Defaultvalues<T>::getMax();
-		case ReductionType::SUM:
-			return 0;
-		};
-	}
-	template<typename T>
-	T combine(const ReductionType& r, const T& a, const T& b) {
-		switch(r) {
-			case ReductionType::MEAN:
-			case ReductionType::SUM:
-				return a+b;
-			case ReductionType::MIN:
-				return std::min(a,b);
-			case ReductionType::MAX:
-				return std::max(a,b);
-		}
-	}
+    template <typename T>
+    T getUnitForReduction(const ReductionType& r) {
+        switch (r) {
+            case ReductionType::MEAN:
+                return 0;
+            case ReductionType::MAX:
+                return Defaultvalues<T>::getMin();
+            case ReductionType::MIN:
+                return Defaultvalues<T>::getMax();
+            case ReductionType::SUM:
+                return 0;
+        };
+    }
+    template <typename T>
+    T combine(const ReductionType& r, const T& a, const T& b) {
+        switch (r) {
+            case ReductionType::MEAN:
+            case ReductionType::SUM:
+                return a + b;
+            case ReductionType::MIN:
+                return std::min(a, b);
+            case ReductionType::MAX:
+                return std::max(a, b);
+        }
+    }
 
     ImageInport inport1_;
     ImageInport inport2_;
@@ -116,19 +116,19 @@ private:
     ImageOutport maskPort_;
 
     FloatProperty maxDeviation_;
-	FloatProperty maxPixelwiseDeviation_;
+    FloatProperty maxPixelwiseDeviation_;
     TemplateOptionProperty<ComparisonType> comparisonType_;
-	TemplateOptionProperty<ReductionType> reductionType_;
+    TemplateOptionProperty<ReductionType> reductionType_;
     DirectoryProperty reportDir_;
     int imageCompCount_ = 0;
 
-	double difference(const ComparisonType&, const glm::dvec4&, const glm::dvec4&);
-	double absoluteARGBdifference(const glm::dvec4&, const glm::dvec4&);
+    double difference(const ComparisonType&, const glm::dvec4&, const glm::dvec4&);
+    double absoluteARGBdifference(const glm::dvec4&, const glm::dvec4&);
 
     struct Comparison {
         time_t timestamp;
         double result;
-		ReductionType reduction;
+        ReductionType reduction;
         size_t differentPixels;
         size_t pixelCount;
         std::filesystem::path img1;

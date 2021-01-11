@@ -30,8 +30,8 @@
 #include <inviwo/propertybasedtesting/html/report.h>
 
 namespace inviwo {
-const std::string& cssFile = 
-R""""(
+const std::string& cssFile =
+    R""""(
 td, th {
   border: 1px solid #999;
   text-align: left;
@@ -45,95 +45,86 @@ body {
 }
 )"""";
 
-PropertyBasedTestingReport::PropertyBasedTestingReport
-		( std::ostream& out
-		, const std::vector< TestingError >& errors
-		, const std::vector<TestProperty*>& props) {
-	HTML::Table errorTable;
-	errorTable << (HTML::HeadRow()
-			<< HTML::Text("Test1")
-			<< HTML::Text("Test1 score")
-			<< HTML::Text("Expected relation")
-			<< HTML::Text("Test2 score")
-			<< HTML::Text("Test2")
-			<< HTML::Text("Equal Properties"));
-	for(const auto& err : errors)
-		for(const auto& row : generateHTML(err, props))
-			errorTable << row;
+PropertyBasedTestingReport::PropertyBasedTestingReport(std::ostream& out,
+                                                       const std::vector<TestingError>& errors,
+                                                       const std::vector<TestProperty*>& props) {
+    HTML::Table errorTable;
+    errorTable << (HTML::HeadRow() << HTML::Text("Test1") << HTML::Text("Test1 score")
+                                   << HTML::Text("Expected relation") << HTML::Text("Test2 score")
+                                   << HTML::Text("Test2") << HTML::Text("Equal Properties"));
+    for (const auto& err : errors) {
+        for (const auto& row : generateHTML(err, props)) errorTable << row;
+    }
 
-	out << "<!DOCTYPE html>\n";
-	out << (HTML::HTML()
-			<< (HTML::Head() << HTML::Style(cssFile)
-				<< HTML::Meta().addAttribute("charset","utf-8")) //.stylesheet("report.css"))
-			<< (HTML::Body() << errorTable));
+    out << "<!DOCTYPE html>\n";
+    out << (HTML::HTML() << (HTML::Head() << HTML::Style(cssFile)
+                                          << HTML::Meta().addAttribute(
+                                                 "charset", "utf-8"))  //.stylesheet("report.css"))
+                         << (HTML::Body() << errorTable));
 }
 
-std::vector<HTML::Row> PropertyBasedTestingReport::generateHTML
-		( const TestingError& e
-		, const std::vector<TestProperty*>& props) {
+std::vector<HTML::Row> PropertyBasedTestingReport::generateHTML(
+    const TestingError& e, const std::vector<TestProperty*>& props) {
     const auto& [testResult1, testResult2, _expectedEffect, num1, num2] = e;
     const auto& expectedEffect = _expectedEffect;
 
-	const std::string expectedEffectString = [expectedEffect]() {
-			std::stringstream str;
-			str << expectedEffect;
-			return str.str();
-		}();
+    const std::string expectedEffectString = [expectedEffect]() {
+        std::stringstream str;
+        str << expectedEffect;
+        return str.str();
+    }();
 
-	HTML::Row row1;
-	row1 << HTML::Details(HTML::Text("Property Values"),
-			generateHTML(std::make_tuple(testResult2, testResult1, true), props));
-	row1 << HTML::Text(std::to_string(num1));
-	row1 << HTML::Text(expectedEffectString);
-	row1 << HTML::Text(std::to_string(num2));
-	row1 << HTML::Details(HTML::Text("Property Values"),
-			generateHTML(std::make_tuple(testResult1, testResult2, true), props));
-	row1 << HTML::Details(HTML::Text("Equal Properties"),
-			generateHTML(std::make_tuple(testResult1, testResult2, false), props));
-	HTML::Row row2;
-	row2 << HTML::TableCell(HTML::Details(HTML::Text("Image1"),
-				HTML::Image(testResult1->getImagePath()))).addAttribute("colspan","3");
-	row2 << HTML::TableCell(HTML::Details(HTML::Text("Image2"),
-				HTML::Image(testResult2->getImagePath()))).addAttribute("colspan","3");
-	return {row1, row2};
+    HTML::Row row1;
+    row1 << HTML::Details(HTML::Text("Property Values"),
+                          generateHTML(std::make_tuple(testResult2, testResult1, true), props));
+    row1 << HTML::Text(std::to_string(num1));
+    row1 << HTML::Text(expectedEffectString);
+    row1 << HTML::Text(std::to_string(num2));
+    row1 << HTML::Details(HTML::Text("Property Values"),
+                          generateHTML(std::make_tuple(testResult1, testResult2, true), props));
+    row1 << HTML::Details(HTML::Text("Equal Properties"),
+                          generateHTML(std::make_tuple(testResult1, testResult2, false), props));
+    HTML::Row row2;
+    row2 << HTML::TableCell(
+                HTML::Details(HTML::Text("Image1"), HTML::Image(testResult1->getImagePath())))
+                .addAttribute("colspan", "3");
+    row2 << HTML::TableCell(
+                HTML::Details(HTML::Text("Image2"), HTML::Image(testResult2->getImagePath())))
+                .addAttribute("colspan", "3");
+    return {row1, row2};
 }
-HTML::BaseElement PropertyBasedTestingReport::generateHTML
-		( const std::tuple<std::shared_ptr<TestResult>,
-				std::shared_ptr<TestResult>,
-				bool>& testResults
-		, const std::vector<TestProperty*>& props) {
-	const auto&[t1, t2, different] = testResults;
-	HTML::Table res;
-	res << (HTML::HeadRow()
-			<< HTML::Text("DisplayName")
-			<< HTML::Text("Value"));
-	for(auto prop : props) {
-		HTML::Row r;
-		r << HTML::Text(prop->getDisplayName());
-		std::map<const TestProperty*, std::vector<const TestProperty*>> tree;
-		std::map<const TestProperty*, bool>	isInner;
-		prop->traverse([&](const TestProperty* p, const TestProperty* pa) {
-					isInner[pa] = true;
-					if(different == (p->getValueString(t1) != p->getValueString(t2)))
-						tree[pa].emplace_back(p);
-				});
+HTML::BaseElement PropertyBasedTestingReport::generateHTML(
+    const std::tuple<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>, bool>& testResults,
+    const std::vector<TestProperty*>& props) {
+    const auto& [t1, t2, different] = testResults;
+    HTML::Table res;
+    res << (HTML::HeadRow() << HTML::Text("DisplayName") << HTML::Text("Value"));
+    for (auto prop : props) {
+        HTML::Row r;
+        r << HTML::Text(prop->getDisplayName());
+        std::map<const TestProperty*, std::vector<const TestProperty*>> tree;
+        std::map<const TestProperty*, bool> isInner;
+        prop->traverse([&](const TestProperty* p, const TestProperty* pa) {
+            isInner[pa] = true;
+            if (different == (p->getValueString(t1) != p->getValueString(t2)))
+                tree[pa].emplace_back(p);
+        });
 
-		std::function<HTML::Tree(const TestProperty*)> dfs = [&](const TestProperty* p) {
-				HTML::Tree res(HTML::Text(p->getDisplayName()));
-				HTML::TreeChildren children;
-				if(isInner[p])
-					for(auto c : tree[p])
-						children << dfs(c);
-				else // leaf
-					children << HTML::Text(p->getValueString(t1));
-				res << children;
-				return res;
-			};
+        std::function<HTML::Tree(const TestProperty*)> dfs = [&](const TestProperty* p) {
+            HTML::Tree res(HTML::Text(p->getDisplayName()));
+            HTML::TreeChildren children;
+            if (isInner[p]) {
+                for (auto c : tree[p]) children << dfs(c);
+            } else  // leaf
+                children << HTML::Text(p->getValueString(t1));
+            res << children;
+            return res;
+        };
 
-		r << dfs(prop);
-		res << r;
-	}
-	return res;
+        r << dfs(prop);
+        res << r;
+    }
+    return res;
 }
 
 }  // namespace inviwo

@@ -4,21 +4,15 @@
 
 namespace inviwo {
 
-bool PropertyAssignment::isDeactivated() const {
-	return *m_deactivated;
-}
+bool PropertyAssignment::isDeactivated() const { return *m_deactivated; }
 void PropertyAssignment::apply() const {
-	if(!isDeactivated()) {
-		m_apply();
-		assert(isApplied());
-	}
+    if (!isDeactivated()) {
+        m_apply();
+        assert(isApplied());
+    }
 }
-bool PropertyAssignment::isApplied() const {
-	return isDeactivated() || m_isApplied();
-}
+bool PropertyAssignment::isApplied() const { return isDeactivated() || m_isApplied(); }
 
-PropertyAssignment::PropertyAssignment(const bool* deactivated)
-		: m_deactivated(deactivated) {
-}
-	
-}
+PropertyAssignment::PropertyAssignment(const bool* deactivated) : m_deactivated(deactivated) {}
+
+}  // namespace inviwo

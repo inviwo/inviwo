@@ -38,197 +38,160 @@ namespace inviwo {
 namespace HTML {
 
 class BaseElement {
-	struct Attribute {
-		std::string name;
-		std::string value;
-	};
+    struct Attribute {
+        std::string name;
+        std::string value;
+    };
 
-	void printOpen(std::ostream& out, const size_t indent) const;
-	void printContent(std::ostream& out, const size_t indent) const;
-	void printClose(std::ostream& out, const size_t indent) const;
+    void printOpen(std::ostream& out, const size_t indent) const;
+    void printContent(std::ostream& out, const size_t indent) const;
+    void printClose(std::ostream& out, const size_t indent) const;
+
 protected:
-	std::string name;
-	std::string content;
-	std::vector<Attribute> attributes;
-	std::vector<BaseElement> children;
+    std::string name;
+    std::string content;
+    std::vector<Attribute> attributes;
+    std::vector<BaseElement> children;
 
-	bool printClosing = true;
+    bool printClosing = true;
 
-	void print(std::ostream& out, const size_t indent) const;
+    void print(std::ostream& out, const size_t indent) const;
+
 public:
-	BaseElement(const std::string& name, const std::string& content = "");
-	virtual ~BaseElement() = default;
-	
-	friend std::ostream& operator<<(std::ostream& out, const BaseElement& element);
+    BaseElement(const std::string& name, const std::string& content = "");
+    virtual ~BaseElement() = default;
+
+    friend std::ostream& operator<<(std::ostream& out, const BaseElement& element);
 };
 
-template<class Derived>
+template <class Derived>
 class Element : public BaseElement {
 public:
-	Element(const std::string& name, const std::string& content = "")
-			: BaseElement(name, content) {
-	}
+    Element(const std::string& name, const std::string& content = "")
+        : BaseElement(name, content) {}
 
-	// add child
-	virtual Derived& operator<<(const BaseElement& child) {
-		children.emplace_back(child);
-		return *static_cast<Derived*>(this);
-	}
-	Derived& addAttribute(const std::string& aName, const std::string& aValue) {
-		attributes.push_back({aName, aValue});
-		return *static_cast<Derived*>(this);
-	}
-	
-	virtual ~Element() = default;
+    // add child
+    virtual Derived& operator<<(const BaseElement& child) {
+        children.emplace_back(child);
+        return *static_cast<Derived*>(this);
+    }
+    Derived& addAttribute(const std::string& aName, const std::string& aValue) {
+        attributes.push_back({aName, aValue});
+        return *static_cast<Derived*>(this);
+    }
+
+    virtual ~Element() = default;
 };
 
 class HTML : public Element<HTML> {
 public:
-	HTML()
-			: Element("html") {
-	}
+    HTML() : Element("html") {}
 };
 
 class Body : public Element<Body> {
 public:
-	Body()
-			: Element("body") {
-	}
+    Body() : Element("body") {}
 };
 
 class Head : public Element<Head> {
 public:
-	Head()
-		: Element("head") {
-	}
-	Head& stylesheet(const std::string& s) {
-		*this << Element("link").addAttribute("rel", "stylesheet").addAttribute("href",s);
-		return *this;
-	}
+    Head() : Element("head") {}
+    Head& stylesheet(const std::string& s) {
+        *this << Element("link").addAttribute("rel", "stylesheet").addAttribute("href", s);
+        return *this;
+    }
 };
 class Style : public Element<Style> {
 public:
-	Style(const std::string& content)
-		: Element("style", content) {
-	}
+    Style(const std::string& content) : Element("style", content) {}
 };
 class Meta : public Element<Meta> {
 public:
-	Meta()
-		: Element("meta") {
-		Element::printClosing = false;
-	}
+    Meta() : Element("meta") { Element::printClosing = false; }
 };
 
 class Text : public Element<Text> {
 public:
-	Text(const std::string& text)
-			: Element("", text) {
-	}
+    Text(const std::string& text) : Element("", text) {}
 };
 
 class Div : public Element<Div> {
 public:
-	Div(const std::string& mclass)
-			: Element("div") {
-		this->addAttribute("class",mclass);
-	}
+    Div(const std::string& mclass) : Element("div") { this->addAttribute("class", mclass); }
 };
 
 class TableCell : public Element<TableCell> {
 public:
-	TableCell(const BaseElement& el)
-			: Element("td") {
-		*this << el;
-	}
+    TableCell(const BaseElement& el) : Element("td") { *this << el; }
 };
 class Row : public Element<Row> {
 public:
-	Row()
-			: Element("tr") {
-	}
-	virtual Row& operator<<(const BaseElement& child) override {
-		Element::operator<<(static_cast<const BaseElement&>(TableCell(child)));
-		return *this;
-	}
-	virtual Row& operator<<(const TableCell& child) {
-		Element::operator<<(child);
-		return *this;
-	}
+    Row() : Element("tr") {}
+    virtual Row& operator<<(const BaseElement& child) override {
+        Element::operator<<(static_cast<const BaseElement&>(TableCell(child)));
+        return *this;
+    }
+    virtual Row& operator<<(const TableCell& child) {
+        Element::operator<<(child);
+        return *this;
+    }
 };
 class TableHeadCell : public Element<TableHeadCell> {
-	public:
-		TableHeadCell(const BaseElement& el)
-			: Element("th") {
-				*this << el;
-			}
+public:
+    TableHeadCell(const BaseElement& el) : Element("th") { *this << el; }
 };
 class HeadRow : public Element<HeadRow> {
 public:
-	HeadRow()
-			: Element("tr") {
-	}
-	virtual HeadRow& operator<<(const BaseElement& child) override {
-		Element::operator<<(static_cast<const BaseElement&>(TableHeadCell(child)));
-		return *this;
-	}
-	virtual HeadRow& operator<<(const TableHeadCell& child) {
-		Element::operator<<(child);
-		return *this;
-	}
+    HeadRow() : Element("tr") {}
+    virtual HeadRow& operator<<(const BaseElement& child) override {
+        Element::operator<<(static_cast<const BaseElement&>(TableHeadCell(child)));
+        return *this;
+    }
+    virtual HeadRow& operator<<(const TableHeadCell& child) {
+        Element::operator<<(child);
+        return *this;
+    }
 };
 
 class Table : public Element<Table> {
 public:
-	Table()
-			: Element("table") {
-	}
+    Table() : Element("table") {}
 };
 
 class Image : public Element<Image> {
 public:
-	Image(const std::filesystem::path& path, const std::string& alt = "")
-			: Element("img") {
-		BaseElement::printClosing = false;
-		addAttribute("src", path.string());
-		addAttribute("alt", alt);
-	}
+    Image(const std::filesystem::path& path, const std::string& alt = "") : Element("img") {
+        BaseElement::printClosing = false;
+        addAttribute("src", path.string());
+        addAttribute("alt", alt);
+    }
 };
 
 class Details : public Element<Details> {
-	class Summary : public Element<Summary> {
-	public:
-		Summary()
-			: Element("summary") {
-		}
-	};
+    class Summary : public Element<Summary> {
+    public:
+        Summary() : Element("summary") {}
+    };
+
 public:
-	Details(const BaseElement& summary, const BaseElement& content) 
-			: Element("details") {
-		*this << (Summary() << summary) << content;
-	}
+    Details(const BaseElement& summary, const BaseElement& content) : Element("details") {
+        *this << (Summary() << summary) << content;
+    }
 };
 
 class Paragraph : public Element<Paragraph> {
 public:
-	Paragraph(const std::string& content)
-			: Element("p", content) {
-	}
+    Paragraph(const std::string& content) : Element("p", content) {}
 };
 
 class TreeChildren : public Element<TreeChildren> {
 public:
-	TreeChildren()
-		: Element("ul") {
-	}
+    TreeChildren() : Element("ul") {}
 };
 class Tree : public Element<Tree> {
 public:
-	Tree(const BaseElement& content)
-			: Element("ul") {
-		*this << (Element("span") << content);
-	}
+    Tree(const BaseElement& content) : Element("ul") { *this << (Element("span") << content); }
 };
 
-} // namespace HTML
+}  // namespace HTML
 }  // namespace inviwo

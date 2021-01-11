@@ -7,227 +7,219 @@ namespace inviwo {
 namespace util {
 
 // 2-coverage, randomized discrete SLJ strategy
-std::vector<Test> coveringArray(const Test& init, const std::vector<std::vector< std::shared_ptr<PropertyAssignment> >>& vars) {
-	srand(42); // deterministic for regression testing
+std::vector<Test> coveringArray(
+    const Test& init, const std::vector<std::vector<std::shared_ptr<PropertyAssignment>>>& vars) {
+    srand(42);  // deterministic for regression testing
 
-	std::cerr << "coveringArray: vars.size() = " << vars.size() << std::endl;
-	assert(vars.size() > 0);
+    std::cerr << "coveringArray: vars.size() = " << vars.size() << std::endl;
+    assert(vars.size() > 0);
 
-	// special case
-	if(vars.size() == 1) {
-		std::vector<Test> res(vars[0].size(), init);
-		for(size_t i = 0; i < vars[0].size(); i++) {
-			res[i].emplace_back(vars[0][i]);
-		}
-		std::cerr << "special case : res.size() = " << res.size() << std::endl;
-		return res;
-	}
+    // special case
+    if (vars.size() == 1) {
+        std::vector<Test> res(vars[0].size(), init);
+        for (size_t i = 0; i < vars[0].size(); i++) res[i].emplace_back(vars[0][i]);
+        std::cerr << "special case : res.size() = " << res.size() << std::endl;
+        return res;
+    }
 
-	const size_t v = [&](){
-			size_t res = 0;
-			for(const auto& v : vars) res = std::max(res, v.size());
-			return res;
-		}();
+    const size_t v = [&]() {
+        size_t res = 0;
+        for (const auto& v : vars) res = std::max(res, v.size());
+        return res;
+    }();
 
-	std::unordered_set<size_t> uncovered;
-	std::map< std::array<size_t,4>, size_t > idx;
-	for(size_t i = 1; i < vars.size(); i++) {
-		for(size_t j = 0; j < i; j++) {
-			for(size_t ii = 0; ii < vars[i].size(); ii++) {
-				for(size_t ji = 0; ji < vars[j].size(); ji++) {
-					uncovered.insert(idx.size());
-					idx[{i,j,ii,ji}] = idx.size();
-				}
-			}
-		}
-	}
+    std::unordered_set<size_t> uncovered;
+    std::map<std::array<size_t, 4>, size_t> idx;
+    for (size_t i = 1; i < vars.size(); i++) {
+        for (size_t j = 0; j < i; j++) {
+            for (size_t ii = 0; ii < vars[i].size(); ii++) {
+                for (size_t ji = 0; ji < vars[j].size(); ji++) {
+                    uncovered.insert(idx.size());
+                    idx[{i, j, ii, ji}] = idx.size();
+                }
+            }
+        }
+    }
 
-	std::vector<std::vector<size_t>> coveringArray;
-	while(!uncovered.empty()) {
-		size_t expectedCoverage = (uncovered.size() + (v*v-1)) / (v*v); // expectedCoverage > 0
-		size_t coverage;
-		std::vector<size_t> row(vars.size());
-		do {
-			for(size_t i = 0; i < row.size(); i++)
-				row[i] = rand() % vars[i].size();
-			coverage = 0; // number of uncovered interactions
-			for(size_t i = 1; i < vars.size(); i++) {
-				for(size_t j = 0; j < i; j++) {
-					size_t id = idx[{i,j,row[i],row[j]}];
-					coverage += uncovered.count(id);
-				}
-			}
-		} while(coverage < expectedCoverage);
-		for(size_t i = 1; i < vars.size(); i++) {
-			for(size_t j = 0; j < i; j++) {
-				size_t id = idx[{i,j,row[i],row[j]}];
-				uncovered.erase(id);
-			}
-		}
-		coveringArray.emplace_back(row);
-	}
+    std::vector<std::vector<size_t>> coveringArray;
+    while (!uncovered.empty()) {
+        size_t expectedCoverage =
+            (uncovered.size() + (v * v - 1)) / (v * v);  // expectedCoverage > 0
+        size_t coverage;
+        std::vector<size_t> row(vars.size());
+        do {
+            for (size_t i = 0; i < row.size(); i++) row[i] = rand() % vars[i].size();
+            coverage = 0;  // number of uncovered interactions
+            for (size_t i = 1; i < vars.size(); i++) {
+                for (size_t j = 0; j < i; j++) {
+                    size_t id = idx[{i, j, row[i], row[j]}];
+                    coverage += uncovered.count(id);
+                }
+            }
+        } while (coverage < expectedCoverage);
+        for (size_t i = 1; i < vars.size(); i++) {
+            for (size_t j = 0; j < i; j++) {
+                size_t id = idx[{i, j, row[i], row[j]}];
+                uncovered.erase(id);
+            }
+        }
+        coveringArray.emplace_back(row);
+    }
 
-	// contruct result
-	std::vector<Test> res(coveringArray.size(), init);
-	for(size_t c = 0; c < coveringArray.size(); c++) {
-		for(size_t i = 0; i < vars.size(); i++) {
-			res[c].emplace_back( vars[i][coveringArray[c][i]] );
-		}
-	}
+    // contruct result
+    std::vector<Test> res(coveringArray.size(), init);
+    for (size_t c = 0; c < coveringArray.size(); c++) {
+        for (size_t i = 0; i < vars.size(); i++) res[c].emplace_back(vars[i][coveringArray[c][i]]);
+    }
 
-	size_t naive = 0;
-	for(size_t i = 1; i < vars.size(); i++)
-		for(size_t j = 0; j < i; j++)
-			naive += vars[i].size() * vars[j].size();
-	std::cerr << "size reduction: " << naive << " => " << res.size() << std::endl;
+    size_t naive = 0;
+    for (size_t i = 1; i < vars.size(); i++) {
+        for (size_t j = 0; j < i; j++) naive += vars[i].size() * vars[j].size();
+    }
+    std::cerr << "size reduction: " << naive << " => " << res.size() << std::endl;
 
-	return res;
+    return res;
 }
 
-std::vector<Test> optCoveringArray(const size_t num, const Test& init,
-		const std::vector<
-				std::pair<
-					std::function<std::optional<util::PropertyEffect>(
-						const std::shared_ptr<PropertyAssignment>& oldVal,
-						const std::shared_ptr<PropertyAssignment>& newVal)>,
-					std::vector< std::shared_ptr<PropertyAssignment> >
-				>
-			>& vars) {
-	srand(42); // deterministic for regression testing
-	
-	std::cerr << "optCoveringArray: vars.size() = " << vars.size() << std::endl;
-	for(const auto&[cmp,var] : vars) {
-		for(const auto& as : var) {
-			as->print(std::cerr << "\t");
-			std::cerr << std::endl;
-		}
-		std::cerr << std::endl;
-	}
-	assert(vars.size() > 0);
+std::vector<Test> optCoveringArray(
+    const size_t num, const Test& init,
+    const std::vector<std::pair<std::function<std::optional<util::PropertyEffect>(
+                                    const std::shared_ptr<PropertyAssignment>& oldVal,
+                                    const std::shared_ptr<PropertyAssignment>& newVal)>,
+                                std::vector<std::shared_ptr<PropertyAssignment>>>>& vars) {
+    srand(42);  // deterministic for regression testing
 
-	// special case
-	if(vars.size() == 1) {
-		std::vector<Test> res(vars[0].second.size(), init);
-		for(size_t i = 0; i < vars[0].second.size(); i++) {
-			res[i].emplace_back(vars[0].second[i]);
-		}
-		std::cerr << "special case : res.size() = " << res.size() << std::endl;
-		return res;
-	}
+    std::cerr << "optCoveringArray: vars.size() = " << vars.size() << std::endl;
+    for (const auto& [cmp, var] : vars) {
+        for (const auto& as : var) {
+            as->print(std::cerr << "\t");
+            std::cerr << std::endl;
+        }
+        std::cerr << std::endl;
+    }
+    assert(vars.size() > 0);
 
-	using TestConf = std::map<size_t, size_t>; // {var, var_idx}, vars[var][var_idx]
-	std::vector<TestConf> unused;
-	
-	// init
-	for(size_t var = 0; var < vars.size(); var++)
-		for(size_t i = 0; i < vars[var].second.size(); i++)
-			for(size_t var2 = 0; var2 < var; var2++)
-				for(size_t i2 = 0; i2 < vars[var2].second.size(); i2++)
-					unused.emplace_back(std::map<size_t,size_t>{{{var,i}, {var2,i2}}});
-	std::shuffle(unused.begin(), unused.end(), std::default_random_engine(rand()));
+    // special case
+    if (vars.size() == 1) {
+        std::vector<Test> res(vars[0].second.size(), init);
+        for (size_t i = 0; i < vars[0].second.size(); i++) res[i].emplace_back(vars[0].second[i]);
+        std::cerr << "special case : res.size() = " << res.size() << std::endl;
+        return res;
+    }
 
-	std::vector<std::pair<TestConf,size_t>> finished; // {TestConf, current num of other finished comparables}
+    using TestConf = std::map<size_t, size_t>;  // {var, var_idx}, vars[var][var_idx]
+    std::vector<TestConf> unused;
 
-	size_t comparisons = 0; // just for debugging
+    // init
+    for (size_t var = 0; var < vars.size(); var++) {
+        for (size_t i = 0; i < vars[var].second.size(); i++) {
+            for (size_t var2 = 0; var2 < var; var2++) {
+                for (size_t i2 = 0; i2 < vars[var2].second.size(); i2++)
+                    unused.emplace_back(std::map<size_t, size_t>{{{var, i}, {var2, i2}}});
+            }
+        }  // namespace util
+    }
+    std::shuffle(unused.begin(), unused.end(), std::default_random_engine(rand()));
 
-	// note: assumes that all keys of the second argument are also present in
-	// the first
-	const std::function<bool(const TestConf&, const TestConf&)> comparable = 
-		[&](const auto& ref, const auto& vs) {
-			std::optional<util::PropertyEffect> res = {util::PropertyEffect::ANY};
-			for(const auto&[var,i] : vs) {
-				const auto& j = ref.at(var);
-				const auto& expect = vars[var].first( vars[var].second[i], vars[var].second[j] );
-				comparisons++;
-				if(!expect)
-					return false;
-				res = util::combine(*expect, *res);
-				if(!res)
-					return false;
-			}
-			return true;
-		};
+    std::vector<std::pair<TestConf, size_t>>
+        finished;  // {TestConf, current num of other finished comparables}
 
-	const std::function<std::vector<size_t>(std::vector<size_t>, const TestConf&)> filterComparables =
-		[&](auto comparables, const auto& test) {
-			for(size_t i = 0; i < comparables.size(); i++)
-				if(!comparable(finished[comparables[i]].first, test)) {
-					comparables[i] = comparables.back();
-					comparables.pop_back();
-					i--;
-				}
-			return comparables;
-		};
-	// combined score of finished comparables when merging ref into gen
-	const std::function<size_t(const bool, const std::vector<size_t>&, const TestConf&, const TestConf&)> cmp =
-		[&](const bool disjoint, const auto& comparables, const auto& gen, const auto& ref) {
-			if(disjoint) {
-				for(const auto&[k,v] : gen)
-					if(ref.count(k) > 0)
-						return static_cast<size_t>(0);
-			}
-			auto test = ref;
-			test.insert(gen.begin(), gen.end());
-			
-			size_t res = 1;
-			for(const size_t i : filterComparables(comparables, test))
-				res += 1 + (finished.size() - finished[i].second) * 2;
-			return res;
-		};
+    size_t comparisons = 0;  // just for debugging
 
-	while(!unused.empty() && finished.size() < num) {
-		TestConf gen{{unused.back()}};
-		unused.pop_back();
-		std::vector<size_t> comparables(finished.size());
-		std::iota(comparables.begin(), comparables.end(), 0);
-	
-		std::cerr << unused.size() << std::endl;
+    // note: assumes that all keys of the second argument are also present in
+    // the first
+    const std::function<bool(const TestConf&, const TestConf&)> comparable = [&](const auto& ref,
+                                                                                 const auto& vs) {
+        std::optional<util::PropertyEffect> res = {util::PropertyEffect::ANY};
+        for (const auto& [var, i] : vs) {
+            const auto& j = ref.at(var);
+            const auto& expect = vars[var].first(vars[var].second[i], vars[var].second[j]);
+            comparisons++;
+            if (!expect) return false;
+            res = util::combine(*expect, *res);
+            if (!res) return false;
+        }
+        return true;
+    };
 
-		while(gen.size() < vars.size()) {
-			int opt = -1, idx;
-			bool is_unused = false;
+    const std::function<std::vector<size_t>(std::vector<size_t>, const TestConf&)>
+        filterComparables = [&](auto comparables, const auto& test) {
+            for (size_t i = 0; i < comparables.size(); i++) {
+                if (!comparable(finished[comparables[i]].first, test)) {
+                    comparables[i] = comparables.back();
+                    comparables.pop_back();
+                    i--;
+                }
+            }
+            return comparables;
+        };
+    // combined score of finished comparables when merging ref into gen
+    const std::function<size_t(const bool, const std::vector<size_t>&, const TestConf&,
+                               const TestConf&)>
+        cmp = [&](const bool disjoint, const auto& comparables, const auto& gen, const auto& ref) {
+            if (disjoint) {
+                for (const auto& [k, v] : gen) {
+                    if (ref.count(k) > 0) return static_cast<size_t>(0);
+                }
+            }
+            auto test = ref;
+            test.insert(gen.begin(), gen.end());
 
-			for(size_t i = 0; i < unused.size(); i++) {
-				const int val = cmp(true, comparables, gen, unused[i]);
-				if(val > opt)
-					opt = val, idx = i, is_unused = true;
-			}
-			for(size_t i = 0; i < finished.size(); i++) {
-				const int val = cmp(false, comparables, gen, finished[i].first);
-				if(val > opt)
-					opt = val, idx = i, is_unused = false;
-			}
+            size_t res = 1;
+            for (const size_t i : filterComparables(comparables, test))
+                res += 1 + (finished.size() - finished[i].second) * 2;
+            return res;
+        };
 
-			assert(opt != -1);
+    while (!unused.empty() && finished.size() < num) {
+        TestConf gen{{unused.back()}};
+        unused.pop_back();
+        std::vector<size_t> comparables(finished.size());
+        std::iota(comparables.begin(), comparables.end(), 0);
 
-			if(is_unused) {
-				gen.insert(unused[idx].begin(), unused[idx].end());
-				swap(unused[idx], unused.back());
-				unused.pop_back();
-			} else {
-				gen.insert(finished[idx].first.begin(), finished[idx].first.end());
-			}
+        std::cerr << unused.size() << std::endl;
 
-			comparables = filterComparables(comparables, gen);
-		}
-		for(const size_t i : comparables)
-			finished[i].second++;
-		finished.emplace_back(gen, comparables.size());
-	}
+        while (gen.size() < vars.size()) {
+            int opt = -1, idx;
+            bool is_unused = false;
 
-	std::cerr << comparisons << " comparisons" << std::endl;
-	
-	// build tests
-	std::vector<Test> res;
-	for(const auto& [test,val] : finished) {
-		Test tmp = init;
-		for(const auto&[var,i] : test)
-			tmp.emplace_back(vars[var].second[i]);
-		res.emplace_back(tmp);
-	}
-	return res;
+            for (size_t i = 0; i < unused.size(); i++) {
+                const int val = cmp(true, comparables, gen, unused[i]);
+                if (val > opt) opt = val, idx = i, is_unused = true;
+            }
+            for (size_t i = 0; i < finished.size(); i++) {
+                const int val = cmp(false, comparables, gen, finished[i].first);
+                if (val > opt) opt = val, idx = i, is_unused = false;
+            }
+
+            assert(opt != -1);
+
+            if (is_unused) {
+                gen.insert(unused[idx].begin(), unused[idx].end());
+                swap(unused[idx], unused.back());
+                unused.pop_back();
+            } else {
+                gen.insert(finished[idx].first.begin(), finished[idx].first.end());
+            }
+
+            comparables = filterComparables(comparables, gen);
+        }
+        for (const size_t i : comparables) finished[i].second++;
+        finished.emplace_back(gen, comparables.size());
+    }
+
+    std::cerr << comparisons << " comparisons" << std::endl;
+
+    // build tests
+    std::vector<Test> res;
+    for (const auto& [test, val] : finished) {
+        Test tmp = init;
+        for (const auto& [var, i] : test) tmp.emplace_back(vars[var].second[i]);
+        res.emplace_back(tmp);
+    }
+    return res;
 }
 
-} // namespace util
+}  // namespace util
 
-} // namespace inviwo
+}  // namespace inviwo

@@ -36,19 +36,19 @@
 namespace inviwo {
 
 const ProcessorInfo RandomVolumeGenerator::processorInfo_{
-    "org.inviwo.RandomVolumeGenerator",      // Class identifier
-    "Random Volume Generator",                // Display name
-    "Undefined",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.RandomVolumeGenerator",  // Class identifier
+    "Random Volume Generator",           // Display name
+    "Undefined",                         // Category
+    CodeState::Experimental,             // Code state
+    Tags::None,                          // Tags
 };
 const ProcessorInfo RandomVolumeGenerator::getProcessorInfo() const { return processorInfo_; }
 
 RandomVolumeGenerator::RandomVolumeGenerator()
     : Processor()
     , outport_("volume")
-	, seed_("seed", "Seed", 42, 0, INT_MAX)
-	, numPoints_("numPoints", "Number of Points", 5, 1, 500) {
+    , seed_("seed", "Seed", 42, 0, INT_MAX)
+    , numPoints_("numPoints", "Number of Points", 5, 1, 500) {
 
     addPort(outport_);
     addProperty(seed_);
@@ -56,25 +56,26 @@ RandomVolumeGenerator::RandomVolumeGenerator()
 }
 
 void RandomVolumeGenerator::process() {
-	std::default_random_engine generator(seed_.get());
+    std::default_random_engine generator(seed_.get());
     std::uniform_real_distribution<double> dis(0.0, 1.0);
 
-	const size3_t dimensions(1<<5);
-	const mat3 basis(1.0); // identity matrix
+    const size3_t dimensions(1 << 5);
+    const mat3 basis(1.0);  // identity matrix
 
-	std::vector<dvec3> points(numPoints_.get());
-	for(auto& pos : points) {
-		pos = dvec3(dis(generator), dis(generator), dis(generator));
-	}
+    std::vector<dvec3> points(numPoints_.get());
+    for (auto& pos : points) {
+        pos = dvec3(dis(generator), dis(generator), dis(generator));
+    }
 
-	std::shared_ptr<Volume> volume = util::generateVolume(dimensions, basis, [&](const size3_t& ind) {
-				auto rel = dvec3(ind) / dvec3(dimensions); // position clamped to [0,1]^3
-				double dist = INFINITY; // distance to closest point
-				for(const auto& point : points) {
-					dist = std::min(dist, glm::length(rel - point));
-				}
-				return util::glm_convert_normalized<float>(dist);
-			});
+    std::shared_ptr<Volume> volume =
+        util::generateVolume(dimensions, basis, [&](const size3_t& ind) {
+            auto rel = dvec3(ind) / dvec3(dimensions);  // position clamped to [0,1]^3
+            double dist = INFINITY;                     // distance to closest point
+            for (const auto& point : points) {
+                dist = std::min(dist, glm::length(rel - point));
+            }
+            return util::glm_convert_normalized<float>(dist);
+        });
     outport_.setData(volume);
 }
 

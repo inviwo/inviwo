@@ -40,15 +40,14 @@ namespace inviwo {
 
 class PropertyBasedTestingReport {
 private:
-	std::vector<HTML::Row> generateHTML(const TestingError&, const std::vector<TestProperty*>&);
-	HTML::BaseElement generateHTML
-		( const std::tuple<std::shared_ptr<TestResult>,
-				std::shared_ptr<TestResult>,
-				bool>&
-		, const std::vector<TestProperty*>&);
+    std::vector<HTML::Row> generateHTML(const TestingError&, const std::vector<TestProperty*>&);
+    HTML::BaseElement generateHTML(
+        const std::tuple<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>, bool>&,
+        const std::vector<TestProperty*>&);
+
 public:
-	PropertyBasedTestingReport(std::ostream&, const std::vector< TestingError >&,
-			const std::vector<TestProperty*>&);
+    PropertyBasedTestingReport(std::ostream&, const std::vector<TestingError>&,
+                               const std::vector<TestProperty*>&);
 };
 
 }  // namespace inviwo

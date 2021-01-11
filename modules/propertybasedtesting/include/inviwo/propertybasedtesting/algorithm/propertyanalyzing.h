@@ -46,52 +46,50 @@ namespace util {
 // how the number of background pixels should change when the value is
 // increased
 enum class PropertyEffect {
-	EQUAL = 0,
-	NOT_EQUAL,
-	LESS,
-	LESS_EQUAL,
-	GREATER,
-	GREATER_EQUAL,
-	ANY,
-	NOT_COMPARABLE
+    EQUAL = 0,
+    NOT_EQUAL,
+    LESS,
+    LESS_EQUAL,
+    GREATER,
+    GREATER_EQUAL,
+    ANY,
+    NOT_COMPARABLE
 };
-constexpr size_t numPropertyEffects = 1 +
-	static_cast<size_t>(PropertyEffect::NOT_COMPARABLE);
+constexpr size_t numPropertyEffects = 1 + static_cast<size_t>(PropertyEffect::NOT_COMPARABLE);
 
-template<typename A, typename B>
+template <typename A, typename B>
 bool propertyEffectComparator(const PropertyEffect& e, const A& a, const B& b) {
-	assert(static_cast<size_t>(e) < numPropertyEffects);
-	switch(e) {
-		case PropertyEffect::NOT_COMPARABLE:
-			return false;
-		case PropertyEffect::ANY:
-			return true;
-		case PropertyEffect::NOT_EQUAL:
-			return a != b;
-		case PropertyEffect::EQUAL:
-			return a == b;
-		case util::PropertyEffect::LESS:
-			return a < b;
-		case util::PropertyEffect::LESS_EQUAL:
-			return a <= b;
-		case util::PropertyEffect::GREATER:
-			return a > b;
-		case util::PropertyEffect::GREATER_EQUAL:
-			return a >= b;
-	}
-	assert(false);
+    assert(static_cast<size_t>(e) < numPropertyEffects);
+    switch (e) {
+        case PropertyEffect::NOT_COMPARABLE:
+            return false;
+        case PropertyEffect::ANY:
+            return true;
+        case PropertyEffect::NOT_EQUAL:
+            return a != b;
+        case PropertyEffect::EQUAL:
+            return a == b;
+        case util::PropertyEffect::LESS:
+            return a < b;
+        case util::PropertyEffect::LESS_EQUAL:
+            return a <= b;
+        case util::PropertyEffect::GREATER:
+            return a > b;
+        case util::PropertyEffect::GREATER_EQUAL:
+            return a >= b;
+    }
+    assert(false);
 }
 
 using AssignmentComparator = std::function<std::optional<util::PropertyEffect>(
-						const std::shared_ptr<PropertyAssignment>& oldVal,
-						const std::shared_ptr<PropertyAssignment>& newVal)>;
+    const std::shared_ptr<PropertyAssignment>& oldVal,
+    const std::shared_ptr<PropertyAssignment>& newVal)>;
 
 std::ostream& operator<<(std::ostream& out, const PropertyEffect& a);
 
-template<typename T>
+template <typename T>
 std::ostream& operator<<(std::ostream& out, const std::optional<T>& a) {
-	if(!a) return out << "{}";
-	return out << "{" << *a << "}";
+    return (!a ? out << "{}" : out << "{" << *a << "}");
 }
 
 std::optional<PropertyEffect> combine(const PropertyEffect& a, const PropertyEffect& b);
@@ -102,34 +100,28 @@ const PropertyEffect& reverseEffect(const PropertyEffect& pe);
  * returns the desired effect on the number of counted pixels,
  * ANY if no preference
  */
-template<typename T>
-PropertyEffect propertyEffect(const PropertyEffect& selectedEffect,
-		const T& newVal,
-		const T& oldVal) {
-	if(newVal > oldVal)
-		return selectedEffect;
-	else if(newVal == oldVal)
-		return PropertyEffect::ANY;
-	else
-		return reverseEffect(selectedEffect);
+template <typename T>
+PropertyEffect propertyEffect(const PropertyEffect& selectedEffect, const T& newVal,
+                              const T& oldVal) {
+    if (newVal > oldVal) return selectedEffect;
+    if (newVal == oldVal) return PropertyEffect::ANY;
+    return reverseEffect(selectedEffect);
 }
 
-template<typename T, size_t N>
+template <typename T, size_t N>
 struct GetComponent {
-	static typename T::value_type get(const T& v, size_t i) {
-		return v[i];
-	}
+    static typename T::value_type get(const T& v, size_t i) { return v[i]; }
 };
-template<typename T>
-struct GetComponent<T,1> {
-	static T get(const T& v, size_t i) {
-		assert(i == 0);
-		return v;
-	}
+template <typename T>
+struct GetComponent<T, 1> {
+    static T get(const T& v, size_t i) {
+        assert(i == 0);
+        return v;
+    }
 };
 
 std::optional<Processor*> getOwningProcessor(Property* const prop);
 
-} // util
+}  // namespace util
 
-} // inviwo
+}  // namespace inviwo

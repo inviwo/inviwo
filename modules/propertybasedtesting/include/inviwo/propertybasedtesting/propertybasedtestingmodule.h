@@ -36,8 +36,9 @@
 namespace inviwo {
 
 class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyBasedTestingModule : public InviwoModule {
-	TestPropertyFactory testPropertyFactory_;
-	TestPropertyCompositeFactory testPropertyCompositeFactory_;
+    TestPropertyFactory testPropertyFactory_;
+    TestPropertyCompositeFactory testPropertyCompositeFactory_;
+
 public:
     PropertyBasedTestingModule(InviwoApplication* app);
     virtual ~PropertyBasedTestingModule() = default;

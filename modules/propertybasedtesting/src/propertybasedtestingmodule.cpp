@@ -35,14 +35,15 @@
 
 namespace inviwo {
 
-PropertyBasedTestingModule::PropertyBasedTestingModule(InviwoApplication* app) : InviwoModule(app, "PropertyBasedTesting") {
+PropertyBasedTestingModule::PropertyBasedTestingModule(InviwoApplication* app)
+    : InviwoModule(app, "PropertyBasedTesting") {
     // Add a directory to the search path of the Shadermanager
     // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Register objects that can be shared with the rest of inviwo here:
-	
-	app->getWorkspaceManager()->registerFactory(&testPropertyFactory_);
-	app->getWorkspaceManager()->registerFactory(&testPropertyCompositeFactory_);
+
+    app->getWorkspaceManager()->registerFactory(&testPropertyFactory_);
+    app->getWorkspaceManager()->registerFactory(&testPropertyCompositeFactory_);
 
     // Processors
     registerProcessor<PropertyAnalyzer>();
@@ -65,7 +66,8 @@ PropertyBasedTestingModule::PropertyBasedTestingModule(InviwoApplication* app) :
     // registerPort<PropertyBasedTestingInport>();
 
     // PropertyWidgets
-    // registerPropertyWidget<PropertyBasedTestingPropertyWidget, PropertyBasedTestingProperty>("Default");
+    // registerPropertyWidget<PropertyBasedTestingPropertyWidget,
+    // PropertyBasedTestingProperty>("Default");
 
     // Dialogs
     // registerDialog<PropertyBasedTestingDialog>(PropertyBasedTestingOutport);
@@ -75,8 +77,8 @@ PropertyBasedTestingModule::PropertyBasedTestingModule(InviwoApplication* app) :
     // registerSettings(std::make_unique<PropertyBasedTestingSettings>());
     // registerMetaData(std::make_unique<PropertyBasedTestingMetaData>());
     // registerPortInspector("PropertyBasedTestingOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(util::make_unique_ptr<PropertyBasedTestingDrawer>());
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
+    // processorWidget); registerDrawer(util::make_unique_ptr<PropertyBasedTestingDrawer>());
 }
 
 }  // namespace inviwo
