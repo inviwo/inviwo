@@ -71,15 +71,18 @@ public:
 private:
     enum class ComparisonType { AbsARGB };
 	enum class ReductionType { MEAN, MAX, MIN, SUM };
-	std::string reductionTypeName(const ReductionType& r) {
-		#define CASE_VAL(p) case(ReductionType::p): return #p;
-		switch(r) {
-		CASE_VAL(MEAN)
-		CASE_VAL(MAX)
-		CASE_VAL(MIN)
-		CASE_VAL(SUM)
-		};
-	}
+    std::string reductionTypeName(const ReductionType& r) {
+        switch (r) {
+            case ReductionType::MEAN:
+                return "MEAN";
+            case ReductionType::MAX:
+                return "MAX";
+            case ReductionType::MIN:
+                return "MIN";
+            case ReductionType::SUM:
+                return "SUM";
+        };
+    }
 
 	template<typename T>
 	T getUnitForReduction(const ReductionType& r) {

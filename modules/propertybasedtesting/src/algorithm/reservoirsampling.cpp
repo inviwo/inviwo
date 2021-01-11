@@ -38,15 +38,13 @@ std::vector<size_t> reservoirSampling(const size_t n, const size_t k) {
 	std::vector<size_t> result(k);
 	std::iota(result.begin(), result.end(), 0); // start with the first k values
 
-	#define random() (double(rand()) / RAND_MAX)
-
-	double w = exp(log(random())/k);
+	double w = exp(log((double(rand()) / RAND_MAX)) / k);
 
 	for(size_t i = k; i < n; ) {
-		i += log(random())/log(1-w);
+		i += log((double(rand()) / RAND_MAX)) / log(1 - w);
 		if(i < n) {
 			result[ rand()%k ] = i;
-			w *= exp(log(random())/k);
+			w *= exp(log((double(rand()) / RAND_MAX)) / k);
 		}
 	}
 	
