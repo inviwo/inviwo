@@ -28,8 +28,11 @@
     {
       "name": "vcpkg",
       "hidden": true,
+      "environment": {
+        "VCPKG_OVERLAY_PORTS" : "${sourceDir}/tools/vcpkg"
+      },
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET" : "x64-windows",
+        "CMAKE_TOOLCHAIN_FILE" : "${sourceParentDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
         "IVW_CFG_VCPKG_OVERLAYS": "${sourceDir}/tools/vcpkg",
         "IVW_USE_EXTERNAL_ASSIMP":    { "type": "BOOL", "value": "ON"},
         "IVW_USE_EXTERNAL_BENCHMARK": { "type": "BOOL", "value": "ON"},
@@ -69,7 +72,14 @@
       "generator": "Visual Studio 16 2019",
       "architecture" : "x64",
       "binaryDir": "${sourceParentDir}/builds/msvc-dev",
-      "inherits" : ["vcpkg", "modules", "develop"]
+      "inherits" : ["modules", "develop"]
+    },
+    {
+      "name": "msvc-dev-vcpkg",
+      "displayName": "MSVC Development VCPKG",
+      "description": "MSVC Development VCPKG configuration",
+      "binaryDir": "${sourceParentDir}/builds/msvc-dev-vcpkg",
+      "inherits" : ["vcpkg", "msvc-dev"]
     }
   ]
 }

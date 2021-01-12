@@ -102,9 +102,20 @@ function(ivw_vcpkg_install name)
 	string(TOLOWER "${name}" lowercase_name)
 
     if(DEFINED IVW_CFG_VCPKG_OVERLAYS)
-        set(overlay --overlay ${IVW_CFG_VCPKG_OVERLAYS})
+        set(overlay "--overlay" "${IVW_CFG_VCPKG_OVERLAYS}")
     else()
         set(overlay "")
+    endif()
+
+    if(VCPKG_MANIFEST_MODE AND EXISTS "${CMAKE_SOURCE_DIR}/vcpkg_installed")
+        set(install "--install" "${CMAKE_SOURCE_DIR}/vcpkg_installed")
+        set(installdir "${CMAKE_SOURCE_DIR}/vcpkg_installed/")
+    elseif(VCPKG_MANIFEST_MODE AND EXISTS "${CMAKE_BINARY_DIR}/vcpkg_installed")
+        set(install "--install" "${CMAKE_BINARY_DIR}/vcpkg_installed")
+        set(installdir "${CMAKE_BINARY_DIR}/vcpkg_installed/")
+    else()
+        set(install "")
+        set(installdir "${_VCPKG_ROOT_DIR}/installed/")
     endif()
 
     if(NOT DEFINED ivw_vcpkg_info_${lowercase_name} OR 
@@ -113,9 +124,10 @@ function(ivw_vcpkg_install name)
         execute_process(
             COMMAND "${Python3_EXECUTABLE}" "${IVW_TOOLS_DIR}/vcpkginfo.py"
                 --vcpkg "${_VCPKG_EXECUTABLE}" 
-                ${overlay}
                 --pkg ${lowercase_name}
                 --triplet ${VCPKG_TARGET_TRIPLET}
+                ${overlay}
+                ${install}
             OUTPUT_VARIABLE pkgInfo
             ERROR_VARIABLE pkgError
             OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -125,7 +137,8 @@ function(ivw_vcpkg_install name)
                 "  vcpkg: ${_VCPKG_EXECUTABLE}\n"
                 "  triplet: ${VCPKG_TARGET_TRIPLET}\n"
                 "  package: ${lowercase_name}\n"
-                "  overlay ${overlay}\n"
+                "  overlay: ${overlay}\n"
+                "  install: ${install}\n"
                 "  Error: ${pkgError}"
             )
         else()
@@ -148,15 +161,15 @@ function(ivw_vcpkg_install name)
     if(WIN32)
         set(binfiles ${INFO_VCPKG_OWNED_FILES})
         list(FILTER binfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/bin/.*\\.dll") 
-        list(TRANSFORM binfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+        list(TRANSFORM binfiles PREPEND ${installdir})
 
         set(pdbfiles ${INFO_VCPKG_OWNED_FILES})
         list(FILTER pdbfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/bin/.*\\.pdb")
-        list(TRANSFORM pdbfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+        list(TRANSFORM pdbfiles PREPEND ${installdir})
 
         set(libfiles ${INFO_VCPKG_OWNED_FILES})
         list(FILTER libfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/lib/.*\\.lib")
-        list(TRANSFORM libfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+        list(TRANSFORM libfiles PREPEND ${installdir})
 
         install(
             FILES ${binfiles} 
@@ -176,7 +189,7 @@ function(ivw_vcpkg_install name)
     elseif(APPLE)
         set(libfiles ${INFO_VCPKG_OWNED_FILES})
         list(FILTER libfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/lib/.*\\.dylib")
-        list(TRANSFORM libfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+        list(TRANSFORM libfiles PREPEND ${installdir})
         install(
             FILES ${libfiles} 
             DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
@@ -185,7 +198,7 @@ function(ivw_vcpkg_install name)
         
         set(libfiles ${INFO_VCPKG_OWNED_FILES})
         list(FILTER libfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/lib/.*\\.a")
-        list(TRANSFORM libfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+        list(TRANSFORM libfiles PREPEND ${installdir})
         install(
             FILES ${libfiles} 
             DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
@@ -194,7 +207,7 @@ function(ivw_vcpkg_install name)
     else()
         set(libfiles ${INFO_VCPKG_OWNED_FILES})
         list(FILTER libfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/lib/.*\\.so")
-        list(TRANSFORM libfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+        list(TRANSFORM libfiles PREPEND ${installdir})
         install(
             FILES ${libfiles} 
             DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
@@ -203,7 +216,7 @@ function(ivw_vcpkg_install name)
         
         set(libfiles ${INFO_VCPKG_OWNED_FILES})
         list(FILTER libfiles INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/lib/.*\\.a")
-        list(TRANSFORM libfiles PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+        list(TRANSFORM libfiles PREPEND ${installdir})
         install(
             FILES ${libfiles} 
             DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
@@ -213,13 +226,11 @@ function(ivw_vcpkg_install name)
 
     set(copyright ${INFO_VCPKG_OWNED_FILES})
     list(FILTER copyright INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/share/.*copyright.*")
-    list(TRANSFORM copyright PREPEND "${_VCPKG_ROOT_DIR}/installed/")
+    list(TRANSFORM copyright PREPEND ${installdir})
 
     set(headers ${INFO_VCPKG_OWNED_FILES})
     list(FILTER headers INCLUDE REGEX "${VCPKG_TARGET_TRIPLET}/include/.*\\..?.*")
-    list(TRANSFORM headers PREPEND "${_VCPKG_ROOT_DIR}/installed/")
-
-
+    list(TRANSFORM headers PREPEND ${installdir})
 
 
     if(INFO_VCPKG_HOMEPAGE)
@@ -259,7 +270,7 @@ function(ivw_vcpkg_install name)
     if(NOT TARGET ${name}_vcpkg)
         add_custom_target(${name}_vcpkg SOURCES ${headers})
         source_group(
-            TREE "${_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/include/" 
+            TREE "${installdir}${VCPKG_TARGET_TRIPLET}/include/" 
             PREFIX "Header Files" 
             FILES ${headers}
         )
