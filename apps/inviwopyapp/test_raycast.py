@@ -1,8 +1,9 @@
+# %%
 import os, sys
 from pathlib import Path
 import numpy as np
 
-sys.path.append('/home/dome/Repositories/inviwo-build/bin/')
+sys.path.append('/home/dome/Repositories/inviwo-build-pystuff/bin/')
 import inviwopy as ivw
 from inviwopy.glm import vec4, dvec2, size2_t
 from inviwopy.properties import InvalidationLevel

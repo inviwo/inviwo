@@ -27,7 +27,7 @@ class InviwoInterface:
         workspace_path = Path(self.app.getPath(ivw.PathType.Workspaces)) / ivw_network
         self.app.network.load(str(workspace_path))
         self.network = self.app.network
-        self.proc_dict = {str(p): p for p in self.network.processors}
+        self.proc_dict = {p.identifier: p for p in self.network.processors}
         print(f'Loaded workspace: {workspace_path}')
 
         self.set_canvas_hidden_evaluation(True)
@@ -39,6 +39,11 @@ class InviwoInterface:
         self.bgJobs = self.app.runningBackgroundJobs()
 
     def set_canvas_hidden_evaluation(self, value):
+        ''' Sets the "evaluateWhenHidden" property of all canvases in the network
+
+        Args:
+            value (bool): The value to set "evaluateWhenHidden" to. Usually you want this to be True when working in Python
+        '''
         for p in self.network.processors:
             if p.classIdentifier == 'org.inviwo.CanvasGL':
                 print(p.properties)
@@ -46,6 +51,11 @@ class InviwoInterface:
 
     @contextmanager
     def network_locked(self, wait_after_unlock=False):
+        ''' Context manager within which the network is locked
+
+        Args:
+            wait_after_unlock (bool, optional): Wait for network evaluation after unlocking. Defaults to False.
+        '''
         try:
             self.network.lock()
             yield
@@ -53,16 +63,15 @@ class InviwoInterface:
             self.network.unlock()
             if wait_after_unlock: self.app.waitForNetwork()
 
-    def eval(self, keep_network_unlocked=False):
-        relock = self.network.isLocked()
-        while self.network.isLocked():
-            self.network.unlock()
-        self.app.waitForNetwork()
-        if relock and not keep_network_unlocked:
-            self.network.lock()
+    def eval(self):
+        ''' Waits for the network evaluation, if the network is unlocked. (Prints warning otherwise) '''
+        if self.network.isLocked():
+            self.logger.warn("Cannot evaluate network while it is locked! Check InviwoInterface.network.isLocked().")
+        else:
+            self.app.waitForNetwork()
 
     def inject_volume_source(self, src_id):
-        ''' Replaces VolumeSource processors with a VolumeInjector
+        ''' Replaces VolumeSource processors with a VolumeInjector.
 
         Args:
             src_id (str): Volume Source processor id
@@ -73,13 +82,25 @@ class InviwoInterface:
         inj = self.app.processorFactory.create('org.inviwo.VolumeInjector')
         self.injectors[src_id] = inj
         self.replace_processor(src_id, inj)
-        def set_volume(array, invalidate=True):
+        def set_volume(array):
             inj.setArray(array)
-            if invalidate:
-                inj.invalidate(InvalidationLevel.InvalidOutput)
         return set_volume
 
-    ##### DO same for Image, Mesh?
+    def inject_image_source(self, src_id):
+        ''' Replaces ImageSource Processors with an ImageInjector
+
+        Args:
+            src_id (str): Image Source processor id
+
+        Returns:
+            function: Function that injects np.array images into the network
+        '''
+        inj = self.app.processorFactory.create('org.inviwo.ImageInjector')
+        self.injectors[src_id] = inj
+        self.replace_processor(src_id, inj)
+        def set_image(color, depth=None, picking=None):
+            inj.setArray(color, depth, picking)
+        return set_image
 
     def replace_processor(self, old_id, new_proc, allow_partial_connections=True):
         ''' Replaces VolumeSource processors with a VolumeInjector
