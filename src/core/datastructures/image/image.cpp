@@ -31,6 +31,7 @@
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 
@@ -74,6 +75,30 @@ Image::Image(std::shared_ptr<Layer> layer)
     }
 }
 
+Image::Image(std::shared_ptr<Layer> color, std::shared_ptr<Layer> depth, std::shared_ptr<Layer> picking)
+    : DataGroup<Image, ImageRepresentation>(), MetaDataOwner() {
+    size2_t dims {8, 8};
+    if (color) {
+        dims = color->getDimensions();
+        ivwAssert(color->getLayerType() == LayerType::Color,
+                    "color argument does not have LayerType::Color");
+        colorLayers_.push_back(color);
+    } else { colorLayers_.push_back(createColorLayer()); }
+
+
+    if (depth) {
+        LogInfo("Image constr depth");
+        ivwAssert(depth->getLayerType() == LayerType::Depth,
+                    "depth argument does not have LayerType::Depth");
+        depthLayer_ = depth;
+    } else { depthLayer_ = createDepthLayer(dims); }
+
+    if (picking) {
+        ivwAssert(picking->getLayerType() == LayerType::Picking,
+                    "picking argument does not have LayerType::Picking");
+        pickingLayer_ = picking;
+    } else { pickingLayer_ = createPickingLayer(dims); }
+}
 Image::Image(const Image& rhs) : DataGroup<Image, ImageRepresentation>(rhs), MetaDataOwner(rhs) {
     for (const auto& elem : rhs.colorLayers_) {
         colorLayers_.push_back(std::shared_ptr<Layer>(elem->clone()));

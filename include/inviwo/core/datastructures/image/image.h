@@ -49,6 +49,8 @@ public:
     using DataBuffer = std::unique_ptr<std::vector<unsigned char>>;
 
     Image(size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get());
+    Image(std::shared_ptr<Layer> color, std::shared_ptr<Layer> depth,
+                 std::shared_ptr<Layer> picking);
     Image(std::shared_ptr<Layer> layer);
     Image(const Image& rhs);
     Image& operator=(const Image& that);
