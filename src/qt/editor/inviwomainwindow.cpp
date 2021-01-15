@@ -1148,7 +1148,8 @@ void InviwoMainWindow::showWelcomeScreen() {
 
     setUpdatesEnabled(false);
     if (!welcomeWidget_) {
-        welcomeWidget_ = std::make_unique<WelcomeWidget>(this->getInviwoApplication(), centralWidget_);
+        welcomeWidget_ =
+            std::make_unique<WelcomeWidget>(this->getInviwoApplication(), centralWidget_);
         welcomeWidget_->updateRecentWorkspaces(getRecentWorkspaceList());
         centralWidget_->addWidget(welcomeWidget_.get());
 
@@ -1174,7 +1175,6 @@ void InviwoMainWindow::showWelcomeScreen() {
                 hideWelcomeScreen();
                 saveWindowState();
             }
-
         });
         connect(welcomeWidget_.get(), &WelcomeWidget::newWorkspace, this, [this]() {
             if (newWorkspace()) {

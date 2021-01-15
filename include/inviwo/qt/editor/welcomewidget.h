@@ -74,7 +74,7 @@ private:
 
     void updateDetails(const QString& filename);
 
-    InviwoApplication*  app_;
+    InviwoApplication* app_;
 
     FileTreeWidget* filetree_;
     QLineEdit* filterLineEdit_;
