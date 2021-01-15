@@ -97,6 +97,7 @@
 #include <QTabWidget>
 #include <QScreen>
 #include <QToolButton>
+#include <QStackedWidget>
 
 #include <warn/pop>
 
@@ -236,13 +237,10 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());
 
-    centralWidget_ = new QTabWidget(this);
+    centralWidget_ = new QStackedWidget(this);
     centralWidget_->setObjectName("CentralTabWidget");
-    centralWidget_->setTabPosition(QTabWidget::North);
-    centralWidget_->setMovable(true);
-    centralWidget_->setTabBarAutoHide(true);
 
-    centralWidget_->addTab(networkEditorView_, "Network Editor");
+    centralWidget_->addWidget(networkEditorView_);
     setCentralWidget(centralWidget_);
 
     settings_ = new SettingsWidget(this);
@@ -391,10 +389,13 @@ void InviwoMainWindow::addActions() {
     {
         auto welcomeAction =
             new QAction(QIcon(":/svgicons/about-enabled.svg"), tr("&Get Started"), this);
+        welcomeAction->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_N);
+        welcomeAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(welcomeAction);
         connect(welcomeAction, &QAction::triggered, this, &InviwoMainWindow::showWelcomeScreen);
         fileMenuItem->addAction(welcomeAction);
         fileMenuItem->addSeparator();
+        workspaceToolBar->addAction(welcomeAction);
     }
 
     {
@@ -521,10 +522,6 @@ void InviwoMainWindow::addActions() {
             // save empty list
             saveRecentWorkspaceList(QStringList());
             clearRecentWorkspaces_->setEnabled(false);
-
-            if (welcomeWidget_) {
-                welcomeWidget_->updateRecentWorkspaces();
-            }
         });
 
         connect(recentWorkspaceMenu, &QMenu::aboutToShow, this, [this]() {
@@ -912,10 +909,6 @@ void InviwoMainWindow::addToRecentWorkspaces(QString workspaceFileName) {
 
     if (recentFiles.size() > static_cast<int>(maxNumRecentFiles_)) recentFiles.removeLast();
     saveRecentWorkspaceList(recentFiles);
-
-    if (welcomeWidget_) {
-        welcomeWidget_->updateRecentWorkspaces();
-    }
 }
 
 QStringList InviwoMainWindow::getRecentWorkspaceList() const {
@@ -936,6 +929,10 @@ void InviwoMainWindow::saveRecentWorkspaceList(const QStringList& list) {
     settings.beginGroup(objectName());
     settings.setValue("recentFileList", list);
     settings.endGroup();
+
+    if (welcomeWidget_) {
+        welcomeWidget_->updateRecentWorkspaces(list);
+    }
 }
 
 void InviwoMainWindow::setCurrentWorkspace(QString workspaceFileName) {
@@ -1147,40 +1144,76 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
 }
 
 void InviwoMainWindow::showWelcomeScreen() {
-    auto createTabCloseButton = [&](int tabIndex) {
-        const auto iconsize = utilqt::emToPx(this, QSizeF(1.2, 1.2));
-        auto closeBtn = new QToolButton();
-        QIcon icon;
-        icon.addFile(":/svgicons/close.svg", iconsize);
-        closeBtn->setIcon(icon);
-        closeBtn->setIconSize(iconsize);
+    if (!newWorkspace()) return;
 
-        QObject::connect(closeBtn, &QToolButton::clicked, this, [&]() { hideWelcomeScreen(); });
-
-        centralWidget_->tabBar()->setTabButton(tabIndex, QTabBar::RightSide, closeBtn);
-    };
-
+    setUpdatesEnabled(false);
     if (!welcomeWidget_) {
-        welcomeWidget_ = std::make_unique<WelcomeWidget>(this, centralWidget_);
+        welcomeWidget_ = std::make_unique<WelcomeWidget>(this->getInviwoApplication(), centralWidget_);
+        welcomeWidget_->updateRecentWorkspaces(getRecentWorkspaceList());
+        centralWidget_->addWidget(welcomeWidget_.get());
 
-        centralWidget_->setUpdatesEnabled(false);
-        centralWidget_->insertTab(0, welcomeWidget_.get(), "Get Started");
-        createTabCloseButton(0);
-        centralWidget_->setUpdatesEnabled(true);
-    }
-    if (centralWidget_->indexOf(welcomeWidget_.get()) < 0) {
-        centralWidget_->insertTab(0, welcomeWidget_.get(), "Get Started");
-        createTabCloseButton(0);
+        connect(welcomeWidget_.get(), &WelcomeWidget::loadWorkspace, this,
+                [this](const QString& filename, bool isExample) {
+                    if (askToSaveWorkspaceChanges()) {
+                        bool hide = [&]() {
+                            bool controlPressed = app_->keyboardModifiers() == Qt::ControlModifier;
+                            if (isExample && !controlPressed) {
+                                return openExample(filename);
+                            } else {
+                                return openWorkspace(filename);
+                            }
+                        }();
+                        if (hide) {
+                            hideWelcomeScreen();
+                            saveWindowState();
+                        }
+                    }
+                });
+        connect(welcomeWidget_.get(), &WelcomeWidget::openWorkspace, this, [this]() {
+            if (openWorkspace()) {
+                hideWelcomeScreen();
+                saveWindowState();
+            }
+
+        });
+        connect(welcomeWidget_.get(), &WelcomeWidget::newWorkspace, this, [this]() {
+            if (newWorkspace()) {
+                hideWelcomeScreen();
+                saveWindowState();
+            }
+        });
+        connect(welcomeWidget_.get(), &WelcomeWidget::restoreWorkspace, this, [this]() {
+            hideWelcomeScreen();
+            restoreWorkspace();
+            saveWindowState();
+        });
     }
 
     centralWidget_->setCurrentWidget(welcomeWidget_.get());
+    for (auto dw : findChildren<QDockWidget*>()) {
+        if (dw->isVisible() && !dw->isFloating()) {
+            dw->hide();
+            welcomeHidden_.push_back(dw);
+        }
+    }
+    welcomeWidget_->enableRestoreButton(hasRestoreWorkspace());
     welcomeWidget_->setFilterFocus();
+    app_->processEvents(QEventLoop::ExcludeUserInputEvents);
+    setUpdatesEnabled(true);
+    app_->processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 void InviwoMainWindow::hideWelcomeScreen() {
-    if (welcomeWidget_) {
-        centralWidget_->removeTab(centralWidget_->indexOf(welcomeWidget_.get()));
+    setUpdatesEnabled(false);
+    centralWidget_->setCurrentWidget(networkEditorView_);
+    for (auto dw : welcomeHidden_) {
+        dw->show();
     }
+    welcomeHidden_.clear();
+
+    app_->processEvents(QEventLoop::ExcludeUserInputEvents);
+    setUpdatesEnabled(true);
+    app_->processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 void InviwoMainWindow::onModifiedStatusChanged(const bool& /*newStatus*/) { updateWindowTitle(); }
@@ -1262,6 +1295,7 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
     }
 
     app_->getWorkspaceManager()->clear();
+    hideWelcomeScreen();
 
     saveWindowState();
 

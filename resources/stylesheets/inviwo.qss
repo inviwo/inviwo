@@ -257,6 +257,16 @@ QTabBar::tab:top:!selected:hover {
 QTabBar::tab:top:!selected {}
 QTabBar::tab:bottom:!selected {}
 
+/* QStackedWidget */
+QStackedWidget {
+    border: none;
+}
+QStackedWidget QGraphicsView {
+    /* need to set the background otherwise the scrollbars will have a white background */
+    background: #323235;
+    border: none;
+}
+
 /************************ 
 QMenu
 ************************/
