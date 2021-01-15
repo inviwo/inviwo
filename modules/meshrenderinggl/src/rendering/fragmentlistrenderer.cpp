@@ -507,6 +507,15 @@ void FragmentListRenderer::debugFragmentLists(std::ostream& oss) {
     oss << std::endl << "\n==================================================\n";
 }
 
+struct ColorPack {
+    float a;
+    unsigned int b : 10;
+    unsigned int g : 10;
+    unsigned int r : 10;
+    unsigned int unused : 2;
+};
+static_assert(sizeof(ColorPack) == 8);
+
 void FragmentListRenderer::debugIllustrationBuffer(std::ostream& oss) {
     oss << "========= Fragment List Renderer - Illustration Buffers =========\n";
 
@@ -523,7 +532,7 @@ void FragmentListRenderer::debugIllustrationBuffer(std::ostream& oss) {
     size_t size = std::min(static_cast<size_t>(numFrags), fragmentSize_);
 
     glBindBuffer(GL_ARRAY_BUFFER, illustration_.color.getId());
-    std::vector<glm::tvec2<GLfloat>> colorBuffer(size);
+    std::vector<ColorPack> colorBuffer(size);
     glGetBufferSubData(GL_ARRAY_BUFFER, 0, 2 * sizeof(GLfloat) * size, &colorBuffer[0]);
 
     glBindBuffer(GL_ARRAY_BUFFER, illustration_.surfaceInfo.getId());
@@ -544,25 +553,24 @@ void FragmentListRenderer::debugIllustrationBuffer(std::ostream& oss) {
     // print
     for (size_t y = 0; y < screenSize_.y; ++y) {
         for (size_t x = 0; x < screenSize_.x; ++x) {
-            const auto start = idxImg[x + screenSize_.x * y];
-            const auto count = countImg[x + screenSize_.x * y];
+            const size_t start = idxImg[x + screenSize_.x * y];
+            const size_t count = countImg[x + screenSize_.x * y];
             fmt::print(oss, "{: 4}:{: 4} start={: 5}, count={: 5}\n", x, y, start, count);
 
-            for (uint32_t i = 0; i < count; ++i) {
-                float alpha = colorBuffer[start + i].x;
-                int rgb = *reinterpret_cast<int*>(&colorBuffer[start + i].y);
+            for (size_t i = 0; i < count; ++i) {
+                auto color = colorBuffer[start + i];
                 float depth = surfaceInfoBuffer[start + i].x;
                 glm::tvec4<GLint> neighbors = neighborBuffer[start + i];
                 float beta = smoothingBuffer[start + i].x;
                 float gamma = smoothingBuffer[start + i].y;
-                float r = float((rgb >> 20) & 0x3ff) / 1023.0f;
-                float g = float((rgb >> 10) & 0x3ff) / 1023.0f;
-                float b = float(rgb & 0x3ff) / 1023.0f;
+                float r = color.r / 1023.0f;
+                float g = color.g / 1023.0f;
+                float b = color.b / 1023.0f;
 
                 fmt::print(oss,
                            "\tdepth={:5.3f}, alpha={:5.3f}, r={:5.3f}, g={:5.3f}, b={:5.3f}, "
                            "beta={:5.3f}, gamma={:5.3f}, neighbors:",
-                           depth, alpha, r, g, b, beta, gamma);
+                           depth, color.a, r, g, b, beta, gamma);
 
                 for (size_t n = 0; n < 4; ++n) {
                     if (neighbors[n] >= 0) {

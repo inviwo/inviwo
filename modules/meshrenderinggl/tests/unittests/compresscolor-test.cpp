@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,49 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/hdf5/hdf5moduledefine.h>
-#include <modules/hdf5/datastructures/hdf5path.h>
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
 #include <inviwo/core/util/glmvec.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <H5Cpp.h>
-#include <warn/pop>
-
-#include <vector>
-
 namespace inviwo {
 
-namespace hdf5 {
+unsigned int compressColor(glm::vec3 color) {
+    unsigned int c = (int((color.r * 1023)) & 0x3ff) << 20;
+    c += (int((color.g * 1023)) & 0x3ff) << 10;
+    c += (int((color.b * 1023)) & 0x3ff);
+    return c;
+}
+glm::vec3 uncompressColor(unsigned int c) {
+    glm::vec3 color;
+    color.r = float((c >> 20) & 0x3ff) / 1023.0f;
+    color.g = float((c >> 10) & 0x3ff) / 1023.0f;
+    color.b = float(c & 0x3ff) / 1023.0f;
+    return color;
+}
 
-struct IVW_MODULE_HDF5_API VolumeInfo {
-    Path path_;
-    int index_;
-    size3_t dim_;
+struct ColorPack {
+    unsigned int b : 10;
+    unsigned int g : 10;
+    unsigned int r : 10;
+    unsigned int unused : 2;
 };
 
-using VolumeInfos = std::vector<VolumeInfo>;
-using Paths = std::vector<Path>;
+static_assert(sizeof(ColorPack) == 4);
 
-IVW_MODULE_HDF5_API Paths findpaths(const H5::Group& grp, const Path& path,
-                                    const std::string& type);
-IVW_MODULE_HDF5_API bool isOfType(const H5::Group& grp, const std::string& type);
-IVW_MODULE_HDF5_API VolumeInfos getVolumeInfo(const H5::DataSet& ds, const Path& path);
+TEST(CompressColor, colorpack) {
 
-}  // namespace hdf5
+    auto compress = compressColor(glm::vec3{1.f, 0.5f, 0.0f});
+    auto color1 = uncompressColor(compress);
+
+    ColorPack color2;
+    std::memcpy(&color2, &compress, 4);
+
+    glm::vec3 color3{color2.r / 1023.0f, color2.g / 1023.0f, color2.b / 1023.0f};
+
+    EXPECT_EQ(color1, color3);
+}
 
 }  // namespace inviwo

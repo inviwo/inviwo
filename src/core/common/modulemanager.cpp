@@ -428,7 +428,7 @@ auto ModuleManager::getProtectedDependencies(
     std::function<void(const std::string&)> getDeps = [&](const std::string& module) {
         auto it = util::find_if(modules, [&](const auto& m) { return iCaseCmp(m->name, module); });
         if (it != modules.end()) {
-            for (const auto dep : (*it)->dependencies) {
+            for (const auto& dep : (*it)->dependencies) {
                 dependencies.insert(dep.first);
                 getDeps(dep.first);
             }

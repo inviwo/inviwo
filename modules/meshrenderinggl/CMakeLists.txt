@@ -65,8 +65,9 @@ ivw_group("Shader Files" ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
-    tests/unittests/meshrenderinggl-unittest-main.cpp
+    tests/unittests/compresscolor-test.cpp
     tests/unittests/halfedges-test.cpp
+    tests/unittests/meshrenderinggl-unittest-main.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
