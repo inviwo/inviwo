@@ -39,6 +39,8 @@
 #include <H5Cpp.h>
 #include <warn/pop>
 
+#include <vector>
+
 namespace inviwo {
 
 namespace hdf5 {

@@ -1,3 +1,5 @@
+
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -41,25 +43,24 @@ namespace inviwo {
 
 namespace hdf5 {
 
-Handle::Handle(std::string filename) : filename_(filename), path_("/") {
-    H5::H5File hdfFile(filename_, H5F_ACC_RDONLY);
-    data_ = hdfFile.openGroup(path_);
+namespace {
+H5::Group load(const std::string& filename, const std::string& path) {
+    H5::H5File hdfFile(filename, H5F_ACC_RDONLY);
+    return hdfFile.openGroup(path);
 }
+}  // namespace
 
-Handle::Handle(std::string filename, Path path) : filename_(filename), path_(path) {
-    H5::H5File hdfFile(filename_, H5F_ACC_RDONLY);
-    data_ = hdfFile.openGroup(path_);
-}
+Handle::Handle(std::string filename)
+    : filename_(filename), path_("/"), data_{load(filename_, path_)} {}
 
-Handle::Handle(const Handle& rhs) : filename_(rhs.filename_), path_(rhs.path_) {
-    H5::H5File hdfFile(filename_, H5F_ACC_RDONLY);
-    data_ = hdfFile.openGroup(path_);
-}
+Handle::Handle(std::string filename, Path path)
+    : filename_(filename), path_(path), data_{load(filename_, path_)} {}
 
-Handle::Handle(Handle&& rhs) : filename_(rhs.filename_), path_(rhs.path_) {
-    H5::H5File hdfFile(filename_, H5F_ACC_RDONLY);
-    data_ = hdfFile.openGroup(path_);
-}
+Handle::Handle(const Handle& rhs)
+    : filename_(rhs.filename_), path_(rhs.path_), data_{load(filename_, path_)} {}
+
+Handle::Handle(Handle&& rhs)
+    : filename_(rhs.filename_), path_(rhs.path_), data_{load(filename_, path_)} {}
 
 Handle& Handle::operator=(Handle&& that) {
     if (this != &that) {

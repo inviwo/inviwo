@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,62 +26,50 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
-
-#include <inviwo/qt/editor/inviwoqteditordefine.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QSplitter>
+#include <gtest/gtest.h>
 #include <warn/pop>
 
-class QTabWidget;
-class QTextEdit;
-class QToolButton;
-class QLineEdit;
-class QStringList;
+#include <inviwo/core/util/glmvec.h>
 
 namespace inviwo {
 
-class FileTreeWidget;
-class InviwoApplication;
+unsigned int compressColor(glm::vec3 color) {
+    unsigned int c = (int((color.r * 1023)) & 0x3ff) << 20;
+    c += (int((color.g * 1023)) & 0x3ff) << 10;
+    c += (int((color.b * 1023)) & 0x3ff);
+    return c;
+}
+glm::vec3 uncompressColor(unsigned int c) {
+    glm::vec3 color;
+    color.r = float((c >> 20) & 0x3ff) / 1023.0f;
+    color.g = float((c >> 10) & 0x3ff) / 1023.0f;
+    color.b = float(c & 0x3ff) / 1023.0f;
+    return color;
+}
 
-class IVW_QTEDITOR_API WelcomeWidget : public QSplitter {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-public:
-    WelcomeWidget(InviwoApplication* app, QWidget* parent);
-    virtual ~WelcomeWidget() = default;
-
-    void updateRecentWorkspaces(const QStringList& list);
-    void enableRestoreButton(bool hasRestoreWorkspace);
-    void setFilterFocus();
-
-signals:
-    void loadWorkspace(const QString& filename, bool isExample);
-    void newWorkspace();
-    void openWorkspace();
-    void restoreWorkspace();
-
-protected:
-    virtual void showEvent(QShowEvent* event) override;
-    virtual void keyPressEvent(QKeyEvent* event) override;
-
-private:
-    void initChangelog();
-
-    void updateDetails(const QString& filename);
-
-    InviwoApplication* app_;
-
-    FileTreeWidget* filetree_;
-    QLineEdit* filterLineEdit_;
-    QTextEdit* details_;
-    QTextEdit* changelog_;
-    QToolButton* loadWorkspaceBtn_;
-    QToolButton* restoreButton_;
+struct ColorPack {
+    unsigned int b : 10;
+    unsigned int g : 10;
+    unsigned int r : 10;
+    unsigned int unused : 2;
 };
+
+static_assert(sizeof(ColorPack) == 4);
+
+TEST(CompressColor, colorpack) {
+
+    auto compress = compressColor(glm::vec3{1.f, 0.5f, 0.0f});
+    auto color1 = uncompressColor(compress);
+
+    ColorPack color2;
+    std::memcpy(&color2, &compress, 4);
+
+    glm::vec3 color3{color2.r / 1023.0f, color2.g / 1023.0f, color2.b / 1023.0f};
+
+    EXPECT_EQ(color1, color3);
+}
 
 }  // namespace inviwo

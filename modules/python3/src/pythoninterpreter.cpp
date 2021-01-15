@@ -83,7 +83,32 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
         try {
             py::exec(R"(
 import sys
-import inviwopy
+import distutils.sysconfig
+import pathlib
+
+def findLib(paths, name):
+    for path in paths:
+        candidate = pathlib.Path(path) / name
+        if candidate.is_file():
+            return candidate
+    return None
+
+def formatError(e):
+    paths = sys.path
+    pathlist = '\n'.join(paths)
+    config = (f"\n{k:15}{v}" for k,v in distutils.sysconfig.get_config_vars().items()).join()
+    name = e.name    
+    ext = distutils.sysconfig.get_config_var('EXT_SUFFIX')
+    file = findLib(paths, name + ext)
+    return f"{e} \npaths:\n{pathlist} \nname: {name} \nconfig: {config} \match: {file}"    
+
+try:
+    import inviwopy
+except ModuleNotFoundError as e:
+    raise ModuleNotFoundError(formatError(e))
+except ImportError as e:
+    raise ImportError(formatError(e))    
+
 
 class OutputRedirector:
     def __init__(self, type):

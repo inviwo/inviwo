@@ -169,40 +169,39 @@ void VolumeSequenceToDataFrame::initializeResources() { recomputeReduceBuffer();
 
 void VolumeSequenceToDataFrame::process() {
     if (!inport_.hasData()) return;
-    auto volumeSequence = inport_.getVectorData();
-    auto outports = inport_.getConnectedOutports();
-    auto first = (volumeSequence[0])->getRepresentation<VolumeRAM>();
 
-    auto dims = first->getDimensions();
-    size_t size = dims.x * dims.y * dims.z;
+    auto data = inport_.getSourceVectorData();
+
+    const auto& dims = data[0].second->getDimensions();
+    const size_t size = dims.x * dims.y * dims.z;
+    const auto indexMapper = util::IndexMapper3D(dims);
 
     auto dataFrame = std::make_shared<DataFrame>(static_cast<std::uint32_t>(
         reduce_.get() || omitOutliers_.get() ? filteredIDs_.size() : size));
 
-    auto indexMapper = util::IndexMapper3D(dims);
-
-    size_t volumeNumber = 1;
-    for (const auto volume : volumeSequence) {
+    for (auto&& [port, volume] : data) {
         const auto numericType = volume->getDataFormat()->getNumericType();
         if (numericType != NumericType::Float) continue;
         std::vector<std::vector<float>*> channelBuffer_;
         auto volumeRAM = volume->getRepresentation<VolumeRAM>();
+        if (volumeRAM->getDimensions() != dims) {
+            throw Exception("All volume dims has to be equal", IVW_CONTEXT);
+        }
         const auto numCh = volume->getDataFormat()->getComponents();
         for (size_t c = 0; c < numCh; c++) {
-            auto identifier = outports[volumeNumber - 1]->getProcessor()->getIdentifier();
+            auto identifier = port->getProcessor()->getIdentifier();
             auto col = dataFrame->addColumn<float>(
                 identifier, reduce_.get() || omitOutliers_.get() ? filteredIDs_.size() : size);
             channelBuffer_.push_back(
                 &col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer());
         }
-        volumeNumber++;
 
         util::forEachVoxelParallel(*volumeRAM, [&, this](const size3_t& pos) {
             const auto idx = indexMapper(pos);
             if (filteredIDs_.find(idx) == filteredIDs_.end()) return;
             const auto v = volumeRAM->getAsDVec4(pos);
             for (size_t c = 0; c < numCh; c++) {
-                channelBuffer_[c]->at(idx) = float(v[c]);
+                (*channelBuffer_[c])[idx] = float(v[c]);
             }
         });
     }

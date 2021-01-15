@@ -41,10 +41,8 @@
 #include <inviwo/core/network/workspacemanager.h>
 
 #include <inviwo/qt/editor/filetreewidget.h>
-#include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
 #include <inviwo/qt/editor/lineediteventfilter.h>
-#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
@@ -69,7 +67,7 @@
 #include <QDateTime>
 #include <QShowEvent>
 #include <QKeyEvent>
-#include <QCoreApplication>
+#include <QAction>
 #include <QFile>
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 #include <QWindow>
@@ -88,8 +86,8 @@ struct InitQtChangelogResources {
 
 namespace inviwo {
 
-WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
-    : QSplitter(parent), mainWindow_(window) {
+WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
+    : QSplitter(parent), app_(app) {
     setObjectName("WelcomeWidget");
 
     setOrientation(Qt::Horizontal);
@@ -122,7 +120,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
 
     // left column: workspace filter, list of recently used workspaces, and examples
     {
-        filetree_ = new FileTreeWidget(window->getInviwoApplication(), leftWidget);
+        filetree_ = new FileTreeWidget(app_, leftWidget);
         filetree_->setObjectName("FileTreeWidget");
         filetree_->setMinimumWidth(200);
         filetree_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -133,7 +131,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
                              loadWorkspaceBtn_->disconnect();
                              QObject::connect(loadWorkspaceBtn_, &QToolButton::clicked, this,
                                               [this, filename, isExample]() {
-                                                  loadWorkspace(filename, isExample);
+                                                  emit loadWorkspace(filename, isExample);
                                               });
                          });
         QObject::connect(filetree_, &FileTreeWidget::loadFile, this, &WelcomeWidget::loadWorkspace);
@@ -196,38 +194,28 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
         auto newButton = createButton("New", ":/svgicons/newfile.svg");
         newButton->setObjectName("NewWorkspaceToolButton");
         newButton->setToolTip("Create an empty workspace");
-        QObject::connect(newButton, &QToolButton::clicked, this, [window]() {
-            if (window->newWorkspace()) {
-                window->hideWelcomeScreen();
-            }
-        });
+        QObject::connect(newButton, &QToolButton::clicked, this, [this]() { emit newWorkspace(); });
         buttonLayout->addWidget(newButton);
 
         auto openFileButton = createButton("Open...", ":/svgicons/open.svg");
         openFileButton->setObjectName("OpenWorkspaceToolButton");
         openFileButton->setToolTip("Open workspace from disk");
-        QObject::connect(openFileButton, &QToolButton::clicked, this, [window]() {
-            if (window->openWorkspace()) {
-                window->hideWelcomeScreen();
-            }
-        });
+        QObject::connect(openFileButton, &QToolButton::clicked, this,
+                         [this]() { emit openWorkspace(); });
         buttonLayout->addWidget(openFileButton);
 
-        auto restoreButton = createButton("Restore", ":/svgicons/revert.svg");
-        restoreButton->setObjectName("OpenWorkspaceToolButton");
-        restoreButton->setEnabled(window->hasRestoreWorkspace());
-        restoreButton->setToolTip("Restore last automatically saved workspace if available");
-        QObject::connect(restoreButton, &QToolButton::clicked, this, [window]() {
-            window->restoreWorkspace();
-            window->hideWelcomeScreen();
-        });
-        buttonLayout->addWidget(restoreButton);
+        restoreButton_ = createButton("Restore", ":/svgicons/revert.svg");
+        restoreButton_->setObjectName("OpenWorkspaceToolButton");
+        restoreButton_->setToolTip("Restore last automatically saved workspace if available");
+        QObject::connect(restoreButton_, &QToolButton::clicked, this,
+                         [this]() { emit restoreWorkspace(); });
+        buttonLayout->addWidget(restoreButton_);
         gridLayout->addLayout(buttonLayout, 3, 1, 1, 1);
 
         setTabOrder(loadWorkspaceBtn_, newButton);
         setTabOrder(newButton, openFileButton);
-        setTabOrder(openFileButton, restoreButton);
-        setTabOrder(restoreButton, details_);
+        setTabOrder(openFileButton, restoreButton_);
+        setTabOrder(restoreButton_, details_);
     }
 
     // add some space between center and right column
@@ -328,8 +316,12 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
     initChangelog();
 }
 
-void WelcomeWidget::updateRecentWorkspaces() {
-    filetree_->updateRecentWorkspaces(mainWindow_->getRecentWorkspaceList());
+void WelcomeWidget::updateRecentWorkspaces(const QStringList& list) {
+    filetree_->updateRecentWorkspaces(list);
+}
+
+void WelcomeWidget::enableRestoreButton(bool hasRestoreWorkspace) {
+    restoreButton_->setEnabled(hasRestoreWorkspace);
 }
 
 void WelcomeWidget::setFilterFocus() { filterLineEdit_->setFocus(Qt::OtherFocusReason); }
@@ -338,7 +330,6 @@ void WelcomeWidget::showEvent(QShowEvent* event) {
     if (!event->spontaneous()) {
         QModelIndex index = filetree_->selectionModel()->currentIndex();
 
-        updateRecentWorkspaces();
         filetree_->updateExampleEntries();
         filetree_->updateRegressionTestEntries();
 
@@ -371,23 +362,6 @@ void WelcomeWidget::keyPressEvent(QKeyEvent* event) {
         event->accept();
     }
     QWidget::keyPressEvent(event);
-}
-
-void WelcomeWidget::loadWorkspace(const QString& filename, bool isExample) const {
-    if (mainWindow_->askToSaveWorkspaceChanges()) {
-        bool hide = [&]() {
-            bool controlPressed =
-                (mainWindow_->getInviwoApplicationQt()->keyboardModifiers() == Qt::ControlModifier);
-            if (isExample && !controlPressed) {
-                return mainWindow_->openExample(filename);
-            } else {
-                return mainWindow_->openWorkspace(filename);
-            }
-        }();
-        if (hide) {
-            mainWindow_->hideWelcomeScreen();
-        }
-    }
 }
 
 void WelcomeWidget::initChangelog() {
@@ -434,10 +408,8 @@ void WelcomeWidget::updateDetails(const QString& filename) {
         auto istream = filesystem::ifstream(utilqt::fromQString(filename));
         if (istream.is_open()) {
             LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
-            auto d =
-                mainWindow_->getInviwoApplication()
-                    ->getWorkspaceManager()
-                    ->createWorkspaceDeserializer(istream, utilqt::fromQString(filename), &logger);
+            auto d = app_->getWorkspaceManager()->createWorkspaceDeserializer(
+                istream, utilqt::fromQString(filename), &logger);
             d.setExceptionHandler([](const ExceptionContext) {});
             d.deserialize("WorkspaceAnnotations", annotations);
         } else {
@@ -468,7 +440,7 @@ void WelcomeWidget::updateDetails(const QString& filename) {
 
     Document doc;
     auto body = doc.append("html").append("body");
-    body.append("h1", titleStr, {{"style", "font-size:25pt; color:#268bd2"}});
+    body.append("div", titleStr, {{"style", "font-size:45pt; color:#268bd2"}});
 
     auto table = body.append("table", "", {{"style", "margin-bottom:1em;"}});
     auto addrow = [&](std::string_view name, std::string_view value) {

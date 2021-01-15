@@ -6,3 +6,4 @@ pyconfig.ini
 .vscode
 .clangd
 compile_commands.json
+CMakeUserPresets.json

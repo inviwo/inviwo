@@ -22,10 +22,9 @@
         "libpng",
         "minizip",
         "nlohmann-json",
-        "nifticlib"
+        "nifticlib",
         "openexr",
         "pybind11",
-        "python3",
         "tclap",
         "tiff",
         "tinydir",

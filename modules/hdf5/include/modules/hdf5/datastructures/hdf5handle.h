@@ -101,9 +101,9 @@ private:
     double getMin(const DataFormatBase* type) const;
     double getMax(const DataFormatBase* type) const;
 
-    H5::Group data_;
     std::string filename_;
     Path path_;
+    H5::Group data_;
 };
 
 template <typename T>

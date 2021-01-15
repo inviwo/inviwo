@@ -1,15 +1,7 @@
 # Inviwo Python3 Module
 ivw_module(Python3)
 
-#Check if numpy exist 
-execute_process(
-    COMMAND "${PYTHON_EXECUTABLE}" "-c"
-        "try: import numpy; print(numpy.__version__);\nexcept: print('failed')\n"
-    RESULT_VARIABLE NUMPY_STATUS
-    OUTPUT_VARIABLE NUMPY_OUTPUT_VERSION
-    ERROR_VARIABLE NUMPY_ERROR
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)
 
 set(HEADER_FILES
     include/modules/python3/processors/numpymandelbrot.h
@@ -74,10 +66,8 @@ set(TEST_FILES
     tests/unittests/scripts/simple_buffer_test.py
     tests/unittests/scripts/glm.py
     tests/unittests/scripts/option_property.py
+    tests/unittests/numpy-test.cpp
 )
-if(NOT NUMPY_OUTPUT_VERSION MATCHES "failed")
-    list(APPEND TEST_FILES tests/unittests/numpy-test.cpp)
-endif()
 ivw_add_unittest(${TEST_FILES})
 
 # Create module
