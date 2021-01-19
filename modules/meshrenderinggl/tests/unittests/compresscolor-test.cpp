@@ -34,6 +34,8 @@
 
 #include <inviwo/core/util/glmvec.h>
 
+#include <cstring>
+
 namespace inviwo {
 
 unsigned int compressColor(glm::vec3 color) {
