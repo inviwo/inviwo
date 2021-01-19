@@ -33,6 +33,7 @@
 #include <inviwo/core/util/observer.h>
 
 #include <typeindex>
+#include <string>
 
 namespace inviwo {
 
