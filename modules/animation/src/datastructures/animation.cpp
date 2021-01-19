@@ -35,7 +35,7 @@ namespace inviwo {
 
 namespace animation {
 
-Animation::Animation(AnimationManager* am) : am_(am){};
+Animation::Animation(AnimationManager* am) : am_(am) {}
 
 AnimationTimeState Animation::operator()(Seconds from, Seconds to, AnimationState state) const {
     AnimationTimeState ts{to, state};

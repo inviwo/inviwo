@@ -91,7 +91,7 @@ std::shared_ptr<Volume> voronoiSegmentation(
     }
 
     return newVolume;
-};
+}
 
 }  // namespace util
 }  // namespace inviwo
