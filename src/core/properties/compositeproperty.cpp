@@ -170,7 +170,7 @@ void CompositeProperty::accept(NetworkVisitor& visitor) {
 
 InviwoApplication* CompositeProperty::getInviwoApplication() {
     if (auto owner = getOwner()) {
-        return getOwner()->getInviwoApplication();
+        return owner->getInviwoApplication();
     } else {
         return nullptr;
     }

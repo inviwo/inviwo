@@ -56,7 +56,7 @@ public:
             }
         }
         return interps;
-    };
+    }
 };
 
 }  // namespace animation
