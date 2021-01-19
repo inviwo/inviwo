@@ -86,7 +86,7 @@ class ReportLogTest(ReportTest):
 			with open(toPath(report['outputdir'], report['log']), 'r') as f:
 				lines = f.readlines()
 				for line in lines:
-					if "Error:" in line:
+					if "<span class='level'>Error: </span>" in line:
 						self.message.append(line)
 		except FileNotFoundError:
 			self.message.append("Missing Log")
