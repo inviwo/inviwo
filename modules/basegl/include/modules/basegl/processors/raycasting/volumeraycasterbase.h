@@ -27,23 +27,55 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/processors/atlasvolumeraycaster.h>
+#pragma once
+
+#include <modules/basegl/baseglmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/imageport.h>
+
+#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/raycasting/raycastercomponent.h>
+
+#include <inviwo/core/util/stdextensions.h>
+#include <functional>
+#include <string_view>
+#include <tcb/span.hpp>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo AtlasVolumeRaycaster::processorInfo_{
-    "org.inviwo.AtlasVolumeRaycaster",  // Class identifier
-    "Atlas Volume Raycaster",           // Display name
-    "Volume Rendering",                 // Category
-    CodeState::Experimental,            // Code state
-    Tag::GL | Tag{"Volume"}             // Tags
+namespace util {
+
+constexpr auto bind_front = [](auto&& func, auto&& obj) constexpr {
+    return [f = std::forward<decltype(func)>(func), o = std::forward<decltype(obj)>(obj)](
+               auto&&... args) { return std::invoke(f, o, std::forward<decltype(args)>(args)...); };
 };
 
-const ProcessorInfo AtlasVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
+}  // namespace util
 
-AtlasVolumeRaycaster::AtlasVolumeRaycaster() : VolumeRaycasterBase() {}
+/**
+ * @brief Base class for volume raycasters.
+ * Derived classes should register a set of RaycasterComponents to customize behavior
+ */
+class IVW_MODULE_BASEGL_API VolumeRaycasterBase : public Processor {
+protected:
+    VolumeRaycasterBase(std::string_view identifier = "", std::string_view displayName = "");
+    VolumeRaycasterBase(const VolumeRaycasterBase&) = delete;
+    VolumeRaycasterBase& operator=(const VolumeRaycasterBase&) = delete;
+    virtual ~VolumeRaycasterBase();
 
-void AtlasVolumeRaycaster::process() { VolumeRaycasterBase::process(); }
+    void registerComponents(util::span<RaycasterComponent*> comps);
+
+    virtual void initializeResources() override;
+
+    virtual void process() override;
+
+    virtual void handleError(std::string_view action, std::string_view name) const;
+
+    ImageInport entryPort_;
+    ImageInport exitPort_;
+    ImageOutport outport_;
+    Shader shader_;
+    std::vector<RaycasterComponent*> components_;
+};
 
 }  // namespace inviwo

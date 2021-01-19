@@ -39,21 +39,20 @@ namespace inviwo {
 PositionIndicatorComponent::PositionIndicatorComponent()
     : RaycasterComponent(), positionIndicator_("positionindicator", "Position Indicator") {}
 
-std::string PositionIndicatorComponent::getName() const {
+std::string_view PositionIndicatorComponent::getName() const {
     return positionIndicator_.getIdentifier();
 }
 
-void PositionIndicatorComponent::setUniforms(Shader &shader, TextureUnitContainer &) const {
+void PositionIndicatorComponent::process(Shader& shader, TextureUnitContainer&) {
     utilgl::setUniforms(shader, positionIndicator_);
 }
 
-std::vector<Property *> PositionIndicatorComponent::getProperties() {
-    return {&positionIndicator_};
-}
+std::vector<Property*> PositionIndicatorComponent::getProperties() { return {&positionIndicator_}; }
 
 auto PositionIndicatorComponent::getSegments() const -> std::vector<Segment> {
     std::string_view code{
-        "result = drawPlanes(result, samplePos, rayDirection, tIncr, {}.plane{}, t, tDepth);\n"};
+        "result = drawPlanes(result, samplePosition, rayDirection, rayStep, {}.plane{}, "
+        "rayPosition, rayDepth);\n"};
 
     std::stringstream ss;
     if (positionIndicator_) {
@@ -64,14 +63,14 @@ auto PositionIndicatorComponent::getSegments() const -> std::vector<Segment> {
             ss << fmt::format(code, positionIndicator_.getIdentifier(), 2);
         }
         if (positionIndicator_.plane3_) {
-            ss << fmt::format(code, positionIndicator_.getIdentifier(), 2);
+            ss << fmt::format(code, positionIndicator_.getIdentifier(), 3);
         }
     }
     return {Segment{"#include \"utils/raycastgeometry.glsl\"", Segment::include, 1100},
             Segment{fmt::format("uniform VolumeIndicatorParameters {};",
                                 positionIndicator_.getIdentifier()),
                     Segment::uniform, 1100},
-            Segment{ss.str(), Segment::loop, 1100}};
+            Segment{ss.str(), Segment::first, 1100}, Segment{ss.str(), Segment::loop, 1100}};
 }
 
 }  // namespace inviwo

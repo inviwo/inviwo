@@ -27,52 +27,40 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/processors/volumeraycasterbase.h>
+#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>
 
 #include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/algorithm/boundingbox.h>
-#include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/ostreamjoiner.h>
 
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/shader/shadermanager.h>
 
-#include <modules/basegl/raycasting/backgroundcomponent.h>
-#include <modules/basegl/raycasting/isotfcomponent.h>
-#include <modules/basegl/raycasting/lightcomponent.h>
-#include <modules/basegl/raycasting/positionindicatorcomponent.h>
 #include <modules/basegl/raycasting/raycastingcomponent.h>
-
-
-#include <modules/basegl/raycasting/sampletransformcomponent.h>
 
 namespace inviwo {
 
-VolumeRaycasterBase::VolumeRaycasterBase(
-    std::function<std::vector<std::unique_ptr<RaycasterComponent>>(VolumeRaycasterBase&)>
-        makeComponents,
-    const std::string& identifier, const std::string& displayName)
+VolumeRaycasterBase::VolumeRaycasterBase(std::string_view identifier, std::string_view displayName)
     : Processor(identifier, displayName)
-    , volumePort_("volume")
     , entryPort_("entry")
     , exitPort_("exit")
     , outport_("outport")
-    , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , shader_{"raycasting/raycaster.frag", Shader::Build::No}
-    , components_{makeComponents(*this)} {
+    , components_{} {
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    addPort(volumePort_, "volumes");
     addPort(entryPort_, "images");
     addPort(exitPort_, "images");
     addPort(outport_, "images");
+}
 
-    for (auto& comp : components_) {
+VolumeRaycasterBase::~VolumeRaycasterBase() = default;
+
+void VolumeRaycasterBase::registerComponents(util::span<RaycasterComponent*> components) {
+    components_.insert(components_.end(), components.begin(), components.end());
+    for (auto* comp : components) {
         for (const auto& [port, group] : comp->getInports()) {
             addPort(*port, group);
         }
@@ -80,50 +68,33 @@ VolumeRaycasterBase::VolumeRaycasterBase(
             addProperty(*prop);
         }
     }
-    addProperty(camera_);
-}
-
-VolumeRaycasterBase::~VolumeRaycasterBase() {
-    for (auto& comp : components_) {
-        for (const auto& [port, group] : comp->getInports()) {
-            removePort(port);
-        }
-        for (auto prop : comp->getProperties()) {
-            removeProperty(prop);
-        }
-    }
 }
 
 void VolumeRaycasterBase::initializeResources() {
-    utilgl::addDefines(shader_, camera_);
-
-    for (auto& comp : components_) {
-        comp->setDefines(shader_);
+    for (auto* comp : components_) {
+        try {
+            comp->initializeResources(shader_);
+        } catch (...) {
+            handleError("setting shader defines", comp->getName());
+        }
     }
 
-    shader_.getFragmentShaderObject()->clearSegments();
-    for (auto& comp : components_) {
-        for (auto&& segment : comp->getSegments()) {
-            shader_.getFragmentShaderObject()->addSegment(
-                ShaderSegment{segment.type, comp->getName(), segment.snippet, segment.priority});
+    auto* fso = shader_.getFragmentShaderObject();
+    fso->clearOutDeclarations();
+
+    fso->clearSegments();
+    for (auto* comp : components_) {
+        try {
+            for (auto&& segment : comp->getSegments()) {
+                fso->addSegment(ShaderSegment{segment.placeholder, std::string(comp->getName()),
+                                              segment.snippet, segment.priority});
+            }
+        } catch (...) {
+            handleError("adding segments", comp->getName());
         }
     }
 
     shader_.build();
-}
-
-std::vector<std::unique_ptr<RaycasterComponent>> VolumeRaycasterBase::defaultComponents(
-    VolumeRaycasterBase& raycaster) {
-    std::vector<std::unique_ptr<RaycasterComponent>> res;
-
-    res.push_back(std::make_unique<BackgroundComponent>(raycaster));
-    res.push_back(std::make_unique<RaycastingComponent>());
-    res.push_back(std::make_unique<IsoTFComponent>(&raycaster.volumePort_));
-    res.push_back(std::make_unique<LightComponent>(&raycaster.camera_));
-    res.push_back(std::make_unique<PositionIndicatorComponent>());
-    res.push_back(std::make_unique<SampleTransformComponent>());
-
-    return res;
 }
 
 void VolumeRaycasterBase::process() {
@@ -131,18 +102,41 @@ void VolumeRaycasterBase::process() {
     shader_.activate();
 
     TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(shader_, units, volumePort_);
+    utilgl::setUniforms(shader_, outport_);
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepth);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
-    utilgl::setUniforms(shader_, outport_, camera_);
     for (auto& comp : components_) {
-        comp->setUniforms(shader_, units);
+        try {
+            comp->process(shader_, units);
+        } catch (...) {
+            handleError("setting shader uniforms", comp->getName());
+        }
     }
 
     utilgl::singleDrawImagePlaneRect();
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
+}
+
+void VolumeRaycasterBase::handleError(std::string_view action, std::string_view name) const {
+    try {
+        throw;
+    } catch (Exception& e) {
+        throw Exception{fmt::format("Error while {} in raycasting segment: {}, message: {}", action,
+                                    name, e.getMessage()),
+                        e.getContext()};
+
+    } catch (fmt::format_error& e) {
+        throw Exception{
+            fmt::format("Error while {} in raycasting segment: {}, fmt::format_error: {}", action,
+                        name, e.what()),
+            IVW_CONTEXT};
+    } catch (std::exception& e) {
+        throw Exception{fmt::format("Error while {} in raycasting segment: {}, message: {}", action,
+                                    name, e.what()),
+                        IVW_CONTEXT};
+    }
 }
 
 }  // namespace inviwo

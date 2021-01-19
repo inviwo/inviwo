@@ -31,14 +31,7 @@
 
 namespace inviwo {
 
-const RaycasterComponent::Type RaycasterComponent::Segment::include{"@INCLUDE"};
-const RaycasterComponent::Type RaycasterComponent::Segment::uniform{"@UNIFORM"};
-const RaycasterComponent::Type RaycasterComponent::Segment::main{"@MAIN"};
-const RaycasterComponent::Type RaycasterComponent::Segment::pre{"@PRE"};
-const RaycasterComponent::Type RaycasterComponent::Segment::loop{"@LOOP"};
-const RaycasterComponent::Type RaycasterComponent::Segment::post{"@POST"};
-
-void RaycasterComponent::setUniforms(Shader&, TextureUnitContainer&) const {}
-void RaycasterComponent::setDefines(Shader&) const {}
+void RaycasterComponent::process(Shader&, TextureUnitContainer&) {}
+void RaycasterComponent::initializeResources(Shader&) const {}
 
 }  // namespace inviwo

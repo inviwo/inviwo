@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,42 +27,28 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/basegl/processors/volumeraycasterbase.h>
-
+#include <modules/basegl/raycasting/cameracomponent.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.AtlasVolumeRaycaster, Atlas Volume Raycaster}
- * ![](org.inviwo.AtlasVolumeRaycaster.png?classIdentifier=org.inviwo.AtlasVolumeRaycaster)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-class IVW_MODULE_BASEGL_API AtlasVolumeRaycaster : public VolumeRaycasterBase {
-public:
-    AtlasVolumeRaycaster();
-    virtual ~AtlasVolumeRaycaster() = default;
+CameraComponent::CameraComponent(std::string_view name,
+                                 std::function<std::optional<mat4>()> boundingBox)
+    : RaycasterComponent(), camera(std::string(name), "Camera", boundingBox) {}
 
-    virtual void process() override;
+std::string_view CameraComponent::getName() const { return camera.getIdentifier(); }
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+void CameraComponent::initializeResources(Shader& shader) const { utilgl::addDefines(shader, camera); }
 
-private:
+void CameraComponent::process(Shader& shader, TextureUnitContainer&) {
+    utilgl::setUniforms(shader, camera);
+}
 
-};
+std::vector<Property*> CameraComponent::getProperties() { return {&camera}; }
+
+auto CameraComponent::getSegments() const -> std::vector<Segment> {
+    constexpr std::string_view uniforms{"uniform CameraParameters {0};\n"};
+    return {Segment{fmt::format(uniforms, camera.getIdentifier()), Segment::uniform, 500}};
+}
 
 }  // namespace inviwo

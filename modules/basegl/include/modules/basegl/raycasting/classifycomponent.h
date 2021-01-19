@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,26 +31,19 @@
 #include <modules/basegl/baseglmoduledefine.h>
 
 #include <modules/basegl/raycasting/raycastercomponent.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API LightComponent : public RaycasterComponent {
+class IVW_MODULE_BASEGL_API ClassifyComponent : public RaycasterComponent {
 public:
-    LightComponent(CameraProperty* camera);
+    ClassifyComponent(std::string_view volume);
 
     virtual std::string_view getName() const override;
-
-    virtual void process(Shader& shader, TextureUnitContainer&) override;
-
-    virtual void initializeResources(Shader& shader) const override;
-
-    virtual std::vector<Property*> getProperties() override;
 
     virtual std::vector<Segment> getSegments() const override;
 
 private:
-    SimpleLightingProperty lighting_;
+    std::string volume_;
 };
 
 }  // namespace inviwo

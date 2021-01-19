@@ -29,44 +29,82 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/ports/inport.h>
-#include <inviwo/core/properties/property.h>
-#include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shadersegment.h>
-#include <modules/opengl/texture/textureunit.h>
 
 #include <vector>
-#include <string>
+#include <string_view>
 #include <tuple>
 
 namespace inviwo {
 
+class Property;
+class Inport;
+class Shader;
+class TextureUnitContainer;
+
 class IVW_MODULE_BASEGL_API RaycasterComponent {
 public:
-    using Type = typename ShaderSegment::Type;
+    using Placeholder = typename ShaderSegment::Placeholder;
 
+    /**
+     * Represents a placeholder in shader code that will be replaced
+     */
     struct Segment {
-        static const Type include;
-        static const Type uniform;
-        static const Type main;
-        static const Type pre;
-        static const Type loop;
-        static const Type post;
+        static constexpr Placeholder include{"#pragma IVW_INCLUDE", "include"};
+        static constexpr Placeholder uniform{"#pragma IVW_UNIFORM", "uniform"};
+        static constexpr Placeholder setup{"#pragma IVW_SETUP", "setup"};
+        static constexpr Placeholder first{"#pragma IVW_FIRST", "first"};
+        static constexpr Placeholder loop{"#pragma IVW_LOOP", "loop"};
+        static constexpr Placeholder post{"#pragma IVW_POST", "post"};
 
-        std::string snippet;
-        Type type = loop;
-        size_t priority = 1000;
+        std::string snippet;             //!< The replacement code
+        Placeholder placeholder = loop;  //!< The placeholder that will be replaced
+        size_t priority = 1000;          //!< Different replace
     };
 
     virtual ~RaycasterComponent() = default;
 
-    virtual std::string getName() const = 0;
-    virtual void setUniforms(Shader& shader, TextureUnitContainer& cont) const;
-    virtual void setDefines(Shader& shader) const;
+    /**
+     * @brief The name of the RaycasterComponent.
+     * Will show up as the source of the line in the shaderwidget when the file is preprocessed and
+     * in error messages.
+     */
+    virtual std::string_view getName() const = 0;
+
+    /**
+     * @brief Called from VolumeRaycasterBase::initializeResources
+     * Set and shader defines and so on here. The Shader will be recompiles after this.
+     * @param shader in current use
+     */
+    virtual void initializeResources(Shader& shader) const;
+
+    /**
+     * @brief Called from VolumeRaycasterBase::process
+     * Set any needed uniforms here, and bind textures etc.
+     * @param shader in current use
+     * @param container add any used TextureUnits here
+     */
+    virtual void process(Shader& shader, TextureUnitContainer& container);
+
+    /**
+     * @brief Return all Inports and there port groups
+     * This gets called in VolumeRaycasterBase::registerComponents which will add then to the
+     * processor.
+     */
     virtual std::vector<std::tuple<Inport*, std::string>> getInports() { return {}; }
+
+    /**
+     * @brief Return all Properties
+     * This gets called in VolumeRaycasterBase::registerComponents which will add then to the
+     * processor.
+     */
     virtual std::vector<Property*> getProperties() { return {}; }
 
+    /**
+     * @brief Return all Segments to be injected into the shader.
+     * VolumeRaycasterBase::initializeResources after the call to
+     * RaycasterComponent::initializeResources.
+     */
     virtual std::vector<Segment> getSegments() const { return {}; }
 };
 

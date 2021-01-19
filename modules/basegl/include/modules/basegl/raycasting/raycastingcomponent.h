@@ -29,7 +29,6 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/basegl/raycasting/raycastercomponent.h>
 #include <inviwo/core/properties/raycastingproperty.h>
@@ -38,13 +37,13 @@ namespace inviwo {
 
 class IVW_MODULE_BASEGL_API RaycastingComponent : public RaycasterComponent {
 public:
-    RaycastingComponent();
+    RaycastingComponent(std::string_view volume);
 
-    virtual std::string getName() const override;
+    virtual std::string_view getName() const override;
 
-    virtual void setUniforms(Shader& shader, TextureUnitContainer&) const override;
+    virtual void process(Shader& shader, TextureUnitContainer&) override;
 
-    virtual void setDefines(Shader& shader) const override;
+    virtual void initializeResources(Shader& shader) const override;
 
     virtual std::vector<Property*> getProperties() override;
 
@@ -52,8 +51,9 @@ public:
 
 private:
     bool doDVR() const;
-
     bool doISO() const;
+
+    std::string volume_;
 
     RaycastingProperty raycasting_;
 };

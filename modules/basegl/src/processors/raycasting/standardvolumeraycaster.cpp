@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,31 +26,42 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/processors/raycasting/standardvolumeraycaster.h>
 
-#include <modules/basegl/raycasting/raycastercomponent.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API LightComponent : public RaycasterComponent {
-public:
-    LightComponent(CameraProperty* camera);
-
-    virtual std::string_view getName() const override;
-
-    virtual void process(Shader& shader, TextureUnitContainer&) override;
-
-    virtual void initializeResources(Shader& shader) const override;
-
-    virtual std::vector<Property*> getProperties() override;
-
-    virtual std::vector<Segment> getSegments() const override;
-
-private:
-    SimpleLightingProperty lighting_;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo StandardVolumeRaycaster::processorInfo_{
+    "org.inviwo.StandardVolumeRaycaster",       // Class identifier
+    "Standard Volume Raycaster",                // Display name
+    "Volume Rendering",                         // Category
+    CodeState::Experimental,                    // Code state
+    Tag::GL | Tag{"Volume"} | Tag{"Raycaster"}  // Tags
 };
+const ProcessorInfo StandardVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
+
+StandardVolumeRaycaster::StandardVolumeRaycaster(std::string_view identifier,
+                                                 std::string_view displayName)
+    : VolumeRaycasterBase(identifier, displayName)
+    , volume_("volume")
+    , classify_{volume_.getName()}
+    , background_{*this}
+    , raycasting_{volume_.getName()}
+    , isoTF_{&volume_.volumePort}
+    , camera_{"camera", util::boundingBox(volume_.volumePort)}
+    , light_{&camera_.camera}
+    , positionIndicator_{}
+    , sampleTransform_{} {
+
+    std::array<RaycasterComponent*, 9> comps{
+        &volume_, &classify_, &background_,        &raycasting_,     &isoTF_,
+        &camera_, &light_,    &positionIndicator_, &sampleTransform_};
+    registerComponents(comps);
+}
+
+void StandardVolumeRaycaster::process() { VolumeRaycasterBase::process(); }
 
 }  // namespace inviwo

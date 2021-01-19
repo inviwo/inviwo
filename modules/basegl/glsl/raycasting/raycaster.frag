@@ -27,23 +27,18 @@
  *
  *********************************************************************************/
 
+//? #version 460
 
-#include "utils/structs.glsl"
-#include "utils/sampler3d.glsl"
-#include "utils/depth.glsl"
+#include "utils/structs.glsl"   //! #include "../../../opengl/glsl/utils/structs.glsl"
+#include "utils/sampler3d.glsl" //! #include "../../../opengl/glsl/utils/sampler3d.glsl"
+#include "utils/depth.glsl"     //! #include "../../../opengl/glsl/utils/depth.glsl"
 
-@INCLUDE
+#pragma IVW_INCLUDE
 
-vec3 calcRaydirection(in vec3 entryPoint, in vec3 exitPoint) {
-    return normalize(exitPoint - entryPoint);
-}
-
-float calcEnd(in vec3 entryPoint, in vec3 exitPoint) { return length(exitPoint - entryPoint); }
-
-float calcIncr(in float end, in vec3 direction, in float samplingRate, in vec3 dimensions) {
-    float incr = min(end, end / (samplingRate * length(direction * dimensions)));
-    float samples = ceil(end / incr);
-    return end / samples;
+float calcStep(in float rayLength, in vec3 direction, in float samplingRate, in vec3 dimensions) {
+    float incr = min(rayLength, rayLength / (samplingRate * length(direction * dimensions)));
+    float samples = ceil(rayLength / incr);
+    return rayLength / samples;
 }
 
 vec3 calcCameraDir(in vec3 entryPoint, in vec3 exitPoint, in mat4 textureToWorld) {
@@ -52,86 +47,85 @@ vec3 calcCameraDir(in vec3 entryPoint, in vec3 exitPoint, in mat4 textureToWorld
 }
 
 
-uniform VolumeParameters volumeParameters;
-uniform sampler3D volume;
+layout(location = 0) out vec4 FragData0;
+layout(location = 1) out vec4 PickingData;
 
 uniform ImageParameters entryParameters;
 uniform sampler2D entryColor;
 uniform sampler2D entryDepth;
-
 uniform ImageParameters exitParameters;
 uniform sampler2D exitColor;
 uniform sampler2D exitDepth;
-
 uniform ImageParameters outportParameters;
-
-uniform CameraParameters camera;
 uniform float samplingRate = 2.0;
-
-@UNIFORM
 
 uniform int channel = 0;
 
+//? uniform VolumeParameters volumeParameters;
+//? uniform CameraParameters camera;
 
-vec4 rayTraversal(in vec3 entryPoint, in vec3 exitPoint, in float entryPointDepth,
-                  in float exitPointDepth, in vec4 backgroundColor, in float backgroundDepth) {
+#pragma IVW_UNIFORM
 
-    float tEnd = calcEnd(entryPoint, exitPoint);
-    vec3 rayDirection = calcRaydirection(entryPoint, exitPoint);
-    float tIncr = calcIncr(tEnd, rayDirection, samplingRate, volumeParameters.dimensions);
-    vec3 toCameraDir = calcCameraDir(entryPoint, exitPoint, volumeParameters.textureToWorld);
-
-    vec4 result = vec4(0.0);
-    float tDepth = -1.0;
-    vec4 voxel = vec4(0.0);
-    vec3 gradient = vec3(0.0);
-
-    @PRE
-
-    voxel = getNormalizedVoxel(volume, volumeParameters, entryPoint + 0.5 * tIncr * rayDirection);
-
-    for (float t = 0.5 * tIncr; t < tEnd; t += tIncr) {
-        vec3 samplePos = entryPoint + t * rayDirection;
-        vec4 previousVoxel = voxel;
-        vec3 previousGradient = gradient;
-        voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
-    
-        @LOOP
-
-        // early ray termination
-        if (result.a > 0.99) break;
-    }
-
-    @POST
-
-    if (tDepth != -1.0) {
-        tDepth = calculateDepthValue(camera, tDepth / tEnd, entryPointDepth, exitPointDepth);
-    } else {
-        tDepth = 1.0;
-    }
-
-    gl_FragDepth = min(backgroundDepth, tDepth);
-
-    return result;
-}
 
 void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+
     vec3 entryPoint = texture(entryColor, texCoords).rgb;
     vec3 exitPoint = texture(exitColor, texCoords).rgb;
-
     float entryPointDepth = texture(entryDepth, texCoords).x;
     float exitPointDepth = texture(exitDepth, texCoords).x;
 
-    vec4 color = vec4(0);
-    float backgroundDepth = 1;
-    PickingData = vec4(0);
+    // The length of the ray in texture space
+    float rayLength = length(exitPoint - entryPoint);
 
-    @MAIN
+    // The normalized direction of the ray
+    vec3 rayDirection = normalize(exitPoint - entryPoint);
 
-    if (entryPoint != exitPoint) {
-        color = rayTraversal(entryPoint, exitPoint, entryPointDepth, exitPointDepth, color,
-                             backgroundDepth);
+    // The step size in texture space
+    float rayStep = calcStep(rayLength, rayDirection, samplingRate, 
+                             volumeParameters.dimensions);
+
+    vec4 result = vec4(0.0);  // The accumulated color along the ray;
+    vec4 picking = vec4(0.0); // The picking color of the ray
+    float rayDepth = -1.0;    // The ray depth value (0 to ray length, -1 mean "no" depth
+    float depth = 1.0;        // The image depth 
+
+    #pragma IVW_SETUP
+
+    if (entryPoint == exitPoint) {
+        FragData0 = result;
+        PickingData = picking;
+        gl_FragDepth = depth;
+        return;
     }
-    FragData0 = color;
+
+    vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, 
+                                   volumeParameters.textureToWorld);
+
+    // Current position along the ray
+    float rayPosition = 0.5 * rayStep;
+    // Current sample position in texture spcase
+    vec3 samplePosition = entryPoint + rayPosition * rayDirection;
+
+    #pragma IVW_FIRST
+
+    for (rayPosition += rayStep; rayPosition < rayLength; rayPosition += rayStep) {
+        samplePosition = entryPoint + rayPosition * rayDirection;
+
+        #pragma IVW_LOOP
+
+        if (result.a > 0.99) break; // early ray termination
+    }
+
+
+    #pragma IVW_POST
+
+    depth = mix(calculateDepthValue(camera, rayDepth / rayLength, 
+                                    entryPointDepth, exitPointDepth), 
+                depth, 
+                rayDepth == -1.0);
+    
+    FragData0 = result;
+    PickingData = picking;
+    gl_FragDepth = depth;
 }

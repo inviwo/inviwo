@@ -36,20 +36,51 @@ namespace inviwo {
 
 SampleTransformComponent::SampleTransformComponent()
     : RaycasterComponent()
-    , offset_{"sampleOffset", "Sample Shift", vec3{0.0f}, vec3{-1.0f}, vec3{1.0f}} {}
+    , shift_{"shift",
+             "Sample Shift",
+             vec3{0.0f},
+             {vec3{-1.0f}, ConstraintBehavior::Ignore},
+             {vec3{1.0f}, ConstraintBehavior::Ignore}}
+    , repeat_{"repeat",
+              "Repeat",
+              ivec3{1},
+              {ivec3{0}, ConstraintBehavior::Immutable},
+              {ivec3{10}, ConstraintBehavior::Ignore}} {}
 
-std::string SampleTransformComponent::getName() const { return offset_.getIdentifier(); }
+std::string_view SampleTransformComponent::getName() const { return shift_.getIdentifier(); }
 
-void SampleTransformComponent::setUniforms(Shader &shader, TextureUnitContainer &) const {
-    utilgl::setUniforms(shader, offset_);
+void SampleTransformComponent::process(Shader& shader, TextureUnitContainer&) {
+    utilgl::setUniforms(shader, shift_, repeat_);
 }
 
-std::vector<Property *> SampleTransformComponent::getProperties() { return {&offset_}; }
+std::vector<Property*> SampleTransformComponent::getProperties() { return {&shift_, &repeat_}; }
+
+namespace {
+
+constexpr std::string_view uniforms = R"(
+uniform vec3 {shift};
+uniform ivec3 {repeat};
+)";
+
+constexpr std::string_view first = R"(
+samplePosition *= {repeat};
+samplePosition += {shift};
+)";
+
+}  // namespace
 
 auto SampleTransformComponent::getSegments() const -> std::vector<Segment> {
-    return {
-        Segment{"entryPoint += sampleOffset;", Segment::pre, 400},
-        Segment{fmt::format("uniform vec3 {};", offset_.getIdentifier()), Segment::uniform, 400}};
+    using namespace fmt::literals;
+
+    return {Segment{fmt::format(uniforms, "shift"_a = shift_.getIdentifier(),
+                                "repeat"_a = repeat_.getIdentifier()),
+                    Segment::uniform, 300},
+            Segment{fmt::format(first, "shift"_a = shift_.getIdentifier(),
+                                "repeat"_a = repeat_.getIdentifier()),
+                    Segment::first, 300},
+            Segment{fmt::format(first, "shift"_a = shift_.getIdentifier(),
+                                "repeat"_a = repeat_.getIdentifier()),
+                    Segment::loop, 300}};
 }
 
 }  // namespace inviwo

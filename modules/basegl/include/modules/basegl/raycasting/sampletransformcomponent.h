@@ -29,7 +29,6 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/basegl/raycasting/raycastercomponent.h>
 
@@ -42,16 +41,18 @@ public:
     SampleTransformComponent();
     virtual ~SampleTransformComponent() = default;
 
-    virtual std::string getName() const override;
+    virtual std::string_view getName() const override;
 
-    virtual void setUniforms(Shader& shader, TextureUnitContainer& cont) const override;
+    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
 
     virtual std::vector<Property*> getProperties() override;
 
     virtual std::vector<Segment> getSegments() const override;
 
 private:
-    FloatVec3Property offset_;
+    FloatVec3Property shift_;
+    IntVec3Property repeat_;
+
 };
 
 }  // namespace inviwo

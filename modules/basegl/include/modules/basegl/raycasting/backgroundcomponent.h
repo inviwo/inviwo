@@ -29,8 +29,6 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 #include <modules/basegl/raycasting/raycastercomponent.h>
 #include <inviwo/core/ports/imageport.h>
 
@@ -40,9 +38,9 @@ class IVW_MODULE_BASEGL_API BackgroundComponent : public RaycasterComponent {
 public:
     BackgroundComponent(Processor& processor);
 
-    virtual std::string getName() const override;
+    virtual std::string_view getName() const override;
 
-    virtual void setUniforms(Shader& shader, TextureUnitContainer& cont) const override;
+    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
 
     virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
 

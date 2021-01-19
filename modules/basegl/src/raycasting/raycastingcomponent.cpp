@@ -31,19 +31,20 @@
 #include <modules/opengl/shader/shaderutils.h>
 
 #include <string_view>
+#include <fmt/format.h>
 
 namespace inviwo {
-RaycastingComponent::RaycastingComponent()
-    : RaycasterComponent(), raycasting_("raycaster", "Raycasting") {
+RaycastingComponent::RaycastingComponent(std::string_view volume)
+    : RaycasterComponent(), volume_{volume}, raycasting_("raycaster", "Raycasting") {
     raycasting_.compositing_.setVisible(false);
 }
 
-std::string RaycastingComponent::getName() const { return raycasting_.getIdentifier(); }
+std::string_view RaycastingComponent::getName() const { return raycasting_.getIdentifier(); }
 
-void RaycastingComponent::setUniforms(Shader &shader, TextureUnitContainer &) const {
+void RaycastingComponent::process(Shader& shader, TextureUnitContainer&) {
     shader.setUniform("samplingRate", raycasting_.samplingRate_.get());
 }
-void RaycastingComponent::setDefines(Shader &shader) const {
+void RaycastingComponent::initializeResources(Shader& shader) const {
     auto fso = shader.getFragmentShaderObject();
 
     {  // classification
@@ -67,15 +68,33 @@ void RaycastingComponent::setDefines(Shader &shader) const {
         shader, raycasting_.gradientComputation_,
         raycasting_.classification_.get() == RaycastingProperty::Classification::Voxel);
 }
+
+namespace {
+
+constexpr std::string_view iso{R"(
+result = drawISO(result, isovalues, {0}Voxel[channel], {0}VoxelPrev[channel], 
+                {0}Gradient, {0}GradientPrev, {0}Parameters.textureToWorld, 
+                lighting, samplePosition, rayDirection, 
+                cameraDir, rayPosition, rayStep, rayDepth);)"};
+
+constexpr std::string_view dvr2{R"(
+result = drawDVR(result, transferFunction, samplePosition, {0}Voxel, channel, {0}Gradient,
+                 {0}Parameters.textureToWorld, lighting, 
+                 cameraDir, rayPosition, rayStep, rayDepth);)"};
+
+constexpr std::string_view dvr{R"(
+if ({0}Color.a > 0) {{
+    #if defined(SHADING_ENABLED)
+    vec3 worldSpacePosition = ({0}Parameters.textureToWorld * vec4(samplePosition, 1.0)).xyz;
+    {0}Color.rgb = APPLY_LIGHTING(lighting, {0}Color.rgb, {0}Color.rgb, vec3(1.0), 
+                                  worldSpacePosition, -{0}Gradient, cameraDir);
+    #endif
+    result = compositeDVR(result, {0}Color, rayPosition, rayDepth, rayStep);
+}}
+)"};
+}  // namespace
+
 auto RaycastingComponent::getSegments() const -> std::vector<Segment> {
-    static constexpr std::string_view iso{
-        "result = drawISO(result, isovalues, voxel[channel], previousVoxel[channel], gradient,\n"
-        "                 previousGradient, volumeParameters.textureToWorld, lighting, samplePos,\n"
-        "                 rayDirection, toCameraDir, t, tIncr, tDepth);"};
-    static constexpr std::string_view dvr{
-        "result = drawDVR(result, transferFunction, samplePos, voxel, channel, gradient,\n"
-        "                 volumeParameters.textureToWorld, lighting, toCameraDir, t, tIncr, "
-        "tDepth);"};
 
     std::vector<Segment> segments;
 
@@ -84,12 +103,14 @@ auto RaycastingComponent::getSegments() const -> std::vector<Segment> {
             Segment{std::string(R"(#include "raycasting/iso.glsl")"), Segment::include, 1100});
         segments.push_back(
             Segment{std::string("uniform IsovalueParameters isovalues;"), Segment::uniform, 1050});
-        segments.push_back(Segment{std::string(iso), Segment::loop, 1050});
+        segments.push_back(Segment{fmt::format(FMT_STRING(iso), volume_), Segment::first, 1050});
+        segments.push_back(Segment{fmt::format(FMT_STRING(iso), volume_), Segment::loop, 1050});
     }
     if (doDVR()) {
         segments.push_back(
             Segment{std::string(R"(#include "raycasting/dvr.glsl")"), Segment::include, 1100});
-        segments.push_back(Segment{std::string(dvr), Segment::loop, 1100});
+        segments.push_back(Segment{fmt::format(FMT_STRING(dvr), volume_), Segment::first, 1100});
+        segments.push_back(Segment{fmt::format(FMT_STRING(dvr), volume_), Segment::loop, 1100});
     }
 
     return segments;
@@ -102,6 +123,6 @@ bool RaycastingComponent::doISO() const {
     return raycasting_.renderingType_ == RaycastingProperty::RenderingType::DvrIsosurface ||
            raycasting_.renderingType_ == RaycastingProperty::RenderingType::Isosurface;
 }
-std::vector<Property *> RaycastingComponent::getProperties() { return {&raycasting_}; }
+std::vector<Property*> RaycastingComponent::getProperties() { return {&raycasting_}; }
 
 }  // namespace inviwo

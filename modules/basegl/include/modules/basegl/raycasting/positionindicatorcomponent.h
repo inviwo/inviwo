@@ -29,7 +29,6 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/basegl/raycasting/raycastercomponent.h>
 #include <inviwo/core/properties/volumeindicatorproperty.h>
@@ -41,9 +40,9 @@ class IVW_MODULE_BASEGL_API PositionIndicatorComponent : public RaycasterCompone
 public:
     PositionIndicatorComponent();
 
-    virtual std::string getName() const override;
+    virtual std::string_view getName() const override;
 
-    virtual void setUniforms(Shader& shader, TextureUnitContainer&) const override;
+    virtual void process(Shader& shader, TextureUnitContainer&) override;
     
     virtual std::vector<Property*> getProperties() override;
 

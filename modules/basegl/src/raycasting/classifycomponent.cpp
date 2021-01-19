@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,31 +26,29 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-
-#include <modules/basegl/raycasting/raycastercomponent.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
+#include <modules/basegl/raycasting/classifycomponent.h>
+#include <fmt/format.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API LightComponent : public RaycasterComponent {
-public:
-    LightComponent(CameraProperty* camera);
+ClassifyComponent::ClassifyComponent(std::string_view volume)
+    : RaycasterComponent(), volume_{volume} {}
 
-    virtual std::string_view getName() const override;
+std::string_view ClassifyComponent::getName() const { return "classify"; }
 
-    virtual void process(Shader& shader, TextureUnitContainer&) override;
+namespace {
 
-    virtual void initializeResources(Shader& shader) const override;
+constexpr std::string_view classify{R"(
+vec4 {0}Color = texture(transferFunction, vec2({0}Voxel[channel], 0.5));
+)"};
 
-    virtual std::vector<Property*> getProperties() override;
+}
 
-    virtual std::vector<Segment> getSegments() const override;
-
-private:
-    SimpleLightingProperty lighting_;
-};
-
+auto ClassifyComponent::getSegments() const -> std::vector<Segment> {
+    return {
+        Segment{fmt::format(FMT_STRING(classify), volume_), Segment::first, 600},
+        Segment{fmt::format(FMT_STRING(classify), volume_), Segment::loop, 600}
+    };
+}
 }  // namespace inviwo

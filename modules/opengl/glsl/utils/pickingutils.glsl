@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PICKING_UTILS_GLSL
@@ -50,13 +50,13 @@ vec3 pickingIndexToColor(uint id) {
         b |= ((index & uint(1 << (3 * i + 0))) >> (2 * i + 0));
     }
 
-    return vec3(reverseByte(r), reverseByte(g), reverseByte(b))/255.0;
+    return vec3(reverseByte(r), reverseByte(g), reverseByte(b)) / 255.0;
 }
 
 uint pickingColorToIndex(vec3 color) {
-    uint r = reverseByte(uint(color[0]*255.0));
-    uint g = reverseByte(uint(color[1]*255.0));
-    uint b = reverseByte(uint(color[2]*255.0));
+    uint r = reverseByte(uint(color[0] * 255.0));
+    uint g = reverseByte(uint(color[1] * 255.0));
+    uint b = reverseByte(uint(color[2] * 255.0));
 
     uint index = 0u;
     for (int i = 0; i < 8; ++i) {
@@ -67,5 +67,10 @@ uint pickingColorToIndex(vec3 color) {
     return index;
 }
 
+vec4 highlight(vec4 volume, vec4 color1, vec4 color2, float time) {
+    float x = 0.5 * (sin(time / 200.0) + 1.0);
+    return vec4(mix(color1.xyz, color2.xyz, x), 
+                mix(color1.a, color2.a, x) * volume.a);
+}
 
-#endif // IVW_PICKING_UTILS_GLSL
+#endif  // IVW_PICKING_UTILS_GLSL

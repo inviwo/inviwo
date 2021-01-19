@@ -30,55 +30,59 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/buffer/framebufferobject.h>
-#include <modules/opengl/shader/shaderresource.h>
+#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>
+
+#include <modules/basegl/raycasting/raycastingcomponent.h>
+#include <modules/basegl/raycasting/atlascomponent.h>
+#include <modules/basegl/raycasting/backgroundcomponent.h>
+#include <modules/basegl/raycasting/cameracomponent.h>
+#include <modules/basegl/raycasting/classifycomponent.h>
+#include <modules/basegl/raycasting/isotfcomponent.h>
+#include <modules/basegl/raycasting/lightcomponent.h>
+#include <modules/basegl/raycasting/positionindicatorcomponent.h>
+#include <modules/basegl/raycasting/sampletransformcomponent.h>
+#include <modules/basegl/raycasting/timecomponent.h>
+#include <modules/basegl/raycasting/volumecomponent.h>
+
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeRegionShrink, Volume Region Shrink}
- * ![](org.inviwo.VolumeRegionShrink.png?classIdentifier=org.inviwo.VolumeRegionShrink)
- * Shrinks regions of identical values. The processor will assign 0 to each border voxel in each
- * iteration. A voxel is considered on the border if the value of any of the 26 closest neighbors is
- * different. The procedure is repeated number of iterations times.
+/** \docpage{org.inviwo.AtlasVolumeRaycaster, Atlas Volume Raycaster}
+ * ![](org.inviwo.AtlasVolumeRaycaster.png?classIdentifier=org.inviwo.AtlasVolumeRaycaster)
+ * Explanation of how to use the processor.
  *
  * ### Inports
- *   * __inputVolume__ Input volume
+ *   * __<Inport1>__ <description>.
  *
  * ### Outports
- *   * __outputVolume__ Output volume
+ *   * __<Outport1>__ <description>.
  *
  * ### Properties
- *   * __iterations__ How many iterations to use
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_BASEGL_API VolumeRegionShrink : public Processor {
+class IVW_MODULE_BASEGL_API AtlasVolumeRaycaster : public VolumeRaycasterBase {
 public:
-    VolumeRegionShrink();
-    virtual ~VolumeRegionShrink() = default;
+    AtlasVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
+    virtual ~AtlasVolumeRaycaster() = default;
 
     virtual void process() override;
-
-    virtual void initializeResources() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    VolumeInport inport_;
-    VolumeOutport outport_;
-    IntProperty iterations_;
-
-    std::string shaderType_;
-    bool blockShaderReload_ = false;
-    std::shared_ptr<StringShaderResource> fragShader_;
-    Shader shader_;
-
-    std::array<std::shared_ptr<Volume>, 2> out_;
-    FrameBufferObject fbo_;
-
+    TimeComponent time_;
+    VolumeComponent volume_;
+    ClassifyComponent classify_;
+    BackgroundComponent background_;
+    RaycastingComponent raycasting_;
+    IsoTFComponent isoTF_;
+    CameraComponent camera_;
+    LightComponent light_;
+    PositionIndicatorComponent positionIndicator_;
+    SampleTransformComponent sampleTransform_;
+    AtlasComponent atlas_;
 };
 
 }  // namespace inviwo

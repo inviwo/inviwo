@@ -43,9 +43,9 @@ BackgroundComponent::BackgroundComponent(Processor& processor)
     background_.onDisconnect([&]() { processor.invalidate(InvalidationLevel::InvalidResources); });
 }
 
-std::string BackgroundComponent::getName() const { return "background"; }
+std::string_view BackgroundComponent::getName() const { return background_.getIdentifier(); }
 
-void BackgroundComponent::setUniforms(Shader& shader, TextureUnitContainer& cont) const {
+void BackgroundComponent::process(Shader& shader, TextureUnitContainer& cont) {
     if (background_.isReady()) {
         utilgl::bindAndSetUniforms(shader, cont, background_, ImageType::ColorDepthPicking);
     }
@@ -62,36 +62,33 @@ auto BackgroundComponent::getSegments() const -> std::vector<Segment> {
         "uniform sampler2D {0}Picking;\n"
         "uniform sampler2D {0}Depth;\n"};
 
-    static constexpr std::string_view main{
-        "color = texture(bgColor, texCoords);\n"
-        "gl_FragDepth = backgroundDepth = texture({0}Depth, texCoords).x;\n"
-        "PickingData = texture({0}Picking, texCoords);\n"};
-
-    static constexpr std::string_view pre{
+    static constexpr std::string_view setup{
+        "vec4 {0} = texture({0}Color, texCoords);\n"
+        "depth = texture({0}Depth, texCoords).x;\n"
+        "picking = texture({0}Picking, texCoords);\n"
         "// convert to raycasting depth\n"
-        "float bgTDepth = tEnd * calculateTValueFromDepthValue(camera, backgroundDepth, "
+        "float {0}RayDepth = rayLength * calculateTValueFromDepthValue(camera, depth, "
         "entryPointDepth, exitPointDepth);\n"
-        "if (bgTDepth < 0) {\n"
-        "    result = backgroundColor;\n"
-        "}\n"};
+        "if ({0}RayDepth < 0) {{\n"
+        "    result = {0};\n"
+        "}}\n"};
 
     static constexpr std::string_view loop{
-        "result = drawBackground(result, t, tIncr, backgroundColor, bgTDepth, tDepth);"};
+        "result = drawBackground(result, rayPosition, rayStep, {0}, {0}RayDepth, rayDepth);"};
 
     static constexpr std::string_view post{
         "// composite background if lying beyond the last volume sample\n"
-        "if (bgTDepth > tEnd - tIncr * 0.5) {\n"
-        "    result = drawBackground(result, bgTDepth, tIncr * 0.5, backgroundColor, bgTDepth, "
-        "tDepth);\n"
-        "}\n"};
+        "if ({0}RayDepth > rayLength - rayStep * 0.5) {{\n"
+        "    result = drawBackground(result, {0}RayDepth, rayStep * 0.5, {0}, {0}RayDepth, "
+        "rayDepth);\n"
+        "}}\n"};
 
     if (background_.isConnected()) {
         return {Segment{"#include \"utils/raycastgeometry.glsl\"", Segment::include, 900},
                 Segment{fmt::format(uniforms, background_.getIdentifier()), Segment::uniform, 900},
-                Segment{fmt::format(main, background_.getIdentifier()), Segment::main, 900},
-                Segment{std::string(pre), Segment::pre, 900},
-                Segment{std::string(loop), Segment::loop, 900},
-                Segment{std::string(post), Segment::post, 900}};
+                Segment{fmt::format(setup, background_.getIdentifier()), Segment::setup, 900},
+                Segment{fmt::format(loop, background_.getIdentifier()), Segment::first, 900},
+                Segment{fmt::format(post, background_.getIdentifier()), Segment::post, 900}};
     } else {
         return {};
     }

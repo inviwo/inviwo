@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,27 +30,72 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 
-#include <modules/basegl/raycasting/raycastercomponent.h>
-#include <inviwo/core/properties/isotfproperty.h>
+#include <modules/basegl/raycasting/raycastingcomponent.h>
+#include <modules/opengl/volume/volumeutils.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/buttongroupproperty.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/util/colorbrewer.h>
+
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+
+#include <string>
+#include <vector>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API IsoTFComponent : public RaycasterComponent {
+class PickingEvent;
+class Processor;
+class TimeComponent;
+
+class IVW_MODULE_BASEGL_API AtlasComponent : public RaycasterComponent {
 public:
-    IsoTFComponent(VolumeInport* volumeInport);
+    AtlasComponent(Processor* p, std::string_view volume, TimeComponent* time);
 
     virtual std::string_view getName() const override;
 
     virtual void process(Shader& shader, TextureUnitContainer& cont) override;
 
-    virtual void initializeResources(Shader& shader) const override;
+    virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
 
     virtual std::vector<Property*> getProperties() override;
 
     virtual std::vector<Segment> getSegments() const override;
 
+    void onPickingEvent(PickingEvent* e);
+
 private:
-    IsoTFProperty isotfComposite_;
+    enum class ColoringGroup { All, Selected, NotSelected, Filtered, NotFiltered, Zero };
+    enum class ColoringAction { None, SetColor, SetAlpha, SetScheme };
+
+    VolumeInport atlas_;
+    BrushingAndLinkingInport brushing_;
+
+    FloatVec3Property selectionColor_;
+    FloatProperty selectionAlpha_;
+    FloatProperty selectionMix_;
+
+    FloatVec3Property filteredColor_;
+    FloatProperty filteredAlpha_;
+    FloatProperty filteredMix_;
+
+    TransferFunctionProperty tf_;
+    TemplateOptionProperty<ColoringGroup> coloringGroup_;
+    FloatVec3Property coloringColor_;
+    FloatProperty coloringAlpha_;
+    TemplateOptionProperty<colorbrewer::Family> coloringScheme_;
+
+    ButtonGroupProperty coloringApply_;
+    ColoringAction coloringAction_;
+
+    Layer colors_;
+    std::string volume_;
+    PickingMapper picking_;
+    TimeComponent* time_;
 };
 
 }  // namespace inviwo

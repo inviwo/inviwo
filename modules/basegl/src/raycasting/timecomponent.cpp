@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,37 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/cameraproperty.h>
-
+#include <modules/basegl/raycasting/timecomponent.h>
 #include <modules/opengl/shader/shader.h>
-#include <modules/basegl/raycasting/raycastercomponent.h>
+
+#include <chrono>
+#include <functional>
+#include <fmt/format.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API VolumeRaycasterBase : public Processor {
-public:
-    VolumeRaycasterBase(
-        std::function<std::vector<std::unique_ptr<RaycasterComponent>>(VolumeRaycasterBase&)>
-            makeComponents = defaultComponents,
-        const std::string& identifier = "", const std::string& displayName = "");
+TimeComponent::TimeComponent(std::string_view name,
+                             std::function<void(InvalidationLevel)> invalidate)
+    : RaycasterComponent{}
+    , timer{std::chrono::milliseconds{33},
+            [invalidate = std::move(invalidate)]() {
+                invalidate(InvalidationLevel::InvalidOutput);
+            }}
+    , name_{name} {
 
-    VolumeRaycasterBase(const VolumeRaycasterBase&) = delete;
-    VolumeRaycasterBase& operator=(const VolumeRaycasterBase&) = delete;
+    timer.start();
+}
 
-    virtual ~VolumeRaycasterBase();
+std::string_view TimeComponent::getName() const { return name_; }
 
-    virtual void process() override;
-    virtual void initializeResources() override;
+void TimeComponent::process(Shader& shader, TextureUnitContainer&) {
+    shader.setUniform(name_, std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(
+                                 std::chrono::steady_clock::now().time_since_epoch())
+                                 .count());
+}
 
-protected:
-    static std::vector<std::unique_ptr<RaycasterComponent>> defaultComponents(
-        VolumeRaycasterBase& raycaster);
-
-    VolumeInport volumePort_;
-    ImageInport entryPort_;
-    ImageInport exitPort_;
-    ImageOutport outport_;
-    CameraProperty camera_;
-    Shader shader_;
-    std::vector<std::unique_ptr<RaycasterComponent>> components_;
-};
+auto TimeComponent::getSegments() const -> std::vector<Segment> {
+    return {Segment{fmt::format(FMT_STRING("uniform float {};"), name_), Segment::uniform, 600}};
+}
 
 }  // namespace inviwo

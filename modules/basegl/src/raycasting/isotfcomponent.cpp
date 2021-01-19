@@ -40,14 +40,14 @@ IsoTFComponent::IsoTFComponent(VolumeInport* volumeInport)
     , isotfComposite_("isotfComposite", "TF & Isovalues", volumeInport,
                       InvalidationLevel::InvalidResources) {}
 
-std::string IsoTFComponent::getName() const { return isotfComposite_.getIdentifier(); }
+std::string_view IsoTFComponent::getName() const { return isotfComposite_.getIdentifier(); }
 
-void IsoTFComponent::setUniforms(Shader& shader, TextureUnitContainer& cont) const {
+void IsoTFComponent::process(Shader& shader, TextureUnitContainer& cont) {
     utilgl::bindAndSetUniforms(shader, cont, isotfComposite_);
     utilgl::setUniforms(shader, isotfComposite_);
 }
 
-void IsoTFComponent::setDefines(Shader& shader) const {
+void IsoTFComponent::initializeResources(Shader& shader) const {
     // need to ensure there is always at least one isovalue due to the use of the macro
     // as array size in IsovalueParameters
     shader.getFragmentShaderObject()->addShaderDefine(

@@ -36,20 +36,16 @@ namespace inviwo {
 
 LightComponent::LightComponent(CameraProperty* camera)
     : RaycasterComponent(), lighting_("lighting", "Lighting", camera) {}
-std::string LightComponent::getName() const { return lighting_.getIdentifier(); }
 
-void LightComponent::setDefines(Shader& shader) const { utilgl::addDefines(shader, lighting_); }
+std::string_view LightComponent::getName() const { return lighting_.getIdentifier(); }
+
+void LightComponent::initializeResources(Shader& shader) const {
+    utilgl::addDefines(shader, lighting_);
+}
 
 std::vector<Property*> LightComponent::getProperties() { return {&lighting_}; }
 
 auto LightComponent::getSegments() const -> std::vector<Segment> {
-    static constexpr std::string_view pre{
-        "gradient = normalize(COMPUTE_GRADIENT_FOR_CHANNEL(\n"
-        "    voxel, volume, volumeParameters, entryPoint + 0.5 * tIncr * rayDirection, channel));"};
-
-    static constexpr std::string_view loop{
-        "gradient = normalize(\n"
-        "    COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, samplePos, channel));"};
 
     std::vector<Segment> segments;
 
@@ -58,16 +54,12 @@ auto LightComponent::getSegments() const -> std::vector<Segment> {
 
     if (lighting_.shadingMode_ != ShadingMode::None) {
         segments.push_back(
-            Segment{std::string("#include \"utils/gradients.glsl\""), Segment::include, 500});
-        segments.push_back(
             Segment{std::string("#include \"utils/shading.glsl\""), Segment::include, 500});
-        segments.push_back(Segment{std::string(pre), Segment::pre, 500});
-        segments.push_back(Segment{std::string(loop), Segment::loop, 500});
     }
     return segments;
 }
 
-void LightComponent::setUniforms(Shader& shader, TextureUnitContainer&) const {
+void LightComponent::process(Shader& shader, TextureUnitContainer&) {
     if (lighting_.shadingMode_ != ShadingMode::None) {
         utilgl::setUniforms(shader, lighting_);
     }

@@ -79,3 +79,4 @@ private:
 };
 
 }  // namespace inviwo
+
