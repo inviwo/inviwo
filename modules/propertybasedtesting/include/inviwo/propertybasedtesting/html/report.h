@@ -38,7 +38,9 @@
 
 namespace inviwo {
 
-class PropertyBasedTestingReport {
+namespace pbt {
+
+class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyBasedTestingReport {
 private:
     std::vector<HTML::Row> generateHTML(const TestingError&, const std::vector<TestProperty*>&);
     HTML::BaseElement generateHTML(
@@ -49,5 +51,7 @@ public:
     PropertyBasedTestingReport(std::ostream&, const std::vector<TestingError>&,
                                const std::vector<TestProperty*>&);
 };
+
+} // namespace pbt
 
 }  // namespace inviwo

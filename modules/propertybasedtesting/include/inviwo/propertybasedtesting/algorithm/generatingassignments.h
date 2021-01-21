@@ -12,18 +12,20 @@
 
 namespace inviwo {
 
+namespace pbt {
+
 /*
  * Interface to property assignments, enables to apply the assignment
  * (if it not deactivated).
  * Is used mainly by TestProperty
  */
-class PropertyAssignment {
+class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyAssignment {
 private:
-    const bool* m_deactivated;
+    const bool* deactivated_;
 
 protected:
-    virtual void m_apply() const = 0;
-    virtual bool m_isApplied() const = 0;
+    virtual void doApply() const = 0;
+    virtual bool doIsApplied() const = 0;
 
 public:
     PropertyAssignment(const bool* deactivated);
@@ -33,26 +35,21 @@ public:
     bool isApplied() const;
 
     virtual ~PropertyAssignment() = default;
-    virtual void print(std::ostream& out) const = 0;
 };
 
 /*
  * Specialization of PropertyAssignment for OrdinalProperty<T>
  */
 template <typename P, typename T = typename P::value_type>
-class PropertyAssignmentTyped : public PropertyAssignment {
+class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyAssignmentTyped : public PropertyAssignment {
 private:
     P* const prop;
     const T value;
 
-    void m_apply() const override {
+    void doApply() const override {
         prop->set(value);
-        std::cerr << prop->getDisplayName() << " : " << value << " (" << prop->get() << ")"
-                  << std::endl;
     }
-    bool m_isApplied() const override {
-        std::cerr << prop->getDisplayName() << " : " << prop->get() << " vs. " << value
-                  << std::endl;
+    bool doIsApplied() const override {
         return prop->get() == value;
     }
 
@@ -62,10 +59,6 @@ public:
     ~PropertyAssignmentTyped() = default;
     P* getProperty() const { return prop; }
     const T& getValue() const { return value; }
-
-    void print(std::ostream& out) const override {
-        out << "PropertyAssignment(" << prop->getIdentifier() << "," << getValue() << ")";
-    }
 };
 
 /*
@@ -160,5 +153,7 @@ struct GenerateAssignments<MinMaxProperty<T>> {
         return res;
     }
 };
+
+} // namespace pbt
 
 }  // namespace inviwo

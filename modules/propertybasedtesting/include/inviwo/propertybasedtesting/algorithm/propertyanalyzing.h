@@ -41,11 +41,11 @@
 
 namespace inviwo {
 
-namespace util {
+namespace pbt {
 
-// how the number of background pixels should change when the value is
+// how the number of pixels should change when the value is
 // increased
-enum class PropertyEffect {
+enum class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyEffect {
     EQUAL = 0,
     NOT_EQUAL,
     LESS,
@@ -55,53 +55,53 @@ enum class PropertyEffect {
     ANY,
     NOT_COMPARABLE
 };
+
+std::ostream& IVW_MODULE_PROPERTYBASEDTESTING_API operator<<(std::ostream&,
+		const std::optional<PropertyEffect>&);
+
 constexpr size_t numPropertyEffects = 1 + static_cast<size_t>(PropertyEffect::NOT_COMPARABLE);
 
 template <typename A, typename B>
-bool propertyEffectComparator(const PropertyEffect& e, const A& a, const B& b) {
-    assert(static_cast<size_t>(e) < numPropertyEffects);
+bool IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffectComparator(const PropertyEffect& e, const A& a, const B& b) {
+    IVW_ASSERT(static_cast<size_t>(e) < numPropertyEffects,
+			"propertyEffectComparator: giben PropertyEffect is not valid");
     switch (e) {
-        case PropertyEffect::NOT_COMPARABLE:
+		case PropertyEffect::NOT_COMPARABLE:
             return false;
-        case PropertyEffect::ANY:
+		case PropertyEffect::ANY:
             return true;
-        case PropertyEffect::NOT_EQUAL:
+		case PropertyEffect::NOT_EQUAL:
             return a != b;
-        case PropertyEffect::EQUAL:
+		case PropertyEffect::EQUAL:
             return a == b;
-        case util::PropertyEffect::LESS:
+        case PropertyEffect::LESS:
             return a < b;
-        case util::PropertyEffect::LESS_EQUAL:
+        case PropertyEffect::LESS_EQUAL:
             return a <= b;
-        case util::PropertyEffect::GREATER:
+        case PropertyEffect::GREATER:
             return a > b;
-        case util::PropertyEffect::GREATER_EQUAL:
+        case PropertyEffect::GREATER_EQUAL:
             return a >= b;
     }
-    assert(false);
+	IVW_ASSERT(false, "propertyEffectComparator: switch is incomplete");
 }
 
-using AssignmentComparator = std::function<std::optional<util::PropertyEffect>(
+using AssignmentComparator = std::function<std::optional<PropertyEffect>(
     const std::shared_ptr<PropertyAssignment>& oldVal,
     const std::shared_ptr<PropertyAssignment>& newVal)>;
 
 std::ostream& operator<<(std::ostream& out, const PropertyEffect& a);
 
-template <typename T>
-std::ostream& operator<<(std::ostream& out, const std::optional<T>& a) {
-    return (!a ? out << "{}" : out << "{" << *a << "}");
-}
+std::optional<PropertyEffect> IVW_MODULE_PROPERTYBASEDTESTING_API combine(const PropertyEffect& a, const PropertyEffect& b);
 
-std::optional<PropertyEffect> combine(const PropertyEffect& a, const PropertyEffect& b);
-
-const PropertyEffect& reverseEffect(const PropertyEffect& pe);
+const PropertyEffect& IVW_MODULE_PROPERTYBASEDTESTING_API reverseEffect(const PropertyEffect& pe);
 
 /**
  * returns the desired effect on the number of counted pixels,
  * ANY if no preference
  */
 template <typename T>
-PropertyEffect propertyEffect(const PropertyEffect& selectedEffect, const T& newVal,
+PropertyEffect IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffect(const PropertyEffect& selectedEffect, const T& newVal,
                               const T& oldVal) {
     if (newVal > oldVal) return selectedEffect;
     if (newVal == oldVal) return PropertyEffect::ANY;
@@ -109,19 +109,19 @@ PropertyEffect propertyEffect(const PropertyEffect& selectedEffect, const T& new
 }
 
 template <typename T, size_t N>
-struct GetComponent {
+struct IVW_MODULE_PROPERTYBASEDTESTING_API GetComponent {
     static typename T::value_type get(const T& v, size_t i) { return v[i]; }
 };
 template <typename T>
-struct GetComponent<T, 1> {
+struct IVW_MODULE_PROPERTYBASEDTESTING_API GetComponent<T, 1> {
     static T get(const T& v, size_t i) {
-        assert(i == 0);
+        IVW_ASSERT(i == 0, "GetComponent: index must be 0 for single-component types");
         return v;
     }
 };
 
-std::optional<Processor*> getOwningProcessor(Property* const prop);
+std::optional<Processor*> IVW_MODULE_PROPERTYBASEDTESTING_API getOwningProcessor(Property* const prop);
 
-}  // namespace util
+}  // namespace pbt
 
 }  // namespace inviwo

@@ -37,7 +37,7 @@
 namespace inviwo {
 namespace HTML {
 
-class BaseElement {
+class IVW_MODULE_PROPERTYBASEDTESTING_API BaseElement {
     struct Attribute {
         std::string name;
         std::string value;
@@ -65,7 +65,7 @@ public:
 };
 
 template <class Derived>
-class Element : public BaseElement {
+class IVW_MODULE_PROPERTYBASEDTESTING_API Element : public BaseElement {
 public:
     Element(const std::string& name, const std::string& content = "")
         : BaseElement(name, content) {}
@@ -83,17 +83,17 @@ public:
     virtual ~Element() = default;
 };
 
-class HTML : public Element<HTML> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API HTML : public Element<HTML> {
 public:
     HTML() : Element("html") {}
 };
 
-class Body : public Element<Body> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API Body : public Element<Body> {
 public:
     Body() : Element("body") {}
 };
 
-class Head : public Element<Head> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API Head : public Element<Head> {
 public:
     Head() : Element("head") {}
     Head& stylesheet(const std::string& s) {
@@ -101,30 +101,30 @@ public:
         return *this;
     }
 };
-class Style : public Element<Style> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API Style : public Element<Style> {
 public:
     Style(const std::string& content) : Element("style", content) {}
 };
-class Meta : public Element<Meta> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API Meta : public Element<Meta> {
 public:
     Meta() : Element("meta") { Element::printClosing = false; }
 };
 
-class Text : public Element<Text> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API Text : public Element<Text> {
 public:
     Text(const std::string& text) : Element("", text) {}
 };
 
-class Div : public Element<Div> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API Div : public Element<Div> {
 public:
     Div(const std::string& mclass) : Element("div") { this->addAttribute("class", mclass); }
 };
 
-class TableCell : public Element<TableCell> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API TableCell : public Element<TableCell> {
 public:
     TableCell(const BaseElement& el) : Element("td") { *this << el; }
 };
-class Row : public Element<Row> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API Row : public Element<Row> {
 public:
     Row() : Element("tr") {}
     virtual Row& operator<<(const BaseElement& child) override {
@@ -136,11 +136,11 @@ public:
         return *this;
     }
 };
-class TableHeadCell : public Element<TableHeadCell> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API TableHeadCell : public Element<TableHeadCell> {
 public:
     TableHeadCell(const BaseElement& el) : Element("th") { *this << el; }
 };
-class HeadRow : public Element<HeadRow> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API HeadRow : public Element<HeadRow> {
 public:
     HeadRow() : Element("tr") {}
     virtual HeadRow& operator<<(const BaseElement& child) override {
@@ -153,12 +153,12 @@ public:
     }
 };
 
-class Table : public Element<Table> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API Table : public Element<Table> {
 public:
     Table() : Element("table") {}
 };
 
-class Image : public Element<Image> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API Image : public Element<Image> {
 public:
     Image(const std::filesystem::path& path, const std::string& alt = "") : Element("img") {
         BaseElement::printClosing = false;
@@ -167,8 +167,8 @@ public:
     }
 };
 
-class Details : public Element<Details> {
-    class Summary : public Element<Summary> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API Details : public Element<Details> {
+    class IVW_MODULE_PROPERTYBASEDTESTING_API Summary : public Element<Summary> {
     public:
         Summary() : Element("summary") {}
     };
@@ -179,16 +179,16 @@ public:
     }
 };
 
-class Paragraph : public Element<Paragraph> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API Paragraph : public Element<Paragraph> {
 public:
     Paragraph(const std::string& content) : Element("p", content) {}
 };
 
-class TreeChildren : public Element<TreeChildren> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API TreeChildren : public Element<TreeChildren> {
 public:
     TreeChildren() : Element("ul") {}
 };
-class Tree : public Element<Tree> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API Tree : public Element<Tree> {
 public:
     Tree(const BaseElement& content) : Element("ul") { *this << (Element("span") << content); }
 };

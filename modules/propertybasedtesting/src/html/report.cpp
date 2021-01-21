@@ -30,6 +30,9 @@
 #include <inviwo/propertybasedtesting/html/report.h>
 
 namespace inviwo {
+
+namespace pbt {
+
 const std::string& cssFile =
     R""""(
 td, th {
@@ -126,5 +129,7 @@ HTML::BaseElement PropertyBasedTestingReport::generateHTML(
     }
     return res;
 }
+
+} // namespace pbt
 
 }  // namespace inviwo

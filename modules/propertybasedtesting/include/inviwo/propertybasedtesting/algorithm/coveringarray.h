@@ -37,17 +37,17 @@
 
 namespace inviwo {
 
-namespace util {
+namespace pbt {
 
 // 2-coverage, randomized discrete SLJ strategy
-std::vector<Test> coveringArray(
-    const Test& init, const std::vector<std::vector<std::shared_ptr<PropertyAssignment>>>& vars);
+std::vector<Test> IVW_MODULE_PROPERTYBASEDTESTING_API coveringArray(
+    const std::vector<std::vector<std::shared_ptr<PropertyAssignment>>>& vars);
 
-std::vector<Test> optCoveringArray(
-    const size_t num, const Test& init,
-    const std::vector<std::pair<util::AssignmentComparator,
+std::vector<Test> IVW_MODULE_PROPERTYBASEDTESTING_API optCoveringArray(
+    const size_t num,
+    const std::vector<std::pair<AssignmentComparator,
                                 std::vector<std::shared_ptr<PropertyAssignment>>>>& vars);
 
-}  // namespace util
+}  // namespace pbt
 
 }  // namespace inviwo

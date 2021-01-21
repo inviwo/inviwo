@@ -158,6 +158,9 @@ namespace inviwo {
  *   Afterwards a new report is generated, which now only contains the tests
  *   that have failed with the distilled set of properties.
  */
+
+using namespace pbt;
+
 class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyAnalyzer : public Processor,
                                                              private TestPropertyObserver,
                                                              private ProcessorNetworkObserver {

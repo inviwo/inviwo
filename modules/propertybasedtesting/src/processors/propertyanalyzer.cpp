@@ -87,10 +87,6 @@ void PropertyAnalyzer::updateProcessors() {
                        std::make_move_iterator(inactiveProcessors_.end()));
     inactiveProcessors_.clear();
 
-    // for(const auto&[proc,tp] : processors_) {
-    //	std::cerr << "\t" << proc << " " << proc->getDisplayName() << std::endl;
-    //}
-
     std::unordered_set<std::string> visitedProcessors;
     for (Processor* const processor : util::getPredecessors(this)) {
         if (processor == this) continue;
@@ -116,7 +112,8 @@ void PropertyAnalyzer::updateProcessors() {
                   << std::endl;
         testProp->getBoolComp()->setVisible(false);
 
-        assert(inactiveProcessors_.count(processor) == 0);
+        IVW_ASSERT(inactiveProcessors_.count(processor) == 0,
+			"PropertyAnalyzer: disconnected inactive Processor???");
         inactiveProcessors_.emplace(processor, std::move(testProp));
         processors_.erase(processor);
     }
@@ -125,7 +122,8 @@ void PropertyAnalyzer::updateProcessors() {
     for (const auto& procId : visitedProcessors) {
         if (processors_.count(procId) == 0) {
             Processor* const processor = getNetwork()->getProcessorByIdentifier(procId);
-            assert(processor != nullptr);
+			IVW_ASSERT(processor != nullptr,
+				"PropertyAnalyzer: Predecessor Processor with given Identifier does not exist");
 
             size_t numTestableProperties = 0;
             for (Property* prop : processor->getProperties()) {
@@ -291,7 +289,8 @@ void PropertyAnalyzer::setNetwork(ProcessorNetwork* pn) {
 }
 
 void PropertyAnalyzer::initTesting() {
-    assert(remainingTests.empty());
+	IVW_ASSERT(remainingTests.empty(),
+		"PropertyAnalyzer: initTesting() in spite of remaining tests");
     deactivated.clear();
     testResults.clear();
 
@@ -320,7 +319,7 @@ void PropertyAnalyzer::initTesting() {
 
     const auto [assignments, assignmentsComp] = [&]() {
         std::vector<
-            std::pair<util::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
+            std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
             resComp;
         std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> res;
 
@@ -337,17 +336,13 @@ void PropertyAnalyzer::initTesting() {
         return std::make_pair(res, resComp);
     }();
 
-    std::cerr << "assignments: ";
-    for (const auto& x : assignments) std::cerr << " [" << x.size() << "]";
-    std::cerr << std::endl;
-
     if (assignments.empty()) {
         std::cerr << "not testing because there are no assignments generated" << std::endl;
         return;
     }
 
-    allTests = util::optCoveringArray(numTests_.get(), Test{}, assignmentsComp);
-    // auto allTests = util::coveringArray(Test{}, assignments);
+    allTests = optCoveringArray(numTests_.get(), assignmentsComp);
+    // auto allTests = coveringArray(assignments);
 
     {
         const auto sample = reservoirSampling(allTests.size(), numTests_.get());
@@ -430,7 +425,8 @@ auto generateImageFromData(const std::vector<unsigned char>& data) {
 
 void PropertyAnalyzer::checkTestResults() {
     std::cerr << "checking test results" << std::endl;
-    assert(remainingTests.empty());
+	IVW_ASSERT(remainingTests.empty(),
+		"PropertyAnalyzer: checking test results() in spite of remaining tests");
     std::vector<TestingError> errors;
 
     size_t numComparable = 0;
@@ -440,12 +436,12 @@ void PropertyAnalyzer::checkTestResults() {
         for (size_t tRj = 0; tRj < tRi; tRj++) {
             const auto& otherTestResult = testResults[tRj];
 
-            std::optional<util::PropertyEffect> propEff = {util::PropertyEffect::ANY};
+            std::optional<PropertyEffect> propEff = {PropertyEffect::ANY};
             for (auto prop : props_) {
                 auto tmp = prop->getPropertyEffect(testResult, otherTestResult);
                 if (!tmp) propEff = std::nullopt;
                 if (!propEff) break;
-                propEff = util::combine(*propEff, *tmp);
+                propEff = combine(*propEff, *tmp);
             }
 
             if (!propEff)  // not comparable
@@ -456,7 +452,7 @@ void PropertyAnalyzer::checkTestResults() {
             const auto num = testResult->getNumberOfPixels();
             const auto otherNum = otherTestResult->getNumberOfPixels();
 
-            const bool ok = util::propertyEffectComparator(*propEff, num, otherNum);
+            const bool ok = propertyEffectComparator(*propEff, num, otherNum);
             if (!ok) {
                 errors.emplace_back(testResult, otherTestResult, *propEff, num, otherNum);
             }
@@ -490,7 +486,7 @@ void PropertyAnalyzer::checkTestResults() {
         // write report
         const auto reportFilePath = errFileDir / std::string("report.html");
         std::ofstream reportFile(reportFilePath.string(), std::ios::out);
-        PropertyBasedTestingReport report(reportFile, errors, props_);
+		pbt::PropertyBasedTestingReport report(reportFile, errors, props_);
         reportFile.close();
         util::log(IVW_CONTEXT, "Wrote report to " + reportFilePath.string(), LogLevel::Info,
                   LogAudience::User);
@@ -513,7 +509,8 @@ void PropertyAnalyzer::checkTestResults() {
 
     if (currently_condensing) {
         if (errors.empty()) {
-            assert(last_deactivated != -1);
+			IVW_ASSERT(last_deactivated != -1,
+				"PropertyAnalyzer: Condensing, but there are neither errors nor a previously deactivated Property");
 
             (*deactivated[last_deactivated]) = false;
             last_deactivated++;
@@ -561,7 +558,8 @@ bool PropertyAnalyzer::testIsSetUp(const Test& test) const {
 }
 void PropertyAnalyzer::setupTest(const Test& test) {
     NetworkLock lock(this);
-    assert(testingState == TestingState::NONE);
+	IVW_ASSERT(testingState == TestingState::NONE,
+		"PropertyAnalyzer: setting up test while testingState is wrong");
 
     resetAllProps();
 
@@ -621,12 +619,14 @@ void PropertyAnalyzer::process() {
                       LogAudience::User);
         } break;
         case TestingState::GATHERING:
-            assert(!remainingTests.empty());
+			IVW_ASSERT(!remainingTests.empty(),
+				"PropertyAnalyzer: no remaining tests but state is set to GATHERING");
 
             auto test = remainingTests.front();
             remainingTests.pop();
 
-            assert(testIsSetUp(test));
+			IVW_ASSERT(testIsSetUp(test),
+				"PropertyAnalyzer: current test is not set up");
 
             const size_t pixelCount = countPixels(img, color_.get(), useDepth_);
 

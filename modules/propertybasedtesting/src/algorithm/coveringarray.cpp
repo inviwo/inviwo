@@ -4,19 +4,19 @@
 
 namespace inviwo {
 
-namespace util {
+namespace pbt {
 
 // 2-coverage, randomized discrete SLJ strategy
 std::vector<Test> coveringArray(
-    const Test& init, const std::vector<std::vector<std::shared_ptr<PropertyAssignment>>>& vars) {
+		const std::vector<std::vector<std::shared_ptr<PropertyAssignment>>>& vars) {
     srand(42);  // deterministic for regression testing
 
     std::cerr << "coveringArray: vars.size() = " << vars.size() << std::endl;
-    assert(vars.size() > 0);
+    IVW_ASSERT(vars.size() > 0, "coveringArray: passed 0 variables");
 
     // special case
     if (vars.size() == 1) {
-        std::vector<Test> res(vars[0].size(), init);
+        std::vector<Test> res(vars[0].size());
         for (size_t i = 0; i < vars[0].size(); i++) res[i].emplace_back(vars[0][i]);
         std::cerr << "special case : res.size() = " << res.size() << std::endl;
         return res;
@@ -67,7 +67,7 @@ std::vector<Test> coveringArray(
     }
 
     // contruct result
-    std::vector<Test> res(coveringArray.size(), init);
+    std::vector<Test> res(coveringArray.size());
     for (size_t c = 0; c < coveringArray.size(); c++) {
         for (size_t i = 0; i < vars.size(); i++) res[c].emplace_back(vars[i][coveringArray[c][i]]);
     }
@@ -82,28 +82,19 @@ std::vector<Test> coveringArray(
 }
 
 std::vector<Test> optCoveringArray(
-    const size_t num, const Test& init,
-    const std::vector<std::pair<std::function<std::optional<util::PropertyEffect>(
+    const size_t num,
+    const std::vector<std::pair<std::function<std::optional<PropertyEffect>(
                                     const std::shared_ptr<PropertyAssignment>& oldVal,
                                     const std::shared_ptr<PropertyAssignment>& newVal)>,
                                 std::vector<std::shared_ptr<PropertyAssignment>>>>& vars) {
     srand(42);  // deterministic for regression testing
 
-    std::cerr << "optCoveringArray: vars.size() = " << vars.size() << std::endl;
-    for (const auto& [cmp, var] : vars) {
-        for (const auto& as : var) {
-            as->print(std::cerr << "\t");
-            std::cerr << std::endl;
-        }
-        std::cerr << std::endl;
-    }
-    assert(vars.size() > 0);
+    IVW_ASSERT(vars.size() > 0, "optCoveringArray: passed 0 variables");
 
     // special case
     if (vars.size() == 1) {
-        std::vector<Test> res(vars[0].second.size(), init);
+        std::vector<Test> res(vars[0].second.size());
         for (size_t i = 0; i < vars[0].second.size(); i++) res[i].emplace_back(vars[0].second[i]);
-        std::cerr << "special case : res.size() = " << res.size() << std::endl;
         return res;
     }
 
@@ -114,10 +105,11 @@ std::vector<Test> optCoveringArray(
     for (size_t var = 0; var < vars.size(); var++) {
         for (size_t i = 0; i < vars[var].second.size(); i++) {
             for (size_t var2 = 0; var2 < var; var2++) {
-                for (size_t i2 = 0; i2 < vars[var2].second.size(); i2++)
+                for (size_t i2 = 0; i2 < vars[var2].second.size(); i2++) {
                     unused.emplace_back(std::map<size_t, size_t>{{{var, i}, {var2, i2}}});
+				}
             }
-        }  // namespace util
+		}
     }
     std::shuffle(unused.begin(), unused.end(), std::default_random_engine(rand()));
 
@@ -130,13 +122,13 @@ std::vector<Test> optCoveringArray(
     // the first
     const std::function<bool(const TestConf&, const TestConf&)> comparable = [&](const auto& ref,
                                                                                  const auto& vs) {
-        std::optional<util::PropertyEffect> res = {util::PropertyEffect::ANY};
+        std::optional<PropertyEffect> res = {PropertyEffect::ANY};
         for (const auto& [var, i] : vs) {
             const auto& j = ref.at(var);
             const auto& expect = vars[var].first(vars[var].second[i], vars[var].second[j]);
             comparisons++;
             if (!expect) return false;
-            res = util::combine(*expect, *res);
+            res = combine(*expect, *res);
             if (!res) return false;
         }
         return true;
@@ -192,7 +184,7 @@ std::vector<Test> optCoveringArray(
                 if (val > opt) opt = val, idx = i, is_unused = false;
             }
 
-            assert(opt != -1);
+            IVW_ASSERT(opt != -1, "Fatal error while creating covering array");
 
             if (is_unused) {
                 gen.insert(unused[idx].begin(), unused[idx].end());
@@ -213,13 +205,13 @@ std::vector<Test> optCoveringArray(
     // build tests
     std::vector<Test> res;
     for (const auto& [test, val] : finished) {
-        Test tmp = init;
+        Test tmp;
         for (const auto& [var, i] : test) tmp.emplace_back(vars[var].second[i]);
         res.emplace_back(tmp);
     }
     return res;
 }
 
-}  // namespace util
+}  // namespace pbt
 
 }  // namespace inviwo

@@ -2,12 +2,18 @@
 
 namespace inviwo {
 
-namespace util {
+namespace pbt {
+
+std::ostream& operator<<(std::ostream& out, const std::optional<PropertyEffect>& a) {
+	return (!a ? out << "{}" : out << "{" << *a << "}");
+}
+
 
 std::ostream& operator<<(std::ostream& out, const PropertyEffect& a) {
     static const std::string names[] = {"EQUAL",   "NOT_EQUAL",     "LESS", "LESS_EQUAL",
                                         "GREATER", "GREATER_EQUAL", "ANY",  "NOT_COMPARABLE"};
-    assert(static_cast<size_t>(a) < numPropertyEffects);
+    IVW_ASSERT(static_cast<size_t>(a) < numPropertyEffects,
+			"ostream& operator<< for PropertyEffect: given PropertyEffect is invalid");
     return out << names[static_cast<size_t>(a)];
 }
 
@@ -36,7 +42,8 @@ std::optional<PropertyEffect> combine(const PropertyEffect& a, const PropertyEff
 }
 
 const PropertyEffect& reverseEffect(const PropertyEffect& pe) {
-    assert(static_cast<size_t>(pe) < numPropertyEffects);
+    IVW_ASSERT(static_cast<size_t>(pe) < numPropertyEffects,
+			"reverseEffect: given PropertyEffect is invalid");
     const static std::array<PropertyEffect, numPropertyEffects> reverseEffects{
         PropertyEffect::EQUAL,          // EQUAL
         PropertyEffect::NOT_EQUAL,      // NOT_EQUAL
@@ -58,6 +65,6 @@ std::optional<Processor*> getOwningProcessor(Property* const prop) {
     return std::nullopt;
 }
 
-}  // namespace util
+}  // namespace pbt
 
 }  // namespace inviwo
