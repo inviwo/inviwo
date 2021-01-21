@@ -82,7 +82,6 @@ private:
     DataFrameColumnProperty yCol_;
     DataFrameColumnProperty zCol_;
     DataFrameColumnProperty wCol_;
-
 };
 
 }  // namespace inviwo
