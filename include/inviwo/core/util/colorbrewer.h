@@ -92,8 +92,9 @@ IVW_CORE_API std::map<Family, std::vector<dvec4>> getColormaps(const Category& c
  * @param divergenceMidPoint in [0 1]. Only used when category is Diverging
  **/
 IVW_CORE_API TransferFunction getTransferFunction(const Category& category, const Family& family,
-                                                  glm::uint8 nColors, bool discrete,
-                                                  double divergenceMidPoint);
+                                                  size_t nColors, bool discrete,
+                                                  double divergenceMidPoint = 0.5,
+                                                  double start = 0.0, double stop = 1.0);
 
 }  // namespace colorbrewer
 }  // namespace inviwo

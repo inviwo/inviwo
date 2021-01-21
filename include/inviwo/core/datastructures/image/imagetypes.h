@@ -47,7 +47,7 @@ enum class ImageType : char {
 };
 
 enum class InterpolationType : char { Linear, Nearest };
-enum class Wrapping : char { Clamp, Repeat, Mirror };
+enum class Wrapping : char { Clamp = 0, Repeat, Mirror };
 
 using Wrapping1D = std::array<Wrapping, 1>;
 using Wrapping2D = std::array<Wrapping, 2>;

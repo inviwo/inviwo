@@ -108,28 +108,6 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
 
     util::addTFPresetsMenu(this, menu.get(), static_cast<TransferFunctionProperty*>(property_));
 
-    auto transformMenu = menu->addMenu("TF &Transform");
-
-    auto flip = transformMenu->addAction("&Horizontal Flip");
-    auto interpolate = transformMenu->addAction("&Interpolate Alpha");
-    auto equalize = transformMenu->addAction("&Equalize Alpha");
-
-    connect(flip, &QAction::triggered, this, [this]() {
-        NetworkLock lock(property_);
-        auto p = static_cast<TransferFunctionProperty*>(property_);
-        p->get().flipPositions();
-    });
-    connect(interpolate, &QAction::triggered, this, [this]() {
-        NetworkLock lock(property_);
-        auto p = static_cast<TransferFunctionProperty*>(property_);
-        p->get().interpolateAlpha();
-    });
-    connect(equalize, &QAction::triggered, this, [this]() {
-        NetworkLock lock(property_);
-        auto p = static_cast<TransferFunctionProperty*>(property_);
-        p->get().equalizeAlpha();
-    });
-
     auto clearTF = menu->addAction("&Clear TF");
     clearTF->setEnabled(!property_->getReadOnly());
 

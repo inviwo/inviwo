@@ -129,6 +129,9 @@ private:
 
     QComboBox* pointMoveMode_;
 
+    QLabel* domainMin_;
+    QLabel* domainMax_;
+
     // widgets for directly editing the currently selected TF primitives
     TFLineEdit* primitivePos_;
     TFLineEdit* primitiveAlpha_;

@@ -150,6 +150,9 @@ protected:
     virtual void onTFPrimitiveDoubleClicked(const TFEditorPrimitive* p) override;
 
 private:
+    std::vector<TFPrimitive*> getAllPrimitives() const;
+    std::vector<TFPrimitive*> getAllOrSelectedPrimitives() const;
+
     std::vector<TFEditorPrimitive*> getSelectedPrimitiveItems() const;
 
     void createControlPointItem(TFPrimitive& p);
@@ -168,6 +171,8 @@ private:
     std::vector<TFEditorIsovalue*> isovalueItems_;
 
     bool mouseDrag_;
+    QPointF rigidTransRef_;
+    TFEditorPrimitive* dragItem_;
     bool mouseMovedSincePress_ = false;
     bool mouseDoubleClick_ = false;
     DataMapper dataMap_;

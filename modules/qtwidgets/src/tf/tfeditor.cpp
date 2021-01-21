@@ -60,7 +60,11 @@
 #include <QMenu>
 #include <QAction>
 #include <QGraphicsPixmapItem>
+#include <QRectF>
+#include <QTransform>
 #include <warn/pop>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -148,12 +152,41 @@ void TFEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
 #include <warn/ignore/switch-enum>
     switch (e->button()) {
         case Qt::LeftButton:
-            if (getTFPrimitiveItemAt(e->scenePos())) {
+            if (auto start = getTFPrimitiveItemAt(e->scenePos())) {
+                auto selected = getSelectedPrimitiveItems();
                 mouseDrag_ = true;
+
                 // inform all selected TF primitives about imminent move (need to cache position)
-                for (auto& item : getSelectedPrimitiveItems()) {
-                    item->beginMouseDrag();
-                }
+                for (auto& item : selected) item->beginMouseDrag();
+
+                selected.push_back(start);  // start might not have been selected yet
+
+                const auto xrange =
+                    std::minmax_element(selected.begin(), selected.end(),
+                                        [](TFEditorPrimitive* a, TFEditorPrimitive* b) {
+                                            return a->pos().x() < b->pos().x();
+                                        });
+                const auto yrange =
+                    std::minmax_element(selected.begin(), selected.end(),
+                                        [](TFEditorPrimitive* a, TFEditorPrimitive* b) {
+                                            return a->pos().y() < b->pos().y();
+                                        });
+
+                const auto selRect =
+                    QRectF{QPointF{(*xrange.first)->pos().x(), (*yrange.first)->pos().y()},
+                           QSizeF{(*xrange.second)->pos().x() - (*xrange.first)->pos().x(),
+                                  (*yrange.second)->pos().y() - (*yrange.first)->pos().y()}};
+
+                const std::array corners = {selRect.bottomLeft(), selRect.bottomRight(),
+                                            selRect.topLeft(), selRect.topRight()};
+
+                rigidTransRef_ = *std::max_element(
+                    corners.begin(), corners.end(), [&](const QPointF& a, const QPointF& b) {
+                        const auto da = a - start->pos();
+                        const auto db = b - start->pos();
+                        return QPointF::dotProduct(da, da) < QPointF::dotProduct(db, db);
+                    });
+                dragItem_ = start;
 
             } else {
                 views().front()->setDragMode(QGraphicsView::RubberBandDrag);
@@ -176,7 +209,39 @@ void TFEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
     if (mouseDrag_ && ((e->buttons() & Qt::LeftButton) == Qt::LeftButton)) {
         // Prevent network evaluations while moving control point
         NetworkLock lock;
-        QGraphicsScene::mouseMoveEvent(e);
+
+        const bool altPressed =
+            ((QGuiApplication::queryKeyboardModifiers() & Qt::AltModifier) == Qt::AltModifier);
+
+        if (altPressed) {
+            e->accept();
+
+            auto selection = getSelectedPrimitiveItems();
+
+            const auto eventPos = utilqt::clamp(e->scenePos(), sceneRect());
+
+            const auto org = dragItem_->pos() - rigidTransRef_;
+            const auto pos = e->scenePos() - rigidTransRef_;
+
+            if (selection.size() > 1) {
+                const auto translate =
+                    QTransform::fromTranslate(-rigidTransRef_.x(), -rigidTransRef_.y());
+
+                const auto xscale = std::abs(org.x()) > 0.0001 ? pos.x() / org.x() : 1.0;
+                const auto yscale = std::abs(org.y()) > 0.0001 ? pos.y() / org.y() : 1.0;
+
+                const auto scale = QTransform::fromScale(xscale, yscale);
+                const auto trans = translate * scale * translate.inverted();
+
+                for (auto& item : selection) {
+                    auto oldPos = item->pos();
+                    auto newPos = utilqt::clamp(trans.map(oldPos), sceneRect());
+                    item->setPos(newPos);
+                }
+            }
+        } else {
+            QGraphicsScene::mouseMoveEvent(e);
+        }
     } else {
         QGraphicsScene::mouseMoveEvent(e);
     }
@@ -198,15 +263,15 @@ void TFEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 
                     util::KeepTrueWhileInScope k(&selectNewPrimitives_);
                     switch (lastInsertedPrimitiveType_) {
-                        case inviwo::TFEditorPrimitive::TFEditorControlPointType:
+                        case TFEditorPrimitive::TFEditorControlPointType:
                             addControlPoint(e->scenePos());
                             e->accept();
                             break;
-                        case inviwo::TFEditorPrimitive::TFEditorIsovalueType:
+                        case TFEditorPrimitive::TFEditorIsovalueType:
                             addIsovalue(e->scenePos());
                             e->accept();
                             break;
-                        case inviwo::TFEditorPrimitive::TFEditorUnknownPrimitiveType:
+                        case TFEditorPrimitive::TFEditorUnknownPrimitiveType:
                         default:
                             break;
                     }
@@ -463,9 +528,13 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
         menu.addSeparator();
     }
+
     auto editColor = menu.addAction("Edit &Color");
     auto duplicatePrimitive = menu.addAction("D&uplicate");
     auto deletePrimitive = menu.addAction("&Delete");
+    auto clearTF = menu.addAction("&Clear");
+    auto resetTF = menu.addAction("&Reset");
+
     menu.addSeparator();
 
     {
@@ -494,39 +563,107 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 removeControlPoint(elem);
             }
         });
+
+        connect(clearTF, &QAction::triggered, this, [this]() {
+            NetworkLock lock(tfPropertyPtr_->getProperty());
+            for (auto& elem : tfSets_) {
+                elem->clear();
+            }
+        });
+        connect(resetTF, &QAction::triggered, this, [this]() {
+            NetworkLock lock(tfPropertyPtr_->getProperty());
+            tfPropertyPtr_->getProperty()->resetToDefaultState();
+        });
     }
 
     auto transformMenu = menu.addMenu("Trans&form");
     menu.addSeparator();
 
     {
-        auto flip = transformMenu->addAction("&Horizontal Flip");
-        auto interpolate = transformMenu->addAction("&Interpolate Alpha");
-        auto equalize = transformMenu->addAction("&Equalize Alpha");
+        auto distributeAlphaEvenly = transformMenu->addAction("&Distribute Alpha Evenly");
+        auto distributePositionEvenly = transformMenu->addAction("&Distribute Position Evenly");
+        transformMenu->addSeparator();
+        auto alignAlphaToMean = transformMenu->addAction("&Align Alpha to Mean");
+        auto alignAlphaToTop = transformMenu->addAction("&Align Alpha to Top");
+        auto alignAlphaToBottom = transformMenu->addAction("&Align Alpha to Bottom");
+        transformMenu->addSeparator();
+        auto alignPositionToMean = transformMenu->addAction("&Align Position to Mean");
+        auto alignPositionToLeft = transformMenu->addAction("&Align Position to Left");
+        auto alignPositionToRight = transformMenu->addAction("&Align Position to Right");
+        transformMenu->addSeparator();
+        auto flipPositions = transformMenu->addAction("&Horizontal Flip");
+        auto interpolateAlpha = transformMenu->addAction("&Interpolate Alpha");
 
-        connect(flip, &QAction::triggered, this, [this]() {
+        connect(distributeAlphaEvenly, &QAction::triggered, this, [this]() {
             NetworkLock lock(tfPropertyPtr_->getProperty());
-            auto selection = getSelectedPrimitives();
-            for (auto& elem : tfSets_) {
-                elem->flipPositions(selection);
-            }
+            util::distributeAlphaEvenly(getAllOrSelectedPrimitives());
         });
 
-        connect(interpolate, &QAction::triggered, this, [this]() {
+        connect(distributePositionEvenly, &QAction::triggered, this, [this]() {
             NetworkLock lock(tfPropertyPtr_->getProperty());
-            auto selection = getSelectedPrimitives();
-            for (auto& elem : tfSets_) {
-                elem->interpolateAlpha(selection);
-            }
+            util::distributePositionEvenly(getAllOrSelectedPrimitives());
         });
 
-        connect(equalize, &QAction::triggered, this, [this]() {
+        connect(alignAlphaToMean, &QAction::triggered, this, [this]() {
             NetworkLock lock(tfPropertyPtr_->getProperty());
-            auto selection = getSelectedPrimitives();
-            for (auto& elem : tfSets_) {
-                elem->equalizeAlpha(selection);
-            }
+            util::alignAlphaToMean(getAllOrSelectedPrimitives());
         });
+
+        connect(alignAlphaToTop, &QAction::triggered, this, [this]() {
+            NetworkLock lock(tfPropertyPtr_->getProperty());
+            util::alignAlphaToTop(getAllOrSelectedPrimitives());
+        });
+
+        connect(alignAlphaToBottom, &QAction::triggered, this, [this]() {
+            NetworkLock lock(tfPropertyPtr_->getProperty());
+            util::alignAlphaToBottom(getAllOrSelectedPrimitives());
+        });
+
+        connect(alignPositionToMean, &QAction::triggered, this, [this]() {
+            NetworkLock lock(tfPropertyPtr_->getProperty());
+            util::alignPositionToMean(getAllOrSelectedPrimitives());
+        });
+
+        connect(alignPositionToLeft, &QAction::triggered, this, [this]() {
+            NetworkLock lock(tfPropertyPtr_->getProperty());
+            util::alignPositionToLeft(getAllOrSelectedPrimitives());
+        });
+
+        connect(alignPositionToRight, &QAction::triggered, this, [this]() {
+            NetworkLock lock(tfPropertyPtr_->getProperty());
+            util::alignPositionToRight(getAllOrSelectedPrimitives());
+        });
+
+        connect(flipPositions, &QAction::triggered, this, [this]() {
+            NetworkLock lock(tfPropertyPtr_->getProperty());
+            util::flipPositions(getAllOrSelectedPrimitives());
+        });
+
+        connect(interpolateAlpha, &QAction::triggered, this, [this]() {
+            NetworkLock lock(tfPropertyPtr_->getProperty());
+            util::interpolateAlpha(getAllOrSelectedPrimitives());
+        });
+    }
+
+    if (tfPropertyPtr_->hasTF()) {
+
+        auto simplify = menu.addMenu("Simplify");
+        menu.addSeparator();
+
+        auto makeSimple = [this](double delta) {
+            return [this, delta]() {
+                NetworkLock lock(tfPropertyPtr_->getProperty());
+                auto tf = tfPropertyPtr_->getTransferFunction();
+                auto simple = TransferFunction::simplify(tf->get(), delta);
+                tf->clear();
+                tf->add(simple);
+            };
+        };
+
+        for (double delta : {0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.10, 0.20}) {
+            auto action = simplify->addAction(utilqt::toQString(fmt::format("{:05.3f}", delta)));
+            connect(action, &QAction::triggered, this, makeSimple(delta));
+        }
     }
 
     if (tfPropertyPtr_->supportsMask()) {
@@ -588,38 +725,25 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     }
 
     menu.addSeparator();
-    auto tfMenu = menu.addMenu("&Transfer Function");
     {
         if (tfPropertyPtr_->hasTF()) {
-            util::addTFPresetsMenu(e->widget(), tfMenu, tfPropertyPtr_->getTFProperty());
-            tfMenu->addSeparator();
+            util::addTFPresetsMenu(e->widget(), &menu, tfPropertyPtr_->getTFProperty());
+            util::addTFColorbrewerPresetsMenu(e->widget(), &menu, tfPropertyPtr_->getTFProperty());
+            menu.addSeparator();
         }
 
-        auto clearTF = tfMenu->addAction("&Clear");
-        auto resetTF = tfMenu->addAction("&Reset");
-
-        connect(clearTF, &QAction::triggered, this, [this]() {
-            NetworkLock lock(tfPropertyPtr_->getProperty());
-            for (auto& elem : tfSets_) {
-                elem->clear();
-            }
-        });
-        connect(resetTF, &QAction::triggered, this, [this]() {
-            NetworkLock lock(tfPropertyPtr_->getProperty());
-            tfPropertyPtr_->getProperty()->resetToDefaultState();
-        });
-
         if (tfPropertyPtr_->hasTF()) {
-            auto importTF = tfMenu->addAction("&Import TF...");
-            auto exportTF = tfMenu->addAction("&Export TF...");
+            auto importTF = menu.addAction("&Import TF...");
+            auto exportTF = menu.addAction("&Export TF...");
             connect(importTF, &QAction::triggered, this,
                     [this]() { emit TFEditor::importTF(*tfPropertyPtr_->getTransferFunction()); });
             connect(exportTF, &QAction::triggered, this,
                     [this]() { emit TFEditor::exportTF(*tfPropertyPtr_->getTransferFunction()); });
+            menu.addSeparator();
         }
         if (tfPropertyPtr_->hasIsovalues()) {
-            auto importTF = tfMenu->addAction("&Import Isovalues...");
-            auto exportTF = tfMenu->addAction("&Export Isovalues...");
+            auto importTF = menu.addAction("&Import Isovalues...");
+            auto exportTF = menu.addAction("&Export Isovalues...");
             connect(importTF, &QAction::triggered, this,
                     [this]() { emit TFEditor::importTF(*tfPropertyPtr_->getIsovalues()); });
             connect(exportTF, &QAction::triggered, this,
@@ -816,6 +940,26 @@ std::vector<TFPrimitive*> TFEditor::getSelectedPrimitives() const {
     }
 
     return selection;
+}
+
+std::vector<TFPrimitive*> TFEditor::getAllPrimitives() const {
+    std::vector<TFPrimitive*> res;
+
+    std::transform(points_.begin(), points_.end(), std::back_inserter(res),
+                   [](TFEditorControlPoint* p) { return &p->getPrimitive(); });
+
+    std::transform(isovalueItems_.begin(), isovalueItems_.end(), std::back_inserter(res),
+                   [](TFEditorIsovalue* p) { return &p->getPrimitive(); });
+
+    return res;
+}
+
+std::vector<TFPrimitive*> TFEditor::getAllOrSelectedPrimitives() const {
+    if (auto sel = getSelectedPrimitives(); !sel.empty()) {
+        return sel;
+    } else {
+        return getAllPrimitives();
+    }
 }
 
 std::vector<TFEditorPrimitive*> TFEditor::getSelectedPrimitiveItems() const {
