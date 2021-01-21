@@ -1056,7 +1056,8 @@ bool InviwoMainWindow::openWorkspace(QString workspaceFileName, bool isExample) 
             app_->getWorkspaceManager()->clear();
             setCurrentWorkspace(untitledWorkspaceName_);
         }
-        app_->processEvents(QEventLoop::ExcludeUserInputEvents);  // make sure the gui is ready before we unlock.
+        app_->processEvents(
+            QEventLoop::ExcludeUserInputEvents);  // make sure the gui is ready before we unlock.
     }
     saveWindowState();
     getNetworkEditor()->setModified(false);

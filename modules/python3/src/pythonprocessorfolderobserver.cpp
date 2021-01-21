@@ -100,7 +100,7 @@ void PythonProcessorFolderObserver::fileChanged(const std::string& changed) {
     } else {
         if (filesystem::getFileExtension(changed) == "py") {
             if (registerFile(changed)) {
-                LogInfo("Loaded python processor: " <<  changed);
+                LogInfo("Loaded python processor: " << changed);
                 stopFileObservation(changed);
             }
         }
