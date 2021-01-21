@@ -572,7 +572,7 @@ void PropertyAnalyzer::setupTest(const Test& test) {
     app_->getProcessorNetwork()->forEachProcessor(
         [](auto proc) { proc->invalidate(InvalidationLevel::InvalidOutput); });
 
-    dispatchFrontAndForget([this]() {
+    dispatchPool([this]() {
         // necessary because of synchronicity issues, TODO: find better solution
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
         dispatchFrontAndForget([this]() {
