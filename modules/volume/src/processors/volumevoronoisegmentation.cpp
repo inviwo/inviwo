@@ -41,7 +41,7 @@ const ProcessorInfo VolumeVoronoiSegmentation::processorInfo_{
     "org.inviwo.VolumeVoronoiSegmentation",  // Class identifier
     "Volume Voronoi Segmentation",           // Display name
     "Volume Operation",                      // Category
-    CodeState::Experimental,                 // Code state
+    CodeState::Stable,                       // Code state
     Tags::CPU,                               // Tags
 };
 const ProcessorInfo VolumeVoronoiSegmentation::getProcessorInfo() const { return processorInfo_; }
@@ -52,16 +52,17 @@ VolumeVoronoiSegmentation::VolumeVoronoiSegmentation()
     , dataFrame_("seedPoints")
     , outport_("outport")
     , weighted_("weighted", "Weighted voronoi", false)
-    , xCol_{"xCol_", "X Coordinate Column", dataFrame_, false, 1}
-    , yCol_{"yCol_", "Y Coordinate Column", dataFrame_, false, 2}
-    , zCol_{"zCol_", "Z Coordinate Column", dataFrame_, false, 3}
-    , wCol_{"wCol_", "Weight Column", dataFrame_, true, 4} {
+    , iCol_{"iCol", "Segment Index Column", dataFrame_, false, 0}
+    , xCol_{"xCol", "X Coordinate Column", dataFrame_, false, 1}
+    , yCol_{"yCol", "Y Coordinate Column", dataFrame_, false, 2}
+    , zCol_{"zCol", "Z Coordinate Column", dataFrame_, false, 3}
+    , wCol_{"wCol", "Weight Column", dataFrame_, true, 4} {
 
     addPort(volume_);
     addPort(dataFrame_);
     addPort(outport_);
 
-    addProperties(weighted_, xCol_, yCol_, zCol_, wCol_);
+    addProperties(weighted_, iCol_, xCol_, yCol_, zCol_, wCol_);
 }
 
 namespace {
@@ -77,17 +78,20 @@ constexpr auto copyColumn = [](const Column& col, auto& dstContainer, auto assig
 }
 
 void VolumeVoronoiSegmentation::process() {
-    auto calc = [dataFrame = dataFrame_.getData(), volume = volume_.getData(), xCol = xCol_.get(),
-                 yCol = yCol_.get(), zCol = zCol_.get(), wCol = wCol_.get(),
+    auto calc = [dataFrame = dataFrame_.getData(), volume = volume_.getData(), iCol = iCol_.get(),
+                 xCol = xCol_.get(), yCol = yCol_.get(), zCol = zCol_.get(), wCol = wCol_.get(),
                  weighted = weighted_.get()]() {
         const auto nrows = dataFrame->getIndexColumn()->getSize();
         std::vector<std::pair<uint32_t, vec3>> seedPointsWithIndices(nrows);
 
-        copyColumn(*dataFrame->getIndexColumn(), seedPointsWithIndices,
+        if (iCol < 0 || static_cast<size_t>(iCol) >= dataFrame->getNumberOfColumns()) {
+            throw Exception("Missing column", IVW_CONTEXT_CUSTOM("VolumeVoronoiSegmentation"));
+        }
+        copyColumn(*dataFrame->getColumn(iCol), seedPointsWithIndices,
                    [](const auto& src, auto& dst) { dst.first = static_cast<uint32_t>(src); });
 
         const auto setColumnDataAsFloats = [&](int column, int idx) {
-            if (column < 0 || column >= dataFrame->getNumberOfColumns()) {
+            if (column < 0 || static_cast<size_t>(column) >= dataFrame->getNumberOfColumns()) {
                 throw Exception("Missing column", IVW_CONTEXT_CUSTOM("VolumeVoronoiSegmentation"));
             }
             copyColumn(
@@ -99,7 +103,7 @@ void VolumeVoronoiSegmentation::process() {
         setColumnDataAsFloats(zCol, 2);
 
         std::optional<std::vector<float>> radii;
-        if (weighted && wCol >= 0 && wCol < dataFrame->getNumberOfColumns()) {
+        if (weighted && wCol >= 0 && static_cast<size_t>(wCol) < dataFrame->getNumberOfColumns()) {
             radii = std::vector<float>(nrows);
             copyColumn(*dataFrame->getColumn(wCol), *radii,
                        [](const auto& src, auto& dst) { dst = static_cast<float>(src); });
@@ -111,8 +115,6 @@ void VolumeVoronoiSegmentation::process() {
 
         voronoiVolume->setModelMatrix(volume->getModelMatrix());
         voronoiVolume->setWorldMatrix(volume->getWorldMatrix());
-        voronoiVolume->setInterpolation(InterpolationType::Nearest);
-        voronoiVolume->setWrapping(volume->getWrapping());
 
         return voronoiVolume;
     };

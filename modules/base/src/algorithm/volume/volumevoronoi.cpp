@@ -140,9 +140,14 @@ std::shared_ptr<Volume> voronoiSegmentation(
 
     auto voronoiVolumeRep = std::make_shared<VolumeRAMPrecision<unsigned short>>(volumeDimensions);
     auto voronoiVolume = std::make_shared<Volume>(voronoiVolumeRep);
+    voronoiVolume->setInterpolation(InterpolationType::Nearest);
+    voronoiVolume->setWrapping(wrapping);
 
-    voronoiVolume->dataMap_.dataRange =
-        dvec2(0.0, static_cast<double>(seedPointsWithIndices.size()));
+    const auto imax =
+        std::max_element(seedPointsWithIndices.begin(), seedPointsWithIndices.end(),
+                         [](const auto& a, const auto& b) { return a.first < b.first; });
+
+    voronoiVolume->dataMap_.dataRange = dvec2{0.0, static_cast<double>(imax->first)};
     voronoiVolume->dataMap_.valueRange = voronoiVolume->dataMap_.dataRange;
 
     if (weights.has_value()) {
@@ -202,7 +207,7 @@ std::shared_ptr<Volume> voronoiSegmentation(
     }
 
     return voronoiVolume;
-}  // namespace util
+}
 
 }  // namespace util
 }  // namespace inviwo

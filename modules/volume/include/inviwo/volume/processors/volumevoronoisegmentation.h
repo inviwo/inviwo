@@ -78,6 +78,7 @@ private:
     VolumeOutport outport_;
     BoolProperty weighted_;
 
+    DataFrameColumnProperty iCol_;
     DataFrameColumnProperty xCol_;
     DataFrameColumnProperty yCol_;
     DataFrameColumnProperty zCol_;
