@@ -6,3 +6,4 @@ set(dependencies
     InviwoBaseModule
     InviwoBaseGLModule
 )
+set(EnableByDefault ON)
