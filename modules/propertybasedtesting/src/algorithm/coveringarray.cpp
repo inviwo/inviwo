@@ -9,7 +9,7 @@ namespace pbt {
 // 2-coverage, randomized discrete SLJ strategy
 std::vector<Test> coveringArray(
 		const std::vector<std::vector<std::shared_ptr<PropertyAssignment>>>& vars) {
-    srand(42);  // deterministic for regression testing
+	std::default_random_engine rng(42);  // deterministic for regression testing
 
     std::cerr << "coveringArray: vars.size() = " << vars.size() << std::endl;
     IVW_ASSERT(vars.size() > 0, "coveringArray: passed 0 variables");
@@ -22,9 +22,12 @@ std::vector<Test> coveringArray(
         return res;
     }
 
-    const size_t v = [&]() {
+    const size_t maxAssignments = [&]() {
         size_t res = 0;
-        for (const auto& v : vars) res = std::max(res, v.size());
+        for (const auto& v : vars) {
+			IVW_ASSERT(v.size() > 0, "coveringArray: got no assignments for some property");
+			res = std::max(res, v.size());
+		}
         return res;
     }();
 
@@ -44,11 +47,13 @@ std::vector<Test> coveringArray(
     std::vector<std::vector<size_t>> coveringArray;
     while (!uncovered.empty()) {
         size_t expectedCoverage =
-            (uncovered.size() + (v * v - 1)) / (v * v);  // expectedCoverage > 0
+            (uncovered.size() + (maxAssignments * maxAssignments - 1)) / (maxAssignments * maxAssignments);  // expectedCoverage > 0
         size_t coverage;
         std::vector<size_t> row(vars.size());
         do {
-            for (size_t i = 0; i < row.size(); i++) row[i] = rand() % vars[i].size();
+            for (size_t i = 0; i < row.size(); i++) {
+				row[i] = std::uniform_int_distribution<size_t>(0, vars[i].size()-1)(rng);
+			}
             coverage = 0;  // number of uncovered interactions
             for (size_t i = 1; i < vars.size(); i++) {
                 for (size_t j = 0; j < i; j++) {
@@ -87,7 +92,7 @@ std::vector<Test> optCoveringArray(
                                     const std::shared_ptr<PropertyAssignment>& oldVal,
                                     const std::shared_ptr<PropertyAssignment>& newVal)>,
                                 std::vector<std::shared_ptr<PropertyAssignment>>>>& vars) {
-    srand(42);  // deterministic for regression testing
+	std::default_random_engine rng(42);  // deterministic for regression testing
 
     IVW_ASSERT(vars.size() > 0, "optCoveringArray: passed 0 variables");
 
@@ -111,7 +116,7 @@ std::vector<Test> optCoveringArray(
             }
 		}
     }
-    std::shuffle(unused.begin(), unused.end(), std::default_random_engine(rand()));
+    std::shuffle(unused.begin(), unused.end(), rng);
 
     std::vector<std::pair<TestConf, size_t>>
         finished;  // {TestConf, current num of other finished comparables}

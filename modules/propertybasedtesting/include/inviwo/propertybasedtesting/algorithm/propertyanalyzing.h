@@ -64,7 +64,7 @@ constexpr size_t numPropertyEffects = 1 + static_cast<size_t>(PropertyEffect::NO
 template <typename A, typename B>
 bool IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffectComparator(const PropertyEffect& e, const A& a, const B& b) {
     IVW_ASSERT(static_cast<size_t>(e) < numPropertyEffects,
-			"propertyEffectComparator: giben PropertyEffect is not valid");
+			"propertyEffectComparator: given PropertyEffect is not valid");
     switch (e) {
 		case PropertyEffect::NOT_COMPARABLE:
             return false;

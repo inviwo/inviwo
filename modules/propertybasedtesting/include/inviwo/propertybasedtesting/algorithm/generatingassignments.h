@@ -3,12 +3,12 @@
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <modules/base/algorithm/randomutils.h>
+
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 
 #include <vector>
-
-#include <ostream>
 
 namespace inviwo {
 
@@ -64,6 +64,8 @@ public:
 /*
  * A test is a set of assignments to properties. Should contain no
  * property more than once.
+ * We use shared_ptr since multiple tests may assign the same value
+ * to a property.
  */
 using Test = std::vector<std::shared_ptr<PropertyAssignment>>;
 
@@ -72,44 +74,45 @@ using Test = std::vector<std::shared_ptr<PropertyAssignment>>;
  * If you want to be able to generate assignments for new properties, you
  * probably want to add a corresponding specialization for this.
  */
-template <typename T>
+template <typename T, typename RNG>
 struct GenerateAssignments {
-    std::vector<std::shared_ptr<PropertyAssignment>> operator()(T* const, const bool*) const;
+    std::vector<std::shared_ptr<PropertyAssignment>> operator()(RNG&, T* const, const bool*) const;
 };
 
 constexpr size_t maxStepsPerVal = 3;
 constexpr size_t randomValues = 3;
 
-template <typename T>
-struct GenerateAssignments<OrdinalProperty<T>> {
-    std::vector<std::shared_ptr<PropertyAssignment>> operator()(OrdinalProperty<T>* const prop,
-                                                                const bool* deactivated) const {
+template <typename T, typename RNG>
+struct GenerateAssignments<OrdinalProperty<T>, RNG> {
+    std::vector<std::shared_ptr<PropertyAssignment>> operator()(RNG& rng,
+			OrdinalProperty<T>* const prop, const bool* deactivated) const {
 
         using P = OrdinalProperty<T>;
 
         std::vector<std::shared_ptr<PropertyAssignment>> res;
 
         const auto increment = prop->getIncrement();
-        const size_t maxSteps = (prop->getMaxValue() - prop->getMinValue()) / increment;
+		const auto minV = prop->getMinValue();
+		const auto maxV = prop->getMaxValue();
 
-        for (size_t stepsFromMin = 0; stepsFromMin < std::min(maxSteps, maxStepsPerVal);
-             stepsFromMin++) {
+		for(auto[numSteps,val] = std::tuple<size_t,T>(0,minV);
+				numSteps < maxStepsPerVal, val <= prop->getMaxValue(), val >= minV;
+				numSteps++, val += increment) {
             res.emplace_back(std::make_shared<PropertyAssignmentTyped<P>>(
-                deactivated, prop, prop->getMinValue() + stepsFromMin * increment));
+                deactivated, prop, val));
         }
 
-        for (size_t stepsFromMax = 0; stepsFromMax < std::min(maxSteps, maxStepsPerVal);
-             stepsFromMax++) {
+		for(auto[numSteps,val] = std::tuple<size_t,T>(0,prop->getMaxValue());
+				numSteps < maxStepsPerVal, val <= prop->getMaxValue(), val >= minV;
+				numSteps++, val -= increment) {
             res.emplace_back(std::make_shared<PropertyAssignmentTyped<P>>(
-                deactivated, prop, prop->getMaxValue() - stepsFromMax * increment));
+                deactivated, prop, val));
         }
 
-        if (maxSteps > 0) {
-            for (size_t cnt = 0; cnt < randomValues; cnt++) {
-                res.emplace_back(std::make_shared<PropertyAssignmentTyped<P>>(
-                    deactivated, prop, prop->getMinValue() + (rand() % maxSteps) * increment));
-            }
-        }
+		for (size_t cnt = 0; cnt < randomValues; cnt++) {
+			res.emplace_back(std::make_shared<PropertyAssignmentTyped<P>>(
+						deactivated, prop, util::randomNumber<T>(rng, minV, maxV)));
+		}
 
         return res;
     }
@@ -117,17 +120,20 @@ struct GenerateAssignments<OrdinalProperty<T>> {
 
 // NOTE: We assume that a MinMaxProperty<T>* may be casted to
 // OrdinalProperty<T>*
-template <typename T>
-struct GenerateAssignments<MinMaxProperty<T>> {
-    std::vector<std::shared_ptr<PropertyAssignment>> operator()(MinMaxProperty<T>* const prop,
-                                                                const bool* deactivated) const {
+template <typename T, typename RNG>
+struct GenerateAssignments<MinMaxProperty<T>, RNG> {
+    std::vector<std::shared_ptr<PropertyAssignment>> operator()(RNG& rng,
+			MinMaxProperty<T>* const prop, const bool* deactivated) const {
 
         using P = MinMaxProperty<T>;
         using value_type = typename P::value_type;
         std::vector<std::shared_ptr<PropertyAssignment>> res;
 
         const auto minSeparation = prop->getMinSeparation();
-        const size_t maxSteps = (prop->getRangeMax() - prop->getRangeMin()) / minSeparation;
+       
+		const auto minR = prop->getRangeMin();
+		const auto maxR = prop->getRangeMax();
+        const size_t maxSteps = (maxR - minR) / minSeparation;
 
         for (size_t stepsFromMin = 0; stepsFromMin < std::min(maxSteps, maxStepsPerVal);
              stepsFromMin++) {
@@ -135,19 +141,29 @@ struct GenerateAssignments<MinMaxProperty<T>> {
                  stepsFromMax + stepsFromMin < std::min(maxSteps, maxStepsPerVal); stepsFromMax++) {
                 res.emplace_back(std::make_shared<PropertyAssignmentTyped<P>>(
                     deactivated, prop,
-                    value_type(prop->getRangeMin() + stepsFromMin * minSeparation,
-                               prop->getRangeMax() - stepsFromMax * minSeparation)));
+                    value_type(minR + stepsFromMin * minSeparation,
+                               maxR - stepsFromMax * minSeparation)));
             }
         }
 
         // add some random values
         for (size_t cnt = 0; cnt < randomValues; cnt++) {
-            size_t stepsFromMin = rand() % maxSteps;
-            size_t stepsFromMax = rand() % (maxSteps - stepsFromMin);
+			auto lo = util::randomNumber<T>(rng, minR, maxR);
+			auto hi = util::randomNumber<T>(rng, minR, maxR);
+			if(hi < lo) {
+				std::swap(lo, hi);
+			}
+			// ensure minSeparation is respected
+			if(lo + minSeparation > hi) {
+				if(lo + minSeparation > maxR) {
+					lo = hi - minSeparation;
+				} else {
+					hi = lo + minSeparation;
+				}
+			}
             res.emplace_back(std::make_shared<PropertyAssignmentTyped<P>>(
                 deactivated, prop,
-                value_type(prop->getRangeMin() + stepsFromMin * minSeparation,
-                           prop->getRangeMax() - stepsFromMax * minSeparation)));
+                value_type(lo, hi)));
         }
 
         return res;

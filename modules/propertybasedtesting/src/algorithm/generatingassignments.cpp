@@ -10,7 +10,7 @@ bool PropertyAssignment::isDeactivated() const { return *deactivated_; }
 void PropertyAssignment::apply() const {
     if (!isDeactivated()) {
         doApply();
-        IVW_ASSERT(isApplied(), "PropertyAssignment cound not be applied!");
+        IVW_ASSERT(isApplied(), "PropertyAssignment could not be applied!");
     }
 }
 bool PropertyAssignment::isApplied() const { return isDeactivated() || doIsApplied(); }

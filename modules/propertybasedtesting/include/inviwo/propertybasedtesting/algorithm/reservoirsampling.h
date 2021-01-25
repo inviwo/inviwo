@@ -31,11 +31,35 @@
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <random>
+
 namespace inviwo {
 
 // randomly select k elements out of n elements (indexed from 0 to n-1)
 // note: if k > n, then all n elements are chosen
 // Time complexity: O(k * (1+log(n/k)))
-std::vector<size_t> reservoirSampling(const size_t n, const size_t k);
+template<typename RNG>
+std::vector<size_t> reservoirSampling(RNG&, const size_t n, const size_t k);
+
+template<typename RNG>
+std::vector<size_t> reservoirSampling(RNG& rng, const size_t n, const size_t k) {
+    if (k > n) return reservoirSampling(rng, n, n);
+	std::uniform_real_distribution<double> distribution(0.0,1.0);
+
+    std::vector<size_t> result(k);
+    std::iota(result.begin(), result.end(), 0);  // start with the first k values
+
+    double w = exp(log(distribution(rng)) / k);
+
+    for (size_t i = k; i < n;) {
+        i += log(distribution(rng)) / log(1 - w);
+        if (i < n) {
+            result[std::uniform_int_distribution<size_t>(0, k-1)(rng)] = i;
+            w *= exp(log(distribution(rng)) / k);
+        }
+    }
+
+    return result;
+}
 
 }  // namespace inviwo

@@ -196,13 +196,13 @@ void TestPropertyComposite::storeDefault() {
     for (const auto& subProp : subProperties) subProp->storeDefault();
 }
 std::vector<std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
-TestPropertyComposite::generateAssignmentsCmp() const {
+TestPropertyComposite::generateAssignmentsCmp(std::default_random_engine& rng) const {
 
     std::vector<
         std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
         res;
     for_each_checked([&](auto subProp) {
-        auto tmp = subProp->generateAssignmentsCmp();
+        auto tmp = subProp->generateAssignmentsCmp(rng);
         res.insert(res.end(), std::make_move_iterator(tmp.begin()),
                    std::make_move_iterator(tmp.end()));
     });
@@ -373,9 +373,9 @@ auto TestPropertyTyped<T>::selectedEffects() const
 }
 template <typename T>
 std::vector<std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
-TestPropertyTyped<T>::generateAssignmentsCmp() const {
+TestPropertyTyped<T>::generateAssignmentsCmp(std::default_random_engine& rng) const {
 
-    const GenerateAssignments<T> tmp;
+    const GenerateAssignments<T,std::default_random_engine> tmp;
     static const pbt::AssignmentComparator cmp = [this](const auto& oldA, const auto& newA) {
         const PropertyAssignmentTyped<T>* oldAptr =
             dynamic_cast<const PropertyAssignmentTyped<T>*>(oldA.get());
@@ -391,7 +391,7 @@ TestPropertyTyped<T>::generateAssignmentsCmp() const {
 
         return propertyEffect<value_type>(oldV, newV, selectedEffects());
     };
-    auto assignments = tmp(getTypedProperty(), deactivated_.get());
+    auto assignments = tmp(rng, getTypedProperty(), deactivated_.get());
 
     std::vector<
         std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>

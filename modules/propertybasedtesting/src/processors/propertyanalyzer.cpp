@@ -317,6 +317,8 @@ void PropertyAnalyzer::initTesting() {
         prop->storeDefault();
     }
 
+	std::default_random_engine rng(42); // make rng deterministic for regression testing
+
     const auto [assignments, assignmentsComp] = [&]() {
         std::vector<
             std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
@@ -324,7 +326,7 @@ void PropertyAnalyzer::initTesting() {
         std::vector<std::vector<std::shared_ptr<PropertyAssignment>>> res;
 
         for (const auto prop : props_) {
-            auto why = prop->generateAssignmentsCmp();
+            auto why = prop->generateAssignmentsCmp(rng);
             for (auto& [cmp, prop_assignments] : why) {
                 resComp.emplace_back(cmp, prop_assignments);
                 res.emplace_back(prop_assignments);
@@ -345,7 +347,7 @@ void PropertyAnalyzer::initTesting() {
     // auto allTests = coveringArray(assignments);
 
     {
-        const auto sample = reservoirSampling(allTests.size(), numTests_.get());
+        const auto sample = reservoirSampling(rng, allTests.size(), numTests_.get());
         const auto tmp = allTests;
         allTests.clear();
         for (const size_t i : sample) {

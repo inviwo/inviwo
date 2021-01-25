@@ -224,7 +224,7 @@ public:
     virtual void storeDefault() = 0;
     virtual std::vector<
         std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
-    generateAssignmentsCmp() const = 0;
+    generateAssignmentsCmp(std::default_random_engine&) const = 0;
     virtual ~TestProperty() = default;
 };
 
@@ -321,7 +321,7 @@ public:
     void storeDefault();
     std::vector<
         std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
-    generateAssignmentsCmp() const override;
+    generateAssignmentsCmp(std::default_random_engine&) const override;
 };
 
 template <typename C,
@@ -394,7 +394,7 @@ public:
     void storeDefault();
     std::vector<
         std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
-    generateAssignmentsCmp() const override;
+    generateAssignmentsCmp(std::default_random_engine&) const override;
 };
 
 /*
