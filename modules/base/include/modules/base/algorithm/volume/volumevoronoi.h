@@ -35,7 +35,10 @@
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/volumeramutils.h>
+
 #include <vector>
+#include <optional>
+#include <memory>
 
 namespace inviwo {
 namespace util {
@@ -52,15 +55,15 @@ namespace util {
  *     * seedPointsWithIndices is a vector containing the seed points for the algorithm together
  *       with their index number on the form {index, position}. The positions are expected be in
  *       model space.
- *     * weigths is an optional vector containing the weights for each seed point.
- *     * weightedVoronoi is a boolean deciding if the weighted version of voronoi should be used.
- *       If true, the weights must be provided.
+ *     * wrapping the wrapping mode of the volume, @see Wrapping3D.
+ *     * weigths is an optional vector containing the weights for each seed point. If set the
+ *       weighted version of voronoi should be used.
  */
 
 IVW_MODULE_BASE_API std::shared_ptr<Volume> voronoiSegmentation(
     const size3_t volumeDimensions, const mat4& indexToModelMatrix,
-    const std::vector<std::pair<uint32_t, vec3>>& seedPointsWithIndices,
-    const std::optional<std::vector<float>>& weights, bool weightedVoronoi);
+    const std::vector<std::pair<uint32_t, vec3>>& seedPointsWithIndices, const Wrapping3D& wrapping,
+    const std::optional<std::vector<float>>& weights);
 
 }  // namespace util
 }  // namespace inviwo

@@ -30,6 +30,10 @@
 #include <inviwo/volume/processors/volumevoronoisegmentation.h>
 #include <modules/base/algorithm/volume/volumevoronoi.h>
 
+#include <inviwo/core/util/zip.h>
+#include <algorithm>
+#include <functional>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -37,87 +41,89 @@ const ProcessorInfo VolumeVoronoiSegmentation::processorInfo_{
     "org.inviwo.VolumeVoronoiSegmentation",  // Class identifier
     "Volume Voronoi Segmentation",           // Display name
     "Volume Operation",                      // Category
-    CodeState::Experimental,                 // Code state
+    CodeState::Stable,                       // Code state
     Tags::CPU,                               // Tags
 };
 const ProcessorInfo VolumeVoronoiSegmentation::getProcessorInfo() const { return processorInfo_; }
 
 VolumeVoronoiSegmentation::VolumeVoronoiSegmentation()
-    : Processor()
+    : PoolProcessor(pool::Option::DelayDispatch)
     , volume_("inputVolume")
     , dataFrame_("seedPoints")
     , outport_("outport")
-    , weighted_("weighted", "Weighted voronoi", false) {
+    , weighted_("weighted", "Weighted voronoi", false)
+    , iCol_{"iCol", "Segment Index Column", dataFrame_, false, 0}
+    , xCol_{"xCol", "X Coordinate Column", dataFrame_, false, 1}
+    , yCol_{"yCol", "Y Coordinate Column", dataFrame_, false, 2}
+    , zCol_{"zCol", "Z Coordinate Column", dataFrame_, false, 3}
+    , wCol_{"wCol", "Weight Column", dataFrame_, true, 4} {
 
     addPort(volume_);
     addPort(dataFrame_);
     addPort(outport_);
 
-    addProperty(weighted_);
+    addProperties(weighted_, iCol_, xCol_, yCol_, zCol_, wCol_);
+}
+
+namespace {
+constexpr auto copyColumn = [](const Column& col, auto& dstContainer, auto assign) {
+    col.getBuffer()->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
+        [&](auto buf) {
+            const auto& data = buf->getDataContainer();
+            for (auto&& [src, dst] : util::zip(data, dstContainer)) {
+                std::invoke(assign, src, dst);
+            }
+        });
+};
 }
 
 void VolumeVoronoiSegmentation::process() {
-    const auto dataFrame = dataFrame_.getData();
-    const auto volume = volume_.getData();
+    auto calc = [dataFrame = dataFrame_.getData(), volume = volume_.getData(), iCol = iCol_.get(),
+                 xCol = xCol_.get(), yCol = yCol_.get(), zCol = zCol_.get(), wCol = wCol_.get(),
+                 weighted = weighted_.get()]() {
+        const auto nrows = dataFrame->getIndexColumn()->getSize();
+        std::vector<std::pair<uint32_t, vec3>> seedPointsWithIndices(nrows);
 
-    if (volume->getWrapping() != wrapping3d::clampAll) {
-        throw Exception("Incompatible volume wrapping (should be clamped)", IVW_CONTEXT);
-    }
+        if (iCol < 0 || static_cast<size_t>(iCol) >= dataFrame->getNumberOfColumns()) {
+            throw Exception("Missing column", IVW_CONTEXT_CUSTOM("VolumeVoronoiSegmentation"));
+        }
+        copyColumn(*dataFrame->getColumn(iCol), seedPointsWithIndices,
+                   [](const auto& src, auto& dst) { dst.first = static_cast<uint32_t>(src); });
 
-    const auto indices =
-        dataFrame->getIndexColumn()
-            ->getBuffer()
-            ->getRepresentation<BufferRAM>()
-            ->dispatch<std::vector<uint32_t>, dispatching::filter::Scalars>([](auto buf) {
-                auto& data = buf->getDataContainer();
-                std::vector<uint32_t> dst(data.size(), 0.0f);
-                std::transform(data.begin(), data.end(), dst.begin(),
-                               [&](auto v) { return static_cast<uint32_t>(v); });
-                return dst;
-            });
+        const auto setColumnDataAsFloats = [&](int column, int idx) {
+            if (column < 0 || static_cast<size_t>(column) >= dataFrame->getNumberOfColumns()) {
+                throw Exception("Missing column", IVW_CONTEXT_CUSTOM("VolumeVoronoiSegmentation"));
+            }
+            copyColumn(
+                *dataFrame->getColumn(column), seedPointsWithIndices,
+                [idx](const auto& src, auto& dst) { dst.second[idx] = static_cast<float>(src); });
+        };
+        setColumnDataAsFloats(xCol, 0);
+        setColumnDataAsFloats(yCol, 1);
+        setColumnDataAsFloats(zCol, 2);
 
-    const auto getColumnDataAsFloats = [dataFrame](const std::string columnName) {
-        return dataFrame->getColumn(columnName)
-            ->getBuffer()
-            ->getRepresentation<BufferRAM>()
-            ->dispatch<std::vector<float>, dispatching::filter::Scalars>([](auto buf) {
-                auto& data = buf->getDataContainer();
-                std::vector<float> dst(data.size(), 0.0f);
-                std::transform(data.begin(), data.end(), dst.begin(),
-                               [&](auto v) { return static_cast<float>(v); });
-                return dst;
-            });
+        std::optional<std::vector<float>> radii;
+        if (weighted && wCol >= 0 && static_cast<size_t>(wCol) < dataFrame->getNumberOfColumns()) {
+            radii = std::vector<float>(nrows);
+            copyColumn(*dataFrame->getColumn(wCol), *radii,
+                       [](const auto& src, auto& dst) { dst = static_cast<float>(src); });
+        }
+
+        const auto voronoiVolume = util::voronoiSegmentation(
+            volume->getDimensions(), volume->getCoordinateTransformer().getIndexToModelMatrix(),
+            seedPointsWithIndices, volume->getWrapping(), radii);
+
+        voronoiVolume->setModelMatrix(volume->getModelMatrix());
+        voronoiVolume->setWorldMatrix(volume->getWorldMatrix());
+
+        return voronoiVolume;
     };
 
-    const auto xPos = getColumnDataAsFloats("x");
-    const auto yPos = getColumnDataAsFloats("y");
-    const auto zPos = getColumnDataAsFloats("z");
-
-    std::optional<std::vector<float>> radii = std::nullopt;
-    if (dataFrame->getColumn("r") != nullptr) {
-        radii = getColumnDataAsFloats("r");
-    }
-
-    if (indices.size() != xPos.size() || indices.size() != yPos.size() ||
-        indices.size() != zPos.size() ||
-        (radii.has_value() && indices.size() != radii.value().size())) {
-        throw Exception("Unexpected dimension missmatch", IVW_CONTEXT);
-    }
-
-    std::vector<std::pair<uint32_t, vec3>> seedPointsWithIndices = {};
-    for (std::size_t i = 0; i < xPos.size(); ++i) {
-        seedPointsWithIndices.push_back({indices[i], vec3{xPos[i], yPos[i], zPos[i]}});
-    }
-
-    const auto voronoiVolume = util::voronoiSegmentation(
-        volume->getDimensions(), volume->getCoordinateTransformer().getIndexToModelMatrix(),
-        seedPointsWithIndices, radii, weighted_.get());
-
-    voronoiVolume->setModelMatrix(volume->getModelMatrix());
-    voronoiVolume->setWorldMatrix(volume->getWorldMatrix());
-    voronoiVolume->setInterpolation(InterpolationType::Nearest);
-    voronoiVolume->setWrapping(volume->getWrapping());
-
-    outport_.setData(voronoiVolume);
+    outport_.setData(nullptr);
+    dispatchOne(calc, [this](std::shared_ptr<Volume> result) {
+        outport_.setData(result);
+        newResults();
+    });
 }
+
 }  // namespace inviwo

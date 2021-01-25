@@ -30,11 +30,12 @@
 #pragma once
 
 #include <inviwo/volume/volumemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/properties/dataframeproperty.h>
 #include <optional>
 
 namespace inviwo {
@@ -61,7 +62,7 @@ namespace inviwo {
  *
  */
 
-class IVW_MODULE_VOLUME_API VolumeVoronoiSegmentation : public Processor {
+class IVW_MODULE_VOLUME_API VolumeVoronoiSegmentation : public PoolProcessor {
 public:
     VolumeVoronoiSegmentation();
     virtual ~VolumeVoronoiSegmentation() = default;
@@ -75,8 +76,13 @@ private:
     VolumeInport volume_;
     DataFrameInport dataFrame_;
     VolumeOutport outport_;
-
     BoolProperty weighted_;
+
+    DataFrameColumnProperty iCol_;
+    DataFrameColumnProperty xCol_;
+    DataFrameColumnProperty yCol_;
+    DataFrameColumnProperty zCol_;
+    DataFrameColumnProperty wCol_;
 };
 
 }  // namespace inviwo

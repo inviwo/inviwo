@@ -38,30 +38,25 @@
 
 namespace inviwo {
 
+constexpr auto clamp3D = Wrapping3D{Wrapping::Clamp, Wrapping::Clamp, Wrapping::Clamp};
+
 TEST(VolumeVoronoi, Voronoi_NoSeedPoints_ThrowsException) {
-    EXPECT_THROW(util::voronoiSegmentation(/*volumeDimensions*/ size3_t{3, 3, 3},
-                                           /*indexToModelMatrix*/ mat4(), /*seedPoints*/ {},
-                                           /*weights*/ std::nullopt, /*weightedVoronoi*/ false),
+    EXPECT_THROW(util::voronoiSegmentation(
+                     /*volumeDimensions*/ size3_t{3, 3, 3},
+                     /*indexToModelMatrix*/ mat4(), /*seedPoints*/ {},
+                     /*wrapping*/ clamp3D,
+                     /*weights*/ std::nullopt),
                  inviwo::Exception);
 }
 
-TEST(VolumeVoronoi, WeightedVoronoi_WeightsHasNoValue_ThrowsException) {
-    const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{0.3, 0.2, 0.1}},
-                                                               {2, vec3{0.1, 0.2, 0.3}}};
-
-    EXPECT_THROW(util::voronoiSegmentation(/*volumeDimensions*/ size3_t{3, 3, 3},
-                                           /*indexToModelMatrix*/ mat4(), seedPoints,
-                                           /*weights*/ std::nullopt, /*weightedVoronoi*/ true),
-                 inviwo::Exception);
-}
 TEST(VolumeVoronoi, WeightedVoronoi_WeightsAndSeedPointsDimensionMissmatch_ThrowsException) {
     const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{0.3, 0.2, 0.1}},
                                                                {2, vec3{0.1, 0.2, 0.3}}};
     const std::vector<float> weights = {3.0, 4.0, 5.0, 6.0, 7.0};
 
     EXPECT_THROW(util::voronoiSegmentation(/*volumeDimensions*/ size3_t{3, 3, 3},
-                                           /*indexToModelMatrix*/ mat4(), seedPoints, weights,
-                                           /*weightedVoronoi*/ true),
+                                           /*indexToModelMatrix*/ mat4(), seedPoints,
+                                           /*wrapping*/ clamp3D, weights),
                  inviwo::Exception);
 }
 
@@ -74,7 +69,7 @@ TEST(VolumeVoronoi, Voronoi_OneSeedPoint_WholeVolumeHasSameIndex) {
                                   /*indexToModelMatrix*/
                                   mat4{vec4{1.0, 0.0, 0.0, 0.0}, vec4{0.0, 1.0, 0.0, 0.0},
                                        vec4{0.0, 0.0, 1.0, 0.0}, vec4{0.0, 0.0, 0.0, 1.0}},
-                                  seedPoints, /*weights*/ std::nullopt, /*weightedVoronoi*/ false);
+                                  seedPoints, /*wrapping*/ clamp3D, /*weights*/ std::nullopt);
 
     const VolumeRAMPrecision<unsigned short>* ramtyped =
         dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
@@ -105,7 +100,7 @@ TEST(VolumeVoronoi, Voronoi_TwoSeedPoints_PartitionsVolumeInTwo) {
                                   /*indexToModelMatrix*/
                                   mat4{vec4{1.0, 0.0, 0.0, 0.0}, vec4{0.0, 1.0, 0.0, 0.0},
                                        vec4{0.0, 0.0, 1.0, 0.0}, vec4{0.0, 0.0, 0.0, 1.0}},
-                                  seedPoints, /*weights*/ std::nullopt, /*weightedVoronoi*/ false);
+                                  seedPoints, /*wrapping*/ clamp3D, /*weights*/ std::nullopt);
 
     const VolumeRAMPrecision<unsigned short>* ramtyped =
         dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
@@ -142,7 +137,7 @@ TEST(VolumeVoronoi, WeightedVoronoi_TwoSeedPointsWithWeights_PartitionsVolumeInT
         /*indexToModelMatrix*/
         mat4{vec4{1.0, 0.0, 0.0, 0.0}, vec4{0.0, 1.0, 0.0, 0.0}, vec4{0.0, 0.0, 1.0, 0.0},
              vec4{0.0, 0.0, 0.0, 1.0}},
-        seedPoints, /*weights*/ std::vector<float>{1.0, 2.0}, /*weightedVoronoi*/ true);
+        seedPoints, /*wrapping*/ clamp3D, /*weights*/ std::vector<float>{1.0, 2.0});
 
     const VolumeRAMPrecision<unsigned short>* ramtyped =
         dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
@@ -169,43 +164,6 @@ TEST(VolumeVoronoi, WeightedVoronoi_TwoSeedPointsWithWeights_PartitionsVolumeInT
     }
 }
 
-TEST(VolumeVoronoi, Voronoi_TwoSeedPointsWithWeightsButWeightedVoronoiFalse_PartitionsVolumeInTwo) {
-    const std::vector<std::pair<uint32_t, vec3>> seedPoints = {{1, vec3{1, 2, 2}},
-                                                               {2, vec3{2, 2, 2}}};
-    const auto dimensions = size3_t{4, 4, 4};
-
-    auto volumeVoronoi = util::voronoiSegmentation(
-        dimensions,
-        /*indexToModelMatrix*/
-        mat4{vec4{1.0, 0.0, 0.0, 0.0}, vec4{0.0, 1.0, 0.0, 0.0}, vec4{0.0, 0.0, 1.0, 0.0},
-             vec4{0.0, 0.0, 0.0, 1.0}},
-        seedPoints, /*weights*/ std::vector<float>{1.0, 2.0}, /*weightedVoronoi*/ false);
-
-    const VolumeRAMPrecision<unsigned short>* ramtyped =
-        dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
-            volumeVoronoi->getRepresentation<VolumeRAM>());
-
-    EXPECT_TRUE(ramtyped != nullptr);
-
-    const auto data = ramtyped->getDataTyped();
-    const util::IndexMapper3D im(dimensions);
-
-    for (size_t z = 0; z < dimensions.z; z++) {
-        for (size_t y = 0; y < dimensions.y; y++) {
-            // First half of volume
-            for (size_t x1 = 0; x1 < dimensions.x / 2; x1++) {
-                const auto val1 = static_cast<unsigned short>(data[im(x1, y, z)]);
-                EXPECT_EQ(val1, seedPoints[0].first);
-            }
-            // Second half of volume
-            for (size_t x2 = dimensions.x / 2; x2 < dimensions.x; x2++) {
-                const auto val2 = static_cast<unsigned short>(data[im(x2, y, z)]);
-                EXPECT_EQ(val2, seedPoints[1].first);
-            }
-        }
-    }
-}
-
 TEST(VolumeVoronoi, Voronoi_ThreeSeedPoints_PartitionsVolumeInThree) {
     const std::vector<std::pair<uint32_t, vec3>> seedPoints = {
         {1, vec3{0, 1, 1}}, {2, vec3{1, 1, 1}}, {3, vec3{2, 1, 1}}};
@@ -216,7 +174,7 @@ TEST(VolumeVoronoi, Voronoi_ThreeSeedPoints_PartitionsVolumeInThree) {
                                   /*indexToModelMatrix*/
                                   mat4{vec4{1.0, 0.0, 0.0, 0.0}, vec4{0.0, 1.0, 0.0, 0.0},
                                        vec4{0.0, 0.0, 1.0, 0.0}, vec4{0.0, 0.0, 0.0, 1.0}},
-                                  seedPoints, /*weights*/ std::nullopt, /*weightedVoronoi*/ false);
+                                  seedPoints, /*wrapping*/ clamp3D, /*weights*/ std::nullopt);
 
     const VolumeRAMPrecision<unsigned short>* ramtyped =
         dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
