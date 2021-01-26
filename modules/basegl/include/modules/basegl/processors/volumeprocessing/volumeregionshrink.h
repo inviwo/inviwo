@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,18 +30,18 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/opengl/shader/shaderresource.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeLowPass, Volume Low Pass}
- * ![](org.inviwo.VolumeLowPass.png?classIdentifier=org.inviwo.VolumeLowPass)
- * Applies a low pass filter on the input volume.
+/** \docpage{org.inviwo.VolumeRegionShrink, Volume Region Shrink}
+ * ![](org.inviwo.VolumeRegionShrink.png?classIdentifier=org.inviwo.VolumeRegionShrink)
+ * Shink all regions in the volume
  *
  * ### Inports
  *   * __inputVolume__ Input volume
@@ -50,31 +50,30 @@ namespace inviwo {
  *   * __outputVolume__ Output volume
  *
  * ### Properties
- *   * __Kernel Size__ Size of the applied low pass filter
- *   * __Use Gaussian Weights__ Toggles between a Gaussian kernel and a box filter
- *   * __Sigma__ Sigma used by the Gaussian kernel
- *
+ *   * __iterations__ How many iterations to use
  */
-class IVW_MODULE_BASEGL_API VolumeLowPass : public VolumeGLProcessor {
+class IVW_MODULE_BASEGL_API VolumeRegionShrink : public Processor {
 public:
-    VolumeLowPass();
-    virtual ~VolumeLowPass();
+    VolumeRegionShrink();
+    virtual ~VolumeRegionShrink() = default;
+
+    virtual void process() override;
+
+    virtual void initializeResources() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
-    virtual void preProcess(TextureUnitContainer& cont) override;
-    virtual void postProcess() override;
-
-    virtual void initializeResources() override;
-
 private:
-    IntProperty kernelSize_;
+    VolumeInport inport_;
+    VolumeOutport outport_;
+    IntProperty iterations_;
 
-    BoolCompositeProperty useGaussianWeights_;
-    FloatProperty sigma_;
-    BoolProperty updateDataRange_;
+    std::shared_ptr<StringShaderResource> fragShader_;
+    Shader shader_;
+    
+    std::array<std::shared_ptr<Volume>,2> out_;
+    std::array<FrameBufferObject, 2> fbo_;
 };
 
 }  // namespace inviwo
