@@ -301,8 +301,6 @@ private:
     virtual void onAboutPropertyChange(Property*) override;
     virtual void onProcessorInvalidationBegin(Processor*) override;
     virtual void onProcessorInvalidationEnd(Processor*) override;
-    virtual void onProcessorIdentifierChanged(Processor*,
-                                              const std::string& oldIdentifier) override;
     virtual void onProcessorPortRemoved(Processor*, Port* port) override;
 
     virtual void onProcessorStartBackgroundWork(Processor*, size_t jobs) override;
@@ -333,6 +331,8 @@ private:
 
     LinkEvaluator linkEvaluator_;
     std::vector<Processor*> processorsInvalidating_;
+
+    std::unordered_map<Processor*, Processor::NameDispatcherHandle> onIdChange_;
 };
 
 template <class T>

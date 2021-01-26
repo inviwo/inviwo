@@ -106,6 +106,14 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         displayNameLabel_->setFont(nameFont);
         displayNameLabel_->setText(utilqt::toQString(processor_->getDisplayName()));
         LabelGraphicsItemObserver::addObservation(displayNameLabel_);
+
+        nameChange_ =
+            processor->onDisplayNameChange([this](std::string_view newName, std::string_view) {
+                auto newDisplayName = utilqt::toQString(newName);
+                if (newDisplayName != displayNameLabel_->text()) {
+                    displayNameLabel_->setText(newDisplayName);
+                }
+            });
     }
     {
         identifierLabel_ = new LabelGraphicsItem(this, width - 2 * labelHeight, Qt::AlignTop);
@@ -115,6 +123,14 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         identifierLabel_->setFont(classFont);
         identifierLabel_->setText(utilqt::toQString(processor_->getIdentifier()));
         LabelGraphicsItemObserver::addObservation(identifierLabel_);
+
+        idChange_ =
+            processor_->onIdentifierChange([this](std::string_view newID, std::string_view) {
+                auto newIdentifier = utilqt::toQString(newID);
+                if (newIdentifier != displayNameLabel_->text()) {
+                    identifierLabel_->setText(newIdentifier);
+                }
+            });
     }
     {
         tagLabel_ = new LabelGraphicsItem(this, width / 2, Qt::AlignTop);
@@ -411,20 +427,6 @@ void ProcessorGraphicsItem::onLabelGraphicsItemEdited(LabelGraphicsItem*) { posi
 std::string ProcessorGraphicsItem::getIdentifier() const { return processor_->getIdentifier(); }
 
 ProcessorLinkGraphicsItem* ProcessorGraphicsItem::getLinkGraphicsItem() const { return linkItem_; }
-
-void ProcessorGraphicsItem::onProcessorIdentifierChanged(Processor* processor, const std::string&) {
-    auto newIdentifier = utilqt::toQString(processor->getIdentifier());
-    if (newIdentifier != displayNameLabel_->text()) {
-        identifierLabel_->setText(newIdentifier);
-    }
-}
-
-void ProcessorGraphicsItem::onProcessorDisplayNameChanged(Processor*, const std::string&) {
-    auto newDisplayName = utilqt::toQString(processor_->getDisplayName());
-    if (newDisplayName != displayNameLabel_->text()) {
-        displayNameLabel_->setText(newDisplayName);
-    }
-}
 
 void ProcessorGraphicsItem::onProcessorReadyChanged(Processor*) { statusItem_->update(); }
 

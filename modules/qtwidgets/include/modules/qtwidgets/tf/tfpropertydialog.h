@@ -31,6 +31,7 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
+#include <inviwo/core/processors/processor.h>
 #include <modules/qtwidgets/tf/tfeditor.h>
 #include <modules/qtwidgets/tf/tfeditorview.h>
 #include <modules/qtwidgets/properties/ordinalminmaxpropertywidgetqt.h>
@@ -63,12 +64,9 @@ class IVW_MODULE_QTWIDGETS_API TFPropertyDialog : public PropertyEditorWidgetQt,
                                                   public TFPrimitiveSetObserver,
                                                   public TFPropertyObserver {
 public:
-    TFPropertyDialog(TransferFunctionProperty* tfProperty,
-                     const std::vector<TFPrimitiveSet*>& primitiveSets = {});
-    TFPropertyDialog(IsoValueProperty* isoProperty,
-                     const std::vector<TFPrimitiveSet*>& primitiveSets = {});
-    TFPropertyDialog(IsoTFProperty* isotfProperty,
-                     const std::vector<TFPrimitiveSet*>& primitiveSets = {});
+    TFPropertyDialog(TransferFunctionProperty* tfProperty);
+    TFPropertyDialog(IsoValueProperty* isoProperty);
+    TFPropertyDialog(IsoTFProperty* isotfProperty);
     ~TFPropertyDialog();
 
     virtual QSize sizeHint() const override;
@@ -98,8 +96,13 @@ protected:
     virtual void resizeEvent(QResizeEvent*) override;
     virtual void showEvent(QShowEvent*) override;
 
+    void updateTitleFromProperty();
+    virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
+
 private:
-    void initializeDialog();
+    TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> model,
+                     std::vector<TFPrimitiveSet*> tfSets);
+
     void updateTFPreview();
     /**
      * calculate the horizontal and vertical offset in scene coordinates based on the current
@@ -135,6 +138,7 @@ private:
 
     RangeSliderQt* zoomVSlider_;
     RangeSliderQt* zoomHSlider_;
+    Processor::NameDispatcherHandle onNameChange_;
 };
 
 }  // namespace inviwo

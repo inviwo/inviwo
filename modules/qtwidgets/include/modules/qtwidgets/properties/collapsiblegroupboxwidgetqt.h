@@ -32,7 +32,7 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/propertyownerobserver.h>
-#include <inviwo/core/processors/processorobserver.h>
+#include <inviwo/core/processors/processor.h>
 
 class QLineEdit;
 class QToolButton;
@@ -49,12 +49,10 @@ class Property;
 class CompositeProperty;
 class PropertyOwner;
 class EditableLabelQt;
-class Processor;
 class Settings;
 
 class IVW_MODULE_QTWIDGETS_API CollapsibleGroupBoxWidgetQt : public PropertyWidgetQt,
-                                                             public PropertyOwnerObserver,
-                                                             public ProcessorObserver {
+                                                             public PropertyOwnerObserver {
 
 public:
     CollapsibleGroupBoxWidgetQt(CompositeProperty* property, bool isCheckable = false);
@@ -101,9 +99,6 @@ protected:
     virtual void onDidAddProperty(Property* property, size_t index) override;
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
-    // Override ProcessorObserver
-    void onProcessorDisplayNameChanged(Processor* processor,
-                                       const std::string& oldIdentifier) override;
 
     // PropertyObservable overrides
     virtual void onSetSemantics(Property* property, const PropertySemantics& semantics) override;
@@ -149,6 +144,8 @@ private:
     PropertyOwner* propertyOwner_;
     bool showIfEmpty_;
     bool checkable_;
+
+    Processor::NameDispatcherHandle nameChange_;
 };
 
 }  // namespace inviwo

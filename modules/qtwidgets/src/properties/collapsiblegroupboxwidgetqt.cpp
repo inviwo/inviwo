@@ -71,7 +71,11 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Processor* processor, b
     : CollapsibleGroupBoxWidgetQt(nullptr, processor, processor->getDisplayName(), isCheckable) {
 
     // add observer for onProcessorIdentifierChange
-    processor->ProcessorObservable::addObserver(this);
+    nameChange_ =
+        processor->onDisplayNameChange([this](std::string_view newName, std::string_view) {
+            displayName_ = newName;
+            label_->setText(displayName_);
+        });
     setShowIfEmpty(true);
 }
 
@@ -373,12 +377,6 @@ void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* /*prop*/, size_
 
     bool empty = util::all_of(properties_, [](Property* w) { return !w->getVisible(); });
     defaultLabel_->setVisible(empty);
-}
-
-void CollapsibleGroupBoxWidgetQt::onProcessorDisplayNameChanged(Processor* processor,
-                                                                const std::string&) {
-    displayName_ = processor->getDisplayName();
-    label_->setText(displayName_);
 }
 
 void CollapsibleGroupBoxWidgetQt::onSetSemantics(Property* prop, const PropertySemantics&) {

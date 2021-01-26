@@ -104,7 +104,12 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
         QWidget::setVisible(false);
     }
 
-    processor_->ProcessorObservable::addObserver(this);
+    nameChange_ =
+        processor_->onDisplayNameChange([this](std::string_view newName, std::string_view) {
+            setWindowTitle(utilqt::toQString(newName));
+            RenderContext::getPtr()->setContextName(canvas_->contextId(), newName);
+        });
+
     canvas_->setVisible(ProcessorWidget::isVisible());
     {
         // ignore internal state updates, i.e. position, when showing the widget
@@ -191,11 +196,6 @@ void CanvasProcessorWidgetQt::moveEvent(QMoveEvent* event) {
 
     CanvasProcessorWidget::setPosition(utilqt::toGLM(event->pos()));
     QWidget::moveEvent(event);
-}
-
-void CanvasProcessorWidgetQt::onProcessorDisplayNameChanged(Processor*, const std::string&) {
-    setWindowTitle(QString::fromStdString(processor_->getDisplayName()));
-    RenderContext::getPtr()->setContextName(canvas_->contextId(), processor_->getDisplayName());
 }
 
 void CanvasProcessorWidgetQt::updateVisible(bool visible) {

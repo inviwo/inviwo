@@ -39,6 +39,7 @@
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/util/statecoordinator.h>
+#include <inviwo/core/util/dispatcher.h>
 
 namespace inviwo {
 
@@ -164,6 +165,9 @@ class IVW_CORE_API Processor : public PropertyOwner,
                                public ProcessorObservable,
                                public EventPropagator {
 public:
+    using NameDispatcher = Dispatcher<void(std::string_view, std::string_view)>;
+    using NameDispatcherHandle = typename NameDispatcher::Handle;
+
     /**
      * Processor constructor, takes two optional arguments.
      * @param identifier Should only contain alpha numeric
@@ -194,6 +198,8 @@ public:
      */
     void setIdentifier(std::string_view identifier);
     virtual const std::string& getIdentifier() const override;
+    NameDispatcherHandle onIdentifierChange(
+        std::function<void(std::string_view, std::string_view)>);
 
     /**
      * Name of processor, arbitrary string. By default initialized to the ProcessorInfo displayName.
@@ -201,6 +207,8 @@ public:
      */
     void setDisplayName(std::string_view displayName);
     const std::string& getDisplayName() const;
+    NameDispatcherHandle onDisplayNameChange(
+        std::function<void(std::string_view, std::string_view)>);
 
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget);
     ProcessorWidget* getProcessorWidget() const;
@@ -424,6 +432,9 @@ private:
     std::unordered_map<Port*, std::string> portGroups_;
 
     ProcessorNetwork* network_;
+
+    NameDispatcher identifierDispatcher_;
+    NameDispatcher displayNameDispatcher_;
 };
 
 inline ProcessorNetwork* Processor::getNetwork() const { return network_; }
