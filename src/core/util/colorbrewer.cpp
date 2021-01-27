@@ -135,6 +135,9 @@ TransferFunction getTransferFunction(const Category& category, const Family& fam
     auto color = [&](size_t i) { return vec4(colormap[i % colormap.size()]); };
 
     auto addPoint = [&](double pos, size_t i) { tf.add(std::clamp(pos, 0.0, 1.0), color(i)); };
+    auto addPointAlmost = [&](double pos, size_t i) {
+        addPoint(pos - 100.0*std::numeric_limits<double>::epsilon(), i);
+    };
 
     if (category == colorbrewer::Category::Diverging) {
         if (discrete) {
@@ -142,16 +145,16 @@ TransferFunction getTransferFunction(const Category& category, const Family& fam
                 const auto dt = (midPoint - start) / (0.5 * nColors);
                 for (size_t i = 0; i < nColors / 2; i++) {
                     addPoint(start + i * dt, i);
-                    addPoint(std::nextafter(start + (i + 1) * dt, start), i);
+                    addPointAlmost(start + (i + 1) * dt, i);
                 }
             }
             addPoint(midPoint, nColors / 2);
             if (midPoint < stop) {
                 const auto dt = (stop - midPoint) / (0.5 * nColors);
-                addPoint(std::nextafter(midPoint + dt, midPoint), nColors / 2);
+                addPointAlmost(midPoint + dt, nColors / 2);
                 for (auto i = nColors / 2 + 1; i < nColors; i++) {
                     addPoint(start + i * dt, i);
-                    addPoint(std::nextafter(start + (i + 1) * dt, start), i);
+                    addPointAlmost(start + (i + 1) * dt, i);
                 }
             }
         } else {
@@ -175,7 +178,7 @@ TransferFunction getTransferFunction(const Category& category, const Family& fam
             const auto dt = (stop - start) / nColors;
             for (size_t i = 0; i < nColors; i++) {
                 addPoint(start + i * dt, i);
-                addPoint(std::nextafter(start + (i + 1) * dt, start), i);
+                addPointAlmost(start + (i + 1) * dt, i);
             }
         } else {
             const auto dt = (stop - start) / (nColors - 1.0);
