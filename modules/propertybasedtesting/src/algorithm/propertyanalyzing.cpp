@@ -5,7 +5,7 @@ namespace inviwo {
 namespace pbt {
 
 std::ostream& operator<<(std::ostream& out, const PropertyEffect& a) {
-    static const std::string names[] = {"EQUAL",   "NOT_EQUAL",     "LESS", "LESS_EQUAL",
+    static constexpr std::string_view names[] = {"EQUAL",   "NOT_EQUAL",     "LESS", "LESS_EQUAL",
                                         "GREATER", "GREATER_EQUAL", "ANY",  "NOT_COMPARABLE"};
     IVW_ASSERT(static_cast<size_t>(a) < numPropertyEffects,
 			"ostream& operator<< for PropertyEffect: given PropertyEffect is invalid");
@@ -13,29 +13,29 @@ std::ostream& operator<<(std::ostream& out, const PropertyEffect& a) {
 }
 
 PropertyEffect combine(const PropertyEffect& a, const PropertyEffect& b) {
-    const static std::array<std::array<bool, 5>, numPropertyEffects> compatibility{{
-        {false, false, true, false, false},  // EQUAL
-        {true, false, false, false, true},   // NOT_EQUAL
-        {true, false, false, false, false},  // LESS
-        {true, true, false, false, false},   // LESS_EQUAL
-        {false, false, false, false, true},  // GREATER
-        {false, false, false, true, true},   // GREATER_EQUAL
-        {true, true, true, true, true},      // ANY
-        {false, false, false, false, false}  // NOT_COMPARABLE
-    }};
-    auto resAll = compatibility[static_cast<size_t>(a)];
-    for (size_t i = 0; i < resAll.size(); i++) {
-		resAll[i] &= compatibility[static_cast<size_t>(b)][i];
+	const static std::array<std::bitset<5>, numPropertyEffects> compatibility{{
+		0b00100, // EQUAL
+		0b10001, // NOT_EQUAL
+		0b10000, // LESS
+		0b11000, // LESS_EQUAL
+		0b00001, // GREATER
+		0b00011, // GREATER_EQUAL
+		0b11111, // ANY
+		0b00000  // NOT_COMPARABLE
+	}};
+	const auto resAll =
+		compatibility[static_cast<size_t>(a)] & compatibility[static_cast<size_t>(b)];
+
+	// find the effect with the maximum number of set bits in compatibility that
+	// is comparable with resAll (i.e. x & resAll == resAll
+	std::pair<size_t, PropertyEffect> res(0, PropertyEffect::NOT_COMPARABLE);
+	for(size_t i = 0; i < numPropertyEffects; i++) {
+		const auto& comp = compatibility[i];
+		if((resAll & comp) == comp) {
+			res = std::max(res, std::make_pair(comp.count(), PropertyEffect(i)));
+		}
 	}
-
-    for (size_t i = 0; i < numPropertyEffects; i++) {
-        if (resAll == compatibility[i]) {
-            PropertyEffect res = PropertyEffect(i);
-            if (res != PropertyEffect::NOT_COMPARABLE) return PropertyEffect(i);
-        }
-    }
-
-    return PropertyEffect::NOT_COMPARABLE;
+	return res.second;
 }
 
 const PropertyEffect& reverseEffect(const PropertyEffect& pe) {

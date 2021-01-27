@@ -127,7 +127,7 @@ void PropertyAnalyzer::updateProcessors() {
 
             size_t numTestableProperties = 0;
             for (Property* prop : processor->getProperties()) {
-                if (std::unique_ptr<TestProperty> p = testableProperty(prop)) {
+                if (std::unique_ptr<TestProperty> p = createTestableProperty(prop)) {
                     numTestableProperties++;
                 }
             }
@@ -137,7 +137,7 @@ void PropertyAnalyzer::updateProcessors() {
             std::cerr << "constructing " << processor << " " << processor->getDisplayName()
                       << std::endl;
 
-            auto comp_ = TestPropertyComposite::make<Processor>(processor);
+            auto comp_ = std::make_unique<TestPropertyComposite>(processor);
             TestPropertyComposite* const comp = comp_.get();
             processors_.emplace(procId, std::move(comp_));
 
@@ -502,7 +502,7 @@ void PropertyAnalyzer::checkTestResults() {
 
         for (const auto& error : errors) testingErrorToBinary(tmpData, props_, error);
 
-        outputImage = generateImageFromData<F>(tmpData);
+        outputImage_ = generateImageFromData<F>(tmpData);
         this->invalidate(InvalidationLevel::InvalidOutput);
     }
 
@@ -512,15 +512,17 @@ void PropertyAnalyzer::checkTestResults() {
 				"PropertyAnalyzer: Condensing, but there are neither errors nor a previously deactivated Property");
 
             (*deactivated[last_deactivated]) = false;
-            last_deactivated++;
-        } else {
-            last_deactivated++;
         }
+		last_deactivated++;
+
+		outputImage_.reset();
 
         if (last_deactivated >= deactivated.size()) {
             // we have tried to deactivate all properties
             // terminate condensing
             currently_condensing = false;
+            util::log(IVW_CONTEXT, "Condensed tests, see the generated report.", LogLevel::Info,
+                      LogAudience::User);
         } else {
             (*deactivated[last_deactivated]) = true;
 
@@ -606,7 +608,7 @@ void PropertyAnalyzer::process() {
 
     switch (testingState) {
         case TestingState::NONE:
-            if (!outputImage && remainingTests.empty()) {
+            if (!outputImage_ && remainingTests.empty()) {
                 // output image does not exist and we are currently not testing
                 //	   generate output image
                 dispatchFrontAndForget([this]() { initTesting(); });
@@ -650,9 +652,7 @@ void PropertyAnalyzer::process() {
     }
     testingState = TestingState::NONE;
 
-    if (outputImage) {
-        outport_.setData(outputImage);
-    }
+	outport_.setData(outputImage_);
 }
 
 }  // namespace inviwo

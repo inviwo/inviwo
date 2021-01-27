@@ -38,9 +38,15 @@ public:
 };
 
 /*
- * Specialization of PropertyAssignment for OrdinalProperty<T>
+ * Specialization of PropertyAssignment for anything (P) with
+ * P::value_type,
+ * set and
+ * get
  */
-template <typename P, typename T = typename P::value_type>
+template <typename P, typename T = typename P::value_type,
+		 decltype(std::declval<P>().set(std::declval<T>()),
+				 std::declval<P>().get()==std::declval<T>(),
+				 int(0)) = 0>
 class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyAssignmentTyped : public PropertyAssignment {
 private:
     P* const prop;
@@ -133,16 +139,14 @@ struct GenerateAssignments<MinMaxProperty<T>, RNG> {
        
 		const auto minR = prop->getRangeMin();
 		const auto maxR = prop->getRangeMax();
-        const size_t maxSteps = (maxR - minR) / minSeparation;
 
-        for (size_t stepsFromMin = 0; stepsFromMin < std::min(maxSteps, maxStepsPerVal);
-             stepsFromMin++) {
-            for (size_t stepsFromMax = 0;
-                 stepsFromMax + stepsFromMin < std::min(maxSteps, maxStepsPerVal); stepsFromMax++) {
+        for (size_t stepsFromMin = 0; stepsFromMin < maxStepsPerVal; stepsFromMin++) {
+			const auto lo = minR + stepsFromMin * minSeparation;
+            for (auto[stepsFromMax,hi] = std::tuple<size_t,T>(0, maxR);
+					stepsFromMax + stepsFromMin < maxStepsPerVal && lo + minSeparation <= hi;
+					stepsFromMax++, hi -= minSeparation) {
                 res.emplace_back(std::make_shared<PropertyAssignmentTyped<P>>(
-                    deactivated, prop,
-                    value_type(minR + stepsFromMin * minSeparation,
-                               maxR - stepsFromMax * minSeparation)));
+                    deactivated, prop, value_type(lo, hi)));
             }
         }
 

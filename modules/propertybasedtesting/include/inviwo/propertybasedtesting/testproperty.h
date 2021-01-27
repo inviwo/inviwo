@@ -166,7 +166,7 @@ public:
  *	- a textual description of the expected effects on the counted number of pixels,
  *	- the expected effect on the counted number of pixels given two testcases, and
  *  - storing and resetting the value of the property before the tests have started.
- * Instantiation happes mainly by testableProperty (see below).
+ * Instantiation happes mainly by createTestableProperty (see below).
  */
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestProperty
 		: public Serializable
@@ -242,7 +242,7 @@ PropertyEffect IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffect(
  * That is, if the given property derives from CompositeProperty or one of
  * the properties in PropertyTypes (see below).
  */
-std::unique_ptr<TestProperty> IVW_MODULE_PROPERTYBASEDTESTING_API testableProperty(Property* prop);
+std::unique_ptr<TestProperty> IVW_MODULE_PROPERTYBASEDTESTING_API createTestableProperty(Property* prop);
 
 /*
  * Adds necessary callbacks for the proper behavior of the BoolComps of/in a
@@ -255,7 +255,6 @@ void IVW_MODULE_PROPERTYBASEDTESTING_API makeOnChange(BoolCompositeProperty* con
 /*
  * Derived from TestProperty, for all PropertyOwners supporting
  * getDisplayName and getIdentifier, i.e. CompositeProperty and Processor
- * May only be instantiated by TestPropertyComposite::make
  */
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyComposite
 		: public TestProperty
@@ -272,6 +271,8 @@ class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyComposite
                   const TestProperty*) const override;
 
 public:
+	TestPropertyComposite(Processor*);
+	TestPropertyComposite(CompositeProperty*);
     PropertyOwner* getPropertyOwner() const;
 
     template <typename F>
@@ -303,12 +304,6 @@ public:
     std::ostream& ostr(std::ostream& out, std::shared_ptr<TestResult> newTestResult,
                        std::shared_ptr<TestResult> oldTestResult) const override;
 
-    // Constructor for all Propertyowners with a display name and an identifier
-    template <typename C, decltype(static_cast<PropertyOwner*>(std::declval<C*>()),
-                                   std::declval<C>().getDisplayName(),
-                                   std::declval<C>().getIdentifier(), int()) = 0>
-    static std::unique_ptr<TestPropertyComposite> make(C* orig);
-
     virtual ~TestPropertyComposite() = default;
     void setToDefault() const override;
 
@@ -323,16 +318,6 @@ public:
         std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
     generateAssignmentsCmp(std::default_random_engine&) const override;
 };
-
-template <typename C,
-          decltype(static_cast<PropertyOwner*>(std::declval<C*>()),
-                   std::declval<C>().getDisplayName(), std::declval<C>().getIdentifier(), int())>
-std::unique_ptr<TestPropertyComposite> IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyComposite::make(C* orig) {
-    std::string ident = orig->getIdentifier();
-    std::replace(ident.begin(), ident.end(), ' ', '_');
-    return std::unique_ptr<TestPropertyComposite>(
-        new TestPropertyComposite(orig, orig->getDisplayName(), ident));
-}
 
 /*
  * Derived from TestProperty, for all Properties having a value that is

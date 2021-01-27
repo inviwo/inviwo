@@ -75,15 +75,32 @@ void TestProperty::deserialize(Deserializer& d) {
 
 // TestPropertyComposite
 
+TestPropertyComposite::TestPropertyComposite(Processor* orig)
+		: TestPropertyComposite(orig, orig->getDisplayName(),
+			[&](){
+				std::string ident = orig->getIdentifier();
+				std::replace(ident.begin(), ident.end(), ' ', '_');
+				return ident;
+			}()) {
+}
+TestPropertyComposite::TestPropertyComposite(CompositeProperty* orig)
+		: TestPropertyComposite(orig, orig->getDisplayName(),
+			[&](){
+				std::string ident = orig->getIdentifier();
+				std::replace(ident.begin(), ident.end(), ' ', '_');
+				return ident;
+			}()) {
+}
+
 TestPropertyComposite::TestPropertyComposite(PropertyOwner* original,
                                              const std::string& displayName,
                                              const std::string& identifier)
-    : TestProperty(displayName, identifier) {
+		: TestProperty(displayName, identifier) {
     if (auto p = dynamic_cast<Property*>(original); p != nullptr)
         p->setSerializationMode(PropertySerializationMode::All);
     propertyOwner_ = original;
     for (Property* prop : original->getProperties()){
-        if (auto p = testableProperty(prop)) {
+        if (auto p = createTestableProperty(prop)) {
             getBoolComp()->addProperty(p->getBoolComp());
             p->addObserver(this);
             subProperties.emplace_back(std::move(p));
@@ -514,12 +531,12 @@ struct TestablePropertyHelper {
     }
 };
 
-std::unique_ptr<TestProperty> testableProperty(Property* prop) {
+std::unique_ptr<TestProperty> createTestableProperty(Property* prop) {
     std::unique_ptr<TestProperty> res;
     util::for_each_type<PropertyTypes>{}(TestablePropertyHelper{}, res, prop);
     if (!res) {
         if (auto tmp = dynamic_cast<CompositeProperty*>(prop))
-            return TestPropertyComposite::make<CompositeProperty>(tmp);
+            return std::make_unique<TestPropertyComposite>(tmp);
     }
     return res;
 }

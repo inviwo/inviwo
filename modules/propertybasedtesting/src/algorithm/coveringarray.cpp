@@ -68,7 +68,7 @@ std::vector<Test> coveringArray(
                 uncovered.erase(id);
             }
         }
-        coveringArray.emplace_back(row);
+        coveringArray.emplace_back(std::move(row));
     }
 
     // contruct result
