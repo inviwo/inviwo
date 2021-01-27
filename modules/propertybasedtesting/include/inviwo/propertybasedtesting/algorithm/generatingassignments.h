@@ -96,14 +96,14 @@ struct GenerateAssignments<OrdinalProperty<T>, RNG> {
 		const auto maxV = prop->getMaxValue();
 
 		for(auto[numSteps,val] = std::tuple<size_t,T>(0,minV);
-				numSteps < maxStepsPerVal, val <= prop->getMaxValue(), val >= minV;
+				numSteps < maxStepsPerVal && val <= prop->getMaxValue() && val >= minV;
 				numSteps++, val += increment) {
             res.emplace_back(std::make_shared<PropertyAssignmentTyped<P>>(
                 deactivated, prop, val));
         }
 
 		for(auto[numSteps,val] = std::tuple<size_t,T>(0,prop->getMaxValue());
-				numSteps < maxStepsPerVal, val <= prop->getMaxValue(), val >= minV;
+				numSteps < maxStepsPerVal && val <= prop->getMaxValue() && val >= minV;
 				numSteps++, val -= increment) {
             res.emplace_back(std::make_shared<PropertyAssignmentTyped<P>>(
                 deactivated, prop, val));

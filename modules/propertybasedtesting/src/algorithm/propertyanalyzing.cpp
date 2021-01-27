@@ -4,11 +4,6 @@ namespace inviwo {
 
 namespace pbt {
 
-std::ostream& operator<<(std::ostream& out, const std::optional<PropertyEffect>& a) {
-	return (!a ? out << "{}" : out << "{" << *a << "}");
-}
-
-
 std::ostream& operator<<(std::ostream& out, const PropertyEffect& a) {
     static const std::string names[] = {"EQUAL",   "NOT_EQUAL",     "LESS", "LESS_EQUAL",
                                         "GREATER", "GREATER_EQUAL", "ANY",  "NOT_COMPARABLE"};
@@ -17,7 +12,7 @@ std::ostream& operator<<(std::ostream& out, const PropertyEffect& a) {
     return out << names[static_cast<size_t>(a)];
 }
 
-std::optional<PropertyEffect> combine(const PropertyEffect& a, const PropertyEffect& b) {
+PropertyEffect combine(const PropertyEffect& a, const PropertyEffect& b) {
     const static std::array<std::array<bool, 5>, numPropertyEffects> compatibility{{
         {false, false, true, false, false},  // EQUAL
         {true, false, false, false, true},   // NOT_EQUAL
@@ -28,8 +23,10 @@ std::optional<PropertyEffect> combine(const PropertyEffect& a, const PropertyEff
         {true, true, true, true, true},      // ANY
         {false, false, false, false, false}  // NOT_COMPARABLE
     }};
-    auto resAll = compatibility[(size_t)a];
-    for (size_t i = 0; i < resAll.size(); i++) resAll[i] &= compatibility[(size_t)b][i];
+    auto resAll = compatibility[static_cast<size_t>(a)];
+    for (size_t i = 0; i < resAll.size(); i++) {
+		resAll[i] &= compatibility[static_cast<size_t>(b)][i];
+	}
 
     for (size_t i = 0; i < numPropertyEffects; i++) {
         if (resAll == compatibility[i]) {
@@ -38,7 +35,7 @@ std::optional<PropertyEffect> combine(const PropertyEffect& a, const PropertyEff
         }
     }
 
-    return std::nullopt;
+    return PropertyEffect::NOT_COMPARABLE;
 }
 
 const PropertyEffect& reverseEffect(const PropertyEffect& pe) {
@@ -57,12 +54,15 @@ const PropertyEffect& reverseEffect(const PropertyEffect& pe) {
     return reverseEffects[(size_t)pe];
 }
 
-std::optional<Processor*> getOwningProcessor(Property* const prop) {
+Processor* getOwningProcessor(Property* const prop) {
     PropertyOwner* const owner = prop->getOwner();
-    if (Processor* const proc = dynamic_cast<Processor*>(owner); proc != nullptr) return {proc};
-    if (Property* const owningProp = dynamic_cast<Property*>(owner); owningProp != nullptr)
+    if (Processor* const proc = dynamic_cast<Processor*>(owner)) {
+		return proc;
+	}
+    if (Property* const owningProp = dynamic_cast<Property*>(owner)) {
         return getOwningProcessor(owningProp);
-    return std::nullopt;
+	}
+    return nullptr;
 }
 
 }  // namespace pbt

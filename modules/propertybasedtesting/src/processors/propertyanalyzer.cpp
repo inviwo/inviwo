@@ -127,8 +127,7 @@ void PropertyAnalyzer::updateProcessors() {
 
             size_t numTestableProperties = 0;
             for (Property* prop : processor->getProperties()) {
-                if (std::optional<std::unique_ptr<TestProperty>> p = testableProperty(prop);
-                    p != std::nullopt) {
+                if (std::unique_ptr<TestProperty> p = testableProperty(prop)) {
                     numTestableProperties++;
                 }
             }
@@ -438,15 +437,13 @@ void PropertyAnalyzer::checkTestResults() {
         for (size_t tRj = 0; tRj < tRi; tRj++) {
             const auto& otherTestResult = testResults[tRj];
 
-            std::optional<PropertyEffect> propEff = {PropertyEffect::ANY};
+			pbt::PropertyEffect propEff = pbt::PropertyEffect::ANY;
             for (auto prop : props_) {
                 auto tmp = prop->getPropertyEffect(testResult, otherTestResult);
-                if (!tmp) propEff = std::nullopt;
-                if (!propEff) break;
-                propEff = combine(*propEff, *tmp);
+                propEff = combine(propEff, tmp);
             }
 
-            if (!propEff)  // not comparable
+            if (propEff == pbt::PropertyEffect::NOT_COMPARABLE)
                 continue;
 
             numComparable++;
@@ -454,9 +451,9 @@ void PropertyAnalyzer::checkTestResults() {
             const auto num = testResult->getNumberOfPixels();
             const auto otherNum = otherTestResult->getNumberOfPixels();
 
-            const bool ok = propertyEffectComparator(*propEff, num, otherNum);
+            const bool ok = propertyEffectComparator(propEff, num, otherNum);
             if (!ok) {
-                errors.emplace_back(testResult, otherTestResult, *propEff, num, otherNum);
+                errors.emplace_back(testResult, otherTestResult, propEff, num, otherNum);
             }
         }
     }
@@ -505,7 +502,7 @@ void PropertyAnalyzer::checkTestResults() {
 
         for (const auto& error : errors) testingErrorToBinary(tmpData, props_, error);
 
-        outputImage = {generateImageFromData<F>(tmpData)};
+        outputImage = generateImageFromData<F>(tmpData);
         this->invalidate(InvalidationLevel::InvalidOutput);
     }
 
@@ -654,7 +651,7 @@ void PropertyAnalyzer::process() {
     testingState = TestingState::NONE;
 
     if (outputImage) {
-        outport_.setData(*outputImage);
+        outport_.setData(outputImage);
     }
 }
 

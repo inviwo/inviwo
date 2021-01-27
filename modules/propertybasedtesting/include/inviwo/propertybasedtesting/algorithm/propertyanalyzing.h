@@ -37,7 +37,6 @@
 #include <inviwo/core/properties/optionproperty.h>
 
 #include <inviwo/propertybasedtesting/algorithm/generatingassignments.h>
-#include <optional>
 
 namespace inviwo {
 
@@ -55,9 +54,6 @@ enum class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyEffect {
     ANY,
     NOT_COMPARABLE
 };
-
-std::ostream& IVW_MODULE_PROPERTYBASEDTESTING_API operator<<(std::ostream&,
-		const std::optional<PropertyEffect>&);
 
 constexpr size_t numPropertyEffects = 1 + static_cast<size_t>(PropertyEffect::NOT_COMPARABLE);
 
@@ -86,13 +82,13 @@ bool IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffectComparator(const Property
 	IVW_ASSERT(false, "propertyEffectComparator: switch is incomplete");
 }
 
-using AssignmentComparator = std::function<std::optional<PropertyEffect>(
+using AssignmentComparator = std::function<PropertyEffect(
     const std::shared_ptr<PropertyAssignment>& oldVal,
     const std::shared_ptr<PropertyAssignment>& newVal)>;
 
 std::ostream& operator<<(std::ostream& out, const PropertyEffect& a);
 
-std::optional<PropertyEffect> IVW_MODULE_PROPERTYBASEDTESTING_API combine(const PropertyEffect& a, const PropertyEffect& b);
+PropertyEffect IVW_MODULE_PROPERTYBASEDTESTING_API combine(const PropertyEffect& a, const PropertyEffect& b);
 
 const PropertyEffect& IVW_MODULE_PROPERTYBASEDTESTING_API reverseEffect(const PropertyEffect& pe);
 
@@ -120,7 +116,7 @@ struct IVW_MODULE_PROPERTYBASEDTESTING_API GetComponent<T, 1> {
     }
 };
 
-std::optional<Processor*> IVW_MODULE_PROPERTYBASEDTESTING_API getOwningProcessor(Property* const prop);
+Processor* IVW_MODULE_PROPERTYBASEDTESTING_API getOwningProcessor(Property* const prop);
 
 }  // namespace pbt
 

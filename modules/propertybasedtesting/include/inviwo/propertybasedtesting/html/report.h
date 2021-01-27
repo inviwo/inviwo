@@ -34,7 +34,6 @@
 
 #include <inviwo/propertybasedtesting/html/html.h>
 #include <iostream>
-#include <optional>
 
 namespace inviwo {
 

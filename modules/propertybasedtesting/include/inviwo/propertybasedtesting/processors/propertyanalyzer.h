@@ -197,7 +197,7 @@ private:
     std::filesystem::path tempDir_;
 
     ImageInport inport_;
-    std::optional<std::shared_ptr<Image>> outputImage;
+    std::shared_ptr<Image> outputImage;
     ImageOutport outport_;
 
     DirectoryProperty reportDirectory_;  // TODO: create dir after deserialization

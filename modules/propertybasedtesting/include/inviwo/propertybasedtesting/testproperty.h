@@ -212,7 +212,7 @@ public:
     virtual void traverse(std::function<void(const TestProperty*, const TestProperty*)>,
                           const TestProperty*) const = 0;
 
-    virtual std::optional<pbt::PropertyEffect> getPropertyEffect(
+    virtual PropertyEffect getPropertyEffect(
         std::shared_ptr<TestResult>, std::shared_ptr<TestResult>) const = 0;
 
     virtual std::ostream& ostr(std::ostream&, std::shared_ptr<TestResult>) const = 0;
@@ -233,7 +233,7 @@ public:
  * effect of each of the components.
  */
 template <typename T, size_t numComp = DataFormat<T>::components()>
-std::optional<pbt::PropertyEffect> IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffect(
+PropertyEffect IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffect(
     const T& val_old, const T& val_new,
     const std::array<pbt::PropertyEffect, numComp>& selectedEffects);
 
@@ -242,7 +242,7 @@ std::optional<pbt::PropertyEffect> IVW_MODULE_PROPERTYBASEDTESTING_API propertyE
  * That is, if the given property derives from CompositeProperty or one of
  * the properties in PropertyTypes (see below).
  */
-std::optional<std::unique_ptr<TestProperty>> IVW_MODULE_PROPERTYBASEDTESTING_API testableProperty(Property* prop);
+std::unique_ptr<TestProperty> IVW_MODULE_PROPERTYBASEDTESTING_API testableProperty(Property* prop);
 
 /*
  * Adds necessary callbacks for the proper behavior of the BoolComps of/in a
@@ -294,7 +294,7 @@ public:
 
     std::string getValueString(std::shared_ptr<TestResult> testResult) const override;
 
-    std::optional<pbt::PropertyEffect> getPropertyEffect(
+    PropertyEffect getPropertyEffect(
         std::shared_ptr<TestResult> newTestResult,
         std::shared_ptr<TestResult> oldTestResult) const override;
 
@@ -374,7 +374,7 @@ public:
 
     std::string getValueString(std::shared_ptr<TestResult>) const override;
 
-    std::optional<pbt::PropertyEffect> getPropertyEffect(
+    PropertyEffect getPropertyEffect(
         std::shared_ptr<TestResult> newTestResult,
         std::shared_ptr<TestResult> oldTestResult) const override;
 
@@ -400,7 +400,7 @@ public:
 /*
  * Container for a test result.
  * Allows access to the tested value of each property, as well as the
- * resulted number of pixels.
+ * resulting number of pixels.
  */
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestResult {
 private:
@@ -422,16 +422,16 @@ public:
 };
 
 template <typename T, size_t numComp = DataFormat<T>::components()>
-std::optional<pbt::PropertyEffect> IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffect(
+PropertyEffect IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffect(
     const T& val_old, const T& val_new,
     const std::array<pbt::PropertyEffect, numComp>& selectedEffects) {
 
-    std::optional<pbt::PropertyEffect> res = {pbt::PropertyEffect::ANY};
-    for (size_t i = 0; res && i < numComp; i++) {
-        auto compEff = pbt::propertyEffect(selectedEffects[i],
+    PropertyEffect res = PropertyEffect::ANY;
+    for (size_t i = 0; i < numComp; i++) {
+        auto compEff = propertyEffect(selectedEffects[i],
                                             pbt::GetComponent<T, numComp>::get(val_new, i),
                                             pbt::GetComponent<T, numComp>::get(val_old, i));
-        res = pbt::combine(*res, compEff);
+        res = pbt::combine(res, compEff);
     }
     return res;
 }

@@ -88,9 +88,7 @@ std::vector<Test> coveringArray(
 
 std::vector<Test> optCoveringArray(
     const size_t num,
-    const std::vector<std::pair<std::function<std::optional<PropertyEffect>(
-                                    const std::shared_ptr<PropertyAssignment>& oldVal,
-                                    const std::shared_ptr<PropertyAssignment>& newVal)>,
+    const std::vector<std::pair<AssignmentComparator,
                                 std::vector<std::shared_ptr<PropertyAssignment>>>>& vars) {
 	std::default_random_engine rng(42);  // deterministic for regression testing
 
@@ -125,35 +123,31 @@ std::vector<Test> optCoveringArray(
 
     // note: assumes that all keys of the second argument are also present in
     // the first
-    const std::function<bool(const TestConf&, const TestConf&)> comparable = [&](const auto& ref,
-                                                                                 const auto& vs) {
-        std::optional<PropertyEffect> res = {PropertyEffect::ANY};
+    const auto comparable = [&](const auto& ref, const auto& vs) {
+        PropertyEffect res = PropertyEffect::ANY;
         for (const auto& [var, i] : vs) {
             const auto& j = ref.at(var);
-            const auto& expect = vars[var].first(vars[var].second[i], vars[var].second[j]);
+            const auto expect = vars[var].first(vars[var].second[i], vars[var].second[j]);
             comparisons++;
-            if (!expect) return false;
-            res = combine(*expect, *res);
-            if (!res) return false;
+            if (expect == PropertyEffect::NOT_COMPARABLE) return false;
+            res = combine(expect, res);
+            if (res == PropertyEffect::NOT_COMPARABLE) return false;
         }
         return true;
     };
 
-    const std::function<std::vector<size_t>(std::vector<size_t>, const TestConf&)>
-        filterComparables = [&](auto comparables, const auto& test) {
+    const auto filterComparables = [&](auto& comparables, const auto& test) {
             for (size_t i = 0; i < comparables.size(); i++) {
                 if (!comparable(finished[comparables[i]].first, test)) {
-                    comparables[i] = comparables.back();
+                    comparables[i] = std::move(comparables.back());
                     comparables.pop_back();
                     i--;
                 }
             }
-            return comparables;
         };
     // combined score of finished comparables when merging ref into gen
-    const std::function<size_t(const bool, const std::vector<size_t>&, const TestConf&,
-                               const TestConf&)>
-        cmp = [&](const bool disjoint, const auto& comparables, const auto& gen, const auto& ref) {
+    const auto cmp = [&](const bool disjoint,
+					auto comparables, const auto& gen, const auto& ref) {
             if (disjoint) {
                 for (const auto& [k, v] : gen) {
                     if (ref.count(k) > 0) return static_cast<size_t>(0);
@@ -162,8 +156,9 @@ std::vector<Test> optCoveringArray(
             auto test = ref;
             test.insert(gen.begin(), gen.end());
 
+			filterComparables(comparables, test);
             size_t res = 1;
-            for (const size_t i : filterComparables(comparables, test))
+            for (const size_t i : comparables)
                 res += 1 + (finished.size() - finished[i].second) * 2;
             return res;
         };
@@ -174,7 +169,7 @@ std::vector<Test> optCoveringArray(
         std::vector<size_t> comparables(finished.size());
         std::iota(comparables.begin(), comparables.end(), 0);
 
-        std::cerr << unused.size() << std::endl;
+        std::cerr << unused.size() << " unused, " << finished.size() << " finished" << std::endl;
 
         while (gen.size() < vars.size()) {
             int opt = -1, idx;
@@ -199,7 +194,7 @@ std::vector<Test> optCoveringArray(
                 gen.insert(finished[idx].first.begin(), finished[idx].first.end());
             }
 
-            comparables = filterComparables(comparables, gen);
+            filterComparables(comparables, gen);
         }
         for (const size_t i : comparables) finished[i].second++;
         finished.emplace_back(gen, comparables.size());

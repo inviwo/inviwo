@@ -83,10 +83,10 @@ TestPropertyComposite::TestPropertyComposite(PropertyOwner* original,
         p->setSerializationMode(PropertySerializationMode::All);
     propertyOwner_ = original;
     for (Property* prop : original->getProperties()){
-        if (auto p = testableProperty(prop); p != std::nullopt) {
-            getBoolComp()->addProperty((*p)->getBoolComp());
-            (*p)->addObserver(this);
-            subProperties.emplace_back(std::move(*p));
+        if (auto p = testableProperty(prop)) {
+            getBoolComp()->addProperty(p->getBoolComp());
+            p->addObserver(this);
+            subProperties.emplace_back(std::move(p));
         }}
     getBoolComp()->onChange([this]() { this->notifyObserversAboutChange(); });
 }
@@ -109,19 +109,14 @@ void TestPropertyComposite::traverse(
     for (const auto& prop : subProperties) prop->traverse(f, this);
 }
 
-std::optional<pbt::PropertyEffect> TestPropertyComposite::getPropertyEffect(
+PropertyEffect TestPropertyComposite::getPropertyEffect(
     std::shared_ptr<TestResult> newTestResult, std::shared_ptr<TestResult> oldTestResult) const {
     std::vector<pbt::PropertyEffect> subEffects;
 
-    std::optional<pbt::PropertyEffect> res = {pbt::PropertyEffect::ANY};
+    PropertyEffect res = PropertyEffect::ANY;
     for (const auto& subProp : subProperties) {
-        if (!res) break;
         auto tmp = subProp->getPropertyEffect(newTestResult, oldTestResult);
-        if (!tmp) {
-            res = std::nullopt;
-            break;
-        }
-        res = pbt::combine(*res, *tmp);
+        res = combine(res, tmp);
     }
     return res;
 }
@@ -401,7 +396,7 @@ TestPropertyTyped<T>::generateAssignmentsCmp(std::default_random_engine& rng) co
 }
 
 template <typename T>
-std::optional<pbt::PropertyEffect> TestPropertyTyped<T>::getPropertyEffect(
+PropertyEffect TestPropertyTyped<T>::getPropertyEffect(
     std::shared_ptr<TestResult> newTestResult, std::shared_ptr<TestResult> oldTestResult) const {
     const value_type& valNew = newTestResult->getValue(getTypedProperty());
     const value_type& valOld = oldTestResult->getValue(getTypedProperty());
@@ -511,19 +506,19 @@ bool TestPropertyCompositeFactory::hasKey(const std::string& key) const {
 struct TestablePropertyHelper {
     // for Properties with values
     template <typename T>
-    auto operator()(std::optional<std::unique_ptr<TestProperty>>& res, Property* prop)
+    auto operator()(std::unique_ptr<TestProperty>& res, Property* prop)
         -> decltype((typename T::value_type*)(nullptr), void()) {
-        if (res != std::nullopt) return;
-        if (auto tmp = dynamic_cast<T*>(prop); tmp != nullptr)
-            res = {std::make_unique<TestPropertyTyped<T>>(tmp)};
+        if (res) return;
+        if (auto tmp = dynamic_cast<T*>(prop))
+            res = std::make_unique<TestPropertyTyped<T>>(tmp);
     }
 };
 
-std::optional<std::unique_ptr<TestProperty>> testableProperty(Property* prop) {
-    std::optional<std::unique_ptr<TestProperty>> res = std::nullopt;
+std::unique_ptr<TestProperty> testableProperty(Property* prop) {
+    std::unique_ptr<TestProperty> res;
     util::for_each_type<PropertyTypes>{}(TestablePropertyHelper{}, res, prop);
     if (!res) {
-        if (auto tmp = dynamic_cast<CompositeProperty*>(prop); tmp != nullptr)
+        if (auto tmp = dynamic_cast<CompositeProperty*>(prop))
             return TestPropertyComposite::make<CompositeProperty>(tmp);
     }
     return res;
