@@ -136,7 +136,7 @@ TransferFunction getTransferFunction(const Category& category, const Family& fam
 
     auto addPoint = [&](double pos, size_t i) { tf.add(std::clamp(pos, 0.0, 1.0), color(i)); };
     auto addPointAlmost = [&](double pos, size_t i) {
-        addPoint(pos - 100.0*std::numeric_limits<double>::epsilon(), i);
+        addPoint(pos - 100.0 * std::numeric_limits<double>::epsilon(), i);
     };
 
     if (category == colorbrewer::Category::Diverging) {
