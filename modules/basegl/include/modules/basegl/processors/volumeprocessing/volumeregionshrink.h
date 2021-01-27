@@ -71,8 +71,8 @@ private:
 
     std::shared_ptr<StringShaderResource> fragShader_;
     Shader shader_;
-    
-    std::array<std::shared_ptr<Volume>,2> out_;
+
+    std::array<std::shared_ptr<Volume>, 2> out_;
     std::array<FrameBufferObject, 2> fbo_;
 };
 
