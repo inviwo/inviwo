@@ -120,7 +120,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
     }
 
     tfEditor_ = std::make_unique<TFEditor>(propertyPtr_.get(), tfSets_, this);
-    tfSelectionWatcher_ = std::make_unique<TFSelectionWatcher>(tfEditor_.get(), property_, tfSets_);
+    tfSelectionWatcher_ = std::make_unique<TFSelectionWatcher>(property_, tfSets_);
 
     connect(tfEditor_.get(), &TFEditor::selectionChanged, this,
             [this]() { tfSelectionWatcher_->updateSelection(tfEditor_->getSelectedPrimitives()); });
@@ -128,6 +128,12 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
             [&](auto& primitiveSet) { util::importFromFile(primitiveSet, this); });
     connect(tfEditor_.get(), &TFEditor::exportTF, this,
             [&](auto& primitiveSet) { util::exportToFile(primitiveSet, this); });
+
+    connect(tfEditor_.get(), &TFEditor::updateBegin, this, [&]() { ongoingUpdate_ = true; });
+    connect(tfEditor_.get(), &TFEditor::updateEnd, this, [&]() {
+        ongoingUpdate_ = false;
+        updateTFPreview();
+    });
 
     tfEditorView_ = new TFEditorView(propertyPtr_.get(), tfEditor_.get());
 
@@ -497,6 +503,8 @@ void TFPropertyDialog::setReadOnly(bool readonly) {
 void TFPropertyDialog::changeMoveMode(int i) { tfEditor_->setMoveMode(i); }
 
 void TFPropertyDialog::updateTFPreview() {
+    if (ongoingUpdate_) return;
+
     auto pixmap = utilqt::toQPixmap(*propertyPtr_, QSize(tfPreview_->width(), 20));
     tfPreview_->setPixmap(pixmap);
 }

@@ -141,6 +141,8 @@ private:
 
     RangeSliderQt* zoomVSlider_;
     RangeSliderQt* zoomHSlider_;
+
+    bool ongoingUpdate_ = false;
     Processor::NameDispatcherHandle onNameChange_;
 };
 

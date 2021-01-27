@@ -80,6 +80,13 @@ private:
     const TFPrimitive& p_;
 };
 
+template <typename Operator, typename Proj = util::identity>
+constexpr auto derefOperator(Operator&& op, Proj&& proj = {}) {
+    return [o = std::forward<Operator>(op), p = std::forward<Proj>(proj)](auto* a, auto* b) {
+        return std::invoke(o, std::invoke(p, *a), std::invoke(p, *b));
+    };
+}
+
 TFEditor::TFEditor(util::TFPropertyConcept* tfProperty,
                    const std::vector<TFPrimitiveSet*>& primitiveSets, QWidget* parent)
     : QGraphicsScene(parent)
@@ -161,16 +168,13 @@ void TFEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
 
                 selected.push_back(start);  // start might not have been selected yet
 
-                const auto xrange =
-                    std::minmax_element(selected.begin(), selected.end(),
-                                        [](TFEditorPrimitive* a, TFEditorPrimitive* b) {
-                                            return a->pos().x() < b->pos().x();
-                                        });
-                const auto yrange =
-                    std::minmax_element(selected.begin(), selected.end(),
-                                        [](TFEditorPrimitive* a, TFEditorPrimitive* b) {
-                                            return a->pos().y() < b->pos().y();
-                                        });
+                constexpr auto lessx =
+                    derefOperator(std::less<>{}, [](const auto& p) { return p.pos().x(); });
+                constexpr auto lessy =
+                    derefOperator(std::less<>{}, [](const auto& p) { return p.pos().y(); });
+
+                const auto xrange = std::minmax_element(selected.begin(), selected.end(), lessx);
+                const auto yrange = std::minmax_element(selected.begin(), selected.end(), lessy);
 
                 const auto selRect =
                     QRectF{QPointF{(*xrange.first)->pos().x(), (*yrange.first)->pos().y()},
@@ -187,6 +191,7 @@ void TFEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
                         return QPointF::dotProduct(da, da) < QPointF::dotProduct(db, db);
                     });
                 dragItem_ = start;
+                dragPos_ = e->scenePos();
 
             } else {
                 views().front()->setDragMode(QGraphicsView::RubberBandDrag);
@@ -207,19 +212,19 @@ void TFEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
 void TFEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
     mouseMovedSincePress_ = true;
     if (mouseDrag_ && ((e->buttons() & Qt::LeftButton) == Qt::LeftButton)) {
+        e->accept();
+        emit updateBegin();
         // Prevent network evaluations while moving control point
         NetworkLock lock;
 
         const bool altPressed =
             ((QGuiApplication::queryKeyboardModifiers() & Qt::AltModifier) == Qt::AltModifier);
 
+        constexpr auto less = derefOperator(std::less<>{}, &TFEditorPrimitive::getPosition);
+        constexpr auto greater = derefOperator(std::greater<>{}, &TFEditorPrimitive::getPosition);
+
+        auto selection = getSelectedPrimitiveItems();
         if (altPressed) {
-            e->accept();
-
-            auto selection = getSelectedPrimitiveItems();
-
-            const auto eventPos = utilqt::clamp(e->scenePos(), sceneRect());
-
             const auto org = dragItem_->pos() - rigidTransRef_;
             const auto pos = e->scenePos() - rigidTransRef_;
 
@@ -233,6 +238,12 @@ void TFEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
                 const auto scale = QTransform::fromScale(xscale, yscale);
                 const auto trans = translate * scale * translate.inverted();
 
+                if (xscale > 1.0) {
+                    std::stable_sort(selection.begin(), selection.end(), greater);
+                } else {
+                    std::stable_sort(selection.begin(), selection.end(), less);
+                }
+
                 for (auto& item : selection) {
                     auto oldPos = item->pos();
                     auto newPos = utilqt::clamp(trans.map(oldPos), sceneRect());
@@ -240,8 +251,21 @@ void TFEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
                 }
             }
         } else {
-            QGraphicsScene::mouseMoveEvent(e);
+            const auto delta = e->scenePos() - dragPos_;
+            if (delta.x() > 0) {
+                std::stable_sort(selection.begin(), selection.end(), greater);
+            } else {
+                std::stable_sort(selection.begin(), selection.end(), less);
+            }
+
+            for (auto& item : selection) {
+                auto oldPos = item->pos();
+                auto newPos = utilqt::clamp(oldPos + delta, sceneRect());
+                item->setPos(newPos);
+            }
         }
+        dragPos_ = e->scenePos();
+        emit updateEnd();
     } else {
         QGraphicsScene::mouseMoveEvent(e);
     }
@@ -365,10 +389,12 @@ void TFEditor::keyPressEvent(QKeyEvent* keyEvent) {
             delta *= stepDownScalingFactor;
         }
 
+        emit updateBegin();
         QList<QGraphicsItem*> selitems = selectedItems();
         for (auto& selitem : selitems) {
             selitem->setPos(selitem->pos() + delta);
         }
+        emit updateEnd();
 
     } else if (keyEvent->modifiers() & Qt::ControlModifier &&  // Modify selection
                (k == Qt::Key_Left || k == Qt::Key_Right || k == Qt::Key_Up || k == Qt::Key_Down ||
@@ -904,7 +930,7 @@ void TFEditor::updateConnections() {
     connections_[0]->left_ = nullptr;
     connections_[connections_.size() - 1]->right_ = nullptr;
 
-    for (int i = 0; i < static_cast<int>(points_.size()); ++i) {
+    for (size_t i = 0; i < points_.size(); ++i) {
         points_[i]->left_ = connections_[i];
         points_[i]->right_ = connections_[i + 1];
         connections_[i]->right_ = points_[i];

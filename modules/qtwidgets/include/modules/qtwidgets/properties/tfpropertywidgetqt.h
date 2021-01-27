@@ -36,6 +36,9 @@
 
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>
 
+class QShowEvent;
+class QResizeEvent;
+
 namespace inviwo {
 
 class EditableLabelQt;
@@ -73,6 +76,7 @@ public:
     void updateFromProperty();
 
 private:
+    void showEvent(QShowEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
 
     std::unique_ptr<util::TFPropertyConcept> propertyPtr_ = nullptr;

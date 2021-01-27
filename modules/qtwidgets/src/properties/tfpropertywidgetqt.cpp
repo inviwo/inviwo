@@ -142,10 +142,15 @@ TFPushButton::TFPushButton(IsoTFProperty* property, QWidget* parent)
     , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoTFProperty>>(property)) {}
 
 void TFPushButton::updateFromProperty() {
+    if (!isVisible()) return;
     const QSize size = this->size() - QSize(2, 2);
-
     setIcon(utilqt::toQPixmap(*propertyPtr_, size));
     setIconSize(size);
+}
+
+void TFPushButton::showEvent(QShowEvent* event) {
+    updateFromProperty();
+    IvwPushButton::showEvent(event);
 }
 
 void TFPushButton::resizeEvent(QResizeEvent* event) {
