@@ -99,7 +99,6 @@ protected:
     virtual void onDidAddProperty(Property* property, size_t index) override;
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
-
     // PropertyObservable overrides
     virtual void onSetSemantics(Property* property, const PropertySemantics& semantics) override;
     virtual void onSetReadOnly(Property* property, bool readonly) override;

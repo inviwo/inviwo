@@ -65,7 +65,6 @@ public:
     virtual void setPosition(glm::ivec2 pos) override;
     virtual void setDimensions(ivec2 dimensions) override;
 
-
 protected:
     // Override QWidget events
     virtual void resizeEvent(QResizeEvent*) override;
