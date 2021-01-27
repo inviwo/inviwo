@@ -46,7 +46,7 @@ const ProcessorInfo VolumeRegionShrink::getProcessorInfo() const { return proces
 
 namespace {
 
-constexpr std::string_view fragStr = R"(;
+constexpr std::string_view fragStr = R"(
 #include "utils/structs.glsl"
 #include "utils/sampler3d.glsl"
 
