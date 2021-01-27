@@ -41,6 +41,10 @@ ImageCompositor::ImageCompositor(std::string programFileName) : shader(programFi
 
 void ImageCompositor::composite(const Image& source0, const Image& source1, Image& destination,
                                 ImageType type) {
+
+    IVW_ASSERT(&source0 != &destination, "source0 can not be same as destination");
+    IVW_ASSERT(&source1 != &destination, "source1 can not be same as destination");
+
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
     utilgl::activateTarget(destination, type);
     shader.activate();
@@ -59,21 +63,11 @@ void ImageCompositor::composite(const Image& source0, const Image& source1, Imag
 void ImageCompositor::composite(const ImageInport& source0, const ImageInport& source1,
                                 ImageOutport& destination, ImageType type) {
     if (source0.isReady() && source1.isReady()) {
-        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-        utilgl::activateTarget(destination, type);
-        shader.activate();
-
-        TextureUnitContainer units;
-        utilgl::bindAndSetUniforms(shader, units, *source0.getData(), "tex0",
-                                   ImageType::ColorDepthPicking);
-        utilgl::bindAndSetUniforms(shader, units, *source1.getData(), "tex1",
-                                   ImageType::ColorDepthPicking);
-
-        utilgl::setShaderUniforms(shader, destination, "outportParameters");
-        utilgl::singleDrawImagePlaneRect();
-
-        shader.deactivate();
-        utilgl::deactivateCurrentTarget();
+        if (!destination.hasEditableData()) {
+            destination.setData(
+                std::make_shared<Image>(destination.getDimensions(), destination.getDataFormat()));
+        }
+        composite(*source0.getData(), *source1.getData(), *destination.getEditableData(), type);
     }
 }
 

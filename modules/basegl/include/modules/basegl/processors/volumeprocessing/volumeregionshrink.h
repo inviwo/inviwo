@@ -41,7 +41,9 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeRegionShrink, Volume Region Shrink}
  * ![](org.inviwo.VolumeRegionShrink.png?classIdentifier=org.inviwo.VolumeRegionShrink)
- * Shink all regions in the volume
+ * Shrinks regions of identical values. The processor will assign 0 to each all boarder voxels in
+ * each iteration. Border voxels are identified by one of more of the 8 closes neighbors having a
+ * different value then the current voxel. The procedure is repeated number of __iterations__ times.
  *
  * ### Inports
  *   * __inputVolume__ Input volume
@@ -73,7 +75,7 @@ private:
     Shader shader_;
 
     std::array<std::shared_ptr<Volume>, 2> out_;
-    std::array<FrameBufferObject, 2> fbo_;
+    FrameBufferObject fbo_;
 };
 
 }  // namespace inviwo

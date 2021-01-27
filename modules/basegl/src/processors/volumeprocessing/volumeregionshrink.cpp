@@ -120,15 +120,16 @@ void VolumeRegionShrink::process() {
     const size3_t dim{volume->getDimensions()};
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
-    fbo_[0].activate();
+    fbo_.activate();
     VolumeGL* outGL0 = out_[0]->getEditableRepresentation<VolumeGL>();
-    fbo_[0].attachColorTexture(outGL0->getTexture().get(), 0);
+    fbo_.attachColorTexture(outGL0->getTexture().get(), 0);
     out_[0]->invalidateHistogram();
 
     utilgl::Activate as{&shader_};
 
     // Iteration 1
     {
+        glDrawBuffer(GL_COLOR_ATTACHMENT0);
         TextureUnitContainer cont;
         utilgl::bindAndSetUniforms(shader_, cont, *volume, "volume");
         utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
@@ -148,18 +149,17 @@ void VolumeRegionShrink::process() {
     out_[1]->copyMetaDataFrom(*volume);
     out_[1]->dataMap_ = volume->dataMap_;
 
-    fbo_[1].activate();
     VolumeGL* outGL1 = out_[1]->getEditableRepresentation<VolumeGL>();
-    fbo_[1].attachColorTexture(outGL1->getTexture().get(), 0);
+    fbo_.attachColorTexture(outGL1->getTexture().get(), 1);
     out_[1]->invalidateHistogram();
 
     size_t src = 1;
     size_t dst = 0;
     for (int i = 2; i < iterations_; ++i) {
         std::swap(src, dst);
+        glDrawBuffer(static_cast<GLenum>(GL_COLOR_ATTACHMENT0 + dst));
         TextureUnitContainer cont;
         utilgl::bindAndSetUniforms(shader_, cont, *out_[src], "volume");
-        fbo_[dst].activate();
         utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
     }
 
