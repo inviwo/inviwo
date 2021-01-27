@@ -30,88 +30,51 @@
 #include <modules/opengl/image/imagecompositor.h>
 
 #include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/openglutils.h>
-#include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 
-ImageCompositor::ImageCompositor(std::string programFileName)
-    : shader_(programFileName)
-    , colorTex_({1u, 1u}, GLFormat(), GL_LINEAR)
-    , depthTex_({1u, 1u}, GLFormat(), GL_LINEAR)
-    , pickingTex_({1u, 1u}, GLFormat(), GL_LINEAR) {}
+ImageCompositor::ImageCompositor(std::string programFileName) : shader(programFileName) {}
 
-void ImageCompositor::composite(const Image& source, Image& target, ImageType type) {
-    copyTextures(target);
-
-    utilgl::activateTarget(target, type);
-    shader_.activate();
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
+void ImageCompositor::composite(const Image& source0, const Image& source1, Image& destination,
+                                ImageType type) {
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+    utilgl::activateTarget(destination, type);
+    shader.activate();
 
     TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(shader_, units, source, "tex0", ImageType::ColorDepthPicking);
-    bindTextures(units, "tex1");
-    utilgl::setShaderUniforms(shader_, target, "outportParameters");
+    utilgl::bindAndSetUniforms(shader, units, source0, "tex0", ImageType::ColorDepthPicking);
+    utilgl::bindAndSetUniforms(shader, units, source1, "tex1", ImageType::ColorDepthPicking);
+
+    utilgl::setShaderUniforms(shader, destination, "outportParameters");
     utilgl::singleDrawImagePlaneRect();
 
-    shader_.deactivate();
+    shader.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 
-void ImageCompositor::composite(ImageInport& source, ImageOutport& target, ImageType type) {
-    if (source.isReady() && target.hasData()) {
-        copyTextures(*target.getData());
-
-        utilgl::activateTarget(target, type);
-        shader_.activate();
-        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
+void ImageCompositor::composite(const ImageInport& source0, const ImageInport& source1,
+                                ImageOutport& destination, ImageType type) {
+    if (source0.isReady() && source1.isReady()) {
+        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+        utilgl::activateTarget(destination, type);
+        shader.activate();
 
         TextureUnitContainer units;
-        utilgl::bindAndSetUniforms(shader_, units, *source.getData(), "tex0",
+        utilgl::bindAndSetUniforms(shader, units, *source0.getData(), "tex0",
                                    ImageType::ColorDepthPicking);
-        bindTextures(units, "tex1");
-        utilgl::setShaderUniforms(shader_, target, "outportParameters");
+        utilgl::bindAndSetUniforms(shader, units, *source1.getData(), "tex1",
+                                   ImageType::ColorDepthPicking);
+
+        utilgl::setShaderUniforms(shader, destination, "outportParameters");
         utilgl::singleDrawImagePlaneRect();
 
-        shader_.deactivate();
+        shader.deactivate();
         utilgl::deactivateCurrentTarget();
     }
-}
-
-void ImageCompositor::copyTextures(const Image& target) {
-    auto glrep = target.getRepresentation<ImageGL>();
-    {
-        auto layer = glrep->getColorLayerGL();
-        IVW_ASSERT(layer, "no color layer in target image");
-        colorTex_ = *layer->getTexture();
-    }
-    {
-        auto layer = glrep->getDepthLayerGL();
-        IVW_ASSERT(layer, "no depth layer in target image");
-        depthTex_ = *layer->getTexture();
-    }
-    {
-        auto layer = glrep->getPickingLayerGL();
-        IVW_ASSERT(layer, "no picking layer in target image");
-        pickingTex_ = *layer->getTexture();
-    }
-}
-
-void ImageCompositor::bindTextures(TextureUnitContainer& cont, const std::string& id) {
-    TextureUnit unit1, unit2, unit3;
-    utilgl::bindTexture(colorTex_, unit1);
-    utilgl::bindTexture(depthTex_, unit2);
-    utilgl::bindTexture(pickingTex_, unit3);
-    shader_.setUniform(id + "Color", unit1);
-    shader_.setUniform(id + "Depth", unit2);
-    shader_.setUniform(id + "Picking", unit3);
-    cont.push_back(std::move(unit1));
-    cont.push_back(std::move(unit2));
-    cont.push_back(std::move(unit3));
 }
 
 }  // namespace inviwo

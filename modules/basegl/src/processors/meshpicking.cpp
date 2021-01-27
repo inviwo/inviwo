@@ -57,7 +57,6 @@ MeshPicking::MeshPicking()
     , meshInport_("geometryInport")
     , imageInport_("imageInport")
     , outport_("outport")
-    , compositor_()
     , cullFace_("cullFace", "Cull Face",
                 {{"culldisable", "Disable", GL_NONE},
                  {"cullfront", "Front", GL_FRONT},
@@ -146,8 +145,8 @@ void MeshPicking::process() {
         mesh_ = meshInport_.getData();
         drawer_ = std::make_unique<MeshDrawerGL>(mesh_.get());
     }
-
-    utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
+    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_,
+                                               ImageType::ColorDepthPicking);
 
     shader_.activate();
     shader_.setUniform("pickingColor", picking_.getColor());
@@ -169,9 +168,6 @@ void MeshPicking::process() {
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
-    if (imageInport_.hasData()) {
-        compositor_.composite(imageInport_, outport_, ImageType::ColorDepthPicking);
-    }
 }
 
 }  // namespace inviwo

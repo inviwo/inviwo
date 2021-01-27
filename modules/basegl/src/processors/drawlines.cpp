@@ -100,8 +100,6 @@ void DrawLines::process() {
         lineShader_.deactivate();
     }
     utilgl::deactivateCurrentTarget();
-
-    compositor_.composite(inport_, outport_, ImageType::ColorOnly);
 }
 
 void DrawLines::addPoint(vec2 p) {

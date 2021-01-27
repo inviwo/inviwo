@@ -91,7 +91,6 @@ void DrawPoints::process() {
         pointShader_.deactivate();
     }
     utilgl::deactivateCurrentTarget();
-    compositor_.composite(inport_, outport_, ImageType::ColorOnly);
 }
 
 void DrawPoints::addPoint(vec2 p) {

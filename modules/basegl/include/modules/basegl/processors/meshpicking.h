@@ -27,21 +27,18 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_POSITIONWIDGETPROCESSOR_H
-#define IVW_POSITIONWIDGETPROCESSOR_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/meshport.h>
-#include <modules/opengl/image/imagecompositor.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/interaction/cameratrackball.h>
+#include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
@@ -91,7 +88,6 @@ private:
     MeshInport meshInport_;
     ImageInport imageInport_;
     ImageOutport outport_;
-    ImageCompositor compositor_;
 
     OptionPropertyInt cullFace_;
 
@@ -112,5 +108,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_POSITIONWIDGETPROCESSOR_H
