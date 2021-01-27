@@ -198,8 +198,14 @@ public:
      */
     void setIdentifier(std::string_view identifier);
     virtual const std::string& getIdentifier() const override;
+
+    /**
+     * Get notified when the processor identifier changes. The callback happens after the identifier
+     * is changed.
+     * @param callback gets called with the new and the old identifier respectively.
+     */
     NameDispatcherHandle onIdentifierChange(
-        std::function<void(std::string_view, std::string_view)>);
+        std::function<void(std::string_view, std::string_view)> callback);
 
     /**
      * Name of processor, arbitrary string. By default initialized to the ProcessorInfo displayName.
@@ -207,8 +213,14 @@ public:
      */
     void setDisplayName(std::string_view displayName);
     const std::string& getDisplayName() const;
+
+    /**
+     * Get notified when the processor display name changes. The callback happens after the display
+     * name is changed.
+     * @param callback gets called with the new and the old display name respectively.
+     */
     NameDispatcherHandle onDisplayNameChange(
-        std::function<void(std::string_view, std::string_view)>);
+        std::function<void(std::string_view, std::string_view)> callback);
 
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget);
     ProcessorWidget* getProcessorWidget() const;

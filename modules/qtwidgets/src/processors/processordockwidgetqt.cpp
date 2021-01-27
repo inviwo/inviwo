@@ -52,7 +52,7 @@ ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString& title,
     ivec2 dim = ProcessorWidget::getDimensions();
     ivec2 pos = ProcessorWidget::getPosition();
 
-    setWindowTitle(QString::fromStdString(processor_->getDisplayName()));
+    setWindowTitle(utilqt::toQString(processor_->getDisplayName()));
     // make the widget to float and not sticky by default
     this->setFloating(true);
     this->setSticky(false);

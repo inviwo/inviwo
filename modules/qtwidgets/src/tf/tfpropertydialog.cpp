@@ -69,6 +69,8 @@
 #include <QSettings>
 #include <warn/pop>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* property)
@@ -393,12 +395,10 @@ void TFPropertyDialog::showEvent(QShowEvent* event) {
 void TFPropertyDialog::updateTitleFromProperty() {
     if (!property_->getOwner()) return;
 
-    auto processorName = property_->getOwner()->getProcessor()->getDisplayName();
-    auto windowTitle =
-        "Transfer Function Editor - " + property_->getDisplayName() + " (" + processorName + ")";
-    if (property_->getReadOnly()) {
-        windowTitle += " - Read Only";
-    }
+    const auto processorName = property_->getOwner()->getProcessor()->getDisplayName();
+    const auto windowTitle =
+        fmt::format("Transfer Function Editor - {} ({}){}", property_->getDisplayName(),
+                    processorName, (property_->getReadOnly() ? " - Read Only" : ""));
     setWindowTitle(utilqt::toQString(windowTitle));
 }
 
