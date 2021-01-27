@@ -84,6 +84,11 @@ public:
     const HistogramContainer& getHistograms() const { return *histograms_; }
     HistogramContainer& getHistograms() { return *histograms_; }
 
+    void invalidateHistogram() {
+        histograms_->clear();
+        calculation_.reset();
+    }
+
 protected:
     std::shared_ptr<HistogramCalculationState> startCalculation(
         std::shared_ptr<const VolumeRAM> volumeRam, dvec2 dataRange, size_t bins) const;
