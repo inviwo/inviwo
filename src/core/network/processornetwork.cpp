@@ -77,6 +77,12 @@ bool ProcessorNetwork::addProcessor(Processor* processor) {
     processors_[processor->getIdentifier()] = processor;
     processor->setNetwork(this);
     processor->ProcessorObservable::addObserver(this);
+    onIdChange_[processor] =
+        processor->onIdentifierChange([this](std::string_view newID, std::string_view oldID) {
+            std::string old{oldID};
+            processors_[std::string{newID}] = processors_[old];
+            processors_.erase(old);
+        });
     addPropertyOwnerObservation(processor);
 
     auto meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
@@ -126,6 +132,7 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
     notifyObserversProcessorNetworkWillRemoveProcessor(processor);
     processors_.erase(processor->getIdentifier());
     processor->ProcessorObservable::removeObserver(this);
+    onIdChange_.erase(processor);
     removePropertyOwnerObservation(processor);
     processor->setNetwork(nullptr);
     processor->setProcessorWidget(nullptr);
@@ -346,12 +353,6 @@ void ProcessorNetwork::onProcessorInvalidationEnd(Processor* p) {
     if (processorsInvalidating_.empty()) {
         notifyObserversProcessorNetworkEvaluateRequest();
     }
-}
-
-void ProcessorNetwork::onProcessorIdentifierChanged(Processor* processor,
-                                                    const std::string& oldIdentifier) {
-    processors_.erase(oldIdentifier);
-    processors_[processor->getIdentifier()] = processor;
 }
 
 void ProcessorNetwork::onProcessorPortRemoved(Processor*, Port* port) {

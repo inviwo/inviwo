@@ -31,7 +31,7 @@
 #include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/qtwidgets/processors/processorwidgetqt.h>
-#include <inviwo/core/processors/processorobserver.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/dispatcher.h>
 
 #include <unordered_set>
@@ -44,8 +44,7 @@ class DataFrameTableView;
 /**
  * \brief A processor widget showing a DataFrame in a table view.
  */
-class IVW_MODULE_DATAFRAMEQT_API DataFrameTableProcessorWidget : public ProcessorWidgetQt,
-                                                                 public ProcessorObserver {
+class IVW_MODULE_DATAFRAMEQT_API DataFrameTableProcessorWidget : public ProcessorWidgetQt {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -67,9 +66,6 @@ public:
     CallbackHandle setColumnSelectionChangedCallback(std::function<SelectionChangedFunc> callback);
     CallbackHandle setRowSelectionChangedCallback(std::function<SelectionChangedFunc> callback);
 
-    // Override ProcessorObserver
-    virtual void onProcessorDisplayNameChanged(Processor*, const std::string&) override;
-
 private:
     using tableview_ptr =
         std::unique_ptr<DataFrameTableView, std::function<void(DataFrameTableView*)>>;
@@ -77,6 +73,8 @@ private:
 
     Dispatcher<SelectionChangedFunc> columnSelectionChanged_;
     Dispatcher<SelectionChangedFunc> rowSelectionChanged_;
+
+    Processor::NameDispatcherHandle nameChange_;
 };
 
 }  // namespace inviwo

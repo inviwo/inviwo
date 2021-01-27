@@ -114,8 +114,6 @@ protected:
     void onLabelGraphicsItemEdited(LabelGraphicsItem* item) override;
 
     // ProcessorObserver overrides
-    virtual void onProcessorIdentifierChanged(Processor*, const std::string&) override;
-    virtual void onProcessorDisplayNameChanged(Processor*, const std::string&) override;
     virtual void onProcessorReadyChanged(Processor*) override;
     virtual void onProcessorPortAdded(Processor*, Port*) override;
     virtual void onProcessorPortRemoved(Processor*, Port*) override;
@@ -148,6 +146,9 @@ private:
     std::vector<std::unique_ptr<QWidget>> ownedWidgets_;
 
     bool highlight_;
+
+    std::shared_ptr<std::function<void(std::string_view, std::string_view)>> idChange_;
+    std::shared_ptr<std::function<void(std::string_view, std::string_view)>> nameChange_;
 
 #if IVW_PROFILING
     size_t processCount_;

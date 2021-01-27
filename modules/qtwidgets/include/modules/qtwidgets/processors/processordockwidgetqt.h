@@ -29,9 +29,7 @@
 
 #pragma once
 
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processorobserver.h>
-#include <inviwo/core/processors/processorobserver.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorwidget.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
@@ -49,8 +47,7 @@ namespace inviwo {
  * \see InviwoDockWidget ProcessorWidget
  */
 class IVW_MODULE_QTWIDGETS_API ProcessorDockWidgetQt : public InviwoDockWidget,
-                                                       public ProcessorWidget,
-                                                       public ProcessorObserver {
+                                                       public ProcessorWidget {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -68,14 +65,12 @@ public:
     virtual void setPosition(glm::ivec2 pos) override;
     virtual void setDimensions(ivec2 dimensions) override;
 
-    // Override ProcessorObserver
-    virtual void onProcessorIdentifierChanged(Processor* processor,
-                                              const std::string& oldIdentifier) override;
-
 protected:
     // Override QWidget events
     virtual void resizeEvent(QResizeEvent*) override;
     virtual void moveEvent(QMoveEvent*) override;
+
+    Processor::NameDispatcherHandle idChange_;
 };
 
 }  // namespace inviwo

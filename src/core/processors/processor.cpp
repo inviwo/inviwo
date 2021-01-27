@@ -197,19 +197,28 @@ void Processor::setIdentifier(std::string_view identifier) {
         }
         auto old = identifier_;
         identifier_ = identifier;
-        notifyObserversIdentifierChanged(this, old);
+        identifierDispatcher_.invoke(identifier_, old);
     }
 }
 
 const std::string& Processor::getIdentifier() const { return identifier_; }
+
+auto Processor::onIdentifierChange(std::function<void(std::string_view, std::string_view)> callback)
+    -> NameDispatcherHandle {
+    return identifierDispatcher_.add(callback);
+}
 
 const std::string& Processor::getDisplayName() const { return displayName_; }
 void Processor::setDisplayName(std::string_view displayName) {
     if (displayName_ != displayName) {
         auto old = displayName_;
         displayName_ = displayName;
-        notifyObserversDisplayNameChanged(this, old);
+        displayNameDispatcher_.invoke(displayName_, old);
     }
+}
+auto Processor::onDisplayNameChange(
+    std::function<void(std::string_view, std::string_view)> callback) -> NameDispatcherHandle {
+    return displayNameDispatcher_.add(callback);
 }
 
 void Processor::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {

@@ -39,6 +39,7 @@
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/util/statecoordinator.h>
+#include <inviwo/core/util/dispatcher.h>
 
 namespace inviwo {
 
@@ -164,6 +165,9 @@ class IVW_CORE_API Processor : public PropertyOwner,
                                public ProcessorObservable,
                                public EventPropagator {
 public:
+    using NameDispatcher = Dispatcher<void(std::string_view, std::string_view)>;
+    using NameDispatcherHandle = typename NameDispatcher::Handle;
+
     /**
      * Processor constructor, takes two optional arguments.
      * @param identifier Should only contain alpha numeric
@@ -196,11 +200,27 @@ public:
     virtual const std::string& getIdentifier() const override;
 
     /**
+     * Get notified when the processor identifier changes. The callback happens after the identifier
+     * is changed.
+     * @param callback gets called with the new and the old identifier respectively.
+     */
+    NameDispatcherHandle onIdentifierChange(
+        std::function<void(std::string_view, std::string_view)> callback);
+
+    /**
      * Name of processor, arbitrary string. By default initialized to the ProcessorInfo displayName.
      * This name will be shown on various graphical representations.
      */
     void setDisplayName(std::string_view displayName);
     const std::string& getDisplayName() const;
+
+    /**
+     * Get notified when the processor display name changes. The callback happens after the display
+     * name is changed.
+     * @param callback gets called with the new and the old display name respectively.
+     */
+    NameDispatcherHandle onDisplayNameChange(
+        std::function<void(std::string_view, std::string_view)> callback);
 
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget);
     ProcessorWidget* getProcessorWidget() const;
@@ -424,6 +444,9 @@ private:
     std::unordered_map<Port*, std::string> portGroups_;
 
     ProcessorNetwork* network_;
+
+    NameDispatcher identifierDispatcher_;
+    NameDispatcher displayNameDispatcher_;
 };
 
 inline ProcessorNetwork* Processor::getNetwork() const { return network_; }
