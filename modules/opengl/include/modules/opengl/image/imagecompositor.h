@@ -46,7 +46,14 @@ public:
     ImageCompositor(std::string programFileName = "composite.frag");
     ~ImageCompositor() = default;
 
+    /**
+     * Blend @p source0 and @p source1 using depth into the @p destination
+     */
     void composite(const Image& source0, const Image& source1, Image& destination, ImageType type);
+
+    /**
+     * Blend @p source0 and @p source1 using depth into the @p destination
+     */
     void composite(const ImageInport& source0, const ImageInport& source1,
                    ImageOutport& destination, ImageType type);
 

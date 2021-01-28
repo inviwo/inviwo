@@ -41,9 +41,9 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeRegionShrink, Volume Region Shrink}
  * ![](org.inviwo.VolumeRegionShrink.png?classIdentifier=org.inviwo.VolumeRegionShrink)
- * Shrinks regions of identical values. The processor will assign 0 to each all boarder voxels in
- * each iteration. Border voxels are identified by one of more of the 8 closes neighbors having a
- * different value then the current voxel. The procedure is repeated number of __iterations__ times.
+ * Shrinks regions of identical values. The processor will assign 0 to each border voxel in each
+ * iteration. A voxel is considered on the border if the value of any of the 26 closest neighbors is
+ * different. The procedure is repeated number of iterations times.
  *
  * ### Inports
  *   * __inputVolume__ Input volume

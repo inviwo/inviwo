@@ -31,6 +31,7 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/openglutils.h>
+#include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
 
@@ -58,23 +59,17 @@ in vec4 texCoord_;
 void main() {
     vec4 value = getVoxel(volume, volumeParameters, texCoord_.xyz);
 
-    bool edge = false;
-    for(int z = -1; z < 1; z++) {
-        for(int y = -1; y < 1; y++) {
-            for(int x = -1; x < 1; x++){
-
-                vec4 neighbor = getVoxel(volume, volumeParameters, texCoord_.xyz + vec3(x,y,z)*volumeParameters.reciprocalDimensions);
-                if (neighbor != value) {
-                    edge = true;
-                } 
+    bool border = false;
+    for (int z = -1; z < 1; z++) {
+        for (int y = -1; y < 1; y++) {
+            for (int x = -1; x < 1; x++) {
+                border = border || value != getVoxel(volume, volumeParameters, 
+                                            texCoord_.xyz + vec3(x,y,z) * 
+                                            volumeParameters.reciprocalDimensions); 
             }
         }
     }
-    if (edge) {
-        FragData0 = vec4(0.0, 0.0, 0.0, 0.0);
-    } else {
-        FragData0 = value;
-    }
+    FragData0 = mix(value, vec4(0.0), border);
 }   
 )";
 
@@ -97,6 +92,7 @@ VolumeRegionShrink::VolumeRegionShrink()
     addProperty(iterations_);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    ShaderManager::getPtr()->addShaderResource(fragShader_);
 }
 
 void VolumeRegionShrink::process() {
