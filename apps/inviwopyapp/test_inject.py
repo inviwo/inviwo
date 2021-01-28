@@ -1,5 +1,5 @@
 #%%
-import os, sys, time, tqdm, glm
+import os, sys, time, tqdm
 from pathlib import Path
 from argparse import ArgumentParser, Namespace
 import numpy as np
@@ -126,6 +126,7 @@ if __name__=='__main__':
     parser = ArgumentParser('Volume Raycaster')
     parser.add_argument('target_path', type=str, help='Where tosave the dataset')
     parser.add_argument('--samples_per_vol', type=int, default=100)
+    parser.add_argument('--fixed_pos', action='store_true', help='Use same camera pos for all renders')
     parser.add_argument('--resolution', type=int, default=224, help='Image resolution of the created dataset')
     parser.add_argument('--n_classes', type=int, default=15, help='Number of classes to split the TF in')
     parser.add_argument('--tf_peaks', type=int, default=1, help='Number of peaks, see train.py')
@@ -158,7 +159,10 @@ if __name__=='__main__':
                 for pt in tf:
                     tf_prop.add(pt[0], vec4(*pt[1:]))
                 # cam.lookFrom = vec3(0.0,3.0, 0.0)
-                cam.lookFrom = vec3(-0.12641, -1.959986, 0.4977)
+                if args.fixed_pos:
+                    cam.lookFrom = vec3(-0.12641, -1.959986, 0.4977)
+                else:
+                    cam.lookFrom = vec3(get_rand_pos())
                 cam.lookUp = vec3(0,-1.0,0)
                 # print(cam.lookFrom)
 
@@ -181,4 +185,4 @@ if __name__=='__main__':
             a['name'] += f'_{i:04d}'
             # imsave('testuru.png', im.permute(1, 2, 0).numpy())
             # print(a['tf_rgb'], a['tf_op'])
-            torch.save(a, tpath/f"{item['name']}_{i:04d}.pt")
+            torch.save(a, tpath/f"{item['name']}_{i:06d}.pt")
