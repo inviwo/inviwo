@@ -40,6 +40,8 @@
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/image/imagecompositor.h>
+#include <inviwo/core/datastructures/image/image.h>
 
 namespace inviwo {
 
@@ -80,6 +82,8 @@ public:
 
     virtual void process() override;
 
+    void render();
+
     void handlePickingEvent(PickingEvent*);
 
     void updatePosition(PickingEvent* p);
@@ -103,6 +107,9 @@ private:
 
     std::shared_ptr<const Mesh> mesh_;
     std::unique_ptr<MeshDrawerGL> drawer_;
+
+    std::optional<ImageCompositor> compositor_;
+    std::optional<Image> tmp_;
 
     bool highlight_ = false;
 };

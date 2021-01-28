@@ -145,9 +145,26 @@ void MeshPicking::process() {
         mesh_ = meshInport_.getData();
         drawer_ = std::make_unique<MeshDrawerGL>(mesh_.get());
     }
-    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_,
-                                               ImageType::ColorDepthPicking);
 
+    if (imageInport_.isReady()) {
+        if (!tmp_ || tmp_->getDimensions() != outport_.getDimensions() ||
+            tmp_->getDataFormat() != outport_.getDataFormat()) {
+            tmp_.emplace(outport_.getDimensions(), outport_.getDataFormat());
+        }
+        if (!compositor_) {
+            compositor_.emplace();
+        }
+        utilgl::activateAndClearTarget(*tmp_, ImageType::ColorDepthPicking);
+        render();
+        compositor_->composite(*imageInport_.getData(), *tmp_, *outport_.getEditableData(),
+                               ImageType::ColorDepthPicking);
+    } else {
+        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
+        render();
+    }
+}
+
+void MeshPicking::render() {
     shader_.activate();
     shader_.setUniform("pickingColor", picking_.getColor());
     shader_.setUniform("highlight", highlight_);
