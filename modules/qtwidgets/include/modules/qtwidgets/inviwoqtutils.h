@@ -148,6 +148,8 @@ IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const IsoValueProperty& property, con
 IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept,
                                            const QSize& size);
 
+IVW_MODULE_QTWIDGETS_API QPointF clamp(const QPointF& pos, const QRectF& rect);
+
 /**
  * \brief Retrieve the QMainWindow named "InviwoMainWindow" from QApplication.
  * @return The main window if the application contains the widget, otherwise null.

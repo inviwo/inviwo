@@ -120,7 +120,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
     }
 
     tfEditor_ = std::make_unique<TFEditor>(propertyPtr_.get(), tfSets_, this);
-    tfSelectionWatcher_ = std::make_unique<TFSelectionWatcher>(tfEditor_.get(), property_, tfSets_);
+    tfSelectionWatcher_ = std::make_unique<TFSelectionWatcher>(property_, tfSets_);
 
     connect(tfEditor_.get(), &TFEditor::selectionChanged, this,
             [this]() { tfSelectionWatcher_->updateSelection(tfEditor_->getSelectedPrimitives()); });
@@ -128,6 +128,12 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
             [&](auto& primitiveSet) { util::importFromFile(primitiveSet, this); });
     connect(tfEditor_.get(), &TFEditor::exportTF, this,
             [&](auto& primitiveSet) { util::exportToFile(primitiveSet, this); });
+
+    connect(tfEditor_.get(), &TFEditor::updateBegin, this, [&]() { ongoingUpdate_ = true; });
+    connect(tfEditor_.get(), &TFEditor::updateEnd, this, [&]() {
+        ongoingUpdate_ = false;
+        updateTFPreview();
+    });
 
     tfEditorView_ = new TFEditorView(propertyPtr_.get(), tfEditor_.get());
 
@@ -201,6 +207,21 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
     connect(pointMoveMode_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, &TFPropertyDialog::changeMoveMode);
 
+    domainMin_ = new QLabel("0.0");
+    domainMax_ = new QLabel("1.0");
+
+    if (auto port = propertyPtr_->getVolumeInport()) {
+        const auto portChange = [this, port]() {
+            auto dataMap = port->hasData() ? port->getData()->dataMap_ : DataMapper{};
+            domainMin_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(0.0)));
+            domainMax_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(1.0)));
+        };
+        port->onChange(portChange);
+        port->onConnect(portChange);
+        port->onDisconnect(portChange);
+        portChange();
+    }
+
     // set up TF primitive widgets
     {
         primitivePos_ = new TFLineEdit();
@@ -256,12 +277,19 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
     rightLayout->addWidget(colorWheel_.get());
 
     auto primitivePropLayout = new QGridLayout();
-    primitivePropLayout->addWidget(new QLabel("Scalar"), 1, 1);
-    primitivePropLayout->addWidget(primitivePos_, 1, 2);
-    primitivePropLayout->addWidget(new QLabel("Alpha"), 2, 1);
-    primitivePropLayout->addWidget(primitiveAlpha_, 2, 2);
-    primitivePropLayout->addWidget(new QLabel("Color"), 3, 1);
-    primitivePropLayout->addWidget(primitiveColor_, 3, 2);
+    primitivePropLayout->addWidget(new QLabel("Scalar"), 0, 0);
+    primitivePropLayout->addWidget(primitivePos_, 0, 1);
+    primitivePropLayout->addWidget(new QLabel("Alpha"), 1, 0);
+    primitivePropLayout->addWidget(primitiveAlpha_, 1, 1);
+    primitivePropLayout->addWidget(new QLabel("Color"), 2, 0);
+    primitivePropLayout->addWidget(primitiveColor_, 2, 1);
+
+    primitivePropLayout->addWidget(new QLabel("Min"), 3, 0);
+    primitivePropLayout->addWidget(domainMin_, 3, 1);
+
+    primitivePropLayout->addWidget(new QLabel("Max"), 4, 0);
+    primitivePropLayout->addWidget(domainMax_, 4, 1);
+
     rightLayout->addLayout(primitivePropLayout);
 
     rightLayout->addStretch(3);
@@ -475,6 +503,8 @@ void TFPropertyDialog::setReadOnly(bool readonly) {
 void TFPropertyDialog::changeMoveMode(int i) { tfEditor_->setMoveMode(i); }
 
 void TFPropertyDialog::updateTFPreview() {
+    if (ongoingUpdate_) return;
+
     auto pixmap = utilqt::toQPixmap(*propertyPtr_, QSize(tfPreview_->width(), 20));
     tfPreview_->setPixmap(pixmap);
 }

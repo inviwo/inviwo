@@ -38,9 +38,9 @@
 
 namespace inviwo {
 
-TFSelectionWatcher::TFSelectionWatcher(TFEditor* editor, Property* property,
+TFSelectionWatcher::TFSelectionWatcher(Property* property,
                                        const std::vector<TFPrimitiveSet*>& primitiveSets)
-    : tfEditor_(editor), property_(property), tfSets_(primitiveSets) {}
+    : property_(property), tfSets_(primitiveSets) {}
 
 void TFSelectionWatcher::setPosition(double pos) {
     NetworkLock lock(property_);

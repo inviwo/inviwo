@@ -129,6 +129,9 @@ private:
 
     QComboBox* pointMoveMode_;
 
+    QLabel* domainMin_;
+    QLabel* domainMax_;
+
     // widgets for directly editing the currently selected TF primitives
     TFLineEdit* primitivePos_;
     TFLineEdit* primitiveAlpha_;
@@ -138,6 +141,8 @@ private:
 
     RangeSliderQt* zoomVSlider_;
     RangeSliderQt* zoomHSlider_;
+
+    bool ongoingUpdate_ = false;
     Processor::NameDispatcherHandle onNameChange_;
 };
 

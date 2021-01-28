@@ -260,29 +260,6 @@ public:
      */
     void interpolateAndStoreColors(vec4* dataArray, const size_t size) const;
 
-    /**
-     * flip the positions of the \p primitives with respect to the respective range, i.e.
-     *      p' = range.max - (p - range.min)
-     * with range.min/max corresponding to the lowest/highest position in \p primitives. If
-     * \p primitives is empty, the entire TFPrimitiveSet is flipped using
-     * TFPrimitiveSet::getRange().
-     *
-     * @param primitives   list of primitives to be flipped. If empty, the entire primitive set
-     *                     is flipped.
-     */
-    void flipPositions(const std::vector<TFPrimitive*>& primitives = {});
-    /**
-     * interpolate the alpha values of all primitives in between the first and the last primitive
-     * based on their relative position. If \p primitives is empty, the alpha of the entire
-     * TFPrimitiveSet will be adjusted.
-     */
-    void interpolateAlpha(const std::vector<TFPrimitive*>& primitives = {});
-    /**
-     * set the alphas value of all primitives to the average alpha value. If \p primitives is empty,
-     * the entire TFPrimitiveSet is equalized.
-     */
-    void equalizeAlpha(const std::vector<TFPrimitive*>& primitives = {});
-
 protected:
     void add(std::unique_ptr<TFPrimitive> primitive);
     bool remove(std::vector<std::unique_ptr<TFPrimitive>>::iterator it);
@@ -312,5 +289,53 @@ inline TFPrimitiveSetType TFPrimitiveSet::getType() const { return type_; }
 
 bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
 bool operator!=(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
+
+namespace util {
+
+IVW_CORE_API void distributeAlphaEvenly(std::vector<TFPrimitive*> selection);
+IVW_CORE_API void distributePositionEvenly(std::vector<TFPrimitive*> selection);
+
+/**
+ * Set the alphas value of selection to the average alpha value.
+ */
+IVW_CORE_API void alignAlphaToMean(const std::vector<TFPrimitive*>& selection);
+/**
+ * Set the alphas value of selection to the max alpha value.
+ */
+IVW_CORE_API void alignAlphaToTop(const std::vector<TFPrimitive*>& selection);
+/**
+ * Set the alphas value of selection to the min alpha value.
+ */
+IVW_CORE_API void alignAlphaToBottom(const std::vector<TFPrimitive*>& selection);
+
+/**
+ * Set the position value of selection to the average position value.
+ */
+IVW_CORE_API void alignPositionToMean(std::vector<TFPrimitive*> selection);
+/**
+ * Set the position value of selection to the min position value.
+ */
+IVW_CORE_API void alignPositionToLeft(std::vector<TFPrimitive*> selection);
+
+/**
+ * Set the position value of selection to the max position value.
+ */
+IVW_CORE_API void alignPositionToRight(std::vector<TFPrimitive*> selection);
+
+/**
+ * Interpolate the alpha values of selected primitives in between the first and the last primitive
+ * based on their relative position.
+ */
+IVW_CORE_API void interpolateAlpha(const std::vector<TFPrimitive*>& selection);
+
+/**
+ * Flip the positions of the \p primitives with respect to the respective range, i.e.
+ *      p' = range.max - (p - range.min)
+ * with range.min/max corresponding to the lowest/highest position in \p primitives.
+ *
+ * @param primitives   list of primitives to be flipped.
+ */
+IVW_CORE_API void flipPositions(const std::vector<TFPrimitive*>& selection);
+}  // namespace util
 
 }  // namespace inviwo

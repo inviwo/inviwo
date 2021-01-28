@@ -41,8 +41,7 @@
 namespace inviwo {
 
 TFEditorIsovalue::TFEditorIsovalue(TFPrimitive& primitive, QGraphicsScene* scene, double size)
-    : TFEditorPrimitive(primitive, scene, vec2(primitive.getPosition(), primitive.getAlpha()),
-                        size) {
+    : TFEditorPrimitive(primitive, scene, primitive.getPosition(), primitive.getAlpha(), size) {
     // ensure that Isovalue primitives are rendered behind TF control points
     defaultZValue_ = 5;
     setZValue(defaultZValue_);
@@ -50,7 +49,7 @@ TFEditorIsovalue::TFEditorIsovalue(TFPrimitive& primitive, QGraphicsScene* scene
 }
 
 void TFEditorIsovalue::onTFPrimitiveChange(const TFPrimitive& p) {
-    setTFPosition(vec2(p.getPosition(), p.getAlpha()));
+    setTFPosition(p.getPosition(), p.getAlpha());
 }
 
 QRectF TFEditorIsovalue::boundingRect() const {
@@ -101,7 +100,7 @@ void TFEditorIsovalue::paintPrimitive(QPainter* painter) {
     painter->drawRect(QRectF(QPointF(-0.5f * width, -0.5f * width), QSizeF(width, width)));
 }
 
-void TFEditorIsovalue::onItemPositionChange(const vec2& newPos) { data_.setPositionAlpha(newPos); }
+void TFEditorIsovalue::onItemPositionChange(const dvec2& newPos) { data_.setPositionAlpha(newPos); }
 
 void TFEditorIsovalue::onItemSceneHasChanged() { onTFPrimitiveChange(data_); }
 

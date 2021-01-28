@@ -181,6 +181,8 @@ private:
     void saveWorkspace(QString workspaceFileName);
     void appendWorkspace(const std::string& workspaceFileName);
 
+    std::optional<QString> askForWorkspaceToOpen();
+
     void addActions();
 
     void closeEvent(QCloseEvent* event) override;

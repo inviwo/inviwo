@@ -91,7 +91,7 @@ private:
      *
      * @param newPos   new, normalized position of the primitive
      */
-    virtual void onItemPositionChange(const vec2& newPos) override;
+    virtual void onItemPositionChange(const dvec2& newPos) override;
 
     /**
      * gets called in itemChange() when a scene change has happend

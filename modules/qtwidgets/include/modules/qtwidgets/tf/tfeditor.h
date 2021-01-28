@@ -110,6 +110,8 @@ signals:
     void showColorDialog();
     void importTF(TFPrimitiveSet& primitiveSet);
     void exportTF(const TFPrimitiveSet& primitiveSet);
+    void updateBegin();
+    void updateEnd();
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
@@ -150,6 +152,9 @@ protected:
     virtual void onTFPrimitiveDoubleClicked(const TFEditorPrimitive* p) override;
 
 private:
+    std::vector<TFPrimitive*> getAllPrimitives() const;
+    std::vector<TFPrimitive*> getAllOrSelectedPrimitives() const;
+
     std::vector<TFEditorPrimitive*> getSelectedPrimitiveItems() const;
 
     void createControlPointItem(TFPrimitive& p);
@@ -168,6 +173,9 @@ private:
     std::vector<TFEditorIsovalue*> isovalueItems_;
 
     bool mouseDrag_;
+    QPointF rigidTransRef_;
+    QPointF dragPos_;
+    TFEditorPrimitive* dragItem_ = nullptr;
     bool mouseMovedSincePress_ = false;
     bool mouseDoubleClick_ = false;
     DataMapper dataMap_;

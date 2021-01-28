@@ -83,7 +83,9 @@ context menu.</p>
 <p>Points can be adjusted using the left mouse button or using the Scalar and
 Alpha fields on the right-hand side. When using the mouse to move TF points,
 &lt;SHIFT&gt; can be used to restrict the movement to either horizontal or
-vertical.</p>
+vertical. If &lt;ALT&gt; is pressed while dragging a selection, instead of 
+moving the selected points, a scaling of the bounding box of the selected points
+is applied</p>
 <p>Alternatively, the arrow keys move TF points left/right or up/down.
 &lt;SHIFT&gt; increases the step size while &lt;ALT&gt; reduces it.</p>
 

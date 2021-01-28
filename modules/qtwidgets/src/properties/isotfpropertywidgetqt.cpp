@@ -93,31 +93,6 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
 
     util::addTFPresetsMenu(this, menu.get(), &static_cast<IsoTFProperty*>(property_)->tf_);
 
-    auto transformMenu = menu->addMenu("&Transform");
-
-    auto flip = transformMenu->addAction("&Horizontal Flip");
-    auto interpolate = transformMenu->addAction("&Interpolate Alpha");
-    auto equalize = transformMenu->addAction("&Equalize Alpha");
-
-    connect(flip, &QAction::triggered, this, [this]() {
-        NetworkLock lock(property_);
-        auto p = static_cast<IsoTFProperty*>(property_);
-        p->tf_.get().flipPositions();
-        p->isovalues_.get().flipPositions();
-    });
-    connect(interpolate, &QAction::triggered, this, [this]() {
-        NetworkLock lock(property_);
-        auto p = static_cast<IsoTFProperty*>(property_);
-        p->tf_.get().interpolateAlpha();
-        p->isovalues_.get().interpolateAlpha();
-    });
-    connect(equalize, &QAction::triggered, this, [this]() {
-        NetworkLock lock(property_);
-        auto p = static_cast<IsoTFProperty*>(property_);
-        p->tf_.get().equalizeAlpha();
-        p->isovalues_.get().equalizeAlpha();
-    });
-
     auto clearTF = menu->addAction("&Clear TF && Isovalues");
     clearTF->setEnabled(!property_->getReadOnly());
 

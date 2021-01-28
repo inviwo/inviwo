@@ -995,7 +995,7 @@ void InviwoMainWindow::openLastWorkspace(std::string workspace) {
     }
 }
 
-bool InviwoMainWindow::openWorkspace() {
+std::optional<QString> InviwoMainWindow::askForWorkspaceToOpen() {
     if (askToSaveWorkspaceChanges()) {
         InviwoFileDialog openFileDialog(this, "Open Workspace ...", "workspace");
         openFileDialog.addSidebarPath(PathType::Workspaces);
@@ -1005,8 +1005,15 @@ bool InviwoMainWindow::openWorkspace() {
 
         if (openFileDialog.exec()) {
             QString path = openFileDialog.selectedFiles().at(0);
-            return openWorkspace(path);
+            return path;
         }
+    }
+    return std::nullopt;
+}
+
+bool InviwoMainWindow::openWorkspace() {
+    if (auto path = askForWorkspaceToOpen()) {
+        return openWorkspace(*path);
     }
     return false;
 }
@@ -1049,7 +1056,8 @@ bool InviwoMainWindow::openWorkspace(QString workspaceFileName, bool isExample) 
             app_->getWorkspaceManager()->clear();
             setCurrentWorkspace(untitledWorkspaceName_);
         }
-        app_->processEvents();  // make sure the gui is ready before we unlock.
+        app_->processEvents(
+            QEventLoop::ExcludeUserInputEvents);  // make sure the gui is ready before we unlock.
     }
     saveWindowState();
     getNetworkEditor()->setModified(false);
@@ -1156,31 +1164,26 @@ void InviwoMainWindow::showWelcomeScreen() {
         connect(welcomeWidget_.get(), &WelcomeWidget::loadWorkspace, this,
                 [this](const QString& filename, bool isExample) {
                     if (askToSaveWorkspaceChanges()) {
-                        bool hide = [&]() {
-                            bool controlPressed = app_->keyboardModifiers() == Qt::ControlModifier;
-                            if (isExample && !controlPressed) {
-                                return openExample(filename);
-                            } else {
-                                return openWorkspace(filename);
-                            }
-                        }();
-                        if (hide) {
-                            hideWelcomeScreen();
-                            saveWindowState();
+                        hideWelcomeScreen();
+                        saveWindowState();
+                        bool controlPressed = app_->keyboardModifiers() == Qt::ControlModifier;
+                        if (isExample && !controlPressed) {
+                            openExample(filename);
+                        } else {
+                            openWorkspace(filename);
                         }
                     }
                 });
         connect(welcomeWidget_.get(), &WelcomeWidget::openWorkspace, this, [this]() {
-            if (openWorkspace()) {
+            if (auto path = askForWorkspaceToOpen()) {
                 hideWelcomeScreen();
+                openWorkspace(*path);
                 saveWindowState();
             }
         });
         connect(welcomeWidget_.get(), &WelcomeWidget::newWorkspace, this, [this]() {
-            if (newWorkspace()) {
-                hideWelcomeScreen();
-                saveWindowState();
-            }
+            hideWelcomeScreen();
+            saveWindowState();
         });
         connect(welcomeWidget_.get(), &WelcomeWidget::restoreWorkspace, this, [this]() {
             hideWelcomeScreen();
@@ -1210,8 +1213,6 @@ void InviwoMainWindow::hideWelcomeScreen() {
         dw->show();
     }
     welcomeHidden_.clear();
-
-    app_->processEvents(QEventLoop::ExcludeUserInputEvents);
     setUpdatesEnabled(true);
     app_->processEvents(QEventLoop::ExcludeUserInputEvents);
 }

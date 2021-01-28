@@ -360,6 +360,11 @@ QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept, const QSize& s
     return tfPixmap;
 }
 
+QPointF clamp(const QPointF& pos, const QRectF& rect) {
+    return QPointF{std::clamp(pos.x(), rect.left(), rect.right()),
+                   std::clamp(pos.y(), rect.top(), rect.bottom())};
+}
+
 QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,
                             bool decorationOffset /*= true*/) {
 #ifdef WIN32

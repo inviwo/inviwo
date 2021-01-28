@@ -77,7 +77,7 @@ public:
      * @param size     base size of primitive
      */
     TFEditorPrimitive(TFPrimitive& primitive, QGraphicsScene* scene = nullptr,
-                      const vec2& pos = vec2(), double size = 14.0);
+                      double position = 0.0, float alpha = 0.0f, double size = 14.0);
     virtual ~TFEditorPrimitive() = default;
 
     TFPrimitive& getPrimitive();
@@ -97,7 +97,7 @@ public:
      *
      * @param tfpos   normalized position [0,1] corresponding to scalar value and opacity
      */
-    void setTFPosition(const dvec2& tfpos);
+    void setTFPosition(double pos, float alpha);
 
     virtual const QPointF& getCurrentPos() const;
 
@@ -152,7 +152,7 @@ protected:
      *
      * @param newPos   new, normalized position of the primitive
      */
-    virtual void onItemPositionChange([[maybe_unused]] const vec2& newPos) {}
+    virtual void onItemPositionChange([[maybe_unused]] const dvec2& newPos) {}
 
     /**
      * gets called in itemChange() when a scene change has happend

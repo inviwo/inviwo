@@ -31,6 +31,7 @@
 #include <inviwo/core/util/exception.h>
 
 #include <fmt/format.h>
+#include <cmath>
 
 namespace inviwo {
 namespace colorbrewer {
@@ -121,67 +122,68 @@ std::map<Family, std::vector<dvec4>> getColormaps(const Category& category,
 }
 
 TransferFunction getTransferFunction(const Category& category, const Family& family,
-                                     glm::uint8 nColors, bool discrete, double midPoint) {
+                                     const size_t nColors, const bool discrete,
+                                     const double midPoint, const double start, const double stop) {
     TransferFunction tf;
-    auto colors = colorbrewer::getColormap(family, nColors);
+
+    const size_t minColors = getMinNumberOfColorsForFamily(family);
+    const size_t maxColors = getMaxNumberOfColorsForFamily(family);
+
+    const auto& colormap = colorbrewer::getColormap(
+        family, static_cast<glm::uint8>(std::clamp(nColors, minColors, maxColors)));
+
+    auto color = [&](size_t i) { return vec4(colormap[i % colormap.size()]); };
+
+    auto addPoint = [&](double pos, size_t i) { tf.add(std::clamp(pos, 0.0, 1.0), color(i)); };
+    auto addPointAlmost = [&](double pos, size_t i) {
+        addPoint(pos - 100.0 * std::numeric_limits<double>::epsilon(), i);
+    };
 
     if (category == colorbrewer::Category::Diverging) {
         if (discrete) {
-            auto dt = midPoint / (0.5 * (colors.size()));
-            double start = 0, end = std::max(dt - std::numeric_limits<double>::epsilon(), 0.);
-            for (auto i = 0u; i < colors.size() / 2; i++) {
-                tf.add(start, vec4(colors[i]));
-                tf.add(end, vec4(colors[i]));
-                start += dt;
-                end += dt;
+            if (midPoint > start) {
+                const auto dt = (midPoint - start) / (0.5 * nColors);
+                for (size_t i = 0; i < nColors / 2; i++) {
+                    addPoint(start + i * dt, i);
+                    addPointAlmost(start + (i + 1) * dt, i);
+                }
             }
-            tf.add(start, vec4(colors[colors.size() / 2]));
-            if (midPoint < 1.0) {
-                dt = (1.0 - midPoint) / (0.5 * (colors.size()));
-                tf.add(start + dt - std::numeric_limits<double>::epsilon(),
-                       vec4(colors[colors.size() / 2]));
-                start = start + dt;
-                end = start + dt - std::numeric_limits<double>::epsilon();
-                for (auto i = colors.size() / 2 + 1; i < colors.size(); i++) {
-                    // Avoid numerical issues with min
-                    tf.add(std::min(start, 1.0), vec4(colors[i]));
-                    tf.add(std::min(end, 1.0), vec4(colors[i]));
-                    start += dt;
-                    end += dt;
+            addPoint(midPoint, nColors / 2);
+            if (midPoint < stop) {
+                const auto dt = (stop - midPoint) / (0.5 * nColors);
+                addPointAlmost(midPoint + dt, nColors / 2);
+                for (auto i = nColors / 2 + 1; i < nColors; i++) {
+                    addPoint(start + i * dt, i);
+                    addPointAlmost(start + (i + 1) * dt, i);
                 }
             }
         } else {
-            auto dt = midPoint / (0.5 * (colors.size() - 1.0));
-            for (auto i = 0u; i < colors.size() / 2; i++) {
-                tf.add(i * dt, vec4(colors[i]));
+            if (midPoint > start) {
+                const auto dt = (midPoint - start) / (0.5 * (nColors - 1.0));
+                for (size_t i = 0; i < nColors / 2; i++) {
+                    addPoint(start + i * dt, i);
+                }
             }
-            tf.add(midPoint, vec4(colors[colors.size() / 2]));
-            if (midPoint < 1.0) {
-                dt = (1.0 - midPoint) / (0.5 * (colors.size() - 1.0));
-                auto t = midPoint + dt;
-                for (auto i = colors.size() / 2 + 1; i < colors.size(); i++) {
-                    // Avoid numerical issues with min
-                    tf.add(std::min(t, 1.0), vec4(colors[i]));
-                    t += dt;
+            addPoint(midPoint, nColors / 2);
+            if (midPoint < stop) {
+                const auto dt = (stop - midPoint) / (0.5 * (nColors - 1.0));
+                for (size_t i = nColors / 2 + 1; i < nColors; i++) {
+                    addPoint(midPoint + (i - nColors / 2) * dt, i);
                 }
             }
         }
 
     } else {
         if (discrete) {
-            double dt = 1.0 / (colors.size());
-            double start = 0, end = dt - std::numeric_limits<double>::epsilon();
-            for (const auto& c : colors) {
-                tf.add(start, vec4(c));
-                tf.add(end, vec4(c));
-                start += dt;
-                end += dt;
+            const auto dt = (stop - start) / nColors;
+            for (size_t i = 0; i < nColors; i++) {
+                addPoint(start + i * dt, i);
+                addPointAlmost(start + (i + 1) * dt, i);
             }
         } else {
-            auto dt = 1.0 / (colors.size() - 1.0);
-            size_t idx = 0;
-            for (const auto& c : colors) {
-                tf.add(idx++ * dt, vec4(c));
+            const auto dt = (stop - start) / (nColors - 1.0);
+            for (size_t i = 0; i < nColors; i++) {
+                addPoint(start + i * dt, i);
             }
         }
     }
