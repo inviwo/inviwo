@@ -84,6 +84,8 @@ void exposeInviwoApplication(pybind11::module& m) {
              py::return_value_policy::reference)
 
         .def("waitForPool", &InviwoApplication::waitForPool)
+        .def("resizePool", &InviwoApplication::resizePool)
+        .def("getPoolSize", &InviwoApplication::getPoolSize)
         .def("closeInviwoApplication", &InviwoApplication::closeInviwoApplication)
 
         .def("getOutputPath",

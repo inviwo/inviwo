@@ -163,6 +163,8 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    void fitData();
+
 private:
     CameraFactory* factory_;
     OptionPropertyString cameraType_;
@@ -192,7 +194,6 @@ private:
     std::vector<ButtonGroupProperty::Button> buttons();
     void updateFittingVisibility();
     void setView(::inviwo::camerautil::Side side);
-    void fitData();
     void flipUp();
     void setNearFar();
     void setLookRange();

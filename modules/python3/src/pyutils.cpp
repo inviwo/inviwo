@@ -59,7 +59,8 @@ void removeModulePath(const std::string& path) {
     namespace py = pybind11;
 
     if (!Py_IsInitialized()) {
-        throw Exception("addModulePath(): Python is not initialized", IVW_CONTEXT_CUSTOM("pyutil"));
+        throw Exception("removeModulePath(): Python is not initialized",
+                        IVW_CONTEXT_CUSTOM("pyutil"));
     }
 
     std::string pathConv = path;
