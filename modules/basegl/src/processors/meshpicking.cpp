@@ -161,7 +161,7 @@ void MeshPicking::process() {
     {
         utilgl::CullFaceState culling(cullFace_.get());
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-        utilgl::DepthFuncState depthfunc(GL_ALWAYS);
+        utilgl::DepthFuncState depthfunc(GL_LESS);
 
         drawer_->draw();
     }

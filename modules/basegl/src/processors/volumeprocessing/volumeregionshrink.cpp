@@ -69,7 +69,7 @@ void main() {
             }
         }
     }
-    FragData0 = mix(value, vec4(0.0), border);
+    FragData0 = mix(value, vec4(0.0), bvec4(border));
 }   
 )";
 
@@ -110,6 +110,9 @@ void VolumeRegionShrink::process() {
 
     out_[0]->setModelMatrix(volume->getModelMatrix());
     out_[0]->setWorldMatrix(volume->getWorldMatrix());
+    out_[0]->setSwizzleMask(volume->getSwizzleMask());
+    out_[0]->setWrapping(volume->getWrapping());
+    out_[0]->setInterpolation(volume->getInterpolation());
     out_[0]->copyMetaDataFrom(*volume);
     out_[0]->dataMap_ = volume->dataMap_;
 
@@ -131,7 +134,9 @@ void VolumeRegionShrink::process() {
         utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
     }
     if (iterations_ == 1) {
+        FrameBufferObject::deactivateFBO();
         outport_.setData(out_[0]);
+        out_[1].reset();
         return;
     }
 
@@ -142,6 +147,9 @@ void VolumeRegionShrink::process() {
 
     out_[1]->setModelMatrix(volume->getModelMatrix());
     out_[1]->setWorldMatrix(volume->getWorldMatrix());
+    out_[1]->setSwizzleMask(volume->getSwizzleMask());
+    out_[1]->setWrapping(volume->getWrapping());
+    out_[1]->setInterpolation(volume->getInterpolation());
     out_[1]->copyMetaDataFrom(*volume);
     out_[1]->dataMap_ = volume->dataMap_;
 
@@ -151,7 +159,7 @@ void VolumeRegionShrink::process() {
 
     size_t src = 1;
     size_t dst = 0;
-    for (int i = 2; i < iterations_; ++i) {
+    for (int i = 1; i < iterations_; ++i) {
         std::swap(src, dst);
         glDrawBuffer(static_cast<GLenum>(GL_COLOR_ATTACHMENT0 + dst));
         TextureUnitContainer cont;
