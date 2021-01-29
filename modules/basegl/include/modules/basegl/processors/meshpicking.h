@@ -27,22 +27,21 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_POSITIONWIDGETPROCESSOR_H
-#define IVW_POSITIONWIDGETPROCESSOR_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/meshport.h>
-#include <modules/opengl/image/imagecompositor.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/interaction/cameratrackball.h>
+#include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/image/imagecompositor.h>
+#include <inviwo/core/datastructures/image/image.h>
 
 namespace inviwo {
 
@@ -83,6 +82,8 @@ public:
 
     virtual void process() override;
 
+    void render();
+
     void handlePickingEvent(PickingEvent*);
 
     void updatePosition(PickingEvent* p);
@@ -91,7 +92,6 @@ private:
     MeshInport meshInport_;
     ImageInport imageInport_;
     ImageOutport outport_;
-    ImageCompositor compositor_;
 
     OptionPropertyInt cullFace_;
 
@@ -108,9 +108,10 @@ private:
     std::shared_ptr<const Mesh> mesh_;
     std::unique_ptr<MeshDrawerGL> drawer_;
 
+    std::optional<ImageCompositor> compositor_;
+    std::optional<Image> tmp_;
+
     bool highlight_ = false;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_POSITIONWIDGETPROCESSOR_H

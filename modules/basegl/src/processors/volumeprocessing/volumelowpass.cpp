@@ -43,7 +43,7 @@ const ProcessorInfo VolumeLowPass::processorInfo_{
     "Volume Low Pass",           // Display name
     "Volume Operation",          // Category
     CodeState::Stable,           // Code state
-    "GL",                        // Tags
+    Tags::GL,                    // Tags
 };
 const ProcessorInfo VolumeLowPass::getProcessorInfo() const { return processorInfo_; }
 
@@ -53,6 +53,7 @@ VolumeLowPass::VolumeLowPass()
     , useGaussianWeights_("useGaussianWeights", "Use Gaussian Weights")
     , sigma_("sigma", "Sigma", 1.f, 0.001f, 2.f, 0.001f)
     , updateDataRange_("updateDataRange", "Update Data Range", false) {
+
     addProperty(kernelSize_);
     addProperty(useGaussianWeights_);
     addProperty(updateDataRange_);

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,37 +27,55 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/processors/imageprocessing/imagecompositeprocessorgl.h>
+#pragma once
+
+#include <modules/basegl/baseglmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/opengl/shader/shaderresource.h>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ImageCompositeProcessorGL::processorInfo_{
-    "org.inviwo.ImageCompositeProcessorGL",  // Class identifier
-    "Image Composite",                       // Display name
-    "Image Operation",                       // Category
-    CodeState::Stable,                       // Code state
-    Tags::GL,                                // Tags
+/** \docpage{org.inviwo.VolumeRegionShrink, Volume Region Shrink}
+ * ![](org.inviwo.VolumeRegionShrink.png?classIdentifier=org.inviwo.VolumeRegionShrink)
+ * Shrinks regions of identical values. The processor will assign 0 to each border voxel in each
+ * iteration. A voxel is considered on the border if the value of any of the 26 closest neighbors is
+ * different. The procedure is repeated number of iterations times.
+ *
+ * ### Inports
+ *   * __inputVolume__ Input volume
+ *
+ * ### Outports
+ *   * __outputVolume__ Output volume
+ *
+ * ### Properties
+ *   * __iterations__ How many iterations to use
+ */
+class IVW_MODULE_BASEGL_API VolumeRegionShrink : public Processor {
+public:
+    VolumeRegionShrink();
+    virtual ~VolumeRegionShrink() = default;
+
+    virtual void process() override;
+
+    virtual void initializeResources() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    VolumeInport inport_;
+    VolumeOutport outport_;
+    IntProperty iterations_;
+
+    std::shared_ptr<StringShaderResource> fragShader_;
+    Shader shader_;
+
+    std::array<std::shared_ptr<Volume>, 2> out_;
+    FrameBufferObject fbo_;
 };
-const ProcessorInfo ImageCompositeProcessorGL::getProcessorInfo() const { return processorInfo_; }
-
-ImageCompositeProcessorGL::ImageCompositeProcessorGL()
-    : Processor()
-    , imageInport1_("imageInport1")
-    , imageInport2_("imageInport2")
-    , outport_("outport")
-    , compositor_{} {
-
-    addPort(imageInport1_);
-    addPort(imageInport2_);
-    addPort(outport_);
-
-    compositor_.shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-}
-
-void ImageCompositeProcessorGL::process() {
-    compositor_.composite(imageInport1_, imageInport2_, outport_, ImageType::ColorDepthPicking);
-}
 
 }  // namespace inviwo

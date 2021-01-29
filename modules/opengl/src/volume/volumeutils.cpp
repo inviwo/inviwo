@@ -131,8 +131,8 @@ void setShaderUniforms(Shader& shader, const VolumeInport& port, std::string_vie
     setShaderUniforms(shader, *port.getData(), samplerID);
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, VolumeInport& volumePort) {
-
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
+                        const VolumeInport& volumePort) {
     TextureUnit unit;
     utilgl::bindTexture(volumePort, unit);
     shader.setUniform(volumePort.getIdentifier(), unit.getUnitNumber());

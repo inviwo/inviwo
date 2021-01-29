@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMELOWPASS_H
-#define IVW_VOLUMELOWPASS_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
@@ -80,5 +78,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMELOWPASS_H

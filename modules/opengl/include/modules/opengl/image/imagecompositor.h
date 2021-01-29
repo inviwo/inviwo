@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGECOMPOSITOR_H
-#define IVW_IMAGECOMPOSITOR_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/shader/shader.h>
@@ -46,21 +44,20 @@ namespace inviwo {
 class IVW_MODULE_OPENGL_API ImageCompositor {
 public:
     ImageCompositor(std::string programFileName = "composite.frag");
-    virtual ~ImageCompositor() = default;
+    ~ImageCompositor() = default;
 
-    void composite(const Image& source, Image& target, ImageType type);
-    void composite(ImageInport& source, ImageOutport& target, ImageType type);
+    /**
+     * Blend @p source0 and @p source1 using depth into the @p destination
+     */
+    void composite(const Image& source0, const Image& source1, Image& destination, ImageType type);
 
-private:
-    void copyTextures(const Image& target);
-    void bindTextures(TextureUnitContainer& cont, const std::string& id);
+    /**
+     * Blend @p source0 and @p source1 using depth into the @p destination
+     */
+    void composite(const ImageInport& source0, const ImageInport& source1,
+                   ImageOutport& destination, ImageType type);
 
-    Shader shader_;
-    Texture2D colorTex_;
-    Texture2D depthTex_;
-    Texture2D pickingTex_;
+    Shader shader;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGECOMPOSITOR_H

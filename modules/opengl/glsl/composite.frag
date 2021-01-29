@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include "utils/structs.glsl"
-#include "utils/sampler2d.glsl"
 
 uniform sampler2D tex0Color;
 uniform sampler2D tex0Depth;

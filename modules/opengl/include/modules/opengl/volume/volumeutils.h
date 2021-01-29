@@ -49,7 +49,7 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const VolumeInport&
                                              std::string_view samplerID);
 
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                                              VolumeInport& volume);
+                                              const VolumeInport& volume);
 
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
                                               const Volume& volume, std::string_view samplerID);

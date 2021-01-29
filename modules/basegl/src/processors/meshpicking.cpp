@@ -57,7 +57,6 @@ MeshPicking::MeshPicking()
     , meshInport_("geometryInport")
     , imageInport_("imageInport")
     , outport_("outport")
-    , compositor_()
     , cullFace_("cullFace", "Cull Face",
                 {{"culldisable", "Disable", GL_NONE},
                  {"cullfront", "Front", GL_FRONT},
@@ -147,8 +146,25 @@ void MeshPicking::process() {
         drawer_ = std::make_unique<MeshDrawerGL>(mesh_.get());
     }
 
-    utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
+    if (imageInport_.isReady()) {
+        if (!tmp_ || tmp_->getDimensions() != outport_.getDimensions() ||
+            tmp_->getDataFormat() != outport_.getDataFormat()) {
+            tmp_.emplace(outport_.getDimensions(), outport_.getDataFormat());
+        }
+        if (!compositor_) {
+            compositor_.emplace();
+        }
+        utilgl::activateAndClearTarget(*tmp_, ImageType::ColorDepthPicking);
+        render();
+        compositor_->composite(*imageInport_.getData(), *tmp_, *outport_.getEditableData(),
+                               ImageType::ColorDepthPicking);
+    } else {
+        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
+        render();
+    }
+}
 
+void MeshPicking::render() {
     shader_.activate();
     shader_.setUniform("pickingColor", picking_.getColor());
     shader_.setUniform("highlight", highlight_);
@@ -162,16 +178,13 @@ void MeshPicking::process() {
     {
         utilgl::CullFaceState culling(cullFace_.get());
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-        utilgl::DepthFuncState depthfunc(GL_ALWAYS);
+        utilgl::DepthFuncState depthfunc(GL_LESS);
 
         drawer_->draw();
     }
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
-    if (imageInport_.hasData()) {
-        compositor_.composite(imageInport_, outport_, ImageType::ColorDepthPicking);
-    }
 }
 
 }  // namespace inviwo
