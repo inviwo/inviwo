@@ -69,10 +69,10 @@ marching::Config::Config()
              {8, 9, 10, 11}}}
     , triangulations{[]() {
         std::unordered_map<size_t, std::vector<Triangle>> tmp;
-        tmp[3] = {{{0, 1, 2}}};
-        tmp[4] = {{{0, 1, 2}, {0, 2, 3}}};
-        tmp[5] = {{{0, 1, 2}, {0, 2, 3}, {0, 3, 4}}};
-        tmp[6] = {{{0, 1, 2}, {2, 3, 4}, {0, 4, 5}, {0, 2, 4}}};
+        tmp[3] = {{0, 1, 2}};
+        tmp[4] = {{0, 1, 2}, {0, 2, 3}};
+        tmp[5] = {{0, 1, 2}, {0, 2, 3}, {0, 3, 4}};
+        tmp[6] = {{0, 1, 2}, {2, 3, 4}, {0, 4, 5}, {0, 2, 4}};
         return tmp;
     }()}
     , nodeIdsToEdgeId{util::make_array<8, NodeId>([&](NodeId i) -> std::array<EdgeId, 8> {

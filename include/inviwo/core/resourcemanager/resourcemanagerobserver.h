@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/observer.h>
 
+#include <string>
 #include <typeindex>
 #include <string>
 
