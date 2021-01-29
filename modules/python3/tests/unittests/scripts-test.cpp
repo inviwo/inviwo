@@ -36,20 +36,6 @@
 #include <modules/python3/python3module.h>
 #include <modules/python3/pythonscript.h>
 #include <modules/python3/pybindutils.h>
-
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
-
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-
 #include <inviwo/core/properties/optionproperty.h>
 
 #include <pybind11/pybind11.h>

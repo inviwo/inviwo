@@ -33,7 +33,6 @@
 #include <inviwopy/inviwopy.h>
 #include <inviwo/core/properties/constraintbehavior.h>
 
-#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -182,59 +181,6 @@ void exposeProperties(py::module& m) {
     util::for_each_type<OrdinalPropetyTypes>{}(OrdinalRefPropertyHelper{}, m);
     util::for_each_type<OptionPropetyTypes>{}(OptionPropertyHelper{}, m);
     util::for_each_type<MinMaxPropertyTypes>{}(MinMaxHelper{}, m);
-
-    PyPropertyClass<CameraProperty, CompositeProperty>(m, "CameraProperty")
-        .def(py::init([](const std::string& identifier, const std::string& displayName, vec3 eye,
-                         vec3 center, vec3 lookUp, Inport* inport,
-                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                 return new CameraProperty(identifier, displayName, eye, center, lookUp, inport,
-                                           invalidationLevel, semantics);
-             }),
-             py::arg("identifier"), py::arg("displayName"), py::arg("eye") = vec3(0.0f, 0.0f, 2.0f),
-             py::arg("center") = vec3(0.0f), py::arg("lookUp") = vec3(0.0f, 1.0f, 0.0f),
-             py::arg("inport") = nullptr,
-             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
-             py::arg("semantics") = PropertySemantics::Default)
-        .def_property_readonly("camera",
-                               static_cast<Camera& (CameraProperty::*)()>(&CameraProperty::get))
-        .def_property_readonly("value",
-                               static_cast<Camera& (CameraProperty::*)()>(&CameraProperty::get))
-        .def_property(
-            "lookFrom", &CameraProperty::getLookFrom,
-            [](CameraProperty* cam, vec3 val) { cam->setLookFrom(val); },
-            py::return_value_policy::copy)
-        .def_property(
-            "lookTo", &CameraProperty::getLookTo,
-            [](CameraProperty* cam, vec3 val) { cam->setLookTo(val); },
-            py::return_value_policy::copy)
-        .def_property(
-            "lookUp", &CameraProperty::getLookUp,
-            [](CameraProperty* cam, vec3 val) { cam->setLookUp(val); },
-            py::return_value_policy::copy)
-        .def_property_readonly("lookRight", &CameraProperty::getLookRight)
-        .def_property("aspectRatio", &CameraProperty::getAspectRatio,
-                      &CameraProperty::setAspectRatio)
-        .def_property("nearPlane", &CameraProperty::getNearPlaneDist,
-                      &CameraProperty::setNearPlaneDist)
-        .def_property("farPlane", &CameraProperty::getFarPlaneDist,
-                      &CameraProperty::setFarPlaneDist)
-        .def("setLook",
-             [](CameraProperty* cam, vec3 from, vec3 to, vec3 up) { cam->setLook(from, to, up); })
-        .def_property_readonly("lookFromMinValue", &CameraProperty::getLookFromMinValue)
-        .def_property_readonly("lookFromMaxValue", &CameraProperty::getLookFromMaxValue)
-        .def_property_readonly("lookToMinValue", &CameraProperty::getLookToMinValue)
-        .def_property_readonly("lookToMaxValue", &CameraProperty::getLookToMaxValue)
-        .def("getWorldPosFromNormalizedDeviceCoords",
-             &CameraProperty::getWorldPosFromNormalizedDeviceCoords)
-        .def("getClipPosFromNormalizedDeviceCoords",
-             &CameraProperty::getClipPosFromNormalizedDeviceCoords)
-        .def("getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth",
-             &CameraProperty::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth)
-        .def_property_readonly("viewMatrix", &CameraProperty::viewMatrix)
-        .def_property_readonly("projectionMatrix", &CameraProperty::projectionMatrix)
-        .def_property_readonly("inverseViewMatrix", &CameraProperty::inverseViewMatrix)
-        .def_property_readonly("inverseProjectionMatrix", &CameraProperty::inverseProjectionMatrix)
-        .def("fitData", &CameraProperty::fitData);
 
     PyPropertyClass<TransferFunctionProperty, Property>(m, "TransferFunctionProperty")
         .def(py::init([](const std::string& identifier, const std::string& displayName,

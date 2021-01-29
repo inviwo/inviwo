@@ -685,6 +685,7 @@ set(TEST_FILES
     tests/unittests/enumoptionproperty-test.cpp
     tests/unittests/filesystem-test.cpp
     tests/unittests/glm-test.cpp
+    tests/unittests/image-tests.cpp
     tests/unittests/indirectiterator-tests.cpp
     tests/unittests/interpolation-tests.cpp
     tests/unittests/inviwo-core-unittest-main.cpp

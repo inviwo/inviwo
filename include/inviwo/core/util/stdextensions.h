@@ -410,6 +410,18 @@ bool none_of(const T& cont, UnaryPredicate pred) {
     return std::none_of(begin(cont), end(cont), pred);
 }
 
+template <typename Iter, typename Proj = identity>
+Iter find_not_equal(Iter begin, Iter end, Proj proj = {}) {
+    if (begin == end) return end;
+
+    decltype(auto) val = std::invoke(proj, *begin);
+
+    for (auto it = std::next(begin); it != end; ++it) {
+        if (val != std::invoke(proj, *it)) return it;
+    }
+    return end;
+}
+
 template <class Iter>
 struct iter_range : std::pair<Iter, Iter> {
     using value_type = typename std::iterator_traits<Iter>::value_type;

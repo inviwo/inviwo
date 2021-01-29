@@ -163,7 +163,37 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    /**
+     * Fit the current bounding box into view, keeping the view direction
+     * If updateNearFar is set it will also adjust near and far.
+     * If updateLookRanges is set it will also adjust the range of look from
+     * @pre There must be a bounding box set
+     */
     void fitData();
+    /**
+     * Fit the current bounding box into view and set the view direction to the specified side
+     * If updateNearFar is set it will also adjust near and far.
+     * If updateLookRanges is set it will also adjust the range of look from
+     * @pre There must be a bounding box set
+     */
+    void setView(camerautil::Side side);
+
+    /**
+     * Flip the direction of the up vector
+     */
+    void flipUp();
+
+    /**
+     * Adjust the near and far values for the current bounding box
+     * @pre There must be a bounding box set
+     */
+    void setNearFar();
+
+    /**
+     * Adjust the look from ranges for the current bounding box
+     * @pre There must be a bounding box set
+     */
+    void setLookRange();
 
 private:
     CameraFactory* factory_;
@@ -193,10 +223,6 @@ private:
 
     std::vector<ButtonGroupProperty::Button> buttons();
     void updateFittingVisibility();
-    void setView(::inviwo::camerautil::Side side);
-    void flipUp();
-    void setNearFar();
-    void setLookRange();
 
     CompositeProperty settings_;
     BoolProperty updateNearFar_;

@@ -52,6 +52,7 @@
 #include <inviwopy/pylogging.h>
 #include <inviwopy/pyevent.h>
 #include <inviwopy/pycamera.h>
+#include <inviwopy/pycameraproperty.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/commandlineparser.h>
@@ -102,6 +103,7 @@ PYBIND11_MODULE(inviwopy, m) {
     exposeCamera(dataModule);
     exposeTFPrimitiveSet(dataModule);
     exposeInviwoModule(m);
+    exposeCameraProperty(m, propertiesModule);
 
     py::class_<Settings, PropertyOwner, std::unique_ptr<Settings, py::nodelete>>(m, "Settings");
 

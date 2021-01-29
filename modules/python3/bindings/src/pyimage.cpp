@@ -111,7 +111,7 @@ void exposeImage(py::module& m) {
     py::class_<Image, std::shared_ptr<Image>>(m, "Image")
         .def(py::init<size2_t, const DataFormatBase*>())
         .def(py::init<std::shared_ptr<Layer>>())
-        .def(py::init<std::shared_ptr<Layer>, std::shared_ptr<Layer>, std::shared_ptr<Layer>>())
+        .def(py::init<std::vector<std::shared_ptr<Layer>>>())
         .def("setDimensions", &Image::setDimensions)
         .def("addColorLayer", &Image::addColorLayer)
         .def("clone", [](Image& self) { return self.clone(); })

@@ -31,16 +31,62 @@
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/document.h>
-#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
 Image::Image(size2_t dimensions, const DataFormatBase* format)
     : DataGroup<Image, ImageRepresentation>()
     , MetaDataOwner()
+    , colorLayers_{{createColorLayer(dimensions, format)}}
     , depthLayer_{createDepthLayer(dimensions)}
-    , pickingLayer_{createPickingLayer(dimensions)} {
-    colorLayers_.push_back(createColorLayer(dimensions, format));
+    , pickingLayer_{createPickingLayer(dimensions)} {}
+
+Image::Image(std::vector<std::shared_ptr<Layer>> layers)
+    : DataGroup<Image, ImageRepresentation>(), MetaDataOwner() {
+
+    if (util::find_not_equal(layers.begin(), layers.end(),
+                             [](const auto& a) { return a->getDimensions(); }) != layers.end()) {
+        throw Exception("All layers has to have the same dimensions", IVW_CONTEXT);
+    }
+
+    const auto dims = layers.empty() ? size2_t{8, 8} : layers.front()->getDimensions();
+
+    if (auto it =
+            std::find_if(layers.begin(), layers.end(),
+                         [](auto& layer) { return layer->getLayerType() == LayerType::Depth; });
+        it != layers.end()) {
+
+        depthLayer_ = *it;
+        layers.erase(it);
+    } else {
+        depthLayer_ = createDepthLayer(dims);
+    }
+
+    if (auto it =
+            std::find_if(layers.begin(), layers.end(),
+                         [](auto& layer) { return layer->getLayerType() == LayerType::Picking; });
+        it != layers.end()) {
+
+        pickingLayer_ = *it;
+        layers.erase(it);
+    } else {
+        pickingLayer_ = createPickingLayer(dims);
+    }
+
+    if (auto it =
+            std::find_if(layers.begin(), layers.end(),
+                         [](auto& layer) { return layer->getLayerType() != LayerType::Color; });
+        it != layers.end()) {
+        throw Exception(fmt::format("Multiple layers of type {} found", (*it)->getLayerType()),
+                        IVW_CONTEXT);
+    }
+
+    if (layers.empty()) {
+        colorLayers_.push_back(createColorLayer(dims));
+    } else {
+        colorLayers_ = std::move(layers);
+    }
 }
 
 Image::Image(std::shared_ptr<Layer> layer)
@@ -75,35 +121,6 @@ Image::Image(std::shared_ptr<Layer> layer)
     }
 }
 
-Image::Image(std::shared_ptr<Layer> color, std::shared_ptr<Layer> depth,
-             std::shared_ptr<Layer> picking)
-    : DataGroup<Image, ImageRepresentation>(), MetaDataOwner() {
-    size2_t dims{8, 8};
-    if (color) {
-        dims = color->getDimensions();
-        IVW_ASSERT(color->getLayerType() == LayerType::Color,
-                   "color argument does not have LayerType::Color");
-        colorLayers_.push_back(color);
-    } else {
-        colorLayers_.push_back(createColorLayer());
-    }
-
-    if (depth) {
-        IVW_ASSERT(depth->getLayerType() == LayerType::Depth,
-                   "depth argument does not have LayerType::Depth");
-        depthLayer_ = depth;
-    } else {
-        depthLayer_ = createDepthLayer(dims);
-    }
-
-    if (picking) {
-        IVW_ASSERT(picking->getLayerType() == LayerType::Picking,
-                   "picking argument does not have LayerType::Picking");
-        pickingLayer_ = picking;
-    } else {
-        pickingLayer_ = createPickingLayer(dims);
-    }
-}
 Image::Image(const Image& rhs) : DataGroup<Image, ImageRepresentation>(rhs), MetaDataOwner(rhs) {
     for (const auto& elem : rhs.colorLayers_) {
         colorLayers_.push_back(std::shared_ptr<Layer>(elem->clone()));
@@ -292,8 +309,11 @@ dvec4 Image::readPixel(size2_t pos, LayerType layer, size_t index) const {
 
     if (it != representations_.end()) {
         return it->second->readPixel(pos, layer, index);
+    } else {
+        // Fallback. If no representation exist, create ImageRAM one
+        const auto imageRAM = getRepresentation<ImageRAM>();
+        return imageRAM->readPixel(pos, layer, index);
     }
-    return dvec4(0.0);
 }
 
 uvec3 Image::colorCode = uvec3(90, 127, 183);
