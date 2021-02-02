@@ -232,7 +232,7 @@ private:
     bool testIsSetUp(const Test& test) const;
     void setupTest(const Test& test);
 
-    std::vector<bool*> deactivated;
+    std::vector<bool*> deactivated_;
     int last_deactivated;
 
     std::vector<Test> allTests;

@@ -138,15 +138,15 @@ PropertyEffect TestPropertyComposite::getPropertyEffect(
     return res;
 }
 
-size_t TestPropertyComposite::totalCheckedComponents() const {
+size_t TestPropertyComposite::totalNumCheckedProperties() const {
     size_t result = 0;
-    for_each_checked([&](auto prop) { result += prop->totalCheckedComponents(); });
+    for_each_checked([&](auto prop) { result += prop->totalNumCheckedProperties(); });
     return result;
 }
 bool* TestPropertyComposite::deactivated(size_t i) {
     bool* result = nullptr;
     for_each_checked([&](auto prop) {
-        const size_t sc = prop->totalCheckedComponents();
+        const size_t sc = prop->totalNumCheckedProperties();
         if (result == nullptr && i < sc)
             result = prop->deactivated(i);
         else
@@ -159,7 +159,7 @@ bool* TestPropertyComposite::deactivated(size_t i) {
 const bool* TestPropertyComposite::deactivated(size_t i) const {
     bool* result = nullptr;
     for_each_checked([&](auto prop) {
-        const size_t sc = prop->totalCheckedComponents();
+        const size_t sc = prop->totalNumCheckedProperties();
         if (result == nullptr && i < sc)
             result = prop->deactivated(i);
         else
@@ -181,17 +181,6 @@ std::string TestPropertyComposite::textualDescription(unsigned int indent) const
 }
 
 std::ostream& TestPropertyComposite::ostr(std::ostream& out,
-                                          std::shared_ptr<TestResult> testResult) const {
-    out << "(";
-    size_t n = 0;
-    for (const auto& subProp : subProperties) {
-        if (n++ > 0) out << ", ";
-        subProp->ostr(out, testResult);
-    }
-    return out << ")";
-}
-
-std::ostream& TestPropertyComposite::ostr(std::ostream& out,
                                           std::shared_ptr<TestResult> newTestResult,
                                           std::shared_ptr<TestResult> oldTestResult) const {
     out << getDisplayName() << ":" << std::endl;
@@ -207,12 +196,11 @@ void TestPropertyComposite::setToDefault() const {
 void TestPropertyComposite::storeDefault() {
     for (const auto& subProp : subProperties) subProp->storeDefault();
 }
-std::vector<std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
+std::vector<std::pair<pbt::AssignmentComparator,
+	std::vector<std::shared_ptr<PropertyAssignment>>>>
 TestPropertyComposite::generateAssignmentsCmp(std::default_random_engine& rng) const {
 
-    std::vector<
-        std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
-        res;
+    std::vector<std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>> res;
     for_each_checked([&](auto subProp) {
         auto tmp = subProp->generateAssignmentsCmp(rng);
         res.insert(res.end(), std::make_move_iterator(tmp.begin()),
@@ -222,7 +210,7 @@ TestPropertyComposite::generateAssignmentsCmp(std::default_random_engine& rng) c
 }
 
 void TestPropertyComposite::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+    s.serialize("type", classIdentifier(), SerializationTarget::Attribute);
 
     TestProperty::serialize(s);
 
@@ -261,7 +249,7 @@ TestPropertyTyped<T>::TestPropertyTyped(T* original)
         }
         return res;
     }())
-    , deactivated_(std::make_unique<bool>(false)) {
+    , deactivated_(false) {
 
     for (size_t i = 0; i < numComponents; i++) {
         getBoolComp()->addProperty(getEffectOption(i));
@@ -288,18 +276,18 @@ void TestPropertyTyped<T>::storeDefault() {
     defaultValue_ = getTypedProperty()->get();
 }
 template <typename T>
-size_t TestPropertyTyped<T>::totalCheckedComponents() const {
+size_t TestPropertyTyped<T>::totalNumCheckedProperties() const {
     return getBoolComp()->isChecked();
 }
 template <typename T>
 bool* TestPropertyTyped<T>::deactivated(size_t i) {
     IVW_ASSERT(i == 0, "TestPropertyTyped::deactivated: index has to be 0");
-    return deactivated_.get();
+    return &deactivated_;
 }
 template <typename T>
 const bool* TestPropertyTyped<T>::deactivated(size_t i) const {
     IVW_ASSERT(i == 0, "TestPropertyTyped::deactivated: index has to be 0");
-    return deactivated_.get();
+    return &deactivated_;
 }
 template <typename T>
 std::string TestPropertyTyped<T>::textualDescription(unsigned int indent) const {
@@ -384,11 +372,12 @@ auto TestPropertyTyped<T>::selectedEffects() const
     return selectedEffects;
 }
 template <typename T>
-std::vector<std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
+std::vector<std::pair<pbt::AssignmentComparator,
+	std::vector<std::shared_ptr<PropertyAssignment>>>>
 TestPropertyTyped<T>::generateAssignmentsCmp(std::default_random_engine& rng) const {
 
     const GenerateAssignments<T,std::default_random_engine> tmp;
-    static const pbt::AssignmentComparator cmp = [this](const auto& oldA, const auto& newA) {
+    pbt::AssignmentComparator cmp = [this](const auto& oldA, const auto& newA) {
         const PropertyAssignmentTyped<T>* oldAptr =
             dynamic_cast<const PropertyAssignmentTyped<T>*>(oldA.get());
         const PropertyAssignmentTyped<T>* newAptr =
@@ -403,12 +392,11 @@ TestPropertyTyped<T>::generateAssignmentsCmp(std::default_random_engine& rng) co
 
         return propertyEffect<value_type>(oldV, newV, selectedEffects());
     };
-    auto assignments = tmp(rng, getTypedProperty(), deactivated_.get());
+    auto assignments = tmp(rng, getTypedProperty(), &deactivated_);
 
-    std::vector<
-        std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
-        res;
-    res.emplace_back(cmp, assignments);
+    std::vector<std::pair<pbt::AssignmentComparator,
+		std::vector<std::shared_ptr<PropertyAssignment>>>> res;
+    res.emplace_back(std::move(cmp), std::move(assignments));
     return res;
 }
 
@@ -435,14 +423,6 @@ void TestPropertyTyped<T>::traverse(std::function<void(const TestProperty*, cons
 
 template <typename T>
 std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
-                                         std::shared_ptr<TestResult> testResult) const {
-    const value_type& val = testResult->getValue(getTypedProperty());
-
-    return out << '\"' << getDisplayName() << "\" with identifier \"" << getIdentifier()
-               << "\": " << val;
-}
-template <typename T>
-std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
                                          std::shared_ptr<TestResult> newTestResult,
                                          std::shared_ptr<TestResult> oldTestResult) const {
     const value_type& valNew = newTestResult->getValue(getTypedProperty());
@@ -455,7 +435,7 @@ std::ostream& TestPropertyTyped<T>::ostr(std::ostream& out,
 
 template <typename T>
 void TestPropertyTyped<T>::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+    s.serialize("type", classIdentifier(), SerializationTarget::Attribute);
 
     TestProperty::serialize(s);
 
@@ -478,47 +458,10 @@ void TestPropertyTyped<T>::deserialize(Deserializer& d) {
         for (auto& e : effectOption_) e.setNetwork(pn);
     });
 
-    deactivated_ = std::make_unique<bool>(false);
+    deactivated_ = false;
 }
 
 // Helpers
-struct TestPropertyFactoryHelper {
-    template <typename T>
-    auto operator()(
-        std::unordered_map<std::string, std::function<std::unique_ptr<TestProperty>()>>& res) {
-        res[TestPropertyTyped<T>::getClassIdentifier()] = []() {
-            return std::unique_ptr<TestProperty>(new TestPropertyTyped<T>());
-        };
-    }
-};
-
-const std::unordered_map<std::string, std::function<std::unique_ptr<TestProperty>()>>
-    TestPropertyFactory::members = []() {
-        using M = std::remove_const_t<decltype(TestPropertyFactory::members)>;
-        M res;
-        // add TestPropertyComposite
-        res[TestPropertyComposite::getClassIdentifier()] = []() {
-            return std::unique_ptr<TestProperty>(new TestPropertyComposite());
-        };
-        // add all TestPropertyTyped
-        util::for_each_type<PropertyTypes>{}(TestPropertyFactoryHelper{}, res);
-        return res;
-    }();
-std::unique_ptr<TestProperty> TestPropertyFactory::create(const std::string& key) const {
-    IVW_ASSERT(hasKey(key), "TestPropertyFactory: missing key");
-    return members.at(key)();
-}
-bool TestPropertyFactory::hasKey(const std::string& key) const {
-    return members.find(key) != members.end();
-}
-
-std::unique_ptr<TestPropertyComposite> TestPropertyCompositeFactory::create(
-    const std::string& key) const {
-    return std::unique_ptr<TestPropertyComposite>(new TestPropertyComposite());
-}
-bool TestPropertyCompositeFactory::hasKey(const std::string& key) const {
-    return key == TestPropertyComposite::getClassIdentifier();
-}
 
 struct TestablePropertyHelper {
     // for Properties with values
@@ -556,18 +499,6 @@ void makeOnChange(BoolCompositeProperty* const prop) {
             prop->setChecked(checked);
         }
     });
-}
-
-void testingErrorToBinary(std::vector<unsigned char>& output,
-                          const std::vector<TestProperty*>& props, const TestingError& err) {
-    const auto& [testResult1, testResult2, effect, res1, res2] = err;
-
-    std::stringstream str;
-    for (auto prop : props) prop->ostr(str, testResult1, testResult2) << std::endl;
-    str << res1 << res2 << effect;
-
-    const std::string data = str.str();
-    output.insert(output.end(), data.begin(), data.end());
 }
 
 } // namespace pbt

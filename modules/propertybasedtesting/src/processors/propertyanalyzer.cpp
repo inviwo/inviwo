@@ -290,7 +290,7 @@ void PropertyAnalyzer::setNetwork(ProcessorNetwork* pn) {
 void PropertyAnalyzer::initTesting() {
 	IVW_ASSERT(remainingTests.empty(),
 		"PropertyAnalyzer: initTesting() in spite of remaining tests");
-    deactivated.clear();
+    deactivated_.clear();
     testResults.clear();
 
     distillButton_.setVisible(false);
@@ -330,8 +330,8 @@ void PropertyAnalyzer::initTesting() {
                 resComp.emplace_back(cmp, prop_assignments);
                 res.emplace_back(prop_assignments);
             }
-            for (size_t i = 0; i < prop->totalCheckedComponents(); i++) {
-                deactivated.emplace_back(prop->deactivated(i));
+            for (size_t i = 0; i < prop->totalNumCheckedProperties(); i++) {
+                deactivated_.emplace_back(prop->deactivated(i));
             }
         }
         return std::make_pair(res, resComp);
@@ -357,7 +357,7 @@ void PropertyAnalyzer::initTesting() {
         remainingTests.emplace(test);
     }
 
-    for (const auto& d : deactivated) (*d) = false;
+    for (const auto& d : deactivated_) (*d) = false;
     last_deactivated = -1;
 
     std::cerr << "remainingTests.size() = " << remainingTests.size() << std::endl;
@@ -511,32 +511,20 @@ void PropertyAnalyzer::checkTestResults() {
 			IVW_ASSERT(last_deactivated != -1,
 				"PropertyAnalyzer: Condensing, but there are neither errors nor a previously deactivated Property");
 
-            (*deactivated[last_deactivated]) = false;
+            (*deactivated_[last_deactivated]) = false;
         }
 		last_deactivated++;
 
-		outputImage_.reset();
+        outputImage_ = generateImageFromData<DataFormat<glm::u8vec4>>(std::vector<unsigned char>());
 
-        if (last_deactivated >= deactivated.size()) {
+        if (last_deactivated >= deactivated_.size()) {
             // we have tried to deactivate all properties
             // terminate condensing
             currently_condensing = false;
             util::log(IVW_CONTEXT, "Condensed tests, see the generated report.", LogLevel::Info,
                       LogAudience::User);
         } else {
-            (*deactivated[last_deactivated]) = true;
-
-            for (auto prop : props_)
-                prop->traverse([&](const TestProperty* p, const TestProperty* pa) {
-                    std::cout << p->getDisplayName() << " : ";
-                    if (p->totalCheckedComponents() > 1) {
-                        std::cout << "inner node with " << p->totalCheckedComponents()
-                                  << " sub components";
-                    } else {
-                        std::cout << (*(p->deactivated(0)) ? "deactivated" : "active");
-                    }
-                    std::cout << std::endl;
-                });
+            (*deactivated_[last_deactivated]) = true;
 
             // copy tests to 'remainingTests'
             for (const auto& test : allTests) {

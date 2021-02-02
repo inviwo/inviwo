@@ -18,6 +18,8 @@ set(HEADER_FILES
     include/inviwo/propertybasedtesting/propertybasedtestingmodule.h
     include/inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h
     include/inviwo/propertybasedtesting/testproperty.h
+    include/inviwo/propertybasedtesting/testresult.h
+    include/inviwo/propertybasedtesting/testpropertyfactory.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -36,6 +38,8 @@ set(SOURCE_FILES
     src/processors/randomvolumegenerator.cpp
     src/propertybasedtestingmodule.cpp
     src/testproperty.cpp
+	src/testresult.cpp
+	src/testpropertyfactory.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

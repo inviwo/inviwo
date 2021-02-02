@@ -17,7 +17,7 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOr
  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -26,22 +26,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-
-#include <inviwo/propertybasedtesting/testpropertyfactory.h>
+#include <inviwo/propertybasedtesting/testresult.h>
+#include <inviwo/propertybasedtesting/testproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyBasedTestingModule : public InviwoModule {
-	pbt::TestPropertyFactory testPropertyFactory_;
-    pbt::TestPropertyCompositeFactory testPropertyCompositeFactory_;
+namespace pbt {
 
-public:
-    PropertyBasedTestingModule(InviwoApplication* app);
-    virtual ~PropertyBasedTestingModule() = default;
-};
+void testingErrorToBinary(std::vector<unsigned char>& output,
+                          const std::vector<TestProperty*>& props, const TestingError& err) {
+    const auto& [testResult1, testResult2, effect, res1, res2] = err;
 
-}  // namespace inviwo
+    std::stringstream str;
+    for (auto prop : props) prop->ostr(str, testResult1, testResult2) << std::endl;
+    str << res1 << res2 << effect;
+
+    const std::string data = str.str();
+    output.insert(output.end(), data.begin(), data.end());
+}
+
+} // namespace pbt
+
+} // namespace inviwo
