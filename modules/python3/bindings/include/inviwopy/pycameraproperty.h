@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2021 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/python3/pyutils.h>
-
-#include <inviwo/core/util/sourcecontext.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/stringconversion.h>
+#pragma once
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -40,39 +36,6 @@
 
 namespace inviwo {
 
-namespace pyutil {
-
-void addModulePath(const std::string& path) {
-    namespace py = pybind11;
-
-    if (!Py_IsInitialized()) {
-        throw Exception("addModulePath(): Python is not initialized", IVW_CONTEXT_CUSTOM("pyutil"));
-    }
-
-    std::string pathConv = path;
-    replaceInString(pathConv, "\\", "/");
-
-    py::module::import("sys").attr("path").cast<py::list>().append(pathConv);
-}
-
-void removeModulePath(const std::string& path) {
-    namespace py = pybind11;
-
-    if (!Py_IsInitialized()) {
-        throw Exception("removeModulePath(): Python is not initialized",
-                        IVW_CONTEXT_CUSTOM("pyutil"));
-    }
-
-    std::string pathConv = path;
-    replaceInString(pathConv, "\\", "/");
-
-    py::module::import("sys").attr("path").attr("remove")(pathConv);
-}
-
-ModulePath::ModulePath(const std::string& path) : path_{path} { addModulePath(path_); }
-
-ModulePath::~ModulePath() { removeModulePath(path_); }
-
-}  // namespace pyutil
+void exposeCameraProperty(pybind11::module& main, pybind11::module& properties);
 
 }  // namespace inviwo

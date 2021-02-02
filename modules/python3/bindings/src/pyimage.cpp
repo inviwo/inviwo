@@ -70,6 +70,11 @@ auto getLayers = [](Image* img) {
 
 void exposeImage(py::module& m) {
 
+    py::enum_<LayerType>(m, "LayerType")
+        .value("Color", LayerType::Color)
+        .value("Depth", LayerType::Depth)
+        .value("Picking", LayerType::Picking);
+
     py::enum_<ImageChannel>(m, "ImageChannel")
         .value("Red", ImageChannel::Red)
         .value("Green", ImageChannel::Green)
@@ -106,6 +111,9 @@ void exposeImage(py::module& m) {
     py::class_<Image, std::shared_ptr<Image>>(m, "Image")
         .def(py::init<size2_t, const DataFormatBase*>())
         .def(py::init<std::shared_ptr<Layer>>())
+        .def(py::init<std::vector<std::shared_ptr<Layer>>>())
+        .def("setDimensions", &Image::setDimensions)
+        .def("addColorLayer", &Image::addColorLayer)
         .def("clone", [](Image& self) { return self.clone(); })
         .def_property_readonly("dimensions", &Image::getDimensions)
         .def_property_readonly(
@@ -133,6 +141,7 @@ void exposeImage(py::module& m) {
                       InterpolationType, const Wrapping2D&>())
         .def("clone", [](Layer& self) { return self.clone(); })
         .def(py::init([](py::array data) { return pyutil::createLayer(data).release(); }))
+        .def("setDimensions", &Layer::setDimensions)
         .def_property_readonly("dimensions", &Layer::getDimensions)
         .def_property("swizzlemask", &Layer::getSwizzleMask, &Layer::setSwizzleMask)
         .def_property("interpolation", &Layer::getInterpolation, &Layer::setInterpolation)
@@ -183,6 +192,8 @@ void exposeImage(py::module& m) {
     exposeInport<ImageInport>(m, "Image");
     exposeInport<ImageMultiInport>(m, "ImageMulti");
     exposeOutport<ImageOutport>(m, "Image")
-        .def_property_readonly("dimensions", &ImageOutport::getDimensions);
+        .def_property_readonly("dimensions", &ImageOutport::getDimensions)
+        .def("setDimensions", &ImageOutport::setDimensions)
+        .def("setHandleResizeEvents", &ImageOutport::setHandleResizeEvents);
 }
 }  // namespace inviwo

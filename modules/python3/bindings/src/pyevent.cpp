@@ -389,14 +389,6 @@ void exposeEvents(pybind11::module& m) {
     py::class_<typename ViewEvent::FlipUp>(m, "ViewEventFlipUp").def(py::init<>());
     py::class_<typename ViewEvent::FitData>(m, "ViewEventFitData").def(py::init<>());
 
-    py::enum_<camerautil::Side>(m, "Side")
-        .value("XNegative", camerautil::Side::XNegative)
-        .value("XPositive", camerautil::Side::XPositive)
-        .value("YNegative", camerautil::Side::YNegative)
-        .value("YPositive", camerautil::Side::YPositive)
-        .value("ZNegative", camerautil::Side::ZNegative)
-        .value("ZPositive", camerautil::Side::ZPositive);
-
     py::class_<ViewEvent, Event>(m, "ViewEvent")
         .def(py::init<typename ViewEvent::Action>())
         .def_property_readonly("action", &ViewEvent::getAction)
