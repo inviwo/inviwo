@@ -78,6 +78,18 @@ TEST(ImageTests, constructFromLayers) {
     EXPECT_EQ(image->readPixel(size2_t{0, 0}, LayerType::Color, 0).x, 1.0);
     EXPECT_DOUBLE_EQ(image->readPixel(size2_t{0, 0}, LayerType::Depth, 0).x, 0.1f);
     EXPECT_EQ(image->readPixel(size2_t{0, 0}, LayerType::Picking, 0).x, 5.0);
+
+    EXPECT_EQ(image->readPixel(size2_t{1, 0}, LayerType::Color, 0).x, 2.0);
+    EXPECT_DOUBLE_EQ(image->readPixel(size2_t{1, 0}, LayerType::Depth, 0).x, 0.2f);
+    EXPECT_EQ(image->readPixel(size2_t{1, 0}, LayerType::Picking, 0).x, 6.0);
+
+    EXPECT_EQ(image->readPixel(size2_t{0, 1}, LayerType::Color, 0).x, 3.0);
+    EXPECT_DOUBLE_EQ(image->readPixel(size2_t{0, 1}, LayerType::Depth, 0).x, 0.3f);
+    EXPECT_EQ(image->readPixel(size2_t{0, 1}, LayerType::Picking, 0).x, 7.0);
+
+    EXPECT_EQ(image->readPixel(size2_t{1, 1}, LayerType::Color, 0).x, 4.0);
+    EXPECT_DOUBLE_EQ(image->readPixel(size2_t{1, 1}, LayerType::Depth, 0).x, 0.4f);
+    EXPECT_EQ(image->readPixel(size2_t{1, 1}, LayerType::Picking, 0).x, 8.0);
 }
 
 }  // namespace inviwo

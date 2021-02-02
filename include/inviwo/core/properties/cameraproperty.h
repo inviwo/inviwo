@@ -167,13 +167,16 @@ public:
      * Fit the current bounding box into view, keeping the view direction
      * If updateNearFar is set it will also adjust near and far.
      * If updateLookRanges is set it will also adjust the range of look from
+     * @see camerautil::setCameraView
      * @pre There must be a bounding box set
      */
     void fitData();
+
     /**
      * Fit the current bounding box into view and set the view direction to the specified side
      * If updateNearFar is set it will also adjust near and far.
      * If updateLookRanges is set it will also adjust the range of look from
+     * @see camerautil::setCameraView
      * @pre There must be a bounding box set
      */
     void setView(camerautil::Side side);

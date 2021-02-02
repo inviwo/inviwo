@@ -48,9 +48,32 @@ class IVW_CORE_API Image : public DataGroup<Image, ImageRepresentation>, public 
 public:
     using DataBuffer = std::unique_ptr<std::vector<unsigned char>>;
 
+    /**
+     * @brief Create a new image with @p dimensions and @p format.
+     * The image will hold one color layer, one depth layer and one picking layer.
+     * The layers will not have any representations.
+     * @param dimensions of the new image
+     * @param format of the new image
+     */
     Image(size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get());
+
+    /**
+     * @brief Create an Image from the given layers.
+     * Any number of color layers can be added. The color layers will be added in the same order as
+     * in the list. For any LayerType not in the list default layers will added.
+     * @pre The list of layers may only contain one Depth and one Picking layers.
+     * @pre All Layers in the list must have the same dimensions.
+     * @param layers to use
+     */
     Image(std::vector<std::shared_ptr<Layer>> layers);
+
+    /**
+     * @brief Create a new image from the given layer.
+     * Default layers will be added for the other two LayerTypes
+     * @param layer to use
+     */
     Image(std::shared_ptr<Layer> layer);
+
     Image(const Image& rhs);
     Image& operator=(const Image& that);
     virtual Image* clone() const;
