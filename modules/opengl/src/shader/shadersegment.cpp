@@ -32,10 +32,11 @@
 namespace inviwo {
 
 std::ostream& operator<<(std::ostream& os, const ShaderSegment::Type& obj) {
-    os << obj.getString();
+    os << obj.key;
     return os;
 }
 
-ShaderSegment::Type::Type(std::string value) : value_{std::move(value)} {}
+ShaderSegment::Type::Type(std::string aKey, std::string aName)
+    : key{std::move(aKey)}, name{std::move(aName)} {}
 
 }  // namespace inviwo

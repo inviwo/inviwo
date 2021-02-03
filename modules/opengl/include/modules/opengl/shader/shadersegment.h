@@ -41,19 +41,18 @@ struct IVW_MODULE_OPENGL_API ShaderSegment {
     /**
      * Represents a placeholder in shader code that will be replaced
      */
-    class IVW_MODULE_OPENGL_API Type {
+    struct IVW_MODULE_OPENGL_API Type {
     public:
         Type() = default;
-        explicit Type(std::string type);
-        const std::string& getString() const { return value_; }
+        explicit Type(std::string key, std::string name);
 
         IVW_MODULE_OPENGL_API friend std::ostream& operator<<(std::ostream& os, const Type& obj);
 
         IVW_MODULE_OPENGL_API friend bool operator==(const Type& lhs, const Type& rhs) {
-            return lhs.getString() == rhs.getString();
+            return lhs.key == rhs.key;
         }
         IVW_MODULE_OPENGL_API friend bool operator<(const Type& lhs, const Type& rhs) {
-            return lhs.getString() < rhs.getString();
+            return lhs.key < rhs.key;
         }
         IVW_MODULE_OPENGL_API friend bool operator!=(const Type& lhs, const Type& rhs) {
             return !operator==(lhs, rhs);
@@ -68,8 +67,8 @@ struct IVW_MODULE_OPENGL_API ShaderSegment {
             return !operator<(lhs, rhs);
         }
 
-    private:
-        std::string value_;
+        std::string key;
+        std::string name;
     };
 
     Type type;  //!< The placeholder that will be replaced
@@ -92,7 +91,7 @@ namespace std {
 template <>
 struct hash<typename inviwo::ShaderSegment::Type> {
     size_t operator()(typename inviwo::ShaderSegment::Type const& type) const {
-        return std::hash<std::string>{}(type.getString());
+        return std::hash<std::string>{}(type.key);
     }
 };
 }  // namespace std

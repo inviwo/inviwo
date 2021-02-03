@@ -92,6 +92,11 @@ std::unique_ptr<Canvas> HiddenCanvasQt::createHiddenQtCanvas() {
     // OpenGL can be initialized in this thread
     newContext->initializeGL();
 
+    // Since the qt context has to be created on the main thread and moved to the background we need
+    // to update the registered thread id to the correct one here
+    RenderContext::getPtr()->setContextThreadId(newContext->contextId(),
+                                                std::this_thread::get_id());
+
     return newContext;
 }
 

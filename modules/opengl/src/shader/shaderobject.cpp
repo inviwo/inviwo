@@ -159,14 +159,14 @@ struct Psm {
         auto replace = [](Char c, State& s) {
             using SegType = typename ShaderSegment::Type;
             const auto lineEnd = std::find(c.curr, c.end, '\n');
-            const auto type = SegType{trim(std::string{c.curr, lineEnd})};
+            const auto type = SegType{trim(std::string{c.curr, lineEnd}), ""};
             const auto it = s.replacements.find(type);
             if (it != s.replacements.end()) {
                 for (auto segIt = it->second.begin(); segIt != it->second.end(); ++segIt) {
                     const auto& segment = *segIt;
                     const auto snippet = psm::indent(segment.snippet, s.column);
                     utilgl::parseShaderSource(
-                        fmt::format("{}[{},{}]", segment.name, segment.type.getString(),
+                        fmt::format("{}[{},{}]", segment.name, segment.type.name,
                                     segment.priority),
                         snippet, s.output, s.lnr, s.replacements, s.getSource);
                     if (std::next(segIt) != it->second.end()) {
@@ -188,7 +188,7 @@ struct Psm {
 
         auto repl = [](Char c, State& s) {
             for (auto& [key, val] : s.replacements) {
-                if (c.peek(key.getString())) return true;
+                if (c.peek(key.key)) return true;
             }
             return false;
         };
