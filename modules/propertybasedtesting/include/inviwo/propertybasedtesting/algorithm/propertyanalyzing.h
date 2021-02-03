@@ -58,17 +58,17 @@ enum class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyEffect {
 constexpr size_t numPropertyEffects = 1 + static_cast<size_t>(PropertyEffect::NOT_COMPARABLE);
 
 template <typename A, typename B>
-bool IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffectComparator(const PropertyEffect& e, const A& a, const B& b) {
+bool propertyEffectComparator(const PropertyEffect& e, const A& a, const B& b) {
     IVW_ASSERT(static_cast<size_t>(e) < numPropertyEffects,
-			"propertyEffectComparator: given PropertyEffect is not valid");
+            "propertyEffectComparator: given PropertyEffect is not valid");
     switch (e) {
-		case PropertyEffect::NOT_COMPARABLE:
+        case PropertyEffect::NOT_COMPARABLE:
             return false;
-		case PropertyEffect::ANY:
+        case PropertyEffect::ANY:
             return true;
-		case PropertyEffect::NOT_EQUAL:
+        case PropertyEffect::NOT_EQUAL:
             return a != b;
-		case PropertyEffect::EQUAL:
+        case PropertyEffect::EQUAL:
             return a == b;
         case PropertyEffect::LESS:
             return a < b;
@@ -79,7 +79,7 @@ bool IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffectComparator(const Property
         case PropertyEffect::GREATER_EQUAL:
             return a >= b;
     }
-	IVW_ASSERT(false, "propertyEffectComparator: switch is incomplete");
+    IVW_ASSERT(false, "propertyEffectComparator: switch is incomplete");
 }
 
 using AssignmentComparator = std::function<PropertyEffect(
@@ -97,24 +97,41 @@ const PropertyEffect& IVW_MODULE_PROPERTYBASEDTESTING_API reverseEffect(const Pr
  * ANY if no preference
  */
 template <typename T>
-PropertyEffect IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffect(const PropertyEffect& selectedEffect, const T& newVal,
+PropertyEffect propertyEffect(const PropertyEffect& selectedEffect, const T& newVal,
                               const T& oldVal) {
     if (newVal > oldVal) return selectedEffect;
     if (newVal == oldVal) return PropertyEffect::ANY;
     return reverseEffect(selectedEffect);
 }
 
+
+/*
+ * GetComponent<T>::get(v,i) returns the i-th component of v (where v is of type
+ * T and i is an integer less than the number of components of T as determined
+ * by DataFormat<T>::components()).
+ * Specifically, this is enables handling scalar types (e.g. float)
+ * the same way as (glm) vector types (e.g. dvec2), that is
+ * - GetComponent<float>::get(v,0) returns v
+ * - GetComponent<dvec2>::get(v,1) returns v.y
+ */ 
 template <typename T, size_t N>
-struct IVW_MODULE_PROPERTYBASEDTESTING_API GetComponent {
-    static typename T::value_type get(const T& v, size_t i) { return v[i]; }
+struct GetComponentHelper {
+    static decltype(std::declval<const T&>()[0]) get(const T& v, size_t i) { return v[i]; }
+    static decltype(std::declval<T&>()[0]) get(T& v, size_t i) { return v[i]; }
 };
 template <typename T>
-struct IVW_MODULE_PROPERTYBASEDTESTING_API GetComponent<T, 1> {
-    static T get(const T& v, size_t i) {
-        IVW_ASSERT(i == 0, "GetComponent: index must be 0 for single-component types");
+struct GetComponentHelper<T,1> {
+    static T& get(T& v, size_t i=0) {
+        IVW_ASSERT(i == 0, "GetComponent: index must be 0 for scalar types");
+        return v;
+    }
+    static const T& get(const T& v, size_t i=0) {
+        IVW_ASSERT(i == 0, "GetComponent: index must be 0 for scalar types");
         return v;
     }
 };
+template <typename T>
+struct GetComponent : public GetComponentHelper<T, DataFormat<T>::components()> {};
 
 Processor* IVW_MODULE_PROPERTYBASEDTESTING_API getOwningProcessor(Property* const prop);
 

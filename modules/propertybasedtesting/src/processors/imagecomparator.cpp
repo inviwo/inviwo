@@ -29,7 +29,7 @@
 
 #include <inviwo/propertybasedtesting/processors/imagecomparator.h>
 
-#include <inviwo/propertybasedtesting/html/html.h>
+#include <inviwo/core/util/document.h>
 
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/properties/listproperty.h>
@@ -37,6 +37,7 @@
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/imageramutils.h>
 #include <filesystem>
+#include <fstream>
 
 namespace inviwo {
 
@@ -156,7 +157,7 @@ void ImageComparator::process() {
     auto colorLayerDiff = diffRAM->getColorLayerRAM();
     auto colorLayerMask = maskRAM->getColorLayerRAM();
 
-    const ReductionType reduction = reductionType_.get();
+    const ReductionType reduction = reductionType_.getSelectedValue();
 
     double result = getUnitForReduction<double>(reduction);
     size_t diffPixels = 0;
@@ -222,40 +223,51 @@ th { font-weight: normal; width: 25%}"
 )"""";
 
 void ImageComparator::createReport() {
-    HTML::Body body;
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+
+    Document doc;
+    auto html = doc.append("html");
+    html.append("head").append("style", reportCssFile);
+    auto body = html.append("body");
 
     for (const auto& comp : comparisons_) {
         char timeBuffer[sizeof "2012-12-24 12:34:56"];
         strftime(timeBuffer, sizeof timeBuffer, "%F %T", localtime(&comp.timestamp));
 
-        body << (HTML::Div("comparison")
-                 << (HTML::Table().addAttribute("class", "data")
-                     << (HTML::Row() << HTML::Text("Date") << HTML::Text(timeBuffer))
-                     << (HTML::Row() << HTML::Text("Difference result (" +
-                                                   reductionTypeName(comp.reduction) + ")")
-                                     << HTML::Text(std::to_string(comp.result)))
-                     << (HTML::Row() << HTML::Text("Pixel count")
-                                     << HTML::Text(std::to_string(comp.pixelCount)))
-                     << (HTML::Row() << HTML::Text("Different pixels")
-                                     << HTML::Text(std::to_string(comp.differentPixels)))
-                     << (HTML::Row() << HTML::Text("Percent difference")
-                                     << HTML::Text(std::to_string(100 * comp.differentPixels /
-                                                                  comp.pixelCount))))
-                 << (HTML::Table().addAttribute("class", "images")
-                     << (HTML::HeadRow() << HTML::Text("diff") << HTML::Text("mask")
-                                         << HTML::Text("img1") << HTML::Text("img2"))
-                     << (HTML::Row()
-                         << HTML::Image(comp.diff).addAttribute("title", comp.diff.string())
-                         << HTML::Image(comp.mask).addAttribute("title", comp.mask.string())
-                         << HTML::Image(comp.img1).addAttribute("title", comp.img1.string())
-                         << HTML::Image(comp.img2).addAttribute("title", comp.img2.string()))));
+        auto compDiv = body.append("div","",{{"class","comparison"}});
+        {
+            utildoc::TableBuilder tb(compDiv, P::end(), {{"class","data"}});
+
+            tb("Date", timeBuffer);
+            tb("Difference result(" + reductionTypeName(comp.reduction) + ")", std::to_string(comp.result));
+            tb("Pixel count", std::to_string(comp.pixelCount));
+            tb("Different pixels", std::to_string(comp.differentPixels));
+            tb("Percent difference", std::to_string(100. * comp.differentPixels / comp.pixelCount));
+        }
+        {
+            utildoc::TableBuilder tb(compDiv, P::end(), {{"class","images"}});
+            tb(H("diff"), H("mask"), H("img1"), H("img2"));
+            Document diffImg;
+            diffImg.append("img","",    { {"title", comp.diff.string()}
+                                        , {"src", comp.diff.string()}});
+            Document maskImg;
+            maskImg.append("img","",    { {"title", comp.mask.string()}
+                                          , {"src", comp.mask.string()}});
+            Document img1Img;
+            img1Img.append("img","",    { {"title", comp.img1.string()}
+                                          , {"src", comp.img1.string()}});
+            Document img2Img;
+            img2Img.append("img","",    { {"title", comp.img2.string()}
+                                        , {"src", comp.img2.string()}});
+            tb(diffImg, maskImg, img1Img, img2Img);
+        }
+
     }
 
     std::ofstream report;
     report.open(reportDir_.get() + "/report.html");
-    report << (HTML::HTML() << (HTML::Head() << HTML::Style(reportCssFile)
-                                             << HTML::Meta().addAttribute("charset", "utf-8"))
-                            << body);
+    report << "<!DOCTYPE html>\n" << doc << std::endl;
     report.close();
 }
 

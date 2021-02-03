@@ -67,9 +67,7 @@ protected:
     virtual ~TestPropertyObservable() = default;
 };
 
-/** \docpage{org.inviwo.PropertyAnalyzer, PropertyAnalyzer}
- * ![](org.inviwo.NetworkPath.png?classIdentifier=org.inviwo.NetworkPath)
- *
+/** 
  * A NetworkPath<T> is a reference to a Processor or Property of type T in the
  * ProcessorNetwork. If the pointer to the object is not known (i.e.
  * after deserialization) or one wants to deserialize a NetworkPath, 
@@ -77,7 +75,7 @@ protected:
  * setNetwork(...) before the deserialization/first access.
  */
 template <typename T>
-class IVW_MODULE_PROPERTYBASEDTESTING_API NetworkPath : public Serializable {
+class NetworkPath : public Serializable {
 private:
     mutable std::string path_;
     mutable T* ptr_;
@@ -91,15 +89,15 @@ private:
             return path_;
         } else {
             if (auto p = dynamic_cast<Processor*>(ptr_)) {
-				IVW_ASSERT(isProcessor_,
-						"NetworkPath: ptr points to Processor but isProcessor_ disagrees");
+                IVW_ASSERT(isProcessor_,
+                        "NetworkPath: ptr points to Processor but isProcessor_ disagrees");
                 return path_ = p->getIdentifier();
             } else {
-				IVW_ASSERT(!isProcessor_,
-						"NetworkPath: ptr does not point to Processor but isProcessor_ disagrees");
+                IVW_ASSERT(!isProcessor_,
+                        "NetworkPath: ptr does not point to Processor but isProcessor_ disagrees");
                 auto p2 = dynamic_cast<Property*>(ptr_);
-				IVW_ASSERT(p2 != nullptr,
-						"NetworkPath: ptr points not to Processor and not to a Property");
+                IVW_ASSERT(p2 != nullptr,
+                        "NetworkPath: ptr points not to Processor and not to a Property");
                 return path_ = p2->getPath();
             }
         }
@@ -126,22 +124,22 @@ public:
     T* get() const {
         if (ptr_ == nullptr) {
             IVW_ASSERT(pn_ != nullptr,
-				"NetworkPath::get(): ptr and network are both nullptr");
+                "NetworkPath::get(): ptr and network are both nullptr");
             if (isProcessor_) {
-				Processor* const t = pn_->getProcessorByIdentifier(path_);
-				IVW_ASSERT(t != nullptr,
-						"NetworkPath: getProcessorByIdentifier failed");
-				ptr_ = dynamic_cast<T*>(t);
-				IVW_ASSERT(ptr_ != nullptr,
-					"NetworkPath: referenced processor has wrong type");
+                Processor* const t = pn_->getProcessorByIdentifier(path_);
+                IVW_ASSERT(t != nullptr,
+                        "NetworkPath: getProcessorByIdentifier failed");
+                ptr_ = dynamic_cast<T*>(t);
+                IVW_ASSERT(ptr_ != nullptr,
+                    "NetworkPath: referenced processor has wrong type");
                 return ptr_;
             } else {
                 Property* const tmp = pn_->getProperty(path_);
-				IVW_ASSERT(tmp != nullptr,
-					"NetworkPath: network does not contain referenced object");
+                IVW_ASSERT(tmp != nullptr,
+                    "NetworkPath: network does not contain referenced object");
                 ptr_ = dynamic_cast<T*>(tmp);
-				IVW_ASSERT(ptr_ != nullptr,
-					"NetworkPath: referenced object has wrong type");
+                IVW_ASSERT(ptr_ != nullptr,
+                    "NetworkPath: referenced object has wrong type");
             }
         }
         return ptr_;
@@ -170,16 +168,16 @@ public:
  * It is used to provide a general interface to all properties, regardless of
  * their value_type.
  * It enables
- *	- generation of assignments,
- *	- a textual description of the expected effects on the counted number of pixels,
- *	- the expected effect on the counted number of pixels given two testcases, and
+ *    - generation of assignments,
+ *    - a textual description of the expected effects on the counted number of pixels,
+ *    - the expected effect on the counted number of pixels given two testcases, and
  *  - storing and resetting the value of the property before the tests have started.
  * Instantiation happes mainly by createTestableProperty (see below).
  */
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestProperty
-		: public Serializable
-		, public TestPropertyObservable
-		{
+        : public Serializable
+        , public TestPropertyObservable
+        {
 private:
     std::string displayName_, identifier_;
     NetworkPath<BoolCompositeProperty> boolComp_ = nullptr;
@@ -200,21 +198,21 @@ protected:
     }
 
 public:
-	/*
-	 * This needs to be called after construction/deserialization
-	 * in order to ensure that the NetworkPaths are correct
-	 */
+    /*
+     * This needs to be called after construction/deserialization
+     * in order to ensure that the NetworkPaths are correct
+     */
     void setNetwork(ProcessorNetwork*);
-	/*
-	 * returns the total number of checked (enabled) 
-	 * testable properties (i.e. excluding composite properties)
-	 */
+    /*
+     * returns the total number of checked (enabled) 
+     * testable properties (i.e. excluding composite properties)
+     */
     virtual size_t totalNumCheckedProperties() const = 0;
-	/*
-	 * deactivated(i) returns a pointer to a boolean indicating
-	 * whether the i-th contained testable property is active
-	 * and is included in tests
-	 */
+    /*
+     * deactivated(i) returns a pointer to a boolean indicating
+     * whether the i-th contained testable property is active
+     * and is included in tests
+     */
     virtual bool* deactivated(size_t) = 0;
     virtual const bool* deactivated(size_t) const = 0;
 
@@ -226,58 +224,58 @@ public:
     const std::string& getDisplayName() const;
     const std::string& getIdentifier() const;
 
-	/*
-	 * returns a textual description of the effects the active properties
-	 * should have on the score of the output when changed
-	 */
+    /*
+     * returns a textual description of the effects the active properties
+     * should have on the score of the output when changed
+     */
     virtual std::string textualDescription(unsigned int indent = 0) const = 0;
 
-	/*
-	 * returns the values that the currently active testable properties had in a
-	 * test in a human-readable form
-	 */
+    /*
+     * returns the values that the currently active testable properties had in a
+     * test in a human-readable form
+     */
     virtual std::string getValueString(std::shared_ptr<TestResult>) const = 0;
-	/*
-	 * traverses the contained TestProperties in pre order and calls the given
-	 * function for each TestProperty with the current TestProperty as first
-	 * argument and its parent TestProperty as second argument (or nullptr when
-	 * there is no traversed parent)
-	 */
+    /*
+     * traverses the contained TestProperties in pre order and calls the given
+     * function for each TestProperty with the current TestProperty as first
+     * argument and its parent TestProperty as second argument (or nullptr when
+     * there is no traversed parent)
+     */
     void traverse(std::function<void(const TestProperty*, const TestProperty*)>) const;
     virtual void traverse(std::function<void(const TestProperty*, const TestProperty*)>,
                           const TestProperty*) const = 0;
 
-	/*
-	 * returns the PropertyEffect expected given the two test cases and the
-	 * set PropertyEffects of the contained currently active testable properties
-	 */
+    /*
+     * returns the PropertyEffect expected given the two test cases and the
+     * set PropertyEffects of the contained currently active testable properties
+     */
     virtual PropertyEffect getPropertyEffect(
         std::shared_ptr<TestResult>, std::shared_ptr<TestResult>) const = 0;
 
-	/*
-	 * writes the values of all contained currently active testable properties
-	 * in both test results as well as the expected PropertyEffect (as returned
-	 * by getPropertyEffect) in human readable form to the std::ostream
-	 */
+    /*
+     * writes the values of all contained currently active testable properties
+     * in both test results as well as the expected PropertyEffect (as returned
+     * by getPropertyEffect) in human readable form to the std::ostream
+     */
     virtual std::ostream& ostr(std::ostream&, std::shared_ptr<TestResult>,
                                std::shared_ptr<TestResult>) const = 0;
 
-	/*
-	 * reset all contained testable properties to the stored default value
-	 * (i.e. the value the properties had before the testing started)
-	 */
+    /*
+     * reset all contained testable properties to the stored default value
+     * (i.e. the value the properties had before the testing started)
+     */
     virtual void setToDefault() const = 0;
-	/*
-	 * store the current value of all contained testable properties
-	 */
+    /*
+     * store the current value of all contained testable properties
+     */
     virtual void storeDefault() = 0;
-	/*
-	 * returns a vector containing an AssignmentComparator as well as a vector
-	 * of assignments for each contained currently active testable property
-	 */
+    /*
+     * returns a vector containing an AssignmentComparator as well as a vector
+     * of assignments for each contained currently active testable property
+     */
     virtual std::vector<
         std::pair<pbt::AssignmentComparator,
-		std::vector<std::shared_ptr<PropertyAssignment>>>>
+        std::vector<std::shared_ptr<PropertyAssignment>>>>
     generateAssignmentsCmp(std::default_random_engine&) const = 0;
     virtual ~TestProperty() = default;
 };
@@ -287,7 +285,7 @@ public:
  * effect of each of the components.
  */
 template <typename T, size_t numComp = DataFormat<T>::components()>
-PropertyEffect IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffect(
+PropertyEffect propertyEffect(
     const T& val_old, const T& val_new,
     const std::array<pbt::PropertyEffect, numComp>& selectedEffects);
 
@@ -297,7 +295,7 @@ PropertyEffect IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffect(
  * the properties in PropertyTypes (see below).
  */
 std::unique_ptr<TestProperty> IVW_MODULE_PROPERTYBASEDTESTING_API
-	createTestableProperty(Property* prop);
+    createTestableProperty(Property* prop);
 
 /*
  * Adds necessary callbacks for the proper behavior of the BoolComps of/in a
@@ -312,9 +310,9 @@ void IVW_MODULE_PROPERTYBASEDTESTING_API makeOnChange(BoolCompositeProperty* con
  * getDisplayName and getIdentifier, i.e. CompositeProperty and Processor
  */
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyComposite
-		: public TestProperty
-		, public TestPropertyObserver
-		{
+        : public TestProperty
+        , public TestPropertyObserver
+        {
     NetworkPath<PropertyOwner> propertyOwner_;
     std::vector<std::unique_ptr<TestProperty>> subProperties;
 
@@ -326,8 +324,8 @@ class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyComposite
                   const TestProperty*) const override;
 
 public:
-	TestPropertyComposite(Processor*);
-	TestPropertyComposite(CompositeProperty*);
+    TestPropertyComposite(Processor*);
+    TestPropertyComposite(CompositeProperty*);
     PropertyOwner* getPropertyOwner() const;
 
     template <typename F>
@@ -368,7 +366,7 @@ public:
 
     void storeDefault();
     std::vector<std::pair<pbt::AssignmentComparator,
-		std::vector<std::shared_ptr<PropertyAssignment>>>>
+        std::vector<std::shared_ptr<PropertyAssignment>>>>
     generateAssignmentsCmp(std::default_random_engine&) const override;
 };
 
@@ -377,7 +375,7 @@ public:
  * supported by DataFormat<>.
  */
 template <typename T>
-class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyTyped : public TestProperty {
+class TestPropertyTyped : public TestProperty {
     using value_type = typename T::value_type;
     static constexpr size_t numComponents = DataFormat<value_type>::components();
 
@@ -429,21 +427,21 @@ public:
 
     void storeDefault();
     std::vector<std::pair<pbt::AssignmentComparator,
-		std::vector<std::shared_ptr<PropertyAssignment>>>>
+        std::vector<std::shared_ptr<PropertyAssignment>>>>
     generateAssignmentsCmp(std::default_random_engine&) const override;
 };
 
 
 template <typename T, size_t numComp = DataFormat<T>::components()>
-PropertyEffect IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffect(
+PropertyEffect propertyEffect(
     const T& val_old, const T& val_new,
     const std::array<pbt::PropertyEffect, numComp>& selectedEffects) {
 
     PropertyEffect res = PropertyEffect::ANY;
     for (size_t i = 0; i < numComp; i++) {
         auto compEff = propertyEffect(selectedEffects[i],
-                                            pbt::GetComponent<T, numComp>::get(val_new, i),
-                                            pbt::GetComponent<T, numComp>::get(val_old, i));
+                                            GetComponent<T>::get(val_new, i),
+                                            GetComponent<T>::get(val_old, i));
         res = pbt::combine(res, compEff);
     }
     return res;

@@ -47,7 +47,7 @@ template <typename P, typename T = typename P::value_type,
 		 decltype(std::declval<P>().set(std::declval<T>()),
 				 std::declval<P>().get()==std::declval<T>(),
 				 int(0)) = 0>
-class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyAssignmentTyped : public PropertyAssignment {
+class PropertyAssignmentTyped : public PropertyAssignment {
 private:
     P* const prop;
     const T value;
@@ -79,6 +79,10 @@ using Test = std::vector<std::shared_ptr<PropertyAssignment>>;
  * Helper for generating assignments.
  * If you want to be able to generate assignments for new properties, you
  * probably want to add a corresponding specialization for this.
+ * Note: although the return type is equivalent to Test, there is a semantical
+ * difference: a Test should contain no two assignments to the same property,
+ * while the returned vector here contains only assignments to the same
+ * property.
  */
 template <typename T, typename RNG>
 struct GenerateAssignments {
@@ -124,8 +128,6 @@ struct GenerateAssignments<OrdinalProperty<T>, RNG> {
     }
 };
 
-// NOTE: We assume that a MinMaxProperty<T>* may be casted to
-// OrdinalProperty<T>*
 template <typename T, typename RNG>
 struct GenerateAssignments<MinMaxProperty<T>, RNG> {
     std::vector<std::shared_ptr<PropertyAssignment>> operator()(RNG& rng,
@@ -158,8 +160,8 @@ struct GenerateAssignments<MinMaxProperty<T>, RNG> {
 				std::swap(lo, hi);
 			}
 			// ensure minSeparation is respected
-			if(lo + minSeparation > hi) {
-				if(lo + minSeparation > maxR) {
+			if(lo > hi - minSeparation) {
+				if(lo > maxR - minSeparation) {
 					lo = hi - minSeparation;
 				} else {
 					hi = lo + minSeparation;

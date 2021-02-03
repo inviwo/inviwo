@@ -50,7 +50,7 @@ void TestProperty::onNetworkReceive(std::function<void(ProcessorNetwork*)> f) {
 
 BoolCompositeProperty* TestProperty::getBoolComp() const {
     IVW_ASSERT(boolComp_.get() != nullptr,
-			"TestProperty::getBoolComp() failed: boolComp_ is a nullptr");
+            "TestProperty::getBoolComp() failed: boolComp_ is a nullptr");
     return boolComp_;
 }
 
@@ -76,26 +76,26 @@ void TestProperty::deserialize(Deserializer& d) {
 // TestPropertyComposite
 
 TestPropertyComposite::TestPropertyComposite(Processor* orig)
-		: TestPropertyComposite(orig, orig->getDisplayName(),
-			[&](){
-				std::string ident = orig->getIdentifier();
-				std::replace(ident.begin(), ident.end(), ' ', '_');
-				return ident;
-			}()) {
+        : TestPropertyComposite(orig, orig->getDisplayName(),
+            [&](){
+                std::string ident = orig->getIdentifier();
+                std::replace(ident.begin(), ident.end(), ' ', '_');
+                return ident;
+            }()) {
 }
 TestPropertyComposite::TestPropertyComposite(CompositeProperty* orig)
-		: TestPropertyComposite(orig, orig->getDisplayName(),
-			[&](){
-				std::string ident = orig->getIdentifier();
-				std::replace(ident.begin(), ident.end(), ' ', '_');
-				return ident;
-			}()) {
+        : TestPropertyComposite(orig, orig->getDisplayName(),
+            [&](){
+                std::string ident = orig->getIdentifier();
+                std::replace(ident.begin(), ident.end(), ' ', '_');
+                return ident;
+            }()) {
 }
 
 TestPropertyComposite::TestPropertyComposite(PropertyOwner* original,
                                              const std::string& displayName,
                                              const std::string& identifier)
-		: TestProperty(displayName, identifier) {
+        : TestProperty(displayName, identifier) {
     if (auto p = dynamic_cast<Property*>(original); p != nullptr)
         p->setSerializationMode(PropertySerializationMode::All);
     propertyOwner_ = original;
@@ -153,7 +153,7 @@ bool* TestPropertyComposite::deactivated(size_t i) {
             i -= sc;
     });
     IVW_ASSERT(result != nullptr,
-			"TestPropertyComposite::deactivated: failed to find deactivated-bool");
+            "TestPropertyComposite::deactivated: failed to find deactivated-bool");
     return result;
 }
 const bool* TestPropertyComposite::deactivated(size_t i) const {
@@ -166,7 +166,7 @@ const bool* TestPropertyComposite::deactivated(size_t i) const {
             i -= sc;
     });
     IVW_ASSERT(result != nullptr,
-			"TestPropertyComposite::deactivated: failed to find (const) deactivated-bool");
+            "TestPropertyComposite::deactivated: failed to find (const) deactivated-bool");
     return result;
 }
 
@@ -197,7 +197,7 @@ void TestPropertyComposite::storeDefault() {
     for (const auto& subProp : subProperties) subProp->storeDefault();
 }
 std::vector<std::pair<pbt::AssignmentComparator,
-	std::vector<std::shared_ptr<PropertyAssignment>>>>
+    std::vector<std::shared_ptr<PropertyAssignment>>>>
 TestPropertyComposite::generateAssignmentsCmp(std::default_random_engine& rng) const {
 
     std::vector<std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>> res;
@@ -216,7 +216,7 @@ void TestPropertyComposite::serialize(Serializer& s) const {
 
     s.serialize("PropertyOwner", propertyOwner_);
 
-	s.serialize("SubProperties", subProperties);
+    s.serialize("SubProperties", subProperties);
 }
 void TestPropertyComposite::deserialize(Deserializer& d) {
     TestProperty::deserialize(d);
@@ -260,7 +260,7 @@ TestPropertyTyped<T>::TestPropertyTyped(T* original)
 template <typename T>
 T* TestPropertyTyped<T>::getTypedProperty() const {
     IVW_ASSERT(typedProperty_.get() != nullptr,
-			"TestPropertyTyped::getTypedProperty() failed: typedProperty_ is a nullptr");
+            "TestPropertyTyped::getTypedProperty() failed: typedProperty_ is a nullptr");
     return typedProperty_;
 }
 template <typename T>
@@ -359,7 +359,7 @@ std::string TestPropertyTyped<T>::textualDescription(unsigned int indent) const 
 template <typename T>
 OptionPropertyInt* TestPropertyTyped<T>::getEffectOption(size_t i) const {
     IVW_ASSERT(effectOption_[i] != nullptr,
-			"TestPropertyTyped::getEffectOption() failed: selected effectOption is nullptr");
+            "TestPropertyTyped::getEffectOption() failed: selected effectOption is nullptr");
     return effectOption_[i];
 }
 
@@ -373,7 +373,7 @@ auto TestPropertyTyped<T>::selectedEffects() const
 }
 template <typename T>
 std::vector<std::pair<pbt::AssignmentComparator,
-	std::vector<std::shared_ptr<PropertyAssignment>>>>
+    std::vector<std::shared_ptr<PropertyAssignment>>>>
 TestPropertyTyped<T>::generateAssignmentsCmp(std::default_random_engine& rng) const {
 
     const GenerateAssignments<T,std::default_random_engine> tmp;
@@ -382,10 +382,10 @@ TestPropertyTyped<T>::generateAssignmentsCmp(std::default_random_engine& rng) co
             dynamic_cast<const PropertyAssignmentTyped<T>*>(oldA.get());
         const PropertyAssignmentTyped<T>* newAptr =
             dynamic_cast<const PropertyAssignmentTyped<T>*>(newA.get());
-		IVW_ASSERT(oldAptr != nullptr,
-			"AssignmentComparator: failed to dyn_cast 'oldA' to typed assignment");
-		IVW_ASSERT(newAptr != nullptr,
-			"AssignmentComparator: failed to dyn_cast 'newA' to typed assignment");
+        IVW_ASSERT(oldAptr != nullptr,
+            "AssignmentComparator: failed to dyn_cast 'oldA' to typed assignment");
+        IVW_ASSERT(newAptr != nullptr,
+            "AssignmentComparator: failed to dyn_cast 'newA' to typed assignment");
 
         const value_type& oldV = oldAptr->getValue();
         const value_type& newV = newAptr->getValue();
@@ -395,7 +395,7 @@ TestPropertyTyped<T>::generateAssignmentsCmp(std::default_random_engine& rng) co
     auto assignments = tmp(rng, getTypedProperty(), &deactivated_);
 
     std::vector<std::pair<pbt::AssignmentComparator,
-		std::vector<std::shared_ptr<PropertyAssignment>>>> res;
+        std::vector<std::shared_ptr<PropertyAssignment>>>> res;
     res.emplace_back(std::move(cmp), std::move(assignments));
     return res;
 }

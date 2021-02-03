@@ -39,10 +39,20 @@ namespace inviwo {
 
 namespace pbt {
 
-// 2-coverage, randomized discrete SLJ strategy
+/*
+ * 2-coverage, randomized discrete SLJ strategy
+ */
 std::vector<Test> IVW_MODULE_PROPERTYBASEDTESTING_API coveringArray(
     const std::vector<std::vector<std::shared_ptr<PropertyAssignment>>>& vars);
 
+/*
+ * 2-coverage, but using a greedy randomized strategy for optimizing for comparability.
+ * Much slower than the procedure above, but also yields much more comparable tests.
+ * - num is the maximum number of tests to be generated; useful for preventing
+ *   unnecessary calculations
+ * - vars should contain a pair for each variable, where the first component is
+ *   an AssignmentComparator and the second contains the actual assignments
+ */
 std::vector<Test> IVW_MODULE_PROPERTYBASEDTESTING_API optCoveringArray(
     const size_t num,
     const std::vector<std::pair<AssignmentComparator,

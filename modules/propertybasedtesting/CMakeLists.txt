@@ -9,7 +9,6 @@ set(HEADER_FILES
     include/inviwo/propertybasedtesting/algorithm/generatingassignments.h
     include/inviwo/propertybasedtesting/algorithm/propertyanalyzing.h
     include/inviwo/propertybasedtesting/algorithm/reservoirsampling.h
-    include/inviwo/propertybasedtesting/html/html.h
     include/inviwo/propertybasedtesting/html/report.h
     include/inviwo/propertybasedtesting/processors/faultycubeproxyprocessor.h
     include/inviwo/propertybasedtesting/processors/propertyanalyzer.h
@@ -30,7 +29,6 @@ set(SOURCE_FILES
     src/algorithm/generatingassignments.cpp
     src/algorithm/propertyanalyzing.cpp
     src/algorithm/reservoirsampling.cpp
-    src/html/html.cpp
     src/html/report.cpp
     src/processors/faultycubeproxyprocessor.cpp
     src/processors/propertyanalyzer.cpp
@@ -38,8 +36,8 @@ set(SOURCE_FILES
     src/processors/randomvolumegenerator.cpp
     src/propertybasedtestingmodule.cpp
     src/testproperty.cpp
-	src/testresult.cpp
-	src/testpropertyfactory.cpp
+    src/testresult.cpp
+    src/testpropertyfactory.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

@@ -113,7 +113,7 @@ void PropertyAnalyzer::updateProcessors() {
         testProp->getBoolComp()->setVisible(false);
 
         IVW_ASSERT(inactiveProcessors_.count(processor) == 0,
-			"PropertyAnalyzer: disconnected inactive Processor???");
+            "PropertyAnalyzer: disconnected inactive Processor???");
         inactiveProcessors_.emplace(processor, std::move(testProp));
         processors_.erase(processor);
     }
@@ -122,8 +122,8 @@ void PropertyAnalyzer::updateProcessors() {
     for (const auto& procId : visitedProcessors) {
         if (processors_.count(procId) == 0) {
             Processor* const processor = getNetwork()->getProcessorByIdentifier(procId);
-			IVW_ASSERT(processor != nullptr,
-				"PropertyAnalyzer: Predecessor Processor with given Identifier does not exist");
+            IVW_ASSERT(processor != nullptr,
+                "PropertyAnalyzer: Predecessor Processor with given Identifier does not exist");
 
             size_t numTestableProperties = 0;
             for (Property* prop : processor->getProperties()) {
@@ -288,8 +288,8 @@ void PropertyAnalyzer::setNetwork(ProcessorNetwork* pn) {
 }
 
 void PropertyAnalyzer::initTesting() {
-	IVW_ASSERT(remainingTests.empty(),
-		"PropertyAnalyzer: initTesting() in spite of remaining tests");
+    IVW_ASSERT(remainingTests.empty(),
+        "PropertyAnalyzer: initTesting() in spite of remaining tests");
     deactivated_.clear();
     testResults.clear();
 
@@ -316,7 +316,7 @@ void PropertyAnalyzer::initTesting() {
         prop->storeDefault();
     }
 
-	std::default_random_engine rng(42); // make rng deterministic for regression testing
+    std::default_random_engine rng(42); // make rng deterministic for regression testing
 
     const auto [assignments, assignmentsComp] = [&]() {
         std::vector<
@@ -426,8 +426,8 @@ auto generateImageFromData(const std::vector<unsigned char>& data) {
 
 void PropertyAnalyzer::checkTestResults() {
     std::cerr << "checking test results" << std::endl;
-	IVW_ASSERT(remainingTests.empty(),
-		"PropertyAnalyzer: checking test results() in spite of remaining tests");
+    IVW_ASSERT(remainingTests.empty(),
+        "PropertyAnalyzer: checking test results() in spite of remaining tests");
     std::vector<TestingError> errors;
 
     size_t numComparable = 0;
@@ -437,7 +437,7 @@ void PropertyAnalyzer::checkTestResults() {
         for (size_t tRj = 0; tRj < tRi; tRj++) {
             const auto& otherTestResult = testResults[tRj];
 
-			pbt::PropertyEffect propEff = pbt::PropertyEffect::ANY;
+            pbt::PropertyEffect propEff = pbt::PropertyEffect::ANY;
             for (auto prop : props_) {
                 auto tmp = prop->getPropertyEffect(testResult, otherTestResult);
                 propEff = combine(propEff, tmp);
@@ -485,7 +485,11 @@ void PropertyAnalyzer::checkTestResults() {
         // write report
         const auto reportFilePath = errFileDir / std::string("report.html");
         std::ofstream reportFile(reportFilePath.string(), std::ios::out);
-		pbt::PropertyBasedTestingReport report(reportFile, errors, props_);
+        pbt::propertyBasedTestingReport(reportFile, errors, [this](){
+                std::vector<const TestProperty*> res;
+                std::copy(props_.begin(), props_.end(), std::back_inserter(res));
+                return res;
+            }());
         reportFile.close();
         util::log(IVW_CONTEXT, "Wrote report to " + reportFilePath.string(), LogLevel::Info,
                   LogAudience::User);
@@ -508,12 +512,12 @@ void PropertyAnalyzer::checkTestResults() {
 
     if (currently_condensing) {
         if (errors.empty()) {
-			IVW_ASSERT(last_deactivated != -1,
-				"PropertyAnalyzer: Condensing, but there are neither errors nor a previously deactivated Property");
+            IVW_ASSERT(last_deactivated != -1,
+                "PropertyAnalyzer: Condensing, but there are neither errors nor a previously deactivated Property");
 
             (*deactivated_[last_deactivated]) = false;
         }
-		last_deactivated++;
+        last_deactivated++;
 
         outputImage_ = generateImageFromData<DataFormat<glm::u8vec4>>(std::vector<unsigned char>());
 
@@ -547,8 +551,8 @@ bool PropertyAnalyzer::testIsSetUp(const Test& test) const {
 }
 void PropertyAnalyzer::setupTest(const Test& test) {
     NetworkLock lock(this);
-	IVW_ASSERT(testingState == TestingState::NONE,
-		"PropertyAnalyzer: setting up test while testingState is wrong");
+    IVW_ASSERT(testingState == TestingState::NONE,
+        "PropertyAnalyzer: setting up test while testingState is wrong");
 
     resetAllProps();
 
@@ -598,7 +602,7 @@ void PropertyAnalyzer::process() {
         case TestingState::NONE:
             if (!outputImage_ && remainingTests.empty()) {
                 // output image does not exist and we are currently not testing
-                //	   generate output image
+                //       generate output image
                 dispatchFrontAndForget([this]() { initTesting(); });
             }
             break;
@@ -608,14 +612,14 @@ void PropertyAnalyzer::process() {
                       LogAudience::User);
         } break;
         case TestingState::GATHERING:
-			IVW_ASSERT(!remainingTests.empty(),
-				"PropertyAnalyzer: no remaining tests but state is set to GATHERING");
+            IVW_ASSERT(!remainingTests.empty(),
+                "PropertyAnalyzer: no remaining tests but state is set to GATHERING");
 
             auto test = remainingTests.front();
             remainingTests.pop();
 
-			IVW_ASSERT(testIsSetUp(test),
-				"PropertyAnalyzer: current test is not set up");
+            IVW_ASSERT(testIsSetUp(test),
+                "PropertyAnalyzer: current test is not set up");
 
             const size_t pixelCount = countPixels(img, color_.get(), useDepth_);
 
@@ -640,7 +644,7 @@ void PropertyAnalyzer::process() {
     }
     testingState = TestingState::NONE;
 
-	outport_.setData(outputImage_);
+    outport_.setData(outputImage_);
 }
 
 }  // namespace inviwo

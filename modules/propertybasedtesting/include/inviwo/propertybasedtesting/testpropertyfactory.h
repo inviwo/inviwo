@@ -53,7 +53,7 @@ protected:
 };
 
 template<typename T>
-class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyFactoryObjectTemplate
+class TestPropertyFactoryObjectTemplate
 		: public TestPropertyFactoryObject {
 public:
     TestPropertyFactoryObjectTemplate() : TestPropertyFactoryObject(T::classIdentifier()) {}

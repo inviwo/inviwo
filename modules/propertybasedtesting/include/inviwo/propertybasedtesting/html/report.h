@@ -32,24 +32,17 @@
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
 #include <inviwo/propertybasedtesting/testproperty.h>
 
-#include <inviwo/propertybasedtesting/html/html.h>
 #include <iostream>
+
+#include <inviwo/core/util/document.h>
 
 namespace inviwo {
 
 namespace pbt {
 
-class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyBasedTestingReport {
-private:
-    std::vector<HTML::Row> generateHTML(const TestingError&, const std::vector<TestProperty*>&);
-    HTML::BaseElement generateHTML(
-        const std::tuple<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>, bool>&,
-        const std::vector<TestProperty*>&);
-
-public:
-    PropertyBasedTestingReport(std::ostream&, const std::vector<TestingError>&,
-                               const std::vector<TestProperty*>&);
-};
+void IVW_MODULE_PROPERTYBASEDTESTING_API propertyBasedTestingReport(
+        std::ostream&, const std::vector<TestingError>&,
+        const std::vector<const TestProperty*>&);
 
 } // namespace pbt
 
