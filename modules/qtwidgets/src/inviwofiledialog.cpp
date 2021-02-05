@@ -79,7 +79,7 @@ int InviwoFileDialog::exec() {
         }
     }
 
-    if (!currentPath_.isEmpty()) {
+    if (!currentPath_.isEmpty() && QDir(currentPath_).exists()) {
         QFileDialog::setDirectory(currentPath_);
     }
 
