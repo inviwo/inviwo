@@ -99,7 +99,7 @@ private:
 
 template <typename T>
 T ColorLineEdit::getColor() const {
-    if constexpr (std::is_floating_point_v<T>) {
+    if constexpr (std::is_floating_point_v<typename T::value_type>) {
         return util::glm_convert<T>(color_);
     } else {
         return util::glm_convert<T>(color_ * 255.0);
