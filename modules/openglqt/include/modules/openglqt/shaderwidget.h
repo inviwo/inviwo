@@ -78,7 +78,6 @@ private:
     QAction* revert_;
     std::shared_ptr<const ShaderResource> orignal_;
 
-
     bool fileChangedInBackground_ = false;
     bool reloadQueryInProgress_ = false;
     bool ignoreNextUpdate_ = false;
