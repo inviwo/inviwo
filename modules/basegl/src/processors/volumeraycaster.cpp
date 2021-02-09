@@ -68,6 +68,7 @@
 #include <modules/opengl/texture/textureutils.h>                        // for bindAndSetUniforms
 #include <modules/opengl/volume/volumegl.h>                             // IWYU pragma: keep
 #include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
+#include <modules/opengl/openglutils.h>
 
 #include <bitset>         // for bitset<>::reference
 #include <cstddef>        // for size_t
@@ -80,8 +81,21 @@
 #include <utility>        // for pair
 #include <vector>         // for vector
 
+#include <modules/opengl/uniform/camerauniforms.h>
+#include <modules/opengl/uniform/volumeuniforms.h>
+#include <modules/opengl/uniform/layeruniforms.h>
+#include <modules/opengl/uniform/imageuniforms.h>
+#include <modules/opengl/uniform/simplelightinguniforms.h>
+#include <modules/opengl/uniform/volumeindicatoruniforms.h>
+#include <modules/opengl/uniform/raycastinguniform.h>
+#include <modules/opengl/uniform/isotfuniforms.h>
+#include <modules/opengl/uniform/propertyuniforms.h>
+
+
 #include <inviwo/tracy/tracy.h>
 #include <inviwo/tracy/tracyopengl.h>
+
+#include <type_traits>
 
 namespace inviwo {
 class Deserializer;
@@ -103,15 +117,15 @@ VolumeRaycaster::VolumeRaycaster()
     , exitPort_("exit")
     , backgroundPort_("bg")
     , outport_("outport")
-    , channel_("channel", "Render Channel", {{"Channel 1", "Channel 1", 0}}, 0)
+    , channel_("channel", "Render Channel",
+               std::vector<OptionPropertyIntOption>{{"Channel 1", "Channel 1", 0}}, size_t{0})
     , raycasting_("raycaster", "Raycasting")
-    , isotfComposite_("isotfComposite", "TF & Isovalues", &volumePort_)
+    , isotf_("isotfComposite", "TF & Isovalues", &volumePort_)
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
-    , lighting_("lighting", "Lighting", &camera_)
-    , positionIndicator_("positionindicator", "Position Indicator")
+    , lighting_("lighting", "Lighting", &camera_.property)
+    , indicator_("positionindicator", "Position Indicator")
     , toggleShading_(
           "toggleShading", "Toggle Shading", [this](Event* e) { toggleShading(e); }, IvwKey::L) {
-
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(volumePort_, "VolumePortGroup");
@@ -122,64 +136,89 @@ VolumeRaycaster::VolumeRaycaster()
 
     backgroundPort_.setOptional(true);
 
-    channel_.setSerializationMode(PropertySerializationMode::All);
+    channel_.property.setSerializationMode(PropertySerializationMode::All);
 
     auto updateTFHistSel = [this]() {
         HistogramSelection selection{};
-        selection[channel_] = true;
-        isotfComposite_.setHistogramSelection(selection);
+        selection[channel_.property.getSelectedIndex()] = true;
+        isotf_.property.setHistogramSelection(selection);
     };
     updateTFHistSel();
-    channel_.onChange(updateTFHistSel);
+    channel_.property.onChange(updateTFHistSel);
 
     volumePort_.onChange([this]() {
         if (volumePort_.hasData()) {
             size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
 
-            if (channels == channel_.size()) return;
+            if (channels == channel_.property.size()) return;
 
             std::vector<OptionPropertyIntOption> channelOptions;
             for (size_t i = 0; i < channels; i++) {
                 channelOptions.emplace_back("Channel " + toString(i + 1),
                                             "Channel " + toString(i + 1), static_cast<int>(i));
             }
-            channel_.replaceOptions(channelOptions);
-            channel_.setCurrentStateAsDefault();
+            channel_.property.replaceOptions(channelOptions);
+            channel_.property.setCurrentStateAsDefault();
         }
     });
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
     // change the currently selected channel when a pre-computed gradient is selected
-    raycasting_.gradientComputation_.onChange([this]() {
-        if (channel_.size() == 4) {
-            if (raycasting_.gradientComputation_.get() ==
+    raycasting_.property.gradientComputation_.onChange([this]() {
+        if (channel_.property.size() == 4) {
+            if (raycasting_.property.gradientComputation_.get() ==
                 RaycastingProperty::GradientComputation::PrecomputedXYZ) {
-                channel_.set(3);
-            } else if (raycasting_.gradientComputation_.get() ==
+                channel_.property.set(3);
+            } else if (raycasting_.property.gradientComputation_.get() ==
                        RaycastingProperty::GradientComputation::PrecomputedYZW) {
-                channel_.set(0);
+                channel_.property.set(0);
             }
         }
     });
 
-    addProperty(channel_);
-    addProperty(raycasting_);
-    addProperty(isotfComposite_);
-
-    addProperty(camera_);
-    addProperty(lighting_);
-    addProperty(positionIndicator_);
-    addProperty(toggleShading_);
+    addProperties(channel_.property, raycasting_.property, isotf_.property, camera_.property,
+                  lighting_.property, indicator_.property, toggleShading_);
 }
 
 const ProcessorInfo VolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 void VolumeRaycaster::initializeResources() {
-    utilgl::addDefines(shader_, raycasting_, isotfComposite_, camera_, lighting_,
-                       positionIndicator_);
+    utilgl::addDefines(shader_, raycasting_.property, isotf_.property, camera_.property,
+                       lighting_.property, indicator_.property);
     utilgl::addShaderDefinesBGPort(shader_, backgroundPort_);
     shader_.build();
+
+    camera_.bind(shader_);
+    lighting_.bind(shader_);
+    raycasting_.bind(shader_);
+    indicator_.bind(shader_);
+    isotf_.bind(shader_, isotf_.property.isovalues_.getIdentifier());
+    channel_.bind(shader_);
+
+    volumeUniforms_.bind(shader_, volumePort_.getIdentifier());
+    entryUniforms_.bind(shader_, entryPort_.getIdentifier());
+    exitUniforms_.bind(shader_, exitPort_.getIdentifier());
+    backgroundUniforms_.bind(shader_, backgroundPort_.getIdentifier());
+    outUniforms_.bind(shader_, outport_.getIdentifier());
+    useNormals_.bind(shader_, "useNormals");
+
+    utilgl::Activate as{&shader_};
+
+    shader_.setUniform("volume", volumeNum.number);
+    shader_.setUniform(isotf_.property.tf_.getIdentifier(), tfNum.number);
+    shader_.setUniform("entryColor", entryNums.color().number);
+    shader_.setUniform("entryDepth", entryNums.depth().number);
+    shader_.setUniform("entryPicking", entryNums.picking().number);
+    shader_.setUniform("entryNormal", entryNums[3].number);
+    shader_.setUniform("exitColor", exitNums.color().number);
+    shader_.setUniform("exitDepth", exitNums.depth().number);
+
+    if (backgroundPort_.isConnected()) {
+        shader_.setUniform("bgColor", backgroundNums.color().number);
+        shader_.setUniform("bgDepth", backgroundNums.depth().number);
+        shader_.setUniform("bgPicking", backgroundNums.picking().number);
+    }
 }
 
 void VolumeRaycaster::process() {
@@ -206,52 +245,67 @@ void VolumeRaycaster::raycast(const Volume& volume) {
         throw Exception("Could not find VolumeGL representation", IVW_CONTEXT);
     }
 
-    {
-        TRACY_ZONE_SCOPED_NC("Clear", 0x008800);
-        TRACY_GPU_ZONE_C("Clear", 0x008800);
     utilgl::activateAndClearTarget(outport_);
-    }
-    shader_.activate();
-    TextureUnitContainer units;
+
+    const auto entry = entryPort_.getData();
+    const auto exit = exitPort_.getData();
+    const auto back = backgroundPort_.getData();
+
+    utilgl::Activate as{&shader_};
 
     {
         TRACY_ZONE_SCOPED_NC("BindAndSetUniforms", 0x008800);
         TRACY_GPU_ZONE_C("BindAndSetUniforms", 0x008800);
-    utilgl::bindAndSetUniforms(shader_, units, volume, "volume");
-    utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
-    utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
-    utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
-    if (backgroundPort_.hasData()) {
-            utilgl::bindAndSetUniforms(shader_, units, backgroundPort_,
-                                       ImageType::ColorDepthPicking);
-    }
-    if (auto normals = entryPort_.getData()->getColorLayer(1)) {
-        utilgl::bindAndSetUniforms(shader_, units,
-                                   *normals->getRepresentation<LayerGL>()->getTexture(),
-                                   std::string_view{"entryNormal"});
-        shader_.setUniform("useNormals", true);
-    } else {
-        shader_.setUniform("useNormals", false);
-    }
 
-    utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
-                        channel_, isotfComposite_);
+        volume.getRepresentation<VolumeGL>()->bindTexture(volumeNum.unit());
+
+        if (const auto tfLayer = isotf_.property.tf_.get().getData()) {
+            const auto transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
+            transferFunctionGL->bindTexture(tfNum.unit());
+        }
+
+        utilgl::bindTextures(*entry, entryNums.color().unit(), entryNums.depth().unit(),
+                             entryNums.picking().unit());
+        if (auto normals = entry->getColorLayer(1)) {
+            normals->getRepresentation<LayerGL>()->bindTexture(entryNums[3].unit());
+            useNormals_.setUniforms(true);
+        } else {
+            useNormals_.setUniforms(false);
+        }
+
+        utilgl::bindTextures(*exit, exitNums.color().unit(), exitNums.depth().unit());
+        if (backgroundPort_.hasData()) {
+            utilgl::bindTextures(*back, backgroundNums.color().unit(),
+                                 backgroundNums.depth().unit(), backgroundNums.picking().unit());
+            backgroundUniforms_.setUniforms(*back);
+        }
+
+        camera_.setUniforms();
+        lighting_.setUniforms();
+        raycasting_.setUniforms();
+        indicator_.setUniforms();
+        isotf_.setUniforms();
+        channel_.setUniforms();
+
+        volumeUniforms_.setUniforms(volume);
+        entryUniforms_.setUniforms(*entry);
+        exitUniforms_.setUniforms(*exit);
+        outUniforms_.setUniforms(*outport_.getData());
     }
     {
         TRACY_ZONE_SCOPED_NC("Raycast", 0x008800);
         TRACY_GPU_ZONE_C("Raycast", 0x008800);
-    utilgl::singleDrawImagePlaneRect();
+        utilgl::singleDrawImagePlaneRect();
     }
 
-    shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 
 void VolumeRaycaster::toggleShading(Event*) {
-    if (lighting_.shadingMode_.get() == ShadingMode::None) {
-        lighting_.shadingMode_.set(ShadingMode::Phong);
+    if (lighting_.property.shadingMode_.get() == ShadingMode::None) {
+        lighting_.property.shadingMode_.set(ShadingMode::Phong);
     } else {
-        lighting_.shadingMode_.set(ShadingMode::None);
+        lighting_.property.shadingMode_.set(ShadingMode::None);
     }
 }
 
