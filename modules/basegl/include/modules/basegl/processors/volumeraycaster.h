@@ -44,6 +44,8 @@
 #include <inviwo/core/properties/volumeindicatorproperty.h>  // for VolumeIndicatorProperty
 #include <modules/opengl/shader/shader.h>                    // for Shader
 
+#include <modules/opengl/uniform/uniform.h>
+
 namespace inviwo {
 class Deserializer;
 class Event;
@@ -103,14 +105,27 @@ protected:
     ImageInport backgroundPort_;
     ImageOutport outport_;
 
-    OptionPropertyInt channel_;
-    RaycastingProperty raycasting_;
-    IsoTFProperty isotfComposite_;
-
-    CameraProperty camera_;
-    SimpleLightingProperty lighting_;
-    VolumeIndicatorProperty positionIndicator_;
+    uniform::UniformWrapper<OptionPropertyInt> channel_;
+    uniform::UniformWrapper<RaycastingProperty> raycasting_;
+    uniform::UniformWrapper<IsoTFProperty> isotf_;
+    uniform::UniformWrapper<CameraProperty> camera_;
+    uniform::UniformWrapper<SimpleLightingProperty> lighting_;
+    uniform::UniformWrapper<VolumeIndicatorProperty> indicator_;
     EventProperty toggleShading_;
+
+    uniform::UniformManager<Volume> volumeUniforms_;
+    uniform::UniformManager<Image> entryUniforms_;
+    uniform::UniformManager<Image> exitUniforms_;
+    uniform::UniformManager<Image> backgroundUniforms_;
+    uniform::UniformManager<Image> outUniforms_;
+    uniform::UniformManager<bool> useNormals_;
+
+    TextureNumberCounter texCounter_{};
+    TextureNumber volumeNum{texCounter_};
+    TextureNumber tfNum{texCounter_};
+    TextureNumbers<4> entryNums{texCounter_};
+    TextureNumbers<2> exitNums{texCounter_};
+    TextureNumbers<3> backgroundNums{texCounter_};
 };
 
 }  // namespace inviwo
