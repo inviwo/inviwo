@@ -97,7 +97,8 @@ struct State {
     std::ostream& output;
     LineNumberResolver& lnr;
     std::string_view key;
-    std::unordered_map<typename ShaderSegment::Type, std::vector<ShaderSegment>> replacements;
+    std::unordered_map<typename ShaderSegment::Placeholder, std::vector<ShaderSegment>>
+        replacements;
     std::function<std::optional<std::pair<std::string, std::string>>(std::string_view)> getSource;
     size_t lines = 0;
     size_t column = 0;
@@ -157,16 +158,18 @@ struct Psm {
         };
 
         auto replace = [](Char c, State& s) {
-            using SegType = typename ShaderSegment::Type;
+            using Placeholder = typename ShaderSegment::Placeholder;
             const auto lineEnd = std::find(c.curr, c.end, '\n');
-            const auto type = SegType{trim(std::string{c.curr, lineEnd}), ""};
-            const auto it = s.replacements.find(type);
+
+            std::string_view line{&*c.curr, static_cast<size_t>(lineEnd - c.curr)};
+            const auto placeholder = Placeholder{util::trim(line), ""};
+            const auto it = s.replacements.find(placeholder);
             if (it != s.replacements.end()) {
                 for (auto segIt = it->second.begin(); segIt != it->second.end(); ++segIt) {
                     const auto& segment = *segIt;
                     const auto snippet = psm::indent(segment.snippet, s.column);
                     utilgl::parseShaderSource(
-                        fmt::format("{}[{},{}]", segment.name, segment.type.name,
+                        fmt::format("{}[{},{}]", segment.name, segment.placeholder.name,
                                     segment.priority),
                         snippet, s.output, s.lnr, s.replacements, s.getSource);
                     if (std::next(segIt) != it->second.end()) {
@@ -245,7 +248,8 @@ struct Psm {
 
 void utilgl::parseShaderSource(
     std::string_view key, std::string_view source, std::ostream& output, LineNumberResolver& lnr,
-    std::unordered_map<typename ShaderSegment::Type, std::vector<ShaderSegment>> replacements,
+    std::unordered_map<typename ShaderSegment::Placeholder, std::vector<ShaderSegment>>
+        replacements,
     std::function<std::optional<std::pair<std::string, std::string>>(std::string_view)> getSource) {
 
     size_t lines = 0;
@@ -277,6 +281,8 @@ std::string ShaderObject::OutDeclaration::toString() const {
 
 ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderResource> resource)
     : shaderType_{shaderType}, id_{0}, resource_{resource} {
+
+    IVW_ASSERT(resource_, "Should never be null");
 
     if (!shaderType_) {
         throw OpenGLException("Invalid shader type", IVW_CONTEXT);
@@ -386,6 +392,12 @@ ShaderObject::~ShaderObject() {
 GLuint ShaderObject::getID() const { return id_; }
 
 std::string ShaderObject::getFileName() const { return resource_->key(); }
+
+void ShaderObject::setResource(std::shared_ptr<const ShaderResource> resource) {
+    IVW_ASSERT(resource, "Should never be null");
+    resource_ = resource;
+    callbacks_.invoke(this);
+}
 
 std::shared_ptr<const ShaderResource> ShaderObject::getResource() const { return resource_; }
 
@@ -528,11 +540,12 @@ void ShaderObject::parseSource(std::ostringstream& output) {
 
     std::sort(shaderSegments_.begin(), shaderSegments_.end(),
               [](const ShaderSegment& a, const ShaderSegment& b) {
-                  return std::tie(a.type, a.priority) < std::tie(b.type, b.priority);
+                  return std::tie(a.placeholder, a.priority) < std::tie(b.placeholder, b.priority);
               });
-    std::unordered_map<typename ShaderSegment::Type, std::vector<ShaderSegment>> replacements;
+    std::unordered_map<typename ShaderSegment::Placeholder, std::vector<ShaderSegment>>
+        replacements;
     for (const auto& segment : shaderSegments_) {
-        replacements[segment.type].push_back(segment);
+        replacements[segment.placeholder].push_back(segment);
     }
 
     utilgl::parseShaderSource(resource_->key(), resource_->source(), output, lnr_, replacements,

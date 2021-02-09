@@ -33,6 +33,7 @@
 #include <inviwo/core/util/filesystem.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/colorconversion.h>
 
 #include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/shader/shadermanager.h>
@@ -42,6 +43,8 @@
 #include <modules/qtwidgets/codeedit.h>
 
 #include <modules/openglqt/glslsyntaxhighlight.h>
+
+#include <fmt/format.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -81,11 +84,33 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
     shadercode_->setObjectName("shaderwidgetcode");
     shadercode_->setPlainText(utilqt::toQString(obj->print(false, false)));
 
+    apply_ = toolBar->addAction(QIcon(":/svgicons/run-script.svg"), tr("&Apply Changes"));
+    apply_->setToolTip(
+        "Replace the ShaderTesource in the shader with a new one with this contents. The "
+        "changes will only affect this shader and will not be persistent.");
+    apply_->setShortcut(Qt::CTRL | Qt::Key_R);
+    apply_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mainWindow->addAction(apply_);
+    connect(apply_, &QAction::triggered, this, &ShaderWidget::apply);
+
     save_ = toolBar->addAction(QIcon(":/svgicons/save.svg"), tr("&Save Shader"));
+    save_->setToolTip(
+        "If we have a FileShaderResoruce save the changes to disk, the change will be persistent "
+        "and all shaders using the file will be reloaded. If we have a StringShaderResource, "
+        "update the string. The change will affect all shaders using the resource but will not be "
+        "persistent");
     save_->setShortcut(QKeySequence::Save);
     save_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mainWindow->addAction(save_);
     connect(save_, &QAction::triggered, this, &ShaderWidget::save);
+
+    revert_ = toolBar->addAction(QIcon(":/svgicons/revert.svg"), tr("Revert"));
+    revert_->setToolTip("Revert changes");
+    revert_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    revert_->setEnabled(false);
+    QObject::connect(shadercode_, &QPlainTextEdit::modificationChanged, revert_,
+                     &QAction::setEnabled);
+    QObject::connect(revert_, &QAction::triggered, this, &ShaderWidget::revert);
 
     QPixmap enabled(":/svgicons/precompiled-enabled.svg");
     QPixmap disabled(":/svgicons/precompiled-disabled.svg");
@@ -96,13 +121,6 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
     preprocess_ = toolBar->addAction(preicon, "Show Preprocessed Shader");
     preprocess_->setChecked(false);
     preprocess_->setCheckable(true);
-
-    auto revert = toolBar->addAction(QIcon(":/svgicons/revert.svg"), tr("Revert"));
-    revert->setToolTip("Revert changes");
-    revert->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    revert->setEnabled(false);
-    QObject::connect(shadercode_, &QPlainTextEdit::modificationChanged, revert,
-                     &QAction::setEnabled);
 
     toolBar->addSeparator();
     auto undo = toolBar->addAction(QIcon(":/svgicons/undo.svg"), "&Undo");
@@ -134,7 +152,7 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
         }
         updateState();
     });
-    QObject::connect(revert, &QAction::triggered, this, &ShaderWidget::updateState);
+
     QObject::connect(shadercode_, &QPlainTextEdit::modificationChanged, this,
                      &QDockWidget::setWindowModified);
 
@@ -190,7 +208,31 @@ void ShaderWidget::save() {
     }
 }
 
-inline void ShaderWidget::updateState() {
+void ShaderWidget::apply() {
+    ignoreNextUpdate_ = true;
+
+    if (!orignal_) {
+        orignal_ = obj_->getResource();
+    }
+
+    auto tmp = std::make_shared<StringShaderResource>(
+        "[tmp]", utilqt::fromQString(shadercode_->toPlainText()));
+    obj_->setResource(tmp);
+    setWindowTitle("<tmp file>[*]");
+    revert_->setEnabled(true);
+}
+
+void ShaderWidget::revert() {
+    if (orignal_) {
+        ignoreNextUpdate_ = true;
+        obj_->setResource(orignal_);
+        setWindowTitle(utilqt::toQString(obj_->getFileName()) + "[*]");
+        orignal_ = nullptr;
+    }
+    updateState();
+}
+
+void ShaderWidget::updateState() {
     const bool checked = preprocess_->isChecked();
     const auto code = obj_->print(false, checked);
 
@@ -210,23 +252,43 @@ inline void ShaderWidget::updateState() {
         }
         const auto numberSize = std::to_string(lines).size();
         shadercode_->setLineAnnotation([this, width, numberSize](int line) {
-            const auto info = obj_->resolveLine(line - 1);
-            const auto pos = info.first.find_last_of('/');
-            const auto file = info.first.substr(pos + 1);
-            std::stringstream out;
-            out << std::left << std::setw(width + 1u) << file << std::right << std::setw(numberSize)
-                << info.second;
-            return out.str();
+            const auto&& [tag, num] = obj_->resolveLine(line - 1);
+            const auto pos = tag.find_last_of('/');
+            const auto file = std::string_view{tag}.substr(pos + 1);
+
+            return fmt::format(FMT_STRING("{0:<{2}}{1:>{3}}"), file, num, width + 1u, numberSize);
         });
         shadercode_->setAnnotationSpace(
             [width, numberSize](int) { return static_cast<int>(width + 1 + numberSize); });
+
+        shadercode_->setLineAnnotationColor([this](int line, vec4 org) {
+            const auto&& [tag, num] = obj_->resolveLine(line - 1);
+            if (auto pos = tag.find_first_of('['); pos != std::string::npos) {
+                const auto resource = std::string_view{tag}.substr(0, pos);
+
+                auto hsv = color::rgb2hsv(vec3(org));
+                auto randH = static_cast<double>(std::hash<std::string_view>{}(resource)) /
+                             std::numeric_limits<size_t>::max();
+
+                auto adjusted =
+                    vec4{color::hsv2rgb(vec3(static_cast<float>(randH), std::max(0.75f, hsv.y),
+                                             std::max(0.25f, hsv.z))),
+                         org.w};
+                return adjusted;
+            } else {
+                return org;
+            }
+        });
+
     } else {
         shadercode_->setLineAnnotation([](int line) { return std::to_string(line); });
+        shadercode_->setLineAnnotationColor([](int, vec4 org) { return org; });
         shadercode_->setAnnotationSpace([](int maxDigits) { return maxDigits; });
     }
 
     shadercode_->setReadOnly(checked);
     save_->setEnabled(!checked);
+    apply_->setEnabled(!checked);
     preprocess_->setText(checked ? "Show Plain Shader Only" : "Show Preprocessed Shader");
     shadercode_->document()->setModified(false);
 }

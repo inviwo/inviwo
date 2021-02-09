@@ -140,7 +140,10 @@ Shader::Shader(const Shader& rhs) : program_{rhs.program_}, warningLevel_{rhs.wa
 }
 
 Shader::Shader(Shader&& rhs)
-    : program_{std::move(rhs.program_)}
+    : program_{[&]() {
+        ShaderManager::getPtr()->unregisterShader(&rhs);
+        return std::move(rhs.program_);
+    }()}
     , shaderObjects_{std::move(rhs.shaderObjects_)}
     , attached_{std::move(rhs.attached_)}
     , ready_(rhs.ready_)
@@ -148,7 +151,6 @@ Shader::Shader(Shader&& rhs)
 
     rhs.callbacks_.clear();
     rhs.ready_ = false;
-    ShaderManager::getPtr()->unregisterShader(&rhs);
 
     for (auto& elem : shaderObjects_) {
         callbacks_.emplace_back(elem.onChange([this](ShaderObject* o) { rebuildShader(o); }));
@@ -193,13 +195,14 @@ Shader& Shader::operator=(Shader&& that) {
         attached_.clear();
         shaderObjects_.clear();
 
+        ShaderManager::getPtr()->unregisterShader(&that);
+
         program_ = std::move(that.program_);
         ready_ = that.ready_;
         warningLevel_ = that.warningLevel_;
         shaderObjects_ = std::move(that.shaderObjects_);
         attached_ = std::move(that.attached_);
 
-        ShaderManager::getPtr()->unregisterShader(&that);
         that.ready_ = false;
         that.callbacks_.clear();
 

@@ -157,7 +157,7 @@
       <Synthetic Name="Data"><DisplayString>{dimensions_}</DisplayString>
         <Expand>
           <ArrayItems Condition="data_._Mypair._Myval2 != nullptr">
-            <Direction>Forward</Direction>
+            <Direction>Backward</Direction>
             <Rank>3</Rank>
             <Size>((size_t*)(&amp;dimensions_))[$i]</Size>
             <ValuePointer>data_._Mypair._Myval2</ValuePointer>
@@ -346,7 +346,7 @@
       <Synthetic Name="Data"><DisplayString>{dimensions_}</DisplayString>
         <Expand>
           <ArrayItems Condition="data_._Mypair._Myval2 != nullptr">
-            <Direction>Forward</Direction>
+            <Direction>Backward</Direction>
             <Rank>2</Rank>
             <Size>((size_t*)(&amp;dimensions_))[$i]</Size>
             <ValuePointer>data_._Mypair._Myval2</ValuePointer>

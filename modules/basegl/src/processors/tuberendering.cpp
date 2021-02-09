@@ -151,8 +151,6 @@ void TubeRendering::process() {
     utilgl::CullFaceState cullstate(GL_BACK);
 
     const auto draw = [this, hasAnyLine](const Mesh& mesh, Shader& shader, auto test) {
-        if (!hasAnyLine(mesh, test)) return;
-
         shader.activate();
         TextureUnitContainer units;
         utilgl::bindAndSetUniforms(shader, units, metaColor_);
@@ -180,8 +178,12 @@ void TubeRendering::process() {
     };
 
     for (const auto& mesh : inport_) {
-        draw(*mesh, adjacencyShaders_.getShader(*mesh), hasLineAdjacency);
-        draw(*mesh, shaders_.getShader(*mesh), hasLine);
+        if (hasAnyLine(*mesh, hasLineAdjacency)) {
+            draw(*mesh, adjacencyShaders_.getShader(*mesh), hasLineAdjacency);
+        }
+        if (hasAnyLine(*mesh, hasLine)) {
+            draw(*mesh, shaders_.getShader(*mesh), hasLine);
+        }
     }
     utilgl::deactivateCurrentTarget();
 }

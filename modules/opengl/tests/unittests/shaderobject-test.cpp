@@ -124,12 +124,12 @@ TEST(ShaderObject, parseSource) {
         return std::nullopt;
     };
 
-    using SegType = typename ShaderSegment::Type;
-    std::unordered_map<SegType, std::vector<ShaderSegment>> replacements{
-        {SegType("MAGIC_REPLACEMENT", "REPLACEMENT"),
-         {ShaderSegment{SegType{"MAGIC_REPLACEMENT", "REPLACEMENT"}, "Repl1",
+    using Placeholder = typename ShaderSegment::Placeholder;
+    std::unordered_map<Placeholder, std::vector<ShaderSegment>> replacements{
+        {Placeholder("MAGIC_REPLACEMENT", "REPLACEMENT"),
+         {ShaderSegment{Placeholder{"MAGIC_REPLACEMENT", "REPLACEMENT"}, "Repl1",
                         "replacement code1;\nreplacement code2;", 900},
-          ShaderSegment{SegType{"MAGIC_REPLACEMENT", "REPLACEMENT"}, "Repl2",
+          ShaderSegment{Placeholder{"MAGIC_REPLACEMENT", "REPLACEMENT"}, "Repl2",
                         "replacement code3;\nreplacement code4;", 1100}}}
 
     };

@@ -57,6 +57,7 @@ public:
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
 
     void setLineAnnotation(std::function<std::string(int)>);
+    void setLineAnnotationColor(std::function<vec4(int, vec4)>);
     void setAnnotationSpace(std::function<int(int)>);
 
     SyntaxHighlighter& syntaxHighlighter();
@@ -86,6 +87,7 @@ protected:
     vec4 highlightColor_;
     SyntaxHighlighter* sh_;
     std::function<std::string(int)> annotateLine_;
+    std::function<vec4(int, vec4)> annotateColor_;
     std::function<int(int)> annotationSpace_;
 };
 

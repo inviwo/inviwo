@@ -29,14 +29,13 @@
 
 #include <modules/opengl/shader/shadersegment.h>
 
+#include <iostream>
+
 namespace inviwo {
 
-std::ostream& operator<<(std::ostream& os, const ShaderSegment::Type& obj) {
+std::ostream& operator<<(std::ostream& os, const ShaderSegment::Placeholder& obj) {
     os << obj.key;
     return os;
 }
-
-ShaderSegment::Type::Type(std::string aKey, std::string aName)
-    : key{std::move(aKey)}, name{std::move(aName)} {}
 
 }  // namespace inviwo

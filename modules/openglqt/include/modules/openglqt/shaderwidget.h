@@ -60,6 +60,8 @@ protected:
 
 private:
     void save();
+    void apply();
+    void revert();
 
     void updateState();
     void queryReloadFile();
@@ -72,6 +74,10 @@ private:
     std::vector<std::shared_ptr<std::function<void()>>> codeCallbacks_;
     QAction* preprocess_;
     QAction* save_;
+    QAction* apply_;
+    QAction* revert_;
+    std::shared_ptr<const ShaderResource> orignal_;
+
 
     bool fileChangedInBackground_ = false;
     bool reloadQueryInProgress_ = false;

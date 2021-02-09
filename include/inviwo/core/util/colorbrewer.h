@@ -44,14 +44,12 @@ class IVW_CORE_API ColorBrewerException : public Exception {
 public:
     ColorBrewerException(const std::string& message, ExceptionContext context)
         : Exception(message, context) {}
-    virtual ~ColorBrewerException() throw() {}
 };
 
 class IVW_CORE_API UnsupportedNumberOfColorsException : public Exception {
 public:
     UnsupportedNumberOfColorsException(const std::string& message, ExceptionContext context)
         : Exception(message, context) {}
-    virtual ~UnsupportedNumberOfColorsException() throw() {}
 };
 
 /**
