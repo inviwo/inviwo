@@ -150,7 +150,7 @@ void TubeRendering::process() {
     // avoid this we turn on face culling.
     utilgl::CullFaceState cullstate(GL_BACK);
 
-    const auto draw = [this, hasAnyLine](const Mesh& mesh, Shader& shader, auto test) {
+    const auto draw = [this](const Mesh& mesh, Shader& shader, auto test) {
         shader.activate();
         TextureUnitContainer units;
         utilgl::bindAndSetUniforms(shader, units, metaColor_);

@@ -181,7 +181,7 @@ void ShaderWidget::closeEvent(QCloseEvent* event) {
     InviwoDockWidget::closeEvent(event);
 }
 
-inline bool ShaderWidget::eventFilter(QObject* obj, QEvent* event) {
+bool ShaderWidget::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::FocusIn) {
         if (fileChangedInBackground_) {
             queryReloadFile();
