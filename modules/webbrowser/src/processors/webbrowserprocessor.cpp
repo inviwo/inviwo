@@ -151,7 +151,10 @@ std::string WebBrowserProcessor::getSource() {
 }
 
 WebBrowserProcessor::~WebBrowserProcessor() {
-    static_cast<WebBrowserClient*>(browser_->GetHost()->GetClient().get())->removeLoadHandler(this);
+    WebBrowserClient* webbrowser =
+        static_cast<WebBrowserClient*>(browser_->GetHost()->GetClient().get());
+    webbrowser->removeLoadHandler(this);
+    webbrowser->OnBeforeClose(browser_);
     // Force close browser
     browser_->GetHost()->CloseBrowser(true);
 }
