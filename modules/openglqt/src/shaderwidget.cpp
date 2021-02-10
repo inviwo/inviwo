@@ -220,6 +220,7 @@ void ShaderWidget::apply() {
     obj_->setResource(tmp);
     setWindowTitle("<tmp file>[*]");
     revert_->setEnabled(true);
+    shadercode_->document()->setModified(false);
 }
 
 void ShaderWidget::revert() {
