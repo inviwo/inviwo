@@ -48,6 +48,7 @@ CodeEdit::CodeEdit(QWidget* parent)
     , highlightColor_{1.0f}
     , sh_{new SyntaxHighlighter(document())}
     , annotateLine_{[](int line) { return std::to_string(line); }}
+    , annotateColor_{[](int, vec4 orgColor) { return orgColor; }}
     , annotationSpace_{[](int maxDigits) { return maxDigits; }} {
 
     setObjectName("CodeEdit");
@@ -89,6 +90,10 @@ CodeEdit::CodeEdit(QWidget* parent)
 
 void CodeEdit::setLineAnnotation(std::function<std::string(int)> func) {
     annotateLine_ = std::move(func);
+    updateLineNumberAreaWidth(0);
+}
+void CodeEdit::setLineAnnotationColor(std::function<vec4(int, vec4)> annotateColor) {
+    annotateColor_ = std::move(annotateColor);
     updateLineNumberAreaWidth(0);
 }
 void CodeEdit::setAnnotationSpace(std::function<int(int)> func) {
@@ -179,11 +184,10 @@ void CodeEdit::lineNumberAreaPaintEvent(QPaintEvent* event) {
     const int height = fontMetrics().height();
     const int width = lineNumberArea_->width() - offset;
 
-    painter.setPen(utilqt::toQColor(textColor_));
-
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible() && bottom >= event->rect().top()) {
             const auto number = utilqt::toQString(annotateLine_(blockNumber + 1));
+            painter.setPen(utilqt::toQColor(annotateColor_(blockNumber + 1, textColor_)));
             painter.drawText(0, top, width, height, Qt::AlignRight, number);
         }
 

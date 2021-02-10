@@ -55,7 +55,8 @@
 
 #pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <cstdint>
+#include <string_view>
 
 namespace inviwo {
 
@@ -63,7 +64,7 @@ namespace util {
 
 namespace detail {
 
-static uint64_t constexpr crc_table[] = {
+constexpr std::uint64_t crc_table[] = {
     0x0000000000000000ULL, 0x24854997ba2f81e7ULL, 0x490a932f745f03ceULL, 0x6d8fdab8ce708229ULL,
     0x9215265ee8be079cULL, 0xb6906fc95291867bULL, 0xdb1fb5719ce10452ULL, 0xff9afce626ce85b5ULL,
     0x66daad56789639abULL, 0x425fe4c1c2b9b84cULL, 0x2fd03e790cc93a65ULL, 0x0b5577eeb6e6bb82ULL,
@@ -129,25 +130,20 @@ static uint64_t constexpr crc_table[] = {
     0x22499b3228721766ULL, 0x06ccd2a5925d9681ULL, 0x6b43081d5c2d14a8ULL, 0x4fc6418ae602954fULL,
     0xb05cbd6cc0cc10faULL, 0x94d9f4fb7ae3911dULL, 0xf9562e43b4931334ULL, 0xddd367d40ebc92d3ULL};
 
-constexpr uint64_t crc64impl(uint64_t prevCrc, const char* str, size_t size) {
-    return !size
-               ? prevCrc
-               : crc64impl((prevCrc >> 8) ^ crc_table[(prevCrc ^ *str) & 0xff], str + 1, size - 1);
-}
-
-constexpr uint64_t crc64(const char* str, size_t size) {
-    return crc64impl(0xffffffff, str, size) ^ 0xffffffff;
-}
-
 }  // namespace detail
 
-template <size_t len>
-constexpr uint64_t constexpr_hash(const char (&str)[len]) {
-    return detail::crc64(str, len);
+[[nodiscard]] constexpr std::uint64_t constexpr_hash(std::string_view str) noexcept {
+    std::uint64_t crc = 0xffffffff;
+    for (auto c : str) {
+        crc = (crc >> 8) ^ detail::crc_table[(crc ^ c) & 0xff];
+    }
+    return crc ^ 0xffffffff;
 }
 
-constexpr uint64_t constexpr_hash(const std::string_view str) {
-    return detail::crc64(str.data(), str.length());
+template <size_t len>
+[[nodiscard]] constexpr std::uint64_t constexpr_hash(const char (&str)[len]) noexcept {
+    static_assert(len > 0, "len should include the null terminator");
+    return constexpr_hash(std::string_view{str, len - 1});
 }
 
 }  // namespace util
