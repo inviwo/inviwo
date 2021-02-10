@@ -36,6 +36,7 @@
 #include <inviwo/core/network/networklock.h>
 
 #include <inviwo/core/util/datetime.h>
+#include <inviwo/core/util/glm.h>
 
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
@@ -44,8 +45,55 @@
 
 namespace inviwo {
 
-std::mutex PropertyAnalyzer::mutex_;
-std::set<size_t> PropertyAnalyzer::curr_alive;
+std::set<size_t> PropertyAnalyzer::currAlive_;
+
+template <typename F, typename T = typename F::type>
+auto generateImageFromData(const std::vector<unsigned char>& data) {
+    auto swizzleMask = [](size_t numComponents) {
+        switch (numComponents) {
+            case 1:
+                return swizzlemasks::luminance;
+            case 2:
+                return swizzlemasks::luminanceAlpha;
+            case 3:
+                return swizzlemasks::rgb;
+            case 4:
+            default:
+                return swizzlemasks::rgba;
+        }
+    };
+
+    size2_t dimensions;
+    // determine dimensions: find smallest power of two that is at least as large as
+    // data.size(), and split it as evenly as possible, i.e. find a,b s.t.
+	// 2^a*2^b >= data.size(), a>=b, a<=b+1. Find x=2^a,y<=2^b, x*y>=data.size()
+    {
+		// take the ceil of data.size()/sizeof(T)
+        const size_t numElements = std::max(static_cast<size_t>(1),
+				(data.size() + sizeof(T) - 1) / sizeof(T));
+        size_t e;
+        for(e = 0; (1ull << e) < numElements; e++) {}
+        const size_t b = e / 2, a = e - b; // split e into a, b as above
+        dimensions.x = 1ull << b;
+        dimensions.y = 1ull << a;
+        while (dimensions.x * (dimensions.y - 1) >= numElements) {
+			dimensions.y--;
+		}
+    }
+
+    T* const imageData = new T[dimensions.x * dimensions.y];
+	unsigned char* const rawImageData = reinterpret_cast<unsigned char*>(imageData);
+	std::copy(data.begin(), data.end(), rawImageData);
+    // pad the remaining image with 0xFF
+    memset(rawImageData + data.size(), 0xFF,
+           dimensions.x * dimensions.y * sizeof(T) - data.size());
+
+    auto errLayerRAM = std::make_shared<LayerRAMPrecision<T>>(
+			imageData, dimensions, LayerType::Color, swizzleMask(F::comp));
+    auto errLayer = std::make_shared<Layer>(errLayerRAM);
+    return std::make_shared<Image>(errLayer);
+}
+
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo PropertyAnalyzer::processorInfo_{
@@ -58,8 +106,6 @@ const ProcessorInfo PropertyAnalyzer::processorInfo_{
 const ProcessorInfo PropertyAnalyzer::getProcessorInfo() const { return processorInfo_; }
 
 void PropertyAnalyzer::resetAllProps() {
-    const std::lock_guard<std::mutex> lock(mutex_);
-
     for (auto prop : props_) {
         prop->setToDefault();
     }
@@ -70,17 +116,14 @@ void PropertyAnalyzer::onProcessorNetworkWillRemoveProcessor(Processor* proc) {
     inactiveProcessors_.erase(proc->getIdentifier());
 }
 void PropertyAnalyzer::onProcessorNetworkDidAddConnection(const PortConnection& conn) {
-    const std::lock_guard<std::mutex> lock(mutex_);
     ProcessorNetworkObserver::onProcessorNetworkDidAddConnection(conn);
-    dispatchFrontAndForget([this]() { updateProcessors(); });
+    updateProcessors();
 }
 void PropertyAnalyzer::onProcessorNetworkDidRemoveConnection(const PortConnection& conn) {
-    const std::lock_guard<std::mutex> lock(mutex_);
     ProcessorNetworkObserver::onProcessorNetworkDidRemoveConnection(conn);
-    dispatchFrontAndForget([this]() { updateProcessors(); });
+    updateProcessors();
 }
 void PropertyAnalyzer::updateProcessors() {
-    const std::lock_guard<std::mutex> lock(mutex_);
     std::cerr << "PropertyAnalyzer::updateProcessors() @ " << this << std::endl;
 
     processors_.insert(std::make_move_iterator(inactiveProcessors_.begin()),
@@ -157,7 +200,6 @@ size_t curr_id = 0;
 
 PropertyAnalyzer::PropertyAnalyzer(InviwoApplication* app)
     : Processor()
-    , m_id(curr_id++)
     , testingState(TestingState::NONE)
     , app_(app)
     , tempDir_{std::filesystem::temp_directory_path() /
@@ -174,7 +216,8 @@ PropertyAnalyzer::PropertyAnalyzer(InviwoApplication* app)
     , description_("description", "Description", "", InvalidationLevel::InvalidOutput,
                    PropertySemantics::Multiline) {
 
-    curr_alive.emplace(m_id);
+	m_id = curr_id++;
+	currAlive_.emplace(m_id);
 
     countPixelsButton_.onChange([this]() {
         NetworkLock lock(this);
@@ -239,8 +282,6 @@ void PropertyAnalyzer::onTestPropertyChange() {
 }
 
 void PropertyAnalyzer::serialize(Serializer& s) const {
-    const std::lock_guard<std::mutex> lock(mutex_);
-
     Processor::serialize(s);
 
     s.serialize("NumProcs", processors_.size() + inactiveProcessors_.size());
@@ -259,8 +300,6 @@ void PropertyAnalyzer::serialize(Serializer& s) const {
 
 void PropertyAnalyzer::deserialize(Deserializer& d) {
     std::cerr << "deserializing PropertyAnalyzer" << std::endl;
-    const std::lock_guard<std::mutex> lock(mutex_);
-
     Processor::deserialize(d);
 
     size_t num;
@@ -281,7 +320,6 @@ void PropertyAnalyzer::deserialize(Deserializer& d) {
 }
 
 void PropertyAnalyzer::setNetwork(ProcessorNetwork* pn) {
-    std::cerr << "PropertyAnalyzer::setNetwork(" << pn << ")" << std::endl;
     Processor::setNetwork(pn);
     for (const auto& [proc, tp] : processors_) tp->setNetwork(pn);
     for (const auto& [proc, tp] : inactiveProcessors_) tp->setNetwork(pn);
@@ -305,9 +343,9 @@ void PropertyAnalyzer::initTesting() {
         }
     }
 
+    // create Image with (empty) results
+	outputImage_ = generateImageFromData<DataFormat<glm::u8vec4>>({});
     if (props_.empty()) {
-        std::cerr << "not testing because there are no selected properties" << std::endl;
-        checkTestResults();  // create Image with (empty) results
         return;
     }
 
@@ -366,7 +404,8 @@ void PropertyAnalyzer::initTesting() {
         std::string("Testing ") + std::to_string(remainingTests.size()) + " configurations...",
         LogLevel::Info, LogAudience::User);
 
-    if (remainingTests.size() > 0) {
+    if (!remainingTests.empty()) {
+		// enqueue next test
         dispatchFrontAndForget([this]() { setupTest(remainingTests.front()); });
     }
 }
@@ -379,49 +418,6 @@ std::ostream& printError(std::ostream& out, const std::vector<TestProperty*>& pr
     out << "Got " << res1 << " and " << res2 << " pixels, respectively."
         << " These numbers should be " << effect << std::endl;
     return out;
-}
-
-template <typename F, typename T = typename F::type>
-auto generateImageFromData(const std::vector<unsigned char>& data) {
-    auto swizzleMask = [](size_t numComponents) {
-        switch (numComponents) {
-            case 1:
-                return swizzlemasks::luminance;
-            case 2:
-                return swizzlemasks::luminanceAlpha;
-            case 3:
-                return swizzlemasks::rgb;
-            case 4:
-            default:
-                return swizzlemasks::rgba;
-        }
-    };
-
-    size2_t dimensions;
-    // determine dimensions: find smallest power of two that is at least as large as
-    // data.size(), and split it as evenly as possible, i.e. 2^a*2^b >= data.size(),
-    // a>=b, a<=b+1. let x=2^a,y<=2^b, x*y>=data.size()y
-    {
-        const size_t numElements = std::max(size_t(1), (data.size() + sizeof(T) - 1) / sizeof(T));
-        size_t e = 0;
-        while ((1ull << e) < numElements) e++;
-        const size_t b = e / 2, a = e - b;
-        dimensions.x = 1ull << b;
-        dimensions.y = 1ull << a;
-        while (dimensions.x * (dimensions.y - 1) >= numElements) dimensions.y--;
-    }
-
-    T* raw = new T[dimensions.x * dimensions.y];
-    memcpy(raw, data.data(), data.size());
-    // padding
-    memset(reinterpret_cast<unsigned char*>(raw) + data.size(), 0xFF,
-           dimensions.x * dimensions.y * sizeof(T) - data.size());
-    // std::fill_n(raw + data.size(), dimensions.x*dimensions.y - data.size(), T(0,255,0,255));
-
-    auto errLayerRAM = std::make_shared<LayerRAMPrecision<T>>(raw, dimensions, LayerType::Color,
-                                                              swizzleMask(F::comp));
-    auto errLayer = std::make_shared<Layer>(errLayerRAM);
-    return std::make_shared<Image>(errLayer);
 }
 
 void PropertyAnalyzer::checkTestResults() {
@@ -519,9 +515,7 @@ void PropertyAnalyzer::checkTestResults() {
         }
         last_deactivated++;
 
-        outputImage_ = generateImageFromData<DataFormat<glm::u8vec4>>(std::vector<unsigned char>());
-
-        if (last_deactivated >= deactivated_.size()) {
+        if (static_cast<size_t>(last_deactivated) >= deactivated_.size()) {
             // we have tried to deactivate all properties
             // terminate condensing
             currently_condensing = false;
@@ -537,8 +531,10 @@ void PropertyAnalyzer::checkTestResults() {
 
             testResults.clear();
             // kick off testing
-            if (remainingTests.size() > 0)
+            if (!remainingTests.empty()) {
+				// enqueue first test
                 dispatchFrontAndForget([this]() { setupTest(remainingTests.front()); });
+			}
         }
     }
     std::cout << "done checking Test results" << std::endl;
@@ -561,9 +557,11 @@ void PropertyAnalyzer::setupTest(const Test& test) {
         assignment->apply();
     }
 
-    // TODO: find better solution
-    app_->getProcessorNetwork()->forEachProcessor(
-        [](auto proc) { proc->invalidate(InvalidationLevel::InvalidOutput); });
+    // Invalidate all predecessors in order to force the update of their output
+    for (Processor* const processor : util::getPredecessors(this)) {
+        if (processor == this) continue;
+		processor->invalidate(InvalidationLevel::InvalidOutput);
+	}
 
     dispatchPool([this]() {
         // necessary because of synchronicity issues, TODO: find better solution
@@ -577,33 +575,39 @@ void PropertyAnalyzer::setupTest(const Test& test) {
 
 size_t countPixels(std::shared_ptr<const Image> img, const dvec4& col, const bool useDepth) {
     auto imgRam = img->getRepresentation<ImageRAM>();
-    auto layer = useDepth ? imgRam->getDepthLayerRAM() : imgRam->getColorLayerRAM();
-    const auto dim = layer->getDimensions();
-    size_t res = 0;
-    for (size_t x = 0; x < dim.x; x++) {
-        for (size_t y = 0; y < dim.y; y++) {
-            const auto pixelCol = layer->getAsNormalizedDVec4(size2_t(x, y));
-            if (useDepth) {
-                if (pixelCol.x == 1) res++;
-            } else {
-                if (glm::length(pixelCol - col) < 1e-3) res++;
-            }
-        }
-    }
-    return res;
+    auto layerRAM = useDepth ? imgRam->getDepthLayerRAM() : imgRam->getColorLayerRAM();
+	return layerRAM->dispatch<size_t, dispatching::filter::All>([col,useDepth](auto lr) {
+			using ValueType = util::PrecisionValueType<decltype(lr)>;
+			using Primitive = typename DataFormat<ValueType>::primitive;
+			const auto dim = lr->getDimensions();
+			const ValueType* data = lr->getDataTyped();
+			return static_cast<size_t>(std::count_if(data, data + dim.x*dim.y,
+				[useDepth,col](const auto x) {
+					if(useDepth) {
+						const Primitive alpha = pbt::GetComponent<ValueType>::get(x,0);
+						if constexpr (std::is_integral_v<ValueType>) {
+							return alpha == std::numeric_limits<ValueType>::max();
+						} else {
+							return glm::abs(alpha - 1) <= util::epsilon<Primitive>();
+						}
+					 } else {
+						const auto d = util::glm_convert_normalized<dvec4>(x) - col;
+						return glm::dot(d,d) <= 1e-7;
+					}
+				}));
+		});
 }
 
 void PropertyAnalyzer::process() {
-    const std::lock_guard<std::mutex> lock(mutex_);
-
     auto img = inport_.getData();
 
     switch (testingState) {
         case TestingState::NONE:
             if (!outputImage_ && remainingTests.empty()) {
                 // output image does not exist and we are currently not testing
-                //       generate output image
-                dispatchFrontAndForget([this]() { initTesting(); });
+                // => generate output image for regression testing
+				initTesting();
+				return;
             }
             break;
         case TestingState::SINGLE_COUNT: {

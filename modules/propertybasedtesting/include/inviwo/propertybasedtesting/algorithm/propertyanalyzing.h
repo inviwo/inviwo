@@ -60,15 +60,15 @@ constexpr size_t numPropertyEffects = 1 + static_cast<size_t>(PropertyEffect::NO
 template <typename A, typename B>
 bool propertyEffectComparator(const PropertyEffect& e, const A& a, const B& b) {
     IVW_ASSERT(static_cast<size_t>(e) < numPropertyEffects,
-            "propertyEffectComparator: given PropertyEffect is not valid");
+			"propertyEffectComparator: given PropertyEffect is not valid");
     switch (e) {
-        case PropertyEffect::NOT_COMPARABLE:
+		case PropertyEffect::NOT_COMPARABLE:
             return false;
-        case PropertyEffect::ANY:
+		case PropertyEffect::ANY:
             return true;
-        case PropertyEffect::NOT_EQUAL:
+		case PropertyEffect::NOT_EQUAL:
             return a != b;
-        case PropertyEffect::EQUAL:
+		case PropertyEffect::EQUAL:
             return a == b;
         case PropertyEffect::LESS:
             return a < b;
@@ -79,7 +79,7 @@ bool propertyEffectComparator(const PropertyEffect& e, const A& a, const B& b) {
         case PropertyEffect::GREATER_EQUAL:
             return a >= b;
     }
-    IVW_ASSERT(false, "propertyEffectComparator: switch is incomplete");
+	IVW_ASSERT(false, "propertyEffectComparator: switch is incomplete");
 }
 
 using AssignmentComparator = std::function<PropertyEffect(

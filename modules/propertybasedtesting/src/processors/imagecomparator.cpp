@@ -32,10 +32,11 @@
 #include <inviwo/core/util/document.h>
 
 #include <inviwo/core/datastructures/image/imageram.h>
+#include <inviwo/core/io/imagewriterutil.h>
 #include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/io/imagewriterutil.h>
 #include <inviwo/core/util/fileextension.h>
-#include <inviwo/core/util/imageramutils.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <filesystem>
 #include <fstream>
 
@@ -86,23 +87,17 @@ ImageComparator::ImageComparator()
         auto img1 = inport1_.getData();
         auto img2 = inport2_.getData();
 
-        const auto dim1 = img1->getDimensions();
+        const auto dim = img1->getDimensions();
         const auto dim2 = img2->getDimensions();
-        if (dim1 != dim2) {
+        if (dim != dim2) {
             std::stringstream str;
-            str << getIdentifier() << ": Images do not have same dimensions: " << dim1
+            str << getIdentifier() << ": Images do not have same dimensions: " << dim
                 << " != " << dim2;
             util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
             return false;
         }
         return true;
     });
-}
-
-void ImageComparator::setNetwork(ProcessorNetwork* network) {
-    if (network) network->addObserver(this);
-
-    Processor::setNetwork(network);
 }
 
 double ImageComparator::difference(const ComparisonType& comp, const glm::dvec4& col1,
@@ -112,7 +107,7 @@ double ImageComparator::difference(const ComparisonType& comp, const glm::dvec4&
             return absoluteARGBdifference(col1, col2);
     }
 }
-double ImageComparator::absoluteARGBdifference(const glm::dvec4& col1, const glm::dvec4& col2) {
+double ImageComparator::absoluteARGBdifference(const dvec4& col1, const dvec4& col2) {
     double res = 0;
     for (size_t i = 0; i < DataFormat<dvec4>::components(); i++) res += abs(col1[i] - col2[i]);
     return res;
@@ -129,59 +124,71 @@ void ImageComparator::process() {
         }
     }
 
-    const auto img1 = inport1_.getData();
-    const auto img2 = inport2_.getData();
+    const std::shared_ptr<const Image> img1 = inport1_.getData();
+    const std::shared_ptr<const Image> img2 = inport2_.getData();
 
-    const auto dim1 = img1->getDimensions();
-    const auto dim2 = img2->getDimensions();
+    const auto dim = img1->getDimensions();
 
-    if (dim1 != dim2) {
+    if (dim != img2->getDimensions()) {
         std::stringstream str;
-        str << getIdentifier() << ": Error: Image dimensions do not agree: " << dim1
-            << " != " << dim2;
+        str << getIdentifier() << ": Error: Image dimensions do not agree: " << dim
+            << " != " << img2->getDimensions();
         util::log(IVW_CONTEXT, str.str(), LogLevel::Info, LogAudience::User);
         return;
     }
-    const size_t numPixels = dim1.x * dim1.y;
+    const size_t numPixels = dim.x * dim.y;
 
-    auto diffImg = std::make_shared<Image>(dim1, DataVec3UInt8::get());
-    auto maskImg = std::make_shared<Image>(dim1, DataVec3UInt8::get());
+	using F = DataFormat<glm::u8vec3>;
+	using T = F::type;
+	T* const diffImageData = new T[numPixels];
+	T* const maskImageData = new T[numPixels];
 
-    auto imgRAM1 = img1->getRepresentation<ImageRAM>();
-    auto imgRAM2 = img2->getRepresentation<ImageRAM>();
-    auto diffRAM = diffImg->getEditableRepresentation<ImageRAM>();
-    auto maskRAM = maskImg->getEditableRepresentation<ImageRAM>();
-
-    auto colorLayerRAM1 = imgRAM1->getColorLayerRAM();
-    auto colorLayerRAM2 = imgRAM2->getColorLayerRAM();
-    auto colorLayerDiff = diffRAM->getColorLayerRAM();
-    auto colorLayerMask = maskRAM->getColorLayerRAM();
+    const auto imgRam1 = img1->getRepresentation<ImageRAM>();
+    const auto imgRam2 = img2->getRepresentation<ImageRAM>();
+    const auto colorLayerRAM1 = imgRam1->getColorLayerRAM();
+    const auto colorLayerRAM2 = imgRam2->getColorLayerRAM();
 
     const ReductionType reduction = reductionType_.getSelectedValue();
 
     double result = getUnitForReduction<double>(reduction);
-    size_t diffPixels = 0;
-    for (size_t x = 0; x < dim1.x; x++) {
-        for (size_t y = 0; y < dim1.y; y++) {
-            const auto col1 = colorLayerRAM1->getAsDVec4(size2_t(x, y));
-            const auto col2 = colorLayerRAM2->getAsDVec4(size2_t(x, y));
-            const double diff = difference(comparisonType_.get(), col1, col2);
-            const bool pixelDifferent =
-                (diff / std::max({1.0, glm::length(col1), glm::length(col2)})) <=
-                maxPixelwiseDeviation_.get();
-            const double c = pixelDifferent * 255.0;
+	size_t diffPixels = colorLayerRAM1->dispatch<size_t, dispatching::filter::All>([&](auto lr1) {
+			const auto* data1 = lr1->getDataTyped();
 
-            result = combine(reduction, result, diff);
-            colorLayerDiff->setFromDVec3(size2_t(x, y), 128.0 + (col1 - col2) / 2.0);
-            colorLayerMask->setFromDVec3(size2_t(x, y), dvec3(c, c, c));
-            if (pixelDifferent) {
-                diffPixels++;
-            }
-        }
-    }
+			// compiling takes quite a long time, maybe filter for the type of lr1?
+			return colorLayerRAM2->dispatch<size_t, dispatching::filter::All>([&](auto lr2) {
+					const auto* data2 = lr2->getDataTyped();
+					
+					size_t diffPixels = 0;
+					for(size_t i = 0; i < numPixels; i++) {
+						const dvec4 col1 = util::glm_convert_normalized<dvec4>(data1[i]);
+						const dvec4 col2 = util::glm_convert_normalized<dvec4>(data2[i]);
+
+						const double diff = difference(comparisonType_.get(), col1, col2);
+            			const bool pixelDifferent = (diff > maxPixelwiseDeviation_.get());
+            			const double c = pixelDifferent * 255.0;
+
+            			result = combine(reduction, result, diff);
+						diffImageData[i] = static_cast<T>(127.5 + (col1 - col2) / 2.0);
+						maskImageData[i] = static_cast<T>(dvec3(c,c,c));
+            			if (pixelDifferent) {
+            			    diffPixels++;
+            			}
+					}
+					return diffPixels;
+				});
+		});
     if (reduction == ReductionType::MEAN) {
         result /= numPixels;
     }
+
+	const auto createImg = [&](T* const imageData) {
+			auto imgRAM = std::make_shared<LayerRAMPrecision<T>>(
+					imageData, dim, LayerType::Color, swizzlemasks::rgb);
+    		auto imgLayer = std::make_shared<Layer>(imgRAM);
+    		return std::make_shared<Image>(imgLayer);
+		};
+	const auto diffImg = createImg(diffImageData);
+	const auto maskImg = createImg(maskImageData);
 
     differencePort_.setData(diffImg);
     maskPort_.setData(maskImg);

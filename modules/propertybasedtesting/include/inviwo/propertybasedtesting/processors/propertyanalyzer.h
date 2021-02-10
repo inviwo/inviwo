@@ -167,9 +167,7 @@ class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyAnalyzer : public Processor,
 public:
     PropertyAnalyzer(InviwoApplication*);
     virtual ~PropertyAnalyzer() {
-        const std::lock_guard<std::mutex> lock(mutex_);
-        std::cerr << "~PropertyAnalyzer() @ " << this << std::endl;
-        curr_alive.erase(m_id);
+        currAlive_.erase(m_id);
     }
 
     virtual void process() override;
@@ -183,12 +181,11 @@ public:
     virtual void setNetwork(ProcessorNetwork*) override;
 
 private:
-    static std::set<size_t> curr_alive;
+    static std::set<size_t> currAlive_;
     size_t m_id;
     template <typename F>
     void dispatchFrontAndForget(F);
 
-    static std::mutex mutex_;
     enum TestingState { NONE, GATHERING, SINGLE_COUNT };
     TestingState testingState;
     bool currently_condensing = false;
@@ -245,7 +242,9 @@ template <typename F>
 void PropertyAnalyzer::dispatchFrontAndForget(F f) {
     const size_t id = m_id;
     app_->dispatchFrontAndForget([id, f]() {
-        if (PropertyAnalyzer::curr_alive.count(id)) f();
+        if (PropertyAnalyzer::currAlive_.count(id)) {
+			f();
+		}
     });
 }
 

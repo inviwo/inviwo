@@ -50,7 +50,7 @@ class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyTyped;
  */
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestResult {
 private:
-    const std::vector<TestProperty*>& defaultValues;
+    const std::vector<TestProperty*>& testProperties;
     const Test test;
     const size_t pixels;
     const std::filesystem::path imgPath;
@@ -62,9 +62,9 @@ public:
     template <typename T>
     typename T::value_type getValue(const T* prop) const;
 
-    TestResult(const std::vector<TestProperty*>& defaultValues, const Test& t, size_t val,
+    TestResult(const std::vector<TestProperty*>& testProperties, const Test& t, size_t val,
                const std::filesystem::path& imgPath)
-        : defaultValues(defaultValues), test(t), pixels(val), imgPath(imgPath) {}
+        : testProperties(testProperties), test(t), pixels(val), imgPath(imgPath) {}
 };
 
 using TestingError = std::tuple<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>,
@@ -84,7 +84,7 @@ typename T::value_type TestResult::getValue(const T* prop) const {
             return p->getValue();
     }
 
-    for (auto def : defaultValues) {
+    for (auto def : testProperties) {
         if (auto p = dynamic_cast<TestPropertyTyped<T>*>(def); p != nullptr) {
             if (p->getTypedProperty() == prop) return p->getDefaultValue();
         } else if (auto p = dynamic_cast<TestPropertyComposite*>(def); p != nullptr) {

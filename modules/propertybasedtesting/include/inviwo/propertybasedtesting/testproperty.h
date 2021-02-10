@@ -102,7 +102,6 @@ private:
             }
         }
     }
-
 public:
     bool operator<(const NetworkPath& other) const { return path() < other.path(); }
     // only for deserialization
@@ -117,32 +116,60 @@ public:
         if (pn == nullptr) {
             path_ = path();
             ptr_ = nullptr;
-        }
-        pn_ = pn;
+			pn_ = nullptr;
+        } else {
+			pn_ = pn;
+			maybeGet();
+		}
     }
 
-    T* get() const {
+	/*
+	 * Is true, if and only if the pointer to the referenced object or the
+	 * the pointer to the network is known (and in the latter case, when the
+	 * path is not empty).
+	 */
+	bool isValid() const {
+		return ptr_ != nullptr || pn_ != nullptr;
+	}
+	/*
+	 * Fails iff !isValid()
+	 * Returns nullptr, if and only if ptr_ is null and the network does
+	 * not contain the referenced object.
+	 */
+	T* maybeGet() const {
         if (ptr_ == nullptr) {
             IVW_ASSERT(pn_ != nullptr,
-                "NetworkPath::get(): ptr and network are both nullptr");
+                "NetworkPath::get(): \"" + path_ + "\" ptr and network are both nullptr");
             if (isProcessor_) {
                 Processor* const t = pn_->getProcessorByIdentifier(path_);
-                IVW_ASSERT(t != nullptr,
-                        "NetworkPath: getProcessorByIdentifier failed");
+				if(t == nullptr) { // processor does not exist in the network
+					return nullptr;
+				}
                 ptr_ = dynamic_cast<T*>(t);
                 IVW_ASSERT(ptr_ != nullptr,
-                    "NetworkPath: referenced processor has wrong type");
+                    "NetworkPath::get(): \"" + path_ +"\" referenced processor has wrong type");
                 return ptr_;
             } else {
                 Property* const tmp = pn_->getProperty(path_);
-                IVW_ASSERT(tmp != nullptr,
-                    "NetworkPath: network does not contain referenced object");
+				if(tmp == nullptr) { // property does not exist in the network
+					return nullptr;
+				}
                 ptr_ = dynamic_cast<T*>(tmp);
                 IVW_ASSERT(ptr_ != nullptr,
-                    "NetworkPath: referenced object has wrong type");
+                    "NetworkPath::get(): \"" + path_ + "\" referenced object has wrong type");
             }
         }
         return ptr_;
+	}
+	/*
+	 * Note: only works under the assumption that maybeGet() does not
+	 * return nullptr
+	 */
+    T* get() const {
+		T* const res = maybeGet();
+		IVW_ASSERT(res != nullptr,
+				"NetworkPath::get(): \"" + path_ + "\" The referenced object does not exist in the network");
+		return res;
     }
     operator T*() const { return get(); }
     T* operator->() const { return get(); }
@@ -277,7 +304,7 @@ public:
         std::pair<pbt::AssignmentComparator,
         std::vector<std::shared_ptr<PropertyAssignment>>>>
     generateAssignmentsCmp(std::default_random_engine&) const = 0;
-    virtual ~TestProperty() = default;
+    virtual ~TestProperty();
 };
 
 /*

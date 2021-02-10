@@ -43,30 +43,48 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.ImageComparator, Image Comparator}
  * ![](org.inviwo.ImageComparator.png?classIdentifier=org.inviwo.ImageComparator)
- * Explanation of how to use the processor.
+ *
+ * This processor takes two images (of same dimensions) and computes the
+ * difference according to a given metric. If the total difference is larger than
+ * a given threshold, a report with the input images as well as the relevant
+ * data (Time, difference, number of different pixels, difference in percent)
+ * is written on disk.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __<inport1>__ The first image
+ *   * __<inport2>__ The second image
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __<difference>__ The (pixelwise) difference of the two input images
+ *   * __<mask>__ The mask of the difference, that is, a pixel is black, if
+ *   and only if the difference of the pixels in the reference images
+ *   (at the same position) exceeds the pixelwise threshold (and white
+ *   otherwise).
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __<Maximum deviation>__ The maximum deviation of the total difference,
+ *   that if exceeded, a report is generated
+ *   * __<Maximum pixelwise deviation (%)>__ The maximum deviation of a pixel,
+ *   such that a pixel is counted as 'different' the maximum deviation is exceeded.
+ *   * __<Comparison Type>__ The method according to which the (pixelwise)
+ *   difference is computed. Right now, only 'Absolute ARGB differences' is available.
+ *   * __<Reduction>__ The method according to which the pixelwise differences
+ *   are accumulated. Available are 'Mean', 'Maximum', 'Minimum' and 'Sum'.
+ *   * __<Report Directory>__ The directory where the report and all relevant
+ *   images are saved to.
  */
-class IVW_MODULE_PROPERTYBASEDTESTING_API ImageComparator : public Processor,
-                                                            public ProcessorNetworkObserver {
+class IVW_MODULE_PROPERTYBASEDTESTING_API ImageComparator : public Processor {
 public:
     ImageComparator();
+	virtual ~ImageComparator() = default;
 
     virtual void process() override;
 
-    virtual void setNetwork(ProcessorNetwork* network) override;
     virtual void createReport();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 
 private:
     enum class ComparisonType { AbsARGB };
