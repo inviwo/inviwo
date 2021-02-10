@@ -157,7 +157,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     setAcceptDrops(true);
 
     // make sure, tooltips are always shown (this includes port inspectors as well)
-    this->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+    setAttribute(Qt::WA_AlwaysShowToolTips, true);
 
     networkEditor_ = std::make_unique<NetworkEditor>(this);
 
@@ -360,7 +360,7 @@ void InviwoMainWindow::getScreenGrab(std::string path, std::string fileName) {
     repaint();
     app_->processEvents();
     app_->waitForPool();
-    QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(this->winId());
+    QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(winId());
     screenGrab.save(QString::fromStdString(path + "/" + fileName), "png");
 }
 
@@ -391,7 +391,7 @@ void InviwoMainWindow::addActions() {
             new QAction(QIcon(":/svgicons/about-enabled.svg"), tr("&Get Started"), this);
         welcomeAction->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_N);
         welcomeAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        this->addAction(welcomeAction);
+        addAction(welcomeAction);
         connect(welcomeAction, &QAction::triggered, this, &InviwoMainWindow::showWelcomeScreen);
         fileMenuItem->addAction(welcomeAction);
         fileMenuItem->addSeparator();
@@ -402,7 +402,7 @@ void InviwoMainWindow::addActions() {
         auto newAction = new QAction(QIcon(":/svgicons/newfile.svg"), tr("&New Workspace"), this);
         newAction->setShortcut(QKeySequence::New);
         newAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        this->addAction(newAction);
+        addAction(newAction);
         connect(newAction, &QAction::triggered, this, [this]() {
             if (newWorkspace()) {
                 hideWelcomeScreen();
@@ -416,7 +416,7 @@ void InviwoMainWindow::addActions() {
         auto openAction = new QAction(QIcon(":/svgicons/open.svg"), tr("&Open Workspace"), this);
         openAction->setShortcut(QKeySequence::Open);
         openAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        this->addAction(openAction);
+        addAction(openAction);
         connect(openAction, &QAction::triggered, this, [this]() {
             if (openWorkspace()) {
                 hideWelcomeScreen();
@@ -430,7 +430,7 @@ void InviwoMainWindow::addActions() {
         auto saveAction = new QAction(QIcon(":/svgicons/save.svg"), tr("&Save Workspace"), this);
         saveAction->setShortcut(QKeySequence::Save);
         saveAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        this->addAction(saveAction);
+        addAction(saveAction);
         connect(saveAction, &QAction::triggered, this,
                 static_cast<void (InviwoMainWindow::*)()>(&InviwoMainWindow::saveWorkspace));
         fileMenuItem->addAction(saveAction);
@@ -442,7 +442,7 @@ void InviwoMainWindow::addActions() {
             new QAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Workspace As"), this);
         saveAsAction->setShortcut(QKeySequence::SaveAs);
         saveAsAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        this->addAction(saveAsAction);
+        addAction(saveAsAction);
         connect(saveAsAction, &QAction::triggered, this, &InviwoMainWindow::saveWorkspaceAs);
         fileMenuItem->addAction(saveAsAction);
         workspaceToolBar->addAction(saveAsAction);
@@ -836,49 +836,92 @@ void InviwoMainWindow::addActions() {
 
     // Windows
     {
-        QObject::connect(windowMenuItem, &QMenu::aboutToShow, this, [this, windowMenuItem]() {
-            windowMenuItem->clear();
-            auto showAllAction = windowMenuItem->addAction("&Show All");
-            auto hideAllAction = windowMenuItem->addAction("&Hide All");
+        auto showAllAction = new QAction("&Show All", this);
+        auto hideAllAction = new QAction("&Hide All", this);
 
-            QObject::connect(showAllAction, &QAction::triggered, this, [this]() {
-                auto widgetProcessors =
-                    util::copy_if(app_->getProcessorNetwork()->getProcessors(),
-                                  [](const auto p) { return p->hasProcessorWidget(); });
-                for (const auto p : widgetProcessors) {
-                    p->getProcessorWidget()->show();
-                }
-            });
-            QObject::connect(hideAllAction, &QAction::triggered, this, [this]() {
-                auto widgetProcessors =
-                    util::copy_if(app_->getProcessorNetwork()->getProcessors(),
-                                  [](const auto p) { return p->hasProcessorWidget(); });
-                for (const auto p : widgetProcessors) {
-                    p->getProcessorWidget()->hide();
-                }
-            });
+        addAction(showAllAction);
+        addAction(hideAllAction);
 
+        showAllAction->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_H);
+        showAllAction->setShortcutContext(Qt::ApplicationShortcut);
+
+        hideAllAction->setShortcut(Qt::CTRL | Qt::Key_H);
+        hideAllAction->setShortcutContext(Qt::ApplicationShortcut);
+
+        const auto getWidgetProcessors = [](InviwoApplication* app) {
             auto widgetProcessors =
-                util::copy_if(app_->getProcessorNetwork()->getProcessors(),
+                util::copy_if(app->getProcessorNetwork()->getProcessors(),
                               [](const auto p) { return p->hasProcessorWidget(); });
             std::sort(widgetProcessors.begin(), widgetProcessors.end(), [](auto a, auto b) {
                 return iCaseLess(a->getDisplayName(), b->getDisplayName());
             });
+            return widgetProcessors;
+        };
 
-            if (!widgetProcessors.empty()) {
-                windowMenuItem->addSeparator();
-            }
-            for (const auto p : widgetProcessors) {
-                auto action =
-                    windowMenuItem->addAction(QString("%1 (%2)")
-                                                  .arg(utilqt::toQString(p->getDisplayName()))
-                                                  .arg(utilqt::toQString(p->getIdentifier())));
-                action->setCheckable(true);
-                action->setChecked(p->getProcessorWidget()->isVisible());
-                QObject::connect(action, &QAction::toggled, this,
-                                 [p](bool toggle) { p->getProcessorWidget()->setVisible(toggle); });
-            }
-        });
+        auto getFloatingDockWidgets = [](InviwoMainWindow* win) {
+            auto dockWidgets = util::copy_if(win->findChildren<InviwoDockWidget*>(),
+                                             [](const auto p) { return p->isFloating(); });
+            std::sort(dockWidgets.begin(), dockWidgets.end(), [](auto a, auto b) {
+                return QString::compare(a->windowTitle(), b->windowTitle(), Qt::CaseInsensitive);
+            });
+
+            return dockWidgets;
+        };
+
+        QObject::connect(showAllAction, &QAction::triggered, this,
+                         [this, getWidgetProcessors, getFloatingDockWidgets]() {
+                             for (const auto p : getWidgetProcessors(app_)) {
+                                 p->getProcessorWidget()->show();
+                             }
+                             for (const auto dockWidget : getFloatingDockWidgets(this)) {
+                                 dockWidget->show();
+                             }
+                         });
+        QObject::connect(hideAllAction, &QAction::triggered, this,
+                         [this, getWidgetProcessors, getFloatingDockWidgets]() {
+                             for (const auto p : getWidgetProcessors(app_)) {
+                                 p->getProcessorWidget()->hide();
+                             }
+                             for (const auto dockWidget : getFloatingDockWidgets(this)) {
+                                 dockWidget->hide();
+                             }
+                         });
+
+        QObject::connect(
+            windowMenuItem, &QMenu::aboutToShow, this,
+            [this, windowMenuItem, getFloatingDockWidgets, getWidgetProcessors, showAllAction,
+             hideAllAction]() {
+                windowMenuItem->clear();
+                windowMenuItem->addAction(showAllAction);
+                windowMenuItem->addAction(hideAllAction);
+
+                const auto widgetProcessors = getWidgetProcessors(app_);
+                if (!widgetProcessors.empty()) windowMenuItem->addSeparator();
+
+                for (const auto p : widgetProcessors) {
+                    auto action =
+                        windowMenuItem->addAction(QString("%1 (%2)")
+                                                      .arg(utilqt::toQString(p->getDisplayName()))
+                                                      .arg(utilqt::toQString(p->getIdentifier())));
+                    action->setCheckable(true);
+                    action->setChecked(p->getProcessorWidget()->isVisible());
+                    QObject::connect(action, &QAction::toggled, this, [p](bool toggle) {
+                        p->getProcessorWidget()->setVisible(toggle);
+                    });
+                }
+
+                const auto dockWidgets = getFloatingDockWidgets(this);
+                if (!dockWidgets.empty()) windowMenuItem->addSeparator();
+
+                for (const auto dockWidget : dockWidgets) {
+                    auto action =
+                        windowMenuItem->addAction(QString("%1").arg(dockWidget->windowTitle()));
+                    action->setCheckable(true);
+                    action->setChecked(dockWidget->isVisible());
+                    QObject::connect(action, &QAction::toggled, this,
+                                     [dockWidget](bool toggle) { dockWidget->setVisible(toggle); });
+                }
+            });
     }
 
     // Help
@@ -1056,8 +1099,8 @@ bool InviwoMainWindow::openWorkspace(QString workspaceFileName, bool isExample) 
             app_->getWorkspaceManager()->clear();
             setCurrentWorkspace(untitledWorkspaceName_);
         }
-        app_->processEvents(
-            QEventLoop::ExcludeUserInputEvents);  // make sure the gui is ready before we unlock.
+        app_->processEvents(QEventLoop::ExcludeUserInputEvents);  // make sure the gui is ready
+                                                                  // before we unlock.
     }
     saveWindowState();
     getNetworkEditor()->setModified(false);
@@ -1156,8 +1199,7 @@ void InviwoMainWindow::showWelcomeScreen() {
 
     setUpdatesEnabled(false);
     if (!welcomeWidget_) {
-        welcomeWidget_ =
-            std::make_unique<WelcomeWidget>(this->getInviwoApplication(), centralWidget_);
+        welcomeWidget_ = std::make_unique<WelcomeWidget>(getInviwoApplication(), centralWidget_);
         welcomeWidget_->updateRecentWorkspaces(getRecentWorkspaceList());
         centralWidget_->addWidget(welcomeWidget_.get());
 
@@ -1404,8 +1446,8 @@ void InviwoMainWindow::dragMoveEvent(QDragMoveEvent* event) {
 void InviwoMainWindow::dropEvent(QDropEvent* event) {
     const QMimeData* mimeData = event->mimeData();
     if (mimeData->hasUrls()) {
-        // use dispatch front here to avoid blocking the drag&drop source, e.g. Windows Explorer,
-        // while the drop operation is performed
+        // use dispatch front here to avoid blocking the drag&drop source, e.g. Windows
+        // Explorer, while the drop operation is performed
         auto action = [this, keyModifiers = event->keyboardModifiers(),
                        urlList = mimeData->urls()]() {
             RenderContext::getPtr()->activateDefaultRenderContext();
