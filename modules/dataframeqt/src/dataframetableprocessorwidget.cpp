@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
 
     ivec2 dim = getDimensions();
 
-    setWindowTitle(QString::fromStdString(processor_->getDisplayName()));
+    setWindowTitle(utilqt::toQString(processor_->getDisplayName()));
 
     tableview_ = tableview_ptr(new DataFrameTableView(this), [&](DataFrameTableView* c) {
         layout()->removeWidget(c);
@@ -77,7 +77,11 @@ DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
     layout->addWidget(tableview_.get());
 
     setDimensions(dim);
-    processor_->ProcessorObservable::addObserver(this);
+
+    nameChange_ =
+        processor_->onDisplayNameChange([this](std::string_view newName, std::string_view) {
+            setWindowTitle(utilqt::toQString(newName));
+        });
 
     {
         util::KeepTrueWhileInScope ignore(&ignoreEvents_);
@@ -86,8 +90,8 @@ DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
 }
 
 void DataFrameTableProcessorWidget::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
-                                                 bool vectorsIntoColumns) {
-    tableview_->setDataFrame(dataframe, vectorsIntoColumns);
+                                                 bool vectorsIntoColumns, bool categoryIndices) {
+    tableview_->setDataFrame(dataframe, vectorsIntoColumns, categoryIndices);
 }
 
 void DataFrameTableProcessorWidget::setIndexColumnVisible(bool visible) {
@@ -108,10 +112,6 @@ auto DataFrameTableProcessorWidget::setColumnSelectionChangedCallback(
 auto DataFrameTableProcessorWidget::setRowSelectionChangedCallback(
     std::function<SelectionChangedFunc> callback) -> CallbackHandle {
     return rowSelectionChanged_.add(callback);
-}
-
-void DataFrameTableProcessorWidget::onProcessorDisplayNameChanged(Processor*, const std::string&) {
-    setWindowTitle(QString::fromStdString(processor_->getDisplayName()));
 }
 
 }  // namespace inviwo

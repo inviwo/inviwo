@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_CONTROLKEYFRAME_H
-#define IVW_CONTROLKEYFRAME_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -68,12 +66,10 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    ControlAction action_;
-    Seconds jumpTime_;
+    ControlAction action_ = ControlAction::Pause;
+    Seconds jumpTime_ = Seconds{0};
 };
 
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_CONTROLKEYFRAME_H

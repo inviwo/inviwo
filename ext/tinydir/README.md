@@ -1,8 +1,11 @@
 TinyDir
 =======
-[![Build Status](https://travis-ci.org/cxong/tinydir.svg?branch=master)](https://travis-ci.org/cxong/tinydir)[![Project Stats](https://www.openhub.net/p/tinydir/widgets/project_thin_badge.gif)](https://www.openhub.net/p/tinydir)
+[![Build Status](https://travis-ci.org/cxong/tinydir.svg?branch=master)](https://travis-ci.org/cxong/tinydir)
+[![Release](http://img.shields.io/github/release/cxong/tinydir.svg)](https://github.com/cxong/tinydir/releases/latest)
 
 Lightweight, portable and easy to integrate C directory and file reader. TinyDir wraps dirent for POSIX and FindFirstFile for Windows.
+
+Windows unicode is supported by defining `UNICODE` and `_UNICODE` before including `tinydir.h`.
 
 Example
 =======
@@ -64,18 +67,13 @@ Platforms
 
 POSIX and Windows supported. Open to the possibility of supporting other platforms.
 
-Links
-=====
-Available Archlinux AUR package : https://aur.archlinux.org/packages/tinydir-git/
-
 License
 =======
 
-Simplified BSD.
+Simplified BSD; if you use tinydir you can comply by including `tinydir.h` or `COPYING` somewhere in your package.
 
 Known Limitations
 =================
 
-- Not threadsafe
 - Limited path and filename sizes
-- No wide char support
+- [Possible race condition bug if folder being read has changing content](https://github.com/cxong/tinydir/issues/13)

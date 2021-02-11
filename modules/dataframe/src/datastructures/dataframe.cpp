@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,20 +34,39 @@
 #include <inviwo/dataframe/datastructures/datapoint.h>
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/zip.h>
+
+#include <utility>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
 /*
  * This creates a table with one column: The index column
  */
-DataFrame::DataFrame(std::uint32_t size) : columns_() {
+DataFrame::DataFrame(std::uint32_t size) : columns_{} {
     // at the moment, GPUs only support uints up to 32bit
-    auto &cont = addColumn<std::uint32_t>("index", size)
+    auto& cont = addColumn<std::uint32_t>("index", size)
                      ->getTypedBuffer()
                      ->getEditableRAMRepresentation()
                      ->getDataContainer();
     std::iota(cont.begin(), cont.end(), 0);
 }
+DataFrame::DataFrame(const DataFrame& rhs) : columns_{} {
+    for (const auto& col : rhs.columns_) {
+        columns_.emplace_back(col->clone());
+    }
+}
+DataFrame& DataFrame::operator=(const DataFrame& that) {
+    if (this != &that) {
+        DataFrame tmp(that);
+        std::swap(tmp.columns_, columns_);
+    }
+    return *this;
+}
+DataFrame& DataFrame::operator=(DataFrame&&) = default;
+DataFrame::DataFrame(DataFrame&&) = default;
 
 std::shared_ptr<Column> DataFrame::addColumn(std::shared_ptr<Column> column) {
     if (column) {
@@ -56,21 +75,21 @@ std::shared_ptr<Column> DataFrame::addColumn(std::shared_ptr<Column> column) {
     return column;
 }
 
-std::shared_ptr<Column> DataFrame::addColumnFromBuffer(const std::string &identifier,
+std::shared_ptr<Column> DataFrame::addColumnFromBuffer(const std::string& identifier,
                                                        std::shared_ptr<const BufferBase> buffer) {
     return buffer->getRepresentation<BufferRAM>()
         ->dispatch<std::shared_ptr<Column>, dispatching::filter::Scalars>([&](auto buf) {
             using ValueType = util::PrecisionValueType<decltype(buf)>;
             auto col = this->addColumn<ValueType>(identifier);
             auto newBuf = col->getTypedBuffer();
-            auto &newVec = newBuf->getEditableRAMRepresentation()->getDataContainer();
-            auto &oldVec = buf->getDataContainer();
+            auto& newVec = newBuf->getEditableRAMRepresentation()->getDataContainer();
+            auto& oldVec = buf->getDataContainer();
             newVec.insert(newVec.end(), oldVec.begin(), oldVec.end());
             return col;
         });
 }
 
-void DataFrame::dropColumn(const std::string &header) {
+void DataFrame::dropColumn(const std::string& header) {
     columns_.erase(std::remove_if(std::begin(columns_), std::end(columns_),
                                   [&](std::shared_ptr<Column> col) -> bool {
                                       return col->getHeader() == header;
@@ -85,7 +104,7 @@ void DataFrame::dropColumn(const size_t index) {
     columns_.erase(std::begin(columns_) + index);
 }
 
-std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(const std::string &header,
+std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(const std::string& header,
                                                                    size_t size) {
     auto col = std::make_shared<CategoricalColumn>(header);
     col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer().resize(size);
@@ -93,7 +112,14 @@ std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(const std::st
     return col;
 }
 
-void DataFrame::addRow(const std::vector<std::string> &data) {
+std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(
+    const std::string& header, const std::vector<std::string>& values) {
+    auto col = std::make_shared<CategoricalColumn>(header, values);
+    columns_.push_back(col);
+    return col;
+}
+
+void DataFrame::addRow(const std::vector<std::string>& data) {
     if (columns_.size() <= 1) {
         throw NoColumns("DataFrame: DataFrame has no columns", IVW_CONTEXT);
     } else if (columns_.size() != data.size() + 1) {  // consider index column of DataFrame
@@ -108,7 +134,7 @@ void DataFrame::addRow(const std::vector<std::string> &data) {
     for (size_t i = 0; i < data.size(); ++i) {
         try {
             columns_[i + 1]->add(data[i]);
-        } catch (InvalidConversion &) {
+        } catch (InvalidConversion&) {
             columnIdForDataTypeErrors.push_back(i + 1);
         }
     }
@@ -138,7 +164,7 @@ void DataFrame::updateIndexBuffer() {
     const size_t nrows = getNumberOfRows();
 
     auto indexBuffer = std::static_pointer_cast<Buffer<std::uint32_t>>(columns_[0]->getBuffer());
-    auto &indexVector = indexBuffer->getEditableRAMRepresentation()->getDataContainer();
+    auto& indexVector = indexBuffer->getEditableRAMRepresentation()->getDataContainer();
     indexVector.resize(nrows);
     std::iota(indexVector.begin(), indexVector.end(), 0);
 }
@@ -155,19 +181,13 @@ size_t DataFrame::getNumberOfRows() const {
     return size;
 }
 
-DataFrame::DataFrame(const DataFrame &df) {
-    for (const auto &col : df.columns_) {
-        columns_.emplace_back(col->clone());
-    }
-}
-
 std::vector<std::shared_ptr<Column>>::const_iterator DataFrame::end() const {
     return columns_.end();
 }
 
-const std::vector<std::pair<std::string, const DataFormatBase *>> DataFrame::getHeaders() const {
-    std::vector<std::pair<std::string, const DataFormatBase *>> headers;
-    for (const auto &c : columns_) {
+const std::vector<std::pair<std::string, const DataFormatBase*>> DataFrame::getHeaders() const {
+    std::vector<std::pair<std::string, const DataFormatBase*>> headers;
+    for (const auto& c : columns_) {
         headers.emplace_back(c->getHeader(), c->getBuffer()->getDataFormat());
     }
     return headers;
@@ -177,11 +197,11 @@ std::string DataFrame::getHeader(size_t idx) const { return columns_[idx]->getHe
 
 std::shared_ptr<const Column> DataFrame::getColumn(size_t index) const { return columns_[index]; }
 
-std::shared_ptr<Column> DataFrame::getColumn(const std::string &name) {
+std::shared_ptr<Column> DataFrame::getColumn(const std::string& name) {
     return util::find_if_or_null(columns_, [name](auto c) { return c->getHeader() == name; });
 }
 
-std::shared_ptr<const Column> DataFrame::getColumn(const std::string &name) const {
+std::shared_ptr<const Column> DataFrame::getColumn(const std::string& name) const {
     return util::find_if_or_null(columns_, [name](auto c) { return c->getHeader() == name; });
 }
 
@@ -203,52 +223,96 @@ std::vector<std::shared_ptr<Column>>::const_iterator DataFrame::begin() const {
 
 std::vector<std::shared_ptr<Column>>::iterator DataFrame::end() { return columns_.end(); }
 
-std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::vector<std::string>> &exampleRows,
-                                           const std::vector<std::string> &colHeaders) {
+namespace detail {
+
+bool isIntegral(const std::string& str) {
+    try {
+        // check for integral type, if there are parts left over it is most likely a
+        // floating point number
+        std::size_t pos;
+        std::stoll(str, &pos);
+        if (pos == str.size()) {
+            return true;
+        }
+    } catch (const std::exception&) {
+    }
+    return false;
+}
+
+bool isFloat(const std::string& str) {
+    try {
+        // check for floating point number
+        std::size_t pos;
+        std::stod(str, &pos);
+        if (pos == str.size()) {
+            return true;
+        }
+    } catch (const std::exception&) {
+    }
+    return false;
+}
+
+}  // namespace detail
+
+std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::vector<std::string>>& exampleRows,
+                                           const std::vector<std::string>& colHeaders,
+                                           bool doublePrecision) {
 
     if (exampleRows.empty()) {
         throw InvalidColCount("No example data to derive columns from",
                               IVW_CONTEXT_CUSTOM("DataFrame::createDataFrame"));
     }
 
-    // Guess type of each column, ordinal or nominal
-    std::vector<std::pair<unsigned int, unsigned int>> columnTypeStatistics(colHeaders.size(),
-                                                                            std::make_pair(0, 0));
+    // Guess type of each column, distinguish between ordinal (int, ) and nominal (string)
+    struct ColCounts {
+        unsigned int integral = 0u;
+        unsigned int floatingPoint = 0u;
+        unsigned int nominal = 0u;
+    };
+
+    std::vector<ColCounts> stats(colHeaders.size());
     for (size_t i = 0; i < exampleRows.size(); ++i) {
-        const auto &rowData = exampleRows[i];
+        const auto& rowData = exampleRows[i];
         if (rowData.size() != colHeaders.size()) {
-            std::ostringstream oss;
-            oss << "Number of headers does not match column count, number of headers: "
-                << colHeaders.size() << ", number of columns: " << rowData.size();
-            throw InvalidColCount(oss.str(), IVW_CONTEXT_CUSTOM("DataFrame::createDataFrame"));
+            throw InvalidColCount(
+                fmt::format("Number of headers ({}) does not match column count ({})",
+                            colHeaders.size(), rowData.size()),
+                IVW_CONTEXT_CUSTOM("DataFrame::createDataFrame"));
         }
         for (auto column = 0u; column < rowData.size(); ++column) {
-            std::istringstream iss(trim(rowData[column]));
-            float d;
-            // try extracting floating point number. If the stream is not at its end, then there was
-            // trailing data. Hence this value does not represent a floating point number.
-            if ((iss >> d) && iss.eof()) {
-                // ordinal buffer
-                columnTypeStatistics[column].first++;
-            } else {  // nominal buffer
-                columnTypeStatistics[column].second++;
+            if (rowData[column].empty()) {
+                continue;
+            } else if (detail::isIntegral(rowData[column])) {
+                ++stats[column].integral;
+                continue;
+            } else if (detail::isFloat(rowData[column])) {
+                ++stats[column].floatingPoint;
+                continue;
             }
+            ++stats[column].nominal;
         }
     }
 
-    auto dataFrame = std::make_shared<DataFrame>(0u);
-    for (size_t column = 0; column < exampleRows.front().size(); ++column) {
+    auto dataframe = std::make_shared<DataFrame>();
+    for (auto&& [col, elem] : util::enumerate(util::zip(colHeaders, stats))) {
         const auto header =
-            (!colHeaders.empty() ? colHeaders[column]
-                                 : std::string("Column ") + std::to_string(column + 1));
-        if (columnTypeStatistics[column].first > columnTypeStatistics[column].second) {
-            // ordinal buffer
-            dataFrame->addColumn<float>(header, 0u);
-        } else {  // nominal buffer
-            dataFrame->addCategoricalColumn(header, 0);
+            (!get<0>(elem).empty() ? get<0>(elem) : fmt::format("Column {}", col + 1));
+        const auto& counts = get<1>(elem);
+        if (counts.nominal > 0) {
+            dataframe->addCategoricalColumn(header);
+        } else if (counts.floatingPoint > 0) {
+            if (doublePrecision) {
+                dataframe->addColumn<double>(header);
+            } else {
+                dataframe->addColumn<float>(header);
+            }
+        } else if (counts.integral > 0) {
+            dataframe->addColumn<int>(header);
+        } else {
+            dataframe->addCategoricalColumn(header);
         }
     }
-    return dataFrame;
+    return dataframe;
 }
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2020-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/constraintbehavior.h>
 #include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/assertion.h>
 
 #include <string>
 #include <functional>
@@ -154,6 +155,7 @@ public:
 
     virtual OrdinalRefProperty<T>& setCurrentStateAsDefault() override;
     virtual OrdinalRefProperty<T>& resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -179,6 +181,11 @@ public:
     static bool validRange(const T& min, const T& max);
 
     void setGetAndSet(std::function<T()> get, std::function<void(const T&)> set) {
+        IVW_ASSERT(get_, "The getter has to be valid");
+        IVW_ASSERT(set_, "The setter has to be valid");
+        IVW_ASSERT(get, "The getter has to be valid");
+        IVW_ASSERT(set, "The setter has to be valid");
+
         auto val = get_();
         get_ = std::move(get);
         set_ = std::move(set);
@@ -240,8 +247,10 @@ using IntSize4RefProperty = OrdinalRefProperty<size4_t>;
 
 template <typename T>
 struct PropertyTraits<OrdinalRefProperty<T>> {
-    static std::string classIdentifier() {
-        return "org.inviwo." + Defaultvalues<T>::getName() + "RefProperty";
+    static const std::string& classIdentifier() {
+        static const std::string identifier =
+            "org.inviwo." + Defaultvalues<T>::getName() + "RefProperty";
+        return identifier;
     }
 };
 
@@ -268,11 +277,14 @@ OrdinalRefProperty<T>::OrdinalRefProperty(const std::string& identifier,
     , minConstraint_{"minConstraint", minValue.second}
     , maxConstraint_{"maxConstraint", maxValue.second} {
 
+    IVW_ASSERT(get_, "The getter has to be valid");
+    IVW_ASSERT(set_, "The setter has to be valid");
+
     if (!validRange(minValue_, maxValue_) || get_() != clamp(get_())) {
         throw Exception{
             fmt::format("Invalid range ({} <= {} <= {}) given for \"{}\" ({}Property, {})",
                         minValue_.value, get_(), maxValue_.value, this->getDisplayName(),
-                        Defaultvalues<T>::getName(), joinString(this->getPath(), ".")),
+                        Defaultvalues<T>::getName(), this->getPath()),
             IVW_CONTEXT};
     }
 }
@@ -298,6 +310,7 @@ OrdinalRefProperty<T>::OrdinalRefProperty(const OrdinalRefProperty<T>& rhs) = de
 
 template <typename T>
 OrdinalRefProperty<T>& OrdinalRefProperty<T>::operator=(const T& value) {
+    IVW_ASSERT(set_, "The setter has to be valid");
     set(value);
     return *this;
 }
@@ -317,33 +330,40 @@ std::string OrdinalRefProperty<T>::getClassIdentifier() const {
 
 template <typename T>
 OrdinalRefProperty<T>::operator T() const {
+    IVW_ASSERT(get_, "The getter has to be valid");
     return get_();
 }
 
 template <typename T>
 auto OrdinalRefProperty<T>::operator*() const -> T {
+    IVW_ASSERT(get_, "The getter has to be valid");
     return get_();
 }
 
 template <typename T>
 auto OrdinalRefProperty<T>::get() const -> T {
+    IVW_ASSERT(get_, "The getter has to be valid");
     return get_();
 }
 
 template <typename T>
 auto OrdinalRefProperty<T>::get(size_t index) const -> component_type {
+    IVW_ASSERT(get_, "The getter has to be valid");
     const auto val = get_();
     return util::glmcomp(val, index);
 }
 
 template <typename T>
 auto OrdinalRefProperty<T>::get(size_t i, size_t j) const -> component_type {
+    IVW_ASSERT(get_, "The getter has to be valid");
     const auto val = get_();
     return util::glmcomp(val, i, j);
 }
 
 template <typename T>
 void OrdinalRefProperty<T>::set(const T& value) {
+    IVW_ASSERT(get_, "The getter has to be valid");
+    IVW_ASSERT(set_, "The setter has to be valid");
     const auto val = clamp(value);
     if (val != get_()) {
         set_(val);
@@ -353,6 +373,8 @@ void OrdinalRefProperty<T>::set(const T& value) {
 
 template <typename T>
 void OrdinalRefProperty<T>::set(component_type val, size_t index) {
+    IVW_ASSERT(get_, "The getter has to be valid");
+    IVW_ASSERT(set_, "The setter has to be valid");
     auto tmp = get_();
     util::glmcomp(tmp, index) = val;
     set(tmp);
@@ -360,6 +382,8 @@ void OrdinalRefProperty<T>::set(component_type val, size_t index) {
 
 template <typename T>
 void OrdinalRefProperty<T>::set(component_type val, size_t i, size_t j) {
+    IVW_ASSERT(get_, "The getter has to be valid");
+    IVW_ASSERT(set_, "The setter has to be valid");
     auto tmp = get_();
     util::glmcomp(tmp, i, j) = val;
     set(tmp);
@@ -368,10 +392,12 @@ void OrdinalRefProperty<T>::set(component_type val, size_t i, size_t j) {
 template <typename T>
 void OrdinalRefProperty<T>::set(const T& value, const T& minVal, const T& maxVal,
                                 const T& increment) {
+    IVW_ASSERT(get_, "The getter has to be valid");
+    IVW_ASSERT(set_, "The setter has to be valid");
     if (!validRange(minVal, maxVal)) {
         throw Exception{
             fmt::format("Invalid range given for \"{}\" ({}Property, {})", this->getDisplayName(),
-                        Defaultvalues<T>::getName(), joinString(this->getPath(), ".")),
+                        Defaultvalues<T>::getName(), this->getPath()),
             IVW_CONTEXT};
     }
 
@@ -391,6 +417,8 @@ void OrdinalRefProperty<T>::set(const T& value, const T& minVal, const T& maxVal
 
 template <typename T>
 void OrdinalRefProperty<T>::set(const OrdinalRefProperty* srcProperty) {
+    IVW_ASSERT(get_, "The getter has to be valid");
+    IVW_ASSERT(set_, "The setter has to be valid");
     bool modified = false;
     if (isLinkingMinBound()) modified |= minValue_.update(srcProperty->minValue_);
     if (isLinkingMaxBound()) modified |= maxValue_.update(srcProperty->maxValue_);
@@ -419,6 +447,8 @@ auto OrdinalRefProperty<T>::getMinValue() const -> const T& {
 
 template <typename T>
 void OrdinalRefProperty<T>::setMinValue(const T& newMinValue) {
+    IVW_ASSERT(get_, "The getter has to be valid");
+    IVW_ASSERT(set_, "The setter has to be valid");
     bool modified = false;
     modified |= minValue_.update(newMinValue);
     // Make sure min < max
@@ -444,6 +474,8 @@ auto OrdinalRefProperty<T>::getMaxValue() const -> const T& {
 
 template <typename T>
 void OrdinalRefProperty<T>::setMaxValue(const T& newMaxValue) {
+    IVW_ASSERT(get_, "The getter has to be valid");
+    IVW_ASSERT(set_, "The setter has to be valid");
     bool modified = false;
     modified |= maxValue_.update(newMaxValue);
     // Make sure min < max
@@ -481,6 +513,11 @@ OrdinalRefProperty<T>& OrdinalRefProperty<T>::resetToDefaultState() {
     modified |= increment_.reset();
     if (modified) this->propertyModified();
     return *this;
+}
+
+template <typename T>
+bool OrdinalRefProperty<T>::isDefaultState() const {
+    return increment_.isDefault() && minValue_.isDefault() && maxValue_.isDefault();
 }
 
 template <typename T>
@@ -556,6 +593,7 @@ bool OrdinalRefProperty<T>::validRange(const T& min, const T& max) {
 
 template <typename T>
 Document OrdinalRefProperty<T>::getDescription() const {
+    IVW_ASSERT(get_, "The getter has to be valid");
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
 
@@ -574,6 +612,7 @@ Document OrdinalRefProperty<T>::getDescription() const {
     return doc;
 }
 
+/// @cond
 // Scalar properties
 extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<float>;
 extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<int>;
@@ -609,5 +648,6 @@ extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<dmat4>;
 
 extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<glm::dquat>;
 extern template class IVW_CORE_TMPL_EXP OrdinalRefProperty<glm::fquat>;
+/// @endcond
 
 }  // namespace inviwo

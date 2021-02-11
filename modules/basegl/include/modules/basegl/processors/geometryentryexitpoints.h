@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -82,6 +82,7 @@ private:
     CameraTrackball trackball_;
 
     algorithm::EntryExitPointsHelper entryExitHelper_;
+    std::shared_ptr<std::function<void()>> onReloadCallback_;
 };
 
 }  // namespace inviwo

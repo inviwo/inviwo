@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,8 +30,7 @@
 // Windows implementation based on
 // https://wiki.qt.io/Assigning_a_file_type_to_an_Application_on_Windows
 
-// ————————————————————————————————-
-/**
+/*
  * @file
  * @brief
  * @author Gerolf Reinwardt
@@ -65,7 +64,6 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Gerolf Reinwardt.
  */
-// ————————————————————————————————-
 
 #ifndef IVW_FILEASSOCIATIONS_H
 #define IVW_FILEASSOCIATIONS_H
@@ -121,6 +119,12 @@ class IVW_QTEDITOR_API FileAssociations : public QAbstractNativeEventFilter {
     friend FileAssociationData;
 
 public:
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    using ResultType = long;
+#else
+    using ResultType = qintptr;
+#endif
+
     FileAssociations(QMainWindow* win);
     virtual ~FileAssociations();
 
@@ -132,14 +136,14 @@ public:
      * @param fileExtension  File extension, including the dot (e.g. ".inv")
      * @param appIconIndex   Index of the app icon to use for the file in the windows explorer,
      *                       typically the application icon
-     * @param commands       Vector FileAssociationCommands see @FileAssociationCommand
+     * @param commands       Vector FileAssociationCommands @see FileAssociationCommand
      */
     void registerFileType(const std::string& documentId, const std::string& fileTypeName,
                           const std::string& fileExtension, int appIconIndex = 0,
                           std::vector<FileAssociationCommand> commands = {});
 
     // QAbstractNativeEventFilter overrides
-    bool nativeEventFilter(const QByteArray& eventType, void* message, long* result) override;
+    bool nativeEventFilter(const QByteArray& eventType, void* message, ResultType* result) override;
 
 private:
     /**

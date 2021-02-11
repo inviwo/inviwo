@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -82,10 +82,9 @@ bool xml::copyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProp
 
             if (p->getIdentifier() == id &&
                 (p->getClassIdentifier() == type ||
-                 p->getClassIdentifier() == splitString(type, '.').back())) {
+                 p->getClassIdentifier() == util::splitByLast(type, '.').second)) {
                 LogInfoCustom("VersionConverter",
-                              "    Match for sub property: " + joinString(p->getPath(), ".") +
-                                      " found in type: "
+                              "    Match for sub property: " + p->getPath() + " found in type: "
                                   << type << " id: " << id);
 
                 list.InsertEndChild(*(child->Clone()));
@@ -152,10 +151,10 @@ bool xml::findMatchingSubPropertiesForComposites(
 }
 
 TxElement* xml::getElement(TxElement* node, std::string path) {
-    std::vector<std::string> parts = splitString(path, '/');
+    const auto parts = util::splitStringView(path, '/');
     if (parts.size() > 0) {
-        std::vector<std::string> components = splitString(parts[0], '&');
-        std::string name = components[0];
+        const auto components = util::splitStringView(parts[0], '&');
+        std::string_view name = components[0];
 
         ticpp::Iterator<ticpp::Element> child;
         for (child = child.begin(node); child != child.end(); child++) {
@@ -164,9 +163,9 @@ TxElement* xml::getElement(TxElement* node, std::string path) {
             child->GetValue(&childname);
             if (childname == name) {
                 for (size_t i = 1; i < components.size(); ++i) {
-                    std::vector<std::string> pair = splitString(components[i], '=');
-                    auto val = child->GetAttributeOrDefault(pair[0], "");
-                    match = match && val == pair[1];
+                    const auto [attr, value] = util::splitByFirst(components[i], '=');
+                    auto val = child->GetAttributeOrDefault(std::string{attr}, "");
+                    match = match && val == value;
                 }
             } else {
                 match = false;

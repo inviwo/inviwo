@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,12 +35,12 @@
 #include <modules/opengl/geometry/meshgl.h>
 #include <random>
 
-static void newTexture(GLuint &id) {
+static void newTexture(GLuint& id) {
     if (id) glDeleteTextures(1, &id);
     glGenTextures(1, &id);
 }
 
-static void newFramebuffer(GLuint &id) {
+static void newFramebuffer(GLuint& id) {
     if (id) glDeleteFramebuffers(1, &id);
     glGenFramebuffers(1, &id);
 }
@@ -73,8 +73,8 @@ FXAA::FXAA()
     , enable_("enable", "Enable Operation", true)
     , dither_("dither", "Dither")
     , quality_("quality", "Quality", 0.5f, 0.f, 1.f, 0.1f)
-    , fxaa_("fullscreenquad.vert", "fxaa.frag", false)
-    , prepass_("fullscreenquad.vert", "rgbl.frag", true) {
+    , fxaa_("fullscreenquad.vert", "fxaa.frag", Shader::Build::No)
+    , prepass_("fullscreenquad.vert", "rgbl.frag", Shader::Build::Yes) {
     addPort(inport_);
     addPort(outport_);
 
@@ -96,13 +96,13 @@ FXAA::FXAA()
     dither_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
     quality_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
     inport_.onChange([this]() {
-        const DataFormatBase *format = inport_.getData()->getDataFormat();
+        const DataFormatBase* format = inport_.getData()->getDataFormat();
         const auto swizzleMask = inport_.getData()->getColorLayer()->getSwizzleMask();
 
         if (!outport_.hasEditableData() || format != outport_.getData()->getDataFormat() ||
             swizzleMask != outport_.getData()->getColorLayer()->getSwizzleMask()) {
             auto dim = outport_.getData()->getDimensions();
-            Image *img = new Image(dim, format);
+            Image* img = new Image(dim, format);
             img->copyMetaDataFrom(*inport_.getData());
             // forward swizzle mask of the input
             img->getColorLayer()->setSwizzleMask(swizzleMask);

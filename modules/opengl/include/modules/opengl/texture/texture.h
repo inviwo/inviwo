@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TEXTURE_H
-#define IVW_TEXTURE_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
@@ -131,5 +130,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TEXTURE_H

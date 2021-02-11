@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,8 +45,8 @@ namespace inviwo {
 class IVW_CORE_API SerializationException : public Exception {
 public:
     struct SerializationExceptionData {
-        SerializationExceptionData(std::string k = "", std::string t = "", std::string i = "",
-                                   TxElement* n = nullptr)
+        SerializationExceptionData(std::string_view k = "", std::string_view t = "",
+                                   std::string_view i = "", TxElement* n = nullptr)
             : key(k), type(t), id(i), nd(n) {}
         std::string key;
         std::string type;
@@ -54,8 +54,9 @@ public:
         NodeDebugger nd;
     };
 
-    SerializationException(std::string message = "", ExceptionContext context = ExceptionContext(),
-                           std::string key = "", std::string type = "", std::string id = "",
+    SerializationException(std::string_view message = "",
+                           ExceptionContext context = ExceptionContext(), std::string_view key = "",
+                           std::string_view type = "", std::string_view id = "",
                            TxElement* n = nullptr);
     virtual ~SerializationException() noexcept = default;
 
@@ -67,11 +68,5 @@ public:
 private:
     SerializationExceptionData data_;
 };
-
-namespace util {
-
-IVW_CORE_API std::string formatSerializationError(const std::string& name, const std::string& src,
-                                                  const std::string& dst, const std::string& err);
-}  // namespace util
 
 }  // namespace inviwo

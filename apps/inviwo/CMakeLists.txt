@@ -1,20 +1,16 @@
-#--------------------------------------------------------------------
 # Inviwo Qt Application
 project(inviwo)
 
 find_package(Qt5Core QUIET REQUIRED)
 find_package(Qt5Widgets QUIET REQUIRED)
 
-#--------------------------------------------------------------------
 # Add MOC files
 set(MOC_FILES  ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h)
 
-#--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES  ${MOC_FILES})
 ivw_group("Header Files" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
     ${IVW_APPLICATION_DIR}/inviwo/inviwo.cpp
@@ -26,7 +22,6 @@ ivw_group("Source Files" ${SOURCE_FILES})
 qt5_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
 
-#--------------------------------------------------------------------
 # Define libraries that should be linked
 ivw_retrieve_all_modules(enabled_modules)
 
@@ -42,7 +37,6 @@ elseif(APPLE)
 endif()
 source_group("Resource Files" FILES ${RES_FILES})
 
-#--------------------------------------------------------------------
 # Create application
 add_executable(inviwo MACOSX_BUNDLE WIN32 
     ${SOURCE_FILES} 
@@ -57,19 +51,17 @@ target_link_libraries(inviwo PUBLIC
     Qt5::Widgets
 )
 set_target_properties(inviwo PROPERTIES OUTPUT_NAME "Inviwo")
-#--------------------------------------------------------------------
+
 # Register the use of modules
 # Determine dendendencies and set runtime module loading defines
 ivw_configure_application_module_dependencies(inviwo ${enabled_modules})
 ivw_define_standard_definitions(inviwo inviwo)
 ivw_define_standard_properties(inviwo)
 
-#--------------------------------------------------------------------
 # Add application to pack
-if(WIN32)
-    install(TARGETS inviwo RUNTIME DESTINATION bin COMPONENT qt_app)
+ivw_default_install_targets(inviwo)
 
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # Configure Info.plist
     # https://cmake.org/cmake/help/v3.15/prop_tgt/MACOSX_BUNDLE_INFO_PLIST.html
     string(TIMESTAMP YEAR "%Y")
@@ -84,46 +76,22 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
         MACOSX_BUNDLE_COPYRIGHT "C) 2012-${YEAR} Inviwo Foundation"
     )
     #Following http://www.cmake.org/Wiki/BundleUtilitiesExample
-    install(
-        TARGETS inviwo 
-        RUNTIME   DESTINATION bin 
-        BUNDLE    DESTINATION . 
-        ARCHIVE   DESTINATION Inviwo.app/Contents/MacOS/ 
-        LIBRARY   DESTINATION Inviwo.app/Contents/MacOS/ 
-        COMPONENT qt_app
-    )
     set(plugin_dest_dir Inviwo.app/Contents/MacOS)
     set(qtconf_dest_dir Inviwo.app/Contents/Resources)
     set(APPS "\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/MacOS/Inviwo")
-    set(DIRS "\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/")
-    
+    set(DIRS "\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/")   
     # get link errors with out this line.
-    install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT qt_app)
+    install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT Application)
     install(CODE "set(BU_CHMOD_BUNDLE_ITEMS ON)
                   include(BundleUtilities)
                   file(GLOB_RECURSE LIBS1 \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}\")
                   file(GLOB_RECURSE LIBS2 \"\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
                   fixup_bundle(\"${APPS}\" \"\${LIBS1};\${LIBS2}\" \"${DIRS}\")"
-            COMPONENT qt_app
+            COMPONENT Application
     )
-    install(
-        DIRECTORY   ${IVW_ROOT_DIR}/data/ 
-        DESTINATION Inviwo.app/Contents/Resources/data
-        COMPONENT   qt_app
-    )
-
     set(CPACK_BINARY_DRAGNDROP ON)
-
-else()
-    install(
-        TARGETS   inviwo
-        RUNTIME   DESTINATION bin
-        BUNDLE    DESTINATION bin
-        ARCHIVE   DESTINATION lib
-        LIBRARY   DESTINATION lib
-        COMPONENT qt_app
-    )
 endif()
+
 
 # Add build dependency towards any pybind11 targets and inviwo,
 # if python is not enabled, this list will be empty
@@ -132,7 +100,6 @@ if(_allPyBindWrappers)
 endif()
 ivw_memleak_setup(inviwo)
 
-#--------------------------------------------------------------------
 # add a console version of inviwo.exe called inviwo-cli.exe
 if(WIN32)
     set_property(TARGET inviwo APPEND_STRING PROPERTY LINK_FLAGS 
@@ -171,14 +138,14 @@ if(WIN32)
     set_property(TARGET inviwo-cli APPEND_STRING PROPERTY LINK_FLAGS 
         " /SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
 
-    install(TARGETS inviwo-cli RUNTIME DESTINATION bin COMPONENT qt_app)
+    ivw_default_install_targets(inviwo-cli)
 endif()
 
 # Save information for python tools.
 ivw_mod_name_to_class(ivw_module_classes ${enabled_modules})
 ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_module_classes}" inviwo)
-
-
 ivw_deploy_qt(inviwo)
 
-include(packaging/packaging.cmake) # Package creation
+if(IVW_PACKAGE_SELECT_APP STREQUAL "inviwo")
+    include(packaging/packaging.cmake) # Package creation
+endif()

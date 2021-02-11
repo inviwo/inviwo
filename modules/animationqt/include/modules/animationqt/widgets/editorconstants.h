@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_EDITORCONSTANTS_H
-#define IVW_EDITORCONSTANTS_H
+#pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 
@@ -73,5 +71,3 @@ IVW_MODULE_ANIMATIONQT_API FindDivisionsResult findDivisions(double start, doubl
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_EDITORCONSTANTS_H

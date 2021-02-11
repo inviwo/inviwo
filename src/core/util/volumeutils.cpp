@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,22 +34,22 @@ namespace inviwo {
 
 namespace util {
 
-bool hasMargins(const std::shared_ptr<const Volume> &volume) {
+bool hasMargins(const std::shared_ptr<const Volume>& volume) {
     return (volume && volume->getMetaData<BoolMetaData>("marginsEnabled", false));
 }
 
-bool isBricked(const std::shared_ptr<const Volume> &volume) {
+bool isBricked(const std::shared_ptr<const Volume>& volume) {
     return (volume && volume->getMetaData<BoolMetaData>("brickedVolume", false));
 }
 
-size3_t getBrickDimensions(const std::shared_ptr<const Volume> &volume) {
+size3_t getBrickDimensions(const std::shared_ptr<const Volume>& volume) {
     if (!volume) {
         return size3_t(1, 1, 1);
     }
     return size3_t(volume->getMetaData<IntVec3MetaData>("brickDim", ivec3(1, 1, 1)));
 }
 
-std::pair<vec3, vec3> getVolumeMargins(const std::shared_ptr<const Volume> &volume) {
+std::pair<vec3, vec3> getVolumeMargins(const std::shared_ptr<const Volume>& volume) {
     if (hasMargins(volume)) {
         auto marginsBottomLeft =
             volume->getMetaData<FloatVec3MetaData>("marginsBottomLeft", vec3(0.0f));
@@ -60,7 +60,7 @@ std::pair<vec3, vec3> getVolumeMargins(const std::shared_ptr<const Volume> &volu
     return {vec3(0.0f), vec3(0.0f)};
 }
 
-size3_t getVolumeDimensions(const std::shared_ptr<const Volume> &volume) {
+size3_t getVolumeDimensions(const std::shared_ptr<const Volume>& volume) {
     if (!volume) {
         return {};
     }
@@ -89,7 +89,7 @@ size3_t getVolumeDimensions(const std::shared_ptr<const Volume> &volume) {
     return dims;
 }
 
-double voxelVolume(const Volume &volume) {
+double voxelVolume(const Volume& volume) {
     auto basis = volume.getBasis();
     auto dims = volume.getDimensions();
     auto a = basis[0] / static_cast<float>(dims.x);

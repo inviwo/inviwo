@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SHADERMANAGER_H
-#define IVW_SHADERMANAGER_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
@@ -38,7 +37,10 @@
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/dispatcher.h>
 
-#include <unordered_map>
+#include <map>
+#include <string>
+#include <string_view>
+#include <vector>
 
 namespace inviwo {
 
@@ -70,7 +72,7 @@ public:
     void addShaderResource(std::string key, std::string resource);
     void addShaderResource(std::unique_ptr<ShaderResource> resource);
     void addShaderResource(std::shared_ptr<ShaderResource> resource);
-    std::shared_ptr<ShaderResource> getShaderResource(std::string key);
+    std::shared_ptr<ShaderResource> getShaderResource(std::string_view key);
 
     const std::vector<Shader*>& getShaders() const;
     void rebuildAllShaders();
@@ -93,7 +95,7 @@ private:
     std::vector<std::string> shaderSearchPaths_;
 
     std::vector<std::shared_ptr<ShaderResource>> ownedResources_;
-    std::unordered_map<std::string, std::weak_ptr<ShaderResource>> shaderResources_;
+    std::map<std::string, std::weak_ptr<ShaderResource>, std::less<>> shaderResources_;
 
     TemplateOptionProperty<Shader::UniformWarning>* uniformWarnings_;  // non-owning reference
     TemplateOptionProperty<Shader::OnError>* shaderObjectErrors_;      // non-owning reference
@@ -115,5 +117,3 @@ std::shared_ptr<ShaderManager::Callback> ShaderManager::onWillRemoveShader(T&& c
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_SHADERMANAGER_H

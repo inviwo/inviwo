@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -65,20 +65,32 @@ PoolProcessor::PoolProcessor(pool::Options options, const std::string& identifie
                              const std::string& displayName)
     : Processor(identifier, displayName)
     , options_{options}
+    , states_{}
+    , notifyRemainingJobsFinish_{[this]() {
+        auto running = std::accumulate(states_.begin(), states_.end(), size_t{0},
+                                       [](size_t sum, auto& state) { return sum + state->nJobs; });
+        notifyObserversFinishBackgroundWork(this, running);
+    }}
     , wrapper_{std::make_shared<pool::detail::Wrapper>(*this)}
+    , queue_{}
     , delay_{std::chrono::milliseconds(500),
              [wrapper = std::weak_ptr<pool::detail::Wrapper>(wrapper_)]() {
                  if (auto w = wrapper.lock()) {
                      auto& p = w->processor;
 
-                     if (p.queuedDispatch() && !p.states_.empty()) return;
+                     if (p.queuedDispatch() && !p.states_.empty()) {
+                         p.delayBackgoundJobReset_.call();
+                         return;
+                     }
 
                      if (!p.queue_.empty()) {
                          p.submit(p.queue_.front());
                          p.queue_.clear();
                      }
+                     p.delayBackgoundJobReset_.call();
                  }
-             }} {}
+             }}
+    , delayBackgoundJobReset_{nullptr} {}
 
 PoolProcessor::~PoolProcessor() { stopJobs(); }
 
@@ -93,6 +105,7 @@ bool PoolProcessor::hasJobs() { return !states_.empty(); }
 void PoolProcessor::submit(Submission& job) {
     job.setupProgress();
     states_.push_back(job.state);
+    notifyObserversStartBackgroundWork(this, job.tasks.size());
     for (auto& task : job.tasks) {
         getNetwork()->getApplication()->getThreadPool().enqueueRaw(std::move(task));
     }
@@ -109,8 +122,16 @@ void PoolProcessor::invalidate(InvalidationLevel invalidationLevel, Property* so
 }
 
 void PoolProcessor::handleError() {
-    StandardExceptionHandler eh{};
-    eh(IVW_CONTEXT);
+    LogError("An error occurred while processing background jobs");
+    try {
+        throw;
+    } catch (Exception& e) {
+        util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+    } catch (std::exception& e) {
+        util::log(IVW_CONTEXT, std::string(e.what()), LogLevel::Error);
+    } catch (...) {
+        util::log(IVW_CONTEXT, "Unknown error", LogLevel::Error);
+    }
     for (auto port : getOutports()) {
         port->clear();
     }

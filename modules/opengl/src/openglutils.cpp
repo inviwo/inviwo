@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -283,6 +283,14 @@ GlBoolState::~GlBoolState() {
     }
 }
 
+TexParameter::TexParameter(const TextureUnit& unit, GLenum target, GLenum name, GLint value)
+    : unit_(unit.getEnum()), target_(target), name_(name), oldValue_{} {
+    glActiveTexture(unit_);
+    glGetTexParameteriv(target_, name_, &oldValue_);
+    glTexParameteri(target_, name_, value);
+    TextureUnit::setZeroUnit();
+}
+
 TexParameter& TexParameter::operator=(TexParameter&& that) {
     if (this != &that) {
         unit_ = 0;
@@ -298,14 +306,6 @@ TexParameter& TexParameter::operator=(TexParameter&& that) {
 TexParameter::TexParameter(TexParameter&& rhs)
     : unit_(rhs.unit_), target_(rhs.target_), name_(rhs.name_), oldValue_(rhs.oldValue_) {
     rhs.target_ = 0;
-}
-
-TexParameter::TexParameter(const TextureUnit& unit, GLenum target, GLenum name, GLint value)
-    : unit_(unit.getEnum()), target_(target), name_(name), oldValue_{} {
-    glActiveTexture(unit_);
-    glGetTexParameteriv(target_, name_, &oldValue_);
-    glTexParameteri(target_, name_, value);
-    TextureUnit::setZeroUnit();
 }
 
 TexParameter::~TexParameter() {
@@ -428,86 +428,49 @@ BlendModeEquationState::~BlendModeEquationState() {
     }
 }
 
-ClearColor::ClearColor(vec4 color) : color_(color) {
-    glGetFloatv(GL_COLOR_CLEAR_VALUE, glm::value_ptr(oldColor_));
-    if (oldColor_ != color_) {
-        glClearColor(color_.x, color_.y, color_.z, color_.w);
+ClearColor::ClearColor(vec4 color) : oldColor_{} {
+    vec4 value{0};
+    glGetFloatv(GL_COLOR_CLEAR_VALUE, glm::value_ptr(value));
+    if (value != color) {
+        oldColor_.value = value;
+        glClearColor(color.x, color.y, color.z, color.w);
     }
-}
-
-ClearColor::ClearColor(ClearColor&& rhs) : color_(rhs.color_), oldColor_(rhs.oldColor_) {
-    rhs.color_ = rhs.oldColor_;
-}
-
-ClearColor& ClearColor::operator=(ClearColor&& that) {
-    if (this != &that) {
-        color_ = that.color_;
-        oldColor_ = that.oldColor_;
-        that.color_ = that.oldColor_;
-    }
-    return *this;
 }
 
 ClearColor::~ClearColor() {
-    if (oldColor_ != color_) {
-        glClearColor(oldColor_.x, oldColor_.y, oldColor_.z, oldColor_.w);
+    if (oldColor_.value) {
+        glClearColor(oldColor_.value->x, oldColor_.value->y, oldColor_.value->z,
+                     oldColor_.value->w);
     }
 }
 
-ClearDepth::ClearDepth(float depth) : depth_(depth) {
-    glGetFloatv(GL_DEPTH_CLEAR_VALUE, &oldDepth_);
-    if (oldDepth_ != depth_) {
-        glClearDepth(depth_);
+ClearDepth::ClearDepth(float depth) : oldDepth_() {
+    float value{0};
+    glGetFloatv(GL_DEPTH_CLEAR_VALUE, &value);
+    if (value != depth) {
+        oldDepth_.value = value;
+        glClearDepth(depth);
     }
-}
-
-ClearDepth::ClearDepth(ClearDepth&& rhs) : depth_(rhs.depth_), oldDepth_(rhs.oldDepth_) {
-    rhs.depth_ = rhs.oldDepth_;
-}
-
-ClearDepth& ClearDepth::operator=(ClearDepth&& that) {
-    if (this != &that) {
-        depth_ = that.depth_;
-        oldDepth_ = that.oldDepth_;
-        that.depth_ = that.oldDepth_;
-    }
-    return *this;
 }
 
 ClearDepth::~ClearDepth() {
-    if (oldDepth_ != depth_) {
-        glClearDepth(oldDepth_);
+    if (oldDepth_.value) {
+        glClearDepth(*oldDepth_.value);
     }
 }
-
-ViewportState& ViewportState::operator=(ViewportState&& that) {
-    if (this != &that) {
-        coords_ = {0, 0, 0, 0};
-        std::swap(coords_, that.coords_);
-        oldCoords_ = {0, 0, 0, 0};
-        std::swap(oldCoords_, that.oldCoords_);
-    }
-    return *this;
-}
-
-ViewportState::ViewportState(ViewportState&& rhs)
-    : coords_(rhs.coords_), oldCoords_(rhs.oldCoords_) {}
 
 ViewportState::ViewportState(GLint x, GLint y, GLsizei width, GLsizei height)
-    : coords_{x, y, width, height}, oldCoords_{} {
-    oldCoords_.get();
-    coords_.set();
+    : oldCoords_{Viewport{}} {
+    oldCoords_.value->get();
+    glViewport(x, y, width, height);
 }
 
 ViewportState::ViewportState(const ivec4& coords)
-    : coords_{coords.x, coords.y, coords.z, coords.w}, oldCoords_{} {
-    oldCoords_.get();
-    coords_.set();
-}
+    : ViewportState(coords.x, coords.y, coords.z, coords.w) {}
 
 ViewportState::~ViewportState() {
-    if (coords_ != oldCoords_) {
-        oldCoords_.set();
+    if (oldCoords_.value) {
+        oldCoords_.value->set();
     }
 }
 
@@ -515,33 +478,18 @@ void Viewport::get() { glGetIntegerv(GL_VIEWPORT, view_.data()); }
 
 void Viewport::set() { glViewport(x(), y(), width(), height()); }
 
-ScissorState& ScissorState::operator=(ScissorState&& that) {
-    if (this != &that) {
-        box_ = {0, 0, 0, 0};
-        std::swap(box_, that.box_);
-        oldBox_ = {0, 0, 0, 0};
-        std::swap(oldBox_, that.oldBox_);
-    }
-    return *this;
-}
-
-ScissorState::ScissorState(ScissorState&& rhs) : box_(rhs.box_), oldBox_(rhs.oldBox_) {}
-
 ScissorState::ScissorState(GLint x, GLint y, GLsizei width, GLsizei height)
-    : box_{x, y, width, height}, oldBox_{} {
-    oldBox_.get();
-    box_.set();
+    : oldBox_{ScissorBox{}} {
+    oldBox_.value->get();
+    glScissor(x, y, width, height);
 }
 
 ScissorState::ScissorState(const ivec4& coords)
-    : box_{coords.x, coords.y, coords.z, coords.w}, oldBox_{} {
-    oldBox_.get();
-    box_.set();
-}
+    : ScissorState{coords.x, coords.y, coords.z, coords.w} {}
 
 ScissorState::~ScissorState() {
-    if (box_ != oldBox_) {
-        oldBox_.set();
+    if (oldBox_.value) {
+        oldBox_.value->set();
     }
 }
 
@@ -549,33 +497,18 @@ void ScissorBox::get() { glGetIntegerv(GL_SCISSOR_BOX, box_.data()); }
 
 void ScissorBox::set() { glScissor(x(), y(), width(), height()); }
 
-ColorMaskState& ColorMaskState::operator=(ColorMaskState&& that) {
-    if (this != &that) {
-        mask_ = {GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE};
-        std::swap(mask_, that.mask_);
-        oldMask_ = {GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE};
-        std::swap(oldMask_, that.oldMask_);
-    }
-    return *this;
-}
-
-ColorMaskState::ColorMaskState(ColorMaskState&& rhs) : mask_(rhs.mask_), oldMask_(rhs.oldMask_) {}
-
 ColorMaskState::ColorMaskState(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
-    : mask_{red, green, blue, alpha}, oldMask_{} {
-    oldMask_.get();
-    mask_.set();
+    : oldMask_{ColorMask{}} {
+    oldMask_.value->get();
+    glColorMask(red, green, blue, alpha);
 }
 
 ColorMaskState::ColorMaskState(const bvec4& mask)
-    : mask_{mask.x, mask.y, mask.z, mask.w}, oldMask_{} {
-    oldMask_.get();
-    mask_.set();
-}
+    : ColorMaskState{mask.x, mask.y, mask.z, mask.w} {}
 
 ColorMaskState::~ColorMaskState() {
-    if (mask_ != oldMask_) {
-        oldMask_.set();
+    if (oldMask_.value) {
+        oldMask_.value->set();
     }
 }
 
@@ -583,36 +516,19 @@ void ColorMask::get() { glGetBooleanv(GL_COLOR_WRITEMASK, mask_.data()); }
 
 void ColorMask::set() { glColorMask(red(), green(), blue(), alpha()); }
 
-ColorMaskiState& ColorMaskiState::operator=(ColorMaskiState&& that) {
-    if (this != &that) {
-        buf_ = that.buf_;
-        mask_ = {GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE};
-        std::swap(mask_, that.mask_);
-        oldMask_ = {GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE};
-        std::swap(oldMask_, that.oldMask_);
-    }
-    return *this;
-}
-
-ColorMaskiState::ColorMaskiState(ColorMaskiState&& rhs)
-    : buf_(rhs.buf_), mask_(rhs.mask_), oldMask_(rhs.oldMask_) {}
-
 ColorMaskiState::ColorMaskiState(GLuint buf, GLboolean red, GLboolean green, GLboolean blue,
                                  GLboolean alpha)
-    : buf_{buf}, mask_{red, green, blue, alpha}, oldMask_{} {
-    oldMask_.get();
-    mask_.set();
+    : buf_{buf}, oldMask_{ColorMask{}} {
+    oldMask_.value->get();
+    glColorMaski(buf_, red, green, blue, alpha);
 }
 
 ColorMaskiState::ColorMaskiState(GLuint buf, const bvec4& mask)
-    : buf_{buf}, mask_{mask.x, mask.y, mask.z, mask.w}, oldMask_{} {
-    oldMask_.get();
-    mask_.set();
-}
+    : ColorMaskiState{buf, mask.x, mask.y, mask.z, mask.w} {}
 
 ColorMaskiState::~ColorMaskiState() {
-    if (mask_ != oldMask_) {
-        oldMask_.set();
+    if (oldMask_.value) {
+        oldMask_.value->set();
     }
 }
 

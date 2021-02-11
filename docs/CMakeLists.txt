@@ -248,8 +248,6 @@ ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
 EXTERNAL_PAGES         = YES
 
-PERL_PATH              = ${PERL_EXECUTABLE}
-
 CLASS_DIAGRAMS         = ${ARG_GENERATE_IMG}
 HAVE_DOT               = ${DOXYGEN_DOT_FOUND}
 
@@ -357,7 +355,7 @@ function(ivw_private_make_help)
         GENERATE_QHP
     )
 
-    find_program(IVW_DOXY_QHELPGENERATOR "qhelpgenerator")
+    find_program(IVW_DOXYGEN_QHELPGENERATOR "qhelpgenerator")
 
     add_custom_target("DOXY-HELP-${HARG_NAME}"
         COMMAND ${CMAKE_COMMAND} -E echo "Running Doxygen for ${HARG_NAME}"
@@ -369,9 +367,9 @@ function(ivw_private_make_help)
                                  -P "${ivw_doxy_dir}/strip-qhp.cmake"
 
         COMMAND ${CMAKE_COMMAND} -E echo "Building ${name_lower}.qch"
-        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXY_QHELPGENERATOR} -o ${HARG_OUTPUT_DIR}/${name_lower}.qch \
+        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXYGEN_QHELPGENERATOR} -o ${HARG_OUTPUT_DIR}/${name_lower}.qch \
                                  ${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
-        COMMAND ${IVW_DOXY_QHELPGENERATOR} "-o" "${HARG_OUTPUT_DIR}/${name_lower}.qch"
+        COMMAND ${IVW_DOXYGEN_QHELPGENERATOR} "-o" "${HARG_OUTPUT_DIR}/${name_lower}.qch"
                                             "${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
 
         COMMAND ${CMAKE_COMMAND} -E make_directory "${HARG_DOC_DIR}"
@@ -391,10 +389,9 @@ endif()
 ivw_retrieve_all_modules(reg_modules)
 ivw_mod_name_to_mod_dep(modules ${reg_modules})
 
-find_package(Perl QUIET)            # sets: PERL_FOUND, PERL_EXECUTABLE
 find_package(Doxygen QUIET)         # sets: DOXYGEN_FOUND, DOXYGEN_EXECUTABLE,
                                     # DOXYGEN_DOT_FOUND, DOXYGEN_DOT_EXECUTABLE
-find_package(PythonInterp QUIET)    # sets: PYTHONINTERP_FOUND PYTHON_EXECUTABLE
+find_package(Python3 COMPONENTS Interpreter QUIET)    # sets: Python3_Interpreter_FOUND Python3_EXECUTABLE
 if(NOT ${DOXYGEN_FOUND})
 message(WARNING "Tried to create doxygen project, but doxygen was not found")
     return()
@@ -407,7 +404,7 @@ set(output_dir ${CMAKE_CURRENT_BINARY_DIR})
 set(tag_files "")
 set(dependency_list "")
 set(GENERATE_IMG "YES")
-if(PYTHONINTERP_FOUND)
+if(Python3_Interpreter_FOUND)
     if(${MSVC})
         set(PREFIX_PYTHON "python ")
     else()
@@ -531,8 +528,8 @@ add_custom_target("DOXY-generate-processor-previews"
 add_dependencies("DOXY-generate-processor-previews" "DOXY-Clear")
 set_target_properties("DOXY-generate-processor-previews"
                         PROPERTIES FOLDER "docs" EXCLUDE_FROM_ALL TRUE)
-option(IVW_ENFORCE_PROCESSOR_PREVIEWS "Turn on to enforce generating processor previews when building doxygen documentation (DOXY-Inviwo)" ON)
-if(${IVW_ENFORCE_PROCESSOR_PREVIEWS})
+option(IVW_DOXYGEN_ENFORCE_PROCESSOR_PREVIEWS "Turn on to enforce generating processor previews when building doxygen documentation (DOXY-Inviwo)" ON)
+if(${IVW_DOXYGEN_ENFORCE_PROCESSOR_PREVIEWS})
     add_dependencies("DOXY-Inviwo" "DOXY-generate-processor-previews" "DOXY-Clear")
 else()
     add_dependencies("DOXY-Inviwo" "DOXY-Clear")

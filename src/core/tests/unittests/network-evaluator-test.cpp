@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -253,7 +253,7 @@ TEST(NetworkEvaluator, Error) {
         a->invalidate(InvalidationLevel::InvalidOutput);
         EXPECT_EQ(throwCount, 1);
         ai.checkAndReset(0, 1, 0);
-        bi.checkAndReset(0, 1, 0);
+        bi.checkAndReset(0, 0, 1);
     }
 }
 

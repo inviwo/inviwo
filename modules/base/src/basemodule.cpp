@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@
 #include <modules/base/processors/diffuselightsourceprocessor.h>
 #include <modules/base/processors/directionallightsourceprocessor.h>
 #include <modules/base/processors/distancetransformram.h>
+#include <modules/base/processors/gridplanes.h>
 #include <modules/base/processors/heightfieldmapper.h>
 #include <modules/base/processors/imageinformation.h>
 #include <modules/base/processors/inputselector.h>
@@ -72,11 +73,13 @@
 #include <modules/base/processors/transform.h>
 #include <modules/base/processors/trianglestowireframe.h>
 #include <modules/base/processors/volumeboundaryplanes.h>
+#include <modules/base/processors/volumeconverter.h>
 #include <modules/base/processors/volumecreator.h>
 #include <modules/base/processors/volumesequenceelementselectorprocessor.h>
 #include <modules/base/processors/volumesource.h>
 #include <modules/base/processors/volumeexport.h>
 #include <modules/base/processors/volumebasistransformer.h>
+#include <modules/base/processors/volumeshifter.h>
 #include <modules/base/processors/volumeslice.h>
 #include <modules/base/processors/volumesubsample.h>
 #include <modules/base/processors/volumesubset.h>
@@ -95,6 +98,7 @@
 
 // Properties
 #include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/datarangeproperty.h>
 #include <modules/base/properties/gaussianproperty.h>
 #include <modules/base/properties/imageinformationproperty.h>
 #include <modules/base/properties/layerinformationproperty.h>
@@ -102,7 +106,6 @@
 #include <modules/base/properties/bufferinformationproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
 #include <modules/base/properties/sequencetimerproperty.h>
-#include <modules/base/properties/stipplingproperty.h>
 
 // Io
 #include <modules/base/io/binarystlwriter.h>
@@ -137,6 +140,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<DiffuseLightSourceProcessor>();
     registerProcessor<DirectionalLightSourceProcessor>();
     registerProcessor<DistanceTransformRAM>();
+    registerProcessor<GridPlanes>();
     registerProcessor<MeshSource>();
     registerProcessor<HeightFieldMapper>();
     registerProcessor<ImageExport>();
@@ -166,6 +170,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<TrianglesToWireframe>();
     registerProcessor<TransformMesh>();
     registerProcessor<TransformVolume>();
+    registerProcessor<VolumeConverter>();
     registerProcessor<WorldTransformMeshDeprecated>();
     registerProcessor<WorldTransformVolumeDeprecated>();
     registerProcessor<VolumeSlice>();
@@ -201,25 +206,26 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MeshConverterProcessor>();
     registerProcessor<VolumeInformation>();
     registerProcessor<TFSelector>();
+    registerProcessor<VolumeShifter>();
 
     // input selectors
     registerProcessor<InputSelector<MultiDataInport<Volume>, VolumeOutport>>();
     registerProcessor<InputSelector<MultiDataInport<Mesh>, MeshOutport>>();
     registerProcessor<InputSelector<ImageMultiInport, ImageOutport>>();
 
-    registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();
-    registerProperty<ImageInformationProperty>();
-    registerProperty<LayerInformationProperty>();
-    registerProperty<MeshInformationProperty>();
     registerProperty<BufferInformationProperty>();
-    registerProperty<MeshBufferInformationProperty>();
+    registerProperty<DataRangeProperty>();
+    registerProperty<ImageInformationProperty>();
     registerProperty<IndexBufferInformationProperty>();
+    registerProperty<LayerInformationProperty>();
+    registerProperty<MeshBufferInformationProperty>();
+    registerProperty<MeshInformationProperty>();
+    registerProperty<SequenceTimerProperty>();
     registerProperty<VolumeInformationProperty>();
 
     registerProperty<Gaussian1DProperty>();
     registerProperty<Gaussian2DProperty>();
-    registerProperty<StipplingProperty>();
 
     registerProperty<transform::TranslateProperty>();
     registerProperty<transform::RotateProperty>();

@@ -1,9 +1,4 @@
-#--------------------------------------------------------------------
 # Inviwo integration tests
-if(NOT IVW_INTEGRATION_TESTS)
-    return()
-endif()
-
 project(inviwo-integrationtests)
 
 # Add source files
@@ -30,12 +25,15 @@ endforeach()
 
 # Create application
 add_executable(inviwo-integrationtests ${SOURCE_FILES})
+
+find_package(GTest CONFIG REQUIRED)
 target_link_libraries(inviwo-integrationtests PRIVATE 
     inviwo::core
+    inviwo::module::opengl
     inviwo::module::glfw
     inviwo::module::base
     inviwo::testutil
-    gtest
+    GTest::gtest
 )
 ivw_configure_application_module_dependencies(inviwo-integrationtests ${enabled_modules})
 ivw_define_standard_definitions(inviwo-integrationtests inviwo-integrationtests)

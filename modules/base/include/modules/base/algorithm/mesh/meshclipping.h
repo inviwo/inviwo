@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,7 +81,7 @@ IVW_MODULE_BASE_API std::vector<std::vector<std::uint32_t>> gatherLoops(
  * Vertex attributes are interpolated. Floating types use linear interpolation, integer types use
  * nearest. Connectivity types loop and fan are not handled.
  * @param mesh to clip
- * @param plane in world space coordinate system
+ * @param worldSpacePlane in world space coordinate system
  * @param capClippedHoles: replaces removed parts with triangles aligned with the plane
  * @throws Exception if mesh is not supported.
  * @returns Clipped Mesh

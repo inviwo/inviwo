@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@
 #include <vector>
 #include <string>
 
-#ifdef IVW_SIGAR
+#ifdef IVW_USE_SIGAR
 struct sigar_t;
 #endif
 
@@ -108,7 +108,7 @@ private:
     bool successDiskInfo_;
     bool successProcessMemoryInfo_;
 
-#ifdef IVW_SIGAR
+#ifdef IVW_USE_SIGAR
     sigar_t* sigar_;
 #endif
 };

@@ -48,7 +48,9 @@ def main():
     desc = '''Script for updating the regression test images. Example call:\n\n
      python.exe ./update-regression-images.py --user <github username> --token <github token>\n
             --save --min 0.00 --max 0.05 -j "http://jenkins.inviwo.org:8080/job/inviwo/job/feature%252Fworkspaces2"\n 
-            -r inviwo=C:/Users/petst55/Work/Inviwo/Inviwo-dev modules=C:/Users/petst55/Work/Inviwo/Inviwo-modules'''
+            -r inviwo=<path to repo> modules=<path to repo>\n
+    Tokens can be created at https://github.com/settings/tokens and needs user access to authenticate with jenkins
+    '''
 
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument('-u', '--user', help='Github user name', required=True)
@@ -67,6 +69,10 @@ def main():
     jsonReport = Path('Regression', 'report.json')
     
     request = requests.get(args.job + "/" + jsonReport.as_posix(), auth=auth)
+    if not request.ok:
+        print_error(f"Request failed: {request.status_code} {request.reason}")
+        exit(1)
+
     report = request.json()
     imgcount = 0
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,9 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/network/networkvisitor.h>
 
 namespace inviwo {
 
@@ -76,8 +78,8 @@ Property::~Property() {
     }
 }
 
-std::string Property::getIdentifier() const { return identifier_; }
-Property& Property::setIdentifier(const std::string& identifier) {
+const std::string& Property::getIdentifier() const { return identifier_; }
+Property& Property::setIdentifier(std::string_view identifier) {
     if (identifier_ != identifier) {
         identifier_ = identifier;
 
@@ -88,20 +90,24 @@ Property& Property::setIdentifier(const std::string& identifier) {
     }
     return *this;
 }
-std::vector<std::string> Property::getPath() const {
-    std::vector<std::string> path;
-    if (owner_) {
-        path = owner_->getPath();
+
+std::string Property::getPath() const {
+    std::vector<std::string_view> ids;
+    ids.emplace_back(identifier_);
+    PropertyOwner* owner = owner_;
+    while (owner) {
+        ids.emplace_back(owner->getIdentifier());
+        owner = owner->getOwner();
     }
-    path.push_back(identifier_);
-    return path;
+    std::reverse(ids.begin(), ids.end());
+    return joinString(ids, ".");
 }
 
 std::string Property::getDisplayName() const { return displayName_; }
 
-Property& Property::setDisplayName(const std::string& displayName) {
-    if (displayName_ != displayName) {
-        displayName_ = displayName;
+Property& Property::setDisplayName(std::string_view displayName) {
+    if (displayName_.value != displayName) {
+        displayName_.value = displayName;
         notifyObserversOnSetDisplayName(this, displayName_);
         notifyAboutChange();
     }
@@ -111,8 +117,7 @@ Property& Property::setDisplayName(const std::string& displayName) {
 PropertySemantics Property::getSemantics() const { return semantics_; }
 
 Property& Property::setSemantics(const PropertySemantics& semantics) {
-    if (semantics_ != semantics) {
-        semantics_ = semantics;
+    if (semantics_.update(semantics)) {
         notifyObserversOnSetSemantics(this, semantics_);
         notifyAboutChange();
     }
@@ -123,8 +128,7 @@ std::string Property::getClassIdentifierForWidget() const { return getClassIdent
 
 bool Property::getReadOnly() const { return readOnly_; }
 Property& Property::setReadOnly(bool readOnly) {
-    if (readOnly_ != readOnly) {
-        readOnly_ = readOnly;
+    if (readOnly_.update(readOnly)) {
         notifyObserversOnSetReadOnly(this, readOnly_);
         notifyAboutChange();
     }
@@ -211,7 +215,7 @@ void Property::deserialize(Deserializer& d) {
     std::string className;
     d.deserialize("type", className, SerializationTarget::Attribute);
     if (className != getClassIdentifier()) {
-        LogWarn("Deserialized property: " + joinString(getPath(), ".") +
+        LogWarn("Deserialized property: " + getPath() +
                 " with class identifier: " + getClassIdentifier() +
                 " from a serialized property with a different class identifier: " + className);
     }
@@ -275,7 +279,7 @@ Document Property::getDescription() const {
     utildoc::TableBuilder tb(b, P::end(), {{"identifier", "propertyInfo"}});
     tb(H("Identifier"), identifier_);
     tb(H("Class Identifier"), getClassIdentifier());
-    tb(H("Path"), joinString(getPath(), "."));
+    tb(H("Path"), getPath());
     util::for_each_argument([&tb](auto p) { tb(H(camelCaseToHeader(p.name)), p.value); }, readOnly_,
                             semantics_, usageMode_, visible_);
     tb(H("Validation Level"), invalidationLevel_);
@@ -286,6 +290,8 @@ Document Property::getDescription() const {
 const std::vector<std::pair<std::string, std::string>>& Property::getAutoLinkToProperty() const {
     return autoLinkTo_;
 }
+
+void Property::accept(NetworkVisitor& visitor) { visitor.visit(*this); }
 
 // Call this when a property has changed in a way not related to it's "value"
 // When for example semantics have changed, i.e. for stuff where property
@@ -314,12 +320,30 @@ Property& Property::resetToDefaultState() {
     return *this;
 }
 
+bool Property::isDefaultState() const { return false; }
+
+bool Property::needsSerialization() const {
+    switch (serializationMode_) {
+        case PropertySerializationMode::All:
+            return true;
+        case PropertySerializationMode::None:
+            return false;
+        case PropertySerializationMode::Default:
+            [[fallthrough]];
+        default:
+            return !isDefaultState();
+    }
+}
+
 void Property::set(const Property* /*src*/) { propertyModified(); }
 
 const std::vector<PropertyWidget*>& Property::getWidgets() const { return propertyWidgets_; }
 
 PropertySerializationMode Property::getSerializationMode() const { return serializationMode_; }
-void Property::setSerializationMode(PropertySerializationMode mode) { serializationMode_ = mode; }
+Property& Property::setSerializationMode(PropertySerializationMode mode) {
+    serializationMode_ = mode;
+    return *this;
+}
 
 std::shared_ptr<std::function<void()>> Property::onChangeScoped(std::function<void()> callback) {
     return onChangeCallback_.addLambdaCallbackRaii(std::move(callback));

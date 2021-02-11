@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glm.h>
 
 #include <memory>
 #include <vector>
@@ -48,14 +48,14 @@ enum class UpdateNearFar { Yes, No };
 enum class UpdateLookRanges { Yes, No };
 
 /**
- * Setup the camera parameters such that the whole boundingBox spaned by basis and offset
+ * Setup the camera parameters such that the whole boundingBox spanned by basis and offset
  * will be inside the view frustum, for the given view direction
  *
  * @param cam       the Camera to update
  * @param boundingBox the basis and offset of the bounding box that will fit inside the new
  *                    view frustum
  * @param viewDir    the view direction of when viewing the bounding box
- * @param lookDir    the up direction of when viewing the bounding box
+ * @param lookUp     the up direction of when viewing the bounding box
  * @param fitRatio   determines the spacing between volume and the boundaries of the view frustum. A
  *                   fit ratio of 1 means a perfect fit, no space between frustum and volume. The
  *                   aspect ratio is taken into account.
@@ -63,13 +63,13 @@ enum class UpdateLookRanges { Yes, No };
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
-IVW_CORE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox, vec3 viewDir,
+IVW_CORE_API void setCameraView(CameraProperty& cam, const mat4& boundingBox, vec3 viewDir,
                                 vec3 lookUp, float fitRatio = 1.05f,
                                 UpdateNearFar updateNearFar = UpdateNearFar::No,
                                 UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
 
 /**
- * Setup the camera parameters such that the whole boundingBox spaned by basis and offset
+ * Setup the camera parameters such that the whole boundingBox spanned by basis and offset
  * will be inside the view frustum, using the current view direction
  *
  * @param cam       the Camera to update
@@ -82,13 +82,13 @@ IVW_CORE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox, ve
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
-IVW_CORE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox,
+IVW_CORE_API void setCameraView(CameraProperty& cam, const mat4& boundingBox,
                                 float fitRatio = 1.05f,
                                 UpdateNearFar updateNearFar = UpdateNearFar::No,
                                 UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
 
 /**
- * Setup the camera parameters such that the whole boundingBox spaned by basis and offset
+ * Setup the camera parameters such that the whole boundingBox spanned by basis and offset
  * will be inside the view frustum.
  *
  * @param cam       the Camera to update
@@ -102,7 +102,7 @@ IVW_CORE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox,
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
-IVW_CORE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox, Side side,
+IVW_CORE_API void setCameraView(CameraProperty& cam, const mat4& boundingBox, Side side,
                                 float fitRatio = 1.05f,
                                 UpdateNearFar updateNearFar = UpdateNearFar::No,
                                 UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
@@ -114,29 +114,29 @@ IVW_CORE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox, Si
  * a zoom factor of 25 will allow to zoom out to a distance of "25 volumes".
  *
  * @param cam           camera to update
- * @param boundingBox  basis and offset of the bounding box used to determinte the ranges
+ * @param boundingBox  basis and offset of the bounding box used to determine the ranges
  * @param maxZoomFactor determines how far away from the volume the user will be able to zoom out.
  */
-IVW_CORE_API void setCameraLookRanges(CameraProperty &cam, const mat4 &boundingBox,
+IVW_CORE_API void setCameraLookRanges(CameraProperty& cam, const mat4& boundingBox,
                                       float maxZoomFactor = 25.f);
 
 /**
  * Computes appropriate near and far clip distances for the given bounding box and zoom factor.
- * Makes sure that the far plane is distant enough to avoid clipping given to current zoomfactor.
+ * Makes sure that the far plane is distant enough to avoid clipping given to current zoom factor.
  * @see setCameraLookRanges
  */
-IVW_CORE_API std::pair<float, float> computeCameraNearFar(const mat4 &boundingBox,
+IVW_CORE_API std::pair<float, float> computeCameraNearFar(const mat4& boundingBox,
                                                           float maxZoomFactor = 25.f,
                                                           float nearFarRatio = 1.f / 10000.f);
 
 /**
  * Sets the near and far clip distances of the camera based on the given bounding volume and zoom
  * factor. Ensures that the far plane is distant enough to avoid clipping given to current
- * zoomfactor.
+ * zoom factor.
  * @see computeCameraNearFar
  * @see setCameraLookRanges
  */
-IVW_CORE_API void setCameraNearFar(CameraProperty &cam, const mat4 &boundingBox,
+IVW_CORE_API void setCameraNearFar(CameraProperty& cam, const mat4& boundingBox,
                                    float maxZoomFactor = 25.f, float nearFarRatio = 1.f / 10000.f);
 
 }  // namespace camerautil

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,12 +31,12 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <sstream>
-#include <string>
+#include <string_view>
 
 namespace inviwo {
 
-IVW_CORE_API void assertion(const char* fileName, const char* functionName, long lineNumber,
-                            std::string message);
+IVW_CORE_API void assertion(std::string_view fileName, std::string_view functionName,
+                            long lineNumber, std::string_view message);
 
 namespace util {
 
@@ -47,6 +47,11 @@ IVW_CORE_API void debugBreak();
 }  // namespace inviwo
 
 #if defined(IVW_DEBUG) || defined(IVW_FORCE_ASSERTIONS)
+
+namespace inviwo::cfg {
+constexpr bool assertions = true;
+}
+
 #define IVW_ASSERT(condition, message)                                               \
     {                                                                                \
         if (!(bool(condition))) {                                                    \
@@ -60,6 +65,10 @@ IVW_CORE_API void debugBreak();
 #define ivwAssert(condition, message) IVW_ASSERT(condition, message)
 
 #else
+
+namespace inviwo::cfg {
+constexpr bool assertions = false;
+}
 
 #define IVW_ASSERT(condition, message)
 #define ivwAssert(condition, message)

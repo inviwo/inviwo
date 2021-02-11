@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRANSFERFUNCTIONEDITOR_H
-#define IVW_TRANSFERFUNCTIONEDITOR_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>
@@ -111,6 +110,8 @@ signals:
     void showColorDialog();
     void importTF(TFPrimitiveSet& primitiveSet);
     void exportTF(const TFPrimitiveSet& primitiveSet);
+    void updateBegin();
+    void updateEnd();
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
@@ -151,6 +152,9 @@ protected:
     virtual void onTFPrimitiveDoubleClicked(const TFEditorPrimitive* p) override;
 
 private:
+    std::vector<TFPrimitive*> getAllPrimitives() const;
+    std::vector<TFPrimitive*> getAllOrSelectedPrimitives() const;
+
     std::vector<TFEditorPrimitive*> getSelectedPrimitiveItems() const;
 
     void createControlPointItem(TFPrimitive& p);
@@ -169,6 +173,9 @@ private:
     std::vector<TFEditorIsovalue*> isovalueItems_;
 
     bool mouseDrag_;
+    QPointF rigidTransRef_;
+    QPointF dragPos_;
+    TFEditorPrimitive* dragItem_ = nullptr;
     bool mouseMovedSincePress_ = false;
     bool mouseDoubleClick_ = false;
     DataMapper dataMap_;
@@ -185,5 +192,3 @@ inline double TFEditor::getControlPointSize() const { return controlPointSize_; 
 inline const dvec2& TFEditor::getRelativeSceneOffset() const { return relativeSceneOffset_; }
 
 }  // namespace inviwo
-
-#endif  // IVW_TRANSFERFUNCTIONEDITOR_H

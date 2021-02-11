@@ -1,6 +1,5 @@
-if (BUILD_SHARED_LIBS)
-else()
-	message(WARNING "tidds is published under LGPL. Shared Liberary build will be enforced for tidds")
+if (NOT BUILD_SHARED_LIBS)
+	message(STATUS "tidds is published under LGPL. Shared Liberary build will be enforced for tidds")
 endif()
 
 # needs to be always used as a shared library due to LGPL of TinyDDS

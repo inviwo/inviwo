@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -238,6 +238,8 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     registerProcessor<WebBrowserProcessor>();
 
     doChromiumWork_.start();
+
+    browserClient_ = new WebBrowserClient(app->getModuleManager(), getPropertyWidgetCEFFactory());
 }
 
 WebBrowserModule::~WebBrowserModule() {

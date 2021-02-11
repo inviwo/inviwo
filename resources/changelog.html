@@ -9,153 +9,152 @@
 	h1 { font-size:  xx-large; color: #268bd2; margin-bottom:1em; }
 	h2 { font-size: large; color: #268bd2; margin-top:1em; margin-bottom:0em; }
 	p { margin-bottom: 0.2em; margin-top: 0.1em; }
+	li { margin-bottom: 0.2em; }
 	div { margin: 0; padding: 0; }
-	pre { margin-top: 0.3em; margin-bottom: 0.3em; }
-	code { color: #E0E0DB; background-color: #4a4a4f; padding-left: 0.4em; padding-right: 0.4em; }
-	div.highlight { background-color: #4a4a4f; padding-top: 0.1em; padding-bottom: 0.1em; }
-	.hll { background-color: #49483e }
-	.c { color: #75715e } /* Comment */
-	.err { color: #960050; background-color: #1e0010 } /* Error */
-	.k { color: #66d9ef } /* Keyword */
-	.l { color: #ae81ff } /* Literal */
-	.n { color: #f8f8f2 } /* Name */
-	.o { color: #f92672 } /* Operator */
-	.p { color: #f8f8f2 } /* Punctuation */
-	.ch { color: #75715e } /* Comment.Hashbang */
-	.cm { color: #75715e } /* Comment.Multiline */
-	.cp { color: #E22453; font-weight: bold } /* Comment.Preproc */
-	.cpf { color: #E6DB74; font-style: italic } /* Comment.PreprocFile */
-	.c1 { color: #75715e } /* Comment.Single */
-	.cs { color: #75715e } /* Comment.Special */
-	.gd { color: #f92672 } /* Generic.Deleted */
-	.ge { font-style: italic } /* Generic.Emph */
-	.gi { color: #a6e22e } /* Generic.Inserted */
-	.gs { font-weight: bold } /* Generic.Strong */
-	.gu { color: #75715e } /* Generic.Subheading */
-	.kc { color: #66d9ef } /* Keyword.Constant */
-	.kd { color: #66d9ef } /* Keyword.Declaration */
-	.kn { color: #f92672 } /* Keyword.Namespace */
-	.kp { color: #66d9ef } /* Keyword.Pseudo */
-	.kr { color: #66d9ef } /* Keyword.Reserved */
-	.kt { color: #66d9ef } /* Keyword.Type */
-	.ld { color: #e6db74 } /* Literal.Date */
-	.m { color: #ae81ff } /* Literal.Number */
-	.s { color: #e6db74 } /* Literal.String */
-	.na { color: #a6e22e } /* Name.Attribute */
-	.nb { color: #f8f8f2 } /* Name.Builtin */
-	.nc { color: #a6e22e } /* Name.Class */
-	.no { color: #66d9ef } /* Name.Constant */
-	.nd { color: #a6e22e } /* Name.Decorator */
-	.ni { color: #f8f8f2 } /* Name.Entity */
-	.ne { color: #a6e22e } /* Name.Exception */
-	.nf { color: #a6e22e } /* Name.Function */
-	.nl { color: #f8f8f2 } /* Name.Label */
-	.nn { color: #f8f8f2 } /* Name.Namespace */
-	.nx { color: #a6e22e } /* Name.Other */
-	.py { color: #f8f8f2 } /* Name.Property */
-	.nt { color: #f92672 } /* Name.Tag */
-	.nv { color: #f8f8f2 } /* Name.Variable */
-	.ow { color: #f92672 } /* Operator.Word */
-	.w { color: #f8f8f2 } /* Text.Whitespace */
-	.mb { color: #ae81ff } /* Literal.Number.Bin */
-	.mf { color: #ae81ff } /* Literal.Number.Float */
-	.mh { color: #ae81ff } /* Literal.Number.Hex */
-	.mi { color: #ae81ff } /* Literal.Number.Integer */
-	.mo { color: #ae81ff } /* Literal.Number.Oct */
-	.sa { color: #e6db74 } /* Literal.String.Affix */
-	.sb { color: #e6db74 } /* Literal.String.Backtick */
-	.sc { color: #e6db74 } /* Literal.String.Char */
-	.dl { color: #e6db74 } /* Literal.String.Delimiter */
-	.sd { color: #e6db74 } /* Literal.String.Doc */
-	.s2 { color: #e6db74 } /* Literal.String.Double */
-	.se { color: #ae81ff } /* Literal.String.Escape */
-	.sh { color: #e6db74 } /* Literal.String.Heredoc */
-	.si { color: #e6db74 } /* Literal.String.Interpol */
-	.sx { color: #e6db74 } /* Literal.String.Other */
-	.sr { color: #e6db74 } /* Literal.String.Regex */
-	.s1 { color: #e6db74 } /* Literal.String.Single */
-	.ss { color: #e6db74 } /* Literal.String.Symbol */
-	.bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
-	.fm { color: #a6e22e } /* Name.Function.Magic */
-	.vc { color: #f8f8f2 } /* Name.Variable.Class */
-	.vg { color: #f8f8f2 } /* Name.Variable.Global */
-	.vi { color: #f8f8f2 } /* Name.Variable.Instance */
-	.vm { color: #f8f8f2 } /* Name.Variable.Magic */
-	.il { color: #ae81ff } /* Literal.Number.Integer.Long */
+	pre { margin-top: 0.3em; margin-bottom: 0.3em; line-height:120%;}
+	code { color: #f8f8f2; background-color: #4a4a4f; padding-left: 0.4em; padding-right: 0.4em; }
+	div.highlight { color: #f8f8f2; background-color: #4a4a4f; padding-top: 0.1em; padding-bottom: 0.1em; }
+	.pl-s, .pl-pds, .pl-sr { color: #e6db74; }
+	.pl-k { color: #66d9ef; } /* keyword, storage, storage.type */
+	.pl-s1 { color: #a6e22e; } /* string source */
+	.pl-kos { color: #f8f8f2; }
+	.pl-en, .pl-e{ color: #a6e22e; } /* entity.name */
+	.pl-c1 { color: #f92672; }
+	.pl-smi { color: #f6f8fa; } /* variable.parameter.function, storage.modifier.package, storage.modifier.import, storage.type.java, variable.other */
+	.pl-v {color: #a6e22e; } /* variable */
+	.pl-c {	color: #f6f8fa; } /* comment, punctuation.definition.comment, string.comment */ 
 </style>
 </head>
-<body >
-<h1>Latest Changes</h1>
+<body>
+<h2>2020-11-10 Improved Filtering in Processor List Widget</h2>
+<p>Filtering in the Processor List Widget is now based on matching substrings (space is the separator). For example, searching for <code>Vol Source</code> will return <code>Volume Source</code>, <code>Volume Sequence Source</code>, and <code>Image Stack Volume Source</code>.<br>
+This also enables searching for processor names and tags at the same time, e.g. <code>Slice GL</code>.</p>
+<h2>2020-10-28 Performance refactoring</h2>
+<ul>
+<li>Serialization no longer supports use of the "allowReferences" to serialize pointer to the same object multiple times. Reasoning being that it requires all properties and ports to always be present in the xml even if they don't have any state that needs serialization. The new solution uses "paths" (a dot separated list of identifiers) instead of pointers where needed.</li>
+<li>Some of the serialization functions now supports filters and projections to avoid having to create temporary objects to serialize.</li>
+<li>Property now has a <code>virtual bool isDefaultState() const</code> function. Should generally be overridden by subclasses to return true if they are in the default state or not.</li>
+<li>Property now has a <code>virtual bool needsDerialization() const</code> function, the default implementation returns true, when the serialization mode is <code>All</code> or <code>Default</code> and <code>!isDefaultState()</code> otherwise false.</li>
+<li><code>PropertyOwner</code> now only serializes property that <code>needsDeserialization</code> this reduces amount of items that need serialization by a large fraction.</li>
+<li><code>DefaultValues</code> now uses <code>StaticString</code> to make the implementation constexpr</li>
+<li>Many classIdentifiers now return <code>const std::string&amp;</code> instead of <code>std::string</code> to avoid creating new strings. This can easily be done by keeping a static <code>std::string</code> around.</li>
+<li>Now uses std::string_view instead of <code>const std::string&amp;</code> in many places to avoid having to create strings with dynamic allocations.</li>
+<li>StringConversion.h now has a <code>StrBuffer</code> class to make it easier to format string using a buffer on the Stack. Very useful for concatenation.</li>
+<li>StringConversion.h now has a <code>forEachStringPart</code> function to call a callback on parts of a string.</li>
+<li>Processor identifiers now follow the same rules as other identifiers</li>
+<li><code>MinMaxProperty</code> is no longer derives from <code>TemplateProperty</code>.</li>
+</ul>
+<h2>2020-09-30 FBO Asserts</h2>
+<p>Added asserts for using the wrong context in the FBO. An FBO has to be created, used, and deleted in the same OpenGL context. We now have runtime checks to verify that this is the case.</p>
+<h2>2020-07-17 Volume and DataFrame converter</h2>
+<p>The <code>VolumeConverter</code> processor provides functionality for converting a <code>Volume</code> to a different data format with optional mapping of data values and custom ranges. The base module now also features a <code>DataRangeProperty</code> holding data &amp;value ranges of a volume plus optional overrides.</p>
+<p>The CSV reader now distinguishes between integral, floating point, and string/categorical values. Floating point values are stored either in float32 (default) or float64/double columns depending on the <code>doubleprec</code> argument in the CSVReader constructor. Since some of the plotting processors are relying on float32 columns, a <code>DataFrame Float32 Converter</code> processor was added which converts float64 columns to float32.</p>
+<h2>2020-06-09 Remove use of deprecated QGLWidget and OpenGL compatibility mode</h2>
+<p>In case you have built a custom Qt application your main file need be updated to enable shared OpenGL context, see apps/inviwo/inviwo.cpp.<br>
+We now also use QOffScreenSurface for default OpenGL context and threaded rendering instead of a custom hidden window.</p>
+<h2>2020-06-30 DataFrame</h2>
+<p>Moved DataFrame utils files to <code>dataframe/util/dataframeutil.h</code> (previously <code>dataframe/datastructures/dataframeutil.h</code>). Renamed namespace from <code>dataframeutil</code> to <code>dataframe</code>.</p>
+<p>Added utility functions for joining two DataFrames: <code>appendRows()</code>, <code>appendColumns()</code>, <code>innerJoin()</code>.</p>
+<h2>2020-06-26 Vcpkg support</h2>
+<p>We now support using <a href="https://github.com/microsoft/vcpkg">vcpkg</a> for handling external dependencies. The following packages from vcpkg can be used <code>assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib</code>.</p>
+<p>To install vcpkg and the dependencies in a directory of your choice (outside of inviwo) do:</p>
+<div class="highlight highlight-source-batchfile"><pre><span class="pl-k">&gt;</span> git clone https://github.com/Microsoft/vcpkg.git
+<span class="pl-k">&gt;</span> <span class="pl-k">cd</span> vcpkg
+<span class="pl-k">&gt;</span> ./bootstrap-vcpkg.bat
+<span class="pl-k">&gt;</span> ./vcpkg.exe install --triplet x64-windows assimp benchmark cimg
+    eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] 
+    libjpeg-turbo libpng minizip nlohmann-json openexr pybind11
+    python3 tclap tiff tinydir tinyxml2 utfcpp zlib      </pre></div>
+<p>Then set the <code>CMAKE_TOOLCHAIN_FILE</code> to <code>&lt;vcpkg-install-dir&gt;/scripts/buildsystems/vcpkg.cmake</code> when configuring CMake (see <a href="https://stackoverflow.com/questions/29982505/setting-a-cross-compiler-file-using-the-cmake-gui" rel="nofollow">https://stackoverflow.com/questions/29982505/setting-a-cross-compiler-file-using-the-cmake-gui</a> ). Finally, set all the corresponding <code>IVW_USE_EXTERNAL_&lt;package&gt;</code> to <code>TRUE</code>.</p>
+<p>To help interact with vcpkg <code>cmake/vcpkghelpers.cmake</code> provides functions for installing the vcpkg packages needed to create installers (only windows so far).</p>
+<h2>2020-06-26 CMake refactor</h2>
+<p>We have renamed many cmake options to make the naming more consistent and the options easier to find. But you might need to review your cmake settings when updating to make sure you have the correct settings.<br>
+We now group the cmake settings like this:</p>
+<ul>
+<li><code>IVW_APP_*</code> Enable disable building various apps</li>
+<li><code>IVV_CFG_*</code> All configuration options, like  PRECOMPILED_HEADERS and PROFILING</li>
+<li><code>IVW_DOXYGEN_*</code> Doxygen options</li>
+<li><code>IVW_EXTERNAL_*</code> Add external modules / projects</li>
+<li><code>IVW_MODULE_*</code> enable/disable modules</li>
+<li><code>IVW_PACKAGE_*</code> options for installing/creating installers</li>
+<li><code>IVW_TEST_*</code> option for unit test, integration test, regressions test.</li>
+<li><code>IVW_USE_*</code> options for enabling/disabling some libraries / tools (sigar, openmp, openexr)</li>
+<li><code>IVW_USE_EXTERNAL_*</code> enable/disable building various dependences. if off then dependences must be provided externally</li>
+</ul>
+<p>Notable changes include:</p>
+<ul>
+<li><code>PRECOMPILED_HEADERS -&gt; IVW_CFG_PRECOMPILED_HEADERS</code></li>
+<li><code>IVW_PROFILING -&gt; IVW_CFG_PROFILING</code></li>
+<li><code>IVW_OPENMP_ON -&gt; IVW_USE_OPENMP</code></li>
+</ul>
+<h2>2020-06-16 StipplingProperty now in BaseGL</h2>
+<p>Moved StipplingProperty and associated settings from Base module to BaseGL.</p>
+<h2>2020-06-03 WebBrowser Javascript API</h2>
+<p>Changed redirection of <code>https://inviwo</code> to <code>inviwo://</code> to avoid confusion with the https scheme.<br>
+Your html-files will need to update from<br>
+'<a href="https://inviwo/modules/yourmodule" rel="nofollow">https://inviwo/modules/yourmodule</a>'<br>
+to<br>
+'inviwo://yourmodule'</p>
 <h2>2020-04-03 OrdinalPropertyState</h2>
-<p>Added a OrdinalPropertyState helper for constructing ordinal properties.<br />
-And a factory function <code>util::ordinalColor</code> for OrdinalProperties representing Colors<br />
-When instantiating a Ordinal Property for a color value one would need to write something along<br />
+<p>Added a OrdinalPropertyState helper for constructing ordinal properties.<br>
+And a factory function <code>util::ordinalColor</code> for OrdinalProperties representing Colors<br>
+When instantiating a Ordinal Property for a color value one would need to write something along<br>
 there lines</p>
-<div class="highlight"><pre><span></span><span class="n">color</span><span class="p">(</span><span class="s">&quot;cubeColor&quot;</span><span class="p">,</span> <span class="s">&quot;Cube Color&quot;</span><span class="p">,</span> <span class="n">vec4</span><span class="p">(</span><span class="mf">0.11f</span><span class="p">,</span> <span class="mf">0.42f</span><span class="p">,</span> <span class="mf">0.63f</span><span class="p">,</span> <span class="mf">1.0f</span><span class="p">),</span>
-     <span class="p">{</span><span class="n">vec4</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">),</span> <span class="n">ConstraintBehavior</span><span class="o">::</span><span class="n">Immutable</span><span class="p">},</span>
-     <span class="p">{</span><span class="n">vec4</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">),</span> <span class="n">ConstraintBehavior</span><span class="o">::</span><span class="n">Immutable</span><span class="p">},</span> <span class="n">vec4</span><span class="p">(</span><span class="mf">0.01f</span><span class="p">),</span>
-     <span class="n">InvalidationLevel</span><span class="o">::</span><span class="n">InvalidOutput</span><span class="p">,</span> <span class="n">PropertySemantics</span><span class="o">::</span><span class="n">Color</span><span class="p">)</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-en">color</span>(<span class="pl-s"><span class="pl-pds">"</span>cubeColor<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Cube Color<span class="pl-pds">"</span></span>, vec4(<span class="pl-c1">0</span>.<span class="pl-c1">11f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">42f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">63f</span>, <span class="pl-c1">1</span>.<span class="pl-c1">0f</span>),
+     {<span class="pl-c1">vec4</span>(<span class="pl-c1">0</span>.<span class="pl-c1">0f</span>), ConstraintBehavior::Immutable},
+     {<span class="pl-c1">vec4</span>(<span class="pl-c1">1</span>.<span class="pl-c1">0f</span>), ConstraintBehavior::Immutable}, vec4(<span class="pl-c1">0</span>.<span class="pl-c1">01f</span>),
+     InvalidationLevel::InvalidOutput, PropertySemantics::Color)</pre></div>
 <p>by using the helper function most of the boilerplate can be removed:</p>
-<div class="highlight"><pre><span></span><span class="n">color</span><span class="p">{</span><span class="s">&quot;cubeColor&quot;</span><span class="p">,</span> <span class="s">&quot;Cube Color&quot;</span><span class="p">,</span> <span class="n">util</span><span class="o">::</span><span class="n">ordinalColor</span><span class="p">(</span><span class="mf">0.11f</span><span class="p">,</span> <span class="mf">0.42f</span><span class="p">,</span> <span class="mf">0.63f</span><span class="p">)}</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre>color{<span class="pl-s"><span class="pl-pds">"</span>cubeColor<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Cube Color<span class="pl-pds">"</span></span>, <span class="pl-c1">util::ordinalColor</span>(<span class="pl-c1">0</span>.<span class="pl-c1">11f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">42f</span>, <span class="pl-c1">0</span>.<span class="pl-c1">63f</span>)}</pre></div>
 <h2>2020-04-01 Constraint Behavior</h2>
-<p>Extends the behavior of the Ordinal Property's min and max bound with a <code>ConstraintBehavior</code> mode.<br />
+<p>Extends the behavior of the Ordinal Property's min and max bound with a <code>ConstraintBehavior</code> mode.<br>
 Four settings are available:</p>
 <ul>
-<li><strong>Editable</strong>: The default behavior and the same as we have had before. Clamps values and the boundary is editable by the user in the GUI and by the programmer from code. The bounds are linked to other properties. Typical use case would be when you have a good default value for a bound, but other values are still valid. </li>
-<li><strong>Mutable</strong>: Clamps values and the boundary is editable by the programmer (setMinValue, setMaxValue) and not from the GUI. Bounds are not linked to other properties. Typical use case would be when you have a bound that the user should not be able to modify but needs to be modified from the programmers side, say for example the upper bound of the size of a vector when the value is used for indexing. </li>
+<li><strong>Editable</strong>: The default behavior and the same as we have had before. Clamps values and the boundary is editable by the user in the GUI and by the programmer from code. The bounds are linked to other properties. Typical use case would be when you have a good default value for a bound, but other values are still valid.</li>
+<li><strong>Mutable</strong>: Clamps values and the boundary is editable by the programmer (setMinValue, setMaxValue) and not from the GUI. Bounds are not linked to other properties. Typical use case would be when you have a bound that the user should not be able to modify but needs to be modified from the programmers side, say for example the upper bound of the size of a vector when the value is used for indexing.</li>
 <li><strong>Immutable</strong>: Clamps values and the boundary can not be modified. Bounds are not linked to other properties. Typical use case would be something like a color where there is a defined range, (0,1) in this case, that should never be modified.</li>
-<li><strong>Ignore</strong>: Don't clamp values and the boundary is editable by the user and by the programmer. The bounds are only used for interaction purposes. Bounds are linked to other properties. Typical use case would be for a value of unbounded character, like the look from in the camera. The any value is usually valid, the bound are only used to suggest a reasonable value. </li>
+<li><strong>Ignore</strong>: Don't clamp values and the boundary is editable by the user and by the programmer. The bounds are only used for interaction purposes. Bounds are linked to other properties. Typical use case would be for a value of unbounded character, like the look from in the camera. The any value is usually valid, the bound are only used to suggest a reasonable value.</li>
 </ul>
 <p>To specify the behavior a new Constructor has been added to the OrdinalProperty:</p>
-<div class="highlight"><pre><span></span>    <span class="n">OrdinalProperty</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">identifier</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">displayName</span><span class="p">,</span>
-                    <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">value</span> <span class="o">=</span> <span class="n">Defaultvalues</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">getVal</span><span class="p">(),</span>
-                    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">ConstraintBehavior</span><span class="o">&gt;&amp;</span> <span class="n">minValue</span> <span class="o">=</span>
-                        <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="p">{</span><span class="n">Defaultvalues</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">getMin</span><span class="p">(),</span> <span class="n">ConstraintBehavior</span><span class="o">::</span><span class="n">Editable</span><span class="p">},</span>
-                    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">ConstraintBehavior</span><span class="o">&gt;&amp;</span> <span class="n">maxValue</span> <span class="o">=</span>
-                        <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="p">{</span><span class="n">Defaultvalues</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">getMax</span><span class="p">(),</span> <span class="n">ConstraintBehavior</span><span class="o">::</span><span class="n">Editable</span><span class="p">},</span>
-                    <span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">increment</span> <span class="o">=</span> <span class="n">Defaultvalues</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">getInc</span><span class="p">(),</span>
-                    <span class="n">InvalidationLevel</span> <span class="n">invalidationLevel</span> <span class="o">=</span> <span class="n">InvalidationLevel</span><span class="o">::</span><span class="n">InvalidOutput</span><span class="p">,</span>
-                    <span class="n">PropertySemantics</span> <span class="n">semantics</span> <span class="o">=</span> <span class="n">PropertySemantics</span><span class="o">::</span><span class="n">Default</span><span class="p">);</span>
-</pre></div>
-
-
-<p>where the <code>ConstraintBehavior</code> can be specified together with the <code>minValue</code> and <code>maxValue</code>. </p>
+<div class="highlight highlight-source-c++"><pre><span class="pl-en">OrdinalProperty</span>(<span class="pl-k">const</span> std::string&amp; identifier, <span class="pl-k">const</span> std::string&amp; displayName,
+                <span class="pl-k">const</span> T&amp; value = Defaultvalues&lt;T&gt;::getVal(),
+                <span class="pl-k">const</span> std::pair&lt;T, ConstraintBehavior&gt;&amp; minValue =
+                    std::pair{Defaultvalues&lt;T&gt;::<span class="pl-c1">getMin</span>(), ConstraintBehavior::Editable},
+                <span class="pl-k">const</span> std::pair&lt;T, ConstraintBehavior&gt;&amp; maxValue =
+                    std::pair{Defaultvalues&lt;T&gt;::<span class="pl-c1">getMax</span>(), ConstraintBehavior::Editable},
+                <span class="pl-k">const</span> T&amp; increment = Defaultvalues&lt;T&gt;::getInc(),
+                InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                PropertySemantics semantics = PropertySemantics::Default);</pre></div>
+<p>where the <code>ConstraintBehavior</code> can be specified together with the <code>minValue</code> and <code>maxValue</code>.</p>
 <h2>2020-03-13 Webbrowser API - get parent processor</h2>
 <p>Added functionality to retrieve which processor is responsible for the browser API-calls. See InviwoAPI.js and web browser property synchronization example workspace.</p>
 <h2>2019-12-02 PoolProcessor</h2>
 <p>Added a processor base class to make background processing easier. Here is a basic example of how the process function might look like:</p>
-<div class="highlight"><pre><span></span><span class="k">const</span> <span class="k">auto</span> <span class="n">calc</span> <span class="o">=</span> <span class="p">[</span><span class="n">image</span> <span class="o">=</span> <span class="n">inport_</span><span class="p">.</span><span class="n">getData</span><span class="p">()](</span><span class="n">pool</span><span class="o">::</span><span class="n">Stop</span> <span class="n">stop</span><span class="p">,</span> <span class="n">pool</span><span class="o">::</span><span class="n">Progress</span> <span class="n">progress</span><span class="p">)</span> 
-    <span class="o">-&gt;</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Image</span><span class="o">&gt;</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">stop</span><span class="p">)</span> <span class="k">return</span> <span class="k">nullptr</span><span class="p">;</span>
-    <span class="k">auto</span> <span class="n">newImage</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Image</span><span class="o">&gt;</span><span class="p">(</span><span class="n">image</span><span class="o">-&gt;</span><span class="n">clone</span><span class="p">());</span>
-    <span class="n">progress</span><span class="p">(</span><span class="mf">0.5f</span><span class="p">);</span>
-    <span class="c1">// Do some work with the image</span>
-    <span class="k">return</span> <span class="n">newImage</span><span class="p">;</span>
-<span class="p">};</span>
-<span class="n">dispatchOne</span><span class="p">(</span><span class="n">calc</span><span class="p">,</span> <span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Image</span><span class="o">&gt;</span> <span class="n">result</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">outport_</span><span class="p">.</span><span class="n">setData</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
-    <span class="n">newResults</span><span class="p">();</span>  <span class="c1">// Let the network know that the processor has new results on the outport.</span>
-<span class="p">});</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">const</span> <span class="pl-k">auto</span> calc = [image = inport_.getData()](pool::Stop stop, pool::Progress progress) 
+    -&gt; std::shared_ptr&lt;<span class="pl-k">const</span> Image&gt; {
+    <span class="pl-k">if</span> (stop) <span class="pl-k">return</span> <span class="pl-c1">nullptr</span>;
+    <span class="pl-k">auto</span> newImage = std::shared_ptr&lt;Image&gt;(image-&gt;<span class="pl-c1">clone</span>());
+    <span class="pl-c1">progress</span>(<span class="pl-c1">0</span>.<span class="pl-c1">5f</span>);
+    <span class="pl-c"><span class="pl-c">//</span> Do some work with the image</span>
+    <span class="pl-k">return</span> newImage;
+};
+<span class="pl-en">dispatchOne</span>(calc, [<span class="pl-c1">this</span>](std::shared_ptr&lt;<span class="pl-k">const</span> Image&gt; result) {
+    outport_.<span class="pl-c1">setData</span>(result);
+    <span class="pl-c"><span class="pl-c">//</span> Let the network know that the processor has new results on the outport.</span>
+    <span class="pl-c1">newResults</span>();
+});</pre></div>
 <p>The <code>PoolProcessor</code> automatically manages the Activity Indicator and the Progress Bar. It handles stopping old jobs and it manages the lifetimes of the jobs and the processor. The Example module has an <code>ExampleProgressBar</code> processor with example code. And the <code>PoolProcessor</code> has examples in its documentation as well.</p>
 <h2>2019-11-05 Mesh Plane Clipping</h2>
 <p>The mesh clipping processor can now handle most mesh types.</p>
 <h2>2019-10-02 DataFrameQt</h2>
-<p>A new sink processor that displays a spreadsheet view of a data frame, with selection support. </p>
+<p>A new sink processor that displays a spreadsheet view of a data frame, with selection support.</p>
 <h2>2019-09-16 Auto Save</h2>
 <p>Inviwo now has a auto save feature that lets you restore a workspace on restart even if it was never saved.</p>
 <h2>2019-09-02 New Inviwo Version 0.9.11</h2>
 <p>Major change since the last release include:</p>
 <ul>
-<li>We have updated a number of build requirements:<ul>
+<li>We have updated a number of build requirements:
+<ul>
 <li>A compiler supporting C++17 (We have built Inviwo with VS 2017, Clang 7, GCC 8, and XCode 10)</li>
 <li>CMake version &gt;= 3.12</li>
 <li>Qt version &gt;= 5.12</li>
@@ -164,9 +163,9 @@ Four settings are available:</p>
 <li>New transfer function transforms: flip positions, interpolate alpha, equalize alpha (#618)</li>
 <li>Better import of transfer functions from images (#626)</li>
 <li>Source processors now have an option to see and explicitly set the data reader used. (#635)</li>
-<li>We now group add the module targets in a folder per external modules directory. The folder name can be customized by adding a <code>meta.cmake</code> file to the external modules directory with <code>set(group_name &lt;name&gt;)</code> otherwise the folder name is used. (#637)</li>
+<li>We now group add the module targets in a folder per external modules directory. The folder name can be customized by adding a <code> meta.cmake</code> file to the external modules directory with <code>set(group_name &lt;name&gt;)</code> otherwise the folder name is used. (#637)</li>
 <li>Image port resize refactoring. The handling of image resize event is now more robust. (#645, #658)</li>
-<li>The Volume '.dat' reader now supports a ByteOffset option. </li>
+<li>The Volume '.dat' reader now supports a ByteOffset option.</li>
 <li>The Camera now has a set off buttons to easily fit data into the view. The buttons are also available via the canvas context menu. (#656)</li>
 <li>The Welcome widget got a search feature (#654, #662)</li>
 <li>Jenkins got better at tracking warning and format issues.</li>
@@ -175,13 +174,13 @@ Four settings are available:</p>
 <li>PropertyOnwer will let all its observers know about the property removal on destruction (#632)</li>
 </ul>
 <h2>2019-08-20 Parallel coordinates plot margins</h2>
-<p>Removed autoMargins property and replaced it with includeLabels making it possible to specify margins with labels. </p>
+<p>Removed autoMargins property and replaced it with includeLabels making it possible to specify margins with labels.</p>
 <h2>2019-08-16 Property Assignment</h2>
 <p>We decided to remove the assignment operator from Property and related classes. The reason being that it is hard to understand what is does and hard to implement. Hence if you have implemented your own properties in your code you will have to remove the assignment operators from them. And given that we couldn't find any uses of it we decided to remove it. If you want to assign the "value" of a property to an other property the Property::set(const Property* src) function should be used.</p>
 <h2>2019-08-05 New version requirements</h2>
-<p>We now require a C++17 compatible compiler, and CMake version of at least 3.12 </p>
+<p>We now require a C++17 compatible compiler, and CMake version of at least 3.12</p>
 <h2>2019-07-16 Transfer Function Editing</h2>
-<p>Added some utility functions for editing transfer functions: </p>
+<p>Added some utility functions for editing transfer functions:</p>
 <ul>
 <li><strong>flip positions</strong> - swap the positions of all TF primitives with respect to their range</li>
 <li><strong>interpolate alpha</strong> - interpolates the alpha values of all TF primitives in between the left-most and right-most TF primitive</li>
@@ -202,128 +201,112 @@ Four settings are available:</p>
 </ul>
 <p>Moreover this will be that last version to not require c++17.</p>
 <h2>2019-06-11 Webbrowser property synchronization</h2>
-<p>Changed way of synchronizing/setting properties in javascript. Instead of adding properties to the webbrowser processor one can now set them using their path from javascript.<br />
+<p>Changed way of synchronizing/setting properties in javascript. Instead of adding properties to the webbrowser processor one can now set them using their path from javascript.<br>
 See web_property_sync.html in the Webbrowser module</p>
 <p>This means that you need to update workspaces/webpages which used the Webbrowser processor.</p>
-<div class="highlight"><pre><span></span><span class="c1">// Update html inputs when corresponding Inviwo properties change</span>
-<span class="nx">inviwo</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="s2">&quot;ordinalProperty&quot;</span><span class="p">,</span> <span class="s2">&quot;MeshCreator.torusRadius2_&quot;</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">slider</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;ordinalProperty&quot;</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">ordinalPropertyValue</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;ordinalPropertyValue&quot;</span><span class="p">);</span>
+<div class="highlight highlight-source-js"><pre><span class="pl-c">// Update html inputs when corresponding Inviwo properties change</span>
+<span class="pl-s1">inviwo</span><span class="pl-kos">.</span><span class="pl-en">subscribe</span><span class="pl-kos">(</span><span class="pl-s">"ordinalProperty"</span><span class="pl-kos">,</span> <span class="pl-s">"MeshCreator.torusRadius2_"</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">var</span> <span class="pl-s1">slider</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">"ordinalProperty"</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">var</span> <span class="pl-s1">ordinalPropertyValue</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">"ordinalPropertyValue"</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
 
-<span class="nx">slider</span><span class="p">.</span><span class="nx">oninput</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">inviwo</span><span class="p">.</span><span class="nx">setProperty</span><span class="p">(</span><span class="s2">&quot;MeshCreator.torusRadius2_&quot;</span><span class="p">,</span> <span class="p">{</span><span class="nx">value</span><span class="o">:</span> <span class="nb">Number</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">)});</span>
-    <span class="nx">ordinalPropertyValue</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
-
-
+<span class="pl-s1">slider</span><span class="pl-kos">.</span><span class="pl-en">oninput</span> <span class="pl-c1">=</span> <span class="pl-k">function</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+    <span class="pl-s1">inviwo</span><span class="pl-kos">.</span><span class="pl-en">setProperty</span><span class="pl-kos">(</span><span class="pl-s">"MeshCreator.torusRadius2_"</span><span class="pl-kos">,</span> <span class="pl-kos">{</span><span class="pl-c1">value</span>: <span class="pl-v">Number</span><span class="pl-kos">(</span><span class="pl-smi">this</span><span class="pl-kos">.</span><span class="pl-c1">value</span><span class="pl-kos">)</span><span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-s1">ordinalPropertyValue</span><span class="pl-kos">.</span><span class="pl-c1">innerHTML</span> <span class="pl-c1">=</span> <span class="pl-smi">this</span><span class="pl-kos">.</span><span class="pl-c1">value</span><span class="pl-kos">;</span>
+<span class="pl-kos">}</span></pre></div>
 <h2>2019-04-30 Python Processors</h2>
-<p>Inviwo Processors can now be implemented directly in Python by creating a python class and deriving from inviwopy.Processor.<br />
+<p>Inviwo Processors can now be implemented directly in Python by creating a python class and deriving from inviwopy.Processor.<br>
 Bellow follows an example of a python processor:</p>
-<div class="highlight"><pre><span></span><span class="c1"># Name: PythonExample </span>
+<div class="highlight highlight-source-python"><pre><span class="pl-c"># Name: PythonExample </span>
+<span class="pl-k">import</span> <span class="pl-s1">inviwopy</span> <span class="pl-k">as</span> <span class="pl-s1">ivw</span>
 
-<span class="kn">import</span> <span class="nn">inviwopy</span> <span class="k">as</span> <span class="nn">ivw</span>
+<span class="pl-k">class</span> <span class="pl-v">PythonExample</span>(<span class="pl-s1">ivw</span>.<span class="pl-v">Processor</span>):
+    <span class="pl-k">def</span> <span class="pl-en">__init__</span>(<span class="pl-s1">self</span>, <span class="pl-s1">id</span>, <span class="pl-s1">name</span>):
+        <span class="pl-s1">ivw</span>.<span class="pl-v">Processor</span>.<span class="pl-en">__init__</span>(<span class="pl-s1">self</span>, <span class="pl-s1">id</span>, <span class="pl-s1">name</span>)
+        <span class="pl-s1">self</span>.<span class="pl-s1">inport</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-s1">data</span>.<span class="pl-v">VolumeInport</span>(<span class="pl-s">"inport"</span>)
+        <span class="pl-s1">self</span>.<span class="pl-en">addInport</span>(<span class="pl-s1">self</span>.<span class="pl-s1">inport</span>)
+        <span class="pl-s1">self</span>.<span class="pl-s1">outport</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-s1">data</span>.<span class="pl-v">VolumeOutport</span>(<span class="pl-s">"outport"</span>)
+        <span class="pl-s1">self</span>.<span class="pl-en">addOutport</span>(<span class="pl-s1">self</span>.<span class="pl-s1">outport</span>)
 
-<span class="k">class</span> <span class="nc">PythonExample</span><span class="p">(</span><span class="n">ivw</span><span class="o">.</span><span class="n">Processor</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="n">ivw</span><span class="o">.</span><span class="n">Processor</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">inport</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">VolumeInport</span><span class="p">(</span><span class="s2">&quot;inport&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">addInport</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inport</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">outport</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">VolumeOutport</span><span class="p">(</span><span class="s2">&quot;outport&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">addOutport</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outport</span><span class="p">)</span>
+        <span class="pl-s1">self</span>.<span class="pl-s1">slider</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-s1">properties</span>.<span class="pl-v">IntProperty</span>(<span class="pl-s">"slider"</span>, <span class="pl-s">"slider"</span>, <span class="pl-c1">0</span>, <span class="pl-c1">0</span>, <span class="pl-c1">100</span>, <span class="pl-c1">1</span>)
+        <span class="pl-s1">self</span>.<span class="pl-en">addProperty</span>(<span class="pl-s1">self</span>.<span class="pl-s1">slider</span>)
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">IntProperty</span><span class="p">(</span><span class="s2">&quot;slider&quot;</span><span class="p">,</span> <span class="s2">&quot;slider&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">addProperty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">)</span>
+    <span class="pl-en">@<span class="pl-s1">staticmethod</span></span>
+    <span class="pl-k">def</span> <span class="pl-en">processorInfo</span>():
+        <span class="pl-k">return</span> <span class="pl-s1">ivw</span>.<span class="pl-v">ProcessorInfo</span>(
+            <span class="pl-s1">classIdentifier</span> <span class="pl-c1">=</span> <span class="pl-s">"org.inviwo.PythonExample"</span>,
+            <span class="pl-s1">displayName</span> <span class="pl-c1">=</span> <span class="pl-s">"Python Example"</span>, 
+            <span class="pl-s1">category</span> <span class="pl-c1">=</span> <span class="pl-s">"Python"</span>,
+            <span class="pl-s1">codeState</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-v">CodeState</span>.<span class="pl-v">Stable</span>,
+            <span class="pl-s1">tags</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-v">Tags</span>.<span class="pl-v">PY</span>
+        )
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">processorInfo</span><span class="p">():</span>
-        <span class="k">return</span> <span class="n">ivw</span><span class="o">.</span><span class="n">ProcessorInfo</span><span class="p">(</span>
-            <span class="n">classIdentifier</span> <span class="o">=</span> <span class="s2">&quot;org.inviwo.PythonExample&quot;</span><span class="p">,</span>
-            <span class="n">displayName</span> <span class="o">=</span> <span class="s2">&quot;Python Example&quot;</span><span class="p">,</span> 
-            <span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;Python&quot;</span><span class="p">,</span>
-            <span class="n">codeState</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">CodeState</span><span class="o">.</span><span class="n">Stable</span><span class="p">,</span>
-            <span class="n">tags</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">Tags</span><span class="o">.</span><span class="n">PY</span>
-        <span class="p">)</span>
+    <span class="pl-k">def</span> <span class="pl-en">getProcessorInfo</span>(<span class="pl-s1">self</span>):
+        <span class="pl-k">return</span> <span class="pl-v">PythonExample</span>.<span class="pl-en">processorInfo</span>()
 
-    <span class="k">def</span> <span class="nf">getProcessorInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">PythonExample</span><span class="o">.</span><span class="n">processorInfo</span><span class="p">()</span>
+    <span class="pl-k">def</span> <span class="pl-en">initializeResources</span>(<span class="pl-s1">self</span>):
+        <span class="pl-en">print</span>(<span class="pl-s">"init"</span>)
 
-    <span class="k">def</span> <span class="nf">initializeResources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;init&quot;</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;process: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">outport</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inport</span><span class="o">.</span><span class="n">getData</span><span class="p">())</span>
-</pre></div>
-
-
-<p>The initial '# Name:' comment is needed for Inviwo to know what python class that is should look for.<br />
-To register an Inviwo python processor one can put in in the <user setttings folder>/python_processor or by adding a <code>PythonProcessorFolderObserver</code> to an Inviwo module and have that observe a folder.</p>
+    <span class="pl-k">def</span> <span class="pl-en">process</span>(<span class="pl-s1">self</span>):
+        <span class="pl-en">print</span>(<span class="pl-s">"process: "</span>, <span class="pl-s1">self</span>.<span class="pl-s1">slider</span>.<span class="pl-s1">value</span>)
+        <span class="pl-s1">self</span>.<span class="pl-s1">outport</span>.<span class="pl-en">setData</span>(<span class="pl-s1">self</span>.<span class="pl-s1">inport</span>.<span class="pl-en">getData</span>())</pre></div>
+<p>The initial '# Name:' comment is needed for Inviwo to know what python class that is should look for.<br>
+To register an Inviwo python processor one can put in in the /python_processor or by adding a <code>PythonProcessorFolderObserver</code> to an Inviwo module and have that observe a folder.</p>
 <h2>2019-04-30 Python Applications</h2>
-<p>It is now possible to run inviwo directly from python using a new inviwopyapp python package found in <code>apps/inviwopyapp</code>.<br />
-An example of running inviwo can be found in <code>apps/inviwopyapp/inviwo.py</code>. </p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">inviwopy</span> <span class="k">as</span> <span class="nn">ivw</span>
-<span class="kn">import</span> <span class="nn">inviwopyapp</span> <span class="k">as</span> <span class="nn">qt</span>
+<p>It is now possible to run inviwo directly from python using a new inviwopyapp python package found in <code>apps/inviwopyapp</code>.<br>
+An example of running inviwo can be found in <code>apps/inviwopyapp/inviwo.py</code>.</p>
+<div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> <span class="pl-s1">inviwopy</span> <span class="pl-k">as</span> <span class="pl-s1">ivw</span>
+<span class="pl-k">import</span> <span class="pl-s1">inviwopyapp</span> <span class="pl-k">as</span> <span class="pl-s1">qt</span>
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="c1"># Inviwo requires that a logcentral is created.</span>
-    <span class="n">lc</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">LogCentral</span><span class="p">()</span>
+<span class="pl-k">if</span> <span class="pl-s1">__name__</span> <span class="pl-c1">==</span> <span class="pl-s">'__main__'</span>:
+    <span class="pl-c"># Inviwo requires that a logcentral is created.</span>
+    <span class="pl-s1">lc</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-v">LogCentral</span>()
+    
+    <span class="pl-c"># Create and register a console logger</span>
+    <span class="pl-s1">cl</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-v">ConsoleLogger</span>()
+    <span class="pl-s1">lc</span>.<span class="pl-en">registerLogger</span>(<span class="pl-s1">cl</span>)
 
-    <span class="c1"># Create and register a console logger</span>
-    <span class="n">cl</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">ConsoleLogger</span><span class="p">()</span>
-    <span class="n">lc</span><span class="o">.</span><span class="n">registerLogger</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span>
+    <span class="pl-c"># Create the inviwo application</span>
+    <span class="pl-s1">app</span> <span class="pl-c1">=</span> <span class="pl-s1">qt</span>.<span class="pl-v">InviwoApplicationQt</span>()
+    <span class="pl-s1">app</span>.<span class="pl-en">registerModules</span>()
 
-    <span class="c1"># Create the inviwo application</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">qt</span><span class="o">.</span><span class="n">InviwoApplicationQt</span><span class="p">()</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">registerModules</span><span class="p">()</span>
+    <span class="pl-c"># load a workspace</span>
+    <span class="pl-s1">app</span>.<span class="pl-s1">network</span>.<span class="pl-en">load</span>(<span class="pl-s1">app</span>.<span class="pl-en">getPath</span>(<span class="pl-s1">ivw</span>.<span class="pl-v">PathType</span>.<span class="pl-v">Workspaces</span>) <span class="pl-c1">+</span> <span class="pl-s">"/boron.inv"</span>)
 
-    <span class="c1"># load a workspace</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">getPath</span><span class="p">(</span><span class="n">ivw</span><span class="o">.</span><span class="n">PathType</span><span class="o">.</span><span class="n">Workspaces</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/boron.inv&quot;</span><span class="p">)</span>
+    <span class="pl-c"># Make sure the app is ready</span>
+    <span class="pl-s1">app</span>.<span class="pl-en">update</span>()
+    <span class="pl-s1">app</span>.<span class="pl-en">waitForPool</span>()
+    <span class="pl-s1">app</span>.<span class="pl-en">update</span>()
+    <span class="pl-c"># Save a snapshot</span>
+    <span class="pl-s1">app</span>.<span class="pl-s1">network</span>.<span class="pl-v">Canvas</span>.<span class="pl-en">snapshot</span>(<span class="pl-s">"snapshot.png"</span>) 
 
-    <span class="c1"># Make sure the app is ready</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">waitForPool</span><span class="p">()</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-    <span class="c1"># Save a snapshot</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Canvas</span><span class="o">.</span><span class="n">snapshot</span><span class="p">(</span><span class="s2">&quot;snapshot.png&quot;</span><span class="p">)</span> 
-
-    <span class="c1"># run the app event loop</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-</pre></div>
-
-
+    <span class="pl-c"># run the app event loop</span>
+    <span class="pl-s1">app</span>.<span class="pl-en">run</span>()</pre></div>
 <h2>2019-04-26 Parallel Coordinate Plot Update: flipped axes</h2>
 <p>Axes of the parallel coordinate plot can now be inverted via a double click with the left mouse button or using the corresponding <code>Invert Range</code> property of the axis. In addition, the filtering handles can be hidden if necessary (<code>Axes Settings</code> → <code>Handles Visible</code>).</p>
 <h2>2019-04-16 Moved DataFrame data structure from Plotting to new module (DataFrame)</h2>
 <p>Types of breaking changes:</p>
-<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;modules/plotting/datastructures/dataframe.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;modules/plotting/datastructures/dataframeutil.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;modules/plotting/datastructures/column.h&gt;</span><span class="cp"></span>
+<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>modules/plotting/datastructures/dataframe.h<span class="pl-pds">&gt;</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>modules/plotting/datastructures/dataframeutil.h<span class="pl-pds">&gt;</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>modules/plotting/datastructures/column.h<span class="pl-pds">&gt;</span></span>
 
-<span class="n">plot</span><span class="o">::</span><span class="n">DataFrame</span>
-<span class="n">plot</span><span class="o">::</span><span class="n">Column</span>
-</pre></div>
-
-
-<p>which need to be changed to </p>
-<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;inviwo/dataframe/datastructures/dataframe.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;inviwo/dataframe/datastructures/dataframeutil.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;inviwo/dataframe/datastructures/column.h&gt;</span><span class="cp"></span>
-<span class="c1">// Namespace plot removed</span>
-<span class="n">DataFrame</span>
-<span class="n">Column</span>
-</pre></div>
-
-
+plot::DataFrame
+plot::Column</pre></div>
+<p>which need to be changed to</p>
+<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/dataframe/datastructures/dataframe.h<span class="pl-pds">&gt;</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/dataframe/datastructures/dataframeutil.h<span class="pl-pds">&gt;</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/dataframe/datastructures/column.h<span class="pl-pds">&gt;</span></span>
+<span class="pl-c"><span class="pl-c">//</span> Namespace plot removed</span>
+DataFrame
+Column</pre></div>
 <p>Also added a reader for JSON-files which outputs a DataFrame.</p>
 <h2>2019-03-06</h2>
 <p>New processor <code>Geometry Entry Exit Points</code> generates entry point and exit point images from any closed mesh to be used in raycasting. The positions of the input mesh are directly mapped to texture coordinates of a volume. This enables volume rendering within arbitrary bounding geometry.</p>
 <h2>2019-02-24 Unified line rendering</h2>
-<p>Line renderer vertex shader outputs <code>flat out uint pickID_;</code> and geometry shader takes <code>flat in uint pickID_[];</code> as input.<br />
+<p>Line renderer vertex shader outputs <code>flat out uint pickID_;</code> and geometry shader takes <code>flat in uint pickID_[];</code> as input.<br>
 Vertex shaders depending on linerenderer.geom must write the pickID_ instead of the picking color.</p>
-<p>Geometry shaders depending on previous linerenderer.vert should add the following:<br />
+<p>Geometry shaders depending on previous linerenderer.vert should add the following:<br>
 <code>#include "utils/pickingutils.glsl"</code></p>
-<p>and modify the output to for example:<br />
+<p>and modify the output to for example:<br>
 <code>pickColor_ = vec4(pickingIndexToColor(pickID_[0]), pickID_[0] == 0 ? 0.0 : 1.0);</code></p>
 <h2>2019-01-17 Get Started and Workspace Annotations</h2>
 <p>Get Started screen provides an overview over recently used workspaces and available examples next to the latest changes.</p>
@@ -333,230 +316,180 @@ Vertex shaders depending on linerenderer.geom must write the pickID_ instead of 
 <h2>2018-11-22</h2>
 <p>Better handling of linking in port inspectors. Show auto links when dragging in processors, disable auto links by pressing alt. Pressing shift while dragging when dragging in processors enables auto connection for inports.</p>
 <h2>2018-11-19</h2>
-<p>Converted all Inviwo core modules to use the new structure with include and src folders. </p>
+<p>Converted all Inviwo core modules to use the new structure with include and src folders.</p>
 <h2>2018-11-19</h2>
-<p>Added a <code>--updateModule</code> option to inviwo-meta-cli.exe it will update a module to use include and src folders.<br />
-Move all <code>.h</code> file into the <code>include/&lt;org&gt;/&lt;module&gt;</code> sub folder and all <code>.cpp</code> into the <code>src</code> folder. <br />
+<p>Added a <code>--updateModule</code> option to inviwo-meta-cli.exe it will update a module to use include and src folders.<br>
+Move all <code>.h</code> file into the <code>include/&lt;org&gt;/&lt;module&gt;</code> sub folder and all <code>.cpp</code> into the <code>src </code> folder.<br>
 except for files under <code>/ext</code>, <code>/tests</code>, or paths excluded be the given filters.</p>
 <h2>2018-11-14</h2>
-<p>Added an option to control if a module should be on by default, and remove the old global setting.<br />
+<p>Added an option to control if a module should be on by default, and remove the old global setting.<br>
 To enable the module by default add the following to the module <code>depends.cmake</code> file:</p>
-<div class="highlight"><pre><span></span><span class="n">set</span><span class="p">(</span><span class="n">EnableByDefault</span> <span class="n">ON</span><span class="p">)</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-en">set</span>(EnableByDefault ON)</pre></div>
 <h2>2018-11-14</h2>
 <p>A new inviwo-meta library and an inviwo-meta-cli commandline app has been added to supersede the <code>make-new-module.py</code> and <code>make-new-file.py</code> python scripts. The library is also exposed in the tools menu of inviwo. Note that the inviwo-meta library relies on C++17 features and, thus, requires a recent compiler.</p>
 <h2>2018-11-14</h2>
-<p>Generated files are now stored in the corresponding <code>CMAKE_CURRENT_BINAY_DIR</code> for the subdirectory in question.<br />
-For a module this means <code>{build folder}/modules/{module name}</code>. <code>CMAKE_CURRENT_BINAY_DIR/include</code> path is added as an include path for each module. Hence, the generated headers are put in </p>
-<div class="highlight"><pre><span></span>{build folder}/modules/{module name}/include/{organization}/{module name}/
-</pre></div>
-
-
+<p>Generated files are now stored in the corresponding <code>CMAKE_CURRENT_BINAY_DIR</code> for the subdirectory in question.<br>
+For a module this means <code>{build folder}/modules/{module name}</code>. <code>CMAKE_CURRENT_BINAY_DIR/include</code> path is added as an include path for each module. Hence, the generated headers are put in</p>
+<pre><code>{build folder}/modules/{module name}/include/{organization}/{module name}/
+</code></pre>
 <p>Same is true for the generated headers of inviwo core, like <code>moduleregistration.h</code>. They are now placed in:</p>
-<div class="highlight"><pre><span></span>{build folder}/modules/core/include/inviwo/core/
-</pre></div>
-
-
+<pre><code>{build folder}/modules/core/include/inviwo/core/
+</code></pre>
 <p>Which means that for the module loading in apps</p>
-<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;moduleregistration.h&gt;</span><span class="cp"></span>
-</pre></div>
-
-
-<p>needs to be changed to </p>
-<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;inviwo/core/moduleregistration.h&gt;</span><span class="cp"></span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>moduleregistration.h<span class="pl-pds">&gt;</span></span></pre></div>
+<p>needs to be changed to</p>
+<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/core/moduleregistration.h<span class="pl-pds">&gt;</span></span></pre></div>
 <h2>2018-11-14</h2>
 <p>New Module structure. We have introduced a new module structure where we separate headers and source files in the same way as it was already done for the core part of inviwo. Hence, module headers should now be placed under the include folder like:</p>
-<div class="highlight"><pre><span></span>    .../{module name}/include/{organization}/{module name}/
-</pre></div>
-
-
+<pre><code>.../{module name}/include/{organization}/{module name}/
+</code></pre>
 <p>and sources goes in the source folder:</p>
-<div class="highlight"><pre><span></span>    .../{module name}/src/
-</pre></div>
-
-
-<p><code>{module name}</code> it the lower case name of the module, <code>{organization}</code> default to inviwo but can be user-specified. <br />
-The headers can then be included using </p>
-<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;{organization}/{module name}/header.h&gt;</span><span class="cp"></span>
-</pre></div>
-
-
-<p>The implementation is backwards compatible so old modules can continue to exist, but the structure is considered deprecated.<br />
+<pre><code>.../{module name}/src/
+</code></pre>
+<p><code>{module name}</code> it the lower case name of the module, <code>{organization}</code> default to inviwo but can be user-specified.<br>
+The headers can then be included using</p>
+<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>{organization}/{module name}/header.h<span class="pl-pds">&gt;</span></span></pre></div>
+<p>The implementation is backwards compatible so old modules can continue to exist, but the structure is considered deprecated.<br>
 The main reasons for the change are to make packaging of headers easier and to prevent accidentally including headers from modules without depending on them.</p>
 <h2>2018-11-05</h2>
 <p>The SplitImage processor now features a draggable handle. This handle allows to adjust the split position in the canvas with either mouse or touch.</p>
 <h2>2018-10-04 Color Scale Legend</h2>
 <p>Added a Color Scale Legend processor to the plottinggl module that draws a 1D transfer function and the corresponding value axis on top of an image.</p>
 <h2>2018-09-27 Full screen on startup</h2>
-<p>Core: Renamed key mapping to fullscreenEvent and instead use fullscreen for a bool property.<br />
+<p>Core: Renamed key mapping to fullscreenEvent and instead use fullscreen for a bool property.<br>
 You will need to change the key mapping again if you have changed it from shift + f.</p>
 <p>Python: Full screen is now exposed as a property in the canvas instead of a function.</p>
 <h2>2018-09-26 Initial DiscreteData</h2>
-<p>Adding the DiscreteData module. The idea is to handle datasets that support all kinds of grids, data representations and interpolations on them.<br />
+<p>Adding the DiscreteData module. The idea is to handle datasets that support all kinds of grids, data representations and interpolations on them.<br>
 Current status: Dataset; Explicit and implicit channel; Structured and periodic structured grid.</p>
 <h2>2018-09-24 Color property improvements</h2>
-<p>Updated the color property widget which allows to edit colors directly. Supports floating point range <code>[0,1]</code>, int range <code>[0,255]</code>, and hex color codes (<code>#RGB</code>, <code>#RGBA</code>, <code>#RRGGBB</code>, <code>#RRGGBBAA</code>).<br />
+<p>Updated the color property widget which allows to edit colors directly. Supports floating point range <code>[0,1]</code>, int range <code>[0,255]</code>, and hex color codes (<code>#RGB</code>, <code>#RGBA</code>, <code>#RRGGBB</code>, <code>#RRGGBBAA</code>).<br>
 Invalid input is indicated by red border and changes discarded if either <code>&lt;Esc&gt;</code> is pressed or the widget looses focus.</p>
 <h2>2018-09-24 Spinbox semantics for ordinal properties</h2>
 <p>New property semantics for ordinal properties: <code>SpinBox</code></p>
 <p>This widget allows to adjust the value by dragging the arrow up/down indicator with the mouse. The rate of change per sec is shown in a tooltip. Alternatively, use the mouse wheel to adjust the value.</p>
 <h2>2018-09-21</h2>
 <p>Settings are no longer shared between executables. I.e. The Inviwo app and the integration test will not use the same settings any more. We now prefix the settings with the InviwoApplication display name. This also implies that any existing Inviwo app settings will be lost. To keep old setting one can prefix all the ".ivs" file in the inviwo settings folder with "Inviwo_".  On windows the inviwo settings can be found in <code>%APPDATA%/inviwo</code>.</p>
-<p>Added System settings for breaking into the debugger on various log message levels, and on throwing exceptions. Also added an option to add stacktraces to exceptions. All to help with debugging. </p>
+<p>Added System settings for breaking into the debugger on various log message levels, and on throwing exceptions. Also added an option to add stacktraces to exceptions. All to help with debugging.</p>
 <p>The inviwo app will now catch uncaught inviwo exceptions in main and present an dialog with information and an option to continue or abort. It will also give an option to save your workspace before closing.</p>
 <p>InviwoApplicationQt now has the same order of constructor arguments as InviwoApplication.</p>
 <h2>2018-08-21</h2>
 <p>The property class identifier system no longer uses the <code>InviwoPropertyInfo</code> / <code>PropertyClassIdentifier</code> macros but rather implements</p>
-<div class="highlight"><pre><span></span><span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">getClassIdentifier</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span>
-</pre></div>
-
-
-<p>The static class identifier </p>
-<div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">CLASS_IDENTIFIER</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">virtual</span> std::string <span class="pl-en">getClassIdentifier</span>() <span class="pl-k">const</span> <span class="pl-k">override</span></pre></div>
+<p>The static class identifier</p>
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">static</span> <span class="pl-k">const</span> std::string CLASS_IDENTIFIER</pre></div>
 <p>can still be added manually, but the preferred way is to either use</p>
-<div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">classIdentifier</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">static</span> <span class="pl-k">const</span> std::string classIdentifier</pre></div>
 <p>or specialize the <code>PropertyTraits</code> like:</p>
-<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;&gt;</span>
-<span class="k">struct</span> <span class="n">PropertyTraits</span><span class="o">&lt;</span><span class="n">MyProperty</span><span class="o">&gt;</span> <span class="p">{</span>
-    <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">classIdentifier</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="s">&quot;org.somename.myproperty&quot;</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">};</span>
-</pre></div>
-
-
-<p>To access a class identifier of a property type statically, the <code>PropertyTraits</code> class should be used  </p>
-<div class="highlight"><pre><span></span>    <span class="n">PropertyTraits</span><span class="o">&lt;</span><span class="n">MyProperty</span><span class="o">&gt;::</span><span class="n">classIdentifier</span><span class="p">()</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">template </span>&lt;&gt;
+<span class="pl-k">struct</span> <span class="pl-en">PropertyTraits</span>&lt;MyProperty&gt; {
+    <span class="pl-k">static</span> std::string <span class="pl-en">classIdentifier</span>() {
+        <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>org.somename.myproperty<span class="pl-pds">"</span></span>;
+    }
+};</pre></div>
+<p>To access a class identifier of a property type statically, the <code>PropertyTraits</code> class should be used</p>
+<div class="highlight highlight-source-c++"><pre>PropertyTraits&lt;MyProperty&gt;::classIdentifier()</pre></div>
 <p>instead of accessing the <code>CLASS_IDENTIFIER</code> directly.</p>
-<p>An enum traits class has been added to help working with enums and serialization, especially in the case of OptionProperties. <br />
+<p>An enum traits class has been added to help working with enums and serialization, especially in the case of OptionProperties.<br>
 For example given an enum:</p>
-<div class="highlight"><pre><span></span><span class="k">enum</span> <span class="k">class</span> <span class="nc">MyEnum</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">};</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">enum</span> <span class="pl-k">class</span> <span class="pl-en">MyEnum</span> { a, b };</pre></div>
 <p>EnumTraits can be specialized to provided a name for <code>MyEnum</code>, i.e.</p>
-<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;&gt;</span>
-<span class="k">struct</span> <span class="n">EnumTraits</span><span class="o">&lt;</span><span class="n">MyEnum</span><span class="o">&gt;</span> <span class="p">{</span>
-    <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">()</span> <span class="p">{</span><span class="k">return</span> <span class="s">&quot;MyEnum&quot;</span><span class="p">;</span> <span class="p">}</span>
-<span class="p">};</span>
-</pre></div>
-
-
-<p>This name will then be used by the TemplateOptionProperty in its class identifier. </p>
-<div class="highlight"><pre><span></span><span class="n">TemplateOptionProperty</span><span class="o">&lt;</span><span class="n">MyEnum</span><span class="o">&gt;</span> <span class="n">prop</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">,</span><span class="s">&quot;test&quot;</span><span class="p">);</span>    
-<span class="n">prop</span><span class="p">.</span><span class="n">getClassIdentifier</span><span class="p">()</span> <span class="o">==</span> <span class="n">PropertyTraits</span><span class="o">&lt;</span><span class="n">TemplateOptionProperty</span><span class="o">&lt;</span><span class="n">MyEnum</span><span class="o">&gt;&gt;::</span><span class="n">classIdentifier</span> <span class="o">==</span> <span class="s">&quot;org.inviwo.OptionPropertyMyEnum&quot;</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">template </span>&lt;&gt;
+<span class="pl-k">struct</span> <span class="pl-en">EnumTraits</span>&lt;MyEnum&gt; {
+    <span class="pl-k">static</span> std::string <span class="pl-en">name</span>() {<span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>MyEnum<span class="pl-pds">"</span></span>; }
+};</pre></div>
+<p>This name will then be used by the TemplateOptionProperty in its class identifier.</p>
+<div class="highlight highlight-source-c++"><pre>TemplateOptionProperty&lt;MyEnum&gt; <span class="pl-en">prop</span>(<span class="pl-s"><span class="pl-pds">"</span>test<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>test<span class="pl-pds">"</span></span>);    
+prop.getClassIdentifier();</pre></div>
+<p>which will use</p>
+<div class="highlight highlight-source-c++"><pre>PropertyTraits&lt;TemplateOptionProperty&lt;MyEnum&gt;&gt;::classIdentifier;</pre></div>
+<p>which then resolves to</p>
+<div class="highlight highlight-source-c++"><pre><span class="pl-s"><span class="pl-pds">"</span>org.inviwo.OptionPropertyMyEnum<span class="pl-pds">"</span></span>;</pre></div>
 <p>This makes it possible to differentiate <code>MyEnum</code> from other enum TemplateOptionPropertys.</p>
 <h2>2018-09-19 Web browser</h2>
-<p>Use html5 web pages inside of Inviwo. Uses Chromium Embedded Framework (CEF) to render web pages off-screen. The rendered web page is transferred to an Inviwo Image.<br />
+<p>Use html5 web pages inside of Inviwo. Uses Chromium Embedded Framework (CEF) to render web pages off-screen. The rendered web page is transferred to an Inviwo Image.<br>
 Inviwo properties can be synchronized using javascript, see the web browser module example.</p>
 <h2>2018-07-26 ListProperty</h2>
-<p>Added <code>ListProperty</code>, a new property for dynamically adding and removing properties.<br />
+<p>Added <code>ListProperty</code>, a new property for dynamically adding and removing properties.<br>
 A ListProperty holds a number of "prefab" objects, i.e. unique_ptr to properties, which are used to instantiate new list entries. The property widget features small "x" buttons for removing individual elements (if removal is enabled). Pressing the "+" button next to the property label adds new elements (if adding is enabled). In case multiple prefabs exist, a drop-down menu is shown when pressing the "+" button.</p>
-<div class="highlight"><pre><span></span><span class="c1">// using a single prefab object and at most 10 elements</span>
-<span class="n">ListProperty</span> <span class="nf">listProperty</span><span class="p">(</span><span class="s">&quot;myListProperty&quot;</span><span class="p">,</span> <span class="s">&quot;My ListProperty&quot;</span><span class="p">,</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">BoolProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;boolProp&quot;</span><span class="p">,</span> <span class="s">&quot;BoolProperty&quot;</span><span class="p">,</span> <span class="nb">true</span><span class="p">),</span> <span class="mi">10</span><span class="p">);</span>
+<div class="highlight highlight-source-c++"><pre><span class="pl-c"><span class="pl-c">//</span> using a single prefab object and at most 10 elements</span>
+ListProperty <span class="pl-en">listProperty</span>(<span class="pl-s"><span class="pl-pds">"</span>myListProperty<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>My ListProperty<span class="pl-pds">"</span></span>,
+    std::make_unique&lt;BoolProperty&gt;(<span class="pl-s"><span class="pl-pds">"</span>boolProp<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>BoolProperty<span class="pl-pds">"</span></span>, <span class="pl-c1">true</span>), 10);
 
-<span class="c1">// multiple prefab objects</span>
-<span class="n">ListProperty</span> <span class="nf">listProperty</span><span class="p">(</span><span class="s">&quot;myListProperty&quot;</span><span class="p">,</span> <span class="s">&quot;My List Property&quot;</span><span class="p">,</span> 
-    <span class="p">[]()</span> <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">Property</span><span class="o">&gt;&gt;</span> <span class="n">v</span><span class="p">;</span>
-        <span class="n">v</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">IntProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;template1&quot;</span><span class="p">,</span> <span class="s">&quot;Template 1&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">));</span>
-        <span class="n">v</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">IntProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;template2&quot;</span><span class="p">,</span> <span class="s">&quot;Template 2&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">99</span><span class="p">));</span>
-        <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
-    <span class="p">}());</span>
-</pre></div>
-
-
+<span class="pl-c"><span class="pl-c">//</span> multiple prefab objects</span>
+ListProperty <span class="pl-en">listProperty</span>(<span class="pl-s"><span class="pl-pds">"</span>myListProperty<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>My List Property<span class="pl-pds">"</span></span>, 
+    []() {
+        std::vector&lt;std::unique_ptr&lt;Property&gt;&gt; v = {
+            std::make_unique&lt;IntProperty&gt;(<span class="pl-s"><span class="pl-pds">"</span>template1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Template 1<span class="pl-pds">"</span></span>, <span class="pl-c1">5</span>, <span class="pl-c1">0</span>, <span class="pl-c1">10</span>);
+            std::make_unique&lt;IntProperty&gt;(<span class="pl-s"><span class="pl-pds">"</span>template2<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Template 2<span class="pl-pds">"</span></span>, <span class="pl-c1">2</span>, <span class="pl-c1">0</span>, <span class="pl-c1">99</span>);
+        };
+        <span class="pl-k">return</span> v;
+    }());</pre></div>
 <p>This also works when using different types of properties as prefab objects:</p>
-<div class="highlight"><pre><span></span><span class="n">ListProperty</span> <span class="nf">listProperty</span><span class="p">(</span><span class="s">&quot;myListProperty&quot;</span><span class="p">,</span> <span class="s">&quot;My List Property&quot;</span><span class="p">,</span> 
-    <span class="p">[]()</span> <span class="p">{</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">Property</span><span class="o">&gt;&gt;</span> <span class="n">v</span><span class="p">;</span>
-        <span class="n">v</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">BoolProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;boolProperty1&quot;</span><span class="p">,</span> <span class="s">&quot;Boolean Flag&quot;</span><span class="p">,</span> <span class="nb">true</span><span class="p">));</span>
-        <span class="n">v</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">TransferFunctionProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;customTF1&quot;</span><span class="p">,</span> <span class="s">&quot;Transfer Function&quot;</span><span class="p">));</span>
-        <span class="n">v</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">IntProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;template1&quot;</span><span class="p">,</span> <span class="s">&quot;Template 1&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">));</span>
-        <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
-    <span class="p">}());</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre>ListProperty <span class="pl-en">listProperty</span>(<span class="pl-s"><span class="pl-pds">"</span>myListProperty<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>My List Property<span class="pl-pds">"</span></span>, 
+    []() {
+        std::vector&lt;std::unique_ptr&lt;Property&gt;&gt; v = {
+            std::make_unique&lt;BoolProperty&gt;(<span class="pl-s"><span class="pl-pds">"</span>boolProperty1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Boolean Flag<span class="pl-pds">"</span></span>, <span class="pl-c1">true</span>);
+            std::make_unique&lt;TransferFunctionProperty&gt;(<span class="pl-s"><span class="pl-pds">"</span>customTF1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Transfer Function<span class="pl-pds">"</span></span>);
+            std::make_unique&lt;IntProperty&gt;(<span class="pl-s"><span class="pl-pds">"</span>template1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Template 1<span class="pl-pds">"</span></span>, <span class="pl-c1">5</span>, <span class="pl-c1">0</span>, <span class="pl-c1">10</span>);
+        };
+        <span class="pl-k">return</span> v;
+    }());</pre></div>
 <p>Prefabs can be added later on as well using <code>ListProperty::addPrefab(std::unique_ptr&lt;Property&gt;&amp;&amp; p)</code>.</p>
 <h2>2018-07-25 Integral Line Tracing updates</h2>
-<p>Before this change we had two Tracers, one for streamlines and one for pathlines, both in three spatial dimensions only.<br />
-These two classes were very similar and have now been merged/rewritten into a single templated class supporting both <br />
-streamline and pathline tracing and is no longer limited to three dimensions. <br />
-A new processor has been added which uses this tracer class to integrate stream/pathlines. The old processors, i.e. <br />
-<code>StreamLines</code>, <code>PathLines</code> and <code>StreamRibbons</code> are now deprecated and were renamed to <code>[Name]Deprecated</code> for backwards compatibility.<br />
-The processors that are recommended to use are <code>StreamLines3D</code>, <code>PathLines3D</code> and <code>StreamLines2D</code>, see example workspaces to <br />
-see how they are used.  </p>
+<p>Before this change we had two Tracers, one for streamlines and one for pathlines, both in three spatial dimensions only.<br>
+These two classes were very similar and have now been merged/rewritten into a single templated class supporting both<br>
+streamline and pathline tracing and is no longer limited to three dimensions.<br>
+A new processor has been added which uses this tracer class to integrate stream/pathlines. The old processors, i.e.<br>
+<code>StreamLines</code>, <code>PathLines</code> and <code>StreamRibbons</code> are now deprecated and were renamed to <code>[Name]Deprecated</code> for backwards compatibility.<br>
+The processors that are recommended to use are <code>StreamLines3D</code>, <code>PathLines3D</code> and <code>StreamLines2D</code>, see example workspaces to<br>
+see how they are used.</p>
 <h2>2018-06-28 GLM Version Update</h2>
-<p>GLM was updated to the new 0.9.9.0 version. Major changes are listed at <a href="https://github.com/g-truc/glm/releases/tag/0.9.9.0">https://github.com/g-truc/glm/releases/tag/0.9.9.0</a><br />
+<p>GLM was updated to the new 0.9.9.0 version. Major changes are listed at <a href="https://github.com/g-truc/glm/releases/tag/0.9.9.0">https://github.com/g-truc/glm/releases/tag/0.9.9.0</a><br>
 Notable changes include the include of the vector / matrix dimension as a template argument, so the main types are now</p>
-<div class="highlight"><pre><span></span>    <span class="k">template</span> <span class="o">&lt;</span><span class="n">glm</span><span class="o">::</span><span class="n">length_t</span> <span class="n">L</span><span class="p">,</span> <span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="n">glm</span><span class="o">::</span><span class="n">qualifier</span> <span class="n">Q</span><span class="o">&gt;</span>
-    <span class="n">glm</span><span class="o">::</span><span class="n">vec</span><span class="o">&lt;</span><span class="n">L</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">Q</span><span class="o">&gt;</span> 
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">template </span>&lt;glm::<span class="pl-c1">length_t</span> L, <span class="pl-k">typename</span> T, glm::qualifier Q&gt;
+glm::vec&lt;L, T, Q&gt; </pre></div>
 <p>and</p>
-<div class="highlight"><pre><span></span>    <span class="k">template</span> <span class="o">&lt;</span><span class="n">glm</span><span class="o">::</span><span class="n">length_t</span> <span class="n">C</span><span class="p">,</span> <span class="n">glm</span><span class="o">::</span><span class="n">length_t</span> <span class="n">R</span><span class="p">,</span> <span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="n">glm</span><span class="o">::</span><span class="n">qualifier</span> <span class="n">Q</span><span class="o">&gt;</span>
-    <span class="n">glm</span><span class="o">::</span><span class="n">mat</span><span class="o">&lt;</span><span class="n">C</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">Q</span><span class="o">&gt;</span>
-</pre></div>
-
-
-<p>Most code should continue working as before. Except for <strong>default constructed values that now are left uninitialized</strong>. Where as before vec where initialized to 0 and mat to identify. This change can <strong>break</strong> user code we have seen.  </p>
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">template </span>&lt;glm::<span class="pl-c1">length_t</span> C, glm::<span class="pl-c1">length_t</span> R, <span class="pl-k">typename</span> T, glm::qualifier Q&gt;
+glm::mat&lt;C, R, T, Q&gt;</pre></div>
+<p>Most code should continue working as before. Except for <strong>default constructed values that now are left uninitialized</strong>. Where as before vec where initialized to 0 and mat to identify. This change can <strong>break</strong> user code we have seen.</p>
 <h2>2018-05-02 Refactored Transfer Function</h2>
 <ul>
-<li>Renamed <code>TransferFunctionDataPoint</code>to <code>TFPrimitive</code></li>
+<li>Renamed <code>TransferFunctionDataPoint </code>to <code>TFPrimitive</code></li>
 <li>Renamed <code>TransferFunctionDataPoint::getRGBA</code>. Instead use <code>TFPrimitive::getColor</code></li>
 <li>Renamed <code>TransferFunctionDataPoint::getPos</code>. Instead use <code>TFPrimitive::getPosition</code></li>
 <li>Renamed <code>TransferFunctionObserver</code>. Instead use <code>TFPrimitiveSetObserver</code></li>
 <li>Renamed <code>TransferFunctionPointObserver</code>. Instead use <code>TFPrimitiveObserver</code></li>
 <li>TF primitive position type changed from float to double</li>
-<li>Deprecated many Transfer function methods, see deprecation messages. </li>
+<li>Deprecated many Transfer function methods, see deprecation messages.</li>
 </ul>
 <h2>2018-04-11 Deprecating Callback Registration of Member Functions</h2>
-<p>The interface of ports and properties offers callback registration using lambda expressions as well as member functions. It was decided to deprecate the usage of member functions in this context. Consider registering lambda expression instead.<br />
+<p>The interface of ports and properties offers callback registration using lambda expressions as well as member functions. It was decided to deprecate the usage of member functions in this context. Consider registering lambda expression instead.<br>
 The functions in question have been marked as deprecated (<code>[[deprecated]]</code>) and warnings should appear during compilation. Using pre-compiled headers on MSVC is known to suppress those, though.</p>
 <p>This immediately affects <code>Inport</code>, <code>Outport</code>, and <code>Property</code> (in particular <code>onChange(T* object, void (T::*method)())</code>, <code>onInvalid()</code>, <code>removeOnChange()</code>, <code>removeOnInvalid()</code>.</p>
 <p>We will remove the respective deprecated functions at some point in the future.</p>
 <h2>2018-01-15 Updates in UserInterfaceGL module</h2>
-<p>The UserInterfaceGL module has experienced some major updates. For one, sliders and range sliders are now available within <code>glui</code> and secondly touch interaction is now supported. This includes all glui elements (buttons, sliders, ...) as well as the widgets for camera manipulation (Camera Widget), widgets for volume cropping (Cropping Widget), and the presentation mode (Presentation Processor). The <code>Presentation Processor</code> can be used, e.g. during demonstrations, as it allows to show images in a PowerPoint fashion instead of its regular image input. </p>
+<p>The UserInterfaceGL module has experienced some major updates. For one, sliders and range sliders are now available within <code>glui</code> and secondly touch interaction is now supported. This includes all glui elements (buttons, sliders, ...) as well as the widgets for camera manipulation (Camera Widget), widgets for volume cropping (Cropping Widget), and the presentation mode (Presentation Processor). The <code>Presentation Processor</code> can be used, e.g. during demonstrations, as it allows to show images in a PowerPoint fashion instead of its regular image input.</p>
 <p>So far, the following UI elements are supported by glui:</p>
-<ul>
-<li><input checked="checked" disabled="disabled" type="checkbox" /> box layout (vertical and horizontal)</li>
-<li><input checked="checked" disabled="disabled" type="checkbox" /> checkboxes</li>
-<li><input checked="checked" disabled="disabled" type="checkbox" /> buttons and toolbuttons, which feature only an icon</li>
-<li><input checked="checked" disabled="disabled" type="checkbox" /> sliders (vertical and horizontal)</li>
-<li><input checked="checked" disabled="disabled" type="checkbox" /> range sliders (vertical and horizontal)</li>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> box layout (vertical and horizontal)</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> checkboxes</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> buttons and toolbuttons, which feature only an icon</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> sliders (vertical and horizontal)</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> range sliders (vertical and horizontal)</li>
 </ul>
 <p>For all UI elements, matching property widgets exist, i.e. <code>glui::BoolPropertyWidget</code>, <code>glui::ButtonPropertyWidget</code>, <code>glui::IntPropertyWidget</code>, <code>glui::FloatPropertyWidget</code>, <code>glui::IntMinMaxPropertyWidget</code>, and <code>glui::FloatMinMaxPropertyWidget</code>. This allows to link the UI elements with the respective properties.</p>
-<p>For examples and usage see <code>readme.md</code> in the UserInterfaceGL module and check out <code>modules/UserInterfaceGL/processors/GLUITestProcessor.h</code>. </p>
+<p>For examples and usage see <code>readme.md</code> in the UserInterfaceGL module and check out <code>modules/UserInterfaceGL/processors/GLUITestProcessor.h</code>.</p>
 <h2>2018-01-12 Moved OpenEXR from ext to modules/cimg/ext</h2>
 <p>OpenEXR is only used by the CImg module. Root/ext folder is for core dependencies and libraries used by multiple modules.</p>
 <h2>2017-12-01 Composite Processors</h2>
 <p>We now support composite processor, i.e. a processor wrappig it own processors network. Composite processors can be created from a selection of processors in the networkeditor, or by adding it from the processor list. This makes reusing groups of processors and managing large networks easier.</p>
 <h2>2017-11-26 Use ZLIB::ZLIB as CMake target for zlib instead of inviwo::zlib1</h2>
-<p>We are now using the same target name for zlib as find_package(ZLIB) would give. </p>
+<p>We are now using the same target name for zlib as find_package(ZLIB) would give.</p>
 <h2>2017-11-23 Drag&amp;Drop of Inviwo Workspace files</h2>
 <p>Workspace files can now be dropped onto the Inviwo Qt Application which in turn will open the respective workspace.</p>
 <h2>2017-11-23 UTF-8 support</h2>
-<p>Internally, Inviwo relies on UTF-8 encoded strings, i.e. strings with multibyte encoding stored in a std::string. In order to access files which contain unicode characters in the file name, one should use <code>filesystem::fstream()</code>, <code>filesystem::ifstream()</code>, and <code>filesystem::ofstream()</code>. These functions create and return a <code>std::*stream</code> object for the given file name. </p>
+<p>Internally, Inviwo relies on UTF-8 encoded strings, i.e. strings with multibyte encoding stored in a std::string. In order to access files which contain unicode characters in the file name, one should use <code>filesystem::fstream()</code>, <code>filesystem::ifstream()</code>, and <code>filesystem::ofstream()</code>. These functions create and return a <code>std::*stream</code> object for the given file name.</p>
 <p>The call <code>auto f = filesystem::fstream(filename, mode);</code> is functionally equivalent to the statement <code>std::fstream f(filename, mode);</code>. No checks whether the file exists or was successfully opened are performed. That is, the caller has to check it. For more details check the documentation of <code>std::fstream</code>.</p>
 <p>This is necessary since the Visual Studio compiler does not have support for handling UTF-8 encoded strings in <code>std::*stream(filename)</code>. See also comments on <code>filesystem::*stream()</code> in <code>core/util/filesystem.h</code>.</p>
 <h2>2017-11-21 Dependency fixes</h2>
@@ -566,245 +499,214 @@ The functions in question have been marked as deprecated (<code>[[deprecated]]</
 <p>Removed the static usedIdentifiers from Processor, the network now checks that the id is unique or increments it instead. The processor displayname is now used as the main userfaceing name instead of identifier, it does not have any of the format limitations of the identifier and does not need to be unique. Made the displayName is now user configurable.</p>
 <h2>2017-11-09 Lightsource refactoring, LightSourceType is now an enum class and uses lower case.</h2>
 <ul>
-<li>Replace <code>LightSourceType::Enum</code> with <code>LightSourceType</code> </li>
+<li>Replace <code>LightSourceType::Enum</code> with <code>LightSourceType</code></li>
 <li>Replace <code>LIGHT_AREA</code>, <code>LIGHT_CONE</code>, <code>LIGHT_POINT</code>, <code>LIGHT_DIRECTIONAL</code> with <code>area</code>, <code>cone</code>, <code>point</code>, <code>directional</code></li>
 </ul>
 <h2>2017-11-09 Port traits refactoring</h2>
 <p>The old port_traits was previously used to acquire information, mainly class identifiers, about data objects used in ports and ports them self. Here we have separated port_traits into PortTraits (only classIdentifier) and DataTraits (with classIdentifier, dataName, colorCode and info). Where DataTraits are only used for data objects and PortTraits only for ports. The naming has also been updated to match the inviwo style better.</p>
 <p>Hence if you have your own port_traits specialization it has to be replaced by something like the following for a Port:</p>
-<div class="highlight"><pre><span></span>    <span class="cp">#include</span> <span class="cpf">&lt;inviwo/core/ports/porttraits.h&gt;</span><span class="cp"></span>
-
-    <span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-    <span class="k">struct</span> <span class="n">PortTraits</span><span class="o">&lt;</span><span class="n">MyPort</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="p">{</span>
-        <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">classIdentifier</span><span class="p">()</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="n">generateMyPortClassIdentifier</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">();</span>
-        <span class="p">}</span>
-    <span class="p">};</span>
-</pre></div>
-
-
-<p>And for a data object, i.e. something that you put in a port. </p>
-<div class="highlight"><pre><span></span>    <span class="cp">#include</span> <span class="cpf">&lt;inviwo/core/datastructures/datatraits.h&gt;</span><span class="cp"></span>
-
-    <span class="k">template</span> <span class="o">&lt;&gt;</span>
-    <span class="k">struct</span> <span class="n">DataTraits</span><span class="o">&lt;</span><span class="n">MyDataType</span><span class="o">&gt;</span> <span class="p">{</span>
-        <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">classIdentifier</span><span class="p">()</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="s">&quot;org.something.mydatatype&quot;</span><span class="p">;</span>
-        <span class="p">}</span>
-        <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dataName</span><span class="p">()</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="s">&quot;MyDataType&quot;</span><span class="p">;</span>
-        <span class="p">}</span>
-        <span class="k">static</span> <span class="n">uvec3</span> <span class="n">colorCode</span><span class="p">()</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="n">uvec3</span><span class="p">{</span><span class="mi">55</span><span class="p">,</span><span class="mi">66</span><span class="p">,</span><span class="mi">77</span><span class="p">};</span>
-        <span class="p">}</span>
-        <span class="k">static</span> <span class="n">Document</span> <span class="n">info</span><span class="p">(</span><span class="k">const</span> <span class="n">MyDataType</span><span class="o">&amp;</span> <span class="n">data</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">Document</span> <span class="n">doc</span><span class="p">;</span>
-            <span class="n">doc</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;p&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">.</span><span class="n">someInfo</span><span class="p">());</span>
-            <span class="k">return</span> <span class="n">doc</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">};</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/core/ports/porttraits.h<span class="pl-pds">&gt;</span></span>
+<span class="pl-k">template </span>&lt;<span class="pl-k">typename</span> T&gt;
+<span class="pl-k">struct</span> <span class="pl-en">PortTraits</span>&lt;MyPort&lt;T&gt;&gt; {
+    <span class="pl-k">static</span> std::string <span class="pl-en">classIdentifier</span>() {
+        <span class="pl-k">return</span> generateMyPortClassIdentifier&lt;T&gt;();
+    }
+};</pre></div>
+<p>And for a data object, i.e. something that you put in a port.</p>
+<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/core/datastructures/datatraits.h<span class="pl-pds">&gt;</span></span>
+<span class="pl-k">template </span>&lt;&gt;
+<span class="pl-k">struct</span> <span class="pl-en">DataTraits</span>&lt;MyDataType&gt; {
+    <span class="pl-k">static</span> std::string <span class="pl-en">classIdentifier</span>() {
+        <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>org.something.mydatatype<span class="pl-pds">"</span></span>;
+    }
+    <span class="pl-k">static</span> std::string <span class="pl-en">dataName</span>() {
+        <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>MyDataType<span class="pl-pds">"</span></span>;
+    }
+    <span class="pl-k">static</span> uvec3 <span class="pl-en">colorCode</span>() {
+        <span class="pl-k">return</span> uvec3{<span class="pl-c1">55</span>,<span class="pl-c1">66</span>,<span class="pl-c1">77</span>};
+    }
+    <span class="pl-k">static</span> Document <span class="pl-en">info</span>(<span class="pl-k">const</span> MyDataType&amp; data) {
+        Document doc;
+        doc.<span class="pl-c1">append</span>(<span class="pl-s"><span class="pl-pds">"</span>p<span class="pl-pds">"</span></span>, data.<span class="pl-c1">someInfo</span>());
+        <span class="pl-k">return</span> doc;
+    }
+};</pre></div>
 <p>Port registration also now gets the port classIdentifier via PortTraits, so no need to specify the class identifier that registering the port.</p>
 <h2>2017-11-07 Breaking changes: Static functioned moved from BasicMesh</h2>
-<p>Before this change, BasicMesh had various static functions to create meshes. These methods have been moved to a new file and namespace. They are now located in <code>&lt;modules/base/algorithm/meshutils.h&gt;</code> and the namespace meshutil. <br />
+<p>Before this change, BasicMesh had various static functions to create meshes. These methods have been moved to a new file and namespace. They are now located in <code>&lt;modules/base/algorithm/meshutils.h&gt;</code> and the namespace meshutil.<br>
 Hence, where you have used methods like <code>BasicMesh::sphere(...)</code>: you have to change to use <code>meshutil::sphere(...)</code> and add include <code>#include &lt;modules/base/algorithm/meshutils.h&gt;</code>. You also have to add <code>InviwoBaseModule</code> to your modules <code>depends.cmake</code></p>
 <h2>2017-10-22 New feature: Runtime module loading and module versioning</h2>
-<p>Modules can now be dynamically loaded when starting an Inviwo application instead if linking them into the application. This means that the application does not need to know about all modules at compile time. <br />
-Enable <code>IVW_RUNTIME_MODULE_LOADING</code> in Cmake to use this feature.<br />
-You can choose to only load a subset of existing modules by modifying inviwo-enabled-modules.txt in the application binary directory. </p>
+<p>Modules can now be dynamically loaded when starting an Inviwo application instead if linking them into the application. This means that the application does not need to know about all modules at compile time.<br>
+Enable <code>IVW_RUNTIME_MODULE_LOADING</code> in Cmake to use this feature.<br>
+You can choose to only load a subset of existing modules by modifying inviwo-enabled-modules.txt in the application binary directory.</p>
 <p>Modules can be automatically reloaded when changed while running inviwo by enabling runtime module reloading in the application settings. <strong>This means that you can compile a module while running inviwo!</strong> The workspace will automatically be serialized, modules will be reloaded, and then the workspace will be deserialized again.</p>
 <h3>Module versioning</h3>
-<p>We automatically add a version for you and we have made it easy for you so you usually do not need to care about your module version:<br />
-- You only need to change your module version if you want to release a new version of your module in between Inviwo core versions.</p>
-<p>We have also introduced a module version to ensure that modules are loading correctly. You only need to change the module version if your module changes in between inviwo releases since the module version is dependent on the inviwo application version. Change the module version by adding "IVW_MODULE_VERSION(1.0.0)", i.e. Major.Minor.Patch in your module CmakeLists.txt file. We follow semantic versioning: <a href="http://semver.org/">http://semver.org/</a></p>
+<p>We automatically add a version for you and we have made it easy for you so you usually do not need to care about your module version:</p>
+<ul>
+<li>You only need to change your module version if you want to release a new version of your module in between Inviwo core versions.</li>
+</ul>
+<p>We have also introduced a module version to ensure that modules are loading correctly. You only need to change the module version if your module changes in between inviwo releases since the module version is dependent on the inviwo application version. Change the module version by adding "IVW_MODULE_VERSION(1.0.0)", i.e. Major.Minor.Patch in your module CmakeLists.txt file. We follow semantic versioning: <a href="http://semver.org/" rel="nofollow">http://semver.org/</a></p>
 <h2>2017-10-01 Breaking changes for Processor::isReady, Processor::performEvaluationRequest</h2>
 <p>Before this change, we could not detect when the Processor::isReady status changed. We introduced a StateCoordinator to resolve this issue and improve network evaluation. Only processors that have a sink among its decedents will now be evaluated.</p>
 <ul>
-<li>Processor performEvaluationRequest has been removed, instead call <code>Processor::invalidate</code> to trigger a network evaluation. </li>
+<li>Processor performEvaluationRequest has been removed, instead call <code>Processor::invalidate</code> to trigger a network evaluation.</li>
 <li>If you happen to override <code>Processor::isReady()</code>, that will no longer work. You instead have to set the updater for the <code>isReady_</code> StateCoordinator. Most likely, you will just need to move your isReady code to a functor and set it in the constructor of your processor:</li>
 </ul>
-<div class="highlight"><pre><span></span>    <span class="c1">// (default isReady() behavior)</span>
-    <span class="n">isReady_</span><span class="p">.</span><span class="n">setUpdate</span><span class="p">([</span><span class="k">this</span><span class="p">]()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">allInportsAreReady</span><span class="p">();</span> <span class="p">});</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-c"><span class="pl-c">//</span> (default isReady() behavior)</span>
+isReady_.setUpdate([<span class="pl-c1">this</span>]() { <span class="pl-k">return</span> <span class="pl-c1">allInportsAreReady</span>(); });</pre></div>
 <ul>
 <li>This also applies to <code>isSink_</code> and <code>isSource_</code> in a similar manner. To mark a processor as sink, use <code>isSink_.setUpdate([]() { return true; });</code></li>
 </ul>
 <p>Note that you can use <code>Inport::setOptional(true)</code> if you want your processor to process even though the port is not connected instead of changing isReady.</p>
-<p>Ready status is now pushed from outport to inport to processor, making it an observable in ProcessorObserver.<br />
+<p>Ready status is now pushed from outport to inport to processor, making it an observable in ProcessorObserver.<br>
 As this is now a state that is pushed instead of pulled you should also call <code>isReady_.update()</code> when ever the outcome of the functor above might change. This does not apply to ports, e.g. <code>onConnect</code> and <code>onDisconnect</code>, since ports already call  <code>isReady_.update()</code> on connect and disconnect.</p>
 <h2>2016-11-11 - Moved the QtWidgets project into the modules folder.</h2>
-<p>Moved <code>InviwoApplicationQt</code> from <code>QtWidgets</code> into a new project InviwoQtApplicationBase.<br />
-If a module was using <code>InviwoApplicationQt</code> to get the main window, for example:  </p>
-<div class="highlight"><pre><span></span>    <span class="cp">#include</span> <span class="cpf">&lt;inviwo/qt/qtwidgets/inviwoapplicationqt.h&gt; </span><span class="cp"></span>
-    <span class="k">auto</span> <span class="n">mainWindow</span> <span class="o">=</span> <span class="k">dynamic_cast</span><span class="o">&lt;</span><span class="n">InviwoApplicationQt</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">InviwoApplication</span><span class="o">::</span><span class="n">getPtr</span><span class="p">())</span><span class="o">-&gt;</span><span class="n">getMainWindow</span><span class="p">();</span>
-</pre></div>
-
-
-<p>This can be exchanged with:   </p>
-<div class="highlight"><pre><span></span>    <span class="cp">#include</span> <span class="cpf">&lt;modules/qtwidgets/inviwoqtutils.h&gt;  </span><span class="cp"></span>
-    <span class="k">auto</span> <span class="n">mainWindow</span> <span class="o">=</span> <span class="n">utilqt</span><span class="o">::</span><span class="n">getApplicationMainWindow</span><span class="p">();</span>
-</pre></div>
-
-
-<p>Perform search and replace to accommodate changes:<br />
-Search:  <code>#include &lt;inviwo/qt/widgets/inviwoapplicationqt.h&gt;``
-Replace:</code>#include <inviwo/qt/applicationbase/inviwoapplicationqt.h><code>Furthermore, make your project depend on</code>InviwoQtApplicationBase<code>instead of</code>InviwoQtWidgets`</p>
-<p>Search: <code>inviwo/qt/widgets/</code><br />
+<p>Moved <code>InviwoApplicationQt</code> from <code>QtWidgets</code> into a new project InviwoQtApplicationBase.<br>
+If a module was using <code>InviwoApplicationQt</code> to get the main window, for example:</p>
+<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>inviwo/qt/qtwidgets/inviwoapplicationqt.h<span class="pl-pds">&gt;</span></span> 
+<span class="pl-k">auto</span> app = <span class="pl-k">dynamic_cast</span>&lt;InviwoApplicationQt*&gt;(InviwoApplication::getPtr());
+<span class="pl-k">auto</span> mainWindow = app-&gt;<span class="pl-en">getMainWindow</span>();</pre></div>
+<p>This can be exchanged with:</p>
+<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>modules/qtwidgets/inviwoqtutils.h<span class="pl-pds">&gt;</span></span>  
+<span class="pl-k">auto</span> mainWindow = utilqt::getApplicationMainWindow();</pre></div>
+<p>Perform search and replace to accommodate changes:<br>
+Search:  <code>#include &lt;inviwo/qt/widgets/inviwoapplicationqt.h&gt;`` Replace: </code>#include &lt;inviwo/qt/applicationbase/inviwoapplicationqt.h&gt;<code>  Furthermore, make your project depend on</code>InviwoQtApplicationBase<code>instead of</code>InviwoQtWidgets`</p>
+<p>Search: <code>inviwo/qt/widgets/</code><br>
 Replace: <code>modules/qtwidgets/</code></p>
-<h2>2016-11-08</h2>
-<p>The vector interpolation was removed from the Interpolation helper class. The reason for this is that having the function pointer as a parameter for the function made the function impossible to inline and hence much slower, the interpolation calls become about 50% faster when the argument was removed. </p>
+<p>##2016-11-08<br>
+The vector interpolation was removed from the Interpolation helper class. The reason for this is that having the function pointer as a parameter for the function made the function impossible to inline and hence much slower, the interpolation calls become about 50% faster when the argument was removed.</p>
 <h2>2016-02-03</h2>
 <p>The <code>setValueFrom*</code> and <code>getValueAs*</code> in buffer-, layer- and volumeRAM has been renamed to <code>getAs*</code> and <code>setFrom*</code> Previously only get function would use normalization. Now there are instead an other set of functions <code>getAsNormalized*</code> and <code>setFromNormalized*</code> that will apply normalization. Where as neither <code>setFrom*</code> or <code>getAs*</code> will use any normalization, just plain casting.</p>
-<h2>2015-12-03</h2>
+<p>##2015-12-03</p>
 <ul>
 <li><strong>Generic Types</strong> <code>BufferType</code>, <code>BufferUsage</code>, <code>DrawType</code>, and <code>ConnectivityType</code> have had their members renamed to pascal case. Use <code>tools/refactoring/enumfixes.py</code> to update your code.</li>
-<li><strong>Processor</strong> InviwoProcessorInfo macros has been removed. Use ProcessorInfo class. </li>
+<li><strong>Processor</strong> InviwoProcessorInfo macros has been removed. Use ProcessorInfo class.</li>
 <li><strong>Processor</strong> Virtual initialize and deinitialize function has be removed. Use constructor.</li>
 <li><strong>Processor</strong> enable/disable evaluation function has been removed. It was rarely used and the new NetworkLock is easier to use.</li>
 </ul>
 <h2>2015-11-16</h2>
-<p><strong>Singeltons</strong> The factories are not singletons any longer. They are now owned by InviwoApplication, one can ask InviwoApplication for them. There is a script <code>tools/refactoring/factoryfixes.py</code> to update code. </p>
+<p><strong>Singeltons</strong> The factories are not singletons any longer. They are now owned by InviwoApplication, one can ask InviwoApplication for them. There is a script <code>tools/refactoring/factoryfixes.py</code> to update code.</p>
 <h2>2015-11-04</h2>
 <p><strong>Serialization</strong> Removed the ivw prefix from all serialization classes, and related filenames.  Use <code>tools/refactoring/serializerename.py</code> to update you own code. Just modify the "path = [paths, to, code]" variable first.</p>
 <h2>2015-10-29</h2>
-<p><strong>Enum refactoring:</strong> <br />
-<em> <code>enum DataFromatEnums::Id</code> -&gt; <code>enum class DataFormatId</code>, camelcased <br />
-</em> <code>enum DataFromatEnums::NumericType</code> -&gt; <code>enum class NumericType</code>, camelcased <br />
-<em> <code>enum ShadingFunctionEnum</code> -&gt; <code>enum class ShadingFunctionKind</code>, camelcased <br />
-</em> <code>enum UsageMode</code> -&gt; <code>enum class UsageMode</code>, camelcased <br />
-<em> <code>DrawMode</code> camelcased <br />
-</em> <code>enum InteractionEventType</code> -&gt; <code>enum class InteractionEventType</code>, camelcased <br />
-<em> <code>enum GlVendor</code> -&gt; <code>enum class GlVendor</code>, camelcased <br />
-</em> <code>enum GLFormats::Normalization</code> -&gt; <code>enum class GLFormats::Normalization</code>, camelcased<br />
-<em> <code>enum CLFormats::Normalization</code> -&gt; <code>enum class CLFormats::Normalization</code>, camelcased<br />
-</em> <code>enum InvalidationLevel</code> -&gt; <code>enum class InvalidationLevel</code>, camelcased</p>
-<p>The enums has also been made into a consistent camel case.<br />
+<p><strong>Enum refactoring:</strong></p>
+<ul>
+<li><code>enum DataFromatEnums::Id</code> -&gt; <code>enum class DataFormatId</code>, camelcased</li>
+<li><code>enum DataFromatEnums::NumericType</code> -&gt; <code>enum class NumericType</code>, camelcased</li>
+<li><code>enum ShadingFunctionEnum</code> -&gt; <code>enum class ShadingFunctionKind</code>, camelcased</li>
+<li><code>enum UsageMode</code> -&gt; <code>enum class UsageMode</code>, camelcased</li>
+<li><code>DrawMode</code> camelcased</li>
+<li><code>enum InteractionEventType</code> -&gt; <code>enum class InteractionEventType</code>, camelcased</li>
+<li><code>enum GlVendor</code> -&gt; <code>enum class GlVendor</code>, camelcased</li>
+<li><code>enum GLFormats::Normalization</code> -&gt; <code>enum class GLFormats::Normalization</code>, camelcased</li>
+<li><code>enum CLFormats::Normalization</code> -&gt; <code>enum class CLFormats::Normalization</code>, camelcased</li>
+<li><code>enum InvalidationLevel</code> -&gt; <code>enum class InvalidationLevel</code>, camelcased</li>
+</ul>
+<p>The enums has also been made into a consistent camel case.<br>
 To simplify refactoring there is a script in <code>tools/refactoring/enumfixes.py</code> that one can run to update code. You only have to specify the relevant paths in the script first.</p>
 <h2>2015-10-28</h2>
 <p>Processors: Updated to use new structure of ProcessorInfo. The macro</p>
-<div class="highlight"><pre><span></span>    <span class="n">InviwoProcessorInfo</span><span class="p">();</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-en">InviwoProcessorInfo</span>();</pre></div>
 <p>should be replaced with:</p>
-<div class="highlight"><pre><span></span>    <span class="k">virtual</span> <span class="k">const</span> <span class="n">ProcessorInfo</span> <span class="nf">getProcessorInfo</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
-    <span class="k">static</span> <span class="k">const</span> <span class="n">ProcessorInfo</span> <span class="n">processorInfo_</span><span class="p">;</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">virtual</span> <span class="pl-k">const</span> ProcessorInfo <span class="pl-en">getProcessorInfo</span>() <span class="pl-k">const</span> <span class="pl-k">override</span>;
+<span class="pl-k">static</span> <span class="pl-k">const</span> ProcessorInfo processorInfo_;</pre></div>
 <p>in the header file.</p>
 <p>In the cpp file the macros, <code>ProcessorClassIdentifier(VolumeRaycaster, "org.inviwo.VolumeRaycaster");</code> etc. for the static members are replaced with:</p>
-<div class="highlight"><pre><span></span>    <span class="k">const</span> <span class="n">ProcessorInfo</span> <span class="n">VolumeRaycaster</span><span class="o">::</span><span class="n">processorInfo_</span><span class="p">{</span>
-        <span class="s">&quot;org.inviwo.VolumeRaycaster&quot;</span><span class="p">,</span>  <span class="c1">// Class identifer</span>
-        <span class="s">&quot;Volume Raycaster&quot;</span><span class="p">,</span>            <span class="c1">// Display name</span>
-        <span class="s">&quot;Volume Rendering&quot;</span><span class="p">,</span>            <span class="c1">// Category</span>
-        <span class="n">CodeState</span><span class="o">::</span><span class="n">Stable</span><span class="p">,</span>             <span class="c1">// Code state</span>
-        <span class="n">Tags</span><span class="o">::</span><span class="n">GL</span>                       <span class="c1">// Tags</span>
-    <span class="p">};</span>
-    <span class="k">const</span> <span class="n">ProcessorInfo</span> <span class="n">VolumeRaycaster</span><span class="o">::</span><span class="n">getProcessorInfo</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">processorInfo_</span><span class="p">;</span>
-    <span class="p">}</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">const</span> ProcessorInfo VolumeRaycaster::processorInfo_{
+    <span class="pl-s"><span class="pl-pds">"</span>org.inviwo.VolumeRaycaster<span class="pl-pds">"</span></span>,  <span class="pl-c"><span class="pl-c">//</span> Class identifer</span>
+    <span class="pl-s"><span class="pl-pds">"</span>Volume Raycaster<span class="pl-pds">"</span></span>,            <span class="pl-c"><span class="pl-c">//</span> Display name</span>
+    <span class="pl-s"><span class="pl-pds">"</span>Volume Rendering<span class="pl-pds">"</span></span>,            <span class="pl-c"><span class="pl-c">//</span> Category</span>
+    CodeState::Stable,             <span class="pl-c"><span class="pl-c">//</span> Code state</span>
+    Tags::GL                       <span class="pl-c"><span class="pl-c">//</span> Tags</span>
+};
+<span class="pl-k">const</span> ProcessorInfo <span class="pl-en">VolumeRaycaster::getProcessorInfo</span>() <span class="pl-k">const</span> {
+    <span class="pl-k">return</span> processorInfo_;
+}</pre></div>
 <p>The old macros should still work, but will be deprecated before next release.</p>
 <p>The name of the static member <code>processorInfo_</code> is important since that is what the <code>ProcessorTraits</code> looks for when it tries to find the information statically. If you want to have a different name or generate the information dynamically you can specialize the <code>ProcessorTraits</code> for your processor. Here is an example for the template processor BasisTransform:</p>
-<div class="highlight"><pre><span></span>    <span class="k">template</span> <span class="o">&lt;&gt;</span>
-    <span class="k">struct</span> <span class="n">ProcessorTraits</span><span class="o">&lt;</span><span class="n">BasisTransform</span><span class="o">&lt;</span><span class="n">Mesh</span><span class="o">&gt;&gt;</span> <span class="p">{</span>
-        <span class="k">static</span> <span class="n">ProcessorInfo</span> <span class="n">getProcessorInfo</span><span class="p">()</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="p">{</span>
-                <span class="s">&quot;org.inviwo.BasisTransformGeometry&quot;</span><span class="p">,</span>  <span class="c1">// Class identifier</span>
-                <span class="s">&quot;Basis Transform Mesh&quot;</span><span class="p">,</span>               <span class="c1">// Display name</span>
-                <span class="s">&quot;Coordinate Transforms&quot;</span><span class="p">,</span>              <span class="c1">// Category</span>
-                <span class="n">CodeState</span><span class="o">::</span><span class="n">Experimental</span><span class="p">,</span>              <span class="c1">// Code state</span>
-                <span class="n">Tags</span><span class="o">::</span><span class="n">CPU</span>                             <span class="c1">// Tags</span>
-            <span class="p">};</span>
-        <span class="p">}</span>
-    <span class="p">};</span>
-</pre></div>
-
-
-<p>If you have many processor that needs updating there is a utility script <br />
-<code>tools/refactoring/processorinfo.py</code>.<br />
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">template </span>&lt;&gt;
+<span class="pl-k">struct</span> <span class="pl-en">ProcessorTraits</span>&lt;BasisTransform&lt;Mesh&gt;&gt; {
+    <span class="pl-k">static</span> ProcessorInfo <span class="pl-en">getProcessorInfo</span>() {
+        <span class="pl-k">return</span> {
+            <span class="pl-s"><span class="pl-pds">"</span>org.inviwo.BasisTransformGeometry<span class="pl-pds">"</span></span>,  <span class="pl-c"><span class="pl-c">//</span> Class identifier</span>
+            <span class="pl-s"><span class="pl-pds">"</span>Basis Transform Mesh<span class="pl-pds">"</span></span>,               <span class="pl-c"><span class="pl-c">//</span> Display name</span>
+            <span class="pl-s"><span class="pl-pds">"</span>Coordinate Transforms<span class="pl-pds">"</span></span>,              <span class="pl-c"><span class="pl-c">//</span> Category</span>
+            CodeState::Experimental,              <span class="pl-c"><span class="pl-c">//</span> Code state</span>
+            Tags::CPU                             <span class="pl-c"><span class="pl-c">//</span> Tags</span>
+        };
+    }
+};</pre></div>
+<p>If you have many processor that needs updating there is a utility script<br>
+<code>tools/refactoring/processorinfo.py</code>.<br>
 You will need to edit some path information in it, but otherwise it should be automatic.</p>
 <p><strong>Converting files to UTF-8</strong></p>
-<p>If you need to convert your files to UTF-8 you can use notepad++ and the following python script (python plugin installer can be found at <a href="http://sourceforge.net/projects/npppythonscript/files/">http://sourceforge.net/projects/npppythonscript/files/</a>):</p>
-<div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">os</span><span class="p">;</span>
-    <span class="kn">import</span> <span class="nn">sys</span><span class="p">;</span>
-    <span class="n">filePathSrc</span><span class="o">=</span><span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">inviwo</span><span class="se">\\</span><span class="s2">vistinct</span><span class="se">\\</span><span class="s2">&quot;</span> <span class="c1"># Path to the folder with files to convert</span>
-    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">filePathSrc</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.h&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.cpp&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.cl&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.frag&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.vert&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.glsl&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.geom&quot;</span><span class="p">):</span> <span class="c1"># Specify type of the files</span>
-                <span class="n">notepad</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">root</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span>
-                <span class="n">notepad</span><span class="o">.</span><span class="n">runMenuCommand</span><span class="p">(</span><span class="s2">&quot;Encoding&quot;</span><span class="p">,</span> <span class="s2">&quot;Convert to UTF-8&quot;</span><span class="p">)</span>
-                <span class="n">notepad</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-                <span class="n">notepad</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</pre></div>
-
-
+<p>If you need to convert your files to UTF-8 you can use notepad++ and the following python script (python plugin installer can be found at <a href="http://sourceforge.net/projects/npppythonscript/files/" rel="nofollow">http://sourceforge.net/projects/npppythonscript/files/</a>):</p>
+<div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> <span class="pl-s1">os</span>;
+<span class="pl-k">import</span> <span class="pl-s1">sys</span>;
+<span class="pl-c"># Path to the folder with files to convert</span>
+<span class="pl-s1">filePathSrc</span><span class="pl-c1">=</span><span class="pl-s">"C:<span class="pl-cce">\\</span>inviwo<span class="pl-cce">\\</span>vistinct<span class="pl-cce">\\</span>"</span> 
+<span class="pl-k">for</span> <span class="pl-s1">root</span>, <span class="pl-s1">dirs</span>, <span class="pl-s1">files</span> <span class="pl-c1">in</span> <span class="pl-s1">os</span>.<span class="pl-en">walk</span>(<span class="pl-s1">filePathSrc</span>):
+    <span class="pl-k">for</span> <span class="pl-s1">fn</span> <span class="pl-c1">in</span> <span class="pl-s1">files</span>:
+        <span class="pl-k">if</span> <span class="pl-s1">fn</span>.<span class="pl-en">endswith</span>(<span class="pl-s">".h"</span>) <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-en">endswith</span>(<span class="pl-s">".cpp"</span>) 
+            <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-en">endswith</span>(<span class="pl-s">".cl"</span>) <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-en">endswith</span>(<span class="pl-s">".frag"</span>) 
+            <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-en">endswith</span>(<span class="pl-s">".vert"</span>) <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-en">endswith</span>(<span class="pl-s">".glsl"</span>) 
+            <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-en">endswith</span>(<span class="pl-s">".geom"</span>): <span class="pl-c"># Specify type of the files</span>
+            <span class="pl-s1">notepad</span>.<span class="pl-en">open</span>(<span class="pl-s1">root</span> <span class="pl-c1">+</span> <span class="pl-s">"<span class="pl-cce">\\</span>"</span> <span class="pl-c1">+</span> <span class="pl-s1">fn</span>)
+            <span class="pl-s1">notepad</span>.<span class="pl-en">runMenuCommand</span>(<span class="pl-s">"Encoding"</span>, <span class="pl-s">"Convert to UTF-8"</span>)
+            <span class="pl-s1">notepad</span>.<span class="pl-en">save</span>()
+            <span class="pl-s1">notepad</span>.<span class="pl-en">close</span>()</pre></div>
 <h2>2015-10-27</h2>
 <p><strong>CodeState</strong> CodeState is now an enum class, i.e. <code>CODE_STATE_STABLE</code> -&gt; <code>CodeState::Stable</code> etc</p>
 <h2>2015-10-07</h2>
 <p><strong>Modules</strong> The module registration has change a bit a module now has to take a  <code>InviwoApplication*</code> in the constructor, like:</p>
-<div class="highlight"><pre><span></span>    <span class="k">class</span> <span class="nc">IVW_MODULE_BASEGL_API</span> <span class="nl">BaseGLModule</span> <span class="p">:</span> <span class="k">public</span> <span class="n">InviwoModule</span> <span class="p">{</span>
-    <span class="k">public</span><span class="o">:</span>
-        <span class="n">BaseGLModule</span><span class="p">(</span><span class="n">InviwoApplication</span><span class="o">*</span> <span class="n">app</span><span class="p">);</span>
-    <span class="p">};</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">class</span> <span class="pl-en">IVW_MODULE_BASEGL_API</span> BaseGLModule : public InviwoModule {
+<span class="pl-k">public:</span>
+    <span class="pl-en">BaseGLModule</span>(InviwoApplication* app);
+};</pre></div>
 <p>And then pass that on to the base class together with the module name</p>
-<div class="highlight"><pre><span></span>    <span class="n">BaseGLModule</span><span class="o">::</span><span class="n">BaseGLModule</span><span class="p">(</span><span class="n">InviwoApplication</span><span class="o">*</span> <span class="n">app</span><span class="p">)</span> <span class="o">:</span> <span class="n">InviwoModule</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="s">&quot;BaseGL&quot;</span><span class="p">)</span> <span class="p">{</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-en">BaseGLModule::BaseGLModule</span>(InviwoApplication* app) : InviwoModule(app, <span class="pl-s"><span class="pl-pds">"</span>BaseGL<span class="pl-pds">"</span></span>) {</pre></div>
 <p>There is also not any <code>initialize()</code> do <code>deinitialize()</code> function anymore, just use the constructor and destructor.</p>
 <p>The MACROS for registering object in the module are now replaced by proper function. The most common one for processor now look like this:</p>
-<div class="highlight"><pre><span></span>    <span class="n">registerProcessor</span><span class="o">&lt;</span><span class="n">Background</span><span class="o">&gt;</span><span class="p">();</span>
-</pre></div>
-
-
-<p>For other object refer to InviwoModule. </p>
-<p>Is is also generally encouraged to avoid using any singletons, especially during initialization but also in general. In the long run we are working on removing most of the.   </p>
+<div class="highlight highlight-source-c++"><pre>registerProcessor&lt;Background&gt;();</pre></div>
+<p>For other object refer to InviwoModule.</p>
+<p>Is is also generally encouraged to avoid using any singletons, especially during initialization but also in general. In the long run we are working on removing most of the.</p>
 <h2>2015-10-01</h2>
 <ul>
-<li><strong>Data</strong> <code>Data</code> and <code>DataGroup" is now templated with respect to the</code>DataRepresentation` that they have.</li>
+<li><strong>Data</strong> <code>Data</code> and <code>DataGroup" is now templated with respect to the </code>DataRepresentation` that they have.</li>
 <li><strong>Converters</strong> The converter are now typed with From and To templates.</li>
-<li><strong>Geometry Types</strong> all the enums CoordinatePlane, CartesianCoordinateAxis, BufferUsage, DrawType, ConnectivityType are now enum classes. </li>
+<li><strong>Geometry Types</strong> all the enums CoordinatePlane, CartesianCoordinateAxis, BufferUsage, DrawType, ConnectivityType are now enum classes.</li>
 <li><strong>Buffers</strong> The buffers have been updated. The old <code>Buffer</code> is now a abstract <code>BufferBase</code> and the old <code>BufferPrecision&lt;T&gt;</code> is now <code>Buffer&lt;T&gt;</code> this is the class you should use. The BufferType member/template argument has been removed from both <code>Buffer</code> and <code>BufferRepresentation</code> and is now handled by the <code>Mesh</code>. Because of this most typedef for <code>Buffer</code> and <code>BufferRAM</code> has now been removed. To create a <code>BufferRAM</code> you would now to this: <code>auto repr = std::make_shared&lt;BufferRAMPrecision&lt;vec3&gt;&gt;()</code> and then add it to a <code>Buffer</code> with <code>auto buffer = std::make_shared&lt;Buffer&lt;vec3&gt;&gt;(repr);</code></li>
 <li><strong>Multiple context</strong> there is now basic support for using OpenGL from multiple thread. Call <code>RenderContext::getPtr()-&gt;activateLocalRenderContext();</code> before using OpenGL.</li>
 <li><strong>Data Readers</strong> The Data Reader base class has been clean up. Now there is only one function to implement: <code>virtual std::shared_ptr&lt;T&gt; readData(const std::string filePath) = 0;</code></li>
-<li><strong>DiskRepresentationLoader</strong> there is a new class DiskRepresentationLoader to handle the old <code>DataReader::readData</code>, and <code>DataReader::readDataInto</code> with a cleaner interface without any <code>void*</code>. and a <code>RawVolumeRAMLoader</code> class that is used in by the "dat", "ivf", "raw" readers. </li>
+<li><strong>DiskRepresentationLoader</strong> there is a new class DiskRepresentationLoader to handle the old <code>DataReader::readData</code>, and <code>DataReader::readDataInto</code> with a cleaner interface without any <code>void*</code>. and a <code>RawVolumeRAMLoader</code> class that is used in by the "dat", "ivf", "raw" readers.</li>
 </ul>
 <h2>2015-10-01</h2>
-<p>Updates to Data:<br />
-   * Using type_index to refer to different representations<br />
-   * Data stores representations using shared_ptr<br />
-   * Reworked converter factory. Now automatically creates all converter packages.<br />
-   * Data always uses a converter package of size 1 or more. Simplifies code paths...<br />
-   * Data now has a mutex to protect mutable representations.<br />
-   * Each representations now have a isValid flag, that is updated by Data<br />
-   * The old bitflags in data are now gone.<br />
-   * Representations should now implement a getTypeIndex() method on the type erasure level above DataFormat, I.e. VolumeRAM VolumeGL, not any of the precision classes.<br />
-   * All representations should now be created as shared_ptr and Data::addRepresentation now only accepts a shared_ptr.</p>
+<p>Updates to Data:</p>
+<ul>
+<li>Using type_index to refer to different representations</li>
+<li>Data stores representations using shared_ptr</li>
+<li>Reworked converter factory. Now automatically creates all converter packages.</li>
+<li>Data always uses a converter package of size 1 or more. Simplifies code paths...</li>
+<li>Data now has a mutex to protect mutable representations.</li>
+<li>Each representations now have a isValid flag, that is updated by Data</li>
+<li>The old bitflags in data are now gone.</li>
+<li>Representations should now implement a getTypeIndex() method on the type erasure level above DataFormat, I.e. VolumeRAM VolumeGL, not any of the precision classes.</li>
+<li>All representations should now be created as shared_ptr and Data::addRepresentation now only accepts a shared_ptr.</li>
+</ul>
 <h2>2015-09-10</h2>
 <ul>
 <li>
-<p><strong>Ports</strong> now uses <code>std::shared_ptr&lt;const T&gt;</code> for everything. I.e. <code>DataInport::getData()</code> now returns a <code>std::shared_ptr&lt;const T&gt;</code> and <code>DataOutport::setData(std::shared_ptr&lt;const T&gt; data)</code> also takes a shared ptr. Notably the argument to the <code>DataOutport::setData</code> is now a <code>std::shared_ptr&lt;__const__ T&gt;</code> this means that you can now do <code>outport.setData(inport.getData());</code> But on the other hand will you not be able to do:<br />
-<code>outport.getData()-&gt;getEditableRepresentation&lt;T&gt;()</code> since the data is now const. To solve this it is recommended to keep a copy of the <code>std::shared_ptr&lt;T&gt;</code> around in the processor instead. <br />
+<p><strong>Ports</strong> now uses <code>std::shared_ptr&lt;const T&gt;</code> for everything. I.e. <code>DataInport::getData()</code> now returns a <code>std::shared_ptr&lt;const T&gt;</code> and <code>DataOutport::setData(std::shared_ptr&lt;const T&gt; data)</code> also takes a shared ptr. Notably the argument to the <code>DataOutport::setData</code> is now a <code>std::shared_ptr&lt;__const__ T&gt;</code> this means that you can now do <code>outport.setData(inport.getData());</code> But on the other hand will you not be able to do:<br>
+<code>outport.getData()-&gt;getEditableRepresentation&lt;T&gt;()</code> since the data is now const. To solve this it is recommended to keep a copy of the <code>std::shared_ptr&lt;T&gt;</code> around in the processor instead.<br>
 One should take special care when changing data that has already been added to a outport since a different processor might be using that data in a background thread. One might for example use <code>std::shared_ptr&lt;T&gt;::unique()</code> to check whether there is someone else holding the data.</p>
 </li>
 <li>
 <p><strong>Image port</strong> has special overloads for non-const data since they might need to resize the data during resize events. Hence <code>ImageOutport::setData(std::shared_ptr&lt;T&gt; data)</code> and <code>std::shared_ptr&lt;T&gt; ImageOutport::getEditableData()</code> exists.</p>
 </li>
 <li>
-<p><strong>utilgl</strong> All the opengl utility functions in shaderutils, textureutils, etc, now uses reference arguments instead of points. <br />
-Notably the: <code>void setShaderUniforms(Shader&amp; shader, ...)</code><br />
-functions now take the shader by reference not pointer. </p>
+<p><strong>utilgl</strong> All the opengl utility functions in shaderutils, textureutils, etc, now uses reference arguments instead of points.<br>
+Notably the: <code>void setShaderUniforms(Shader&amp; shader, ...)</code><br>
+functions now take the shader by reference not pointer.</p>
 </li>
 </ul>
 <h2>2015-09-09</h2>
@@ -820,68 +722,56 @@ functions now take the shader by reference not pointer. </p>
 <ul>
 <li><strong>Shaders</strong> A shader now has a <code>onReload(std::function&lt;void()&gt;)</code> callback that processors that want to be reloaded on shader reload has to use. So now only affected processors will be invalidated on shader modifications. To get the same behavior as before this needs to be added to an processor using shaders:</li>
 </ul>
-<div class="highlight"><pre><span></span>    <span class="n">shader_</span><span class="p">.</span><span class="n">onReload</span><span class="p">([</span><span class="k">this</span><span class="p">]()</span> <span class="p">{</span> <span class="n">invalidate</span><span class="p">(</span><span class="n">INVALID_RESOURCES</span><span class="p">);</span> <span class="p">});</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre>shader_.onReload([<span class="pl-c1">this</span>]() { <span class="pl-c1">invalidate</span>(INVALID_RESOURCES); });</pre></div>
 <h2>2015-07-15</h2>
 <ul>
 <li><strong>Timers</strong> The <code>InviwoApplication::createTimer()</code> factory has been removed in favor of a pure c++11 timer. Hence there is no need for a factory. The new class is very similar and can be found in <code>inviwo/core/util/timer.h</code></li>
 </ul>
 <h2>2015-07-14</h2>
 <ul>
-<li><strong>Observers</strong> The observers now use a unordered_set and the "observers_" member is now typed correctly hence there is no need to static cast. And since unordered_set does not have reverse iterators, if you use that you need to update. The current preferred use looks like this: </li>
+<li><strong>Observers</strong> The observers now use a unordered_set and the "observers_" member is now typed correctly hence there is no need to static cast. And since unordered_set does not have reverse iterators, if you use that you need to update. The current preferred use looks like this:</li>
 </ul>
-<div class="highlight"><pre><span></span>    <span class="kt">void</span> <span class="n">PropertyObservable</span><span class="o">::</span><span class="n">notifyObserversOnSetVisible</span><span class="p">(</span><span class="kt">bool</span> <span class="n">visible</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
-        <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">o</span> <span class="p">:</span> <span class="n">observers_</span><span class="p">)</span> <span class="n">o</span><span class="o">-&gt;</span><span class="n">onSetVisible</span><span class="p">(</span><span class="n">visible</span><span class="p">);</span>
-    <span class="p">}</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">void</span> <span class="pl-en">PropertyObservable::notifyObserversOnSetVisible</span>(<span class="pl-k">bool</span> visible) <span class="pl-k">const</span> {
+    <span class="pl-k">for</span> (<span class="pl-k">auto</span> o : observers_) o-&gt;<span class="pl-c1">onSetVisible</span>(visible);
+}</pre></div>
 <ul>
 <li><strong>Activity Indicator</strong> There is now activity indicator for processor similar to a progress bar. it will only show up as a yellow status indicator on the processor. It can either be active or not. See volumesubsample for an example.</li>
 </ul>
 <h2>2015-07-09</h2>
 <ul>
-<li><strong>Threading</strong> For handling background work there are now two global functions </li>
+<li><strong>Threading</strong> For handling background work there are now two global functions</li>
 </ul>
-<div class="highlight"><pre><span></span>    <span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">F</span><span class="p">,</span> <span class="n">class</span><span class="p">...</span> <span class="n">Args</span><span class="o">&gt;</span>
-    <span class="k">auto</span> <span class="n">dispatchFront</span><span class="p">(</span><span class="n">F</span><span class="o">&amp;&amp;</span> <span class="n">f</span><span class="p">,</span> <span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span> <span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">std</span><span class="o">::</span><span class="n">result_of</span><span class="o">&lt;</span><span class="n">F</span><span class="p">(</span><span class="n">Args</span><span class="p">...)</span><span class="o">&gt;::</span><span class="n">type</span><span class="o">&gt;</span>
-    <span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">F</span><span class="p">,</span> <span class="n">class</span><span class="p">...</span> <span class="n">Args</span><span class="o">&gt;</span>
-    <span class="k">auto</span> <span class="n">dispatchPool</span><span class="p">(</span><span class="n">F</span><span class="o">&amp;&amp;</span> <span class="n">f</span><span class="p">,</span> <span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span> <span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">std</span><span class="o">::</span><span class="n">result_of</span><span class="o">&lt;</span><span class="n">F</span><span class="p">(</span><span class="n">Args</span><span class="p">...)</span><span class="o">&gt;::</span><span class="n">type</span><span class="o">&gt;</span> 
-</pre></div>
-
-
-<p><code>dispatchFront</code> is used to submit a task to the Front thread, i.e. the thread that does handles the GUI and so far all the evaluation. Everything that can have side effects should be run in this thread, changing properties, updating the GUI, triggering evaluation etc. </p>
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">template </span>&lt;<span class="pl-k">class</span> <span class="pl-en">F</span>, <span class="pl-k">class</span>... Args&gt;
+<span class="pl-k">auto</span> <span class="pl-en">dispatchFront</span>(F&amp;&amp; f, Args&amp;&amp;... args) -&gt;
+    std::future&lt;typename std::result_of&lt;F(Args...)&gt;::type&gt;
+template &lt;class F, class... Args&gt;
+auto dispatchPool(F&amp;&amp; f, Args&amp;&amp;... args) -&gt; 
+    std::future&lt;typename std::result_of&lt;F(Args...)&gt;::type&gt; </pre></div>
+<p><code>dispatchFront</code> is used to submit a task to the Front thread, i.e. the thread that does handles the GUI and so far all the evaluation. Everything that can have side effects should be run in this thread, changing properties, updating the GUI, triggering evaluation etc.</p>
 <p><code>dispatchPool</code> is used to submit tasks to the thread pool. The size of the thread pool will by default be half of the number of cores and can be change is the system settings. It the pool size is 0 all submitted tasks will be run immediately. This is used in the regression to make sure everything is finished before we close inviwo. At this point we can not run OpenGL operations in the thread pool since we don't have any routines for how to handle the contexts.</p>
 <p>The return value of both <code>dispatchFront</code> and <code>dispatchPool</code> is a future&lt;...&gt; of the return value of the task given. Apart for getting the result of the task this future can be used to check whether the task has finished or is still running. Here is a small example:</p>
-<div class="highlight"><pre><span></span>    <span class="n">std</span><span class="o">::</span><span class="n">future</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">Volume</span><span class="o">&gt;&gt;</span> <span class="n">result_</span><span class="p">;</span>
-</pre></div>
-
-
+<div class="highlight highlight-source-c++"><pre>std::future&lt;std::unique_ptr&lt;Volume&gt;&gt; result_;</pre></div>
 <p>result here is a future holding the resulting volume from a subsampling. The following code submits the subsampling task to the thread pool and extracts the result from the future when the calculation is done.</p>
-<div class="highlight"><pre><span></span>    <span class="kt">void</span> <span class="n">VolumeSubsample</span><span class="o">::</span><span class="n">process</span><span class="p">()</span> <span class="p">{</span> 
-        <span class="k">if</span> <span class="p">(</span><span class="n">result_</span><span class="p">.</span><span class="n">valid</span><span class="p">()</span> <span class="o">&amp;&amp;</span>
-            <span class="n">result_</span><span class="p">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">milli</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">==</span>
-                <span class="n">std</span><span class="o">::</span><span class="n">future_status</span><span class="o">::</span><span class="n">ready</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight highlight-source-c++"><pre><span class="pl-k">void</span> <span class="pl-en">VolumeSubsample::process</span>() { 
+    <span class="pl-k">if</span> (result_.<span class="pl-c1">valid</span>() &amp;&amp;
+        result_.<span class="pl-c1">wait_for</span>(std::chrono::duration&lt;<span class="pl-k">int</span>, std::milli&gt;(<span class="pl-c1">0</span>)) ==
+            std::future_status::ready) {
 
-            <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">Volume</span><span class="o">&gt;</span> <span class="n">volume</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">result_</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-            <span class="n">outport_</span><span class="p">.</span><span class="n">setData</span><span class="p">(</span><span class="n">volume</span><span class="p">.</span><span class="n">release</span><span class="p">());</span>
+        std::unique_ptr&lt;Volume&gt; volume = <span class="pl-c1">std::move</span>(result_.<span class="pl-c1">get</span>());
+        outport_.<span class="pl-c1">setData</span>(volume.<span class="pl-c1">release</span>());
 
-        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">result_</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span> <span class="p">{</span>
-            <span class="k">const</span> <span class="n">Volume</span><span class="o">*</span> <span class="n">data</span> <span class="o">=</span> <span class="n">inport_</span><span class="p">.</span><span class="n">getData</span><span class="p">();</span>
-            <span class="k">const</span> <span class="n">VolumeRAM</span><span class="o">*</span> <span class="n">vol</span> <span class="o">=</span> <span class="n">data</span><span class="o">-&gt;</span><span class="n">getRepresentation</span><span class="o">&lt;</span><span class="n">VolumeRAM</span><span class="o">&gt;</span><span class="p">();</span>
+    } <span class="pl-k">else</span> <span class="pl-k">if</span> (!result_.<span class="pl-c1">valid</span>()) {
+        <span class="pl-k">const</span> Volume* data = inport_.<span class="pl-c1">getData</span>();
+        <span class="pl-k">const</span> VolumeRAM* vol = data-&gt;<span class="pl-smi">getRepresentation</span>&lt;VolumeRAM&gt;();
 
-            <span class="n">result_</span> <span class="o">=</span> <span class="n">dispatchPool</span><span class="p">(</span>
-                <span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">const</span> <span class="n">VolumeRAM</span><span class="o">*</span> <span class="n">v</span><span class="p">,</span> <span class="n">VolumeRAMSubSample</span><span class="o">::</span><span class="n">Factor</span> <span class="n">f</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">Volume</span><span class="o">&gt;</span> <span class="p">{</span>
-                    <span class="k">auto</span> <span class="n">volume</span> <span class="o">=</span> <span class="n">util</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">Volume</span><span class="o">&gt;</span><span class="p">(</span><span class="n">VolumeRAMSubSample</span><span class="o">::</span><span class="n">apply</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">f</span><span class="p">));</span>
-                    <span class="n">dispatchFront</span><span class="p">([</span><span class="k">this</span><span class="p">]()</span> <span class="p">{</span> <span class="n">invalidate</span><span class="p">(</span><span class="n">INVALID_OUTPUT</span><span class="p">);</span> <span class="p">});</span>
-                    <span class="k">return</span> <span class="n">volume</span><span class="p">;</span>
-                <span class="p">},</span>
-                <span class="n">vol</span><span class="p">,</span> <span class="n">subSampleFactor_</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-</pre></div>
-
-
+        result_ = <span class="pl-c1">dispatchPool</span>(
+            [<span class="pl-c1">this</span>](<span class="pl-k">const</span> VolumeRAM* v, VolumeRAMSubSample::Factor f) 
+                -&gt; std::unique_ptr&lt;Volume&gt; {
+                <span class="pl-k">auto</span> volume = util::make_unique&lt;Volume&gt;(<span class="pl-c1">VolumeRAMSubSample::apply</span>(v, f));
+                <span class="pl-c1">dispatchFront</span>([<span class="pl-c1">this</span>]() { <span class="pl-c1">invalidate</span>(INVALID_OUTPUT); });
+                <span class="pl-k">return</span> volume;
+            },
+            vol, subSampleFactor_.<span class="pl-c1">get</span>());
+    }
+}</pre></div>
 <p>Here we start by checking if there is a valid future, that means that there is either a result available or the calculation is running. In the case when the result is ready we extract the result and set it to the outport. If it is still running we do nothing since we don't what to fill the pool with jobs. To check if a future is ready we use wait_for with a timeout of 0. In the case that the result is invalid we submit a new task the pool using <code>dispatchPool</code> and assign the result to <code>result_</code>. To make sure that we get back to the process function when the task is done we also add a nested task submit inside of the pool task <code>dispatchFront([this]() { invalidate(INVALID_OUTPUT); });</code> this will run when that task is finished submitting an invalidation on the Front thread casing a new evaluation of the processor. Where we then will find the result of the task.</p></body></html>

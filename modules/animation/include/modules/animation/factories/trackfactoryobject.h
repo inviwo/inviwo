@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_TRACKFACTORYOBJECT_H
-#define IVW_TRACKFACTORYOBJECT_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -36,6 +34,9 @@
 #include <modules/animation/datastructures/track.h>
 
 namespace inviwo {
+
+class ProcessorNetwork;
+
 namespace animation {
 
 class IVW_MODULE_ANIMATION_API TrackFactoryObject {
@@ -43,7 +44,7 @@ public:
     TrackFactoryObject(const std::string& classIdentifier);
     virtual ~TrackFactoryObject() = default;
 
-    virtual std::unique_ptr<Track> create() const = 0;
+    virtual std::unique_ptr<Track> create(ProcessorNetwork* network) const = 0;
     const std::string& getClassIdentifier() const;
 
 protected:
@@ -60,11 +61,17 @@ public:
         : TrackFactoryObject(classIdentifier){};
     virtual ~TrackFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Track> create() const override { return std::make_unique<T>(); }
+    virtual std::unique_ptr<Track> create(
+        [[maybe_unused]] ProcessorNetwork* network) const override {
+
+        if constexpr (std::is_constructible_v<T, ProcessorNetwork*>) {
+            return std::make_unique<T>(network);
+        } else {
+            return std::make_unique<T>();
+        }
+    }
 };
 
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_TRACKFACTORYOBJECT_H

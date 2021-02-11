@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2020 Inviwo Foundation
+# Copyright (c) 2013-2021 Inviwo Foundation
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -32,17 +32,6 @@
 # Needed for the function pybind11_add_module and dependency pybind11::module 
 
 set(_allPyBindWrappers "" CACHE INTERNAL  "")
-if(PYTHONLIBS_FOUND)
-    add_subdirectory(${IVW_EXTENSIONS_DIR}/pybind11)
-    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-        # Workaround
-        CHECK_CXX_COMPILER_FLAG("-flto-partition=none" HAS_LTO_PARTITION_FLAG)
-        if(HAS_LTO_PARTITION_FLAG)
-            set(PYBIND11_LTO_CXX_FLAGS "" CACHE INTERNAL "")
-            set(PYBIND11_LTO_LINKER_FLAGS "-flto-partition=one" CACHE INTERNAL "")
-        endif(HAS_LTO_PARTITION_FLAG)
-    endif()
-endif(PYTHONLIBS_FOUND)
 
 function (ivw_add_py_wrapper target)
     if(IVW_MODULE_PYTHON3)
@@ -65,13 +54,14 @@ function (ivw_add_py_wrapper target)
 endfunction()
 
 function(ivw_check_python_module module retval)
-    find_package(PythonInterp QUIET)
-    if (NOT PYTHONINTERP_FOUND)
+    find_package(Python3 COMPONENTS Interpreter QUIET)
+
+    if (NOT Python3_Interpreter_FOUND)
         set(${retval} FALSE PARENT_SCOPE)
         return()
     endif()
 
-    execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c" 
+    execute_process(COMMAND "${Python3_EXECUTABLE}" "-c" 
         "import sys\ntry:\n\timport ${module}\nexcept ImportError:\n\tsys.exit(1)"
         RESULT_VARIABLE result 
         ERROR_QUIET)

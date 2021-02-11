@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@
 #include <inviwo/core/processors/processor.h>
 
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/utilities.h>
 
 #include <type_traits>
 #include <string>
@@ -71,26 +72,25 @@ public:
         : ProcessorFactoryObject(ProcessorTraits<T>::getProcessorInfo()) {}
     virtual ~ProcessorFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Processor> create(InviwoApplication* app) {
-        (void)app;
+    virtual std::unique_ptr<Processor> create([[maybe_unused]] InviwoApplication* app) {
         std::unique_ptr<Processor> p;
 
         if constexpr (std::is_constructible_v<T, const std::string&, const std::string&,
                                               InviwoApplication*>) {
-            p = std::make_unique<T>(getDisplayName(), getDisplayName(), app);
+            p = std::make_unique<T>(util::stripIdentifier(getDisplayName()), getDisplayName(), app);
         } else if constexpr (std::is_constructible_v<T, const std::string&, const std::string&>) {
-            p = std::make_unique<T>(getDisplayName(), getDisplayName());
+            p = std::make_unique<T>(util::stripIdentifier(getDisplayName()), getDisplayName());
         } else if constexpr (std::is_constructible_v<T, const std::string&, InviwoApplication*>) {
-            p = std::make_unique<T>(getDisplayName(), app);
+            p = std::make_unique<T>(util::stripIdentifier(getDisplayName()), app);
         } else if constexpr (std::is_constructible_v<T, const std::string&>) {
-            p = std::make_unique<T>(getDisplayName());
+            p = std::make_unique<T>(util::stripIdentifier(getDisplayName()));
         } else if constexpr (std::is_constructible_v<T, InviwoApplication*>) {
             p = std::make_unique<T>(app);
         } else {
             p = std::make_unique<T>();
         }
 
-        if (p->getIdentifier().empty()) p->setIdentifier(getDisplayName());
+        if (p->getIdentifier().empty()) p->setIdentifier(util::stripIdentifier(getDisplayName()));
         if (p->getDisplayName().empty()) p->setDisplayName(getDisplayName());
         return p;
     }

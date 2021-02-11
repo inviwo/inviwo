@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -113,7 +113,7 @@ TEST(ShaderObject, parseSource) {
     LineNumberResolver lnr;
 
     auto getSource =
-        [](const std::string& path) -> std::optional<std::pair<std::string, std::string>> {
+        [](std::string_view path) -> std::optional<std::pair<std::string, std::string>> {
         if (path == "inc1") {
             return std::pair<std::string, std::string>{path, "Inc1"};
         }
@@ -124,12 +124,12 @@ TEST(ShaderObject, parseSource) {
         return std::nullopt;
     };
 
-    using SegType = typename ShaderSegment::Type;
-    std::unordered_map<SegType, std::vector<ShaderSegment>> replacements{
-        {SegType{"MAGIC_REPLACEMENT"},
-         {ShaderSegment{SegType{"MAGIC_REPLACEMENT"}, "Repl1",
+    using Placeholder = typename ShaderSegment::Placeholder;
+    std::unordered_map<Placeholder, std::vector<ShaderSegment>> replacements{
+        {Placeholder("MAGIC_REPLACEMENT", "REPLACEMENT"),
+         {ShaderSegment{Placeholder{"MAGIC_REPLACEMENT", "REPLACEMENT"}, "Repl1",
                         "replacement code1;\nreplacement code2;", 900},
-          ShaderSegment{SegType{"MAGIC_REPLACEMENT"}, "Repl2",
+          ShaderSegment{Placeholder{"MAGIC_REPLACEMENT", "REPLACEMENT"}, "Repl2",
                         "replacement code3;\nreplacement code4;", 1100}}}
 
     };
@@ -140,13 +140,13 @@ TEST(ShaderObject, parseSource) {
     auto parsed = oss.str();
 
     std::stringstream ss;
-    for (auto&& [key, line] : util::zip(lnr, splitString(parsed, '\n'))) {
+    for (auto&& [key, line] : util::zip(lnr, util::splitStringView(parsed, '\n'))) {
         ss << fmt::format("{:<12} {:>2}: {}\n", key.first, key.second, line);
     }
     auto pre = ss.str();
 
-    auto expectedLines = splitString(code1Parsed, '\n');
-    auto parsedLines = splitString(parsed, '\n');
+    auto expectedLines = util::splitStringView(code1Parsed, '\n');
+    auto parsedLines = util::splitStringView(parsed, '\n');
 
     EXPECT_EQ(expectedLines.size(), parsedLines.size());
 
@@ -156,39 +156,39 @@ TEST(ShaderObject, parseSource) {
 
     std::vector<size_t> lineNum{1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 1,  14, 1,  2, 3,
                                 16, 17, 18, 19, 20, 21, 22, 23, 1, 2,  1,  2,  25, 26, 27, 28};
-    std::vector<std::string> names{"Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "inc1",
-                                   "Code1",
-                                   "inc2",
-                                   "inc2",
-                                   "inc2",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Repl1[MAGIC_REPLACEMENT,900]",
-                                   "Repl1[MAGIC_REPLACEMENT,900]",
-                                   "Repl2[MAGIC_REPLACEMENT,1100]",
-                                   "Repl2[MAGIC_REPLACEMENT,1100]",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1",
-                                   "Code1"};
+    std::vector<std::string_view> names{"Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "inc1",
+                                        "Code1",
+                                        "inc2",
+                                        "inc2",
+                                        "inc2",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Repl1[REPLACEMENT,900]",
+                                        "Repl1[REPLACEMENT,900]",
+                                        "Repl2[REPLACEMENT,1100]",
+                                        "Repl2[REPLACEMENT,1100]",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1",
+                                        "Code1"};
 
     for (const auto& [exp, refname, refline] : util::zip(lnr, names, lineNum)) {
         EXPECT_EQ(exp.first, refname);

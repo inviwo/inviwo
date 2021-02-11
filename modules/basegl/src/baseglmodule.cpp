@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -83,9 +83,12 @@
 #include <modules/basegl/processors/volumeprocessing/volumelowpass.h>
 #include <modules/basegl/processors/volumeprocessing/volumemapping.h>
 #include <modules/basegl/processors/volumeprocessing/volumemerger.h>
+#include <modules/basegl/processors/volumeprocessing/volumeregionshrink.h>
 #include <modules/basegl/processors/volumeraycaster.h>
 #include <modules/basegl/processors/volumeslicegl.h>
 #include <modules/basegl/processors/volumeprocessing/volumeshader.h>
+#include <modules/basegl/properties/linesettingsproperty.h>
+#include <modules/basegl/properties/stipplingproperty.h>
 #include <modules/basegl/datavisualizer/volumeraycastvisualizer.h>
 #include <modules/basegl/datavisualizer/volumeslicevisualizer.h>
 #include <modules/basegl/datavisualizer/imagevisualizer.h>
@@ -102,6 +105,9 @@ namespace inviwo {
 BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL") {
 
     basegl::addShaderResources(ShaderManager::getPtr(), {getPath(ModulePath::GLSL)});
+
+    registerProperty<LineSettingsProperty>();
+    registerProperty<StipplingProperty>();
 
     registerProcessor<AxisAlignedCutPlane>();
     registerProcessor<Background>();
@@ -162,6 +168,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<VolumeLowPass>();
     registerProcessor<VolumeMapping>();
     registerProcessor<VolumeMerger>();
+    registerProcessor<VolumeRegionShrink>();
     registerProcessor<VolumeShader>();
 
     registerDataVisualizer(std::make_unique<VolumeRaycastVisualizer>(app));

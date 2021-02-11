@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,8 @@
 
 #include <vector>
 #include <memory>
+#include <string_view>
+#include <tcb/span.hpp>
 
 namespace inviwo {
 
@@ -44,6 +46,7 @@ class Event;
 class EventProperty;
 class CompositeProperty;
 class InviwoApplication;
+class NetworkVisitor;
 
 class IVW_CORE_API PropertyOwner : public PropertyOwnerObservable,
                                    public virtual Serializable,
@@ -82,7 +85,7 @@ public:
      */
     virtual void insertProperty(size_t index, Property& property);
 
-    virtual Property* removeProperty(const std::string& identifier);
+    virtual Property* removeProperty(std::string_view identifier);
     virtual Property* removeProperty(Property* property);
     virtual Property* removeProperty(Property& property);
     /**
@@ -93,14 +96,16 @@ public:
      */
     virtual Property* removeProperty(size_t index);
 
-    virtual std::vector<std::string> getPath() const;
+    virtual const std::string& getIdentifier() const;
 
     const std::vector<Property*>& getProperties() const;
     const std::vector<CompositeProperty*>& getCompositeProperties() const;
     std::vector<Property*> getPropertiesRecursive() const;
-    Property* getPropertyByIdentifier(const std::string& identifier,
+    Property* getPropertyByIdentifier(std::string_view identifier,
                                       bool recursiveSearch = false) const;
-    Property* getPropertyByPath(const std::vector<std::string>& path) const;
+
+    Property* getPropertyByPath(std::string_view path) const;
+
     template <class T>
     std::vector<T*> getPropertiesByType(bool recursiveSearch = false) const;
 
@@ -124,15 +129,18 @@ public:
     virtual Processor* getProcessor();
     virtual const Processor* getProcessor() const;
 
+    virtual const PropertyOwner* getOwner() const;
+    virtual PropertyOwner* getOwner();
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    void setAllPropertiesCurrentStateAsDefault();
-    void resetAllPoperties();
+    virtual void setAllPropertiesCurrentStateAsDefault();
+    virtual void resetAllPoperties();
 
     virtual void invokeEvent(Event* event) override;
 
-    virtual InviwoApplication* getInviwoApplication();
+    virtual InviwoApplication* getInviwoApplication() = 0;
 
 protected:
     PropertyOwner();
@@ -153,6 +161,9 @@ protected:
     // allocated on the heap.
     std::vector<std::unique_ptr<Property>> ownedProperties_;
 
+    void forEachProperty(std::function<void(Property&)> callback,
+                         bool recursiveSearch = false) const;
+
 private:
     Property* removeProperty(std::vector<Property*>::iterator it);
     bool findPropsForComposites(TxElement*);
@@ -160,32 +171,21 @@ private:
 };
 
 template <class T>
-std::vector<T*> PropertyOwner::getPropertiesByType(bool recursiveSearch /* = false */) const {
+std::vector<T*> PropertyOwner::getPropertiesByType(bool recursiveSearch) const {
     std::vector<T*> foundProperties;
-    for (size_t i = 0; i < properties_.size(); i++) {
-        if (dynamic_cast<T*>(properties_[i])) {
-            foundProperties.push_back(static_cast<T*>(properties_[i]));
-        } else if (recursiveSearch && dynamic_cast<PropertyOwner*>(properties_[i])) {
-            std::vector<T*> subProperties =
-                dynamic_cast<PropertyOwner*>(properties_[i])->getPropertiesByType<T>(true);
-            foundProperties.insert(foundProperties.end(), subProperties.begin(),
-                                   subProperties.end());
-        }
-    }
+    forEachProperty(
+        [&](Property& property) {
+            if (auto p = dynamic_cast<T*>(&property)) {
+                foundProperties.push_back(p);
+            }
+        },
+        recursiveSearch);
+
     return foundProperties;
 }
 
-namespace detail {
-inline void addPropertyHelper(PropertyOwner&) {}
-template <typename... Ts>
-void addPropertyHelper(PropertyOwner& owner, Property& p, Ts&... props) {
-    owner.addProperty(p);
-    addPropertyHelper(owner, props...);
-}
-}  // namespace detail
-
 template <typename... Ts>
 void PropertyOwner::addProperties(Ts&... properties) {
-    detail::addPropertyHelper(*this, properties...);
+    (addProperty(properties), ...);
 }
 }  // namespace inviwo

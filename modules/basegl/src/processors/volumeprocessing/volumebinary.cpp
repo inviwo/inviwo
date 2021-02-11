@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ VolumeBinary::VolumeBinary()
     this->dataFormat_ = DataUInt8::get();
 }
 
-void VolumeBinary::preProcess(TextureUnitContainer &) { utilgl::setUniforms(shader_, threshold_); }
+void VolumeBinary::preProcess(TextureUnitContainer&) { utilgl::setUniforms(shader_, threshold_); }
 
 void VolumeBinary::postProcess() { volume_->dataMap_.dataRange = vec2(0, 255); }
 

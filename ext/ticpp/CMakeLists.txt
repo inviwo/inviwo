@@ -5,22 +5,22 @@ project(ticpp)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${IVW_EXTENSIONS_DIR}/ticpp/ticpp.h
-    ${IVW_EXTENSIONS_DIR}/ticpp/ticppapi.h
-    ${IVW_EXTENSIONS_DIR}/ticpp/ticpprc.h
-    ${IVW_EXTENSIONS_DIR}/ticpp/tinystr.h
-    ${IVW_EXTENSIONS_DIR}/ticpp/tinyxml.h
+    include/ticpp/ticpp.h
+    include/ticpp/ticppapi.h
+    include/ticpp/ticpprc.h
+    include/ticpp/tinystr.h
+    include/ticpp/tinyxml.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${IVW_EXTENSIONS_DIR}/ticpp/ticpp.cpp
-    ${IVW_EXTENSIONS_DIR}/ticpp/tinystr.cpp
-    ${IVW_EXTENSIONS_DIR}/ticpp/tinyxml.cpp
-    ${IVW_EXTENSIONS_DIR}/ticpp/tinyxmlerror.cpp
-    ${IVW_EXTENSIONS_DIR}/ticpp/tinyxmlparser.cpp
+    src/ticpp.cpp
+    src/tinystr.cpp
+    src/tinyxml.cpp
+    src/tinyxmlerror.cpp
+    src/tinyxmlparser.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -28,7 +28,10 @@ ivw_group("Source Files" ${SOURCE_FILES})
 # Create library
 add_library(ticpp ${SOURCE_FILES} ${HEADER_FILES})
 set_target_properties(ticpp PROPERTIES VERSION 0.4 SOVERSION 0.4)
-
+target_include_directories(ticpp 
+    PUBLIC include
+    PRIVATE include/ticpp
+)
 #--------------------------------------------------------------------
 # Define defintions
 ivw_define_standard_definitions(ticpp ticpp)
@@ -46,7 +49,7 @@ ivw_folder(ticpp ext)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
-ivw_default_install_comp_targets(core ticpp)
+ivw_default_install_targets(ticpp)
 ivw_make_package(TiCPP ticpp)
 
 ivw_suppress_compiler_warnings(ticpp)

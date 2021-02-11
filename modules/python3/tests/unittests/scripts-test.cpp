@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,20 +36,6 @@
 #include <modules/python3/python3module.h>
 #include <modules/python3/pythonscript.h>
 #include <modules/python3/pybindutils.h>
-
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
-
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-
 #include <inviwo/core/properties/optionproperty.h>
 
 #include <pybind11/pybind11.h>
@@ -194,9 +180,9 @@ TEST(Python3Scripts, OptionPropertyTest) {
 
     bool status = false;
     script.run([&](pybind11::dict dict) {
-        auto prop = dict["p"].cast<Property *>();
+        auto prop = dict["p"].cast<Property*>();
         ASSERT_TRUE(prop != nullptr);
-        auto optionProperty = static_cast<OptionPropertyInt *>(prop);
+        auto optionProperty = static_cast<OptionPropertyInt*>(prop);
         ASSERT_TRUE(optionProperty != nullptr);
 
         EXPECT_STREQ("test", optionProperty->getIdentifier().c_str());

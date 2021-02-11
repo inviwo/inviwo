@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-FileShaderResource::FileShaderResource(const std::string& key, const std::string& fileName)
+FileShaderResource::FileShaderResource(std::string_view key, std::string_view fileName)
     : FileObserver(util::getInviwoApplication()), key_(key), fileName_(fileName) {
     startFileObservation(fileName_);
 }
@@ -42,9 +42,9 @@ std::unique_ptr<ShaderResource> FileShaderResource::clone() {
     return std::make_unique<FileShaderResource>(key_, fileName_);
 }
 
-std::string FileShaderResource::key() const { return key_; }
+const std::string& FileShaderResource::key() const { return key_; }
 
-std::string FileShaderResource::source() const {
+const std::string& FileShaderResource::source() const {
     if (!cache_.empty()) return cache_;
     auto stream = filesystem::ifstream(fileName_);
     std::stringstream buffer;
@@ -53,13 +53,13 @@ std::string FileShaderResource::source() const {
     return cache_;
 }
 
-void FileShaderResource::setSource(const std::string& source) {
+void FileShaderResource::setSource(std::string_view source) {
     auto file = filesystem::ofstream(fileName_);
     file << source;
     file.close();
 }
 
-std::string FileShaderResource::file() const { return fileName_; }
+const std::string& FileShaderResource::file() const { return fileName_; }
 
 void FileShaderResource::fileChanged(const std::string& /*fileName*/) {
     cache_ = "";
@@ -73,11 +73,11 @@ std::unique_ptr<ShaderResource> StringShaderResource::clone() {
     return std::make_unique<StringShaderResource>(key_, source_);
 }
 
-std::string StringShaderResource::key() const { return key_; }
+const std::string& StringShaderResource::key() const { return key_; }
 
-std::string StringShaderResource::source() const { return source_; }
+const std::string& StringShaderResource::source() const { return source_; }
 
-void StringShaderResource::setSource(const std::string& source) {
+void StringShaderResource::setSource(std::string_view source) {
     source_ = source;
     callbacks_.invoke(this);
 }

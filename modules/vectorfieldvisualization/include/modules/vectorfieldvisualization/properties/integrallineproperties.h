@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INTEGRALLINEPROPERTIES_H
-#define IVW_INTEGRALLINEPROPERTIES_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 
@@ -84,5 +82,3 @@ Matrix<N + 1, float> IntegralLineProperties::getSeedPointTransformationMatrix(
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_INTEGRALLINEPROPERTIES_H

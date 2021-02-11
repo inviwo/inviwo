@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,11 @@ public:
     virtual Canvas::ContextID activeContext() const override {
         return static_cast<Canvas::ContextID>(glfwGetCurrentContext());
     }
+
+    virtual Canvas::ContextID contextId() const override {
+        return static_cast<Canvas::ContextID>(win_);
+    }
+
     GLFWwindow* win_;
 };
 
@@ -96,15 +101,15 @@ GLFWModule::~GLFWModule() {
 }
 
 void GLFWModule::onProcessorNetworkEvaluationBegin() {
-    // This is called before the network is evaluated, here we make sure that the default context is
-    // active
-
+    // This is called before the network is evaluated,
+    // here we make sure that the default context is active
     RenderContext::getPtr()->activateDefaultRenderContext();
 }
 void GLFWModule::onProcessorNetworkEvaluationEnd() {
     // This is called after the network is evaluated, here we make sure that the gpu is done with
     // its work before we continue. This is needed to make sure that we have textures that are upto
     // data when we render the canvases.
+
     auto syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
     const GLuint64 timeoutInNanoSec = 50'000'000;  // 50ms

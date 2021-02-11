@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,11 @@
  *
  *********************************************************************************/
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
+#include <warn/pop>
 
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
 #include <inviwo/core/common/inviwo.h>
@@ -55,17 +58,18 @@ PYBIND11_MODULE(inviwopyapp, m) {
     auto inviwoApplicationClass = static_cast<py::object>(inviwopy.attr("InviwoApplication"));
     py::class_<InviwoApplicationQt, InviwoApplication>(m, "InviwoApplicationQt",
                                                        py::multiple_inheritance{})
-        .def(py::init([]() {
-            auto app = new InviwoApplicationQt("inviwo");
-            app->setStyleSheetFile(":/stylesheets/inviwo.qss");
+        .def(py::init([](std::string appName) {
+                 auto app = new InviwoApplicationQt(appName);
+                 app->setStyleSheetFile(":/stylesheets/inviwo.qss");
 
-            auto win = new QMainWindow();
-            win->setObjectName("InviwoMainWindow");
-            app->setMainWindow(win);
-            win->hide();
+                 auto win = new QMainWindow();
+                 win->setObjectName("InviwoMainWindow");
+                 app->setMainWindow(win);
+                 win->hide();
 
-            return app;
-        }))
+                 return app;
+             }),
+             py::arg("appName") = "inviwo")
         .def("run",
              [](InviwoApplicationQt* app) {
                  auto timer = new QTimer(app);
@@ -85,7 +89,22 @@ PYBIND11_MODULE(inviwopyapp, m) {
         .def("registerModules",
              [](InviwoApplicationQt* app) { app->registerModules(inviwo::getModuleList()); })
         .def("registerRuntimeModules",
-             [](InviwoApplicationQt* app) { app->registerModules(RuntimeModuleLoading{}); });
+             [](InviwoApplicationQt* app) { app->registerModules(RuntimeModuleLoading{}); })
+        .def("runningBackgroundJobs",
+             [](InviwoApplicationQt* app) {
+                 return app->getProcessorNetwork()->runningBackgroundJobs();
+             })
+        .def(
+            "waitForNetwork",
+            [](InviwoApplicationQt* app, int maxJobs = 0) {
+                app->processEvents();
+                app->waitForPool();
+                do {
+                    app->processEvents();
+                    app->processFront();
+                } while (app->getProcessorNetwork()->runningBackgroundJobs() > maxJobs);
+            },
+            py::arg("maxJobs") = 0);
 
     m.add_object("py", inviwopy);
     m.doc() = "Python inviwo application";

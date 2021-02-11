@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,23 +27,25 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CUBEPROXYGEOMETRY_H
-#define IVW_CUBEPROXYGEOMETRY_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <modules/base/algorithm/meshutils.h>
+
+#include <inviwo/core/util/glmvec.h>
 
 #include <tuple>
+#include <memory>
 
 namespace inviwo {
 
 class Volume;
-class SimpleMesh;
+class Mesh;
 
 namespace algorithm {
 
-std::shared_ptr<SimpleMesh> IVW_MODULE_BASE_API
-createCubeProxyGeometry(const std::shared_ptr<const Volume> &volume);
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> createCubeProxyGeometry(
+    const std::shared_ptr<const Volume>& volume, meshutil::IncludeNormals normals);
 
 /**
  * \brief create a clipped cube proxy geometry for the given volume
@@ -53,8 +55,9 @@ createCubeProxyGeometry(const std::shared_ptr<const Volume> &volume);
  * @param clipExtent  extent of the clipped volume, normalized texture coordinates [0,1]
  * @return cube proxy geometry
  */
-std::shared_ptr<SimpleMesh> IVW_MODULE_BASE_API createCubeProxyGeometry(
-    const std::shared_ptr<const Volume> &volume, const vec3 &clipOrigin, const vec3 &clipExtent);
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> createCubeProxyGeometry(
+    const std::shared_ptr<const Volume>& volume, const vec3& clipOrigin, const vec3& clipExtent,
+    meshutil::IncludeNormals normals);
 
 /**
  * \brief create a clipped cube proxy geometry for the given volume
@@ -64,11 +67,10 @@ std::shared_ptr<SimpleMesh> IVW_MODULE_BASE_API createCubeProxyGeometry(
  * @param clipMax  top right clip position in voxel coordinates [0,volDim - 1]
  * @return cube proxy geometry
  */
-std::shared_ptr<SimpleMesh> IVW_MODULE_BASE_API createCubeProxyGeometry(
-    const std::shared_ptr<const Volume> &volume, const size3_t &clipMin, const size3_t &clipMax);
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> createCubeProxyGeometry(
+    const std::shared_ptr<const Volume>& volume, const size3_t& clipMin, const size3_t& clipMax,
+    meshutil::IncludeNormals normals);
 
 }  // namespace algorithm
 
 }  // namespace inviwo
-
-#endif  // IVW_CUBEPROXYGEOMETRY_H

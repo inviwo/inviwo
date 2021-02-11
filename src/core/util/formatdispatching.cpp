@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-dispatching::DispatchException::DispatchException(const std::string &message,
+dispatching::DispatchException::DispatchException(const std::string& message,
                                                   ExceptionContext context)
     : Exception(message, context) {}
 

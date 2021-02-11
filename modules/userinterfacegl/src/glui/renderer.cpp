@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,13 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/zip.h>
 
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/buffer/buffergl.h>
@@ -52,7 +54,7 @@
 
 #include <modules/fontrendering/util/fontutils.h>
 
-#include <modules/cimg/cimgutils.h>
+#include <algorithm>
 
 namespace inviwo {
 
@@ -216,34 +218,25 @@ std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
     auto factory = InviwoApplication::getPtr()->getDataReaderFactory();
     if (auto reader = factory->getReaderForTypeAndExtension<Layer>("png")) {
         for (auto filename : textureFiles) {
-            std::shared_ptr<Layer> layer;
-            // try to load texture data from current file
-            try {
-                layer = reader->readData(sourcePath + "/" + filename);
-            } catch (DataReaderException const& e) {
-                util::log(e.getContext(),
-                          "Could not load texture data: " + filename + ", " + e.getMessage(),
-                          LogLevel::Error);
-            }
-            // add current layer, might be a nullptr if the image data could not be loaded
+            auto layer = reader->readData(sourcePath + "/" + filename);
             textureLayers.push_back(layer);
         }
     } else {
         throw Exception("Could not find a data reader for texture data (png).", IVW_CONTEXT);
     }
 
-    // find common texture size, use tex format of first available resource
-    const DataFormatBase* dataformat = nullptr;
-    size2_t texDim(std::numeric_limits<std::size_t>::max());
-    for (auto texLayer : textureLayers) {
-        if (texLayer.get() != nullptr) {
-            if (!dataformat) {
-                dataformat = texLayer->getDataFormat();
-            } else if (dataformat->getId() != texLayer->getDataFormat()->getId()) {
-                LogWarn("Different image formats used for UI textures.");
-            }
-            texDim = glm::min(texDim, texLayer->getDimensions());
-        }
+    // Check that all textures has the same dimensions
+    const size2_t texDim = textureLayers.front()->getDimensions();
+    if (!std::all_of(textureLayers.begin(), textureLayers.end(),
+                     [&](const auto& layer) { return layer->getDimensions() == texDim; })) {
+        throw Exception("Textures have inconsistent sizes: " + joinString(textureFiles, ", "),
+                        IVW_CONTEXT);
+    }
+    const DataFormatBase* const dataformat = textureLayers.front()->getDataFormat();
+    if (!std::all_of(textureLayers.begin(), textureLayers.end(),
+                     [&](const auto& layer) { return layer->getDataFormat() == dataformat; })) {
+        throw Exception("Textures have inconsistent formats: " + joinString(textureFiles, ", "),
+                        IVW_CONTEXT);
     }
 
     // upload the individual textures, rescale where necessary
@@ -254,28 +247,13 @@ std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
     TextureUnit texUnit;
     texUnit.activate();
     texture->bind();
-    int zIndex = 0;
-    for (auto texLayer : textureLayers) {
-        if (texLayer.get() != nullptr) {
-            const void* data = nullptr;
-            auto layerRAM = texLayer->getRepresentation<LayerRAM>();
-            std::shared_ptr<LayerRAM> resizedTex;
-            if (texLayer->getDimensions() != texDim) {
-                // need to resize layer
-                resizedTex = createLayerRAM(texDim, LayerType::Color, texLayer->getDataFormat());
-                cimgutil::rescaleLayerRamToLayerRam(layerRAM, resizedTex.get());
-                data = resizedTex->getData();
-            } else {
-                data = layerRAM->getData();
-            }
-
-            auto glformat = GLFormats::get(layerRAM->getDataFormat()->getId());
-            // upload data into array texture
-            glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, zIndex, static_cast<GLsizei>(texDim.x),
-                            static_cast<GLsizei>(texDim.y), 1, glformat.format, glformat.type,
-                            data);
-        }
-        ++zIndex;
+    for (auto [zIndex, texLayer] : util::enumerate(textureLayers)) {
+        auto layerRAM = texLayer->getRepresentation<LayerRAM>();
+        auto glformat = GLFormats::get(layerRAM->getDataFormat()->getId());
+        // upload data into array texture
+        glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, static_cast<GLsizei>(zIndex),
+                        static_cast<GLsizei>(texDim.x), static_cast<GLsizei>(texDim.y), 1,
+                        glformat.format, glformat.type, layerRAM->getData());
     }
     return texture;
 }

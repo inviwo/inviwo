@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -70,7 +70,7 @@ ImageGradient::ImageGradient()
     addProperty(renormalization_);
 }
 
-void ImageGradient::preProcess(TextureUnitContainer &) {
+void ImageGradient::preProcess(TextureUnitContainer&) {
     shader_.setUniform("channel", channel_.getSelectedValue());
     shader_.setUniform("renormalization_", renormalization_.get() ? 1 : 0);
 }

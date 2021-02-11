@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,8 @@
 #include <inviwo/core/properties/valuewrapper.h>
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/transformiterator.h>
+
+#include <string_view>
 
 namespace inviwo {
 
@@ -91,7 +93,7 @@ public:
     void setType(TFPrimitiveSetType type);
     TFPrimitiveSetType getType() const;
 
-    virtual std::string getTitle() const;
+    virtual std::string_view getTitle() const;
 
     /**
      * returns the range of the TF.  For a relative TF this will return [0,1]. In case of an
@@ -144,7 +146,37 @@ public:
      * @return vectors of TFPrimitives' position and color sorted increasingly regarding position
      */
     std::pair<std::vector<double>, std::vector<vec4>> getVectors() const;
+
+    /**
+     * Access TFPrimitives as pair of vectors which can be used, e.g., for setting uniforms of a
+     * shader.
+     *
+     * @return vectors of TFPrimitives' position and color sorted increasingly regarding position
+     */
     std::pair<std::vector<float>, std::vector<vec4>> getVectorsf() const;
+
+    /**
+     * Access TFPrimitives positions as a vector which can be used, e.g., for setting uniforms of a
+     * shader.
+     *
+     * @return vector of TFPrimitives' positions sorted increasingly regarding position
+     */
+    std::vector<double> getPositions() const;
+    /**
+     * Access TFPrimitives positions as a vector which can be used, e.g., for setting uniforms of a
+     * shader.
+     *
+     * @return vector of TFPrimitives' positions sorted increasingly regarding position
+     */
+    std::vector<float> getPositionsf() const;
+
+    /**
+     * Access TFPrimitives colors as a vector which can be used, e.g., for setting uniforms of a
+     * shader.
+     *
+     * @return vector of TFPrimitives' colors sorted increasingly regarding position
+     */
+    std::vector<vec4> getColors() const;
 
     /**
      * Add a TFPrimitive
@@ -228,29 +260,6 @@ public:
      */
     void interpolateAndStoreColors(vec4* dataArray, const size_t size) const;
 
-    /**
-     * flip the positions of the \p primitives with respect to the respective range, i.e.
-     *      p' = range.max - (p - range.min)
-     * with range.min/max corresponding to the lowest/highest position in \p primitives. If
-     * \p primitives is empty, the entire TFPrimitiveSet is flipped using
-     * TFPrimitiveSet::getRange().
-     *
-     * @param primitives   list of primitives to be flipped. If empty, the entire primitive set
-     *                     is flipped.
-     */
-    void flipPositions(const std::vector<TFPrimitive*>& primitives = {});
-    /**
-     * interpolate the alpha values of all primitives in between the first and the last primitive
-     * based on their relative position. If \p primitives is empty, the alpha of the entire
-     * TFPrimitiveSet will be adjusted.
-     */
-    void interpolateAlpha(const std::vector<TFPrimitive*>& primitives = {});
-    /**
-     * set the alphas value of all primitives to the average alpha value. If \p primitives is empty,
-     * the entire TFPrimitiveSet is equalized.
-     */
-    void equalizeAlpha(const std::vector<TFPrimitive*>& primitives = {});
-
 protected:
     void add(std::unique_ptr<TFPrimitive> primitive);
     bool remove(std::vector<std::unique_ptr<TFPrimitive>>::iterator it);
@@ -266,8 +275,8 @@ protected:
      */
     vec4 interpolateColor(double t) const;
 
-    virtual std::string serializationKey() const;
-    virtual std::string serializationItemKey() const;
+    virtual std::string_view serializationKey() const;
+    virtual std::string_view serializationItemKey() const;
 
     std::vector<std::unique_ptr<TFPrimitive>> values_;
     std::vector<TFPrimitive*> sorted_;
@@ -280,5 +289,53 @@ inline TFPrimitiveSetType TFPrimitiveSet::getType() const { return type_; }
 
 bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
 bool operator!=(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
+
+namespace util {
+
+IVW_CORE_API void distributeAlphaEvenly(std::vector<TFPrimitive*> selection);
+IVW_CORE_API void distributePositionEvenly(std::vector<TFPrimitive*> selection);
+
+/**
+ * Set the alphas value of selection to the average alpha value.
+ */
+IVW_CORE_API void alignAlphaToMean(const std::vector<TFPrimitive*>& selection);
+/**
+ * Set the alphas value of selection to the max alpha value.
+ */
+IVW_CORE_API void alignAlphaToTop(const std::vector<TFPrimitive*>& selection);
+/**
+ * Set the alphas value of selection to the min alpha value.
+ */
+IVW_CORE_API void alignAlphaToBottom(const std::vector<TFPrimitive*>& selection);
+
+/**
+ * Set the position value of selection to the average position value.
+ */
+IVW_CORE_API void alignPositionToMean(std::vector<TFPrimitive*> selection);
+/**
+ * Set the position value of selection to the min position value.
+ */
+IVW_CORE_API void alignPositionToLeft(std::vector<TFPrimitive*> selection);
+
+/**
+ * Set the position value of selection to the max position value.
+ */
+IVW_CORE_API void alignPositionToRight(std::vector<TFPrimitive*> selection);
+
+/**
+ * Interpolate the alpha values of selected primitives in between the first and the last primitive
+ * based on their relative position.
+ */
+IVW_CORE_API void interpolateAlpha(const std::vector<TFPrimitive*>& selection);
+
+/**
+ * Flip the positions of the \p primitives with respect to the respective range, i.e.
+ *      p' = range.max - (p - range.min)
+ * with range.min/max corresponding to the lowest/highest position in \p primitives.
+ *
+ * @param primitives   list of primitives to be flipped.
+ */
+IVW_CORE_API void flipPositions(const std::vector<TFPrimitive*>& selection);
+}  // namespace util
 
 }  // namespace inviwo

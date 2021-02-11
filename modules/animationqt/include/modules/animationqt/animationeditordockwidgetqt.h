@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_ANIMATIONEDITORDOCKWIDGETQT_H
-#define IVW_ANIMATIONEDITORDOCKWIDGETQT_H
+#pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -55,8 +53,8 @@ class SequenceEditorFactory;
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget,
                                                                public AnimationControllerObserver {
 public:
-    AnimationEditorDockWidgetQt(AnimationManager& controller, const std::string& widgetName,
-                                TrackWidgetQtFactory& widgetFactory,
+    AnimationEditorDockWidgetQt(AnimationController& controller, AnimationManager& manager,
+                                const std::string& widgetName, TrackWidgetQtFactory& widgetFactory,
                                 SequenceEditorFactory& editorFactory, QWidget* parent);
     AnimationEditorDockWidgetQt(const AnimationEditorDockWidgetQt&) = delete;
     AnimationEditorDockWidgetQt(AnimationEditorDockWidgetQt&&) = delete;
@@ -82,5 +80,3 @@ protected:
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_ANIMATIONEDITORDOCKWIDGETQT_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_ANIMATIONCONTROLLEROBSERVER_H
-#define IVW_ANIMATIONCONTROLLEROBSERVER_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -49,10 +47,6 @@ class IVW_MODULE_ANIMATION_API AnimationControllerObserver : public Observer {
 public:
     virtual void onStateChanged(AnimationController* /*controller*/, AnimationState /*prevState*/,
                                 AnimationState /*newState*/){};
-    virtual void onPlaybackSettingsChanged(AnimationController* /*controller*/,
-                                           AnimationPlaySettings /*prevSettings*/,
-                                           AnimationPlaySettings /*newSettings*/){};
-
     virtual void onTimeChanged(AnimationController* /*controller*/, Seconds /*oldTime*/,
                                Seconds /*newTime*/){};
     virtual void onAnimationChanged(AnimationController* /*controller*/, Animation* /*oldAnim*/,
@@ -64,9 +58,6 @@ class IVW_MODULE_ANIMATION_API AnimationControllerObservable
 protected:
     void notifyStateChanged(AnimationController* controller, AnimationState prevState,
                             AnimationState newState);
-    void notifyPlaybackSettingsChanged(AnimationController* controller,
-                                       AnimationPlaySettings prevMode,
-                                       AnimationPlaySettings newMode);
     void notifyTimeChanged(AnimationController* controller, Seconds oldTime, Seconds newTime);
     void notifyAnimationChanged(AnimationController* controller, Animation* oldAnimation,
                                 Animation* newAnimation);
@@ -75,5 +66,3 @@ protected:
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_ANIMATIONCONTROLLEROBSERVER_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,41 +41,38 @@ class ProcessorNetworkObservable;
 
 class IVW_CORE_API ProcessorNetworkObserver : public Observer {
 public:
-    ProcessorNetworkObserver() = default;
-    virtual ~ProcessorNetworkObserver() = default;
     friend ProcessorNetworkObservable;
     /**
      * This method will be called when observed object changes.
      * Override it to add behavior.
      */
-    virtual void onProcessorNetworkChange(){};
-    virtual void onProcessorNetworkEvaluateRequest(){};
-    virtual void onProcessorNetworkUnlocked(){};
+    virtual void onProcessorNetworkChange() {}
+    virtual void onProcessorNetworkEvaluateRequest() {}
+    virtual void onProcessorNetworkUnlocked() {}
 
     // Processors
-    virtual void onProcessorNetworkWillAddProcessor(Processor*){};
-    virtual void onProcessorNetworkDidAddProcessor(Processor*){};
-    virtual void onProcessorNetworkWillRemoveProcessor(Processor*){};
-    virtual void onProcessorNetworkDidRemoveProcessor(Processor*){};
+    virtual void onProcessorNetworkWillAddProcessor(Processor*) {}
+    virtual void onProcessorNetworkDidAddProcessor(Processor*) {}
+    virtual void onProcessorNetworkWillRemoveProcessor(Processor*) {}
+    virtual void onProcessorNetworkDidRemoveProcessor(Processor*) {}
 
     // Connections
-    virtual void onProcessorNetworkWillAddConnection(const PortConnection&){};
-    virtual void onProcessorNetworkDidAddConnection(const PortConnection&){};
-    virtual void onProcessorNetworkWillRemoveConnection(const PortConnection&){};
-    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection&){};
+    virtual void onProcessorNetworkWillAddConnection(const PortConnection&) {}
+    virtual void onProcessorNetworkDidAddConnection(const PortConnection&) {}
+    virtual void onProcessorNetworkWillRemoveConnection(const PortConnection&) {}
+    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection&) {}
 
     // Links
-    virtual void onProcessorNetworkWillAddLink(const PropertyLink&){};
-    virtual void onProcessorNetworkDidAddLink(const PropertyLink&){};
-    virtual void onProcessorNetworkWillRemoveLink(const PropertyLink&){};
-    virtual void onProcessorNetworkDidRemoveLink(const PropertyLink&){};
+    virtual void onProcessorNetworkWillAddLink(const PropertyLink&) {}
+    virtual void onProcessorNetworkDidAddLink(const PropertyLink&) {}
+    virtual void onProcessorNetworkWillRemoveLink(const PropertyLink&) {}
+    virtual void onProcessorNetworkDidRemoveLink(const PropertyLink&) {}
+
+    virtual void onProcessorBackgroundJobsChanged(Processor*, int /*diff*/, int /*total*/) {}
 };
 
 class IVW_CORE_API ProcessorNetworkObservable : public Observable<ProcessorNetworkObserver> {
 public:
-    ProcessorNetworkObservable() = default;
-    virtual ~ProcessorNetworkObservable() = default;
-
     void notifyObserversProcessorNetworkChanged();
     void notifyObserversProcessorNetworkEvaluateRequest();
     void notifyObserversProcessorNetworkUnlocked();
@@ -97,6 +94,8 @@ public:
     void notifyObserversProcessorNetworkDidAddLink(const PropertyLink& propertyLink);
     void notifyObserversProcessorNetworkWillRemoveLink(const PropertyLink& propertyLink);
     void notifyObserversProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink);
+
+    void notifyObserversProcessorBackgroundJobsChanged(Processor* p, int diff, int total);
 };
 
 }  // namespace inviwo

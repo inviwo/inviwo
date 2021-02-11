@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,8 +36,8 @@ namespace glui {
 const std::string IntPropertyWidget::classIdentifier = "org.inviwo.glui.IntPropertyWidget";
 std::string IntPropertyWidget::getClassIdentifier() const { return classIdentifier; }
 
-IntPropertyWidget::IntPropertyWidget(IntProperty &property, Processor &processor,
-                                     Renderer &uiRenderer, const ivec2 &extent,
+IntPropertyWidget::IntPropertyWidget(IntProperty& property, Processor& processor,
+                                     Renderer& uiRenderer, const ivec2& extent,
                                      UIOrientation orientation)
     : Slider(property.getDisplayName(), property.get(), property.getMinValue(),
              property.getMaxValue(), processor, uiRenderer, extent, orientation)
@@ -45,7 +45,7 @@ IntPropertyWidget::IntPropertyWidget(IntProperty &property, Processor &processor
     , property_(&property) {
     property_->addObserver(this);
 
-    moveAction_ = [this](const dvec2 &delta) {
+    moveAction_ = [this](const dvec2& delta) {
         bool triggerUpdate = false;
         if (!property_->getReadOnly()) {
             // delta in pixel (screen coords),
@@ -70,14 +70,14 @@ void IntPropertyWidget::updateFromProperty() {
     setEnabled(!property_->getReadOnly());
 }
 
-void IntPropertyWidget::onSetVisible(Property *, bool visible) { setVisible(visible); }
+void IntPropertyWidget::onSetVisible(Property*, bool visible) { setVisible(visible); }
 
-void IntPropertyWidget::onSetDisplayName(Property *, const std::string &displayName) {
+void IntPropertyWidget::onSetDisplayName(Property*, const std::string& displayName) {
     setLabel(displayName);
     property_->propertyModified();
 }
 
-void IntPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
+void IntPropertyWidget::onSetReadOnly(Property*, bool readonly) { setEnabled(!readonly); }
 
 }  // namespace glui
 

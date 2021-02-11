@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/interaction/events/eventlistener.h>
@@ -48,7 +49,7 @@
 namespace inviwo {
 
 class Inport;
-
+class CameraFactory;
 /**
  * \ingroup properties
  * A property wrapping the Camera data structure
@@ -56,6 +57,7 @@ class Inport;
  */
 class IVW_CORE_API CameraProperty : public CompositeProperty, public TrackballObject {
 public:
+    using value_type = Camera;
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
@@ -83,49 +85,47 @@ public:
     virtual const Camera& get() const;
     virtual void set(const Property* srcProperty) override;
 
-    /**
-     * Reset camera position, direction to default state.
-     */
-    void resetCamera();
-
-    virtual CameraProperty& setCurrentStateAsDefault() override;
-    virtual CameraProperty& resetToDefaultState() override;
+    CameraProperty& setCamera(const std::string& cameraIdentifier);
+    CameraProperty& setCamera(std::unique_ptr<Camera> camera);
 
     virtual const vec3& getLookFrom() const override;
-    virtual void setLookFrom(vec3 lookFrom) override;
+    virtual CameraProperty& setLookFrom(vec3 lookFrom) override;
     virtual const vec3& getLookTo() const override;
-    virtual void setLookTo(vec3 lookTo) override;
+    virtual CameraProperty& setLookTo(vec3 lookTo) override;
     virtual const vec3& getLookUp() const override;
-    virtual void setLookUp(vec3 lookUp) override;
+    virtual CameraProperty& setLookUp(vec3 lookUp) override;
 
     vec3 getLookRight() const;
 
-    void setAspectRatio(float aspectRatio);
+    CameraProperty& setAspectRatio(float aspectRatio);
     float getAspectRatio() const;
     /**
      * Sets given camera properties while respecting their min/max ranges.
      * Locks and unlocks processor network before and after changing property values.
      * @note Parameters will be capped by their min/max.
      */
-    virtual void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;
+    virtual CameraProperty& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;
 
     virtual float getNearPlaneDist() const override;
     virtual float getFarPlaneDist() const override;
 
-    void setNearPlaneDist(float v);
-    void setFarPlaneDist(float v);
+    CameraProperty& setNearPlaneDist(float v);
+    CameraProperty& setFarPlaneDist(float v);
     /**
      * Set near and far plane distance values and adjust their min/max ranges.
      * Adjusts the min/max ranges of the properties to e.g. 0.1/10 times the given value.
      * Locks and unlocks processor network before and after changing property values.
      */
-    void setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist, float minMaxRatio = 10.f);
+    CameraProperty& setNearFarPlaneDist(float nearPlaneDist, float farPlaneDist,
+                                        float minMaxRatio = 10.f);
 
     virtual vec3 getLookFromMinValue() const override;
     virtual vec3 getLookFromMaxValue() const override;
 
     virtual vec3 getLookToMinValue() const override;
     virtual vec3 getLookToMaxValue() const override;
+
+    virtual void zoom(float factor, Bounded bounded) override;
 
     /**
      * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
@@ -152,26 +152,80 @@ public:
 
     void invokeEvent(Event* event) override;
 
+    Property* getCameraProperty(const std::string& identifier) const;
+    void addCamerapProperty(std::unique_ptr<Property> camprop);
+
+    virtual CameraProperty& setCurrentStateAsDefault() override;
+    virtual CameraProperty& resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
+    virtual bool needsSerialization() const override;
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+
+    /**
+     * Fit the current bounding box into view, keeping the view direction
+     * If updateNearFar is set it will also adjust near and far.
+     * If updateLookRanges is set it will also adjust the range of look from
+     * @see camerautil::setCameraView
+     * @pre There must be a bounding box set
+     */
+    void fitData();
+
+    /**
+     * Fit the current bounding box into view and set the view direction to the specified side
+     * If updateNearFar is set it will also adjust near and far.
+     * If updateLookRanges is set it will also adjust the range of look from
+     * @see camerautil::setCameraView
+     * @pre There must be a bounding box set
+     */
+    void setView(camerautil::Side side);
+
+    /**
+     * Flip the direction of the up vector
+     */
+    void flipUp();
+
+    /**
+     * Adjust the near and far values for the current bounding box
+     * @pre There must be a bounding box set
+     */
+    void setNearFar();
+
+    /**
+     * Adjust the look from ranges for the current bounding box
+     * @pre There must be a bounding box set
+     */
+    void setLookRange();
+
+private:
+    CameraFactory* factory_;
+    OptionPropertyString cameraType_;
+    std::vector<Property*> cameraProperties_;
+    std::vector<std::unique_ptr<Property>> ownedCameraProperties_;
+    std::unique_ptr<Camera> camera_;
+    std::unique_ptr<Camera> defaultCamera_;
+    ButtonGroupProperty cameraActions_;
+
+public:
     // These properties enable linking of individual
     // camera properties but requires them to be synced
     // with the camera.
     // Use NetworkLock if editing multiple properties at the same time
-    OptionPropertyString cameraType_;
-    ButtonGroupProperty cameraActions_;
-    FloatVec3Property lookFrom_;
-    FloatVec3Property lookTo_;
-    FloatVec3Property lookUp_;
-    FloatProperty aspectRatio_;
-    FloatProperty nearPlane_;
-    FloatProperty farPlane_;
+
+    FloatVec3RefProperty lookFrom_;
+    FloatVec3RefProperty lookTo_;
+    FloatVec3RefProperty lookUp_;
+    FloatRefProperty aspectRatio_;
+    FloatRefProperty nearPlane_;
+    FloatRefProperty farPlane_;
 
 private:
+    bool changeCamera(const std::string& name);
+    void hideConfiguredProperties();
+
     std::vector<ButtonGroupProperty::Button> buttons();
-    void setView(::inviwo::camerautil::Side side);
-    void fitData();
-    void flipUp();
-    void setNearFar();
-    void setLookRange();
+    void updateFittingVisibility();
 
     CompositeProperty settings_;
     BoolProperty updateNearFar_;
@@ -180,8 +234,6 @@ private:
     ButtonProperty setNearFarButton_;
     ButtonProperty setLookRangesButton_;
 
-    void changeCamera(std::unique_ptr<Camera> newCamera);
-    std::unique_ptr<Camera> camera_;
     std::function<std::optional<mat4>()> getBoundingBox_;
     bool aspectSupplier_ = false;
 };

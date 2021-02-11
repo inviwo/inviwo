@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2020-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,19 +29,22 @@
 
 #include <inviwopy/pypickingmapper.h>
 
-#include <inviwo/core/datastructures/camera.h>
+#include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/datastructures/camera/orthographiccamera.h>
+#include <inviwo/core/datastructures/camera/perspectivecamera.h>
+#include <inviwo/core/datastructures/camera/skewedperspectivecamera.h>
 
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 
 namespace inviwo {
 
-void exposeCamera(pybind11::module &m) {
+void exposeCamera(pybind11::module& m) {
     namespace py = pybind11;
 
     py::class_<Camera>(m, "Camera")
         .def("clone", &Camera::clone)
-        .def("update", &Camera::update)
+        .def("updateFrom", &Camera::updateFrom)
         .def_property("lookFrom", &Camera::getLookFrom, &Camera::setLookFrom)
         .def_property("lookTo", &Camera::getLookTo, &Camera::setLookTo)
         .def_property("lookUp", &Camera::getLookUp, &Camera::setLookUp)

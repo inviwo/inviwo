@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DOUBLE_SPIN_BOX_QT_H
-#define IVW_DOUBLE_SPIN_BOX_QT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
@@ -81,5 +80,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DOUBLE_SPIN_BOX_QT_H

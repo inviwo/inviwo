@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LAYERRAMDISTANCETRANSFORM_H
-#define IVW_LAYERRAMDISTANCETRANSFORM_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -37,7 +36,7 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
-#ifndef __clang__
+#ifdef IVW_USE_OPENMP
 #include <omp.h>
 #endif
 
@@ -62,28 +61,28 @@ namespace util {
  */
 template <typename T, typename U, typename Predicate, typename ValueTransform,
           typename ProgressCallback>
-void layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
-                               LayerRAMPrecision<U> *outDistanceField, const Matrix<2, U> basis,
+void layerRAMDistanceTransform(const LayerRAMPrecision<T>* inLayer,
+                               LayerRAMPrecision<U>* outDistanceField, const Matrix<2, U> basis,
                                const size2_t upsample, Predicate predicate,
                                ValueTransform valueTransform, ProgressCallback callback);
 
 template <typename T, typename U>
-void layerRAMDistanceTransform(const LayerRAMPrecision<T> *inVolume,
-                               LayerRAMPrecision<U> *outDistanceField, const Matrix<2, U> basis,
+void layerRAMDistanceTransform(const LayerRAMPrecision<T>* inVolume,
+                               LayerRAMPrecision<U>* outDistanceField, const Matrix<2, U> basis,
                                const size2_t upsample);
 
 template <typename U, typename Predicate, typename ValueTransform, typename ProgressCallback>
-void layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *outDistanceField,
+void layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
                             const size2_t upsample, Predicate predicate,
                             ValueTransform valueTransform, ProgressCallback callback);
 
 template <typename U, typename ProgressCallback>
-void layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *outDistanceField,
+void layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
                             const size2_t upsample, double threshold, bool normalize, bool flip,
                             bool square, double scale, ProgressCallback callback);
 
 template <typename U>
-void layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *outDistanceField,
+void layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
                             const size2_t upsample, double threshold, bool normalize, bool flip,
                             bool square, double scale);
 
@@ -91,13 +90,13 @@ void layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *outDista
 
 template <typename T, typename U, typename Predicate, typename ValueTransform,
           typename ProgressCallback>
-void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
-                                     LayerRAMPrecision<U> *outDistanceField,
+void util::layerRAMDistanceTransform(const LayerRAMPrecision<T>* inLayer,
+                                     LayerRAMPrecision<U>* outDistanceField,
                                      const Matrix<2, U> basis, const size2_t upsample,
                                      Predicate predicate, ValueTransform valueTransform,
                                      ProgressCallback callback) {
 
-#ifndef __clang__
+#ifdef IVW_USE_OPENMP
     omp_set_num_threads(std::thread::hardware_concurrency());
 #endif
 
@@ -107,8 +106,8 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
 
     callback(0.0);
 
-    const T *src = inLayer->getDataTyped();
-    U *dst = outDistanceField->getDataTyped();
+    const T* src = inLayer->getDataTyped();
+    U* dst = outDistanceField->getDataTyped();
 
     const i64vec2 srcDim{inLayer->getDimensions()};
     const i64vec2 dstDim{outDistanceField->getDimensions()};
@@ -156,7 +155,9 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
 
 // first pass, forward and backward scan along x
 // result: min distance in x direction
+#ifdef IVW_USE_OPENMP
 #pragma omp parallel for
+#endif
     for (int64 y = 0; y < dstDim.y; ++y) {
         // forward
         U dist = static_cast<U>(dstDim.x);
@@ -185,11 +186,15 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
     // for each voxel v(x,y,z) find min_i(data(x,i,z) + (y - i)^2), 0 <= i < dimY
     // result: min distance in x and y direction
     callback(0.45);
+#ifdef IVW_USE_OPENMP
 #pragma omp parallel
+#endif
     {
         std::vector<U> buff;
         buff.resize(dstDim.y);
+#ifdef IVW_USE_OPENMP
 #pragma omp for
+#endif
         for (int64 x = 0; x < dstDim.x; ++x) {
 
             // cache column data into temporary buffer
@@ -216,7 +221,9 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
     // scale data
     callback(0.9);
     const int64 layerSize = dstDim.x * dstDim.y;
+#ifdef IVW_USE_OPENMP
 #pragma omp parallel for
+#endif
     for (int64 i = 0; i < layerSize; ++i) {
         dst[i] = valueTransform(dst[i]);
     }
@@ -224,21 +231,21 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
 }
 
 template <typename T, typename U>
-void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
-                                     LayerRAMPrecision<U> *outDistanceField,
+void util::layerRAMDistanceTransform(const LayerRAMPrecision<T>* inLayer,
+                                     LayerRAMPrecision<U>* outDistanceField,
                                      const Matrix<2, U> basis, const size2_t upsample) {
 
     util::layerRAMDistanceTransform(
         inLayer, outDistanceField, basis, upsample,
-        [](const T &val) { return util::glm_convert_normalized<double>(val) > 0.5; },
-        [](const U &squareDist) {
+        [](const T& val) { return util::glm_convert_normalized<double>(val) > 0.5; },
+        [](const U& squareDist) {
             return static_cast<U>(std::sqrt(static_cast<double>(squareDist)));
         },
         [](double f) {});
 }
 
 template <typename U, typename Predicate, typename ValueTransform, typename ProgressCallback>
-void util::layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *outDistanceField,
+void util::layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
                                   const size2_t upsample, Predicate predicate,
                                   ValueTransform valueTransform, ProgressCallback callback) {
 
@@ -250,7 +257,7 @@ void util::layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *ou
 }
 
 template <typename U, typename ProgressCallback>
-void util::layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *outDistanceField,
+void util::layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
                                   const size2_t upsample, double threshold, bool normalize,
                                   bool flip, bool square, double scale, ProgressCallback progress) {
 
@@ -258,20 +265,20 @@ void util::layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *ou
     inputLayerRep->dispatch<void, dispatching::filter::Scalars>([&](const auto lrprecision) {
         using ValueType = util::PrecisionValueType<decltype(lrprecision)>;
 
-        const auto predicateIn = [threshold](const ValueType &val) { return val < threshold; };
-        const auto predicateOut = [threshold](const ValueType &val) { return val > threshold; };
+        const auto predicateIn = [threshold](const ValueType& val) { return val < threshold; };
+        const auto predicateOut = [threshold](const ValueType& val) { return val > threshold; };
 
-        const auto normPredicateIn = [threshold](const ValueType &val) {
+        const auto normPredicateIn = [threshold](const ValueType& val) {
             return util::glm_convert_normalized<double>(val) < threshold;
         };
-        const auto normPredicateOut = [threshold](const ValueType &val) {
+        const auto normPredicateOut = [threshold](const ValueType& val) {
             return util::glm_convert_normalized<double>(val) > threshold;
         };
 
-        const auto valTransIdent = [scale](const float &squareDist) {
+        const auto valTransIdent = [scale](const float& squareDist) {
             return static_cast<float>(scale * squareDist);
         };
-        const auto valTransSqrt = [scale](const float &squareDist) {
+        const auto valTransSqrt = [scale](const float& squareDist) {
             return static_cast<float>(scale * std::sqrt(squareDist));
         };
 
@@ -304,7 +311,7 @@ void util::layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *ou
 }
 
 template <typename U>
-void util::layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *outDistanceField,
+void util::layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
                                   const size2_t upsample, double threshold, bool normalize,
                                   bool flip, bool square, double scale) {
     util::layerDistanceTransform(inLayer, outDistanceField, upsample, threshold, normalize, flip,
@@ -312,5 +319,3 @@ void util::layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *ou
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_LAYERRAMDISTANCETRANSFORM_H

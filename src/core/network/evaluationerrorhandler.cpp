@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,8 @@
 
 #include <inviwo/core/network/evaluationerrorhandler.h>
 #include <inviwo/core/processors/processor.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -62,6 +64,10 @@ void StandardEvaluationErrorHandler::operator()(Processor* processor, Evaluation
             e.getStack(ss);
             util::log(e.getContext(), ss.str(), LogLevel::Info);
         }
+    } catch (fmt::format_error& e) {
+        util::log(context,
+                  id + " Error in " + func + " using fmt::format: " + std::string(e.what()),
+                  LogLevel::Error);
     } catch (std::exception& e) {
         util::log(context, id + " Error in " + func + ": " + std::string(e.what()),
                   LogLevel::Error);

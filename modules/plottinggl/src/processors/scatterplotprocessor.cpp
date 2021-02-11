@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@
 #include <modules/opengl/openglutils.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 
-#include <inviwo/dataframe/datastructures/dataframeutil.h>
+#include <inviwo/dataframe/util/dataframeutil.h>
 
 namespace inviwo {
 
@@ -62,17 +62,14 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     , radiusCol_("radiusCol", "Radius column", dataFramePort_, true, 4) {
 
     addPort(dataFramePort_);
-    addPort(brushingPort_);
-    addPort(backgroundPort_);
+    addPort(brushingPort_).setOptional(true);
+    addPort(backgroundPort_).setOptional(true);
     addPort(outport_);
-
-    brushingPort_.setOptional(true);
-    backgroundPort_.setOptional(true);
 
     tooltipCallBack_ = scatterPlot_.addToolTipCallback([this](PickingEvent* p, size_t rowId) {
         if (!p) return;
         if (auto dataframe = dataFramePort_.getData()) {
-            p->setToolTip(dataframeutil::createToolTipForRow(*dataFramePort_.getData(), rowId));
+            p->setToolTip(dataframe::createToolTipForRow(*dataFramePort_.getData(), rowId));
         }
     });
     selectionChangedCallBack_ =
@@ -109,12 +106,9 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     scatterPlot_.properties_.xAxis_.captionSettings_.offset_.set(20.0f);
     scatterPlot_.properties_.yAxis_.captionSettings_.setChecked(true);
     scatterPlot_.properties_.yAxis_.captionSettings_.offset_.set(30.0f);
+    scatterPlot_.properties_.setCurrentStateAsDefault();
 
-    addProperty(scatterPlot_.properties_);
-    addProperty(xAxis_);
-    addProperty(yAxis_);
-    addProperty(colorCol_);
-    addProperty(radiusCol_);
+    addProperties(scatterPlot_.properties_, xAxis_, yAxis_, colorCol_, radiusCol_);
 
     xAxis_.onChange([this]() { onXAxisChange(); });
     yAxis_.onChange([this]() { onYAxisChange(); });

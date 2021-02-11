@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -96,7 +96,7 @@ std::vector<Processor*> ImageBackgroundVisualizer::addSourceAndVisualizerNetwork
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     net->addLink(sourceAndOutport.first->getPropertyByIdentifier("imageDimension_"),
-                 processors.back()->getPropertyByPath({"inputSize", "dimensions"}));
+                 processors.back()->getPropertyByPath("inputSize.dimensions"));
 
     net->evaluateLinksFromProperty(
         sourceAndOutport.first->getPropertyByIdentifier("imageDimension_"));

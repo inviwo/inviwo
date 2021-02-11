@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LAYERRAMSUBSET_H
-#define IVW_LAYERRAMSUBSET_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
@@ -56,6 +54,7 @@ namespace util {
  * @param offset   subregion offset in input layer
  * @param extent   extent (width and height) of subregion
  * @param clampBorderOutsideImage    if true, the output region is clamped to the layer boundaries
+ *
  * @return std::shared_ptr<LayerRAM>
  */
 IVW_MODULE_BASE_API std::shared_ptr<LayerRAM> layerSubSet(const Layer* in, ivec2 offset,
@@ -75,6 +74,7 @@ IVW_MODULE_BASE_API std::shared_ptr<LayerRAM> layerSubSet(const Layer* in, ivec2
  * @param offset   subregion offset in input layer
  * @param extent   extent (width and height) of subregion
  * @param clampBorderOutsideImage    if true, the output region is clamped to the layer boundaries
+ *
  * @return std::shared_ptr<LayerRAMPrecision<T>>
  */
 template <typename T>
@@ -121,7 +121,9 @@ std::shared_ptr<LayerRAMPrecision<U>> extractLayerSubSet(const LayerRAMPrecision
         std::fill(dst, dst + dstDim.x * dstDim.y, U(0));
     }
     // memcpy each row to form sub layer
+#ifdef IVW_USE_OPENMP
 #pragma omp parallel for
+#endif
     for (int j = 0; j < copyExtent.y; j++) {
         size_t srcPos = (j + srcOffset.y) * srcDim.x + srcOffset.x;
         size_t dstPos = (j + dstOffset.y) * dstDim.x + dstOffset.x;
@@ -150,5 +152,3 @@ std::shared_ptr<LayerRAMPrecision<T>> util::layerSubSet(const Layer* in, ivec2 o
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_LAYERRAMSUBSET_H

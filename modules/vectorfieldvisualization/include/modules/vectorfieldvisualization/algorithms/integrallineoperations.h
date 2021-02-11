@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,32 +27,28 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INTEGRALLINEOPERATIONS_H
-#define IVW_INTEGRALLINEOPERATIONS_H
+#pragma once
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/vectorfieldvisualization/datastructures/integralline.h>
 #include <modules/vectorfieldvisualization/datastructures/integrallineset.h>
 
 namespace inviwo {
 
 namespace util {
-IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine curvature(const IntegralLine &line,
+IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine curvature(const IntegralLine& line,
                                                                dmat4 toWorld);
-IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineSet curvature(const IntegralLineSet &lines);
+IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineSet curvature(const IntegralLineSet& lines);
 
-IVW_MODULE_VECTORFIELDVISUALIZATION_API void curvature(IntegralLine &line, dmat4 toWorld);
-IVW_MODULE_VECTORFIELDVISUALIZATION_API void curvature(IntegralLineSet &lines);
+IVW_MODULE_VECTORFIELDVISUALIZATION_API void curvature(IntegralLine& line, dmat4 toWorld);
+IVW_MODULE_VECTORFIELDVISUALIZATION_API void curvature(IntegralLineSet& lines);
 
-IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine tortuosity(const IntegralLine &line,
+IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine tortuosity(const IntegralLine& line,
                                                                 dmat4 toWorld);
-IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineSet tortuosity(const IntegralLineSet &lines);
+IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineSet tortuosity(const IntegralLineSet& lines);
 
-IVW_MODULE_VECTORFIELDVISUALIZATION_API void tortuosity(IntegralLine &line, dmat4 toWorld);
-IVW_MODULE_VECTORFIELDVISUALIZATION_API void tortuosity(IntegralLineSet &lines);
+IVW_MODULE_VECTORFIELDVISUALIZATION_API void tortuosity(IntegralLine& line, dmat4 toWorld);
+IVW_MODULE_VECTORFIELDVISUALIZATION_API void tortuosity(IntegralLineSet& lines);
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_INTEGRALLINECURVATURE_H

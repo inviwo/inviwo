@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -136,19 +136,13 @@ Outport& CompositeSink<InportType, OutportType>::getSuperOutport() {
 template <typename InportType, typename OutportType>
 void CompositeSink<InportType, OutportType>::serialize(Serializer& s) const {
     CompositeSinkBase::serialize(s);
-    // Need to use pointers here, since the port will be serialized in portconnections etc and we
-    // want the serialization to know they are the same object.
-    auto ptr = &superOutport_;
-    s.serialize("SuperOutport", ptr);
+    s.serialize("SuperOutport", superOutport_);
 }
 
 template <typename InportType, typename OutportType>
 void CompositeSink<InportType, OutportType>::deserialize(Deserializer& d) {
     CompositeSinkBase::deserialize(d);
-    // Need to use pointers here, since the port will be deserialized in portconnections etc and we
-    // want the serialization to know they are the same object.
-    auto ptr = &superOutport_;
-    d.deserialize("SuperOutport", ptr);
+    d.deserialize("SuperOutport", superOutport_);
 }
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -491,6 +491,7 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
                                 return static_cast<T>(buffer[index]) * weight;
                             }));
                     };
+                    (void)mix;
 
                     auto outRam =
                         std::make_shared<BufferRAMPrecision<ValueType, PB::target>>(*inRam);

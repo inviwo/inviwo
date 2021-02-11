@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,10 @@
 #pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+
+#include <string>
+#include <string_view>
+#include <functional>
 
 namespace inviwo {
 
@@ -41,38 +44,39 @@ struct IVW_MODULE_OPENGL_API ShaderSegment {
     /**
      * Represents a placeholder in shader code that will be replaced
      */
-    class IVW_MODULE_OPENGL_API Type {
+    struct IVW_MODULE_OPENGL_API Placeholder {
     public:
-        Type() = default;
-        explicit Type(std::string type);
-        const std::string& getString() const { return value_; }
+        Placeholder() = default;
+        explicit constexpr Placeholder(std::string_view key, std::string_view name)
+            : key{key}, name{name} {}
 
-        IVW_MODULE_OPENGL_API friend std::ostream& operator<<(std::ostream& os, const Type& obj);
-
-        IVW_MODULE_OPENGL_API friend bool operator==(const Type& lhs, const Type& rhs) {
-            return lhs.getString() == rhs.getString();
+        inline friend bool operator==(const Placeholder& lhs, const Placeholder& rhs) {
+            return lhs.key == rhs.key;
         }
-        IVW_MODULE_OPENGL_API friend bool operator<(const Type& lhs, const Type& rhs) {
-            return lhs.getString() < rhs.getString();
+        inline friend bool operator<(const Placeholder& lhs, const Placeholder& rhs) {
+            return lhs.key < rhs.key;
         }
-        IVW_MODULE_OPENGL_API friend bool operator!=(const Type& lhs, const Type& rhs) {
+        inline friend bool operator!=(const Placeholder& lhs, const Placeholder& rhs) {
             return !operator==(lhs, rhs);
         }
-        IVW_MODULE_OPENGL_API friend bool operator>(const Type& lhs, const Type& rhs) {
+        inline friend bool operator>(const Placeholder& lhs, const Placeholder& rhs) {
             return operator<(rhs, lhs);
         }
-        IVW_MODULE_OPENGL_API friend bool operator<=(const Type& lhs, const Type& rhs) {
+        inline friend bool operator<=(const Placeholder& lhs, const Placeholder& rhs) {
             return !operator>(lhs, rhs);
         }
-        IVW_MODULE_OPENGL_API friend bool operator>=(const Type& lhs, const Type& rhs) {
+        inline friend bool operator>=(const Placeholder& lhs, const Placeholder& rhs) {
             return !operator<(lhs, rhs);
         }
 
-    private:
-        std::string value_;
+        IVW_MODULE_OPENGL_API friend std::ostream& operator<<(std::ostream& os,
+                                                              const Placeholder& obj);
+
+        std::string_view key;
+        std::string_view name;
     };
 
-    Type type;  //!< The placeholder that will be replaced
+    Placeholder placeholder;  //!< The placeholder that will be replaced
     /**
      * A name of the snippet, used by the LineNumberResolver and to identify the segment in the
      * ShaderObject
@@ -80,8 +84,8 @@ struct IVW_MODULE_OPENGL_API ShaderSegment {
     std::string name;
     std::string snippet;  //!< The replacement code
     /**
-     * If there are multiple replacement with the same Type, they will be sorted using priority,
-     * lower goes first.
+     * If there are multiple replacement with the same Placeholder, they will be sorted using
+     * priority, lower goes first.
      */
     size_t priority = 1000;
 };
@@ -90,9 +94,9 @@ struct IVW_MODULE_OPENGL_API ShaderSegment {
 
 namespace std {
 template <>
-struct hash<typename inviwo::ShaderSegment::Type> {
-    size_t operator()(typename inviwo::ShaderSegment::Type const& type) const {
-        return std::hash<std::string>{}(type.getString());
+struct hash<typename inviwo::ShaderSegment::Placeholder> {
+    size_t operator()(typename inviwo::ShaderSegment::Placeholder const& type) const {
+        return std::hash<std::string_view>{}(type.key);
     }
 };
 }  // namespace std

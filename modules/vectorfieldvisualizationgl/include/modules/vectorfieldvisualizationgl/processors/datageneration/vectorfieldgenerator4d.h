@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VECTORFIELDGENERATOR4D_H
-#define IVW_VECTORFIELDGENERATOR4D_H
+#pragma once
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
@@ -73,5 +71,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VECTORFIELDGENERATOR4D_H

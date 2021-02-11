@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,7 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
     registerProcessor<VectorFieldGenerator4D>();
 
     auto& gl = app->getModuleByType<OpenGLModule>()->getOpenGLCapabilities();
-    if (gl.isComputeShadersSupported()) {
+    if (gl.getOpenGLVersion() >= 430) {
         registerProcessor<StreamParticles>();
     }
 }

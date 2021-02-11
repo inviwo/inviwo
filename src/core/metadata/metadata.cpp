@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,10 @@
 
 namespace inviwo {
 
-std::string MetaData::getClassIdentifier() const { return "MetaData"; }
+const std::string& MetaData::getClassIdentifier() const {
+    static const std::string identifier = "MetaData";
+    return identifier;
+}
 
 bool operator==(const MetaData& lhs, const MetaData& rhs) { return lhs.equal(rhs); }
 

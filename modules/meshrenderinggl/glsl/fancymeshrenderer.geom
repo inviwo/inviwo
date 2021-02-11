@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -109,13 +109,6 @@ bool isFront(int a, int b, int c) {
     vec3 C = vertices[c].position.xyz / vertices[c].position.w;
     float area = (A.x * B.y - B.x * A.y) + (B.x * C.y - C.x * B.y) + (C.x * A.y - A.x * C.y);
     return area > 0;
-    /*
-    vec3 A = vertices[a].worldPosition.xyz;
-    vec3 B = vertices[b].worldPosition.xyz;
-    vec3 C = vertices[c].worldPosition.xyz;
-    vec4 normal = camera.worldToClip * vec4(geometry.dataToWorldNormalMatrix * normalize(cross(B-A,
-    C-A)), 0); return normal.z < 0;
-    */
 }
 
 void main(void) {

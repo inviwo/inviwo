@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INTEGRALLINE_H
-#define IVW_INTEGRALLINE_H
+#pragma once
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/bufferutils.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
@@ -47,36 +45,36 @@ public:
     enum class TerminationReason { StartPoint, Steps, OutOfBounds, ZeroVelocity, Unknown };
 
     IntegralLine() = default;
-    IntegralLine(const IntegralLine &rhs) = default;
-    IntegralLine(IntegralLine &&rhs) = default;
+    IntegralLine(const IntegralLine& rhs) = default;
+    IntegralLine(IntegralLine&& rhs) = default;
 
-    IntegralLine &operator=(const IntegralLine &that) = default;
-    IntegralLine &operator=(IntegralLine &&that) = default;
+    IntegralLine& operator=(const IntegralLine& that) = default;
+    IntegralLine& operator=(IntegralLine&& that) = default;
 
     virtual ~IntegralLine() = default;
 
-    const std::vector<dvec3> &getPositions() const;
-    std::vector<dvec3> &getPositions();
+    const std::vector<dvec3>& getPositions() const;
+    std::vector<dvec3>& getPositions();
 
-    std::shared_ptr<const BufferBase> getMetaDataBuffer(const std::string &name) const;
-    std::shared_ptr<BufferBase> getMetaDataBuffer(const std::string &name);
+    std::shared_ptr<const BufferBase> getMetaDataBuffer(const std::string& name) const;
+    std::shared_ptr<BufferBase> getMetaDataBuffer(const std::string& name);
 
-    void addMetaDataBuffer(const std::string &name, std::shared_ptr<BufferBase> buffer);
+    void addMetaDataBuffer(const std::string& name, std::shared_ptr<BufferBase> buffer);
 
     template <typename T>
-    std::shared_ptr<Buffer<T>> createMetaData(const std::string &name);
+    std::shared_ptr<Buffer<T>> createMetaData(const std::string& name);
 
     void reverse();
 
     template <typename T>
-    const std::vector<T> &getMetaData(const std::string &name) const;
+    const std::vector<T>& getMetaData(const std::string& name) const;
 
     template <typename T>
-    std::vector<T> &getMetaData(const std::string &name, bool create = false);
+    std::vector<T>& getMetaData(const std::string& name, bool create = false);
 
-    const std::map<std::string, std::shared_ptr<BufferBase>> &getMetaDataBuffers() const;
+    const std::map<std::string, std::shared_ptr<BufferBase>>& getMetaDataBuffers() const;
 
-    bool hasMetaData(const std::string &name) const;
+    bool hasMetaData(const std::string& name) const;
 
     std::vector<std::string> getMetaDataKeys() const;
 
@@ -114,7 +112,7 @@ private:
 };
 
 template <typename T>
-std::shared_ptr<Buffer<T>> IntegralLine::createMetaData(const std::string &name) {
+std::shared_ptr<Buffer<T>> IntegralLine::createMetaData(const std::string& name) {
     if (hasMetaData(name)) {
         throw Exception("Meta data with name " + name + " already exists", IVW_CONTEXT);
     }
@@ -124,7 +122,7 @@ std::shared_ptr<Buffer<T>> IntegralLine::createMetaData(const std::string &name)
 }
 
 template <typename T>
-const std::vector<T> &IntegralLine::getMetaData(const std::string &name) const {
+const std::vector<T>& IntegralLine::getMetaData(const std::string& name) const {
     auto it = metaData_.find(name);
     if (it == metaData_.end()) {
         throw Exception("No meta data with name: " + name, IVW_CONTEXT);
@@ -138,11 +136,11 @@ const std::vector<T> &IntegralLine::getMetaData(const std::string &name) const {
         throw Exception(oss.str(), IVW_CONTEXT);
     }
 
-    return static_cast<Buffer<T> *>(it->second.get())->getRAMRepresentation()->getDataContainer();
+    return static_cast<Buffer<T>*>(it->second.get())->getRAMRepresentation()->getDataContainer();
 }
 
 template <typename T>
-std::vector<T> &IntegralLine::getMetaData(const std::string &name, bool create) {
+std::vector<T>& IntegralLine::getMetaData(const std::string& name, bool create) {
     auto it = metaData_.find(name);
     if (it == metaData_.end() && !create) {
         throw Exception("No meta data with name: " + name, IVW_CONTEXT);
@@ -159,7 +157,7 @@ std::vector<T> &IntegralLine::getMetaData(const std::string &name, bool create) 
         throw Exception(oss.str(), IVW_CONTEXT);
     }
 
-    return static_cast<Buffer<T> *>(it->second.get())
+    return static_cast<Buffer<T>*>(it->second.get())
         ->getEditableRAMRepresentation()
         ->getDataContainer();
 }
@@ -174,7 +172,7 @@ T IntegralLine::getMetaDataAtDistance(std::string md, double d) const {
         return T(0);
     }
 
-    auto &metaData = getMetaData<T>(md);
+    auto& metaData = getMetaData<T>(md);
 
     if (d == 0) {
         return metaData.front();
@@ -201,7 +199,7 @@ T IntegralLine::getMetaDataAtDistance(std::string md, double d) const {
 }
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os,
                                              IntegralLine::TerminationReason reason) {
     switch (reason) {
         case IntegralLine::TerminationReason::StartPoint:
@@ -226,5 +224,3 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_INTEGRALLINE_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -134,7 +134,10 @@ DataSource<DataType, PortType>::DataSource(InviwoApplication* app, const std::st
     , port_("data")
     , file_("filename", "File", file, content)
     , reader_("reader", "Data Reader")
-    , reload_("reload", "Reload data") {
+    , reload_("reload", "Reload data", [this]() {
+        loadingFailed_ = false;
+        isReady_.update();
+    }) {
 
     addPort(port_);
     addProperties(file_, reader_, reload_);

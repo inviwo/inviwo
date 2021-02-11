@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,7 +67,7 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     , nearestInterpolation_("nearestInterpolation", "Use nearest neighbor interpolation", false)
     , camera_("camera", "Camera", util::boundingBox(volume_))
     , trackball_(&camera_)
-    , sliceShader_("geometryrendering.vert", "axisalignedcutplaneslice.frag", false)
+    , sliceShader_("geometryrendering.vert", "axisalignedcutplaneslice.frag", Shader::Build::No)
     , boundingBoxShader_("geometryrendering.vert", "axisalignedcutplaneboundingbox.frag") {
 
     addPort(volume_);

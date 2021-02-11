@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -94,6 +94,11 @@ struct IVW_CORE_API OnScopeExit {
 
     void setAction(ExitAction action = nullptr) { action_ = action; }
     void release() { setAction(); }
+    void call() {
+        if (action_) action_();
+        action_ = nullptr;
+    }
+    operator bool() const { return static_cast<bool>(action_); }
 
 private:
 #include <warn/push>

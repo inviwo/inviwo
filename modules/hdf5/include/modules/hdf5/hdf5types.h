@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,13 +27,17 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HDF5TYPES_H
-#define IVW_HDF5TYPES_H
+#pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/hdf5/hdf5exception.h>
+
+#include <inviwo/core/util/formats.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <H5Cpp.h>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -96,5 +100,3 @@ IVW_MODULE_HDF5_API const DataFormatBase* getDataFormatFromDataSet(const H5::Dat
 }  // namespace hdf5
 
 }  // namespace inviwo
-
-#endif  // IVW_HDF5TYPES_H

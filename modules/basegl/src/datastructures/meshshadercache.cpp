@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -85,7 +85,7 @@ Shader& MeshShaderCache::getShader(const Mesh& mesh, std::optional<Mesh::MeshInf
     if (it != shaders_.end()) {
         return it->second;
     } else {
-        auto ins = shaders_.emplace(state, Shader(items_, Shader::Build::No));
+        auto ins = shaders_.try_emplace(state, items_, Shader::Build::No);
         auto& shader = ins.first->second;
         shader[ShaderType::Vertex]->clearInDeclarations();
 

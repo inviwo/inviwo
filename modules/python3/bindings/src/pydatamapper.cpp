@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,14 +40,14 @@ namespace py = pybind11;
 
 namespace inviwo {
 
-void exposeDataMapper(py::module &m) {
+void exposeDataMapper(py::module& m) {
 
     py::class_<DataMapper>(m, "DataMapper")
         .def(py::init())
         .def_readwrite("dataRange", &DataMapper::dataRange)
         .def_readwrite("valueRange", &DataMapper::valueRange)
         .def_readwrite("valueUnit", &DataMapper::valueUnit)
-        .def("__repr__", [](const DataMapper &datamapper) {
+        .def("__repr__", [](const DataMapper& datamapper) {
             std::ostringstream oss;
             oss << "<DataMapper:  dataRange = " << datamapper.dataRange
                 << ",  valueRange = " << datamapper.valueRange << ",  valueUnit = \""

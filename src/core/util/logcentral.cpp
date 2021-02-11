@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -70,16 +70,18 @@ bool operator<=(const LogVerbosity& lhs, const LogLevel& rhs) { return !(rhs < l
 bool operator>=(const LogVerbosity& lhs, const LogLevel& rhs) { return !(lhs < rhs); }
 
 void Logger::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                          std::string msg, const char* file, const char* function, int line) {
+                          std::string_view msg, std::string_view file, std::string_view function,
+                          int line) {
     log("Processor " + processor->getIdentifier(), level, audience, file, function, line, msg);
 }
 
-void Logger::logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
-                        const char* function, int line) {
+void Logger::logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
+                        std::string_view file, std::string_view function, int line) {
     log("ProcessorNetwork", level, audience, file, function, line, msg);
 }
 
-void Logger::logAssertion(const char* file, const char* function, int line, std::string msg) {
+void Logger::logAssertion(std::string_view file, std::string_view function, int line,
+                          std::string_view msg) {
     log("Assertion failed", LogLevel::Error, LogAudience::Developer, file, function, line, msg);
 }
 
@@ -91,19 +93,20 @@ LogVerbosity LogCentral::getVerbosity() { return logVerbosity_; }
 
 void LogCentral::registerLogger(std::weak_ptr<Logger> logger) { loggers_.push_back(logger); }
 
-void LogCentral::log(std::string source, LogLevel level, LogAudience audience, const char* file,
-                     const char* function, int line, std::string msg) {
+void LogCentral::log(std::string_view source, LogLevel level, LogAudience audience,
+                     std::string_view file, std::string_view function, int line,
+                     std::string_view msg) {
     if (logStacktrace_ && level == LogLevel::Error && audience == LogAudience::Developer) {
         std::stringstream ss;
         ss << msg;
 
-        std::vector<std::string> stacktrace = getStackTrace();
-        // start at i == 3 to remove log and getStacktrace from stackgrace
+        const auto stacktrace = getStackTrace();
+        // start at i == 3 to remove log and getStacktrace from stack trace
         for (size_t i = 3; i < stacktrace.size(); ++i) {
-            ss << std::endl << stacktrace[i];
+            ss << '\n' << stacktrace[i];
         }
-        // append an extra line break to easier separate several stacktraces in a row
-        ss << std::endl;
+        // append an extra line break to easier separate several stack traces in a row
+        ss << '\n';
 
         msg = ss.str();
     }
@@ -138,7 +141,8 @@ void LogCentral::log(std::string source, LogLevel level, LogAudience audience, c
 }
 
 void LogCentral::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                              std::string msg, const char* file, const char* function, int line) {
+                              std::string_view msg, std::string_view file,
+                              std::string_view function, int line) {
     if (level >= logVerbosity_) {
         // use remove if here to remove expired weak pointers while calling the loggers.
         util::erase_remove_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
@@ -152,8 +156,8 @@ void LogCentral::logProcessor(Processor* processor, LogLevel level, LogAudience 
     }
 }
 
-void LogCentral::logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
-                            const char* function, int line) {
+void LogCentral::logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
+                            std::string_view file, std::string_view function, int line) {
     if (level >= logVerbosity_) {
         // use remove if here to remove expired weak pointers while calling the loggers.
         util::erase_remove_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
@@ -167,7 +171,8 @@ void LogCentral::logNetwork(LogLevel level, LogAudience audience, std::string ms
     }
 }
 
-void LogCentral::logAssertion(const char* file, const char* function, int line, std::string msg) {
+void LogCentral::logAssertion(std::string_view file, std::string_view function, int line,
+                              std::string_view msg) {
     util::erase_remove_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
         if (auto l = logger.lock()) {
             l->logAssertion(file, function, line, msg);
@@ -187,15 +192,15 @@ MessageBreakLevel LogCentral::getMessageBreakLevel() const { return breakLevel_;
 
 LogCentral* LogCentral::instance_ = nullptr;
 
-void util::log(ExceptionContext context, std::string message, LogLevel level,
+void util::log(ExceptionContext context, std::string_view message, LogLevel level,
                LogAudience audience) {
     util::log(LogCentral::getPtr(), context, message, level, audience);
 }
 
-void util::log(Logger* logger, ExceptionContext context, std::string message, LogLevel level,
+void util::log(Logger* logger, ExceptionContext context, std::string_view message, LogLevel level,
                LogAudience audience) {
-    logger->log(context.getCaller(), level, audience, context.getFile().c_str(),
-                context.getFunction().c_str(), context.getLine(), message);
+    logger->log(context.getCaller(), level, audience, context.getFile(), context.getFunction(),
+                context.getLine(), message);
 }
 
 }  // namespace inviwo

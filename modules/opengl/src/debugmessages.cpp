@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,9 +57,10 @@ void logDebugMode(debug::Mode mode, debug::Severity severity, Canvas::ContextID 
     }
 }
 
-void GLAPIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint id,
-                                           GLenum eseverity, GLsizei /*length*/,
-                                           const GLchar* message, const void* /*module*/) {
+extern "C" {
+static void GLAPIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint id,
+                                                  GLenum eseverity, GLsizei /*length*/,
+                                                  const GLchar* message, const void* /*module*/) {
 
     const auto source = debug::toSouce(esource);
     const auto type = debug::toType(etype);
@@ -91,12 +92,13 @@ void GLAPIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint 
         }
     }
 }
+}
 
 void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity) {
     if (RenderContext::getPtr()->hasDefaultRenderContext()) {
         RenderContext::getPtr()->forEachContext(
-            [mode, severity](Canvas::ContextID id, const std::string& /*name*/, Canvas* canvas,
-                             std::thread::id threadId) {
+            [mode, severity](Canvas::ContextID id, const std::string& /*name*/,
+                             ContextHolder* canvas, std::thread::id threadId) {
                 if (threadId == std::this_thread::get_id()) {
                     canvas->activate();
                     setOpenGLDebugMode(mode, severity);
@@ -136,7 +138,7 @@ void setOpenGLDebugMode(debug::Mode mode, debug::Severity severity) {
 IVW_MODULE_OPENGL_API void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity) {
     if (RenderContext::getPtr()->hasDefaultRenderContext()) {
         RenderContext::getPtr()->forEachContext(
-            [severity](Canvas::ContextID id, const std::string& /*name*/, Canvas* canvas,
+            [severity](Canvas::ContextID id, const std::string& /*name*/, ContextHolder* canvas,
                        std::thread::id threadId) {
                 if (threadId == std::this_thread::get_id()) {
                     const auto rc = RenderContext::getPtr();

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,13 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMERAYCASTER_H
-#define IVW_VOLUMERAYCASTER_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/serialization/versionconverter.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/properties/raycastingproperty.h>
@@ -77,7 +74,7 @@ namespace inviwo {
  *   * __Toggle Shading__    boolean flag for enabling/disabling shading
  *
  */
-class IVW_MODULE_BASEGL_API VolumeRaycaster : public Processor {
+class IVW_MODULE_BASEGL_API VolumeRaycaster : public PoolProcessor {
 public:
     VolumeRaycaster();
     virtual ~VolumeRaycaster() = default;
@@ -91,12 +88,12 @@ public:
 
 protected:
     virtual void process() override;
+    void raycast(const Volume& volume);
 
     void toggleShading(Event*);
 
     Shader shader_;
     VolumeInport volumePort_;
-    std::shared_ptr<const Volume> loadedVolume_;
     ImageInport entryPort_;
     ImageInport exitPort_;
     ImageInport backgroundPort_;
@@ -113,5 +110,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMERAYCASTER_H

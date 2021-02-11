@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,10 +44,10 @@ public:
     StdVectorMetaData() = default;
     virtual ~StdVectorMetaData() = default;
 
-    virtual std::string getClassIdentifier() const override {
-        std::ostringstream name;
-        name << "org.inviwo." << Defaultvalues<T>::getName() << "StdVectorMetaData";
-        return name.str();
+    virtual const std::string& getClassIdentifier() const override {
+        static const std::string identifier =
+            "org.inviwo." + Defaultvalues<T>::getName() + "StdVectorMetaData";
+        return identifier;
     }
 
     virtual MetaData* clone() const override { return new StdVectorMetaData<T>(*this); }
@@ -77,11 +77,11 @@ public:
     StdUnorderedMapMetaData() = default;
     virtual ~StdUnorderedMapMetaData() = default;
 
-    virtual std::string getClassIdentifier() const override {
-        std::ostringstream name;
-        name << "org.inviwo." << Defaultvalues<K>::getName() << Defaultvalues<T>::getName()
-             << "StdUnorderedMapMetaData";
-        return name.str();
+    virtual const std::string& getClassIdentifier() const override {
+        static const std::string identifier = "org.inviwo." + Defaultvalues<K>::getName() +
+                                              Defaultvalues<T>::getName() +
+                                              "StdUnorderedMapMetaData";
+        return identifier;
     }
 
     virtual MetaData* clone() const override { return new StdUnorderedMapMetaData<K, T>(*this); }

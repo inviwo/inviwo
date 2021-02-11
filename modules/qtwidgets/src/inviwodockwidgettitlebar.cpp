@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,9 +47,9 @@
 
 namespace inviwo {
 
-InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
+InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget* parent)
     : QWidget(parent)
-    , parent_(dynamic_cast<QDockWidget *>(parent))
+    , parent_(dynamic_cast<QDockWidget*>(parent))
     , allowedDockAreas_(parent_->allowedAreas())
     , internalStickyFlagUpdate_(false) {
     label_ = new QLabel(parent->windowTitle());
@@ -86,13 +86,14 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
         closeBtn_->setIconSize(iconsize);
     }
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    QHBoxLayout* layout = new QHBoxLayout(this);
     layout->addWidget(label_, 1);
     layout->addWidget(stickyBtn_);
     layout->addWidget(floatBtn_);
     layout->addWidget(closeBtn_);
     layout->setSpacing(0);
-    layout->setMargin(utilqt::emToPx(this, 0.2));
+    auto margin = utilqt::emToPx(this, 0.2);
+    layout->setContentsMargins(margin, margin, margin, margin);
 
     setLayout(layout);
 
@@ -109,9 +110,9 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
 
 InviwoDockWidgetTitleBar::~InviwoDockWidgetTitleBar() = default;
 
-void InviwoDockWidgetTitleBar::paintEvent(QPaintEvent *) {
+void InviwoDockWidgetTitleBar::paintEvent(QPaintEvent*) {
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
     QPainter p(this);
     // style()->drawControl(QStyle::CE_DockWidgetTitle, &opt, &p, this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
@@ -129,7 +130,7 @@ void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {
     emit stickyFlagChanged(toggle);
 }
 
-void InviwoDockWidgetTitleBar::showEvent(QShowEvent *) {
+void InviwoDockWidgetTitleBar::showEvent(QShowEvent*) {
     if (isSticky()) {
         // docking allowed, restore docking areas
         parent_->setAllowedAreas(allowedDockAreas_);
@@ -139,7 +140,7 @@ void InviwoDockWidgetTitleBar::showEvent(QShowEvent *) {
     }
 }
 
-bool InviwoDockWidgetTitleBar::eventFilter(QObject *obj, QEvent *event) {
+bool InviwoDockWidgetTitleBar::eventFilter(QObject* obj, QEvent* event) {
     if ((event->type() == QEvent::ModifiedChange) || (event->type() == QEvent::WindowTitleChange)) {
         label_->setText(utilqt::windowTitleHelper(parent_->windowTitle(), parent_));
     }
@@ -153,7 +154,7 @@ void InviwoDockWidgetTitleBar::setIconSize(double size) {
     const auto iconsize = utilqt::emToPx(this, QSizeF(iconSize_, iconSize_));
 
     if (auto theLayout = layout()) {
-        for (auto tb : theLayout->findChildren<QToolButton *>()) {
+        for (auto tb : theLayout->findChildren<QToolButton*>()) {
             tb->setIconSize(iconsize);
         }
     }

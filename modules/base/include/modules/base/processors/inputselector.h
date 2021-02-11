@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,6 @@ namespace inviwo {
  */
 
 /**
- * \class InputSelector
  * \brief processor for selecting one of n connected inputs
  */
 template <typename InportType, typename OutportType>
@@ -130,7 +129,12 @@ InputSelector<Inport, Outport>::InputSelector()
 
 template <typename Inport, typename Outport>
 void InputSelector<Inport, Outport>::process() {
-    outport_.setData(inport_.getVectorData().at(selectedPort_.get()));
+    auto data = inport_.getVectorData();
+    if (selectedPort_.get() < data.size()) {
+        outport_.setData(data[selectedPort_.get()]);
+    } else {
+        outport_.setData(data.back());
+    }
 }
 
 template <typename InportType, typename OutportType>

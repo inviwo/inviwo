@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,17 +47,17 @@ public:
     using QImageVector = std::vector<std::pair<std::string, QImage>>;
 
     WorkspaceAnnotationsQt() = default;
-    WorkspaceAnnotationsQt(const QImage &network, const QImageVector &canvasImages);
+    WorkspaceAnnotationsQt(const QImage& network, const QImageVector& canvasImages);
     virtual ~WorkspaceAnnotationsQt() = default;
 
-    void setNetworkImage(const QImage &network);
-    const Base64Image &getNetworkImage() const;
+    void setNetworkImage(const QImage& network);
+    const Base64Image& getNetworkImage() const;
 
     using WorkspaceAnnotations::setCanvasImages;
-    void setCanvasImages(const QImageVector &canvasImages);
+    void setCanvasImages(const QImageVector& canvasImages);
 
-    virtual void serialize(Serializer &s) const override;
-    virtual void deserialize(Deserializer &d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 private:
     Base64Image network_;

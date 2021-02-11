@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,17 +27,19 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HDF5DATA_H
-#define IVW_HDF5DATA_H
+#pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/glmvec.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <H5Cpp.h>
+#include <warn/pop>
 
 #include <modules/hdf5/hdf5utils.h>
 #include <modules/hdf5/hdf5types.h>
@@ -46,6 +48,9 @@
 #include <limits>
 #include <functional>
 #include <type_traits>
+#include <string>
+#include <vector>
+#include <ostream>
 
 #include <half/half.hpp>
 
@@ -96,9 +101,9 @@ private:
     double getMin(const DataFormatBase* type) const;
     double getMax(const DataFormatBase* type) const;
 
-    H5::Group data_;
     std::string filename_;
     Path path_;
+    H5::Group data_;
 };
 
 template <typename T>
@@ -176,5 +181,3 @@ H5T_NATIVE_HBOOL 	hbool_t
 }  // namespace hdf5
 
 }  // namespace inviwo
-
-#endif  // IVW_HDF5DATA_H

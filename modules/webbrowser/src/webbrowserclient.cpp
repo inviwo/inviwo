@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,11 +29,14 @@
 
 #include <modules/webbrowser/webbrowserclient.h>
 #include <modules/webbrowser/webbrowsermodule.h>
+#include <inviwo/core/util/exception.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <include/wrapper/cef_helpers.h>
 #include <warn/pop>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -46,16 +49,16 @@ void setupResourceManager(CefRefPtr<CefResourceManager> resource_manager) {
         CefPostTask(TID_IO, base::Bind(setupResourceManager, resource_manager));
         return;
     }
-    std::string origin = "https://inviwo";
+    std::string origin = "inviwo://";
     // Redirect paths to corresponding app/module directories.
     // Enables resource loading from these directories directory (js-files and so on).
-    auto appOrigin = origin + "/app";
+    auto appOrigin = origin + "app";
     resource_manager->AddDirectoryProvider(appOrigin, InviwoApplication::getPtr()->getBasePath(),
                                            99, std::string());
 
-    auto moduleOrigin = origin + "/modules";
+    auto moduleOrigin = origin;
     for (const auto& m : InviwoApplication::getPtr()->getModules()) {
-        auto mOrigin = moduleOrigin + "/" + toLower(m->getIdentifier());
+        auto mOrigin = moduleOrigin + toLower(m->getIdentifier());
         auto moduleDir = m->getPath();
         resource_manager->AddDirectoryProvider(mOrigin, moduleDir, 100, std::string());
     }
@@ -63,18 +66,43 @@ void setupResourceManager(CefRefPtr<CefResourceManager> resource_manager) {
 
 }  // namespace detail
 
-WebBrowserClient::WebBrowserClient(const Processor* parent,
-                                   CefRefPtr<RenderHandlerGL> renderHandler,
+WebBrowserClient::WebBrowserClient(ModuleManager& moduleManager,
                                    const PropertyWidgetCEFFactory* widgetFactory)
-    : parent_(parent)
-    , widgetFactory_(widgetFactory)
-    , renderHandler_(renderHandler)
+    : widgetFactory_{widgetFactory}
+    , renderHandler_(new RenderHandlerGL([&](CefRefPtr<CefBrowser> browser) {
+        auto bdIt = browserParents_.find(browser->GetIdentifier());
+        if (bdIt != browserParents_.end()) {
+            bdIt->second.processor->invalidate(InvalidationLevel::InvalidOutput);
+        }
+    }))
     , resourceManager_(new CefResourceManager()) {
-    detail::setupResourceManager(resourceManager_);
+    onModulesRegisteredCallback_ = moduleManager.onModulesDidRegister([&]() {
+        // Ensure that all module resources have been registered before setting up resources
+        detail::setupResourceManager(resourceManager_);
+    });
 }
 
-void WebBrowserClient::SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler) {
-    renderHandler_ = renderHandler;
+void WebBrowserClient::setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent) {
+    CEF_REQUIRE_UI_THREAD();
+    BrowserData bd{parent, new ProcessorCefSynchronizer(parent)};
+    browserParents_[browser->GetIdentifier()] = bd;
+    addLoadHandler(bd.processorCefSynchronizer);
+    messageRouter_->AddHandler(bd.processorCefSynchronizer.get(), false);
+}
+
+ProcessorCefSynchronizer::CallbackHandle WebBrowserClient::registerCallback(
+    CefRefPtr<CefBrowser> browser, const std::string& name,
+    std::function<ProcessorCefSynchronizer::CallbackFunc> callback) {
+    CEF_REQUIRE_UI_THREAD();
+    if (auto it = browserParents_.find(browser->GetIdentifier()); it != browserParents_.end()) {
+        return it->second.processorCefSynchronizer->registerCallback(name, callback);
+    } else {
+        throw Exception(
+            fmt::format(
+                "Registering callback '{}' in browser without a parent processor (browser ID {})",
+                name, browser->GetIdentifier()),
+            IVW_CONTEXT);
+    }
 }
 
 bool WebBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
@@ -97,9 +125,6 @@ void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
         propertyCefSynchronizer_ = new PropertyCefSynchronizer(widgetFactory_);
         addLoadHandler(propertyCefSynchronizer_);
         messageRouter_->AddHandler(propertyCefSynchronizer_.get(), false);
-        processorCefSynchronizer_ = new ProcessorCefSynchronizer(parent_);
-        addLoadHandler(processorCefSynchronizer_);
-        messageRouter_->AddHandler(processorCefSynchronizer_.get(), false);
     }
 
     browserCount_++;
@@ -115,15 +140,18 @@ bool WebBrowserClient::DoClose(CefRefPtr<CefBrowser> browser) {
 
 void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     CEF_REQUIRE_UI_THREAD();
+    auto bdIt = browserParents_.find(browser->GetIdentifier());
+    if (bdIt != browserParents_.end()) {
+        messageRouter_->RemoveHandler(bdIt->second.processorCefSynchronizer.get());
+        removeLoadHandler(bdIt->second.processorCefSynchronizer);
+        browserParents_.erase(bdIt);
+    }
 
     if (--browserCount_ == 0) {
         // Free the router when the last browser is closed.
         messageRouter_->RemoveHandler(propertyCefSynchronizer_.get());
         removeLoadHandler(propertyCefSynchronizer_);
         propertyCefSynchronizer_ = nullptr;
-        messageRouter_->RemoveHandler(processorCefSynchronizer_.get());
-        removeLoadHandler(processorCefSynchronizer_);
-        processorCefSynchronizer_ = nullptr;
 
         messageRouter_ = NULL;
     }
@@ -236,7 +264,7 @@ bool WebBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_s
         std::string file = "";
         if (src.rfind("file://", 0) == 0) {
             replaceInString(src, "\\", "/");
-            file = splitString(src, '/').back();
+            file = std::string{util::splitByLast(src, '/').second};
         }
 
         LogLevel loglevel;

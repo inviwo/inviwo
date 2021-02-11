@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -97,7 +97,7 @@ void ImageOutport::clear() {
 bool ImageOutport::hasEditableData() const { return static_cast<bool>(image_); }
 
 size2_t ImageOutport::getLargestReqDim() const {
-    if (requestedDimensions_.empty()) return size2_t(0, 0);
+    if (requestedDimensions_.empty()) return size2_t(1, 1);
 
     return std::max_element(requestedDimensions_.begin(), requestedDimensions_.end(),
                             [](const auto& a, const auto& b) {
@@ -206,7 +206,7 @@ size2_t ImageOutport::getDimensions() const {
     else if (data_)
         return data_->getDimensions();
     else
-        return size2_t{0, 0};
+        return getLargestReqDim();
 }
 
 std::shared_ptr<Image> ImageOutport::getEditableData() const {

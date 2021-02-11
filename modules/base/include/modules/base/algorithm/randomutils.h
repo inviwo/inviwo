@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -79,8 +79,8 @@ std::vector<T> haltonSequence(size_t base, size_t numberOfPoints) {
         size_t denom = base;
         size_t a = i;
         while (a != 0) {
-            auto rest = a % base;
-            auto b = (T(1.0) / static_cast<T>(denom));
+            const auto rest = a % base;
+            const auto b = (T(1.0) / static_cast<T>(denom));
             val += rest * b;
             a -= rest;
             a /= base;
@@ -105,19 +105,19 @@ std::shared_ptr<Image> haltonSequence(size2_t dims, size_t numberOfPoints, size_
                                       size_t baseY = 3) {
 
     std::shared_ptr<Image> img = std::make_shared<Image>(dims, DataFormat<T>::get());
-    auto ram = static_cast<LayerRAMPrecision<T> *>(
+    auto ram = static_cast<LayerRAMPrecision<T>*>(
         img->getColorLayer()->getEditableRepresentation<LayerRAM>());
 
-    auto x = util::haltonSequence<T>(baseX, numberOfPoints);
-    auto y = util::haltonSequence<T>(baseY, numberOfPoints);
+    const auto x = util::haltonSequence<T>(baseX, numberOfPoints);
+    const auto y = util::haltonSequence<T>(baseY, numberOfPoints);
 
-    auto dimsf = vec2(dims - size2_t(1));
+    const auto dimsf = vec2(dims - size2_t(1));
 
-    util::IndexMapper2D index(dims);
+    const util::IndexMapper2D index(dims);
     auto data = ram->getDataTyped();
 
-    for (auto &&point : util::zip(x, y)) {
-        auto coord = dimsf * vec2(get<0>(point), get<1>(point));
+    for (auto&& [xi, yi] : util::zip(x, y)) {
+        auto coord = dimsf * vec2(xi, yi);
         data[index(coord)] = 1;
     }
     return img;
@@ -136,19 +136,19 @@ template <typename T>
 std::shared_ptr<Volume> haltonSequence(size3_t dims, size_t numberOfPoints, size_t baseX = 2,
                                        size_t baseY = 3, size_t baseZ = 5) {
     std::shared_ptr<Volume> vol = std::make_shared<Volume>(dims, DataFormat<T>::get());
-    auto ram = static_cast<VolumeRAMPrecision<T> *>(vol->getEditableRepresentation<VolumeRAM>());
+    auto ram = static_cast<VolumeRAMPrecision<T>*>(vol->getEditableRepresentation<VolumeRAM>());
 
-    auto x = util::haltonSequence<T>(baseX, numberOfPoints);
-    auto y = util::haltonSequence<T>(baseY, numberOfPoints);
-    auto z = util::haltonSequence<T>(baseZ, numberOfPoints);
+    const auto x = util::haltonSequence<T>(baseX, numberOfPoints);
+    const auto y = util::haltonSequence<T>(baseY, numberOfPoints);
+    const auto z = util::haltonSequence<T>(baseZ, numberOfPoints);
 
-    auto dimsf = vec3(dims - size3_t(1));
+    const auto dimsf = vec3(dims - size3_t(1));
 
-    util::IndexMapper3D index(dims);
+    const util::IndexMapper3D index(dims);
     auto data = ram->getDataTyped();
 
-    for (auto &&point : util::zip(x, y, z)) {
-        auto coord = dimsf * vec3(get<0>(point), get<1>(point), get<2>(point));
+    for (auto&& [xi, yi, zi] : util::zip(x, y, z)) {
+        auto coord = dimsf * vec3(xi, yi, zi);
         data[index(coord)] = 1;
     }
 
@@ -186,11 +186,11 @@ struct RandomNumberRangeValues {
  * I.e when used with e.g. std::mt19937 it generates uniformly distributed number between \p min
  * and \p max.
  * \p min/\p max defaults to 0 and 1 for floating point types otherwise default to
- * std::numeric_limits::lowest()/::max()
+ * std::numeric_limits::lowest()/std::numeric_limits::max()
  */
 template <typename T, typename RNG,
           typename F = std::conditional_t<std::is_same_v<float, T>, float, double>>
-inline static T randomNumber(RNG &rng, T min = detail::RandomNumberRangeValues::min<T>(),
+inline static T randomNumber(RNG& rng, T min = detail::RandomNumberRangeValues::min<T>(),
                              T max = detail::RandomNumberRangeValues::max<T>()) {
     const auto t = static_cast<F>(rng() - RNG::min()) / static_cast<F>(RNG::max() - RNG::min());
     return static_cast<T>(min + t * (max - min));
@@ -204,8 +204,8 @@ template <typename T, typename Rand = std::mt19937,
           typename Dist = typename std::conditional<std::is_integral<T>::value,
                                                     std::uniform_int_distribution<T>,
                                                     std::uniform_real_distribution<T>>::type>
-void randomSequence(T *data, size_t numberOfElements, Rand &randomNumberGenerator = Rand(),
-                    Dist &distribution = Dist(0, 1)) {
+void randomSequence(T* data, size_t numberOfElements, Rand& randomNumberGenerator = Rand(),
+                    Dist& distribution = Dist(0, 1)) {
     std::generate(data, data + numberOfElements,
                   [&]() { return distribution(randomNumberGenerator); });
 }
@@ -223,10 +223,10 @@ template <typename T, typename Rand = std::mt19937,
           typename Dist = typename std::conditional<std::is_integral<T>::value,
                                                     std::uniform_int_distribution<T>,
                                                     std::uniform_real_distribution<T>>::type>
-std::shared_ptr<Image> randomImage(size2_t dims, Rand &randomNumberGenerator = Rand(),
-                                   Dist &distribution = Dist(0, 1)) {
+std::shared_ptr<Image> randomImage(size2_t dims, Rand& randomNumberGenerator = Rand(),
+                                   Dist& distribution = Dist(0, 1)) {
     std::shared_ptr<Image> img = std::make_shared<Image>(dims, DataFormat<T>::get());
-    auto ram = static_cast<LayerRAMPrecision<T> *>(
+    auto ram = static_cast<LayerRAMPrecision<T>*>(
         img->getColorLayer()->getEditableRepresentation<LayerRAM>());
 
     randomSequence(ram->getDataTyped(), dims.x * dims.y, randomNumberGenerator, distribution);
@@ -247,10 +247,10 @@ template <typename T, typename Rand = std::mt19937,
           typename Dist = typename std::conditional<std::is_integral<T>::value,
                                                     std::uniform_int_distribution<T>,
                                                     std::uniform_real_distribution<T>>::type>
-std::shared_ptr<Volume> randomVolume(size3_t dims, Rand &randomNumberGenerator = Rand(),
-                                     Dist &distribution = Dist(0, 1)) {
+std::shared_ptr<Volume> randomVolume(size3_t dims, Rand& randomNumberGenerator = Rand(),
+                                     Dist& distribution = Dist(0, 1)) {
     std::shared_ptr<Volume> vol = std::make_shared<Volume>(dims, DataFormat<T>::get());
-    auto ram = static_cast<VolumeRAMPrecision<T> *>(vol->getEditableRepresentation<VolumeRAM>());
+    auto ram = static_cast<VolumeRAMPrecision<T>*>(vol->getEditableRepresentation<VolumeRAM>());
 
     randomSequence(ram->getDataTyped(), dims.x * dims.y * dims.z, randomNumberGenerator,
                    distribution);
@@ -274,9 +274,9 @@ std::shared_ptr<Volume> randomVolume(size3_t dims, Rand &randomNumberGenerator =
  */
 template <typename Rand = std::mt19937>
 std::shared_ptr<Image> perlinNoise(size2_t dims, float persistence, size_t startLevel,
-                                   size_t endLevel, Rand &randomNumberGenerator = Rand()) {
+                                   size_t endLevel, Rand& randomNumberGenerator = Rand()) {
     std::shared_ptr<Image> img = std::make_shared<Image>(dims, DataFloat32::get());
-    auto ram = static_cast<LayerRAMPrecision<float> *>(
+    auto ram = static_cast<LayerRAMPrecision<float>*>(
         img->getColorLayer()->getEditableRepresentation<LayerRAM>());
 
     auto size = nextPow2(std::max(dims.x, dims.y));
@@ -303,7 +303,7 @@ std::shared_ptr<Image> perlinNoise(size2_t dims, float persistence, size_t start
             float v = 0;
             float X = x * repri;
             float Y = y * repri;
-            for (auto &sampler : samplers) {
+            for (auto& sampler : samplers) {
                 v += sampler.sample(X, Y);
             }
             v = (v + 1.0f) / 2.0f;
@@ -326,7 +326,7 @@ std::shared_ptr<Image> perlinNoise(size2_t dims, float persistence, size_t start
  */
 template <typename Rand = std::mt19937>
 std::shared_ptr<Image> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_t maxPoints,
-                                   Rand &randomNumberGenerator = Rand()) {
+                                   Rand& randomNumberGenerator = Rand()) {
     std::shared_ptr<Image> img = std::make_shared<Image>(dims, DataFloat32::get());
 
     std::uniform_int_distribution<int> rx(0, static_cast<int>(dims.x));
@@ -338,7 +338,7 @@ std::shared_ptr<Image> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
     auto minDist2 = minDist * minDist;
     size2_t gridSize = size2_t(1) + size2_t(vec2(dims) * (1.0f / minDist));
 
-    auto generateRandomPointAround = [&](const glm::i32vec2 &point) {
+    auto generateRandomPointAround = [&](const glm::i32vec2& point) {
         auto radius = minDist * (rand(randomNumberGenerator) +
                                  1);  // random radius between mindist and 2 * mindist
         auto angle = 2 * M_PI * rand(randomNumberGenerator);  // random angle
@@ -350,9 +350,9 @@ std::shared_ptr<Image> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
     auto gridImg = std::make_unique<Image>(gridSize, DataVec2Int32::get());
     auto grid = gridImg->getColorLayer()->getEditableRepresentation<LayerRAM>();
 
-    auto imgData = static_cast<float *>(
-        img->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
-    auto gridData = static_cast<glm::i32vec2 *>(grid->getData());
+    auto imgData =
+        static_cast<float*>(img->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
+    auto gridData = static_cast<glm::i32vec2*>(grid->getData());
     util::IndexMapper2D imgIndex(dims);
     util::IndexMapper2D gridIndex(gridSize);
 

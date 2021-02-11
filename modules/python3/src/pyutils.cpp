@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,8 @@ void removeModulePath(const std::string& path) {
     namespace py = pybind11;
 
     if (!Py_IsInitialized()) {
-        throw Exception("addModulePath(): Python is not initialized", IVW_CONTEXT_CUSTOM("pyutil"));
+        throw Exception("removeModulePath(): Python is not initialized",
+                        IVW_CONTEXT_CUSTOM("pyutil"));
     }
 
     std::string pathConv = path;

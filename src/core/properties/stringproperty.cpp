@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,11 +47,23 @@ StringProperty& StringProperty::operator=(const std::string& value) {
 
 StringProperty* StringProperty::clone() const { return new StringProperty(*this); }
 
+StringProperty& StringProperty::set(std::string_view value) {
+    if (value_.value != value) {
+        value_.value = value;
+        propertyModified();
+    }
+    return *this;
+}
+
+StringProperty& StringProperty::set(const char* value) { return set(std::string_view{value}); }
+
+StringProperty::operator std::string_view() const { return value_.value; }
+
 Document StringProperty::getDescription() const {
     using P = Document::PathComponent;
     Document doc = TemplateProperty<std::string>::getDescription();
     auto b = doc.get({P("html"), P("body")});
-    b.append("p", value_.value);
+    b.append("pre", value_.value);
     return doc;
 }
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,6 +89,16 @@ OrdinalPropertyState<vec3> util::ordinalColor(const vec3& value,
             vec3{0.01f},
             invalidationLevel,
             PropertySemantics::Color};
+}
+
+OrdinalPropertyState<vec3> util::ordinalLight(const vec3& pos, float min, float max,
+                                              InvalidationLevel invalidationLevel) {
+    return {pos,
+            {vec3{min}, ConstraintBehavior::Ignore},
+            {vec3{max}, ConstraintBehavior::Ignore},
+            vec3{0.1f},
+            invalidationLevel,
+            PropertySemantics::LightPosition};
 }
 
 }  // namespace inviwo

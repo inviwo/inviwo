@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -108,28 +108,6 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
 
     util::addTFPresetsMenu(this, menu.get(), static_cast<TransferFunctionProperty*>(property_));
 
-    auto transformMenu = menu->addMenu("TF &Transform");
-
-    auto flip = transformMenu->addAction("&Horizontal Flip");
-    auto interpolate = transformMenu->addAction("&Interpolate Alpha");
-    auto equalize = transformMenu->addAction("&Equalize Alpha");
-
-    connect(flip, &QAction::triggered, this, [this]() {
-        NetworkLock lock(property_);
-        auto p = static_cast<TransferFunctionProperty*>(property_);
-        p->get().flipPositions();
-    });
-    connect(interpolate, &QAction::triggered, this, [this]() {
-        NetworkLock lock(property_);
-        auto p = static_cast<TransferFunctionProperty*>(property_);
-        p->get().interpolateAlpha();
-    });
-    connect(equalize, &QAction::triggered, this, [this]() {
-        NetworkLock lock(property_);
-        auto p = static_cast<TransferFunctionProperty*>(property_);
-        p->get().equalizeAlpha();
-    });
-
     auto clearTF = menu->addAction("&Clear TF");
     clearTF->setEnabled(!property_->getReadOnly());
 
@@ -153,21 +131,26 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
 
 TFPushButton::TFPushButton(TransferFunctionProperty* property, QWidget* parent)
     : IvwPushButton(parent)
-    , propertyPtr_(std::make_unique<util::TFPropertyModel<TransferFunctionProperty*>>(property)) {}
+    , propertyPtr_(std::make_unique<util::TFPropertyModel<TransferFunctionProperty>>(property)) {}
 
 TFPushButton::TFPushButton(IsoValueProperty* property, QWidget* parent)
     : IvwPushButton(parent)
-    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoValueProperty*>>(property)) {}
+    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoValueProperty>>(property)) {}
 
 TFPushButton::TFPushButton(IsoTFProperty* property, QWidget* parent)
     : IvwPushButton(parent)
-    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoTFProperty*>>(property)) {}
+    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoTFProperty>>(property)) {}
 
 void TFPushButton::updateFromProperty() {
+    if (!isVisible()) return;
     const QSize size = this->size() - QSize(2, 2);
-
     setIcon(utilqt::toQPixmap(*propertyPtr_, size));
     setIconSize(size);
+}
+
+void TFPushButton::showEvent(QShowEvent* event) {
+    updateFromProperty();
+    IvwPushButton::showEvent(event);
 }
 
 void TFPushButton::resizeEvent(QResizeEvent* event) {

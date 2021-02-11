@@ -33,7 +33,7 @@ Below follow some general information about the framework:
 
 #### Build system
  - The project and module configuration/generation is performed through CMake (>= 3.12.0).
- - Inviwo has been compiled in Visual Studio 2017, Clang 7, GCC 8, XCode 10
+ - Inviwo has been compiled in Visual Studio 2019, Clang 8, GCC 9, XCode 11
  - C++17 Required
 
 #### Documentation

@@ -36,7 +36,7 @@ vertTextSpacing = 1.0 / (len(fontNames))
 
 for i,(name, id) in enumerate(zip(fontNames, fontIdentifiers)) :
     p = app.processorFactory.create("org.inviwo.TextOverlayGL", glm.ivec2(300, processorSpacing * i))    
-    p.identifier = name
+    p.displayName = name
     p.text.value = name
     p.color.value = glm.vec4(0, 0, 0, 1)
     p.font.fontFace.selectedIdentifier = id

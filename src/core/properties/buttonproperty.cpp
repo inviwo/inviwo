@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -83,5 +83,7 @@ ButtonProperty& ButtonProperty::propertyModified() {
 }
 
 ButtonProperty& ButtonProperty::resetToDefaultState() { return *this; }
+
+bool ButtonProperty::isDefaultState() const { return true; }
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,22 +44,24 @@ void LogFilter::setLogger(Logger* logger) { logger_ = logger; }
 
 Logger* LogFilter::getLogger() const { return logger_; }
 
-void LogFilter::log(std::string logSource, LogLevel level, LogAudience audience, const char* file,
-                    const char* function, int line, std::string msg) {
+void LogFilter::log(std::string_view logSource, LogLevel level, LogAudience audience,
+                    std::string_view file, std::string_view function, int line,
+                    std::string_view msg) {
     if (level >= logVerbosity_) {
         logger_->log(logSource, level, audience, file, function, line, std::move(msg));
     }
 }
 
 void LogFilter::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                             std::string msg, const char* file, const char* function, int line) {
+                             std::string_view msg, std::string_view file, std::string_view function,
+                             int line) {
     if (level >= logVerbosity_) {
         logger_->logProcessor(processor, level, audience, std::move(msg), file, function, line);
     }
 }
 
-void LogFilter::logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
-                           const char* function, int line) {
+void LogFilter::logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
+                           std::string_view file, std::string_view function, int line) {
     if (level >= logVerbosity_) {
         logger_->logNetwork(level, audience, std::move(msg), file, function, line);
     }

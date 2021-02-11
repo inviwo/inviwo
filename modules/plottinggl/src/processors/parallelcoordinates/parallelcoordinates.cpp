@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@
 #include <inviwo/core/io/datareaderfactory.h>
 
 #include <modules/plotting/utils/statsutils.h>
-#include <inviwo/dataframe/datastructures/dataframeutil.h>
+#include <inviwo/dataframe/util/dataframeutil.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/zip.h>
 
@@ -146,7 +146,7 @@ ParallelCoordinates::ParallelCoordinates()
     , linePicking_(this, 1, [&](PickingEvent* p) { linePicked(p); })
     , axisPicking_(this, 1,
                    [&](PickingEvent* p) { axisPicked(p, p->getPickedId(), PickType::Axis); })
-    , lineShader_("pcp_lines.vert", "pcp_lines.geom", "pcp_lines.frag", false)
+    , lineShader_("pcp_lines.vert", "pcp_lines.geom", "pcp_lines.frag", Shader::Build::No)
     , lines_{}
     , marginsInternal_(0.0f, 0.0f)
     , brushingDirty_(true)  // needs to be true after deserialization
@@ -328,9 +328,9 @@ void ParallelCoordinates::process() {
 
 void ParallelCoordinates::createOrUpdateProperties() {
     axes_.clear();
-    for (auto& p : axisProperties_.getProperties()) {
-        p->setVisible(false);
-    }
+
+    std::unordered_set<Property*> previousProperties(axisProperties_.getProperties().begin(),
+                                                     axisProperties_.getProperties().end());
 
     if (!dataFrame_.hasData()) return;
     auto data = dataFrame_.getData();
@@ -357,6 +357,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
             axisProperties_.addProperty(newProp.release());
             return ptr;
         }();
+        previousProperties.erase(prop);
         prop->setColumnId(axes_.size());
         prop->setVisible(true);
 
@@ -388,6 +389,11 @@ void ParallelCoordinates::createOrUpdateProperties() {
     for (auto& axis : axes_) {
         axis.pcp->updateFromColumn(data->getColumn(axis.pcp->columnId()));
         axis.pcp->setParallelCoordinates(this);
+    }
+
+    // Remove properties for axes that doesn't exist in the current dataframe
+    for (auto prop : previousProperties) {
+        axisProperties_.removeProperty(prop);
     }
 
     updating_ = false;
@@ -631,7 +637,7 @@ void ParallelCoordinates::linePicked(PickingEvent* p) {
         // Show tooltip about current line
         if (p->getHoverState() == PickingHoverState::Move ||
             p->getHoverState() == PickingHoverState::Enter) {
-            p->setToolTip(dataframeutil::createToolTipForRow(*df, p->getPickedId()));
+            p->setToolTip(dataframe::createToolTipForRow(*df, p->getPickedId()));
             hoveredLine_ = static_cast<int>(p->getPickedId());
             invalidate(InvalidationLevel::InvalidOutput);
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@ IvfSequenceVolumeReader::IvfSequenceVolumeReader() {
     addExtension({"ivfs", "Sequence of Inviwo ivf volumes"});
 }
 
-std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(const std::string &filePath) {
+std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(const std::string& filePath) {
     std::string fileName = filePath;
     if (!filesystem::fileExists(fileName)) {
         std::string newPath = filesystem::addBasePath(fileName);

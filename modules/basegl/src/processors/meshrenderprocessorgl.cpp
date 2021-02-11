@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
                     InvalidationLevel::InvalidResources)
     , viewNormalsLayer_("viewNormalsLayer", "Normals (View space)", false,
                         InvalidationLevel::InvalidResources)
-    , shader_("meshrendering.vert", "meshrendering.frag", false) {
+    , shader_("meshrendering.vert", "meshrendering.frag", Shader::Build::No) {
 
     addPort(inport_);
     addPort(imageInport_).setOptional(true);

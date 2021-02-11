@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BUFFER_OBJECT_H
-#define IVW_BUFFER_OBJECT_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
@@ -135,6 +134,8 @@ public:
 
     void download(void* data) const;
 
+    static std::string_view targetName(GLenum target);
+
 private:
     void initialize(const void* data, GLsizeiptr sizeInBytes);
 
@@ -151,5 +152,3 @@ inline const DataFormatBase* BufferObject::getDataFormat() const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_BUFFER_OBJECT_H

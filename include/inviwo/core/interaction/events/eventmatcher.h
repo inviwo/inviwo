@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,8 @@ public:
 
     virtual void setCurrentStateAsDefault();
     virtual void resetToDefaultState();
+    virtual bool isDefaultState() const;
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -83,6 +85,8 @@ public:
 
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -117,6 +121,8 @@ public:
 
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -144,6 +150,8 @@ public:
 
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -179,6 +187,8 @@ public:
 
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -203,6 +213,8 @@ public:
 
     template <typename EventType>
     static std::unique_ptr<GeneralEventMatcher> create();
+
+    virtual bool isDefaultState() const override;
 
 protected:
     GeneralEventMatcher(const GeneralEventMatcher&) = default;

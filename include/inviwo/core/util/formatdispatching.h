@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ namespace dispatching {
  */
 class IVW_CORE_API DispatchException : public Exception {
 public:
-    DispatchException(const std::string &message = "",
+    DispatchException(const std::string& message = "",
                       ExceptionContext context = ExceptionContext());
     virtual ~DispatchException() throw() = default;
 };
@@ -103,7 +103,7 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
     using Format = typename std::tuple_element<M, std::tuple<Formats...>>::type;
 
     template <typename Callable, typename... Args>
-    static Result dispatch(DataFormatId id, Callable &&obj, Args &&... args) {
+    static Result dispatch(DataFormatId id, Callable&& obj, Args&&... args) {
         if (B > E)
             throw DispatchException(
                 "Format " + std::string(DataFormatBase::get(id)->getString()) + " not supported",
@@ -148,7 +148,7 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
  * the list of formats after the filtering.
  */
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
-auto dispatch(DataFormatId format, Callable &&obj, Args &&... args) -> Result {
+auto dispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Result {
     // Has to be in order of increasing id
 
     using Formats = DefaultDataFormats;
@@ -322,7 +322,7 @@ template <typename T>
 using PrecisionType = typename std::remove_pointer<typename std::remove_const<T>::type>::type;
 
 template <typename T>
-using PrecsionType[[deprecated("Use `PrecisionType` instead")]] =
+using PrecsionType [[deprecated("Use `PrecisionType` instead")]] =
     typename std::remove_pointer<typename std::remove_const<T>::type>::type;
 
 /**
@@ -340,7 +340,7 @@ template <typename T>
 using PrecisionValueType = typename PrecisionType<T>::type;
 
 template <typename T>
-using PrecsionValueType[[deprecated("Use `PrecisionValueType` instead")]] =
+using PrecsionValueType [[deprecated("Use `PrecisionValueType` instead")]] =
     typename PrecisionType<T>::type;
 
 }  // namespace util

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(nlohmann_json VERSION 3.3.0 LANGUAGES CXX)
+project(nlohmann_json VERSION 3.9.1 LANGUAGES CXX)
 
 set(NLOHMANN_JSON_TARGET_NAME         ${PROJECT_NAME})
 set(NLOHMANN_JSON_INCLUDE_BUILD_DIR "${PROJECT_SOURCE_DIR}/single_include/")
@@ -30,3 +30,4 @@ endif()
 add_custom_target(json_dummy SOURCES ${PROJECT_SOURCE_DIR}/single_include/nlohmann/json.hpp)
 # Creates VS folder structure
 ivw_folder(json_dummy ext)
+ivw_register_package(nlohmann_json nlohmann_json)

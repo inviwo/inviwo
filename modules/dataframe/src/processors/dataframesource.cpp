@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameSource::processorInfo_{
     "org.inviwo.DataFrameSource",                                // Class identifier
-    "Data Frame Source",                                         // Display name
+    "DataFrame Source",                                          // Display name
     "Data Input",                                                // Category
     CodeState::Stable,                                           // Code state
     "CPU, Plotting, Source, CSV, JSON, DataFrame, Spreadsheet",  // Tags

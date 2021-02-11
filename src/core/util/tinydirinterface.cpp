@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,9 @@
 
 #include <inviwo/core/util/tinydirinterface.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stringconversion.h>
+
+#include <fmt/format.h>
 
 #ifdef WIN32
 #define NOMINMAX  // tinydir.h includes windows.h...
@@ -50,32 +53,45 @@ struct tinydir_dir_hack : tinydir_dir {};
 
 namespace inviwo {
 
-TinyDirInterface::TinyDirInterface() : isOpen_(false), mode_(ListMode::FilesOnly), path_() {
-    // initialize tinydir struct
-    resource_ = std::make_unique<tinydir_dir_hack>();
-    memset(resource_.get(), 0, sizeof(tinydir_dir_hack));
+TinyDirInterface::TinyDirInterface(ListMode mode) : mode_{mode}, resource_{} {}
+
+TinyDirInterface::TinyDirInterface(const std::string& path, ListMode mode)
+    : mode_{mode}, resource_{} {
+    open(path);
 }
 
 TinyDirInterface::~TinyDirInterface() { close(); }
 
-bool TinyDirInterface::open(const std::string &path) {
+void TinyDirInterface::open(const std::string& inpath) {
     // close previous directory
     close();
 
-    if (path.empty()) return false;
+    if (inpath.empty()) {
+        throw FileException("Can not open empty path", IVW_CONTEXT);
+    }
 
-    path_ = path;
-    int errCode = tinydir_open(resource_.get(), path_.c_str());
-    isOpen_ = (errCode == 0);
+    // initialize tinydir struct
+    auto resource = std::make_unique<tinydir_dir_hack>();
+    memset(resource.get(), 0, sizeof(tinydir_dir_hack));
 
-    return isOpen_;
+#ifdef _MSC_VER
+    const auto path = util::toWstring(inpath);
+#else
+    const auto path = inpath;
+#endif
+
+    int errCode = tinydir_open(resource.get(), path.c_str());
+    if (errCode != 0) {
+        throw FileException("Can not open empty path", IVW_CONTEXT);
+    }
+
+    resource_ = std::move(resource);
 }
 
 void TinyDirInterface::close() {
-    if (isOpen_) {
-        path_ = std::string();
+    if (resource_) {
         tinydir_close(resource_.get());
-        isOpen_ = false;
+        resource_.reset();
     }
 }
 
@@ -83,9 +99,9 @@ void TinyDirInterface::setListMode(ListMode mode) { mode_ = mode; }
 
 TinyDirInterface::ListMode TinyDirInterface::getListMode() const { return mode_; }
 
-bool TinyDirInterface::isOpen() const { return isOpen_; }
+bool TinyDirInterface::isOpen() const { return resource_ != nullptr; }
 
-bool TinyDirInterface::isNextEntryAvailable() const { return (isOpen_ && resource_->has_next); }
+bool TinyDirInterface::isNextEntryAvailable() const { return (resource_ && resource_->has_next); }
 
 std::string TinyDirInterface::getNextEntry() { return getNextEntry(false); }
 
@@ -102,7 +118,7 @@ std::vector<std::string> TinyDirInterface::getContents() {
     }
 
     // ascending sort based on file name and then on the extension
-    std::sort(files.begin(), files.end(), [](const std::string &a, const std::string &b) {
+    std::sort(files.begin(), files.end(), [](const std::string& a, const std::string& b) {
         std::size_t pos = a.rfind(".");
         bool extFound = (pos != std::string::npos);
         std::string filenameA{extFound ? a.substr(0, pos) : a};
@@ -130,7 +146,7 @@ std::vector<std::string> TinyDirInterface::getContentsWithBasePath() {
 }
 
 std::string TinyDirInterface::getNextEntry(bool includeBasePath) {
-    if (!isOpen_) return {};
+    if (!resource_) return {};
 
     std::string str{};
     bool foundEntry = false;
@@ -140,21 +156,32 @@ std::string TinyDirInterface::getNextEntry(bool includeBasePath) {
         int errnum = tinydir_readfile(resource_.get(), &file);
         if (errnum != 0) {
             // cannot access entry
-            std::string errMsg{"Cannot access entry in \""};
-            errMsg.append(resource_->path);
-            errMsg.append("\": ");
-            errMsg.append(strerror(errnum));
-
-            throw FileException(errMsg, IVW_CONTEXT);
+#ifdef _MSC_VER
+            const auto rpath = util::fromWstring(resource_->path);
+#else
+            const auto rpath = std::string(resource_->path);
+#endif
+            throw FileException(
+                fmt::format("Cannot access entry in \"{}\": {}", rpath, strerror(errnum)),
+                IVW_CONTEXT);
         }
+
+#ifdef _MSC_VER
+        const auto name = util::fromWstring(file.name);
+        const auto path = util::fromWstring(file.path);
+#else
+        const auto name = std::string(file.name);
+        const auto path = std::string(file.path);
+#endif
+
         // skip current directory ('.') and parent directory ('..')
-        bool skip = ((strcmp(file.name, ".") == 0) || (strcmp(file.name, "..") == 0));
+        const bool skip = (name == "." || name == "..");
 
         // check whether entry matches current ListMode setting
         foundEntry = !skip && ((mode_ == ListMode::FilesAndDirectories) ||
                                ((file.is_dir == 0) != (mode_ == ListMode::DirectoriesOnly)));
         if (foundEntry) {
-            str = (includeBasePath ? file.path : file.name);
+            str = (includeBasePath ? path : name);
         }
         tinydir_next(resource_.get());
     }

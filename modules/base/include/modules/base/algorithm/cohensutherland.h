@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,8 +55,8 @@ namespace algorithm {
  * bool value is true and the two position describe the clipped line segment inside the rectangle.
  */
 IVW_MODULE_BASE_API std::tuple<bool, vec2, vec2> clipLineCohenSutherland(vec2 p1, vec2 p2,
-                                                                         const vec2 &rectMin,
-                                                                         const vec2 &rectMax);
+                                                                         const vec2& rectMin,
+                                                                         const vec2& rectMax);
 
 /**
  * \brief check whether point \p p lies within a rectangle
@@ -69,7 +69,7 @@ IVW_MODULE_BASE_API std::tuple<bool, vec2, vec2> clipLineCohenSutherland(vec2 p1
  * @param rectMax   upper right corner of rectangle
  * @return true if \p point lies inside the rectangle
  */
-IVW_MODULE_BASE_API bool insideRect(const vec2 &p, const vec2 &rectMin, const vec2 &rectMax);
+IVW_MODULE_BASE_API bool insideRect(const vec2& p, const vec2& rectMin, const vec2& rectMax);
 
 }  // namespace algorithm
 

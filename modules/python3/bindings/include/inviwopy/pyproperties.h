@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,19 +60,19 @@ using namespace inviwo;
  */
 template <>
 struct type_caster<Property> : type_caster_base<Property> {
-    static handle cast(Property &&src, return_value_policy, handle parent) {
+    static handle cast(Property&& src, return_value_policy, handle parent) {
         return cast(&src, return_value_policy::move, parent);
     }
-    static handle cast(const Property &src, return_value_policy policy, handle parent) {
+    static handle cast(const Property& src, return_value_policy policy, handle parent) {
         if (policy == return_value_policy::automatic ||
             policy == return_value_policy::automatic_reference)
             policy = return_value_policy::copy;
         return cast(&src, policy, parent);
     }
-    static handle cast(const Property *prop, return_value_policy policy, handle parent) {
-        if (auto cp = dynamic_cast<const CompositeProperty *>(prop)) {
+    static handle cast(const Property* prop, return_value_policy policy, handle parent) {
+        if (auto cp = dynamic_cast<const CompositeProperty*>(prop)) {
             return type_caster_base<CompositeProperty>::cast(cp, policy, parent);
-        } else if (auto op = dynamic_cast<const BaseOptionProperty *>(prop)) {
+        } else if (auto op = dynamic_cast<const BaseOptionProperty*>(prop)) {
             return type_caster_base<BaseOptionProperty>::cast(op, policy, parent);
         } else {
             return type_caster_base<Property>::cast(prop, policy, parent);
@@ -87,7 +87,7 @@ namespace inviwo {
 namespace detail {
 template <typename T>
 struct PropertyDeleter {
-    void operator()(T *p) {
+    void operator()(T* p) {
         if (p && p->getOwner() == nullptr) delete p;
     }
 };
@@ -97,14 +97,15 @@ template <typename T>
 using PropertyPtr = std::unique_ptr<T, detail::PropertyDeleter<T>>;
 
 template <typename T, typename P, typename C>
-void pyTemplateProperty(C &prop) {
-    prop.def_property("value", [](P &p) { return p.get(); }, [](P &p, T t) { p.set(t); })
-        .def("__repr__", [](P &v) { return inviwo::toString(v.get()); });
+void pyTemplateProperty(C& prop) {
+    prop.def_property(
+            "value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
+        .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
 }
 
 template <typename PropertyType, typename T>
 struct OrdinalPropertyIterator {
-    OrdinalPropertyIterator(PropertyType *prop)
+    OrdinalPropertyIterator(PropertyType* prop)
         : property_(prop)
         , cur(prop->getMinValue())
         , inc(prop->getIncrement())
@@ -113,17 +114,17 @@ struct OrdinalPropertyIterator {
         property_->set(property_->getMinValue());
     }
 
-    OrdinalPropertyIterator(PropertyType *prop, T begin, T end)
+    OrdinalPropertyIterator(PropertyType* prop, T begin, T end)
         : property_(prop), cur(begin), inc(prop->getIncrement()), begin(begin), end(end) {
         property_->set(property_->getMinValue());
     }
 
-    OrdinalPropertyIterator(PropertyType *prop, T begin, T end, T inc)
+    OrdinalPropertyIterator(PropertyType* prop, T begin, T end, T inc)
         : property_(prop), cur(begin), inc(inc), begin(begin), end(end) {
         property_->set(property_->getMinValue());
     }
 
-    OrdinalPropertyIterator *iter() { return this; }
+    OrdinalPropertyIterator* iter() { return this; }
 
     T next() {
         if (cur > end) {
@@ -135,7 +136,7 @@ struct OrdinalPropertyIterator {
         }
     }
 
-    PropertyType *property_;
+    PropertyType* property_;
     T cur;
     T inc;
     T begin;
@@ -143,30 +144,30 @@ struct OrdinalPropertyIterator {
 };
 
 template <typename T, typename P, typename M, typename PC>
-void addOrdinalPropertyIterator(M &m, PC &pc, const std::string &suffix) {
-    const auto itclassname = Defaultvalues<T>::getName() + suffix;
+void addOrdinalPropertyIterator(M& m, PC& pc, const std::string& suffix) {
+    const auto itclassname = Defaultvalues<T>::getName().string() + suffix;
     using IT = OrdinalPropertyIterator<P, T>;
     pybind11::class_<IT>(m, itclassname.c_str())
-        .def(pybind11::init<P *>())
+        .def(pybind11::init<P*>())
         .def("__next__", &IT::next)
         .def("__iter__", &IT::iter);
 
-    pc.def("__iter__", [&](P *p) { return IT(p); });
-    pc.def("foreach", [&](P *p, T begin, T end) { return IT(p, begin, end); });
-    pc.def("foreach", [&](P *p, T begin, T end, T inc) { return IT(p, begin, end, inc); });
+    pc.def("__iter__", [&](P* p) { return IT(p); });
+    pc.def("foreach", [&](P* p, T begin, T end) { return IT(p, begin, end); });
+    pc.def("foreach", [&](P* p, T begin, T end, T inc) { return IT(p, begin, end, inc); });
 }
 
 struct OrdinalPropertyHelper {
     template <typename T>
-    auto operator()(pybind11::module &m) {
+    auto operator()(pybind11::module& m) {
         namespace py = pybind11;
         using P = OrdinalProperty<T>;
 
         auto classname = Defaultvalues<T>::getName() + "Property";
 
         py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
-        prop.def(py::init([](const std::string &identifier, const std::string &name, const T &value,
-                             const T &min, const T &max, const T &increment,
+        prop.def(py::init([](const std::string& identifier, const std::string& name, const T& value,
+                             const T& min, const T& max, const T& increment,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, value, min, max, increment, invalidationLevel,
                                   semantics);
@@ -178,9 +179,9 @@ struct OrdinalPropertyHelper {
                  py::arg("increment") = Defaultvalues<T>::getInc(),
                  py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
                  py::arg("semantics") = PropertySemantics::Default)
-            .def(py::init([](const std::string &identifier, const std::string &name, const T &value,
-                             const std::pair<T, ConstraintBehavior> &min,
-                             const std::pair<T, ConstraintBehavior> &max, const T &increment,
+            .def(py::init([](const std::string& identifier, const std::string& name, const T& value,
+                             const std::pair<T, ConstraintBehavior>& min,
+                             const std::pair<T, ConstraintBehavior>& max, const T& increment,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, value, min, max, increment, invalidationLevel,
                                   semantics);
@@ -194,11 +195,12 @@ struct OrdinalPropertyHelper {
                  py::arg("increment") = Defaultvalues<T>::getInc(),
                  py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
                  py::arg("semantics") = PropertySemantics::Default)
-            .def_property("value", [](P &p) { return p.get(); }, [](P &p, T t) { p.set(t); })
+            .def_property(
+                "value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
             .def_property("minValue", &P::getMinValue, &P::setMinValue)
             .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
             .def_property("increment", &P::getIncrement, &P::setIncrement)
-            .def("__repr__", [](P &v) { return inviwo::toString(v.get()); });
+            .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
 
         if constexpr (util::rank<T>::value == 0) {
             addOrdinalPropertyIterator<T, P>(m, prop, "PropertyIterator");
@@ -210,17 +212,17 @@ struct OrdinalPropertyHelper {
 
 struct OrdinalRefPropertyHelper {
     template <typename T>
-    auto operator()(pybind11::module &m) {
+    auto operator()(pybind11::module& m) {
         namespace py = pybind11;
         using P = OrdinalRefProperty<T>;
 
         auto classname = Defaultvalues<T>::getName() + "RefProperty";
 
         py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
-        prop.def(py::init([](const std::string &identifier, const std::string &name,
-                             std::function<T()> get, std::function<void(const T &)> set,
-                             const std::pair<T, ConstraintBehavior> &min,
-                             const std::pair<T, ConstraintBehavior> &max, const T &increment,
+        prop.def(py::init([](const std::string& identifier, const std::string& name,
+                             std::function<T()> get, std::function<void(const T&)> set,
+                             const std::pair<T, ConstraintBehavior>& min,
+                             const std::pair<T, ConstraintBehavior>& max, const T& increment,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, std::move(get), std::move(set), min, max,
                                   increment, invalidationLevel, semantics);
@@ -234,12 +236,13 @@ struct OrdinalRefPropertyHelper {
                  py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
                  py::arg("semantics") = PropertySemantics::Default)
 
-            .def_property("value", [](P &p) { return p.get(); }, [](P &p, T t) { p.set(t); })
+            .def_property(
+                "value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
             .def_property("minValue", &P::getMinValue, &P::setMinValue)
             .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
             .def_property("increment", &P::getIncrement, &P::setIncrement)
             .def("setGetAndSet", &P::setGetAndSet)
-            .def("__repr__", [](P &v) { return inviwo::toString(v.get()); });
+            .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
 
         if constexpr (util::rank<T>::value == 0) {
             addOrdinalPropertyIterator<T, P>(m, prop, "RefPropertyIterator");
@@ -251,7 +254,7 @@ struct OrdinalRefPropertyHelper {
 
 struct MinMaxHelper {
     template <typename T>
-    auto operator()(pybind11::module &m) {
+    auto operator()(pybind11::module& m) {
         namespace py = pybind11;
         using P = MinMaxProperty<T>;
         using range_type = glm::tvec2<T, glm::defaultp>;
@@ -259,9 +262,9 @@ struct MinMaxHelper {
         auto classname = Defaultvalues<T>::getName() + "MinMaxProperty";
 
         py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
-        prop.def(py::init([](const std::string &identifier, const std::string &name,
-                             const T &valueMin, const T &valueMax, const T &rangeMin,
-                             const T &rangeMax, const T &increment, const T &minSeperation,
+        prop.def(py::init([](const std::string& identifier, const std::string& name,
+                             const T& valueMin, const T& valueMax, const T& rangeMin,
+                             const T& rangeMax, const T& increment, const T& minSeperation,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, valueMin, valueMax, rangeMin, rangeMax,
                                   increment, minSeperation, invalidationLevel, semantics);
@@ -289,7 +292,7 @@ struct MinMaxHelper {
 struct OptionPropertyHelper {
 
     template <typename T>
-    auto operator()(pybind11::module &m) {
+    auto operator()(pybind11::module& m) {
         namespace py = pybind11;
         using P = TemplateOptionProperty<T>;
         using O = OptionPropertyOption<T>;
@@ -299,13 +302,13 @@ struct OptionPropertyHelper {
 
         py::class_<O>(m, optionclassname.c_str())
             .def(py::init<>())
-            .def(py::init<const std::string &, const std::string &, const T &>())
+            .def(py::init<const std::string&, const std::string&, const T&>())
             .def_readwrite("id", &O::id_)
             .def_readwrite("name", &O::name_)
             .def_readwrite("value", &O::value_);
 
         py::class_<P, BaseOptionProperty, PropertyPtr<P>> prop(m, classname.c_str());
-        prop.def(py::init([](const std::string &identifier, const std::string &name,
+        prop.def(py::init([](const std::string& identifier, const std::string& name,
                              std::vector<OptionPropertyOption<T>> options, size_t selectedIndex,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, options, selectedIndex, invalidationLevel,
@@ -317,22 +320,24 @@ struct OptionPropertyHelper {
                  py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
                  py::arg("semantics") = PropertySemantics::Default)
 
-            .def("addOption", [](P *p, const std::string &id, const std::string &displayName,
-                                 const T &t) { p->addOption(id, displayName, t); })
+            .def("addOption", [](P* p, const std::string& id, const std::string& displayName,
+                                 const T& t) { p->addOption(id, displayName, t); })
 
             .def_property_readonly("values", &P::getValues)
             .def("removeOption", py::overload_cast<size_t>(&P::removeOption))
-            .def("removeOption", py::overload_cast<const std::string &>(&P::removeOption))
+            .def("removeOption", py::overload_cast<const std::string&>(&P::removeOption))
 
-            .def_property("value", [](P *p) { return p->get(); }, [](P *p, T &t) { p->set(t); })
-            .def_property("selectedValue", &P::getSelectedValue, &P::setSelectedValue)
+            .def_property(
+                "value", [](P* p) { return p->get(); }, [](P* p, T& t) { p->set(t); })
+            .def_property("selectedValue", &P::getSelectedValue,
+                          [](P* p, const T& val) { p->setSelectedValue(val); })
 
             .def("replaceOptions",
-                 [](P *p, const std::vector<std::string> &ids,
-                    const std::vector<std::string> &displayNames,
-                    const std::vector<T> &values) { p->replaceOptions(ids, displayNames, values); })
+                 [](P* p, const std::vector<std::string>& ids,
+                    const std::vector<std::string>& displayNames,
+                    const std::vector<T>& values) { p->replaceOptions(ids, displayNames, values); })
 
-            .def("replaceOptions", [](P *p, std::vector<OptionPropertyOption<T>> options) {
+            .def("replaceOptions", [](P* p, std::vector<OptionPropertyOption<T>> options) {
                 p->replaceOptions(options);
             });
 
@@ -340,6 +345,6 @@ struct OptionPropertyHelper {
     }
 };
 
-void exposeProperties(pybind11::module &m);
+void exposeProperties(pybind11::module& m);
 
 }  // namespace inviwo

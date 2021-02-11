@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -111,11 +111,11 @@ private:
     void createLineStripMesh();
     void updateAxisRanges();
     void updateBoundingCube();
-    void objectPicked(PickingEvent *p);
-    void rangePositionHandlePicked(CropAxis &cropAxis, PickingEvent *p, InteractionElement element);
+    void objectPicked(PickingEvent* p);
+    void rangePositionHandlePicked(CropAxis& cropAxis, PickingEvent* p, InteractionElement element);
 
     AnnotationInfo getAxis(CartesianCoordinateAxis majorAxis);
-    void renderAxis(const CropAxis &axis);
+    void renderAxis(const CropAxis& axis);
 
     ImageInport inport_;
     VolumeInport volume_;
@@ -155,7 +155,7 @@ private:
     bool isMouseBeingPressedAndHold_;
     ivec2 lastState_;
 
-    std::array<std::shared_ptr<Mesh>, 2> interactionHandleMesh_;
+    std::array<std::shared_ptr<const Mesh>, 2> interactionHandleMesh_;
 
     std::shared_ptr<Mesh> linestrip_;
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,25 @@ std::string ShaderType::extension(const ShaderType& type) {
             return "comp";
         default:
             return "";
+    }
+}
+
+std::string ShaderType::name() const {
+    switch (type_) {
+        case GL_VERTEX_SHADER:
+            return "vertex";
+        case GL_GEOMETRY_SHADER:
+            return "geometry";
+        case GL_FRAGMENT_SHADER:
+            return "fragment";
+        case GL_TESS_CONTROL_SHADER:
+            return "tesc_control";
+        case GL_TESS_EVALUATION_SHADER:
+            return "tese_evaluation";
+        case GL_COMPUTE_SHADER:
+            return "compute";
+        default:
+            return "invalid";
     }
 }
 

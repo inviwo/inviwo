@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TFEDITORISOVALUE_H
-#define IVW_TFEDITORISOVALUE_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>
@@ -75,7 +74,7 @@ private:
      *
      * @param newPos   new, normalized position of the primitive
      */
-    virtual void onItemPositionChange(const vec2& newPos) override;
+    virtual void onItemPositionChange(const dvec2& newPos) override;
 
     /**
      * gets called in itemChange() when a scene change has happend
@@ -93,5 +92,3 @@ IVW_MODULE_QTWIDGETS_API bool operator<=(const TFEditorIsovalue& lhs, const TFEd
 IVW_MODULE_QTWIDGETS_API bool operator>=(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs);
 
 }  // namespace inviwo
-
-#endif  // IVW_TFEDITORISOVALUE_H

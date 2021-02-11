@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ const ProcessorInfo MultichannelRaycaster::getProcessorInfo() const { return pro
 
 MultichannelRaycaster::MultichannelRaycaster()
     : Processor()
-    , shader_("multichannelraycaster.frag", false)
+    , shader_("multichannelraycaster.frag", Shader::Build::No)
     , volumePort_("volume")
     , entryPort_("entry")
     , exitPort_("exit")
@@ -123,7 +123,6 @@ void MultichannelRaycaster::initializeResources() {
 }
 
 void MultichannelRaycaster::process() {
-    LGL_ERROR;
     utilgl::activateAndClearTarget(outport_);
     shader_.activate();
 
@@ -146,7 +145,6 @@ void MultichannelRaycaster::process() {
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
-    LGL_ERROR;
 }
 
 void MultichannelRaycaster::deserialize(Deserializer& d) {

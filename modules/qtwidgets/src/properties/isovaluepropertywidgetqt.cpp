@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -87,28 +87,6 @@ std::unique_ptr<QMenu> IsoValuePropertyWidgetQt::getContextMenu() {
     auto menu = PropertyWidgetQt::getContextMenu();
 
     menu->addSeparator();
-
-    auto transformMenu = menu->addMenu("&Transform");
-
-    auto flip = transformMenu->addAction("&Horizontal Flip");
-    auto interpolate = transformMenu->addAction("&Interpolate Alpha");
-    auto equalize = transformMenu->addAction("&Equalize Alpha");
-
-    connect(flip, &QAction::triggered, this, [this]() {
-        NetworkLock lock(property_);
-        auto p = static_cast<IsoValueProperty*>(property_);
-        p->get().flipPositions();
-    });
-    connect(interpolate, &QAction::triggered, this, [this]() {
-        NetworkLock lock(property_);
-        auto p = static_cast<IsoValueProperty*>(property_);
-        p->get().interpolateAlpha();
-    });
-    connect(equalize, &QAction::triggered, this, [this]() {
-        NetworkLock lock(property_);
-        auto p = static_cast<IsoValueProperty*>(property_);
-        p->get().equalizeAlpha();
-    });
 
     auto clearTF = menu->addAction("&Clear Isovalues");
     clearTF->setEnabled(!property_->getReadOnly());

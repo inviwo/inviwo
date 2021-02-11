@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,16 +26,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_DEMONAVIGATORDOCKWIDGETQT_H
-#define IVW_DEMONAVIGATORDOCKWIDGETQT_H
+#pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <modules/animation/demo/democontrollerobserver.h>
 #include <modules/animation/demo/democontroller.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
 
 class QToolButton;
 
@@ -48,13 +47,16 @@ class IVW_MODULE_ANIMATIONQT_API DemoNavigatorDockWidgetQt : public InviwoDockWi
                                                              public PropertyOwner {
 public:
     DemoNavigatorDockWidgetQt(DemoController& controller, const std::string& widgetName,
-                              QWidget* parent);
+                              QWidget* parent,
+                              InviwoApplication* app = InviwoApplication::getPtr());
     virtual ~DemoNavigatorDockWidgetQt();
+
+    virtual InviwoApplication* getInviwoApplication() override;
 
 protected:
     DemoController& controller_;
+    InviwoApplication* app_;
 
-    // GUI-stuff
     QAction* btnLast_;
     QAction* btnNext_;
     QAction* btnBegin_;
@@ -64,5 +66,3 @@ protected:
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_DEMONAVIGATORDOCKWIDGETQT_H

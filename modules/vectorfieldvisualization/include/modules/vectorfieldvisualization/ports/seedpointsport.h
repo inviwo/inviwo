@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SEEDPOINTSPORT_H
-#define IVW_SEEDPOINTSPORT_H
+#pragma once
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
@@ -59,5 +57,3 @@ using SeedPoints4DInport = DataInport<SeedPoint4DVector, 0>;
 using SeedPoints4DOutport = DataOutport<SeedPoint4DVector>;
 
 }  // namespace inviwo
-
-#endif  // IVW_SEEDPOINTSPORT_H

@@ -1,9 +1,9 @@
-#--------------------------------------------------------------------
 # Create python module
 set(HEADER_FILES
     include/inviwopy/inviwopy.h
     include/inviwopy/pybuffer.h
     include/inviwopy/pycamera.h
+    include/inviwopy/pycameraproperty.h
     include/inviwopy/pydataformat.h
     include/inviwopy/pydatamapper.h
     include/inviwopy/pyevent.h
@@ -31,6 +31,7 @@ set(SOURCE_FILES
     src/inviwopy.cpp
     src/pybuffer.cpp
     src/pycamera.cpp
+    src/pycameraproperty.cpp
     src/pydataformat.cpp
     src/pydatamapper.cpp
     src/pyevent.cpp
@@ -58,4 +59,4 @@ ivw_add_py_wrapper(inviwopy ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(inviwopy PUBLIC inviwo::core inviwo::module::python3)
 target_include_directories(inviwopy PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-ivw_default_install_comp_targets(python inviwopy)
+ivw_default_install_targets(inviwopy)

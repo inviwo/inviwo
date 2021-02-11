@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,8 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
-#include <string>
+#include <string_view>
+#include <functional>
 
 namespace inviwo {
 
@@ -39,11 +40,16 @@ class InviwoApplication;
 
 namespace util {
 
-void IVW_CORE_API updateWorkspaces(InviwoApplication* app);
+IVW_CORE_API void forEachWorkspaceInDirRecusive(std::string_view path,
+                                                std::function<void(std::string_view)> callback);
 
-void IVW_CORE_API updateRegressionWorkspaces(InviwoApplication* app);
+enum class DryRun { Yes, No };
 
-void IVW_CORE_API updateWorkspaces(InviwoApplication* app, const std::string& path);
+IVW_CORE_API void updateWorkspaces(InviwoApplication* app, std::string_view path, DryRun dryRun);
+
+IVW_CORE_API void updateExampleWorkspaces(InviwoApplication* app, DryRun dryRun);
+
+IVW_CORE_API void updateRegressionWorkspaces(InviwoApplication* app, DryRun dryRun);
 
 }  // namespace util
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -102,7 +102,7 @@ MeshRasterizer::MeshRasterizer()
           3, InvalidationLevel::InvalidResources)
     , faceSettings_{true, false}
     , shader_(std::make_shared<Shader>("fancymeshrenderer.vert", "fancymeshrenderer.geom",
-                                       "fancymeshrenderer.frag", false)) {
+                                       "fancymeshrenderer.frag", Shader::Build::No)) {
     // input and output ports
     addPort(inport_).onChange([this]() { updateMeshes(); });
     addPort(outport_);
@@ -140,6 +140,7 @@ MeshRasterizer::AlphaSettings::AlphaSettings()
     : CompositeProperty("alphaContainer", "Alpha")
     , enableUniform_("alphaUniform", "Uniform", true, InvalidationLevel::InvalidResources)
     , uniformScaling_("alphaUniformScaling", "Scaling", 0.5f, 0.f, 1.f, 0.01f)
+    , minimumAlpha_("minimumAlpha", "Minimum Alpha", 0.1f, 0.f, 1.f, 0.01f)
     , enableAngleBased_("alphaAngleBased", "Angle-based", false,
                         InvalidationLevel::InvalidResources)
     , angleBasedExponent_("alphaAngleBasedExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f)
@@ -151,9 +152,9 @@ MeshRasterizer::AlphaSettings::AlphaSettings()
     , densityExponent_("alphaDensityExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f)
     , enableShape_("alphaShape", "Shape-based", false, InvalidationLevel::InvalidResources)
     , shapeExponent_("alphaShapeExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f) {
-    addProperties(enableUniform_, uniformScaling_, enableAngleBased_, angleBasedExponent_,
-                  enableNormalVariation_, normalVariationExponent_, enableDensity_, baseDensity_,
-                  densityExponent_, enableShape_, shapeExponent_);
+    addProperties(minimumAlpha_, enableUniform_, uniformScaling_, enableAngleBased_,
+                  angleBasedExponent_, enableNormalVariation_, normalVariationExponent_,
+                  enableDensity_, baseDensity_, densityExponent_, enableShape_, shapeExponent_);
 
     const auto get = [](const auto& p) { return p.get(); };
 
@@ -166,8 +167,9 @@ MeshRasterizer::AlphaSettings::AlphaSettings()
 }
 
 void MeshRasterizer::AlphaSettings::setUniforms(Shader& shader, std::string_view prefix) const {
-    std::array<std::pair<std::string_view, std::variant<float>>, 6> uniforms{
-        {{"uniformScale", uniformScaling_},
+    std::array<std::pair<std::string_view, std::variant<float>>, 7> uniforms{
+        {{"minAlpha", minimumAlpha_},
+         {"uniformScale", uniformScaling_},
          {"angleExp", angleBasedExponent_},
          {"normalExp", normalVariationExponent_},
          {"baseDensity", baseDensity_},
@@ -179,7 +181,7 @@ void MeshRasterizer::AlphaSettings::setUniforms(Shader& shader, std::string_view
                        auto& aval) { shader.setUniform(fmt::format("{}{}", prefix, akey), aval); },
                    val);
     }
-}
+}  // namespace inviwo
 
 MeshRasterizer::EdgeSettings::EdgeSettings()
     : CompositeProperty("edges", "Edges")
@@ -471,9 +473,9 @@ void MeshRasterization::rasterize(const ivec2& imageSize, const mat4& worldMatri
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, forceOpaque_);
         utilgl::DepthMaskState depthMask(forceOpaque_ ? GL_TRUE : GL_FALSE);
 
-        utilgl::CullFaceState culling(!showFace_[0] && showFace_[1]
-                                          ? GL_FRONT
-                                          : showFace_[0] && !showFace_[1] ? GL_BACK : GL_NONE);
+        utilgl::CullFaceState culling(!showFace_[0] && showFace_[1]   ? GL_FRONT
+                                      : showFace_[0] && !showFace_[1] ? GL_BACK
+                                                                      : GL_NONE);
         utilgl::BlendModeState blendModeState(forceOpaque_ ? GL_ONE : GL_SRC_ALPHA,
                                               forceOpaque_ ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,8 +40,6 @@ OpenGLSettings::OpenGLSettings()
     : Settings("OpenGL Settings")
     , shaderReloadingProperty_("shaderReloading", "Automatically reload shaders", true)
     , btnOpenGLInfo_("printOpenGLInfo", "Print OpenGL Info")
-    , selectedOpenGLProfile_("selectedOpenGLProfile", "OpenGL Profile",
-                             {{"core", "Core"}, {"compatibility", "Compatibility"}}, 0)
     , uniformWarnings_("uniformWarnings", "Uniform Warnings",
                        {{"ignore", "Ignore missing locations", Shader::UniformWarning::Ignore},
                         {"warn", "Print warning", Shader::UniformWarning::Warn},
@@ -72,7 +70,6 @@ OpenGLSettings::OpenGLSettings()
 
     addProperty(shaderReloadingProperty_);
     addProperty(btnOpenGLInfo_);
-    addProperty(selectedOpenGLProfile_);
     addProperty(uniformWarnings_);
     addProperty(shaderObjectErrors_);
     addProperty(debugMessages_);

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -241,6 +241,8 @@ ConnectionGraphicsItem* NetworkEditor::addConnectionGraphicsItem(const PortConne
 void NetworkEditor::removeConnection(ConnectionGraphicsItem* connectionGraphicsItem) {
     Outport* outport = connectionGraphicsItem->getOutport();
     Inport* inport = connectionGraphicsItem->getInport();
+
+    RenderContext::getPtr()->activateDefaultRenderContext();
     network_->removeConnection(outport, inport);
 }
 
@@ -270,6 +272,7 @@ void NetworkEditor::removeLink(LinkConnectionGraphicsItem* linkGraphicsItem) {
         linkGraphicsItem->getSrcProcessorGraphicsItem()->getProcessor(),
         linkGraphicsItem->getDestProcessorGraphicsItem()->getProcessor());
 
+    RenderContext::getPtr()->activateDefaultRenderContext();
     NetworkLock lock(network_);
     for (auto& link : links) {
         network_->removeLink(link.getSource(), link.getDestination());
@@ -460,6 +463,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 auto action = subMenu->addAction(utilqt::toQString(vis->getName()));
                 connect(action, &QAction::triggered, [this, vis, outport]() {
                     AdjustSceneToChangesBlocker blocker(*this);
+                    RenderContext::getPtr()->activateDefaultRenderContext();
 
                     auto pos = util::getPosition(outport->getProcessor());
                     auto oldPos = util::getPositions(network_);
@@ -551,6 +555,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             QAction* delprocessor = menu.addAction(QIcon(":/svgicons/edit-delete.svg"),
                                                    tr("Delete && &Keep Connections"));
             connect(delprocessor, &QAction::triggered, [this, processor]() {
+                RenderContext::getPtr()->activateDefaultRenderContext();
+
                 auto p = processor->getProcessor();
                 for (auto& prop : p->getPropertiesRecursive()) {
                     auto links = network_->getPropertiesLinkedTo(prop);
@@ -641,8 +647,10 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         menu.addSeparator();
         auto compAction = menu.addAction(QIcon(":/svgicons/composite-create-enabled.svg"),
                                          tr("&Create Composite"));
-        connect(compAction, &QAction::triggered, this,
-                [this]() { util::replaceSelectionWithCompositeProcessor(*network_); });
+        connect(compAction, &QAction::triggered, this, [this]() {
+            RenderContext::getPtr()->activateDefaultRenderContext();
+            util::replaceSelectionWithCompositeProcessor(*network_);
+        });
         compAction->setEnabled(selectedProcessors.size() > 1);
 
         auto expandAction = menu.addAction(QIcon(":/svgicons/composite-expand-enabled.svg"),
@@ -674,8 +682,9 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                     PathType::Settings, "/composites", true);
                 const auto filename = util::findUniqueIdentifier(
                     util::stripIdentifier(p->getDisplayName()),
-                    [&](const std::string& name) {
-                        return !filesystem::fileExists(compDir + "/" + name + ".inv");
+                    [&](std::string_view name) {
+                        StrBuffer path{"{}/{}.inv", compDir, name};
+                        return !filesystem::fileExists(path);
                     },
                     "");
                 filesystem::createDirectoryRecursively(compDir);
@@ -769,6 +778,7 @@ void NetworkEditor::deleteSelection() {
 
 void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
     NetworkLock lock(network_);
+    RenderContext::getPtr()->activateDefaultRenderContext();
 
     // Remove Connections
     util::erase_remove_if(items, [&](QGraphicsItem* item) {

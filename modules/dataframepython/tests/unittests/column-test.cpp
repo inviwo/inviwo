@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -149,7 +149,7 @@ col.buffer.data = np.array([0.0, 0.1, 0.5, 1.0, 2.0, 10.0], dtype=np.single)
         static_cast<const BufferRAMPrecision<float>*>(buffer->getRepresentation<BufferRAM>());
     const std::vector<float> expected = {0.0f, 0.1f, 0.5f, 1.0f, 2.0f, 10.0f};
 
-    EXPECT_EQ(expected, bufferram->getDataContainer()) << "Categories in column are not correct";
+    EXPECT_EQ(expected, bufferram->getDataContainer()) << "Column contents differ";
 }
 
 TEST(ColumnTests, DataAccess) {
@@ -170,6 +170,7 @@ col.set(2, 5.0)
 
     py::eval<py::eval_statements>(source, dict);
 
+    const auto value = dict["value"].cast<float>();
     auto buffer = dict["col"].attr("buffer").cast<std::shared_ptr<BufferBase>>();
     auto rows = dict["col"].attr("size").cast<size_t>();
 
@@ -177,11 +178,84 @@ col.set(2, 5.0)
         << "column buffer has incorrect data format";
     EXPECT_EQ(6, rows) << "Row count differs";
 
+    EXPECT_EQ(0.5f, value) << "get() returned wrong value";
+
     auto bufferram =
         static_cast<const BufferRAMPrecision<float>*>(buffer->getRepresentation<BufferRAM>());
     const std::vector<float> expected = {0.0f, 0.1f, 5.0f, 1.0f, 2.0f, 10.0f};
 
-    EXPECT_EQ(expected, bufferram->getDataContainer()) << "Categories in column are not correct";
+    EXPECT_EQ(expected, bufferram->getDataContainer()) << "Column contents differ";
+}
+
+TEST(ColumnAppend, IntColumn) {
+    const std::string source = R"delim(
+import inviwopy
+import ivwdataframe
+import numpy as np
+
+col = ivwdataframe.IntColumn('IntCol')
+col.add(0)
+col.add(1)
+col.add(2)
+col.add(3)
+
+col2 = ivwdataframe.IntColumn('IntCol 2')
+col2.add(4)
+col2.add(5)
+
+col.append(col2)
+)delim";
+
+    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+
+    py::eval<py::eval_statements>(source, dict);
+
+    auto buffer = dict["col"].attr("buffer").cast<std::shared_ptr<BufferBase>>();
+    auto rows = dict["col"].attr("size").cast<size_t>();
+
+    ASSERT_EQ(DataFormat<int>::id(), buffer->getDataFormat()->getId())
+        << "column buffer has incorrect data format";
+    EXPECT_EQ(6, rows) << "Row count differs";
+
+    auto bufferram =
+        static_cast<const BufferRAMPrecision<int>*>(buffer->getRepresentation<BufferRAM>());
+    const std::vector<int> expected = {0, 1, 2, 3, 4, 5};
+
+    EXPECT_EQ(expected, bufferram->getDataContainer()) << "Column contents differ";
+}
+
+TEST(ColumnAppend, Categorical) {
+    const std::string source = R"delim(
+import inviwopy
+import ivwdataframe
+
+col = ivwdataframe.CategoricalColumn('Column')
+col.add('a')
+col.add('c')
+col.add('b')
+
+col2 = ivwdataframe.CategoricalColumn('Column 2')
+col2.add('d')
+col2.add('e')
+col2.add('a')
+col2.add('b')
+
+col.append(col2)
+)delim";
+
+    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+
+    py::eval<py::eval_statements>(source, dict);
+
+    auto pyCategories = dict["col"].attr("categories");
+    auto result = pyCategories.cast<std::vector<std::string>>();
+
+    const std::vector<std::string> expected = {"a", "c", "b", "d", "e"};
+
+    const auto rows = dict["col"].attr("size").cast<size_t>();
+
+    EXPECT_EQ(7, rows) << "Incorrect number of rows after append";
+    EXPECT_EQ(expected, result) << "Categories after append are not correct";
 }
 
 }  // namespace inviwo

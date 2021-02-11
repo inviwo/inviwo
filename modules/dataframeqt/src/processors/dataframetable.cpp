@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,7 @@ DataFrameTable::DataFrameTable()
                 ivec2(std::numeric_limits<int>::lowest()), ivec2(std::numeric_limits<int>::max()),
                 ivec2(1, 1), InvalidationLevel::Valid, PropertySemantics::Text)
     , showIndexColumn_("showIndexColumn", "Show Index Column", false, InvalidationLevel::Valid)
+    , showCategoryIndices_("showCategoryIndices", "Show Category Indices", false)
     , vectorCompAsColumn_("vectorCompAsColumn", "Vector Components as Columns", true)
     , widgetMetaData_{
           createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::CLASS_IDENTIFIER)} {
@@ -63,7 +64,8 @@ DataFrameTable::DataFrameTable()
 
     addPort(inport_);
     addPort(brushLinkPort_);
-    addProperties(dimensions_, position_, showIndexColumn_, vectorCompAsColumn_);
+    addProperties(dimensions_, position_, showIndexColumn_, showCategoryIndices_,
+                  vectorCompAsColumn_);
 
     dimensions_.setSerializationMode(PropertySerializationMode::None);
     dimensions_.onChange([this]() { widgetMetaData_->setDimensions(dimensions_.get()); });
@@ -84,8 +86,9 @@ DataFrameTable::~DataFrameTable() {
 
 void DataFrameTable::process() {
     if (auto w = getWidget()) {
-        if (inport_.isChanged() || vectorCompAsColumn_.isModified()) {
-            w->setDataFrame(inport_.getData(), vectorCompAsColumn_);
+        if (inport_.isChanged() || vectorCompAsColumn_.isModified() ||
+            showCategoryIndices_.isModified()) {
+            w->setDataFrame(inport_.getData(), vectorCompAsColumn_, showCategoryIndices_);
             w->updateSelection(brushLinkPort_.getSelectedColumns(),
                                brushLinkPort_.getSelectedIndices());
         } else if (brushLinkPort_.isChanged()) {

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/processors/processorutils.h>
 
 #include <fmt/format.h>
 
@@ -40,26 +41,35 @@ namespace inviwo {
 ProcessorFactory::ProcessorFactory(InviwoApplication* app) : Parent(), app_{app} {}
 
 bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
+    auto moduleId = [&]() {
+        auto module = util::getProcessorModule(processor->getClassIdentifier(), *app_);
+        return module ? module->getIdentifier() : std::string("Unknown");
+    };
+
     if (!Parent::registerObject(processor)) {
-        LogWarn(fmt::format("Processor with class name: '{}' is already registered",
-                            processor->getClassIdentifier()));
+        LogWarn(fmt::format(
+            "Processor with class name: '{}' is already registered by module '{}'. This "
+            "processor will be ignored",
+            processor->getClassIdentifier(), moduleId()));
         return false;
     }
 
-    if (splitString(processor->getClassIdentifier(), '.').size() < 3) {
+    if (util::splitStringView(processor->getClassIdentifier(), '.').size() < 3) {
         LogWarn(
             fmt::format("All processor classIdentifiers should be named using reverse DNS "
-                        "(org.inviwo.processor) not like: '{}'",
-                        processor->getClassIdentifier()));
+                        "(org.inviwo.processor) not like: '{}' in module {}",
+                        processor->getClassIdentifier(), moduleId()));
     }
     if (processor->getCategory().empty()) {
-        LogWarn(fmt::format("Processor '{}' has no category", processor->getClassIdentifier()));
+        LogWarn(fmt::format("Processor '{}' in module '{}' has no category",
+                            processor->getClassIdentifier(), moduleId()));
     } else if (processor->getCategory() == "Undefined") {
-        LogWarn(fmt::format("Processor '{}' has category \"Undefined\"",
-                            processor->getClassIdentifier()));
+        LogWarn(fmt::format("Processor '{}' in module '{}' has category \"Undefined\"",
+                            processor->getClassIdentifier(), moduleId()));
     }
     if (processor->getDisplayName().empty()) {
-        LogWarn(fmt::format("Processor '{}' has no display name", processor->getClassIdentifier()));
+        LogWarn(fmt::format("Processor '{}' in module '{}' has no display name",
+                            processor->getClassIdentifier(), moduleId()));
     }
 
     return true;

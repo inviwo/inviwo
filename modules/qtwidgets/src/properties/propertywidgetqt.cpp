@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QStyleOption>
 #include <QPainter>
 #include <QToolTip>
@@ -56,6 +55,7 @@
 #include <QLayout>
 #include <QMimeData>
 #include <QMessageBox>
+#include <QActionGroup>
 #include <warn/pop>
 
 namespace inviwo {
@@ -182,7 +182,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
             auto copyPathAction = menu->addAction("Copy Path");
             connect(copyPathAction, &QAction::triggered, this, [this]() {
                 if (!property_) return;
-                std::string path = joinString(property_->getPath(), ".");
+                std::string path = property_->getPath();
                 QApplication::clipboard()->setText(path.c_str());
             });
         }
@@ -437,7 +437,8 @@ bool PropertyWidgetQt::event(QEvent* event) {
     if (event->type() == QEvent::ToolTip && property_) {
         event->accept();
         auto helpEvent = static_cast<QHelpEvent*>(event);
-        QToolTip::showText(helpEvent->globalPos(), utilqt::toQString(property_->getDescription()));
+        const std::string info = property_->getDescription();
+        QToolTip::showText(helpEvent->globalPos(), utilqt::toQString(info));
         return true;
     } else if (event->type() == QEvent::MouseButtonRelease) {
         auto mouseEvent = static_cast<QMouseEvent*>(event);

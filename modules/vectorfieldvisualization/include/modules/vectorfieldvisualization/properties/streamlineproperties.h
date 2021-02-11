@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STREAMLINEPROPERTIES_H
-#define IVW_STREAMLINEPROPERTIES_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -49,5 +47,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_STREAMLINEPROPERTIES_H

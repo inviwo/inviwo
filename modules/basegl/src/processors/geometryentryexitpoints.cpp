@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,15 +59,15 @@ GeometryEntryExitPoints::GeometryEntryExitPoints()
     addProperty(camera_);
     addProperty(trackball_);
 
-    for (auto& shader : entryExitHelper_.getShaders()) {
-        shader.get().onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    }
+    onReloadCallback_ =
+        entryExitHelper_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 void GeometryEntryExitPoints::process() {
     entryExitHelper_(*entryPort_.getEditableData().get(), *exitPort_.getEditableData().get(),
                      camera_.get(), *volumeInport_.getData().get(), *meshInport_.getData().get(),
-                     capNearClipping_.get());
+                     capNearClipping_ ? algorithm::CapNearClip::Yes : algorithm::CapNearClip::No,
+                     algorithm::IncludeNormals::Yes);
 }
 
 }  // namespace inviwo

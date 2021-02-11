@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -72,8 +72,10 @@ bool PythonProcessorFolderObserver::registerFile(const std::string& filename) {
             module_.registerProcessor(std::move(pfo));
             registeredFiles_.push_back(filename);
             return true;
+        } catch (const Exception& e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
         } catch (const std::exception& e) {
-            LogError(e.what());
+            LogWarn(e.what());
         }
     }
     return false;
@@ -98,8 +100,8 @@ void PythonProcessorFolderObserver::fileChanged(const std::string& changed) {
     } else {
         if (filesystem::getFileExtension(changed) == "py") {
             if (registerFile(changed)) {
-                LogInfo("Loaded python processor: " << directory_ + "/" + changed);
-                stopFileObservation(directory_ + "/" + changed);
+                LogInfo("Loaded python processor: " << changed);
+                stopFileObservation(changed);
             }
         }
     }

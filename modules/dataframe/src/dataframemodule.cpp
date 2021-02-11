@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,8 @@
 #include <inviwo/dataframe/dataframemodule.h>
 #include <inviwo/dataframe/io/json/dataframepropertyjsonconverter.h>
 #include <inviwo/dataframe/processors/csvsource.h>
+#include <inviwo/dataframe/processors/dataframefloat32converter.h>
+#include <inviwo/dataframe/processors/dataframejoin.h>
 #include <inviwo/dataframe/processors/dataframesource.h>
 #include <inviwo/dataframe/processors/dataframeexporter.h>
 #include <inviwo/dataframe/processors/imagetodataframe.h>
@@ -52,8 +54,10 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
 
     // Processors
     registerProcessor<CSVSource>();
+    registerProcessor<DataFrameJoin>();
     registerProcessor<DataFrameSource>();
     registerProcessor<DataFrameExporter>();
+    registerProcessor<DataFrameFloat32Converter>();
     registerProcessor<ImageToDataFrame>();
     registerProcessor<SyntheticDataFrame>();
     registerProcessor<VolumeToDataFrame>();

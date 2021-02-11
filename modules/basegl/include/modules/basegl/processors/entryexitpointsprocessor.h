@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ENTRYEXITPOINTSPROCESSOR_H
-#define IVW_ENTRYEXITPOINTSPROCESSOR_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
@@ -43,6 +42,8 @@
 #include <modules/basegl/algorithm/entryexitpoints.h>
 
 namespace inviwo {
+
+class ImageGL;
 
 /** \docpage{org.inviwo.EntryExitPoints, Entry exit points}
  * ![](org.inviwo.EntryExitPoints.png?classIdentifier=org.inviwo.EntryExitPoints)
@@ -83,8 +84,10 @@ private:
     CameraTrackball trackball_;
 
     algorithm::EntryExitPointsHelper entryExitHelper_;
+    std::shared_ptr<std::function<void()>> onReloadCallback_;
+
+    ImageGL* entryImg_ = nullptr;
+    ImageGL* exitImg_ = nullptr;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ENTRYEXITPOINTSPROCESSOR_H

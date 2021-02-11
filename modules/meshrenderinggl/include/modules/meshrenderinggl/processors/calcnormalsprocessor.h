@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,11 +51,13 @@ namespace inviwo {
  *
  * ### Properties
  *   * __Mode__  The weighting modes for calculating normals
- *       * @copydoc meshutil::CalculateMeshNormalsMode::PassThrough
- *       * @copydoc meshutil::CalculateMeshNormalsMode::NoWeighting
- *       * @copydoc meshutil::CalculateMeshNormalsMode::WeightArea
- *       * @copydoc meshutil::CalculateMeshNormalsMode::WeightAngle
- *       * @copydoc meshutil::CalculateMeshNormalsMode::WeightNMax
+ *      * __PassThrough__ mesh is not changed
+ *      * __NoWeighting__ no weighting of the normals, simple average
+ *      * __WeightArea__  Weight = area of the triangle
+ *      * __WeightAngle__ Weight based on the angle. As defined in "Computing vertex normals
+ *                        from polygonal facets" by Grit Thürmer and Charles A. Wüthrich 1998.
+ *      * __WeightNMax__  Based on "Weights for Computing Vertex Normals from Facet Normals",
+ *                        N. Max, 1999. This gives the best results in most cases.
  *
  */
 class IVW_MODULE_MESHRENDERINGGL_API CalcNormalsProcessor : public Processor {

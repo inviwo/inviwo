@@ -3,7 +3,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,18 @@ public:
     virtual void activate() = 0;
     virtual std::unique_ptr<Canvas> createHiddenCanvas() = 0;
     virtual Canvas::ContextID activeContext() const = 0;
+    virtual Canvas::ContextID contextId() const = 0;
+};
+
+class IVW_CORE_API CanvasContextHolder : public ContextHolder {
+public:
+    CanvasContextHolder(Canvas* canvas);
+    virtual void activate() override;
+    virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
+    virtual Canvas::ContextID activeContext() const override;
+    virtual Canvas::ContextID contextId() const override;
+
+    Canvas* canvas_;
 };
 
 /**
@@ -60,19 +72,28 @@ public:
     bool hasDefaultRenderContext() const;
     ContextHolder* setDefaultRenderContext(Canvas* canvas);
     ContextHolder* setDefaultRenderContext(std::unique_ptr<ContextHolder> context);
+
+    /**
+     * @brief Activate the default Inviwo render context.
+     * Should only be called from the main GUI thread.
+     */
     void activateDefaultRenderContext() const;
 
+    /**
+     * @brief Activate the thread local Inviwo render context.
+     * Will activate the inviwo render context associated with the calling thread
+     */
     void activateLocalRenderContext() const;
     Canvas::ContextID activeContext() const;
 
     void clearContext();
 
-    void registerContext(Canvas* canvas, const std::string& name);
-    void unRegisterContext(Canvas* canvas);
+    void registerContext(Canvas::ContextID id, std::string_view name,
+                         std::unique_ptr<ContextHolder> context);
+    void unRegisterContext(Canvas::ContextID id);
 
-    Canvas* getCanvas(Canvas::ContextID id) const;
     std::string getContextName(Canvas::ContextID id) const;
-    void setContextName(Canvas::ContextID id, const std::string& name);
+    void setContextName(Canvas::ContextID id, std::string_view name);
     std::thread::id getContextThreadId(Canvas::ContextID id) const;
     void setContextThreadId(Canvas::ContextID id, std::thread::id);
 
@@ -82,8 +103,8 @@ public:
 private:
     struct ContextInfo {
         std::string name;
-        Canvas* canvas;
         std::thread::id threadId;
+        std::unique_ptr<ContextHolder> context;
     };
 
     std::unordered_map<Canvas::ContextID, ContextInfo> contextRegistry_;
@@ -100,8 +121,32 @@ private:
 template <typename C>
 void RenderContext::forEachContext(C callback) {
     for (const auto& item : contextRegistry_) {
-        callback(item.first, item.second.name, item.second.canvas, item.second.threadId);
+        callback(item.first, item.second.name, item.second.context.get(), item.second.threadId);
     }
 }
+
+namespace rendercontext {
+
+/**
+ * @brief Activate the default Inviwo render context.
+ * Should only be called from the main GUI thread.
+ */
+inline void activateDefault() {
+    if (RenderContext::isInitialized()) {
+        RenderContext::getPtr()->activateDefaultRenderContext();
+    }
+}
+
+/**
+ * @brief Activate the thread local Inviwo render context.
+ * Will activate the inviwo render context associated with the calling thread
+ */
+inline void activateLocal() {
+    if (RenderContext::isInitialized()) {
+        RenderContext::getPtr()->activateLocalRenderContext();
+    }
+}
+
+}  // namespace rendercontext
 
 }  // namespace inviwo

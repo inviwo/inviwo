@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@
 #include <flags/flags.h>
 
 #include <iostream>
-#include <string>
+#include <string_view>
 #include <vector>
 
 namespace inviwo {
@@ -93,7 +93,7 @@ public:
      * \param exceptionHandler A callback for handling errors.
      * \param mode to indicate if we are saving to disk or undo-stack
      */
-    void save(std::ostream& stream, const std::string& refPath,
+    void save(std::ostream& stream, std::string_view refPath,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
               WorkspaceSaveMode mode = WorkspaceSaveMode::Disk);
 
@@ -103,7 +103,7 @@ public:
      * \param exceptionHandler A callback for handling errors.
      * \param mode to indicate if we are saving to disk or undo-stack
      */
-    void save(const std::string& path,
+    void save(std::string_view path,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
               WorkspaceSaveMode mode = WorkspaceSaveMode::Disk);
 
@@ -115,7 +115,7 @@ public:
      *      path to the saved file.
      * \param exceptionHandler A callback for handling errors.
      */
-    void load(std::istream& stream, const std::string& refPath,
+    void load(std::istream& stream, std::string_view refPath,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler());
 
     /**
@@ -123,7 +123,7 @@ public:
      * \param path the file to read from.
      * \param exceptionHandler A callback for handling errors.
      */
-    void load(const std::string& path,
+    void load(std::string_view path,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler());
 
     /**
@@ -150,7 +150,7 @@ public:
     /**
      *	Create a deserializer for a workspace stream, and apply all needed version updates.
      */
-    Deserializer createWorkspaceDeserializer(std::istream& stream, const std::string& refPath,
+    Deserializer createWorkspaceDeserializer(std::istream& stream, std::string_view refPath,
                                              Logger* logger = LogCentral::getPtr()) const;
 
 private:

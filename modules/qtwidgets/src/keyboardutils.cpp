@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ namespace inviwo {
 
 namespace util {
 
-IvwKey mapKeyFromQt(const QKeyEvent *keyevent) {
+IvwKey mapKeyFromQt(const QKeyEvent* keyevent) {
 
 #ifdef _WIN32
     // handle special keys here first, examples include numpad keys and left/right modifier keys.

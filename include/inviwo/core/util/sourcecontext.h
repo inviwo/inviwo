@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/hashcombine.h>
 
+#include <string_view>
 #include <string>
 #include <cstring>
 #include <iostream>
@@ -55,7 +56,10 @@ public:
      */
     SourceContext(std::string caller = "", std::string file = "", std::string function = "",
                   int line = 0)
-        : caller_(caller), file_(file), function_(function), line_(line) {}
+        : caller_(std::move(caller))
+        , file_(std::move(file))
+        , function_(std::move(function))
+        , line_(line) {}
 
     /**
      * Usually the class name of *this in the current scope.
@@ -122,18 +126,18 @@ public:
      * @param function name of the function in the current scope
      * @param line line number in the current source file
      */
-    constexpr SourceLocation(const char* file, const char* function, int line)
+    constexpr SourceLocation(std::string_view file, std::string_view function, int line)
         : file_{file}, function_{function}, line_{line} {}
 
     /**
-     * The name and path the the source file
+     * The name and path of the source file
      */
-    constexpr const char* getFile() const noexcept { return file_; };
+    constexpr std::string_view getFile() const noexcept { return file_; };
 
     /**
      * Name of the function in the current scope
      */
-    constexpr const char* getFunction() const noexcept { return function_; };
+    constexpr std::string_view getFunction() const noexcept { return function_; };
 
     /**
      * Line number in the current source file
@@ -141,8 +145,8 @@ public:
     constexpr int getLine() const noexcept { return line_; };
 
     friend constexpr bool operator==(const SourceLocation& a, const SourceLocation& b) noexcept {
-        return a.getLine() == b.getLine() && std::strcmp(a.getFile(), b.getFile()) == 0 &&
-               std::strcmp(a.getFunction(), b.getFunction()) == 0;
+        return a.getLine() == b.getLine() && a.getFile() == b.getFile() &&
+               a.getFunction() == b.getFunction();
     }
 
     friend constexpr bool operator!=(const SourceLocation& a, const SourceLocation& b) noexcept {
@@ -150,8 +154,8 @@ public:
     }
 
 private:
-    const char* file_;
-    const char* function_;
+    std::string_view file_;
+    std::string_view function_;
     int line_;
 };
 

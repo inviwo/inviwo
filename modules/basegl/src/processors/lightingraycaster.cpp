@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ const ProcessorInfo LightingRaycaster::getProcessorInfo() const { return process
 
 LightingRaycaster::LightingRaycaster()
     : Processor()
-    , shader_("lighting/lightingraycasting.frag", false)
+    , shader_("lighting/lightingraycasting.frag", Shader::Build::No)
     , volumePort_("volume")
     , entryPort_("entry-points")
     , exitPort_("exit-points")

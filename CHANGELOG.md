@@ -1,5 +1,89 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2020-11-10 Improved Filtering in Processor List Widget
+ Filtering in the Processor List Widget is now based on matching substrings (space is the separator). For example, searching for `Vol Source` will return `Volume Source`, `Volume Sequence Source`, and `Image Stack Volume Source`.
+ This also enables searching for processor names and tags at the same time, e.g. `Slice GL`.
+
+## 2020-10-28 Performance refactoring
+* Serialization no longer supports use of the "allowReferences" to serialize pointer to the same object multiple times. Reasoning being that it requires all properties and ports to always be present in the xml even if they don't have any state that needs serialization. The new solution uses "paths" (a dot separated list of identifiers) instead of pointers where needed.
+* Some of the serialization functions now supports filters and projections to avoid having to create temporary objects to serialize.
+* Property now has a `virtual bool isDefaultState() const` function. Should generally be overridden by subclasses to return true if they are in the default state or not.
+* Property now has a `virtual bool needsDerialization() const` function, the default implementation returns true, when the serialization mode is `All` or `Default` and `!isDefaultState()` otherwise false.
+* `PropertyOwner` now only serializes property that `needsDeserialization` this reduces amount of items that need serialization by a large fraction.
+* `DefaultValues` now uses `StaticString` to make the implementation constexpr
+* Many classIdentifiers now return `const std::string&` instead of `std::string` to avoid creating new strings. This can easily be done by keeping a static `std::string` around.
+* Now uses std::string_view instead of `const std::string&` in many places to avoid having to create strings with dynamic allocations.
+* StringConversion.h now has a `StrBuffer` class to make it easier to format string using a buffer on the Stack. Very useful for concatenation.
+* StringConversion.h now has a `forEachStringPart` function to call a callback on parts of a string.
+* Processor identifiers now follow the same rules as other identifiers
+* `MinMaxProperty` is no longer derives from `TemplateProperty`.
+
+## 2020-09-30 FBO Asserts
+Added asserts for using the wrong context in the FBO. An FBO has to be created, used, and deleted in the same OpenGL context. We now have runtime checks to verify that this is the case.
+    
+## 2020-07-17 Volume and DataFrame converter
+The `VolumeConverter` processor provides functionality for converting a `Volume` to a different data format with optional mapping of data values and custom ranges. The base module now also features a `DataRangeProperty` holding data &value ranges of a volume plus optional overrides.
+
+The CSV reader now distinguishes between integral, floating point, and string/categorical values. Floating point values are stored either in float32 (default) or float64/double columns depending on the `doubleprec` argument in the CSVReader constructor. Since some of the plotting processors are relying on float32 columns, a `DataFrame Float32 Converter` processor was added which converts float64 columns to float32.
+
+## 2020-06-09 Remove use of deprecated QGLWidget and OpenGL compatibility mode
+In case you have built a custom Qt application your main file need be updated to enable shared OpenGL context, see apps/inviwo/inviwo.cpp.
+We now also use QOffScreenSurface for default OpenGL context and threaded rendering instead of a custom hidden window. 
+
+## 2020-06-30 DataFrame
+Moved DataFrame utils files to `dataframe/util/dataframeutil.h` (previously `dataframe/datastructures/dataframeutil.h`). Renamed namespace from `dataframeutil` to `dataframe`.
+
+Added utility functions for joining two DataFrames: `appendRows()`, `appendColumns()`, `innerJoin()`.
+
+## 2020-06-26 Vcpkg support
+We now support using [vcpkg](https://github.com/microsoft/vcpkg) for handling external dependencies. The following packages from vcpkg can be used `assimp benchmark cimg eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] libjpeg-turbo libpng minizip nlohmann-json openexr pybind11 python3 tclap tiff tinydir tinyxml2 utfcpp zlib`.
+
+To install vcpkg and the dependencies in a directory of your choice (outside of inviwo) do: 
+
+```cmd  
+> git clone https://github.com/Microsoft/vcpkg.git
+> cd vcpkg
+> ./bootstrap-vcpkg.bat
+> ./vcpkg.exe install --triplet x64-windows assimp benchmark cimg
+    eigen3 fmt freetype glew glfw3 glm gtest hdf5[cpp,zlib] 
+    libjpeg-turbo libpng minizip nlohmann-json openexr pybind11
+    python3 tclap tiff tinydir tinyxml2 utfcpp zlib      
+```
+
+Then set the `CMAKE_TOOLCHAIN_FILE` to `<vcpkg-install-dir>/scripts/buildsystems/vcpkg.cmake` when configuring CMake (see https://stackoverflow.com/questions/29982505/setting-a-cross-compiler-file-using-the-cmake-gui ). Finally, set all the corresponding `IVW_USE_EXTERNAL_<package>` to `TRUE`.
+
+To help interact with vcpkg `cmake/vcpkghelpers.cmake` provides functions for installing the vcpkg packages needed to create installers (only windows so far).
+
+## 2020-06-26 CMake refactor
+We have renamed many cmake options to make the naming more consistent and the options easier to find. But you might need to review your cmake settings when updating to make sure you have the correct settings. 
+We now group the cmake settings like this:
+
+ - `IVW_APP_*` Enable disable building various apps
+ - `IVV_CFG_*` All configuration options, like  PRECOMPILED_HEADERS and PROFILING
+ - `IVW_DOXYGEN_*` Doxygen options
+ - `IVW_EXTERNAL_*` Add external modules / projects
+ - `IVW_MODULE_*` enable/disable modules
+ - `IVW_PACKAGE_*` options for installing/creating installers
+ - `IVW_TEST_*` option for unit test, integration test, regressions test.
+ - `IVW_USE_*` options for enabling/disabling some libraries / tools (sigar, openmp, openexr)
+ - `IVW_USE_EXTERNAL_*` enable/disable building various dependences. if off then dependences must be provided externally
+
+Notable changes include:
+
+ - `PRECOMPILED_HEADERS -> IVW_CFG_PRECOMPILED_HEADERS`
+ - `IVW_PROFILING -> IVW_CFG_PROFILING`
+ - `IVW_OPENMP_ON -> IVW_USE_OPENMP`
+
+## 2020-06-16 StipplingProperty now in BaseGL
+Moved StipplingProperty and associated settings from Base module to BaseGL.
+
+## 2020-06-03 WebBrowser Javascript API
+Changed redirection of `https://inviwo` to `inviwo://` to avoid confusion with the https scheme.
+Your html-files will need to update from 
+'https://inviwo/modules/yourmodule' 
+to 
+'inviwo://yourmodule' 
+
 ## 2020-04-03 OrdinalPropertyState
 Added a OrdinalPropertyState helper for constructing ordinal properties.
 And a factory function `util::ordinalColor` for OrdinalProperties representing Colors
@@ -27,15 +111,15 @@ Four settings are available:
 
 To specify the behavior a new Constructor has been added to the OrdinalProperty:
 ```c++
-    OrdinalProperty(const std::string& identifier, const std::string& displayName,
-                    const T& value = Defaultvalues<T>::getVal(),
-                    const std::pair<T, ConstraintBehavior>& minValue =
-                        std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
-                    const std::pair<T, ConstraintBehavior>& maxValue =
-                        std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
-                    const T& increment = Defaultvalues<T>::getInc(),
-                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                    PropertySemantics semantics = PropertySemantics::Default);
+OrdinalProperty(const std::string& identifier, const std::string& displayName,
+                const T& value = Defaultvalues<T>::getVal(),
+                const std::pair<T, ConstraintBehavior>& minValue =
+                    std::pair{Defaultvalues<T>::getMin(), ConstraintBehavior::Editable},
+                const std::pair<T, ConstraintBehavior>& maxValue =
+                    std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable},
+                const T& increment = Defaultvalues<T>::getInc(),
+                InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                PropertySemantics semantics = PropertySemantics::Default);
 ```
 where the `ConstraintBehavior` can be specified together with the `minValue` and `maxValue`. 
 
@@ -55,7 +139,8 @@ const auto calc = [image = inport_.getData()](pool::Stop stop, pool::Progress pr
 };
 dispatchOne(calc, [this](std::shared_ptr<const Image> result) {
     outport_.setData(result);
-    newResults();  // Let the network know that the processor has new results on the outport.
+    // Let the network know that the processor has new results on the outport.
+    newResults();
 });
 ```
 The `PoolProcessor` automatically manages the Activity Indicator and the Progress Bar. It handles stopping old jobs and it manages the lifetimes of the jobs and the processor. The Example module has an `ExampleProgressBar` processor with example code. And the `PoolProcessor` has examples in its documentation as well.
@@ -146,7 +231,6 @@ Inviwo Processors can now be implemented directly in Python by creating a python
 Bellow follows an example of a python processor:
 ```py
 # Name: PythonExample 
-
 import inviwopy as ivw
 
 class PythonExample(ivw.Processor):
@@ -179,7 +263,6 @@ class PythonExample(ivw.Processor):
     def process(self):
         print("process: ", self.slider.value)
         self.outport.setData(self.inport.getData())
-
 ```
 The initial '# Name:' comment is needed for Inviwo to know what python class that is should look for.
 To register an Inviwo python processor one can put in in the <user setttings folder>/python_processor or by adding a `PythonProcessorFolderObserver` to an Inviwo module and have that observe a folder.
@@ -309,11 +392,11 @@ needs to be changed to
 ## 2018-11-14
 New Module structure. We have introduced a new module structure where we separate headers and source files in the same way as it was already done for the core part of inviwo. Hence, module headers should now be placed under the include folder like:
 ```
-    .../{module name}/include/{organization}/{module name}/
+.../{module name}/include/{organization}/{module name}/
 ```
 and sources goes in the source folder:
 ```
-    .../{module name}/src/
+.../{module name}/src/
 ```
 `{module name}` it the lower case name of the module, `{organization}` default to inviwo but can be user-specified. 
 The headers can then be included using 
@@ -343,12 +426,10 @@ Current status: Dataset; Explicit and implicit channel; Structured and periodic 
 Updated the color property widget which allows to edit colors directly. Supports floating point range `[0,1]`, int range `[0,255]`, and hex color codes (`#RGB`, `#RGBA`, `#RRGGBB`, `#RRGGBBAA`).
 Invalid input is indicated by red border and changes discarded if either `<Esc>` is pressed or the widget looses focus.
 
-
 ## 2018-09-24 Spinbox semantics for ordinal properties
 New property semantics for ordinal properties: `SpinBox`
 
 This widget allows to adjust the value by dragging the arrow up/down indicator with the mouse. The rate of change per sec is shown in a tooltip. Alternatively, use the mouse wheel to adjust the value.
-
 
 ## 2018-09-21
 Settings are no longer shared between executables. I.e. The Inviwo app and the integration test will not use the same settings any more. We now prefix the settings with the InviwoApplication display name. This also implies that any existing Inviwo app settings will be lost. To keep old setting one can prefix all the ".ivs" file in the inviwo settings folder with "Inviwo_".  On windows the inviwo settings can be found in `%APPDATA%/inviwo`.
@@ -383,7 +464,7 @@ struct PropertyTraits<MyProperty> {
 ```
 To access a class identifier of a property type statically, the `PropertyTraits` class should be used  
 ```c++
-    PropertyTraits<MyProperty>::classIdentifier()
+PropertyTraits<MyProperty>::classIdentifier()
 ```
 instead of accessing the `CLASS_IDENTIFIER` directly.
 
@@ -402,7 +483,15 @@ struct EnumTraits<MyEnum> {
 This name will then be used by the TemplateOptionProperty in its class identifier. 
 ```c++
 TemplateOptionProperty<MyEnum> prop("test","test");    
-prop.getClassIdentifier() == PropertyTraits<TemplateOptionProperty<MyEnum>>::classIdentifier == "org.inviwo.OptionPropertyMyEnum"
+prop.getClassIdentifier();
+```
+which will use
+```c++
+PropertyTraits<TemplateOptionProperty<MyEnum>>::classIdentifier;
+```
+which then resolves to 
+```c++
+"org.inviwo.OptionPropertyMyEnum";
 ```
 This makes it possible to differentiate `MyEnum` from other enum TemplateOptionPropertys.
 
@@ -422,9 +511,10 @@ ListProperty listProperty("myListProperty", "My ListProperty",
 // multiple prefab objects
 ListProperty listProperty("myListProperty", "My List Property", 
     []() {
-        std::vector<std::unique_ptr<Property>> v;
-        v.emplace_back(std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10));
-        v.emplace_back(std::make_unique<IntProperty>("template2", "Template 2", 2, 0, 99));
+        std::vector<std::unique_ptr<Property>> v = {
+            std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10);
+            std::make_unique<IntProperty>("template2", "Template 2", 2, 0, 99);
+        };
         return v;
     }());
 ```
@@ -433,10 +523,11 @@ This also works when using different types of properties as prefab objects:
 ```c++
 ListProperty listProperty("myListProperty", "My List Property", 
     []() {
-        std::vector<std::unique_ptr<Property>> v;
-        v.emplace_back(std::make_unique<BoolProperty>("boolProperty1", "Boolean Flag", true));
-        v.emplace_back(std::make_unique<TransferFunctionProperty>("customTF1", "Transfer Function"));
-        v.emplace_back(std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10));
+        std::vector<std::unique_ptr<Property>> v = {
+            std::make_unique<BoolProperty>("boolProperty1", "Boolean Flag", true);
+            std::make_unique<TransferFunctionProperty>("customTF1", "Transfer Function");
+            std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10);
+        };
         return v;
     }());
 ```
@@ -456,13 +547,13 @@ see how they are used.
 GLM was updated to the new 0.9.9.0 version. Major changes are listed at https://github.com/g-truc/glm/releases/tag/0.9.9.0
 Notable changes include the include of the vector / matrix dimension as a template argument, so the main types are now
 ```c++
-    template <glm::length_t L, typename T, glm::qualifier Q>
-    glm::vec<L, T, Q> 
+template <glm::length_t L, typename T, glm::qualifier Q>
+glm::vec<L, T, Q> 
 ```
 and
 ```c++
-    template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-    glm::mat<C, R, T, Q>
+template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+glm::mat<C, R, T, Q>
 ```
 Most code should continue working as before. Except for __default constructed values that now are left uninitialized__. Where as before vec where initialized to 0 and mat to identify. This change can __break__ user code we have seen.  
 
@@ -537,36 +628,34 @@ The old port_traits was previously used to acquire information, mainly class ide
 
 Hence if you have your own port_traits specialization it has to be replaced by something like the following for a Port:
 ```c++
-    #include <inviwo/core/ports/porttraits.h>
-
-    template <typename T>
-    struct PortTraits<MyPort<T>> {
-        static std::string classIdentifier() {
-            return generateMyPortClassIdentifier<T>();
-        }
-    };
+#include <inviwo/core/ports/porttraits.h>
+template <typename T>
+struct PortTraits<MyPort<T>> {
+    static std::string classIdentifier() {
+        return generateMyPortClassIdentifier<T>();
+    }
+};
 ```
 And for a data object, i.e. something that you put in a port. 
 ```c++
-    #include <inviwo/core/datastructures/datatraits.h>
-
-    template <>
-    struct DataTraits<MyDataType> {
-        static std::string classIdentifier() {
-            return "org.something.mydatatype";
-        }
-        static std::string dataName() {
-            return "MyDataType";
-        }
-        static uvec3 colorCode() {
-            return uvec3{55,66,77};
-        }
-        static Document info(const MyDataType& data) {
-            Document doc;
-            doc.append("p", data.someInfo());
-            return doc;
-        }
-    };
+#include <inviwo/core/datastructures/datatraits.h>
+template <>
+struct DataTraits<MyDataType> {
+    static std::string classIdentifier() {
+        return "org.something.mydatatype";
+    }
+    static std::string dataName() {
+        return "MyDataType";
+    }
+    static uvec3 colorCode() {
+        return uvec3{55,66,77};
+    }
+    static Document info(const MyDataType& data) {
+        Document doc;
+        doc.append("p", data.someInfo());
+        return doc;
+    }
+};
 ```
 
 Port registration also now gets the port classIdentifier via PortTraits, so no need to specify the class identifier that registering the port.
@@ -593,8 +682,8 @@ Before this change, we could not detect when the Processor::isReady status chang
 - Processor performEvaluationRequest has been removed, instead call `Processor::invalidate` to trigger a network evaluation. 
 - If you happen to override ```Processor::isReady()```, that will no longer work. You instead have to set the updater for the ```isReady_``` StateCoordinator. Most likely, you will just need to move your isReady code to a functor and set it in the constructor of your processor:
 ```c++
-    // (default isReady() behavior)
-    isReady_.setUpdate([this]() { return allInportsAreReady(); });
+// (default isReady() behavior)
+isReady_.setUpdate([this]() { return allInportsAreReady(); });
 ```
 - This also applies to `isSink_` and `isSource_` in a similar manner. To mark a processor as sink, use `isSink_.setUpdate([]() { return true; });`
 
@@ -608,13 +697,14 @@ As this is now a state that is pushed instead of pulled you should also call ```
 Moved `InviwoApplicationQt` from `QtWidgets` into a new project InviwoQtApplicationBase.  
 If a module was using `InviwoApplicationQt` to get the main window, for example:  
 ```cpp
-    #include <inviwo/qt/qtwidgets/inviwoapplicationqt.h> 
-    auto mainWindow = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow();
+#include <inviwo/qt/qtwidgets/inviwoapplicationqt.h> 
+auto app = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());
+auto mainWindow = app->getMainWindow();
 ``` 
 This can be exchanged with:   
 ```cpp
-    #include <modules/qtwidgets/inviwoqtutils.h>  
-    auto mainWindow = utilqt::getApplicationMainWindow();
+#include <modules/qtwidgets/inviwoqtutils.h>  
+auto mainWindow = utilqt::getApplicationMainWindow();
 ```
 
 Perform search and replace to accommodate changes:  
@@ -662,44 +752,44 @@ To simplify refactoring there is a script in `tools/refactoring/enumfixes.py` th
 ## 2015-10-28
 Processors: Updated to use new structure of ProcessorInfo. The macro
 ```c++
-    InviwoProcessorInfo();
+InviwoProcessorInfo();
 ```
 should be replaced with:
 ```c++
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+virtual const ProcessorInfo getProcessorInfo() const override;
+static const ProcessorInfo processorInfo_;
 ```
 in the header file.
 
 In the cpp file the macros, `ProcessorClassIdentifier(VolumeRaycaster, "org.inviwo.VolumeRaycaster");` etc. for the static members are replaced with:
 ```c++
-    const ProcessorInfo VolumeRaycaster::processorInfo_{
-        "org.inviwo.VolumeRaycaster",  // Class identifer
-        "Volume Raycaster",            // Display name
-        "Volume Rendering",            // Category
-        CodeState::Stable,             // Code state
-        Tags::GL                       // Tags
-    };
-    const ProcessorInfo VolumeRaycaster::getProcessorInfo() const {
-        return processorInfo_;
-    }
+const ProcessorInfo VolumeRaycaster::processorInfo_{
+    "org.inviwo.VolumeRaycaster",  // Class identifer
+    "Volume Raycaster",            // Display name
+    "Volume Rendering",            // Category
+    CodeState::Stable,             // Code state
+    Tags::GL                       // Tags
+};
+const ProcessorInfo VolumeRaycaster::getProcessorInfo() const {
+    return processorInfo_;
+}
 ```
 The old macros should still work, but will be deprecated before next release.
 
 The name of the static member ```processorInfo_``` is important since that is what the ```ProcessorTraits``` looks for when it tries to find the information statically. If you want to have a different name or generate the information dynamically you can specialize the ```ProcessorTraits``` for your processor. Here is an example for the template processor BasisTransform:
 ```cpp
-    template <>
-    struct ProcessorTraits<BasisTransform<Mesh>> {
-        static ProcessorInfo getProcessorInfo() {
-            return {
-                "org.inviwo.BasisTransformGeometry",  // Class identifier
-                "Basis Transform Mesh",               // Display name
-                "Coordinate Transforms",              // Category
-                CodeState::Experimental,              // Code state
-                Tags::CPU                             // Tags
-            };
-        }
-    };
+template <>
+struct ProcessorTraits<BasisTransform<Mesh>> {
+    static ProcessorInfo getProcessorInfo() {
+        return {
+            "org.inviwo.BasisTransformGeometry",  // Class identifier
+            "Basis Transform Mesh",               // Display name
+            "Coordinate Transforms",              // Category
+            CodeState::Experimental,              // Code state
+            Tags::CPU                             // Tags
+        };
+    }
+};
 ```
 
 If you have many processor that needs updating there is a utility script 
@@ -710,16 +800,20 @@ You will need to edit some path information in it, but otherwise it should be au
 
 If you need to convert your files to UTF-8 you can use notepad++ and the following python script (python plugin installer can be found at http://sourceforge.net/projects/npppythonscript/files/):
 ```py
-    import os;
-    import sys;
-    filePathSrc="C:\\inviwo\\vistinct\\" # Path to the folder with files to convert
-    for root, dirs, files in os.walk(filePathSrc):
-        for fn in files:
-            if fn.endswith(".h") or fn.endswith(".cpp") or fn.endswith(".cl") or fn.endswith(".frag") or fn.endswith(".vert") or fn.endswith(".glsl") or fn.endswith(".geom"): # Specify type of the files
-                notepad.open(root + "\\" + fn)
-                notepad.runMenuCommand("Encoding", "Convert to UTF-8")
-                notepad.save()
-                notepad.close()
+import os;
+import sys;
+# Path to the folder with files to convert
+filePathSrc="C:\\inviwo\\vistinct\\" 
+for root, dirs, files in os.walk(filePathSrc):
+    for fn in files:
+        if fn.endswith(".h") or fn.endswith(".cpp") 
+            or fn.endswith(".cl") or fn.endswith(".frag") 
+            or fn.endswith(".vert") or fn.endswith(".glsl") 
+            or fn.endswith(".geom"): # Specify type of the files
+            notepad.open(root + "\\" + fn)
+            notepad.runMenuCommand("Encoding", "Convert to UTF-8")
+            notepad.save()
+            notepad.close()
 ```
 
 ## 2015-10-27
@@ -728,20 +822,20 @@ __CodeState__ CodeState is now an enum class, i.e. `CODE_STATE_STABLE` -> `CodeS
 ## 2015-10-07
 __Modules__ The module registration has change a bit a module now has to take a  `InviwoApplication*` in the constructor, like:
 ```cpp 
-    class IVW_MODULE_BASEGL_API BaseGLModule : public InviwoModule {
-    public:
-        BaseGLModule(InviwoApplication* app);
-    };
+class IVW_MODULE_BASEGL_API BaseGLModule : public InviwoModule {
+public:
+    BaseGLModule(InviwoApplication* app);
+};
 ```
 And then pass that on to the base class together with the module name
 ```cpp
-    BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL") {
+BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL") {
 ```
 There is also not any `initialize()` do `deinitialize()` function anymore, just use the constructor and destructor.
 
 The MACROS for registering object in the module are now replaced by proper function. The most common one for processor now look like this:
 ```cpp
-    registerProcessor<Background>();
+registerProcessor<Background>();
 ```
 For other object refer to InviwoModule. 
 
@@ -790,7 +884,7 @@ functions now take the shader by reference not pointer.
 ## 2015-07-16
 * __Shaders__ A shader now has a `onReload(std::function<void()>)` callback that processors that want to be reloaded on shader reload has to use. So now only affected processors will be invalidated on shader modifications. To get the same behavior as before this needs to be added to an processor using shaders:
 ```cpp
-    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
 ```
 
 ## 2015-07-15
@@ -799,9 +893,9 @@ functions now take the shader by reference not pointer.
 ## 2015-07-14
 * __Observers__ The observers now use a unordered_set and the "observers_" member is now typed correctly hence there is no need to static cast. And since unordered_set does not have reverse iterators, if you use that you need to update. The current preferred use looks like this: 
 ```cpp
-    void PropertyObservable::notifyObserversOnSetVisible(bool visible) const {
-        for (auto o : observers_) o->onSetVisible(visible);
-    }
+void PropertyObservable::notifyObserversOnSetVisible(bool visible) const {
+    for (auto o : observers_) o->onSetVisible(visible);
+}
 ```
 
 * __Activity Indicator__ There is now activity indicator for processor similar to a progress bar. it will only show up as a yellow status indicator on the processor. It can either be active or not. See volumesubsample for an example.
@@ -810,10 +904,12 @@ functions now take the shader by reference not pointer.
 ## 2015-07-09
 * __Threading__ For handling background work there are now two global functions 
 ```cpp
-    template <class F, class... Args>
-    auto dispatchFront(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>
-    template <class F, class... Args>
-    auto dispatchPool(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> 
+template <class F, class... Args>
+auto dispatchFront(F&& f, Args&&... args) ->
+    std::future<typename std::result_of<F(Args...)>::type>
+template <class F, class... Args>
+auto dispatchPool(F&& f, Args&&... args) -> 
+    std::future<typename std::result_of<F(Args...)>::type> 
 ```
 `dispatchFront` is used to submit a task to the Front thread, i.e. the thread that does handles the GUI and so far all the evaluation. Everything that can have side effects should be run in this thread, changing properties, updating the GUI, triggering evaluation etc. 
 
@@ -821,30 +917,31 @@ functions now take the shader by reference not pointer.
 
 The return value of both `dispatchFront` and `dispatchPool` is a future<...> of the return value of the task given. Apart for getting the result of the task this future can be used to check whether the task has finished or is still running. Here is a small example:
 ```cpp
-    std::future<std::unique_ptr<Volume>> result_;
+std::future<std::unique_ptr<Volume>> result_;
 ```
 result here is a future holding the resulting volume from a subsampling. The following code submits the subsampling task to the thread pool and extracts the result from the future when the calculation is done.
 ```cpp
-    void VolumeSubsample::process() { 
-        if (result_.valid() &&
-            result_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
-                std::future_status::ready) {
+void VolumeSubsample::process() { 
+    if (result_.valid() &&
+        result_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
+            std::future_status::ready) {
 
-            std::unique_ptr<Volume> volume = std::move(result_.get());
-            outport_.setData(volume.release());
+        std::unique_ptr<Volume> volume = std::move(result_.get());
+        outport_.setData(volume.release());
 
-        } else if (!result_.valid()) {
-            const Volume* data = inport_.getData();
-            const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
+    } else if (!result_.valid()) {
+        const Volume* data = inport_.getData();
+        const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
 
-            result_ = dispatchPool(
-                [this](const VolumeRAM* v, VolumeRAMSubSample::Factor f) -> std::unique_ptr<Volume> {
-                    auto volume = util::make_unique<Volume>(VolumeRAMSubSample::apply(v, f));
-                    dispatchFront([this]() { invalidate(INVALID_OUTPUT); });
-                    return volume;
-                },
-                vol, subSampleFactor_.get());
-        }
+        result_ = dispatchPool(
+            [this](const VolumeRAM* v, VolumeRAMSubSample::Factor f) 
+                -> std::unique_ptr<Volume> {
+                auto volume = util::make_unique<Volume>(VolumeRAMSubSample::apply(v, f));
+                dispatchFront([this]() { invalidate(INVALID_OUTPUT); });
+                return volume;
+            },
+            vol, subSampleFactor_.get());
     }
+}
 ```
 Here we start by checking if there is a valid future, that means that there is either a result available or the calculation is running. In the case when the result is ready we extract the result and set it to the outport. If it is still running we do nothing since we don't what to fill the pool with jobs. To check if a future is ready we use wait_for with a timeout of 0. In the case that the result is invalid we submit a new task the pool using `dispatchPool` and assign the result to `result_`. To make sure that we get back to the process function when the task is done we also add a nested task submit inside of the pool task `dispatchFront([this]() { invalidate(INVALID_OUTPUT); });` this will run when that task is finished submitting an invalidation on the Front thread casing a new evaluation of the processor. Where we then will find the result of the task.

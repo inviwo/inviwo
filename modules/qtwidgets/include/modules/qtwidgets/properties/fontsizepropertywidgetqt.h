@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FONTSIZEPROPERTYWIDGETQT_H
-#define IVW_FONTSIZEPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 
@@ -56,5 +55,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FONTSIZEPROPERTYWIDGETQT_H

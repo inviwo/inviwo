@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ORDINALBASEWIDGET_H
-#define IVW_ORDINALBASEWIDGET_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/properties/constraintbehavior.h>
@@ -49,5 +48,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ORDINALBASEWIDGET_H

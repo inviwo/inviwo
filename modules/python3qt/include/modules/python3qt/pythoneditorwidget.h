@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYTHONEDITORYWIDGET_H
-#define IVW_PYTHONEDITORYWIDGET_H
+#pragma once
 
 #include <modules/python3qt/python3qtmoduledefine.h>
 #include <modules/python3/pythonscript.h>
@@ -98,7 +97,9 @@ private:
 
     QMainWindow* mainWindow_;
     CodeEdit* pythonCode_;
+    std::vector<std::shared_ptr<std::function<void()>>> codeCallbacks_;
     CodeEdit* pythonOutput_;
+    std::vector<std::shared_ptr<std::function<void()>>> outputCallbacks_;
 
     QColor infoTextColor_;
     QColor errorTextColor_;
@@ -118,5 +119,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PYTHONEDITORYWIDGET_H

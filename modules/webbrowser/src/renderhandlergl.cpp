@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,48 +28,49 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/renderhandlergl.h>
-#include <modules/opengl/inviwoopengl.h>
+
 #include <inviwo/core/util/rendercontext.h>
 
 namespace inviwo {
 
-RenderHandlerGL::RenderHandlerGL(OnWebPageCopiedCallback onWebPageCopiedCallback)
-    : CefRenderHandler()
-    , texture2D_(size2_t{1, 1}, GL_BGRA, GL_RGBA, GL_UNSIGNED_BYTE, GL_NEAREST)
-    , onWebPageCopiedCallback{onWebPageCopiedCallback} {}
+RenderHandlerGL::RenderHandlerGL(OnWebPageCopiedCallback cb) : onWebPageCopiedCallback{cb} {}
 
-void RenderHandlerGL::updateCanvasSize(size2_t newSize) {
+void RenderHandlerGL::updateCanvasSize(CefRefPtr<CefBrowser> browser, size2_t newSize) {
     // Prevent crash when newSize = 0
-    texture2D_.resize(glm::max(size2_t{1, 1}, newSize));
+    browserData_[browser->GetIdentifier()].texture2D.resize(glm::max(size2_t{1, 1}, newSize));
 }
 
 void RenderHandlerGL::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
-    rect = CefRect{0, 0, static_cast<int>(texture2D_.getWidth()),
-                   static_cast<int>(texture2D_.getHeight())};
+    auto& texture2D = browserData_[browser->GetIdentifier()].texture2D;
+    rect = CefRect{0, 0, static_cast<int>(texture2D.getWidth()),
+                   static_cast<int>(texture2D.getHeight())};
 }
 
 void RenderHandlerGL::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {
     if (!show) {
         // Clear the popup rectangle.
-        ClearPopupRects();
+        ClearPopupRects(browser);
         browser->GetHost()->Invalidate(PET_VIEW);
     }
 }
 
 void RenderHandlerGL::OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) {
     if (rect.width <= 0 || rect.height <= 0) return;
-    originalPopupRect_ = rect;
-    popupRect_ = GetPopupRectInWebView(originalPopupRect_);
+    auto& browserData = browserData_[browser->GetIdentifier()];
+    browserData.originalPopupRect = rect;
+    browserData.popupRect = GetPopupRectInWebView(browser, browserData.originalPopupRect);
 }
 
-CefRect RenderHandlerGL::GetPopupRectInWebView(const CefRect& original_rect) {
+CefRect RenderHandlerGL::GetPopupRectInWebView(CefRefPtr<CefBrowser> browser,
+                                               const CefRect& original_rect) {
     CefRect rc(original_rect);
     // if x or y are negative, move them to 0.
     if (rc.x < 0) rc.x = 0;
     if (rc.y < 0) rc.y = 0;
     // if popup goes outside the view, try to reposition origin
-    auto width = static_cast<int>(texture2D_.getWidth());
-    auto height = static_cast<int>(texture2D_.getHeight());
+    auto& texture2D = browserData_[browser->GetIdentifier()].texture2D;
+    auto width = static_cast<int>(texture2D.getWidth());
+    auto height = static_cast<int>(texture2D.getHeight());
     if (rc.x + rc.width > width) rc.x = width - rc.width;
     if (rc.y + rc.height > height) rc.y = height - rc.height;
     // if x or y became negative, move them to 0 again.
@@ -78,17 +79,21 @@ CefRect RenderHandlerGL::GetPopupRectInWebView(const CefRect& original_rect) {
     return rc;
 }
 
-void RenderHandlerGL::ClearPopupRects() {
-    popupRect_.Set(0, 0, 0, 0);
-    originalPopupRect_.Set(0, 0, 0, 0);
+void RenderHandlerGL::ClearPopupRects(CefRefPtr<CefBrowser> browser) {
+    auto& browserData = browserData_[browser->GetIdentifier()];
+    browserData.popupRect.Set(0, 0, 0, 0);
+    browserData.originalPopupRect.Set(0, 0, 0, 0);
 }
 
 void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
                               const RectList& dirtyRects, const void* buffer, int width,
                               int height) {
     RenderContext::getPtr()->activateLocalRenderContext();
-    if (type == PET_VIEW && width == static_cast<int>(texture2D_.getWidth()) &&
-        height == static_cast<int>(texture2D_.getHeight())) {
+    auto& browserData = browserData_[browser->GetIdentifier()];
+    auto& texture2D = browserData.texture2D;
+    auto& popupRect = browserData.popupRect;
+    if (type == PET_VIEW && width == static_cast<int>(texture2D.getWidth()) &&
+        height == static_cast<int>(texture2D.getHeight())) {
         // CPU implementation using LayerRAM
 
         // Flipping image and swizzling using CPU code was too slow.
@@ -111,10 +116,10 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
         //}
         if ((dirtyRects.size() == 1 && dirtyRects[0] == CefRect(0, 0, width, height))) {
             // Upload all data
-            texture2D_.upload(buffer);
+            texture2D.upload(buffer);
         } else {
             // Update dirty areas
-            texture2D_.bind();
+            texture2D.bind();
             glPixelStorei(GL_UNPACK_ALIGNMENT, 4);  // RGBA 8-bit are always aligned
             glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
             for (const auto& rect : dirtyRects) {
@@ -122,13 +127,13 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
                 glPixelStorei(GL_UNPACK_SKIP_PIXELS, rect.x);
                 glPixelStorei(GL_UNPACK_SKIP_ROWS, rect.y);
                 glTexSubImage2D(GL_TEXTURE_2D, 0, rect.x, rect.y, rect.width, rect.height,
-                                texture2D_.getFormat(), texture2D_.getDataType(), buffer);
+                                texture2D.getFormat(), texture2D.getDataType(), buffer);
             }
         }
-    } else if (type == PET_POPUP && popupRect_.width > 0 && popupRect_.height > 0) {
+    } else if (type == PET_POPUP && popupRect.width > 0 && popupRect.height > 0) {
         //  buffer only contains data for drawing the popup widget (including dropdown elements)
-        int skip_pixels = 0, x = popupRect_.x;
-        int skip_rows = 0, y = popupRect_.y;
+        int skip_pixels = 0, x = popupRect.x;
+        int skip_rows = 0, y = popupRect.y;
         int w = width;
         int h = height;
 
@@ -141,30 +146,34 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
             skip_rows = -y;
             y = 0;
         }
-        auto texWidth = static_cast<int>(texture2D_.getWidth());
-        auto texHeight = static_cast<int>(texture2D_.getHeight());
+        auto texWidth = static_cast<int>(texture2D.getWidth());
+        auto texHeight = static_cast<int>(texture2D.getHeight());
 
         if (x + w > texWidth) w -= x + w - texWidth;
         if (y + h > texHeight) h -= y + h - texHeight;
-        texture2D_.bind();
+        texture2D.bind();
         // Update the popup rectangle.
         glPixelStorei(GL_UNPACK_ALIGNMENT, 4);  // RGBA 8-bit are always aligned
         glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
         glPixelStorei(GL_UNPACK_SKIP_PIXELS, skip_pixels);
         glPixelStorei(GL_UNPACK_SKIP_ROWS, skip_rows);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, texture2D_.getFormat(),
-                        texture2D_.getDataType(), buffer);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, texture2D.getFormat(),
+                        texture2D.getDataType(), buffer);
     }
     // Reset states
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
     glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
     glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 
-    if (type == PET_VIEW && !popupRect_.IsEmpty()) {
+    if (type == PET_VIEW && !popupRect.IsEmpty()) {
         browser->GetHost()->Invalidate(PET_POPUP);
     }
     // Notify that we are done copying
-    onWebPageCopiedCallback();
+    onWebPageCopiedCallback(browser);
+}
+
+Texture2D& RenderHandlerGL::getTexture2D(CefRefPtr<CefBrowser> browser) {
+    return browserData_[browser->GetIdentifier()].texture2D;
 }
 
 };  // namespace inviwo

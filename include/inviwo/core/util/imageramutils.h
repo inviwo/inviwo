@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,10 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 
 #include <memory>
@@ -38,7 +41,6 @@
 #include <future>
 
 namespace inviwo {
-class Image;
 
 namespace util {
 
@@ -57,7 +59,7 @@ void forEachPixel(const size2_t dims, C callback) {
 }
 
 template <typename C>
-void forEachPixel(const LayerRAM &layer, C callback) {
+void forEachPixel(const LayerRAM& layer, C callback) {
     forEachPixel(layer.getDimensions(), callback);
 }
 
@@ -87,15 +89,21 @@ void forEachPixelParallel(const size2_t dims, C callback, size_t jobs = 0) {
         }));
     }
 
-    for (const auto &e : futures) {
+    for (const auto& e : futures) {
         e.wait();
     }
 }
 
 template <typename C>
-void forEachPixelParallel(const LayerRAM &layer, C callback, size_t jobs = 0) {
+void forEachPixelParallel(const LayerRAM& layer, C callback, size_t jobs = 0) {
     forEachPixelParallel(layer.getDimensions(), callback, jobs);
 }
+
+IVW_CORE_API void flipLayerVertical(Layer& layer);
+IVW_CORE_API void flipLayerHorizontal(Layer& layer);
+
+IVW_CORE_API void flipImageVertical(Image& img);
+IVW_CORE_API void flipImageHorizontal(Image& img);
 
 IVW_CORE_API std::shared_ptr<Image> readImageFromDisk(std::string filename);
 

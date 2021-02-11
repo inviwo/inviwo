@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,7 @@
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/util/statecoordinator.h>
+#include <inviwo/core/util/dispatcher.h>
 
 namespace inviwo {
 
@@ -46,6 +47,8 @@ class Event;
 class InteractionHandler;
 class ProcessorWidget;
 class ProcessorNetwork;
+class NetworkVisitor;
+class InviwoApplication;
 
 /**
  * \defgroup processors Processors
@@ -162,6 +165,9 @@ class IVW_CORE_API Processor : public PropertyOwner,
                                public ProcessorObservable,
                                public EventPropagator {
 public:
+    using NameDispatcher = Dispatcher<void(std::string_view, std::string_view)>;
+    using NameDispatcherHandle = typename NameDispatcher::Handle;
+
     /**
      * Processor constructor, takes two optional arguments.
      * @param identifier Should only contain alpha numeric
@@ -170,7 +176,7 @@ public:
      * If the parameters are not set, the processor factory will initiate the
      * identifier and displayName with the ProcessorInfo displayName.
      */
-    Processor(const std::string& identifier = "", const std::string& displayName = "");
+    Processor(std::string_view identifier = "", std::string_view displayName = "");
     virtual ~Processor();
 
     // Should be implemented by all inheriting classes;
@@ -190,17 +196,31 @@ public:
      * @see ProcessorNetwork
      * @see util::findUniqueIdentifier
      */
-    void setIdentifier(const std::string& identifier);
-    const std::string& getIdentifier() const;
+    void setIdentifier(std::string_view identifier);
+    virtual const std::string& getIdentifier() const override;
+
+    /**
+     * Get notified when the processor identifier changes. The callback happens after the identifier
+     * is changed.
+     * @param callback gets called with the new and the old identifier respectively.
+     */
+    NameDispatcherHandle onIdentifierChange(
+        std::function<void(std::string_view, std::string_view)> callback);
 
     /**
      * Name of processor, arbitrary string. By default initialized to the ProcessorInfo displayName.
      * This name will be shown on various graphical representations.
      */
-    void setDisplayName(const std::string& displayName);
+    void setDisplayName(std::string_view displayName);
     const std::string& getDisplayName() const;
 
-    virtual std::vector<std::string> getPath() const override;
+    /**
+     * Get notified when the processor display name changes. The callback happens after the display
+     * name is changed.
+     * @param callback gets called with the new and the old display name respectively.
+     */
+    NameDispatcherHandle onDisplayNameChange(
+        std::function<void(std::string_view, std::string_view)> callback);
 
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget);
     ProcessorWidget* getProcessorWidget() const;
@@ -215,9 +235,9 @@ public:
      */
     virtual void initializeResources() {}
 
-    Port* getPort(const std::string& identifier) const;
-    Inport* getInport(const std::string& identifier) const;
-    Outport* getOutport(const std::string& identifier) const;
+    Port* getPort(std::string_view identifier) const;
+    Inport* getInport(std::string_view identifier) const;
+    Outport* getOutport(std::string_view identifier) const;
 
     const std::vector<Inport*>& getInports() const;
     const std::vector<Outport*>& getOutports() const;
@@ -227,7 +247,7 @@ public:
      */
     const std::string& getPortGroup(Port* port) const;
     std::vector<std::string> getPortGroups() const;
-    const std::vector<Port*>& getPortsInGroup(const std::string& portGroup) const;
+    const std::vector<Port*>& getPortsInGroup(std::string_view portGroup) const;
     const std::vector<Port*>& getPortsInSameGroup(Port* port) const;
 
     bool allInportsConnected() const;
@@ -328,6 +348,10 @@ public:
     // Override from the property owner
     virtual Processor* getProcessor() override { return this; }
     virtual const Processor* getProcessor() const override { return this; }
+    virtual const PropertyOwner* getOwner() const override { return nullptr; }
+    virtual PropertyOwner* getOwner() override { return nullptr; };
+
+    virtual InviwoApplication* getInviwoApplication() override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -340,7 +364,7 @@ public:
      * @param portGroup name of group to propagate events through (defaults to "default")
      */
     template <typename T, typename std::enable_if_t<std::is_base_of<Inport, T>::value, int> = 0>
-    T& addPort(std::unique_ptr<T> port, const std::string& portGroup = "default");
+    T& addPort(std::unique_ptr<T> port, std::string_view portGroup = "default");
 
     /**
      * Add port to processor and pass ownership to processor.
@@ -350,7 +374,7 @@ public:
      * @param portGroup name of group to propagate events through (defaults to "default")
      */
     template <typename T, typename std::enable_if_t<std::is_base_of<Outport, T>::value, int> = 0>
-    T& addPort(std::unique_ptr<T> port, const std::string& portGroup = "default");
+    T& addPort(std::unique_ptr<T> port, std::string_view portGroup = "default");
 
     /**
      * Add port to processor.
@@ -360,9 +384,9 @@ public:
      * @param portGroup name of group to propagate events through (defaults to "default")
      */
     template <typename T>
-    T& addPort(T& port, const std::string& portGroup = "default");
+    T& addPort(T& port, std::string_view portGroup = "default");
 
-    Port* removePort(const std::string& identifier);
+    Port* removePort(std::string_view identifier);
     Inport* removePort(Inport* port);
     Outport* removePort(Outport* port);
 
@@ -371,11 +395,21 @@ public:
      * ProcessorNetwork traversal. An inactive connection will propagate invalidations and events
      * but will not be processed. Useful if the Processor has states in which it does not use an
      * inport.
-     * @param This processor's inport
-     * @param Another processor's outport
+     * @param inport This processor's inport
+     * @param outport Another processor's outport
      * @see InputSelector for an example
      */
-    virtual bool isConnectionActive(Inport*, Outport*) const { return true; }
+    virtual bool isConnectionActive([[maybe_unused]] Inport* inport,
+                                    [[maybe_unused]] Outport* outport) const {
+        return true;
+    }
+
+    /**
+     * @brief Accept a NetworkVisitor, the visitor will visit this and then each Property of the
+     * Processor in an undefined order. The Visitor will then visit each Properties's properties and
+     * so on.
+     */
+    virtual void accept(NetworkVisitor& visitor);
 
 protected:
     std::unique_ptr<ProcessorWidget> processorWidget_;
@@ -387,7 +421,7 @@ protected:
      * @note Port group will be overwritten by addPort.
      * @see addPort
      */
-    void addPortToGroup(Port* port, const std::string& portGroup);
+    void addPortToGroup(Port* port, std::string_view portGroup);
     /**
      * Removes port from its group, even if it is the default one.
      * @see addPort
@@ -395,8 +429,8 @@ protected:
     void removePortFromGroups(Port* port);
 
 private:
-    void addPortInternal(Inport* port, const std::string& portGroup);
-    void addPortInternal(Outport* port, const std::string& portGroup);
+    void addPortInternal(Inport* port, std::string_view portGroup);
+    void addPortInternal(Outport* port, std::string_view portGroup);
 
     std::string identifier_;
     std::string displayName_;
@@ -410,12 +444,15 @@ private:
     std::unordered_map<Port*, std::string> portGroups_;
 
     ProcessorNetwork* network_;
+
+    NameDispatcher identifierDispatcher_;
+    NameDispatcher displayNameDispatcher_;
 };
 
 inline ProcessorNetwork* Processor::getNetwork() const { return network_; }
 
 template <typename T, typename std::enable_if_t<std::is_base_of<Inport, T>::value, int>>
-T& Processor::addPort(std::unique_ptr<T> port, const std::string& portGroup) {
+T& Processor::addPort(std::unique_ptr<T> port, std::string_view portGroup) {
     T& ret = *port;
     addPortInternal(port.get(), portGroup);
     ownedInports_.push_back(std::move(port));
@@ -423,7 +460,7 @@ T& Processor::addPort(std::unique_ptr<T> port, const std::string& portGroup) {
 }
 
 template <typename T, typename std::enable_if_t<std::is_base_of<Outport, T>::value, int>>
-T& Processor::addPort(std::unique_ptr<T> port, const std::string& portGroup) {
+T& Processor::addPort(std::unique_ptr<T> port, std::string_view portGroup) {
     T& ret = *port;
     addPortInternal(port.get(), portGroup);
     ownedOutports_.push_back(std::move(port));
@@ -431,7 +468,7 @@ T& Processor::addPort(std::unique_ptr<T> port, const std::string& portGroup) {
 }
 
 template <typename T>
-T& Processor::addPort(T& port, const std::string& portGroup) {
+T& Processor::addPort(T& port, std::string_view portGroup) {
     static_assert(std::is_base_of<Inport, T>::value || std::is_base_of<Outport, T>::value,
                   "T must be an Inport or Outport");
     addPortInternal(&port, portGroup);

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VECTOR3DDIVERGENCE_H
-#define IVW_VECTOR3DDIVERGENCE_H
+#pragma once
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
@@ -51,5 +49,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VECTOR3DDIVERGENCE_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -473,7 +473,8 @@ std::vector<std::pair<double, vec2>> getLabelPositions(const AxisSettings& setti
             });
 
     } else {
-        const vec2 scaling(axisDir * static_cast<float>(screenLength / (tickmarks.size() - 1)));
+        const auto denom = tickmarks.size() > 1 ? tickmarks.size() - 1 : 1.f;
+        const vec2 scaling(axisDir * static_cast<float>(screenLength / denom));
         auto seq = util::make_sequence(size_t{0}, tickmarks.size(), size_t{1});
         std::transform(tickmarks.begin(), tickmarks.end(), seq.begin(), labelPositions.begin(),
                        [&](double pos, size_t i) -> std::pair<double, vec2> {

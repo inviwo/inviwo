@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INTEGRALLINETRACERPROCESSOR_H
-#define IVW_INTEGRALLINETRACERPROCESSOR_H
+#pragma once
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -117,8 +115,8 @@ void IntegralLineTracerProcessor<Tracer>::process() {
 
     std::mutex mutex;
     size_t startID = 0;
-    for (const auto &seeds : seeds_) {
-        util::forEachParallel(*seeds, [&](const auto &p, size_t i) {
+    for (const auto& seeds : seeds_) {
+        util::forEachParallel(*seeds, [&](const auto& p, size_t i) {
             IntegralLine line = tracer.traceFrom(p);
             auto size = line.getPositions().size();
             if (size > 1) {
@@ -188,5 +186,3 @@ const ProcessorInfo IntegralLineTracerProcessor<Tracer>::getProcessorInfo() cons
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_INTEGRALLINETRACERPROCESSOR_H

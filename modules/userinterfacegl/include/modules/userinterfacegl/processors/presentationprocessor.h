@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -85,8 +85,8 @@ private:
     void updateProperties();
     void updateFileName();
 
-    void nextSlide(Event *e);
-    void previousSlide(Event *e);
+    void nextSlide(Event* e);
+    void previousSlide(Event* e);
 
     ImageInport inport_;
     ImageOutport outport_;

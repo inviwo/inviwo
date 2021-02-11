@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/properties/propertyowner.h>
 
 #include <cmath>
@@ -93,7 +94,7 @@ private:
 
     Prop* ordinal_;
     EditableLabelQt* label_;
-    OrdinalLikePropertySettingsWidgetQt<Prop>* settingsWidget_;
+    OrdinalLikePropertySettingsWidgetQt<Prop>* settings_;
 
     std::vector<OrdinalBaseWidget<BT>*> editors_;
 };
@@ -109,7 +110,7 @@ OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* proper
     : PropertyWidgetQt(property)
     , ordinal_(property)
     , label_{new EditableLabelQt(this, property)}
-    , settingsWidget_(nullptr) {
+    , settings_(nullptr) {
 
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
@@ -226,8 +227,10 @@ void OrdinalLikePropertyWidgetQt<Prop, Sem>::updateFromProperty() {
     T val = ordinal_->get();
 
     constexpr size_t nelem = util::flat_extent<T>::value;
-    std::array<ConstraintBehavior, nelem> mincb = {ordinal_->getMinConstraintBehaviour()};
-    std::array<ConstraintBehavior, nelem> maxcb = {ordinal_->getMaxConstraintBehaviour()};
+    auto mincb =
+        util::make_array<nelem>([&](auto) { return ordinal_->getMinConstraintBehaviour(); });
+    auto maxcb =
+        util::make_array<nelem>([&](auto) { return ordinal_->getMaxConstraintBehaviour(); });
 
     if constexpr (Sem == OrdinalPropertyWidgetQtSematics::SphericalSpinBox ||
                   Sem == OrdinalPropertyWidgetQtSematics::Spherical) {
@@ -273,10 +276,10 @@ void OrdinalLikePropertyWidgetQt<Prop, Sem>::setPropertyValue(size_t editorId) {
 
 template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>
 void OrdinalLikePropertyWidgetQt<Prop, Sem>::showSettings() {
-    if (!settingsWidget_) {
-        settingsWidget_ = new OrdinalLikePropertySettingsWidgetQt<Prop>(ordinal_, this);
+    if (!settings_) {
+        settings_ = new OrdinalLikePropertySettingsWidgetQt<Prop>(ordinal_, this);
     }
-    settingsWidget_->showWidget();
+    settings_->showWidget();
 }
 
 template <typename Prop, OrdinalPropertyWidgetQtSematics Sem>

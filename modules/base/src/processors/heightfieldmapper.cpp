@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,13 +57,13 @@ HeightFieldMapper::HeightFieldMapper()
     addPort(inport_);
     addPort(outport_);
 
-    heightRange_.visibilityDependsOn(scalingModeProp_, [](const OptionPropertyInt &opt) {
+    heightRange_.visibilityDependsOn(scalingModeProp_, [](const OptionPropertyInt& opt) {
         return opt == HeightFieldScaling::DataRange;
     });
-    maxHeight_.visibilityDependsOn(scalingModeProp_, [](const OptionPropertyInt &opt) {
+    maxHeight_.visibilityDependsOn(scalingModeProp_, [](const OptionPropertyInt& opt) {
         return opt == HeightFieldScaling::SeaLevel;
     });
-    seaLevel_.visibilityDependsOn(scalingModeProp_, [](const OptionPropertyInt &opt) {
+    seaLevel_.visibilityDependsOn(scalingModeProp_, [](const OptionPropertyInt& opt) {
         return opt == HeightFieldScaling::SeaLevel;
     });
 
@@ -83,16 +83,16 @@ void HeightFieldMapper::process() {
     }
 
     // check the number of channels
-    const DataFormatBase *format = srcImg->getDataFormat();
+    const DataFormatBase* format = srcImg->getDataFormat();
     std::size_t numInputChannels = format->getComponents();
     size2_t dim = srcImg->getDimensions();
 
-    Image *outImg = nullptr;
+    Image* outImg = nullptr;
 
     // check format of output image
     if (!outImg || (outImg->getDataFormat()->getId() != DataFormatId::Float32)) {
         // replace with new floating point image
-        Image *img = new Image(dim, DataFloat32::get());
+        Image* img = new Image(dim, DataFloat32::get());
         outport_.setData(img);
         outImg = img;
     } else if (outImg->getDimensions() != dim) {
@@ -100,15 +100,15 @@ void HeightFieldMapper::process() {
         outImg->setDimensions(dim);
     }
 
-    LayerRAM *dstLayer = outImg->getColorLayer(0)->getEditableRepresentation<LayerRAM>();
-    float *data = static_cast<float *>(dstLayer->getData());
+    LayerRAM* dstLayer = outImg->getColorLayer(0)->getEditableRepresentation<LayerRAM>();
+    float* data = static_cast<float*>(dstLayer->getData());
 
     // convert input image to float image
-    const LayerRAM *srcLayer = srcImg->getColorLayer(0)->getRepresentation<LayerRAM>();
+    const LayerRAM* srcLayer = srcImg->getColorLayer(0)->getRepresentation<LayerRAM>();
 
     // special case: input image is already FLOAT32 with 1 channel
     if ((numInputChannels == 1) && (format->getId() == DataFormatId::Float32)) {
-        const float *srcData = static_cast<const float *>(srcLayer->getData());
+        const float* srcData = static_cast<const float*>(srcLayer->getData());
         std::copy(srcData, srcData + dim.x * dim.y, data);
     } else {
         switch (numInputChannels) {

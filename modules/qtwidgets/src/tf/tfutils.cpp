@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/colorbrewer.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/io/datawriterexception.h>
 #include <inviwo/core/datastructures/transferfunction.h>
@@ -44,10 +45,19 @@
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <fmt/format.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMenu>
 #include <QAction>
+#include <QSpinBox>
+#include <QDialog>
+#include <QGridLayout>
+#include <QLabel>
+#include <QWidget>
+#include <QDialogButtonBox>
+#include <QCheckBox>
 #include <warn/pop>
 
 namespace inviwo {
@@ -55,7 +65,7 @@ namespace inviwo {
 namespace util {
 
 void importFromFile(TFPrimitiveSet& primitiveSet, QWidget* parent) {
-    InviwoFileDialog importFileDialog(parent, "Import " + primitiveSet.getTitle(),
+    InviwoFileDialog importFileDialog(parent, fmt::format("Import {}", primitiveSet.getTitle()),
                                       "transferfunction");
     importFileDialog.setAcceptMode(AcceptMode::Open);
     importFileDialog.setFileMode(FileMode::ExistingFile);
@@ -76,7 +86,7 @@ void importFromFile(TFPrimitiveSet& primitiveSet, QWidget* parent) {
 }
 
 void exportToFile(const TFPrimitiveSet& primitiveSet, QWidget* parent) {
-    InviwoFileDialog exportFileDialog(parent, "Export " + primitiveSet.getTitle(),
+    InviwoFileDialog exportFileDialog(parent, fmt::format("Export {}", primitiveSet.getTitle()),
                                       "transferfunction");
     exportFileDialog.setAcceptMode(AcceptMode::Save);
     exportFileDialog.setFileMode(FileMode::AnyFile);
@@ -153,6 +163,159 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
             action->setEnabled(false);
         }
     }
+    return presets;
+}
+
+namespace {
+
+struct GenerateNDialog : QDialog {
+    QCheckBox* normalized;
+    QDoubleSpinBox* start;
+    QDoubleSpinBox* middle;
+    QDoubleSpinBox* stop;
+    QSpinBox* steps;
+
+    GenerateNDialog()
+        : QDialog()
+        , normalized{new QCheckBox{}}
+        , start{new QDoubleSpinBox{}}
+        , middle{new QDoubleSpinBox{}}
+        , stop{new QDoubleSpinBox{}}
+        , steps{new QSpinBox{}} {
+
+        setWindowTitle("Specify Range");
+        QGridLayout* layout = new QGridLayout(this);
+        {
+            const auto space = utilqt::emToPx(this, 15.0 / 9.0);
+            layout->setContentsMargins(space, space, space, space);
+        }
+
+        normalized->setChecked(true);
+        normalized->setDisabled(true);
+
+        start->setMaximum(std::numeric_limits<double>::max());
+        middle->setMaximum(std::numeric_limits<double>::max());
+        stop->setMaximum(std::numeric_limits<double>::max());
+
+        start->setMinimum(std::numeric_limits<double>::lowest());
+        middle->setMinimum(std::numeric_limits<double>::lowest());
+        stop->setMinimum(std::numeric_limits<double>::lowest());
+
+        start->setValue(0.0);
+        middle->setValue(0.5);
+        stop->setValue(1.0);
+        steps->setValue(10);
+        steps->setMinimum(0);
+
+        layout->addWidget(new QLabel("Normalized:"), 0, 0);
+        layout->addWidget(new QLabel("Start:"), 1, 0);
+        layout->addWidget(new QLabel("Middle:"), 2, 0);
+        layout->addWidget(new QLabel("Stop:"), 3, 0);
+        layout->addWidget(new QLabel("Steps:"), 4, 0);
+
+        layout->addWidget(normalized, 0, 1);
+        layout->addWidget(start, 1, 1);
+        layout->addWidget(middle, 2, 1);
+        layout->addWidget(stop, 3, 1);
+        layout->addWidget(steps, 4, 1);
+
+        QDialogButtonBox* buttonBox =
+            new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+        connect(buttonBox, &QDialogButtonBox::accepted, this, &GenerateNDialog::accept);
+        connect(buttonBox, &QDialogButtonBox::rejected, this, &GenerateNDialog::reject);
+
+        layout->addWidget(buttonBox, 5, 0, 1, 2);
+    }
+};
+}  // namespace
+
+QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
+                                   TransferFunctionProperty* property) {
+    if (!parent || !menu || !property) {
+        return nullptr;
+    }
+
+    auto presets = menu->addMenu("&Colorbrewer Presets");
+    presets->setObjectName("TF");
+    presets->setEnabled(!property->getReadOnly());
+    const int iconWidth = utilqt::emToPx(presets, 11);
+    // need to set the stylesheet explicitely since Qt _only_ supports 'px' for icon sizes
+    presets->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
+
+    auto addAction = [&](QMenu* menu, TransferFunction tf, std::string_view name) {
+        auto action = menu->addAction(utilqt::toQString(name));
+        action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize{iconWidth, 20})));
+
+        QObject::connect(action, &QAction::triggered, parent, [property, tf2 = std::move(tf)]() {
+            NetworkLock lock(property);
+            property->set(tf2);
+        });
+    };
+
+    auto generateN = [&](colorbrewer::Category category, colorbrewer::Family family,
+                         bool discrete) {
+        return [category, family, discrete, property]() {
+            GenerateNDialog dialog;
+            if (category != colorbrewer::Category::Diverging) {
+                dialog.middle->setDisabled(true);
+            }
+
+            if (auto port = property->getVolumeInport()) {
+                dialog.normalized->setEnabled(true);
+            }
+
+            if (dialog.exec()) {
+                auto start = dialog.start->value();
+                auto middle = dialog.middle->value();
+                auto stop = dialog.stop->value();
+                auto steps = dialog.steps->value();
+
+                if (!dialog.normalized->isChecked()) {
+                    if (auto port = property->getVolumeInport()) {
+                        const auto dataMap =
+                            port->hasData() ? port->getData()->dataMap_ : DataMapper{};
+                        start = dataMap.mapFromValueToNormalized(start);
+                        middle = dataMap.mapFromValueToNormalized(middle);
+                        stop = dataMap.mapFromValueToNormalized(stop);
+                    }
+                }
+
+                property->set(colorbrewer::getTransferFunction(category, family, steps, discrete,
+                                                               middle, start, stop));
+            }
+        };
+    };
+
+    for (auto category : {colorbrewer::Category::Diverging, colorbrewer::Category::Qualitative,
+                          colorbrewer::Category::Sequential}) {
+        for (auto discrete : {true, false}) {
+
+            auto categoryMenu = presets->addMenu(
+                utilqt::toQString(toString(category) + +(discrete ? " Discrete" : " Contiguous")));
+            categoryMenu->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
+
+            for (auto family : colorbrewer::getFamiliesForCategory(category)) {
+                const auto max = colorbrewer::getMaxNumberOfColorsForFamily(family);
+                const auto min = colorbrewer::getMinNumberOfColorsForFamily(family);
+
+                auto familyMenu = categoryMenu->addMenu(utilqt::toQString(toString(family)));
+                familyMenu->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
+                auto maxtf = colorbrewer::getTransferFunction(category, family, max, discrete, 0.5);
+                familyMenu->setIcon(QIcon(utilqt::toQPixmap(maxtf, QSize{iconWidth, 20})));
+
+                for (auto n = min; n < max; ++n) {
+                    addAction(familyMenu,
+                              colorbrewer::getTransferFunction(category, family, n, discrete, 0.5),
+                              toString(static_cast<int>(n)) + " colors");
+                }
+
+                auto action = familyMenu->addAction("Generate...");
+                QObject::connect(action, &QAction::triggered, parent,
+                                 generateN(category, family, discrete));
+            }
+        }
+    }
+
     return presets;
 }
 

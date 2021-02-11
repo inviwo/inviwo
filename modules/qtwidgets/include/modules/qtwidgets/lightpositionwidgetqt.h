@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LIGHTPOSITIONWIDGETQT_H
-#define IVW_LIGHTPOSITIONWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <warn/push>
@@ -36,12 +35,16 @@
 #include <QLabel>
 #include <warn/pop>
 
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glmvec.h>
+#include <memory>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QRadialGradient>
+#include <QPixmap>
+#include <warn/pop>
 
 class QMouseEvent;
-class QPixmap;
-class QRadialGradient;
-class QPainter;
 
 namespace inviwo {
 
@@ -52,16 +55,16 @@ class IVW_MODULE_QTWIDGETS_API LightPositionWidgetQt : public QLabel {
 #include <warn/pop>
 public:
     LightPositionWidgetQt();
-    void setPosition(const vec3& positionVector);
-    vec3 getPosition() const;
+    void setPosition(const dvec3& positionVector);
+    dvec3 getPosition() const;
     virtual ~LightPositionWidgetQt();
 
-    float getX() const;
-    float getY() const;
-    float getZ() const;
+    double getX() const;
+    double getY() const;
+    double getZ() const;
 
-    void setRadius(float radius);
-    float getRadius() const;
+    void setRadius(double radius);
+    double getRadius() const;
 
 signals:
     void positionChanged();
@@ -75,17 +78,12 @@ protected:
 private:
     void setNewPosition(QMouseEvent* event);
 
-    QPixmap* gradientPixmap_;
-    QRadialGradient* gradient_;
+    int size_;
+    QPixmap pixmap_;
+    QRadialGradient gradient_;
 
-    QPainter* painter_;
-    bool mouseDown_;
-
-    float radius_;
-    float theta_;
-    float phi_;
+    dvec2 pos_;  // norm(pos) should always be less <= 1.0
+    double radius_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_INTSLIDERQT_H

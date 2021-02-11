@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -95,36 +95,24 @@ HDF5ToVolume::HDF5ToVolume()
     addPort(outport_);
     inport_.onChange([this]() { onDataChange(); });
 
-    addProperty(volumeSelection_);
     volumeSelection_.onChange([this]() { onSelectionChange(); });
     volumeSelection_.setSerializationMode(PropertySerializationMode::All);
 
-    addProperty(automaticEvaluation_);
     automaticEvaluation_.onChange([this]() { evaluate_.setReadOnly(automaticEvaluation_); });
-    addProperty(evaluate_);
+
     evaluate_.onChange([this]() { dirty_ = true; });
 
-    basisGroup_.addProperty(basisSelection_);
-    basisGroup_.addProperty(spacing_);
-    basisGroup_.addProperty(basis_);
-    addProperty(basisGroup_);
+    basisGroup_.addProperties(basisSelection_, spacing_, basis_);
+
     basisSelection_.onChange([this]() { onBasisSelecionChange(); });
     basisSelection_.setSerializationMode(PropertySerializationMode::All);
 
     dataDimensions_.setReadOnly(true);
     dataRange_.setReadOnly(true);
-    information_.addProperty(dataDimensions_);
-    information_.addProperty(dataRange_);
-    addProperty(information_);
+    information_.addProperties(dataDimensions_, dataRange_);
 
-    outputGroup_.addProperty(datatype_);
-    outputGroup_.addProperty(overrideRange_);
-
-    outputGroup_.addProperty(outDataRange_);
-    outputGroup_.addProperty(valueRange_);
-    outputGroup_.addProperty(valueUnit_);
-    outputGroup_.addProperty(selection_);
-
+    outputGroup_.addProperties(datatype_, overrideRange_, outDataRange_, valueRange_, valueUnit_,
+                               selection_);
     outputGroup_.onChange([this]() {
         if (automaticEvaluation_) {
             dirty_ = true;
@@ -132,7 +120,8 @@ HDF5ToVolume::HDF5ToVolume()
         }
     });
 
-    addProperty(outputGroup_);
+    addProperties(volumeSelection_, automaticEvaluation_, evaluate_, basisGroup_, information_,
+                  outputGroup_);
 }
 
 HDF5ToVolume::~HDF5ToVolume() = default;
@@ -262,26 +251,29 @@ void HDF5ToVolume::onDataChange() {
         // Update Volume Selection
         std::vector<OptionPropertyStringOption> volumeOptions;
         for (const auto& meta : volumeMatches_) {
-            volumeOptions.emplace_back(meta.path_, getDescription(meta), meta.path_);
+            const auto path = meta.path_.toString();
+            volumeOptions.emplace_back(path, getDescription(meta), path);
         }
         volumeSelection_.replaceOptions(volumeOptions);
         volumeSelection_.setCurrentStateAsDefault();
 
         // Update Basis Selection
-
         std::vector<OptionPropertyStringOption> basisOptions;
         basisOptions.emplace_back("default", "User defined basis", "default");
         basisOptions.emplace_back("default", "User defined spacing", "default");
         for (const auto& meta : basisMatches_) {
-            basisOptions.emplace_back(meta.path_, getDescription(meta), meta.path_);
+            const auto path = meta.path_.toString();
+            basisOptions.emplace_back(path, getDescription(meta), path);
         }
         basisSelection_.replaceOptions(basisOptions);
         basisSelection_.setCurrentStateAsDefault();
-
     } else {
         basisSelection_.clearOptions();
         volumeSelection_.clearOptions();
     }
+
+    onSelectionChange();
+    onBasisSelecionChange();
 }
 
 std::string HDF5ToVolume::getDescription(const MetaData& meta) {
@@ -325,43 +317,36 @@ void HDF5ToVolume::makeVolume() {
         MetaData volumeMeta = volumeMatches_[volumeSelection_.getSelectedIndex()];
 
         try {
-            const DataFormatBase* format = nullptr;
-
-            switch (datatype_.getSelectedIndex()) {
-                case 1:
-                    format = DataFloat32::get();
-                    break;
-                case 2:
-                    format = DataFloat64::get();
-                    break;
-                case 3:
-                    format = DataUInt8::get();
-                    break;
-                case 4:
-                    format = DataUInt16::get();
-                    break;
-                default:
-                    break;
-            }
+            auto format = [&]() -> const DataFormatBase* {
+                switch (datatype_.getSelectedIndex()) {
+                    case 1:
+                        return DataFloat32::get();
+                    case 2:
+                        return DataFloat64::get();
+                    case 3:
+                        return DataUInt8::get();
+                    case 4:
+                        return DataUInt16::get();
+                    default:
+                        return nullptr;
+                }
+            }();
 
             volume_ = std::shared_ptr<Volume>(
                 data->getVolumeAtPathAsType(Path(data->getGroup().getObjName()) + volumeMeta.path_,
                                             selection_.getSelection(), format));
 
             dataRange_.set(volume_->dataMap_.dataRange);
-
             outport_.setData(volume_);
 
         } catch (const H5::GroupIException& e) {
             LogInfo(e.getDetailMsg());
-
-            return;
         }
     }
 }
 
-HDF5ToVolume::DimSelection::DimSelection(std::string identifier, std::string displayName,
-                                         InvalidationLevel level)
+HDF5ToVolume::DimSelection::DimSelection(const std::string& identifier,
+                                         const std::string& displayName, InvalidationLevel level)
     : CompositeProperty(identifier, displayName, level, PropertySemantics::Default)
     , range("range", "Range", 0, 255, 0, 255, 1, 1)
     , stride("stride", "Stride", 1, 1, 255) {
@@ -377,8 +362,9 @@ void HDF5ToVolume::DimSelection::update(int newMax) {
     stride.setMaxValue(std::max(10, newMax));
 }
 
-HDF5ToVolume::DimSelections::DimSelections(std::string identifier, std::string displayName,
-                                           size_t maxRank, InvalidationLevel level)
+HDF5ToVolume::DimSelections::DimSelections(const std::string& identifier,
+                                           const std::string& displayName, size_t maxRank,
+                                           InvalidationLevel level)
     : CompositeProperty(identifier, displayName, level, PropertySemantics::Default)
     , adjustBasis_("adjustBasis", "Automatically adjust basis", true)
     , maxRank_(maxRank)

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRANSFERFUNCTIONEDITORPRIMITIVE_H
-#define IVW_TRANSFERFUNCTIONEDITORPRIMITIVE_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
@@ -78,7 +77,7 @@ public:
      * @param size     base size of primitive
      */
     TFEditorPrimitive(TFPrimitive& primitive, QGraphicsScene* scene = nullptr,
-                      const vec2& pos = vec2(), double size = 14.0);
+                      double position = 0.0, float alpha = 0.0f, double size = 14.0);
     virtual ~TFEditorPrimitive() = default;
 
     TFPrimitive& getPrimitive();
@@ -98,7 +97,7 @@ public:
      *
      * @param tfpos   normalized position [0,1] corresponding to scalar value and opacity
      */
-    void setTFPosition(const dvec2& tfpos);
+    void setTFPosition(double pos, float alpha);
 
     virtual const QPointF& getCurrentPos() const;
 
@@ -153,7 +152,7 @@ protected:
      *
      * @param newPos   new, normalized position of the primitive
      */
-    virtual void onItemPositionChange(const vec2& /*newPos*/) {}
+    virtual void onItemPositionChange([[maybe_unused]] const dvec2& newPos) {}
 
     /**
      * gets called in itemChange() when a scene change has happend
@@ -191,5 +190,3 @@ IVW_MODULE_QTWIDGETS_API bool operator>=(const TFEditorPrimitive& lhs,
                                          const TFEditorPrimitive& rhs);
 
 }  // namespace inviwo
-
-#endif  // IVW_TRANSFERFUNCTIONEDITORPRIMITIVE_H

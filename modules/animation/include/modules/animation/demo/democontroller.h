@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_DEMOCONTROLLER_H
-#define IVW_DEMOCONTROLLER_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -61,7 +59,11 @@ public:
 
     void setFolder(const std::string& path);
 
+    virtual InviwoApplication* getInviwoApplication() override;
+
 protected:
+    void loadWorkspaceApp(const std::string& fileName);
+
     InviwoApplication* app_;
     FileProperty demoFolder_;
     OptionPropertyInt demoFile_;
@@ -72,5 +74,3 @@ protected:
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_DEMOCONTROLLER_H

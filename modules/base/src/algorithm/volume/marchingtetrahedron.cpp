@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,9 +33,9 @@
 namespace inviwo {
 
 std::shared_ptr<Mesh> MarchingTetrahedron::apply(
-    std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert, bool enclose,
+    std::shared_ptr<const Volume> volume, double iso, const vec4& color, bool invert, bool enclose,
     std::function<void(float)> progressCallback,
-    std::function<bool(const size3_t &)> maskingCallback) {
+    std::function<bool(const size3_t&)> maskingCallback) {
     LogWarnCustom("MarchingTetrahedron::apply",
                   "Deprecated: Use util::marchingtetrahedron(...) instead");
     return util::marchingtetrahedron(volume, iso, color, invert, enclose, progressCallback,
@@ -60,10 +60,10 @@ const static std::array<std::array<size_t, 4>, 6> tetras = {
     std::array<size_t, 4>{2, 3, 5, 6}, std::array<size_t, 4>{0, 3, 4, 5},
     std::array<size_t, 4>{7, 4, 3, 5}, std::array<size_t, 4>{7, 6, 5, 3}};
 
-void evaluateTetra(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
-                   std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &p0,
-                   double v0, const glm::vec3 &p1, double v1, const glm::vec3 &p2, double v2,
-                   const glm::vec3 &p3, double v3) {
+void evaluateTetra(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer,
+                   std::vector<vec3>& positions, std::vector<vec3>& normals, const glm::vec3& p0,
+                   double v0, const glm::vec3& p1, double v1, const glm::vec3& p2, double v2,
+                   const glm::vec3& p3, double v3) {
     int index = 0;
     if (v0 > 0) index = index | 1;
     if (v1 > 0) index = index | 2;
@@ -155,9 +155,9 @@ void evaluateTetra(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuff
 
 namespace util {
 std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume, double iso,
-                                          const vec4 &color, bool invert, bool enclose,
+                                          const vec4& color, bool invert, bool enclose,
                                           std::function<void(float)> progressCallback,
-                                          std::function<bool(const size3_t &)> maskingCallback) {
+                                          std::function<bool(const size3_t&)> maskingCallback) {
 
     return volume->getRepresentation<VolumeRAM>()->dispatch<std::shared_ptr<Mesh>>([&](auto ram) {
         using T = util::PrecisionValueType<decltype(ram)>;
@@ -179,7 +179,7 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume, 
         mesh->setModelMatrix(volume->getModelMatrix());
         mesh->setWorldMatrix(volume->getWorldMatrix());
 
-        const T *src = ram->getDataTyped();
+        const T* src = ram->getDataTyped();
 
         const size3_t dim{volume->getDimensions()};
         double dx, dy, dz;
@@ -204,12 +204,12 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume, 
                     std::array<double, 8> values;
 
                     for (int l = 0; l < 8; l++) {
-                        const auto &o = marchingtetrahedron::offs[l];
+                        const auto& o = marchingtetrahedron::offs[l];
                         pos[l] = glm::vec3(x + dx * o.x, y + dy * o.y, z + dz * o.z);
                         values[l] = marching::getValue(src, size3_t(i, j, k) + o, dim, iso, invert);
                     }
 
-                    for (auto &t : marchingtetrahedron::tetras) {
+                    for (auto& t : marchingtetrahedron::tetras) {
                         marchingtetrahedron::evaluateTetra(vertexTree, indexBuffer.get(), positions,
                                                            normals, pos[t[0]], values[t[0]],
                                                            pos[t[1]], values[t[1]], pos[t[2]],

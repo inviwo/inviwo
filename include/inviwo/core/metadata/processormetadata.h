@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,12 +51,12 @@ public:
     ProcessorMetaData& operator=(const ProcessorMetaData& that) = default;
     virtual ~ProcessorMetaData() = default;
 
-    virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; }
-    virtual ProcessorMetaData* clone() const;
+    virtual const std::string& getClassIdentifier() const override { return CLASS_IDENTIFIER; }
+    virtual ProcessorMetaData* clone() const override;
 
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
-    virtual bool equal(const MetaData& rhs) const;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+    virtual bool equal(const MetaData& rhs) const override;
 
     void setPosition(const ivec2& pos);
     ivec2 getPosition() const;

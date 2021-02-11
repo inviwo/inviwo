@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,11 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/propertytrack.h>
+#include <inviwo/core/util/logcentral.h>
 
 namespace inviwo {
-namespace animation {}  // namespace animation
+namespace animation {
+namespace detail {}  // namespace detail
+
+}  // namespace animation
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,13 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CODEEDIT_H
-#define IVW_CODEEDIT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <modules/qtwidgets/properties/syntaxhighlighter.h>
+#include <modules/qtwidgets/syntaxhighlighter.h>
 
 #include <QPlainTextEdit>
 #include <QObject>
@@ -47,47 +46,49 @@ class LineNumberArea;
 
 namespace inviwo {
 
+class SyntaxHighlighter;
+
 class IVW_MODULE_QTWIDGETS_API CodeEdit : public QPlainTextEdit {
 public:
-    CodeEdit(SyntaxType type = None, QWidget *parent = nullptr);
+    CodeEdit(QWidget* parent = nullptr);
     virtual ~CodeEdit() = default;
 
-    void setSyntax(SyntaxType type);
-
     // QPlainTextEdit overrides
-    virtual void keyPressEvent(QKeyEvent *keyEvent) override;
+    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
 
     void setLineAnnotation(std::function<std::string(int)>);
+    void setLineAnnotationColor(std::function<vec4(int, vec4)>);
     void setAnnotationSpace(std::function<int(int)>);
 
+    SyntaxHighlighter& syntaxHighlighter();
+
 protected:
-    void lineNumberAreaPaintEvent(QPaintEvent *event);
+    void lineNumberAreaPaintEvent(QPaintEvent* event);
     int lineNumberAreaWidth();
 
     class LineNumberArea : public QWidget {
     public:
-        LineNumberArea(CodeEdit *editor) : QWidget(editor) { codeEdit_ = editor; }
+        LineNumberArea(CodeEdit* editor) : QWidget(editor) { codeEdit_ = editor; }
         QSize sizeHint() const override { return QSize(codeEdit_->lineNumberAreaWidth(), 0); }
 
     protected:
-        void paintEvent(QPaintEvent *event) override { codeEdit_->lineNumberAreaPaintEvent(event); }
-        CodeEdit *codeEdit_;
+        void paintEvent(QPaintEvent* event) override { codeEdit_->lineNumberAreaPaintEvent(event); }
+        CodeEdit* codeEdit_;
     };
 
-    void resizeEvent(QResizeEvent *event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
     void updateLineNumberAreaWidth(int newBlockCount);
     void highlightCurrentLine();
-    void updateLineNumberArea(const QRect &, int);
+    void updateLineNumberArea(const QRect&, int);
 
-    QWidget *lineNumberArea_;
-    std::vector<std::shared_ptr<std::function<void()>>> callbacks_;
-    ivec4 textColor_;
-    ivec4 highLightColor_;
+    QWidget* lineNumberArea_;
+    vec4 textColor_;
+    vec4 highlightColor_;
+    SyntaxHighlighter* sh_;
     std::function<std::string(int)> annotateLine_;
+    std::function<vec4(int, vec4)> annotateColor_;
     std::function<int(int)> annotationSpace_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CODEEDIT_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_LINEAR_INTERPOLATION_H
-#define IVW_LINEAR_INTERPOLATION_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -45,13 +43,13 @@ namespace animation {
  * Linear interpolation function for key frames.
  * Perfoms linear interpolation between two neighboring key frames.
  */
-template <typename Key>
-class LinearInterpolation : public InterpolationTyped<Key> {
+template <typename Key, typename Result = typename Key::value_type>
+class LinearInterpolation : public InterpolationTyped<Key, Result> {
 public:
     LinearInterpolation() = default;
     virtual ~LinearInterpolation() = default;
 
-    virtual LinearInterpolation<Key>* clone() const override;
+    virtual LinearInterpolation<Key, Result>* clone() const override;
 
     virtual std::string getName() const override;
 
@@ -66,41 +64,40 @@ public:
     /*
      * Returns linear interpolation of keyframe values at time t.
      */
-    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
-                            easing::EasingType easing) const -> typename Key::value_type override;
+    virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
+                            easing::EasingType easing, Result& out) const override;
 };
 
-template <typename Key>
-LinearInterpolation<Key>* LinearInterpolation<Key>::clone() const {
-    return new LinearInterpolation<Key>(*this);
+template <typename Key, typename Result>
+LinearInterpolation<Key, Result>* LinearInterpolation<Key, Result>::clone() const {
+    return new LinearInterpolation<Key, Result>(*this);
 }
 
-template <typename Key>
-std::string LinearInterpolation<Key>::getName() const {
+template <typename Key, typename Result>
+std::string LinearInterpolation<Key, Result>::getName() const {
     return "Linear";
 }
 
-template <typename Key>
-std::string LinearInterpolation<Key>::getClassIdentifier() const {
+template <typename Key, typename Result>
+std::string LinearInterpolation<Key, Result>::getClassIdentifier() const {
     return classIdentifier();
 }
 
-template <typename Key>
-bool LinearInterpolation<Key>::equal(const Interpolation& other) const {
+template <typename Key, typename Result>
+bool LinearInterpolation<Key, Result>::equal(const Interpolation& other) const {
     return classIdentifier() == other.getClassIdentifier();
 }
 
-template <typename Key>
-std::string LinearInterpolation<Key>::classIdentifier() {
+template <typename Key, typename Result>
+std::string LinearInterpolation<Key, Result>::classIdentifier() {
     return "org.inviwo.animation.linearinterpolation." +
            Defaultvalues<typename Key::value_type>::getName();
 }
 
-template <typename Key>
-auto LinearInterpolation<Key>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
-                                          Seconds /*from*/, Seconds to,
-                                          easing::EasingType easing) const ->
-    typename Key::value_type {
+template <typename Key, typename Result>
+void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
+                                                  Seconds /*from*/, Seconds to,
+                                                  easing::EasingType easing, Result& out) const {
 
     using VT = typename Key::value_type;
     using DT = typename util::same_extent<VT, double>::type;
@@ -117,22 +114,20 @@ auto LinearInterpolation<Key>::operator()(const std::vector<std::unique_ptr<Key>
 
     // We have to take special care here since we might have unsigned types.
     // Lets just convert everything to doubles.
-    const auto dv1 = static_cast<DT>(v1);
-    const auto dv2 = static_cast<DT>(v2);
+    const auto& dv1 = static_cast<DT>(v1);
+    const auto& dv2 = static_cast<DT>(v2);
 
-    return static_cast<VT>(glm::mix(dv1, dv2, easing::ease((to - t1) / (t2 - t1), easing)));
+    out = static_cast<VT>(glm::mix(dv1, dv2, easing::ease((to - t1) / (t2 - t1), easing)));
 }
 
-template <typename Key>
-void LinearInterpolation<Key>::serialize(Serializer& s) const {
+template <typename Key, typename Result>
+void LinearInterpolation<Key, Result>::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
 }
 
-template <typename Key>
-void LinearInterpolation<Key>::deserialize(Deserializer&) {}
+template <typename Key, typename Result>
+void LinearInterpolation<Key, Result>::deserialize(Deserializer&) {}
 
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_LINEAR_INTERPOLATION_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,8 +28,7 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/imageprocessing/imagecompositeprocessorgl.h>
-#include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
@@ -38,7 +37,7 @@ const ProcessorInfo ImageCompositeProcessorGL::processorInfo_{
     "org.inviwo.ImageCompositeProcessorGL",  // Class identifier
     "Image Composite",                       // Display name
     "Image Operation",                       // Category
-    CodeState::Experimental,                 // Code state
+    CodeState::Stable,                       // Code state
     Tags::GL,                                // Tags
 };
 const ProcessorInfo ImageCompositeProcessorGL::getProcessorInfo() const { return processorInfo_; }
@@ -47,17 +46,18 @@ ImageCompositeProcessorGL::ImageCompositeProcessorGL()
     : Processor()
     , imageInport1_("imageInport1")
     , imageInport2_("imageInport2")
-    , outport_("outport") {
+    , outport_("outport")
+    , compositor_{} {
+
     addPort(imageInport1_);
     addPort(imageInport2_);
     addPort(outport_);
+
+    compositor_.shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 void ImageCompositeProcessorGL::process() {
-    utilgl::activateTargetAndCopySource(outport_, imageInport1_);
-    utilgl::deactivateCurrentTarget();
-
-    compositor_.composite(imageInport2_, outport_, ImageType::ColorDepth);
+    compositor_.composite(imageInport1_, imageInport2_, outport_, ImageType::ColorDepthPicking);
 }
 
 }  // namespace inviwo

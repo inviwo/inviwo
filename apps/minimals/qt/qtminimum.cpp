@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,11 @@
 #include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QSurfaceFormat>
+#include <warn/pop>
+
 using namespace inviwo;
 
 int main(int argc, char** argv) {
@@ -49,6 +54,14 @@ int main(int argc, char** argv) {
     inviwo::util::OnScopeExit deleteLogcentral([]() { inviwo::LogCentral::deleteInstance(); });
     auto logger = std::make_shared<inviwo::ConsoleLogger>();
     LogCentral::getPtr()->registerLogger(logger);
+
+    // Must be set before constructing QApplication
+    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+    QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+    QSurfaceFormat defaultFormat;
+    defaultFormat.setMajorVersion(10);
+    defaultFormat.setProfile(QSurfaceFormat::CoreProfile);
+    QSurfaceFormat::setDefaultFormat(defaultFormat);
 
     InviwoApplicationQt inviwoApp(argc, argv, "Inviwo-Qt");
     inviwoApp.printApplicationInfo();
@@ -66,14 +79,14 @@ int main(int argc, char** argv) {
         "Specify default name of each snapshot, or empty string for processor name.", false, "",
         "Snapshot default name: UPN=Use Processor name.");
 
-    cmdparser.add(&snapshotArg,
-                  [&]() {
-                      std::string path = cmdparser.getOutputPath();
-                      if (path.empty()) path = inviwoApp.getPath(PathType::Images);
-                      util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path,
-                                            snapshotArg.getValue());
-                  },
-                  1000);
+    cmdparser.add(
+        &snapshotArg,
+        [&]() {
+            std::string path = cmdparser.getOutputPath();
+            if (path.empty()) path = inviwoApp.getPath(PathType::Images);
+            util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, snapshotArg.getValue());
+        },
+        1000);
 
     // Do this after registerModules if some arguments were added
     cmdparser.parse(inviwo::CommandLineParser::Mode::Normal);

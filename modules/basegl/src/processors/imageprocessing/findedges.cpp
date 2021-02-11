@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,6 @@ FindEdges::FindEdges()
 
 FindEdges::~FindEdges() = default;
 
-void FindEdges::preProcess(TextureUnitContainer &) { shader_.setUniform("alpha_", alpha_.get()); }
+void FindEdges::preProcess(TextureUnitContainer&) { shader_.setUniform("alpha_", alpha_.get()); }
 
 }  // namespace inviwo

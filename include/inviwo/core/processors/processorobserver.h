@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,15 +58,6 @@ public:
     virtual void onProcessorInvalidationBegin(Processor*){};
     virtual void onProcessorInvalidationEnd(Processor*){};
 
-    /**
-     * Called after the identifier has been changed.
-     */
-    virtual void onProcessorIdentifierChanged(Processor*, const std::string& /*oldIdentifier*/){};
-    /**
-     * Called after the displayName has been changed.
-     */
-    virtual void onProcessorDisplayNameChanged(Processor*, const std::string& /*oldDisplayName*/){};
-
     virtual void onProcessorPortAdded(Processor*, Port*){};
     virtual void onProcessorPortRemoved(Processor*, Port*){};
 
@@ -75,25 +66,30 @@ public:
 
     /**
      * Called after the processor has changed its source state.
-     * The processor argument is the modified processor
      */
     virtual void onProcessorSourceChanged(Processor*){};
     /**
      * Called after the processor has changed its sink state.
-     * The processor argument is the modified processor
      */
     virtual void onProcessorSinkChanged(Processor*){};
     /**
      * Called after the processor has changed its ready state.
-     * The processor argument is the modified processor
      */
     virtual void onProcessorReadyChanged(Processor*){};
     /**
      * Called after a processor inport and its connected outport(s) changed active state.
-     * The processor argument is the modified processor
      * @see Processor::isConnectionActive
      */
     virtual void onProcessorActiveConnectionsChanged(Processor*){};
+
+    /**
+     * @brief Called when a processor initiates a background computation
+     */
+    virtual void onProcessorStartBackgroundWork(Processor*, size_t /*jobs*/){};
+    /**
+     * @brief Called when a processor finishes a background computation
+     */
+    virtual void onProcessorFinishBackgroundWork(Processor*, size_t /*jobs*/){};
 };
 
 /** \class ProcessorObservable
@@ -117,15 +113,6 @@ protected:
 
     void notifyObserversInvalidationEnd(Processor* p) {
         forEachObserver([&](ProcessorObserver* o) { o->onProcessorInvalidationEnd(p); });
-    }
-
-    void notifyObserversIdentifierChanged(Processor* p, const std::string& oldIdentifier) {
-        forEachObserver(
-            [&](ProcessorObserver* o) { o->onProcessorIdentifierChanged(p, oldIdentifier); });
-    }
-    void notifyObserversDisplayNameChanged(Processor* p, const std::string& oldDisplayName) {
-        forEachObserver(
-            [&](ProcessorObserver* o) { o->onProcessorDisplayNameChanged(p, oldDisplayName); });
     }
 
     void notifyObserversProcessorPortAdded(Processor* p, Port* port) {
@@ -153,6 +140,13 @@ protected:
     }
     void notifyObserversActiveConnectionsChange(Processor* p) {
         forEachObserver([&](ProcessorObserver* o) { o->onProcessorActiveConnectionsChanged(p); });
+    }
+
+    void notifyObserversStartBackgroundWork(Processor* p, size_t jobs = 1) {
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorStartBackgroundWork(p, jobs); });
+    }
+    void notifyObserversFinishBackgroundWork(Processor* p, size_t jobs = 1) {
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorFinishBackgroundWork(p, jobs); });
     }
 };
 

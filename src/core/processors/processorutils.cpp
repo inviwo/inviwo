@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,10 @@
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/metadata/processormetadata.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwomodule.h>
+
+#include <algorithm>
 
 namespace inviwo {
 namespace util {
@@ -73,6 +77,25 @@ void setSelected(Processor* processor, bool selected) {
     if (auto meta = getMetaData(processor)) {
         meta->setSelected(selected);
     }
+}
+
+InviwoModule* getProcessorModule(const Processor* processor, const InviwoApplication& app) {
+    if (!processor) return nullptr;
+    return getProcessorModule(processor->getClassIdentifier(), app);
+}
+
+InviwoModule* getProcessorModule(std::string_view classIdentifier, const InviwoApplication& app) {
+
+    const auto it = std::find_if(app.getModules().begin(), app.getModules().end(),
+                                 [&](const std::unique_ptr<InviwoModule>& module) {
+                                     const auto processors = module->getProcessors();
+                                     return std::find_if(processors.begin(), processors.end(),
+                                                         [&](const ProcessorFactoryObject* pfo) {
+                                                             return pfo->getClassIdentifier() ==
+                                                                    classIdentifier;
+                                                         }) != processors.end();
+                                 });
+    return it != app.getModules().end() ? it->get() : nullptr;
 }
 
 }  // namespace util

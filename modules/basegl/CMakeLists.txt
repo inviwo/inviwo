@@ -12,6 +12,8 @@ set(HEADER_FILES
     include/modules/basegl/datastructures/linesettings.h
     include/modules/basegl/datastructures/linesettingsinterface.h
     include/modules/basegl/datastructures/meshshadercache.h
+    include/modules/basegl/datastructures/stipplingsettings.h
+    include/modules/basegl/datastructures/stipplingsettingsinterface.h
     include/modules/basegl/datavisualizer/imagebackgroundvisualizer.h
     include/modules/basegl/datavisualizer/imagevisualizer.h
     include/modules/basegl/datavisualizer/meshvisualizer.h
@@ -72,10 +74,12 @@ set(HEADER_FILES
     include/modules/basegl/processors/volumeprocessing/volumelowpass.h
     include/modules/basegl/processors/volumeprocessing/volumemapping.h
     include/modules/basegl/processors/volumeprocessing/volumemerger.h
+    include/modules/basegl/processors/volumeprocessing/volumeregionshrink.h
     include/modules/basegl/processors/volumeprocessing/volumeshader.h
     include/modules/basegl/processors/volumeraycaster.h
     include/modules/basegl/processors/volumeslicegl.h
     include/modules/basegl/properties/linesettingsproperty.h
+    include/modules/basegl/properties/stipplingproperty.h
     include/modules/basegl/rendering/linerenderer.h
     include/modules/basegl/viewmanager.h
 )
@@ -90,6 +94,8 @@ set(SOURCE_FILES
     src/datastructures/linesettings.cpp
     src/datastructures/linesettingsinterface.cpp
     src/datastructures/meshshadercache.cpp
+    src/datastructures/stipplingsettings.cpp
+    src/datastructures/stipplingsettingsinterface.cpp
     src/datavisualizer/imagebackgroundvisualizer.cpp
     src/datavisualizer/imagevisualizer.cpp
     src/datavisualizer/meshvisualizer.cpp
@@ -150,10 +156,12 @@ set(SOURCE_FILES
     src/processors/volumeprocessing/volumelowpass.cpp
     src/processors/volumeprocessing/volumemapping.cpp
     src/processors/volumeprocessing/volumemerger.cpp
+    src/processors/volumeprocessing/volumeregionshrink.cpp
     src/processors/volumeprocessing/volumeshader.cpp
     src/processors/volumeraycaster.cpp
     src/processors/volumeslicegl.cpp
     src/properties/linesettingsproperty.cpp
+    src/properties/stipplingproperty.cpp
     src/rendering/linerenderer.cpp
     src/viewmanager.cpp
 )
@@ -167,7 +175,6 @@ set(SHADER_FILES
     glsl/axisalignedcutplaneboundingbox.frag
     glsl/axisalignedcutplaneslice.frag
     glsl/background.frag
-    glsl/capnearclipping.frag
     glsl/cubeglyph.frag
     glsl/cubeglyph.geom
     glsl/cubeglyph.vert
@@ -201,7 +208,6 @@ set(SHADER_FILES
     glsl/linerenderer.vert
     glsl/mesh2drendering.frag
     glsl/mesh2drendering.vert
-    glsl/meshentryexit.vert
     glsl/meshrendering.frag
     glsl/meshrendering.vert
     glsl/multichannelraycaster.frag

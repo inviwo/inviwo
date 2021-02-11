@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -72,7 +72,7 @@ private:
     };
 
     PickingManager::Result findPickingAction(const uvec2& coord);
-    std::shared_ptr<const Image> src_;
+    std::weak_ptr<const Image> src_;
 
     PickingControllerMouseState mouseState_;
 

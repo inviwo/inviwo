@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
@@ -45,8 +46,8 @@ public:
 
         bool isValid() const;
 
-        virtual void serialize(Serializer &s) const override;
-        virtual void deserialize(Deserializer &d) override;
+        virtual void serialize(Serializer& s) const override;
+        virtual void deserialize(Deserializer& d) override;
 
         std::string name;
         std::string base64jpeg;
@@ -55,31 +56,34 @@ public:
 
     using ImageVector = std::vector<Base64Image>;
 
-    WorkspaceAnnotations();
-    WorkspaceAnnotations(const ImageVector &canvasImages);
+    WorkspaceAnnotations(InviwoApplication* app = InviwoApplication::getPtr());
+    WorkspaceAnnotations(const ImageVector& canvasImages,
+                         InviwoApplication* app = InviwoApplication::getPtr());
     virtual ~WorkspaceAnnotations() = default;
 
-    void setTitle(const std::string &title);
+    void setTitle(const std::string& title);
     std::string getTitle() const;
 
-    void setAuthor(const std::string &author);
+    void setAuthor(const std::string& author);
     std::string getAuthor() const;
 
-    void setTags(const std::string &tags);
+    void setTags(const std::string& tags);
     std::string getTags() const;
 
-    void setCategories(const std::string &cat);
+    void setCategories(const std::string& cat);
     std::string getCategories() const;
 
-    void setDescription(const std::string &desc);
+    void setDescription(const std::string& desc);
     std::string getDescription() const;
 
-    void setCanvasImages(const ImageVector &canvases);
+    void setCanvasImages(const ImageVector& canvases);
 
     const ImageVector getCanvasImages() const;
 
-    virtual void serialize(Serializer &s) const override;
-    virtual void deserialize(Deserializer &d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+
+    virtual InviwoApplication* getInviwoApplication() override;
 
 protected:
     StringProperty title_;
@@ -89,6 +93,7 @@ protected:
     StringProperty description_;
 
     ImageVector canvases_;
+    InviwoApplication* app_;
 };
 
 }  // namespace inviwo

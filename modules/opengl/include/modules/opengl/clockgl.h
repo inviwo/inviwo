@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -159,7 +159,6 @@ protected:
 };
 
 /**
- * \class inviwo::ScopedClockGL
  * scoped clock for OpenGL time measurements
  *
  * \see IVW_OPENGL_PROFILING(message), IVW_OPENGL_PROFILING_CUSTOM(src, message)
@@ -171,7 +170,7 @@ using ScopedClockGL = ScopedClock<ClockGL>;
  * \def IVW_OPENGL_PROFILING(message)
  * creates a scoped ClockGL clock with the given message.
  *
- * @param src      source of the log message
+ * @param message  log message
  */
 
 /**

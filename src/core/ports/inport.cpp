@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,8 @@ Inport::Inport(std::string identifier)
                    return (isConnected() && util::all_of(connectedOutports_,
                                                          [](Outport* p) { return p->isReady(); }));
                }}
-    , isOptional_(false, [](const bool& /*isOptional*/) {}, []() { return false; })
+    , isOptional_(
+          false, [](const bool& /*isOptional*/) {}, []() { return false; })
     , changed_(false)
     , lastInvalidationLevel_(InvalidationLevel::Valid) {}
 

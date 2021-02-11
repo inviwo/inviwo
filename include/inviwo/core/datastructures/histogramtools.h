@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -83,6 +83,11 @@ public:
     bool hasHistograms() const { return !histograms_->empty(); }
     const HistogramContainer& getHistograms() const { return *histograms_; }
     HistogramContainer& getHistograms() { return *histograms_; }
+
+    void invalidateHistogram() {
+        histograms_->clear();
+        calculation_.reset();
+    }
 
 protected:
     std::shared_ptr<HistogramCalculationState> startCalculation(

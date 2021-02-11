@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -77,8 +77,8 @@ public:
             tmp += " (" + fileName_ + ")";
         }
 
-        inviwo::LogCentral::getPtr()->log("AssimpReader", loglevel_, LogAudience::User, __FILE__,
-                                          "inviwo::AssimpReader::readData", 0, tmp);
+        LogCentral::getPtr()->log("AssimpReader", loglevel_, LogAudience::User, __FILE__,
+                                  "inviwo::AssimpReader::readData", 0, tmp);
     }
 };
 
@@ -93,7 +93,8 @@ AssimpReader::AssimpReader()
     size_t readers = importer.GetImporterCount();
     for (size_t i = 0; i < readers; ++i) {
         const aiImporterDesc* desc = importer.GetImporterInfo(i);
-        for (std::string e : splitString(std::string(desc->mFileExtensions), ' ')) {
+        for (std::string_view e :
+             util::splitStringView(std::string_view(desc->mFileExtensions), ' ')) {
             addExtension(FileExtension(e, desc->mName));
         }
     }
@@ -394,6 +395,51 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string& filePath) {
     }
 
     return mesh;
+}
+
+bool AssimpReader::setOption(std::string_view key, std::any value) {
+    if (auto* fix = std::any_cast<bool>(&value); fix && key == "FixInvalidData") {
+        setFixInvalidDataFlag(*fix);
+        return true;
+    } else if (auto* level = std::any_cast<LogVerbosity>(&value); level && key == "LogLevel") {
+        switch (*level) {
+            case LogVerbosity::Error:
+                setLogLevel(AssimpLogLevel::Error);
+                return true;
+            case LogVerbosity::Warn:
+                setLogLevel(AssimpLogLevel::Warn);
+                return true;
+            case LogVerbosity::Info:
+                setLogLevel(AssimpLogLevel::Info);
+                return true;
+            case LogVerbosity::None:
+                setLogLevel(AssimpLogLevel::None);
+                return true;
+        }
+        return false;
+    }
+
+    return false;
+}
+
+std::any AssimpReader::getOption(std::string_view key) {
+    if (key == "FixInvalidData") {
+        return getFixInvalidDataFlag();
+    } else if (key == "LogLevel") {
+        switch (getLogLevel()) {
+            case AssimpLogLevel::Error:
+                return LogVerbosity::Error;
+            case AssimpLogLevel::Warn:
+                return LogVerbosity::Warn;
+            case AssimpLogLevel::Info:
+                return LogVerbosity::Info;
+            case AssimpLogLevel::Debug:
+                return LogVerbosity::Info;
+            case AssimpLogLevel::None:
+                return LogVerbosity::None;
+        }
+    }
+    return std::any{};
 }
 
 }  // namespace inviwo

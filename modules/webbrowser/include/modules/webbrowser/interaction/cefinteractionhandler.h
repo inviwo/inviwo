@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CEFINTERACTIONHANDLER_H
-#define IVW_CEFINTERACTIONHANDLER_H
+#pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <inviwo/core/interaction/interactionhandler.h>
@@ -89,5 +88,3 @@ private:
 };
 
 };  // namespace inviwo
-
-#endif  // IVW_CEFINTERACTIONHANDLER_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,22 +44,22 @@ public:
     ImageConvolution(Callback C) : ImageConvolution() {
         shader_.onReload(C);
     }
-    ImageConvolution() : shader_("img_convolution.frag", false) {}
+    ImageConvolution() : shader_("img_convolution.frag", Shader::Build::No) {}
     virtual ~ImageConvolution() {}
 
-    std::shared_ptr<Image> convolution(const Layer &layer, std::function<float(vec2)> kernelWeight,
-                                       const float &kernelScale, ivec2 kernelSize);
-    std::shared_ptr<Image> convolution(const Layer &layer, int kw, int kh,
-                                       const std::vector<float> &kernel, const float &kernelScale);
+    std::shared_ptr<Image> convolution(const Layer& layer, std::function<float(vec2)> kernelWeight,
+                                       const float& kernelScale, ivec2 kernelSize);
+    std::shared_ptr<Image> convolution(const Layer& layer, int kw, int kh,
+                                       const std::vector<float>& kernel, const float& kernelScale);
 
-    std::shared_ptr<Image> convolution_separable(const Layer &layer, std::function<float(float)>,
-                                                 int kernelSize, const float &kernelScale);
+    std::shared_ptr<Image> convolution_separable(const Layer& layer, std::function<float(float)>,
+                                                 int kernelSize, const float& kernelScale);
 
-    std::shared_ptr<Image> gaussianLowpass(const Layer &layer, int kernelSize);
-    std::shared_ptr<Image> gaussianLowpass(const Layer &layer, float sigma);
-    std::shared_ptr<Image> gaussianLowpass(const Layer &layer, int kernelSize, float sigma);
+    std::shared_ptr<Image> gaussianLowpass(const Layer& layer, int kernelSize);
+    std::shared_ptr<Image> gaussianLowpass(const Layer& layer, float sigma);
+    std::shared_ptr<Image> gaussianLowpass(const Layer& layer, int kernelSize, float sigma);
 
-    std::shared_ptr<Image> lowpass(const Layer &layer, int kernelSize);
+    std::shared_ptr<Image> lowpass(const Layer& layer, int kernelSize);
 
 protected:
     Shader shader_;

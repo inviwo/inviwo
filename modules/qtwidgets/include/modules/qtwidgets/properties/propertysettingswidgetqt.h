@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -256,6 +256,16 @@ void OrdinalLikePropertySettingsWidgetQt<Prop>::apply() {
         }
     }
 
+    for (size_t i = 0; i < settings_.size(); i++) {
+        if (util::glmcomp(vals[0], i) > util::glmcomp(vals[1], i) ||
+            util::glmcomp(vals[1], i) > util::glmcomp(vals[2], i)) {
+            LogError(fmt::format("Invalid range found elem {}: {} <= {} <= {}", i,
+                                 util::glmcomp(vals[0], i), util::glmcomp(vals[1], i),
+                                 util::glmcomp(vals[1], i)));
+            return;
+        }
+    }
+
     property_->setInitiatingWidget(this);
     for (int k = 0; k < 4; ++k) {
         property_->set(vals[1], vals[0], vals[2], vals[3]);
@@ -428,7 +438,7 @@ template <typename T>
 void MinMaxPropertySettingsWidgetQt<T>::apply() {
     NetworkLock lock(property_);
 
-    using range_type = typename MinMaxProperty<T>::range_type;
+    using range_type = typename MinMaxProperty<T>::value_type;
 
     // order of values stored in setting_:
     // "Component", "Min Bound", "Start","End", "Max Bound", "MinSeparation", "Increment"

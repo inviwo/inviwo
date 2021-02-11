@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ namespace inviwo {
 
 namespace util {
 
-void saveLayer(const Layer& layer, const std::string& path, const FileExtension& extension) {
+void saveLayer(const Layer& layer, std::string_view path, const FileExtension& extension) {
     auto factory = InviwoApplication::getPtr()->getDataWriterFactory();
 
     auto writer = std::shared_ptr<DataWriterType<Layer>>(
@@ -63,7 +63,7 @@ void saveLayer(const Layer& layer, const std::string& path, const FileExtension&
 
     try {
         writer->setOverwrite(true);
-        writer->writeData(&layer, path);
+        writer->writeData(&layer, std::string{path});
         LogInfoCustom("ImageWriterUtil", "Canvas layer exported to disk: " << path);
     } catch (DataWriterException const& e) {
         LogErrorCustom("ImageWriterUtil", e.getMessage());

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/volumesequenceutils.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/rendercontext.h>
 
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/texture/textureutils.h>
@@ -54,7 +55,55 @@ const ProcessorInfo StreamParticles::processorInfo_{
 };
 const ProcessorInfo StreamParticles::getProcessorInfo() const { return processorInfo_; }
 
-StreamParticles::StreamParticles(InviwoApplication *app) : Processor() {
+StreamParticles::StreamParticles(InviwoApplication* app)
+    : Processor()
+    , volume_{"volume"}
+    , seeds_{"seeds"}
+    , meshPort_{"particles"}
+    , seedingSpace_{"seedingSpace",
+                    "Seeding Space",
+                    {{"data", "Data", SeedingSpace::Data}, {"world", "World", SeedingSpace::World}}}
+    , advectionSpeed_{"advectionSpeed", "Advection Speed", 0.01f, 0.0f, 1.0f}
+    , internalSteps_{"advectionsPerFrame",
+                     "Advections per Frame",
+                     10,
+                     1,
+                     100,
+                     1,
+                     InvalidationLevel::InvalidResources}
+    , particleSize_{"particleSize", "Particle radius", 0.025f, 0.035f, 0.0f, 1.0f}
+    , minV_{"minV",
+            "Min velocity",
+            0,
+            0,
+            std::numeric_limits<float>::max(),
+            0.1f,
+            InvalidationLevel::Valid,
+            PropertySemantics::Text}
+    , maxV_{"maxV",
+            "Max velocity",
+            1,
+            0,
+            std::numeric_limits<float>::max(),
+            0.1f,
+            InvalidationLevel::Valid,
+            PropertySemantics::Text}
+    , tf_{"tf", "Velocity mapping"}
+    , reseedInterval_{[&]() {
+                          LGL_ERROR;
+                          return "reseedsInterval";
+                      }(),
+                      "Reseed interval", 1.0f, 0.0f, 10.0f}
+    , shader_{{{ShaderType::Compute, std::string{"streamparticles.comp"}}}, Shader::Build::No}
+    , timer_{Timer::Milliseconds(17), [&]() { update(); }}
+    , reseedtime_{[&]() {
+        LGL_ERROR;
+        return 0.0;
+    }()}
+    , prevT_{0}
+    , clock_{}
+    , ready_{false}
+    , buffersDirty_{true} {
 
     addPort(volume_);
     addPort(seeds_);
@@ -92,9 +141,14 @@ void StreamParticles::process() {
 }
 
 void StreamParticles::update() {
-    if (ready_) {
-        ready_ = false;
-        invalidate(InvalidationLevel::InvalidOutput);
+    try {
+        RenderContext::getPtr()->activateDefaultRenderContext();
+        if (ready_) {
+            ready_ = false;
+            invalidate(InvalidationLevel::InvalidOutput);
+        }
+    } catch (const Exception& e) {
+        util::log(e.getContext(), e.getMessage(), LogLevel::Error);
     }
 }
 
@@ -110,8 +164,8 @@ void StreamParticles::initBuffers() {
     std::mt19937 rand;
     std::uniform_real_distribution<float> dist(0, 1);
 
-    auto &positions = bufPos_->getEditableRAMRepresentation()->getDataContainer();
-    auto &lifes = bufLife_->getEditableRAMRepresentation()->getDataContainer();
+    auto& positions = bufPos_->getEditableRAMRepresentation()->getDataContainer();
+    auto& lifes = bufLife_->getEditableRAMRepresentation()->getDataContainer();
 
     if (seedingSpace_.get() == SeedingSpace::World) {
         std::transform(seeds->begin(), seeds->end(), positions.begin(),
@@ -147,8 +201,8 @@ void StreamParticles::reseed() {
     if (curT >= reseedtime_ + reseedInterval_.get()) {
         auto seeds = seeds_.getData();
 
-        auto &positions = bufPos_->getEditableRAMRepresentation()->getDataContainer();
-        auto &lifes = bufLife_->getEditableRAMRepresentation()->getDataContainer();
+        auto& positions = bufPos_->getEditableRAMRepresentation()->getDataContainer();
+        auto& lifes = bufLife_->getEditableRAMRepresentation()->getDataContainer();
 
         std::mt19937 rand;
         std::uniform_int_distribution<size_t> dist(0, seeds->size());

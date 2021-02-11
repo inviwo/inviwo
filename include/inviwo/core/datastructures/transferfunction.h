@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
+#include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <inviwo/core/util/fileextension.h>
 
@@ -100,7 +101,7 @@ public:
     virtual void load(const std::string& filename,
                       const FileExtension& ext = FileExtension()) override;
 
-    virtual std::string getTitle() const override;
+    virtual std::string_view getTitle() const override;
 
     /**
      * Simplify a vector of TF points by removing points that can be replaced by interpolating
@@ -113,8 +114,8 @@ public:
 protected:
     void calcTransferValues() const;
 
-    virtual std::string serializationKey() const override;
-    virtual std::string serializationItemKey() const override;
+    virtual std::string_view serializationKey() const override;
+    virtual std::string_view serializationItemKey() const override;
 
 private:
     double maskMin_;
@@ -127,5 +128,38 @@ private:
 
 bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
 bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs);
+
+template <>
+struct DataTraits<TransferFunction> {
+    static const std::string& classIdentifier() {
+        static const std::string id{"org.inviwo.transferfunction"};
+        return id;
+    }
+    static const std::string& dataName() {
+        static const std::string name{"Transfer function"};
+        return name;
+    }
+    static uvec3 colorCode() { return uvec3{55, 66, 77}; }
+    static Document info(const TransferFunction& data) {
+        using H = utildoc::TableBuilder::Header;
+        using P = Document::PathComponent;
+        Document doc;
+        doc.append("b", "TransferFunction", {{"style", "color:white;"}});
+        utildoc::TableBuilder tb(doc.handle(), P::end());
+        tb(H("Number of primitives: "), data.size());
+        utildoc::TableBuilder tb2(doc.handle(), P::end());
+        tb2(H("Index"), H("Pos"), H("Color"));
+        // abbreviate list if there are more than 20 items
+        const size_t ncols = (data.size() > 20) ? 10 : data.size();
+        for (size_t i = 0; i < ncols; i++) {
+            tb2(std::to_string(i + 1), data[i].getPosition(), data[i].getColor());
+        }
+        if (ncols != data.size()) {
+            doc.append("span",
+                       "... (" + std::to_string(data.size() - ncols) + " additional primitives)");
+        }
+        return doc;
+    }
+};
 
 }  // namespace inviwo

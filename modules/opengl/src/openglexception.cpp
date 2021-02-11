@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,9 @@
 namespace inviwo {
 
 OpenGLException::OpenGLException(const std::string& message, ExceptionContext context)
-    : Exception(message, context) {}
+    : Exception(message, std::move(context)) {}
 
 OpenGLInitException::OpenGLInitException(const std::string& message, ExceptionContext context)
-    : ModuleInitException(message, context, {"opengl"}) {}
+    : ModuleInitException(message, std::move(context), {"opengl"}) {}
 
 }  // namespace inviwo

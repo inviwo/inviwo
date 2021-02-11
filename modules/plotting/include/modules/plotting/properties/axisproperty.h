@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_AXISPROPERTY_H
-#define IVW_AXISPROPERTY_H
+#pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -36,7 +35,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 
@@ -45,11 +44,13 @@
 
 #include <modules/plotting/datastructures/axissettings.h>
 
+#include <string_view>
+
 namespace inviwo {
 
 namespace plot {
 
-class IVW_MODULE_PLOTTING_API AxisProperty : public AxisSettings, public CompositeProperty {
+class IVW_MODULE_PLOTTING_API AxisProperty : public AxisSettings, public BoolCompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -62,37 +63,37 @@ public:
     virtual AxisProperty* clone() const override;
     virtual ~AxisProperty() = default;
 
-    virtual void setCaption(const std::string& title);
+    virtual AxisProperty& setCaption(std::string_view title);
 
-    void setLabelFormat(const std::string& formatStr);
+    AxisProperty& setLabelFormat(std::string_view formatStr);
     /**
      * \brief sets range property of axis and ensures the min/max limits are adjusted accordingly
      * @param range   new axis range
      */
-    void setRange(const dvec2& range);
+    AxisProperty& setRange(const dvec2& range);
 
     /**
      * \brief set all colors to \p c, i.e. axis, ticks, labels, and caption
      */
-    void setColor(const vec4& c);
+    AxisProperty& setColor(const vec4& c);
 
     /**
      * \brief set font face of labels and caption to \p fontFace
      */
-    void setFontFace(const std::string& fontFace);
+    AxisProperty& setFontFace(std::string_view fontFace);
 
     /**
      * \brief set font size for caption and labels
      */
-    void setFontSize(int fontsize);
+    AxisProperty& setFontSize(int fontsize);
 
-    void setTickLength(float major, float minor);
+    AxisProperty& setTickLength(float major, float minor);
 
     /**
      * \brief set the line width of the axis, major, and minor ticks. Minor ticks will be 2/3 the
      * width.
      */
-    void setLineWidth(float width);
+    AxisProperty& setLineWidth(float width);
 
     // Inherited via AxisSettings
     virtual dvec2 getRange() const override;
@@ -115,7 +116,6 @@ public:
     virtual const MinorTickSettings& getMinorTicks() const override;
 
     // general properties
-    BoolProperty visible_;
     FloatVec4Property color_;
     FloatProperty width_;
     BoolProperty useDataRange_;
@@ -143,5 +143,3 @@ private:
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_AXISPROPERTY_H

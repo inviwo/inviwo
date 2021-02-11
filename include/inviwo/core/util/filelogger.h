@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,9 +45,9 @@ public:
     FileLogger(std::string logPath);
     virtual ~FileLogger();
 
-    virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience,
-                     const char* fileName, const char* functionName, int lineNumber,
-                     std::string logMsg) override;
+    virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,
+                     std::string_view fileName, std::string_view functionName, int lineNumber,
+                     std::string_view logMsg) override;
 
 private:
     std::ofstream fileStream_;

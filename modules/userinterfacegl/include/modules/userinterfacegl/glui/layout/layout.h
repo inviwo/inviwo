@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,8 +63,8 @@ public:
      *
      * @param margins   new margins (top, left, bottom, right)
      */
-    void setMargins(const ivec4 &margins);
-    const ivec4 &getMargins() const;
+    void setMargins(const ivec4& margins);
+    const ivec4& getMargins() const;
 
     /**
      * \brief apply the given scaling factor to all widgets
@@ -80,21 +80,21 @@ public:
      * @param topLeft         defines the top left corner where the UI is positioned
      * @param canvasDim      dimensions of the output canvas
      */
-    virtual void render(const ivec2 &topLeft, const size2_t &canvasDim) = 0;
+    virtual void render(const ivec2& topLeft, const size2_t& canvasDim) = 0;
 
     /**
      * \brief add a UI element to the layout at the end of the layout
      *
      * @param element  UI element to be added
      */
-    virtual void addElement(Element &element) = 0;
+    virtual void addElement(Element& element) = 0;
 
     /**
      * \brief remove the given UI element from the layout
      *
      * @param element  UI element to be removed
      */
-    virtual void removeElement(Element &element) = 0;
+    virtual void removeElement(Element& element) = 0;
 
 protected:
     ivec4 margins_ = ivec4(10, 10, 10, 10);  //!< top, left, bottom, right

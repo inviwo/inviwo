@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,8 +81,7 @@ std::unique_ptr<PropertyWidget> PropertyWidgetFactory::create(Property* property
         if (PropertySemantics::Default == it->second->getSematics()) {
             LogWarn("Requested property widget semantics ("
                     << sematics << ") for property (" << property->getDisplayName() << ", "
-                    << joinString(property->getPath(), "/")
-                    << ") does not exist, returning default semantics.");
+                    << property->getPath() << ") does not exist, returning default semantics.");
             return it->second->create(property);
         }
     }

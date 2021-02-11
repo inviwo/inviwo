@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMELOWPASS_H
-#define IVW_VOLUMELOWPASS_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
@@ -66,7 +64,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    virtual void preProcess(TextureUnitContainer &cont) override;
+    virtual void preProcess(TextureUnitContainer& cont) override;
     virtual void postProcess() override;
 
     virtual void initializeResources() override;
@@ -80,5 +78,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMELOWPASS_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
 #pragma once
 
 #include <modules/basegl/datastructures/linesettingsinterface.h>
-#include <modules/base/properties/stipplingproperty.h>
+#include <modules/basegl/properties/stipplingproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -39,9 +39,13 @@ namespace inviwo {
 class IVW_MODULE_BASEGL_API LineSettingsProperty : public LineSettingsInterface,
                                                    public CompositeProperty {
 public:
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     LineSettingsProperty(const std::string& identifier, const std::string& displayName,
                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                          PropertySemantics semantics = PropertySemantics::Default);
+    LineSettingsProperty(const LineSettingsProperty& rhs);
     virtual ~LineSettingsProperty() = default;
 
     virtual LineSettingsProperty* clone() const override;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,12 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CANVASQOPENGLWIDGET_H
-#define IVW_CANVASQOPENGLWIDGET_H
+#pragma once
 
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <modules/opengl/canvasgl.h>
-#include <inviwo/core/common/inviwo.h>
 
 #define QT_NO_OPENGL_ES_2
 #define GLEXT_64_TYPES_DEFINED
@@ -40,7 +38,6 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QOpenGLWidget>
-#include <QSurfaceFormat>
 #include <warn/pop>
 
 class QResizeEvent;
@@ -51,32 +48,26 @@ class IVW_MODULE_OPENGLQT_API CanvasQOpenGLWidget : public QOpenGLWidget, public
     friend class CanvasProcessorWidgetQt;
 
 public:
-    using QtBase = QOpenGLWidget;
-
-    explicit CanvasQOpenGLWidget(QWidget* parent = nullptr, uvec2 dim = uvec2(256, 256));
+    explicit CanvasQOpenGLWidget(QWidget* parent = nullptr, size2_t dim = size2_t(256, 256),
+                                 std::string_view name = "Canvas");
     virtual ~CanvasQOpenGLWidget();
-
-    static void defineDefaultContextFormat();
 
     virtual void activate() override;
     virtual void glSwapBuffers() override;
     virtual void update() override;
-    void repaint();
 
-    virtual void resize(uvec2 size) override;
+    virtual void resize(size2_t size) override;
+    virtual ContextID activeContext() const override;
+    virtual ContextID contextId() const override;
 
 protected:
     virtual void initializeGL() override;
     virtual void paintGL() override;
     virtual void resizeEvent(QResizeEvent* event) override;
 
-    static CanvasQOpenGLWidget* sharedCanvas_;  // For rendering-context sharing
+    virtual void releaseContext() override;
 
-private:
-    static QSurfaceFormat sharedFormat_;
-    bool swapBuffersAllowed_;
+    std::string name_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CANVASQOPENGLWIDGET_H

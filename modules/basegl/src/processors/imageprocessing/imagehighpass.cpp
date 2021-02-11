@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ ImageHighPass::ImageHighPass()
     addProperty(sharpen_);
 }
 
-void ImageHighPass::preProcess(TextureUnitContainer &) {
+void ImageHighPass::preProcess(TextureUnitContainer&) {
     utilgl::setUniforms(shader_, kernelSize_, sharpen_);
 }
 

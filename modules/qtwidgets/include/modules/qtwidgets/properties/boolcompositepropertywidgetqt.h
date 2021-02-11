@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BOOLCOMPOSITEPROPERTYWIDGETQT_H
-#define IVW_BOOLCOMPOSITEPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
@@ -64,5 +63,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BOOLCOMPOSITEPROPERTYWIDGETQT_H

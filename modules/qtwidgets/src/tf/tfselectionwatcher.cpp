@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,14 +38,14 @@
 
 namespace inviwo {
 
-TFSelectionWatcher::TFSelectionWatcher(TFEditor *editor, Property *property,
-                                       const std::vector<TFPrimitiveSet *> &primitiveSets)
-    : tfEditor_(editor), property_(property), tfSets_(primitiveSets) {}
+TFSelectionWatcher::TFSelectionWatcher(Property* property,
+                                       const std::vector<TFPrimitiveSet*>& primitiveSets)
+    : property_(property), tfSets_(primitiveSets) {}
 
 void TFSelectionWatcher::setPosition(double pos) {
     NetworkLock lock(property_);
     util::KeepTrueWhileInScope b(&updateInProgress_);
-    for (auto &elem : tfSets_) {
+    for (auto& elem : tfSets_) {
         elem->setPosition(selectedPrimitives_, pos);
     }
     emit updateWidgetPosition(pos, false);
@@ -54,22 +54,22 @@ void TFSelectionWatcher::setPosition(double pos) {
 void TFSelectionWatcher::setAlpha(double alpha) {
     NetworkLock lock(property_);
     util::KeepTrueWhileInScope b(&updateInProgress_);
-    for (auto &elem : tfSets_) {
+    for (auto& elem : tfSets_) {
         elem->setAlpha(selectedPrimitives_, alpha);
     }
     emit updateWidgetAlpha(alpha, false);
 }
 
-void TFSelectionWatcher::setColor(const QColor &c) {
+void TFSelectionWatcher::setColor(const QColor& c) {
     NetworkLock lock(property_);
     util::KeepTrueWhileInScope b(&updateInProgress_);
-    for (auto &elem : tfSets_) {
+    for (auto& elem : tfSets_) {
         elem->setColor(selectedPrimitives_, utilqt::tovec3(c));
     }
     emit updateWidgetColor(c, false);
 }
 
-void TFSelectionWatcher::updateSelection(const std::vector<TFPrimitive *> selection) {
+void TFSelectionWatcher::updateSelection(const std::vector<TFPrimitive*> selection) {
     // de-register all primitive callbacks
     for (auto p : selectedPrimitives_) {
         p->removeObserver(this);
@@ -85,7 +85,7 @@ void TFSelectionWatcher::updateSelection(const std::vector<TFPrimitive *> select
     informWidgets();
 }
 
-void TFSelectionWatcher::onTFPrimitiveChange(const TFPrimitive &p) {
+void TFSelectionWatcher::onTFPrimitiveChange(const TFPrimitive& p) {
     if (updateInProgress_) return;
 
     if (selectedPrimitives_.empty() || !util::contains(selectedPrimitives_, &p)) {

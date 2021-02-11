@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,7 @@ class DataFrameTableProcessorWidget;
  *
  * ### Properties
  *   * __Show Index Column__             show/hide index column in table
+ *   * __Show Category Indices__         show interal category indices for categorical columns
  *   * __Vector Components as Columns__  print glm::vec components in separate columns
  *
  */
@@ -91,6 +92,7 @@ private:
     IntSize2Property dimensions_;
     IntVec2Property position_;
     BoolProperty showIndexColumn_;
+    BoolProperty showCategoryIndices_;
     BoolProperty vectorCompAsColumn_;
 
     ProcessorWidgetMetaData* widgetMetaData_;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,13 +27,19 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HDF5UTILS_H
-#define IVW_HDF5UTILS_H
+#pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
 #include <modules/hdf5/datastructures/hdf5path.h>
-#include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/util/glmvec.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <H5Cpp.h>
+#include <warn/pop>
+
+#include <vector>
 
 namespace inviwo {
 
@@ -56,5 +62,3 @@ IVW_MODULE_HDF5_API VolumeInfos getVolumeInfo(const H5::DataSet& ds, const Path&
 }  // namespace hdf5
 
 }  // namespace inviwo
-
-#endif  // IVW_HDF5UTILS_H

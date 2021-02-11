@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,20 +74,13 @@ TEST_F(NetworkTest, Inititiate) {
 }
 
 TEST_F(NetworkTest, NetworkGetPropery) {
-    std::vector<std::string> path;
-    path.push_back("volumeSource");
-    path.push_back("filename");
-
+    std::string_view path = "volumeSource.filename";
     const Property* prop = network.getProperty(path);
     ASSERT_TRUE(prop != nullptr);
 }
 
 TEST_F(NetworkTest, NetworkGetSubPropery) {
-    std::vector<std::string> path;
-    path.push_back("volumeSource");
-    path.push_back("Information");
-    path.push_back("dimensions");
-
+    std::string_view path = "volumeSource.Information.dimensions";
     const Property* prop = network.getProperty(path);
     ASSERT_TRUE(prop != nullptr);
 }
@@ -125,10 +118,7 @@ TEST_F(NetworkTest, ProcessorGetProperty) {
     const Processor* p = network.getProcessorByIdentifier("volumeSource");
     ASSERT_TRUE(p != nullptr);
 
-    std::vector<std::string> path;
-    path.push_back("Information");
-    path.push_back("dimensions");
-
+    std::string_view path = "Information.dimensions";
     const Property* prop = p->getPropertyByPath(path);
     ASSERT_TRUE(prop != nullptr);
 }

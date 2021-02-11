@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,34 +31,77 @@
 
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/canvas.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QResizeEvent>
-#include <QPaintEvent>
+#include <QSurfaceFormat>
 #include <warn/pop>
+
+#include <string_view>
+
+class QOffscreenSurface;
+class QOpenGLContext;  // Include causes: warning qopenglfunctions.h is not compatible with GLEW,
+                       // GLEW defines will be undefined
 
 namespace inviwo {
 
-// Inspiration from http://www.krazer.com/?p=109
-// https://github.com/caseymcc/TestOpenCL
-
-template <typename Base>
-class HiddenCanvasQt : public Base {
+/*
+ * Convenience class for creating an QOffscreenSurface with an QOpenGLContext.
+ *
+ * This class can be used for concurrent OpenGL operations in background threads.
+ * The class must be created in the main thread.
+ * initializeGL must be called before use, but can be called in a different thread.
+ *
+ * @note Most Canvas overriden functions are non-functional except HiddenCanvasQt::activate()
+ */
+class IVW_MODULE_OPENGLQT_API HiddenCanvasQt : public Canvas {
 public:
-    explicit HiddenCanvasQt(uvec2 dim = uvec2(256, 256)) : Base(dim, "Background") {
-        this->setVisible(false);
-        this->doneCurrent();
-    }
-    virtual ~HiddenCanvasQt() = default;
+    /*
+     * Must be created in the main thread.
+     * Must call initializeGL before using it for
+     */
+    HiddenCanvasQt(std::string_view name, QSurfaceFormat format = QSurfaceFormat::defaultFormat());
+    HiddenCanvasQt(const HiddenCanvasQt&) = delete;
+    HiddenCanvasQt(HiddenCanvasQt&&) = delete;
+    HiddenCanvasQt& operator=(const HiddenCanvasQt&) = delete;
+    HiddenCanvasQt& operator=(HiddenCanvasQt&&) = delete;
+
+    virtual ~HiddenCanvasQt();
+    /*
+     * Initialize context and OpenGL functions. Only call this function once.
+     */
+    void initializeGL();
+    /*
+     * Does nothing
+     */
+    virtual void render([[maybe_unused]] std::shared_ptr<const Image>,
+                        [[maybe_unused]] LayerType layerType = LayerType::Color,
+                        [[maybe_unused]] size_t idx = 0) override{};
+
+    virtual size2_t getImageDimensions() const override { return size2_t{0}; }
+    virtual void update() override;
+    virtual void activate() override;
+
+    // used to create hidden canvases used for context in background threads.
+    virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
+    static std::unique_ptr<Canvas> createHiddenQtCanvas();
+
+    using ContextID = const void*;
+    virtual ContextID activeContext() const override;
+    virtual ContextID contextId() const override;
+
+    virtual void releaseContext() override;
+
+    QOpenGLContext* getContext() { return context_; };
 
 protected:
-    virtual void initializeGL() override{};
-    virtual void resizeGL(int /*width*/, int /*height*/) override{};
-    virtual void paintGL() override{};
-
-    virtual void resizeEvent(QResizeEvent *) override{};
-    virtual void paintEvent(QPaintEvent *) override{};
+    /**
+     * Derived classes should override to implement actual window state.
+     */
+    virtual void setFullScreenInternal([[maybe_unused]] bool fullscreen) override{};
+    QOpenGLContext* context_;
+    QOffscreenSurface* offScreenSurface_;
 };
 
 }  // namespace inviwo

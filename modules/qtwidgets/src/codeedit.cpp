@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,22 +29,26 @@
 
 #include <modules/qtwidgets/codeedit.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/qtwidgetssettings.h>
-#include <inviwo/core/common/inviwoapplication.h>
+
+#include <modules/qtwidgets/syntaxhighlighter.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QtWidgets>
 #include <warn/pop>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
-CodeEdit::CodeEdit(SyntaxType type, QWidget *parent)
+CodeEdit::CodeEdit(QWidget* parent)
     : QPlainTextEdit(parent)
     , lineNumberArea_{new LineNumberArea(this)}
-    , textColor_{0, 0, 0, 255}
-    , highLightColor_{255, 255, 255, 255}
+    , textColor_{syntax::text}
+    , highlightColor_{1.0f}
+    , sh_{new SyntaxHighlighter(document())}
     , annotateLine_{[](int line) { return std::to_string(line); }}
+    , annotateColor_{[](int, vec4 orgColor) { return orgColor; }}
     , annotationSpace_{[](int maxDigits) { return maxDigits; }} {
 
     setObjectName("CodeEdit");
@@ -61,86 +65,35 @@ CodeEdit::CodeEdit(SyntaxType type, QWidget *parent)
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
 
-    setSyntax(type);
-}
+    auto updateSyntax = [this]() {
+        auto color = utilqt::toivec3(sh_->defaultFormat().background().color());
 
-void CodeEdit::setSyntax(SyntaxType type) {
-    auto setCSS = [this](const std::string &family, int size, const ivec4 &color) {
-        std::stringstream ss;
-        ss << "background-color: rgb(" << color.r << ", " << color.g << ", " << color.b << ");"
-           << "\n"
-           << "font-size: " << size << "pt;"
-           << "font-family: " << family << ";\n";
-        setStyleSheet(ss.str().c_str());
+        auto css = fmt::format("background-color: rgb({}, {}, {});font-size: {}pt;font-family: {};",
+                               color.r, color.g, color.b, sh_->fontSize(), sh_->font());
+        setStyleSheet(utilqt::toQString(css));
 
-        QFontMetrics metrics(QFont(utilqt::toQString(family), size));
+        textColor_ = utilqt::tovec4(sh_->defaultFormat().foreground().color());
+        highlightColor_ = sh_->highlight();
+
+        QFontMetrics metrics(QFont(utilqt::toQString(sh_->font()), sh_->fontSize()));
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
         setTabStopWidth(4 * metrics.width(' '));
 #else
         setTabStopDistance(static_cast<qreal>(4 * metrics.horizontalAdvance(' ')));
 #endif
+        sh_->rehighlight();
     };
-    auto app = util::getInviwoApplication();
-    auto settings = app->getSettingsByType<QtWidgetsSettings>();
-    callbacks_.clear();
-    switch (type) {
-        case GLSL: {
-            auto sh = SyntaxHighligther::createSyntaxHighligther<GLSL>(document());
-            auto setStyle = [this, sh, setCSS, settings]() {
-                auto color = settings->glslBackgroundColor_.get();
-                auto size = settings->fontSize_.get();
-                auto family = settings->font_.get();
-                setCSS(family, size, color);
-                textColor_ = settings->glslTextColor_.get();
-                highLightColor_ = settings->glslBackgroundHighLightColor_.get();
-                sh->rehighlight();
-            };
-            callbacks_.push_back(settings->glslSyntax_.onChangeScoped(setStyle));
-            callbacks_.push_back(settings->font_.onChangeScoped(setStyle));
-            callbacks_.push_back(settings->fontSize_.onChangeScoped(setStyle));
-            setStyle();
-            break;
-        }
-        case Python: {
-            auto sh = SyntaxHighligther::createSyntaxHighligther<Python>(document());
-            auto setStyle = [this, sh, setCSS, settings]() {
-                auto color = settings->pyBGColor_.get();
-                auto size = settings->fontSize_.get();
-                auto family = settings->font_.get();
-                setCSS(family, size, color);
-                textColor_ = settings->pyTextColor_.get();
-                highLightColor_ = settings->pyBGHighLightColor_.get();
-                sh->rehighlight();
-            };
-            callbacks_.push_back(settings->pythonSyntax_.onChangeScoped(setStyle));
-            callbacks_.push_back(settings->font_.onChangeScoped(setStyle));
-            callbacks_.push_back(settings->fontSize_.onChangeScoped(setStyle));
-            setStyle();
-            break;
-        }
-        case None:
-        default: {
-            auto sh = SyntaxHighligther::createSyntaxHighligther<None>(document());
-            auto setStyle = [this, sh, setCSS, settings]() {
-                auto color = settings->pyBGColor_.get();
-                auto size = settings->fontSize_.get();
-                auto family = settings->font_.get();
-                setCSS(family, size, color);
-                textColor_ = settings->pyTextColor_.get();
-                highLightColor_ = settings->pyBGHighLightColor_.get();
-                sh->rehighlight();
-            };
-            callbacks_.push_back(settings->pythonSyntax_.onChangeScoped(setStyle));
-            callbacks_.push_back(settings->font_.onChangeScoped(setStyle));
-            callbacks_.push_back(settings->fontSize_.onChangeScoped(setStyle));
-            setStyle();
-            break;
-        }
-    }
+
+    connect(sh_, &SyntaxHighlighter::update, this, updateSyntax);
+    updateSyntax();
 }
 
 void CodeEdit::setLineAnnotation(std::function<std::string(int)> func) {
     annotateLine_ = std::move(func);
+    updateLineNumberAreaWidth(0);
+}
+void CodeEdit::setLineAnnotationColor(std::function<vec4(int, vec4)> annotateColor) {
+    annotateColor_ = std::move(annotateColor);
     updateLineNumberAreaWidth(0);
 }
 void CodeEdit::setAnnotationSpace(std::function<int(int)> func) {
@@ -148,7 +101,9 @@ void CodeEdit::setAnnotationSpace(std::function<int(int)> func) {
     updateLineNumberAreaWidth(0);
 }
 
-void CodeEdit::keyPressEvent(QKeyEvent *keyEvent) {
+SyntaxHighlighter& CodeEdit::syntaxHighlighter() { return *sh_; }
+
+void CodeEdit::keyPressEvent(QKeyEvent* keyEvent) {
     if (keyEvent->key() == Qt::Key_Tab) {
         keyEvent->accept();
         insertPlainText("    ");
@@ -177,7 +132,7 @@ void CodeEdit::updateLineNumberAreaWidth(int /* newBlockCount */) {
     setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
 }
 
-void CodeEdit::updateLineNumberArea(const QRect &rect, int dy) {
+void CodeEdit::updateLineNumberArea(const QRect& rect, int dy) {
     if (dy) {
         lineNumberArea_->scroll(0, dy);
     } else {
@@ -189,7 +144,7 @@ void CodeEdit::updateLineNumberArea(const QRect &rect, int dy) {
     }
 }
 
-void CodeEdit::resizeEvent(QResizeEvent *e) {
+void CodeEdit::resizeEvent(QResizeEvent* e) {
     QPlainTextEdit::resizeEvent(e);
 
     QRect cr = contentsRect();
@@ -201,7 +156,7 @@ void CodeEdit::highlightCurrentLine() {
 
     if (!isReadOnly()) {
         QTextEdit::ExtraSelection selection;
-        selection.format.setBackground(utilqt::toQColor(highLightColor_));
+        selection.format.setBackground(utilqt::toQColor(highlightColor_));
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
         selection.cursor = textCursor();
         selection.cursor.clearSelection();
@@ -211,7 +166,7 @@ void CodeEdit::highlightCurrentLine() {
     setExtraSelections(extraSelections);
 }
 
-void CodeEdit::lineNumberAreaPaintEvent(QPaintEvent *event) {
+void CodeEdit::lineNumberAreaPaintEvent(QPaintEvent* event) {
     if (document()->isEmpty()) return;
 
     QPainter painter(lineNumberArea_);
@@ -229,11 +184,10 @@ void CodeEdit::lineNumberAreaPaintEvent(QPaintEvent *event) {
     const int height = fontMetrics().height();
     const int width = lineNumberArea_->width() - offset;
 
-    painter.setPen(utilqt::toQColor(textColor_));
-
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible() && bottom >= event->rect().top()) {
             const auto number = utilqt::toQString(annotateLine_(blockNumber + 1));
+            painter.setPen(utilqt::toQColor(annotateColor_(blockNumber + 1, textColor_)));
             painter.drawText(0, top, width, height, Qt::AlignRight, number);
         }
 

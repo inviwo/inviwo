@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
 
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/util/zip.h>
-#include <inviwo/dataframe/datastructures/dataframeutil.h>
+#include <inviwo/dataframe/util/dataframeutil.h>
 
 namespace inviwo {
 
@@ -69,14 +69,14 @@ PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
     backgroundPort_.setOptional(true);
 
     tooltipCallBack_ =
-        persistenceDiagramPlot_.addToolTipCallback([this](PickingEvent *p, size_t rowId) {
+        persistenceDiagramPlot_.addToolTipCallback([this](PickingEvent* p, size_t rowId) {
             if (!p) return;
             if (auto dataframe = dataFrame_.getData()) {
-                p->setToolTip(dataframeutil::createToolTipForRow(*dataFrame_.getData(), rowId));
+                p->setToolTip(dataframe::createToolTipForRow(*dataFrame_.getData(), rowId));
             }
         });
     selectionChangedCallBack_ = persistenceDiagramPlot_.addSelectionChangedCallback(
-        [this](const std::unordered_set<size_t> &indices) {
+        [this](const std::unordered_set<size_t>& indices) {
             brushingPort_.sendSelectionEvent(indices);
         });
 
@@ -110,16 +110,16 @@ void PersistenceDiagramPlotProcessor::process() {
         auto dfSize = dataframe->getNumberOfRows();
 
         auto iCol = dataframe->getIndexColumn();
-        auto &indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+        auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
         auto filteredIndicies = brushingPort_.getFilteredIndices();
         IndexBuffer indicies;
-        auto &vec = indicies.getEditableRAMRepresentation()->getDataContainer();
+        auto& vec = indicies.getEditableRAMRepresentation()->getDataContainer();
         vec.reserve(dfSize - filteredIndicies.size());
 
         auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
         std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
-                     [&](const auto &id) { return !brushingPort_.isFiltered(indexCol[id]); });
+                     [&](const auto& id) { return !brushingPort_.isFiltered(indexCol[id]); });
 
         if (backgroundPort_.hasData()) {
             persistenceDiagramPlot_.plot(*outport_.getEditableData(), *backgroundPort_.getData(),

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEGLPROCESSOR_H
-#define IVW_VOLUMEGLPROCESSOR_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/opengl/shader/shader.h>
@@ -56,7 +54,7 @@ class IVW_MODULE_BASEGL_API VolumeGLProcessor : public Processor {
 public:
     VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
                       bool buildShader = true);
-    VolumeGLProcessor(const std::string &fragmentShader, bool buildShader = true);
+    VolumeGLProcessor(const std::string& fragmentShader, bool buildShader = true);
     virtual ~VolumeGLProcessor();
 
     virtual void process() override;
@@ -68,7 +66,7 @@ protected:
      * after the shader has been activated.
      * Overwrite this function in the derived class to perform things like custom shader setup
      */
-    virtual void preProcess(TextureUnitContainer &cont);
+    virtual void preProcess(TextureUnitContainer& cont);
 
     /*! \brief this function gets called at the end of the process function
      * Overwrite this function in the derived class to perform post-processing
@@ -84,7 +82,7 @@ protected:
     VolumeOutport outport_;
     std::shared_ptr<Volume> volume_;
 
-    const DataFormatBase *dataFormat_;
+    const DataFormatBase* dataFormat_;
     bool internalInvalid_;
     std::string fragmentShader_;
     Shader shader_;
@@ -92,5 +90,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEGLPROCESSOR_H

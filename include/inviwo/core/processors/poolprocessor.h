@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/util/timer.h>
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/network/processornetwork.h>
 
 #include <atomic>
@@ -307,10 +308,12 @@ private:
                          std::shared_ptr<pool::detail::StateTemplate<Result, Done>> state);
 
     pool::Options options_;
-    std::shared_ptr<pool::detail::Wrapper> wrapper_;
     std::vector<std::shared_ptr<pool::detail::State>> states_;
+    util::OnScopeExit notifyRemainingJobsFinish_;
+    std::shared_ptr<pool::detail::Wrapper> wrapper_;
     std::vector<Submission> queue_;
     Delay delay_;
+    util::OnScopeExit delayBackgoundJobReset_;
 };
 
 namespace pool::detail {
@@ -321,13 +324,14 @@ struct IVW_CORE_API Wrapper {
 
 struct IVW_CORE_API State {
     State(std::weak_ptr<Wrapper> processor, size_t count)
-        : processor(processor), count{count}, stop{false}, progress(count) {}
+        : processor(processor), count{count}, stop{false}, progress(count), nJobs{count} {}
 
     std::weak_ptr<Wrapper> processor;
     std::atomic<size_t> count;
     std::atomic<bool> stop;
     std::vector<std::atomic<float>> progress;
     std::future<void> progressUpdate;
+    size_t nJobs;
 
     Stop getStop() { return Stop(stop); }
 
@@ -373,8 +377,16 @@ template <typename Result, typename Done>
 inline void PoolProcessor::callDone(
     InviwoApplication* app, std::shared_ptr<pool::detail::StateTemplate<Result, Done>> state) {
     static const auto done = [](PoolProcessor& p, auto state) {
+        // This code will run in the main thread, make sure the default context is active
+        RenderContext::getPtr()->activateDefaultRenderContext();
         try {
-            if constexpr (std::is_invocable_v<Done, Result>) {
+            // The Done call callback should be callable with the Result type
+            if constexpr (std::is_same_v<Result, void>) {
+                for (auto& res : state->futures) {
+                    res.get();
+                }
+                state->done();
+            } else if constexpr (std::is_invocable_v<Done, Result>) {
                 state->done(state->futures.front().get());
             } else {
                 std::vector<Result> results;
@@ -402,6 +414,8 @@ inline void PoolProcessor::callDone(
                     return;
                 }
 
+                p.notifyObserversFinishBackgroundWork(&p, state->nJobs);
+
                 if (state->stop) return;
 
                 if (isLast || p.keepOldJobs()) {
@@ -416,7 +430,13 @@ template <typename Job, typename Done>
 void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
     using Result = typename pool::detail::JobTraits<Job>::Result;
 
-    static_assert(std::is_invocable_v<Done, std::vector<Result>>);
+    if constexpr (std::is_same_v<Result, void>) {
+        static_assert(std::is_invocable_v<Done>, "The 'Done' functor should callable");
+    } else {
+        static_assert(std::is_invocable_v<Done, std::vector<Result>>,
+                      "The 'Done' functor should take a std::vector of the result of the 'Job' "
+                      "functor as argument");
+    }
 
     if (!keepOldJobs()) stopJobs();
 
@@ -429,7 +449,11 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
         auto task = makeTask<Result>(std::move(job), state->getStop(), state->getProgress(i++));
         state->futures.push_back(task->get_future());
         sub.tasks.emplace_back([state, task, app]() {
-            if (!state->stop) (*task)();
+            if (!state->stop) {
+                // This code will run in a background thread, make sure the local context is active
+                RenderContext::getPtr()->activateLocalRenderContext();
+                (*task)();
+            }
             callDone(app, state);
         });
     }
@@ -437,6 +461,12 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
     if (delayDispatch()) {
         queue_.clear();
         queue_.push_back(std::move(sub));
+
+        if (!delayBackgoundJobReset_) {
+            notifyObserversStartBackgroundWork(this, 1);
+            delayBackgoundJobReset_.setAction(
+                [this]() { notifyObserversFinishBackgroundWork(this, 1); });
+        }
         delay_.start();
 
     } else if (queuedDispatch() && !states_.empty()) {
@@ -452,7 +482,12 @@ template <typename Job, typename Done>
 void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
     using Result = typename pool::detail::JobTraits<Job>::Result;
 
-    static_assert(std::is_invocable_v<Done, Result>);
+    if constexpr (std::is_same_v<Result, void>) {
+        static_assert(std::is_invocable_v<Done>, "The 'Done' functor should be callable");
+    } else {
+        static_assert(std::is_invocable_v<Done, Result>,
+                      "The 'Done' functor should take the result of the 'Job' functor as argument");
+    }
 
     if (!keepOldJobs()) stopJobs();
 
@@ -463,7 +498,10 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
 
     Submission sub{state,
                    {[state, task, app]() {
-                       if (!state->stop) (*task)();
+                       if (!state->stop) {
+                           RenderContext::getPtr()->activateLocalRenderContext();
+                           (*task)();
+                       }
                        callDone(app, state);
                    }},
                    [this]() { setupProgress<Job>(); }};
@@ -471,6 +509,11 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
     if (delayDispatch()) {
         queue_.clear();
         queue_.push_back(std::move(sub));
+        if (!delayBackgoundJobReset_) {
+            notifyObserversStartBackgroundWork(this, 1);
+            delayBackgoundJobReset_.setAction(
+                [this]() { notifyObserversFinishBackgroundWork(this, 1); });
+        }
         delay_.start();
 
     } else if (queuedDispatch() && !states_.empty()) {

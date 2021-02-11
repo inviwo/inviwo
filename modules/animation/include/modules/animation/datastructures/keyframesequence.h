@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_KEYFRAMESEQUENCE_H
-#define IVW_KEYFRAMESEQUENCE_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -77,7 +75,7 @@ public:
     /**
      * Add Keyframe and call KeyframeObserver::notifyKeyframeAdded
      */
-    virtual void add(std::unique_ptr<Keyframe> key) = 0;
+    virtual Keyframe* add(std::unique_ptr<Keyframe> key) = 0;
 
     /**
      * Remove Keyframe and call KeyframeObserver::notifyKeyframeRemoved
@@ -112,5 +110,3 @@ IVW_MODULE_ANIMATION_API bool operator>=(const Seconds& a, const KeyframeSequenc
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_KEYFRAMESEQUENCE_H

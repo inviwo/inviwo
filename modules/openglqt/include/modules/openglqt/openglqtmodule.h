@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,8 @@
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/rendercontext.h>
 
+#include <modules/openglqt/hiddencanvasqt.h>
+
 namespace inviwo {
 
 class IVW_MODULE_OPENGLQT_API OpenGLQtModule : public InviwoModule,
@@ -48,7 +50,7 @@ public:
 
 private:
     ContextHolder* holder_ = nullptr;
-    std::unique_ptr<Canvas> sharedCanvas_;
+    HiddenCanvasQt sharedCanvas_;
 };
 
 }  // namespace inviwo

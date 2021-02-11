@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,8 +63,8 @@ public:
         Element(Element&&) noexcept = default;
         Element& operator=(Element&&) = default;
 
-        Element(ElementType type, const std::string& content);
-        Element(const std::string& name, const std::string& content = "",
+        Element(ElementType type, std::string_view content);
+        Element(std::string_view name, std::string_view content = "",
                 const std::unordered_map<std::string, std::string>& attributes = {});
 
         const std::string& name() const;
@@ -95,14 +95,14 @@ public:
 
     class IVW_CORE_API PathComponent {
     public:
-        PathComponent(const std::string strrep,
+        PathComponent(std::string_view strrep,
                       std::function<ElemVec::const_iterator(const ElemVec&)> matcher);
 
         PathComponent(int index);
-        PathComponent(const std::string name);
+        PathComponent(std::string_view name);
         PathComponent(const std::unordered_map<std::string, std::string>& attributes);
 
-        PathComponent(const std::string name,
+        PathComponent(std::string_view name,
                       const std::unordered_map<std::string, std::string>& attributes);
 
         static PathComponent first();
@@ -135,11 +135,11 @@ public:
         DocumentHandle& operator=(DocumentHandle&&) = default;
 
         DocumentHandle get(const std::vector<PathComponent>& path);
-        DocumentHandle insert(PathComponent pos, const std::string& name,
-                              const std::string content = "",
+        DocumentHandle insert(PathComponent pos, std::string_view name,
+                              std::string_view content = "",
                               const std::unordered_map<std::string, std::string>& attributes = {});
 
-        DocumentHandle append(const std::string& name, const std::string content = "",
+        DocumentHandle append(std::string_view name, std::string_view content = "",
                               const std::unordered_map<std::string, std::string>& attributes = {});
 
         DocumentHandle insert(PathComponent pos, Document doc);
@@ -149,7 +149,7 @@ public:
         Element& element();
 
         operator bool() const;
-        DocumentHandle& operator+=(const std::string& content);
+        DocumentHandle& operator+=(std::string_view content);
 
     private:
         DocumentHandle(const Document* doc, Element* elem);
@@ -167,11 +167,10 @@ public:
     DocumentHandle handle() const;
 
     DocumentHandle get(const std::vector<PathComponent>& path);
-    DocumentHandle insert(PathComponent pos, const std::string& name,
-                          const std::string content = "",
+    DocumentHandle insert(PathComponent pos, std::string_view name, std::string_view content = "",
                           const std::unordered_map<std::string, std::string>& attributes = {});
 
-    DocumentHandle append(const std::string& name, const std::string content = "",
+    DocumentHandle append(std::string_view name, std::string_view content = "",
                           const std::unordered_map<std::string, std::string>& attributes = {});
 
     DocumentHandle insert(PathComponent pos, Document doc);
@@ -254,6 +253,7 @@ public:
         Wrapper(T&& data) : data_(detail::convert(std::forward<T>(data))) {}
         Wrapper(const std::string& data);
         Wrapper(const char* const data);
+        Wrapper(std::string_view data);
     };
 
     struct IVW_CORE_API ArrributeWrapper : Wrapper {

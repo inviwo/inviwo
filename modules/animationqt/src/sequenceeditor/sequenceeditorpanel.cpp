@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,9 +46,9 @@
 namespace inviwo {
 
 namespace animation {
-SequenceEditorPanel::SequenceEditorPanel(AnimationManager& manager,
+SequenceEditorPanel::SequenceEditorPanel(Animation& animation, AnimationManager& manager,
                                          SequenceEditorFactory& editorFactory, QWidget* parent)
-    : QScrollArea(parent), manager_(manager), factory_{editorFactory} {
+    : QScrollArea(parent), animation_(animation), manager_(manager), factory_{editorFactory} {
     setObjectName("SequenceEditorPanel");
 
     setWidgetResizable(true);
@@ -86,11 +86,10 @@ SequenceEditorPanel::SequenceEditorPanel(AnimationManager& manager,
     baseLayout->addWidget(lower);
     setWidget(widget);
 
-    auto& ani = manager_.getAnimationController().getAnimation();
-    for (auto& track : ani) {
+    for (auto& track : animation_) {
         onTrackAdded(&track);
     }
-    ani.addObserver(this);
+    animation_.addObserver(this);
 }
 
 QLayout* SequenceEditorPanel::getOptionLayout() { return optionLayout_; }
@@ -113,13 +112,19 @@ void SequenceEditorPanel::onTrackAdded(Track* track) {
     track->addObserver(this);
 }
 
-void SequenceEditorPanel::onTrackRemoved(Track* track) { track->removeObserver(this); }
+void SequenceEditorPanel::onTrackRemoved(Track* track) {
+    for (size_t i = 0; i < track->size(); i++) {
+        onKeyframeSequenceRemoved(track, &(*track)[i]);
+    }
+    track->removeObserver(this);
+}
 
 void SequenceEditorPanel::onKeyframeSequenceAdded(Track* t, KeyframeSequence* s) {
     auto widgetId = factory_.getSequenceEditorId(t->getClassIdentifier());
-    auto widget = factory_.create(widgetId, *s, *t, manager_);
-    widgets_[s] = widget.get();
-    sequenceEditors_->addWidget(widget.release());
+    if (auto widget = factory_.create(widgetId, *s, *t, manager_)) {
+        widgets_[s] = widget.get();
+        sequenceEditors_->addWidget(widget.release());
+    }
 }
 
 void SequenceEditorPanel::onKeyframeSequenceRemoved(Track*, KeyframeSequence* s) {

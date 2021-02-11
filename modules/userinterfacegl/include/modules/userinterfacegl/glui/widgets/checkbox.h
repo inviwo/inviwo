@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,21 +51,21 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    CheckBox(const std::string &label, Processor &processor, Renderer &uiRenderer,
-             const ivec2 &extent = ivec2(24, 24));
+    CheckBox(const std::string& label, Processor& processor, Renderer& uiRenderer,
+             const ivec2& extent = ivec2(24, 24));
     virtual ~CheckBox() = default;
 
     void setValue(bool value);
     bool getValue() const;
 
 private:
-    virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override;
+    virtual void renderWidget(const ivec2& origin, const size2_t& canvasDim) override;
 
     virtual ivec2 computeLabelPos(int descent) const override;
     virtual UIState uiState() const override;
     virtual void updateState() override;
 
-    Texture2DArray *uiTextures_;
+    Texture2DArray* uiTextures_;
     std::array<int, 9> uiTextureMap_;
 };
 

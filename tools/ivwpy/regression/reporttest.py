@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2020 Inviwo Foundation
+# Copyright (c) 2013-2021 Inviwo Foundation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,7 @@ class ReportLogTest(ReportTest):
 			with open(toPath(report['outputdir'], report['log']), 'r') as f:
 				lines = f.readlines()
 				for line in lines:
-					if "Error:" in line:
+					if "<span class='level'>Error: </span>" in line:
 						self.message.append(line)
 		except FileNotFoundError:
 			self.message.append("Missing Log")

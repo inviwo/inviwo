@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,6 +66,9 @@
 #include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/qt/editor/inviwoeditmenu.h>
 
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/processornetworkobserver.h>
+
 namespace inviwo {
 
 TextSelectionDelegate::TextSelectionDelegate(QWidget* parent) : QItemDelegate(parent) {}
@@ -88,6 +91,19 @@ void TextSelectionDelegate::setModelData([[maybe_unused]] QWidget* editor,
                                          [[maybe_unused]] const QModelIndex& index) const {
     // dummy function to prevent changing the model
 }
+
+struct BackgroundJobs : QLabel, ProcessorNetworkObserver {
+    BackgroundJobs(QWidget* parent, ProcessorNetwork* net) : QLabel(parent) {
+        net->addObserver(this);
+        update(0);
+    }
+
+    void update(int jobs) { setText(QString("Backgrund Jobs: %1").arg(jobs)); }
+
+    virtual void onProcessorBackgroundJobsChanged(Processor*, int, int total) override {
+        update(total);
+    }
+};
 
 ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     : InviwoDockWidget(tr("Console"), parent, "ConsoleWidget")
@@ -118,7 +134,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     tableView_->setContextMenuPolicy(Qt::ActionsContextMenu);
     clearAction_ = new QAction(QIcon(":/svgicons/log-clear.svg"), tr("&Clear Log"), this);
-    clearAction_->setShortcut(Qt::ControlModifier + Qt::Key_E);
+    clearAction_->setShortcut(Qt::CTRL | Qt::Key_E);
     connect(clearAction_, &QAction::triggered, [&]() { clear(); });
 
     tableView_->hideColumn(static_cast<int>(LogTableModelEntry::ColumnID::Date));
@@ -209,7 +225,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     auto levelCallback = [this, updateRowsHeights](bool /*checked*/) {
         if (util::all_of(levels, [](const auto& level) { return level.action->isChecked(); })) {
-            levelFilter_->setFilterRegExp("");
+            levelFilter_->setFilterRegularExpression("");
         } else {
             std::stringstream ss;
             auto joiner = util::make_ostream_joiner(ss, "|");
@@ -217,7 +233,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
             for (const auto& level : levels) {
                 if (level.action->isChecked()) joiner = level.level;
             }
-            levelFilter_->setFilterRegExp(QString::fromStdString(ss.str()));
+            levelFilter_->setFilterRegularExpression(QString::fromStdString(ss.str()));
         }
         updateRowsHeights();
     };
@@ -253,6 +269,9 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     });
     timer->start(1000);
 
+    statusBar->addWidget(
+        new BackgroundJobs(this, mainwindow_->getInviwoApplication()->getProcessorNetwork()));
+
     statusBar->addSpacing(20);
     statusBar->addWidget(new QLabel("Filter", this));
     filterPattern_->setMinimumWidth(200);
@@ -264,7 +283,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     connect(filterPattern_, &QLineEdit::textChanged,
             [this, updateRowsHeights, clearFilter](const QString& text) {
-                filter_->setFilterRegExp(text);
+                filter_->setFilterRegularExpression(text);
                 updateRowsHeights();
                 clearFilter->setEnabled(!text.isEmpty());
             });
@@ -272,7 +291,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     connect(clearFilter, &QAction::triggered, [this]() { filterPattern_->setText(""); });
 
     auto filterAction = new QAction(makeIcon("find"), "&Filter", this);
-    filterAction->setShortcut(Qt::ControlModifier + Qt::AltModifier + Qt::Key_F);
+    filterAction->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_F);
     connect(filterAction, &QAction::triggered, [this]() {
         raise();
         filterPattern_->setFocus();
@@ -349,36 +368,36 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     settings.endGroup();
 
     auto editmenu = mainwindow_->getInviwoEditMenu();
-    editActionsHandle_ = editmenu->registerItem(
-        std::make_shared<MenuItem>(this,
-                                   [this](MenuItemType t) -> bool {
-                                       switch (t) {
-                                           case MenuItemType::copy:
-                                               return tableView_->selectionModel()->hasSelection();
-                                           case MenuItemType::cut:
-                                           case MenuItemType::paste:
-                                           case MenuItemType::del:
-                                           case MenuItemType::select:
-                                           default:
-                                               return false;
-                                       }
-                                   },
-                                   [this](MenuItemType t) -> void {
-                                       switch (t) {
-                                           case MenuItemType::copy: {
-                                               if (tableView_->selectionModel()->hasSelection()) {
-                                                   copy();
-                                               }
-                                               break;
-                                           }
-                                           case MenuItemType::cut:
-                                           case MenuItemType::paste:
-                                           case MenuItemType::del:
-                                           case MenuItemType::select:
-                                           default:
-                                               break;
-                                       }
-                                   }));
+    editActionsHandle_ = editmenu->registerItem(std::make_shared<MenuItem>(
+        this,
+        [this](MenuItemType t) -> bool {
+            switch (t) {
+                case MenuItemType::copy:
+                    return tableView_->selectionModel()->hasSelection();
+                case MenuItemType::cut:
+                case MenuItemType::paste:
+                case MenuItemType::del:
+                case MenuItemType::select:
+                default:
+                    return false;
+            }
+        },
+        [this](MenuItemType t) -> void {
+            switch (t) {
+                case MenuItemType::copy: {
+                    if (tableView_->selectionModel()->hasSelection()) {
+                        copy();
+                    }
+                    break;
+                }
+                case MenuItemType::cut:
+                case MenuItemType::paste:
+                case MenuItemType::del:
+                case MenuItemType::select:
+                default:
+                    break;
+            }
+        }));
 }
 
 ConsoleWidget::~ConsoleWidget() = default;
@@ -405,57 +424,63 @@ void ConsoleWidget::updateIndicators(LogLevel level) {
     }
 }
 
-void ConsoleWidget::log(std::string source, LogLevel level, LogAudience audience, const char* file,
-                        const char* function, int line, std::string msg) {
-    LogTableModelEntry e = {
-        std::chrono::system_clock::now(), source, level, audience, file ? file : "", line,
-        function ? function : "",         msg};
+void ConsoleWidget::log(std::string_view source, LogLevel level, LogAudience audience,
+                        std::string_view file, std::string_view function, int line,
+                        std::string_view msg) {
+    LogTableModelEntry e = {std::chrono::system_clock::now(),
+                            std::string(source),
+                            level,
+                            audience,
+                            std::string(file),
+                            line,
+                            std::string(function),
+                            std::string(msg)};
     logEntry(std::move(e));
 }
 
 void ConsoleWidget::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                                 std::string msg, const char* file, const char* function,
-                                 int line) {
+                                 std::string_view msg, std::string_view file,
+                                 std::string_view function, int line) {
     LogTableModelEntry e = {std::chrono::system_clock::now(),
                             processor->getIdentifier(),
                             level,
                             audience,
-                            file ? file : "",
+                            std::string(file),
                             line,
-                            function ? function : "",
-                            msg};
+                            std::string(function),
+                            std::string(msg)};
     logEntry(std::move(e));
 }
 
-void ConsoleWidget::logNetwork(LogLevel level, LogAudience audience, std::string msg,
-                               const char* file, const char* function, int line) {
+void ConsoleWidget::logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
+                               std::string_view file, std::string_view function, int line) {
     LogTableModelEntry e = {std::chrono::system_clock::now(),
                             "ProcessorNetwork",
                             level,
                             audience,
-                            file ? file : "",
+                            std::string(file),
                             line,
-                            function ? function : "",
-                            msg};
+                            std::string(function),
+                            std::string(msg)};
     logEntry(std::move(e));
 }
 
-void ConsoleWidget::logAssertion(const char* file, const char* function, int line,
-                                 std::string msg) {
+void ConsoleWidget::logAssertion(std::string_view file, std::string_view function, int line,
+                                 std::string_view msg) {
     LogTableModelEntry e = {std::chrono::system_clock::now(),
                             "Assertion",
                             LogLevel::Error,
                             LogAudience::Developer,
-                            file ? file : "",
+                            std::string(file),
                             line,
-                            function ? function : "",
-                            msg};
+                            std::string(function),
+                            std::string(msg)};
     logEntry(std::move(e));
 
     auto error = QString{"<b>Assertion Failed</b><br>File: %1:%2<br>Function: %3<p>%4"}
-                     .arg(file)
+                     .arg(file.data())
                      .arg(line)
-                     .arg(function)
+                     .arg(function.data())
                      .arg(utilqt::toQString(msg));
     QMessageBox::critical(nullptr, "Assertion Failed", error);
 }

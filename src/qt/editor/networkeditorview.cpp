@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,6 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QMatrix>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QScrollBar>
@@ -220,7 +219,7 @@ void NetworkEditorView::fitNetwork() {
     if (const auto network = mainwindow_->getInviwoApplication()->getProcessorNetwork()) {
         if (network->getProcessors().size() > 0) {
             const auto br = editor_->getProcessorsBoundingRect().adjusted(-50, -50, 50, 50);
-            setSceneRect(br);
+            setSceneRect(growSceneRect(br));
             fitInView(br, Qt::KeepAspectRatio);
         } else {
             QRectF r{rect()};
@@ -228,7 +227,7 @@ void NetworkEditorView::fitNetwork() {
             setSceneRect(rect());
             fitInView(rect(), Qt::KeepAspectRatio);
         }
-        if (matrix().m11() > scale) {
+        if (transform().m11() > scale) {
             setTransform(QTransform::fromScale(scale, scale), false);
         }
     }
@@ -236,7 +235,7 @@ void NetworkEditorView::fitNetwork() {
 
 void NetworkEditorView::onSceneSizeChanged() {
     auto br = editor_->getProcessorsBoundingRect();
-    if (sceneRect().contains(br)) return;
+    if (sceneRect().contains(growSceneRect(br))) return;
 
     QSizeF viewsize = viewport()->size();
     QSizeF brsize = br.size();
@@ -249,12 +248,15 @@ void NetworkEditorView::onSceneSizeChanged() {
         br.setTop(br.top() - 0.5 * (viewsize.height() - brsize.height()));
         br.setBottom(br.bottom() + 0.5 * (viewsize.height() - brsize.height()));
     }
-    setSceneRect(br);
+    setSceneRect(growSceneRect(br));
 }
 
-void NetworkEditorView::focusOutEvent(QFocusEvent* e) {
-    setDragMode(QGraphicsView::RubberBandDrag);
-    QGraphicsView::focusOutEvent(e);
+QRectF NetworkEditorView::growSceneRect(QRectF r) const {
+    QSizeF viewsize = viewport()->size();
+    const auto w = std::max(viewsize.width(), r.width());
+    const auto h = std::max(viewsize.height(), r.height());
+
+    return r.adjusted(-w, -h, w, h);
 }
 
 void NetworkEditorView::wheelEvent(QWheelEvent* e) {
@@ -281,20 +283,43 @@ void NetworkEditorView::wheelEvent(QWheelEvent* e) {
     e->accept();
 }
 
-void NetworkEditorView::keyPressEvent(QKeyEvent* keyEvent) {
-    if (keyEvent->modifiers() & Qt::ControlModifier) {
-        setDragMode(QGraphicsView::ScrollHandDrag);
+void NetworkEditorView::mousePressEvent(QMouseEvent* e) {
+    const auto items = scene()->items(mapToScene(e->pos()));
+    if (items.empty() && e->button() == Qt::LeftButton && (e->modifiers() & Qt::ControlModifier)) {
+        dragPos_ = e->pos();
+        e->accept();
+        viewport()->setCursor(Qt::ClosedHandCursor);
+    } else {
+        QGraphicsView::mousePressEvent(e);
     }
-    QGraphicsView::keyPressEvent(keyEvent);
 }
 
-void NetworkEditorView::keyReleaseEvent(QKeyEvent* keyEvent) {
-    setDragMode(QGraphicsView::RubberBandDrag);
-    QGraphicsView::keyReleaseEvent(keyEvent);
+void NetworkEditorView::mouseReleaseEvent(QMouseEvent* e) {
+    if (e->button() == Qt::LeftButton && dragPos_) {
+        dragPos_.reset();
+        viewport()->setCursor(Qt::ArrowCursor);
+        e->accept();
+    } else {
+        QGraphicsView::mouseReleaseEvent(e);
+    }
+}
+
+void NetworkEditorView::mouseMoveEvent(QMouseEvent* e) {
+    if ((e->buttons() & Qt::LeftButton) && dragPos_) {
+        auto delta = e->pos() - dragPos_.value();
+        auto hBar = horizontalScrollBar();
+        auto vBar = verticalScrollBar();
+        hBar->setValue(hBar->value() - delta.x());
+        vBar->setValue(vBar->value() - delta.y());
+        dragPos_ = e->pos();
+        e->accept();
+    } else {
+        QGraphicsView::mouseMoveEvent(e);
+    }
 }
 
 void NetworkEditorView::zoom(double dz) {
-    if ((dz > 1.0 && matrix().m11() > 8.0) || (dz < 1.0 && matrix().m11() < 0.125)) return;
+    if ((dz > 1.0 && transform().m11() > 8.0) || (dz < 1.0 && transform().m11() < 0.125)) return;
 
     setTransform(QTransform::fromScale(dz, dz), true);
 }

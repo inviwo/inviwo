@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,9 +37,32 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#include <string_view>
+
 namespace inviwo {
 
 namespace animation {
+
+namespace {
+
+constexpr std::string_view defaultImageExt = "png";
+
+std::vector<std::string> imageExts(InviwoApplication* app) {
+    return util::transform(app->getDataWriterFactory()->getExtensionsForType<Layer>(),
+                           [](const auto& i) -> std::string { return toString(i); });
+}
+
+size_t imageExtIndex(InviwoApplication* app, std::string_view ext) {
+    auto exts = app->getDataWriterFactory()->getExtensionsForType<Layer>();
+    auto it = std::find_if(exts.begin(), exts.end(), [&](auto& e) { return e.extension_ == ext; });
+    if (it != exts.end()) {
+        return std::distance(exts.begin(), it);
+    } else {
+        return 0;
+    }
+}
+
+}  // namespace
 
 AnimationController::AnimationController(Animation& animation, InviwoApplication* app)
     : playOptions("PlayOptions", "Play Settings")
@@ -78,19 +101,8 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
                         1)
     , renderLocation("RenderLocationDir", "Directory")
     , renderBaseName("RenderLocationBaseName", "Base Name")
-    , renderImageExtension(
-          "RenderImageExtension", "Type",
-          util::transform(app->getDataWriterFactory()->getExtensionsForType<Layer>(),
-                          [](const auto& i) -> std::string { return toString(i); }),
-          [app]() -> size_t {
-              auto ext = app->getDataWriterFactory()->getExtensionsForType<Layer>();
-              auto it = std::find_if(ext.begin(), ext.end(),
-                                     [](auto& e) { return e.extension_ == "png"; });
-              if (it != ext.end())
-                  return std::distance(ext.begin(), it);
-              else
-                  return 0;
-          }())
+    , renderImageExtension("RenderImageExtension", "Type", imageExts(app),
+                           imageExtIndex(app, defaultImageExt))
     , renderNumFrames("RenderNumFrames", "# Frames", 100, 2, 1000000, 1,
                       InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , renderAction("RenderAction", "Render")
@@ -113,10 +125,7 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
     playWindowMode.onChange([&]() { playWindow.setVisible(playWindowMode.get() == 1); });
     playWindow.setVisible(playWindowMode.get() == 1);
 
-    playOptions.addProperty(playWindowMode);
-    playOptions.addProperty(playWindow);
-    playOptions.addProperty(framesPerSecond);
-    playOptions.addProperty(playMode);
+    playOptions.addProperties(playWindowMode, playWindow, framesPerSecond, playMode);
     playOptions.setCollapsed(true);
     addProperty(playOptions);
 
@@ -150,6 +159,8 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
     renderOptions.addProperty(renderActionStop);
     renderOptions.setCollapsed(true);
     addProperty(renderOptions);
+
+    renderImageExtension.setSerializationMode(PropertySerializationMode::None);
 
     // Control Track
     controlInsertPauseFrame.onChange([this]() {
@@ -193,14 +204,6 @@ void AnimationController::setState(AnimationState newState) {
             break;
     }
     notifyStateChanged(this, oldState, state_);
-}
-
-void AnimationController::setPlaybackSettings(const AnimationPlaySettings& newSettings) {
-    if (settingsPlay_ != newSettings) {
-        auto oldSettings = settingsPlay_;
-        settingsPlay_ = newSettings;
-        notifyPlaybackSettingsChanged(this, oldSettings, settingsPlay_);
-    }
 }
 
 void AnimationController::setTime(Seconds time) {
@@ -281,7 +284,9 @@ void AnimationController::render() {
                     desiredDims = renderSize.get();
                     break;
                 }
-                default: { ivwAssert(false, "Should not happen."); }
+                default: {
+                    ivwAssert(false, "Should not happen.");
+                }
             }
             // - adjust basic dimensions to the aspect ratio
             if (renderAspectRatio.get() > 0) {
@@ -334,7 +339,7 @@ void AnimationController::pause() { setState(AnimationState::Paused); }
 
 void AnimationController::stop() {
     setState(AnimationState::Paused);
-    deltaTime_ = Seconds(fabs(deltaTime_.count()));  // Make sure we play forward.
+    deltaTime_ = std::chrono::abs(deltaTime_);  // Make sure we play forward.
     eval(currentTime_, Seconds(0));
 }
 
@@ -373,7 +378,7 @@ void AnimationController::tick() {
                 break;
             }
             case PlaybackMode::Swing: {
-                deltaTime_ = -deltaTime_;
+                setPlaybackDirection(PlaybackDirection::Backward);
                 newTime = lastTime + deltaTime_;
                 break;
             }
@@ -395,7 +400,7 @@ void AnimationController::tick() {
                 break;
             }
             case PlaybackMode::Swing: {
-                deltaTime_ = -deltaTime_;
+                setPlaybackDirection(PlaybackDirection::Forward);
                 newTime = firstTime + deltaTime_;
                 break;
             }
@@ -468,7 +473,8 @@ void AnimationController::setAnimation(Animation& animation) {
 
 void AnimationController::setPlaySpeed(double fps) {
     deltaTime_ = Seconds(1.0 / fps);
-    timer_.setInterval(std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_));
+    timer_.setInterval(
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::abs(deltaTime_)));
 }
 
 const Animation& AnimationController::getAnimation() const { return *animation_; }
@@ -477,7 +483,51 @@ Animation& AnimationController::getAnimation() { return *animation_; }
 
 const AnimationState& AnimationController::getState() const { return state_; }
 
+PlaybackDirection AnimationController::getPlaybackDirection() const {
+    return deltaTime_ < Seconds(0) ? PlaybackDirection::Backward : PlaybackDirection::Forward;
+}
+
+void AnimationController::setPlaybackDirection(PlaybackDirection newDirection) {
+    if (newDirection == PlaybackDirection::Forward) {
+        deltaTime_ = std::chrono::abs(deltaTime_);
+    } else {
+        deltaTime_ = -std::chrono::abs(deltaTime_);
+    }
+}
+
 Seconds AnimationController::getCurrentTime() const { return currentTime_; }
+
+void AnimationController::resetAllPoperties() {
+
+    const auto options = imageExts(app_);
+    const auto selectedIndex = imageExtIndex(app_, defaultImageExt);
+
+    renderImageExtension.replaceOptions(options);
+    renderImageExtension.setSelectedIndex(selectedIndex);
+    renderImageExtension.setCurrentStateAsDefault();
+
+    PropertyOwner::resetAllPoperties();
+}
+
+void AnimationController::serialize(Serializer& s) const {
+    PropertyOwner::serialize(s);
+    if (renderImageExtension.size() > 0) {
+        s.serialize("renderImageExtension", renderImageExtension.getSelectedValue());
+    }
+}
+
+void AnimationController::deserialize(Deserializer& d) {
+    PropertyOwner::deserialize(d);
+
+    const auto options = imageExts(app_);
+    std::string selectedValue{defaultImageExt};
+
+    d.deserialize("renderImageExtension", selectedValue);
+
+    renderImageExtension.replaceOptions(options);
+    renderImageExtension.setSelectedValue(selectedValue);
+    renderImageExtension.setCurrentStateAsDefault();
+}
 
 }  // namespace animation
 

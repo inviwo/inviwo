@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,13 +34,13 @@ namespace inviwo {
 
 size_t IndexList::getSize() const { return indices_.size(); }
 
-void IndexList::set(const BrushingAndLinkingInport *src,
-                    const std::unordered_set<size_t> &indices) {
+void IndexList::set(const BrushingAndLinkingInport* src,
+                    const std::unordered_set<size_t>& indices) {
     indicesBySource_[src] = indices;
     update();
 }
 
-void IndexList::remove(const BrushingAndLinkingInport *src) {
+void IndexList::remove(const BrushingAndLinkingInport* src) {
     indicesBySource_.erase(src);
     update();
 }
@@ -52,9 +52,9 @@ std::shared_ptr<std::function<void()>> IndexList::onChange(std::function<void()>
 void IndexList::update() {
     indices_.clear();
 
-    using T = std::unordered_map<const BrushingAndLinkingInport *,
-                                 std::unordered_set<size_t>>::value_type;
-    util::map_erase_remove_if(indicesBySource_, [](const T &p) {
+    using T =
+        std::unordered_map<const BrushingAndLinkingInport*, std::unordered_set<size_t>>::value_type;
+    util::map_erase_remove_if(indicesBySource_, [](const T& p) {
         return !p.first->isConnected() ||
                p.second.empty();  // remove if port is disconnected or if the set is empty
     });
@@ -67,7 +67,8 @@ void IndexList::update() {
 
 void IndexList::clear() {
     indices_.clear();
-    update();
+    indicesBySource_.clear();
+    onUpdate_.invoke();
 }
 
 }  // namespace inviwo

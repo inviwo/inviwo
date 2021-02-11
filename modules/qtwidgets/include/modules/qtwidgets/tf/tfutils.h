@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/tfprimitiveset.h>
 
@@ -76,6 +75,9 @@ IVW_MODULE_QTWIDGETS_API void exportToFile(const TFPrimitiveSet& primitiveSet,
  */
 IVW_MODULE_QTWIDGETS_API QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu,
                                                  TransferFunctionProperty* property);
+
+IVW_MODULE_QTWIDGETS_API QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
+                                                            TransferFunctionProperty* property);
 
 }  // namespace util
 

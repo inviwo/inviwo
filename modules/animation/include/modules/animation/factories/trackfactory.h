@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_TRACKFACTORY_H
-#define IVW_TRACKFACTORY_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -38,17 +36,44 @@
 #include <modules/animation/factories/trackfactoryobject.h>
 
 namespace inviwo {
+
+class ProcessorNetwork;
+class Property;
+
 namespace animation {
 
-class IVW_MODULE_ANIMATION_API TrackFactory : public StandardFactory<Track, TrackFactoryObject> {
+class IVW_MODULE_ANIMATION_API TrackFactory
+    : public Factory<Track>,
+      public StandardFactory<Track, TrackFactoryObject, const std::string&, ProcessorNetwork*> {
+
+    using Parent =
+        StandardFactory<Track, TrackFactoryObject, const std::string&, ProcessorNetwork*>;
+
 public:
-    TrackFactory() = default;
+    TrackFactory(ProcessorNetwork* network);
     virtual ~TrackFactory() = default;
 
-    using StandardFactory<Track, TrackFactoryObject>::create;
+    using Parent::create;
+
+    virtual bool hasKey(const std::string& key) const override;
+    virtual std::unique_ptr<Track> create(const std::string& key) const override;
+    virtual std::unique_ptr<Track> create(Property* property) const;
+
+    /**
+     * Register connection between a property and a track.
+     * Used to create typed tracks for a property.
+     * @param propertyClassID Property::getClassIdentifier
+     * @param trackClassID PropertyTrack::getIdentifier()
+     */
+    void registerPropertyTrackConnection(const std::string& propertyClassID,
+                                         const std::string& trackClassID);
+
+    ProcessorNetwork* network_;
+
+protected:
+    std::unordered_map<std::string, std::string> propertyToTrackMap_;
 };
 
 }  // namespace animation
-}  // namespace inviwo
 
-#endif  // IVW_TRACKFACTORY_H
+}  // namespace inviwo

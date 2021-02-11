@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
     layout_ = new QHBoxLayout();
 
     layout_->setSpacing(1);
-    layout_->setMargin(0);
+    layout_->setContentsMargins(0, 0, 0, 0);
 
     QSize iconSize = QSize(8, 8);
 

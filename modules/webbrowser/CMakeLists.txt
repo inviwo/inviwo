@@ -4,7 +4,7 @@
 # See https://bitbucket.org/chromiumembedded/cef-project
 
 # Specify the CEF distribution version.
-# http://opensource.spotify.com/cefbuilds/index.html
+# https://cef-builds.spotifycdn.com/index.html
 # Test before upgrading version since they are sometimes unstable:
 # 3.3202.1680.g700054b Problems with event handling of html-range elements (sliders)
 # 3.3359.1774.gd49d25f Crashes when creating browsers
@@ -16,7 +16,7 @@
 # FATAL:async_layer_tree_frame_sink.cc
 # Known issue: Dropdown does not work.
 # Probably due to https://magpcss.org/ceforum/viewtopic.php?f=6&t=11618
-set(CEF_VERSION "78.3.9+gc7345f2+chromium-78.0.3904.108")
+set(CEF_VERSION "87.1.6+g315d248+chromium-87.0.4280.66")
 
 # Determine the platform.
 include("cmake/cef_platform.cmake")
@@ -34,6 +34,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
 if (WIN32)
     option(USE_SANDBOX "Enable or disable use of the sandbox." OFF)
 endif()
+
+set(PROJECT_ARCH "x86_64") # CEF Wants this on OS X.
 
 # Load the CEF configuration.
 # Execute FindCEF.cmake which must exist in CMAKE_MODULE_PATH.
@@ -99,6 +101,7 @@ set(HEADER_FILES
     include/modules/webbrowser/webbrowserclient.h
     include/modules/webbrowser/webbrowsermodule.h
     include/modules/webbrowser/webbrowsermoduledefine.h
+    include/modules/webbrowser/webbrowserutil.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -119,6 +122,7 @@ set(SOURCE_FILES
     src/webbrowserapp.cpp
     src/webbrowserclient.cpp
     src/webbrowsermodule.cpp
+    src/webbrowserutil.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -147,6 +151,8 @@ ivw_add_unittest(${TEST_FILES})
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES} ${JS_FILES})
 target_include_directories(inviwo-module-webbrowser PUBLIC ${CEF_INCLUDE_PATH})
+
+find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(inviwo-module-webbrowser PUBLIC
     $<$<NOT:$<BOOL:${OS_MACOSX}>>:libcef_lib>
     libcef_dll_wrapper 
@@ -187,7 +193,7 @@ if (OS_MACOSX)
     # Copy the CEF framework into the Frameworks directory (used by installer)
     install(DIRECTORY "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
             DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/Chromium Embedded Framework.framework"
-            COMPONENT inviwo-module-webbrowser) 
+            COMPONENT Application) 
 elseif (WIN32)
     if(USE_SANDBOX)
         # Logical target used to link the cef_sandbox library.
@@ -203,7 +209,7 @@ elseif (WIN32)
     install(DIRECTORY "${CEF_BINARY_DIR}/" # Note importance of / in the end to not put files into subfolder
             "${CEF_RESOURCE_DIR}/"
             DESTINATION "${IVW_RUNTIME_INSTALL_DIR}"
-            COMPONENT inviwo-module-webbrowser)
+            COMPONENT Application)
 
 else () # Linux
     # Set rpath so that libraries can be placed next to the executable.
@@ -223,7 +229,7 @@ else () # Linux
     install(DIRECTORY "${CEF_BINARY_DIR}/" # Note importance of / in the end to not put files into subfolder
             "${CEF_RESOURCE_DIR}/"
             DESTINATION "${IVW_RUNTIME_INSTALL_DIR}"
-            COMPONENT inviwo-module-webbrowser)
+            COMPONENT Application)
 endif()
 
 # Setup CEF helper executable. Started from the web browser module as a sub-process.

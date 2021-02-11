@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,7 @@ LineRasterizer::LineRasterizer()
                 shader[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY", toString(mode));
                 invalidate(InvalidationLevel::InvalidResources);
             }}},
-          [this](Shader& shader) -> void { invalidate(InvalidationLevel::InvalidResources); })) {
+          [this](Shader&) -> void { invalidate(InvalidationLevel::InvalidResources); })) {
 
     addPort(inport_);
     addPort(outport_);

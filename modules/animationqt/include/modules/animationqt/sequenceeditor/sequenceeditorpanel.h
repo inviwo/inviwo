@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_SEQUENCEEDITORPANEL_H
-#define IVW_SEQUENCEEDITORPANEL_H
+#pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -53,6 +51,7 @@ namespace inviwo {
 namespace animation {
 
 class AnimationManager;
+class Animation;
 class SequenceEditorWidget;
 class SequenceEditorFactory;
 class EditorWidgetFactory;
@@ -62,8 +61,8 @@ class IVW_MODULE_ANIMATIONQT_API SequenceEditorPanel : public QScrollArea,
                                                        public AnimationObserver,
                                                        public TrackObserver {
 public:
-    SequenceEditorPanel(AnimationManager& manager, SequenceEditorFactory& editorFactory,
-                        QWidget* parent = nullptr);
+    SequenceEditorPanel(Animation& animation, AnimationManager& manager,
+                        SequenceEditorFactory& editorFactory, QWidget* parent = nullptr);
     virtual ~SequenceEditorPanel() = default;
 
     virtual void onAnimationChanged(AnimationController* controller, Animation* oldAnim,
@@ -78,6 +77,7 @@ public:
     QLayout* getOptionLayout();
 
 private:
+    Animation& animation_;
     AnimationManager& manager_;
     SequenceEditorFactory& factory_;
 
@@ -89,5 +89,3 @@ private:
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_SEQUENCEEDITORPANEL_H

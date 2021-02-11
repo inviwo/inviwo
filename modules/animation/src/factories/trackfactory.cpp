@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,5 +28,41 @@
  *********************************************************************************/
 
 #include <modules/animation/factories/trackfactory.h>
+#include <modules/animation/datastructures/propertytrack.h>
 
-namespace inviwo {}  // namespace inviwo
+namespace inviwo {
+namespace animation {
+
+TrackFactory::TrackFactory(ProcessorNetwork* network) : network_{network} {}
+
+bool TrackFactory::hasKey(const std::string& key) const { return Parent::hasKey(key); }
+
+std::unique_ptr<Track> TrackFactory::create(const std::string& key) const {
+    return Parent::create(key, network_);
+}
+
+std::unique_ptr<Track> TrackFactory::create(Property* property) const {
+    auto it = propertyToTrackMap_.find(property->getClassIdentifier());
+    if (it != propertyToTrackMap_.end()) {
+        if (auto track = create(it->second)) {
+            if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
+                try {
+                    basePropertyTrack->setProperty(property);
+                } catch (const Exception& e) {
+                    LogWarn(e.getMessage() << " Invalid property class identified?") return nullptr;
+                }
+
+                return track;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void TrackFactory::registerPropertyTrackConnection(const std::string& propertyClassID,
+                                                   const std::string& trackClassID) {
+    propertyToTrackMap_[propertyClassID] = trackClassID;
+}
+
+}  // namespace animation
+}  // namespace inviwo

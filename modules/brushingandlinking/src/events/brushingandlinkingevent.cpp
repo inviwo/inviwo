@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,8 @@
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/interaction/events/eventutil.h>
+
+#include <fmt/format.h>
 
 #include <algorithm>
 
@@ -65,9 +67,7 @@ void BrushingAndLinkingEvent::printEvent(const std::string& eventType, std::ostr
         if (indices.empty()) return "none"s;
         std::string str = joinString(indices.begin(),
                                      indices.begin() + std::min<size_t>(indices.size(), 10), ", ");
-        if (indices_.size() > 10) {
-            str.append("...");
-        }
+        str.append(fmt::format("{} ({})", (indices_.size() > 10) ? "..." : "", indices.size()));
         return str;
     }();
 

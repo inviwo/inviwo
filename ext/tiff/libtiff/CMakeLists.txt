@@ -194,7 +194,7 @@ target_include_directories(tiff INTERFACE
 add_library(TIFF::TIFF ALIAS tiff)
 #--------------------------------------------------------------------
 # Install library into target folder
-ivw_default_install_comp_targets(core tiff)
+ivw_default_install_targets(tiff)
 
 #--------------------------------------------------------------------
 # Create folder structure

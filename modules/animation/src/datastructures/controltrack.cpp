@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ std::string ControlTrack::getClassIdentifier() const { return classIdentifier();
 AnimationTimeState ControlTrack::operator()(Seconds from, Seconds to, AnimationState state) const {
     if (!isEnabled() || empty()) return {to, state};
 
-    // 'it' will be the first seq. with a first time larger then 'to'.
+    // 'it' will be the first seq. with a first time larger than 'to'.
     auto it = std::upper_bound(sequences_.begin(), sequences_.end(), to,
                                [](const auto& a, const auto& b) { return a < *b; });
 

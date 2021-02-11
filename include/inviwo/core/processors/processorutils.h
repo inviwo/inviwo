@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,13 +33,16 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/utilities.h>
 
 #include <type_traits>
+#include <string_view>
 
 namespace inviwo {
 
 class Processor;
 class ProcessorMetaData;
+class InviwoModule;
 
 namespace util {
 
@@ -103,13 +106,31 @@ std::unique_ptr<T> makeProcessor(ivec2 pos, Args&&... args) {
         p = std::make_unique<T>(std::forward<Args>(args)..., InviwoApplication::getPtr());
     }
 
-    if (p->getIdentifier().empty()) p->setIdentifier(name);
+    if (p->getIdentifier().empty()) p->setIdentifier(util::stripIdentifier(name));
     if (p->getDisplayName().empty()) p->setDisplayName(name);
 
     setPosition(p.get(), pos);
 
-    return std::move(p);
+    return p;
 }
+
+/**
+ * @brief Find which module that registered a processor
+ * @param processor the processor to look for
+ * @param app the InviwoApplication needed to get the modules
+ * @return the InviwoModule that registered the processor or nullptr if not found
+ */
+IVW_CORE_API InviwoModule* getProcessorModule(const Processor* processor,
+                                              const InviwoApplication& app);
+
+/**
+ * @brief Find which module that registered a processor
+ * @param classIdentifier the class identifier of the processor to look for
+ * @param app the InviwoApplication needed to get the modules
+ * @return the InviwoModule that registered the processor or nullptr if not found
+ */
+IVW_CORE_API InviwoModule* getProcessorModule(std::string_view classIdentifier,
+                                              const InviwoApplication& app);
 
 }  // namespace util
 

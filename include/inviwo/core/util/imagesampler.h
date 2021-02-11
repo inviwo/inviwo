@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,7 @@ public:
      * Use ImageSpatialSampler(std::shared_ptr<const Image>) to ensure that the LayerRAM is
      * available for the lifetime of the ImageSpatialSampler
      */
-    ImageSpatialSampler(const LayerRAM *ram)
+    ImageSpatialSampler(const LayerRAM* ram)
         : SpatialSampler<2, DataDims, T>(*ram->getOwner())
         , layer_(ram)
         , dims_(layer_->getDimensions())
@@ -74,7 +74,7 @@ public:
      * Use ImageSpatialSampler(std::shared_ptr<const Image>) to ensure that the Layer is available
      * for the lifetime of the ImageSpatialSampler
      */
-    ImageSpatialSampler(const Layer *layer)
+    ImageSpatialSampler(const Layer* layer)
         : ImageSpatialSampler(layer->getRepresentation<LayerRAM>()) {}
 
     /**
@@ -82,7 +82,7 @@ public:
      * Use ImageSpatialSampler(std::shared_ptr<const Image>) to ensure that the Image is available
      * for the lifetime of the ImageSpatialSampler
      */
-    ImageSpatialSampler(const Image *img) : ImageSpatialSampler(img->getColorLayer()) {}
+    ImageSpatialSampler(const Image* img) : ImageSpatialSampler(img->getColorLayer()) {}
 
     /**
      * Creates a ImageSpatialSampler for the given Image.
@@ -118,7 +118,7 @@ public:
     }
 
 protected:
-    virtual Vector<DataDims, T> sampleDataSpace(const dvec2 &pos) const {
+    virtual Vector<DataDims, T> sampleDataSpace(const dvec2& pos) const {
         dvec2 samplePos = pos * dvec2(dims_ - size2_t(1));
         size2_t indexPos = size2_t(samplePos);
         dvec2 interpolants = samplePos - dvec2(indexPos);
@@ -132,17 +132,17 @@ protected:
         return Interpolation<dvec4>::bilinear(samples, interpolants);
     }
 
-    virtual bool withinBoundsDataSpace(const dvec2 &pos) const {
+    virtual bool withinBoundsDataSpace(const dvec2& pos) const {
         return !(glm::any(glm::lessThan(pos, dvec2(0.0))) ||
                  glm::any(glm::greaterThan(pos, dvec2(1.0))));
     }
 
 private:
-    dvec4 getPixel(const size2_t &pos) const {
+    dvec4 getPixel(const size2_t& pos) const {
         auto p = glm::clamp(pos, size2_t(0), dims_ - size2_t(1));
         return layer_->getAsDVec4(p);
     }
-    const LayerRAM *layer_;
+    const LayerRAM* layer_;
     size2_t dims_;
 
     std::shared_ptr<const Image> sharedImage_;
@@ -165,10 +165,10 @@ using ImageSampler = ImageSpatialSampler<4, double>;  // For backwards compatibi
 template <typename T, typename P>
 class TemplateImageSampler {
 public:
-    TemplateImageSampler(const LayerRAM *ram);
-    TemplateImageSampler(const Layer *layer);
+    TemplateImageSampler(const LayerRAM* ram);
+    TemplateImageSampler(const Layer* layer);
 
-    TemplateImageSampler(const Image *img);
+    TemplateImageSampler(const Image* img);
     TemplateImageSampler(std::shared_ptr<const Image> sharedImage);
     virtual ~TemplateImageSampler() = default;
 
@@ -176,7 +176,7 @@ public:
      * Samples the image at the given position using bi-linear interpolation.
      * @param pos Position to sample at, expects range [0 1]
      */
-    T sample(const Vector<2, P> &pos);
+    T sample(const Vector<2, P>& pos);
 
     /**
      * @see sample()
@@ -186,8 +186,8 @@ public:
     T sample(P x, P y);
 
 private:
-    T getPixel(const size2_t &pos);
-    const T *data_;
+    T getPixel(const size2_t& pos);
+    const T* data_;
     size2_t dims_;
     util::IndexMapper2D ic_;
 
@@ -195,8 +195,8 @@ private:
 };
 
 template <typename T, typename P>
-TemplateImageSampler<T, P>::TemplateImageSampler(const LayerRAM *ram)
-    : data_(static_cast<const T *>(ram->getData()))
+TemplateImageSampler<T, P>::TemplateImageSampler(const LayerRAM* ram)
+    : data_(static_cast<const T*>(ram->getData()))
     , dims_(ram->getDimensions())
     , ic_(dims_)
     , sharedImage_(nullptr) {
@@ -210,11 +210,11 @@ TemplateImageSampler<T, P>::TemplateImageSampler(const LayerRAM *ram)
 }
 
 template <typename T, typename P>
-TemplateImageSampler<T, P>::TemplateImageSampler(const Layer *layer)
+TemplateImageSampler<T, P>::TemplateImageSampler(const Layer* layer)
     : TemplateImageSampler(layer->getRepresentation<LayerRAM>()) {}
 
 template <typename T, typename P>
-TemplateImageSampler<T, P>::TemplateImageSampler(const Image *img)
+TemplateImageSampler<T, P>::TemplateImageSampler(const Image* img)
     : TemplateImageSampler(img->getColorLayer()) {}
 
 template <typename T, typename P>
@@ -229,13 +229,13 @@ T TemplateImageSampler<T, P>::sample(P x, P y) {
 }
 
 template <typename T, typename P>
-T TemplateImageSampler<T, P>::getPixel(const size2_t &pos) {
+T TemplateImageSampler<T, P>::getPixel(const size2_t& pos) {
     auto p = glm::clamp(pos, size2_t(0), dims_ - size2_t(1));
     return data_[ic_(p)];
 }
 
 template <typename T, typename P>
-T TemplateImageSampler<T, P>::sample(const Vector<2, P> &pos) {
+T TemplateImageSampler<T, P>::sample(const Vector<2, P>& pos) {
     Vector<2, P> samplePos = pos * Vector<2, P>(dims_ - size2_t(1));
     size2_t indexPos = size2_t(samplePos);
     Vector<2, P> interpolants = samplePos - Vector<2, P>(indexPos);

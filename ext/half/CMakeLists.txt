@@ -1,21 +1,13 @@
-# Following
-# http://stackoverflow.com/a/29214327/3214598
-
 set(HEADER_FILES 
-    ${IVW_EXTENSIONS_DIR}/half/half.hpp
+    include/half/half.hpp
 )
 ivw_group("Header Files" ${HEADER_FILES})
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
-#add_library(moduleA INTERFACE) # 'moduleA' is an INTERFACE pseudo target
+add_library(half INTERFACE)
+add_library(inviwo::half ALIAS half)
+target_include_directories(half INTERFACE include)
 
-# From here, the target 'moduleA' can be customised
-#target_include_directories(moduleA ...) # Transitively forwarded
-#install(TARGETS moduleA ...)
-
-#  HACK: have the files showing in the IDE, under the name 'flags'
-add_custom_target(half SOURCES ${HEADER_FILES})
-set_target_properties(half PROPERTIES VERSION 1.12.0 SOVERSION 1.12)
-
-# Creates VS folder structure
-ivw_folder(half ext)
+#  HACK: have the files showing in the IDE, under the name 'half-dummy'
+add_custom_target(half_dummy SOURCES ${HEADER_FILES})
+ivw_folder(half_dummy ext)

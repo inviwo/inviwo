@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,9 +76,9 @@ SplitImage::SplitImage()
     , triColor_("triColor", "Hover Color", vec4(1.0f, 0.666f, 0.0f, 1.0f), vec4(0.0f), vec4(1.0f))
     , width_("width", "Width (pixel)", 9.0f, 0.0f, 50.0f, 0.1f)
     , triSize_("triSize", "Triangle Size", 10.0f, 0.0f, 50.0f)
-    , shader_("splitter.vert", "linerenderer.geom", "linerenderer.frag", false)
+    , shader_("splitter.vert", "linerenderer.geom", "linerenderer.frag", Shader::Build::No)
     , triShader_("standard.vert", "standard.frag")
-    , pickingMapper_(this, 1, [&](PickingEvent *e) { handlePickingEvent(e); }) {
+    , pickingMapper_(this, 1, [&](PickingEvent* e) { handlePickingEvent(e); }) {
     inport0_.setOptional(true);
     inport1_.setOptional(true);
     addPort(inport0_);
@@ -148,12 +148,12 @@ void SplitImage::process() {
             viewport1 = ivec4(0, 0, dims.x, dims.y - height);
         }
 
-        auto renderPort = [&](const ImageInport &inport, const auto &viewport) {
+        auto renderPort = [&](const ImageInport& inport, const auto& viewport) {
             utilgl::ScissorState scissor(viewport);
 
             TextureUnit colorUnit, depthUnit, pickingUnit;
             TextureUnitContainer additionalColorUnits;
-            Shader *shader = nullptr;
+            Shader* shader = nullptr;
             if (inport.isReady()) {
                 shader = SharedOpenGLResources::getPtr()->getImageCopyShader(
                     inport.getData()->getNumberOfColorLayers());
@@ -325,7 +325,7 @@ void SplitImage::updateTriMesh() {
     triangleMesh_ = mesh;
 }
 
-void SplitImage::handlePickingEvent(PickingEvent *e) {
+void SplitImage::handlePickingEvent(PickingEvent* e) {
     bool triggerUpdate = false;
 
     auto moveAction = [this](dvec2 delta) {
@@ -369,7 +369,7 @@ void SplitImage::handlePickingEvent(PickingEvent *e) {
 
         if (touchEvent->touchPoints().size() == 1) {
             // allow interaction only for a single touch point
-            const auto &touchPoint = touchEvent->touchPoints().front();
+            const auto& touchPoint = touchEvent->touchPoints().front();
 
             if (touchPoint.state() == TouchState::Started) {
                 // initial activation since touch event began

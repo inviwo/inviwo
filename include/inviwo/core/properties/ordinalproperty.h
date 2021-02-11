@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -158,6 +158,7 @@ public:
 
     virtual OrdinalProperty<T>& setCurrentStateAsDefault() override;
     virtual OrdinalProperty<T>& resetToDefaultState() override;
+    virtual bool isDefaultState() const override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -216,6 +217,10 @@ IVW_CORE_API OrdinalPropertyState<vec4> ordinalColor(
 IVW_CORE_API OrdinalPropertyState<vec3> ordinalColor(
     const vec3& value, InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
 
+IVW_CORE_API OrdinalPropertyState<vec3> ordinalLight(
+    const vec3& pos, float min = -100.0, float max = 100.0,
+    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
+
 }  // namespace util
 
 // Scalar properties
@@ -256,8 +261,10 @@ using FloatQuaternionProperty = OrdinalProperty<glm::fquat>;
 
 template <typename T>
 struct PropertyTraits<OrdinalProperty<T>> {
-    static std::string classIdentifier() {
-        return "org.inviwo." + Defaultvalues<T>::getName() + "Property";
+    static const std::string& classIdentifier() {
+        static const std::string identifier =
+            "org.inviwo." + Defaultvalues<T>::getName() + "Property";
+        return identifier;
     }
 };
 
@@ -286,7 +293,7 @@ OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::st
         throw Exception{
             fmt::format("Invalid range ({} <= {} <= {}) given for \"{}\" ({}Property, {})",
                         minValue_.value, value_.value, maxValue_.value, this->getDisplayName(),
-                        Defaultvalues<T>::getName(), joinString(this->getPath(), ".")),
+                        Defaultvalues<T>::getName(), this->getPath()),
             IVW_CONTEXT};
     }
 }
@@ -393,7 +400,7 @@ void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, c
     if (!validRange(minVal, maxVal)) {
         throw Exception{
             fmt::format("Invalid range given for \"{}\" ({}Property, {})", this->getDisplayName(),
-                        Defaultvalues<T>::getName(), joinString(this->getPath(), ".")),
+                        Defaultvalues<T>::getName(), this->getPath()),
             IVW_CONTEXT};
     }
 
@@ -481,6 +488,12 @@ OrdinalProperty<T>& OrdinalProperty<T>::resetToDefaultState() {
     modified |= value_.reset();
     if (modified) this->propertyModified();
     return *this;
+}
+
+template <typename T>
+bool OrdinalProperty<T>::isDefaultState() const {
+    return value_.isDefault() && increment_.isDefault() && minValue_.isDefault() &&
+           maxValue_.isDefault();
 }
 
 template <typename T>
@@ -576,6 +589,7 @@ Document OrdinalProperty<T>::getDescription() const {
     return doc;
 }
 
+/// @cond
 // Scalar properties
 extern template class IVW_CORE_TMPL_EXP OrdinalProperty<float>;
 extern template class IVW_CORE_TMPL_EXP OrdinalProperty<int>;
@@ -611,5 +625,6 @@ extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dmat4>;
 
 extern template class IVW_CORE_TMPL_EXP OrdinalProperty<glm::dquat>;
 extern template class IVW_CORE_TMPL_EXP OrdinalProperty<glm::fquat>;
+/// @endcond
 
 }  // namespace inviwo

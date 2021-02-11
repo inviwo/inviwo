@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,9 +54,11 @@ namespace inviwo {
 namespace animation {
 
 DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
-                                                     const std::string& widgetName, QWidget* parent)
+                                                     const std::string& widgetName, QWidget* parent,
+                                                     InviwoApplication* app)
     : InviwoDockWidget(utilqt::toQString(widgetName), parent, "DemoNavigatorWidget")
-    , controller_(controller) {
+    , controller_(controller)
+    , app_(app) {
 
     setFloating(true);
     setSticky(false);
@@ -160,6 +162,8 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
 }
 
 DemoNavigatorDockWidgetQt::~DemoNavigatorDockWidgetQt() = default;
+
+InviwoApplication* DemoNavigatorDockWidgetQt::getInviwoApplication() { return app_; }
 
 }  // namespace animation
 

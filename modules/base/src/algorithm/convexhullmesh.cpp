@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ namespace inviwo {
 
 namespace util {
 
-std::shared_ptr<Mesh> convertHullToMesh(const std::vector<vec2> &hull, bool useIndices) {
+std::shared_ptr<Mesh> convertHullToMesh(const std::vector<vec2>& hull, bool useIndices) {
     auto mesh = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::Loop);
 
     if (hull.empty()) {

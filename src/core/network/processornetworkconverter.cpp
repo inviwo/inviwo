@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,8 @@
 
 #include <inviwo/core/network/processornetworkconverter.h>
 #include <inviwo/core/util/utilities.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -66,7 +68,7 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             traverseNodes(root, &ProcessorNetworkConverter::updatePropertyLinks);
             [[fallthrough]];
         case 9:
-            ProcessorNetworkConverter::updatePortsInProcessors(root);
+            updatePortsInProcessors(root);
             [[fallthrough]];
         case 10:
             traverseNodes(root,
@@ -87,6 +89,12 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             [[fallthrough]];
         case 15:
             traverseNodes(root, &ProcessorNetworkConverter::updatePropertyEditorMetadata);
+            [[fallthrough]];
+        case 16:
+            updateCameraPropertyToRefs(root);
+            [[fallthrough]];
+        case 17:
+            updateLinkAndConnections(root);
             return true;  // Changes has been made.
         default:
             return false;  // No changes
@@ -109,7 +117,7 @@ void ProcessorNetworkConverter::updateProcessorType(TxElement* node) {
 
     if (key == "Processor") {
         std::string type = node->GetAttributeOrDefault("type", "");
-        if (splitString(type, '.').size() < 3) {
+        if (util::splitStringView(type, '.').size() < 3) {
             node->SetAttribute("type", "org.inviwo." + type);
         }
     }
@@ -492,7 +500,7 @@ void ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifers(TxElemen
         int size = sizeof(renamed) / sizeof(std::string);
         if (std::find(renamed, renamed + size, type) != renamed + size) {
             std::string newtype = removeFromString(type, ' ');
-            if (splitString(type, '.').size() < 3) {
+            if (util::splitStringView(type, '.').size() < 3) {
                 node->SetAttribute("type", "org.inviwo." + newtype);
             } else {
                 node->SetAttribute("type", newtype);
@@ -569,7 +577,7 @@ void ProcessorNetworkConverter::updateProcessorIdentifiersStriped(TxElement* nod
             std::string newIdentifier = identifier;
             int i = 2;
 
-            auto parts = splitString(identifier, ' ');
+            auto parts = util::splitString(identifier, ' ');
             if (parts.size() > 1 &&
                 util::all_of(parts.back(), [](const char& c) { return std::isdigit(c); })) {
                 i = std::stoi(parts.back());
@@ -661,6 +669,199 @@ void ProcessorNetworkConverter::updatePropertyEditorMetadata(TxElement* parent) 
         }
         for (auto item : toRemove) {
             parent->RemoveChild(item);
+        }
+    }
+}
+
+void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
+
+    std::unordered_map<std::string, std::string> refrencemap;
+
+    auto fixcamera = [&](TxElement* node) {
+        std::string key;
+        node->GetValue(&key);
+
+        if (key == "Property") {
+            std::string type = node->GetAttributeOrDefault("type", "");
+            if (type == "org.inviwo.CameraProperty") {
+
+                // create
+                TxElement cam;
+                cam.SetValue("Camera");
+
+                xml::visitMatchingNodes(
+                    node, {{"Properties", {}}, {"Property", {}}}, [&](TxElement* subNode) {
+                        auto name = subNode->GetAttribute("identifier");
+
+                        if (name == "lookFrom" || name == "lookTo" || name == "lookUp") {
+                            subNode->SetAttribute("type", "org.inviwo.FloatVec3RefProperty");
+                            if (auto value = subNode->FirstChild("value", false)) {
+                                auto val = value->Clone();
+                                val->SetValue(name);
+                                cam.InsertEndChild(*val);
+                            }
+
+                        } else if (name == "fov" || name == "aspectRatio" || name == "near" ||
+                                   name == "far" || name == "width") {
+                            subNode->SetAttribute("type", "org.inviwo.FloatRefProperty");
+                            if (auto value = subNode->FirstChild("value", false)) {
+                                auto val = value->Clone();
+                                val->SetValue(name);
+                                cam.InsertEndChild(*val);
+                            }
+                        } else if (name == "offset") {
+                            subNode->SetAttribute("type", "org.inviwo.FloatVec2RefProperty");
+                            if (auto value = subNode->FirstChild("value", false)) {
+                                auto val = value->Clone();
+                                val->SetValue(name);
+                                cam.InsertEndChild(*val);
+                            }
+                        }
+
+                        if (auto id = subNode->GetAttributeOrDefault("id", ""); !id.empty()) {
+                            refrencemap[id] = subNode->GetAttribute("type");
+                        }
+
+                        // Fix min and max of aspectRatio. some networks have a max of 1 which
+                        // breaks a lot of stuff
+                        if (name == "aspectRatio") {
+                            if (auto max = subNode->FirstChild("maxvalue", false)) {
+                                max->ToElement()->SetAttribute(
+                                    "content", detail::toStr(std::numeric_limits<float>::max()));
+                            }
+                            if (auto min = subNode->FirstChild("minvalue", false)) {
+                                min->ToElement()->SetAttribute("content", detail::toStr(0.0f));
+                            }
+                        }
+                    });
+
+                // insert new node
+                node->InsertEndChild(cam);
+
+                if (auto owned = node->FirstChild("OwnedPropertyIdentifiers", false)) {
+                    node->RemoveChild(owned);
+                }
+            }
+        }
+    };
+
+    std::function<void(TxElement*, const std::function<void(TxElement*)>&)> visit =
+        [&](TxElement* node, const std::function<void(TxElement*)>& func) {
+            func(node);
+            ticpp::Iterator<ticpp::Element> child;
+            for (child = child.begin(node); child != child.end(); child++) {
+                visit(child.Get(), func);
+            }
+        };
+
+    visit(root, fixcamera);
+
+    auto fixrefs = [&](TxElement* node) {
+        if (auto id = node->GetAttributeOrDefault("reference", ""); !id.empty()) {
+            if (auto it = refrencemap.find(id); it != refrencemap.end()) {
+                node->SetAttribute("type", it->second);
+            }
+        }
+    };
+
+    visit(root, fixrefs);
+}
+
+void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
+    auto visit = [](TxElement* node, std::string_view name, auto&& func) {
+        auto impl = [](TxElement* node, std::string_view name, auto&& func, auto& impl) -> void {
+            if (node->Value() == name) {
+                func(node);
+            }
+            ticpp::Iterator<ticpp::Element> child;
+            for (child = child.begin(node); child != child.end(); child++) {
+                impl(child.Get(), name, func, impl);
+            }
+        };
+        impl(node, name, func, impl);
+    };
+    std::unordered_map<std::string, std::string> ports;
+    std::unordered_map<std::string, std::string> properties;
+
+    if (auto processorsNode = xml::getElement(root, "Processors")) {
+        visit(processorsNode, "InPort", [&](TxElement* node) {
+            const auto xmlId = node->GetAttribute("id");
+            if (xmlId.empty()) return;
+            auto portId = node->GetAttribute("identifier");
+            auto processorId = util::stripIdentifier(
+                node->Parent()->Parent()->ToElement()->GetAttribute("identifier"));
+            ports[xmlId] = fmt::format("{}.{}", processorId, portId);
+        });
+
+        visit(processorsNode, "OutPort", [&](TxElement* node) {
+            auto xmlId = node->GetAttribute("id");
+            if (xmlId.empty()) return;
+            auto portId = node->GetAttribute("identifier");
+            auto processorId = util::stripIdentifier(
+                node->Parent()->Parent()->ToElement()->GetAttribute("identifier"));
+            ports[xmlId] = fmt::format("{}.{}", processorId, portId);
+        });
+
+        // Composite networks
+        visit(processorsNode, "SuperInport", [&](TxElement* node) {
+            const auto xmlId = node->GetAttribute("id");
+            if (xmlId.empty()) return;
+            auto portId = node->GetAttribute("identifier");
+            auto processorId = util::stripIdentifier(
+                node->Parent()->Parent()->Parent()->Parent()->ToElement()->GetAttribute(
+                    "identifier"));
+            ports[xmlId] = fmt::format("{}.{}", processorId, portId);
+        });
+        visit(processorsNode, "SuperOutport", [&](TxElement* node) {
+            const auto xmlId = node->GetAttribute("id");
+            if (xmlId.empty()) return;
+            auto portId = node->GetAttribute("identifier");
+            auto processorId = util::stripIdentifier(
+                node->Parent()->Parent()->Parent()->Parent()->ToElement()->GetAttribute(
+                    "identifier"));
+            ports[xmlId] = fmt::format("{}.{}", processorId, portId);
+        });
+
+        visit(processorsNode, "Property", [&](TxElement* node) {
+            auto xmlId = node->GetAttribute("id");
+            if (xmlId.empty()) return;
+
+            std::vector<std::string> path;
+            while (true) {
+                auto id = node->GetAttribute("identifier");
+                path.push_back(id);
+                if (node->Value() == "Processor") break;
+                node = node->Parent()->Parent()->ToElement();
+            }
+            std::reverse(path.begin(), path.end());
+            path[0] = util::stripIdentifier(path[0]);
+
+            properties[xmlId] = joinString(path, ".");
+        });
+    }
+
+    if (auto connectionsNode = xml::getElement(root, "Connections")) {
+
+        ticpp::Iterator<ticpp::Element> child;
+        for (child = child.begin(connectionsNode); child != child.end(); child++) {
+            const auto src = xml::getElement(child.Get(), "OutPort")->GetAttribute("reference");
+            const auto dst = xml::getElement(child.Get(), "InPort")->GetAttribute("reference");
+
+            child->SetAttribute("src", ports[src]);
+            child->SetAttribute("dst", ports[dst]);
+        }
+    }
+    if (auto propertyLinksNode = xml::getElement(root, "PropertyLinks")) {
+
+        ticpp::Iterator<ticpp::Element> child;
+        for (child = child.begin(propertyLinksNode); child != child.end(); child++) {
+            const auto src =
+                xml::getElement(child.Get(), "SourceProperty")->GetAttribute("reference");
+            const auto dst =
+                xml::getElement(child.Get(), "DestinationProperty")->GetAttribute("reference");
+
+            child->SetAttribute("src", properties[src]);
+            child->SetAttribute("dst", properties[dst]);
         }
     }
 }

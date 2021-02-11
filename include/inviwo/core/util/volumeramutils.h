@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ void forEachVoxel(const size3_t dims, C callback) {
 }
 
 template <typename C>
-void forEachVoxel(const VolumeRAM &v, C callback) {
+void forEachVoxel(const VolumeRAM& v, C callback) {
     forEachVoxel(v.getDimensions(), callback);
 }
 
@@ -84,12 +84,12 @@ void forEachVoxelParallel(const size3_t dims, C callback, size_t jobs = 0) {
         }));
     }
 
-    for (const auto &e : futures) {
+    for (const auto& e : futures) {
         e.wait();
     }
 }
 template <typename C>
-void forEachVoxelParallel(const VolumeRAM &v, C callback, size_t jobs = 0) {
+void forEachVoxelParallel(const VolumeRAM& v, C callback, size_t jobs = 0) {
     forEachVoxelParallel(v.getDimensions(), callback, jobs);
 }
 

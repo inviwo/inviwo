@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,10 @@ class IVW_MODULE_PLOTTING_API PlotTextData : public PlotTextSettings {
 public:
     PlotTextData() = default;
     PlotTextData(const PlotTextSettings& s);
+    PlotTextData(const PlotTextData&) = default;
+    PlotTextData(PlotTextData&&) noexcept = default;
+    PlotTextData& operator=(const PlotTextData&) = default;
+    PlotTextData& operator=(PlotTextData&&) = default;
     virtual ~PlotTextData() = default;
 
     // Inherited via PlotTextSettings

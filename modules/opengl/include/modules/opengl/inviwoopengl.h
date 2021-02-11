@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOOPENGL_H
-#define IVW_INVIWOOPENGL_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 
@@ -38,7 +37,8 @@
 
 #include <GL/glew.h>
 
-#include <string>
+#include <string_view>
+#include <typeinfo>
 
 namespace inviwo {
 
@@ -52,17 +52,26 @@ IVW_MODULE_OPENGL_API std::string getGLErrorString(GLenum err);
 /**
  * Log the last OpenGL error if there has been an error, i.e. glGetError() != GL_NO_ERROR.
  */
-IVW_MODULE_OPENGL_API void LogGLError(const char* fileName, const char* functionName,
+IVW_MODULE_OPENGL_API void LogGLError(std::string_view fileName, std::string_view functionName,
                                       int lineNumber);
+
+/**
+ * Log the last OpenGL error if there has been an error, i.e. glGetError() != GL_NO_ERROR.
+ */
+IVW_MODULE_OPENGL_API void LogGLError(std::string_view source, std::string_view fileName,
+                                      std::string_view functionName, int lineNumber);
+
+IVW_MODULE_OPENGL_API void LogGLError(const std::type_info& source, std::string_view fileName,
+                                      std::string_view functionName, int lineNumber);
 
 #if defined(IVW_DEBUG) || defined(IVW_FORCE_ASSERTIONS)
 #define LGL_ERROR inviwo::LogGLError(__FILE__, __FUNCTION__, __LINE__)
+#define LGL_ERROR_CLASS inviwo::LogGLError(typeid(this), __FILE__, __FUNCTION__, __LINE__)
 #define LGL_ERROR_SUPPRESS glGetError()
 #else
 #define LGL_ERROR
+#define LGL_ERROR_CLASS
 #define LGL_ERROR_SUPPRESS
 #endif
 
 }  // namespace inviwo
-
-#endif  // IVW_INVIWOOPENGL_H

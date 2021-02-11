@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,9 +29,11 @@
 
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/safecstr.h>
 
 #include <random>
 #include <iomanip>
+#include <clocale>
 
 #if defined(__clang__) || defined(__GNUC__)
 #include <cstdlib>
@@ -50,7 +52,7 @@ namespace inviwo {
 
 namespace util {
 
-std::wstring toWstring(const std::string& str) {
+std::wstring toWstring(std::string_view str) {
 #if defined(_WIN32)
     if (str.empty()) return std::wstring();
     int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), NULL, 0);
@@ -59,15 +61,27 @@ std::wstring toWstring(const std::string& str) {
     return result;
 #else
     auto state = std::mbstate_t();
-    auto sptr = str.data();
-    size_t len = std::mbsrtowcs(nullptr, &sptr, 0, &state) + 1;
+    SafeCStr safestr{str};
+    auto sptr = safestr.c_str();
+    const char* loc = nullptr;
+    size_t len = std::mbsrtowcs(nullptr, &sptr, 0, &state);
+    if (len == static_cast<std::size_t>(-1)) {
+        loc = std::setlocale(LC_CTYPE, nullptr);
+        std::setlocale(LC_CTYPE, "en_US.UTF-8");
+        len = std::mbsrtowcs(nullptr, &sptr, 0, &state);
+        if (len == static_cast<std::size_t>(-1)) {
+            if (loc) std::setlocale(LC_CTYPE, loc);
+            throw Exception("Invalid unicode sequence", IVW_CONTEXT_CUSTOM("String Conversion"));
+        }
+    }
     std::wstring result(len, 0);
     std::mbsrtowcs(result.data(), &sptr, result.size(), &state);
+    if (loc) std::setlocale(LC_CTYPE, loc);
     return result;
 #endif
 }
 
-std::string fromWstring(const std::wstring& str) {
+std::string fromWstring(std::wstring_view str) {
 #if defined(_WIN32)
     int s_size = static_cast<int>(str.size());
     if (s_size == 0) {  // WideCharToMultiByte does not support zero length, handle separately.
@@ -90,44 +104,79 @@ std::string fromWstring(const std::wstring& str) {
     return result;
 #else
     auto state = std::mbstate_t();
-    auto sptr = str.data();
-    size_t len = std::wcsrtombs(nullptr, &sptr, 0, &state) + 1;
+    std::wstring safestr(str);
+    const wchar_t* sptr = safestr.data();
+    const char* loc = nullptr;
+    size_t len = std::wcsrtombs(nullptr, &sptr, 0, &state);
+    if (len == static_cast<std::size_t>(-1)) {
+        loc = std::setlocale(LC_CTYPE, nullptr);
+        std::setlocale(LC_CTYPE, "en_US.UTF-8");
+        len = std::wcsrtombs(nullptr, &sptr, 0, &state);
+        if (len == static_cast<std::size_t>(-1)) {
+            if (loc) std::setlocale(LC_CTYPE, loc);
+            throw Exception("Invalid unicode sequence", IVW_CONTEXT_CUSTOM("String Conversion"));
+        }
+    }
     std::string result(len, 0);
     std::wcsrtombs(result.data(), &sptr, result.size(), &state);
+    if (loc) std::setlocale(LC_CTYPE, loc);
     return result;
 #endif
 }
 
 }  // namespace util
 
-std::vector<std::string> splitString(const std::string& str, char delimeter) {
-    std::vector<std::string> strings;
-    std::stringstream stream(str);
-    std::string part;
+std::vector<std::string> util::splitString(std::string_view str, char delimiter) {
+    std::vector<std::string> output;
+    size_t first = 0;
 
-    while (std::getline(stream, part, delimeter)) strings.push_back(part);
+    while (first < str.size()) {
+        const auto second = str.find_first_of(delimiter, first);
 
-    return strings;
-}
+        if (first != second) output.emplace_back(str.substr(first, second - first));
 
-std::vector<std::string> splitStringWithMultipleDelimiters(const std::string& str,
-                                                           std::vector<char> delimiters) {
-    if (!delimiters.size()) {
-        // adding default delimiters
-        delimiters.push_back('_');
-        delimiters.push_back('+');
-        delimiters.push_back('-');
-        delimiters.push_back('.');
-        delimiters.push_back(' ');
+        if (second == std::string_view::npos) break;
+
+        first = second + 1;
     }
 
-    std::string tempString = str;
-    char lastDelimiter = delimiters[delimiters.size() - 1];
+    return output;
+}
 
-    for (size_t i = 0; i < delimiters.size() - 1; i++)
-        replaceInString(tempString, toString(delimiters[i]), toString(lastDelimiter));
+std::vector<std::string_view> util::splitStringView(std::string_view str, char delimiter) {
+    std::vector<std::string_view> output;
+    size_t first = 0;
 
-    return splitString(tempString, lastDelimiter);
+    while (first < str.size()) {
+        const auto second = str.find_first_of(delimiter, first);
+
+        if (first != second) output.emplace_back(str.substr(first, second - first));
+
+        if (second == std::string_view::npos) break;
+
+        first = second + 1;
+    }
+
+    return output;
+}
+
+std::vector<std::string> splitStringWithMultipleDelimiters(std::string_view str,
+                                                           std::vector<char> delimiters) {
+    std::vector<std::string> output;
+    size_t first = 0;
+    auto delim = std::string_view{delimiters.data(), delimiters.size()};
+
+    while (first < str.size()) {
+        const auto second = str.find_first_of(delim, first);
+
+        if (first != second) output.emplace_back(str.substr(first, second - first));
+
+        if (second == std::string_view::npos) break;
+
+        first = second + 1;
+    }
+
+    return output;
 }
 
 std::string removeFromString(std::string str, char char_to_remove) {
@@ -135,7 +184,7 @@ std::string removeFromString(std::string str, char char_to_remove) {
     return str;
 }
 
-void replaceInString(std::string& str, const std::string& oldStr, const std::string& newStr) {
+void replaceInString(std::string& str, std::string_view oldStr, std::string_view newStr) {
     size_t pos = 0;
 
     while ((pos = str.find(oldStr, pos)) != std::string::npos) {
@@ -144,7 +193,7 @@ void replaceInString(std::string& str, const std::string& oldStr, const std::str
     }
 }
 
-std::string htmlEncode(const std::string& data) {
+std::string htmlEncode(std::string_view data) {
     std::string buffer;
     buffer.reserve(data.size());
     for (size_t pos = 0; pos != data.size(); ++pos) {
@@ -207,54 +256,35 @@ std::string toLower(std::string str) {
     return str;
 }
 
-size_t countLines(std::string str) {
-    size_t lineCount = 1;
-    size_t position = 0;
+size_t countLines(std::string_view str) { return std::count(str.begin(), str.end(), '\n') + 1; }
 
-    while (position < str.length()) {
-        if (str.substr(position, 1) == "\n") lineCount++;
-
-        position++;
-    }
-
-    return lineCount;
-}
-
-static const std::string possibleValues =
-    "0123456789"
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "abcdefghijklmnopqrstuvwxyz";
 std::string randomString(size_t length) {
-    std::string s;
+    constexpr std::string_view possibleValues =
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz";
 
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, static_cast<int>(possibleValues.size()) - 1);
 
-    while (s.size() < length) s += possibleValues[dis(gen)];
+    std::string s(length, ' ');
+    for (auto& c : s) c = possibleValues[dis(gen)];
 
     return s;
 }
 
-// trim from start
-std::string ltrim(std::string s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](auto c) {
-                return !std::isspace(static_cast<unsigned char>(c));
-            }));
-    return s;
-}
-
-std::string dotSeperatedToPascalCase(const std::string& s) {
+std::string dotSeperatedToPascalCase(std::string_view s) {
     std::stringstream ss;
-    for (auto elem : splitString(s, '.')) {
-        elem[0] = static_cast<char>(std::toupper(elem[0]));
-        ss << elem;
-    }
+    util::forEachStringPart(s, ".", [&](std::string_view elem) {
+        if (elem.size() > 0) ss << static_cast<char>(std::toupper(elem[0]));
+        if (elem.size() > 1) ss << elem.substr(1);
+    });
     return ss.str();
 }
 
-std::string camelCaseToHeader(const std::string& s) {
-    if (s.empty()) return s;
+std::string camelCaseToHeader(std::string_view s) {
+    if (s.empty()) return {};
     std::stringstream ss;
     char previous = ' ';
     for (auto c : s) {
@@ -268,19 +298,27 @@ std::string camelCaseToHeader(const std::string& s) {
     return str;
 }
 
-bool iCaseCmp(const std::string& l, const std::string& r) {
-    return l.size() == r.size() &&
-           std::equal(l.cbegin(), l.cend(), r.cbegin(),
-                      [](std::string::value_type l1, std::string::value_type r1) {
+bool iCaseCmp(std::string_view l, std::string_view r) {
+    return std::equal(l.cbegin(), l.cend(), r.cbegin(), r.cend(),
+                      [](std::string_view::value_type l1, std::string_view::value_type r1) {
                           return std::tolower(l1) == std::tolower(r1);
                       });
 }
 
-bool iCaseLess(const std::string& l, const std::string& r) {
-    return std::lexicographical_compare(l.cbegin(), l.cend(), r.cbegin(), r.cend(),
-                                        [](std::string::value_type l1, std::string::value_type r1) {
-                                            return std::tolower(l1) < std::tolower(r1);
-                                        });
+bool iCaseLess(std::string_view l, std::string_view r) {
+    return std::lexicographical_compare(
+        l.cbegin(), l.cend(), r.cbegin(), r.cend(),
+        [](std::string_view::value_type l1, std::string_view::value_type r1) {
+            return std::tolower(l1) < std::tolower(r1);
+        });
+}
+
+// trim from start
+std::string ltrim(std::string s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](auto c) {
+                return !std::isspace(static_cast<unsigned char>(c));
+            }));
+    return s;
 }
 
 // trim from end
@@ -295,7 +333,7 @@ std::string rtrim(std::string s) {
 // trim from both ends
 std::string trim(std::string s) { return ltrim(rtrim(s)); }
 
-std::string removeSubString(const std::string& str, const std::string& strToRemove) {
+std::string removeSubString(std::string_view str, std::string_view strToRemove) {
     std::string newString(str);
     size_t pos;
     while ((pos = newString.find(strToRemove)) != std::string::npos) {
@@ -344,7 +382,7 @@ std::string msToString(double ms, bool includeZeros, bool spacing) {
     return ss.str();
 }
 
-bool CaseInsensitiveCompare::operator()(const std::string& a, const std::string& b) const {
+bool CaseInsensitiveCompare::operator()(std::string_view a, std::string_view b) const {
     return iCaseLess(a, b);
 }
 

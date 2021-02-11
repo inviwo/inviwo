@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_TRACKCONTROLSWIDGETQT_H
-#define IVW_TRACKCONTROLSWIDGETQT_H
+#pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <modules/animation/animationcontroller.h>
@@ -37,8 +35,12 @@
 #include <modules/animation/datastructures/trackobserver.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/keyframeobserver.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QWidget>
 #include <QStandardItem>
+#include <warn/pop>
 
 class QHBoxLayout;
 class QToolButton;
@@ -73,5 +75,3 @@ private:
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_TRACKCONTROLSWIDGETQT_H

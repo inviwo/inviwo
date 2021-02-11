@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,12 +31,15 @@
 
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/volumeutils.h>
 #include <inviwo/core/util/colorconversion.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/buffer/buffergl.h>
@@ -44,9 +47,10 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
-#include <modules/assimp/assimpreader.h>
 
 #include <glm/gtc/epsilon.hpp>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -101,9 +105,9 @@ CropWidget::CropWidget()
 
     , lightingProperty_("internalLighting", "Lighting", &camera_)
     , trackball_(&camera_)
-    , picking_(this, 3 * numInteractionWidgets, [&](PickingEvent *p) { objectPicked(p); })
-    , shader_("geometrycustompicking.vert", "geometryrendering.frag", false)
-    , lineShader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", false)
+    , picking_(this, 3 * numInteractionWidgets, [&](PickingEvent* p) { objectPicked(p); })
+    , shader_("geometrycustompicking.vert", "geometryrendering.frag", Shader::Build::No)
+    , lineShader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", Shader::Build::No)
     , isMouseBeingPressedAndHold_(false)
     , lastState_(-1)
     , volumeBasis_(1.0f)
@@ -115,7 +119,7 @@ CropWidget::CropWidget()
 
     inport_.setOptional(true);
 
-    for (auto &elem : cropAxes_) {
+    for (auto& elem : cropAxes_) {
         // Since the clips depend on the input volume dimensions, we make sure to always
         // serialize them so we can do a proper renormalization when we load new data.
         elem.range.setSerializationMode(PropertySerializationMode::All);
@@ -225,7 +229,7 @@ void CropWidget::process() {
         utilgl::setShaderUniforms(shader_, lightingProperty_, "lighting");
         shader_.setUniform("overrideColor", handleColor_.get());
 
-        for (auto &elem : cropAxes_) {
+        for (auto& elem : cropAxes_) {
             if (elem.enabled.get()) {
                 // update axis information
                 elem.info = getAxis(elem.axis);
@@ -263,21 +267,41 @@ void CropWidget::initializeResources() {
 }
 
 void CropWidget::initMesh() {
-    auto module = InviwoApplication::getPtr()->getModuleByIdentifier("UserInterfaceGL");
-    if (!module) {
-        throw Exception("Could not locate module 'UserInterfaceGL'", IVW_CONTEXT);
-    }
 
-    std::string basePath(module->getPath(ModulePath::Data));
-    basePath += "/meshes/";
+    auto load = [this](std::string_view file) -> std::shared_ptr<const Mesh> {
+        auto app = getNetwork()->getApplication();
+        auto module = app->getModuleByIdentifier("UserInterfaceGL");
+        if (!module) {
+            throw Exception("Could not locate module 'UserInterfaceGL'", IVW_CONTEXT);
+        }
 
-    AssimpReader meshReader;
-    meshReader.setLogLevel(AssimpLogLevel::Error);
-    meshReader.setFixInvalidDataFlag(false);
+        auto reader = app->getDataReaderFactory()->getReaderForTypeAndExtension<Mesh>("fbx");
+        if (!reader) {
+            throw Exception("Could not fbx mesh reader", IVW_CONTEXT);
+        }
+        reader->setOption("FixInvalidData", false);
+        reader->setOption("LogLevel", LogVerbosity::Error);
+
+        return reader->readData(
+            fmt::format("{}/meshes/{}", module->getPath(ModulePath::Data), file));
+    };
+
+    auto cache = [](std::weak_ptr<const Mesh>& cache, auto func,
+                    auto... args) -> std::shared_ptr<const Mesh> {
+        if (auto mesh = cache.lock()) {
+            return mesh;
+        } else {
+            mesh = func(args...);
+            cache = mesh;
+            return mesh;
+        }
+    };
+
+    static std::array<std::weak_ptr<const Mesh>, 2> meshes;
 
     // interaction handles
-    interactionHandleMesh_[0] = meshReader.readData(basePath + "arrow-single.fbx");
-    interactionHandleMesh_[1] = meshReader.readData(basePath + "crop-handle.fbx");
+    interactionHandleMesh_[0] = cache(meshes[0], load, "arrow-single.fbx");
+    interactionHandleMesh_[1] = cache(meshes[1], load, "crop-handle.fbx");
 
     createLineStripMesh();
 }
@@ -318,11 +342,11 @@ void CropWidget::createLineStripMesh() {
     linestrip_ = linestrip;
 }
 
-void CropWidget::renderAxis(const CropAxis &axis) {
+void CropWidget::renderAxis(const CropAxis& axis) {
     // if min separation of the range is smaller, the middle handle is not drawn
     const float minSeparationPercentage = 0.05f;
 
-    auto &property = axis.range;
+    auto& property = axis.range;
 
     float range = static_cast<float>(property.getRangeMax() - property.getRangeMin());
     float lowerBound = (property.get().x - property.getRangeMin()) / range;
@@ -337,7 +361,7 @@ void CropWidget::renderAxis(const CropAxis &axis) {
         // apply custom transformation
         const mat4 m = glm::scale(vec3(scale_.get()));
 
-        auto draw = [&](auto &drawObject, unsigned int pickID, float value, const mat4 &rot) {
+        auto draw = [&](auto& drawObject, unsigned int pickID, float value, const mat4& rot) {
             mat4 worldMatrix(glm::translate(axis.info.pos + axis.info.axis * value) * m * rot);
             mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
             shader_.setUniform("geometry.dataToWorld", worldMatrix);
@@ -457,7 +481,7 @@ void CropWidget::updateBoundingCube() {
     }
 }
 
-void CropWidget::objectPicked(PickingEvent *e) {
+void CropWidget::objectPicked(PickingEvent* e) {
     const auto axisID = e->getPickedId() / static_cast<size_t>(numInteractionWidgets);
     if (axisID >= cropAxes_.size()) {
         LogWarn("invalid picking ID");
@@ -484,7 +508,7 @@ void CropWidget::objectPicked(PickingEvent *e) {
 }
 
 CropWidget::AnnotationInfo CropWidget::getAxis(CartesianCoordinateAxis majorAxis) {
-    auto &cam = camera_.get();
+    auto& cam = camera_.get();
     std::array<vec2, 4> axisSelector = {{{0, 0}, {1, 0}, {1, 1}, {0, 1}}};
 
     auto viewMatrix(cam.getViewMatrix());
@@ -624,7 +648,7 @@ CropWidget::AnnotationInfo CropWidget::getAxis(CartesianCoordinateAxis majorAxis
             vec3(projPoints2[selectedIndex + 4])};
 }
 
-void CropWidget::rangePositionHandlePicked(CropAxis &cropAxis, PickingEvent *p,
+void CropWidget::rangePositionHandlePicked(CropAxis& cropAxis, PickingEvent* p,
                                            InteractionElement element) {
     auto currNDC = p->getNDC();
     auto prevNDC = p->getPressedNDC();
@@ -639,7 +663,7 @@ void CropWidget::rangePositionHandlePicked(CropAxis &cropAxis, PickingEvent *p,
     vec2 axis2D(cropAxis.info.endNDC - cropAxis.info.startNDC);
     float dist = glm::dot(delta, glm::normalize(axis2D));
 
-    auto &property = cropAxis.range;
+    auto& property = cropAxis.range;
 
     auto value = property.get();
     auto range = property.getRange();

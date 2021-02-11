@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,13 +35,18 @@
 #include <inviwo/core/util/stringconversion.h>
 
 #include <fstream>
+#include <algorithm>
 
 namespace inviwo {
 
 CSVDataReaderException::CSVDataReaderException(const std::string& message, ExceptionContext context)
     : DataReaderException("CSVReader: " + message, context) {}
 
-CSVReader::CSVReader() : DataReaderType<DataFrame>(), delimiters_(","), firstRowHeader_(true) {
+CSVReader::CSVReader(const std::string& delim, bool hasHeader, bool doubleprec)
+    : DataReaderType<DataFrame>()
+    , delimiters_(delim)
+    , firstRowHeader_(hasHeader)
+    , doublePrecision_(doubleprec) {
     addExtension(FileExtension("csv", "Comma Separated Values"));
 }
 
@@ -50,6 +55,8 @@ CSVReader* CSVReader::clone() const { return new CSVReader(*this); }
 void CSVReader::setDelimiters(const std::string& delim) { delimiters_ = delim; }
 
 void CSVReader::setFirstRowHeader(bool hasHeader) { firstRowHeader_ = hasHeader; }
+
+void CSVReader::setEnableDoublePrecision(bool doubleprec) { doublePrecision_ = doubleprec; }
 
 std::shared_ptr<DataFrame> CSVReader::readData(const std::string& fileName) {
     auto file = filesystem::ifstream(fileName);
@@ -68,6 +75,22 @@ std::shared_ptr<DataFrame> CSVReader::readData(const std::string& fileName) {
 
     return readData(file);
 }
+
+namespace detail {
+
+bool isLineBreak(const char ch, std::istream& stream) {
+    if (ch == '\r') {
+        // consume potential LF (\n) following CR (\r)
+        if (stream.peek() == '\n') {
+            stream.get();
+        }
+        return true;
+    } else {
+        return (ch == '\n');
+    }
+}
+
+}  // namespace detail
 
 std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
     // Skip BOM if it exists. Added by for example Excel when saving csv files.
@@ -95,21 +118,9 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
         size_t quoteBeginLine = 0;
         char prev = 0;
 
-        auto isLineBreak = [](const char ch, std::istream& stream) {
-            if (ch == '\r') {
-                // consume potential LF (\n) following CR (\r)
-                if (stream.peek() == '\n') {
-                    stream.get();
-                }
-                return true;
-            } else {
-                return (ch == '\n');
-            }
-        };
-
         char ch;
         while (in.get(ch) && in.good()) {
-            bool linebreak = isLineBreak(ch, in);
+            bool linebreak = detail::isLineBreak(ch, in);
             if (linebreak) {
                 ++lineNumber;  // increase line counter
                 // ensure that ch is equal to '\n'
@@ -139,7 +150,7 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
             throw CSVDataReaderException("Unmatched quotes (starting in line " +
                                          std::to_string(quoteBeginLine) + ")");
         }
-        return {value, false};
+        return {trim(value), false};
     };
 
     // extract one row from the current stream position, the bool return value indicates whether
@@ -159,7 +170,7 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
         values.push_back(val.first);
         while (!val.second && !in.eof()) {
             val = extractField();
-            values.push_back(trim(val.first));
+            values.push_back(val.first);
         }
         // ignore last field _if_ it is empty and would be inserted in the maxColCount+1 column
         if (values.back().empty() && (values.size() - 1 == maxColCount)) {
@@ -234,9 +245,8 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
     auto row = extractRow(maxColCount);
     while (!row.second) {
         // Do not add empty rows, i.e. rows with only delimiters (,,,,) or newline
-        auto emptyIt = std::find_if(std::begin(row.first), std::end(row.first),
-                                    [](const auto& a) { return !a.empty(); });
-        if (emptyIt != row.first.end()) {
+        if (std::any_of(std::begin(row.first), std::end(row.first),
+                        [](const auto& a) { return !a.empty(); })) {
             // May throw DataTypeMismatch, but do not catch it here since it indicates
             // that the DataFrame is in an invalid state
             dataFrame->addRow(row.first);

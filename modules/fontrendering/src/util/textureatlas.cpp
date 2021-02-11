@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@
 #include <algorithm>
 #include <numeric>
 #include <cmath>
+#include <type_traits>
 
 namespace inviwo {
 
@@ -205,6 +206,12 @@ void TextureAtlas::initAtlas(TextRenderer& textRenderer, const std::vector<TexAt
 
     renderInfo_.boundingBoxes = std::move(bboxes);
 }
+
+static_assert(std::is_default_constructible_v<TextureAtlas>);
+static_assert(std::is_copy_constructible_v<TextureAtlas>);
+static_assert(std::is_copy_assignable_v<TextureAtlas>);
+static_assert(std::is_nothrow_move_constructible_v<TextureAtlas>);
+static_assert(std::is_nothrow_move_assignable_v<TextureAtlas>);
 
 }  // namespace util
 

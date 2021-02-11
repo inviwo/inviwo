@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,20 +28,22 @@
  *********************************************************************************/
 
 #include <modules/animationqt/sequenceeditor/propertysequenceeditor.h>
-
 #include <modules/animationqt/sequenceeditor/keyframeeditorwidget.h>
+
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertywidgetfactory.h>
+
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/datastructures/valuekeyframesequence.h>
 #include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/animationmanager.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/util/stringconversion.h>
-
-#include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>
-
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/properties/propertywidgetfactory.h>
+#include <modules/qtwidgets/editablelabelqt.h>
+#include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -60,13 +62,13 @@ namespace {
 
 class PropertyEditorWidget : public QWidget, public KeyframeObserver {
 public:
-    PropertyEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent)
+    PropertyEditorWidget(Keyframe& keyframe, SequenceEditorWidget* parent)
         : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
 
-        auto &propTrack = dynamic_cast<BasePropertyTrack &>(parent->getTrack());
+        auto& propTrack = dynamic_cast<BasePropertyTrack&>(parent->getTrack());
 
         setObjectName("KeyframeEditorWidget");
-
+        setVisible(keyframe_.isSelected());
         keyframe.addObserver(this);
 
         auto layout = new QHBoxLayout();
@@ -86,21 +88,37 @@ public:
         layout->addWidget(timeSpinner_);
 
         property_.reset(propTrack.getProperty()->clone());
-        propTrack.setOtherProperty(property_.get(), &keyframe);
+        propTrack.setPropertyFromKeyframe(property_.get(), &keyframe);
         property_->onChange([p = property_.get(), &propTrack, k = &keyframe_]() {
-            propTrack.updateKeyframeFromProperty(p, k);
+            propTrack.setKeyframeFromProperty(p, k);
         });
         property_->setOwner(nullptr);
 
         auto propWidget =
             util::getInviwoApplication()->getPropertyWidgetFactory()->create(property_.get());
-        propertyWidget_ = static_cast<PropertyWidgetQt *>(propWidget.release());
+        propertyWidget_ = static_cast<PropertyWidgetQt*>(propWidget.release());
 
-        if (auto label = propertyWidget_->findChild<EditableLabelQt *>()) {
+        if (auto label = propertyWidget_->findChild<EditableLabelQt*>()) {
+            // Do not repeat information (Track name in PropertySequenceEditor) for each property
             label->setVisible(false);
         }
+        if (auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(propertyWidget_)) {
+            collapsibleWidget->initState();
+            if (auto cameraProperty = dynamic_cast<CameraProperty*>(property_.get())) {
+                // HACK: Only show relevant properties for the CameraTrack
+                // We should delegate this in case more properties need this
+                std::vector<Property*> properties = cameraProperty->getPropertiesRecursive();
+                for (auto prop : properties) {
+                    const auto keepProperties = {"lookFrom", "lookTo", "lookUp"};
+                    if (std::none_of(
+                            std::begin(keepProperties), std::end(keepProperties),
+                            [prop](const auto& v) { return v == prop->getIdentifier(); })) {
+                        prop->setVisible(false);
+                    }
+                }
+            }
+        }
         layout->addWidget(propertyWidget_);
-
         setLayout(layout);
     }
 
@@ -114,34 +132,32 @@ public:
         }
     }
 
-    virtual void onKeyframeTimeChanged(Keyframe *key, Seconds) override {
+    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds) override {
         timeSpinner_->setValue(key->getTime().count());
         sequenceEditorWidget_->setReorderNeeded();
     }
 
-    Keyframe &getKeyframe() { return keyframe_; }
+    Keyframe& getKeyframe() { return keyframe_; }
 
-    virtual void onKeyframeSelectionChanged(Keyframe *) override {
+    virtual void onKeyframeSelectionChanged(Keyframe* key) override {
+        setVisible(key->isSelected());
         sequenceEditorWidget_->updateVisibility();
     }
 
 private:
-    Keyframe &keyframe_;
-    SequenceEditorWidget *sequenceEditorWidget_{nullptr};
+    Keyframe& keyframe_;
+    SequenceEditorWidget* sequenceEditorWidget_{nullptr};
 
     std::unique_ptr<Property> property_{nullptr};
-    PropertyWidgetQt *propertyWidget_{nullptr};
-    QDoubleSpinBox *timeSpinner_{nullptr};
+    PropertyWidgetQt* propertyWidget_{nullptr};
+    QDoubleSpinBox* timeSpinner_{nullptr};
 };
 
 }  // namespace
 
-PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track &track,
-                                               AnimationManager &manager)
-    : SequenceEditorWidget(sequence, track) {
-
-    auto &bpt = dynamic_cast<BasePropertyTrack &>(track);
-    auto &valseq = dynamic_cast<ValueKeyframeSequence &>(sequence);
+PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track& track,
+                                               AnimationManager& manager)
+    : SequenceEditorWidget(sequence, track, manager) {
 
     sequence.addObserver(this);
 
@@ -174,17 +190,16 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track
     sublayout->addWidget(new QLabel("Interpolation"), 0, 0);
     sublayout->addWidget(interpolation_, 0, 1);
 
-    auto map = manager.getInterpolationMapping();
-
-    for (auto range = map.equal_range(bpt.getProperty()->getClassIdentifier());
-         range.first != range.second; ++range.first) {
-        auto ip = manager.getInterpolationFactory().create(range.first->second);
+    auto& valseq = dynamic_cast<ValueKeyframeSequence&>(sequence);
+    for (auto interpObj : valseq.getSupportedInterpolations(manager.getInterpolationFactory())) {
+        auto ip = interpObj->create();
         interpolation_->addItem(utilqt::toQString(ip->getName()),
                                 QVariant(utilqt::toQString(ip->getClassIdentifier())));
         if (valseq.getInterpolation().getClassIdentifier() == ip->getClassIdentifier()) {
             interpolation_->setCurrentIndex(interpolation_->count() - 1);
         }
     }
+
     connect(interpolation_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, [this, &valseq, &manager](int) {
                 const auto id = utilqt::fromQString(interpolation_->currentData().toString());
@@ -213,18 +228,18 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track
     updateVisibility();
 }
 
-QWidget *PropertySequenceEditor::create(Keyframe *key) {
+QWidget* PropertySequenceEditor::create(Keyframe* key) {
     return new PropertyEditorWidget(*key, this);
 }
 
-void PropertySequenceEditor::onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence *seq) {
+void PropertySequenceEditor::onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence* seq) {
     QSignalBlocker block(easingComboBox_);
     auto index = easingComboBox_->findData(QVariant(static_cast<int>(seq->getEasingType())));
     easingComboBox_->setCurrentIndex(index);
 }
 
 void PropertySequenceEditor::onValueKeyframeSequenceInterpolationChanged(
-    ValueKeyframeSequence *seq) {
+    ValueKeyframeSequence* seq) {
 
     auto id = utilqt::toQString(seq->getInterpolation().getClassIdentifier());
     auto ind = interpolation_->findData(id);

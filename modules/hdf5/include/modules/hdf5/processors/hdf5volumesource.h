@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HDF5VOLUMESOURCE_H
-#define IVW_HDF5VOLUMESOURCE_H
+#pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/hdf5/ports/hdf5port.h>
 #include <modules/hdf5/datastructures/hdf5metadata.h>
@@ -97,7 +95,7 @@ protected:
 private:
     class DimSelection : public CompositeProperty {
     public:
-        DimSelection(std::string identifier, std::string displayName,
+        DimSelection(const std::string& identifier, const std::string& displayName,
                      InvalidationLevel = InvalidationLevel::InvalidOutput);
 
         DimSelection(const DimSelection& rhs) = default;
@@ -111,7 +109,7 @@ private:
 
     class DimSelections : public CompositeProperty {
     public:
-        DimSelections(std::string identifier, std::string displayName, size_t maxRank,
+        DimSelections(const std::string& identifier, const std::string& displayName, size_t maxRank,
                       InvalidationLevel = InvalidationLevel::InvalidOutput);
 
         DimSelections(const DimSelections& rhs) = default;
@@ -175,5 +173,3 @@ private:
 }  // namespace hdf5
 
 }  // namespace inviwo
-
-#endif  // IVW_HDF5VOLUMESOURCE_H

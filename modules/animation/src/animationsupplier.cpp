@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,11 +55,6 @@ AnimationSupplier::~AnimationSupplier() { unRegisterAll(); }
 void AnimationSupplier::registerPropertyTrackConnection(const std::string& propertyClassID,
                                                         const std::string& trackClassID) {
     manager_.registerPropertyTrackConnection(propertyClassID, trackClassID);
-}
-
-void AnimationSupplier::registerPropertyInterpolationConnection(
-    const std::string& propertyClassID, const std::string& interpolationClassID) {
-    manager_.registerPropertyInterpolationConnection(propertyClassID, interpolationClassID);
 }
 
 void AnimationSupplier::unRegisterAll() {

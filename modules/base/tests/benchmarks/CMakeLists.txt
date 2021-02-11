@@ -1,20 +1,18 @@
-    project(BaseBenchmarks)
-    #--------------------------------------------------------------------
-    # Add source files
-    set(SOURCE_FILES 
-        ${CMAKE_CURRENT_SOURCE_DIR}/benchmain.cpp 
-    )
-    ivw_group("Source Files" ${SOURCE_FILES})
+project(BaseBenchmarks)
 
-    set(target "base-benchmark")
-    #--------------------------------------------------------------------
-    # Create application
-    add_executable(${target} MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
-    target_link_libraries(${target} PUBLIC benchmark)
-    target_link_libraries(${target} PUBLIC inviwo::module::base)
-    set_target_properties(${target} PROPERTIES FOLDER benchmarks)
+set(SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/marchingcubes.cpp)
+ivw_group("Source Files" ${SOURCE_FILES})
 
-    #--------------------------------------------------------------------
-    # Define defintions and properties
-    ivw_define_standard_definitions(${target} ${target})
-    ivw_define_standard_properties(${target})
+# Create application
+add_executable(bm-marchingcubes MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
+find_package(benchmark CONFIG REQUIRED)
+target_link_libraries(bm-marchingcubes 
+    PUBLIC 
+        benchmark::benchmark
+        inviwo::module::base
+)
+set_target_properties(bm-marchingcubes PROPERTIES FOLDER benchmarks)
+
+# Define defintions and properties
+ivw_define_standard_properties(bm-marchingcubes)
+ivw_define_standard_definitions(bm-marchingcubes bm-marchingcubes)

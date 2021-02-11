@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,8 +42,9 @@ SequenceTimerProperty::SequenceTimerProperty(std::string identifier, std::string
     , index_("selectedSequenceIndex", "Sequence Index", 1, 1, 1, 1)
     , play_("playSequence", "Play Sequence", false, InvalidationLevel::Valid)
     , framesPerSecond_("volumesPerSecond", "Frame rate", 30, 1, 60, 1, InvalidationLevel::Valid)
-    , playPause_("playPause", "Play / Pause", [this](Event*) { play_.set(!play_.get()); },
-                 IvwKey::P, KeyState::Press)
+    , playPause_(
+          "playPause", "Play / Pause", [this](Event*) { play_.set(!play_.get()); }, IvwKey::P,
+          KeyState::Press)
     , timer_(std::chrono::milliseconds{1000 / framesPerSecond_.get()},
              [this]() { onTimerEvent(); }) {
 

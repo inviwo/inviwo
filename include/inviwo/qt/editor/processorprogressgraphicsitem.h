@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,14 +56,14 @@ protected:
     // ProgressBarObserver methods
     /**
      * This method will be called when observed object changes.
-     * @param New progress between [0 1]
+     * @param progress New progress between [0 1]
      */
-    virtual void progressChanged(float) override;
+    virtual void progressChanged(float progress) override;
     /**
      * This method will be called when observed object changes.
      * @param visibility state that ProgressBar changed into
      */
-    virtual void progressBarVisibilityChanged(bool) override;
+    virtual void progressBarVisibilityChanged(bool visibility) override;
 
 private:
     QSize size_;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HEDGEHOG2D_H
-#define IVW_HEDGEHOG2D_H
+#pragma once
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/meshport.h>
@@ -81,14 +79,12 @@ private:
 
     void adjustVisibilites();
 
-    vec4 getColor(const dvec2 &velocity);
+    vec4 getColor(const dvec2& velocity);
 
-    void createArrow(BasicMesh &mesh, IndexBufferRAM &index, float x, float y, float dx, float dy,
-                     const dvec2 &velocity);
-    void createQuiver(BasicMesh &mesh, IndexBufferRAM &index, float x, float y, float dx, float dy,
-                      const dvec2 &velocity);
+    void createArrow(BasicMesh& mesh, IndexBufferRAM& index, float x, float y, float dx, float dy,
+                     const dvec2& velocity);
+    void createQuiver(BasicMesh& mesh, IndexBufferRAM& index, float x, float y, float dx, float dy,
+                      const dvec2& velocity);
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_HEDGEHOG2D_H

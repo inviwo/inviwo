@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,7 @@
  * All the code here is free for you.
  *********************************************************************************/
 
-#ifndef IVW_COLORWHEEL_H
-#define IVW_COLORWHEEL_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <warn/push>
@@ -107,5 +106,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_COLORWHEEL_H

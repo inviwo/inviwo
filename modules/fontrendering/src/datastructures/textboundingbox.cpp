@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,8 @@
 
 namespace inviwo {
 
-TextBoundingBox::TextBoundingBox(const size2_t &textExt, const ivec2 &glyphsOrigin,
-                                 const size2_t &glyphsExt, int baselineOffset)
+TextBoundingBox::TextBoundingBox(const size2_t& textExt, const ivec2& glyphsOrigin,
+                                 const size2_t& glyphsExt, int baselineOffset)
     : textExtent(textExt), glyphsOrigin(glyphsOrigin), glyphsExtent(glyphsExt) {
     updateGlyphPenOffset(baselineOffset);
 }

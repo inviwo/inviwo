@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,20 +54,20 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    IntMinMaxPropertyWidget(IntMinMaxProperty &property, Processor &processor, Renderer &uiRenderer,
-                            const ivec2 &extent = ivec2(100, 24),
+    IntMinMaxPropertyWidget(IntMinMaxProperty& property, Processor& processor, Renderer& uiRenderer,
+                            const ivec2& extent = ivec2(100, 24),
                             UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~IntMinMaxPropertyWidget() = default;
 
     virtual void updateFromProperty() override;
 
     // PropertyObservable overrides
-    virtual void onSetVisible(Property *property, bool visible) override;
-    virtual void onSetDisplayName(Property *property, const std::string &displayName) override;
-    virtual void onSetReadOnly(Property *property, bool readonly) override;
+    virtual void onSetVisible(Property* property, bool visible) override;
+    virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
+    virtual void onSetReadOnly(Property* property, bool readonly) override;
 
 private:
-    IntMinMaxProperty *property_;
+    IntMinMaxProperty* property_;
 };
 
 }  // namespace glui

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,9 +42,9 @@ class IVW_CORE_API PortInspectorFactoryObject {
 public:
     PortInspectorFactoryObject(const std::string& portClassIdentifier,
                                const std::string& inspectorWorkspaceFileName);
-    virtual ~PortInspectorFactoryObject() {}
+    ~PortInspectorFactoryObject() = default;
 
-    virtual std::unique_ptr<PortInspector> create();
+    std::unique_ptr<PortInspector> create();
 
     std::string getClassIdentifier() const;
 

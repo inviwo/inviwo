@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,26 +55,28 @@ TFSelector::TFSelector()
     , tfPresets_("presets", "Presets",
                  std::make_unique<TransferFunctionProperty>("tfPreset1", "TF 1"))
     , interactions_("interactions", "Interactions")
-    , nextTF_("nextTF", "Next TF",
-              [this](Event* e) {
-                  size_t next = selectedTF_.getSelectedIndex() + 1;
-                  if (cycle_.get()) {
-                      next = next % selectedTF_.size();
-                  }
-                  selectedTF_.setSelectedIndex(next);
-                  e->markAsUsed();
-              },
-              IvwKey::Period, KeyState::Press)
-    , previousTF_("previousTF", "Previous TF",
-                  [this](Event* e) {
-                      if (auto index = selectedTF_.getSelectedIndex()) {
-                          selectedTF_.setSelectedIndex(index - 1);
-                      } else if (cycle_.get()) {
-                          selectedTF_.setSelectedIndex(selectedTF_.size() - 1);
-                      }
-                      e->markAsUsed();
-                  },
-                  IvwKey::Comma, KeyState::Press) {
+    , nextTF_(
+          "nextTF", "Next TF",
+          [this](Event* e) {
+              size_t next = selectedTF_.getSelectedIndex() + 1;
+              if (cycle_.get()) {
+                  next = next % selectedTF_.size();
+              }
+              selectedTF_.setSelectedIndex(next);
+              e->markAsUsed();
+          },
+          IvwKey::Period, KeyState::Press)
+    , previousTF_(
+          "previousTF", "Previous TF",
+          [this](Event* e) {
+              if (auto index = selectedTF_.getSelectedIndex()) {
+                  selectedTF_.setSelectedIndex(index - 1);
+              } else if (cycle_.get()) {
+                  selectedTF_.setSelectedIndex(selectedTF_.size() - 1);
+              }
+              e->markAsUsed();
+          },
+          IvwKey::Comma, KeyState::Press) {
 
     addPort(inport_);
     addPort(outport_);

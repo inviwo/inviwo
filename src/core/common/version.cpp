@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,46 +28,15 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/version.h>
-#include <cstdio>
 
 namespace inviwo {
 
-Version::Version(std::string versionString) {
-    std::sscanf(versionString.c_str(), "%u.%u.%u.%u", &major, &minor, &patch, &build);
-}
-
-Version::Version(const char* versionString) : Version(std::string(versionString)) {}
-
-Version::Version(unsigned int major_, unsigned int minor_, unsigned int patch_, unsigned int build_)
-    : major{major_}, minor{minor_}, patch{patch_}, build{build_} {}
-
-bool Version::semanticVersionEqual(const Version& other) const {
-    if (major < 1 || other.major < 1) {
-        // Each version increment is a breaking change
-        // when major version is 0
-        return std::tie(major, minor, patch) == std::tie(other.major, other.minor, other.patch);
-    } else {
-        return std::tie(major, minor) == std::tie(other.major, other.minor);
-    }
-}
-
-bool operator<(const Version& lhs, const Version& rhs) {
-    // Keep ordering using lexicographical comparison provided by std::tie:
-    return std::tie(lhs.major, lhs.minor, lhs.patch, lhs.build) <
-           std::tie(rhs.major, rhs.minor, rhs.patch, rhs.build);
-}
-bool operator==(const Version& lhs, const Version& rhs) {
-    // Keep ordering using lexicographical comparison provided by std::tie:
-    return std::tie(lhs.major, lhs.minor, lhs.patch, lhs.build) ==
-           std::tie(rhs.major, rhs.minor, rhs.patch, rhs.build);
-}
-
-bool operator!=(const Version& lhs, const Version& rhs) { return !(lhs == rhs); }
-
-bool operator>(const Version& lhs, const Version& rhs) { return !(lhs <= rhs); }
-
-bool operator>=(const Version& lhs, const Version& rhs) { return !(lhs < rhs); }
-
-bool operator<=(const Version& lhs, const Version& rhs) { return (lhs < rhs) || (lhs == rhs); }
+namespace {
+constexpr Version ver{std::string_view{"9.8.3.21"}};
+static_assert(ver.major == 9);
+static_assert(ver.minor == 8);
+static_assert(ver.patch == 3);
+static_assert(ver.build == 21);
+}  // namespace
 
 }  // namespace inviwo

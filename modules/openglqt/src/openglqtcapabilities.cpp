@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,18 +29,13 @@
 
 #include <modules/openglqt/openglqtcapabilities.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <inviwo/core/util/formatconversion.h>
-#include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
-#define OpenGLQtInfoNotFound(message) \
-    { LogInfo(message << " Info could not be retrieved"); }
+OpenGLQtCapabilities::OpenGLQtCapabilities() = default;
 
-OpenGLQtCapabilities::OpenGLQtCapabilities() {}
-
-OpenGLQtCapabilities::~OpenGLQtCapabilities() {}
+OpenGLQtCapabilities::~OpenGLQtCapabilities() = default;
 
 void OpenGLQtCapabilities::printInfo() {
     // Qt General Info
@@ -50,16 +45,10 @@ std::vector<int> OpenGLQtCapabilities::getGLVersion() {
     const GLubyte* glversion = glGetString(GL_VERSION);
     std::string glVersionStr =
         std::string((glversion != nullptr ? reinterpret_cast<const char*>(glversion) : "INVALID"));
-    std::vector<std::string> versionInfoStr = splitString(glVersionStr, '.');
-    // ivwAssert(versionInfo.size()!=0, "Cannot retrieve GL version.");
-    std::string majorVersion = versionInfoStr[0];
-    std::string minorVersion = versionInfoStr[1];
-    int major = stringTo<int>(majorVersion);
-    int minor = stringTo<int>(minorVersion);
-    std::vector<int> versionInfo;
-    versionInfo.push_back(major);
-    versionInfo.push_back(minor);
-    return versionInfo;
+    const auto versionInfoStr = util::splitStringView(glVersionStr, '.');
+    const int major = stringTo<int>(versionInfoStr[0]);
+    const int minor = stringTo<int>(versionInfoStr[1]);
+    return {major, minor};
 }
 
 }  // namespace inviwo

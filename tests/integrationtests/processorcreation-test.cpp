@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,8 +36,11 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/util/logerrorcounter.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/stringlogger.h>
 #include <inviwo/core/common/inviwoapplication.h>
+
+#include <modules/opengl/inviwoopengl.h>
 
 namespace inviwo {
 
@@ -80,19 +83,32 @@ protected:
 };
 
 TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
+    RenderContext::getPtr()->activateDefaultRenderContext();
+    LGL_ERROR;
+
     LogErrorCheck checklog(GetParam());
     auto s = factory_->create(GetParam());
+
+    LGL_ERROR;
+
     ASSERT_TRUE(s.get() != nullptr) << "Could not create processor " << GetParam();
     s->resetAllPoperties();
+
+    LGL_ERROR;
 
     const size_t sizeBefore = network_->getProcessors().size();
     auto p = s.release();
     network_->addProcessor(p);
     EXPECT_EQ(sizeBefore + 1, network_->getProcessors().size())
         << "Could not add processor " << GetParam();
+
+    LGL_ERROR;
+
     network_->removeAndDeleteProcessor(p);
     EXPECT_EQ(sizeBefore, network_->getProcessors().size())
         << "Could not remove processor " << GetParam();
+
+    LGL_ERROR;
 }
 
 INSTANTIATE_TEST_SUITE_P(

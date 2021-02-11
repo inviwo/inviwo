@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_COLORPROPERTYWDIGETQT_H
-#define IVW_COLORPROPERTYWDIGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
@@ -283,7 +282,7 @@ std::unique_ptr<QMenu> ColorPropertyWidgetQt<T>::getContextMenu() {
         ordinalProperty_->template getMetaData<IntMetaData>(
             "representation", static_cast<int>(util::DefaultColorRepresentation<T>::value)));
 
-    auto actionGroup = new QActionGroup(menu.get());
+    auto actionGroup = new QActionGroup(representationMenu);
 
     auto createAction = [&](const QString& title, ColorLineEdit::ColorRepresentation colorRep) {
         auto action = representationMenu->addAction(title);
@@ -353,5 +352,3 @@ void ColorPropertyWidgetQt<T>::openColorDialog() {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_COLORPROPERTYWIDGETQT_H

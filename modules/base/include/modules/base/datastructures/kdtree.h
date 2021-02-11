@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,17 +45,17 @@ class KDNode;
 
 template <unsigned char N, typename T, typename P>
 struct KDNodeDistWrapper {
-    KDNode<N, T, P> *node;
+    KDNode<N, T, P>* node;
     P sqDist;
-    bool operator<(const KDNodeDistWrapper<N, T, P> &rhs) const { return sqDist > rhs.sqDist; }
+    bool operator<(const KDNodeDistWrapper<N, T, P>& rhs) const { return sqDist > rhs.sqDist; }
 };
 
 template <unsigned char N, typename T = char, typename P = double>
 class KDNode {
     friend class KDTree<N, T, P>;
 
-    KDNode *leftChild_;
-    KDNode *rightChild_;
+    KDNode* leftChild_;
+    KDNode* rightChild_;
     T data_;
     unsigned char dimmension_;
     P pos_[N];
@@ -64,10 +64,10 @@ class KDNode {
     bool compare(const P pos[N]) const;
 
 public:
-    KDNode(const P pos[N], const T &data, KDNode *parent = 0);
+    KDNode(const P pos[N], const T& data, KDNode* parent = 0);
     virtual ~KDNode();
 
-    KDNode *clone();
+    KDNode* clone();
 
     bool isLeaf() const;
     bool isRightLeaf() const;
@@ -76,35 +76,35 @@ public:
     unsigned long depth() const;
     unsigned long size() const;
 
-    T &get();
-    const T &get() const;
-    T *getDataAsPointer() { return &data_; }
-    P *getPosition();
+    T& get();
+    const T& get() const;
+    T* getDataAsPointer() { return &data_; }
+    P* getPosition();
 
     bool isOk() const;
 
-    KDNode *findMin(unsigned int dim);
-    KDNode *findMax(unsigned int dim);
+    KDNode* findMin(unsigned int dim);
+    KDNode* findMax(unsigned int dim);
 
-    KDNode *insert(const P pos[N], const T &data);
-    KDNode *find(const P pos[N]);
-    KDNode *findParent(const KDNode *n);
+    KDNode* insert(const P pos[N], const T& data);
+    KDNode* find(const P pos[N]);
+    KDNode* findParent(const KDNode* n);
 
-    KDNode *getRightChild() { return rightChild_; }
-    KDNode *getLeftChild() { return leftChild_; }
-    std::pair<KDNode *, KDNode *> getChilds() {
-        return std::pair<KDNode *, KDNode *>(leftChild_, rightChild_);
+    KDNode* getRightChild() { return rightChild_; }
+    KDNode* getLeftChild() { return leftChild_; }
+    std::pair<KDNode*, KDNode*> getChilds() {
+        return std::pair<KDNode*, KDNode*>(leftChild_, rightChild_);
     }
 
-    KDNode<N, T, P> *findNearest(const P pos[N], KDNode *nearest);
+    KDNode<N, T, P>* findNearest(const P pos[N], KDNode* nearest);
     void findNNearest(const P pos[N], size_t amount,
-                      std::vector<KDNodeDistWrapper<N, T, P>> &current);
-    void findCloseTo(const P pos[N], const P squaredDistance, std::vector<KDNode *> &nodes);
+                      std::vector<KDNodeDistWrapper<N, T, P>>& current);
+    void findCloseTo(const P pos[N], const P squaredDistance, std::vector<KDNode*>& nodes);
 
-    static void swap(KDNode<N, T, P> *n0, KDNode<N, T, P> *n1, KDNode<N, T, P> *p0,
-                     KDNode<N, T, P> *p1);
+    static void swap(KDNode<N, T, P>* n0, KDNode<N, T, P>* n1, KDNode<N, T, P>* p0,
+                     KDNode<N, T, P>* p1);
 
-    void getAsVector(std::vector<KDNode *> &nodes) {
+    void getAsVector(std::vector<KDNode*>& nodes) {
         nodes.push_back(this);
         if (leftChild_) leftChild_->getAsVector(nodes);
         if (rightChild_) rightChild_->getAsVector(nodes);
@@ -119,14 +119,14 @@ public:
     typedef KDNode<N, T, P> Node;
 
 private:
-    Node *root_;
+    Node* root_;
 
 public:
     KDTree();
     virtual ~KDTree();
 
-    KDTree(const KDTree &tree) { root_ = tree.root_->clone(); }
-    KDTree &operator=(const KDTree &rhs) {
+    KDTree(const KDTree& tree) { root_ = tree.root_->clone(); }
+    KDTree& operator=(const KDTree& rhs) {
         if (this != &rhs) {
             delete root_;
             root_ = rhs.root_->clone();
@@ -134,7 +134,7 @@ public:
         return *this;
     }
 
-    void erase(Node *node, KDNode<N, T, P> *parent = nullptr);
+    void erase(Node* node, KDNode<N, T, P>* parent = nullptr);
 
     bool isOk() const;
     bool empty() const { return root_ == nullptr; }
@@ -144,19 +144,19 @@ public:
     unsigned long depth() const;
     unsigned long size() const;
 
-    std::vector<Node *> getAsVector();
+    std::vector<Node*> getAsVector();
 
-    Node *getRoot() { return root_; }
+    Node* getRoot() { return root_; }
 
-    Node *findMin(unsigned int dim);
-    Node *findMax(unsigned int dim);
+    Node* findMin(unsigned int dim);
+    Node* findMax(unsigned int dim);
 
-    Node *insert(const P pos[N], const T &data);
-    Node *find(const P pos[N]);
+    Node* insert(const P pos[N], const T& data);
+    Node* find(const P pos[N]);
 
-    Node *findNearest(const P pos[N]);
-    std::vector<Node *> findCloseTo(const P pos[N], const P distance);
-    std::vector<Node *> findNNearest(const P pos[N], int amount);
+    Node* findNearest(const P pos[N]);
+    std::vector<Node*> findCloseTo(const P pos[N], const P distance);
+    std::vector<Node*> findNNearest(const P pos[N], int amount);
 };
 
 template <unsigned char N, typename T = char, typename P = double>
@@ -168,18 +168,18 @@ public:
     typedef KDNode<N, T, P> Node;
     typedef KDTree<N, T, P> Tree;
 
-    Node *insert(const Vector<N, P> &pos, const T &data) {
+    Node* insert(const Vector<N, P>& pos, const T& data) {
         return Tree::insert(glm::value_ptr(pos), data);
     }
-    Node *find(const Vector<N, P> &pos) { return Tree::find(glm::value_ptr(pos)); }
+    Node* find(const Vector<N, P>& pos) { return Tree::find(glm::value_ptr(pos)); }
 
-    Node *findNearest(const Vector<N, P> &pos) { return Tree::findNearest(glm::value_ptr(pos)); }
+    Node* findNearest(const Vector<N, P>& pos) { return Tree::findNearest(glm::value_ptr(pos)); }
 
-    std::vector<Node *> findNNearest(const Vector<N, P> &pos, const int &amount) {
+    std::vector<Node*> findNNearest(const Vector<N, P>& pos, const int& amount) {
         return Tree::findNNearest(glm::value_ptr(pos), amount);
     }
 
-    std::vector<Node *> findCloseTo(const Vector<N, P> &pos, const P distance) {
+    std::vector<Node*> findCloseTo(const Vector<N, P>& pos, const P distance) {
         return Tree::findCloseTo(glm::value_ptr(pos), distance);
     }
 };
@@ -192,7 +192,7 @@ template <typename T = char, typename P = double>
 using K4DTree = KDTreeGlm<4, T, P>;
 
 template <unsigned char N, typename P = double>
-Vector<N, P> ptrToVec(const P *f) {
+Vector<N, P> ptrToVec(const P* f) {
     Vector<N, P> vec;
     for (size_t i = 0; i < N; ++i) vec[i] = f[i];
     return vec;
@@ -227,19 +227,19 @@ bool KDTree<N, T, P>::isOk() const {
 }
 
 template <unsigned char N, typename T, typename P>
-KDNode<N, T, P> *KDTree<N, T, P>::findMin(unsigned int d) {
+KDNode<N, T, P>* KDTree<N, T, P>::findMin(unsigned int d) {
     if (root_ == 0) return 0;
     return root_->findMin(d);
 }
 
 template <unsigned char N, typename T, typename P>
-KDNode<N, T, P> *KDTree<N, T, P>::findMax(unsigned int d) {
+KDNode<N, T, P>* KDTree<N, T, P>::findMax(unsigned int d) {
     if (root_ == 0) return 0;
     return root_->findMax(d);
 }
 
 template <unsigned char N, typename T, typename P>
-KDNode<N, T, P> *KDTree<N, T, P>::insert(const P pos[N], const T &data) {
+KDNode<N, T, P>* KDTree<N, T, P>::insert(const P pos[N], const T& data) {
     if (root_ == 0) {
         root_ = new KDNode<N, T, P>(pos, data);
         return root_;
@@ -249,13 +249,13 @@ KDNode<N, T, P> *KDTree<N, T, P>::insert(const P pos[N], const T &data) {
 }
 
 template <unsigned char N, typename T, typename P>
-KDNode<N, T, P> *KDTree<N, T, P>::find(const P pos[N]) {
+KDNode<N, T, P>* KDTree<N, T, P>::find(const P pos[N]) {
     if (root_ == 0) return 0;
     return root_->find(pos);
 }
 
 template <unsigned char N, typename T, typename P>
-void KDTree<N, T, P>::erase(KDNode<N, T, P> *node, KDNode<N, T, P> *parent) {
+void KDTree<N, T, P>::erase(KDNode<N, T, P>* node, KDNode<N, T, P>* parent) {
     if (node == 0) {
         std::cerr << "Trying to delete a null node" << std::endl;
         return;
@@ -277,7 +277,7 @@ void KDTree<N, T, P>::erase(KDNode<N, T, P> *node, KDNode<N, T, P> *parent) {
         return;
     }
 
-    KDNode<N, T, P> *min;
+    KDNode<N, T, P>* min;
     if (!parent) parent = root_->findParent(node);
 
     if (!node->isRightLeaf()) {
@@ -295,22 +295,22 @@ void KDTree<N, T, P>::erase(KDNode<N, T, P> *node, KDNode<N, T, P> *parent) {
 }
 
 template <unsigned char N, typename T, typename P>
-KDNode<N, T, P> *KDTree<N, T, P>::findNearest(const P pos[N]) {
+KDNode<N, T, P>* KDTree<N, T, P>::findNearest(const P pos[N]) {
     if (root_ == 0) return 0;
     return root_->findNearest(pos, 0);
 }
 
 template <unsigned char N, typename T, typename P>
-std::vector<KDNode<N, T, P> *> KDTree<N, T, P>::findCloseTo(const P pos[N], P distance) {
-    std::vector<KDNode<N, T, P> *> nodes;
+std::vector<KDNode<N, T, P>*> KDTree<N, T, P>::findCloseTo(const P pos[N], P distance) {
+    std::vector<KDNode<N, T, P>*> nodes;
     if (root_ == 0) return nodes;
     root_->findCloseTo(pos, distance * distance, nodes);
     return nodes;
 }
 
 template <unsigned char N, typename T, typename P>
-std::vector<KDNode<N, T, P> *> KDTree<N, T, P>::getAsVector() {
-    std::vector<Node *> v;
+std::vector<KDNode<N, T, P>*> KDTree<N, T, P>::getAsVector() {
+    std::vector<Node*> v;
     if (root_) root_->getAsVector(v);
     return v;
 }
@@ -323,9 +323,9 @@ void KDTree<N, T, P>::clear() {
 }
 
 template <unsigned char N, typename T, typename P>
-std::vector<KDNode<N, T, P> *> KDTree<N, T, P>::findNNearest(const P pos[N], int amount) {
+std::vector<KDNode<N, T, P>*> KDTree<N, T, P>::findNNearest(const P pos[N], int amount) {
     std::vector<KDNodeDistWrapper<N, T, P>> nearnodes;
-    std::vector<Node *> nodes;
+    std::vector<Node*> nodes;
     if (root_ == 0) return nodes;
     root_->findNNearest(pos, amount, nearnodes);
     for (size_t i = 0; i < nearnodes.size(); ++i) {
@@ -335,7 +335,7 @@ std::vector<KDNode<N, T, P> *> KDTree<N, T, P>::findNNearest(const P pos[N], int
 }
 
 template <unsigned char N, typename T, typename P>
-KDNode<N, T, P>::KDNode(const P pos[N], const T &data, KDNode *parent)
+KDNode<N, T, P>::KDNode(const P pos[N], const T& data, KDNode* parent)
     : leftChild_(0), rightChild_(0), data_(data) {
     for (size_t i = 0; i < N; i++) {
         pos_[i] = pos[i];
@@ -349,8 +349,8 @@ KDNode<N, T, P>::~KDNode() {
     delete rightChild_;
 }
 template <unsigned char N, typename T, typename P>
-KDNode<N, T, P> *KDNode<N, T, P>::clone() {
-    KDNode<N, T, P> *newNode = new KDNode<N, T, P>(pos_, data_, 0);
+KDNode<N, T, P>* KDNode<N, T, P>::clone() {
+    KDNode<N, T, P>* newNode = new KDNode<N, T, P>(pos_, data_, 0);
     newNode->dimmension_ = dimmension_;
     if (leftChild_) {
         newNode->leftChild_ = leftChild_->clone();
@@ -412,22 +412,22 @@ unsigned long KDNode<N, T, P>::size() const {
 }
 
 template <unsigned char N, typename T, typename P>
-T &KDNode<N, T, P>::get() {
+T& KDNode<N, T, P>::get() {
     return data_;
 }
 
 template <unsigned char N, typename T, typename P>
-const T &KDNode<N, T, P>::get() const {
+const T& KDNode<N, T, P>::get() const {
     return data_;
 }
 
 template <unsigned char N, typename T, typename P>
-P *KDNode<N, T, P>::getPosition() {
+P* KDNode<N, T, P>::getPosition() {
     return pos_;
 }
 
 template <unsigned char N, typename T, typename P>
-KDNode<N, T, P> *KDNode<N, T, P>::insert(const P pos[N], const T &data) {
+KDNode<N, T, P>* KDNode<N, T, P>::insert(const P pos[N], const T& data) {
     bool right = goRight(pos);
     if (right) {
         if (rightChild_ == 0) {
@@ -458,7 +458,7 @@ bool KDNode<N, T, P>::compare(const P pos[N]) const {
 }
 
 template <unsigned char N, typename T, typename P>
-KDNode<N, T, P> *KDNode<N, T, P>::findMin(unsigned int d) {
+KDNode<N, T, P>* KDNode<N, T, P>::findMin(unsigned int d) {
     if (dimmension_ == d) {
         return isLeftLeaf() ? this : leftChild_->findMin(d);
     }
@@ -480,7 +480,7 @@ KDNode<N, T, P> *KDNode<N, T, P>::findMin(unsigned int d) {
 }
 
 template <unsigned char N, typename T, typename P>
-KDNode<N, T, P> *KDNode<N, T, P>::findMax(unsigned int d) {
+KDNode<N, T, P>* KDNode<N, T, P>::findMax(unsigned int d) {
     if (dimmension_ == d) {
         return isRightLeaf() ? this : rightChild_->findMax(d);
     }
@@ -501,7 +501,7 @@ KDNode<N, T, P> *KDNode<N, T, P>::findMax(unsigned int d) {
 }
 
 template <unsigned char N, typename T, typename P>
-KDNode<N, T, P> *KDNode<N, T, P>::find(const P pos[N]) {
+KDNode<N, T, P>* KDNode<N, T, P>::find(const P pos[N]) {
     bool found = true;
     for (unsigned char i = 0; i < N && found; i++) {
         found &= pos_[i] == pos[i];
@@ -518,7 +518,7 @@ KDNode<N, T, P> *KDNode<N, T, P>::find(const P pos[N]) {
 }
 
 template <unsigned char N, typename T, typename P>
-KDNode<N, T, P> *KDNode<N, T, P>::findParent(const KDNode *n) {
+KDNode<N, T, P>* KDNode<N, T, P>::findParent(const KDNode* n) {
     if (leftChild_ == n) return this;
     if (rightChild_ == n) return this;
     if (goRight(n->pos_)) {
@@ -529,7 +529,7 @@ KDNode<N, T, P> *KDNode<N, T, P>::findParent(const KDNode *n) {
 }
 
 template <unsigned char N, typename T, typename P>
-KDNode<N, T, P> *__closestTo(const P pos[N], KDNode<N, T, P> *n0, KDNode<N, T, P> *n1) {
+KDNode<N, T, P>* __closestTo(const P pos[N], KDNode<N, T, P>* n0, KDNode<N, T, P>* n1) {
     if (n0 == 0) return n1;
     if (n1 == 0 || n0 == n1) return n0;
     P d0 = 0, d1 = 0, dx;
@@ -549,7 +549,7 @@ KDNode<N, T, P> *__closestTo(const P pos[N], KDNode<N, T, P> *n0, KDNode<N, T, P
 }
 
 template <unsigned char N, typename T, typename P>
-KDNode<N, T, P> *KDNode<N, T, P>::findNearest(const P pos[N], KDNode<N, T, P> *nearest) {
+KDNode<N, T, P>* KDNode<N, T, P>::findNearest(const P pos[N], KDNode<N, T, P>* nearest) {
     if (isLeaf()) {
         nearest = __closestTo<N, T, P>(pos, this, nearest);
         return nearest;
@@ -606,7 +606,7 @@ P __sqDist(const P p0[N], const P p1[N]) {
 }
 
 template <unsigned char N, typename T, typename P>
-void KDNode<N, T, P>::findCloseTo(const P pos[N], const P sqDist, std::vector<KDNode *> &nodes) {
+void KDNode<N, T, P>::findCloseTo(const P pos[N], const P sqDist, std::vector<KDNode*>& nodes) {
     if (__sqDist<N, T, P>(pos, pos_) < sqDist) {
         nodes.push_back(this);
     }
@@ -640,14 +640,14 @@ void KDNode<N, T, P>::findCloseTo(const P pos[N], const P sqDist, std::vector<KD
 
 #define __FF__ std::cout << "Failed at " << __FILE__ << "@" << __LINE__ << std::endl
 template <unsigned char N, typename T, typename P>
-void KDNode<N, T, P>::swap(KDNode<N, T, P> *n0, KDNode<N, T, P> *n1, KDNode<N, T, P> *p0,
-                           KDNode<N, T, P> *p1) {
+void KDNode<N, T, P>::swap(KDNode<N, T, P>* n0, KDNode<N, T, P>* n1, KDNode<N, T, P>* p0,
+                           KDNode<N, T, P>* p1) {
     if (n0 == n1 || n0 == 0 || n1 == 0) return;
 
-    KDNode<N, T, P> *r0 = n0->rightChild_;
-    KDNode<N, T, P> *l0 = n0->leftChild_;
-    KDNode<N, T, P> *r1 = n1->rightChild_;
-    KDNode<N, T, P> *l1 = n1->leftChild_;
+    KDNode<N, T, P>* r0 = n0->rightChild_;
+    KDNode<N, T, P>* l0 = n0->leftChild_;
+    KDNode<N, T, P>* r1 = n1->rightChild_;
+    KDNode<N, T, P>* l1 = n1->leftChild_;
 
     if (p0 == n1) {            // if n0 is a child to n1
         swap(n1, n0, p1, p0);  // swap in "other" direction
@@ -693,7 +693,7 @@ void KDNode<N, T, P>::swap(KDNode<N, T, P> *n0, KDNode<N, T, P> *n1, KDNode<N, T
 
 template <unsigned char N, typename T, typename P>
 void KDNode<N, T, P>::findNNearest(const P pos[N], size_t amount,
-                                   std::vector<KDNodeDistWrapper<N, T, P>> &current) {
+                                   std::vector<KDNodeDistWrapper<N, T, P>>& current) {
     P sqDist = __sqDist<N, T, P>(pos, pos_);
     if (current.size() < amount) {
         KDNodeDistWrapper<N, T, P> holder;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,6 @@ class PickingAction;
  */
 class IVW_CORE_API PickingMapper {
 public:
-    PickingMapper(PickingManager* manager = PickingManager::getPtr());
-
     /**
      * Construct a picking mapper. This will register a range of colors in the PickingMangaer and
      * create a PickingAction to associate those indices the the supplied action. The processor

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,122 +32,28 @@
 
 namespace inviwo {
 
-size_t SerializeBase::ReferenceDataContainer::insert(const void* data, TxElement* node,
-                                                     bool isPointer) {
-    SerializeBase::ReferenceData refData;
-    refData.node_ = node;
-    refData.isPointer_ = isPointer;
-    referenceMap_.insert(RefDataPair(data, refData));
-    return referenceMap_.count(data);
-}
+SerializeBase::SerializeBase()
+    : doc_{std::make_unique<TxDocument>()}, rootElement_{nullptr}, retrieveChild_{true} {}
 
-void SerializeBase::ReferenceDataContainer::setReferenceAttributes() {
-    // Loop over all different key values.
-    for (auto uniqueKey = referenceMap_.begin(); uniqueKey != referenceMap_.end();
-         uniqueKey = referenceMap_.upper_bound(uniqueKey->first)) {
-        auto sameKeys = referenceMap_.equal_range(uniqueKey->first);
-
-        if (std::distance(sameKeys.first, sameKeys.second) <= 1) continue;
-
-        std::stringstream ss;
-        ss << "ref";
-        ss << referenceCount_;
-
-        // Loop over all items with the same key as uniqueKey.
-        for (auto item = sameKeys.first; item != sameKeys.second; ++item) {
-            if (item->second.isPointer_) {
-                item->second.node_->SetAttribute(SerializeConstants::RefAttribute, ss.str());
-            } else {
-                item->second.node_->SetAttribute(SerializeConstants::IDAttribute, ss.str());
-            }
-        }
-
-        referenceCount_++;
-    }
-}
-
-size_t SerializeBase::ReferenceDataContainer::find(const void* data) {
-    return referenceMap_.count(data);
-}
-
-void* SerializeBase::ReferenceDataContainer::find(const std::string& type,
-                                                  const std::string& reference_or_id) {
-    void* data = nullptr;
-
-    if (reference_or_id.empty()) return data;
-
-    for (auto& elem : referenceMap_) {
-        std::string type_attrib("");
-        std::string ref_attrib("");
-        std::string id_attrib("");
-        elem.second.node_->GetAttribute(SerializeConstants::TypeAttribute, &type_attrib, false);
-        elem.second.node_->GetAttribute(SerializeConstants::RefAttribute, &ref_attrib, false);
-        elem.second.node_->GetAttribute(SerializeConstants::IDAttribute, &id_attrib, false);
-
-        if (type_attrib == type &&
-            (ref_attrib == reference_or_id || id_attrib == reference_or_id)) {
-            data = const_cast<void*>(elem.first);
-            break;
-        }
-    }
-
-    return data;
-}
-
-TxElement* SerializeBase::ReferenceDataContainer::nodeCopy(const void* data) {
-    std::pair<RefMap::iterator, RefMap::iterator> pIt;
-    std::vector<ReferenceData> nodes;
-    TxElement* nodeCopy = nullptr;
-    pIt = referenceMap_.equal_range(data);
-
-    for (RefMap::iterator mIt = pIt.first; mIt != pIt.second; ++mIt) {
-        nodeCopy = mIt->second.node_->Clone()->ToElement();
-
-        if (nodeCopy) {
-            nodeCopy->Clear();
-            break;
-        }
-    }
-
-    return nodeCopy;
-}
-
-SerializeBase::SerializeBase(bool allowReference)
-    : doc_{std::make_unique<TxDocument>()}
-    , rootElement_{nullptr}
-    , allowRef_{allowReference}
-    , retrieveChild_{true} {}
-
-SerializeBase::SerializeBase(std::string fileName, bool allowReference)
+SerializeBase::SerializeBase(std::string_view fileName)
     : fileName_{fileName}
-    , doc_{std::make_unique<TxDocument>(fileName)}
+    , doc_{std::make_unique<TxDocument>(fileName.data())}
     , rootElement_{nullptr}
-    , allowRef_{allowReference}
     , retrieveChild_{true} {}
 
-SerializeBase::SerializeBase(std::istream& stream, const std::string& path, bool allowReference)
+SerializeBase::SerializeBase(std::istream& stream, std::string_view path)
     : fileName_{path}
     , doc_{std::make_unique<TxDocument>()}
     , rootElement_{nullptr}
-    , allowRef_{allowReference}
     , retrieveChild_{true} {
     stream >> *doc_;
 }
 
 SerializeBase::~SerializeBase() = default;
-SerializeBase::SerializeBase(SerializeBase&&) = default;
-SerializeBase& SerializeBase::operator=(SerializeBase&&) = default;
+SerializeBase::SerializeBase(SerializeBase&&) noexcept = default;
+SerializeBase& SerializeBase::operator=(SerializeBase&&) noexcept = default;
 
 const std::string& SerializeBase::getFileName() const { return fileName_; }
-
-bool SerializeBase::isPrimitiveType(const std::type_info& type) const {
-    if (type == typeid(bool) || type == typeid(char) || type == typeid(int) ||
-        type == typeid(signed int) || type == typeid(unsigned int) || type == typeid(float) ||
-        type == typeid(double) || type == typeid(long double) || type == typeid(std::string))
-        return true;
-
-    return false;
-}
 
 std::string SerializeBase::nodeToString(const TxElement& node) {
     try {
@@ -204,14 +110,15 @@ NodeSwitch::NodeSwitch(SerializeBase& serializer, std::unique_ptr<TxElement> nod
     serializer_->rootElement_ = node_.get();
     serializer_->retrieveChild_ = retrieveChild;
 }
-NodeSwitch::NodeSwitch(SerializeBase& serializer, const std::string& key, bool retrieveChild)
+NodeSwitch::NodeSwitch(SerializeBase& serializer, std::string_view key, bool retrieveChild)
     : serializer_(&serializer)
     , storedNode_(serializer_->rootElement_)
     , storedRetrieveChild_(serializer_->retrieveChild_) {
 
-    serializer_->rootElement_ = serializer_->retrieveChild_
-                                    ? serializer_->rootElement_->FirstChildElement(key, false)
-                                    : serializer_->rootElement_;
+    serializer_->rootElement_ =
+        serializer_->retrieveChild_
+            ? serializer_->rootElement_->FirstChildElement(key.data(), false)
+            : serializer_->rootElement_;
 
     serializer_->retrieveChild_ = retrieveChild;
 }

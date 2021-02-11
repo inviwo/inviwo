@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,9 +41,12 @@
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/util/exception.h>
 
+#include <string_view>
+
 namespace inviwo {
 
 class InviwoApplication;
+class NetworkVisitor;
 
 /**
  * This class manages the current processor network. It can be thought of as a container of
@@ -116,7 +119,7 @@ public:
      * @param identifier Identifier of the Processor to be accessed.
      * @see getProcessorsByType(), Processor::setIdentifier(), Processor::getIdentifier()
      */
-    Processor* getProcessorByIdentifier(std::string identifier) const;
+    Processor* getProcessorByIdentifier(std::string_view identifier) const;
 
     /**
      * Returns a vector of Processors which are of type T. In case no Processors match T
@@ -224,7 +227,38 @@ public:
     std::vector<Property*> getPropertiesLinkedTo(Property* property);
     std::vector<PropertyLink> getLinksBetweenProcessors(Processor* p1, Processor* p2);
 
-    Property* getProperty(std::vector<std::string> path) const;
+    /**
+     * @brief Get Property by path
+     * @param path string of dot separated identifiers starting with a processor identifier followed
+     * by property identifiers.
+     * @return the property or nullptr if not found
+     */
+    Property* getProperty(std::string_view path) const;
+
+    /**
+     * @brief Get Port by path
+     * @param path string of dot separated identifiers starting with a processor identifier followed
+     * by a port identifier.
+     * @return the port or nullptr if not found
+     */
+    Port* getPort(std::string_view path) const;
+
+    /**
+     * @brief Get Inport by path
+     * @param path string of dot separated identifiers starting with a processor identifier followed
+     * by a port identifier.
+     * @return the port or nullptr if not found
+     */
+    Inport* getInport(std::string_view path) const;
+
+    /**
+     * @brief Get Outport by path
+     * @param path string of dot separated identifiers starting with a processor identifier followed
+     * by a port identifier.
+     * @return the port or nullptr if not found
+     */
+    Outport* getOutport(std::string_view path) const;
+
     bool isPropertyInNetwork(Property* prop) const;
 
     InviwoApplication* getApplication() const;
@@ -249,7 +283,17 @@ public:
      */
     void clear();
 
+    /**
+     * @brief Accept a NetworkVisitor, the visitor will visit each Processor of the Network in an
+     * undefined order. The Visitor will then visit each processors Properties and so on.
+     */
+    void accept(NetworkVisitor& visor);
+
+    int runningBackgroundJobs() const { return backgoundJobs_; }
+
 private:
+    void removeProcessorHelper(Processor* processor);
+
     // PropertyOwnerObserver overrides
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
@@ -257,9 +301,10 @@ private:
     virtual void onAboutPropertyChange(Property*) override;
     virtual void onProcessorInvalidationBegin(Processor*) override;
     virtual void onProcessorInvalidationEnd(Processor*) override;
-    virtual void onProcessorIdentifierChanged(Processor*,
-                                              const std::string& oldIdentifier) override;
     virtual void onProcessorPortRemoved(Processor*, Port* port) override;
+
+    virtual void onProcessorStartBackgroundWork(Processor*, size_t jobs) override;
+    virtual void onProcessorFinishBackgroundWork(Processor*, size_t jobs) override;
 
     // ProcessorMeteDataObserver overrides
     virtual void onProcessorMetaDataPositionChange() override;
@@ -273,6 +318,7 @@ private:
 
     unsigned int locked_ = 0;
     bool deserializing_ = false;
+    int backgoundJobs_ = 0;
 
     InviwoApplication* application_;
 
@@ -285,6 +331,8 @@ private:
 
     LinkEvaluator linkEvaluator_;
     std::vector<Processor*> processorsInvalidating_;
+
+    std::unordered_map<Processor*, Processor::NameDispatcherHandle> onIdChange_;
 };
 
 template <class T>

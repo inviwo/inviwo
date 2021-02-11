@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -64,17 +64,17 @@ public:
     virtual void doIfNotReady() override { PYBIND11_OVERLOAD(void, Processor, doIfNotReady, ); }
     virtual void setValid() override { PYBIND11_OVERLOAD(void, Processor, setValid, ); }
     virtual void invalidate(InvalidationLevel invalidationLevel,
-                            Property *modifiedProperty = nullptr) override {
+                            Property* modifiedProperty = nullptr) override {
         PYBIND11_OVERLOAD(void, Processor, invalidate, invalidationLevel, modifiedProperty);
     }
     virtual const ProcessorInfo getProcessorInfo() const override {
         PYBIND11_OVERLOAD_PURE(const ProcessorInfo, Processor, getProcessorInfo, );
     }
 
-    virtual void invokeEvent(Event *event) override {
+    virtual void invokeEvent(Event* event) override {
         PYBIND11_OVERLOAD(void, Processor, invokeEvent, event);
     }
-    virtual void propagateEvent(Event *event, Outport *source) override {
+    virtual void propagateEvent(Event* event, Outport* source) override {
         PYBIND11_OVERLOAD(void, Processor, propagateEvent, event, source);
     }
 };
@@ -83,13 +83,13 @@ class ProcessorFactoryObjectTrampoline : public ProcessorFactoryObject {
 public:
     using ProcessorFactoryObject::ProcessorFactoryObject;
 
-    virtual pybind11::object createProcessor(InviwoApplication *app) {
+    virtual pybind11::object createProcessor(InviwoApplication* app) {
         PYBIND11_OVERLOAD(pybind11::object, ProcessorFactoryObjectTrampoline, createProcessor, app);
     }
 
-    virtual std::unique_ptr<Processor> create(InviwoApplication *app) override {
+    virtual std::unique_ptr<Processor> create(InviwoApplication* app) override {
         auto proc = createProcessor(app);
-        auto p = std::unique_ptr<Processor>(proc.cast<Processor *>());
+        auto p = std::unique_ptr<Processor>(proc.cast<Processor*>());
         proc.release();
         return p;
     }
@@ -99,20 +99,20 @@ class ProcessorWidgetFactoryObjectTrampoline : public ProcessorWidgetFactoryObje
 public:
     using ProcessorWidgetFactoryObject::ProcessorWidgetFactoryObject;
 
-    virtual pybind11::object createWidget(Processor *processor) {
+    virtual pybind11::object createWidget(Processor* processor) {
         PYBIND11_OVERLOAD(pybind11::object, ProcessorWidgetFactoryObjectTrampoline, createWidget,
                           processor);
     }
 
-    virtual std::unique_ptr<ProcessorWidget> create(Processor *processor) override {
+    virtual std::unique_ptr<ProcessorWidget> create(Processor* processor) override {
         auto proc = createWidget(processor);
-        auto p = std::unique_ptr<ProcessorWidget>(proc.cast<ProcessorWidget *>());
+        auto p = std::unique_ptr<ProcessorWidget>(proc.cast<ProcessorWidget*>());
         proc.release();
         return p;
     }
 };
 
-void exposeProcessors(pybind11::module &m) {
+void exposeProcessors(pybind11::module& m) {
     namespace py = pybind11;
 
     py::enum_<CodeState>(m, "CodeState")
@@ -172,9 +172,9 @@ void exposeProcessors(pybind11::module &m) {
         .def("hasKey", &ProcessorFactory::hasKey)
         .def_property_readonly("keys", &ProcessorFactory::getKeys)
         .def("create",
-             [](ProcessorFactory *pf, std::string key) { return pf->create(key).release(); })
+             [](ProcessorFactory* pf, std::string key) { return pf->create(key).release(); })
         .def("create",
-             [](ProcessorFactory *pf, std::string key, ivec2 pos) {
+             [](ProcessorFactory* pf, std::string key, ivec2 pos) {
                  auto p = pf->create(key);
                  if (!p) {
                      throw py::key_error("failed to create processor of type '" + key + "'");
@@ -198,13 +198,13 @@ void exposeProcessors(pybind11::module &m) {
     py::class_<ProcessorWidgetFactory>(m, "ProcessorWidgetFactory")
         .def("registerObject", &ProcessorWidgetFactory::registerObject)
         .def("unRegisterObject", &ProcessorWidgetFactory::unRegisterObject)
-        .def("create", [](ProcessorWidgetFactory *pf, Processor *p) { return pf->create(p); })
+        .def("create", [](ProcessorWidgetFactory* pf, Processor* p) { return pf->create(p); })
         .def("hasKey", &ProcessorWidgetFactory::hasKey)
         .def("getkeys", &ProcessorWidgetFactory::getKeys);
 
     py::class_<ProcessorWidgetFactoryObject, ProcessorWidgetFactoryObjectTrampoline>(
         m, "ProcessorWidgetFactoryObject")
-        .def(py::init<const std::string &>())
+        .def(py::init<const std::string&>())
         .def("getClassIdentifier", &ProcessorWidgetFactoryObject::getClassIdentifier);
 
     py::class_<ProcessorMetaData>(m, "ProcessorMetaData")
@@ -212,15 +212,15 @@ void exposeProcessors(pybind11::module &m) {
         .def_property("selected", &ProcessorMetaData::isSelected, &ProcessorMetaData::setSelected)
         .def_property("visible", &ProcessorMetaData::isVisible, &ProcessorMetaData::setVisible);
 
-    using InportVecWrapper = VectorIdentifierWrapper<std::vector<Inport *>>;
-    exposeVectorIdentifierWrapper<std::vector<Inport *>>(m, "InportVectorWrapper");
+    using InportVecWrapper = VectorIdentifierWrapper<std::vector<Inport*>>;
+    exposeVectorIdentifierWrapper<std::vector<Inport*>>(m, "InportVectorWrapper");
 
-    using OutportVecWrapper = VectorIdentifierWrapper<std::vector<Outport *>>;
-    exposeVectorIdentifierWrapper<std::vector<Outport *>>(m, "OutportVectorWrapper");
+    using OutportVecWrapper = VectorIdentifierWrapper<std::vector<Outport*>>;
+    exposeVectorIdentifierWrapper<std::vector<Outport*>>(m, "OutportVectorWrapper");
 
     py::class_<Processor, ProcessorTrampoline, PropertyOwner, ProcessorPtr<Processor>>(
         m, "Processor", py::dynamic_attr{}, py::multiple_inheritance{})
-        .def(py::init<const std::string &, const std::string &>())
+        .def(py::init<const std::string&, const std::string&>())
         .def("__repr__", &Processor::getIdentifier)
         .def_property_readonly("classIdentifier", &Processor::getClassIdentifier)
         .def_property("displayName", &Processor::getDisplayName, &Processor::setDisplayName)
@@ -234,34 +234,36 @@ void exposeProcessors(pybind11::module &m) {
         .def_property_readonly("network", &Processor::getNetwork,
                                py::return_value_policy::reference)
         .def_property_readonly("inports",
-                               [](Processor *p) { return InportVecWrapper(p->getInports()); })
+                               [](Processor* p) { return InportVecWrapper(p->getInports()); })
         .def_property_readonly("outports",
-                               [](Processor *p) { return OutportVecWrapper(p->getOutports()); })
+                               [](Processor* p) { return OutportVecWrapper(p->getOutports()); })
         .def("getPort", &Processor::getPort, py::return_value_policy::reference)
         .def("getInport", &Processor::getInport, py::return_value_policy::reference)
         .def("getOutport", &Processor::getOutport, py::return_value_policy::reference)
-        .def("addInport",
-             [](Processor &p, Inport *port, const std::string &group, bool owner) {
-                 if (owner) {
-                     p.addPort(std::unique_ptr<Inport>(port), group);
-                 } else {
-                     p.addPort(*port, group);
-                 }
-             },
-             py::arg("inport"), py::arg("group") = "default", py::arg("owner") = true,
-             py::keep_alive<1, 2>{})
-        .def("addOutport",
-             [](Processor &p, Outport *port, const std::string &group, bool owner) {
-                 if (owner) {
-                     p.addPort(std::unique_ptr<Outport>(port), group);
-                 } else {
-                     p.addPort(*port, group);
-                 }
-             },
-             py::arg("outport"), py::arg("group") = "default", py::arg("owner") = true,
-             py::keep_alive<1, 2>{})
-        .def("removeInport", [](Processor &p, Inport *port) { return p.removePort(port); })
-        .def("removeOutport", [](Processor &p, Outport *port) { return p.removePort(port); })
+        .def(
+            "addInport",
+            [](Processor& p, Inport* port, const std::string& group, bool owner) {
+                if (owner) {
+                    p.addPort(std::unique_ptr<Inport>(port), group);
+                } else {
+                    p.addPort(*port, group);
+                }
+            },
+            py::arg("inport"), py::arg("group") = "default", py::arg("owner") = true,
+            py::keep_alive<1, 2>{})
+        .def(
+            "addOutport",
+            [](Processor& p, Outport* port, const std::string& group, bool owner) {
+                if (owner) {
+                    p.addPort(std::unique_ptr<Outport>(port), group);
+                } else {
+                    p.addPort(*port, group);
+                }
+            },
+            py::arg("outport"), py::arg("group") = "default", py::arg("owner") = true,
+            py::keep_alive<1, 2>{})
+        .def("removeInport", [](Processor& p, Inport* port) { return p.removePort(port); })
+        .def("removeOutport", [](Processor& p, Outport* port) { return p.removePort(port); })
         .def("getPortGroup", &Processor::getPortGroup)
         .def("getPortGroups", &Processor::getPortGroups)
         .def("getPortsInGroup", &Processor::getPortsInGroup)
@@ -283,7 +285,7 @@ void exposeProcessors(pybind11::module &m) {
         .def("propagateEvent", &Processor::propagateEvent)
         .def_property_readonly(
             "meta",
-            [](Processor *p) {
+            [](Processor* p) {
                 return p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
             },
             py::return_value_policy::reference);
@@ -292,11 +294,12 @@ void exposeProcessors(pybind11::module &m) {
         .def_property("size", &CanvasProcessor::getCanvasSize, &CanvasProcessor::setCanvasSize)
         .def("getUseCustomDimensions", &CanvasProcessor::getUseCustomDimensions)
         .def_property_readonly("customDimensions", &CanvasProcessor::getCustomDimensions)
-        .def_property_readonly("image", [](CanvasProcessor *cp) { return cp->getImage().get(); },
-                               py::return_value_policy::reference)
+        .def_property_readonly(
+            "image", [](CanvasProcessor* cp) { return cp->getImage().get(); },
+            py::return_value_policy::reference)
         .def_property_readonly("ready", &CanvasProcessor::isReady)
         .def("snapshot",
-             [](CanvasProcessor *canvas, std::string filepath) {
+             [](CanvasProcessor* canvas, std::string filepath) {
                  auto ext = filesystem::getFileExtension(filepath);
 
                  auto writer = canvas->getNetwork()
@@ -316,7 +319,7 @@ void exposeProcessors(pybind11::module &m) {
                  }
              })
 
-        .def("snapshotAsync", [](CanvasProcessor *canvas, std::string filepath) {
+        .def("snapshotAsync", [](CanvasProcessor* canvas, std::string filepath) {
             auto ext = filesystem::getFileExtension(filepath);
 
             auto writer = std::shared_ptr<DataWriterType<Layer>>{

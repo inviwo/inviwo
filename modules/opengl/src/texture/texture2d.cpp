@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -115,7 +115,7 @@ void Texture2D::upload(const void* data) {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<GLsizei>(dimensions_.x),
                     static_cast<GLsizei>(dimensions_.y), format_, dataType_, data);
-    LGL_ERROR_SUPPRESS;
+    LGL_ERROR_CLASS;
 }
 
 void Texture2D::setWrapping(const std::array<GLenum, 2>& wrapping) {

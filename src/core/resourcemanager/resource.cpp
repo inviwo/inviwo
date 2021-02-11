@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,6 @@
 
 namespace inviwo {
 
-Resource::Resource(const std::string &key) : key_(key) {}
+Resource::Resource(const std::string& key) : key_(key) {}
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STREAMRIBBONS_H
-#define IVW_STREAMRIBBONS_H
+#pragma once
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -82,5 +81,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_STREAMRIBBONS_H

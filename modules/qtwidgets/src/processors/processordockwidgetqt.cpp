@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString& title,
     ivec2 dim = ProcessorWidget::getDimensions();
     ivec2 pos = ProcessorWidget::getPosition();
 
-    setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
+    setWindowTitle(utilqt::toQString(processor_->getDisplayName()));
     // make the widget to float and not sticky by default
     this->setFloating(true);
     this->setSticky(false);
@@ -76,7 +76,9 @@ ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString& title,
         }
     }
 
-    processor_->ProcessorObservable::addObserver(this);
+    idChange_ = processor_->onDisplayNameChange([this](std::string_view newName, std::string_view) {
+        setWindowTitle(utilqt::toQString(newName));
+    });
 }
 
 void ProcessorDockWidgetQt::setVisible(bool visible) {
@@ -109,10 +111,6 @@ void ProcessorDockWidgetQt::resizeEvent(QResizeEvent* event) {
 void ProcessorDockWidgetQt::moveEvent(QMoveEvent* event) {
     ProcessorDockWidgetQt::setPosition(ivec2(event->pos().x(), event->pos().y()));
     InviwoDockWidget::moveEvent(event);
-}
-
-void ProcessorDockWidgetQt::onProcessorIdentifierChanged(Processor*, const std::string&) {
-    setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
 }
 
 }  // namespace inviwo

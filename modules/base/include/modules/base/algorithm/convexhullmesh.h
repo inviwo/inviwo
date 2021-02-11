@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ class Mesh;
 
 namespace util {
 
-std::shared_ptr<Mesh> IVW_MODULE_BASE_API convertHullToMesh(const std::vector<vec2> &hull,
+std::shared_ptr<Mesh> IVW_MODULE_BASE_API convertHullToMesh(const std::vector<vec2>& hull,
                                                             bool useIndices = false);
 
 }  // namespace util

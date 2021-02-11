@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,15 +30,14 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/sourcecontext.h>
 
+#include <string_view>
 #include <string>
-#include <functional>
 #include <exception>
 #include <stdexcept>
 #include <vector>
-#include <iostream>
+#include <ostream>
 
 #include <warn/push>
 #include <warn/ignore/dll-interface-base>
@@ -51,7 +50,7 @@ using ExceptionHandler = std::function<void(ExceptionContext)>;
 
 class IVW_CORE_API Exception : public std::runtime_error {
 public:
-    Exception(const std::string& message = "", ExceptionContext context = ExceptionContext());
+    Exception(std::string_view message = "", ExceptionContext context = ExceptionContext());
     virtual ~Exception() noexcept;
     virtual std::string getMessage() const;
     std::string getFullMessage() const;
@@ -74,45 +73,44 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 
 class IVW_CORE_API RangeException : public Exception {
 public:
-    RangeException(const std::string& message = "", ExceptionContext context = ExceptionContext());
+    RangeException(std::string_view message = "", ExceptionContext context = ExceptionContext());
     virtual ~RangeException() noexcept = default;
 };
 
 class IVW_CORE_API NullPointerException : public Exception {
 public:
-    NullPointerException(const std::string& message = "",
+    NullPointerException(std::string_view message = "",
                          ExceptionContext context = ExceptionContext());
     virtual ~NullPointerException() noexcept = default;
 };
 
 class IVW_CORE_API IgnoreException : public Exception {
 public:
-    IgnoreException(const std::string& message = "", ExceptionContext context = ExceptionContext());
+    IgnoreException(std::string_view message = "", ExceptionContext context = ExceptionContext());
     virtual ~IgnoreException() noexcept = default;
 };
 
 class IVW_CORE_API AbortException : public Exception {
 public:
-    AbortException(const std::string& message = "", ExceptionContext context = ExceptionContext());
+    AbortException(std::string_view message = "", ExceptionContext context = ExceptionContext());
     virtual ~AbortException() noexcept = default;
 };
 
 class IVW_CORE_API FileException : public Exception {
 public:
-    FileException(const std::string& message = "", ExceptionContext context = ExceptionContext());
+    FileException(std::string_view message = "", ExceptionContext context = ExceptionContext());
     virtual ~FileException() noexcept = default;
 };
 
 class IVW_CORE_API ResourceException : public Exception {
 public:
-    ResourceException(const std::string& message = "",
-                      ExceptionContext context = ExceptionContext());
+    ResourceException(std::string_view message = "", ExceptionContext context = ExceptionContext());
     virtual ~ResourceException() noexcept = default;
 };
 
 class IVW_CORE_API ModuleInitException : public Exception {
 public:
-    ModuleInitException(const std::string& message = "",
+    ModuleInitException(std::string_view message = "",
                         ExceptionContext context = ExceptionContext(),
                         std::vector<std::string> modulesToDeregister = {});
     virtual ~ModuleInitException() noexcept = default;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,15 +27,17 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
-#define IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/tf/tfpropertydialog.h>
 #include <modules/qtwidgets/inviwowidgetsqt.h>
 
-#include <inviwo/core/properties/tfpropertyconcept.h>
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>
+
+class QShowEvent;
+class QResizeEvent;
 
 namespace inviwo {
 
@@ -74,11 +76,10 @@ public:
     void updateFromProperty();
 
 private:
+    void showEvent(QShowEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
 
     std::unique_ptr<util::TFPropertyConcept> propertyPtr_ = nullptr;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H

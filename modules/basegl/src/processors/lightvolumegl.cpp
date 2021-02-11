@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -102,9 +102,9 @@ LightVolumeGL::LightVolumeGL()
     , transferFunction_("transferFunction", "Transfer function", &inport_)
     , floatPrecision_("floatPrecision", "Float Precision", false)
     , propagationShader_("lighting/lightpropagation.vert", "lighting/lightpropagation.geom",
-                         "lighting/lightpropagation.frag", true)
+                         "lighting/lightpropagation.frag")
     , mergeShader_("lighting/lightvolumeblend.vert", "lighting/lightvolumeblend.geom",
-                   "lighting/lightvolumeblend.frag", true)
+                   "lighting/lightvolumeblend.frag")
     , lightColor_(1.f)
     , propParams_{{{supportColoredLight_ ? lightColor_ : borderColor_},
                    {supportColoredLight_ ? lightColor_ : borderColor_}}}

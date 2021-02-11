@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -258,7 +258,7 @@ std::vector<TFPrimitiveData> TransferFunction::simplify(const std::vector<TFPrim
 }
 
 void TransferFunction::calcTransferValues() const {
-    ivwAssert(std::is_sorted(sorted_.begin(), sorted_.end(), comparePtr{}), "Should be sorted");
+    IVW_ASSERT(std::is_sorted(sorted_.begin(), sorted_.end(), comparePtr{}), "Should be sorted");
 
     // We assume the the points a sorted here.
     auto dataArray = dataRepr_->getDataTyped();
@@ -274,11 +274,11 @@ void TransferFunction::calcTransferValues() const {
     invalidData_ = false;
 }
 
-std::string TransferFunction::getTitle() const { return "Transfer Function"; }
+std::string_view TransferFunction::getTitle() const { return "Transfer Function"; }
 
-std::string TransferFunction::serializationKey() const { return "Points"; }
+std::string_view TransferFunction::serializationKey() const { return "Points"; }
 
-std::string TransferFunction::serializationItemKey() const { return "Point"; }
+std::string_view TransferFunction::serializationItemKey() const { return "Point"; }
 
 bool operator==(const TransferFunction& lhs, const TransferFunction& rhs) {
     if (lhs.maskMin_ != rhs.maskMin_) return false;

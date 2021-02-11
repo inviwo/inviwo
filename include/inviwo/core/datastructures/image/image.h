@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,8 +48,32 @@ class IVW_CORE_API Image : public DataGroup<Image, ImageRepresentation>, public 
 public:
     using DataBuffer = std::unique_ptr<std::vector<unsigned char>>;
 
+    /**
+     * @brief Create a new image with @p dimensions and @p format.
+     * The image will hold one color layer, one depth layer and one picking layer.
+     * The layers will not have any representations.
+     * @param dimensions of the new image
+     * @param format of the new image
+     */
     Image(size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get());
+
+    /**
+     * @brief Create an Image from the given layers.
+     * Any number of color layers can be added. The color layers will be added in the same order as
+     * in the list. For any LayerType not in the list default layers will added.
+     * @pre The list of layers may only contain one Depth and one Picking layers.
+     * @pre All Layers in the list must have the same dimensions.
+     * @param layers to use
+     */
+    Image(std::vector<std::shared_ptr<Layer>> layers);
+
+    /**
+     * @brief Create a new image from the given layer.
+     * Default layers will be added for the other two LayerTypes
+     * @param layer to use
+     */
     Image(std::shared_ptr<Layer> layer);
+
     Image(const Image& rhs);
     Image& operator=(const Image& that);
     virtual Image* clone() const;
@@ -107,6 +131,19 @@ public:
      */
     dvec4 readPixel(size2_t pos, LayerType layer, size_t index = 0) const;
 
+    /**
+     * Call the given \p callback for each layer including depth and picking, if existing. The
+     * signature of the callback is `void(Layer&)`.
+     */
+    template <typename C>
+    void forEachLayer(C callback);
+    /**
+     * Call the given \p callback for each layer including depth and picking, if existing. The
+     * signature of the callback is `void(const Layer&)`.
+     */
+    template <typename C>
+    void forEachLayer(C callback) const;
+
     static uvec3 colorCode;
     static const std::string classIdentifier;
     static const std::string dataName;
@@ -125,5 +162,19 @@ protected:
 // https://docs.microsoft.com/en-us/cpp/cpp/general-rules-and-limitations?view=vs-2017
 extern template class IVW_CORE_TMPL_EXP DataReaderType<Image>;
 extern template class IVW_CORE_TMPL_EXP DataWriterType<Image>;
+
+template <typename C>
+void Image::forEachLayer(C callback) {
+    for (auto& layer : colorLayers_) callback(*layer);
+    if (depthLayer_) callback(*depthLayer_);
+    if (pickingLayer_) callback(*pickingLayer_);
+}
+
+template <typename C>
+void Image::forEachLayer(C callback) const {
+    for (auto& layer : colorLayers_) callback(static_cast<const Layer&>(*layer));
+    if (depthLayer_) callback(static_cast<const Layer&>(*depthLayer_));
+    if (pickingLayer_) callback(static_cast<const Layer&>(*pickingLayer_));
+}
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,177 +27,336 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FRAMEBUFFEROBJECT_H
-#define IVW_FRAMEBUFFEROBJECT_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/texture/texture2darray.h>
 #include <modules/opengl/texture/texture3d.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <vector>
+#include <optional>
 
 namespace inviwo {
 
+/**
+ * @brief Inviwo framebuffer wrapper.
+ *
+ * Handles creation and deletion of OpenGL framebuffer objects. Has functions for attaching and
+ * detaching of textures to the framebuffer. It also keeps track of all attached texture ids. The
+ * wrapper is a move only type.
+ */
 class IVW_MODULE_OPENGL_API FrameBufferObject {
-
 public:
+    /**
+     * @brief Create a new framebuffer object
+     */
     FrameBufferObject();
+    FrameBufferObject(const FrameBufferObject&) = delete;
+    FrameBufferObject(FrameBufferObject&& rhs) noexcept;
+    FrameBufferObject& operator=(const FrameBufferObject&) = delete;
+    FrameBufferObject& operator=(FrameBufferObject&& rhs) noexcept;
     ~FrameBufferObject();
 
     /**
-     * Activate this FBO and store the currently set FBO
+     * @brief Get the framebuffer name
      */
-    void activate();
-    void defineDrawBuffers();
+    unsigned int getID() const;
 
     /**
-     * Unbind FBO and restore previous one
+     * @brief Binds the framebuffer
+     */
+    void activate();
+
+    /**
+     * @brief Unbind the framebuffer (binds id 0)
      */
     void deactivate();
 
     /**
-     * Use this function to unbind the FBO, without restoring the previous after this call, no FBO
-     * is bound
+     * @brief Unbind the framebuffer (binds id 0)
      */
     static void deactivateFBO();
 
     /**
-     *	For attaching a 2D Texture
+     * @brief Check if this framebuffer is currently bound
+     */
+    bool isActive() const;
+
+    /**
+     * @brief Get the framebuffer status.
+     * GL_FRAMEBUFFER_COMPLETE represents a complete framebuffer.
+     * see glCheckFramebufferStatus for more details of the return value.
+     * @see utilgl::framebufferStatusToString(GLenum)
+     * @pre The framebuffer must be active.
+     * @return the framebuffer status.
+     */
+    GLenum status() const;
+
+    /**
+     * @brief Attach a 2D Texture to the framebuffer
+     * @pre The framebuffer must be active.
+     * @param texture to attach
+     * @param attachmentID attachment point to use (@c GL_COLOR_ATTACHMENT0, ... )
      */
     void attachTexture(Texture2D* texture, GLenum attachmentID);
+
+    /**
+     * @brief Attach a 2D Color Texture to the framebuffer.
+     *
+     * Will use the first available attachment point.
+     * @pre The framebuffer must be active.
+     * @param texture to attach
+     * @return The used attachment point (@c GL_COLOR_ATTACHMENT0, ... )
+     */
     GLenum attachColorTexture(Texture2D* texture);
 
     /**
-     * If forcedLocation is > -1, this will enforce to position the color attachment at the given
-     * location in the draw buffer list (as used for attrib location in shaders). Side effects:
-     * affects subsequent buffer locations of already attached color buffers
+     * @brief Attach a 2D Color Texture to the framebuffer.
+     * @pre The framebuffer must be active.
+     * @param texture to attach
+     * @param attachmentNumber number of attachment point to use (0, 1, ...)
+     * @return the attachment point used (GL_COLOR_ATTACHMENT0, ... )
      */
-    GLenum attachColorTexture(Texture2D* texture, int attachmentNumber, bool attachFromRear = false,
-                              int forcedLocation = -1);
+    GLenum attachColorTexture(Texture2D* texture, int attachmentNumber);
 
     /**
-     * For attaching a 2D Array Texture
+     * @brief Attach a 2D Texture Array to the framebuffer.
+     * @pre The framebuffer must be active.
+     * @param texture to attach
+     * @param attachmentID attachment point to use (@c GL_COLOR_ATTACHMENT0, ... )
      */
     void attachTexture(Texture2DArray* texture, GLenum attachmentID);
+
+    /**
+     * @brief Attach a 2D Color Texture Array to the framebuffer.
+     *
+     * Will use the first available attachment point.
+     * @pre The framebuffer must be active.
+     * @param texture to attach
+     * @return The used attachment point (@c GL_COLOR_ATTACHMENT0, ... )
+     */
     GLenum attachColorTexture(Texture2DArray* texture);
 
     /**
-     * If forcedLocation is > -1, this will enforce to position the color attachment at the given
-     * location in the draw buffer list (as used for attrib location in shaders). Side effects:
-     * affects subsequent buffer locations of already attached color buffers
+     * @brief Attach a 2D Color Texture Array to the framebuffer.
+     * @pre The framebuffer must be active.
+     * @param texture to attach
+     * @param attachmentNumber number of attachment point to use (0, 1, ...)
+     * @return the attachment point used (@c GL_COLOR_ATTACHMENT0, ... )
      */
-    GLenum attachColorTexture(Texture2DArray* texture, int attachmentNumber,
-                              bool attachFromRear = false, int forcedLocation = -1);
+    GLenum attachColorTexture(Texture2DArray* texture, int attachmentNumber);
 
     /**
-     * For attaching a layer of a 2D Array Texture
+     * @brief Attach a layer of 2D a Texture Array to the framebuffer.
+     * @pre The framebuffer must be active.
+     * @param texture to attach
+     * @param attachmentID attachment point to use (@c GL_COLOR_ATTACHMENT0, ... )
+     * @param layer index of the layer to attach
+     * @param level the mimpmap level to use defaults to 0
      */
     void attachTextureLayer(Texture2DArray* texture, GLenum attachmentID, int layer, int level = 0);
+
+    /**
+     * @brief Attach a layer of a 2D Color Texture Array to the framebuffer.
+     *
+     * Will use the first available attachment point.
+     * @pre The framebuffer must be active.
+     * @param texture to attach
+     * @param layer index of the layer to attach
+     * @return The used attachment point (@c GL_COLOR_ATTACHMENT0, ... )
+     */
     GLenum attachColorTextureLayer(Texture2DArray* texture, int layer);
 
     /**
-     * If forcedLocation is > -1, this will enforce to position the color attachment at the given
-     * location in the draw buffer list (as used for attrib location in shaders). Side effects:
-     * affects subsequent buffer locations of already attached color buffers
+     * @brief Attach a layer of a 2D Color Texture Array to the framebuffer.
+     * @pre The framebuffer must be active.
+     * @param texture to attach
+     * @param attachmentNumber number of attachment point to use (0, 1, ...)
+     * @param layer index of the layer to attach
+     * @return the attachment point used (@c GL_COLOR_ATTACHMENT0, ... )
      */
-    GLenum attachColorTextureLayer(Texture2DArray* texture, int attachmentNumber, int layer,
-                                   bool attachFromRear = false, int forcedLocation = -1);
+    GLenum attachColorTextureLayer(Texture2DArray* texture, int attachmentNumber, int layer);
 
     /**
-     * For attaching a 3D Texture
+     * @brief Attach a 3D Texture to the framebuffer.
+     *
+     * Use @c gl_Layer in the geometry shader to set target z slice.
+     * @pre The framebuffer must be active.
+     * @param texture to attach
+     * @param attachmentID attachment point to use (@c GL_COLOR_ATTACHMENT0, ... )
      */
     void attachTexture(Texture3D* texture, GLenum attachmentID);
+
+    /**
+     * @brief Attach a 3D Color Texture to the framebuffer.
+     *
+     * Will use the first available attachment point.
+     * Use @c gl_Layer in the geometry shader to set target z slice.
+     * @pre The framebuffer must be active.
+     * @param texture to attach
+     * @return The used attachment point (@c GL_COLOR_ATTACHMENT0, ... )
+     */
     GLenum attachColorTexture(Texture3D* texture);
 
     /**
-     * If forcedLocation is > -1, this will enforce to position the color attachment at the given
-     * location in the draw buffer list (as used for attrib location in shaders). Side effects:
-     * affects subsequent buffer locations of already attached color buffers
+     * @brief Attach a 3D Color Texture to the framebuffer.
+     *
+     * Use @c gl_Layer in the geometry shader to set target z slice.
+     * @pre The framebuffer must be active.
+     * @param texture to attach
+     * @param attachmentNumber number of attachment point to use (0, 1, ...)
+     * @return the attachment point used (@c GL_COLOR_ATTACHMENT0, ... )
      */
-    GLenum attachColorTexture(Texture3D* texture, int attachmentNumber, bool attachFromRear = false,
-                              int forcedLocation = -1);
+    GLenum attachColorTexture(Texture3D* texture, int attachmentNumber);
 
     /**
-     * For attaching a layer of a 3D Texture
+     * @brief Attach a layer of a 3D Texture to the framebuffer.
+     * @pre The framebuffer must be active.
+     * @param texture to attach
+     * @param attachmentID attachment point to use (@c GL_COLOR_ATTACHMENT0, ... )
+     * @param layer index of the z layer to attach
      */
     void attachTextureLayer(Texture3D* texture, GLenum attachmentID, int layer);
+
+    /**
+     * @brief Attach a layer of a 3D Color Texture to the framebuffer.
+     * Will use the first available attachment point.
+     * @pre The framebuffer must be active.
+     * @param texture to attach
+     * @param layer index of the z layer to attach
+     * @return The used attachment point (@c GL_COLOR_ATTACHMENT0, ... )
+     */
     GLenum attachColorTextureLayer(Texture3D* texture, int layer);
 
     /**
-     * If forcedLocation is > -1, this will enforce to position the color attachment at the given
-     * location in the draw buffer list (as used for attrib location in shaders). Side effects:
-     * affects subsequent buffer locations of already attached color buffers
+     * @brief Attach a layer of a 3D Color Texture to the framebuffer.
+     * @pre The framebuffer must be active.
+     * @param texture to attach
+     * @param attachmentNumber number of attachment point to use (0, 1, ...)
+     * @param layer index of the z layer to attach
+     * @return the attachment point used (@c GL_COLOR_ATTACHMENT0, ... )
      */
-    GLenum attachColorTextureLayer(Texture3D* texture, int attachmentNumber, int layer,
-                                   bool attachFromRear = false, int forcedLocation = -1);
+    GLenum attachColorTextureLayer(Texture3D* texture, int attachmentNumber, int layer);
 
+    /**
+     * @brief Detach the texture at the given attachment point
+     * @pre The framebuffer must be active.
+     * @param attachmentID to detach (@c GL_COLOR_ATTACHMENT0, ... )
+     */
     void detachTexture(GLenum attachmentID);
+
+    /**
+     * @brief Detach all the attached textures
+     * @pre The framebuffer must be active.
+     */
     void detachAllTextures();
 
-    unsigned int getID() const;
+    /**
+     * @brief Get the maximal number of color attachments
+     * Queries @c GL_MAX_COLOR_ATTACHMENTS
+     */
+    static GLuint maxColorAttachments();
 
     /**
-     * Returns a compactified list of all color attachments (as used in glDrawBuffers())
+     * @brief Check if there are any color attachments
      */
-    const std::vector<GLenum>& getDrawBuffers() const { return drawBuffers_; }
-
-    /**
-     * Returns a boolean field indicating whether attachment i has an attached texture
-     */
-    const std::vector<bool>& getDrawBuffersInUse() const { return buffersInUse_; }
-    const GLenum* getDrawBuffersDeprecated() const;
-    int getMaxColorAttachments() const;
-
-    /**
-     * Returns the location of the given attachment withing the registered draw buffers (e.g. used
-     * for glBindAttribLocation() and glFragDataLocation())
-     */
-    int getAttachmentLocation(GLenum attachmentID) const;
 
     bool hasColorAttachment() const;
+    /**
+     * @brief Check if there is any depth attachment
+     */
     bool hasDepthAttachment() const;
-    bool hasStencilAttachment() const;
-
-    void checkStatus();
-
-    void setRead_Blit(bool set = true) const;
-    void setDraw_Blit(bool set = true);
-
-    bool isActive() const;
-
-protected:
-    void performAttachTexture(GLenum attachmentID);
-    bool performAttachColorTexture(GLenum& outAttachNumber);
 
     /**
-     * If forcedLocation is > -1, this will enforce to position the color attachment at the given
-     * location in the draw buffer list (as used for attrib location in shaders). Side effects:
-     * affects subsequent buffer locations of already attached color buffers. NOTE: if
-     * forcedLocation is larger than the number of attachments, it will not be considered
+     * @brief Check if there is any stencil attachment
      */
-    bool performAttachColorTexture(GLenum& outAttachNumber, int attachmentNumber,
-                                   bool attachFromRear = false, int forcedLocation = -1);
+    bool hasStencilAttachment() const;
 
-    std::string printBuffers() const;
-    static std::string getAttachmentStr(GLenum attachmentID);
+    /**
+     * @brief Get the current list of attached colors texture id.
+     *
+     * Returns a list of all color attachments points, for unused points the value will be 0, for
+     * used points the value will be the attached texture id.
+     * @return List of attached texture ids.
+     */
+    const std::vector<GLuint>& attachedColorTextureIds() const { return attachedColorIds_; }
+
+    /**
+     * @brief Returns the texture id of the attached depth texture id or 0 if no depth is attached.
+     */
+    GLuint attachedDepthTextureId() const { return attachedDepthId_; }
+    /**
+     * @brief Returns the texture id of the attached stencil texture id of 0 if no stencil is
+     * attached.
+     */
+    GLuint attachedStencilTextureId() const { return attachedStencilId_; }
+
+    /**
+     * @brief Bind the framebuffer name to GL_READ_FRAMEBUFFER for "Blit" reading
+     * @param set True will bind this buffer, False will bind id 0
+     */
+    void setReadBlit(bool set = true) const;
+
+    /**
+     * @brief Bind the framebuffer name to GL_DRAW_FRAMEBUFFER for "Blit" drawing
+     * @param set True will bind this buffer, False will bind id 0
+     */
+    void setDrawBlit(bool set = true);
 
 private:
+    static GLuint enumToNumber(GLenum attachmentID) { return attachmentID - GL_COLOR_ATTACHMENT0; }
+    static GLenum numberToEnum(GLuint number) { return GL_COLOR_ATTACHMENT0 + number; }
+
+    void registerAttachment(GLenum attachmentID, GLuint texId);
+    void deregisterAttachment(GLenum attachmentID);
+    GLenum firstFreeAttachmentID() const;
+
     unsigned int id_;
-    bool hasDepthAttachment_;
-    bool hasStencilAttachment_;
+    GLuint attachedDepthId_;
+    GLuint attachedStencilId_;
+    std::vector<GLuint> attachedColorIds_;
 
-    std::vector<GLenum> drawBuffers_;
-    std::vector<bool> buffersInUse_;
-    int maxColorattachments_;
-
-    static const std::array<GLenum, 16> colorAttachmentEnums_;
-
-    GLint prevFbo_;
-    GLint prevDrawFbo_;
-    mutable GLint prevReadFbo_;
+    Canvas::ContextID creationContext_ = nullptr;
 };
 
-}  // namespace inviwo
+namespace utilgl {
 
-#endif  // IVW_FRAMEBUFFEROBJECT_H
+/**
+ * @brief Convert the return value of @c glCheckFramebufferStatus to a human readable string
+ */
+IVW_MODULE_OPENGL_API std::string_view framebufferStatusToString(GLenum status);
+
+/**
+ * @brief A FrameBufferObject activation RAII utility, will store the current FBO and restore that
+ * in the destructor
+ */
+class IVW_MODULE_OPENGL_API ActivateFBO {
+public:
+    explicit ActivateFBO(FrameBufferObject& fbo) : prevFbo_{0} {
+        GLint currentFbo = 0;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFbo);
+        if (static_cast<GLint>(fbo.getID()) != currentFbo) {
+            fbo.activate();
+            prevFbo_ = currentFbo;
+        }
+    }
+    ActivateFBO(const ActivateFBO&) = delete;
+    ActivateFBO(ActivateFBO&& rhs) noexcept : prevFbo_{rhs.prevFbo_} { rhs.prevFbo_ = 0; };
+    ActivateFBO& operator=(const ActivateFBO&) = delete;
+    ActivateFBO& operator=(ActivateFBO&& that) = delete;
+
+    ~ActivateFBO() {
+        if (prevFbo_ != 0) {
+            glBindFramebuffer(GL_FRAMEBUFFER, prevFbo_);
+        }
+    }
+
+private:
+    GLint prevFbo_;
+};
+
+}  // namespace utilgl
+
+}  // namespace inviwo

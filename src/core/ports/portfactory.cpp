@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,24 +32,24 @@
 
 namespace inviwo {
 
-bool InportFactory::hasKey(const std::string &key) const {
+bool InportFactory::hasKey(const std::string& key) const {
     return StandardFactory<Inport, InportFactoryObject>::hasKey(key);
 }
 
-std::unique_ptr<Inport> InportFactory::create(const std::string &className,
-                                              const std::string &identifier) const {
+std::unique_ptr<Inport> InportFactory::create(const std::string& className,
+                                              const std::string& identifier) const {
     return std::unique_ptr<Inport>(util::map_find_or_null(
-        map_, className, [&identifier](InportFactoryObject *o) { return o->create(identifier); }));
+        map_, className, [&identifier](InportFactoryObject* o) { return o->create(identifier); }));
 }
 
-bool OutportFactory::hasKey(const std::string &key) const {
+bool OutportFactory::hasKey(const std::string& key) const {
     return StandardFactory<Outport, OutportFactoryObject>::hasKey(key);
 }
 
-std::unique_ptr<Outport> OutportFactory::create(const std::string &className,
-                                                const std::string &identifier) const {
+std::unique_ptr<Outport> OutportFactory::create(const std::string& className,
+                                                const std::string& identifier) const {
     return std::unique_ptr<Outport>(util::map_find_or_null(
-        map_, className, [&identifier](OutportFactoryObject *o) { return o->create(identifier); }));
+        map_, className, [&identifier](OutportFactoryObject* o) { return o->create(identifier); }));
 }
 
 }  // namespace inviwo

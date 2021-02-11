@@ -1,8 +1,10 @@
+
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,25 +43,24 @@ namespace inviwo {
 
 namespace hdf5 {
 
-Handle::Handle(std::string filename) : filename_(filename), path_("/") {
-    H5::H5File hdfFile(filename_, H5F_ACC_RDONLY);
-    data_ = hdfFile.openGroup(path_);
+namespace {
+H5::Group load(const std::string& filename, const std::string& path) {
+    H5::H5File hdfFile(filename, H5F_ACC_RDONLY);
+    return hdfFile.openGroup(path);
 }
+}  // namespace
 
-Handle::Handle(std::string filename, Path path) : filename_(filename), path_(path) {
-    H5::H5File hdfFile(filename_, H5F_ACC_RDONLY);
-    data_ = hdfFile.openGroup(path_);
-}
+Handle::Handle(std::string filename)
+    : filename_(filename), path_("/"), data_{load(filename_, path_)} {}
 
-Handle::Handle(const Handle& rhs) : filename_(rhs.filename_), path_(rhs.path_) {
-    H5::H5File hdfFile(filename_, H5F_ACC_RDONLY);
-    data_ = hdfFile.openGroup(path_);
-}
+Handle::Handle(std::string filename, Path path)
+    : filename_(filename), path_(path), data_{load(filename_, path_)} {}
 
-Handle::Handle(Handle&& rhs) : filename_(rhs.filename_), path_(rhs.path_) {
-    H5::H5File hdfFile(filename_, H5F_ACC_RDONLY);
-    data_ = hdfFile.openGroup(path_);
-}
+Handle::Handle(const Handle& rhs)
+    : filename_(rhs.filename_), path_(rhs.path_), data_{load(filename_, path_)} {}
+
+Handle::Handle(Handle&& rhs)
+    : filename_(rhs.filename_), path_(rhs.path_), data_{load(filename_, path_)} {}
 
 Handle& Handle::operator=(Handle&& that) {
     if (this != &that) {
@@ -91,7 +92,7 @@ Handle* Handle::getHandleForPath(const std::string& path) const {
 
 Document Handle::getInfo() const {
     Document doc;
-    doc.append("p", "File: " + filename_ + path_);
+    doc.append("p", "File: " + filename_ + path_.toString());
     return doc;
 }
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@ namespace inviwo {
 
 namespace util {
 
-std::shared_ptr<LayerRAM> layerSubSet(const Layer *in, ivec2 offset, size2_t extent,
+std::shared_ptr<LayerRAM> layerSubSet(const Layer* in, ivec2 offset, size2_t extent,
                                       bool clampBorderOutsideImage) {
 
     return in->getRepresentation<LayerRAM>()->dispatch<std::shared_ptr<LayerRAM>>(

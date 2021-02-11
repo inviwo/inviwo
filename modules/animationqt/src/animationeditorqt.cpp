@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -187,7 +187,6 @@ void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent* event) {
     auto source = dynamic_cast<PropertyWidget*>(event->source());
     if (source) {
         auto property = source->getProperty();
-        auto app = controller_.getInviwoApplication();
 
         // Get time
         QGraphicsView* pView = views().empty() ? nullptr : views().first();
@@ -195,12 +194,10 @@ void AnimationEditorQt::dropEvent(QGraphicsSceneDragDropEvent* event) {
             getSnapTime(event->scenePos().x(), pView ? pView->transform().m11() : 1);
         const qreal time = snapX / static_cast<double>(widthPerSecond);
 
-        // Use AnimationManager for adding keyframe or keyframe sequence.
-        auto& am = app->template getModuleByType<AnimationModule>()->getAnimationManager();
         if (event->modifiers() & Qt::ControlModifier) {
-            am.addSequenceCallback(property, Seconds(time));
+            controller_.getAnimation().addKeyframeSequence(property, Seconds(time));
         } else {
-            am.addKeyframeCallback(property, Seconds(time));
+            controller_.getAnimation().addKeyframe(property, Seconds(time));
         }
 
         event->acceptProposedAction();

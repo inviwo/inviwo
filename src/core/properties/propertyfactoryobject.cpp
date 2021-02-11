@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,11 +31,10 @@
 
 namespace inviwo {
 
-PropertyFactoryObject::PropertyFactoryObject(const std::string& className)
-    : className_(className) {}
+PropertyFactoryObject::PropertyFactoryObject(std::string_view className) : className_(className) {}
 
-PropertyFactoryObject::~PropertyFactoryObject() {}
+PropertyFactoryObject::~PropertyFactoryObject() = default;
 
-std::string PropertyFactoryObject::getClassIdentifier() const { return className_; }
+const std::string& PropertyFactoryObject::getClassIdentifier() const { return className_; }
 
 }  // namespace inviwo

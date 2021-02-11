@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,7 @@ InviwoEditMenu::InviwoEditMenu(InviwoMainWindow* win) : QMenu(tr("&Edit"), win) 
         auto deleteAction = addAction(QIcon(":/svgicons/edit-delete.svg"), tr("&Delete"));
         actions_[MenuItemType::del] = deleteAction;
         deleteAction->setShortcuts(QList<QKeySequence>(
-            {QKeySequence::Delete, QKeySequence(Qt::ControlModifier + Qt::Key_Backspace)}));
+            {QKeySequence::Delete, QKeySequence(Qt::ControlModifier | Qt::Key_Backspace)}));
     }
     {
         auto selectAllAction = addAction(QIcon(":/svgicons/edit-selectall.svg"), tr("&Select All"));

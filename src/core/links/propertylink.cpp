@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,55 +40,6 @@ PropertyLink::PropertyLink() : src_(nullptr), dst_(nullptr) {}
 PropertyLink::operator bool() const { return src_ && dst_; }
 
 PropertyLink::PropertyLink(Property* src, Property* dst) : src_(src), dst_(dst) {}
-
-void PropertyLink::serialize(Serializer& s) const {
-    s.serialize("SourceProperty", src_);
-    s.serialize("DestinationProperty", dst_);
-}
-
-void PropertyLink::deserialize(Deserializer& d) {
-    struct LinkError {
-        LinkError() : error(false), data(){};
-        bool error;
-        SerializationException::SerializationExceptionData data;
-    };
-    LinkError srcError, dstError;
-
-    try {
-        d.deserialize("SourceProperty", src_);
-    } catch (SerializationException& e) {
-        srcError.error = true;
-        srcError.data = e.getData();
-    }
-
-    try {
-        d.deserialize("DestinationProperty", dst_);
-    } catch (SerializationException& e) {
-        dstError.error = true;
-        dstError.data = e.getData();
-    }
-
-    if (srcError.error && dstError.error) {
-        const auto message = util::formatSerializationError(
-            "Property Link", srcError.data.nd.getDescription(), dstError.data.nd.getDescription(),
-            "Source and destination properties not found.");
-        throw SerializationException(message, IVW_CONTEXT, "PropertyLink");
-
-    } else if (srcError.error) {
-        const auto message = util::formatSerializationError(
-            "Property Link", srcError.data.nd.getDescription(), joinString(dst_->getPath(), "."),
-            "Source property not found.");
-
-        throw SerializationException(message, IVW_CONTEXT, "PropertyLink");
-
-    } else if (dstError.error) {
-        const auto message = util::formatSerializationError(
-            "Property Link", joinString(src_->getPath(), "."), dstError.data.nd.getDescription(),
-            "Destination property not found.");
-
-        throw SerializationException(message, IVW_CONTEXT, "PropertyLink");
-    }
-}
 
 bool PropertyLink::involves(Processor* processor) const {
     return src_->getOwner()->getProcessor() == processor ||

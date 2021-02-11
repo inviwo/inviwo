@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_WEBBROWSERPROCESSOR_H
-#define IVW_WEBBROWSERPROCESSOR_H
+#pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/webbrowser/webbrowserclient.h>
@@ -39,6 +38,7 @@
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -106,7 +106,7 @@ namespace inviwo {
 #include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
 class IVW_MODULE_WEBBROWSER_API WebBrowserProcessor : public Processor, public CefLoadHandler {
 public:
-    WebBrowserProcessor();
+    WebBrowserProcessor(InviwoApplication* app);
     virtual ~WebBrowserProcessor();
 
     virtual void process() override;
@@ -137,15 +137,14 @@ protected:
     enum class SourceType { LocalFile, WebAddress };
 
     TemplateOptionProperty<SourceType> sourceType_;
+    BoolProperty isLoading_;
 
     CEFInteractionHandler cefInteractionHandler_;
     PickingMapper picking_;
     CefImageConverter cefToInviwoImageConverter_;
     // create browser-window
     CefRefPtr<RenderHandlerGL> renderHandler_;
-    CefRefPtr<WebBrowserClient> browserClient_;
     CefRefPtr<CefBrowser> browser_;
-    bool isBrowserLoading_ = true;
 
     SingleFileObserver fileObserver_;
 
@@ -153,5 +152,3 @@ protected:
 };
 #include <warn/pop>
 }  // namespace inviwo
-
-#endif  // IVW_WEBBROWSERPROCESSOR_H

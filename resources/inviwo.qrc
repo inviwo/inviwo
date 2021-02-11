@@ -1,7 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/">
-        <file>changelog.html</file>
-
         <file>svgicons/about-enabled.svg</file>
         <file>svgicons/about-disabled.svg</file>
         <file>svgicons/help.svg</file>
@@ -126,6 +124,7 @@
         <file>inviwo/inviwo-logo-300px.png</file>
         <file>inviwo/inviwo-logo-light-600px.png</file>
         
+        <file>images/elliit.png</file>
         <file>images/kth.png</file>
         <file>images/liu-black.png</file>
         <file>images/liu-white-crop.png</file>

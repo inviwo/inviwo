@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,16 +47,16 @@ public:
     /**
      * This method will be called when observed object changes.
      * Override it to add behavior.
-     * @param New progress between [0 1]
+     * @param progress New progress between [0 1]
      */
-    virtual void progressChanged(float){};
+    virtual void progressChanged([[maybe_unused]] float progress){};
 
     /**
      * This method will be called when observed object changes.
      * Override it to add behavior.
      * @param visibility state that ProgressBar changed into
      */
-    virtual void progressBarVisibilityChanged(bool){};
+    virtual void progressBarVisibilityChanged([[maybe_unused]] bool visibility){};
 };
 
 /** \class ProgressBarObservable

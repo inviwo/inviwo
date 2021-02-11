@@ -7,7 +7,7 @@ Insert a WebBrowser processor in your network and point it to your html-page.
 In the html-page:
 Include the Inviwo API for communication using:
 ```
-<script src="https://inviwo/modules/webbrowser/data/js/inviwoapi.js"></script>
+<script src="inviwo://webbrowser/data/js/inviwoapi.js"></script>
 ```
 Initialize Inviwo API so that we can use it to synchronize properties
 ```
@@ -29,4 +29,10 @@ inviwo.getProperty('Path.To.Property', function(prop) {
     }
 });
 ```
-An example can be seen in data/workspaces/web_property_sync.html
+
+The application base path, i.e. where the core data and modules folder and etc are, can be retrieved using:
+```
+<script src="inviwo://app"></script>
+```
+
+An example can be seen in tests/regression/web-property-sync/web_property_sync.html

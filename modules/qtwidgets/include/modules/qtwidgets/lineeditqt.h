@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LINEEDITQT_H
-#define IVW_LINEEDITQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/editablelabelqt.h>
@@ -55,16 +54,14 @@ class IVW_MODULE_QTWIDGETS_API LineEditQt : public QLineEdit {
     Q_OBJECT
 #include <warn/pop>
 public:
-    LineEditQt(QWidget *parent = nullptr);
+    LineEditQt(QWidget* parent = nullptr);
     virtual ~LineEditQt() = default;
 
 signals:
     void editingCanceled();
 
 protected:
-    virtual void keyPressEvent(QKeyEvent *e) override;
+    virtual void keyPressEvent(QKeyEvent* e) override;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LINEEDITQT_H

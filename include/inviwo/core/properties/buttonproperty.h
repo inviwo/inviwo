@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,6 +86,8 @@ public:
 
     // Override Property::resetToDefaultState, to avoid calling propertyModified  on reset.
     virtual ButtonProperty& resetToDefaultState() override;
+
+    virtual bool isDefaultState() const override;
 
 private:
     bool buttonPressed_ = false;

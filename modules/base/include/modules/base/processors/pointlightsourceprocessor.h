@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -100,9 +100,9 @@ public:
     virtual const vec3& getLookFrom() const override;
     virtual const vec3& getLookUp() const override;
 
-    virtual void setLookTo(vec3 lookTo) override;
-    virtual void setLookFrom(vec3 lookFrom) override;
-    virtual void setLookUp(vec3 lookUp) override;
+    virtual PointLightInteractionHandler& setLookTo(vec3 lookTo) override;
+    virtual PointLightInteractionHandler& setLookFrom(vec3 lookFrom) override;
+    virtual PointLightInteractionHandler& setLookUp(vec3 lookUp) override;
 
     virtual vec3 getLookFromMinValue() const override;
     virtual vec3 getLookFromMaxValue() const override;
@@ -110,10 +110,12 @@ public:
     virtual vec3 getLookToMinValue() const override;
     virtual vec3 getLookToMaxValue() const override;
 
-    virtual void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;
+    virtual PointLightInteractionHandler& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;
 
     virtual float getNearPlaneDist() const override;
     virtual float getFarPlaneDist() const override;
+
+    virtual void zoom(float factor, Bounded bounded) override;
 
     virtual vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const override;
     virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(

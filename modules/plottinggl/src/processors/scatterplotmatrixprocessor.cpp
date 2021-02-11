@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -75,20 +75,20 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     , textRenderer_()
     , textureQuadRenderer_()
 
-    , mouseEvent_("mouseEvent", "Mouse Event",
-                  [&](Event *e) {
-                      if (auto me = dynamic_cast<MouseEvent *>(e)) {
-                          auto p =
-                              ivec2(me->posNormalized() * dvec2(static_cast<double>(numParams_)));
-                          if (p.x == p.y) {
-                              color_.setSelectedValue(visibleIDToColumnID_[p.x]);
-                          } else {
-                              selectedX_.setSelectedValue(visibleIDToColumnID_[p.x]);
-                              selectedY_.setSelectedValue(visibleIDToColumnID_[p.y]);
-                          }
-                      }
-                  },
-                  MouseButton::Left, MouseState::Press)
+    , mouseEvent_(
+          "mouseEvent", "Mouse Event",
+          [&](Event* e) {
+              if (auto me = dynamic_cast<MouseEvent*>(e)) {
+                  auto p = ivec2(me->posNormalized() * dvec2(static_cast<double>(numParams_)));
+                  if (p.x == p.y) {
+                      color_.setSelectedValue(visibleIDToColumnID_[p.x]);
+                  } else {
+                      selectedX_.setSelectedValue(visibleIDToColumnID_[p.x]);
+                      selectedY_.setSelectedValue(visibleIDToColumnID_[p.y]);
+                  }
+              }
+          },
+          MouseButton::Left, MouseState::Press)
 
 {
     addPort(dataFrame_);
@@ -115,7 +115,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
 
     color_.onChange([&]() {
         auto buf = color_.getBuffer();
-        for (auto &p : plots_) {
+        for (auto& p : plots_) {
             p->setColorData(buf);
         }
         scatterPlotproperties_.tf_.setVisible(buf != nullptr);
@@ -156,11 +156,12 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     fontColor_.onChange(updateLabels);
 
     fontColor_.onChange(updateStatsLabels);
+    fontFaceStats_.onChange(updateStatsLabels);
     statsFontSize_.onChange(updateStatsLabels);
     correlectionTF_.onChange(updateStatsLabels);
 
     scatterPlotproperties_.onChange([&]() {
-        for (auto &p : plots_) {
+        for (auto& p : plots_) {
             p->properties_.set(&scatterPlotproperties_);
         }
     });
@@ -178,31 +179,10 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     });
 }
 
-template <typename T>
-struct RangeIterator : public std::iterator<std::forward_iterator_tag, T, T, const T *, T> {
-    T i;
-
-    RangeIterator(T i = 0) : i(i) {}
-
-    bool operator==(RangeIterator b) { return i == b.i; }
-    bool operator!=(RangeIterator b) { return i != b.i; }
-    RangeIterator operator++() {
-        ++i;
-        return *this;
-    }
-    RangeIterator operator++(int) {
-        auto tmp = *this;
-        ++i;
-        return tmp;
-    }
-
-    T operator*() const { return i; }
-};
-
 void ScatterPlotMatrixProcessor::process() {
     if (plots_.empty()) {
         createScatterPlots();
-        for (auto &p : plots_) {
+        for (auto& p : plots_) {
             p->properties_.set(&scatterPlotproperties_);
         }
     }
@@ -219,16 +199,16 @@ void ScatterPlotMatrixProcessor::process() {
         auto dfSize = dataframe->getNumberOfRows();
 
         auto iCol = dataframe->getIndexColumn();
-        auto &indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+        auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
         auto brushedIndicies = brushing_.getFilteredIndices();
         indicies = std::make_unique<IndexBuffer>();
-        auto &vec = indicies->getEditableRAMRepresentation()->getDataContainer();
+        auto& vec = indicies->getEditableRAMRepresentation()->getDataContainer();
         vec.reserve(dfSize - brushedIndicies.size());
 
         auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
         std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
-                     [&](const auto &id) { return !brushing_.isFiltered(indexCol[id]); });
+                     [&](const auto& id) { return !brushing_.isFiltered(indexCol[id]); });
     }
 
     utilgl::activateAndClearTarget(outport_);
@@ -272,7 +252,7 @@ void ScatterPlotMatrixProcessor::process() {
 void ScatterPlotMatrixProcessor::createScatterPlots() {
     numParams_ = 0;
     if (outport_.hasData()) {
-        auto &dataFrame = *dataFrame_.getData();
+        auto& dataFrame = *dataFrame_.getData();
 
         auto buffer = [&]() -> std::shared_ptr<const BufferBase> {
             auto idx = color_.get();
@@ -314,7 +294,7 @@ void ScatterPlotMatrixProcessor::createStatsLabels() {
         textRenderer_.setFont(fontFaceStats_.get());
         textRenderer_.setFontSize(statsFontSize_.get());
 
-        auto &dataFrame = *dataFrame_.getData();
+        auto& dataFrame = *dataFrame_.getData();
         for (auto x = dataFrame.begin(); x != dataFrame.end(); ++x) {
             if (!isIncluded(*x)) continue;
             for (auto y = x + 1; y != dataFrame.end(); ++y) {
@@ -352,7 +332,7 @@ void ScatterPlotMatrixProcessor::createLabels() {
         textRenderer_.setFont(fontFace_.get());
         textRenderer_.setFontSize(fontSize_.get());
 
-        auto &dataFrame = *dataFrame_.getData();
+        auto& dataFrame = *dataFrame_.getData();
         for (auto x = dataFrame.begin(); x != dataFrame.end(); ++x) {
             if (!isIncluded(*x)) continue;
             auto tex = util::createTextTexture(textRenderer_, (*x)->getHeader(), fontColor_);
@@ -367,7 +347,7 @@ bool ScatterPlotMatrixProcessor::isIncluded(std::shared_ptr<Column> col) {
 
     auto prop = parameters_.getPropertyByIdentifier(identifier);
     if (prop) {
-        if (auto bp = dynamic_cast<BoolProperty *>(prop)) {
+        if (auto bp = dynamic_cast<BoolProperty*>(prop)) {
             bp->setSerializationMode(PropertySerializationMode::All);
             return bp->get();
         }

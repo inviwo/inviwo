@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 
 #include <locale>
@@ -49,6 +49,8 @@
 #include <QPixmap>
 #include <QLocale>
 #include <warn/pop>
+
+#include <string_view>
 
 class QFontMetrics;
 
@@ -93,7 +95,8 @@ IVW_MODULE_QTWIDGETS_API std::ios_base& localizeStream(std::ios_base& stream);
 /**
  * \brief convert a std::string to a localized QString using the currently set system locale
  */
-IVW_MODULE_QTWIDGETS_API QString toLocalQString(const std::string&);
+IVW_MODULE_QTWIDGETS_API QString toLocalQString(std::string_view str);
+IVW_MODULE_QTWIDGETS_API QString toLocalQString(std::string str);
 /**
  * \brief convert a QString to a localized 8bit std::string
  */
@@ -102,7 +105,9 @@ IVW_MODULE_QTWIDGETS_API std::string fromLocalQString(const QString& input);
 /**
  * \brief create a QString from a UTF8-encoded std::string
  */
-IVW_MODULE_QTWIDGETS_API QString toQString(const std::string&);
+IVW_MODULE_QTWIDGETS_API QString toQString(const std::string_view str);
+IVW_MODULE_QTWIDGETS_API QString toQString(const std::string str);
+
 /**
  * \brief create a UTF8-encoded std::string from a QString
  */
@@ -142,6 +147,8 @@ IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const IsoValueProperty& property, con
 
 IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept,
                                            const QSize& size);
+
+IVW_MODULE_QTWIDGETS_API QPointF clamp(const QPointF& pos, const QRectF& rect);
 
 /**
  * \brief Retrieve the QMainWindow named "InviwoMainWindow" from QApplication.
@@ -252,6 +259,22 @@ int decimals([[maybe_unused]] double inc) {
         return 0;
     }
 }
+
+/**
+ * @brief Get a list of all available mono space font
+ *
+ * Queries the @c QFontDatabase for all font that @c isFixedPitch
+ */
+IVW_MODULE_QTWIDGETS_API std::vector<std::string> getMonoSpaceFonts();
+
+/**
+ * @brief Index of the system mono space font
+ *
+ * Returns the index of the default system mono space font in the list given by getMonoSpaceFonts
+ * @see getMonoSpaceFonts()
+ * @return the index or 0 if the default font was not found
+ */
+IVW_MODULE_QTWIDGETS_API size_t getDefaultMonoSpaceFontIndex();
 
 }  // namespace utilqt
 

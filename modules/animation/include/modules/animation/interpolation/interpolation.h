@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_KEYFRAME_INTERPOLATION_H
-#define IVW_KEYFRAME_INTERPOLATION_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -72,9 +70,11 @@ IVW_MODULE_ANIMATION_API bool operator!=(const Interpolation& a, const Interpola
  *  @see KeyFrame
  *  @see KeyFrameSequence
  */
-template <typename Key>
+template <typename Key, typename Result = typename Key::value_type>
 class InterpolationTyped : public Interpolation {
 public:
+    using key_type = Key;
+    using result_type = Result;
     InterpolationTyped() = default;
     virtual ~InterpolationTyped() = default;
 
@@ -85,12 +85,10 @@ public:
     virtual void deserialize(Deserializer& d) override = 0;
 
     // Override this function to interpolate between key frames
-    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
-                            easing::EasingType easing) const -> typename Key::value_type = 0;
+    virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
+                            easing::EasingType easing, Result& out) const = 0;
 };
 
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_KEYFRAME_INTERPOLATION_H

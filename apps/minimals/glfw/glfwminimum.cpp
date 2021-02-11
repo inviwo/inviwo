@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -82,14 +82,14 @@ int main(int argc, char** argv) {
         "Specify default name of each snapshot, or empty string for processor name.", false, "",
         "Snapshot default name: UPN=Use Processor name.");
 
-    cmdparser.add(&snapshotArg,
-                  [&]() {
-                      std::string path = cmdparser.getOutputPath();
-                      if (path.empty()) path = inviwoApp.getPath(PathType::Images);
-                      util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path,
-                                            snapshotArg.getValue());
-                  },
-                  1000);
+    cmdparser.add(
+        &snapshotArg,
+        [&]() {
+            std::string path = cmdparser.getOutputPath();
+            if (path.empty()) path = inviwoApp.getPath(PathType::Images);
+            util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, snapshotArg.getValue());
+        },
+        1000);
 
     // Do this after registerModules if some arguments were added
     cmdparser.parse(inviwo::CommandLineParser::Mode::Normal);

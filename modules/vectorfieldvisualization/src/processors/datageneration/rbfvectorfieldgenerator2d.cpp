@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -94,9 +94,9 @@ void RBFVectorFieldGenerator2D::process() {
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(seeds_.get()), xy(seeds_.get());
 
     int row = 0;
-    for (auto &a : samples_) {
+    for (auto& a : samples_) {
         int col = 0;
-        for (auto &b : samples_) {
+        for (auto& b : samples_) {
             auto r = glm::distance(a.first, b.first);
             A(row, col++) = shape_.get() + gaussian_.evaluate(r);
         }
@@ -114,7 +114,7 @@ void RBFVectorFieldGenerator2D::process() {
     img->getColorLayer()->setSwizzleMask(
         {ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One});
     auto data =
-        static_cast<vec2 *>(img->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
+        static_cast<vec2*>(img->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
 
     int i = 0;
     for (int y = 0; y < size_.get().y; y++) {
@@ -163,7 +163,7 @@ void RBFVectorFieldGenerator2D::createSamples() {
     });
 }
 
-void RBFVectorFieldGenerator2D::serialize(Serializer &s) const {
+void RBFVectorFieldGenerator2D::serialize(Serializer& s) const {
     std::vector<dvec2> sx;
     std::vector<dvec2> sy;
 
@@ -178,7 +178,7 @@ void RBFVectorFieldGenerator2D::serialize(Serializer &s) const {
     Processor::serialize(s);
 }
 
-void RBFVectorFieldGenerator2D::deserialize(Deserializer &d) {
+void RBFVectorFieldGenerator2D::deserialize(Deserializer& d) {
     std::vector<dvec2> sx;
     std::vector<dvec2> sy;
     d.deserialize("samplesx", sx, "samplex");

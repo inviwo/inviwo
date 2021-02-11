@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,46 +46,47 @@ DatVolumeWriter::DatVolumeWriter() : DataWriterType<Volume>() {
     addExtension(FileExtension("dat", "Inviwo dat file format"));
 }
 
-DatVolumeWriter::DatVolumeWriter(const DatVolumeWriter& rhs) : DataWriterType<Volume>(rhs) {}
+DatVolumeWriter::DatVolumeWriter(const DatVolumeWriter& rhs) = default;
 
-DatVolumeWriter& DatVolumeWriter::operator=(const DatVolumeWriter& that) {
-    if (this != &that) DataWriterType<Volume>::operator=(that);
-
-    return *this;
-}
+DatVolumeWriter& DatVolumeWriter::operator=(const DatVolumeWriter& that) = default;
 
 DatVolumeWriter* DatVolumeWriter::clone() const { return new DatVolumeWriter(*this); }
 
 void DatVolumeWriter::writeData(const Volume* data, const std::string filePath) const {
+    util::writeDatVolume(*data, filePath, getOverwrite());
+}
+
+namespace util {
+void writeDatVolume(const Volume& data, const std::string filePath, bool overwrite) {
     std::string rawPath = filesystem::replaceFileExtension(filePath, "raw");
 
-    if (filesystem::fileExists(filePath) && !overwrite_)
-        throw DataWriterException("Error: Output file: " + filePath + " already exists",
-                                  IVW_CONTEXT);
+    if (filesystem::fileExists(filePath) && !overwrite)
+        throw DataWriterException("Output file: " + filePath + " already exists",
+                                  IVW_CONTEXT_CUSTOM("util::writeDatVolume"));
 
-    if (filesystem::fileExists(rawPath) && !overwrite_)
-        throw DataWriterException("Error: Output file: " + rawPath + " already exists",
-                                  IVW_CONTEXT);
+    if (filesystem::fileExists(rawPath) && !overwrite)
+        throw DataWriterException("Output file: " + rawPath + " already exists",
+                                  IVW_CONTEXT_CUSTOM("util::writeDatVolume"));
 
     std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
     // Write the .dat file content
     std::stringstream ss;
-    const VolumeRAM* vr = data->getRepresentation<VolumeRAM>();
-    glm::mat3 basis = glm::transpose(data->getBasis());
-    glm::vec3 offset = data->getOffset();
-    glm::mat4 wtm = glm::transpose(data->getWorldMatrix());
+    const VolumeRAM* vr = data.getRepresentation<VolumeRAM>();
+    glm::mat3 basis = glm::transpose(data.getBasis());
+    glm::vec3 offset = data.getOffset();
+    glm::mat4 wtm = glm::transpose(data.getWorldMatrix());
 
     auto print = util::overloaded{
-        [&](std::string_view key, const std::string& val) { fmt::print(ss, "{}: {}", key, val); },
-        [&](std::string_view key, InterpolationType val) { fmt::print(ss, "{}: {}", key, val); },
+        [&](std::string_view key, const std::string& val) { fmt::print(ss, "{}: {}\n", key, val); },
+        [&](std::string_view key, InterpolationType val) { fmt::print(ss, "{}: {}\n", key, val); },
         [&](std::string_view key, const SwizzleMask& mask) {
-            fmt::print(ss, "{}: {}{}{}{}", key, mask[0], mask[1], mask[2], mask[3]);
+            fmt::print(ss, "{}: {}{}{}{}\n", key, mask[0], mask[1], mask[2], mask[3]);
         },
         [&](std::string_view key, const Wrapping3D& wrapping) {
-            fmt::print(ss, "{}: {} {} {}", key, wrapping[0], wrapping[1], wrapping[2]);
+            fmt::print(ss, "{}: {} {} {}\n", key, wrapping[0], wrapping[1], wrapping[2]);
         },
         [&](std::string_view key, const auto& vec) {
-            fmt::print(ss, "{}: {}", key, fmt::join(begin(vec), end(vec), " "));
+            fmt::print(ss, "{}: {}\n", key, fmt::join(begin(vec), end(vec), " "));
         }};
 
     print("RawFile", fileName + ".raw");
@@ -100,30 +101,33 @@ void DatVolumeWriter::writeData(const Volume* data, const std::string filePath) 
     print("WorldVector2", wtm[1]);
     print("WorldVector3", wtm[2]);
     print("WorldVector4", wtm[3]);
-    print("DataRange", data->dataMap_.dataRange);
-    print("ValueRange", data->dataMap_.valueRange);
-    print("Unit", data->dataMap_.valueUnit);
+    print("DataRange", data.dataMap_.dataRange);
+    print("ValueRange", data.dataMap_.valueRange);
+    print("Unit", data.dataMap_.valueUnit);
 
     print("SwizzleMask", vr->getSwizzleMask());
     print("Interpolation", vr->getInterpolation());
     print("Wrapping", vr->getWrapping());
 
-    for (auto& key : data->getMetaDataMap()->getKeys()) {
-        auto m = data->getMetaDataMap()->get(key);
+    for (auto& key : data.getMetaDataMap()->getKeys()) {
+        auto m = data.getMetaDataMap()->get(key);
         if (auto sm = dynamic_cast<const StringMetaData*>(m)) print(key, sm->get());
     }
 
     if (auto f = filesystem::ofstream(filePath)) {
         f << ss.str();
     } else {
-        throw DataWriterException("Error: Could not write to dat file: " + filePath, IVW_CONTEXT);
+        throw DataWriterException("Could not write to dat file: " + filePath,
+                                  IVW_CONTEXT_CUSTOM("util::writeDatVolume"));
     }
 
     if (auto f = filesystem::ofstream(rawPath, std::ios::out | std::ios::binary)) {
         f.write(static_cast<const char*>(vr->getData()), vr->getNumberOfBytes());
     } else {
-        throw DataWriterException("Error: Could not write to raw file: " + rawPath, IVW_CONTEXT);
+        throw DataWriterException("Could not write to raw file: " + rawPath,
+                                  IVW_CONTEXT_CUSTOM("util::writeDatVolume"));
     }
 }
+}  // namespace util
 
 }  // namespace inviwo

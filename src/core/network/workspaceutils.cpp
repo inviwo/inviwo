@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,26 +36,26 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/logerrorcounter.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 namespace util {
 
-void updateWorkspaces(InviwoApplication* app) {
-    updateWorkspaces(app, filesystem::getPath(PathType::Workspaces));
+void forEachWorkspaceInDirRecusive(std::string_view path,
+                                   std::function<void(std::string_view)> callback) {
 
-    for (const auto& m : app->getModules()) {
-        updateWorkspaces(app, m->getPath(ModulePath::Workspaces));
+    for (const auto& file : filesystem::getDirectoryContentsRecursively(
+             std::string(path), filesystem::ListMode::Files)) {
+        if (filesystem::wildcardStringMatch("*.inv", file)) {
+            callback(fmt::format("{}/{}", path, file));
+        }
     }
 }
 
-void updateRegressionWorkspaces(InviwoApplication* app) {
-    for (const auto& m : app->getModules()) {
-        updateWorkspaces(app, m->getPath(ModulePath::RegressionTests));
-    }
-}
-
-void updateWorkspaces(InviwoApplication* app, const std::string& path) {
-    auto update = [&](const std::string& fileName) {
+void updateWorkspaces(InviwoApplication* app, std::string_view path, DryRun dryRun) {
+    auto update = [&](std::string_view fileName) {
+        LogInfoCustom("util::updateWorkspaces", "Updating workspace: " << fileName);
         auto errorCounter = std::make_shared<LogErrorCounter>();
         LogCentral::getPtr()->registerLogger(errorCounter);
 
@@ -79,8 +79,13 @@ void updateWorkspaces(InviwoApplication* app, const std::string& path) {
                                     IVW_CONTEXT_CUSTOM("util::updateWorkspaces"));
                 }
             }
-            app->waitForPool();
-            {
+
+            do {
+                app->processFront();
+                app->waitForPool();
+            } while (app->getProcessorNetwork()->runningBackgroundJobs() > 0);
+
+            if (dryRun == DryRun::No) {
                 app->getWorkspaceManager()->save(fileName, [&](ExceptionContext ec) {
                     try {
                         throw;
@@ -89,32 +94,31 @@ void updateWorkspaces(InviwoApplication* app, const std::string& path) {
                     }
                 });
             }
-
         } catch (const Exception& e) {
-            util::log(e.getContext(),
-                      "Unable to convert network " + fileName + " due to " + e.getMessage(),
-                      LogLevel::Error);
+            util::log(
+                e.getContext(),
+                fmt::format("Unable to convert network {} due to {}", fileName, e.getMessage()),
+                LogLevel::Error);
             NetworkLock lock(app->getProcessorNetwork());
             app->getWorkspaceManager()->clear();
         }
     };
 
-    std::function<void(const std::string&)> updatePath = [&](const std::string& path) {
-        for (const auto& file :
-             filesystem::getDirectoryContents(path, filesystem::ListMode::Files)) {
-            if (filesystem::wildcardStringMatch("*.inv", file)) {
-                const auto workspace = path + "/" + file;
-                LogInfoCustom("util::updateWorkspaces", "Updating workspace: " << workspace);
-                update(workspace);
-            }
-        }
-        for (const auto& dir :
-             filesystem::getDirectoryContents(path, filesystem::ListMode::Directories)) {
-            if (dir != "." && dir != "..") updatePath(path + "/" + dir);
-        }
-    };
+    forEachWorkspaceInDirRecusive(path, update);
+}
 
-    updatePath(path);
+void updateExampleWorkspaces(InviwoApplication* app, DryRun dryRun) {
+    updateWorkspaces(app, filesystem::getPath(PathType::Workspaces), dryRun);
+
+    for (const auto& m : app->getModules()) {
+        updateWorkspaces(app, m->getPath(ModulePath::Workspaces), dryRun);
+    }
+}
+
+void updateRegressionWorkspaces(InviwoApplication* app, DryRun dryRun) {
+    for (const auto& m : app->getModules()) {
+        updateWorkspaces(app, m->getPath(ModulePath::RegressionTests), dryRun);
+    }
 }
 
 }  // namespace util

@@ -1,8 +1,6 @@
-#--------------------------------------------------------------------
 # Inviwo Base Module
 ivw_module(Base)
 
-#--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     include/modules/base/algorithm/algorithmoptions.h
@@ -33,13 +31,12 @@ set(HEADER_FILES
     include/modules/base/algorithm/volume/volumeramsubsample.h
     include/modules/base/algorithm/volume/volumeramsubset.h
     include/modules/base/algorithm/volume/volumesignificantvoxels.h
+    include/modules/base/algorithm/volume/volumevoronoi.h
     include/modules/base/basemodule.h
     include/modules/base/basemoduledefine.h
     include/modules/base/datastructures/disjointsets.h
     include/modules/base/datastructures/imagereusecache.h
     include/modules/base/datastructures/kdtree.h
-    include/modules/base/datastructures/stipplingsettings.h
-    include/modules/base/datastructures/stipplingsettingsinterface.h
     include/modules/base/io/binarystlwriter.h
     include/modules/base/io/datvolumesequencereader.h
     include/modules/base/io/datvolumewriter.h
@@ -58,6 +55,7 @@ set(HEADER_FILES
     include/modules/base/processors/diffuselightsourceprocessor.h
     include/modules/base/processors/directionallightsourceprocessor.h
     include/modules/base/processors/distancetransformram.h
+    include/modules/base/processors/gridplanes.h
     include/modules/base/processors/heightfieldmapper.h
     include/modules/base/processors/imagecontourprocessor.h
     include/modules/base/processors/imageexport.h
@@ -100,6 +98,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumebasistransformer.h
     include/modules/base/processors/volumeboundaryplanes.h
     include/modules/base/processors/volumeboundingbox.h
+    include/modules/base/processors/volumeconverter.h
     include/modules/base/processors/volumecreator.h
     include/modules/base/processors/volumecurlcpuprocessor.h
     include/modules/base/processors/volumedivergencecpuprocessor.h
@@ -111,6 +110,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumesequencesingletimestepsampler.h
     include/modules/base/processors/volumesequencesource.h
     include/modules/base/processors/volumesequencetospatial4dsampler.h
+    include/modules/base/processors/volumeshifter.h
     include/modules/base/processors/volumeslice.h
     include/modules/base/processors/volumesource.h
     include/modules/base/processors/volumesubsample.h
@@ -119,19 +119,17 @@ set(HEADER_FILES
     include/modules/base/processors/worldtransformdeprecated.h
     include/modules/base/properties/basisproperty.h
     include/modules/base/properties/bufferinformationproperty.h
+    include/modules/base/properties/datarangeproperty.h
     include/modules/base/properties/gaussianproperty.h
     include/modules/base/properties/imageinformationproperty.h
     include/modules/base/properties/layerinformationproperty.h
     include/modules/base/properties/meshinformationproperty.h
     include/modules/base/properties/sequencetimerproperty.h
-    include/modules/base/properties/stipplingproperty.h
     include/modules/base/properties/transformlistproperty.h
     include/modules/base/properties/volumeinformationproperty.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-
-#--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
     src/algorithm/algorithmoptions.cpp
@@ -160,11 +158,10 @@ set(SOURCE_FILES
     src/algorithm/volume/volumeramsubsample.cpp
     src/algorithm/volume/volumeramsubset.cpp
     src/algorithm/volume/volumesignificantvoxels.cpp
+    src/algorithm/volume/volumevoronoi.cpp
     src/basemodule.cpp
     src/datastructures/disjointsets.cpp
     src/datastructures/imagereusecache.cpp
-    src/datastructures/stipplingsettings.cpp
-    src/datastructures/stipplingsettingsinterface.cpp
     src/io/binarystlwriter.cpp
     src/io/datvolumesequencereader.cpp
     src/io/datvolumewriter.cpp
@@ -181,6 +178,7 @@ set(SOURCE_FILES
     src/processors/diffuselightsourceprocessor.cpp
     src/processors/directionallightsourceprocessor.cpp
     src/processors/distancetransformram.cpp
+    src/processors/gridplanes.cpp
     src/processors/heightfieldmapper.cpp
     src/processors/imagecontourprocessor.cpp
     src/processors/imageexport.cpp
@@ -221,6 +219,7 @@ set(SOURCE_FILES
     src/processors/trianglestowireframe.cpp
     src/processors/volumeboundaryplanes.cpp
     src/processors/volumeboundingbox.cpp
+    src/processors/volumeconverter.cpp
     src/processors/volumecreator.cpp
     src/processors/volumecurlcpuprocessor.cpp
     src/processors/volumedivergencecpuprocessor.cpp
@@ -232,6 +231,7 @@ set(SOURCE_FILES
     src/processors/volumesequencesingletimestepsampler.cpp
     src/processors/volumesequencesource.cpp
     src/processors/volumesequencetospatial4dsampler.cpp
+    src/processors/volumeshifter.cpp
     src/processors/volumeslice.cpp
     src/processors/volumesource.cpp
     src/processors/volumesubsample.cpp
@@ -239,18 +239,17 @@ set(SOURCE_FILES
     src/processors/volumetospatialsampler.cpp
     src/properties/basisproperty.cpp
     src/properties/bufferinformationproperty.cpp
+    src/properties/datarangeproperty.cpp
     src/properties/gaussianproperty.cpp
     src/properties/imageinformationproperty.cpp
     src/properties/layerinformationproperty.cpp
     src/properties/meshinformationproperty.cpp
     src/properties/sequencetimerproperty.cpp
-    src/properties/stipplingproperty.cpp
     src/properties/transformlistproperty.cpp
     src/properties/volumeinformationproperty.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
 # Unit tests
 set(TEST_FILES
     tests/unittests/base-unittest-main.cpp
@@ -258,12 +257,17 @@ set(TEST_FILES
     tests/unittests/kdtree-test.cpp
     tests/unittests/marchingcubes-test.cpp
     tests/unittests/meshcutting-test.cpp
+    tests/unittests/volumevoronoi-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
-#--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
-if(IVW_BENCHMARKS)
+
+if(IVW_TEST_BENCHMARKS)
     add_subdirectory(tests/benchmarks)
+endif()
+
+if(IVW_MODULE_PYTHON3)
+    add_subdirectory(bindings)
 endif()

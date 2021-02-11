@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,6 +53,7 @@ namespace inviwo {
  *   * __Outport__ Output proxy geometry.
  *
  * ### Properties
+ *   * __Enable Normals__ Face normals are included in the mesh
  *   * __Enable Clipping__ Enable axis aligned clipping of the mesh
  *   * __Clip X Slices__ Clip X axis
  *   * __Clip Y Slices__ Clip Y axis
@@ -74,6 +75,7 @@ private:
     VolumeInport inport_;
     MeshOutport outport_;
 
+    BoolProperty addFaceNormals_;
     BoolProperty clippingEnabled_;
 
     IntMinMaxProperty clipX_;

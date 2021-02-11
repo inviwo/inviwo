@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,11 +60,11 @@ public:
     virtual void load(const std::string& filename,
                       const FileExtension& ext = FileExtension()) override;
 
-    virtual std::string getTitle() const override;
+    virtual std::string_view getTitle() const override;
 
 protected:
-    virtual std::string serializationKey() const override;
-    virtual std::string serializationItemKey() const override;
+    virtual std::string_view serializationKey() const override;
+    virtual std::string_view serializationItemKey() const override;
 };
 
 }  // namespace inviwo

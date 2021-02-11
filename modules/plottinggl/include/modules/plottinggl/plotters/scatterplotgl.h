@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@
 #include <inviwo/core/util/dispatcher.h>
 
 #include <modules/base/algorithm/dataminmax.h>
-#include <modules/base/properties/stipplingproperty.h>
+#include <modules/basegl/properties/stipplingproperty.h>
 #include <modules/basegl/properties/linesettingsproperty.h>
 
 #include <modules/opengl/texture/textureutils.h>

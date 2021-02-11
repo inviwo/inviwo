@@ -4,3 +4,6 @@ inviwo-log.html
 pyconfig.ini
 .idea
 .vscode
+.clangd
+compile_commands.json
+CMakeUserPresets.json

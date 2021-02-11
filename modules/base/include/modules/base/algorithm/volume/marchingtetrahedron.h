@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,11 +50,9 @@ public:
      * @see util::marchingtetrahedron
      */
     static std::shared_ptr<Mesh> apply(
-        std::shared_ptr<const Volume> volume, double iso, const vec4 &color, bool invert,
+        std::shared_ptr<const Volume> volume, double iso, const vec4& color, bool invert,
         bool enclose, std::function<void(float)> progressCallback = std::function<void(float)>(),
-        std::function<bool(const size3_t &)> maskingCallback = [](const size3_t &) {
-            return true;
-        });
+        std::function<bool(const size3_t&)> maskingCallback = [](const size3_t&) { return true; });
 };
 
 namespace util {
@@ -76,10 +74,10 @@ namespace util {
  * (return true to include current cell)
  */
 std::shared_ptr<Mesh> marchingtetrahedron(
-    std::shared_ptr<const Volume> volume, double iso, const vec4 &color = vec4(1.0f),
+    std::shared_ptr<const Volume> volume, double iso, const vec4& color = vec4(1.0f),
     bool invert = false, bool enclose = true,
     std::function<void(float)> progressCallback = std::function<void(float)>(),
-    std::function<bool(const size3_t &)> maskingCallback = [](const size3_t &) { return true; });
+    std::function<bool(const size3_t&)> maskingCallback = [](const size3_t&) { return true; });
 }  // namespace util
 
 }  // namespace inviwo

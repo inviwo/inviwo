@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -367,9 +367,9 @@ bool ModuleManager::checkDependencies(const InviwoModuleFactoryObject& obj) cons
     std::stringstream err;
 
     // Make sure that the module supports the current inviwo core version
-    if (!Version(IVW_VERSION).semanticVersionEqual(obj.inviwoCoreVersion)) {
+    if (!build::version.semanticVersionEqual(obj.inviwoCoreVersion)) {
         err << "\nModule was built for Inviwo version " << obj.inviwoCoreVersion
-            << ", current version is " << IVW_VERSION;
+            << ", current version is " << build::version;
     }
 
     // Check if dependency modules have correct versions.
@@ -428,7 +428,7 @@ auto ModuleManager::getProtectedDependencies(
     std::function<void(const std::string&)> getDeps = [&](const std::string& module) {
         auto it = util::find_if(modules, [&](const auto& m) { return iCaseCmp(m->name, module); });
         if (it != modules.end()) {
-            for (const auto dep : (*it)->dependencies) {
+            for (const auto& dep : (*it)->dependencies) {
                 dependencies.insert(dep.first);
                 getDeps(dep.first);
             }

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,9 +34,10 @@
 #include <sstream>
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QStylePainter>
-#include <QPointF>
 #include <QMouseEvent>
+#include <QPainterPath>
+#include <QPointF>
+#include <QStylePainter>
 #include <warn/pop>
 
 namespace inviwo {

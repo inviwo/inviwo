@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ ImageMixer::ImageMixer()
     , blendingMode_("blendMode", "Blend Mode", InvalidationLevel::InvalidResources)
     , weight_("weight", "Weight", 0.5f, 0.0f, 1.0f)
     , clamp_("clamp", "Clamp values to zero and one", false, InvalidationLevel::InvalidResources)
-    , shader_("img_mix.frag", false) {
+    , shader_("img_mix.frag", Shader::Build::No) {
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 

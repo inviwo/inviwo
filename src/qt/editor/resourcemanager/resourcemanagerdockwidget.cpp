@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,18 +57,18 @@ int ResourceRole = Qt::UserRole + 1;
 
 class ResourceManagerItemModel : public QStandardItemModel {
 public:
-    ResourceManagerItemModel(QObject *parent) : QStandardItemModel(parent) { setColumnCount(3); }
+    ResourceManagerItemModel(QObject* parent) : QStandardItemModel(parent) { setColumnCount(3); }
 
-    virtual Qt::ItemFlags flags(const QModelIndex & /*index*/) const override {
+    virtual Qt::ItemFlags flags(const QModelIndex& /*index*/) const override {
         return Qt::ItemIsEnabled;
     }
 
-    Resource *getResource(int row) const {
+    Resource* getResource(int row) const {
         auto qvar = data(this->index(row, 0), ResourceRole);
-        return static_cast<Resource *>(qvar.value<void *>());
+        return static_cast<Resource*>(qvar.value<void*>());
     }
 
-    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override {
+    virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override {
 
         if (role == Qt::ToolTipRole) {
             auto resource = getResource(index.row());
@@ -79,7 +79,7 @@ public:
     }
 };
 
-ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget *parent, ResourceManager &manager)
+ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget* parent, ResourceManager& manager)
     : InviwoDockWidget("Resource Manager", parent, "ResourceManager"), manager_(manager) {
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(40, 70)));  // default size
@@ -132,13 +132,13 @@ ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget *parent, ResourceMa
 
 ResourceManagerDockWidget::~ResourceManagerDockWidget() { manager_.removeObserver(this); }
 
-void ResourceManagerDockWidget::onResourceAdded(const std::string &key, const std::type_index &type,
-                                                Resource *resource) {
-    QList<QStandardItem *> row;
+void ResourceManagerDockWidget::onResourceAdded(const std::string& key, const std::type_index& type,
+                                                Resource* resource) {
+    QList<QStandardItem*> row;
 
     auto keyC = key;
     replaceInString(keyC, "\\", "/");
-    auto keySplit = splitString(keyC, '/').back();
+    auto keySplit = util::splitByLast(keyC, '/').second;
 
     row.append(new QStandardItem(utilqt::toQString(keySplit)));
     row.append(new QStandardItem(utilqt::toQString(resource->typeDisplayName())));
@@ -149,14 +149,14 @@ void ResourceManagerDockWidget::onResourceAdded(const std::string &key, const st
     btn->setToolTip("Remove resource");
     tableView_->setIndexWidget(model_->index(rowID, 2), btn);
 
-    model_->setData(model_->index(rowID, 0), QVariant::fromValue((void *)resource), ResourceRole);
+    model_->setData(model_->index(rowID, 0), QVariant::fromValue((void*)resource), ResourceRole);
 
     connect(btn, &QPushButton::pressed,
             [key, t = type, rm = &this->manager_]() { rm->removeResource(key, t); });
 }
 
-void ResourceManagerDockWidget::onResourceRemoved(const std::string &, const std::type_index &,
-                                                  Resource *resource) {
+void ResourceManagerDockWidget::onResourceRemoved(const std::string&, const std::type_index&,
+                                                  Resource* resource) {
     for (int i = 0; i < model_->rowCount(); i++) {
         if (model_->getResource(i) == resource) {
             model_->removeRow(i);

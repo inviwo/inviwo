@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -176,16 +176,19 @@ public:
     Logger() = default;
     virtual ~Logger() = default;
 
-    virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience,
-                     const char* file, const char* function, int line, std::string msg) = 0;
+    virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,
+                     std::string_view file, std::string_view function, int line,
+                     std::string_view msg) = 0;
 
     virtual void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                              std::string msg, const char* file, const char* function, int line);
+                              std::string_view msg, std::string_view file,
+                              std::string_view function, int line);
 
-    virtual void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
-                            const char* function, int line);
+    virtual void logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
+                            std::string_view file, std::string_view function, int line);
 
-    virtual void logAssertion(const char* file, const char* function, int line, std::string msg);
+    virtual void logAssertion(std::string_view file, std::string_view function, int line,
+                              std::string_view msg);
 };
 
 class IVW_CORE_API LogCentral : public Singleton<LogCentral>, public Logger {
@@ -203,19 +206,20 @@ public:
      */
     void registerLogger(std::weak_ptr<Logger> logger);
 
-    virtual void log(std::string source, LogLevel level, LogAudience audience, const char* file,
-                     const char* function, int line, std::string msg) override;
+    virtual void log(std::string_view source, LogLevel level, LogAudience audience,
+                     std::string_view file, std::string_view function, int line,
+                     std::string_view msg) override;
 
     virtual void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                              std::string msg, const char* file = "", const char* function = "",
-                              int line = 0) override;
+                              std::string_view msg, std::string_view file = "",
+                              std::string_view function = "", int line = 0) override;
 
-    virtual void logNetwork(LogLevel level, LogAudience audience, std::string msg,
-                            const char* file = "", const char* function = "",
+    virtual void logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
+                            std::string_view file = "", std::string_view function = "",
                             int line = 0) override;
 
-    virtual void logAssertion(const char* file, const char* function, int line,
-                              std::string msg) override;
+    virtual void logAssertion(std::string_view file, std::string_view function, int line,
+                              std::string_view msg) override;
 
     void setLogStacktrace(const bool& logStacktrace = true);
     bool getLogStacktrace() const;
@@ -238,11 +242,11 @@ private:
 
 namespace util {
 
-IVW_CORE_API void log(ExceptionContext context, std::string message,
+IVW_CORE_API void log(ExceptionContext context, std::string_view message,
                       LogLevel level = LogLevel::Info,
                       LogAudience audience = LogAudience::Developer);
 
-IVW_CORE_API void log(Logger* logger, ExceptionContext context, std::string message,
+IVW_CORE_API void log(Logger* logger, ExceptionContext context, std::string_view message,
                       LogLevel level = LogLevel::Info,
                       LogAudience audience = LogAudience::Developer);
 

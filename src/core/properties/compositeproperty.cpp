@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/network/networkvisitor.h>
 
 namespace inviwo {
 
@@ -47,6 +48,8 @@ CompositeProperty::CompositeProperty(const std::string& identifier, const std::s
     , subPropertyInvalidationLevel_(InvalidationLevel::Valid) {}
 
 CompositeProperty* CompositeProperty::clone() const { return new CompositeProperty(*this); }
+
+const std::string& CompositeProperty::getIdentifier() const { return Property::getIdentifier(); }
 
 std::string CompositeProperty::getClassIdentifierForWidget() const {
     return CompositeProperty::classIdentifier;
@@ -73,9 +76,9 @@ void CompositeProperty::set(const CompositeProperty* src) {
         propertyModified();
     } else {
         LogWarn("Unable to link CompositeProperties: \n"
-                << joinString(src->getPath(), ".") << "\n to \n"
-                << joinString(getPath(), ".") << ".\nNumber of sub properties differ ("
-                << subProperties.size() << " vs " << properties_.size() << ")");
+                << src->getPath() << "\n to \n"
+                << getPath() << ".\nNumber of sub properties differ (" << subProperties.size()
+                << " vs " << properties_.size() << ")");
     }
 }
 
@@ -113,6 +116,26 @@ CompositeProperty& CompositeProperty::resetToDefaultState() {
     return *this;
 }
 
+bool CompositeProperty::isDefaultState() const {
+    return collapsed_.isDefault() &&
+           std::all_of(properties_.begin(), properties_.end(),
+                       [](const Property* p) { return p->isDefaultState(); });
+}
+
+bool CompositeProperty::needsSerialization() const {
+    switch (serializationMode_) {
+        case PropertySerializationMode::All:
+            return true;
+        case PropertySerializationMode::None:
+            return false;
+        case PropertySerializationMode::Default:
+            [[fallthrough]];
+        default:
+            return std::any_of(properties_.begin(), properties_.end(),
+                               [](const Property* p) { return p->needsSerialization(); });
+    }
+}
+
 CompositeProperty& CompositeProperty::setReadOnly(bool value) {
     Property::setReadOnly(value);
     for (auto& elem : properties_) {
@@ -133,13 +156,24 @@ void CompositeProperty::deserialize(Deserializer& d) {
     collapsed_.deserialize(d, serializationMode_);
 }
 
-std::vector<std::string> CompositeProperty::getPath() const {
-    std::vector<std::string> path;
-    if (const auto owner = getOwner()) {
-        path = owner->getPath();
+const PropertyOwner* CompositeProperty::getOwner() const { return Property::getOwner(); }
+
+PropertyOwner* CompositeProperty::getOwner() { return Property::getOwner(); }
+
+void CompositeProperty::accept(NetworkVisitor& visitor) {
+    if (visitor.visit(*this)) {
+        for (auto* elem : properties_) {
+            elem->accept(visitor);
+        }
     }
-    path.push_back(getIdentifier());
-    return path;
+}
+
+InviwoApplication* CompositeProperty::getInviwoApplication() {
+    if (auto owner = getOwner()) {
+        return owner->getInviwoApplication();
+    } else {
+        return nullptr;
+    }
 }
 
 Processor* CompositeProperty::getProcessor() {

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,7 +67,7 @@ DepthDarkening::DepthDarkening()
     , cam_("camera", "Camera")
 
     , depthDarkeningShader_("depthdarkening.frag")
-    , linearizeDepthShader_("depthlinearize.frag", false)
+    , linearizeDepthShader_("depthlinearize.frag", Shader::Build::No)
 
     , convolution_([&]() { this->invalidate(InvalidationLevel::InvalidOutput); })
 

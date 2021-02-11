@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,10 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <nlohmann/json.hpp>
+
+#ifdef WIN32
+#include <ciso646>  // required for logical operators 'not', 'and', ... used by inja.hpp
+#endif
 #include <inja.hpp>
 #include <warn/pop>
 

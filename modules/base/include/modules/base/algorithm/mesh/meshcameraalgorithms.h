@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,13 +51,14 @@ IVW_MODULE_BASE_API void centerViewOnMeshes(const std::vector<std::shared_ptr<co
                                             CameraProperty& camera, float minMaxRatio = 10.f);
 /**
  * \brief Compute near and far plane parameters covering the bounding box when maximally zoomed out.
+ *
  * Projects the bounding box onto the view direction and selects the distance furthest away as far
  * plane (increased by 1% to make sure that mesh is not clipped). The view directions considered are
  * lookFrom min/max -> lookTo. Near plane is computed as max(1e^-6, farPlaneDistance * farNearRatio)
  *
  * @param worldSpaceBoundingBox Min and max points of geometry
  * @param camera Camera used as basis for computation
- * @param farNearRatio Ratio between near and far plane. 1:10000 is commonly used by game engines.
+ * @param nearFarRatio Ratio between near and far plane. 1:10000 is commonly used by game engines.
  * @return Near and far plane distances.
  */
 IVW_MODULE_BASE_API std::pair<float, float> computeNearFarPlanes(

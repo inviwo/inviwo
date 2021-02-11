@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -91,6 +91,8 @@ EventProperty& EventProperty::resetToDefaultState() {
     if (matcher_) matcher_->resetToDefaultState();
     return *this;
 }
+
+bool EventProperty::isDefaultState() const { return matcher_ ? matcher_->isDefaultState() : true; }
 
 void EventProperty::serialize(Serializer& s) const {
     Property::serialize(s);

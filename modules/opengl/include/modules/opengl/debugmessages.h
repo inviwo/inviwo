@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,13 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DEBUGMESSAGES_H
-#define IVW_DEBUGMESSAGES_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/util/canvas.h>
+#include <inviwo/core/util/logcentral.h>
 
 namespace inviwo {
 
@@ -291,12 +290,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 
 }  // namespace debug
 
-IVW_MODULE_OPENGL_API void GLAPIENTRY openGLDebugMessageCallback(GLenum source, GLenum type,
-                                                                 GLuint id, GLenum severity,
-                                                                 GLsizei length,
-                                                                 const GLchar* message,
-                                                                 const void* none);
-
 IVW_MODULE_OPENGL_API void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity);
 IVW_MODULE_OPENGL_API void handleOpenGLDebugMode(Canvas::ContextID context);
 IVW_MODULE_OPENGL_API void setOpenGLDebugMode(debug::Mode mode, debug::Severity severity);
@@ -305,5 +298,3 @@ IVW_MODULE_OPENGL_API void configureOpenGLDebugMessages(utilgl::debug::Severity 
 }  // namespace utilgl
 
 }  // namespace inviwo
-
-#endif  // IVW_DEBUGMESSAGES_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ void Jacobian2D::initializeResources() {
     ImageGLProcessor::initializeResources();
 }
 
-void Jacobian2D::preProcess(TextureUnitContainer &) {
+void Jacobian2D::preProcess(TextureUnitContainer&) {
     shader_.setUniform("renormalization_", renormalization_.get() ? 1 : 0);
 }
 

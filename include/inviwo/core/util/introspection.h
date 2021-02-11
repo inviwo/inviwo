@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,6 +49,11 @@ namespace util {
 namespace detail {
 
 template <typename T>
+constexpr bool alwaysFalse() {
+    return false;
+}
+
+template <typename T>
 using upperClassIdentifierType = decltype(T::CLASS_IDENTIFIER);
 
 template <typename T>
@@ -82,13 +87,15 @@ template <class T>
 using HasClassIdentifier = std::disjunction<HasClassIdentifierUpper<T>, HasClassIdentifierLower<T>>;
 
 template <typename T>
-std::string classIdentifier() {
+const std::string& classIdentifier() {
     if constexpr (HasClassIdentifierUpper<T>::value) {
         return T::CLASS_IDENTIFIER;
     } else if constexpr (HasClassIdentifierLower<T>::value) {
         return T::classIdentifier;
     } else {
-        return {};
+        static_assert(detail::alwaysFalse<T>(), "ClassIdentifier is missing for type");
+        static std::string unknown{"Unknown"};
+        return unknown;
     }
 }
 
@@ -96,11 +103,16 @@ template <class T>
 using HasDataName = is_detected_exact<const std::string, detail::dataNameType, T>;
 
 template <typename T>
-std::string dataName() {
+const std::string& dataName() {
     if constexpr (HasDataName<T>::value) {
         return T::dataName;
+    } else if constexpr (HasClassIdentifierUpper<T>::value) {
+        return T::CLASS_IDENTIFIER;
+    } else if constexpr (HasClassIdentifierLower<T>::value) {
+        return T::classIdentifier;
     } else {
-        return classIdentifier<T>();
+        static std::string unknown{"Unknown"};
+        return unknown;
     }
 }
 

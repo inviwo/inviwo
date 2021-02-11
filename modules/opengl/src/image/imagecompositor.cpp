@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,40 +32,42 @@
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/image/imagegl.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
-ImageCompositor::ImageCompositor(std::string programFileName) : shader_(programFileName) {}
+ImageCompositor::ImageCompositor(std::string programFileName) : shader(programFileName) {}
 
-void ImageCompositor::composite(const Image& source, Image& target, ImageType type) {
-    utilgl::activateTarget(target, type);
-    shader_.activate();
+void ImageCompositor::composite(const Image& source0, const Image& source1, Image& destination,
+                                ImageType type) {
+
+    IVW_ASSERT(&source0 != &destination, "source0 can not be same as destination");
+    IVW_ASSERT(&source1 != &destination, "source1 can not be same as destination");
+
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+    utilgl::activateTarget(destination, type);
+    shader.activate();
 
     TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(shader_, units, source, "tex0", ImageType::ColorDepthPicking);
-    utilgl::bindAndSetUniforms(shader_, units, target, "tex1", ImageType::ColorDepthPicking);
-    utilgl::setShaderUniforms(shader_, target, "outportParameters");
+    utilgl::bindAndSetUniforms(shader, units, source0, "tex0", ImageType::ColorDepthPicking);
+    utilgl::bindAndSetUniforms(shader, units, source1, "tex1", ImageType::ColorDepthPicking);
+
+    utilgl::setShaderUniforms(shader, destination, "outportParameters");
     utilgl::singleDrawImagePlaneRect();
 
-    shader_.deactivate();
+    shader.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 
-void ImageCompositor::composite(ImageInport& source, ImageOutport& target, ImageType type) {
-    if (source.isReady() && target.hasData()) {
-        utilgl::activateTarget(target, type);
-        shader_.activate();
-
-        TextureUnitContainer units;
-        utilgl::bindAndSetUniforms(shader_, units, *source.getData(), "tex0",
-                                   ImageType::ColorDepthPicking);
-        utilgl::bindAndSetUniforms(shader_, units, *target.getData(), "tex1",
-                                   ImageType::ColorDepthPicking);
-        utilgl::setShaderUniforms(shader_, target, "outportParameters");
-        utilgl::singleDrawImagePlaneRect();
-
-        shader_.deactivate();
-        utilgl::deactivateCurrentTarget();
+void ImageCompositor::composite(const ImageInport& source0, const ImageInport& source1,
+                                ImageOutport& destination, ImageType type) {
+    if (source0.isReady() && source1.isReady()) {
+        if (!destination.hasEditableData()) {
+            destination.setData(
+                std::make_shared<Image>(destination.getDimensions(), destination.getDataFormat()));
+        }
+        composite(*source0.getData(), *source1.getData(), *destination.getEditableData(), type);
     }
 }
 

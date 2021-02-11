@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,11 +51,11 @@ const ProcessorInfo CompositeProcessor::processorInfo_{
     CodeState::Stable,                // Code state
     "Composites",                     // Tags
     false};
+
 const ProcessorInfo CompositeProcessor::getProcessorInfo() const { return processorInfo_; }
 
-CompositeProcessor::CompositeProcessor(const std::string& identifier,
-                                       const std::string& displayName, InviwoApplication* app,
-                                       const std::string& file)
+CompositeProcessor::CompositeProcessor(std::string_view identifier, std::string_view displayName,
+                                       InviwoApplication* app, std::string_view file)
     : Processor(identifier, displayName)
     , app_{app}
     , subNetwork_{std::make_unique<ProcessorNetwork>(app)}
@@ -106,7 +106,7 @@ void CompositeProcessor::deserialize(Deserializer& d) {
     Processor::deserialize(d);
 }
 
-void CompositeProcessor::saveSubNetwork(const std::string& file) {
+void CompositeProcessor::saveSubNetwork(std::string_view file) {
     Serializer s(app_->getPath(PathType::Workspaces));
 
     Tags tags;
@@ -120,17 +120,17 @@ void CompositeProcessor::saveSubNetwork(const std::string& file) {
     s.serialize("Tags", tags.getString());
     s.serialize("ProcessorNetwork", *subNetwork_);
 
-    auto ofs = filesystem::ofstream(file);
+    auto ofs = filesystem::ofstream(std::string{file});
     s.writeFile(ofs, true);
 }
 
 ProcessorNetwork& CompositeProcessor::getSubNetwork() { return *subNetwork_; }
 
-void CompositeProcessor::loadSubNetwork(const std::string& file) {
+void CompositeProcessor::loadSubNetwork(std::string_view file) {
     if (filesystem::fileExists(file)) {
         subNetwork_->clear();
         auto wm = app_->getWorkspaceManager();
-        auto ifs = filesystem::ifstream(file);
+        auto ifs = filesystem::ifstream(std::string{file});
         auto d = wm->createWorkspaceDeserializer(ifs, app_->getPath(PathType::Workspaces));
         auto name = getDisplayName();
         d.deserialize("DisplayName", name);
@@ -163,8 +163,7 @@ Property* CompositeProcessor::addSuperProperty(Property* orgProp) {
             orgProp->setMetaData<BoolMetaData>("CompositeProcessorExposed", true);
             return handlers_[orgProp]->superProperty;
         } else {
-            throw Exception("Could not find property " + joinString(orgProp->getPath(), "."),
-                            IVW_CONTEXT);
+            throw Exception("Could not find property " + orgProp->getPath(), IVW_CONTEXT);
         }
     }
 }
@@ -213,16 +212,16 @@ void CompositeProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
 
     if (auto sink = dynamic_cast<CompositeSinkBase*>(p)) {
         auto& port = sink->getSuperOutport();
-        port.setIdentifier(util::findUniqueIdentifier(
-            port.getIdentifier(), [&](const std::string& id) { return getPort(id) == nullptr; },
-            ""));
+        const auto id = util::findUniqueIdentifier(
+            port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; }, "");
+        port.setIdentifier(id);
         addPort(port);
         sinks_.push_back(sink);
     } else if (auto source = dynamic_cast<CompositeSourceBase*>(p)) {
         auto& port = source->getSuperInport();
-        port.setIdentifier(util::findUniqueIdentifier(
-            port.getIdentifier(), [&](const std::string& id) { return getPort(id) == nullptr; },
-            ""));
+        const auto id = util::findUniqueIdentifier(
+            port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; }, "");
+        port.setIdentifier(id);
         addPort(port);
         sources_.push_back(source);
     }
@@ -268,7 +267,10 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
         util::KeepTrueWhileInScope active{&onChangeActive};
         subProperty->set(superProperty);
     })} {
-    superProperty->setIdentifier(joinString(subProperty->getPath(), "-"));
+
+    auto superId = subProperty->getPath();
+    replaceInString(superId, ".", "-");
+    superProperty->setIdentifier(superId);
     superProperty->setDisplayName(subProperty->getOwner()->getProcessor()->getDisplayName() + " " +
                                   subProperty->getDisplayName());
     superProperty->setSerializationMode(PropertySerializationMode::All);
@@ -283,7 +285,9 @@ CompositeProcessor::PropertyHandler::~PropertyHandler() {
 
 void CompositeProcessor::onSetIdentifier(Property* orgProp, const std::string&) {
     if (auto superProperty = getSuperProperty(orgProp)) {
-        superProperty->setIdentifier(joinString(orgProp->getPath(), "-"));
+        auto superId = orgProp->getPath();
+        replaceInString(superId, ".", "-");
+        superProperty->setIdentifier(superId);
     }
 }
 

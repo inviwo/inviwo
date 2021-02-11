@@ -32,6 +32,7 @@ set(MOC_FILES
     include/modules/qtwidgets/propertylistwidget.h
     include/modules/qtwidgets/rangesliderqt.h
     include/modules/qtwidgets/sliderwidgetqt.h
+    include/modules/qtwidgets/syntaxhighlighter.h
     include/modules/qtwidgets/tf/tfcoloredit.h
     include/modules/qtwidgets/tf/tfeditor.h
     include/modules/qtwidgets/tf/tflineedit.h
@@ -76,7 +77,6 @@ set(HEADER_FILES
     include/modules/qtwidgets/properties/propertysettingswidgetqt.h
     include/modules/qtwidgets/properties/propertywidgetqt.h
     include/modules/qtwidgets/properties/stringpropertywidgetqt.h
-    include/modules/qtwidgets/properties/syntaxhighlighter.h
     include/modules/qtwidgets/properties/texteditorwidgetqt.h
     include/modules/qtwidgets/properties/tfprimitivesetwidgetqt.h
     include/modules/qtwidgets/properties/tfpropertywidgetqt.h
@@ -84,7 +84,6 @@ set(HEADER_FILES
     include/modules/qtwidgets/qstringhelper.h
     include/modules/qtwidgets/qtwidgetsmodule.h
     include/modules/qtwidgets/qtwidgetsmoduledefine.h
-    include/modules/qtwidgets/qtwidgetssettings.h
     include/modules/qtwidgets/rawdatareaderdialogqt.h
     include/modules/qtwidgets/textlabeloverlay.h
     include/modules/qtwidgets/tf/tfcontrolpointconnection.h
@@ -92,6 +91,7 @@ set(HEADER_FILES
     include/modules/qtwidgets/tf/tfeditorisovalue.h
     include/modules/qtwidgets/tf/tfeditorprimitive.h
     include/modules/qtwidgets/tf/tfeditorview.h
+    include/modules/qtwidgets/tf/tfpropertyconcept.h
     include/modules/qtwidgets/tf/tfpropertydialog.h
     include/modules/qtwidgets/tf/tfutils.h
 )
@@ -135,7 +135,6 @@ set(SOURCE_FILES
     src/properties/eventpropertywidgetqt.cpp
     src/properties/filepropertywidgetqt.cpp
     src/properties/fontsizepropertywidgetqt.cpp
-    src/properties/glslsyntaxhighlighter.cpp
     src/properties/indicatorwidget.cpp
     src/properties/isotfpropertywidgetqt.cpp
     src/properties/isovaluepropertywidgetqt.cpp
@@ -150,10 +149,8 @@ set(SOURCE_FILES
     src/properties/propertyeditorwidgetqt.cpp
     src/properties/propertysettingswidgetqt.cpp
     src/properties/propertywidgetqt.cpp
-    src/properties/pythonsyntaxhighlighter.cpp
     src/properties/stringmultilinepropertywidgetqt.cpp
     src/properties/stringpropertywidgetqt.cpp
-    src/properties/syntaxhighlighter.cpp
     src/properties/texteditorwidgetqt.cpp
     src/properties/tfprimitivesetwidgetqt.cpp
     src/properties/tfpropertywidgetqt.cpp
@@ -161,10 +158,10 @@ set(SOURCE_FILES
     src/properties/valuedragspinbox.cpp
     src/propertylistwidget.cpp
     src/qtwidgetsmodule.cpp
-    src/qtwidgetssettings.cpp
     src/rangesliderqt.cpp
     src/rawdatareaderdialogqt.cpp
     src/sliderwidgetqt.cpp
+    src/syntaxhighlighter.cpp
     src/textlabeloverlay.cpp
     src/tf/tfcoloredit.cpp
     src/tf/tfcontrolpointconnection.cpp
@@ -174,6 +171,7 @@ set(SOURCE_FILES
     src/tf/tfeditorprimitive.cpp
     src/tf/tfeditorview.cpp
     src/tf/tflineedit.cpp
+    src/tf/tfpropertyconcept.cpp
     src/tf/tfpropertydialog.cpp
     src/tf/tfselectionwatcher.cpp
     src/tf/tfutils.cpp
@@ -194,7 +192,9 @@ source_group("Resource Files" FILES
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${QRC_FILE} ${HEADER_FILES})
+ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${QRC_FILE} ${HEADER_FILES}
+    $<$<BOOL:${WIN32}>:${IVW_ROOT_DIR}/tools/natvis/qt5.natvis>
+)
 target_link_libraries(inviwo-module-qtwidgets PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Svg)
 
 ivw_compile_optimize_on_target(inviwo-module-qtwidgets)

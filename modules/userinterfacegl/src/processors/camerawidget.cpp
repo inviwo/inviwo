@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,8 @@
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/image/imagegl.h>
@@ -49,8 +51,6 @@
 #include <modules/opengl/glformats.h>
 
 #include <modules/base/algorithm/meshutils.h>
-
-#include <modules/assimp/assimpreader.h>
 
 namespace inviwo {
 
@@ -112,9 +112,9 @@ CameraWidget::CameraWidget()
                       38.0f, 1.0f)
     , lightingProperty_("internalLighting", "Lighting", nullptr)
 
-    , picking_(this, numInteractionWidgets, [&](PickingEvent *p) { objectPicked(p); })
-    , shader_("widgetrenderer.vert", "geometryrendering.frag", false)
-    , cubeShader_("geometryrendering.vert", "geometryrendering.frag", false)
+    , picking_(this, numInteractionWidgets, [&](PickingEvent* p) { objectPicked(p); })
+    , shader_("widgetrenderer.vert", "geometryrendering.frag", Shader::Build::No)
+    , cubeShader_("geometryrendering.vert", "geometryrendering.frag", Shader::Build::No)
     , overlayShader_("img_identity.vert", "widgettexture.frag")
     , isMouseBeingPressedAndHold_(false)
     , mouseWasMoved_(false)
@@ -190,6 +190,13 @@ void CameraWidget::process() {
         loadMesh();
     }
 
+    // determine size of the widget
+    const vec2 referenceSize(
+        300.0f);  // reference size (width/height) in pixel for scale equal to 1.0
+    ivec2 widgetSize(scaling_.get() * referenceSize);
+
+    updateWidgetTexture(widgetSize);
+
     // combine the previously rendered widget image with the input
     if (inport_.isReady()) {
         utilgl::activateTargetAndCopySource(outport_, inport_);
@@ -200,12 +207,6 @@ void CameraWidget::process() {
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // determine size of the widget
-    const vec2 referenceSize(
-        300.0f);  // reference size (width/height) in pixel for scale equal to 1.0
-    ivec2 widgetSize(scaling_.get() * referenceSize);
-
-    updateWidgetTexture(widgetSize);
     drawWidgetTexture();
     utilgl::deactivateCurrentTarget();
 }
@@ -244,7 +245,7 @@ void CameraWidget::initializeResources() {
     shader_.deactivate();
 }
 
-void CameraWidget::updateWidgetTexture(const ivec2 &widgetSize) {
+void CameraWidget::updateWidgetTexture(const ivec2& widgetSize) {
     if (!widgetImage_.get() || (ivec2(widgetImage_->getDimensions()) != widgetSize)) {
         widgetImage_ = std::make_unique<Image>(widgetSize, outport_.getDataFormat());
         widgetImageGL_ = widgetImage_->getEditableRepresentation<ImageGL>();
@@ -259,7 +260,7 @@ void CameraWidget::updateWidgetTexture(const ivec2 &widgetSize) {
     utilgl::setShaderUniforms(shader_, lightingProperty_, "lighting");
     shader_.setUniform("overrideColor", userColor_.get());
 
-    auto *meshDrawer = meshDrawers_[showRollWidget_.get() ? 1 : 0].get();
+    auto* meshDrawer = meshDrawers_[showRollWidget_.get() ? 1 : 0].get();
     utilgl::setShaderUniforms(shader_, *meshDrawer->getMesh(), "geometry");
 
     meshDrawer->draw();
@@ -329,7 +330,7 @@ void CameraWidget::drawWidgetTexture() {
     overlayShader_.deactivate();
 }
 
-void CameraWidget::objectPicked(PickingEvent *e) {
+void CameraWidget::objectPicked(PickingEvent* e) {
     const auto pickedID = static_cast<int>(e->getPickedId());
     if (pickedID >= static_cast<int>(pickingIDs_.size())) {
         return;
@@ -380,7 +381,7 @@ void CameraWidget::objectPicked(PickingEvent *e) {
 void CameraWidget::saveInitialCameraState() {
     // save current camera vectors (direction, up, and right) to be able to do absolute
     // rotations
-    auto &cam = camera_.get();
+    auto& cam = camera_.get();
     vec3 camDir(glm::normalize(cam.getDirection()));
     vec3 camUp(glm::normalize(cam.getLookUp()));
     vec3 camRight(glm::cross(camDir, camUp));
@@ -393,48 +394,60 @@ void CameraWidget::saveInitialCameraState() {
     initialState_.camUp = camUp;
     initialState_.camRight = camRight;
     try {
-        auto &perspCam = dynamic_cast<PerspectiveCamera &>(cam);
+        auto& perspCam = dynamic_cast<PerspectiveCamera&>(cam);
         double fovy = perspCam.getFovy();
         initialState_.zoom_ = 1.0 / std::tan(fovy * glm::pi<double>() / 360.0);
-    } catch (std::bad_cast &) {
+    } catch (std::bad_cast&) {
         // camera is not a PerspectiveCamera
         initialState_.zoom_ = 1.0;
     }
 }
 
 void CameraWidget::loadMesh() {
-    auto module = InviwoApplication::getPtr()->getModuleByIdentifier("UserInterfaceGL");
-    if (!module) {
-        throw Exception("Could not locate module 'UserInterfaceGL'", IVW_CONTEXT);
-    }
+    auto load = [this](std::string_view file) -> std::shared_ptr<const Mesh> {
+        auto app = getNetwork()->getApplication();
+        auto module = app->getModuleByIdentifier("UserInterfaceGL");
+        if (!module) {
+            throw Exception("Could not locate module 'UserInterfaceGL'", IVW_CONTEXT);
+        }
 
-    std::string basePath(module->getPath(ModulePath::Data));
-    basePath += "/meshes/";
+        auto reader = app->getDataReaderFactory()->getReaderForTypeAndExtension<Mesh>("fbx");
+        if (!reader) {
+            throw Exception("Could not fbx mesh reader", IVW_CONTEXT);
+        }
+        reader->setOption("FixInvalidData", false);
+        reader->setOption("LogLevel", LogVerbosity::Error);
 
-    static std::array<std::shared_ptr<const Mesh>, 4> meshes = [basePath]() {
-        std::array<std::shared_ptr<const Mesh>, 4> res;
+        return reader->readData(
+            fmt::format("{}/meshes/{}", module->getPath(ModulePath::Data), file));
+    };
 
-        AssimpReader meshReader;
-        meshReader.setLogLevel(AssimpLogLevel::Error);
-        meshReader.setFixInvalidDataFlag(false);
+    auto cache = [](std::weak_ptr<const Mesh>& cache, auto func,
+                    auto... args) -> std::shared_ptr<const Mesh> {
+        if (auto mesh = cache.lock()) {
+            return mesh;
+        } else {
+            mesh = func(args...);
+            cache = mesh;
+            return mesh;
+        }
+    };
 
-        // camera interaction widgets
-        res[0] = meshReader.readData(basePath + "camera-widget.fbx");
-        // widget including "camera roll" arrow
-        res[1] = meshReader.readData(basePath + "camera-widget-roll.fbx");
-        // camera zoom buttons
-        res[2] = meshReader.readData(basePath + "camera-zoom.fbx");
+    static std::array<std::weak_ptr<const Mesh>, 4> meshes;
 
-        // cube mesh for orientation
+    // camera interaction widgets
+    meshes_[0] = cache(meshes[0], load, "camera-widget.fbx");
+    // widget including "camera roll" arrow
+    meshes_[1] = cache(meshes[1], load, "camera-widget-roll.fbx");
+    // camera zoom buttons
+    meshes_[2] = cache(meshes[2], load, "camera-zoom.fbx");
+    // cube mesh for orientation
+    meshes_[3] = cache(meshes[3], []() {
         const vec3 cubeScale(8.0f);
         mat4 transform(glm::scale(vec3(cubeScale)));
         transform[3] = vec4(-0.5f * cubeScale, 1.0f);
-        res[3] = meshutil::cube(transform, vec4(0.6f, 0.42f, 0.42f, 1.0f));
-
-        return res;
-    }();
-
-    meshes_ = meshes;
+        return meshutil::cube(transform, vec4(0.6f, 0.42f, 0.42f, 1.0f));
+    });
 
     for (std::size_t i = 0; i < meshes_.size(); ++i) {
         if (auto mesh = meshes_[i].get()) {
@@ -499,7 +512,7 @@ void CameraWidget::rotation(Interaction dir, dvec2 mouseDelta) {
         case Interaction::FreeRotation: {
             vec2 delta(mouseDelta);
             distance = glm::length(delta);
-            const auto &cam = camera_.get();
+            const auto& cam = camera_.get();
             rotAxis = glm::normalize(
                 -delta.y * glm::normalize(glm::cross(cam.getDirection(), cam.getLookUp())) +
                 delta.x * cam.getLookUp());
@@ -564,7 +577,7 @@ void CameraWidget::singleStepRotation(Interaction dir, bool clockwise) {
 void CameraWidget::zoom(dvec2 delta) {
     double f = -delta.y / 50.0;
 
-    auto &cam = camera_.get();
+    auto& cam = camera_.get();
     double focalLength = glm::length(cam.getDirection());
     focalLength = std::max(0.01, focalLength + f * initialState_.zoom_);
 
@@ -579,10 +592,10 @@ void CameraWidget::singleStepZoom(bool zoomIn) {
     zoom(delta);
 }
 
-void CameraWidget::updateOutput(const mat4 &rotation) {
+void CameraWidget::updateOutput(const mat4& rotation) {
     // update camera
     mat3 m(rotation);
-    auto &cam = camera_.get();
+    auto& cam = camera_.get();
     vec3 v(cam.getDirection());
     camera_.setLook(cam.getLookTo() - m * v, cam.getLookTo(), m * cam.getLookUp());
 
@@ -605,7 +618,7 @@ CameraWidget::Interaction CameraWidget::intToInteractionDirection(int dir) {
     }
 }
 
-vec3 CameraWidget::getObjectRotationAxis(const vec3 &rotAxis) const {
+vec3 CameraWidget::getObjectRotationAxis(const vec3& rotAxis) const {
     vec3 axis(glm::abs(rotAxis));
     // use closest object axis for horizontal rotation
     if ((axis.x > axis.y) && (axis.x > axis.z)) {

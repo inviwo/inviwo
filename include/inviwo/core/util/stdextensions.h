@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -139,7 +139,40 @@ struct overloaded : Ts... {
     using Ts::operator()...;
 };
 template <class... Ts>
-overloaded(Ts...)->overloaded<Ts...>;
+overloaded(Ts...) -> overloaded<Ts...>;
+
+struct identity {
+    template <typename T>
+    constexpr decltype(auto) operator()(T&& t) const noexcept {
+        return std::forward<T>(t);
+    }
+};
+
+struct alwaysTrue {
+    template <typename T>
+    constexpr bool operator()(T&&) const noexcept {
+        return true;
+    }
+};
+
+struct identifier {
+    template <typename T>
+    constexpr decltype(auto) operator()(T&& item) const noexcept {
+        return item.getIdentifier();
+    }
+    template <typename T>
+    constexpr decltype(auto) operator()(T* item) const noexcept {
+        return item->getIdentifier();
+    }
+    template <typename T>
+    constexpr decltype(auto) operator()(const std::unique_ptr<T>& item) const noexcept {
+        return item->getIdentifier();
+    }
+    template <typename T>
+    constexpr decltype(auto) operator()(const std::shared_ptr<T>& item) const noexcept {
+        return item->getIdentifier();
+    }
+};
 
 // type trait to check if T is derived from std::basic_string
 namespace detail {
@@ -377,6 +410,18 @@ bool none_of(const T& cont, UnaryPredicate pred) {
     return std::none_of(begin(cont), end(cont), pred);
 }
 
+template <typename Iter, typename Proj = identity>
+Iter find_not_equal(Iter begin, Iter end, Proj proj = {}) {
+    if (begin == end) return end;
+
+    decltype(auto) val = std::invoke(proj, *begin);
+
+    for (auto it = std::next(begin); it != end; ++it) {
+        if (val != std::invoke(proj, *it)) return it;
+    }
+    return end;
+}
+
 template <class Iter>
 struct iter_range : std::pair<Iter, Iter> {
     using value_type = typename std::iterator_traits<Iter>::value_type;
@@ -429,11 +474,11 @@ auto copy_if(const T& cont, P pred) -> std::vector<typename T::value_type> {
 
 template <typename T, typename UnaryOperation>
 auto transform(const T& cont, UnaryOperation op)
-    -> std::vector<std::invoke_result_t<UnaryOperation, typename T::value_type>> {
+    -> std::vector<std::invoke_result_t<UnaryOperation, const typename T::value_type>> {
     using std::begin;
     using std::end;
 
-    std::vector<std::invoke_result_t<UnaryOperation, typename T::value_type>> res;
+    std::vector<std::invoke_result_t<UnaryOperation, const typename T::value_type>> res;
     res.reserve(std::distance(begin(cont), end(cont)));
     std::transform(begin(cont), end(cont), std::back_inserter(res), op);
     return res;

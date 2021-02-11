@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,11 @@
  *
  *********************************************************************************/
 
+#include <inviwo/core/algorithm/camerautils.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/datastructures/camera/perspectivecamera.h>
+#include <inviwo/core/datastructures/camera/skewedperspectivecamera.h>
 
 namespace inviwo {
 
@@ -76,70 +79,85 @@ vec3 getLookUp(Side side) {
 
 }  // namespace detail
 
-void setCameraView(CameraProperty &cam, const mat4 &boundingBox, vec3 inViewDir, vec3 inLookUp,
+template <typename CamType>
+std::tuple<vec3, vec3, vec3> fitPerspectiveCameraView(const CamType& cam, const mat4& boundingBox,
+                                                      vec3 inViewDir, vec3 inLookUp,
+                                                      float fitRatio) {
+
+    const auto offset = vec3{.5f};
+    const auto lookTo = vec3(boundingBox * vec4(offset, 1.f));
+
+    const auto viewDir = glm::normalize(inViewDir);
+    const auto lookUp = glm::normalize(inLookUp);
+    const auto sideDir = glm::cross(viewDir, lookUp);
+
+    const float fovy = cam.getFovy() / 2.0f;
+    const float fovx = glm::degrees(std::atan(cam.getAspectRatio() * std::tan(glm::radians(fovy))));
+
+    const std::array<vec3, 8> corners = {vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{1, 1, 0},
+                                         vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
+                                         vec3{1, 1, 1}, vec3{0, 1, 1}};
+
+    // Find the needed distance from the camera to lookTo given a field of view such that a
+    // corner of the bounding box are within the view
+    const auto dist = [&](vec3 corner) {
+        const auto point = vec3(boundingBox * vec4(corner, 1.f));
+
+        const auto d0 = glm::dot(point - lookTo, -viewDir);
+        const auto height = glm::abs(glm::dot(point - lookTo, lookUp)) * fitRatio;
+        const auto width = glm::abs(glm::dot(point - lookTo, sideDir)) * fitRatio;
+        const float d1 = height * std::tan(glm::radians(90 - fovy));
+        const float d2 = width * std::tan(glm::radians(90 - fovx));
+        return d0 + std::max(d1, d2);
+    };
+
+    // take the largest needed distance for all corners.
+    const auto it = std::max_element(corners.begin(), corners.end(),
+                                     [&](vec3 a, vec3 b) { return dist(a) < dist(b); });
+    const auto lookOffset = dist(*it) * viewDir;
+
+    return {lookTo + lookOffset, lookTo, lookUp};
+}
+
+void setCameraView(CameraProperty& cam, const mat4& boundingBox, vec3 inViewDir, vec3 inLookUp,
                    float fitRatio, UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges) {
-    if (auto perspectiveCamera = dynamic_cast<PerspectiveCamera *>(&cam.get())) {
-        const auto offset = vec3{.5f};
-        const auto lookTo = vec3(boundingBox * vec4(offset, 1.f));
+    NetworkLock lock(&cam);
+    if (updateNearFar == UpdateNearFar::Yes) {
+        setCameraNearFar(cam, boundingBox);
+    }
+    if (updateLookRanges == UpdateLookRanges::Yes) {
+        setCameraLookRanges(cam, boundingBox);
+    }
+    if (auto perspectiveCamera = dynamic_cast<PerspectiveCamera*>(&cam.get())) {
 
-        const auto viewDir = glm::normalize(inViewDir);
-        const auto lookUp = glm::normalize(inLookUp);
-        const auto sideDir = glm::cross(viewDir, lookUp);
+        auto [lookFrom, lookTo, lookUp] = fitPerspectiveCameraView(*perspectiveCamera, boundingBox,
+                                                                   inViewDir, inLookUp, fitRatio);
+        cam.setLook(lookFrom, lookTo, lookUp);
+    } else if (auto skewedPerspectiveCamera = dynamic_cast<SkewedPerspectiveCamera*>(&cam.get())) {
 
-        const float fovy = perspectiveCamera->getFovy() / 2.0f;
-        const float fovx =
-            glm::degrees(std::atan(cam.getAspectRatio() * std::tan(glm::radians(fovy))));
-
-        const std::array<vec3, 8> corners = {vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{1, 1, 0},
-                                             vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
-                                             vec3{1, 1, 1}, vec3{0, 1, 1}};
-
-        // Find the needed distance from the camera to lookTo given a field of view such that a
-        // corner of the bounding box are within the view
-        const auto dist = [&](vec3 corner) {
-            const auto point = vec3(boundingBox * vec4(corner, 1.f));
-
-            const auto d0 = glm::dot(point - lookTo, -viewDir);
-            const auto height = glm::abs(glm::dot(point - lookTo, lookUp)) * fitRatio;
-            const auto width = glm::abs(glm::dot(point - lookTo, sideDir)) * fitRatio;
-            const float d1 = height * std::tan(glm::radians(90 - fovy));
-            const float d2 = width * std::tan(glm::radians(90 - fovx));
-            return d0 + std::max(d1, d2);
-        };
-
-        // take the largest needed distance for all corners.
-        const auto it = std::max_element(corners.begin(), corners.end(),
-                                         [&](vec3 a, vec3 b) { return dist(a) < dist(b); });
-        const auto lookOffset = dist(*it) * viewDir;
-
-        NetworkLock lock(&cam);
-        if (updateNearFar == UpdateNearFar::Yes) {
-            setCameraNearFar(cam, boundingBox);
-        }
-        if (updateLookRanges == UpdateLookRanges::Yes) {
-            setCameraLookRanges(cam, boundingBox);
-        }
-        cam.setLook(lookTo + lookOffset, lookTo, lookUp);
+        auto [lookFrom, lookTo, lookUp] = fitPerspectiveCameraView(
+            *skewedPerspectiveCamera, boundingBox, inViewDir, inLookUp, fitRatio);
+        cam.setLook(lookFrom, lookTo, lookUp);
     } else {
         LogWarnCustom("camerautil::setCameraView",
-                      "setCameraView only supports perspective cameras");
+                      "setCameraView does not support " << cam.get().getClassIdentifier());
     }
 }
 
-void setCameraView(CameraProperty &cam, const mat4 &boundingBox, float fitRatio,
+void setCameraView(CameraProperty& cam, const mat4& boundingBox, float fitRatio,
                    UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges) {
     setCameraView(cam, boundingBox, cam.getLookFrom() - cam.getLookTo(), cam.getLookUp(), fitRatio,
                   updateNearFar, updateLookRanges);
 }
 
-void setCameraView(CameraProperty &cam, const mat4 &boundingBox, Side side, float fitRatio,
+void setCameraView(CameraProperty& cam, const mat4& boundingBox, Side side, float fitRatio,
                    UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges) {
     const auto viewDir = mat3(boundingBox) * detail::getViewDir(side);
     const auto lookUp = mat3(boundingBox) * detail::getLookUp(side);
     setCameraView(cam, boundingBox, viewDir, lookUp, fitRatio, updateNearFar, updateLookRanges);
 }
 
-void setCameraLookRanges(CameraProperty &cam, const mat4 &boundingBox, float zoomRange) {
+void setCameraLookRanges(CameraProperty& cam, const mat4& boundingBox, float zoomRange) {
     NetworkLock lock(&cam);
 
     vec3 lookTo(boundingBox * vec4(vec3(.5f), 1.f));
@@ -158,7 +176,7 @@ void setCameraLookRanges(CameraProperty &cam, const mat4 &boundingBox, float zoo
     cam.lookTo_.setMaxValue(glm::max(p0, p1));
 }
 
-std::pair<float, float> computeCameraNearFar(const mat4 &boundingBox, float zoomRange,
+std::pair<float, float> computeCameraNearFar(const mat4& boundingBox, float zoomRange,
                                              float nearFarRatio) {
     vec3 bx(boundingBox[0]);
     vec3 by(boundingBox[1]);
@@ -175,7 +193,7 @@ std::pair<float, float> computeCameraNearFar(const mat4 &boundingBox, float zoom
     return {newNear, newFar};
 }
 
-void setCameraNearFar(CameraProperty &cam, const mat4 &boundingBox, float zoomRange,
+void setCameraNearFar(CameraProperty& cam, const mat4& boundingBox, float zoomRange,
                       float nearFarRatio) {
 
     auto [newNear, newFar] = computeCameraNearFar(boundingBox, zoomRange, nearFarRatio);

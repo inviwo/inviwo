@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HDF5PORT_H
-#define IVW_HDF5PORT_H
+#pragma once
 
 #include <modules/hdf5/hdf5moduledefine.h>
 #include <inviwo/core/ports/datainport.h>
@@ -45,5 +44,3 @@ using Outport = DataOutport<Handle>;
 }  // namespace hdf5
 
 }  // namespace inviwo
-
-#endif  // IVW_HDF5PORT_H

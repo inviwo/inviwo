@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,10 +49,10 @@ namespace inviwo {
 ConsoleLogger::ConsoleLogger() = default;
 ConsoleLogger::~ConsoleLogger() = default;
 
-void ConsoleLogger::log(std::string logSource, [[maybe_unused]] LogLevel logLevel,
-                        LogAudience /*audience*/, [[maybe_unused]] const char* fileName,
-                        [[maybe_unused]] const char* functionName, [[maybe_unused]] int lineNumber,
-                        std::string logMsg) {
+void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel logLevel,
+                        LogAudience /*audience*/, [[maybe_unused]] std::string_view fileName,
+                        [[maybe_unused]] std::string_view functionName,
+                        [[maybe_unused]] int lineNumber, std::string_view logMsg) {
 
     auto& os = logLevel == LogLevel::Error ? std::cerr : std::cout;
 
@@ -109,27 +109,26 @@ void ConsoleLogger::log(std::string logSource, [[maybe_unused]] LogLevel logLeve
 
     const size_t reserved = 33;
     const auto maxWidth = width - reserved - 1;
-    auto lines = splitString(logMsg, '\n');
-    std::vector<std::string> res;
-    for (auto line : lines) {
+
+    std::vector<std::string_view> res;
+    util::forEachStringPart(logMsg, "\n", [&](std::string_view line) {
         if (line.size() < maxWidth) {
             res.push_back(line);
         } else {
             size_t pos = 0;
             while (pos < line.size()) {
-                res.push_back(trim(line.substr(pos, maxWidth)));
+                res.push_back(util::trim(line.substr(pos, maxWidth)));
                 pos += maxWidth;
             }
         }
-    }
+    });
 
     std::stringstream ss;
     auto joiner = util::make_ostream_joiner(ss, "\n" + std::string(reserved, ' '));
     std::copy(res.begin(), res.end(), joiner);
-    logMsg = ss.str();
 
     os << std::left << std::setw(5) << logLevel << " " << std::setw(25) << logSource << ": "
-       << logMsg << std::endl;
+       << ss.str() << std::endl;
 
 #ifdef WIN32
     SetConsoleTextAttribute(hConsole, oldState.wAttributes);

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <modules/qtwidgets/properties/syntaxhighlighter.h>
+#include <modules/qtwidgets/syntaxhighlighter.h>
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/filepropertywidgetqt.h>
@@ -78,13 +78,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     toolBar->setMovable(false);
     setWidget(mainWindow);
 
-    if (property->getSemantics() == PropertySemantics::ShaderEditor) {
-        editor_ = new CodeEdit{GLSL};
-    } else if (property->getSemantics() == PropertySemantics::PythonEditor) {
-        editor_ = new CodeEdit{Python};
-    } else {
-        editor_ = new CodeEdit{None};
-    }
+    editor_ = new CodeEdit{this};
     mainWindow->setCentralWidget(editor_);
 
     QObject::connect(editor_, &CodeEdit::modificationChanged, this,
@@ -105,7 +99,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     if (fileProperty_) {
         propertyCallback_ = fileProperty_->onChangeScoped([this]() { propertyModified(); });
 
-        auto saveas = toolBar->addAction(QIcon(":/svgicons/saveas.svg"), tr("&Save Script As..."));
+        auto saveas = toolBar->addAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Script As..."));
         saveas->setShortcut(QKeySequence::SaveAs);
         saveas->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         saveas->setToolTip("Save Script As...");
@@ -171,7 +165,9 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     loadState();
 }
 
-SyntaxHighligther* TextEditorDockWidget::getSyntaxHighligther() { return syntaxHighligther_; }
+SyntaxHighlighter& TextEditorDockWidget::getSyntaxHighlighter() {
+    return editor_->syntaxHighlighter();
+}
 
 TextEditorDockWidget::~TextEditorDockWidget() = default;
 

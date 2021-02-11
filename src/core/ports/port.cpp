@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,13 +31,20 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/io/serialization/serialization.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 Port::Port(std::string identifier) : identifier_(std::move(identifier)), processor_(nullptr) {}
 
 Processor* Port::getProcessor() const { return processor_; }
 
-std::string Port::getIdentifier() const { return identifier_; }
+std::string Port::getPath() const {
+    if (!processor_) throw Exception("No processor set", IVW_CONTEXT);
+    return fmt::format("{}.{}", processor_->getIdentifier(), identifier_);
+}
+
+const std::string& Port::getIdentifier() const { return identifier_; }
 
 void Port::setIdentifier(const std::string& name) { identifier_ = name; }
 

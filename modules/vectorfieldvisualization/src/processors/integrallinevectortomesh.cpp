@@ -258,8 +258,8 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
                     minT = std::min(minT, 0.);
                     maxT = std::max(maxT, 1.);
                 } else {
-                    const auto timestamps = line.getMetaData<double>("timestamp");
-                    for (const auto &t : timestamps) {
+                    const auto& timestamp = line.getMetaData<double>("timestamp");
+                    for (const auto& t : timestamp) {
                         minT = std::min(minT, t);
                         maxT = std::max(t, maxT);
                     }

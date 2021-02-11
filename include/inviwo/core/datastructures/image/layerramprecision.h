@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -116,6 +116,8 @@ private:
  * @param type of layer to create.
  * @param format of layer to create.
  * @param swizzleMask used in for the layer, defaults to RGB-alpha
+ * @param interpolation method to use.
+ * @param wrapping method to use.
  * @return nullptr if no valid format was specified.
  */
 IVW_CORE_API std::shared_ptr<LayerRAM> createLayerRAM(

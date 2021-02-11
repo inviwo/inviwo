@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/inviwocommondefines.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -138,7 +139,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
 
         auto cell = table.append("td");
         cell.append("h1", "Inviwo", {{"style", "color:white;"}});
-        cell.append("p", "Interactive Visualization Workshop. Version " + IVW_VERSION);
+        cell.append("p", "Interactive Visualization Workshop. Version " + toString(build::version));
         cell.append("p", "&copy; 2012-" + toString(buildYear) + " The Inviwo Foundation");
         cell.append("a", "http://www.inviwo.org", {{"href", "http://www.inviwo.org"}});
         cell.append("p",
@@ -150,17 +151,17 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         h.append("h3", "Core Team:");
         h.append("br");
         h.append("span",
-                 "Peter Steneteg, Erik Sundén, Daniel Jönsson, Martin Falk, "
-                 "Rickard Englund, Sathish Kottravel, Timo Ropinski");
+                 "Peter Steneteg, Martin Falk, Daniel Jönsson, Rickard Englund, Timo Ropinski, "
+                 "Anke Friederici, Julian Kreiser, Dominik Engel");
     }
     {
         auto h = body.append("p");
         h.append("h3", "Contributors:");
         h.append("br");
+
         h.append("span",
-                 "Robin Skånberg, Jochen Jankowai, Tino Weinkauf, "
-                 "Wiebke Köpp, Anke Friederici, Dominik Engel, "
-                 "Alexander Johansson, Andreas Valter, Johan Norén, Emanuel Winblad, "
+                 "Erik Sundén, Sathish Kottravel, Robin Skånberg, Jochen Jankowai, Tino Weinkauf, "
+                 "Wiebke Köpp, Alexander Johansson, Andreas Valter, Johan Norén, Emanuel Winblad, "
                  "Hans-Christian Helltegen, Viktor Axelsson");
     }
     {
@@ -170,7 +171,8 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         h.append("span",
                  "This work was supported by Linköping University, KTH Royal Institute of "
                  "Technology, Ulm University, and through grants from the Swedish e-Science "
-                 "Research Centre (SeRC).");
+                 "Research Centre (SeRC) and the Excellence Center at Linköping - Lund in "
+                 "Information Technology (ELLIIT)");
         h.append("br");
         auto p = h.append("p");
 
@@ -185,6 +187,9 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
 
         auto uulm = p.append("a", "", {{"href", "http://www.uni-ulm.de/en/"}});
         uulm.append("img", "", makeImg(":/images/uulm.png", 50));
+
+        auto elliit = p.append("a", "", {{"href", "https://old.liu.se/elliit?l=en"}});
+        elliit.append("img", "", makeImg(":/images/elliit.png", 50));
     }
     {
         const auto& bi = syscap.getBuildInfo();
@@ -224,29 +229,32 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         h.append("h3", "Libraries: ");
         auto dl = h.append("dl");
         const auto& mfos = app->getModuleManager().getModuleFactoryObjects();
+        std::map<std::string, LicenseInfo> licenses;
         for (auto& mfo : mfos) {
             for (auto& license : mfo->licenses) {
-                QUrl url;
-                url.setScheme("file");
-                url.setHost("license.txt");
-                QUrlQuery query;
-                query.addQueryItem("module", utilqt::toQString(mfo->name));
-                query.addQueryItem("id", utilqt::toQString(license.id));
-                url.setQuery(query);
-                auto dt = dl.append("dt");
-                dt.append("b", license.name);
-                dt += " ";
-                dt.append("a", license.type, {{"href", utilqt::fromQString(url.url())}});
-                auto dd = dl.append("dd", "", {{"style", "margin-bottom:10px;"}});
-                if (!license.url.empty()) {
-                    dd.append("a", license.url, {{"href", license.url}});
-                    dd += " ";
-                }
-                if (license.version != Version{0, 0, 0, 0}) {
-                    dd += toString(license.version);
-                    dd += " ";
-                }
-                dd += "(" + license.module + ")";
+                licenses.try_emplace(license.id, license);
+            }
+        }
+        for (auto&& [id, license] : licenses) {
+            QUrl url;
+            url.setScheme("file");
+            url.setHost("license.txt");
+            QUrlQuery query;
+            query.addQueryItem("module", utilqt::toQString(license.module));
+            query.addQueryItem("id", utilqt::toQString(license.id));
+            url.setQuery(query);
+            auto dt = dl.append("dt");
+            dt.append("b", license.name);
+            dt += " ";
+            dt.append("a", license.type, {{"href", utilqt::fromQString(url.url())}});
+            auto dd = dl.append("dd", "", {{"style", "margin-bottom:10px;"}});
+            if (!license.url.empty()) {
+                dd.append("a", license.url, {{"href", license.url}});
+                dd += " ";
+            }
+            if (!license.version.empty()) {
+                dd += license.version;
+                dd += " ";
             }
         }
     }
@@ -257,46 +265,57 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     auto showLicense = [str, textdoc, app, escape, makeBody](const QUrl& url) {
         if (url.hasQuery()) {
             QUrlQuery query(url);
-            auto module = utilqt::fromQString(query.queryItemValue("module"));
-            auto id = utilqt::fromQString(query.queryItemValue("id"));
+            auto moduleName = utilqt::fromQString(query.queryItemValue("module"));
+            auto licenseId = utilqt::fromQString(query.queryItemValue("id"));
 
             const auto& mfos = app->getModuleManager().getModuleFactoryObjects();
-            auto mit = util::find_if(mfos, [&](auto& m) { return m->name == module; });
-            if (mit != mfos.end()) {
-                auto it = util::find_if((*mit)->licenses, [&](auto& l) { return l.id == id; });
-                if (it != (*mit)->licenses.end()) {
-                    Document doc;
-                    auto body = makeBody(doc);
-                    auto li = body.append("div");
-                    li.append("p").append("a", "Back", {{"href", "file://home.txt"}});
-                    li.append("br");
-                    li.append("b", it->name);
-                    if (it->version != Version{0, 0, 0, 0}) {
-                        li += toString(it->version);
-                    }
-                    if (!it->url.empty()) {
-                        li.append("a", it->url, {{"href", it->url}});
-                    }
-                    auto mod = app->getModuleByIdentifier(module);
-                    if (!mod) return;
-                    auto path = mod->getPath();
-                    for (auto& file : it->files) {
-                        auto licfile = path + "/" + file;
-                        if (!filesystem::fileExists(licfile)) {
-                            // Look for an installed file
-                            licfile = path + "/licenses/" + it->id + "-" +
-                                      filesystem::getFileNameWithExtension(file);
-                        }
+            auto mit = util::find_if(mfos, [&](auto& m) { return m->name == moduleName; });
+            if (mit == mfos.end()) return;
 
-                        auto f = filesystem::ifstream(licfile);
-                        std::stringstream buffer;
-                        buffer << f.rdbuf();
-                        li.append("pre", escape(buffer.str()), {{"style", "font: 12px;"}});
-                    }
-                    textdoc->setHtml(utilqt::toQString(doc));
-                    return;
-                }
+            auto& licenses = (*mit)->licenses;
+
+            auto lit = util::find_if(licenses, [&](auto& l) { return l.id == licenseId; });
+            if (lit == licenses.end()) return;
+
+            auto& license = *lit;
+
+            Document doc;
+            auto body = makeBody(doc);
+            auto li = body.append("div");
+            li.append("p").append("a", "Back", {{"href", "file://home.txt"}});
+            li.append("br");
+            li.append("b", license.name);
+            if (!license.version.empty()) {
+                li += license.version;
             }
+            if (!license.url.empty()) {
+                li.append("a", license.url, {{"href", license.url}});
+            }
+
+            auto mod = app->getModuleByIdentifier(moduleName);
+            if (!mod) return;
+            auto modulePath = mod->getPath();
+            for (auto& file : license.files) {
+
+                const auto defaultLicensePath = modulePath + "/licenses/" + file;
+                const auto fallbackLicensePath = std::string{build::binaryDirectory} + "/modules/" +
+                                                 toLower(moduleName) + "/licenses/" + file;
+
+                std::stringstream buffer;
+                if (filesystem::fileExists(defaultLicensePath)) {
+                    auto f = filesystem::ifstream(defaultLicensePath);
+                    buffer << f.rdbuf();
+                } else if (filesystem::fileExists(fallbackLicensePath)) {
+                    auto f = filesystem::ifstream(fallbackLicensePath);
+                    buffer << f.rdbuf();
+                } else {
+                    buffer << "License file not found";
+                }
+
+                li.append("pre", escape(buffer.str()), {{"style", "font: 12px;"}});
+            }
+            textdoc->setHtml(utilqt::toQString(doc));
+            return;
         }
         textdoc->setHtml(utilqt::toQString(str));
     };

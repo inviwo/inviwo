@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,15 +59,16 @@ public:
     void setLogger(Logger* logger);
     Logger* getLogger() const;
 
-    virtual void log(std::string logSource, LogLevel level, LogAudience audience, const char* file,
-                     const char* function, int line, std::string msg) override;
+    virtual void log(std::string_view logSource, LogLevel level, LogAudience audience,
+                     std::string_view file, std::string_view function, int line,
+                     std::string_view msg) override;
 
     virtual void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                              std::string msg, const char* file, const char* function,
-                              int line) override;
+                              std::string_view msg, std::string_view file,
+                              std::string_view function, int line) override;
 
-    virtual void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
-                            const char* function, int line) override;
+    virtual void logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
+                            std::string_view file, std::string_view function, int line) override;
 
 private:
     LogVerbosity logVerbosity_;

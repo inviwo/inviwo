@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -83,7 +83,6 @@
 #include <QGridLayout>
 #include <QActionGroup>
 #include <QClipboard>
-#include <QDesktopWidget>
 #include <QFileDialog>
 #include <QList>
 #include <QMessageBox>
@@ -96,7 +95,9 @@
 #include <QDragEnterEvent>
 #include <QBuffer>
 #include <QTabWidget>
+#include <QScreen>
 #include <QToolButton>
+#include <QStackedWidget>
 
 #include <warn/pop>
 
@@ -134,9 +135,9 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                              "",
                              "path"}
     , openData_{"d", "data", "Try and open a data file", false, "", "file name"}
-    , updateWorkspaces_{"", "update-workspaces",
-                        "Update workspaces of all modules to the latest version "
-                        "(located in '<module>/data/workspaces/*')"}
+    , updateExampleWorkspaces_{"", "update-workspaces",
+                               "Update workspaces of all modules to the latest version "
+                               "(located in '<module>/data/workspaces/*')"}
     , updateRegressionWorkspaces_{"", "update-regression-workspaces",
                                   "Update regression workspaces of all modules to the latest "
                                   "version "
@@ -156,7 +157,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     setAcceptDrops(true);
 
     // make sure, tooltips are always shown (this includes port inspectors as well)
-    this->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+    setAttribute(Qt::WA_AlwaysShowToolTips, true);
 
     networkEditor_ = std::make_unique<NetworkEditor>(this);
 
@@ -178,74 +179,77 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
               util::insertNetworkForData(file, net);
           }}});
 
-    const QDesktopWidget dw;
-    auto screen = dw.screenGeometry(this);
+    auto screen = QGuiApplication::primaryScreen();
     const float maxRatio = 0.8f;
+    const auto ssize = screen->availableSize();
 
     QSize size = utilqt::emToPx(this, QSizeF(192, 108));
-    size.setWidth(std::min(size.width(), static_cast<int>(screen.width() * maxRatio)));
-    size.setHeight(std::min(size.height(), static_cast<int>(screen.height() * maxRatio)));
+    size.setWidth(std::min(size.width(), static_cast<int>(ssize.width() * maxRatio)));
+    size.setHeight(std::min(size.height(), static_cast<int>(ssize.height() * maxRatio)));
 
     // Center Window
-    QPoint pos{screen.width() / 2 - size.width() / 2, screen.height() / 2 - size.height() / 2};
+    QPoint pos{ssize.width() / 2 - size.width() / 2, ssize.height() / 2 - size.height() / 2};
 
     resize(size);
     move(pos);
 
-    app->getCommandLineParser().add(&openData_,
-                                    [this]() {
-                                        auto net = app_->getProcessorNetwork();
-                                        util::insertNetworkForData(openData_.getValue(), net, true);
-                                    },
-                                    900);
+    app->getCommandLineParser().add(
+        &openData_,
+        [this]() {
+            auto net = app_->getProcessorNetwork();
+            util::insertNetworkForData(openData_.getValue(), net, true);
+        },
+        900);
 
-    app->getCommandLineParser().add(&snapshotArg_,
-                                    [this]() {
-                                        saveCanvases(app_->getCommandLineParser().getOutputPath(),
-                                                     snapshotArg_.getValue());
-                                    },
-                                    1000);
+    app->getCommandLineParser().add(
+        &snapshotArg_,
+        [this]() {
+            saveCanvases(app_->getCommandLineParser().getOutputPath(), snapshotArg_.getValue());
+        },
+        1000);
 
-    app->getCommandLineParser().add(&screenGrabArg_,
-                                    [this]() {
-                                        getScreenGrab(app_->getCommandLineParser().getOutputPath(),
-                                                      screenGrabArg_.getValue());
-                                    },
-                                    1000);
+    app->getCommandLineParser().add(
+        &screenGrabArg_,
+        [this]() {
+            getScreenGrab(app_->getCommandLineParser().getOutputPath(), screenGrabArg_.getValue());
+        },
+        1000);
 
     app->getCommandLineParser().add(
         &saveProcessorPreviews_,
         [this]() { utilqt::saveProcessorPreviews(app_, saveProcessorPreviews_.getValue()); }, 1200);
 
-    app->getCommandLineParser().add(&updateWorkspaces_, [this]() { util::updateWorkspaces(app_); },
-                                    1250);
+    app->getCommandLineParser().add(
+        &updateExampleWorkspaces_,
+        [this]() { util::updateExampleWorkspaces(app_, util::DryRun::No); }, 1250);
 
-    app->getCommandLineParser().add(&updateRegressionWorkspaces_,
-                                    [this]() { util::updateRegressionWorkspaces(app_); }, 1250);
+    app->getCommandLineParser().add(
+        &updateRegressionWorkspaces_,
+        [this]() { util::updateRegressionWorkspaces(app_, util::DryRun::No); }, 1250);
 
     app->getCommandLineParser().add(
         &updateWorkspacesInPath_,
-        [this]() { util::updateWorkspaces(app_, updateWorkspacesInPath_.getValue()); }, 1250);
+        [this]() {
+            util::updateWorkspaces(app_, updateWorkspacesInPath_.getValue(), util::DryRun::No);
+        },
+        1250);
 
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());
 
-    centralWidget_ = new QTabWidget(this);
+    centralWidget_ = new QStackedWidget(this);
     centralWidget_->setObjectName("CentralTabWidget");
-    centralWidget_->setTabPosition(QTabWidget::North);
-    centralWidget_->setMovable(true);
-    centralWidget_->setTabBarAutoHide(true);
 
-    centralWidget_->addTab(networkEditorView_, "Network Editor");
+    centralWidget_->addWidget(networkEditorView_);
     setCentralWidget(centralWidget_);
 
-    settingsWidget_ = new SettingsWidget(this);
-    addDockWidget(Qt::RightDockWidgetArea, settingsWidget_);
-    settingsWidget_->setVisible(false);
-    settingsWidget_->loadState();
+    settings_ = new SettingsWidget(this);
+    addDockWidget(Qt::RightDockWidgetArea, settings_);
+    settings_->setVisible(false);
+    settings_->loadState();
 
     annotationsWidget_ = new AnnotationsWidget(this);
-    tabifyDockWidget(settingsWidget_, annotationsWidget_);
+    tabifyDockWidget(settings_, annotationsWidget_);
     annotationsWidget_->setVisible(true);
     annotationsWidget_->loadState();
 
@@ -328,10 +332,11 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 InviwoMainWindow::~InviwoMainWindow() = default;
 
 void InviwoMainWindow::showWindow() {
-    if (maximized_)
+    if (maximized_) {
         showMaximized();
-    else
+    } else {
         show();
+    }
 }
 
 void InviwoMainWindow::saveCanvases(std::string path, std::string fileName) {
@@ -340,13 +345,12 @@ void InviwoMainWindow::saveCanvases(std::string path, std::string fileName) {
     repaint();
     app_->processEvents();
     app_->waitForPool();
-    while (auto delay = app_->getTimerThread().lastDelay()) {
-        std::this_thread::sleep_until(*delay);
+
+    while (app_->getProcessorNetwork()->runningBackgroundJobs() > 0) {
         app_->processEvents();
-        while (app_->processFront())
-            ;
-        app_->processEvents();
+        app_->processFront();
     }
+
     util::saveAllCanvases(app_->getProcessorNetwork(), path, fileName);
 }
 
@@ -356,7 +360,7 @@ void InviwoMainWindow::getScreenGrab(std::string path, std::string fileName) {
     repaint();
     app_->processEvents();
     app_->waitForPool();
-    QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(this->winId());
+    QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(winId());
     screenGrab.save(QString::fromStdString(path + "/" + fileName), "png");
 }
 
@@ -385,17 +389,20 @@ void InviwoMainWindow::addActions() {
     {
         auto welcomeAction =
             new QAction(QIcon(":/svgicons/about-enabled.svg"), tr("&Get Started"), this);
-        this->addAction(welcomeAction);
+        welcomeAction->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_N);
+        welcomeAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        addAction(welcomeAction);
         connect(welcomeAction, &QAction::triggered, this, &InviwoMainWindow::showWelcomeScreen);
         fileMenuItem->addAction(welcomeAction);
         fileMenuItem->addSeparator();
+        workspaceToolBar->addAction(welcomeAction);
     }
 
     {
         auto newAction = new QAction(QIcon(":/svgicons/newfile.svg"), tr("&New Workspace"), this);
         newAction->setShortcut(QKeySequence::New);
         newAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        this->addAction(newAction);
+        addAction(newAction);
         connect(newAction, &QAction::triggered, this, [this]() {
             if (newWorkspace()) {
                 hideWelcomeScreen();
@@ -409,7 +416,7 @@ void InviwoMainWindow::addActions() {
         auto openAction = new QAction(QIcon(":/svgicons/open.svg"), tr("&Open Workspace"), this);
         openAction->setShortcut(QKeySequence::Open);
         openAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        this->addAction(openAction);
+        addAction(openAction);
         connect(openAction, &QAction::triggered, this, [this]() {
             if (openWorkspace()) {
                 hideWelcomeScreen();
@@ -423,7 +430,7 @@ void InviwoMainWindow::addActions() {
         auto saveAction = new QAction(QIcon(":/svgicons/save.svg"), tr("&Save Workspace"), this);
         saveAction->setShortcut(QKeySequence::Save);
         saveAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        this->addAction(saveAction);
+        addAction(saveAction);
         connect(saveAction, &QAction::triggered, this,
                 static_cast<void (InviwoMainWindow::*)()>(&InviwoMainWindow::saveWorkspace));
         fileMenuItem->addAction(saveAction);
@@ -435,7 +442,7 @@ void InviwoMainWindow::addActions() {
             new QAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Workspace As"), this);
         saveAsAction->setShortcut(QKeySequence::SaveAs);
         saveAsAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        this->addAction(saveAsAction);
+        addAction(saveAsAction);
         connect(saveAsAction, &QAction::triggered, this, &InviwoMainWindow::saveWorkspaceAs);
         fileMenuItem->addAction(saveAsAction);
         workspaceToolBar->addAction(saveAsAction);
@@ -515,10 +522,6 @@ void InviwoMainWindow::addActions() {
             // save empty list
             saveRecentWorkspaceList(QStringList());
             clearRecentWorkspaces_->setEnabled(false);
-
-            if (welcomeWidget_) {
-                welcomeWidget_->updateRecentWorkspaces();
-            }
         });
 
         connect(recentWorkspaceMenu, &QMenu::aboutToShow, this, [this]() {
@@ -615,7 +618,7 @@ void InviwoMainWindow::addActions() {
         fileMenuItem->addAction(reloadAction);
     }
 
-#ifdef IVW_DEBUG
+#ifndef IVW_RELEASE
     {
         fileMenuItem->addSeparator();
         auto reloadStyle = fileMenuItem->addAction("Reload Style sheet");
@@ -648,7 +651,7 @@ void InviwoMainWindow::addActions() {
         editMenu_->addSeparator();
         auto searchNetwork =
             editMenu_->addAction(QIcon(":/svgicons/find-network.svg"), tr("&Search Network"));
-        searchNetwork->setShortcut(Qt::ShiftModifier + Qt::ControlModifier + Qt::Key_F);
+        searchNetwork->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_F);
         connect(searchNetwork, &QAction::triggered, [this]() {
             networkEditorView_->getNetworkSearch().setVisible(true);
             networkEditorView_->getNetworkSearch().setFocus();
@@ -664,7 +667,7 @@ void InviwoMainWindow::addActions() {
 
         auto addProcessorAction =
             editMenu_->addAction(QIcon(":/svgicons/processor-add.svg"), tr("&Add Processor"));
-        addProcessorAction->setShortcut(Qt::ControlModifier + Qt::Key_D);
+        addProcessorAction->setShortcut(Qt::CTRL | Qt::Key_D);
         connect(addProcessorAction, &QAction::triggered, this,
                 [this]() { processorTreeWidget_->addSelectedProcessor(); });
 
@@ -684,7 +687,7 @@ void InviwoMainWindow::addActions() {
     // View
     {
         // dock widget visibility menu entries
-        viewMenuItem->addAction(settingsWidget_->toggleViewAction());
+        viewMenuItem->addAction(settings_->toggleViewAction());
         processorTreeWidget_->toggleViewAction()->setText(tr("&Processor List"));
         viewMenuItem->addAction(processorTreeWidget_->toggleViewAction());
         propertyListWidget_->toggleViewAction()->setText(tr("&Property List"));
@@ -738,7 +741,7 @@ void InviwoMainWindow::addActions() {
         disableEvalAction->setCheckable(true);
         disableEvalAction->setChecked(false);
 
-        disableEvalAction->setShortcut(Qt::ControlModifier + Qt::Key_L);
+        disableEvalAction->setShortcut(Qt::CTRL | Qt::Key_L);
         networkMenuItem->addAction(disableEvalAction);
         networkToolBar->addAction(disableEvalAction);
         connect(disableEvalAction, &QAction::triggered, this, [disableEvalAction, this]() {
@@ -757,7 +760,7 @@ void InviwoMainWindow::addActions() {
             QIcon(":/svgicons/composite-create-enabled.svg"), tr("&Create Composite"));
         compAction->setEnabled(false);
         networkToolBar->addAction(compAction);
-        compAction->setShortcut(Qt::ControlModifier + Qt::Key_G);
+        compAction->setShortcut(Qt::CTRL | Qt::Key_G);
         connect(compAction, &QAction::triggered, this, [this]() {
             util::replaceSelectionWithCompositeProcessor(*(app_->getProcessorNetwork()));
         });
@@ -765,7 +768,7 @@ void InviwoMainWindow::addActions() {
         auto expandAction = networkMenuItem->addAction(
             QIcon(":/svgicons/composite-expand-enabled.svg"), tr("&Expand Composite"));
         networkToolBar->addAction(expandAction);
-        expandAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_G);
+        expandAction->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_G);
         expandAction->setEnabled(false);
         connect(expandAction, &QAction::triggered, this, [this]() {
             std::unordered_set<CompositeProcessor*> selectedComposites;
@@ -833,49 +836,92 @@ void InviwoMainWindow::addActions() {
 
     // Windows
     {
-        QObject::connect(windowMenuItem, &QMenu::aboutToShow, this, [this, windowMenuItem]() {
-            windowMenuItem->clear();
-            auto showAllAction = windowMenuItem->addAction("&Show All");
-            auto hideAllAction = windowMenuItem->addAction("&Hide All");
+        auto showAllAction = new QAction("&Show All", this);
+        auto hideAllAction = new QAction("&Hide All", this);
 
-            QObject::connect(showAllAction, &QAction::triggered, this, [this]() {
-                auto widgetProcessors =
-                    util::copy_if(app_->getProcessorNetwork()->getProcessors(),
-                                  [](const auto p) { return p->hasProcessorWidget(); });
-                for (const auto p : widgetProcessors) {
-                    p->getProcessorWidget()->show();
-                }
-            });
-            QObject::connect(hideAllAction, &QAction::triggered, this, [this]() {
-                auto widgetProcessors =
-                    util::copy_if(app_->getProcessorNetwork()->getProcessors(),
-                                  [](const auto p) { return p->hasProcessorWidget(); });
-                for (const auto p : widgetProcessors) {
-                    p->getProcessorWidget()->hide();
-                }
-            });
+        addAction(showAllAction);
+        addAction(hideAllAction);
 
+        showAllAction->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_H);
+        showAllAction->setShortcutContext(Qt::ApplicationShortcut);
+
+        hideAllAction->setShortcut(Qt::CTRL | Qt::Key_H);
+        hideAllAction->setShortcutContext(Qt::ApplicationShortcut);
+
+        const auto getWidgetProcessors = [](InviwoApplication* app) {
             auto widgetProcessors =
-                util::copy_if(app_->getProcessorNetwork()->getProcessors(),
+                util::copy_if(app->getProcessorNetwork()->getProcessors(),
                               [](const auto p) { return p->hasProcessorWidget(); });
             std::sort(widgetProcessors.begin(), widgetProcessors.end(), [](auto a, auto b) {
                 return iCaseLess(a->getDisplayName(), b->getDisplayName());
             });
+            return widgetProcessors;
+        };
 
-            if (!widgetProcessors.empty()) {
-                windowMenuItem->addSeparator();
-            }
-            for (const auto p : widgetProcessors) {
-                auto action =
-                    windowMenuItem->addAction(QString("%1 (%2)")
-                                                  .arg(utilqt::toQString(p->getDisplayName()))
-                                                  .arg(utilqt::toQString(p->getIdentifier())));
-                action->setCheckable(true);
-                action->setChecked(p->getProcessorWidget()->isVisible());
-                QObject::connect(action, &QAction::toggled, this,
-                                 [p](bool toggle) { p->getProcessorWidget()->setVisible(toggle); });
-            }
-        });
+        auto getFloatingDockWidgets = [](InviwoMainWindow* win) {
+            auto dockWidgets = util::copy_if(win->findChildren<InviwoDockWidget*>(),
+                                             [](const auto p) { return p->isFloating(); });
+            std::sort(dockWidgets.begin(), dockWidgets.end(), [](auto a, auto b) {
+                return QString::compare(a->windowTitle(), b->windowTitle(), Qt::CaseInsensitive);
+            });
+
+            return dockWidgets;
+        };
+
+        QObject::connect(showAllAction, &QAction::triggered, this,
+                         [this, getWidgetProcessors, getFloatingDockWidgets]() {
+                             for (const auto p : getWidgetProcessors(app_)) {
+                                 p->getProcessorWidget()->show();
+                             }
+                             for (const auto dockWidget : getFloatingDockWidgets(this)) {
+                                 dockWidget->show();
+                             }
+                         });
+        QObject::connect(hideAllAction, &QAction::triggered, this,
+                         [this, getWidgetProcessors, getFloatingDockWidgets]() {
+                             for (const auto p : getWidgetProcessors(app_)) {
+                                 p->getProcessorWidget()->hide();
+                             }
+                             for (const auto dockWidget : getFloatingDockWidgets(this)) {
+                                 dockWidget->hide();
+                             }
+                         });
+
+        QObject::connect(
+            windowMenuItem, &QMenu::aboutToShow, this,
+            [this, windowMenuItem, getFloatingDockWidgets, getWidgetProcessors, showAllAction,
+             hideAllAction]() {
+                windowMenuItem->clear();
+                windowMenuItem->addAction(showAllAction);
+                windowMenuItem->addAction(hideAllAction);
+
+                const auto widgetProcessors = getWidgetProcessors(app_);
+                if (!widgetProcessors.empty()) windowMenuItem->addSeparator();
+
+                for (const auto p : widgetProcessors) {
+                    auto action =
+                        windowMenuItem->addAction(QString("%1 (%2)")
+                                                      .arg(utilqt::toQString(p->getDisplayName()))
+                                                      .arg(utilqt::toQString(p->getIdentifier())));
+                    action->setCheckable(true);
+                    action->setChecked(p->getProcessorWidget()->isVisible());
+                    QObject::connect(action, &QAction::toggled, this, [p](bool toggle) {
+                        p->getProcessorWidget()->setVisible(toggle);
+                    });
+                }
+
+                const auto dockWidgets = getFloatingDockWidgets(this);
+                if (!dockWidgets.empty()) windowMenuItem->addSeparator();
+
+                for (const auto dockWidget : dockWidgets) {
+                    auto action =
+                        windowMenuItem->addAction(QString("%1").arg(dockWidget->windowTitle()));
+                    action->setCheckable(true);
+                    action->setChecked(dockWidget->isVisible());
+                    QObject::connect(action, &QAction::toggled, this,
+                                     [dockWidget](bool toggle) { dockWidget->setVisible(toggle); });
+                }
+            });
     }
 
     // Help
@@ -906,10 +952,6 @@ void InviwoMainWindow::addToRecentWorkspaces(QString workspaceFileName) {
 
     if (recentFiles.size() > static_cast<int>(maxNumRecentFiles_)) recentFiles.removeLast();
     saveRecentWorkspaceList(recentFiles);
-
-    if (welcomeWidget_) {
-        welcomeWidget_->updateRecentWorkspaces();
-    }
 }
 
 QStringList InviwoMainWindow::getRecentWorkspaceList() const {
@@ -930,6 +972,10 @@ void InviwoMainWindow::saveRecentWorkspaceList(const QStringList& list) {
     settings.beginGroup(objectName());
     settings.setValue("recentFileList", list);
     settings.endGroup();
+
+    if (welcomeWidget_) {
+        welcomeWidget_->updateRecentWorkspaces(list);
+    }
 }
 
 void InviwoMainWindow::setCurrentWorkspace(QString workspaceFileName) {
@@ -992,7 +1038,7 @@ void InviwoMainWindow::openLastWorkspace(std::string workspace) {
     }
 }
 
-bool InviwoMainWindow::openWorkspace() {
+std::optional<QString> InviwoMainWindow::askForWorkspaceToOpen() {
     if (askToSaveWorkspaceChanges()) {
         InviwoFileDialog openFileDialog(this, "Open Workspace ...", "workspace");
         openFileDialog.addSidebarPath(PathType::Workspaces);
@@ -1002,8 +1048,15 @@ bool InviwoMainWindow::openWorkspace() {
 
         if (openFileDialog.exec()) {
             QString path = openFileDialog.selectedFiles().at(0);
-            return openWorkspace(path);
+            return path;
         }
+    }
+    return std::nullopt;
+}
+
+bool InviwoMainWindow::openWorkspace() {
+    if (auto path = askForWorkspaceToOpen()) {
+        return openWorkspace(*path);
     }
     return false;
 }
@@ -1046,7 +1099,8 @@ bool InviwoMainWindow::openWorkspace(QString workspaceFileName, bool isExample) 
             app_->getWorkspaceManager()->clear();
             setCurrentWorkspace(untitledWorkspaceName_);
         }
-        app_->processEvents();  // make sure the gui is ready before we unlock.
+        app_->processEvents(QEventLoop::ExcludeUserInputEvents);  // make sure the gui is ready
+                                                                  // before we unlock.
     }
     saveWindowState();
     getNetworkEditor()->setModified(false);
@@ -1141,40 +1195,68 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
 }
 
 void InviwoMainWindow::showWelcomeScreen() {
-    auto createTabCloseButton = [&](int tabIndex) {
-        const auto iconsize = utilqt::emToPx(this, QSizeF(1.2, 1.2));
-        auto closeBtn = new QToolButton();
-        QIcon icon;
-        icon.addFile(":/svgicons/close.svg", iconsize);
-        closeBtn->setIcon(icon);
-        closeBtn->setIconSize(iconsize);
+    if (!newWorkspace()) return;
 
-        QObject::connect(closeBtn, &QToolButton::clicked, this, [&]() { hideWelcomeScreen(); });
-
-        centralWidget_->tabBar()->setTabButton(tabIndex, QTabBar::RightSide, closeBtn);
-    };
-
+    setUpdatesEnabled(false);
     if (!welcomeWidget_) {
-        welcomeWidget_ = std::make_unique<WelcomeWidget>(this, centralWidget_);
+        welcomeWidget_ = std::make_unique<WelcomeWidget>(getInviwoApplication(), centralWidget_);
+        welcomeWidget_->updateRecentWorkspaces(getRecentWorkspaceList());
+        centralWidget_->addWidget(welcomeWidget_.get());
 
-        centralWidget_->setUpdatesEnabled(false);
-        centralWidget_->insertTab(0, welcomeWidget_.get(), "Get Started");
-        createTabCloseButton(0);
-        centralWidget_->setUpdatesEnabled(true);
-    }
-    if (centralWidget_->indexOf(welcomeWidget_.get()) < 0) {
-        centralWidget_->insertTab(0, welcomeWidget_.get(), "Get Started");
-        createTabCloseButton(0);
+        connect(welcomeWidget_.get(), &WelcomeWidget::loadWorkspace, this,
+                [this](const QString& filename, bool isExample) {
+                    if (askToSaveWorkspaceChanges()) {
+                        hideWelcomeScreen();
+                        saveWindowState();
+                        bool controlPressed = app_->keyboardModifiers() == Qt::ControlModifier;
+                        if (isExample && !controlPressed) {
+                            openExample(filename);
+                        } else {
+                            openWorkspace(filename);
+                        }
+                    }
+                });
+        connect(welcomeWidget_.get(), &WelcomeWidget::openWorkspace, this, [this]() {
+            if (auto path = askForWorkspaceToOpen()) {
+                hideWelcomeScreen();
+                openWorkspace(*path);
+                saveWindowState();
+            }
+        });
+        connect(welcomeWidget_.get(), &WelcomeWidget::newWorkspace, this, [this]() {
+            hideWelcomeScreen();
+            saveWindowState();
+        });
+        connect(welcomeWidget_.get(), &WelcomeWidget::restoreWorkspace, this, [this]() {
+            hideWelcomeScreen();
+            restoreWorkspace();
+            saveWindowState();
+        });
     }
 
     centralWidget_->setCurrentWidget(welcomeWidget_.get());
+    for (auto dw : findChildren<QDockWidget*>()) {
+        if (dw->isVisible() && !dw->isFloating()) {
+            dw->hide();
+            welcomeHidden_.push_back(dw);
+        }
+    }
+    welcomeWidget_->enableRestoreButton(hasRestoreWorkspace());
     welcomeWidget_->setFilterFocus();
+    app_->processEvents(QEventLoop::ExcludeUserInputEvents);
+    setUpdatesEnabled(true);
+    app_->processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 void InviwoMainWindow::hideWelcomeScreen() {
-    if (welcomeWidget_) {
-        centralWidget_->removeTab(centralWidget_->indexOf(welcomeWidget_.get()));
+    setUpdatesEnabled(false);
+    centralWidget_->setCurrentWidget(networkEditorView_);
+    for (auto dw : welcomeHidden_) {
+        dw->show();
     }
+    welcomeHidden_.clear();
+    setUpdatesEnabled(true);
+    app_->processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 void InviwoMainWindow::onModifiedStatusChanged(const bool& /*newStatus*/) { updateWindowTitle(); }
@@ -1256,6 +1338,7 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
     }
 
     app_->getWorkspaceManager()->clear();
+    hideWelcomeScreen();
 
     saveWindowState();
 
@@ -1308,7 +1391,7 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
     return continueOperation;
 }
 
-SettingsWidget* InviwoMainWindow::getSettingsWidget() const { return settingsWidget_; }
+SettingsWidget* InviwoMainWindow::getSettingsWidget() const { return settings_; }
 
 ProcessorTreeWidget* InviwoMainWindow::getProcessorTreeWidget() const {
     return processorTreeWidget_;
@@ -1363,8 +1446,8 @@ void InviwoMainWindow::dragMoveEvent(QDragMoveEvent* event) {
 void InviwoMainWindow::dropEvent(QDropEvent* event) {
     const QMimeData* mimeData = event->mimeData();
     if (mimeData->hasUrls()) {
-        // use dispatch front here to avoid blocking the drag&drop source, e.g. Windows Explorer,
-        // while the drop operation is performed
+        // use dispatch front here to avoid blocking the drag&drop source, e.g. Windows
+        // Explorer, while the drop operation is performed
         auto action = [this, keyModifiers = event->keyboardModifiers(),
                        urlList = mimeData->urls()]() {
             RenderContext::getPtr()->activateDefaultRenderContext();

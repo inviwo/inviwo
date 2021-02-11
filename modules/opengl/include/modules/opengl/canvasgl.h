@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,12 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CANVASGL_H
-#define IVW_CANVASGL_H
+#pragma once
 
-#include <inviwo/core/util/canvas.h>
-#include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglmoduledefine.h>
+#include <inviwo/core/util/canvas.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 
 namespace inviwo {
@@ -73,15 +71,16 @@ public:
     double getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate) const;
 
 protected:
-    void renderLayer(size_t idx = 0);
+    void setupDebug();
+
+    void renderLayer();
     void renderNoise();
 
     void drawSquare();
 
     void renderTexture(int);
 
-    std::shared_ptr<const Image> image_;
-    const ImageGL* imageGL_ = nullptr;
+    std::weak_ptr<const Image> image_;
     std::unique_ptr<Mesh> square_;
     /**
      * Each canvas must have its own MeshGL
@@ -100,12 +99,10 @@ protected:
     bool ready_ = false;
 
     LayerType layerType_ = LayerType::Color;
+    size_t layerIdx_ = 0;
+
     Shader* textureShader_ = nullptr;  ///< non-owning reference
     Shader* noiseShader_ = nullptr;    ///< non-owning reference
-
-    size_t activeRenderLayerIdx_ = 0;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CANVASGL_H

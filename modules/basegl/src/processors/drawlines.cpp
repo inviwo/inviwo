@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,10 +52,12 @@ DrawLines::DrawLines()
     , lineSize_("lineSize", "Line Size", 1.f, 1.f, 10.f)
     , lineColor_("lineColor", "Line Color", vec4(1.f))
     , clearButton_("clearButton", "Clear Lines")
-    , mouseDraw_("mouseDraw", "Draw Line", [this](Event* e) { eventDraw(e); }, MouseButton::Left,
-                 MouseStates(flags::any), KeyModifier::Control)
-    , keyEnableDraw_("keyEnableDraw", "Enable Draw", [this](Event* e) { eventEnableDraw(e); },
-                     IvwKey::D, KeyStates(flags::any), KeyModifier::Control)
+    , mouseDraw_(
+          "mouseDraw", "Draw Line", [this](Event* e) { eventDraw(e); }, MouseButton::Left,
+          MouseStates(flags::any), KeyModifier::Control)
+    , keyEnableDraw_(
+          "keyEnableDraw", "Enable Draw", [this](Event* e) { eventEnableDraw(e); }, IvwKey::D,
+          KeyStates(flags::any), KeyModifier::Control)
 
     , lines_(DrawType::Lines, ConnectivityType::Strip)
     , lineDrawer_(&lines_)
@@ -98,8 +100,6 @@ void DrawLines::process() {
         lineShader_.deactivate();
     }
     utilgl::deactivateCurrentTarget();
-
-    compositor_.composite(inport_, outport_, ImageType::ColorOnly);
 }
 
 void DrawLines::addPoint(vec2 p) {

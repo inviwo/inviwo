@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,8 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#ifndef IVW_KEYBOARDUTILS_H
-#define IVW_KEYBOARDUTILS_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
@@ -38,10 +37,8 @@ namespace inviwo {
 
 namespace util {
 
-IVW_MODULE_QTWIDGETS_API IvwKey mapKeyFromQt(const QKeyEvent *keyevent);
+IVW_MODULE_QTWIDGETS_API IvwKey mapKeyFromQt(const QKeyEvent* keyevent);
 
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_KEYBOARDUTILS_H

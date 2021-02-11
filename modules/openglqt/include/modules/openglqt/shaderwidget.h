@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,6 +60,8 @@ protected:
 
 private:
     void save();
+    void apply();
+    void revert();
 
     void updateState();
     void queryReloadFile();
@@ -69,8 +71,12 @@ private:
     ShaderObject* obj_;
     std::shared_ptr<typename ShaderObject::Callback> shaderObjOnChange_;
     CodeEdit* shadercode_;
+    std::vector<std::shared_ptr<std::function<void()>>> codeCallbacks_;
     QAction* preprocess_;
     QAction* save_;
+    QAction* apply_;
+    QAction* revert_;
+    std::shared_ptr<const ShaderResource> orignal_;
 
     bool fileChangedInBackground_ = false;
     bool reloadQueryInProgress_ = false;

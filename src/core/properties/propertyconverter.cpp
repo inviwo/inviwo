@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,8 @@
 
 namespace inviwo {
 
-PropertyConverter::PropertyConverter(const std::string &srcClassIdentifier,
-                                     const std::string &dstClassIdentifier)
+PropertyConverter::PropertyConverter(const std::string& srcClassIdentifier,
+                                     const std::string& dstClassIdentifier)
     : srcClassIdentifier_(srcClassIdentifier), dstClassIdentifier_(dstClassIdentifier) {}
 
 PropertyConverter::~PropertyConverter() = default;
@@ -45,7 +45,7 @@ std::string PropertyConverter::getDestinationPropertyClassIdenetifier() const {
     return dstClassIdentifier_;
 }
 
-void PropertyConverter::convert(const Property *srcProperty, Property *dstProperty) const {
+void PropertyConverter::convert(const Property* srcProperty, Property* dstProperty) const {
     dstProperty->set(srcProperty);
 }
 

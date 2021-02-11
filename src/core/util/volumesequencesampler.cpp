@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,19 +40,19 @@ VolumeSequenceSampler::VolumeSequenceSampler(
     , timeRange_(0, 0)
     , totDuration_(0) {
 
-    for (const auto &vol : (*volumeSequence.get())) {
+    for (const auto& vol : (*volumeSequence.get())) {
         wrappers_.emplace_back(std::make_shared<Wrapper>(vol));
     }
 
     auto lastWrapper = wrappers_.back();
 
     auto infsTime = std::count_if(
-        wrappers_.begin(), wrappers_.end(), [&](const std::shared_ptr<Wrapper> &w) -> bool {
+        wrappers_.begin(), wrappers_.end(), [&](const std::shared_ptr<Wrapper>& w) -> bool {
             return w->timestamp_ == std::numeric_limits<double>::infinity();
         });
 
     auto infsDuration = std::count_if(
-        wrappers_.begin(), wrappers_.end(), [&](const std::shared_ptr<Wrapper> &w) -> bool {
+        wrappers_.begin(), wrappers_.end(), [&](const std::shared_ptr<Wrapper>& w) -> bool {
             return w->duration_ == std::numeric_limits<double>::infinity();
         });
     auto size = static_cast<decltype(infsTime)>(wrappers_.size());
@@ -77,9 +77,9 @@ VolumeSequenceSampler::VolumeSequenceSampler(
         auto firstVol = volumeSequence->front();
         auto lastVol = volumeSequence->back();
         auto firstVolRam = firstVol->getRepresentation<VolumeRAM>();
-        auto firstData = static_cast<const char *>(firstVolRam->getData());
+        auto firstData = static_cast<const char*>(firstVolRam->getData());
         auto lastData =
-            static_cast<const char *>(lastVol->getRepresentation<VolumeRAM>()->getData());
+            static_cast<const char*>(lastVol->getRepresentation<VolumeRAM>()->getData());
         auto dataSize1 = firstVolRam->getNumberOfBytes();
 
         for (size_t i = 0; i < dataSize1 && firstAndLastAreSame; i++) {
@@ -96,21 +96,21 @@ VolumeSequenceSampler::VolumeSequenceSampler(
     if (infsTime == size && infsDuration == size) {
         double dur = 1.0 / (size - 1.0);
         double t = 0;
-        for (auto &w : wrappers_) {
+        for (auto& w : wrappers_) {
             w->duration_ = dur;
             w->timestamp_ = t;
             t += dur;
         }
     } else if (infsTime == size && infsDuration == 0) {
         double t = 0;
-        for (auto &w : wrappers_) {
+        for (auto& w : wrappers_) {
             w->timestamp_ = t;
             t += w->duration_;
         }
     } else {  // timestamps are set
 
         if (infsDuration == size) {  // we do not have durations
-            for (auto &w : wrappers_) {
+            for (auto& w : wrappers_) {
                 if (auto next = w->next_.lock()) {
                     w->duration_ = next->timestamp_ - w->timestamp_;
                 }
@@ -123,7 +123,7 @@ VolumeSequenceSampler::VolumeSequenceSampler(
     }
 
     totDuration_ = 0;
-    for (auto &w : wrappers_) {
+    for (auto& w : wrappers_) {
         totDuration_ += w->duration_;
     }
 
@@ -133,7 +133,7 @@ VolumeSequenceSampler::VolumeSequenceSampler(
 
 VolumeSequenceSampler::~VolumeSequenceSampler() {}
 
-dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4 &pos) const {
+dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4& pos) const {
     auto spatialPos = dvec3(pos);
     double t = pos.w;
 
@@ -165,7 +165,7 @@ dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4 &pos) const {
     return Interpolation<dvec3>::linear(val0, val1, x);
 }
 
-bool VolumeSequenceSampler::withinBoundsDataSpace(const dvec4 &pos) const {
+bool VolumeSequenceSampler::withinBoundsDataSpace(const dvec4& pos) const {
     // TODO check also time
     if (glm::any(glm::lessThan(dvec3(pos), dvec3(0.0)))) {
         return false;

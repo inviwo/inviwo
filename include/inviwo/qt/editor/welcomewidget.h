@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -40,35 +39,49 @@ class QTabWidget;
 class QTextEdit;
 class QToolButton;
 class QLineEdit;
+class QStringList;
 
 namespace inviwo {
 
 class FileTreeWidget;
-class InviwoMainWindow;
+class InviwoApplication;
 
 class IVW_QTEDITOR_API WelcomeWidget : public QSplitter {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
 public:
-    WelcomeWidget(InviwoMainWindow *w, QWidget *parent);
+    WelcomeWidget(InviwoApplication* app, QWidget* parent);
     virtual ~WelcomeWidget() = default;
 
-    void updateRecentWorkspaces();
+    void updateRecentWorkspaces(const QStringList& list);
+    void enableRestoreButton(bool hasRestoreWorkspace);
     void setFilterFocus();
 
+signals:
+    void loadWorkspace(const QString& filename, bool isExample);
+    void newWorkspace();
+    void openWorkspace();
+    void restoreWorkspace();
+
 protected:
-    virtual void showEvent(QShowEvent *event) override;
-    virtual void keyPressEvent(QKeyEvent *event) override;
+    virtual void showEvent(QShowEvent* event) override;
+    virtual void keyPressEvent(QKeyEvent* event) override;
 
 private:
-    void loadWorkspace(const QString &filename, bool isExample) const;
     void initChangelog();
 
-    InviwoMainWindow *mainWindow_;
+    void updateDetails(const QString& filename);
 
-    FileTreeWidget *filetree_;
-    QLineEdit *filterLineEdit_;
-    QTextEdit *details_;
-    QTextEdit *changelog_;
-    QToolButton *loadWorkspaceBtn_;
+    InviwoApplication* app_;
+
+    FileTreeWidget* filetree_;
+    QLineEdit* filterLineEdit_;
+    QTextEdit* details_;
+    QTextEdit* changelog_;
+    QToolButton* loadWorkspaceBtn_;
+    QToolButton* restoreButton_;
 };
 
 }  // namespace inviwo

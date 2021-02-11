@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_ANIMATIONQTSUPPLIER_H
-#define IVW_ANIMATIONQTSUPPLIER_H
+#pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -97,5 +95,3 @@ void AnimationQtSupplier::registerSequenceEditor() {
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_ANIMATIONQTSUPPLIER_H

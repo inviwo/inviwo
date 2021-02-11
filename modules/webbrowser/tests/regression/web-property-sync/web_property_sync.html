@@ -1,0 +1,105 @@
+<html>
+<head>
+<title>Inviwo property syncing example</title>
+<!-- inviwo://yourmodulename will be rediredcted to the module directory on the harddrive -->
+<!-- inviwo://app will be rediredcted to the application (InviwoApplication::getBasePath()) directory on the harddrive -->
+<script src="inviwo://webbrowser/data/js/inviwoapi.js"></script>
+
+<script language="JavaScript">
+// Initialize Inviwo API so that we can use it to synchronize properties
+var inviwo = new InviwoAPI();
+</script>
+<style>
+select {
+	background-color: white;
+}
+</style>
+</head>
+<body>
+<h3>HTML<->Inviwo synchronization (javascript & JSON)</h3>
+<!-- Examples of ways to send data back and fourth between Inviwo and the webpage -->
+<p>Parent processor identifier: <span id="parentWebBrowserProcessor"></p>
+<div class="slidecontainer">
+  <p>Range (line width)<input type="range" min="1" max="100" value="50" class="slider" id="ordinalProperty">
+  <span id="ordinalPropertyValue"></span></p>
+</div>
+  <p><input type="button" value="Button" id="buttonProperty" onclick="inviwo.setProperty('Background.switchColors', {pressButton: true})"></p>
+  <p>Checkbox (enable text)<input type="checkbox" value="Checkbox" id="boolProperty" onchange="inviwo.setProperty('TextOverlay.enable', {value: this.checked})"></p>
+  <p>Text <input type="text" id="stringProperty" value="not changed" oninput="inviwo.setProperty('TextOverlay.text', {value: this.value})" ></p>
+  <br></br>
+  <p>Option property<select id="shadingMode">
+  </select>
+<script>
+inviwo.getParentWebBrowserProcessor(function(processor) {
+  document.getElementById("parentWebBrowserProcessor").innerHTML = processor.path;
+});
+
+var slider = document.getElementById("ordinalProperty");
+var ordinalPropertyValue = document.getElementById("ordinalPropertyValue");
+
+// If you only need one-way synchronization, e.g. always changing values from the 
+// webpage:
+// 1. Use inviwo.getProperty to retrieve and set the initial value in the webpage
+// 2. Use inviwo.setProperty to set the property from the webpage 
+//
+// If a property may change from other sources than your webpage (e.g. the Inviwo network editor):
+// 1. Use inviwo.subscribe to recieve callbacks when the property changes in Inviwo
+// 2. Use inviwo.setProperty to set the property from the webpage
+
+
+slider.oninput = function() {
+	inviwo.setProperty("LineRenderer.lineSettings.lineWidth", {value: Number(this.value)});
+    ordinalPropertyValue.innerHTML = this.value;
+}
+
+// Callbacks that will be called when a property changes, need to be in global scope.
+function syncOrdinal(prop) { 
+	inviwo.syncRange("ordinalProperty", prop); 
+	ordinalPropertyValue.innerHTML = prop.value;
+} 
+function syncCheckbox(prop) { inviwo.syncCheckbox("boolProperty", prop); } 
+function syncString(prop) { inviwo.syncStringInput("stringProperty", prop); } 
+
+// Update html inputs when corresponding Inviwo properties change
+// The supplied callbacks must be declared in global scope.
+inviwo.subscribe("LineRenderer.lineWidth", syncOrdinal); 
+inviwo.subscribe("TextOverlay.enable", syncCheckbox);
+inviwo.subscribe("TextOverlay.text", syncString);
+
+// Example of assuming that the property will not change from the network editor.
+// Enough to get the shading mode once since the number of items will not change after startup.
+inviwo.getProperty("VolumeRaycaster.lighting.shadingMode", function(prop) {
+	inviwo.syncOption("shadingMode", prop);
+});
+document.getElementById("shadingMode").onchange = function() {
+	if (this.selectedIndex >= 0) { 
+		inviwo.setProperty('VolumeRaycaster.lighting.shadingMode', {selectedIndex: Number(this.selectedIndex)}); 
+	}
+}
+
+
+// Example of retrieving property parameters
+inviwo.getProperty("CubeProxyGeometry.clipX", function(prop) {
+	var args = "Hello MinMaxProperty: \n";
+    for (var key in prop) {
+        var attrName = key;
+        var attrValue = prop[key];
+        args += attrName + ": " + attrValue + "\n";
+    }
+    console.log(args);
+});
+
+inviwo.getProperty("EntryExitPoints.camera.lookFrom", function(prop) {
+	var args = "Hello Camera lookFrom: \n";
+    for (var key in prop) {
+        var attrName = key;
+        var attrValue = prop[key];
+		args += attrName + ": " + attrValue + "\n";
+    }
+    console.log(args);
+});
+
+inviwo.setProperty("LineRenderer.lineSettings.lineWidth", {value: Number(2)});
+</script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2020 Inviwo Foundation
+# Copyright (c) 2013-2021 Inviwo Foundation
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ endfunction()
 # Example: ivw_configure_application_module_dependencies(inviwo ${list_of_modules})
 # The list of modules is usually fetched from ivw_retrieve_all_modules
 function(ivw_configure_application_module_dependencies target)
-    if(IVW_RUNTIME_MODULE_LOADING)
+    if(IVW_CFG_RUNTIME_MODULE_LOADING)
         # Specify which modules to load at runtime (all will be loaded if the file does not exist)
         ivw_create_enabled_modules_file(${target} ${ARGN})
         target_compile_definitions(${target} PUBLIC IVW_RUNTIME_MODULE_LOADING)
@@ -158,7 +158,6 @@ function(ivw_private_setup_module_data)
     set("${mod}_modName"      "Inviwo${name}Module"   CACHE INTERNAL "Module mod name")
     set("${mod}_version"      "${version}"            CACHE INTERNAL "Module version")
     set("${mod}_header"       "${header}"             CACHE INTERNAL "Module header")
-    set("${mod}_licenses"     ""                      CACHE INTERNAL "License ids")
     set("${mod}_incPrefix"    "${includePrefix}"      CACHE INTERNAL "Module include Prefix")
     set("${mod}_incPath"      "${includePath}"        CACHE INTERNAL "Module include Path")
     set("${mod}_orgName"      "${orgName}"            CACHE INTERNAL "Module Org Name")
@@ -537,7 +536,7 @@ function(ivw_create_module)
     # Add stuff to the installer
     ivw_default_install_targets(${${mod}_target})
     ivw_private_install_module_dirs()
-    
+
     ivw_make_unittest_target("${${mod}_dir}" "${${mod}_target}")
 
     if(ARG_GROUP)

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,7 @@ public:
     static const std::string classIdentifier;
 
     FilePatternProperty(std::string identifier, std::string displayName, std::string pattern = "",
-                        std::string directory = "",
+                        std::string contentType = "default",
                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                         PropertySemantics semantics = PropertySemantics::Default);
 

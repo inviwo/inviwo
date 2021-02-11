@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,14 +40,6 @@ void AnimationControllerObservable::notifyStateChanged(AnimationController* cont
                                                        AnimationState newState) {
     forEachObserver(
         [&](AnimationControllerObserver* o) { o->onStateChanged(controller, oldState, newState); });
-}
-
-void AnimationControllerObservable::notifyPlaybackSettingsChanged(
-    AnimationController* controller, AnimationPlaySettings prevSettings,
-    AnimationPlaySettings newSettings) {
-    forEachObserver([&](AnimationControllerObserver* o) {
-        o->onPlaybackSettingsChanged(controller, prevSettings, newSettings);
-    });
 }
 
 void AnimationControllerObservable::notifyTimeChanged(AnimationController* controller,

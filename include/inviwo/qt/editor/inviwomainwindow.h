@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@
 
 class QDropEvent;
 class QDragEnterEvent;
-class QTabWidget;
+class QStackedWidget;
 
 namespace inviwo {
 
@@ -170,6 +170,7 @@ private:
      * loads the workspace \p workspaceFileName. In case there are unsaved changes, the user will
      * be asked to save or discard them, or cancel the loading.
      *
+     * @param workspaceFileName
      * @param isExample    if true, the workspace file name will not be set. Thereby preventing
      *                     the user from accidentally overwriting the original file. In addition,
      *                     the workspace is _not_ added to the recent file list.
@@ -179,6 +180,8 @@ private:
     bool openWorkspace(QString workspaceFileName, bool isExample);
     void saveWorkspace(QString workspaceFileName);
     void appendWorkspace(const std::string& workspaceFileName);
+
+    std::optional<QString> askForWorkspaceToOpen();
 
     void addActions();
 
@@ -207,15 +210,16 @@ private:
     QMenu* testMenu_ = nullptr;
     std::shared_ptr<ConsoleWidget> consoleWidget_;
     std::unique_ptr<NetworkEditor> networkEditor_;
-    QTabWidget* centralWidget_;
+    QStackedWidget* centralWidget_;
     NetworkEditorView* networkEditorView_;
 
-    SettingsWidget* settingsWidget_;
+    SettingsWidget* settings_;
     ProcessorTreeWidget* processorTreeWidget_;
     ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;
     HelpWidget* helpWidget_;
     std::unique_ptr<WelcomeWidget> welcomeWidget_;
+    std::vector<QDockWidget*> welcomeHidden_;
     AnnotationsWidget* annotationsWidget_ = nullptr;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
 
@@ -244,7 +248,7 @@ private:
     TCLAP::ValueArg<std::string> screenGrabArg_;
     TCLAP::ValueArg<std::string> saveProcessorPreviews_;
     TCLAP::ValueArg<std::string> openData_;
-    TCLAP::SwitchArg updateWorkspaces_;
+    TCLAP::SwitchArg updateExampleWorkspaces_;
     TCLAP::SwitchArg updateRegressionWorkspaces_;
     TCLAP::ValueArg<std::string> updateWorkspacesInPath_;
 

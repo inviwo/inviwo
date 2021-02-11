@@ -3,7 +3,7 @@
  * Inviwo - Interactive Visualization Workshop
  * Version 0.9
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -109,8 +109,12 @@ struct TextTextureObject {
  */
 class IVW_MODULE_FONTRENDERING_API TextRenderer {
 public:
-    TextRenderer(const std::string &fontPath = util::getDefaultFontPath() + "/arial.ttf");
-    virtual ~TextRenderer();
+    TextRenderer(const std::string& fontPath = util::getDefaultFontPath() + "/arial.ttf");
+    TextRenderer(const TextRenderer& rhs) = delete;
+    TextRenderer(TextRenderer&& rhs) noexcept;
+    TextRenderer& operator=(const TextRenderer& rhs) = delete;
+    TextRenderer& operator=(TextRenderer&& rhs) noexcept;
+    ~TextRenderer();
 
     /**
      * \brief replace the currently loaded font face with a new one
@@ -119,9 +123,9 @@ public:
      * @throws Exception      if the font file could not be opened
      * @throws FileException  if the font format is unsupported
      */
-    void setFont(const std::string &fontPath);
+    void setFont(const std::string& fontPath);
 
-    void render(const std::string &str, const vec2 &posf, const vec2 &scale, const vec4 &color);
+    void render(const std::string& str, const vec2& posf, const vec2& scale, const vec4& color);
 
     /**
      * \brief renders the given string with the specified color at position x, y in normalized
@@ -133,7 +137,7 @@ public:
      * @param scale  scaling factor from screen space (pixel) to normalized device coords
      * @param color  color of rendered text
      */
-    void render(const std::string &str, float x, float y, const vec2 &scale, const vec4 &color);
+    void render(const std::string& str, float x, float y, const vec2& scale, const vec4& color);
 
     /**
      * \brief renders the given string with the specified color into a texture.
@@ -143,11 +147,11 @@ public:
      * @param color  color of rendered text
      * @param clearTexture   if true, the texture is cleared before rendering the text
      */
-    void renderToTexture(std::shared_ptr<Texture2D> texture, const std::string &str,
-                         const vec4 &color, bool clearTexture = true);
+    void renderToTexture(std::shared_ptr<Texture2D> texture, const std::string& str,
+                         const vec4& color, bool clearTexture = true);
 
-    void renderToTexture(const TextTextureObject &texObject, const std::string &str,
-                         const vec4 &color, bool clearTexture = true);
+    void renderToTexture(const TextTextureObject& texObject, const std::string& str,
+                         const vec4& color, bool clearTexture = true);
     /**
      * \brief renders the given string with the specified color into a subregion of the texture.
      *
@@ -158,19 +162,19 @@ public:
      * @param color          color of rendered text
      * @param clearTexture   if true, the texture is cleared before rendering the text
      */
-    void renderToTexture(const TextTextureObject &texObject, const size2_t &origin,
-                         const size2_t &size, const std::string &str, const vec4 &color,
+    void renderToTexture(const TextTextureObject& texObject, const size2_t& origin,
+                         const size2_t& size, const std::string& str, const vec4& color,
                          bool clearTexture = true);
-    void renderToTexture(std::shared_ptr<Texture2D> texture, const size2_t &origin,
-                         const size2_t &size, const std::string &str, const vec4 &color,
+    void renderToTexture(std::shared_ptr<Texture2D> texture, const size2_t& origin,
+                         const size2_t& size, const std::string& str, const vec4& color,
                          bool clearTexture = true);
 
-    void renderToTexture(std::shared_ptr<Texture2D> texture, const std::vector<size2_t> &origin,
-                         const std::vector<size2_t> &size, const std::vector<std::string> &str,
-                         const vec4 &color, bool clearTexture = true);
+    void renderToTexture(std::shared_ptr<Texture2D> texture, const std::vector<size2_t>& origin,
+                         const std::vector<size2_t>& size, const std::vector<std::string>& str,
+                         const vec4& color, bool clearTexture = true);
 
     void renderToTexture(std::shared_ptr<Texture2D> texture,
-                         const std::vector<TexAtlasEntry> &entries, bool clearTexture = true);
+                         const std::vector<TexAtlasEntry>& entries, bool clearTexture = true);
 
     /**
      * \brief computes the glyph bounding box of a given string in normalized device coordinates
@@ -185,7 +189,7 @@ public:
      *
      * \see computeBoundingBox
      */
-    vec2 computeTextSize(const std::string &str, const vec2 &scale);
+    vec2 computeTextSize(const std::string& str, const vec2& scale);
 
     /**
      * \brief computes the glyph bounding box of a given string in pixels (screen space). The
@@ -197,7 +201,7 @@ public:
      *
      * \see computeBoundingBox
      */
-    size2_t computeTextSize(const std::string &str);
+    size2_t computeTextSize(const std::string& str);
 
     /**
      * \brief computes the bounding boxes of both text and all glyphs for a given string in pixels
@@ -211,7 +215,7 @@ public:
      * @param str  input string
      * @return bounding box of the given string
      */
-    TextBoundingBox computeBoundingBox(const std::string &str);
+    TextBoundingBox computeBoundingBox(const std::string& str);
 
     void setFontSize(int val);
     int getFontSize() const { return fontSize_; }
@@ -241,7 +245,7 @@ public:
      */
     int getBaseLineDescender() const;
 
-    void configure(const FontSettings &settings);
+    void configure(const FontSettings& settings);
 
 protected:
     static std::shared_ptr<Shader> getShader();
@@ -286,24 +290,24 @@ protected:
      * @return std::pair<bool, GlyphEntry> where pair.first is true if the glyph exists
      *              and GlyphEntry refers to the respective glyph
      */
-    std::pair<bool, GlyphEntry> requestGlyph(FontCache &fc, unsigned int glyph);
+    std::pair<bool, GlyphEntry> requestGlyph(FontCache& fc, unsigned int glyph);
 
-    std::pair<bool, GlyphEntry> addGlyph(FontCache &fc, unsigned int glyph);
+    std::pair<bool, GlyphEntry> addGlyph(FontCache& fc, unsigned int glyph);
 
-    void uploadGlyph(FontCache &fc, unsigned int glyph);
+    void uploadGlyph(FontCache& fc, unsigned int glyph);
 
-    FontCache &getFontCache();
+    FontCache& getFontCache();
 
     void createDefaultGlyphAtlas();
-    std::shared_ptr<Texture2D> createAtlasTexture(FontCache &fc);
+    std::shared_ptr<Texture2D> createAtlasTexture(FontCache& fc);
 
     FontFamilyStyle getFontTuple() const;
 
     std::tuple<utilgl::DepthMaskState, utilgl::GlBoolState, utilgl::BlendModeState,
-               utilgl::Activate<FrameBufferObject>>
+               utilgl::ActivateFBO>
     setupRenderState(std::shared_ptr<Texture2D> texture, bool clearTexture);
 
-    std::string::const_iterator validateString(const std::string &str) const;
+    std::string::const_iterator validateString(const std::string& str) const;
 
     static constexpr char lf = '\n';   // Line Feed Ascii for std::endl, \n
     static constexpr char tab = '\t';  // Tab Ascii
@@ -316,12 +320,12 @@ protected:
     int fontSize_;        //<! font size in pixel
     double lineSpacing_;  //!< spacing between two lines in percent (default = 0.2)
 
-    const int glyphMargin_;
+    static constexpr int glyphMargin_ = 2;  //<! margin around glyphs in font cache
     std::shared_ptr<Shader> shader_;
 
     FrameBufferObject fbo_;
     std::shared_ptr<Texture2D>
-        prevTexture_;  //<! 2D texture handle which was used previously in renderToTexture()
+        currTexture_;  //<! 2D texture handle which was used previously in renderToTexture()
 };
 
 namespace util {
@@ -349,7 +353,7 @@ namespace util {
  * @return text texture object referring to both texture and corresponding bounding box
  */
 IVW_MODULE_FONTRENDERING_API TextTextureObject
-createTextTextureObject(TextRenderer &textRenderer, std::string text, vec4 fontColor,
+createTextTextureObject(TextRenderer& textRenderer, std::string text, vec4 fontColor,
                         std::shared_ptr<Texture2D> tex = nullptr);
 
 /**
@@ -373,7 +377,7 @@ createTextTextureObject(TextRenderer &textRenderer, std::string text, vec4 fontC
  * @return texture containing the text
  */
 IVW_MODULE_FONTRENDERING_API std::shared_ptr<Texture2D> createTextTexture(
-    TextRenderer &textRenderer, std::string text, vec4 fontColor,
+    TextRenderer& textRenderer, std::string text, vec4 fontColor,
     std::shared_ptr<Texture2D> tex = nullptr);
 
 }  // namespace util

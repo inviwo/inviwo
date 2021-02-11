@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,9 +31,9 @@
 
 namespace inviwo {
 
-void StringLogger::log(std::string logSource, LogLevel logLevel, LogAudience /*audience*/,
-                       const char* fileName, const char* /*functionName*/, int lineNumber,
-                       std::string logMsg) {
+void StringLogger::log(std::string_view logSource, LogLevel logLevel, LogAudience /*audience*/,
+                       std::string_view fileName, std::string_view /*functionName*/, int lineNumber,
+                       std::string_view logMsg) {
 
     switch (logLevel) {
         case LogLevel::Info:
@@ -49,7 +49,7 @@ void StringLogger::log(std::string logSource, LogLevel logLevel, LogAudience /*a
             break;
     }
 
-    logstream_ << logSource << " (" << fileName << ":" << lineNumber << ") " << logMsg << std::endl;
+    logstream_ << logSource << " (" << fileName << ":" << lineNumber << ") " << logMsg << "\n";
 }
 
 std::string StringLogger::getLog() const { return logstream_.str(); }

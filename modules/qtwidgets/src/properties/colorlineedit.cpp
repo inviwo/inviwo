@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@
 
 namespace inviwo {
 
-ColorLineEdit::ColorLineEdit(QWidget *parent)
+ColorLineEdit::ColorLineEdit(QWidget* parent)
     : QLineEdit(parent), validator_(new QRegularExpressionValidator(this)) {
     setObjectName("ColorLineEdit");
     updateRegExp();
@@ -52,7 +52,7 @@ ColorLineEdit::ColorLineEdit(QWidget *parent)
 
     connect(this, &QLineEdit::editingFinished, this, &ColorLineEdit::updateColor);
 
-    connect(this, &QLineEdit::textChanged, this, [&](const QString &) {
+    connect(this, &QLineEdit::textChanged, this, [&](const QString&) {
         if (hasFocus()) {
             invalid_ = false;
             setProperty("input", hasAcceptableInput() ? "valid" : "invalid");
@@ -120,7 +120,7 @@ void ColorLineEdit::setInvalid(bool invalid) {
     updateText();
 }
 
-void ColorLineEdit::changeEvent(QEvent *event) {
+void ColorLineEdit::changeEvent(QEvent* event) {
     switch (event->type()) {
         case QEvent::LocaleChange:
             updateRegExp();
@@ -131,7 +131,7 @@ void ColorLineEdit::changeEvent(QEvent *event) {
     QLineEdit::changeEvent(event);
 }
 
-void ColorLineEdit::focusInEvent(QFocusEvent *event) {
+void ColorLineEdit::focusInEvent(QFocusEvent* event) {
     setProperty("input", hasAcceptableInput() ? "valid" : "invalid");
     style()->unpolish(this);
     style()->polish(this);
@@ -139,7 +139,7 @@ void ColorLineEdit::focusInEvent(QFocusEvent *event) {
     QLineEdit::focusInEvent(event);
 }
 
-void ColorLineEdit::focusOutEvent(QFocusEvent *event) {
+void ColorLineEdit::focusOutEvent(QFocusEvent* event) {
     if (!hasAcceptableInput()) {
         // discard changes if invalid
         updateText();
@@ -152,7 +152,7 @@ void ColorLineEdit::focusOutEvent(QFocusEvent *event) {
     QLineEdit::focusOutEvent(event);
 }
 
-void ColorLineEdit::keyPressEvent(QKeyEvent *event) {
+void ColorLineEdit::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Escape) {
         // discard changes
         updateText();
@@ -251,15 +251,6 @@ void ColorLineEdit::updateRegExp() {
             "|((?:^|\\s+)([-+]?(((\\d+%1\\d*)|(%1\\d+))+([eE][-+]?\\d+)?|\\d+([eE][-+]?\\d+)?)))"
             "{3,4})\\s*")
             .arg(decimalPoint)));
-}
-
-template <>
-dvec3 ColorLineEdit::getColor<dvec3>() const {
-    return color_;
-}
-template <>
-dvec4 ColorLineEdit::getColor<dvec4>() const {
-    return color_;
 }
 
 }  // namespace inviwo

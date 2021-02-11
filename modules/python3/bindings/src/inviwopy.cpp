@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,6 +52,7 @@
 #include <inviwopy/pylogging.h>
 #include <inviwopy/pyevent.h>
 #include <inviwopy/pycamera.h>
+#include <inviwopy/pycameraproperty.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/commandlineparser.h>
@@ -102,6 +103,7 @@ PYBIND11_MODULE(inviwopy, m) {
     exposeCamera(dataModule);
     exposeTFPrimitiveSet(dataModule);
     exposeInviwoModule(m);
+    exposeCameraProperty(m, propertiesModule);
 
     py::class_<Settings, PropertyOwner, std::unique_ptr<Settings, py::nodelete>>(m, "Settings");
 
@@ -114,8 +116,8 @@ PYBIND11_MODULE(inviwopy, m) {
         m.attr("app") = py::cast(InviwoApplication::getPtr(), py::return_value_policy::reference);
     }
 
-    m.def("getApp", []() { return InviwoApplication::getPtr(); },
-          py::return_value_policy::reference);
+    m.def(
+        "getApp", []() { return InviwoApplication::getPtr(); }, py::return_value_policy::reference);
 
     m.def("handlePythonOutput", [](const std::string& msg, int isStderr) {
         if (auto module = InviwoApplication::getPtr()->getModuleByType<Python3Module>()) {

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,6 @@
 #include <QPainter>
 #include <QSplashScreen>
 #include <QTextStream>
-#include <QDesktopWidget>
 #include <warn/pop>
 
 namespace inviwo {
@@ -54,7 +53,7 @@ void InviwoSplashScreen::show() {
 void InviwoSplashScreen::drawContents(QPainter* painter) {
     QString versionLabel;
     QTextStream labelStream(&versionLabel);
-    labelStream << "Version " << QString::fromStdString(IVW_VERSION);
+    labelStream << "Version " << QString::fromStdString(toString(build::version));
     painter->setPen(Qt::black);
     painter->drawText(12, 326, versionLabel);
     auto font = painter->font();

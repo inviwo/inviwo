@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,17 +46,17 @@ namespace glui {
 const std::string Button::classIdentifier = "org.inviwo.glui.Button";
 std::string Button::getClassIdentifier() const { return classIdentifier; }
 
-Button::Button(const std::string &label, Processor &processor, Renderer &uiRenderer,
-               const ivec2 &extent)
+Button::Button(const std::string& label, Processor& processor, Renderer& uiRenderer,
+               const ivec2& extent)
     : AbstractButton(label, processor, uiRenderer, extent) {}
 
-void Button::renderWidget(const ivec2 &origin, const size2_t &) {
+void Button::renderWidget(const ivec2& origin, const size2_t&) {
     TextureUnit texUnit;
     texUnit.activate();
     uiTextures_->bind();
 
     // bind textures
-    auto &uiShader = uiRenderer_->getShader();
+    auto& uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
     uiShader.setUniform("arrayTexMap", 9, uiTextureMap_.data());
 

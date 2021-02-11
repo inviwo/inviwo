@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,8 @@
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/network/networkvisitor.h>
+#include <inviwo/core/network/lambdanetworkvisitor.h>
 
 #include <iterator>
 
@@ -94,6 +96,8 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
 
     if (owner) {  // Assume ownership of property;
         ownedProperties_.emplace_back(property);
+        // Need to serialize everything for owned properties
+        property->setSerializationMode(PropertySerializationMode::All);
     }
     notifyObserversDidAddProperty(property, index);
 }
@@ -102,7 +106,7 @@ void PropertyOwner::insertProperty(size_t index, Property& property) {
     insertProperty(index, &property, false);
 }
 
-Property* PropertyOwner::removeProperty(const std::string& identifier) {
+Property* PropertyOwner::removeProperty(std::string_view identifier) {
     return removeProperty(
         std::find_if(properties_.begin(), properties_.end(),
                      [&identifier](Property* p) { return p->getIdentifier() == identifier; }));
@@ -121,6 +125,17 @@ Property* PropertyOwner::removeProperty(size_t index) {
                              IVW_CONTEXT);
     }
     return removeProperty(begin() + index);
+}
+
+void PropertyOwner::forEachProperty(std::function<void(Property&)> callback,
+                                    bool recursiveSearch) const {
+    LambdaNetworkVisitor visitor{[&](Property& property) {
+        callback(property);
+        return recursiveSearch;
+    }};
+    for (auto* elem : properties_) {
+        elem->accept(visitor);
+    }
 }
 
 Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
@@ -168,37 +183,34 @@ std::vector<Property*> PropertyOwner::getPropertiesRecursive() const {
     return result;
 }
 
-Property* PropertyOwner::getPropertyByIdentifier(const std::string& identifier,
+Property* PropertyOwner::getPropertyByIdentifier(std::string_view identifier,
                                                  bool recursiveSearch) const {
-    for (Property* property : properties_) {
+    for (auto* property : properties_) {
         if (property->getIdentifier() == identifier) return property;
     }
     if (recursiveSearch) {
-        for (CompositeProperty* compositeProperty : compositeProperties_) {
-            Property* p = compositeProperty->getPropertyByIdentifier(identifier, true);
-            if (p) return p;
+        for (auto* compositeProperty : compositeProperties_) {
+            if (auto* p = compositeProperty->getPropertyByIdentifier(identifier, true)) return p;
         }
     }
     return nullptr;
 }
 
-Property* PropertyOwner::getPropertyByPath(const std::vector<std::string>& path) const {
-    Property* property = getPropertyByIdentifier(path[0]);
-    if (property) {
-        size_t i = 1;
-        while (path.size() > i) {
-            CompositeProperty* comp = dynamic_cast<CompositeProperty*>(property);
-            if (comp) {
-                property = comp->getPropertyByIdentifier(path[i]);
-                if (!property) return nullptr;
-            } else {
-                return nullptr;
-            }
-            ++i;
+Property* PropertyOwner::getPropertyByPath(std::string_view path) const {
+    if (path.empty()) return nullptr;
+
+    const auto [first, rest] = util::splitByFirst(path, '.');
+    if (rest.empty()) {
+        return getPropertyByIdentifier(first);
+    } else {
+        auto it = std::find_if(compositeProperties_.begin(), compositeProperties_.end(),
+                               [f = first](auto* comp) { return comp->getIdentifier() == f; });
+        if (it != compositeProperties_.end()) {
+            return (*it)->getPropertyByPath(rest);
+        } else {
+            return nullptr;
         }
-        return property;
     }
-    return nullptr;
 }
 
 size_t PropertyOwner::size() const { return properties_.size(); }
@@ -222,7 +234,7 @@ void PropertyOwner::setValid() {
     invalidationLevel_ = InvalidationLevel::Valid;
 }
 
-inviwo::InvalidationLevel PropertyOwner::getInvalidationLevel() const { return invalidationLevel_; }
+InvalidationLevel PropertyOwner::getInvalidationLevel() const { return invalidationLevel_; }
 
 void PropertyOwner::invalidate(InvalidationLevel invalidationLevel, Property*) {
     invalidationLevel_ = std::max(invalidationLevel_, invalidationLevel);
@@ -232,12 +244,17 @@ Processor* PropertyOwner::getProcessor() { return nullptr; }
 
 const Processor* PropertyOwner::getProcessor() const { return nullptr; }
 
-void PropertyOwner::serialize(Serializer& s) const {
-    auto ownedIdentifiers = util::transform(
-        ownedProperties_, [](const std::unique_ptr<Property>& p) { return p->getIdentifier(); });
-    s.serialize("OwnedPropertyIdentifiers", ownedIdentifiers, "PropertyIdentifier");
+const PropertyOwner* PropertyOwner::getOwner() const { return nullptr; }
 
-    s.serialize("Properties", properties_, "Property");
+PropertyOwner* PropertyOwner::getOwner() { return nullptr; }
+
+void PropertyOwner::serialize(Serializer& s) const {
+    s.serialize("OwnedPropertyIdentifiers", ownedProperties_, "PropertyIdentifier",
+                util::alwaysTrue{},
+                [](const std::unique_ptr<Property>& p) { return p->getIdentifier(); });
+
+    s.serialize("Properties", properties_, "Property",
+                [](const Property* p) { return p->needsSerialization(); });
 }
 
 void PropertyOwner::deserialize(Deserializer& d) {
@@ -280,7 +297,10 @@ void PropertyOwner::resetAllPoperties() {
     for (auto& elem : properties_) elem->resetToDefaultState();
 }
 
-std::vector<std::string> PropertyOwner::getPath() const { return std::vector<std::string>(); }
+const std::string& PropertyOwner::getIdentifier() const {
+    static std::string id;
+    return id;
+}
 
 void PropertyOwner::invokeEvent(Event* event) {
     for (auto elem : eventProperties_) {
@@ -291,10 +311,6 @@ void PropertyOwner::invokeEvent(Event* event) {
         elem->invokeEvent(event);
         if (event->hasBeenUsed()) return;
     }
-}
-
-InviwoApplication* PropertyOwner::getInviwoApplication() {
-    return util::getInviwoApplication(getProcessor());
 }
 
 }  // namespace inviwo

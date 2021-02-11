@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STRINGPROPERTYWIDGETQT_H
-#define IVW_STRINGPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
+
+class QHBoxLayout;
 
 namespace inviwo {
 
@@ -42,7 +43,7 @@ class TextEditorDockWidget;
 
 /**
  * Widget representing a StringProperty.
- * The following semantics are supported: Default, Password, TextEditor, ShaderEditor
+ * The following semantics are supported: Default, Password, TextEditor
  */
 class IVW_MODULE_QTWIDGETS_API StringPropertyWidgetQt : public PropertyWidgetQt {
 public:
@@ -54,12 +55,14 @@ public:
     virtual PropertyEditorWidget* getEditorWidget() const override;
     virtual bool hasEditorWidget() const override;
 
-private:
+protected:
+    virtual void initEditor();
+    void addEditor();
+
     StringProperty* property_;
     LineEditQt* lineEdit_;
+    QHBoxLayout* hWidgetLayout_;
     std::unique_ptr<TextEditorDockWidget> editor_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_STRINGPROPERTYWIDGETQT_H

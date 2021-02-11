@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -104,7 +104,7 @@ private:
 
     /**
      * Compiles the script source to byte code, which speeds up script execution. This function
-     * is called by ::run when needed (eg. the source code has changed)
+     * is called by run when needed (eg. the source code has changed)
      *
      * @return true, if script compilation has been successful
      */

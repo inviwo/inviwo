@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,11 +44,11 @@ public:
     virtual const vec3& getLookFrom() const = 0;
     virtual const vec3& getLookUp() const = 0;
 
-    virtual void setLookTo(vec3 lookTo) = 0;
-    virtual void setLookFrom(vec3 lookFrom) = 0;
-    virtual void setLookUp(vec3 lookUp) = 0;
+    virtual TrackballObject& setLookTo(vec3 lookTo) = 0;
+    virtual TrackballObject& setLookFrom(vec3 lookFrom) = 0;
+    virtual TrackballObject& setLookUp(vec3 lookUp) = 0;
 
-    virtual void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) = 0;
+    virtual TrackballObject& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) = 0;
 
     virtual vec3 getLookFromMinValue() const = 0;
     virtual vec3 getLookFromMaxValue() const = 0;
@@ -62,6 +62,9 @@ public:
     virtual vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const = 0;
     virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
         const vec2& normalizedScreenCoord) const = 0;
+
+    enum class Bounded { Yes, No };
+    virtual void zoom(float factor, Bounded bounded) = 0;
 };
 
 }  // namespace inviwo

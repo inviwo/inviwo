@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,34 +48,34 @@ namespace utilqt {
 
 class IVW_MODULE_QTWIDGETS_API EditorFileObserver : public QObject, public FileObserver {
 public:
-    explicit EditorFileObserver(QWidget *parent, const QString &title = "Editor",
+    explicit EditorFileObserver(QWidget* parent, const QString& title = "Editor",
                                 const std::string filename = std::string{});
     virtual ~EditorFileObserver() = default;
 
-    void setTitle(const QString &title);
-    const QString &getTitle() const;
+    void setTitle(const QString& title);
+    const QString& getTitle() const;
 
     void resumeObservingFile();
     void suspendObservingFile();
 
     void ignoreNextUpdate();
 
-    void setFileName(const std::string &filename);
-    const std::string &getFileName() const;
+    void setFileName(const std::string& filename);
+    const std::string& getFileName() const;
 
     void setModifiedCallback(std::function<void(bool)> cb);
     void setReloadFileCallback(std::function<void()> cb);
 
 private:
-    virtual void fileChanged(const std::string &fileName) override;
-    virtual bool eventFilter(QObject *obj, QEvent *ev) override;
+    virtual void fileChanged(const std::string& fileName) override;
+    virtual bool eventFilter(QObject* obj, QEvent* ev) override;
     void queryReloadFile();
     bool widgetIsFocused() const;
 
     std::function<void(bool)> modifiedCallback_;
     std::function<void()> reloadFileCallback_;
 
-    QWidget *parent_;
+    QWidget* parent_;
     QString title_;
     std::string filename_;
     bool fileChangedInBackground_ = false;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -193,7 +193,7 @@ public:
      */
     virtual void insertProperty(size_t index, Property& property) override;
 
-    virtual Property* removeProperty(const std::string& identifier) override;
+    virtual Property* removeProperty(std::string_view identifier) override;
     virtual Property* removeProperty(Property* property) override;
     virtual Property* removeProperty(Property& property) override;
     virtual Property* removeProperty(size_t index) override;

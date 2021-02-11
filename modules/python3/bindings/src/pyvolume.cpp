@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,24 +49,24 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/ports/volumeport.h>
 
-PYBIND11_MAKE_OPAQUE(VolumeSequence);
+PYBIND11_MAKE_OPAQUE(VolumeSequence)
 
 namespace inviwo {
 
-void exposeVolume(pybind11::module &m) {
+void exposeVolume(pybind11::module& m) {
     namespace py = pybind11;
     py::class_<Volume, std::shared_ptr<Volume>>(m, "Volume")
-        .def(py::init<size3_t, const DataFormatBase *>())
-        .def(py::init<size3_t, const DataFormatBase *, const SwizzleMask &, InterpolationType,
-                      const Wrapping3D &>())
+        .def(py::init<size3_t, const DataFormatBase*>())
+        .def(py::init<size3_t, const DataFormatBase*, const SwizzleMask&, InterpolationType,
+                      const Wrapping3D&>())
         .def(py::init([](py::array data) { return pyutil::createVolume(data).release(); }))
-        .def("clone", [](Volume &self) { return self.clone(); })
+        .def("clone", [](Volume& self) { return self.clone(); })
         .def_property("modelMatrix", &Volume::getModelMatrix, &Volume::setModelMatrix)
         .def_property("worldMatrix", &Volume::getWorldMatrix, &Volume::setWorldMatrix)
         .def_property("basis", &Volume::getBasis, &Volume::setBasis)
         .def_property("offset", &Volume::getOffset, &Volume::setOffset)
-        .def("copyMetaDataFrom", [](Volume &self, Volume &other) { self.copyMetaDataFrom(other); })
-        .def("copyMetaDataTo", [](Volume &self, Volume &other) { self.copyMetaDataTo(other); })
+        .def("copyMetaDataFrom", [](Volume& self, Volume& other) { self.copyMetaDataFrom(other); })
+        .def("copyMetaDataTo", [](Volume& self, Volume& other) { self.copyMetaDataTo(other); })
         .def_property_readonly("dimensions", &Volume::getDimensions)
         .def_property("swizzlemask", &Volume::getSwizzleMask, &Volume::setSwizzleMask)
         .def_property("interpolation", &Volume::getInterpolation, &Volume::setInterpolation)
@@ -74,7 +74,7 @@ void exposeVolume(pybind11::module &m) {
         .def_readwrite("dataMap", &Volume::dataMap_)
         .def_property(
             "data",
-            [&](Volume *volume) -> py::array {
+            [&](Volume* volume) -> py::array {
                 auto df = volume->getDataFormat();
                 auto dims = volume->getDimensions();
 
@@ -90,13 +90,13 @@ void exposeVolume(pybind11::module &m) {
                 auto data = volume->getEditableRepresentation<VolumeRAM>()->getData();
                 return py::array(pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1));
             },
-            [](Volume *volume, py::array data) {
+            [](Volume* volume, py::array data) {
                 auto rep = volume->getEditableRepresentation<VolumeRAM>();
                 pyutil::checkDataFormat<3>(rep->getDataFormat(), rep->getDimensions(), data);
 
                 memcpy(rep->getData(), data.data(0), data.nbytes());
             })
-        .def("__repr__", [](const Volume &volume) {
+        .def("__repr__", [](const Volume& volume) {
             std::ostringstream oss;
             oss << "<Volume:\n  dimensions = " << volume.getDimensions()
                 << "\n  modelMatrix = " << volume.getModelMatrix()

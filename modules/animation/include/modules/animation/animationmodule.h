@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,14 +26,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_ANIMATIONMODULE_H
-#define IVW_ANIMATIONMODULE_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 #include <modules/animation/animationsupplier.h>
 #include <modules/animation/animationmanager.h>
+#include <modules/animation/mainanimation.h>
 #include <modules/animation/demo/democontroller.h>
 
 namespace inviwo {
@@ -46,6 +46,12 @@ public:
     AnimationModule(InviwoApplication* app);
     virtual ~AnimationModule();
 
+    virtual int getVersion() const override;
+    virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
+
+    animation::MainAnimation& getMainAnimation();
+    const animation::MainAnimation& getMainAnimation() const;
+
     animation::AnimationManager& getAnimationManager();
     const animation::AnimationManager& getAnimationManager() const;
 
@@ -53,10 +59,18 @@ public:
     const animation::DemoController& getDemoController() const;
 
 private:
+    class Converter : public VersionConverter {
+    public:
+        Converter(int version) : version_(version) {}
+        virtual bool convert(TxElement* root) override;
+
+    private:
+        int version_;
+    };
     animation::AnimationManager manager_;
+    animation::MainAnimation
+        mainAnimation_;  /// Used by Animation Editor and stored with workspace.
     animation::DemoController demoController_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ANIMATIONMODULE_H

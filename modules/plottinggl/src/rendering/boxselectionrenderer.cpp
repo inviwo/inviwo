@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2020-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/plottinggl/rendering/boxselectionrenderer.h>
+#include <inviwo/core/datastructures/camera/orthographiccamera.h>
 
 namespace inviwo {
 
@@ -60,10 +61,11 @@ void BoxSelectionRenderer::render(std::optional<std::array<dvec2, 2>> dragRect, 
                      vec4(0.f, 0.f, 1.f, 0.f), vec4(start.x, start.y, 0.f, 1.f));
 
         dragRectMesh_.setModelMatrix(m);
+        const vec2 origin{vec2{screenDim} * 0.5f};
         OrthographicCamera camera_{
-            vec3(0.0f, 0.0f, 2.0f),
-            vec3(0.0f),
-            vec3(0.0f, 1.0f, 0.0f),
+            vec3{origin, 2.0f},
+            vec3{origin, 0.0f},
+            vec3{0.0f, 1.0f, 0.0f},
             0.01f,
             10000.0f,
             static_cast<float>(screenDim.x),

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,8 +40,8 @@
 
 namespace inviwo {
 
-InviwoFileDialog::InviwoFileDialog(QWidget *parent, const std::string &title,
-                                   const std::string &pathType, const std::string &path)
+InviwoFileDialog::InviwoFileDialog(QWidget* parent, const std::string& title,
+                                   const std::string& pathType, const std::string& path)
     : QFileDialog(parent, utilqt::toQString(title))
     , pathType_(utilqt::toQString(pathType))
     , currentPath_() {
@@ -54,8 +54,8 @@ InviwoFileDialog::InviwoFileDialog(QWidget *parent, const std::string &title,
 
     useNativeDialog();
     QFileDialog::setOption(QFileDialog::DontUseCustomDirectoryIcons);
-    QObject::connect(this, SIGNAL(filterSelected(const QString &)), this,
-                     SLOT(filterSelectionChanged(const QString &)));
+    QObject::connect(this, SIGNAL(filterSelected(const QString&)), this,
+                     SLOT(filterSelectionChanged(const QString&)));
 }
 
 bool InviwoFileDialog::show() { return this->exec() == QDialog::Accepted; }
@@ -79,7 +79,7 @@ int InviwoFileDialog::exec() {
         }
     }
 
-    if (!currentPath_.isEmpty()) {
+    if (!currentPath_.isEmpty() && QDir(currentPath_).exists()) {
         QFileDialog::setDirectory(currentPath_);
     }
 
@@ -92,7 +92,7 @@ int InviwoFileDialog::exec() {
     return ret;
 }
 
-void InviwoFileDialog::setTitle(const std::string &title) {
+void InviwoFileDialog::setTitle(const std::string& title) {
     this->setWindowTitle(utilqt::toQString(title));
 }
 
@@ -165,17 +165,17 @@ FileMode InviwoFileDialog::getFileMode() const {
             return inviwo::FileMode::AnyFile;
     }
 }
-void InviwoFileDialog::setContentType(const std::string &contentType) {
+void InviwoFileDialog::setContentType(const std::string& contentType) {
     pathType_ = utilqt::toQString(contentType);
 }
 
 std::string InviwoFileDialog::getContentType() const { return utilqt::fromQString(pathType_); }
 
-void InviwoFileDialog::useNativeDialog(const bool &use) {
+void InviwoFileDialog::useNativeDialog(const bool& use) {
     QFileDialog::setOption(QFileDialog::DontUseNativeDialog, !use);
 }
 
-void InviwoFileDialog::setCurrentDirectory(const std::string &path) {
+void InviwoFileDialog::setCurrentDirectory(const std::string& path) {
     std::string fileName;
 
     if (!path.empty()) {
@@ -196,7 +196,7 @@ void InviwoFileDialog::setCurrentDirectory(const std::string &path) {
     }
 }
 
-void InviwoFileDialog::setCurrentFile(const std::string &filename) {
+void InviwoFileDialog::setCurrentFile(const std::string& filename) {
     std::string path;
     bool fileExists = false;
     if (!filename.empty()) {
@@ -224,7 +224,7 @@ std::vector<std::string> InviwoFileDialog::getSelectedFiles() const {
     return filenames;
 }
 
-void InviwoFileDialog::addExtension(const FileExtension &fileExt) {
+void InviwoFileDialog::addExtension(const FileExtension& fileExt) {
     // create Qt compatible string
     std::string str{fileExt.toString()};
 
@@ -237,32 +237,32 @@ void InviwoFileDialog::addExtension(const FileExtension &fileExt) {
     }
 }
 
-void InviwoFileDialog::addExtension(const std::string &ext, const std::string &description) {
+void InviwoFileDialog::addExtension(const std::string& ext, const std::string& description) {
     FileExtension fileExt{ext, description};
     addExtension(fileExt);
 }
 
-void InviwoFileDialog::addExtension(const std::string &extString) {
+void InviwoFileDialog::addExtension(const std::string& extString) {
     FileExtension fileExt{FileExtension::createFileExtensionFromString(extString)};
     addExtension(fileExt);
 }
 
-void InviwoFileDialog::addExtensions(const std::vector<FileExtension> &extensions) {
+void InviwoFileDialog::addExtensions(const std::vector<FileExtension>& extensions) {
     for (auto ext : extensions) {
         addExtension(ext);
     }
 }
 
-void InviwoFileDialog::filterSelectionChanged(const QString &filter) {
+void InviwoFileDialog::filterSelectionChanged(const QString& filter) {
     // try to find matching filter in extension map
     selectedFilter_ = getMatchingFileExtension(filter);
 }
 
 FileExtension InviwoFileDialog::getSelectedFileExtension() const { return selectedFilter_; }
 
-void InviwoFileDialog::setSelectedExtension(const FileExtension &ext) { selectedFilter_ = ext; }
+void InviwoFileDialog::setSelectedExtension(const FileExtension& ext) { selectedFilter_ = ext; }
 
-FileExtension InviwoFileDialog::getMatchingFileExtension(const QString &extStr) {
+FileExtension InviwoFileDialog::getMatchingFileExtension(const QString& extStr) {
     // try to find matching filter in extension map
     auto it = extmap_.find(utilqt::fromQString(extStr));
     if (it != extmap_.end()) {
@@ -272,19 +272,19 @@ FileExtension InviwoFileDialog::getMatchingFileExtension(const QString &extStr) 
     }
 }
 
-void InviwoFileDialog::addSidebarPath(const PathType &path) {
+void InviwoFileDialog::addSidebarPath(const PathType& path) {
     addSidebarPath(filesystem::getPath(path));
 }
 
-void InviwoFileDialog::addSidebarPath(const std::string &path) {
+void InviwoFileDialog::addSidebarPath(const std::string& path) {
     sidebarURLs_ << QUrl::fromLocalFile(QDir(path.c_str()).absolutePath());
 }
 
-void InviwoFileDialog::addSidebarPath(const QString &path) {
+void InviwoFileDialog::addSidebarPath(const QString& path) {
     sidebarURLs_ << QUrl::fromLocalFile(QDir(path).absolutePath());
 }
 
-QString InviwoFileDialog::getPreviousPath(const QString &pathType) {
+QString InviwoFileDialog::getPreviousPath(const QString& pathType) {
     QSettings settings;
     settings.beginGroup("InviwoFileDialog");
 
@@ -295,19 +295,19 @@ QString InviwoFileDialog::getPreviousPath(const QString &pathType) {
         defaultPath = utilqt::toQString(InviwoApplication::getPtr()->getBasePath());
     }
 
-    const QVariant &variant = settings.value(pathType, defaultPath);
+    const QVariant& variant = settings.value(pathType, defaultPath);
     settings.endGroup();
     return variant.toString();
 }
 
-void InviwoFileDialog::setPreviousPath(const QString &pathType, const QString &path) {
+void InviwoFileDialog::setPreviousPath(const QString& pathType, const QString& path) {
     QSettings settings;
     settings.beginGroup("InviwoFileDialog");
     settings.setValue(pathType, path);
     settings.endGroup();
 }
 
-QString InviwoFileDialog::getPreviousExtension(const QString &pathType) {
+QString InviwoFileDialog::getPreviousExtension(const QString& pathType) {
     QSettings settings;
     settings.beginGroup("InviwoFileDialog");
     QString setting = pathType + "_extension";
@@ -319,12 +319,12 @@ QString InviwoFileDialog::getPreviousExtension(const QString &pathType) {
         defaultExt = "";
     }
 
-    const QVariant &variant = settings.value(setting, defaultExt);
+    const QVariant& variant = settings.value(setting, defaultExt);
     settings.endGroup();
     return variant.toString();
 }
 
-void InviwoFileDialog::setPreviousExtension(const QString &pathType, const QString &path) {
+void InviwoFileDialog::setPreviousExtension(const QString& pathType, const QString& path) {
     QSettings settings;
     settings.beginGroup("InviwoFileDialog");
     QString setting = pathType + "_extension";

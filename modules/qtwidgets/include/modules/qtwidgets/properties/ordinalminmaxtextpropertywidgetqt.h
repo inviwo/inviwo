@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,7 +67,7 @@ protected:
     void updateFromMax();
     void showSettings();
 
-    MinMaxPropertySettingsWidgetQt<T>* settingsWidget_;
+    MinMaxPropertySettingsWidgetQt<T>* settings_;
     EditableLabelQt* label_;
     MinMaxProperty<T>* minMaxProperty_;
     OrdinalEditorWidget<T>* min_;
@@ -84,7 +84,7 @@ template <typename BT, typename T>
 OrdinalMinMaxTextPropertyWidgetQt<BT, T>::OrdinalMinMaxTextPropertyWidgetQt(
     MinMaxProperty<T>* property)
     : PropertyWidgetQt(property)
-    , settingsWidget_(nullptr)
+    , settings_(nullptr)
     , label_(new EditableLabelQt(this, property_))
     , minMaxProperty_(property)
     , min_{new OrdinalEditorWidget<T>()}
@@ -284,10 +284,10 @@ std::unique_ptr<QMenu> OrdinalMinMaxTextPropertyWidgetQt<BT, T>::getContextMenu(
 
 template <typename BT, typename T>
 void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::showSettings() {
-    if (!settingsWidget_) {
-        settingsWidget_ = new MinMaxPropertySettingsWidgetQt<T>(minMaxProperty_, this);
+    if (!settings_) {
+        settings_ = new MinMaxPropertySettingsWidgetQt<T>(minMaxProperty_, this);
     }
-    settingsWidget_->showWidget();
+    settings_->showWidget();
 }
 
 }  // namespace inviwo

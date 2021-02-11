@@ -1,13 +1,6 @@
-#--------------------------------------------------------------------
-# Build GLFW
-add_subdirectory(ext/glfw)
-
-#--------------------------------------------------------------------
 # Inviwo GLFW Module
 ivw_module(GLFW)
 
-#--------------------------------------------------------------------
-# Add header files
 set(HEADER_FILES
     include/modules/glfw/canvasglfw.h
     include/modules/glfw/canvasprocessorwidgetglfw.h
@@ -20,8 +13,6 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
-# Add source files
 set(SOURCE_FILES
     src/canvasglfw.cpp
     src/canvasprocessorwidgetglfw.cpp
@@ -33,16 +24,23 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
-find_package(glfw3 REQUIRED)
+option(IVW_USE_EXTERNAL_GLFW "GLFW is provided externaly" OFF)
+if(NOT IVW_USE_EXTERNAL_GLFW)
+    add_subdirectory(ext/glfw)
+    ivw_register_license_file(NAME "GLFW" VERSION ${GLEW_VERSION} MODULE GLFW
+        URL http://www.glfw.org
+        TYPE "The zlib/libpng License"
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/glfw/LICENSE.md
+    )
+    ivw_default_install_targets(glfw)
+    ivw_make_package(glfw3 glfw)
+else()
+    find_package(glfw3 REQUIRED)
+    ivw_vcpkg_install(glfw3 MODULE GLFW)    
+endif()
+
 target_link_libraries(inviwo-module-glfw PUBLIC glfw)
 
-ivw_register_license_file(NAME "GLFW" VERSION 3.3.0 MODULE GLFW
-    URL http://www.glfw.org
-    TYPE "The zlib/libpng License"
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/glfw/LICENSE.md
-)
-ivw_make_package(InviwoGLFWModule inviwo-module-glfw)

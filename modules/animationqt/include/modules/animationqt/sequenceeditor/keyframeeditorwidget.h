@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_KEYFRAMEEDITORWIDGET_H
-#define IVW_KEYFRAMEEDITORWIDGET_H
+#pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -57,28 +55,27 @@ class SequenceEditorWidget;
 
 class IVW_MODULE_ANIMATIONQT_API KeyframeEditorWidget : public QWidget, public KeyframeObserver {
 public:
-    KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWidget *parent);
+    KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWidget* parent);
     virtual ~KeyframeEditorWidget();
 
-    virtual void onKeyframeTimeChanged(Keyframe *key, Seconds oldTime) override;
+    virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) override;
 
-    Keyframe &getKeyframe() { return keyframe_; }
+    Keyframe& getKeyframe() { return keyframe_; }
 
-    virtual void onKeyframeSelectionChanged(Keyframe *seq) override;
+    virtual void onKeyframeSelectionChanged(Keyframe* seq) override;
 
 private:
-    Keyframe &keyframe_;
-    SequenceEditorWidget *sequenceEditorWidget_{nullptr};
+    Keyframe& keyframe_;
+    SequenceEditorWidget* sequenceEditorWidget_{nullptr};
 
     std::unique_ptr<Property> property_{nullptr};
-    PropertyWidgetQt *propertyWidget_{nullptr};
-    QComboBox *actionWidget_{nullptr};
-    QDoubleSpinBox *jumpToWidget_{nullptr};
-    QHBoxLayout *layout_{nullptr};
-    QDoubleSpinBox *timeSpinner_{nullptr};
+    PropertyWidgetQt* propertyWidget_{nullptr};
+    QComboBox* actionWidget_{nullptr};
+    QDoubleSpinBox* jumpToWidget_{nullptr};
+    QHBoxLayout* layout_{nullptr};
+    QDoubleSpinBox* timeSpinner_{nullptr};
 };
 
 }  // namespace animation
-}  // namespace inviwo
 
-#endif  // IVW_KEYFRAMEEDITORWIDGET_H
+}  // namespace inviwo

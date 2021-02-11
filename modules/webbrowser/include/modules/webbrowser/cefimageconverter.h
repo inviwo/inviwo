@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CEFIMAGECONVERTER_H
-#define IVW_CEFIMAGECONVERTER_H
+#pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/webbrowser/renderhandlergl.h>
@@ -52,9 +51,7 @@ public:
                  const ImageInport* optionalBackground = nullptr);
 
 protected:
-    Shader shader_{"img_convert_cef.frag", true};  ///< Flip image y compoenent
+    Shader shader_{"img_convert_cef.frag", Shader::Build::Yes};  ///< Flip image y compoenent
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_WEBBROWSERCLIENT_H

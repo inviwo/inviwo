@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
 #include <modules/base/algorithm/cubeproxygeometry.h>
 
 #include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
+
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/util/volumeutils.h>
 
@@ -38,7 +38,8 @@ namespace inviwo {
 
 namespace algorithm {
 
-std::shared_ptr<SimpleMesh> createCubeProxyGeometry(const std::shared_ptr<const Volume> &volume) {
+std::shared_ptr<Mesh> createCubeProxyGeometry(const std::shared_ptr<const Volume>& volume,
+                                              meshutil::IncludeNormals normals) {
     vec3 startDataTexCoord = vec3(0.0f);
     vec3 extent = vec3(1.0f);
     // the extent will be added to the origin in the parallelepiped() yielding the end position
@@ -59,18 +60,13 @@ std::shared_ptr<SimpleMesh> createCubeProxyGeometry(const std::shared_ptr<const 
     glm::vec3 e1(1.0f, 0.0f, 0.0f);
     glm::vec3 e2(0.0f, 1.0f, 0.0f);
     glm::vec3 e3(0.0f, 0.0f, 1.0f);
-    glm::vec3 texOrigin(startDataTexCoord);
-    glm::vec3 t1(extent.x, 0.0f, 0.0f);
-    glm::vec3 t2(0.0f, extent.y, 0.0f);
-    glm::vec3 t3(0.0f, 0.0f, extent.z);
     glm::vec4 colOrigin(startDataTexCoord, 1.0f);
-    glm::vec4 c1(t1, 0.0f);
-    glm::vec4 c2(t2, 0.0f);
-    glm::vec4 c3(t3, 0.0f);
+    glm::vec4 c1(extent.x, 0.0f, 0.0f, 0.0f);
+    glm::vec4 c2(0.0f, extent.y, 0.0f, 0.0f);
+    glm::vec4 c3(0.0f, 0.0f, extent.z, 0.0f);
 
     // Create parallelepiped and set it to the outport. The outport will own the data.
-    auto geom = SimpleMeshCreator::parallelepiped(origin, e1, e2, e3, texOrigin, t1, t2, t3,
-                                                  colOrigin, c1, c2, c3);
+    auto geom = meshutil::parallelepiped(origin, e1, e2, e3, colOrigin, c1, c2, c3, normals);
     if (volume) {
         geom->setModelMatrix(volume->getModelMatrix());
         geom->setWorldMatrix(volume->getWorldMatrix());
@@ -79,9 +75,9 @@ std::shared_ptr<SimpleMesh> createCubeProxyGeometry(const std::shared_ptr<const 
     return geom;
 }
 
-std::shared_ptr<SimpleMesh> createCubeProxyGeometry(const std::shared_ptr<const Volume> &volume,
-                                                    const vec3 &clipOrigin,
-                                                    const vec3 &clipExtent) {
+std::shared_ptr<Mesh> createCubeProxyGeometry(const std::shared_ptr<const Volume>& volume,
+                                              const vec3& clipOrigin, const vec3& clipExtent,
+                                              meshutil::IncludeNormals normals) {
     vec3 startDataTexCoord = vec3(0.0f);
     vec3 extent = vec3(1.0f);
     // the extent will be added to the origin in the parallelepiped() yielding the end position
@@ -102,14 +98,10 @@ std::shared_ptr<SimpleMesh> createCubeProxyGeometry(const std::shared_ptr<const 
     glm::vec3 e1(1.0f, 0.0f, 0.0f);
     glm::vec3 e2(0.0f, 1.0f, 0.0f);
     glm::vec3 e3(0.0f, 0.0f, 1.0f);
-    glm::vec3 texOrigin(startDataTexCoord);
-    glm::vec3 t1(extent.x, 0.0f, 0.0f);
-    glm::vec3 t2(0.0f, extent.y, 0.0f);
-    glm::vec3 t3(0.0f, 0.0f, extent.z);
     glm::vec4 colOrigin(startDataTexCoord, 1.0f);
-    glm::vec4 c1(t1, 0.0f);
-    glm::vec4 c2(t2, 0.0f);
-    glm::vec4 c3(t3, 0.0f);
+    glm::vec4 c1(extent.x, 0.0f, 0.0f, 0.0f);
+    glm::vec4 c2(0.0f, extent.y, 0.0f, 0.0f);
+    glm::vec4 c3(0.0f, 0.0f, extent.z, 0.0f);
 
     // clip initial bounding cube
     origin = origin + e1 * clipOrigin.x + e2 * clipOrigin.y + e3 * clipOrigin.z;
@@ -117,19 +109,13 @@ std::shared_ptr<SimpleMesh> createCubeProxyGeometry(const std::shared_ptr<const 
     e2 *= clipExtent.y;
     e3 *= clipExtent.z;
 
-    texOrigin = texOrigin + t1 * clipOrigin.x + t2 * clipOrigin.y + t3 * clipOrigin.z;
-    t1 *= clipExtent.x;
-    t2 *= clipExtent.y;
-    t3 *= clipExtent.z;
-
     colOrigin += c1 * clipOrigin.x + c2 * clipOrigin.y + c3 * clipOrigin.z;
     c1 *= clipExtent.x;
     c2 *= clipExtent.y;
     c3 *= clipExtent.z;
 
     // Create parallelepiped and set it to the outport. The outport will own the data.
-    auto geom = SimpleMeshCreator::parallelepiped(origin, e1, e2, e3, texOrigin, t1, t2, t3,
-                                                  colOrigin, c1, c2, c3);
+    auto geom = meshutil::parallelepiped(origin, e1, e2, e3, colOrigin, c1, c2, c3, normals);
     if (volume) {
         geom->setModelMatrix(volume->getModelMatrix());
         geom->setWorldMatrix(volume->getWorldMatrix());
@@ -137,12 +123,12 @@ std::shared_ptr<SimpleMesh> createCubeProxyGeometry(const std::shared_ptr<const 
     return geom;
 }
 
-std::shared_ptr<SimpleMesh> createCubeProxyGeometry(const std::shared_ptr<const Volume> &volume,
-                                                    const size3_t &clipMin,
-                                                    const size3_t &clipMax) {
+std::shared_ptr<Mesh> createCubeProxyGeometry(const std::shared_ptr<const Volume>& volume,
+                                              const size3_t& clipMin, const size3_t& clipMax,
+                                              meshutil::IncludeNormals normals) {
     if (!volume) {
         // the volume is required to figure out the clipped texture coordinates
-        return createCubeProxyGeometry(volume);
+        return createCubeProxyGeometry(volume, normals);
     }
 
     const size3_t volDims = util::getVolumeDimensions(volume);
@@ -155,7 +141,7 @@ std::shared_ptr<SimpleMesh> createCubeProxyGeometry(const std::shared_ptr<const 
     vec3 clipOrigin(vec3(min) / extent);
     vec3 clipExtent(vec3(max - min) / extent);
 
-    return createCubeProxyGeometry(volume, clipOrigin, clipExtent);
+    return createCubeProxyGeometry(volume, clipOrigin, clipExtent, normals);
 }
 
 }  // namespace algorithm

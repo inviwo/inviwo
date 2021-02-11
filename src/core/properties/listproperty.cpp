@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -175,7 +175,7 @@ Property* ListProperty::constructProperty(size_t prefabIndex) {
         property->setSerializationMode(PropertySerializationMode::All);
         property->setIdentifier(util::findUniqueIdentifier(
             property->getIdentifier(),
-            [&](const std::string& id) { return getPropertyByIdentifier(id) == nullptr; }, ""));
+            [&](std::string_view id) { return getPropertyByIdentifier(id) == nullptr; }, ""));
 
         // if prefab has a trailing number in its display name, use number of identifier
         std::string displayName = property->getDisplayName();
@@ -235,7 +235,7 @@ void ListProperty::insertProperty(size_t index, Property& property) {
     insertProperty(index, &property, false);
 }
 
-Property* ListProperty::removeProperty(const std::string& identifier) {
+Property* ListProperty::removeProperty(std::string_view identifier) {
     auto result = CompositeProperty::removeProperty(identifier);
     propertyModified();
     return result;

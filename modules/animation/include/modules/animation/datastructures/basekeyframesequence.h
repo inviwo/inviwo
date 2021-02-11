@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_BASEKEYFRAMESEQUENCE_H
-#define IVW_BASEKEYFRAMESEQUENCE_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -85,9 +83,13 @@ public:
 
     /**
      * Add Keyframe and call KeyframeObserver::notifyKeyframeAdded
+     * @throw Exception if Keyframe is not compatible with BaseKeyframeSequence<Key>
      */
-    virtual void add(std::unique_ptr<Keyframe> key) override;
-    void add(std::unique_ptr<Key> key);
+    virtual Key* add(std::unique_ptr<Keyframe> key) override;
+    /**
+     * Add Keyframe and call KeyframeObserver::notifyKeyframeAdded
+     */
+    Key* add(std::unique_ptr<Key> key);
 
     /**
      * Remove Keyframe and call KeyframeObserver::notifyKeyframeRemoved
@@ -168,16 +170,17 @@ void BaseKeyframeSequence<Key>::onKeyframeTimeChanged(Keyframe* key, Seconds /*o
 }
 
 template <typename Key>
-void BaseKeyframeSequence<Key>::add(std::unique_ptr<Keyframe> key) {
+Key* BaseKeyframeSequence<Key>::add(std::unique_ptr<Keyframe> key) {
     if (auto k = util::dynamic_unique_ptr_cast<Key>(std::move(key))) {
-        add(std::move(k));
+        return add(std::move(k));
     } else {
         throw Exception("Invalid key type", IVW_CONTEXT);
     }
+    return nullptr;
 }
 
 template <typename Key>
-void BaseKeyframeSequence<Key>::add(std::unique_ptr<Key> key) {
+Key* BaseKeyframeSequence<Key>::add(std::unique_ptr<Key> key) {
     auto it =
         keyframes_.insert(std::upper_bound(keyframes_.begin(), keyframes_.end(), key,
                                            [](const auto& a, const auto& b) { return *a < *b; }),
@@ -185,6 +188,7 @@ void BaseKeyframeSequence<Key>::add(std::unique_ptr<Key> key) {
 
     (*it)->addObserver(this);
     notifyKeyframeAdded(it->get(), this);
+    return it->get();
 }
 
 template <typename Key>
@@ -193,7 +197,7 @@ std::unique_ptr<Keyframe> BaseKeyframeSequence<Key>::remove(size_t i) {
         auto key = std::move(keyframes_[i]);
         keyframes_.erase(keyframes_.begin() + i);
         notifyKeyframeRemoved(key.get(), this);
-        return std::move(key);
+        return key;
     } else {
         return nullptr;
     }
@@ -207,7 +211,7 @@ std::unique_ptr<Keyframe> BaseKeyframeSequence<Key>::remove(Keyframe* key) {
         auto res = std::move(*it);
         keyframes_.erase(it);
         notifyKeyframeRemoved(res.get(), this);
-        return std::move(res);
+        return res;
     } else {
         return nullptr;
     }
@@ -302,5 +306,3 @@ void BaseKeyframeSequence<Key>::deserialize(Deserializer& d) {
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_BASEKEYFRAMESEQUENCE_H

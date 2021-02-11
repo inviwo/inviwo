@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,8 +47,8 @@ namespace inviwo {
 
 void TFEditorPrimitiveObserver::onTFPrimitiveDoubleClicked(const TFEditorPrimitive*) {}
 
-TFEditorPrimitive::TFEditorPrimitive(TFPrimitive& primitive, QGraphicsScene* scene, const vec2& pos,
-                                     double size)
+TFEditorPrimitive::TFEditorPrimitive(TFPrimitive& primitive, QGraphicsScene* scene, double position,
+                                     float alpha, double size)
     : size_(size), isEditingPoint_(false), hovered_(false), data_(primitive), mouseDrag_(false) {
     setFlags(ItemIgnoresTransformations | ItemIsFocusable | ItemIsMovable | ItemIsSelectable |
              ItemSendsGeometryChanges);
@@ -70,7 +70,7 @@ TFEditorPrimitive::TFEditorPrimitive(TFPrimitive& primitive, QGraphicsScene* sce
         // update position first, then add to scene to avoid calling the virtual
         // function onItemPositionChange()
         updatePosition(
-            QPointF(pos.x * scene->sceneRect().width(), pos.y * scene->sceneRect().height()));
+            QPointF(position * scene->sceneRect().width(), alpha * scene->sceneRect().height()));
 
         scene->addItem(this);
     }
@@ -92,11 +92,11 @@ void TFEditorPrimitive::setAlpha(float alpha) { data_.setAlpha(alpha); }
 
 const vec4& TFEditorPrimitive::getColor() const { return data_.getColor(); }
 
-void TFEditorPrimitive::setTFPosition(const dvec2& tfpos) {
+void TFEditorPrimitive::setTFPosition(double position, float alpha) {
     if (!isEditingPoint_) {
         isEditingPoint_ = true;
         QRectF rect = scene()->sceneRect();
-        QPointF newpos(tfpos.x * rect.width(), tfpos.y * rect.height());
+        QPointF newpos(position * rect.width(), alpha * rect.height());
         if (newpos != pos()) updatePosition(newpos);
         isEditingPoint_ = false;
         update();
@@ -173,12 +173,8 @@ QVariant TFEditorPrimitive::itemChange(GraphicsItemChange change, const QVariant
             }
         }
 
-        QRectF rect = scene()->sceneRect();
-
-        if (!rect.contains(newpos)) {
-            newpos.setX(qMin(rect.right(), qMax(newpos.x(), rect.left())));
-            newpos.setY(qMin(rect.bottom(), qMax(newpos.y(), rect.top())));
-        }
+        const QRectF rect = scene()->sceneRect();
+        newpos = utilqt::clamp(newpos, rect);
 
         // allow for adjusting the position in derived classes
         currentPos_ = prepareItemPositionChange(newpos);
@@ -187,8 +183,8 @@ QVariant TFEditorPrimitive::itemChange(GraphicsItemChange change, const QVariant
             isEditingPoint_ = true;
 
             // update the associated transfer function primitive
-            onItemPositionChange(vec2(static_cast<float>(currentPos_.x() / rect.width()),
-                                      static_cast<float>(currentPos_.y() / rect.height())));
+            onItemPositionChange(
+                dvec2{currentPos_.x() / rect.width(), currentPos_.y() / rect.height()});
             // update label
             updateLabel();
 

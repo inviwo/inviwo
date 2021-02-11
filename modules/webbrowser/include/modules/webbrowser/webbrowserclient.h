@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_WEBBROWSERCLIENT_H
-#define IVW_WEBBROWSERCLIENT_H
+#pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/webbrowser/renderhandlergl.h>
@@ -36,8 +35,11 @@
 #include <modules/webbrowser/processors/processorcefsynchronizer.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/stdextensions.h>
+
+#include <map>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -53,9 +55,9 @@ namespace inviwo {
 
 /* \class WebBrowserClient
  * CefClient with custom render handler and call redirections.
- * Calls to 'https://inviwo/modules/yourmodule' will be redirected to yourmodule
+ * Calls to 'inviwo://yourmodule' will be redirected to yourmodule
  * directory, i.e. InviwoModule::getPath().
- * Calls to 'https://inviwo/app' will be redirected to the InviwoApplication
+ * Calls to 'inviwo://app' will be redirected to the InviwoApplication
  * (executable) directory, i.e. InviwoApplication::getBasePath().
  */
 #include <warn/push>
@@ -68,19 +70,38 @@ class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
                                                    public CefDisplayHandler,
                                                    public CefResourceRequestHandler {
 public:
-    /**
-     * @param const Processor* parent web browser processor responsible for the browser. Cannot be
-     * null.
-     */
-    WebBrowserClient(const Processor* parent, CefRefPtr<RenderHandlerGL> renderHandler,
-                     const PropertyWidgetCEFFactory* widgetFactory);
+    WebBrowserClient(ModuleManager& moduleManager, const PropertyWidgetCEFFactory* widgetFactory);
 
     virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return renderHandler_; }
     virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
     virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override { return this; }
 
-    void SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler);
+    /**
+     * Enable invalidation when the web page repaints and allow the Inviwo javascript API
+     * to access the parent processor.
+     * @param const Processor* parent web browser processor responsible for the browser. Cannot be
+     * null.
+     * Connection will be removed when the browser closes.
+     */
+    void setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent);
+
+    /**
+     * Register a processor \p callback for a specific \p browser which can be triggered through a
+     * cefQuery request where the 'command' is 'callback' and 'name' refers to \p name in the JSON
+     * object. The callback will then be called with the string payload given by 'data'.
+     *
+     * Note: setBrowserParent() must have been called before.
+     *
+     * \code{.json}
+     * {"command": "callback", "callback": "name", "data": "string payload"}
+     * \endcode
+     *
+     * \see ProcessorCefSynchronizer::registerCallback, setBrowserParent
+     */
+    ProcessorCefSynchronizer::CallbackHandle registerCallback(
+        CefRefPtr<CefBrowser> browser, const std::string& name,
+        std::function<ProcessorCefSynchronizer::CallbackFunc> callback);
 
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
 
@@ -189,13 +210,17 @@ public:
         CefRefPtr<CefRequest> request) override;
 
 protected:
-    const Processor* parent_;                        /// Owner of the webbrowser client
+    struct BrowserData {
+        Processor* processor = nullptr;
+        CefRefPtr<ProcessorCefSynchronizer> processorCefSynchronizer;
+    };
+
+    std::map<int, BrowserData> browserParents_;      /// Owner of each browser
     const PropertyWidgetCEFFactory* widgetFactory_;  /// Non-owning reference
-    CefRefPtr<CefRenderHandler> renderHandler_;
+
+    CefRefPtr<RenderHandlerGL> renderHandler_;
     // Handles the browser side of query routing.
     CefRefPtr<CefMessageRouterBrowserSide> messageRouter_;
-
-    CefRefPtr<ProcessorCefSynchronizer> processorCefSynchronizer_;
 
     std::vector<CefLoadHandler*> loadHandlers_;
     // Manages the registration and delivery of resources (redirections to
@@ -206,10 +231,9 @@ protected:
     int browserCount_ = 0;
 
 private:
+    std::shared_ptr<std::function<void()>> onModulesRegisteredCallback_;
     IMPLEMENT_REFCOUNTING(WebBrowserClient);
     DISALLOW_COPY_AND_ASSIGN(WebBrowserClient);
 };
 #include <warn/pop>
 }  // namespace inviwo
-
-#endif  // IVW_WEBBROWSERCLIENT_H

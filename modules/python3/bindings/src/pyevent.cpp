@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2020-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@
 
 namespace inviwo {
 
-void exposeEvents(pybind11::module &m) {
+void exposeEvents(pybind11::module& m) {
     namespace py = pybind11;
 
     py::enum_<KeyModifier>(m, "KeyModifier")
@@ -257,18 +257,18 @@ void exposeEvents(pybind11::module &m) {
         .def("markAsUnused", &Event::markAsUnused)
         .def("setUsed", &Event::setUsed)
         .def_property("used", &Event::hasBeenUsed,
-                      [](Event *e, bool used) {
+                      [](Event* e, bool used) {
                           if (used) {
                               e->markAsUsed();
                           } else {
                               e->markAsUnused();
                           }
                       })
-        .def("markAsVisited", static_cast<bool (Event::*)(Processor *)>(&Event::markAsVisited))
-        .def("markAsVisited", static_cast<void (Event::*)(Event &)>(&Event::markAsVisited))
+        .def("markAsVisited", static_cast<bool (Event::*)(Processor*)>(&Event::markAsVisited))
+        .def("markAsVisited", static_cast<void (Event::*)(Event&)>(&Event::markAsVisited))
         .def("hasVisitedProcessor", &Event::hasVisitedProcessor)
         .def("getVisitedProcessors", &Event::getVisitedProcessors)
-        .def("__repr__", [](Event *event) {
+        .def("__repr__", [](Event* event) {
             std::ostringstream oss;
             event->print(oss);
             return oss.str();
@@ -281,7 +281,7 @@ void exposeEvents(pybind11::module &m) {
         .def("setToolTip", &InteractionEvent::setToolTip);
 
     py::class_<KeyboardEvent, InteractionEvent>(m, "KeyboardEvent")
-        .def(py::init<IvwKey, KeyState, KeyModifiers, uint32_t, const std::string &>(),
+        .def(py::init<IvwKey, KeyState, KeyModifiers, uint32_t, const std::string&>(),
              py::arg("key") = IvwKey::Unknown, py::arg("state") = KeyState::Press,
              py::arg("modifiers") = KeyModifiers(flags::empty), py::arg("nativeVirtualKey") = 0,
              py::arg("utfText") = u8"")
@@ -359,11 +359,11 @@ void exposeEvents(pybind11::module &m) {
         .def_property("name", &TouchDevice::getName, &TouchDevice::setName);
 
     py::class_<TouchEvent, InteractionEvent>(m, "TouchEvent")
-        .def(py::init<const std::vector<TouchPoint> &, const TouchDevice *, KeyModifiers>(),
+        .def(py::init<const std::vector<TouchPoint>&, const TouchDevice*, KeyModifiers>(),
              py::arg("touchPoints"), py::arg("source"), py::arg("modifiers"))
         .def("hasTouchPoints", &TouchEvent::hasTouchPoints)
         .def_property("touchPoints",
-                      static_cast<const std::vector<TouchPoint> &(TouchEvent::*)() const>(
+                      static_cast<const std::vector<TouchPoint>& (TouchEvent::*)() const>(
                           &TouchEvent::touchPoints),
                       &TouchEvent::setTouchPoints)
         .def_property_readonly("canvasSize", &TouchEvent::canvasSize)
@@ -388,14 +388,6 @@ void exposeEvents(pybind11::module &m) {
 
     py::class_<typename ViewEvent::FlipUp>(m, "ViewEventFlipUp").def(py::init<>());
     py::class_<typename ViewEvent::FitData>(m, "ViewEventFitData").def(py::init<>());
-
-    py::enum_<camerautil::Side>(m, "Side")
-        .value("XNegative", camerautil::Side::XNegative)
-        .value("XPositive", camerautil::Side::XPositive)
-        .value("YNegative", camerautil::Side::YNegative)
-        .value("YPositive", camerautil::Side::YPositive)
-        .value("ZNegative", camerautil::Side::ZNegative)
-        .value("ZPositive", camerautil::Side::ZPositive);
 
     py::class_<ViewEvent, Event>(m, "ViewEvent")
         .def(py::init<typename ViewEvent::Action>())

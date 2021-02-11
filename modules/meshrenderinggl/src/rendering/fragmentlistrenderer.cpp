@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,10 +54,10 @@ FragmentListRenderer::Illustration::Illustration(size2_t screenSize, size_t frag
                  {fragmentSize * 2 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 2),
                   GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER}}}
     , activeSmoothing{0}
-    , fill{"oit/simplequad.vert", "illustration/sortandfill.frag", false}
-    , neighbors{"oit/simplequad.vert", "illustration/neighbors.frag", false}
-    , draw{"oit/simplequad.vert", "illustration/display.frag", false}
-    , smooth{"oit/simplequad.vert", "illustration/smooth.frag", false}
+    , fill{"oit/simplequad.vert", "illustration/sortandfill.frag", Shader::Build::No}
+    , neighbors{"oit/simplequad.vert", "illustration/neighbors.frag", Shader::Build::No}
+    , draw{"oit/simplequad.vert", "illustration/display.frag", Shader::Build::No}
+    , smooth{"oit/simplequad.vert", "illustration/smooth.frag", Shader::Build::No}
     , settings{} {
 
     index.initialize(nullptr);
@@ -80,9 +80,11 @@ FragmentListRenderer::FragmentListRenderer()
     , pixelBuffer_{fragmentSize_ * 4 * sizeof(GLfloat), GLFormats::getGLFormat(GL_FLOAT, 4),
                    GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER}
     , totalFragmentQuery_{0}
-    , clear_("oit/simplequad.vert", "oit/clear.frag", false)
-    , display_("oit/simplequad.vert", "oit/display.frag", false)
+    , clear_("oit/simplequad.vert", "oit/clear.frag", Shader::Build::No)
+    , display_("oit/simplequad.vert", "oit/display.frag", Shader::Build::No)
     , illustration_{screenSize_, fragmentSize_} {
+
+    LGL_ERROR_CLASS;
 
     buildShaders();
 
@@ -94,7 +96,8 @@ FragmentListRenderer::FragmentListRenderer()
 
     // create fragment query
     glGenQueries(1, &totalFragmentQuery_);
-    LGL_ERROR;
+
+    LGL_ERROR_CLASS;
 }
 
 FragmentListRenderer::~FragmentListRenderer() {
@@ -146,9 +149,6 @@ bool FragmentListRenderer::postPass(bool useIllustration, const Image* backgroun
     // check if enough space was available
     if (numFrags > fragmentSize_) {
         // we have to resize the fragment storage buffer
-        LogInfo("fragment lists resolved, pixels drawn: "
-                << numFrags << ", available: " << fragmentSize_ << ", allocate space for "
-                << int(1.1f * numFrags) << " pixels");
         fragmentSize_ = static_cast<size_t>(1.1f * numFrags);
 
         // unbind texture
@@ -308,10 +308,6 @@ void FragmentListRenderer::resizeBuffers(const size2_t& screenSize) {
         // create new SSBO for the pixel storage
         pixelBuffer_.setSizeInBytes(bufferSize);
         pixelBuffer_.unbind();
-
-        LogInfo("fragment-list: pixel storage for "
-                << fragmentSize_
-                << " pixels allocated, memory usage: " << (bufferSize / 1024 / 1024.0f) << " MB");
     }
 }
 
@@ -344,11 +340,6 @@ void FragmentListRenderer::Illustration::resizeBuffers(size2_t screenSize, size_
             smoothing[i].setSizeInBytes(bufferSize);
             smoothing[i].unbind();
         }
-        // reuse fragment lists as neighborhood storage
-
-        LogInfo("Illustration Buffers: additional pixel storage for "
-                << fragmentSize << " pixels allocated, memory usage: "
-                << (bufferSize * 4 / 1024 / 1024.0f) << " MB");
     }
 }
 
@@ -516,6 +507,15 @@ void FragmentListRenderer::debugFragmentLists(std::ostream& oss) {
     oss << std::endl << "\n==================================================\n";
 }
 
+struct ColorPack {
+    float a;
+    unsigned int b : 10;
+    unsigned int g : 10;
+    unsigned int r : 10;
+    unsigned int unused : 2;
+};
+static_assert(sizeof(ColorPack) == 8);
+
 void FragmentListRenderer::debugIllustrationBuffer(std::ostream& oss) {
     oss << "========= Fragment List Renderer - Illustration Buffers =========\n";
 
@@ -532,7 +532,7 @@ void FragmentListRenderer::debugIllustrationBuffer(std::ostream& oss) {
     size_t size = std::min(static_cast<size_t>(numFrags), fragmentSize_);
 
     glBindBuffer(GL_ARRAY_BUFFER, illustration_.color.getId());
-    std::vector<glm::tvec2<GLfloat>> colorBuffer(size);
+    std::vector<ColorPack> colorBuffer(size);
     glGetBufferSubData(GL_ARRAY_BUFFER, 0, 2 * sizeof(GLfloat) * size, &colorBuffer[0]);
 
     glBindBuffer(GL_ARRAY_BUFFER, illustration_.surfaceInfo.getId());
@@ -553,25 +553,24 @@ void FragmentListRenderer::debugIllustrationBuffer(std::ostream& oss) {
     // print
     for (size_t y = 0; y < screenSize_.y; ++y) {
         for (size_t x = 0; x < screenSize_.x; ++x) {
-            const auto start = idxImg[x + screenSize_.x * y];
-            const auto count = countImg[x + screenSize_.x * y];
+            const size_t start = idxImg[x + screenSize_.x * y];
+            const size_t count = countImg[x + screenSize_.x * y];
             fmt::print(oss, "{: 4}:{: 4} start={: 5}, count={: 5}\n", x, y, start, count);
 
-            for (uint32_t i = 0; i < count; ++i) {
-                float alpha = colorBuffer[start + i].x;
-                int rgb = *reinterpret_cast<int*>(&colorBuffer[start + i].y);
+            for (size_t i = 0; i < count; ++i) {
+                auto color = colorBuffer[start + i];
                 float depth = surfaceInfoBuffer[start + i].x;
                 glm::tvec4<GLint> neighbors = neighborBuffer[start + i];
                 float beta = smoothingBuffer[start + i].x;
                 float gamma = smoothingBuffer[start + i].y;
-                float r = float((rgb >> 20) & 0x3ff) / 1023.0f;
-                float g = float((rgb >> 10) & 0x3ff) / 1023.0f;
-                float b = float(rgb & 0x3ff) / 1023.0f;
+                float r = color.r / 1023.0f;
+                float g = color.g / 1023.0f;
+                float b = color.b / 1023.0f;
 
                 fmt::print(oss,
                            "\tdepth={:5.3f}, alpha={:5.3f}, r={:5.3f}, g={:5.3f}, b={:5.3f}, "
                            "beta={:5.3f}, gamma={:5.3f}, neighbors:",
-                           depth, alpha, r, g, b, beta, gamma);
+                           depth, color.a, r, g, b, beta, gamma);
 
                 for (size_t n = 0; n < 4; ++n) {
                     if (neighbors[n] >= 0) {

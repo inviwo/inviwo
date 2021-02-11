@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,8 +55,8 @@ TMIP::TMIP()
     , outputType_("outputType", "Output type",
                   {{"scalar", "Maximum Scalar", OutputType::Scalar},
                    {"velocity", "Vector with maximum velocity", OutputType::HighestVelocity}})
-    , shader_("volume_gpu.vert", "volume_gpu.geom", "tmip.frag", false)
-    , shaderLast_("volume_gpu.vert", "volume_gpu.geom", "tmip.frag", false)
+    , shader_("volume_gpu.vert", "volume_gpu.geom", "tmip.frag", Shader::Build::No)
+    , shaderLast_("volume_gpu.vert", "volume_gpu.geom", "tmip.frag", Shader::Build::No)
     , fbo_() {
 
     addPort(inport_);

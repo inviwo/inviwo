@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_ANIMATIONSUPPLIER_H
-#define IVW_ANIMATIONSUPPLIER_H
+#pragma once
 
 #include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -65,7 +63,7 @@ public:
     void registerTrack();
 
     /**
-     * Register a Interpolation with the Interpolation Factory
+     * Register an Interpolation with the Interpolation Factory
      */
     template <typename T>
     void registerInterpolation();
@@ -79,16 +77,6 @@ public:
      */
     void registerPropertyTrackConnection(const std::string& propertyClassID,
                                          const std::string& trackClassID);
-
-    /**
-     * Register connection between a property and an interpolation.
-     * Used to get the preferred interpolation method for a property.
-     * @param propertyClassID Property::getClassIdentifier
-     * @param interpolationClassID Interpolation::getIdentifier()
-     * @see AnimationManager
-     */
-    void registerPropertyInterpolationConnection(const std::string& propertyClassID,
-                                                 const std::string& interpolationClassID);
 
     void unRegisterAll();
 
@@ -117,5 +105,3 @@ void AnimationSupplier::registerTrack() {
 }  // namespace animation
 
 }  // namespace inviwo
-
-#endif  // IVW_ANIMATIONSUPPLIER_H

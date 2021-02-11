@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -124,6 +124,9 @@ private:
  * @param dimensions of volume to create.
  * @param format of volume to create.
  * @param dataPtr optional pointer to data to be handed into the volume.
+ * @param swizzleMask of volume to create.
+ * @param interpolation of volume to create.
+ * @param wrapping of volume to create.
  * @return nullptr if no valid format was specified.
  */
 IVW_CORE_API std::shared_ptr<VolumeRAM> createVolumeRAM(

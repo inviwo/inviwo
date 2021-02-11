@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-ValueDragSpinBox::ValueDragSpinBox(QWidget *parent)
+ValueDragSpinBox::ValueDragSpinBox(QWidget* parent)
     : QWidget(parent)
     , spinBox_(new NumberLineEdit())
     , valueDragger_(new ValueDragger<int>(spinBox_)) {
@@ -47,7 +47,7 @@ ValueDragSpinBox::ValueDragSpinBox(QWidget *parent)
 
     auto layout = new QHBoxLayout();
     layout->setSpacing(0);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(valueDragger_);
     layout->addWidget(spinBox_);
 
@@ -63,13 +63,13 @@ ValueDragSpinBox::ValueDragSpinBox(QWidget *parent)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     connect(
         spinBox_,
-        static_cast<void (QDoubleSpinBox::*)(const QString &)>(&QDoubleSpinBox::textChanged), this,
-        static_cast<void (ValueDragSpinBox::*)(const QString &)>(&ValueDragSpinBox::valueChanged));
+        static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::textChanged), this,
+        static_cast<void (ValueDragSpinBox::*)(const QString&)>(&ValueDragSpinBox::valueChanged));
 #else
     connect(
         spinBox_,
-        static_cast<void (QDoubleSpinBox::*)(const QString &)>(&QDoubleSpinBox::valueChanged), this,
-        static_cast<void (ValueDragSpinBox::*)(const QString &)>(&ValueDragSpinBox::valueChanged));
+        static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::valueChanged), this,
+        static_cast<void (ValueDragSpinBox::*)(const QString&)>(&ValueDragSpinBox::valueChanged));
 #endif
     connect(spinBox_, &QSpinBox::editingFinished, this, &ValueDragSpinBox::editingFinished);
 }
@@ -78,7 +78,7 @@ void ValueDragSpinBox::setReadOnly(bool r) { spinBox_->setReadOnly(r); }
 
 bool ValueDragSpinBox::isReadOnly() const { return spinBox_->isReadOnly(); }
 
-void ValueDragSpinBox::setSpecialValueText(const QString &txt) {
+void ValueDragSpinBox::setSpecialValueText(const QString& txt) {
     spinBox_->setSpecialValueText(txt);
 }
 
@@ -102,13 +102,13 @@ void ValueDragSpinBox::setMaximum(int max) { spinBox_->setMaximum(max); }
 
 void ValueDragSpinBox::setMinimum(int min) { spinBox_->setMinimum(min); }
 
-void ValueDragSpinBox::setPrefix(const QString &prefix) { spinBox_->setPrefix(prefix); }
+void ValueDragSpinBox::setPrefix(const QString& prefix) { spinBox_->setPrefix(prefix); }
 
 void ValueDragSpinBox::setRange(int minimum, int maximum) { spinBox_->setRange(minimum, maximum); }
 
 void ValueDragSpinBox::setSingleStep(int val) { spinBox_->setSingleStep(val); }
 
-void ValueDragSpinBox::setSuffix(const QString &suffix) { spinBox_->setSuffix(suffix); }
+void ValueDragSpinBox::setSuffix(const QString& suffix) { spinBox_->setSuffix(suffix); }
 
 int ValueDragSpinBox::singleStep() const { return static_cast<int>(spinBox_->singleStep()); }
 

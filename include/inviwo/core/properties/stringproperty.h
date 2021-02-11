@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STRINGPROPERTY_H
-#define IVW_STRINGPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/templateproperty.h>
+
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 
@@ -66,9 +68,13 @@ public:
     virtual StringProperty* clone() const override;
     virtual ~StringProperty() = default;
 
+    StringProperty& set(std::string_view value);
+    StringProperty& set(const char* value);
+    using TemplateProperty<std::string>::set;
+
+    operator std::string_view() const;
+
     virtual Document getDescription() const override;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_STRINGPROPERTY_H

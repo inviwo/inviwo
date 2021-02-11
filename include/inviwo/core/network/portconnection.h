@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,20 +30,24 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/ports/inport.h>
-#include <inviwo/core/ports/outport.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/hashcombine.h>
 
 namespace inviwo {
 
-class IVW_CORE_API PortConnection : public Serializable {
+class Processor;
+class Inport;
+class Outport;
+
+class IVW_CORE_API PortConnection {
 
 public:
     PortConnection();
     PortConnection(Outport* outport, Inport* inport);
     PortConnection(const PortConnection&) = default;
+    PortConnection(PortConnection&&) noexcept = default;
     PortConnection& operator=(const PortConnection&) = default;
-    virtual ~PortConnection() = default;
+    PortConnection& operator=(PortConnection&&) noexcept = default;
+    ~PortConnection() = default;
 
     /**
      * Method to test if both outport and inport is valid, eg not nullptr
@@ -54,12 +58,7 @@ public:
     Inport* getInport() const { return inport_; }
     Outport* getOutport() const { return outport_; }
 
-    bool involvesProcessor(Processor* processor) const {
-        return (inport_->getProcessor() == processor || outport_->getProcessor() == processor);
-    }
-
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
+    bool involvesProcessor(Processor* processor) const;
 
     friend bool IVW_CORE_API operator==(const PortConnection& lhs, const PortConnection& rhs);
     friend bool IVW_CORE_API operator!=(const PortConnection& lhs, const PortConnection& rhs);

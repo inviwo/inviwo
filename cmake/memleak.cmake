@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2020 Inviwo Foundation
+# Copyright (c) 2013-2021 Inviwo Foundation
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -28,15 +28,8 @@
 #################################################################################
 
  ####  Memory leak checks ####
-IF(WIN32 AND MSVC)
-    option(IVW_ENABLE_MSVC_MEMLEAK_TEST "Run memoryleak test within Visual Studio" OFF)
-    if(IVW_ENABLE_MSVC_MEMLEAK_TEST)
-        add_subdirectory(${IVW_EXTENSIONS_DIR}/vld)
-    endif()
-ENDIF()
-
 function(ivw_memleak_setup target)
-    if(WIN32 AND MSVC AND IVW_ENABLE_MSVC_MEMLEAK_TEST)
+    if(WIN32 AND MSVC AND IVW_CFG_MSVC_MEMLEAK_TEST)
         target_link_libraries(${target} PUBLIC vld-interface)
     endif()
 endfunction()

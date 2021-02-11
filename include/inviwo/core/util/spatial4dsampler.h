@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,19 +53,19 @@ public:
     Spatial4DSampler(std::shared_ptr<const SpatialEntity<3>> spatialEntity);
     virtual ~Spatial4DSampler() = default;
 
-    virtual Vector<DataDims, T> sample(const dvec4 &pos, Space space = Space::Data) const;
-    virtual Vector<DataDims, T> sample(const vec4 &pos, Space space = Space::Data) const;
+    virtual Vector<DataDims, T> sample(const dvec4& pos, Space space = Space::Data) const;
+    virtual Vector<DataDims, T> sample(const vec4& pos, Space space = Space::Data) const;
 
-    virtual bool withinBounds(const dvec4 &pos, Space space = Space::Data) const;
-    virtual bool withinBounds(const vec4 &pos, Space space = Space::Data) const;
+    virtual bool withinBounds(const dvec4& pos, Space space = Space::Data) const;
+    virtual bool withinBounds(const vec4& pos, Space space = Space::Data) const;
 
-    const SpatialCoordinateTransformer<3> &getCoordinateTransformer() const;
+    const SpatialCoordinateTransformer<3>& getCoordinateTransformer() const;
     mat4 getModelMatrix() const;
     mat4 getWorldMatrix() const;
 
 protected:
-    virtual Vector<DataDims, T> sampleDataSpace(const dvec4 &pos) const = 0;
-    virtual bool withinBoundsDataSpace(const dvec4 &pos) const = 0;
+    virtual Vector<DataDims, T> sampleDataSpace(const dvec4& pos) const = 0;
+    virtual bool withinBoundsDataSpace(const dvec4& pos) const = 0;
 
     std::shared_ptr<const SpatialEntity<3>> spatialEntity_;
 };
@@ -88,7 +88,7 @@ struct DataTraits<Spatial4DSampler<DataDims, T>> {
         return "Spatial4DSampler<" + DataFormat<Vector<DataDims, T>>::str() + ">";
     }
     static uvec3 colorCode() { return uvec3(153, 0, 76); }
-    static Document info(const Spatial4DSampler<DataDims, T> &) {
+    static Document info(const Spatial4DSampler<DataDims, T>&) {
         Document doc;
         doc.append("p", dataName());
         return doc;
@@ -101,7 +101,7 @@ Spatial4DSampler<DataDims, T>::Spatial4DSampler(
     : spatialEntity_(spatialEntity) {}
 
 template <unsigned DataDims, typename T>
-Vector<DataDims, T> Spatial4DSampler<DataDims, T>::sample(const dvec4 &pos, Space space) const {
+Vector<DataDims, T> Spatial4DSampler<DataDims, T>::sample(const dvec4& pos, Space space) const {
     auto dataPos = dvec3(pos);
     if (space != Space::Data) {
         auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data);
@@ -113,12 +113,12 @@ Vector<DataDims, T> Spatial4DSampler<DataDims, T>::sample(const dvec4 &pos, Spac
 }
 
 template <unsigned DataDims, typename T>
-Vector<DataDims, T> Spatial4DSampler<DataDims, T>::sample(const vec4 &pos, Space space) const {
+Vector<DataDims, T> Spatial4DSampler<DataDims, T>::sample(const vec4& pos, Space space) const {
     return sample(static_cast<dvec4>(pos), space);
 }
 
 template <unsigned DataDims, typename T>
-bool Spatial4DSampler<DataDims, T>::withinBounds(const dvec4 &pos, Space space) const {
+bool Spatial4DSampler<DataDims, T>::withinBounds(const dvec4& pos, Space space) const {
     auto dataPos = dvec3(pos);
     if (space != Space::Data) {
         auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, Space::Data);
@@ -130,12 +130,12 @@ bool Spatial4DSampler<DataDims, T>::withinBounds(const dvec4 &pos, Space space) 
 }
 
 template <unsigned DataDims, typename T>
-bool Spatial4DSampler<DataDims, T>::withinBounds(const vec4 &pos, Space space) const {
+bool Spatial4DSampler<DataDims, T>::withinBounds(const vec4& pos, Space space) const {
     return withinBounds(static_cast<dvec4>(pos), space);
 }
 
 template <unsigned DataDims, typename T>
-const SpatialCoordinateTransformer<3> &Spatial4DSampler<DataDims, T>::getCoordinateTransformer()
+const SpatialCoordinateTransformer<3>& Spatial4DSampler<DataDims, T>::getCoordinateTransformer()
     const {
     return spatialEntity_->getCoordinateTransformer();
 }

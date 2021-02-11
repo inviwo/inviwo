@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@
 
 namespace inviwo {
 
-DoubleValueDragSpinBox::DoubleValueDragSpinBox(QWidget *parent)
+DoubleValueDragSpinBox::DoubleValueDragSpinBox(QWidget* parent)
     : QWidget(parent)
     , spinBox_(new NumberLineEdit())
     , valueDragger_(new ValueDragger<double>(spinBox_))
@@ -51,7 +51,7 @@ DoubleValueDragSpinBox::DoubleValueDragSpinBox(QWidget *parent)
 
     auto layout = new QHBoxLayout();
     layout->setSpacing(utilqt::emToPx(this, 0.2));
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(spinBox_);
     layout->addWidget(valueDragger_);
 
@@ -69,15 +69,15 @@ DoubleValueDragSpinBox::DoubleValueDragSpinBox(QWidget *parent)
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     connect(spinBox_,
-            static_cast<void (QDoubleSpinBox::*)(const QString &)>(&QDoubleSpinBox::textChanged),
-            this, [this](const QString &str) {
+            static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::textChanged),
+            this, [this](const QString& str) {
                 setInvalid(false);
                 emit valueChanged(str);
             });
 #else
     connect(spinBox_,
-            static_cast<void (QDoubleSpinBox::*)(const QString &)>(&QDoubleSpinBox::valueChanged),
-            this, [this](const QString &str) {
+            static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::valueChanged),
+            this, [this](const QString& str) {
                 setInvalid(false);
                 emit valueChanged(str);
             });
@@ -92,7 +92,7 @@ bool DoubleValueDragSpinBox::isReadOnly() const { return spinBox_->isReadOnly();
 
 bool DoubleValueDragSpinBox::isValid() const { return !invalid_; }
 
-void DoubleValueDragSpinBox::setSpecialValueText(const QString &txt) {
+void DoubleValueDragSpinBox::setSpecialValueText(const QString& txt) {
     spinBox_->setSpecialValueText(txt);
 }
 
@@ -120,7 +120,7 @@ void DoubleValueDragSpinBox::setMaximum(double max) { spinBox_->setMaximum(max);
 
 void DoubleValueDragSpinBox::setMinimum(double min) { spinBox_->setMinimum(min); }
 
-void DoubleValueDragSpinBox::setPrefix(const QString &prefix) { spinBox_->setPrefix(prefix); }
+void DoubleValueDragSpinBox::setPrefix(const QString& prefix) { spinBox_->setPrefix(prefix); }
 
 void DoubleValueDragSpinBox::setRange(double minimum, double maximum) {
     spinBox_->setRange(minimum, maximum);
@@ -128,7 +128,7 @@ void DoubleValueDragSpinBox::setRange(double minimum, double maximum) {
 
 void DoubleValueDragSpinBox::setSingleStep(double val) { spinBox_->setSingleStep(val); }
 
-void DoubleValueDragSpinBox::setSuffix(const QString &suffix) { spinBox_->setSuffix(suffix); }
+void DoubleValueDragSpinBox::setSuffix(const QString& suffix) { spinBox_->setSuffix(suffix); }
 
 double DoubleValueDragSpinBox::singleStep() const { return spinBox_->singleStep(); }
 

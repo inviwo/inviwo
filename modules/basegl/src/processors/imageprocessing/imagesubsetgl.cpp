@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -154,6 +154,7 @@ void ImageSubsetGL::invokeEvent(Event* event) {
             [[fallthrough]];
         case GestureEvent::chash():  // GestureEvents are better handles using TouchEvents
             event->markAsUsed();
+            [[fallthrough]];
         default:
             Processor::invokeEvent(event);
     }

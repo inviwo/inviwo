@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -247,6 +247,7 @@ private:
 };
 
 void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
+    using namespace std::literals;
     auto p1 = inLink_->getProcessorGraphicsItem()->getProcessor();
     auto p2 = outLink_->getProcessorGraphicsItem()->getProcessor();
     auto network = p1->getNetwork();
@@ -261,9 +262,9 @@ void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
         renderer.render(&painter);
         return fmt::format("<img src = 'data:image/png;base64,{}'/>", utilqt::toBase64(image));
     };
-    const auto imgRight = img(":/svgicons/link-right.svg");
-    const auto imgBi = img(":/svgicons/link-bidirectional.svg");
-    const auto imgLeft = img(":/svgicons/link-left.svg");
+    const auto imgRight = img(":/svgicons/link-right.svg"sv);
+    const auto imgBi = img(":/svgicons/link-bidirectional.svg"sv);
+    const auto imgLeft = img(":/svgicons/link-left.svg"sv);
 
     using A = utildoc::TableBuilder::ArrributeWrapper;
     using P = Document::PathComponent;

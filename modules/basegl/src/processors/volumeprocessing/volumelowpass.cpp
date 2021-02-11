@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ const ProcessorInfo VolumeLowPass::processorInfo_{
     "Volume Low Pass",           // Display name
     "Volume Operation",          // Category
     CodeState::Stable,           // Code state
-    "GL",                        // Tags
+    Tags::GL,                    // Tags
 };
 const ProcessorInfo VolumeLowPass::getProcessorInfo() const { return processorInfo_; }
 
@@ -53,6 +53,7 @@ VolumeLowPass::VolumeLowPass()
     , useGaussianWeights_("useGaussianWeights", "Use Gaussian Weights")
     , sigma_("sigma", "Sigma", 1.f, 0.001f, 2.f, 0.001f)
     , updateDataRange_("updateDataRange", "Update Data Range", false) {
+
     addProperty(kernelSize_);
     addProperty(useGaussianWeights_);
     addProperty(updateDataRange_);
@@ -75,7 +76,7 @@ VolumeLowPass::VolumeLowPass()
 
 VolumeLowPass::~VolumeLowPass() {}
 
-void VolumeLowPass::preProcess(TextureUnitContainer &) {
+void VolumeLowPass::preProcess(TextureUnitContainer&) {
     utilgl::setUniforms(shader_, kernelSize_);
 
     float sigmaSq2 = 2.0f * sigma_.get() * sigma_.get();

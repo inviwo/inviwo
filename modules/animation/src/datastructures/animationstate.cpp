@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,59 +34,6 @@
 
 namespace inviwo {
 
-namespace animation {
-
-AnimationPlaySettings::AnimationPlaySettings()
-    : mode(PlaybackMode::Once), firstTime(0), lastTime(0), numFrames(2), framesPerSecond(25) {}
-
-Seconds AnimationPlaySettings::getFirstTime() const { return firstTime; }
-
-void AnimationPlaySettings::setFirstTime(const Seconds timeValue) {
-    firstTime = timeValue;
-    if (firstTime > lastTime) std::swap(firstTime, lastTime);
-    setNumFrames(numFrames);
-}
-
-Seconds AnimationPlaySettings::getLastTime() const { return lastTime; }
-
-void AnimationPlaySettings::setLastTime(const Seconds timeValue) {
-    lastTime = timeValue;
-    if (firstTime > lastTime) std::swap(firstTime, lastTime);
-    setNumFrames(numFrames);
-}
-
-int AnimationPlaySettings::getNumFrames() const { return numFrames; }
-
-bool AnimationPlaySettings::setNumFrames(const int desiredFrames) {
-    if (desiredFrames < 2) return false;
-    numFrames = desiredFrames;
-
-    // Adjust fps
-    const Seconds timeWindow(lastTime - firstTime);
-    framesPerSecond = timeWindow.count() / double(numFrames);
-
-    return true;
-}
-
-double AnimationPlaySettings::getFramesPerSecond() const { return framesPerSecond; }
-
-bool AnimationPlaySettings::setFramesPerSecond(const double desiredFPS) {
-    if (desiredFPS < 1e-3) return false;
-    framesPerSecond = desiredFPS;
-
-    // Adjust numFrames
-    const Seconds timeWindow(lastTime - firstTime);
-    numFrames = static_cast<int>(std::ceil(timeWindow.count() * framesPerSecond));
-    if (numFrames < 2) numFrames = 2;  // Only happens for small time windows.
-
-    return true;
-}
-
-bool AnimationPlaySettings::operator!=(const AnimationPlaySettings& other) const {
-    return (mode != other.mode || firstTime != other.firstTime || lastTime != other.lastTime ||
-            numFrames != other.numFrames || framesPerSecond != other.framesPerSecond);
-}
-
-}  // namespace animation
+namespace animation {}  // namespace animation
 
 }  // namespace inviwo

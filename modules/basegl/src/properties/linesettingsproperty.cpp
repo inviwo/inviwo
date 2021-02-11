@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,9 @@
 
 namespace inviwo {
 
+const std::string LineSettingsProperty::classIdentifier = "org.inviwo.LineSettingsProperty";
+std::string LineSettingsProperty::getClassIdentifier() const { return classIdentifier; }
+
 LineSettingsProperty::LineSettingsProperty(const std::string& identifier,
                                            const std::string& displayName,
                                            InvalidationLevel invalidationLevel,
@@ -45,6 +48,19 @@ LineSettingsProperty::LineSettingsProperty(const std::string& identifier,
     , roundDepthProfile_("roundDepthProfile", "Round Depth Profile", true,
                          InvalidationLevel::InvalidResources)
     , stippling_("stippling", "Stippling") {
+    addProperties(lineWidth_, antialiasing_, miterLimit_, roundCaps_, pseudoLighting_,
+                  roundDepthProfile_, stippling_);
+}
+
+LineSettingsProperty::LineSettingsProperty(const LineSettingsProperty& rhs)
+    : CompositeProperty(rhs)
+    , lineWidth_(rhs.lineWidth_)
+    , antialiasing_(rhs.antialiasing_)
+    , miterLimit_(rhs.miterLimit_)
+    , roundCaps_(rhs.roundCaps_)
+    , pseudoLighting_(rhs.pseudoLighting_)
+    , roundDepthProfile_(rhs.roundDepthProfile_)
+    , stippling_(rhs.stippling_) {
     addProperties(lineWidth_, antialiasing_, miterLimit_, roundCaps_, pseudoLighting_,
                   roundDepthProfile_, stippling_);
 }

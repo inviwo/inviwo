@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2020 Inviwo Foundation
+# Copyright (c) 2013-2021 Inviwo Foundation
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,8 @@
 # Specify standard compile options
 # ivw_define_standard_properties(target1 [target2 ...])
 
-option(IVW_TREAT_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
-option(IVW_FORCE_ASSERTIONS "Force use of assertions when not in debug mode" OFF)
+option(IVW_CFG_TREAT_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
+option(IVW_CFG_FORCE_ASSERTIONS "Force use of assertions when not in debug mode" OFF)
 
 function(ivw_define_standard_properties)
     foreach(target ${ARGN})
@@ -41,7 +41,7 @@ function(ivw_define_standard_properties)
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR 
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-            if(${IVW_TREAT_WARNINGS_AS_ERRORS})
+            if(${IVW_CFG_TREAT_WARNINGS_AS_ERRORS})
                 list(APPEND comp_opts "-Werror") # Threat warnings as errors
             endif()
             list(APPEND comp_opts "-Wall")
@@ -52,7 +52,7 @@ function(ivw_define_standard_properties)
         elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
             string(REGEX REPLACE "(^|;)([/-])W[0-9](;|$)" ";" comp_opts "${comp_opts}") # remove any other waning level
             #list(APPEND comp_opts "/nologo") # Suppress Startup Banner
-            if(${IVW_TREAT_WARNINGS_AS_ERRORS})
+            if(${IVW_CFG_TREAT_WARNINGS_AS_ERRORS})
                 list(APPEND comp_opts "/WX")     # Threat warnings as errors
             endif()
             list(APPEND comp_opts "/W4")     # Set default warning level to 4
@@ -62,7 +62,7 @@ function(ivw_define_standard_properties)
             list(APPEND comp_opts "/wd4251") # needs dll-interface   https://msdn.microsoft.com/en-us/library/esew7y1w.aspx
             list(APPEND comp_opts "/wd4505") # unreferenced funtion  https://msdn.microsoft.com/en-us/library/mt694070.aspx
             list(APPEND comp_opts "/w35038") # class member reorder
-            if(NOT IVW_OPENMP_ON)
+            if(NOT IVW_USE_OPENMP)
                 list(APPEND comp_opts "/permissive-")
             endif()
             list(APPEND comp_opts "/std:c++latest")
@@ -109,9 +109,11 @@ macro(ivw_define_standard_definitions project_name target)
 
     target_compile_definitions(${target} PRIVATE 
         $<$<BOOL:${BUILD_SHARED_LIBS}>:INVIWO_ALL_DYN_LINK>
-        $<$<BOOL:${IVW_PROFILING}>:IVW_PROFILING>
-        $<$<BOOL:${IVW_FORCE_ASSERTIONS}>:IVW_FORCE_ASSERTIONS>
+        $<$<BOOL:${IVW_CFG_PROFILING}>:IVW_PROFILING>
+        $<$<BOOL:${IVW_CFG_FORCE_ASSERTIONS}>:IVW_FORCE_ASSERTIONS>
+        $<$<BOOL:${IVW_USE_OPENMP}>:IVW_USE_OPENMP>
         $<$<CONFIG:Debug>:IVW_DEBUG>
+        $<$<CONFIG:Release>:IVW_RELEASE>
     )
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         target_compile_definitions(${target} PRIVATE 

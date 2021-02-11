@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
-#include <inviwo/core/properties/tfpropertyconcept.h>
+#include <modules/qtwidgets/tf/tfpropertyconcept.h>
 
 #include <inviwo/core/util/logcentral.h>
 #include <warn/push>
@@ -47,7 +47,6 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QPixmap>
-#include <QDesktopWidget>
 #include <QMenu>
 #include <QAction>
 #include <QMenuBar>
@@ -57,6 +56,7 @@
 #include <QByteArray>
 #include <QStyle>
 #include <QScreen>
+#include <QFontDatabase>
 #include <warn/pop>
 
 #include <ios>
@@ -102,12 +102,14 @@ std::ios_base& localizeStream(std::ios_base& stream) {
     return stream;
 }
 
-QString toLocalQString(const std::string& input) { return QString::fromLocal8Bit(input.c_str()); }
+QString toLocalQString(std::string_view input) { return QString::fromLocal8Bit(input.data()); }
+QString toLocalQString(std::string str) { return toLocalQString(std::string_view(str)); }
 std::string fromLocalQString(const QString& input) {
     return std::string(input.toLocal8Bit().constData());
 }
 
-QString toQString(const std::string& input) { return QString::fromUtf8(input.c_str()); }
+QString toQString(std::string_view input) { return QString::fromUtf8(input.data()); }
+QString toQString(const std::string str) { return toQString(std::string_view(str)); }
 std::string fromQString(const QString& input) { return std::string(input.toUtf8().constData()); }
 
 QPointF toQPoint(dvec2 v) { return QPointF(v.x, v.y); }
@@ -358,6 +360,11 @@ QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept, const QSize& s
     return tfPixmap;
 }
 
+QPointF clamp(const QPointF& pos, const QRectF& rect) {
+    return QPointF{std::clamp(pos.x(), rect.left(), rect.right()),
+                   std::clamp(pos.y(), rect.top(), rect.bottom())};
+}
+
 QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,
                             bool decorationOffset /*= true*/) {
 #ifdef WIN32
@@ -606,6 +613,30 @@ int emToPx(const QWidget* w, double em) {
 int emToPx(const QFontMetrics& m, double em) {
     const auto pxPerEm = m.boundingRect(QString(100, 'M')).width() / 100.0;
     return static_cast<int>(std::round(pxPerEm * em));
+}
+
+std::vector<std::string> getMonoSpaceFonts() {
+    std::vector<std::string> fonts;
+    QFontDatabase fontdb;
+
+    for (auto& font : fontdb.families()) {
+        if (fontdb.isFixedPitch(font)) {
+            fonts.push_back(utilqt::fromQString(font));
+        }
+    }
+
+    return fonts;
+}
+
+size_t getDefaultMonoSpaceFontIndex() {
+    const auto fonts = getMonoSpaceFonts();
+    const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    auto it = std::find(fonts.begin(), fonts.end(), utilqt::fromQString(fixedFont.family()));
+    if (it != fonts.end()) {
+        return it - fonts.begin();
+    } else {
+        return 0;
+    }
 }
 
 WidgetCloseEventFilter::WidgetCloseEventFilter(QObject* parent) : QObject(parent) {}

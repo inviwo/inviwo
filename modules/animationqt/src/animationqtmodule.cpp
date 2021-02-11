@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,12 +34,15 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <modules/animation/animationmodule.h>
+#include <modules/animation/datastructures/animation.h>
+#include <modules/animation/datastructures/buttontrack.h>
+#include <modules/animation/datastructures/cameratrack.h>
+#include <modules/animation/datastructures/callbacktrack.h>
+#include <modules/animation/datastructures/controltrack.h>
 #include <modules/animation/datastructures/keyframe.h>
+#include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/datastructures/track.h>
-#include <modules/animation/datastructures/propertytrack.h>
-#include <modules/animation/datastructures/controltrack.h>
-#include <modules/animation/datastructures/animation.h>
 #include <modules/animation/animationcontroller.h>
 
 #include <modules/animationqt/animationeditordockwidgetqt.h>
@@ -52,10 +55,13 @@
 #include <modules/animationqt/sequenceeditor/controlsequenceeditor.h>
 
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 
 #include <warn/push>
@@ -66,16 +72,25 @@
 #include <QAction>
 #include <warn/pop>
 
+#ifndef INVIWO_ALL_DYN_LINK
+struct InitQtAnimationResources {
+    // Needed for loading of resources when building statically
+    // see https://wiki.qt.io/QtResources#Q_INIT_RESOURCE
+    InitQtAnimationResources() { Q_INIT_RESOURCE(animation); }
+    ~InitQtAnimationResources() { Q_CLEANUP_RESOURCE(animation); }
+} initQtAnimationResources;
+#endif
+
 namespace inviwo {
 
 namespace {
 
-template <typename PropertyType>
-void registerTrackHelper(animation::AnimationQtSupplier& as) {
+template <typename PropertyType, typename Keyframe,
+          typename KeyframeSequence = animation::KeyframeSequenceTyped<Keyframe>>
+void registerPropertyTrackHelper(animation::AnimationQtSupplier& as) {
     using namespace animation;
 
-    using ValueType = typename PropertyType::value_type;
-    using TrackType = PropertyTrack<PropertyType, ValueKeyframe<ValueType>>;
+    using TrackType = PropertyTrack<PropertyType, Keyframe, KeyframeSequence>;
 
     as.registerTrackToWidgetMap(TrackType::classIdentifier(),
                                 PropertyTrackWidgetQt::classIdentifier());
@@ -89,15 +104,15 @@ struct Reghelper {
     template <typename T>
     auto operator()(animation::AnimationQtSupplier& as) {
         using namespace animation;
-        registerTrackHelper<Prop<T>>(as);
+        registerPropertyTrackHelper<Prop<T>, ValueKeyframe<typename Prop<T>::value_type>>(as);
     }
 };
 
-struct PropertyReghelper {
+struct PropertyValueKeyframeReghelper {
     template <typename Prop>
     auto operator()(animation::AnimationQtSupplier& as) {
         using namespace animation;
-        registerTrackHelper<Prop>(as);
+        registerPropertyTrackHelper<Prop, ValueKeyframe<typename Prop::value_type>>(as);
     }
 };
 
@@ -139,10 +154,10 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
             win->connect(action, &QAction::triggered, [this, win, app]() {
                 if (!editor_) {
                     auto animationModule = app->getModuleByType<AnimationModule>();
-                    auto& manager = animationModule->getAnimationManager();
                     editor_ = std::make_unique<AnimationEditorDockWidgetQt>(
-                        manager, "Animation Editor", getTrackWidgetQtFactory(),
-                        getSequenceEditorFactory(), win);
+                        animationModule->getMainAnimation().getAnimationController(),
+                        animationModule->getAnimationManager(), "Animation Editor",
+                        getTrackWidgetQtFactory(), getSequenceEditorFactory(), win);
                     win->addDockWidget(Qt::BottomDockWidgetArea, editor_.get());
                     editor_->hide();
                     editor_->loadState();
@@ -191,6 +206,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
                              dmat2, dmat3, dmat4, int, ivec2, ivec3, ivec4, unsigned int, uvec2,
                              uvec3, uvec4, size_t, size2_t, size3_t, size4_t>;
     util::for_each_type<Types>{}(Reghelper<OrdinalProperty>{}, *this);
+    util::for_each_type<Types>{}(Reghelper<OrdinalRefProperty>{}, *this);
 
     util::for_each_type<std::tuple<float, double, int, unsigned int, size_t>>{}(
         Reghelper<MinMaxProperty>{}, *this);
@@ -199,7 +215,15 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
         Reghelper<TemplateOptionProperty>{}, *this);
 
     util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
-        PropertyReghelper{}, *this);
+        PropertyValueKeyframeReghelper{}, *this);
+
+    registerPropertyTrackHelper<CameraProperty, CameraKeyframe>(*this);
+
+    registerTrackToWidgetMap(ButtonTrack::classIdentifier(),
+                             PropertyTrackWidgetQt::classIdentifier());
+
+    registerTrackToWidgetMap(CallbackTrack::classIdentifier(),
+                             PropertyTrackWidgetQt::classIdentifier());
 
     registerTrackToWidgetMap(ControlTrack::classIdentifier(),
                              ControlTrackWidgetQt::classIdentifier());

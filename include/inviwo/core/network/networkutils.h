@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,48 +39,6 @@ namespace inviwo {
 namespace util {
 
 namespace detail {
-
-/**
- * Helper class for a connection referring to a port outsize the network it's in
- * used in Copy/Paste for copying subparts of a network but still keeping connections.
- */
-struct PartialConnection : public Serializable {
-    PartialConnection();
-    PartialConnection(std::string path, Inport* inport);
-    std::string outportPath_ = "";
-    Inport* inport_ = nullptr;
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-};
-
-/**
- * Helper class for a links referring to a properties outsize the network it's in
- * used in Copy/Paste for copying subparts of a network but still keeping links.
- */
-struct PartialSrcLink : public Serializable {
-    PartialSrcLink();
-    PartialSrcLink(Property* src, std::string path);
-    Property* src_ = nullptr;
-    std::string dstPath_ = "";
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-};
-
-/**
- * Helper class for a links referring to a properties outsize the network it's in
- * used in Copy/Paste for copying subparts of a network but still keeping links.
- */
-struct PartialDstLink : public Serializable {
-    PartialDstLink();
-    PartialDstLink(std::string path, Property* dst);
-    std::string srcPath_ = "";
-    Property* dst_ = nullptr;
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-};
 
 /**
  * Helper class for Copy/Pasting a network with sub parts referring to stuff outside of the network.

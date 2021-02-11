@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,10 +53,12 @@ DrawPoints::DrawPoints()
     , pointSize_("pointSize", "Point Size", 5, 1, 10)
     , pointColor_("pointColor", "Point Color", vec4(1.f))
     , clearButton_("clearButton", "Clear Drawing")
-    , mouseDraw_("mouseDraw", "Draw Point", [this](Event* e) { eventDraw(e); }, MouseButton::Left,
-                 MouseStates(flags::any), KeyModifier::Control)
-    , keyEnableDraw_("keyEnableDraw", "Enable Draw", [this](Event* e) { eventEnableDraw(e); },
-                     IvwKey::D, KeyStates(flags::any), KeyModifier::Control)
+    , mouseDraw_(
+          "mouseDraw", "Draw Point", [this](Event* e) { eventDraw(e); }, MouseButton::Left,
+          MouseStates(flags::any), KeyModifier::Control)
+    , keyEnableDraw_(
+          "keyEnableDraw", "Enable Draw", [this](Event* e) { eventEnableDraw(e); }, IvwKey::D,
+          KeyStates(flags::any), KeyModifier::Control)
     , points_(DrawType::Points, ConnectivityType::None)
     , pointDrawer_(&points_)
     , pointShader_("img_color.frag")
@@ -89,7 +91,6 @@ void DrawPoints::process() {
         pointShader_.deactivate();
     }
     utilgl::deactivateCurrentTarget();
-    compositor_.composite(inport_, outport_, ImageType::ColorOnly);
 }
 
 void DrawPoints::addPoint(vec2 p) {

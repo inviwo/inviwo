@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(
         }
         std::vector<std::pair<std::string, Version>> deps;
         for (auto&& item : util::zip(dependencies_, dependenciesVersion_)) {
-            deps.emplace_back(get<0>(item), Version(get<0>(item)));
+            deps.emplace_back(get<0>(item), get<1>(item));
         }
         return deps;
     }())

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <inviwo/core/properties/propertypresetmanager.h>
@@ -70,7 +71,11 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Processor* processor, b
     : CollapsibleGroupBoxWidgetQt(nullptr, processor, processor->getDisplayName(), isCheckable) {
 
     // add observer for onProcessorIdentifierChange
-    processor->ProcessorObservable::addObserver(this);
+    nameChange_ =
+        processor->onDisplayNameChange([this](std::string_view newName, std::string_view) {
+            displayName_ = newName;
+            label_->setText(displayName_);
+        });
     setShowIfEmpty(true);
 }
 
@@ -374,12 +379,6 @@ void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* /*prop*/, size_
     defaultLabel_->setVisible(empty);
 }
 
-void CollapsibleGroupBoxWidgetQt::onProcessorDisplayNameChanged(Processor* processor,
-                                                                const std::string&) {
-    displayName_ = processor->getDisplayName();
-    label_->setText(displayName_);
-}
-
 void CollapsibleGroupBoxWidgetQt::onSetSemantics(Property* prop, const PropertySemantics&) {
     auto app = util::getInviwoApplication(prop);
     if (!app) return;
@@ -515,6 +514,9 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(QGridLayout* layout, int row, 
     auto removePropertyBtn = createButton("removeListItemButton", str);
 
     connect(removePropertyBtn, &QToolButton::clicked, this, [layout, prop, buttonWidget]() {
+        // need to activate the default render context in case the property contains member
+        // depending on OpenGL
+        RenderContext::getPtr()->activateDefaultRenderContext();
         if (prop->getOwner()) {
             prop->getOwner()->removeProperty(prop);
         } else {

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -510,21 +510,14 @@ void Trackball::zoom(Event* event) {
     auto mouseEvent = static_cast<MouseEvent*>(event);
     auto curNDC = static_cast<vec3>(mouseEvent->ndc());
 
-    const auto& to = getLookTo();
-    const auto& from = getLookFrom();
-
-    // compute direction vector
-    const vec3 direction = from - to;
-    const float directionLength = glm::length(direction);
     // disable movements on first press
     if (!isMouseBeingPressedAndHold_) {
         isMouseBeingPressedAndHold_ = true;
-    } else if (curNDC.y != lastNDC_.y && directionLength > 0) {
+    } else if (curNDC.y != lastNDC_.y) {
         // use the difference in mouse y-position to determine amount of zoom
-        const auto zoom = (curNDC.y - lastNDC_.y) * directionLength;
-        const auto boundedZoom = getBoundedZoom(from, to, zoom);
-        // zoom by moving the camera
-        setLookFrom(from - glm::normalize(direction) * boundedZoom);
+        const auto zoomfactor = curNDC.y - lastNDC_.y;
+        object_->zoom(zoomfactor, boundedZooming_ ? TrackballObject::Bounded::Yes
+                                                  : TrackballObject::Bounded::No);
     }
 
     lastNDC_ = curNDC;
@@ -613,19 +606,10 @@ void Trackball::stepRotate(Direction dir) {
 void Trackball::stepZoom(Direction dir, const int numSteps) {
     if (!allowZooming_) return;
 
-    // compute direction vector
-    const auto direction = getLookFrom() - getLookTo();
-    const auto directionLength = glm::length(direction);
-    auto zoom = 0.0f;
-    if (dir == Direction::Up) {
-        zoom = stepsize * numSteps * directionLength;
-    } else if (dir == Direction::Down) {
-        zoom = -stepsize * numSteps * directionLength;
-    }
+    const auto zoomfactor = (dir == Direction::Up ? 1.0f : -1.0f) * stepsize * numSteps;
 
-    // zoom by moving the camera
-    const auto boundedZoom = getBoundedZoom(getLookFrom(), getLookTo(), zoom);
-    setLookFrom(getLookFrom() - glm::normalize(direction) * boundedZoom);
+    object_->zoom(zoomfactor,
+                  boundedZooming_ ? TrackballObject::Bounded::Yes : TrackballObject::Bounded::No);
 }
 
 void Trackball::stepPan(Direction dir) {
@@ -971,12 +955,10 @@ void Trackball::zoomWheel(Event* event) {
     if (!allowWheelZooming_) return;
 
     auto wheelEvent = static_cast<WheelEvent*>(event);
-    int steps = static_cast<int>(wheelEvent->delta().y);
+    const auto zoomfactor = static_cast<float>(wheelEvent->delta().y * stepsize);
 
-    if (steps > 0)
-        zoomIn(event, abs(steps));
-    else
-        zoomOut(event, abs(steps));
+    object_->zoom(zoomfactor,
+                  boundedZooming_ ? TrackballObject::Bounded::Yes : TrackballObject::Bounded::No);
 }
 
 void Trackball::zoomIn(Event* event, const int numSteps) {

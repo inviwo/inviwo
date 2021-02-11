@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/controlkeyframesequence.h>
+#include <modules/animation/algorithm/animationrange.h>
 
 namespace inviwo {
 
@@ -52,20 +53,7 @@ ControlKeyframeSequence* ControlKeyframeSequence::clone() const {
 
 AnimationTimeState ControlKeyframeSequence::operator()(Seconds from, Seconds to,
                                                        AnimationState state) const {
-    // 'it' will be the first key. with a time larger then 'to'.
-    auto fromIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), from,
-                                   [](const auto& a, const auto& b) { return a < *b; });
-    auto toIt = std::upper_bound(keyframes_.begin(), keyframes_.end(), to,
-                                 [](const auto& a, const auto& b) { return a < *b; });
-    if (toIt != fromIt) {
-        if (from < to) {
-            return (**fromIt)(from, to, state);
-        } else {
-            return (**toIt)(from, to, state);
-        }
-    }
-
-    return {to, state};
+    return animateRange(keyframes_.begin(), keyframes_.end(), from, to, state);
 }
 
 }  // namespace animation

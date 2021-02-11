@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,7 +74,7 @@ HeightFieldProcessor::HeightFieldProcessor()
     , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , lightingProperty_("lighting", "Lighting", &camera_)
-    , shader_("heightfield.vert", "heightfield.frag", false) {
+    , shader_("heightfield.vert", "heightfield.frag", Shader::Build::No) {
 
     addPort(inport_);
     addPort(inportHeightfield_).setOptional(true);

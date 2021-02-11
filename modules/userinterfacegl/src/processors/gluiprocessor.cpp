@@ -3,7 +3,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -97,7 +97,7 @@ GLUIProcessor::GLUIProcessor(InviwoApplication* app)
               auto propertyFactory = app->getPropertyFactory();
 
               for (auto key : factory.getKeys()) {
-                  auto displayName = splitString(key, '.').back();
+                  auto displayName = std::string{util::splitByLast(key, '.').second};
                   auto identifier = displayName;
                   identifier[0] = static_cast<char>(std::tolower(identifier[0]));
                   v.emplace_back(propertyFactory->create(key, identifier, displayName));

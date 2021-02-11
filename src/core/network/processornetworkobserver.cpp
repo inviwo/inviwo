@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,13 @@ void ProcessorNetworkObservable::notifyObserversProcessorNetworkEvaluateRequest(
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkUnlocked() {
     forEachObserver([](ProcessorNetworkObserver* o) { o->onProcessorNetworkUnlocked(); });
+}
+
+void ProcessorNetworkObservable::notifyObserversProcessorBackgroundJobsChanged(Processor* p,
+                                                                               int diff,
+                                                                               int total) {
+    forEachObserver(
+        [&](ProcessorNetworkObserver* o) { o->onProcessorBackgroundJobsChanged(p, diff, total); });
 }
 
 void ProcessorNetworkObservable::notifyObserversProcessorNetworkWillAddProcessor(

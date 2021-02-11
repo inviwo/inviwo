@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ VolumeGradientMagnitude::VolumeGradientMagnitude()
 
 VolumeGradientMagnitude::~VolumeGradientMagnitude() {}
 
-void VolumeGradientMagnitude::preProcess(TextureUnitContainer &) {
+void VolumeGradientMagnitude::preProcess(TextureUnitContainer&) {
     shader_.setUniform("channel", channel_.getSelectedValue());
 }
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@
 
 namespace inviwo {
 
-AnnotationsWidget::AnnotationsWidget(const QString &title, InviwoMainWindow *mainwindow)
+AnnotationsWidget::AnnotationsWidget(const QString& title, InviwoMainWindow* mainwindow)
     : InviwoDockWidget{title, mainwindow, "AnnotationsWidget"}, mainwindow_(mainwindow) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -81,7 +81,7 @@ AnnotationsWidget::AnnotationsWidget(const QString &title, InviwoMainWindow *mai
         });
 }
 
-AnnotationsWidget::AnnotationsWidget(InviwoMainWindow *mainwindow)
+AnnotationsWidget::AnnotationsWidget(InviwoMainWindow* mainwindow)
     : AnnotationsWidget("Annotations", mainwindow) {}
 
 AnnotationsWidget::~AnnotationsWidget() {
@@ -92,9 +92,9 @@ AnnotationsWidget::~AnnotationsWidget() {
     setWidget(nullptr);
 }
 
-WorkspaceAnnotationsQt &AnnotationsWidget::getAnnotations() { return annotations_; }
+WorkspaceAnnotationsQt& AnnotationsWidget::getAnnotations() { return annotations_; }
 
-const WorkspaceAnnotationsQt &AnnotationsWidget::getAnnotations() const { return annotations_; }
+const WorkspaceAnnotationsQt& AnnotationsWidget::getAnnotations() const { return annotations_; }
 
 void AnnotationsWidget::updateWidget() {
     auto groupbox =

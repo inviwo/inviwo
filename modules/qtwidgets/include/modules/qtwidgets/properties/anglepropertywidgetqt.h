@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ANGLEPROPERTYWIDGETQT_H
-#define IVW_ANGLEPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/angleradiuswidget.h>
@@ -65,7 +64,7 @@ protected:
     // Convenience function
     virtual OrdinalProperty<T>* getProperty() override;
 
-    OrdinalPropertySettingsWidgetQt<T>* settingsWidget_;
+    OrdinalPropertySettingsWidgetQt<T>* settings_;
     EditableLabelQt* displayName_;
     AngleRadiusWidget* angleWidget_;
 };
@@ -76,7 +75,7 @@ using DoubleAnglePropertyWidgetQt = AnglePropertyWidgetQt<double>;
 template <typename T>
 AnglePropertyWidgetQt<T>::AnglePropertyWidgetQt(OrdinalProperty<T>* property)
     : PropertyWidgetQt(property)
-    , settingsWidget_(nullptr)
+    , settings_(nullptr)
     , displayName_(new EditableLabelQt(this, property))
     , angleWidget_(new AngleRadiusWidget(this)) {
     QHBoxLayout* hLayout = new QHBoxLayout();
@@ -130,12 +129,10 @@ OrdinalProperty<T>* AnglePropertyWidgetQt<T>::getProperty() {
 
 template <typename T>
 void AnglePropertyWidgetQt<T>::showSettings() {
-    if (!settingsWidget_) {
-        settingsWidget_ = new OrdinalPropertySettingsWidgetQt<T>(getProperty(), this);
+    if (!settings_) {
+        settings_ = new OrdinalPropertySettingsWidgetQt<T>(getProperty(), this);
     }
-    settingsWidget_->showWidget();
+    settings_->showWidget();
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_ANGLEPROPERTYWIDGETQT_H

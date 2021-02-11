@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,10 @@
 #include <warn/pop>
 
 // Cameras
-#include <inviwo/core/datastructures/camera.h>
+#include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/datastructures/camera/orthographiccamera.h>
+#include <inviwo/core/datastructures/camera/perspectivecamera.h>
+#include <inviwo/core/datastructures/camera/skewedperspectivecamera.h>
 
 // Meta Data
 #include <inviwo/core/metadata/metadata.h>
@@ -277,9 +280,9 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerMetaData(std::make_unique<StdVectorMetaData<std::string>>());
 
     // Register Cameras
-    registerCamera<PerspectiveCamera>("PerspectiveCamera");
-    registerCamera<OrthographicCamera>("OrthographicCamera");
-    registerCamera<SkewedPerspectiveCamera>("SkewedPerspectiveCamera");
+    registerCamera<PerspectiveCamera>(PerspectiveCamera::classIdentifier);
+    registerCamera<OrthographicCamera>(OrthographicCamera::classIdentifier);
+    registerCamera<SkewedPerspectiveCamera>(SkewedPerspectiveCamera::classIdentifier);
 
     // Register Data readers
     registerDataReader(std::make_unique<RawVolumeReader>());

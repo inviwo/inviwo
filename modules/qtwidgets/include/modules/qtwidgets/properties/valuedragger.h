@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VALUEDRAGGER_H
-#define IVW_VALUEDRAGGER_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -58,7 +57,7 @@ namespace inviwo {
 template <typename T>
 class ValueDragger : public QWidget {
 public:
-    explicit ValueDragger(NumberLineEdit *spinBox, QWidget *parent = nullptr);
+    explicit ValueDragger(NumberLineEdit* spinBox, QWidget* parent = nullptr);
     virtual ~ValueDragger() = default;
 
     virtual QSize sizeHint() const override;
@@ -71,12 +70,12 @@ public:
     void setExponent(double e);
 
 protected:
-    virtual void paintEvent(QPaintEvent *e) override;
-    virtual void mousePressEvent(QMouseEvent *e) override;
-    virtual void mouseReleaseEvent(QMouseEvent *e) override;
-    virtual void mouseMoveEvent(QMouseEvent *e) override;
+    virtual void paintEvent(QPaintEvent* e) override;
+    virtual void mousePressEvent(QMouseEvent* e) override;
+    virtual void mouseReleaseEvent(QMouseEvent* e) override;
+    virtual void mouseMoveEvent(QMouseEvent* e) override;
 
-    virtual void timerEvent(QTimerEvent *e) override;
+    virtual void timerEvent(QTimerEvent* e) override;
 
 private:
     void reset();
@@ -88,7 +87,7 @@ private:
     double defaultIncrement_ = 0.01;
     double exponent_ = 1.2;
 
-    NumberLineEdit *spinBox_;
+    NumberLineEdit* spinBox_;
     std::unique_ptr<IndicatorWidget> indicator_;
     int spinDeltaTimerId_ = -1;
     QPoint clickPos_;
@@ -100,7 +99,7 @@ private:
 };
 
 template <typename T>
-ValueDragger<T>::ValueDragger(NumberLineEdit *spinBox, QWidget *parent)
+ValueDragger<T>::ValueDragger(NumberLineEdit* spinBox, QWidget* parent)
     : QWidget(parent), spinBox_(spinBox), indicator_(std::make_unique<IndicatorWidget>()) {
     indicator_->setVisible(false);
     setObjectName("valueDragger");
@@ -143,7 +142,7 @@ void ValueDragger<T>::setExponent(double e) {
 }
 
 template <typename T>
-void ValueDragger<T>::paintEvent(QPaintEvent *) {
+void ValueDragger<T>::paintEvent(QPaintEvent*) {
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
 
@@ -183,7 +182,7 @@ void ValueDragger<T>::paintEvent(QPaintEvent *) {
 }
 
 template <typename T>
-void ValueDragger<T>::mousePressEvent(QMouseEvent *e) {
+void ValueDragger<T>::mousePressEvent(QMouseEvent* e) {
     if ((e->button() == Qt::LeftButton) && !dragging_) {
         reset();
 
@@ -203,7 +202,7 @@ void ValueDragger<T>::mousePressEvent(QMouseEvent *e) {
 }
 
 template <typename T>
-void ValueDragger<T>::mouseReleaseEvent(QMouseEvent *e) {
+void ValueDragger<T>::mouseReleaseEvent(QMouseEvent* e) {
     if (dragging_ && (e->button() == Qt::LeftButton)) {
         reset();
         indicator_->hide();
@@ -214,7 +213,7 @@ void ValueDragger<T>::mouseReleaseEvent(QMouseEvent *e) {
 }
 
 template <typename T>
-void ValueDragger<T>::mouseMoveEvent(QMouseEvent *e) {
+void ValueDragger<T>::mouseMoveEvent(QMouseEvent* e) {
     if (dragging_) {
         int mousePosDelta = clickPos_.y() - e->pos().y();
         int sign = (mousePosDelta > 0) ? 1 : (mousePosDelta < 0) ? -1 : 0;
@@ -232,7 +231,7 @@ void ValueDragger<T>::mouseMoveEvent(QMouseEvent *e) {
 }
 
 template <typename T>
-void ValueDragger<T>::timerEvent(QTimerEvent *e) {
+void ValueDragger<T>::timerEvent(QTimerEvent* e) {
     bool doStep = false;
     if (e->timerId() == spinDeltaTimerId_) {
         QToolTip::showText(mapToGlobal(clickPos_), QString("Δ = %1 / s").arg(delta_));
@@ -276,5 +275,3 @@ void ValueDragger<T>::setValue(double val) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_VALUEDRAGGER_H

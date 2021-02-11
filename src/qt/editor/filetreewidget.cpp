@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -147,7 +147,7 @@ std::tuple<QRect, QRect, QRect> SectionDelegate::getTextBoundingBox(
 
     const int marginLeft = utilqt::emToPx(fm, 6.0 / utilqt::refEm());
     const int textSpacing = utilqt::emToPx(fm, 4.0 / utilqt::refEm());
-    const int margin = utilqt::emToPx(fm, 10.0 / utilqt::refEm());
+    const int margin = utilqt::emToPx(fm, 5.0 / utilqt::refEm());
     const int marginRight = utilqt::emToPx(fm, 6.0 / utilqt::refEm());
 
     auto textRect = (option.rect.isValid() ? option.rect : QRect());
@@ -227,7 +227,7 @@ FileTreeWidget::FileTreeWidget(InviwoApplication* app, QWidget* parent)
 
     setHeaderHidden(true);
     setSelectionBehavior(QAbstractItemView::SelectRows);
-    setIconSize(utilqt::emToPx(this, QSize(3, 3)));
+    setIconSize(utilqt::emToPx(this, QSizeF(2.5, 2.5)));
     setIndentation(utilqt::emToPx(this, 1.0));
     setItemDelegate(new SectionDelegate(this));
 
@@ -384,7 +384,7 @@ bool FileTreeWidget::selectRecentWorkspace(int index) {
 }
 
 void FileTreeWidget::setFilter(const QString& str) {
-    proxyModel_->setFilterRegExp(str);
+    proxyModel_->setFilterRegularExpression(str);
 
     expandItems();
 
@@ -398,7 +398,7 @@ void FileTreeWidget::setFilter(const QString& str) {
 
 void FileTreeWidget::expandItems() {
     // fold/unfold all tree items based on filtering
-    if (proxyModel_->filterRegExp().isEmpty()) {
+    if (proxyModel_->filterRegularExpression().pattern().isEmpty()) {
         defaultExpand();
     } else {
         expandAll();

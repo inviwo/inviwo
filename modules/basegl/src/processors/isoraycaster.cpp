@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ const ProcessorInfo ISORaycaster::getProcessorInfo() const { return processorInf
 
 ISORaycaster::ISORaycaster()
     : Processor()
-    , shader_("isoraycasting.frag", false)
+    , shader_("isoraycasting.frag", Shader::Build::No)
     , volumePort_("volume")
     , entryPort_("entry")
     , exitPort_("exit")

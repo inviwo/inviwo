@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,8 @@ public:
     DataFrameTableView(QWidget* parent = nullptr);
     virtual ~DataFrameTableView() = default;
 
-    void setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool vectorsIntoColumns = false);
+    void setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool vectorsIntoColumns = false,
+                      bool categoryIndices = false);
 
     void setIndexColumnVisible(bool visible);
     bool isIndexColumnVisible() const;
@@ -72,6 +73,7 @@ private:
 
     bool indexVisible_ = false;
     bool vectorsIntoCols_ = false;
+    bool categoryIndices_ = false;
 
     std::shared_ptr<const DataFrame> data_;
 

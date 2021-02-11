@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ namespace inviwo {
 
 const ProcessorInfo VolumeSlice::processorInfo_{
     "org.inviwo.VolumeSlice",  // Class identifier
-    "Volume Slice",            // Display name
+    "Volume Slice Extracter",  // Display name
     "Volume Operation",        // Category
     CodeState::Stable,         // Code state
     Tags::CPU,                 // Tags
@@ -62,15 +62,17 @@ VolumeSlice::VolumeSlice()
     , sliceNumber_("sliceNumber", "Slice Number", 4, 1, 8)
     , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
                                InvalidationLevel::Valid)
-    , mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
-                       [this](Event* e) { eventShiftSlice(e); },
-                       std::make_unique<WheelEventMatcher>())
+    , mouseShiftSlice_(
+          "mouseShiftSlice", "Mouse Slice Shift", [this](Event* e) { eventShiftSlice(e); },
+          std::make_unique<WheelEventMatcher>())
 
-    , stepSliceUp_("stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); },
-                   IvwKey::W, KeyState::Press)
+    , stepSliceUp_(
+          "stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); }, IvwKey::W,
+          KeyState::Press)
 
-    , stepSliceDown_("stepSliceDown", "Key Slice Down", [this](Event* e) { eventStepSliceDown(e); },
-                     IvwKey::S, KeyState::Press)
+    , stepSliceDown_(
+          "stepSliceDown", "Key Slice Down", [this](Event* e) { eventStepSliceDown(e); }, IvwKey::S,
+          KeyState::Press)
 
     , gestureShiftSlice_(
           "gestureShiftSlice", "Gesture Slice Shift",

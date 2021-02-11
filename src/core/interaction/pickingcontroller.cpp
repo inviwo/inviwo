@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,8 +53,8 @@ void PickingController::propagateEvent(Event* event, EventPropagator* propagator
     if (!pickingEnabled()) return;
 
     const auto pickId = [&](size2_t coord) -> size_t {
-        if (src_) {
-            const auto value = src_->readPixel(coord, LayerType::Picking);
+        if (auto src = src_.lock()) {
+            const auto value = src->readPixel(coord, LayerType::Picking);
             if (value.a > 0.0) {
                 return PickingManager::colorToIndex(uvec3(value));
             }
@@ -199,8 +199,8 @@ void PickingController::propagateEvent(GestureEvent*, EventPropagator*) {
 void PickingController::setPickingSource(const std::shared_ptr<const Image>& src) { src_ = src; }
 
 PickingManager::Result PickingController::findPickingAction(const uvec2& coord) {
-    if (src_ && pickingEnabled()) {
-        auto value = src_->readPixel(size2_t(coord), LayerType::Picking);
+    if (auto src = src_.lock(); src && pickingEnabled()) {
+        auto value = src->readPixel(size2_t(coord), LayerType::Picking);
         if (value.a > 0.0) {
             return PickingManager::getPtr()->getPickingActionFromColor(uvec3(value));
         }

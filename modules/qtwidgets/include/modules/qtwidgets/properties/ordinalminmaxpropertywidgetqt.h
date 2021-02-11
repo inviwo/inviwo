@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -98,7 +98,7 @@ private:
     int transformIncrementToSpinnerDecimals();
     void showSettings();
 
-    MinMaxPropertySettingsWidgetQt<T>* settingsWidget_;
+    MinMaxPropertySettingsWidgetQt<T>* settings_;
     RangeSliderQt* slider_;
     NumberLineEdit* spinBoxMin_;
     NumberLineEdit* spinBoxMax_;
@@ -115,7 +115,7 @@ using IntMinMaxPropertyWidgetQt = OrdinalMinMaxPropertyWidgetQt<int>;
 template <typename T>
 OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T>* property)
     : PropertyWidgetQt(property)
-    , settingsWidget_(nullptr)
+    , settings_(nullptr)
     , slider_(new RangeSliderQt(Qt::Horizontal, this))
     , spinBoxMin_(new NumberLineEdit(std::is_integral<T>::value, this))
     , spinBoxMax_(new NumberLineEdit(std::is_integral<T>::value, this))
@@ -301,10 +301,10 @@ int OrdinalMinMaxPropertyWidgetQt<T>::transformIncrementToSpinnerDecimals() {
 
 template <typename T>
 void OrdinalMinMaxPropertyWidgetQt<T>::showSettings() {
-    if (!settingsWidget_) {
-        settingsWidget_ = new MinMaxPropertySettingsWidgetQt<T>(minMaxProperty_, this);
+    if (!settings_) {
+        settings_ = new MinMaxPropertySettingsWidgetQt<T>(minMaxProperty_, this);
     }
-    settingsWidget_->showWidget();
+    settings_->showWidget();
 }
 
 }  // namespace inviwo

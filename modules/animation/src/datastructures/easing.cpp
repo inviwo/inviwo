@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,13 +34,13 @@ namespace animation {
 
 namespace easing {
 
-EasingType &operator++(EasingType &e) {
+EasingType& operator++(EasingType& e) {
     using IntType = typename std::underlying_type<EasingType>::type;
     e = static_cast<EasingType>(static_cast<IntType>(e) + 1);
     return e;
 }
 
-EasingType operator++(EasingType &e, int) {
+EasingType operator++(EasingType& e, int) {
     EasingType result = e;
     ++e;
     return result;

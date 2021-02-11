@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_WEBBROWSERMODULE_H
-#define IVW_WEBBROWSERMODULE_H
+#pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/webbrowser/properties/propertywidgetceffactory.h>
+#include <modules/webbrowser/renderhandlergl.h>
+#include <modules/webbrowser/webbrowserclient.h>
 
 #include <modules/json/jsonmodule.h>
 
@@ -45,7 +46,6 @@
 #if __APPLE__  // Mac
 #include "include/wrapper/cef_library_loader.h"
 #endif
-
 #include <warn/pop>
 
 namespace inviwo {
@@ -57,6 +57,8 @@ class IVW_MODULE_WEBBROWSER_API WebBrowserModule : public InviwoModule {
 public:
     WebBrowserModule(InviwoApplication* app);
     virtual ~WebBrowserModule();
+
+    CefRefPtr<WebBrowserClient> getBrowserClient() { return browserClient_; }
 
     // Register a JSON converter and its corresponding HTML-synchronization widget.
     template <typename T, typename P>
@@ -73,6 +75,7 @@ public:
     static std::string getCefErrorString(cef_errorcode_t code);
 
 protected:
+    CefRefPtr<WebBrowserClient> browserClient_;
     // HTML-property synchronization widget factory
     PropertyWidgetCEFFactory htmlWidgetFactory_;
     std::vector<std::unique_ptr<PropertyWidgetCEFFactoryObject>> propertyWidgets_;
@@ -97,5 +100,3 @@ inline const PropertyWidgetCEFFactory* WebBrowserModule::getPropertyWidgetCEFFac
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_WEBBROWSERMODULE_H

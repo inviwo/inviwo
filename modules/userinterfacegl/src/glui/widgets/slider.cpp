@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,8 @@ namespace glui {
 const std::string Slider::classIdentifier = "org.inviwo.glui.Slider";
 std::string Slider::getClassIdentifier() const { return classIdentifier; }
 
-Slider::Slider(const std::string &label, int value, int minValue, int maxValue,
-               Processor &processor, Renderer &uiRenderer, const ivec2 &extent,
+Slider::Slider(const std::string& label, int value, int minValue, int maxValue,
+               Processor& processor, Renderer& uiRenderer, const ivec2& extent,
                UIOrientation orientation)
     : Element(label, processor, uiRenderer, orientation)
     , value_(value)
@@ -55,7 +55,7 @@ Slider::Slider(const std::string &label, int value, int minValue, int maxValue,
     , max_(maxValue)
     , prevValue_(0) {
     widgetExtent_ = extent;
-    moveAction_ = [this](const dvec2 &delta) {
+    moveAction_ = [this](const dvec2& delta) {
         if (!enabled_) {
             return false;
         }
@@ -101,12 +101,12 @@ int Slider::getMinValue() const { return min_; }
 
 int Slider::getMaxValue() const { return max_; }
 
-void Slider::renderWidget(const ivec2 &origin, const size2_t &) {
+void Slider::renderWidget(const ivec2& origin, const size2_t&) {
     TextureUnit texUnit;
     texUnit.activate();
 
     // bind textures
-    auto &uiShader = uiRenderer_->getShader();
+    auto& uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
     uiShader.setUniform("arrayTexMap", 9, uiTextureMap_.data());
 
@@ -199,7 +199,7 @@ double Slider::getSliderPos() const {
            sliderLength;
 }
 
-double Slider::convertDeltaToSlider(const dvec2 &delta) const {
+double Slider::convertDeltaToSlider(const dvec2& delta) const {
     const auto ext = getWidgetExtentScaled();
     // account for the width of the handle
     const double handleWidth = uiTextures_->getDimensions().x * scalingFactor_;

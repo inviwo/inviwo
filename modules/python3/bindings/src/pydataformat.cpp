@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,15 +36,15 @@ namespace inviwo {
 
 struct DataFormatHelper {
     template <typename DataFormat>
-    auto operator()(pybind11::module &m) {
+    auto operator()(pybind11::module& m) {
         namespace py = pybind11;
         m.attr(("Data" + DataFormat::str()).c_str()) =
-            py::cast(static_cast<const DataFormatBase *>(DataFormat::get()),
+            py::cast(static_cast<const DataFormatBase*>(DataFormat::get()),
                      py::return_value_policy::reference);
     }
 };
 
-void exposeDataFormat(pybind11::module &m) {
+void exposeDataFormat(pybind11::module& m) {
     namespace py = pybind11;
 
     py::enum_<NumericType>(m, "NumericType")

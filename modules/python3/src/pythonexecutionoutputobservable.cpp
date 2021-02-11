@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,9 @@
 #include <modules/python3/pythonexecutionoutputobservable.h>
 
 namespace inviwo {
-void PythonExecutionOutputObservable::pythonExecutionOutputEvent(const std::string &msg,
+void PythonExecutionOutputObservable::pythonExecutionOutputEvent(const std::string& msg,
                                                                  PythonOutputType outputType) {
     forEachObserver(
-        [&](PythonExecutionOutputObeserver *o) { o->onPyhonExecutionOutput(msg, outputType); });
+        [&](PythonExecutionOutputObeserver* o) { o->onPyhonExecutionOutput(msg, outputType); });
 }
 }  // namespace inviwo

@@ -5,6 +5,7 @@ project(inviwopyapp)
 find_package(Qt5Core QUIET REQUIRED)
 find_package(Qt5Gui QUIET REQUIRED)
 find_package(Qt5Widgets QUIET REQUIRED)
+find_package(pybind11 CONFIG REQUIRED)
 
 #--------------------------------------------------------------------
 # Add source files

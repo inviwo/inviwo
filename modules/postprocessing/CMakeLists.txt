@@ -8,6 +8,7 @@ set(HEADER_FILES
     include/modules/postprocessing/postprocessingmodule.h
     include/modules/postprocessing/postprocessingmoduledefine.h
     include/modules/postprocessing/processors/depthdarkening.h
+    include/modules/postprocessing/processors/depthoffield.h
     include/modules/postprocessing/processors/fog.h
     include/modules/postprocessing/processors/fxaa.h
     include/modules/postprocessing/processors/hdrbloom.h
@@ -26,6 +27,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/postprocessingmodule.cpp
     src/processors/depthdarkening.cpp
+    src/processors/depthoffield.cpp
     src/processors/fog.cpp
     src/processors/fxaa.cpp
     src/processors/hdrbloom.cpp
@@ -53,6 +55,9 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/depthdarkening.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/depthlinearize.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/displaytex.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/dof_approx.comp
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/dof_approx.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/dof_exact.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/edgedarken.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fog.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/fog.frag

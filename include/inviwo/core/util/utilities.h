@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stdextensions.h>
-#include <string>
+#include <string_view>
 
 namespace inviwo {
 
@@ -43,16 +43,16 @@ class ProcessorWidget;
 
 namespace util {
 
-IVW_CORE_API void saveNetwork(ProcessorNetwork* network, std::string filename);
+IVW_CORE_API void saveNetwork(ProcessorNetwork* network, std::string_view filename);
 
-IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, const std::string& dir,
-                                  const std::string& name = "UPN", const std::string& ext = ".png",
+IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, std::string_view dir,
+                                  std::string_view name = "UPN", std::string_view ext = ".png",
                                   bool onlyActiveCanvases = false);
 
-IVW_CORE_API bool isValidIdentifierCharacter(char c, const std::string& extra = "");
+IVW_CORE_API bool isValidIdentifierCharacter(char c, std::string_view extra = "");
 
-IVW_CORE_API void validateIdentifier(const std::string& identifier, const std::string& type,
-                                     ExceptionContext context, const std::string& extra = "");
+IVW_CORE_API void validateIdentifier(std::string_view identifier, std::string_view type,
+                                     ExceptionContext context, std::string_view extra = "");
 
 /**
  * Utility to augment an identifier with a number to make it unique. Will add an increasing number
@@ -60,17 +60,16 @@ IVW_CORE_API void validateIdentifier(const std::string& identifier, const std::s
  * Example for a processor identifier:
  *     auto uniqueIdentifier = util::findUniqueIdentifier(
  *         startIdentifier,
- *         [&](const std::string& id) {
+ *         [&](std::string_view id) {
  *             return processorNetwork->getProcessorByIdentifier(id) == nullptr; },
  *         ""
  *     );
  */
-IVW_CORE_API std::string findUniqueIdentifier(const std::string& identifier,
-                                              std::function<bool(const std::string&)> isUnique,
-                                              const std::string& sep = " ");
+IVW_CORE_API std::string findUniqueIdentifier(std::string_view identifier,
+                                              std::function<bool(std::string_view)> isUnique,
+                                              std::string_view sep = " ");
 
-IVW_CORE_API std::string cleanIdentifier(const std::string& identifier,
-                                         const std::string& extra = "");
+IVW_CORE_API std::string cleanIdentifier(std::string_view identifier, std::string_view extra = "");
 
 /**
  * \brief Removes inviwo-module from module library file name.
@@ -80,9 +79,9 @@ IVW_CORE_API std::string cleanIdentifier(const std::string& identifier,
  * @param  filePath Path to module file
  * @return name of the module
  */
-IVW_CORE_API std::string stripModuleFileNameDecoration(std::string filePath);
+IVW_CORE_API std::string stripModuleFileNameDecoration(std::string_view filePath);
 
-IVW_CORE_API std::string stripIdentifier(std::string identifier);
+IVW_CORE_API std::string stripIdentifier(std::string_view identifier);
 
 namespace detail {
 

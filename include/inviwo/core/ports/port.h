@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,9 +54,14 @@ class IVW_CORE_API Port : public Serializable {
 
 public:
     virtual ~Port() = default;
-    std::string getIdentifier() const;
+    const std::string& getIdentifier() const;
     void setIdentifier(const std::string& name);
     Processor* getProcessor() const;
+
+    /**
+     * @brief Get the port path i.e. ```<processor identifier>.<port identifier>```
+     */
+    std::string getPath() const;
 
     virtual std::string getClassIdentifier() const = 0;
     /**

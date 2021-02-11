@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,13 +42,12 @@ namespace inviwo {
 
 TFEditorControlPoint::TFEditorControlPoint(TFPrimitive& primitive, QGraphicsScene* scene,
                                            double size)
-    : TFEditorPrimitive(primitive, scene, vec2(primitive.getPosition(), primitive.getAlpha()),
-                        size) {
+    : TFEditorPrimitive(primitive, scene, primitive.getPosition(), primitive.getAlpha(), size) {
     data_.addObserver(this);
 }
 
 void TFEditorControlPoint::onTFPrimitiveChange(const TFPrimitive& p) {
-    setTFPosition(vec2(p.getPosition(), p.getAlpha()));
+    setTFPosition(p.getPosition(), p.getAlpha());
 }
 
 QRectF TFEditorControlPoint::boundingRect() const {
@@ -130,7 +129,7 @@ QPointF TFEditorControlPoint::prepareItemPositionChange(const QPointF& pos) {
     return adjustedPos;
 }
 
-void TFEditorControlPoint::onItemPositionChange(const vec2& newPos) {
+void TFEditorControlPoint::onItemPositionChange(const dvec2& newPos) {
     data_.setPositionAlpha(newPos);
 }
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
 
 namespace inviwo {
 
-IndicatorWidget::IndicatorWidget(QWidget *parent)
+IndicatorWidget::IndicatorWidget(QWidget* parent)
     : QWidget(parent, Qt::Window | Qt::FramelessWindowHint) {
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -76,7 +76,7 @@ void IndicatorWidget::set(QPoint base, int len) {
     setGeometry(r);
 }
 
-void IndicatorWidget::paintEvent(QPaintEvent *e) {
+void IndicatorWidget::paintEvent(QPaintEvent* e) {
     QPainter p(this);
     p.setRenderHints(QPainter::Antialiasing);
 

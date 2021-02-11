@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,10 +35,12 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/network/networkedge.h>
+#include <inviwo/core/util/rendercontext.h>
 
 namespace inviwo {
 
-PortInspector::PortInspector() {}
+PortInspector::PortInspector() = default;
 
 PortInspector::PortInspector(std::string portClassIdentifier,
                              std::string inspectorWorkspaceFileName)
@@ -50,6 +52,8 @@ PortInspector::PortInspector(std::string portClassIdentifier,
         auto app = InviwoApplication::getPtr();
         auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(
             istream, inspectorNetworkFileName_);
+
+        RenderContext::getPtr()->activateDefaultRenderContext();
 
         ProcessorNetwork network(app);
         deserializer.deserialize("ProcessorNetwork", network);
@@ -103,6 +107,7 @@ PortInspector::PortInspector(std::string portClassIdentifier,
 }
 
 PortInspector::~PortInspector() {
+    RenderContext::getPtr()->activateDefaultRenderContext();
     for (auto processor : processors_) {
         delete processor;
     }
@@ -117,25 +122,5 @@ CanvasProcessor* PortInspector::getCanvasProcessor() const { return canvasProces
 const std::vector<PortConnection>& PortInspector::getConnections() const { return connections_; }
 const std::vector<PropertyLink>& PortInspector::getPropertyLinks() const { return propertyLinks_; }
 const std::vector<Processor*>& PortInspector::getProcessors() const { return processors_; }
-
-void PortInspector::serialize(Serializer& s) const {
-    s.serialize("PortClassIdentifier", portClassIdentifier_);
-    s.serialize("InspectorNetworkFileName", inspectorNetworkFileName_);
-    s.serialize("Processors", processors_, "Processor");
-    s.serialize("Inports", inports_, "Inport");
-    s.serialize("Connections", connections_, "Connection");
-    s.serialize("Links", propertyLinks_, "Link");
-    s.serialize("Canvas", canvasProcessor_);
-}
-
-void PortInspector::deserialize(Deserializer& d) {
-    d.deserialize("PortClassIdentifier", portClassIdentifier_);
-    d.deserialize("InspectorNetworkFileName", inspectorNetworkFileName_);
-    d.deserialize("Processors", processors_, "Processor");
-    d.deserialize("Inports", inports_, "Inport");
-    d.deserialize("Connections", connections_, "Connection");
-    d.deserialize("Links", propertyLinks_, "Link");
-    d.deserialize("Canvas", canvasProcessor_);
-}
 
 }  // namespace inviwo

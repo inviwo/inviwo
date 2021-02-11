@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 #include <inviwo/core/properties/propertyconvertermanager.h>
 #include <inviwo/core/properties/propertyconverter.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/network/processornetwork.h>
@@ -39,6 +40,30 @@
 #include <inviwo/core/properties/compositeproperty.h>
 
 namespace inviwo {
+
+namespace {
+
+struct VisitedHelper {
+    VisitedHelper(std::vector<Property*>& visited, std::vector<ConvertableLink>& toVisit)
+        : visited_(visited), toVisit_(toVisit) {
+        for (auto& link : toVisit_) {
+            util::push_back_unique(visited_, link.src_);
+            util::push_back_unique(visited_, link.dst_);
+        }
+    }
+    ~VisitedHelper() {
+        for (auto& link : toVisit_) {
+            util::erase_remove(visited_, link.src_);
+            util::erase_remove(visited_, link.dst_);
+        }
+    }
+
+private:
+    std::vector<Property*>& visited_;
+    std::vector<ConvertableLink>& toVisit_;
+};
+
+}  // namespace
 
 LinkEvaluator::LinkEvaluator(ProcessorNetwork* network) : network_(network) {}
 
@@ -105,7 +130,7 @@ std::vector<PropertyLink> LinkEvaluator::getLinksBetweenProcessors(Processor* p1
     }
 }
 
-std::vector<LinkEvaluator::Link>& LinkEvaluator::getTriggerdLinksForProperty(Property* property) {
+std::vector<ConvertableLink>& LinkEvaluator::getTriggerdLinksForProperty(Property* property) {
     if (propertyLinkSecondaryCache_.find(property) != propertyLinkSecondaryCache_.end()) {
         return propertyLinkSecondaryCache_[property];
     } else {
@@ -119,20 +144,22 @@ std::vector<Property*> LinkEvaluator::getPropertiesLinkedTo(Property* property) 
                      ? propertyLinkSecondaryCache_[property]
                      : addToSecondaryCache(property);
 
-    return util::transform(list, [](const Link& link) { return link.dst_; });
+    return util::transform(list, [](const ConvertableLink& link) { return link.dst_; });
 }
 
-std::vector<LinkEvaluator::Link>& LinkEvaluator::addToSecondaryCache(Property* src) {
+std::vector<ConvertableLink>& LinkEvaluator::addToSecondaryCache(Property* src) {
     for (auto& dst : propertyLinkPrimaryCache_[src]) {
         if (src != dst) secondaryCacheHelper(propertyLinkSecondaryCache_[src], src, dst);
     }
     return propertyLinkSecondaryCache_[src];
 }
 
-void LinkEvaluator::secondaryCacheHelper(std::vector<Link>& links, Property* src, Property* dst) {
+void LinkEvaluator::secondaryCacheHelper(std::vector<ConvertableLink>& links, Property* src,
+                                         Property* dst) {
     // Check that we don't use a previous source or destination as the new destination.
-    if (!util::contains_if(
-            links, [dst](const Link& link) { return link.src_ == dst || link.dst_ == dst; })) {
+    if (!util::contains_if(links, [dst](const ConvertableLink& link) {
+            return link.src_ == dst || link.dst_ == dst;
+        })) {
         auto manager = network_->getApplication()->getPropertyConverterManager();
         if (auto converter = manager->getConverter(src, dst)) {
             links.emplace_back(src, dst, converter);

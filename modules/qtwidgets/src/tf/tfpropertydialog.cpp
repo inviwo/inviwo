@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -69,54 +69,29 @@
 #include <QSettings>
 #include <warn/pop>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
-TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* property,
-                                   const std::vector<TFPrimitiveSet*>& primitiveSets)
-    : PropertyEditorWidgetQt(property, "Transfer Function Editor", "TFEditorWidget")
-    , sliderRange_(static_cast<int>(property->get().getTextureSize()))
-    , propertyPtr_(std::make_unique<util::TFPropertyModel<TransferFunctionProperty*>>(property))
-    , tfSets_(primitiveSets) {
-    if (tfSets_.empty()) {
-        // no sets given, make sure that the primitive set of the property is used
-        tfSets_.push_back(&property->get());
-    }
-    initializeDialog();
-}
+TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* property)
+    : TFPropertyDialog(std::make_unique<util::TFPropertyModel<TransferFunctionProperty>>(property),
+                       {&property->get()}) {}
 
-TFPropertyDialog::TFPropertyDialog(IsoValueProperty* property,
-                                   const std::vector<TFPrimitiveSet*>& primitiveSets)
-    : PropertyEditorWidgetQt(property, "Transfer Function Editor", "TFEditorWidget")
+TFPropertyDialog::TFPropertyDialog(IsoValueProperty* property)
+    : TFPropertyDialog(std::make_unique<util::TFPropertyModel<IsoValueProperty>>(property),
+                       {&property->get()}) {}
+
+TFPropertyDialog::TFPropertyDialog(IsoTFProperty* property)
+    : TFPropertyDialog(std::make_unique<util::TFPropertyModel<IsoTFProperty>>(property),
+                       {&property->tf_.get(), &property->isovalues_.get()}) {}
+
+TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> model,
+                                   std::vector<TFPrimitiveSet*> tfSets)
+    : PropertyEditorWidgetQt(model->getProperty(), "Transfer Function Editor", "TFEditorWidget")
     , sliderRange_(1024)
-    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoValueProperty*>>(property))
-    , tfSets_(primitiveSets) {
-    if (tfSets_.empty()) {
-        // no sets given, make sure that the primitive set of the property is used
-        tfSets_.push_back(&property->get());
-    }
-    initializeDialog();
-}
+    , propertyPtr_(std::move(model))
+    , tfSets_(tfSets) {
 
-TFPropertyDialog::TFPropertyDialog(IsoTFProperty* property,
-                                   const std::vector<TFPrimitiveSet*>& primitiveSets)
-    : PropertyEditorWidgetQt(property, "Transfer Function Editor", "TFEditorWidget")
-    , sliderRange_(static_cast<int>(property->tf_.get().getTextureSize()))
-    , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoTFProperty*>>(property))
-    , tfSets_(primitiveSets) {
-    if (tfSets_.empty()) {
-        // no sets given, make sure that the primitive sets of the property are used
-        tfSets_.push_back(&property->tf_.get());
-        tfSets_.push_back(&property->isovalues_.get());
-    }
-    initializeDialog();
-}
-
-TFPropertyDialog::~TFPropertyDialog() {
-    tfEditor_->disconnect();
-    hide();
-}
-
-void TFPropertyDialog::initializeDialog() {
     if (auto titlebar = dynamic_cast<InviwoDockWidgetTitleBar*>(titleBarWidget())) {
         if (auto layout = dynamic_cast<QHBoxLayout*>(titlebar->layout())) {
             QToolButton* helpBtn = new QToolButton();
@@ -132,13 +107,20 @@ void TFPropertyDialog::initializeDialog() {
         }
     }
 
+    if (auto owner = propertyPtr_->getProperty()->getOwner()) {
+        if (auto p = owner->getProcessor()) {
+            onNameChange_ = p->onDisplayNameChange(
+                [this](std::string_view, std::string_view) { updateTitleFromProperty(); });
+        }
+    }
+
     propertyPtr_->addObserver(this);
     for (auto& tf : tfSets_) {
         tf->addObserver(this);
     }
 
     tfEditor_ = std::make_unique<TFEditor>(propertyPtr_.get(), tfSets_, this);
-    tfSelectionWatcher_ = std::make_unique<TFSelectionWatcher>(tfEditor_.get(), property_, tfSets_);
+    tfSelectionWatcher_ = std::make_unique<TFSelectionWatcher>(property_, tfSets_);
 
     connect(tfEditor_.get(), &TFEditor::selectionChanged, this,
             [this]() { tfSelectionWatcher_->updateSelection(tfEditor_->getSelectedPrimitives()); });
@@ -146,6 +128,12 @@ void TFPropertyDialog::initializeDialog() {
             [&](auto& primitiveSet) { util::importFromFile(primitiveSet, this); });
     connect(tfEditor_.get(), &TFEditor::exportTF, this,
             [&](auto& primitiveSet) { util::exportToFile(primitiveSet, this); });
+
+    connect(tfEditor_.get(), &TFEditor::updateBegin, this, [&]() { ongoingUpdate_ = true; });
+    connect(tfEditor_.get(), &TFEditor::updateEnd, this, [&]() {
+        ongoingUpdate_ = false;
+        updateTFPreview();
+    });
 
     tfEditorView_ = new TFEditorView(propertyPtr_.get(), tfEditor_.get());
 
@@ -219,6 +207,21 @@ void TFPropertyDialog::initializeDialog() {
     connect(pointMoveMode_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, &TFPropertyDialog::changeMoveMode);
 
+    domainMin_ = new QLabel("0.0");
+    domainMax_ = new QLabel("1.0");
+
+    if (auto port = propertyPtr_->getVolumeInport()) {
+        const auto portChange = [this, port]() {
+            auto dataMap = port->hasData() ? port->getData()->dataMap_ : DataMapper{};
+            domainMin_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(0.0)));
+            domainMax_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(1.0)));
+        };
+        port->onChange(portChange);
+        port->onConnect(portChange);
+        port->onDisconnect(portChange);
+        portChange();
+    }
+
     // set up TF primitive widgets
     {
         primitivePos_ = new TFLineEdit();
@@ -274,12 +277,19 @@ void TFPropertyDialog::initializeDialog() {
     rightLayout->addWidget(colorWheel_.get());
 
     auto primitivePropLayout = new QGridLayout();
-    primitivePropLayout->addWidget(new QLabel("Scalar"), 1, 1);
-    primitivePropLayout->addWidget(primitivePos_, 1, 2);
-    primitivePropLayout->addWidget(new QLabel("Alpha"), 2, 1);
-    primitivePropLayout->addWidget(primitiveAlpha_, 2, 2);
-    primitivePropLayout->addWidget(new QLabel("Color"), 3, 1);
-    primitivePropLayout->addWidget(primitiveColor_, 3, 2);
+    primitivePropLayout->addWidget(new QLabel("Scalar"), 0, 0);
+    primitivePropLayout->addWidget(primitivePos_, 0, 1);
+    primitivePropLayout->addWidget(new QLabel("Alpha"), 1, 0);
+    primitivePropLayout->addWidget(primitiveAlpha_, 1, 1);
+    primitivePropLayout->addWidget(new QLabel("Color"), 2, 0);
+    primitivePropLayout->addWidget(primitiveColor_, 2, 1);
+
+    primitivePropLayout->addWidget(new QLabel("Min"), 3, 0);
+    primitivePropLayout->addWidget(domainMin_, 3, 1);
+
+    primitivePropLayout->addWidget(new QLabel("Max"), 4, 0);
+    primitivePropLayout->addWidget(domainMax_, 4, 1);
+
     rightLayout->addLayout(primitivePropLayout);
 
     rightLayout->addStretch(3);
@@ -353,29 +363,23 @@ void TFPropertyDialog::initializeDialog() {
     }
 
     updateFromProperty();
+    updateTitleFromProperty();
     if (!propertyPtr_->getVolumeInport()) {
         chkShowHistogram_->setVisible(false);
     }
     loadState();
 }
 
+TFPropertyDialog::~TFPropertyDialog() {
+    tfEditor_->disconnect();
+    hide();
+}
+
 QSize TFPropertyDialog::minimumSizeHint() const { return TFPropertyDialog::sizeHint(); }
 
 QSize TFPropertyDialog::sizeHint() const { return layout()->sizeHint(); }
 
-void TFPropertyDialog::updateFromProperty() {
-    if (!property_->getOwner()) return;
-
-    auto processorName = property_->getOwner()->getProcessor()->getDisplayName();
-    auto windowTitle =
-        "Transfer Function Editor - " + property_->getDisplayName() + " (" + processorName + ")";
-    if (property_->getReadOnly()) {
-        windowTitle += " - Read Only";
-    }
-    setWindowTitle(utilqt::toQString(windowTitle));
-
-    updateTFPreview();
-}
+void TFPropertyDialog::updateFromProperty() { updateTFPreview(); }
 
 TFEditorView* TFPropertyDialog::getEditorView() const { return tfEditorView_; }
 
@@ -414,6 +418,20 @@ void TFPropertyDialog::showEvent(QShowEvent* event) {
     updateTFPreview();
     tfEditorView_->update();
     PropertyEditorWidgetQt::showEvent(event);
+}
+
+void TFPropertyDialog::updateTitleFromProperty() {
+    if (!property_->getOwner()) return;
+
+    const auto processorName = property_->getOwner()->getProcessor()->getDisplayName();
+    const auto windowTitle =
+        fmt::format("Transfer Function Editor - {} ({}){}", property_->getDisplayName(),
+                    processorName, (property_->getReadOnly() ? " - Read Only" : ""));
+    setWindowTitle(utilqt::toQString(windowTitle));
+}
+
+void TFPropertyDialog::onSetDisplayName(Property*, const std::string&) {
+    updateTitleFromProperty();
 }
 
 void TFPropertyDialog::onTFPrimitiveAdded(TFPrimitive& p) {
@@ -485,6 +503,8 @@ void TFPropertyDialog::setReadOnly(bool readonly) {
 void TFPropertyDialog::changeMoveMode(int i) { tfEditor_->setMoveMode(i); }
 
 void TFPropertyDialog::updateTFPreview() {
+    if (ongoingUpdate_) return;
+
     auto pixmap = utilqt::toQPixmap(*propertyPtr_, QSize(tfPreview_->width(), 20));
     tfPreview_->setPixmap(pixmap);
 }

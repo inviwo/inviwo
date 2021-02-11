@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2020 Inviwo Foundation
+# Copyright (c) 2013-2021 Inviwo Foundation
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -73,9 +73,9 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER cmake)
 
 #--------------------------------------------------------------------
 # CMake debugging
-option(IVW_CMAKE_DEBUG "Print CMake Debug Information" OFF)
+option(IVW_CFG_CMAKE_DEBUG "Print CMake Debug Information" OFF)
 
-if(IVW_CMAKE_DEBUG)
+if(IVW_CFG_CMAKE_DEBUG)
     function(log_proj variable access value file stack)
         if(${access} STREQUAL "MODIFIED_ACCESS")
             get_filename_component(path ${file} DIRECTORY)
@@ -92,13 +92,10 @@ endif()
 set(CMAKE_WARN_DEPRECATED ON)
 
 function(ivw_debug_message)
-    if(IVW_CMAKE_DEBUG)
+    if(IVW_CFG_CMAKE_DEBUG)
         message(${ARGV})
     endif()
 endfunction()
-
-# Add our cmake modules to search path
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/modules")
 
 # Add parameter for paths to external modules
 set(IVW_EXTERNAL_MODULES "" CACHE STRING "Semicolon (;) separated paths to directories containing external modules")
@@ -159,6 +156,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/deprecated.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/filegeneration.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/globalmacros.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/licenses.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/vcpkghelpers.cmake)
 
 #Generate headers
 ivw_generate_module_paths_header()
@@ -170,7 +168,7 @@ configure_file(${IVW_CMAKE_TEMPLATES}/inviwocommondefines_template.h
 include(${CMAKE_CURRENT_LIST_DIR}/compileresources.cmake)
 
 # Calculate and display profiling information
-option(IVW_PROFILING "Enable profiling" OFF)
+option(IVW_CFG_PROFILING "Enable profiling" OFF)
 
 # Build unittest for all modules
 include(${CMAKE_CURRENT_LIST_DIR}/unittests.cmake)
@@ -183,10 +181,10 @@ include(${CMAKE_CURRENT_LIST_DIR}/pybind11.cmake)
 
 if(WIN32 AND MSVC)
     # Determine runtime library linkage depending on BUILD_SHARED_LIBS setting.
-    # Shared runtime can be forced by setting the IVW_FORCE_SHARED_CRT option.
-    option(IVW_FORCE_SHARED_CRT "Use shared runtime library linkage for Inviwo" OFF)
-    mark_as_advanced(IVW_FORCE_SHARED_CRT)
-    if(BUILD_SHARED_LIBS OR IVW_FORCE_SHARED_CRT)
+    # Shared runtime can be forced by setting the IVW_CFG_MSVC_FORCE_SHARED_CRT option.
+    option(IVW_CFG_MSVC_FORCE_SHARED_CRT "Use shared runtime library linkage for Inviwo" OFF)
+    mark_as_advanced(IVW_CFG_MSVC_FORCE_SHARED_CRT)
+    if(BUILD_SHARED_LIBS OR IVW_CFG_MSVC_FORCE_SHARED_CRT)
         add_compile_options(
             $<$<CONFIG:Release>:/MD> 
             $<$<CONFIG:MinSizeRel>:/MD> 
@@ -202,8 +200,6 @@ if(WIN32 AND MSVC)
         )
     endif()
 
-    # For >=VS2015 enable edit and continue "ZI"
-    add_compile_options($<$<CONFIG:Debug>:/ZI>)
     add_compile_options(/bigobj)
     
     # Add debug postfix if WIN32
@@ -211,25 +207,23 @@ if(WIN32 AND MSVC)
 
     # set iterator debug level (default=2)
     # https://msdn.microsoft.com/en-us/library/hh697468.aspx
-    set(IVW_ITERATOR_DEBUG_LEVEL "2" CACHE STRING "Iterator debug level (IDL, default=2). 
+    set(IVW_CFG_MSVC_ITERATOR_DEBUG_LEVEL "2" CACHE STRING "Iterator debug level (IDL, default=2). 
     IDL=0: Disables checked iterators and disables iterator debugging.
     IDL=1: Enables checked iterators and disables iterator debugging.
     IDL=2: Enables iterator debugging. Note: QT needs to be built with the same flag")
-    set_property(CACHE IVW_ITERATOR_DEBUG_LEVEL PROPERTY STRINGS 0 1 2)
-    add_compile_options($<$<CONFIG:Debug>:/D_ITERATOR_DEBUG_LEVEL=${IVW_ITERATOR_DEBUG_LEVEL}>)
+    set_property(CACHE IVW_CFG_MSVC_ITERATOR_DEBUG_LEVEL PROPERTY STRINGS 0 1 2)
+    add_compile_options($<$<CONFIG:Debug>:/D_ITERATOR_DEBUG_LEVEL=${IVW_CFG_MSVC_ITERATOR_DEBUG_LEVEL}>)
 
     # Multicore builds
-    option(IVW_MULTI_PROCESSOR_BUILD "Build with multiple processors" ON)
-    set(IVW_MULTI_PROCESSOR_COUNT 0 CACHE STRING "Number of cores to use (defalt 0 = all)")
-    if(IVW_MULTI_PROCESSOR_BUILD)
-        if(IVW_MULTI_PROCESSOR_COUNT GREATER 1 AND IVW_MULTI_PROCESSOR_COUNT LESS 1024)
-            add_compile_options(/MP${IVW_MULTI_PROCESSOR_COUNT})
+    option(IVW_CFG_MSVC_MULTI_PROCESSOR_BUILD "Build with multiple processors" ON)
+    set(IVW_CFG_MSVC_MULTI_PROCESSOR_COUNT 0 CACHE STRING "Number of cores to use (defalt 0 = all)")
+    if(IVW_CFG_MSVC_MULTI_PROCESSOR_BUILD)
+        if(IVW_CFG_MSVC_MULTI_PROCESSOR_COUNT GREATER 1 AND IVW_CFG_MSVC_MULTI_PROCESSOR_COUNT LESS 1024)
+            add_compile_options(/MP${IVW_CFG_MSVC_MULTI_PROCESSOR_COUNT})
         else()
             add_compile_options(/MP)
         endif()
     endif()
-
-    set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT inviwo)
 endif()
 
 # Mac specific
@@ -243,13 +237,13 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # Runtime module loading
-option(IVW_RUNTIME_MODULE_LOADING 
+option(IVW_CFG_RUNTIME_MODULE_LOADING 
        "Load modules from dynamic libraries (dll/so) at application startup" OFF)
 
 # Check if OpenMP is available and set it to use, and include the dll in packs
 find_package(OpenMP QUIET)
-option(IVW_OPENMP_ON "Use OpenMP" ${OpenMP_CXX_FOUND})
-if(IVW_OPENMP_ON AND NOT OpenMP_CXX_FOUND)
+option(IVW_USE_OPENMP "Use OpenMP" ${OpenMP_CXX_FOUND})
+if(IVW_USE_OPENMP AND NOT OpenMP_CXX_FOUND)
     message(FATAL_ERROR "OpenMP not available")
 endif()
 

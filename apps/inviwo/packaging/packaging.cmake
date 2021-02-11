@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2020 Inviwo Foundation
+# Copyright (c) 2013-2021 Inviwo Foundation
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -26,15 +26,9 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 #################################################################################
- 
-# Don't use components, will not work with Drag & Drop, and we need controll all the 
-# component namnes which we can't for some of the externals like HDF5
-set(CPACK_MONOLITHIC_INSTALL TRUE)
 set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
 set(CMAKE_INSTALL_OPENMP_LIBRARIES TRUE)
-if(IVW_OPENMP_ON)
-    set(CMAKE_INSTALL_OPENMP_LIBRARIES TRUE)
-endif()
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT Application)
 include (InstallRequiredSystemLibraries)
 
 set(CPACK_PACKAGE_NAME                "Inviwo")
@@ -45,9 +39,14 @@ set(CPACK_PACKAGE_VERSION_MINOR       "${IVW_MINOR_VERSION}")
 set(CPACK_PACKAGE_VERSION_PATCH       "${IVW_PATCH_VERSION}")
 set(CPACK_PACKAGE_DESCRIPTION_FILE    "${IVW_ROOT_DIR}/README.md")
 set(CPACK_RESOURCE_FILE_LICENSE       "${IVW_ROOT_DIR}/LICENSE")
+set(CPACK_PACKAGE_FILE_NAME           "${CPACK_PACKAGE_NAME}-v${IVW_VERSION}")
 
-
-set(CPACK_PACKAGE_FILE_NAME         "${CPACK_PACKAGE_NAME}-v${IVW_VERSION}")
+set(CPACK_MONOLITHIC_INSTALL OFF)
+set(CPACK_NSIS_MANIFEST_DPI_AWARE ON)
+ivw_get_target_property_recursive(install_list inviwo INTERFACE_IVW_INSTALL_LIST OFF)
+ivw_filter_install_list(LIST install_list REMOVE_COMPONENTS Development Testing)
+list(TRANSFORM install_list REPLACE "\\|%\\|" ";")
+set(CPACK_INSTALL_CMAKE_PROJECTS ${install_list})
 
 if(WIN32)
     # Need backslash for correct subdirectory paths with NSIS
@@ -103,15 +102,8 @@ else()
     endif()
 endif()
 
-if(NOT APPLE)
-    install(DIRECTORY ${IVW_ROOT_DIR}/data/images           DESTINATION data      COMPONENT images)
-    install(DIRECTORY ${IVW_ROOT_DIR}/data/scripts          DESTINATION data      COMPONENT scripts)
-    install(DIRECTORY ${IVW_ROOT_DIR}/data/volumes          DESTINATION data      COMPONENT volumes)
-    install(DIRECTORY ${IVW_ROOT_DIR}/data/workspaces       DESTINATION data      COMPONENT workspaces)
-
-    install(DIRECTORY ${IVW_ROOT_DIR}/tests/images          DESTINATION tests     COMPONENT images)
-    install(DIRECTORY ${IVW_ROOT_DIR}/tests/volumes         DESTINATION tests     COMPONENT volumes)
-endif()
+install(DIRECTORY ${IVW_ROOT_DIR}/data/  DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}data  COMPONENT Datasets)
+install(DIRECTORY ${IVW_ROOT_DIR}/tests/ DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}tests COMPONENT Testing)
 
 include(CPack)
 

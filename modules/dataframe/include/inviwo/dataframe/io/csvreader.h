@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,11 +57,12 @@ public:
  * \ingroup dataio
  *
  * \brief A reader for comma separated value (CSV) files with customizable delimiters.
- * The default delimiter is ',' and headers are included
+ * The default delimiter is ',' and headers are included. Floating point values are stored as
+ * float32.
  */
 class IVW_MODULE_DATAFRAME_API CSVReader : public DataReaderType<DataFrame> {
 public:
-    CSVReader();
+    CSVReader(const std::string& delim = ",", bool hasHeader = true, bool doubleprec = false);
     CSVReader(const CSVReader&) = default;
     CSVReader(CSVReader&&) noexcept = default;
     CSVReader& operator=(const CSVReader&) = default;
@@ -71,6 +72,11 @@ public:
 
     void setDelimiters(const std::string& delim);
     void setFirstRowHeader(bool hasHeader);
+    /**
+     * sets the precision for columns containing floating point values. If \p doubleprec is true,
+     * values are stored as double. Otherwise float32 is used.
+     */
+    void setEnableDoublePrecision(bool doubleprec);
     using DataReaderType<DataFrame>::readData;
 
     /**
@@ -101,6 +107,7 @@ public:
 private:
     std::string delimiters_;
     bool firstRowHeader_;
+    bool doublePrecision_;
 };
 
 }  // namespace inviwo

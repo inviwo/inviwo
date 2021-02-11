@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENGLCAPABILITIES_H
-#define IVW_OPENGLCAPABILITIES_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/util/capabilities.h>
@@ -46,7 +45,7 @@ public:
     public:
         GLSLShaderVersion();
         GLSLShaderVersion(int num);
-        GLSLShaderVersion(int num, std::string pro);
+        GLSLShaderVersion(int num, std::string_view pro);
 
         const std::string& getProfile() const;
         int getVersion() const;
@@ -100,6 +99,7 @@ public:
 
     const std::string& getRenderString() const;
     const std::string& getVendorString() const;
+    const std::string& getProfileString() const;
     const std::string& getGLVersionString() const;
     const std::string& getGLSLVersionString() const;
     GlVendor getVendor() const;
@@ -111,9 +111,6 @@ public:
     int getMaxArrayVertexAttribs() const;
     int getMaxColorAttachments() const;
     int getNumTexUnits() const;
-
-    static std::string getPreferredProfile();
-    bool setPreferredProfile(std::string, bool);
 
 protected:
     virtual void retrieveStaticInfo() override;
@@ -145,7 +142,6 @@ private:
     }
 
     static bool glewInitialized_;
-    static std::string preferredProfile_;
     static int glVersion_;
     static std::string glVersionStr_;
 
@@ -153,6 +149,7 @@ private:
 
     std::string glVendorStr_;
     std::string glRenderStr_;
+    std::string glProfileStr_;
     std::string glslVersionStr_;
 
     // GLSL
@@ -182,5 +179,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_OPENGLCAPABILITIES_H

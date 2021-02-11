@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -78,7 +78,7 @@ TEST(Python3Scripts, SimpleBufferTest) {
     intBuffer.getEditableRAMRepresentation()->getDataContainer()[3] = 3;
 
     bool status = false;
-    script.run({{"intBuffer", pybind11::cast(static_cast<BufferBase *>(&intBuffer),
+    script.run({{"intBuffer", pybind11::cast(static_cast<BufferBase*>(&intBuffer),
                                              pybind11::return_value_policy::reference)}},
                [&](pybind11::dict dict) {
                    status = true;
@@ -120,9 +120,9 @@ protected:
             EXPECT_EQ(components, buffer->getDataFormat()->getComponents());
 
             buffer->getEditableRepresentation<BufferRAM>()->dispatch<void>([&](auto pBuffer) {
-                auto &vec = pBuffer->getDataContainer();
+                auto& vec = pBuffer->getDataContainer();
                 int expected = 1;
-                for (const auto &v : vec) {
+                for (const auto& v : vec) {
                     for (size_t i = 0; i < pBuffer->getDataFormat()->getComponents(); i++) {
                         EXPECT_EQ(expected++, (int)util::glmcomp(v, i));
                     }

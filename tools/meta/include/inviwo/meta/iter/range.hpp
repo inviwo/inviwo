@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,8 +53,8 @@ private:
 };
 
 template <typename Container>
-Range(Container& c)->Range<typename Container::iterator>;
+Range(Container& c) -> Range<typename Container::iterator>;
 template <typename Container>
-Range(const Container& c)->Range<typename Container::const_iterator>;
+Range(const Container& c) -> Range<typename Container::const_iterator>;
 
 }  // namespace inviwo::meta

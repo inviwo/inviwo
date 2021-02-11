@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LISTPROPERTYWIDGETQT_H
-#define IVW_LISTPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
@@ -76,5 +75,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LISTPROPERTYWIDGETQT_H

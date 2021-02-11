@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QFile>
 #include <QCursor>
 #include <QMouseEvent>
@@ -257,40 +256,39 @@ void InviwoApplicationQt::logQtMessages([[maybe_unused]] QtMsgType type,
     if (msg.contains("Attempt to set a screen on a child window")) return;
 #endif
 
-    QByteArray localMsg = msg.toLocal8Bit();
+    std::string localMsg = std::string(msg.toUtf8().constData());
+    std::string_view file = context.file ? std::string_view{context.file} : std::string_view{};
+    std::string_view function =
+        context.function ? std::string_view{context.function} : std::string_view{};
 
     switch (type) {
         case QtDebugMsg:
-            LogCentral::getPtr()->log("Qt Debug", LogLevel::Info, LogAudience::Developer,
-                                      context.file, context.function, context.line,
-                                      msg.toUtf8().constData());
+            LogCentral::getPtr()->log("Qt Debug", LogLevel::Info, LogAudience::Developer, file,
+                                      function, context.line, localMsg);
 
-            fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
-                    context.line, context.function);
+            fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.c_str(), context.file, context.line,
+                    context.function);
             break;
         case QtWarningMsg:
-            LogCentral::getPtr()->log("Qt Warning", LogLevel::Warn, LogAudience::Developer,
-                                      context.file, context.function, context.line,
-                                      msg.toUtf8().constData());
+            LogCentral::getPtr()->log("Qt Warning", LogLevel::Warn, LogAudience::Developer, file,
+                                      function, context.line, localMsg);
 
-            fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
+            fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.c_str(), context.file,
                     context.line, context.function);
             break;
         case QtCriticalMsg:
-            LogCentral::getPtr()->log("Qt Critical", LogLevel::Error, LogAudience::Developer,
-                                      context.file, context.function, context.line,
-                                      msg.toUtf8().constData());
+            LogCentral::getPtr()->log("Qt Critical", LogLevel::Error, LogAudience::Developer, file,
+                                      function, context.line, localMsg);
 
-            fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
+            fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.c_str(), context.file,
                     context.line, context.function);
             break;
         case QtFatalMsg:
-            LogCentral::getPtr()->log("Qt Fatal", LogLevel::Error, LogAudience::Developer,
-                                      context.file, context.function, context.line,
-                                      msg.toUtf8().constData());
+            LogCentral::getPtr()->log("Qt Fatal", LogLevel::Error, LogAudience::Developer, file,
+                                      function, context.line, localMsg);
 
-            fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
-                    context.line, context.function);
+            fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.c_str(), context.file, context.line,
+                    context.function);
             QMessageBox::critical(nullptr, "Fatal Error", msg);
             util::debugBreak();
             abort();
@@ -298,12 +296,11 @@ void InviwoApplicationQt::logQtMessages([[maybe_unused]] QtMsgType type,
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
         case QtInfoMsg:
-            LogCentral::getPtr()->log("Qt Info", LogLevel::Info, LogAudience::Developer,
-                                      context.file, context.function, context.line,
-                                      msg.toUtf8().constData());
+            LogCentral::getPtr()->log("Qt Info", LogLevel::Info, LogAudience::Developer, file,
+                                      function, context.line, localMsg);
 
-            fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
-                    context.line, context.function);
+            fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.c_str(), context.file, context.line,
+                    context.function);
             break;
 #endif
     }

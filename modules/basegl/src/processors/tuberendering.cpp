@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2020 Inviwo Foundation
+ * Copyright (c) 2015-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -150,9 +150,7 @@ void TubeRendering::process() {
     // avoid this we turn on face culling.
     utilgl::CullFaceState cullstate(GL_BACK);
 
-    const auto draw = [this, hasAnyLine](const Mesh& mesh, Shader& shader, auto test) {
-        if (!hasAnyLine(mesh, test)) return;
-
+    const auto draw = [this](const Mesh& mesh, Shader& shader, auto test) {
         shader.activate();
         TextureUnitContainer units;
         utilgl::bindAndSetUniforms(shader, units, metaColor_);
@@ -180,8 +178,12 @@ void TubeRendering::process() {
     };
 
     for (const auto& mesh : inport_) {
-        draw(*mesh, adjacencyShaders_.getShader(*mesh), hasLineAdjacency);
-        draw(*mesh, shaders_.getShader(*mesh), hasLine);
+        if (hasAnyLine(*mesh, hasLineAdjacency)) {
+            draw(*mesh, adjacencyShaders_.getShader(*mesh), hasLineAdjacency);
+        }
+        if (hasAnyLine(*mesh, hasLine)) {
+            draw(*mesh, shaders_.getShader(*mesh), hasLine);
+        }
     }
     utilgl::deactivateCurrentTarget();
 }

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
 #include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/network/networkvisitor.h>
 
 namespace inviwo {
 
@@ -65,7 +66,8 @@ public:
     size2_t getCustomDimensions() const;
 
     void saveImageLayer();
-    void saveImageLayer(std::string filePath, const FileExtension& extension = FileExtension());
+    void saveImageLayer(std::string_view filePath,
+                        const FileExtension& extension = FileExtension());
     const Layer* getVisibleLayer() const;
 
     std::shared_ptr<const Image> getImage() const;
@@ -80,6 +82,13 @@ public:
      * By setting setEvaluateWhenHidden to true, it will be evaluated regardless.
      */
     void setEvaluateWhenHidden(bool option);
+
+    /**
+     * @brief Accept a NetworkVisitor, the visitor will visit this and then each Property of the
+     * Processor in an undefined order. The Visitor will then visit each Properties's properties and
+     * so on.
+     */
+    virtual void accept(NetworkVisitor& visitor) override;
 
 protected:
     virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,28 +42,30 @@ bool WorkspaceAnnotations::Base64Image::isValid() const {
     return !base64jpeg.empty() && glm::compMul(size) > 0;
 }
 
-void WorkspaceAnnotations::Base64Image::serialize(Serializer &s) const {
+void WorkspaceAnnotations::Base64Image::serialize(Serializer& s) const {
     s.serialize("name", name);
     s.serialize("size", size);
     s.serialize("base64", base64jpeg);
 }
 
-void WorkspaceAnnotations::Base64Image::deserialize(Deserializer &d) {
+void WorkspaceAnnotations::Base64Image::deserialize(Deserializer& d) {
     d.deserialize("name", name);
     d.deserialize("size", size);
     d.deserialize("base64", base64jpeg);
 }
 
-WorkspaceAnnotations::WorkspaceAnnotations() : WorkspaceAnnotations(ImageVector{}) {}
+WorkspaceAnnotations::WorkspaceAnnotations(InviwoApplication* app)
+    : WorkspaceAnnotations(ImageVector{}, app) {}
 
-WorkspaceAnnotations::WorkspaceAnnotations(const ImageVector &canvasImages)
+WorkspaceAnnotations::WorkspaceAnnotations(const ImageVector& canvasImages, InviwoApplication* app)
     : title_{"title", "Title", ""}
     , author_{"author", "Author", ""}
     , tags_{"tags", "Tags", ""}
     , categories_{"categories", "Categories", ""}
     , description_("description", "Description", "", InvalidationLevel::InvalidOutput,
                    PropertySemantics::Multiline)
-    , canvases_{canvasImages} {
+    , canvases_{canvasImages}
+    , app_{app} {
 
     addProperty(title_);
     addProperty(author_);
@@ -72,53 +74,55 @@ WorkspaceAnnotations::WorkspaceAnnotations(const ImageVector &canvasImages)
     addProperty(description_);
 }
 
-void WorkspaceAnnotations::serialize(Serializer &s) const {
+void WorkspaceAnnotations::serialize(Serializer& s) const {
     try {
         PropertyOwner::serialize(s);
         if (!canvases_.empty()) {
             s.serialize("Canvases", canvases_, "CanvasImage");
         }
-    } catch (const Exception &e) {
+    } catch (const Exception& e) {
         util::log(e.getContext(), e.getMessage(), LogLevel::Error);
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         LogWarn(e.what());
     }
 }
 
-void WorkspaceAnnotations::deserialize(Deserializer &d) {
+void WorkspaceAnnotations::deserialize(Deserializer& d) {
     canvases_.clear();
     // an error is not critical as default values will be used.
     try {
         PropertyOwner::deserialize(d);
         d.deserialize("Canvases", canvases_, "CanvasImage");
-    } catch (const Exception &e) {
+    } catch (const Exception& e) {
         util::log(e.getContext(), e.getMessage(), LogLevel::Error);
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         LogError(e.what());
     }
 }
 
-void WorkspaceAnnotations::setTitle(const std::string &title) { title_ = title; }
+InviwoApplication* WorkspaceAnnotations::getInviwoApplication() { return app_; }
+
+void WorkspaceAnnotations::setTitle(const std::string& title) { title_ = title; }
 
 std::string WorkspaceAnnotations::getTitle() const { return title_; }
 
-void WorkspaceAnnotations::setAuthor(const std::string &author) { author_ = author; }
+void WorkspaceAnnotations::setAuthor(const std::string& author) { author_ = author; }
 
 std::string WorkspaceAnnotations::getAuthor() const { return author_; }
 
-void WorkspaceAnnotations::setTags(const std::string &tags) { tags_ = tags; }
+void WorkspaceAnnotations::setTags(const std::string& tags) { tags_ = tags; }
 
 std::string WorkspaceAnnotations::getTags() const { return tags_; }
 
-void WorkspaceAnnotations::setCategories(const std::string &cat) { categories_ = cat; }
+void WorkspaceAnnotations::setCategories(const std::string& cat) { categories_ = cat; }
 
 std::string WorkspaceAnnotations::getCategories() const { return categories_; }
 
-void WorkspaceAnnotations::setDescription(const std::string &desc) { description_ = desc; }
+void WorkspaceAnnotations::setDescription(const std::string& desc) { description_ = desc; }
 
 std::string WorkspaceAnnotations::getDescription() const { return description_; }
 
-void WorkspaceAnnotations::setCanvasImages(const ImageVector &canvases) { canvases_ = canvases; }
+void WorkspaceAnnotations::setCanvasImages(const ImageVector& canvases) { canvases_ = canvases; }
 
 const WorkspaceAnnotations::ImageVector WorkspaceAnnotations::getCanvasImages() const {
     return canvases_;

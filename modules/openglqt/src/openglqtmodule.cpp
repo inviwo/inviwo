@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2020 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,9 @@
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/util/rendercontext.h>
 
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
+
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <modules/opengl/canvasprocessorgl.h>
@@ -42,6 +45,9 @@
 #include <modules/openglqt/canvasprocessorwidgetqt.h>
 #include <modules/openglqt/canvasqt.h>
 #include <modules/openglqt/openglqtmenu.h>
+#include <modules/openglqt/glslsyntaxhighlight.h>
+#include <modules/openglqt/properties/glslpropertywidgetqt.h>
+#include <modules/openglqt/properties/glslfilepropertywidgetqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -53,7 +59,10 @@
 namespace inviwo {
 
 OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
-    : InviwoModule(app, "OpenGLQt"), ProcessorNetworkEvaluationObserver() {
+    : InviwoModule{app, "OpenGLQt"}
+    , ProcessorNetworkEvaluationObserver{}
+    , sharedCanvas_{"DefaultContext"} {
+
     if (!qApp) {
         throw ModuleInitException("QApplication must be constructed before OpenGLQtModule",
                                   IVW_CONTEXT);
@@ -66,15 +75,14 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     }
 
     // Create GL Context
-    CanvasQt::defineDefaultContextFormat();
-    sharedCanvas_ = util::make_unique<CanvasQt>(size2_t(16, 16), "Default");
+    sharedCanvas_.initializeGL();
 
     if (!glFenceSync) {  // Make sure we have setup the opengl function pointers.
         throw OpenGLInitException("Unable to initiate OpenGL", IVW_CONTEXT);
     }
 
-    static_cast<CanvasQt*>(sharedCanvas_.get())->defaultGLState();
-    holder_ = RenderContext::getPtr()->setDefaultRenderContext(sharedCanvas_.get());
+    CanvasGL::defaultGLState();
+    holder_ = RenderContext::getPtr()->setDefaultRenderContext(&sharedCanvas_);
 
     registerProcessorWidget<CanvasProcessorWidgetQt, CanvasProcessorGL>();
     registerCapabilities(util::make_unique<OpenGLQtCapabilities>());
@@ -86,6 +94,11 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     }
 
     app->getProcessorNetworkEvaluator()->addObserver(this);
+
+    registerSettings(std::make_unique<GLSLSyntaxHighlight>());
+
+    registerPropertyWidget<GLSLFilePropertyWidgetQt, FileProperty>(PropertySemantics::ShaderEditor);
+    registerPropertyWidget<GLSLPropertyWidgetQt, StringProperty>(PropertySemantics::ShaderEditor);
 }
 
 OpenGLQtModule::~OpenGLQtModule() {
@@ -98,7 +111,6 @@ OpenGLQtModule::~OpenGLQtModule() {
 void OpenGLQtModule::onProcessorNetworkEvaluationBegin() {
     // This is called before the network is evaluated, here we make sure that the default context is
     // active
-
     RenderContext::getPtr()->activateDefaultRenderContext();
 }
 void OpenGLQtModule::onProcessorNetworkEvaluationEnd() {
