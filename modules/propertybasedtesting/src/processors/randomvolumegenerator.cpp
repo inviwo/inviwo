@@ -48,7 +48,8 @@ RandomVolumeGenerator::RandomVolumeGenerator()
     : Processor()
     , outport_("volume")
     , seed_("seed", "Seed", 42, 0, INT_MAX)
-    , numPoints_("numPoints", "Number of Points", 5, 1, 500) {
+    , numPoints_("numPoints", "Number of Points", 5, 1, 500)
+    , resolution_("resolution", "Resolution", 32, 1, 1024) {
 
     addPort(outport_);
     addProperty(seed_);
@@ -59,7 +60,7 @@ void RandomVolumeGenerator::process() {
     std::default_random_engine generator(seed_.get());
     std::uniform_real_distribution<double> dis(0.0, 1.0);
 
-    const size3_t dimensions(1 << 5);
+    const size3_t dimensions(resolution_.get());
     const mat3 basis(1.0);  // identity matrix
 
     std::vector<dvec3> points(numPoints_.get());

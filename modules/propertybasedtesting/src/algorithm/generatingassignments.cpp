@@ -17,6 +17,6 @@ bool PropertyAssignment::isApplied() const { return isDeactivated() || doIsAppli
 
 PropertyAssignment::PropertyAssignment(const bool* deactivated) : deactivated_(deactivated) {}
 
-} // namespace pbt
+}  // namespace pbt
 
 }  // namespace inviwo

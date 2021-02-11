@@ -52,9 +52,8 @@ protected:
     const std::string classIdentifier_;
 };
 
-template<typename T>
-class TestPropertyFactoryObjectTemplate
-		: public TestPropertyFactoryObject {
+template <typename T>
+class TestPropertyFactoryObjectTemplate : public TestPropertyFactoryObject {
 public:
     TestPropertyFactoryObjectTemplate() : TestPropertyFactoryObject(T::classIdentifier()) {}
     virtual ~TestPropertyFactoryObjectTemplate() = default;
@@ -63,11 +62,12 @@ public:
 };
 
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyFactory
-		: public StandardFactory<TestProperty, TestPropertyFactoryObject> {
-	std::vector<std::unique_ptr<TestPropertyFactoryObject>> factoryObjects_;
+    : public StandardFactory<TestProperty, TestPropertyFactoryObject> {
+    std::vector<std::unique_ptr<TestPropertyFactoryObject>> factoryObjects_;
+
 public:
-	TestPropertyFactory();
-	virtual ~TestPropertyFactory() = default;
+    TestPropertyFactory();
+    virtual ~TestPropertyFactory() = default;
 };
 
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyCompositeFactoryObject {
@@ -80,14 +80,14 @@ public:
 };
 
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyCompositeFactory
-		: public StandardFactory<TestPropertyComposite, TestPropertyCompositeFactoryObject> {
-	std::unique_ptr<TestPropertyCompositeFactoryObject> obj_;
+    : public StandardFactory<TestPropertyComposite, TestPropertyCompositeFactoryObject> {
+    std::unique_ptr<TestPropertyCompositeFactoryObject> obj_;
+
 public:
-	TestPropertyCompositeFactory();
-	virtual ~TestPropertyCompositeFactory() = default;
+    TestPropertyCompositeFactory();
+    virtual ~TestPropertyCompositeFactory() = default;
 };
 
+}  // namespace pbt
 
-} // namespace pbt
-
-} // namespace inviwo
+}  // namespace inviwo

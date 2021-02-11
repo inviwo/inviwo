@@ -41,9 +41,8 @@ namespace inviwo {
 namespace pbt {
 
 void IVW_MODULE_PROPERTYBASEDTESTING_API propertyBasedTestingReport(
-        std::ostream&, const std::vector<TestingError>&,
-        const std::vector<const TestProperty*>&);
+    std::ostream&, const std::vector<TestingError>&, const std::vector<const TestProperty*>&);
 
-} // namespace pbt
+}  // namespace pbt
 
 }  // namespace inviwo

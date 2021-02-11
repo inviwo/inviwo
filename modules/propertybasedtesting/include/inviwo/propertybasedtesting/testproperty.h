@@ -45,7 +45,7 @@ namespace inviwo {
 
 namespace pbt {
 
-template<typename T>
+template <typename T>
 class TestPropertyFactoryObjectTemplate;
 
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyObservable;
@@ -58,7 +58,8 @@ public:
     virtual ~TestPropertyObserver() = default;
 };
 
-class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyObservable : public Observable<TestPropertyObserver> {
+class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyObservable
+    : public Observable<TestPropertyObserver> {
 protected:
     TestPropertyObservable() = default;
     void notifyObserversAboutChange() {
@@ -67,10 +68,10 @@ protected:
     virtual ~TestPropertyObservable() = default;
 };
 
-/** 
+/**
  * A NetworkPath<T> is a reference to a Processor or Property of type T in the
  * ProcessorNetwork. If the pointer to the object is not known (i.e.
- * after deserialization) or one wants to deserialize a NetworkPath, 
+ * after deserialization) or one wants to deserialize a NetworkPath,
  * the corresponding ProcessorNetwork must be provided via
  * setNetwork(...) before the deserialization/first access.
  */
@@ -79,7 +80,8 @@ class NetworkPath : public Serializable {
 private:
     mutable std::string path_;
     mutable T* ptr_;
-    bool isProcessor_; // dynamic, since this may not be clear from T alone, e.g. if T is PropertyOwner 
+    bool isProcessor_;  // dynamic, since this may not be clear from T alone, e.g. if T is
+                        // PropertyOwner
 
     ProcessorNetwork* pn_;
 
@@ -90,86 +92,83 @@ private:
         } else {
             if (auto p = dynamic_cast<Processor*>(ptr_)) {
                 IVW_ASSERT(isProcessor_,
-                        "NetworkPath: ptr points to Processor but isProcessor_ disagrees");
+                           "NetworkPath: ptr points to Processor but isProcessor_ disagrees");
                 return path_ = p->getIdentifier();
             } else {
-                IVW_ASSERT(!isProcessor_,
-                        "NetworkPath: ptr does not point to Processor but isProcessor_ disagrees");
+                IVW_ASSERT(
+                    !isProcessor_,
+                    "NetworkPath: ptr does not point to Processor but isProcessor_ disagrees");
                 auto p2 = dynamic_cast<Property*>(ptr_);
                 IVW_ASSERT(p2 != nullptr,
-                        "NetworkPath: ptr points not to Processor and not to a Property");
+                           "NetworkPath: ptr points not to Processor and not to a Property");
                 return path_ = p2->getPath();
             }
         }
     }
+
 public:
     bool operator<(const NetworkPath& other) const { return path() < other.path(); }
     // only for deserialization
     NetworkPath() = default;
 
     NetworkPath(T* ptr, ProcessorNetwork* pn = nullptr)
-        : path_("")
-        , ptr_(ptr)
-        , isProcessor_(dynamic_cast<Processor*>(ptr) != nullptr)
-        , pn_(pn) {}
+        : path_(""), ptr_(ptr), isProcessor_(dynamic_cast<Processor*>(ptr) != nullptr), pn_(pn) {}
     void setNetwork(ProcessorNetwork* pn) {
         if (pn == nullptr) {
             path_ = path();
             ptr_ = nullptr;
-			pn_ = nullptr;
+            pn_ = nullptr;
         } else {
-			pn_ = pn;
-			maybeGet();
-		}
+            pn_ = pn;
+            maybeGet();
+        }
     }
 
-	/*
-	 * Is true, if and only if the pointer to the referenced object or the
-	 * the pointer to the network is known (and in the latter case, when the
-	 * path is not empty).
-	 */
-	bool isValid() const {
-		return ptr_ != nullptr || pn_ != nullptr;
-	}
-	/*
-	 * Fails iff !isValid()
-	 * Returns nullptr, if and only if ptr_ is null and the network does
-	 * not contain the referenced object.
-	 */
-	T* maybeGet() const {
+    /*
+     * Is true, if and only if the pointer to the referenced object or the
+     * the pointer to the network is known (and in the latter case, when the
+     * path is not empty).
+     */
+    bool isValid() const { return ptr_ != nullptr || pn_ != nullptr; }
+    /*
+     * Fails iff !isValid()
+     * Returns nullptr, if and only if ptr_ is null and the network does
+     * not contain the referenced object.
+     */
+    T* maybeGet() const {
         if (ptr_ == nullptr) {
             IVW_ASSERT(pn_ != nullptr,
-                "NetworkPath::get(): \"" + path_ + "\" ptr and network are both nullptr");
+                       "NetworkPath::get(): \"" + path_ + "\" ptr and network are both nullptr");
             if (isProcessor_) {
                 Processor* const t = pn_->getProcessorByIdentifier(path_);
-				if(t == nullptr) { // processor does not exist in the network
-					return nullptr;
-				}
+                if (t == nullptr) {  // processor does not exist in the network
+                    return nullptr;
+                }
                 ptr_ = dynamic_cast<T*>(t);
-                IVW_ASSERT(ptr_ != nullptr,
-                    "NetworkPath::get(): \"" + path_ +"\" referenced processor has wrong type");
+                IVW_ASSERT(ptr_ != nullptr, "NetworkPath::get(): \"" + path_ +
+                                                "\" referenced processor has wrong type");
                 return ptr_;
             } else {
                 Property* const tmp = pn_->getProperty(path_);
-				if(tmp == nullptr) { // property does not exist in the network
-					return nullptr;
-				}
+                if (tmp == nullptr) {  // property does not exist in the network
+                    return nullptr;
+                }
                 ptr_ = dynamic_cast<T*>(tmp);
-                IVW_ASSERT(ptr_ != nullptr,
-                    "NetworkPath::get(): \"" + path_ + "\" referenced object has wrong type");
+                IVW_ASSERT(ptr_ != nullptr, "NetworkPath::get(): \"" + path_ +
+                                                "\" referenced object has wrong type");
             }
         }
         return ptr_;
-	}
-	/*
-	 * Note: only works under the assumption that maybeGet() does not
-	 * return nullptr
-	 */
+    }
+    /*
+     * Note: only works under the assumption that maybeGet() does not
+     * return nullptr
+     */
     T* get() const {
-		T* const res = maybeGet();
-		IVW_ASSERT(res != nullptr,
-				"NetworkPath::get(): \"" + path_ + "\" The referenced object does not exist in the network");
-		return res;
+        T* const res = maybeGet();
+        IVW_ASSERT(res != nullptr, "NetworkPath::get(): \"" + path_ +
+                                       "\" The referenced object does not exist in the network");
+        return res;
     }
     operator T*() const { return get(); }
     T* operator->() const { return get(); }
@@ -201,10 +200,8 @@ public:
  *  - storing and resetting the value of the property before the tests have started.
  * Instantiation happes mainly by createTestableProperty (see below).
  */
-class IVW_MODULE_PROPERTYBASEDTESTING_API TestProperty
-        : public Serializable
-        , public TestPropertyObservable
-        {
+class IVW_MODULE_PROPERTYBASEDTESTING_API TestProperty : public Serializable,
+                                                         public TestPropertyObservable {
 private:
     std::string displayName_, identifier_;
     NetworkPath<BoolCompositeProperty> boolComp_ = nullptr;
@@ -231,7 +228,7 @@ public:
      */
     void setNetwork(ProcessorNetwork*);
     /*
-     * returns the total number of checked (enabled) 
+     * returns the total number of checked (enabled)
      * testable properties (i.e. excluding composite properties)
      */
     virtual size_t totalNumCheckedProperties() const = 0;
@@ -276,8 +273,8 @@ public:
      * returns the PropertyEffect expected given the two test cases and the
      * set PropertyEffects of the contained currently active testable properties
      */
-    virtual PropertyEffect getPropertyEffect(
-        std::shared_ptr<TestResult>, std::shared_ptr<TestResult>) const = 0;
+    virtual PropertyEffect getPropertyEffect(std::shared_ptr<TestResult>,
+                                             std::shared_ptr<TestResult>) const = 0;
 
     /*
      * writes the values of all contained currently active testable properties
@@ -301,8 +298,7 @@ public:
      * of assignments for each contained currently active testable property
      */
     virtual std::vector<
-        std::pair<pbt::AssignmentComparator,
-        std::vector<std::shared_ptr<PropertyAssignment>>>>
+        std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
     generateAssignmentsCmp(std::default_random_engine&) const = 0;
     virtual ~TestProperty();
 };
@@ -312,9 +308,8 @@ public:
  * effect of each of the components.
  */
 template <typename T, size_t numComp = DataFormat<T>::components()>
-PropertyEffect propertyEffect(
-    const T& val_old, const T& val_new,
-    const std::array<pbt::PropertyEffect, numComp>& selectedEffects);
+PropertyEffect propertyEffect(const T& val_old, const T& val_new,
+                              const std::array<pbt::PropertyEffect, numComp>& selectedEffects);
 
 /*
  * Creates and returns a TestProperty for an arbitrary property, if possible.
@@ -322,7 +317,7 @@ PropertyEffect propertyEffect(
  * the properties in PropertyTypes (see below).
  */
 std::unique_ptr<TestProperty> IVW_MODULE_PROPERTYBASEDTESTING_API
-    createTestableProperty(Property* prop);
+createTestableProperty(Property* prop);
 
 /*
  * Adds necessary callbacks for the proper behavior of the BoolComps of/in a
@@ -336,10 +331,8 @@ void IVW_MODULE_PROPERTYBASEDTESTING_API makeOnChange(BoolCompositeProperty* con
  * Derived from TestProperty, for all PropertyOwners supporting
  * getDisplayName and getIdentifier, i.e. CompositeProperty and Processor
  */
-class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyComposite
-        : public TestProperty
-        , public TestPropertyObserver
-        {
+class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyComposite : public TestProperty,
+                                                                  public TestPropertyObserver {
     NetworkPath<PropertyOwner> propertyOwner_;
     std::vector<std::unique_ptr<TestProperty>> subProperties;
 
@@ -375,9 +368,8 @@ public:
 
     std::string getValueString(std::shared_ptr<TestResult> testResult) const override;
 
-    PropertyEffect getPropertyEffect(
-        std::shared_ptr<TestResult> newTestResult,
-        std::shared_ptr<TestResult> oldTestResult) const override;
+    PropertyEffect getPropertyEffect(std::shared_ptr<TestResult> newTestResult,
+                                     std::shared_ptr<TestResult> oldTestResult) const override;
 
     std::ostream& ostr(std::ostream& out, std::shared_ptr<TestResult> newTestResult,
                        std::shared_ptr<TestResult> oldTestResult) const override;
@@ -392,8 +384,8 @@ public:
     std::optional<typename T::value_type> getDefaultValue(const T* prop) const;
 
     void storeDefault();
-    std::vector<std::pair<pbt::AssignmentComparator,
-        std::vector<std::shared_ptr<PropertyAssignment>>>>
+    std::vector<
+        std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
     generateAssignmentsCmp(std::default_random_engine&) const override;
 };
 
@@ -417,6 +409,7 @@ class TestPropertyTyped : public TestProperty {
                   const TestProperty*) const override;
 
     TestPropertyTyped() = default;
+
 public:
     OptionPropertyInt* getEffectOption(size_t) const;
     T* getTypedProperty() const;
@@ -437,9 +430,8 @@ public:
 
     std::string getValueString(std::shared_ptr<TestResult>) const override;
 
-    PropertyEffect getPropertyEffect(
-        std::shared_ptr<TestResult> newTestResult,
-        std::shared_ptr<TestResult> oldTestResult) const override;
+    PropertyEffect getPropertyEffect(std::shared_ptr<TestResult> newTestResult,
+                                     std::shared_ptr<TestResult> oldTestResult) const override;
 
     std::ostream& ostr(std::ostream&, std::shared_ptr<TestResult>,
                        std::shared_ptr<TestResult>) const override;
@@ -453,22 +445,19 @@ public:
     void deserialize(Deserializer& s) override;
 
     void storeDefault();
-    std::vector<std::pair<pbt::AssignmentComparator,
-        std::vector<std::shared_ptr<PropertyAssignment>>>>
+    std::vector<
+        std::pair<pbt::AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>
     generateAssignmentsCmp(std::default_random_engine&) const override;
 };
 
-
 template <typename T, size_t numComp = DataFormat<T>::components()>
-PropertyEffect propertyEffect(
-    const T& val_old, const T& val_new,
-    const std::array<pbt::PropertyEffect, numComp>& selectedEffects) {
+PropertyEffect propertyEffect(const T& val_old, const T& val_new,
+                              const std::array<pbt::PropertyEffect, numComp>& selectedEffects) {
 
     PropertyEffect res = PropertyEffect::ANY;
     for (size_t i = 0; i < numComp; i++) {
-        auto compEff = propertyEffect(selectedEffects[i],
-                                            GetComponent<T>::get(val_new, i),
-                                            GetComponent<T>::get(val_old, i));
+        auto compEff = propertyEffect(selectedEffects[i], GetComponent<T>::get(val_new, i),
+                                      GetComponent<T>::get(val_old, i));
         res = pbt::combine(res, compEff);
     }
     return res;
@@ -500,6 +489,6 @@ std::optional<typename T::value_type> TestPropertyComposite::getDefaultValue(con
  */
 using PropertyTypes = std::tuple<IntProperty, FloatProperty, DoubleProperty, IntMinMaxProperty>;
 
-} // namespace pbt
+}  // namespace pbt
 
 }  // namespace inviwo

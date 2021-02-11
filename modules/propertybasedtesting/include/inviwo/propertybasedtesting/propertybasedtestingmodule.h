@@ -36,7 +36,7 @@
 namespace inviwo {
 
 class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyBasedTestingModule : public InviwoModule {
-	pbt::TestPropertyFactory testPropertyFactory_;
+    pbt::TestPropertyFactory testPropertyFactory_;
     pbt::TestPropertyCompositeFactory testPropertyCompositeFactory_;
 
 public:

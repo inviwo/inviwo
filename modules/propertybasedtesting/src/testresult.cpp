@@ -46,6 +46,6 @@ void testingErrorToBinary(std::vector<unsigned char>& output,
     output.insert(output.end(), data.begin(), data.end());
 }
 
-} // namespace pbt
+}  // namespace pbt
 
-} // namespace inviwo
+}  // namespace inviwo

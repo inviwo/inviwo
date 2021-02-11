@@ -66,34 +66,33 @@ auto generateImageFromData(const std::vector<unsigned char>& data) {
     size2_t dimensions;
     // determine dimensions: find smallest power of two that is at least as large as
     // data.size(), and split it as evenly as possible, i.e. find a,b s.t.
-	// 2^a*2^b >= data.size(), a>=b, a<=b+1. Find x=2^a,y<=2^b, x*y>=data.size()
+    // 2^a*2^b >= data.size(), a>=b, a<=b+1. Find x=2^a,y<=2^b, x*y>=data.size()
     {
-		// take the ceil of data.size()/sizeof(T)
-        const size_t numElements = std::max(static_cast<size_t>(1),
-				(data.size() + sizeof(T) - 1) / sizeof(T));
+        // take the ceil of data.size()/sizeof(T)
+        const size_t numElements =
+            std::max(static_cast<size_t>(1), (data.size() + sizeof(T) - 1) / sizeof(T));
         size_t e;
-        for(e = 0; (1ull << e) < numElements; e++) {}
-        const size_t b = e / 2, a = e - b; // split e into a, b as above
+        for (e = 0; (1ull << e) < numElements; e++) {
+        }
+        const size_t b = e / 2, a = e - b;  // split e into a, b as above
         dimensions.x = 1ull << b;
         dimensions.y = 1ull << a;
         while (dimensions.x * (dimensions.y - 1) >= numElements) {
-			dimensions.y--;
-		}
+            dimensions.y--;
+        }
     }
 
     T* const imageData = new T[dimensions.x * dimensions.y];
-	unsigned char* const rawImageData = reinterpret_cast<unsigned char*>(imageData);
-	std::copy(data.begin(), data.end(), rawImageData);
+    unsigned char* const rawImageData = reinterpret_cast<unsigned char*>(imageData);
+    std::copy(data.begin(), data.end(), rawImageData);
     // pad the remaining image with 0xFF
-    memset(rawImageData + data.size(), 0xFF,
-           dimensions.x * dimensions.y * sizeof(T) - data.size());
+    memset(rawImageData + data.size(), 0xFF, dimensions.x * dimensions.y * sizeof(T) - data.size());
 
     auto errLayerRAM = std::make_shared<LayerRAMPrecision<T>>(
-			imageData, dimensions, LayerType::Color, swizzleMask(F::comp));
+        imageData, dimensions, LayerType::Color, swizzleMask(F::comp));
     auto errLayer = std::make_shared<Layer>(errLayerRAM);
     return std::make_shared<Image>(errLayer);
 }
-
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo PropertyAnalyzer::processorInfo_{
@@ -124,8 +123,6 @@ void PropertyAnalyzer::onProcessorNetworkDidRemoveConnection(const PortConnectio
     updateProcessors();
 }
 void PropertyAnalyzer::updateProcessors() {
-    std::cerr << "PropertyAnalyzer::updateProcessors() @ " << this << std::endl;
-
     processors_.insert(std::make_move_iterator(inactiveProcessors_.begin()),
                        std::make_move_iterator(inactiveProcessors_.end()));
     inactiveProcessors_.clear();
@@ -150,13 +147,10 @@ void PropertyAnalyzer::updateProcessors() {
     for (const auto& processor : processorsToRemove) {
         auto& testProp = processors_[processor];
 
-        std::cerr << "inactive " << processor << " "
-                  << getNetwork()->getProcessorByIdentifier(processor)->getDisplayName()
-                  << std::endl;
         testProp->getBoolComp()->setVisible(false);
 
         IVW_ASSERT(inactiveProcessors_.count(processor) == 0,
-            "PropertyAnalyzer: disconnected inactive Processor???");
+                   "PropertyAnalyzer: disconnected inactive Processor???");
         inactiveProcessors_.emplace(processor, std::move(testProp));
         processors_.erase(processor);
     }
@@ -165,7 +159,8 @@ void PropertyAnalyzer::updateProcessors() {
     for (const auto& procId : visitedProcessors) {
         if (processors_.count(procId) == 0) {
             Processor* const processor = getNetwork()->getProcessorByIdentifier(procId);
-            IVW_ASSERT(processor != nullptr,
+            IVW_ASSERT(
+                processor != nullptr,
                 "PropertyAnalyzer: Predecessor Processor with given Identifier does not exist");
 
             size_t numTestableProperties = 0;
@@ -177,8 +172,6 @@ void PropertyAnalyzer::updateProcessors() {
 
             // Skip processors with no testable property
             if (numTestableProperties == 0) continue;
-            std::cerr << "constructing " << processor << " " << processor->getDisplayName()
-                      << std::endl;
 
             auto comp_ = std::make_unique<TestPropertyComposite>(processor);
             TestPropertyComposite* const comp = comp_.get();
@@ -216,8 +209,8 @@ PropertyAnalyzer::PropertyAnalyzer(InviwoApplication* app)
     , description_("description", "Description", "", InvalidationLevel::InvalidOutput,
                    PropertySemantics::Multiline) {
 
-	m_id = curr_id++;
-	currAlive_.emplace(m_id);
+    m_id = curr_id++;
+    currAlive_.emplace(m_id);
 
     countPixelsButton_.onChange([this]() {
         NetworkLock lock(this);
@@ -277,7 +270,6 @@ void PropertyAnalyzer::onTestPropertyChange() {
     for (const auto& [proc, prop] : processors_) {
         if (prop->getBoolComp()->isChecked()) desc += prop->textualDescription() + '\n';
     }
-    std::cerr << "textual Description:\n" << desc << std::endl;
     description_.set(desc);
 }
 
@@ -299,7 +291,6 @@ void PropertyAnalyzer::serialize(Serializer& s) const {
 }
 
 void PropertyAnalyzer::deserialize(Deserializer& d) {
-    std::cerr << "deserializing PropertyAnalyzer" << std::endl;
     Processor::deserialize(d);
 
     size_t num;
@@ -315,8 +306,6 @@ void PropertyAnalyzer::deserialize(Deserializer& d) {
     }
     inactiveProcessors_ = std::move(tmp);
     processors_.clear();
-
-    std::cerr << "PropertyAnalyzer::deserialize() DONE" << std::endl;
 }
 
 void PropertyAnalyzer::setNetwork(ProcessorNetwork* pn) {
@@ -327,7 +316,7 @@ void PropertyAnalyzer::setNetwork(ProcessorNetwork* pn) {
 
 void PropertyAnalyzer::initTesting() {
     IVW_ASSERT(remainingTests.empty(),
-        "PropertyAnalyzer: initTesting() in spite of remaining tests");
+               "PropertyAnalyzer: initTesting() in spite of remaining tests");
     deactivated_.clear();
     testResults.clear();
 
@@ -338,13 +327,11 @@ void PropertyAnalyzer::initTesting() {
     for (const auto& [processor, comp] : processors_) {
         if (comp->getBoolComp()->isChecked()) {
             props_.emplace_back(comp.get());
-            // std::cerr << "Checked: " << comp->getIdentifier() << " @ " <<
-            // processor->getIdentifier() << std::endl;
         }
     }
 
     // create Image with (empty) results
-	outputImage_ = generateImageFromData<DataFormat<glm::u8vec4>>({});
+    outputImage_ = generateImageFromData<DataFormat<glm::u8vec4>>({});
     if (props_.empty()) {
         return;
     }
@@ -354,7 +341,7 @@ void PropertyAnalyzer::initTesting() {
         prop->storeDefault();
     }
 
-    std::default_random_engine rng(42); // make rng deterministic for regression testing
+    std::default_random_engine rng(42);  // make rng deterministic for regression testing
 
     const auto [assignments, assignmentsComp] = [&]() {
         std::vector<
@@ -376,7 +363,8 @@ void PropertyAnalyzer::initTesting() {
     }();
 
     if (assignments.empty()) {
-        std::cerr << "not testing because there are no assignments generated" << std::endl;
+        util::log(IVW_CONTEXT, "Did not generate any assignments.", LogLevel::Warn,
+                  LogAudience::User);
         return;
     }
 
@@ -398,14 +386,13 @@ void PropertyAnalyzer::initTesting() {
     for (const auto& d : deactivated_) (*d) = false;
     last_deactivated = -1;
 
-    std::cerr << "remainingTests.size() = " << remainingTests.size() << std::endl;
     util::log(
         IVW_CONTEXT,
         std::string("Testing ") + std::to_string(remainingTests.size()) + " configurations...",
         LogLevel::Info, LogAudience::User);
 
     if (!remainingTests.empty()) {
-		// enqueue next test
+        // enqueue next test
         dispatchFrontAndForget([this]() { setupTest(remainingTests.front()); });
     }
 }
@@ -421,9 +408,8 @@ std::ostream& printError(std::ostream& out, const std::vector<TestProperty*>& pr
 }
 
 void PropertyAnalyzer::checkTestResults() {
-    std::cerr << "checking test results" << std::endl;
     IVW_ASSERT(remainingTests.empty(),
-        "PropertyAnalyzer: checking test results() in spite of remaining tests");
+               "PropertyAnalyzer: checking test results() in spite of remaining tests");
     std::vector<TestingError> errors;
 
     size_t numComparable = 0;
@@ -439,8 +425,7 @@ void PropertyAnalyzer::checkTestResults() {
                 propEff = combine(propEff, tmp);
             }
 
-            if (propEff == pbt::PropertyEffect::NOT_COMPARABLE)
-                continue;
+            if (propEff == pbt::PropertyEffect::NOT_COMPARABLE) continue;
 
             numComparable++;
 
@@ -481,11 +466,11 @@ void PropertyAnalyzer::checkTestResults() {
         // write report
         const auto reportFilePath = errFileDir / std::string("report.html");
         std::ofstream reportFile(reportFilePath.string(), std::ios::out);
-        pbt::propertyBasedTestingReport(reportFile, errors, [this](){
-                std::vector<const TestProperty*> res;
-                std::copy(props_.begin(), props_.end(), std::back_inserter(res));
-                return res;
-            }());
+        pbt::propertyBasedTestingReport(reportFile, errors, [this]() {
+            std::vector<const TestProperty*> res;
+            std::copy(props_.begin(), props_.end(), std::back_inserter(res));
+            return res;
+        }());
         reportFile.close();
         util::log(IVW_CONTEXT, "Wrote report to " + reportFilePath.string(), LogLevel::Info,
                   LogAudience::User);
@@ -509,7 +494,8 @@ void PropertyAnalyzer::checkTestResults() {
     if (currently_condensing) {
         if (errors.empty()) {
             IVW_ASSERT(last_deactivated != -1,
-                "PropertyAnalyzer: Condensing, but there are neither errors nor a previously deactivated Property");
+                       "PropertyAnalyzer: Condensing, but there are neither errors nor a "
+                       "previously deactivated Property");
 
             (*deactivated_[last_deactivated]) = false;
         }
@@ -532,9 +518,9 @@ void PropertyAnalyzer::checkTestResults() {
             testResults.clear();
             // kick off testing
             if (!remainingTests.empty()) {
-				// enqueue first test
+                // enqueue first test
                 dispatchFrontAndForget([this]() { setupTest(remainingTests.front()); });
-			}
+            }
         }
     }
     std::cout << "done checking Test results" << std::endl;
@@ -548,7 +534,7 @@ bool PropertyAnalyzer::testIsSetUp(const Test& test) const {
 void PropertyAnalyzer::setupTest(const Test& test) {
     NetworkLock lock(this);
     IVW_ASSERT(testingState == TestingState::NONE,
-        "PropertyAnalyzer: setting up test while testingState is wrong");
+               "PropertyAnalyzer: setting up test while testingState is wrong");
 
     resetAllProps();
 
@@ -560,8 +546,8 @@ void PropertyAnalyzer::setupTest(const Test& test) {
     // Invalidate all predecessors in order to force the update of their output
     for (Processor* const processor : util::getPredecessors(this)) {
         if (processor == this) continue;
-		processor->invalidate(InvalidationLevel::InvalidOutput);
-	}
+        processor->invalidate(InvalidationLevel::InvalidOutput);
+    }
 
     dispatchPool([this]() {
         // necessary because of synchronicity issues, TODO: find better solution
@@ -576,26 +562,26 @@ void PropertyAnalyzer::setupTest(const Test& test) {
 size_t countPixels(std::shared_ptr<const Image> img, const dvec4& col, const bool useDepth) {
     auto imgRam = img->getRepresentation<ImageRAM>();
     auto layerRAM = useDepth ? imgRam->getDepthLayerRAM() : imgRam->getColorLayerRAM();
-	return layerRAM->dispatch<size_t, dispatching::filter::All>([col,useDepth](auto lr) {
-			using ValueType = util::PrecisionValueType<decltype(lr)>;
-			using Primitive = typename DataFormat<ValueType>::primitive;
-			const auto dim = lr->getDimensions();
-			const ValueType* data = lr->getDataTyped();
-			return static_cast<size_t>(std::count_if(data, data + dim.x*dim.y,
-				[useDepth,col](const auto x) {
-					if(useDepth) {
-						const Primitive alpha = pbt::GetComponent<ValueType>::get(x,0);
-						if constexpr (std::is_integral_v<ValueType>) {
-							return alpha == std::numeric_limits<ValueType>::max();
-						} else {
-							return glm::abs(alpha - 1) <= util::epsilon<Primitive>();
-						}
-					 } else {
-						const auto d = util::glm_convert_normalized<dvec4>(x) - col;
-						return glm::dot(d,d) <= 1e-7;
-					}
-				}));
-		});
+    return layerRAM->dispatch<size_t, dispatching::filter::All>([col, useDepth](auto lr) {
+        using ValueType = util::PrecisionValueType<decltype(lr)>;
+        using Primitive = typename DataFormat<ValueType>::primitive;
+        const auto dim = lr->getDimensions();
+        const ValueType* data = lr->getDataTyped();
+        return static_cast<size_t>(
+            std::count_if(data, data + dim.x * dim.y, [useDepth, col](const auto x) {
+                if (useDepth) {
+                    const Primitive alpha = pbt::GetComponent<ValueType>::get(x, 0);
+                    if constexpr (std::is_integral_v<ValueType>) {
+                        return alpha == std::numeric_limits<ValueType>::max();
+                    } else {
+                        return glm::abs(alpha - 1) <= util::epsilon<Primitive>();
+                    }
+                } else {
+                    const auto d = util::glm_convert_normalized<dvec4>(x) - col;
+                    return glm::dot(d, d) <= 1e-7;
+                }
+            }));
+    });
 }
 
 void PropertyAnalyzer::process() {
@@ -606,8 +592,8 @@ void PropertyAnalyzer::process() {
             if (!outputImage_ && remainingTests.empty()) {
                 // output image does not exist and we are currently not testing
                 // => generate output image for regression testing
-				initTesting();
-				return;
+                initTesting();
+                return;
             }
             break;
         case TestingState::SINGLE_COUNT: {
@@ -617,13 +603,12 @@ void PropertyAnalyzer::process() {
         } break;
         case TestingState::GATHERING:
             IVW_ASSERT(!remainingTests.empty(),
-                "PropertyAnalyzer: no remaining tests but state is set to GATHERING");
+                       "PropertyAnalyzer: no remaining tests but state is set to GATHERING");
 
             auto test = remainingTests.front();
             remainingTests.pop();
 
-            IVW_ASSERT(testIsSetUp(test),
-                "PropertyAnalyzer: current test is not set up");
+            IVW_ASSERT(testIsSetUp(test), "PropertyAnalyzer: current test is not set up");
 
             const size_t pixelCount = countPixels(img, color_.get(), useDepth_);
 

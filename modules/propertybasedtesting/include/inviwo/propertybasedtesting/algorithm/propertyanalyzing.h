@@ -60,15 +60,15 @@ constexpr size_t numPropertyEffects = 1 + static_cast<size_t>(PropertyEffect::NO
 template <typename A, typename B>
 bool propertyEffectComparator(const PropertyEffect& e, const A& a, const B& b) {
     IVW_ASSERT(static_cast<size_t>(e) < numPropertyEffects,
-			"propertyEffectComparator: given PropertyEffect is not valid");
+               "propertyEffectComparator: given PropertyEffect is not valid");
     switch (e) {
-		case PropertyEffect::NOT_COMPARABLE:
+        case PropertyEffect::NOT_COMPARABLE:
             return false;
-		case PropertyEffect::ANY:
+        case PropertyEffect::ANY:
             return true;
-		case PropertyEffect::NOT_EQUAL:
+        case PropertyEffect::NOT_EQUAL:
             return a != b;
-		case PropertyEffect::EQUAL:
+        case PropertyEffect::EQUAL:
             return a == b;
         case PropertyEffect::LESS:
             return a < b;
@@ -79,16 +79,17 @@ bool propertyEffectComparator(const PropertyEffect& e, const A& a, const B& b) {
         case PropertyEffect::GREATER_EQUAL:
             return a >= b;
     }
-	IVW_ASSERT(false, "propertyEffectComparator: switch is incomplete");
+    IVW_ASSERT(false, "propertyEffectComparator: switch is incomplete");
 }
 
-using AssignmentComparator = std::function<PropertyEffect(
-    const std::shared_ptr<PropertyAssignment>& oldVal,
-    const std::shared_ptr<PropertyAssignment>& newVal)>;
+using AssignmentComparator =
+    std::function<PropertyEffect(const std::shared_ptr<PropertyAssignment>& oldVal,
+                                 const std::shared_ptr<PropertyAssignment>& newVal)>;
 
 std::ostream& operator<<(std::ostream& out, const PropertyEffect& a);
 
-PropertyEffect IVW_MODULE_PROPERTYBASEDTESTING_API combine(const PropertyEffect& a, const PropertyEffect& b);
+PropertyEffect IVW_MODULE_PROPERTYBASEDTESTING_API combine(const PropertyEffect& a,
+                                                           const PropertyEffect& b);
 
 const PropertyEffect& IVW_MODULE_PROPERTYBASEDTESTING_API reverseEffect(const PropertyEffect& pe);
 
@@ -104,7 +105,6 @@ PropertyEffect propertyEffect(const PropertyEffect& selectedEffect, const T& new
     return reverseEffect(selectedEffect);
 }
 
-
 /*
  * GetComponent<T>::get(v,i) returns the i-th component of v (where v is of type
  * T and i is an integer less than the number of components of T as determined
@@ -113,19 +113,19 @@ PropertyEffect propertyEffect(const PropertyEffect& selectedEffect, const T& new
  * the same way as (glm) vector types (e.g. dvec2), that is
  * - GetComponent<float>::get(v,0) returns v
  * - GetComponent<dvec2>::get(v,1) returns v.y
- */ 
+ */
 template <typename T, size_t N>
 struct GetComponentHelper {
     static decltype(std::declval<const T&>()[0]) get(const T& v, size_t i) { return v[i]; }
     static decltype(std::declval<T&>()[0]) get(T& v, size_t i) { return v[i]; }
 };
 template <typename T>
-struct GetComponentHelper<T,1> {
-    static T& get(T& v, size_t i=0) {
+struct GetComponentHelper<T, 1> {
+    static T& get(T& v, size_t i = 0) {
         IVW_ASSERT(i == 0, "GetComponent: index must be 0 for scalar types");
         return v;
     }
-    static const T& get(const T& v, size_t i=0) {
+    static const T& get(const T& v, size_t i = 0) {
         IVW_ASSERT(i == 0, "GetComponent: index must be 0 for scalar types");
         return v;
     }

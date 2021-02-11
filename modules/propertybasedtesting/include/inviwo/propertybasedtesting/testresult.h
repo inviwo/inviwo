@@ -40,7 +40,7 @@ namespace pbt {
 
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestProperty;
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyComposite;
-template<typename T>
+template <typename T>
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyTyped;
 
 /*
@@ -70,11 +70,9 @@ public:
 using TestingError = std::tuple<std::shared_ptr<TestResult>, std::shared_ptr<TestResult>,
                                 pbt::PropertyEffect, size_t, size_t>;
 
-void IVW_MODULE_PROPERTYBASEDTESTING_API testingErrorToBinary(
-		std::vector<unsigned char>&, const std::vector<TestProperty*>&,
-        const TestingError&);
-
-
+void IVW_MODULE_PROPERTYBASEDTESTING_API testingErrorToBinary(std::vector<unsigned char>&,
+                                                              const std::vector<TestProperty*>&,
+                                                              const TestingError&);
 
 template <typename T>
 typename T::value_type TestResult::getValue(const T* prop) const {
@@ -92,10 +90,11 @@ typename T::value_type TestResult::getValue(const T* prop) const {
         }
     }
 
-	IVW_ASSERT(false,
-		(std::string("getValue<") + typeid(T).name() + "> could not get value for ").c_str());
+    IVW_ASSERT(
+        false,
+        (std::string("getValue<") + typeid(T).name() + "> could not get value for ").c_str());
 }
 
-} // namespace pbt
+}  // namespace pbt
 
-} // namespace inviwo
+}  // namespace inviwo

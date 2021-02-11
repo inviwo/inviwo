@@ -39,13 +39,13 @@ namespace inviwo {
  * note: if k > n, then all n elements are chosen
  * Time complexity: O(k * (1+log(n/k)))
  */
-template<typename RNG>
+template <typename RNG>
 std::vector<size_t> reservoirSampling(RNG&, const size_t n, const size_t k);
 
-template<typename RNG>
+template <typename RNG>
 std::vector<size_t> reservoirSampling(RNG& rng, const size_t n, const size_t k) {
     if (k > n) return reservoirSampling(rng, n, n);
-    std::uniform_real_distribution<double> distribution(0.0,1.0);
+    std::uniform_real_distribution<double> distribution(0.0, 1.0);
 
     std::vector<size_t> result(k);
     std::iota(result.begin(), result.end(), 0);  // start with the first k values
@@ -55,7 +55,7 @@ std::vector<size_t> reservoirSampling(RNG& rng, const size_t n, const size_t k) 
     for (size_t i = k; i < n;) {
         i += log(distribution(rng)) / log(1 - w);
         if (i < n) {
-            result[std::uniform_int_distribution<size_t>(0, k-1)(rng)] = i;
+            result[std::uniform_int_distribution<size_t>(0, k - 1)(rng)] = i;
             w *= exp(log(distribution(rng)) / k);
         }
     }

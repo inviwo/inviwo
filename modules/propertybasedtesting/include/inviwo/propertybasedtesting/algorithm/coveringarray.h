@@ -42,8 +42,8 @@ namespace pbt {
 /*
  * 2-coverage, randomized discrete SLJ strategy
  */
-std::vector<Test> IVW_MODULE_PROPERTYBASEDTESTING_API coveringArray(
-    const std::vector<std::vector<std::shared_ptr<PropertyAssignment>>>& vars);
+std::vector<Test> IVW_MODULE_PROPERTYBASEDTESTING_API
+coveringArray(const std::vector<std::vector<std::shared_ptr<PropertyAssignment>>>& vars);
 
 /*
  * 2-coverage, but using a greedy randomized strategy for optimizing for comparability.
@@ -55,8 +55,8 @@ std::vector<Test> IVW_MODULE_PROPERTYBASEDTESTING_API coveringArray(
  */
 std::vector<Test> IVW_MODULE_PROPERTYBASEDTESTING_API optCoveringArray(
     const size_t num,
-    const std::vector<std::pair<AssignmentComparator,
-                                std::vector<std::shared_ptr<PropertyAssignment>>>>& vars);
+    const std::vector<
+        std::pair<AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>& vars);
 
 }  // namespace pbt
 

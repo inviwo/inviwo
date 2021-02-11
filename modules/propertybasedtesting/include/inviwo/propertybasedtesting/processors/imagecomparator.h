@@ -76,7 +76,7 @@ namespace inviwo {
 class IVW_MODULE_PROPERTYBASEDTESTING_API ImageComparator : public Processor {
 public:
     ImageComparator();
-	virtual ~ImageComparator() = default;
+    virtual ~ImageComparator() = default;
 
     virtual void process() override;
 
@@ -84,7 +84,6 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-
 
 private:
     enum class ComparisonType { AbsARGB };

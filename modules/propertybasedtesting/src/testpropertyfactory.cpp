@@ -35,47 +35,47 @@ namespace pbt {
 
 // TestPropertyFactoryObject
 TestPropertyFactoryObject::TestPropertyFactoryObject(const std::string& classIdentifier)
-		: classIdentifier_(classIdentifier) {
-}
+    : classIdentifier_(classIdentifier) {}
 const std::string& TestPropertyFactoryObject::getClassIdentifier() const {
-	return classIdentifier_;
+    return classIdentifier_;
 }
-    
+
 // TestPropertyFactoryObjectTemplate
-template<typename T>
+template <typename T>
 std::unique_ptr<TestProperty> TestPropertyFactoryObjectTemplate<T>::create() const {
-	return std::unique_ptr<T>(new T());
-   }
+    return std::unique_ptr<T>(new T());
+}
 
 struct TestPropertyFactoryHelper {
-	template<typename T>
-	auto operator()(std::vector<std::unique_ptr<TestPropertyFactoryObject>>& factoryObjects) {
-		factoryObjects.emplace_back(std::make_unique<TestPropertyFactoryObjectTemplate<TestPropertyTyped<T>>>());
-	}
+    template <typename T>
+    auto operator()(std::vector<std::unique_ptr<TestPropertyFactoryObject>>& factoryObjects) {
+        factoryObjects.emplace_back(
+            std::make_unique<TestPropertyFactoryObjectTemplate<TestPropertyTyped<T>>>());
+    }
 };
 
 // TestPropertyFactory
 TestPropertyFactory::TestPropertyFactory() {
-	util::for_each_type<PropertyTypes>{}(TestPropertyFactoryHelper{}, factoryObjects_);
-	factoryObjects_.emplace_back(std::make_unique<TestPropertyFactoryObjectTemplate<TestPropertyComposite>>());
-	for(auto& obj : factoryObjects_)
-		registerObject(obj.get());
+    util::for_each_type<PropertyTypes>{}(TestPropertyFactoryHelper{}, factoryObjects_);
+    factoryObjects_.emplace_back(
+        std::make_unique<TestPropertyFactoryObjectTemplate<TestPropertyComposite>>());
+    for (auto& obj : factoryObjects_) registerObject(obj.get());
 }
 
 // TestPropertyCompositeFactoryObject
 std::unique_ptr<TestPropertyComposite> TestPropertyCompositeFactoryObject::create() const {
-	return std::unique_ptr<TestPropertyComposite>(new TestPropertyComposite());
+    return std::unique_ptr<TestPropertyComposite>(new TestPropertyComposite());
 }
 const std::string& TestPropertyCompositeFactoryObject::getClassIdentifier() const {
-	return TestPropertyComposite::classIdentifier();
+    return TestPropertyComposite::classIdentifier();
 }
 
 // TestPropertyCompositeFactory
 TestPropertyCompositeFactory::TestPropertyCompositeFactory()
-		: obj_(new TestPropertyCompositeFactoryObject()) {
-	registerObject(obj_.get());
+    : obj_(new TestPropertyCompositeFactoryObject()) {
+    registerObject(obj_.get());
 }
 
-} // namespace pbt
+}  // namespace pbt
 
-} // namespace inviwo
+}  // namespace inviwo

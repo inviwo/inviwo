@@ -61,7 +61,7 @@ ImageComparator::ImageComparator()
     , maxDeviation_("maxDeviation", "Maximum deviation", 0, 0, std::numeric_limits<float>::max(), 1,
                     InvalidationLevel::Valid, PropertySemantics::Text)
     , maxPixelwiseDeviation_("maxPixelwiseDeviation", "Maximum pixelwise deviation (%)", 0, 0, 1)
-    , comparisonType_("comparisonType", "Comparison Type (dummy)",
+    , comparisonType_("comparisonType", "Comparison Type",
                       {{"diff", "Absolute ARGB differences", ComparisonType::AbsARGB}}, 0,
                       InvalidationLevel::InvalidOutput)
     , reductionType_("reductionType", "Reduction",
@@ -138,10 +138,10 @@ void ImageComparator::process() {
     }
     const size_t numPixels = dim.x * dim.y;
 
-	using F = DataFormat<glm::u8vec3>;
-	using T = F::type;
-	T* const diffImageData = new T[numPixels];
-	T* const maskImageData = new T[numPixels];
+    using F = DataFormat<glm::u8vec3>;
+    using T = F::type;
+    T* const diffImageData = new T[numPixels];
+    T* const maskImageData = new T[numPixels];
 
     const auto imgRam1 = img1->getRepresentation<ImageRAM>();
     const auto imgRam2 = img2->getRepresentation<ImageRAM>();
@@ -151,44 +151,44 @@ void ImageComparator::process() {
     const ReductionType reduction = reductionType_.getSelectedValue();
 
     double result = getUnitForReduction<double>(reduction);
-	size_t diffPixels = colorLayerRAM1->dispatch<size_t, dispatching::filter::All>([&](auto lr1) {
-			const auto* data1 = lr1->getDataTyped();
+    size_t diffPixels = colorLayerRAM1->dispatch<size_t, dispatching::filter::All>([&](auto lr1) {
+        const auto* data1 = lr1->getDataTyped();
 
-			// compiling takes quite a long time, maybe filter for the type of lr1?
-			return colorLayerRAM2->dispatch<size_t, dispatching::filter::All>([&](auto lr2) {
-					const auto* data2 = lr2->getDataTyped();
-					
-					size_t diffPixels = 0;
-					for(size_t i = 0; i < numPixels; i++) {
-						const dvec4 col1 = util::glm_convert_normalized<dvec4>(data1[i]);
-						const dvec4 col2 = util::glm_convert_normalized<dvec4>(data2[i]);
+        // compiling takes quite a long time, maybe filter for the type of lr1?
+        return colorLayerRAM2->dispatch<size_t, dispatching::filter::All>([&](auto lr2) {
+            const auto* data2 = lr2->getDataTyped();
 
-						const double diff = difference(comparisonType_.get(), col1, col2);
-            			const bool pixelDifferent = (diff > maxPixelwiseDeviation_.get());
-            			const double c = pixelDifferent * 255.0;
+            size_t diffPixels = 0;
+            for (size_t i = 0; i < numPixels; i++) {
+                const dvec4 col1 = util::glm_convert_normalized<dvec4>(data1[i]);
+                const dvec4 col2 = util::glm_convert_normalized<dvec4>(data2[i]);
 
-            			result = combine(reduction, result, diff);
-						diffImageData[i] = static_cast<T>(127.5 + (col1 - col2) / 2.0);
-						maskImageData[i] = static_cast<T>(dvec3(c,c,c));
-            			if (pixelDifferent) {
-            			    diffPixels++;
-            			}
-					}
-					return diffPixels;
-				});
-		});
+                const double diff = difference(comparisonType_.get(), col1, col2);
+                const bool pixelDifferent = (diff > maxPixelwiseDeviation_.get());
+                const double c = pixelDifferent * 255.0;
+
+                result = combine(reduction, result, diff);
+                diffImageData[i] = static_cast<T>(127.5 + (col1 - col2) / 2.0);
+                maskImageData[i] = static_cast<T>(dvec3(c, c, c));
+                if (pixelDifferent) {
+                    diffPixels++;
+                }
+            }
+            return diffPixels;
+        });
+    });
     if (reduction == ReductionType::MEAN) {
         result /= numPixels;
     }
 
-	const auto createImg = [&](T* const imageData) {
-			auto imgRAM = std::make_shared<LayerRAMPrecision<T>>(
-					imageData, dim, LayerType::Color, swizzlemasks::rgb);
-    		auto imgLayer = std::make_shared<Layer>(imgRAM);
-    		return std::make_shared<Image>(imgLayer);
-		};
-	const auto diffImg = createImg(diffImageData);
-	const auto maskImg = createImg(maskImageData);
+    const auto createImg = [&](T* const imageData) {
+        auto imgRAM = std::make_shared<LayerRAMPrecision<T>>(imageData, dim, LayerType::Color,
+                                                             swizzlemasks::rgb);
+        auto imgLayer = std::make_shared<Layer>(imgRAM);
+        return std::make_shared<Image>(imgLayer);
+    };
+    const auto diffImg = createImg(diffImageData);
+    const auto maskImg = createImg(maskImageData);
 
     differencePort_.setData(diffImg);
     maskPort_.setData(maskImg);
@@ -242,34 +242,30 @@ void ImageComparator::createReport() {
         char timeBuffer[sizeof "2012-12-24 12:34:56"];
         strftime(timeBuffer, sizeof timeBuffer, "%F %T", localtime(&comp.timestamp));
 
-        auto compDiv = body.append("div","",{{"class","comparison"}});
+        auto compDiv = body.append("div", "", {{"class", "comparison"}});
         {
-            utildoc::TableBuilder tb(compDiv, P::end(), {{"class","data"}});
+            utildoc::TableBuilder tb(compDiv, P::end(), {{"class", "data"}});
 
             tb("Date", timeBuffer);
-            tb("Difference result(" + reductionTypeName(comp.reduction) + ")", std::to_string(comp.result));
+            tb("Difference result(" + reductionTypeName(comp.reduction) + ")",
+               std::to_string(comp.result));
             tb("Pixel count", std::to_string(comp.pixelCount));
             tb("Different pixels", std::to_string(comp.differentPixels));
             tb("Percent difference", std::to_string(100. * comp.differentPixels / comp.pixelCount));
         }
         {
-            utildoc::TableBuilder tb(compDiv, P::end(), {{"class","images"}});
+            utildoc::TableBuilder tb(compDiv, P::end(), {{"class", "images"}});
             tb(H("diff"), H("mask"), H("img1"), H("img2"));
             Document diffImg;
-            diffImg.append("img","",    { {"title", comp.diff.string()}
-                                        , {"src", comp.diff.string()}});
+            diffImg.append("img", "", {{"title", comp.diff.string()}, {"src", comp.diff.string()}});
             Document maskImg;
-            maskImg.append("img","",    { {"title", comp.mask.string()}
-                                          , {"src", comp.mask.string()}});
+            maskImg.append("img", "", {{"title", comp.mask.string()}, {"src", comp.mask.string()}});
             Document img1Img;
-            img1Img.append("img","",    { {"title", comp.img1.string()}
-                                          , {"src", comp.img1.string()}});
+            img1Img.append("img", "", {{"title", comp.img1.string()}, {"src", comp.img1.string()}});
             Document img2Img;
-            img2Img.append("img","",    { {"title", comp.img2.string()}
-                                        , {"src", comp.img2.string()}});
+            img2Img.append("img", "", {{"title", comp.img2.string()}, {"src", comp.img2.string()}});
             tb(diffImg, maskImg, img1Img, img2Img);
         }
-
     }
 
     std::ofstream report;

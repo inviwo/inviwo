@@ -13,10 +13,10 @@ namespace pbt {
  * K. Sarkar, C. J. Colbourn (2018)
  */
 std::vector<Test> coveringArray(
-        const std::vector<std::vector<std::shared_ptr<PropertyAssignment>>>& vars) {
+    const std::vector<std::vector<std::shared_ptr<PropertyAssignment>>>& vars) {
     std::default_random_engine rng(42);  // deterministic for regression testing
 
-    if(vars.empty()) {
+    if (vars.empty()) {
         return {};
     }
 
@@ -60,9 +60,8 @@ std::vector<Test> coveringArray(
     // indices of the contained interactions
     std::vector<std::vector<size_t>> coveringArray;
     while (!uncovered.empty()) {
-        size_t expectedCoverage =
-            (uncovered.size() + (maxAssignments * maxAssignments - 1))
-            / (maxAssignments * maxAssignments);
+        size_t expectedCoverage = (uncovered.size() + (maxAssignments * maxAssignments - 1)) /
+                                  (maxAssignments * maxAssignments);
         // expectedCoverage > 0, since uncovered.size() > 0 and we are using the
         // ceil of the fraction (uncovered.size() / // (maxAssignments*maxAssignments)
 
@@ -73,7 +72,7 @@ std::vector<Test> coveringArray(
         std::vector<size_t> row(vars.size());
         do {
             for (size_t i = 0; i < row.size(); i++) {
-                row[i] = std::uniform_int_distribution<size_t>(0, vars[i].size()-1)(rng);
+                row[i] = std::uniform_int_distribution<size_t>(0, vars[i].size() - 1)(rng);
             }
             coverage = 0;  // number of uncovered interactions
             for (size_t i = 1; i < vars.size(); i++) {
@@ -110,11 +109,11 @@ std::vector<Test> coveringArray(
  */
 std::vector<Test> optCoveringArray(
     const size_t num,
-    const std::vector<std::pair<AssignmentComparator,
-                                std::vector<std::shared_ptr<PropertyAssignment>>>>& vars) {
+    const std::vector<
+        std::pair<AssignmentComparator, std::vector<std::shared_ptr<PropertyAssignment>>>>& vars) {
     std::default_random_engine rng(42);  // deterministic for regression testing
 
-    if(vars.empty()) {
+    if (vars.empty()) {
         return {};
     }
 
@@ -166,14 +165,14 @@ std::vector<Test> optCoveringArray(
     // removes all TestConfs from the second argument which are not comparable
     // to the second argument
     const auto filterComparables = [&](auto& comparables, const TestConf& test) {
-            for (size_t i = 0; i < comparables.size(); i++) {
-                if (!comparable(finished[comparables[i]].first, test)) {
-                    comparables[i] = std::move(comparables.back());
-                    comparables.pop_back();
-                    i--;
-                }
+        for (size_t i = 0; i < comparables.size(); i++) {
+            if (!comparable(finished[comparables[i]].first, test)) {
+                comparables[i] = std::move(comparables.back());
+                comparables.pop_back();
+                i--;
             }
-        };
+        }
+    };
     // combined score of finished comparables when merging 'ref' into 'gen'
     // where the score is 1 + the sum of
     // 1 + (current number of tests -  current number of tests comparable to i)* 2
@@ -181,28 +180,26 @@ std::vector<Test> optCoveringArray(
     // (i.e. the score is increased when 'gen' merged with 'ref' is comparable
     // with many tests for which are comparable to few other tests)
     // if 'disjoint' is true, the score is 0 iff gen and ref are not disjoint
-    const auto cmp = [&](const bool disjoint,
-                    auto comparables, const auto& gen, const auto& ref) {
-            if (disjoint) {
-                if(gen.size() < ref.size()) {
-                    for (const auto& [k, v] : gen) {
-                        if (ref.count(k) > 0) return static_cast<size_t>(0);
-                    }
-                } else {
-                    for (const auto& [k, v] : ref) {
-                        if (gen.count(k) > 0) return static_cast<size_t>(0);
-                    }
+    const auto cmp = [&](const bool disjoint, auto comparables, const auto& gen, const auto& ref) {
+        if (disjoint) {
+            if (gen.size() < ref.size()) {
+                for (const auto& [k, v] : gen) {
+                    if (ref.count(k) > 0) return static_cast<size_t>(0);
+                }
+            } else {
+                for (const auto& [k, v] : ref) {
+                    if (gen.count(k) > 0) return static_cast<size_t>(0);
                 }
             }
-            auto test = ref;
-            test.insert(gen.begin(), gen.end());
+        }
+        auto test = ref;
+        test.insert(gen.begin(), gen.end());
 
-            filterComparables(comparables, test);
-            size_t res = 1;
-            for (const size_t i : comparables)
-                res += 1 + (finished.size() - finished[i].second) * 2;
-            return res;
-        };
+        filterComparables(comparables, test);
+        size_t res = 1;
+        for (const size_t i : comparables) res += 1 + (finished.size() - finished[i].second) * 2;
+        return res;
+    };
 
     // generate tests until we achieved a 2-coverage or reached the maximum
     // number of tests

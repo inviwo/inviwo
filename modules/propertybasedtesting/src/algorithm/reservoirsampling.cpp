@@ -29,6 +29,4 @@
 
 #include <inviwo/propertybasedtesting/algorithm/reservoirsampling.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo
