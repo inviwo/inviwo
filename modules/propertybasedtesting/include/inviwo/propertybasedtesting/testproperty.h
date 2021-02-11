@@ -186,9 +186,7 @@ public:
     }
 };
 
-/** \docpage{org.inviwo.PropertyAnalyzer, PropertyAnalyzer}
- * ![](org.inviwo.TestProperty.png?classIdentifier=org.inviwo.TestProperty)
- *
+/** 
  * A TestProperty holds a reference to a testable property and maintains the
  * respective BoolCompositeProperty and drop-down menu.
  * It is used to provide a general interface to all properties, regardless of

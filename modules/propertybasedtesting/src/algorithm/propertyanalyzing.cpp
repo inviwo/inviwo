@@ -52,15 +52,15 @@ const PropertyEffect& reverseEffect(const PropertyEffect& pe) {
         PropertyEffect::ANY,            // ANY
         PropertyEffect::NOT_COMPARABLE  // NOT_COMPARABLE
     };
-    return reverseEffects[(size_t)pe];
+    return reverseEffects[static_cast<size_t>(pe)];
 }
 
 Processor* getOwningProcessor(Property* const prop) {
     PropertyOwner* const owner = prop->getOwner();
-    if (Processor* const proc = dynamic_cast<Processor*>(owner)) {
+    if (auto proc = dynamic_cast<Processor*>(owner)) {
         return proc;
     }
-    if (Property* const owningProp = dynamic_cast<Property*>(owner)) {
+    if (auto owningProp = dynamic_cast<Property*>(owner)) {
         return getOwningProcessor(owningProp);
     }
     return nullptr;

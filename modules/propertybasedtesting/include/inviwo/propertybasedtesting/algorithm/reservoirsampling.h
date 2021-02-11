@@ -40,10 +40,10 @@ namespace inviwo {
  * Time complexity: O(k * (1+log(n/k)))
  */
 template <typename RNG>
-std::vector<size_t> reservoirSampling(RNG&, const size_t n, const size_t k);
+std::vector<size_t> IVW_MODULE_PROPERTYBASEDTESTING_API reservoirSampling(RNG&, const size_t n, const size_t k);
 
 template <typename RNG>
-std::vector<size_t> reservoirSampling(RNG& rng, const size_t n, const size_t k) {
+std::vector<size_t> IVW_MODULE_PROPERTYBASEDTESTING_API reservoirSampling(RNG& rng, const size_t n, const size_t k) {
     if (k > n) return reservoirSampling(rng, n, n);
     std::uniform_real_distribution<double> distribution(0.0, 1.0);
 

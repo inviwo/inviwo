@@ -86,7 +86,7 @@ using AssignmentComparator =
     std::function<PropertyEffect(const std::shared_ptr<PropertyAssignment>& oldVal,
                                  const std::shared_ptr<PropertyAssignment>& newVal)>;
 
-std::ostream& operator<<(std::ostream& out, const PropertyEffect& a);
+std::ostream& IVW_MODULE_PROPERTYBASEDTESTING_API operator<<(std::ostream& out, const PropertyEffect& a);
 
 PropertyEffect IVW_MODULE_PROPERTYBASEDTESTING_API combine(const PropertyEffect& a,
                                                            const PropertyEffect& b);
@@ -98,7 +98,7 @@ const PropertyEffect& IVW_MODULE_PROPERTYBASEDTESTING_API reverseEffect(const Pr
  * ANY if no preference
  */
 template <typename T>
-PropertyEffect propertyEffect(const PropertyEffect& selectedEffect, const T& newVal,
+PropertyEffect IVW_MODULE_PROPERTYBASEDTESTING_API propertyEffect(const PropertyEffect& selectedEffect, const T& newVal,
                               const T& oldVal) {
     if (newVal > oldVal) return selectedEffect;
     if (newVal == oldVal) return PropertyEffect::ANY;
