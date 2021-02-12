@@ -30,6 +30,7 @@
 #pragma once
 
 #include <glm/gtx/component_wise.hpp>
+#include <glm/detail/func_common.inl>
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/dataframe/datastructures/datapoint.h>
@@ -291,7 +292,7 @@ struct DataTraits<DataFrame> {
                         ->dispatch<std::pair<std::string, std::string>, dispatching::filter::All>(
                             [](auto brprecision) -> std::pair<std::string, std::string> {
                                 using ValueType = util::PrecisionValueType<decltype(brprecision)>;
-                                using PrecistionType = util::value_type<ValueType>::type;
+                                using PrecistionType = typename util::value_type<ValueType>::type;
 
                                 const auto& vec = brprecision->getDataContainer();
 
