@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <glm/gtx/component_wise.hpp>
+
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/dataframe/datastructures/datapoint.h>
 #include <inviwo/dataframe/datastructures/column.h>
@@ -262,11 +264,11 @@ struct DataTraits<DataFrame> {
         bool inconsistenRowCount = false;
         for (size_t i = 0; i < ncols; i++) {
             inconsistenRowCount |= (data.getColumn(i)->getSize() != rowCount);
-            if (auto col = dynamic_cast<const CategoricalColumn*>(data.getColumn(i).get())) {
-                tb2(std::to_string(i + 1), "categorical", col->getBuffer()->getSize(),
+            if (auto col_c = dynamic_cast<const CategoricalColumn*>(data.getColumn(i).get())) {
+                tb2(std::to_string(i + 1), "categorical", col_c->getBuffer()->getSize(),
                     data.getHeader(i));
                 std::string categories;
-                for (const auto& str : col->getCategories()) {
+                for (const auto& str : col_c->getCategories()) {
                     if (!categories.empty()) {
                         categories += ", ";
                     }
@@ -277,13 +279,65 @@ struct DataTraits<DataFrame> {
                         break;
                     }
                 }
-                categories += fmt::format(" [{}]", col->getCategories().size());
+                categories += fmt::format(" [{}]", col_c->getCategories().size());
                 tb2("", categories, utildoc::TableBuilder::Span_t{},
                     utildoc::TableBuilder::Span_t{}, utildoc::TableBuilder::Span_t{});
             } else {
+                auto col_q = data.getColumn(i);
+
+                auto [minString, maxString] =
+                    col_q->getBuffer()
+                        ->getRepresentation<BufferRAM>()
+                        ->dispatch<std::pair<std::string, std::string>, dispatching::filter::All>(
+                            [](auto brprecision) -> std::pair<std::string, std::string> {
+                                using ValueType = util::PrecisionValueType<decltype(brprecision)>;
+                                using PrecistionType = util::value_type<ValueType>::type;
+
+                                const auto& vec = brprecision->getDataContainer();
+
+                                if (vec.empty()) {
+                                    return {"-", "-"};
+                                }
+
+                                auto createSS = [](const PrecistionType& min,
+                                                   const PrecistionType& max)
+                                    -> std::pair<std::string, std::string> {
+                                    if constexpr (std::is_floating_point_v<ValueType>) {
+                                        std::stringstream minSS;
+                                        std::stringstream maxSS;
+
+                                        minSS << std::defaultfloat << min;
+                                        maxSS << std::defaultfloat << max;
+
+                                        return {minSS.str(), maxSS.str()};
+                                    } else {
+                                        return {std::to_string(min), std::to_string(max)};
+                                    }
+                                };
+
+                                if constexpr (util::extent<ValueType>::value == 1) {
+                                    auto [min, max] = std::minmax_element(std::begin(vec), std::end(vec));
+
+                                    // call lambda
+                                    return createSS(*min, *max);
+                                } else {
+                                    auto min{std::numeric_limits<PrecistionType>::max()};
+                                    auto max{std::numeric_limits<PrecistionType>::min()};
+
+                                    std::for_each(std::begin(vec), std::end(vec),
+                                                  [&min, &max](const ValueType& v) {
+                                                      min = std::min(min, glm::compMin(v));
+                                                      max = std::max(max, glm::compMax(v));
+                                                  });
+
+                                    return createSS(min, max);
+                                }
+                            });
+
                 tb2(std::to_string(i + 1),
                     data.getColumn(i)->getBuffer()->getDataFormat()->getString(),
-                    data.getColumn(i)->getBuffer()->getSize(), data.getHeader(i));
+                    data.getColumn(i)->getBuffer()->getSize(), data.getHeader(i), minString,
+                    maxString);
             }
         }
         if (ncols != data.getNumberOfColumns()) {
