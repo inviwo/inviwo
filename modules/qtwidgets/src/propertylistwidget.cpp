@@ -28,14 +28,17 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/propertylistwidget.h>
-#include <inviwo/core/properties/propertywidgetfactory.h>
+
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/processornetworkevaluator.h>
+#include <inviwo/core/properties/propertywidgetfactory.h>
+
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <inviwo/core/processors/processor.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QLabel>
@@ -117,17 +120,24 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
 
     scrollArea_->setWidget(listWidget_);
     setWidget(scrollArea_);
+
+    app->getProcessorNetworkEvaluator()->addObserver(this);
 }
 
 PropertyListWidget::~PropertyListWidget() = default;
 
 void PropertyListWidget::addProcessorProperties(Processor* processor) {
     setUpdatesEnabled(false);
+    listLayout_->setEnabled(false);
+    util::OnScopeExit enableUpdates([&]() {
+        listLayout_->setEnabled(true);
+        setUpdatesEnabled(true);
+    });
+
     if (auto widget = getPropertiesForProcessor(processor)) {
         widget->show();
     }
     QWidget::raise();  // Put this tab in front
-    setUpdatesEnabled(true);
 }
 
 void PropertyListWidget::removeProcessorProperties(Processor* processor) {
@@ -193,6 +203,16 @@ bool PropertyListWidget::event(QEvent* e) {
     } else {
         return InviwoDockWidget::event(e);
     }
+}
+
+void PropertyListWidget::onProcessorNetworkEvaluationBegin() { 
+    setUpdatesEnabled(false); 
+    listLayout_->setEnabled(false);
+}
+
+void PropertyListWidget::onProcessorNetworkEvaluationEnd() { 
+    listLayout_->setEnabled(true);
+    setUpdatesEnabled(true); 
 }
 
 PropertyListEvent::PropertyListEvent(Action action, std::string processorId)

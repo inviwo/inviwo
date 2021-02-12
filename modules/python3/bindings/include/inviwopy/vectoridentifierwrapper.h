@@ -29,8 +29,6 @@
 
 #pragma once
 
-#include <inviwo/core/common/inviwo.h>
-
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
@@ -38,6 +36,8 @@
 #include <memory>
 #include <sstream>
 #include <inviwo/core/util/ostreamjoiner.h>
+#include <cstdint>
+#include <algorithm>
 
 namespace inviwo {
 
@@ -59,11 +59,21 @@ public:
         }
     }
 
-    auto& getFromIndex(size_t ind) const {
-        if (ind < vector_.size()) {
-            return *vector_[ind];
+    auto& getFromIndex(ptrdiff_t pos) const {
+        if (pos >= 0) {
+            const auto ind = static_cast<size_t>(pos);
+            if (ind < vector_.size()) {
+                return *vector_[ind];
+            } else {
+                throw pybind11::index_error();
+            }
         } else {
-            throw pybind11::index_error();
+            const auto ind = static_cast<ptrdiff_t>(vector_.size()) + pos;
+            if (ind >= 0) {
+                return *vector_[static_cast<size_t>(ind)];
+            } else {
+                throw pybind11::index_error();
+            }
         }
     }
 

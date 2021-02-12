@@ -165,6 +165,12 @@ Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
     return prop;
 }
 
+void PropertyOwner::clear() {
+    while (!properties_.empty()) {
+        removeProperty(--properties_.end());
+    }
+}
+
 const std::vector<Property*>& PropertyOwner::getProperties() const { return properties_; }
 
 const std::vector<CompositeProperty*>& PropertyOwner::getCompositeProperties() const {
@@ -212,6 +218,8 @@ Property* PropertyOwner::getPropertyByPath(std::string_view path) const {
         }
     }
 }
+
+bool PropertyOwner::empty() const { return properties_.empty(); }
 
 size_t PropertyOwner::size() const { return properties_.size(); }
 

@@ -96,6 +96,12 @@ public:
      */
     virtual Property* removeProperty(size_t index);
 
+    /**
+     * @brief Remove all properties;
+     * Owned properties will be deleted
+    */
+    virtual void clear();
+
     virtual const std::string& getIdentifier() const;
 
     const std::vector<Property*>& getProperties() const;
@@ -109,6 +115,7 @@ public:
     template <class T>
     std::vector<T*> getPropertiesByType(bool recursiveSearch = false) const;
 
+    bool empty() const;
     size_t size() const;
     Property* operator[](size_t);
     const Property* operator[](size_t) const;

@@ -64,8 +64,17 @@ void exposePropertyOwner(pybind11::module& m) {
             "addProperty",
             [](PropertyOwner& po, Property* prop, bool owner) { po.addProperty(prop, owner); },
             py::arg("prop"), py::arg("owner") = true, py::keep_alive<1, 2>{})
+        .def(
+            "insertProperty",
+            [](PropertyOwner& po, size_t index, Property* prop, bool owner) {
+                po.insertProperty(index, prop, owner);
+            },
+            py::arg("index"), py::arg("prop"), py::arg("owner") = true, py::keep_alive<1, 2>{})
         .def("removeProperty",
              [](PropertyOwner& po, Property* prop) { return po.removeProperty(prop); })
+        .def("removeProperty",
+             [](PropertyOwner& po, size_t index) { return po.removeProperty(index); })
+        .def("clear", &PropertyOwner::clear)
         .def("getPropertyByIdentifier", &PropertyOwner::getPropertyByIdentifier,
              py::return_value_policy::reference, py::arg("identifier"),
              py::arg("recursiveSearch") = false)
@@ -75,7 +84,9 @@ void exposePropertyOwner(pybind11::module& m) {
         .def(
             "getOwner", [](PropertyOwner* po) { return po->getOwner(); },
             py::return_value_policy::reference)
+        .def("empty", &PropertyOwner::empty)
         .def("size", &PropertyOwner::size)
+        .def("isValid", &PropertyOwner::isValid)
         .def("setValid", &PropertyOwner::setValid)
         .def("getInvalidationLevel", &PropertyOwner::getInvalidationLevel)
         .def("invalidate",
