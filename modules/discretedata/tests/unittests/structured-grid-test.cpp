@@ -38,7 +38,6 @@ namespace inviwo {
 namespace discretedata {
 
 TEST(DataSet, StructuredGrid) {
-#if true
     StructuredGrid<3> grid(3, 4, 5);
 
     // Size.
@@ -83,28 +82,18 @@ TEST(DataSet, StructuredGrid) {
     EXPECT_EQ(*grid.numPrimitives_.getOffset<GridPrimitive::Volume>({0, 1, 2}), 0);
     EXPECT_EQ(*grid.numPrimitives_.getOffset<GridPrimitive::Volume>(0), 0);
 
-    auto offsets = dd_util::binomialCoefficientOffsets<3>();
-    std::cout << "  Primitive offsets: [" << offsets[0] << ", " << offsets[1] << ", " << offsets[2]
-              << ", " << offsets[3] << "]" << std::endl;
+    // auto offsets = dd_util::binomialCoefficientOffsets<3>();
 
     // Number *of primitives in a certain direction.
     EXPECT_EQ(grid.numPrimitives_.getSize<GridPrimitive::Vertex>(0), 60);
-    std::cout << "0" << std::endl;
     EXPECT_EQ(grid.numPrimitives_.getSize<GridPrimitive::Vertex>({0}), 60);
-    std::cout << "{0}" << std::endl;
 
     EXPECT_EQ(grid.numPrimitives_.getSize<GridPrimitive::Edge>(0), 40);
-    std::cout << "0" << std::endl;
     EXPECT_EQ(grid.numPrimitives_.getSize<GridPrimitive::Edge>({0}), 40);
-    std::cout << "{0}" << std::endl;
     EXPECT_EQ(grid.numPrimitives_.getSize<GridPrimitive::Edge>(1), 45);
-    std::cout << "1" << std::endl;
     EXPECT_EQ(grid.numPrimitives_.getSize<GridPrimitive::Edge>({1}), 45);
-    std::cout << "{1}" << std::endl;
     EXPECT_EQ(grid.numPrimitives_.getSize<GridPrimitive::Edge>(2), 48);
-    std::cout << "2" << std::endl;
     EXPECT_EQ(grid.numPrimitives_.getSize<GridPrimitive::Edge>({2}), 48);
-    std::cout << "{2}" << std::endl;
 
     EXPECT_EQ(grid.numPrimitives_.getSize<GridPrimitive::Face>({0, 1}), 30);
     EXPECT_EQ(grid.numPrimitives_.getSize<GridPrimitive::Face>(0), 30);
@@ -115,8 +104,49 @@ TEST(DataSet, StructuredGrid) {
     EXPECT_EQ(grid.numPrimitives_.getSize<GridPrimitive::Volume>({0, 1, 2}), 24);
     EXPECT_EQ(grid.numPrimitives_.getSize<GridPrimitive::Volume>(0), 24);
 
-    // globalIndexFromCoordinates
-#endif
+    // Create a primitive object representing the voxel at (0, 2, 3).
+    auto cell123 = grid.getPrimitive<GridPrimitive::Volume>({0, 2, 3}, {0, 1, 2});
+    std::array<ind, 3> c023({0, 2, 3});
+    std::array<size_t, 3> d012({0, 1, 2});
+    EXPECT_EQ(cell123.getCoordinates(), c023);
+    EXPECT_EQ(cell123.getDirections(), d012);
+    EXPECT_EQ(cell123.GlobalPrimitiveIndex, 2 * 2 + 3 * 2 * 3);
+
+    // Check all voxel neighbors - since there is only 2 x 3 x 4 voxels, we get 3 of those.
+    std::vector<ind> neighbors;
+    grid.getConnections(neighbors, cell123.GlobalPrimitiveIndex, GridPrimitive::Volume,
+                        GridPrimitive::Volume);
+    EXPECT_EQ(neighbors.size(), 3);
+    EXPECT_EQ(neighbors[0], 16);
+    EXPECT_EQ(neighbors[1], 20);
+    EXPECT_EQ(neighbors[2], 23);
+
+    // Get all edges of our voxel. There should be 12.
+    std::vector<ind> edges;
+    grid.getConnections(edges, cell123.GlobalPrimitiveIndex, GridPrimitive::Volume,
+                        GridPrimitive::Edge);
+    EXPECT_EQ(edges.size(), 12);
+    // X-pointing edges:
+    EXPECT_EQ(edges[0], 28);
+    EXPECT_EQ(edges[1], 30);
+    EXPECT_EQ(edges[2], 36);
+    EXPECT_EQ(edges[3], 38);
+    // Y-pointing edges:
+    EXPECT_EQ(edges[4], 40 + 33);
+    EXPECT_EQ(edges[5], 40 + 34);
+    EXPECT_EQ(edges[6], 40 + 42);
+    EXPECT_EQ(edges[7], 40 + 43);
+    // Z-pointing edges:
+    EXPECT_EQ(edges[8], 85 + 42);
+    EXPECT_EQ(edges[9], 85 + 43);
+    EXPECT_EQ(edges[10], 85 + 45);
+    EXPECT_EQ(edges[11], 85 + 46);
+
+    // Check one of the edges at random for resolving back to posiiton and direction.
+    auto edge124y = grid.getPrimitive<GridPrimitive::Edge>(40 + 43);
+    std::array<ind, 3> c124({1, 2, 4});
+    EXPECT_EQ(edge124y.getCoordinates(), c124);
+    EXPECT_EQ(edge124y.getDirections()[0], 1);
 }
 
 }  // namespace discretedata

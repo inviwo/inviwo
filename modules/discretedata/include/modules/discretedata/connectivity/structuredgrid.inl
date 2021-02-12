@@ -38,120 +38,124 @@
 namespace inviwo {
 namespace discretedata {
 
-template <ind N>
-StructuredGrid<N>::StructuredGrid(const std::array<ind, N>& numVertices)
+template <ind N, typename C>
+CurvilinearGrid<N, C>::CurvilinearGrid(const std::array<ind, N>& numVertices)
     : Connectivity(static_cast<GridPrimitive>(N)), numPrimitives_(*this, numVertices) {
 
     // Calculating number of edges, faces etc.
     calculateSizes();
 }
 
-template <ind N>
-StructuredGrid<N>::StructuredGrid(std::array<ind, N>&& numVertices)
+template <ind N, typename C>
+CurvilinearGrid<N, C>::CurvilinearGrid(std::array<ind, N>&& numVertices)
     : Connectivity(static_cast<GridPrimitive>(N)), numPrimitives_(*this, std::move(numVertices)) {
 
     // Calculating number of edges, faces etc.
     calculateSizes();
 }
 
-template <ind N>
+template <ind N, typename C>
 template <typename... IND>
-StructuredGrid<N>::StructuredGrid(ind val0, IND... valX)
+CurvilinearGrid<N, C>::CurvilinearGrid(ind val0, IND... valX)
     : Connectivity(static_cast<GridPrimitive>(N)), numPrimitives_{*this, {val0, valX...}} {
 
     // Calculating number of edges, faces etc.
     calculateSizes();
 }
 
-template <ind N>
-std::array<ind, N> StructuredGrid<N>::indexFromLinear(ind idxLin, const std::array<ind, N>& size) {
-    std::array<ind, N> index;
-    for (ind dim = 0; dim < N; ++dim) {
-        index[dim] = idxLin % size[dim];
-        idxLin = static_cast<ind>((idxLin) / size[dim]);
-    }
+// template <ind N, typename C>
+// std::array<ind, N> CurvilinearGrid<N, C>::indexFromLinear(ind idxLin,
+//                                                           const std::array<ind, N>& size) {
+//     std::array<ind, N> index;
+//     for (ind dim = 0; dim < N; ++dim) {
+//         index[dim] = idxLin % size[dim];
+//         idxLin = static_cast<ind>((idxLin) / size[dim]);
+//     }
 
-    return index;
-}
+//     return index;
+// }
 
-template <ind N>
-ind StructuredGrid<N>::indexToLinear(const std::array<ind, N>& idx,
-                                     const std::array<ind, N>& size) {
-    ind linIdx = 0;
-    ind step = 1;
+// template <ind N, typename C>
+// ind CurvilinearGrid<N, C>::indexToLinear(const std::array<ind, N>& idx,
+//                                          const std::array<ind, N>& size) {
+//     ind linIdx = 0;
+//     ind step = 1;
 
-    for (size_t dim = 0; dim < N; ++dim) {
-        IVW_ASSERT((idx[dim] < size[dim] && idx[dim] >= 0), "Index not within bounds.");
-        linIdx += step * idx[dim];
-        step *= size[dim];
-    }
-    return linIdx;
-}
+//     for (size_t dim = 0; dim < N; ++dim) {
+//         IVW_ASSERT((idx[dim] < size[dim] && idx[dim] >= 0), "Index not within bounds.");
+//         linIdx += step * idx[dim];
+//         step *= size[dim];
+//     }
+//     return linIdx;
+// }
 
-template <ind N>
-void StructuredGrid<N>::sameLevelConnection(std::vector<ind>& result, const ind idxLin,
-                                            const std::array<ind, N>& size) {
-    std::array<ind, N> index = indexFromLinear(idxLin, size);
+// template <ind N, typename C>
+// void CurvilinearGrid<N, C>::sameLevelConnection(std::vector<ind>& result, const ind idxLin,
+//                                                 const std::array<ind, N>& size) {
+//     std::array<ind, N> index = indexFromLinear(idxLin, size);
 
-    ind dimensionProduct = 1;
-    for (size_t dim = 0; dim < N; ++dim) {
-        if (index[dim] > 0) result.push_back(idxLin - dimensionProduct);
-        if (index[dim] < size[dim] - 1) result.push_back(idxLin + dimensionProduct);
+//     ind dimensionProduct = 1;
+//     for (size_t dim = 0; dim < N; ++dim) {
+//         if (index[dim] > 0) result.push_back(idxLin - dimensionProduct);
+//         if (index[dim] < size[dim] - 1) result.push_back(idxLin + dimensionProduct);
 
-        dimensionProduct *= size[dim];
-    }
-}
+//         dimensionProduct *= size[dim];
+//     }
+// }
 
-namespace dd_util {
-template <ind N, ind From>
+namespace dd_detail {
+template <ind N, typename C, ind From>
 struct GetConnectionsFromToHelper {
     template <typename Result, ind To>
-    Result operator()(const StructuredGrid<N>& grid, std::vector<ind>& result, ind idxLin) {
-        std::cout << "Dispatched " << From << " -> " << To << std::endl;
+    Result operator()(const CurvilinearGrid<N, C>& grid, std::vector<ind>& result, ind idxLin) {
+
         grid.template getConnectionsDispatched<From, To>(result, idxLin);
     }
 };
-template <ind N>
+template <ind N, typename C>
 struct GetConnectionsFromHelper {
     template <typename Result, ind From>
-    Result operator()(const StructuredGrid<N>& grid, std::vector<ind>& result, ind idxLin,
+    Result operator()(const CurvilinearGrid<N, C>& grid, std::vector<ind>& result, ind idxLin,
                       GridPrimitive to) {
-        GetConnectionsFromToHelper<N, From> dispatcher;
+        GetConnectionsFromToHelper<N, C, From> dispatcher;
         channeldispatching::dispatchNumber<void, 0, N>(ind(to), dispatcher, grid, result, idxLin);
     }
 };
-}  // namespace dd_util
+}  // namespace dd_detail
 
-template <ind N>
-void StructuredGrid<N>::getConnections(std::vector<ind>& result, ind idxLin, GridPrimitive from,
-                                       GridPrimitive to, bool) const {
+template <ind N, typename C>
+void CurvilinearGrid<N, C>::getConnections(std::vector<ind>& result, ind idxLin, GridPrimitive from,
+                                           GridPrimitive to, bool) const {
+    size_t numResults = result.size();
 
-    dd_util::GetConnectionsFromHelper<N> dispatcher;
-    std::cout << "Dispatching " << ind(from) << " -> " << ind(to) << std::endl;
+    dd_detail::GetConnectionsFromHelper<N, C> dispatcher;
+
     channeldispatching::dispatchNumber<void, 0, N>(ind(from), dispatcher, *this, result, idxLin,
                                                    to);
+    std::sort(result.begin() + numResults, result.end());
 }
 
-template <ind N>
+template <ind N, typename C>
 template <ind From, ind To>
-void StructuredGrid<N>::getConnectionsDispatched(std::vector<ind>& result, ind index) const {
-    Primitive<GridPrimitive(From)> fromPrim(index);
-    fromPrim.getConnections<To>(result);
+void CurvilinearGrid<N, C>::getConnectionsDispatched(std::vector<ind>& result, ind index) const {
+    Primitive<GridPrimitive(From)> fromPrim(*this, index);
+    C::template getConnections<GridPrimitive(From), GridPrimitive(To)>(fromPrim, numPrimitives_,
+                                                                       result);
 }
 
-template <ind N>
-ind StructuredGrid<N>::getNumVerticesInDimension(ind dim) const {
+template <ind N, typename C>
+ind CurvilinearGrid<N, C>::getNumVerticesInDimension(ind dim) const {
     IVW_ASSERT(numPrimitives_[dim] >= 2, "Number of elements not known yet.");
     return numPrimitives_[dim];
 }
 
-template <ind N>
-const std::array<ind, N>& StructuredGrid<N>::getNumVertices() const {
+template <ind N, typename C>
+const std::array<ind, N>& CurvilinearGrid<N, C>::getNumVertices() const {
     return numPrimitives_.NumVerticesPerDimension;
 }
 
-template <ind N>
-const CellStructure* StructuredGrid<N>::getCellType(GridPrimitive dim, ind) const {
+template <ind N, typename C>
+const CellStructure* CurvilinearGrid<N, C>::getCellType(GridPrimitive dim, ind) const {
     CellType cell;
     switch (dim) {
         case GridPrimitive::Vertex:
@@ -172,8 +176,8 @@ const CellStructure* StructuredGrid<N>::getCellType(GridPrimitive dim, ind) cons
     return CellStructureByCellType[(int)cell];
 }
 
-template <ind N>
-void StructuredGrid<N>::calculateSizes() {
+template <ind N, typename C>
+void CurvilinearGrid<N, C>::calculateSizes() {
 #ifdef IVW_DEBUG
     IVW_ASSERT(static_cast<ind>(gridDimension_) > static_cast<ind>(GridPrimitive::Vertex),
                "GridPrimitive need to be at least Edge for a structured grid");
@@ -202,8 +206,8 @@ void StructuredGrid<N>::calculateSizes() {
 
 namespace dd_detail {
 
-template <ind N, ind P>
-constexpr void writeSize(typename StructuredGrid<N>::NumPrimitives& numPrimitives) {
+template <ind N, typename C, ind P>
+constexpr void writeSize(typename CurvilinearGrid<N, C>::NumPrimitives& numPrimitives) {
     auto dirs = dd_util::initNchooseK<P>();
     bool valid = true;
     size_t dirsIdx = 0;
@@ -229,11 +233,11 @@ constexpr void writeSize(typename StructuredGrid<N>::NumPrimitives& numPrimitive
     }
 }
 
-template <ind N, int... Is>
-constexpr void writeAllSizes(typename StructuredGrid<N>::NumPrimitives& numPrimitives,
+template <ind N, typename C, int... Is>
+constexpr void writeAllSizes(typename CurvilinearGrid<N, C>::NumPrimitives& numPrimitives,
                              std::integer_sequence<int, Is...> const&) {
 
-    ((writeSize<N, Is>(numPrimitives)), ...);
+    ((writeSize<N, C, Is>(numPrimitives)), ...);
 }
 
 template <ind N, GridPrimitive P>
@@ -257,32 +261,32 @@ constexpr std::enable_if_t<P == GridPrimitive::Vertex, ind> directionsIndex(
 }
 }  // namespace dd_detail
 
-template <ind N>
-StructuredGrid<N>::NumPrimitives::NumPrimitives(
-    const StructuredGrid& grid, const std::array<ind, size_t(N)>& numVerticesPerDimension)
+template <ind N, typename C>
+CurvilinearGrid<N, C>::NumPrimitives::NumPrimitives(
+    const CurvilinearGrid& grid, const std::array<ind, size_t(N)>& numVerticesPerDimension)
     : PerDirectionOffsets({0}), Grid(grid), NumVerticesPerDimension(numVerticesPerDimension) {
 
-    dd_detail::writeAllSizes<N>(*this, std::make_integer_sequence<int, N + 1>{});
+    dd_detail::writeAllSizes<N, C>(*this, std::make_integer_sequence<int, N + 1>{});
 }
 
-template <ind N>
+template <ind N, typename C>
 template <GridPrimitive P>
-constexpr const ind* StructuredGrid<N>::NumPrimitives::getOffset(ind dirsIdx) const {
+constexpr const ind* CurvilinearGrid<N, C>::NumPrimitives::getOffset(ind dirsIdx) const {
     if (dirsIdx < 0) return nullptr;
     return &PerDirectionOffsets[PrimitiveOffsets[size_t(P)] + dirsIdx];
 }
 
-template <ind N>
+template <ind N, typename C>
 template <GridPrimitive P>
-constexpr const ind* StructuredGrid<N>::NumPrimitives::getOffset(
+constexpr const ind* CurvilinearGrid<N, C>::NumPrimitives::getOffset(
     const std::array<size_t, size_t(P)>& dirs) const {
     ind dirsIdx = getDirectionsIndex<P>(dirs);
     return getOffset<P>(dirsIdx);
 }
 
-template <ind N>
+template <ind N, typename C>
 template <GridPrimitive P>
-ind StructuredGrid<N>::NumPrimitives::getSize(ind dirsIdx) const {
+ind CurvilinearGrid<N, C>::NumPrimitives::getSize(ind dirsIdx) const {
     if (dirsIdx < 0) return -1;
 
     size_t primOffset = PrimitiveOffsets[size_t(P)];
@@ -295,27 +299,40 @@ ind StructuredGrid<N>::NumPrimitives::getSize(ind dirsIdx) const {
     return upperLimit - (PerDirectionOffsets[primOffset + dirsIdx]);
 }
 
-template <ind N>
+template <ind N, typename C>
 template <GridPrimitive P>
-ind StructuredGrid<N>::NumPrimitives::getSize(const std::array<size_t, size_t(P)>& dirs) const {
+ind CurvilinearGrid<N, C>::NumPrimitives::getSize(const std::array<size_t, size_t(P)>& dirs) const {
     ind dirIdx = getDirectionsIndex<P>(dirs);
     return getSize<P>(dirIdx);
 }
 
-template <ind N>
+template <ind N, typename C>
 template <GridPrimitive P>
-constexpr ind StructuredGrid<N>::NumPrimitives::getDirectionsIndex(
+constexpr ind CurvilinearGrid<N, C>::NumPrimitives::getDirectionsIndex(
     const std::array<size_t, size_t(P)>& dirs) {
     return dd_detail::directionsIndex<N, P>(dirs);
 }
 
-template <ind N>
+template <ind N, typename C>
 template <GridPrimitive P>
-ind StructuredGrid<N>::NumPrimitives::globalIndexFromCoordinates(
-    const StructuredGrid& grid, const std::array<ind, size_t(N)>& coords,
+constexpr std::array<size_t, size_t(P)> CurvilinearGrid<N, C>::NumPrimitives::getIndexDirections(
+    ind dirIndex) {
+    auto dirs = dd_util::initNchooseK<size_t(P)>();
+    for (ind d = 0; d < dirIndex; ++d) {
+        bool valid = dd_util::nextNchooseK(N, dirs);
+        if (!valid)
+            throw RangeException("Direction index higher than number of direction combinations.");
+    }
+    return dirs;
+}
+
+template <ind N, typename C>
+template <GridPrimitive P>
+ind CurvilinearGrid<N, C>::NumPrimitives::globalIndexFromCoordinates(
+    const CurvilinearGrid& grid, const std::array<ind, size_t(N)>& coords,
     const std::array<size_t, size_t(P)>& dirs) const {
 
-    ind idx = grid.numPrimitives_.getOffset(dirs);
+    ind idx = *grid.numPrimitives_.getOffset<P>(dirs);
     if (idx < 0) return idx;
 
     size_t mult = 1;
@@ -332,63 +349,232 @@ ind StructuredGrid<N>::NumPrimitives::globalIndexFromCoordinates(
     return idx;
 }
 
-template <ind N>
+template <ind N, typename C>
 template <GridPrimitive P>
 std::pair<std::array<ind, size_t(N)>, std::array<size_t, size_t(P)>>
-StructuredGrid<N>::NumPrimitives::coordinatesFromGlobalIndex(ind globalIdx) const {
-    // Find direction offset.
-    ind idx = getOffset(globalIdx);
+CurvilinearGrid<N, C>::NumPrimitives::coordinatesFromGlobalIndex(ind globalIdx) const {
+    if (globalIdx < 0 || globalIdx >= Grid.getNumElements(P))
+        throw RangeException("Index out of range for this primitive type.");
 
-    return std::make_pair<CoordArray, DirArray>();
+    // Find the range the index is in.
+    auto dirBegin = PerDirectionOffsets.begin() + PrimitiveOffsets[size_t(P)];
+    auto dirEnd = (ind(P) == N) ? PerDirectionOffsets.end()
+                                : PerDirectionOffsets.begin() + PrimitiveOffsets[size_t(P) + 1];
+    auto dirPtr = std::upper_bound(dirBegin, dirEnd, globalIdx);
+    dirPtr--;
+    size_t dirIdx = dirPtr - dirBegin;
+    ind localIndex = globalIdx - *dirPtr;
+
+    DirArray<P> dirs = getIndexDirections<P>(dirIdx);
+
+    CoordArray coords;
+    // size_t mult = 1;
+    auto itDir = dirs.begin();
+    for (size_t dim = 0; dim < N; ++dim) {
+        // idx += coords[dim] * mult;
+        ind dimSize = Grid.numPrimitives_.NumVerticesPerDimension[dim];
+        if (itDir != dirs.end() && *itDir == dim) {
+            dimSize--;
+            ++itDir;
+        }
+        // mult *= dimSize;
+        coords[dim] = localIndex % dimSize;
+        localIndex /= dimSize;
+    }
+    return std::make_pair(std::move(coords), std::move(dirs));
 }
 
-// template <ind N>
+// template <ind N, typename C>
 // template <GridPrimitive P>
-// StructuredGrid<N>::Primitive<P>::Primitive(const StructuredGrid<N>& grid) : Grid(grid) {}
+// CurvilinearGrid<N, C>::Primitive<P>::Primitive(const CurvilinearGrid<N, C>& grid) : Grid(grid) {}
 
-template <ind N>
+template <ind N, typename C>
 template <GridPrimitive P>
-StructuredGrid<N>::Primitive<P>::Primitive(const StructuredGrid<N>& grid, ind globalIdx)
-    : Grid(grid) {}
+CurvilinearGrid<N, C>::Primitive<P>::Primitive(const CurvilinearGrid<N, C>& grid, ind globalIdx)
+    : Grid(grid), GlobalPrimitiveIndex(globalIdx) {
+    auto coordDirPair = grid.numPrimitives_.template coordinatesFromGlobalIndex<P>(globalIdx);
+    Coords = coordDirPair.first;
+    Directions = coordDirPair.second;
+}
 
-template <ind N>
+template <ind N, typename C>
 template <GridPrimitive P>
-StructuredGrid<N>::Primitive<P>::Primitive(const StructuredGrid<N>& grid,
-                                           std::array<ind, size_t(N)> coords,
-                                           std::array<size_t, size_t(P)> dirs)
+CurvilinearGrid<N, C>::Primitive<P>::Primitive(const CurvilinearGrid<N, C>& grid,
+                                               std::array<ind, size_t(N)> coords,
+                                               std::array<size_t, size_t(P)> dirs)
     : Grid(grid)
+    , GlobalPrimitiveIndex(
+          grid.numPrimitives_.template globalIndexFromCoordinates<P>(grid, coords, dirs))
     , Coords(coords)
-    , Directions(dirs)
-    , GlobalPrimitiveIndex(globalIndexFromCoordinates(grid, coords, dirs)) {}
+    , Directions(dirs) {}
 
-template <ind N>
+// template <ind N, typename C>
+// template <GridPrimitive P>
+// CurvilinearGrid<N, C>::Primitive<P>::Primitive(const CurvilinearGrid<N, C>& grid,
+//                                                std::array<ind, size_t(N)>&& coords,
+//                                                std::array<size_t, size_t(P)>&& dirs)
+//     : Grid(grid)
+//     , GlobalPrimitiveIndex(
+//           grid.numPrimitives_.template globalIndexFromCoordinates<P>(grid, coords, dirs))
+//     , Coords(std::move(coords))
+//     , Directions(std::move(dirs)) {}
+
+template <ind N, typename C>
 template <GridPrimitive P>
-StructuredGrid<N>::Primitive<P>::Primitive(const StructuredGrid<N>& grid, ind perDirIdx,
-                                           std::array<size_t, size_t(P)> dirs)
+CurvilinearGrid<N, C>::Primitive<P>::Primitive(const CurvilinearGrid<N, C>& grid, ind perDirIdx,
+                                               std::array<size_t, size_t(P)> dirs)
     : Grid(grid)
     , GlobalPrimitiveIndex(grid.numPrimitives_.getOffset(dirs) + perDirIdx)
-    , Directions(dirs)
-    , Coords(grid.numPrimitives_.coordinatesFromGlobalIndex(GlobalPrimitiveIndex)) {}
+    , Coords(grid.numPrimitives_.template coordinatesFromGlobalIndex<P>(GlobalPrimitiveIndex))
+    , Directions(dirs) {}
 
-template <ind N>
+template <ind N, typename C>
 template <GridPrimitive P>
-void StructuredGrid<N>::Primitive<P>::getConnections(std::vector<ind>& result,
-                                                     GridPrimitive toDim) const {}
+CurvilinearGrid<N, C>::Primitive<P>::Primitive(const Primitive<P>& prim)
+    : Grid(prim.Grid)
+    , GlobalPrimitiveIndex(prim.GlobalPrimitiveIndex)
+    , Coords(prim.getCoordinates())
+    , Directions(prim.getDirections()) {}
+
+template <ind N, typename C>
+template <GridPrimitive P>
+CurvilinearGrid<N, C>::Primitive<P> CurvilinearGrid<N, C>::getPrimitive(ind globalIdx) const {
+    return Primitive<P>(*this, globalIdx);
+}
+template <ind N, typename C>
+template <GridPrimitive P>
+CurvilinearGrid<N, C>::Primitive<P> CurvilinearGrid<N, C>::getPrimitive(
+    std::array<ind, size_t(N)> coords, std::array<size_t, size_t(P)> dirs) const {
+    return Primitive<P>(*this, coords, dirs);
+}
+
+// template <ind N, typename C>
+// template <GridPrimitive P>
+// CurvilinearGrid<N, C>::Primitive<P> CurvilinearGrid<N, C>::getPrimitive(
+//     std::array<ind, size_t(N)>&& coords, std::array<size_t, size_t(P)>&& dirs) const {
+//     return Primitive<P>(*this, std::move(coords), std::move(dirs));
+// }
+
+template <ind N, typename C>
+template <GridPrimitive P>
+CurvilinearGrid<N, C>::Primitive<P> CurvilinearGrid<N, C>::getPrimitive(
+    ind perDirIdx, std::array<size_t, size_t(P)> dirs) const {
+    return Primitive<P>(*this, perDirIdx, dirs);
+}
+
+namespace dd_detail {
+template <ind N, typename C, GridPrimitive From>
+struct StructuredGetConnectionsFromToHelper {
+    template <typename Result, ind To>
+    Result operator()(
+        const typename CurvilinearGrid<N, StructuredGridConnections<N>>::template Primitive<From>&
+            prim,
+        const typename CurvilinearGrid<N, StructuredGridConnections<N>>::NumPrimitives&
+            numPrimitives,
+        std::vector<ind>& result) {
+
+        C::template getConnections<From, To>(prim, numPrimitives, result);
+    }
+};
+}  // namespace dd_detail
 
 template <ind N>
 template <GridPrimitive From>
-template <GridPrimitive To>
-void StructuredGrid<N>::Primitive<From>::getConnections(std::vector<ind>& result) const {
-
-    if constexpr (To > P) {  // Going to a higher dimensional primitive? (e.g., edge to face)
-
-    } else {
-        // std::array<ind, N - From> remainingDirections;
-        auto dirSelection = dd_util::initNchooseK<To>();
-        bool validSelection = 0;
-        for () }
-    // Coords
+void StructuredGridConnections<N>::getConnections(
+    const typename CurvilinearGrid<N, StructuredGridConnections<N>>::template Primitive<From>& prim,
+    const typename CurvilinearGrid<N, StructuredGridConnections<N>>::NumPrimitives& numPrimitives,
+    std::vector<ind>& result, GridPrimitive toDim) {
+    dd_detail::StructuredGetConnectionsFromToHelper<N, StructuredGridConnections<N>, From>
+        dispatcher;
+    channeldispatching::dispatchNumber<void, 0, N>(ind(toDim), dispatcher, prim, numPrimitives,
+                                                   result);
 }
+
+template <ind N>
+template <GridPrimitive From, GridPrimitive To>
+void StructuredGridConnections<N>::getConnections(
+    typename CurvilinearGrid<N, StructuredGridConnections<N>>::template Primitive<From>& prim,
+    const typename CurvilinearGrid<N, StructuredGridConnections<N>>::NumPrimitives& numPrimitives,
+    std::vector<ind>& result) {
+    using ToPrimitive =
+        typename CurvilinearGrid<N, StructuredGridConnections<N>>::template Primitive<To>;
+
+    if constexpr (To > From) {  // Going to a higher dimensional primitive? (e.g., edge to face).
+        throw Exception("Not implemented yet.");
+
+    } else if constexpr (N == ind(From) && To == From) {  // Going to a neighbor.
+                                                          // Connecting within the same dimension?
+        for (int dim = 0; dim < int(From); ++dim) {
+            for (int sign : {-1, 1}) {  //= -1; sign <= 1; sign += 2
+                std::array<ind, size_t(N)> neighCoords = prim.getCoordinates();
+                std::array<size_t, size_t(To)> neighDirs = prim.getDirections();
+                // FromPrimitive neighPrim(prim);
+                neighCoords[dim] += sign;
+                if (neighCoords[dim] >= 0 &&
+                    neighCoords[dim] < numPrimitives.NumVerticesPerDimension[dim] - 1) {
+                    ToPrimitive neighPrim(prim.Grid, std::move(neighCoords), std::move(neighDirs));
+                    result.push_back(neighPrim.GlobalPrimitiveIndex);
+                }
+            }
+        }
+    } else if (To == From) {
+        throw Exception("Not implemented yet.");
+
+    } else {  // Going to an element of the original primitive.
+
+        std::array<ind, size_t(N)> neighCoords;
+        std::array<size_t, size_t(To)> neighDirs;
+        std::array<size_t, size_t(From) - size_t(To)> offsetDirections;
+
+        // For iterating through all possible offset combinations.
+        std::bitset<size_t(From) - size_t(To)> posOffset;
+
+        // Cycle through direction combinations of the neighbor.
+        auto dirSelection = dd_util::initNchooseK<size_t(To)>();
+        bool validDirSelection = true;
+        while (validDirSelection) {
+            for (size_t idx = 0; idx < size_t(To); ++idx) {
+                neighDirs[idx] = prim.getDirections()[dirSelection[idx]];
+            }
+
+            // Assemble the directions the primitive will not point to, but be offset by.
+            auto itOffsetDirs = offsetDirections.begin();
+            auto itDirSelection = dirSelection.begin();
+            for (size_t dirIdx = 0; dirIdx < size_t(From); ++dirIdx) {
+                if (*itDirSelection == dirIdx) {
+                    itDirSelection++;
+                } else {
+                    *itOffsetDirs = prim.getDirections()[dirIdx];
+                    itOffsetDirs++;
+                }
+            }
+
+            // Offset the coordinates into some directions.
+            bool validBitConfig = true;
+
+            while (validBitConfig) {
+                neighCoords = prim.getCoordinates();
+
+                for (size_t bit = 0; bit < posOffset.size(); ++bit) {
+                    if (!posOffset[bit]) continue;
+                    neighCoords[offsetDirections[bit]]++;
+
+                    if (neighCoords[offsetDirections[bit]] >=
+                        numPrimitives.NumVerticesPerDimension[offsetDirections[bit]]) {
+                        validBitConfig = false;
+                        break;
+                    }
+                }
+                if (validBitConfig) {
+                    ToPrimitive neighPrim(numPrimitives.Grid, neighCoords, neighDirs);
+                    result.push_back(neighPrim.GlobalPrimitiveIndex);
+                }
+                validBitConfig = dd_util::nextBitset(posOffset);
+            }
+            validDirSelection = dd_util::nextNchooseK(ind(From), dirSelection);
+        }
+    }
+}  // namespace discretedata
 
 }  // namespace discretedata
 }  // namespace inviwo
