@@ -316,7 +316,8 @@ struct DataTraits<DataFrame> {
                                 };
 
                                 if constexpr (util::extent<ValueType>::value == 1) {
-                                    auto [min, max] = std::minmax_element(std::begin(vec), std::end(vec));
+                                    auto [min, max] =
+                                        std::minmax_element(std::begin(vec), std::end(vec));
 
                                     // call lambda
                                     return createSS(*min, *max);
