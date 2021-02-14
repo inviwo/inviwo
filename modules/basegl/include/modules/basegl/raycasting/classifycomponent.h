@@ -40,7 +40,7 @@ public:
 
     virtual std::string_view getName() const override;
 
-    virtual std::vector<Segment> getSegments() const override;
+    virtual std::vector<Segment> getSegments() override;
 
 private:
     std::string volume_;

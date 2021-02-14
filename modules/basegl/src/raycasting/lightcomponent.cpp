@@ -39,24 +39,14 @@ LightComponent::LightComponent(CameraProperty* camera)
 
 std::string_view LightComponent::getName() const { return lighting_.getIdentifier(); }
 
-void LightComponent::initializeResources(Shader& shader) const {
-    utilgl::addDefines(shader, lighting_);
-}
+void LightComponent::initializeResources(Shader& shader) { utilgl::addDefines(shader, lighting_); }
 
 std::vector<Property*> LightComponent::getProperties() { return {&lighting_}; }
 
-auto LightComponent::getSegments() const -> std::vector<Segment> {
+auto LightComponent::getSegments() -> std::vector<Segment> {
 
-    std::vector<Segment> segments;
-
-    segments.push_back(
-        Segment{std::string("uniform LightParameters lighting;"), Segment::uniform, 500});
-
-    if (lighting_.shadingMode_ != ShadingMode::None) {
-        segments.push_back(
-            Segment{std::string("#include \"utils/shading.glsl\""), Segment::include, 500});
-    }
-    return segments;
+    return {{"uniform LightParameters lighting;", Segment::uniform, 500},
+            {R"(#include "utils/shading.glsl")", Segment::include, 500}};
 }
 
 void LightComponent::process(Shader& shader, TextureUnitContainer&) {

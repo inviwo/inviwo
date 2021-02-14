@@ -32,8 +32,6 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/basegl/raycasting/raycastercomponent.h>
 
-#include <flags/flags.h>
-
 namespace inviwo {
 
 class IVW_MODULE_BASEGL_API SampleTransformComponent : public RaycasterComponent {
@@ -47,12 +45,11 @@ public:
 
     virtual std::vector<Property*> getProperties() override;
 
-    virtual std::vector<Segment> getSegments() const override;
+    virtual std::vector<Segment> getSegments() override;
 
 private:
     FloatVec3Property shift_;
     IntVec3Property repeat_;
-
 };
 
 }  // namespace inviwo

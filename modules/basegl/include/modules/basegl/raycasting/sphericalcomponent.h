@@ -29,29 +29,32 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-
 #include <modules/basegl/raycasting/raycastercomponent.h>
-#include <inviwo/core/util/timer.h>
-#include <inviwo/core/properties/invalidationlevel.h>
-
-#include <string>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API TimeComponent : public RaycasterComponent {
+class IVW_MODULE_BASEGL_API SphericalComponent : public RaycasterComponent {
 public:
-    TimeComponent(std::string_view name, std::function<void(InvalidationLevel)> invalidate);
+    SphericalComponent();
+    virtual ~SphericalComponent() = default;
 
     virtual std::string_view getName() const override;
 
-    virtual void process(Shader& shader, TextureUnitContainer&) override;
+    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
+
+    virtual std::vector<Property*> getProperties() override;
 
     virtual std::vector<Segment> getSegments() override;
 
-    Timer timer;
-
 private:
-    std::string name_;
+    OptionPropertyString comp0_;
+    OptionPropertyString comp1_;
+    OptionPropertyString comp2_;
+
+    FloatMinMaxProperty rRange_;
 };
 
 }  // namespace inviwo

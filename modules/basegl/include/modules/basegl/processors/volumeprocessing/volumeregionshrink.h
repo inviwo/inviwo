@@ -78,7 +78,6 @@ private:
 
     std::array<std::shared_ptr<Volume>, 2> out_;
     FrameBufferObject fbo_;
-
 };
 
 }  // namespace inviwo

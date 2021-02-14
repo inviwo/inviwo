@@ -44,12 +44,12 @@ public:
 
     virtual std::string_view getName() const override;
 
-    virtual void initializeResources(Shader& shader) const;
+    virtual void initializeResources(Shader& shader) override;
     virtual void process(Shader& shader, TextureUnitContainer& cont) override;
 
-    virtual std::vector<Property*> getProperties();
+    virtual std::vector<Property*> getProperties() override;
 
-    virtual std::vector<Segment> getSegments() const override;
+    virtual std::vector<Segment> getSegments() override;
 
     CameraProperty camera;
 };

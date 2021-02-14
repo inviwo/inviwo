@@ -32,7 +32,6 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
 
-
 namespace inviwo {
 
 IsoTFComponent::IsoTFComponent(VolumeInport* volumeInport)
@@ -47,7 +46,7 @@ void IsoTFComponent::process(Shader& shader, TextureUnitContainer& cont) {
     utilgl::setUniforms(shader, isotfComposite_);
 }
 
-void IsoTFComponent::initializeResources(Shader& shader) const {
+void IsoTFComponent::initializeResources(Shader& shader) {
     // need to ensure there is always at least one isovalue due to the use of the macro
     // as array size in IsovalueParameters
     shader.getFragmentShaderObject()->addShaderDefine(
@@ -57,7 +56,7 @@ void IsoTFComponent::initializeResources(Shader& shader) const {
 
 std::vector<Property*> IsoTFComponent::getProperties() { return {&isotfComposite_}; }
 
-auto IsoTFComponent::getSegments() const -> std::vector<Segment> {
+auto IsoTFComponent::getSegments() -> std::vector<Segment> {
     return {Segment{"uniform sampler2D transferFunction;", Segment::uniform, 1000}};
 }
 }  // namespace inviwo

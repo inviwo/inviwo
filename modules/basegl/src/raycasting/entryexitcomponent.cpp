@@ -31,8 +31,6 @@
 
 namespace inviwo {
 
-EntryExitComponent::EntryExitComponent() {
-
-}
+EntryExitComponent::EntryExitComponent() {}
 
 }  // namespace inviwo

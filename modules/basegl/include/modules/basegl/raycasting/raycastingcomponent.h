@@ -43,11 +43,11 @@ public:
 
     virtual void process(Shader& shader, TextureUnitContainer&) override;
 
-    virtual void initializeResources(Shader& shader) const override;
+    virtual void initializeResources(Shader& shader) override;
 
     virtual std::vector<Property*> getProperties() override;
 
-    virtual std::vector<Segment> getSegments() const override;
+    virtual std::vector<Segment> getSegments() override;
 
 private:
     bool doDVR() const;

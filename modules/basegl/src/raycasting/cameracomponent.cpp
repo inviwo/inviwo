@@ -29,6 +29,7 @@
 
 #include <modules/basegl/raycasting/cameracomponent.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
@@ -38,7 +39,7 @@ CameraComponent::CameraComponent(std::string_view name,
 
 std::string_view CameraComponent::getName() const { return camera.getIdentifier(); }
 
-void CameraComponent::initializeResources(Shader& shader) const { utilgl::addDefines(shader, camera); }
+void CameraComponent::initializeResources(Shader& shader) { utilgl::addDefines(shader, camera); }
 
 void CameraComponent::process(Shader& shader, TextureUnitContainer&) {
     utilgl::setUniforms(shader, camera);
@@ -46,9 +47,16 @@ void CameraComponent::process(Shader& shader, TextureUnitContainer&) {
 
 std::vector<Property*> CameraComponent::getProperties() { return {&camera}; }
 
-auto CameraComponent::getSegments() const -> std::vector<Segment> {
-    constexpr std::string_view uniforms{"uniform CameraParameters {0};\n"};
-    return {Segment{fmt::format(uniforms, camera.getIdentifier()), Segment::uniform, 500}};
+namespace {
+
+constexpr std::string_view uniforms = util::trim(R"(
+uniform CameraParameters {0};
+)");
+
+}
+
+auto CameraComponent::getSegments() -> std::vector<Segment> {
+    return {Segment{fmt::format(uniforms, getName()), Segment::uniform, 500}};
 }
 
 }  // namespace inviwo

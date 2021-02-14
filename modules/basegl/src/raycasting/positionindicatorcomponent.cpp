@@ -30,6 +30,7 @@
 #include <modules/basegl/raycasting/positionindicatorcomponent.h>
 
 #include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <string_view>
 #include <fmt/format.h>
@@ -49,28 +50,33 @@ void PositionIndicatorComponent::process(Shader& shader, TextureUnitContainer&) 
 
 std::vector<Property*> PositionIndicatorComponent::getProperties() { return {&positionIndicator_}; }
 
-auto PositionIndicatorComponent::getSegments() const -> std::vector<Segment> {
-    std::string_view code{
-        "result = drawPlanes(result, samplePosition, rayDirection, rayStep, {}.plane{}, "
-        "rayPosition, rayDepth);\n"};
+namespace {
 
-    std::stringstream ss;
+constexpr std::string_view uniforms = util::trim(R"(
+uniform VolumeIndicatorParameters {};
+)");
+
+constexpr std::string_view code = util::trim(R"(
+result = drawPlanes(result, samplePosition, rayDirection, rayStep, 
+                    {}.plane{}, rayPosition, rayDepth);
+)");
+
+}  // namespace
+auto PositionIndicatorComponent::getSegments() -> std::vector<Segment> {
+    StrBuffer buff;
+
     if (positionIndicator_) {
-        if (positionIndicator_.plane1_) {
-            ss << fmt::format(code, positionIndicator_.getIdentifier(), 1);
-        }
-        if (positionIndicator_.plane2_) {
-            ss << fmt::format(code, positionIndicator_.getIdentifier(), 2);
-        }
-        if (positionIndicator_.plane3_) {
-            ss << fmt::format(code, positionIndicator_.getIdentifier(), 3);
-        }
+        if (positionIndicator_.plane1_) buff.append(code, getName(), 1);
+        if (positionIndicator_.plane2_) buff.append(code, getName(), 2);
+        if (positionIndicator_.plane3_) buff.append(code, getName(), 3);
+
+        return {{R"(#include "utils/raycastgeometry.glsl")", Segment::include, 1100},
+                {fmt::format(uniforms, getName()), Segment::uniform, 1100},
+                {std::string{buff}, Segment::first, 1100},
+                {std::string{buff}, Segment::loop, 1100}};
+    } else {
+        return {};
     }
-    return {Segment{"#include \"utils/raycastgeometry.glsl\"", Segment::include, 1100},
-            Segment{fmt::format("uniform VolumeIndicatorParameters {};",
-                                positionIndicator_.getIdentifier()),
-                    Segment::uniform, 1100},
-            Segment{ss.str(), Segment::first, 1100}, Segment{ss.str(), Segment::loop, 1100}};
 }
 
 }  // namespace inviwo

@@ -76,7 +76,7 @@ public:
      * Set and shader defines and so on here. The Shader will be recompiles after this.
      * @param shader in current use
      */
-    virtual void initializeResources(Shader& shader) const;
+    virtual void initializeResources(Shader& shader);
 
     /**
      * @brief Called from VolumeRaycasterBase::process
@@ -105,7 +105,7 @@ public:
      * VolumeRaycasterBase::initializeResources after the call to
      * RaycasterComponent::initializeResources.
      */
-    virtual std::vector<Segment> getSegments() const { return {}; }
+    virtual std::vector<Segment> getSegments() { return {}; }
 };
 
 }  // namespace inviwo

@@ -36,7 +36,6 @@
 
 namespace inviwo {
 
-
 class IVW_MODULE_BASEGL_API VolumeComponent : public RaycasterComponent {
 public:
     VolumeComponent(std::string_view name);
@@ -47,7 +46,7 @@ public:
 
     virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
 
-    virtual std::vector<Segment> getSegments() const override;
+    virtual std::vector<Segment> getSegments() override;
 
     VolumeInport volumePort;
 

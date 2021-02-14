@@ -188,4 +188,3 @@ struct PortTraits<BrushingAndLinkingOutport> {
 };
 
 }  // namespace inviwo
-

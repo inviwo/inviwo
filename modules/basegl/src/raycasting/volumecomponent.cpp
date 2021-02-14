@@ -30,6 +30,7 @@
 #include <modules/basegl/raycasting/volumecomponent.h>
 #include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
@@ -46,42 +47,48 @@ std::vector<std::tuple<Inport*, std::string>> VolumeComponent::getInports() {
     return {{&volumePort, std::string{"volumes"}}};
 }
 
-auto VolumeComponent::getSegments() const -> std::vector<Segment> {
-    constexpr std::string_view uniforms{
-        "uniform VolumeParameters {0}Parameters;\n"
-        "uniform sampler3D {0};"};
+namespace {
 
-    constexpr std::string_view voxelFirst{
-        "vec4 {0}VoxelPrev = vec4(0);\n"
-        "vec4 {0}Voxel = getNormalizedVoxel({0}, {0}Parameters, samplePosition);"};
+constexpr std::string_view uniforms = util::trim(R"(
+uniform VolumeParameters {0}Parameters;
+uniform sampler3D {0};
+)");
 
-    constexpr std::string_view voxel{
-        "{0}VoxelPrev = {0}Voxel;\n"
-        "{0}Voxel = getNormalizedVoxel({0}, {0}Parameters, samplePosition);"};
+constexpr std::string_view voxelFirst = util::trim(R"(
+vec4 {0}VoxelPrev = vec4(0);
+vec4 {0}Voxel = getNormalizedVoxel({0}, {0}Parameters, samplePosition);
+)");
 
-    constexpr std::string_view gradientFirst{
-        "vec3 {0}GradientPrev = vec3(0);\n"
-        "vec3 {0}Gradient = normalize(\n"
-        "    COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters, samplePosition, "
-        "channel));"};
+constexpr std::string_view voxel = util::trim(R"(
+{0}VoxelPrev = {0}Voxel;
+{0}Voxel = getNormalizedVoxel({0}, {0}Parameters, samplePosition);
+)");
 
-    constexpr std::string_view gradient{
-        "{0}GradientPrev = {0}Gradient;\n"
-        "{0}Gradient = normalize(\n"
-        "    COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters, samplePosition, channel));"};
+constexpr std::string_view gradientFirst = util::trim(R"(
+vec3 {0}GradientPrev = vec3(0);
+vec3 {0}Gradient = normalize(COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters, samplePosition, channel));
+)");
+
+constexpr std::string_view gradient = util::trim(R"(
+{0}GradientPrev = {0}Gradient;
+{0}Gradient = normalize(COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters, samplePosition, channel));
+)");
+
+}  // namespace
+
+auto VolumeComponent::getSegments() -> std::vector<Segment> {
 
     std::vector<Segment> segments{
-        Segment{fmt::format(uniforms, volumePort.getIdentifier()), Segment::uniform, 400},
-        Segment{fmt::format(voxelFirst, volumePort.getIdentifier()), Segment::first, 400},
-        Segment{fmt::format(voxel, volumePort.getIdentifier()), Segment::loop, 400}};
+        {fmt::format(FMT_STRING(uniforms), getName()), Segment::uniform, 400},
+        {fmt::format(FMT_STRING(voxelFirst), getName()), Segment::first, 400},
+        {fmt::format(FMT_STRING(voxel), getName()), Segment::loop, 400}};
 
     if (calculateGradient) {
+        segments.push_back(Segment{R"(#include "utils/gradients.glsl")", Segment::include, 400});
         segments.push_back(
-            Segment{std::string("#include \"utils/gradients.glsl\""), Segment::include, 400});
+            Segment{fmt::format(FMT_STRING(gradientFirst), getName()), Segment::first, 410});
         segments.push_back(
-            Segment{fmt::format(gradientFirst, volumePort.getIdentifier()), Segment::first, 410});
-        segments.push_back(
-            Segment{fmt::format(gradient, volumePort.getIdentifier()), Segment::loop, 410});
+            Segment{fmt::format(FMT_STRING(gradient), getName()), Segment::loop, 410});
     }
 
     return segments;

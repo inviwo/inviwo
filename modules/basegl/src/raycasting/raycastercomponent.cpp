@@ -32,6 +32,6 @@
 namespace inviwo {
 
 void RaycasterComponent::process(Shader&, TextureUnitContainer&) {}
-void RaycasterComponent::initializeResources(Shader&) const {}
+void RaycasterComponent::initializeResources(Shader&) {}
 
 }  // namespace inviwo

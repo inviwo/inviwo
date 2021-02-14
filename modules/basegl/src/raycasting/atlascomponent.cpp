@@ -29,15 +29,16 @@
 
 #include <modules/basegl/raycasting/atlascomponent.h>
 
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/image/layergl.h>
-#include <modules/opengl/texture/texture2d.h>
-
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/stringconversion.h>
+
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/image/layergl.h>
+#include <modules/opengl/texture/texture2d.h>
 
 #include <modules/basegl/raycasting/timecomponent.h>
 
@@ -55,7 +56,7 @@ OrdinalPropertyState<float> ordinalAlpha(
             {1.0f, ConstraintBehavior::Immutable},
             0.01f,
             invalidationLevel,
-            PropertySemantics::Color};
+            PropertySemantics::Default};
 }
 
 std::vector<colorbrewer::Family> listFamilies() {
@@ -90,10 +91,10 @@ void orderTf(TransferFunction& tf, size_t nSegments) {
     for (size_t i = 0; i <= nSegments; ++i) {
         const auto start = (-0.5 / nSegments);
         const auto stop = (nSegments + 0.5) / nSegments;
-        const auto dt = (stop - start) / nSegments;
+        const auto delta = (stop - start) / (nSegments + 1);
 
-        setPos(start + i * dt, i * 2);
-        setPosAlmost(start + (i + 1) * dt, i * 2 + 1);
+        setPos(start + i * delta, i * 2);
+        setPosAlmost(start + (i + 1) * delta, i * 2 + 1);
     }
 }
 
@@ -247,6 +248,10 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
         selectionAlpha_.isModified() || selectionMix_.isModified() || filteredColor_.isModified() ||
         filteredAlpha_.isModified() || filteredMix_.isModified()) {
 
+        if (colors_.getDimensions().x < nsegments + 1) {
+            colors_.setDimensions(size2_t{nsegments + 1, 2});
+        }
+
         util::IndexMapper2D im(colors_.getDimensions());
 
         auto lrp =
@@ -344,46 +349,49 @@ std::vector<Property*> AtlasComponent::getProperties() {
 }
 
 namespace {
-constexpr std::string_view uniforms = R"(
-uniform VolumeParameters {0}Parameters;
-uniform sampler3D {0};
-uniform sampler2D {0}Colors;
-uniform uint {0}PickingStart;
-uniform uint {0}Size;
-)";
+constexpr std::string_view uniforms = util::trim(R"(
+uniform VolumeParameters {atlas}Parameters;
+uniform sampler3D {atlas};
+uniform sampler2D {atlas}Colors;
+uniform uint {atlas}PickingStart;
+uniform uint {atlas}Size;
+)");
 
-constexpr std::string_view first = R"(
-int selectionSize = textureSize({0}Colors, 0).x;
-float selectionScale = float({0}Size) / (selectionSize - 1);
-float {0}Segment = getNormalizedVoxel({0}, {0}Parameters, samplePosition).x;
+constexpr std::string_view first = util::trim(R"(
+float {atlas}Scale = float({atlas}Size) / (textureSize({atlas}Colors, 0).x - 1);
+float {atlas}Segment = getNormalizedVoxel({atlas}, {atlas}Parameters, samplePosition).x;
 
-vec4 {0}Color1 = texture({0}Colors, vec2({0}Segment * selectionScale, 0.25));
-vec4 {0}Color2 = texture({0}Colors, vec2({0}Segment * selectionScale, 0.75));
-{1}Color = highlight({1}Color, {0}Color1, {0}Color2, time);
+vec4 {atlas}Color1 = texture({atlas}Colors, vec2({atlas}Segment * {atlas}Scale, 0.25));
+vec4 {atlas}Color2 = texture({atlas}Colors, vec2({atlas}Segment * {atlas}Scale, 0.75));
+{volume}Color = highlight({volume}Color, {atlas}Color1, {atlas}Color2, time);
 
-if (picking.a == 0.0 && {1}Color.a > 0.0 && {0}Segment != 0.0) {{
-    picking = vec4(pickingIndexToColor({0}PickingStart + uint({0}Size * {0}Segment + 0.5)), 1.0); 
+if (picking.a == 0.0 && {volume}Color.a > 0.0 && {atlas}Segment != 0.0) {{
+    uint pid = {atlas}PickingStart + uint({atlas}Size * {atlas}Segment + 0.5);
+    picking = vec4(pickingIndexToColor(pid), 1.0);
 }}
-)";
+)");
 
-constexpr std::string_view loop = R"(
-{0}Segment = getNormalizedVoxel({0}, {0}Parameters, samplePosition).x;
-{0}Color1 = texture({0}Colors, vec2({0}Segment * selectionScale, 0.25));
-{0}Color2 = texture({0}Colors, vec2({0}Segment * selectionScale, 0.75));
-{1}Color = highlight({1}Color, {0}Color1, {0}Color2, time);
+constexpr std::string_view loop = util::trim(R"(
+{atlas}Segment = getNormalizedVoxel({atlas}, {atlas}Parameters, samplePosition).x;
+{atlas}Color1 = texture({atlas}Colors, vec2({atlas}Segment * {atlas}Scale, 0.25));
+{atlas}Color2 = texture({atlas}Colors, vec2({atlas}Segment * {atlas}Scale, 0.75));
+{volume}Color = highlight({volume}Color, {atlas}Color1, {atlas}Color2, time);
 
-if (picking.a == 0.0 && {1}Color.a > 0.0 && {0}Segment != 0.0) {{
-    picking = vec4(pickingIndexToColor({0}PickingStart + uint({0}Size * {0}Segment + 0.5)), 1.0); 
+if (picking.a == 0.0 && {volume}Color.a > 0.0 && {atlas}Segment != 0.0) {{
+    uint pid = {atlas}PickingStart + uint({atlas}Size * {atlas}Segment + 0.5);
+    picking = vec4(pickingIndexToColor(pid), 1.0);
 }}
-)";
+)");
 
 }  // namespace
 
-auto AtlasComponent::getSegments() const -> std::vector<Segment> {
-    return {Segment{R"(#include "utils/pickingutils.glsl")", Segment::include, 800},
-            Segment{fmt::format(FMT_STRING(uniforms), getName()), Segment::uniform, 800},
-            Segment{fmt::format(FMT_STRING(first), getName(), volume_), Segment::first, 800},
-            Segment{fmt::format(FMT_STRING(loop), getName(), volume_), Segment::loop, 800}};
+auto AtlasComponent::getSegments() -> std::vector<Segment> {
+    using namespace fmt::literals;
+
+    return {{R"(#include "utils/pickingutils.glsl")", Segment::include, 800},
+            {fmt::format(uniforms, "atlas"_a = getName()), Segment::uniform, 800},
+            {fmt::format(first, "atlas"_a = getName(), "volume"_a = volume_), Segment::first, 800},
+            {fmt::format(loop, "atlas"_a = getName(), "volume"_a = volume_), Segment::loop, 800}};
 }
 
 }  // namespace inviwo

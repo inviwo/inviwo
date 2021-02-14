@@ -65,6 +65,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/pointrenderer.h
     include/modules/basegl/processors/raycasting/atlasvolumeraycaster.h
     include/modules/basegl/processors/raycasting/multichannelvolumeraycaster.h
+    include/modules/basegl/processors/raycasting/sphericalvolumeraycaster.h
     include/modules/basegl/processors/raycasting/standardvolumeraycaster.h
     include/modules/basegl/processors/raycasting/volumeraycasterbase.h
     include/modules/basegl/processors/redgreenprocessor.h
@@ -100,6 +101,7 @@ set(HEADER_FILES
     include/modules/basegl/raycasting/raycastercomponent.h
     include/modules/basegl/raycasting/raycastingcomponent.h
     include/modules/basegl/raycasting/sampletransformcomponent.h
+    include/modules/basegl/raycasting/sphericalcomponent.h
     include/modules/basegl/raycasting/timecomponent.h
     include/modules/basegl/raycasting/volumecomponent.h
     include/modules/basegl/rendering/linerenderer.h
@@ -170,6 +172,7 @@ set(SOURCE_FILES
     src/processors/pointrenderer.cpp
     src/processors/raycasting/atlasvolumeraycaster.cpp
     src/processors/raycasting/multichannelvolumeraycaster.cpp
+    src/processors/raycasting/sphericalvolumeraycaster.cpp
     src/processors/raycasting/standardvolumeraycaster.cpp
     src/processors/raycasting/volumeraycasterbase.cpp
     src/processors/redgreenprocessor.cpp
@@ -205,6 +208,7 @@ set(SOURCE_FILES
     src/raycasting/raycastercomponent.cpp
     src/raycasting/raycastingcomponent.cpp
     src/raycasting/sampletransformcomponent.cpp
+    src/raycasting/sphericalcomponent.cpp
     src/raycasting/timecomponent.cpp
     src/raycasting/volumecomponent.cpp
     src/rendering/linerenderer.cpp

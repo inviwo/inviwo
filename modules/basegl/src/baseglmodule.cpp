@@ -73,6 +73,7 @@
 #include <modules/basegl/processors/pointrenderer.h>
 #include <modules/basegl/processors/raycasting/atlasvolumeraycaster.h>
 #include <modules/basegl/processors/raycasting/multichannelvolumeraycaster.h>
+#include <modules/basegl/processors/raycasting/sphericalvolumeraycaster.h>
 #include <modules/basegl/processors/raycasting/standardvolumeraycaster.h>
 #include <modules/basegl/processors/redgreenprocessor.h>
 #include <modules/basegl/processors/sphererenderer.h>
@@ -100,7 +101,6 @@
 #include <modules/basegl/datavisualizer/imagevisualizer.h>
 #include <modules/basegl/datavisualizer/imagebackgroundvisualizer.h>
 #include <modules/basegl/datavisualizer/meshvisualizer.h>
-
 
 #include <modules/opengl/shader/shadermanager.h>
 
@@ -140,6 +140,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<PointRenderer>();
     registerProcessor<RedGreenProcessor>();
     registerProcessor<SphereRenderer>();
+    registerProcessor<SphericalVolumeRaycaster>();
     registerProcessor<SplitImage>();
     registerProcessor<StandardVolumeRaycaster>();
     registerProcessor<TubeRendering>();

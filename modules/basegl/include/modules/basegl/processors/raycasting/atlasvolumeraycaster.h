@@ -44,7 +44,6 @@
 #include <modules/basegl/raycasting/timecomponent.h>
 #include <modules/basegl/raycasting/volumecomponent.h>
 
-
 namespace inviwo {
 
 /** \docpage{org.inviwo.AtlasVolumeRaycaster, Atlas Volume Raycaster}

@@ -44,7 +44,7 @@ public:
 
     virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
 
-    virtual std::vector<Segment> getSegments() const override;
+    virtual std::vector<Segment> getSegments() override;
 
 private:
     ImageInport background_;

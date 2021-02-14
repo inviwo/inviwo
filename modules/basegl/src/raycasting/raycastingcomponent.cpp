@@ -29,6 +29,7 @@
 
 #include <modules/basegl/raycasting/raycastingcomponent.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <string_view>
 #include <fmt/format.h>
@@ -44,7 +45,7 @@ std::string_view RaycastingComponent::getName() const { return raycasting_.getId
 void RaycastingComponent::process(Shader& shader, TextureUnitContainer&) {
     shader.setUniform("samplingRate", raycasting_.samplingRate_.get());
 }
-void RaycastingComponent::initializeResources(Shader& shader) const {
+void RaycastingComponent::initializeResources(Shader& shader) {
     auto fso = shader.getFragmentShaderObject();
 
     {  // classification
@@ -71,18 +72,18 @@ void RaycastingComponent::initializeResources(Shader& shader) const {
 
 namespace {
 
-constexpr std::string_view iso{R"(
+constexpr std::string_view iso = util::trim(R"(
 result = drawISO(result, isovalues, {0}Voxel[channel], {0}VoxelPrev[channel], 
                 {0}Gradient, {0}GradientPrev, {0}Parameters.textureToWorld, 
                 lighting, samplePosition, rayDirection, 
-                cameraDir, rayPosition, rayStep, rayDepth);)"};
+                cameraDir, rayPosition, rayStep, rayDepth);)");
 
-constexpr std::string_view dvr2{R"(
+constexpr std::string_view dvr2 = util::trim(R"(
 result = drawDVR(result, transferFunction, samplePosition, {0}Voxel, channel, {0}Gradient,
                  {0}Parameters.textureToWorld, lighting, 
-                 cameraDir, rayPosition, rayStep, rayDepth);)"};
+                 cameraDir, rayPosition, rayStep, rayDepth);)");
 
-constexpr std::string_view dvr{R"(
+constexpr std::string_view dvr = util::trim(R"(
 if ({0}Color.a > 0) {{
     #if defined(SHADING_ENABLED)
     vec3 worldSpacePosition = ({0}Parameters.textureToWorld * vec4(samplePosition, 1.0)).xyz;
@@ -91,10 +92,11 @@ if ({0}Color.a > 0) {{
     #endif
     result = compositeDVR(result, {0}Color, rayPosition, rayDepth, rayStep);
 }}
-)"};
+)");
+
 }  // namespace
 
-auto RaycastingComponent::getSegments() const -> std::vector<Segment> {
+auto RaycastingComponent::getSegments() -> std::vector<Segment> {
 
     std::vector<Segment> segments;
 

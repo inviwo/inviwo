@@ -64,7 +64,7 @@ public:
 
     virtual std::vector<Property*> getProperties() override;
 
-    virtual std::vector<Segment> getSegments() const override;
+    virtual std::vector<Segment> getSegments() override;
 
     void onPickingEvent(PickingEvent* e);
 

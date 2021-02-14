@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <modules/basegl/raycasting/classifycomponent.h>
+#include <inviwo/core/util/stringconversion.h>
+
 #include <fmt/format.h>
 
 namespace inviwo {
@@ -39,16 +41,14 @@ std::string_view ClassifyComponent::getName() const { return "classify"; }
 
 namespace {
 
-constexpr std::string_view classify{R"(
+constexpr std::string_view classify = util::trim(R"(
 vec4 {0}Color = texture(transferFunction, vec2({0}Voxel[channel], 0.5));
-)"};
+)");
 
 }
 
-auto ClassifyComponent::getSegments() const -> std::vector<Segment> {
-    return {
-        Segment{fmt::format(FMT_STRING(classify), volume_), Segment::first, 600},
-        Segment{fmt::format(FMT_STRING(classify), volume_), Segment::loop, 600}
-    };
+auto ClassifyComponent::getSegments() -> std::vector<Segment> {
+    return {{fmt::format(FMT_STRING(classify), volume_), Segment::first, 600},
+            {fmt::format(FMT_STRING(classify), volume_), Segment::loop, 600}};
 }
 }  // namespace inviwo

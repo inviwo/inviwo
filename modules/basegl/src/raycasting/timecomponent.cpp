@@ -56,7 +56,7 @@ void TimeComponent::process(Shader& shader, TextureUnitContainer&) {
                                  .count());
 }
 
-auto TimeComponent::getSegments() const -> std::vector<Segment> {
+auto TimeComponent::getSegments() -> std::vector<Segment> {
     return {Segment{fmt::format(FMT_STRING("uniform float {};"), name_), Segment::uniform, 600}};
 }
 

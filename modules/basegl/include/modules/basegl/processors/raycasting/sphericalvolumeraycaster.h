@@ -40,12 +40,13 @@
 #include <modules/basegl/raycasting/lightcomponent.h>
 #include <modules/basegl/raycasting/positionindicatorcomponent.h>
 #include <modules/basegl/raycasting/sampletransformcomponent.h>
+#include <modules/basegl/raycasting/sphericalcomponent.h>
 #include <modules/basegl/raycasting/volumecomponent.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.StandardVolumeRaycaster, Standard Volume Raycaster}
- * ![](org.inviwo.StandardVolumeRaycaster.png?classIdentifier=org.inviwo.StandardVolumeRaycaster)
+/** \docpage{org.inviwo.SphericalVolumeRaycaster, Spherical Volume Raycaster}
+ * ![](org.inviwo.SphericalVolumeRaycaster.png?classIdentifier=org.inviwo.SphericalVolumeRaycaster)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -58,10 +59,10 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_BASEGL_API StandardVolumeRaycaster : public VolumeRaycasterBase {
+class IVW_MODULE_BASEGL_API SphericalVolumeRaycaster : public VolumeRaycasterBase {
 public:
-    StandardVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
-    virtual ~StandardVolumeRaycaster() = default;
+    SphericalVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
+    virtual ~SphericalVolumeRaycaster() = default;
 
     virtual void process() override;
 
@@ -77,6 +78,7 @@ private:
     CameraComponent camera_;
     LightComponent light_;
     PositionIndicatorComponent positionIndicator_;
+    SphericalComponent sphericalTransform_;
     SampleTransformComponent sampleTransform_;
 };
 
