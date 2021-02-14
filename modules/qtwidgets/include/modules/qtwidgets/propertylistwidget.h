@@ -73,7 +73,8 @@ private:
     static QEvent::Type PropertyListEventType;
 };
 
-class IVW_MODULE_QTWIDGETS_API PropertyListWidget : public InviwoDockWidget, ProcessorNetworkEvaluationObserver {
+class IVW_MODULE_QTWIDGETS_API PropertyListWidget : public InviwoDockWidget,
+                                                    ProcessorNetworkEvaluationObserver {
 public:
     using WidgetMap = std::unordered_map<Processor*, CollapsibleGroupBoxWidgetQt*>;
 

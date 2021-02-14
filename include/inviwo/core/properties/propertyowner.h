@@ -99,7 +99,7 @@ public:
     /**
      * @brief Remove all properties;
      * Owned properties will be deleted
-    */
+     */
     virtual void clear();
 
     virtual const std::string& getIdentifier() const;

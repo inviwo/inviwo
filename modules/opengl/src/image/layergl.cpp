@@ -49,9 +49,9 @@ LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* forma
 
     const auto& glFormat = GLFormats::get(getDataFormatId());
     if (getLayerType() == LayerType::Depth) {
-        texture_ = std::make_shared<Texture2D>(dimensions, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT32F,
-                                               glFormat.type, GL_NEAREST, swizzleMask,
-                                               utilgl::convertWrappingToGL(wrap));
+        texture_ = std::make_shared<Texture2D>(dimensions, GL_DEPTH_COMPONENT,
+                                               GL_DEPTH_COMPONENT32F, glFormat.type, GL_NEAREST,
+                                               swizzleMask, utilgl::convertWrappingToGL(wrap));
     } else {
         utilgl::convertInterpolationToGL(interpolation);
         texture_ = std::make_shared<Texture2D>(dimensions, glFormat,

@@ -78,7 +78,8 @@ void exposeLogging(pybind11::module& m) {
              [](LogCentral* lc, std::shared_ptr<Logger> logger) { lc->registerLogger(logger); })
         .def_property("verbosity", &LogCentral::getVerbosity, &LogCentral::setVerbosity)
         .def_property("logStacktrace", &LogCentral::getLogStacktrace, &LogCentral::setLogStacktrace)
-        .def_property("messageBreakLevel", &LogCentral::getMessageBreakLevel, &LogCentral::setMessageBreakLevel)
+        .def_property("messageBreakLevel", &LogCentral::getMessageBreakLevel,
+                      &LogCentral::setMessageBreakLevel)
         .def_static("get", &LogCentral::getPtr, py::return_value_policy::reference);
 
     py::class_<ConsoleLogger, Logger, std::shared_ptr<ConsoleLogger>>(m, "ConsoleLogger")
@@ -91,8 +92,8 @@ void exposeLogging(pybind11::module& m) {
 
     m.def(
         "log",
-        [](std::string_view source, LogLevel level, LogAudience audience,
-           std::string_view file, std::string_view function, int line, std::string_view msg) {
+        [](std::string_view source, LogLevel level, LogAudience audience, std::string_view file,
+           std::string_view function, int line, std::string_view msg) {
             if (LogCentral::isInitialized()) {
                 LogCentral::getPtr()->log(source, level, audience, file, function, line, msg);
             }
