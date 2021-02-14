@@ -155,9 +155,7 @@ size_t ListProperty::getMaxNumberOfElements() const { return maxNumElements_; }
 
 void ListProperty::clear() {
     NetworkLock l(this);
-    while (size()) {
-        removeProperty(static_cast<size_t>(0));
-    }
+    CompositeProperty::clear();
     propertyModified();
 }
 

@@ -40,6 +40,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/common/moduleaction.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/rendercontext.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -119,8 +120,6 @@ void PropertyWidgetQt::setVisible(bool visible) {
     if (visible != wasVisible && parent_) parent_->onChildVisibilityChange(this);
 }
 
-void PropertyWidgetQt::onSetVisible(Property*, bool visible) { setVisible(visible); }
-
 void PropertyWidgetQt::onChildVisibilityChange(PropertyWidgetQt* /*child*/) {
     if (property_) {
         setVisible(property_->getVisible());
@@ -129,9 +128,20 @@ void PropertyWidgetQt::onChildVisibilityChange(PropertyWidgetQt* /*child*/) {
 
 void PropertyWidgetQt::setReadOnly(bool readonly) { setDisabled(readonly); }
 
-void PropertyWidgetQt::onSetUsageMode(Property*, UsageMode) { setVisible(property_->getVisible()); }
+void PropertyWidgetQt::onSetVisible(Property*, bool visible) {
+    setVisible(visible);
+    RenderContext::getPtr()->activateDefaultRenderContext();
+}
 
-void PropertyWidgetQt::onSetReadOnly(Property*, bool readonly) { setReadOnly(readonly); }
+void PropertyWidgetQt::onSetUsageMode(Property*, UsageMode) {
+    setVisible(property_->getVisible());
+    RenderContext::getPtr()->activateDefaultRenderContext();
+}
+
+void PropertyWidgetQt::onSetReadOnly(Property*, bool readonly) {
+    setReadOnly(readonly);
+    RenderContext::getPtr()->activateDefaultRenderContext();
+}
 
 std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
     std::unique_ptr<QMenu> menu = std::make_unique<QMenu>();
@@ -318,22 +328,21 @@ void PropertyWidgetQt::mousePressEvent(QMouseEvent* event) {
 }
 
 void PropertyWidgetQt::mouseMoveEvent(QMouseEvent* event) {
+    if (property_ && (event->buttons() & Qt::LeftButton) &&
+        ((event->pos() - mousePressedPosition_).manhattanLength() <
+         QApplication::startDragDistance())) {
 
-    if (!(event->buttons() & Qt::LeftButton)) return;
+        event->accept();
 
-    if ((event->pos() - mousePressedPosition_).manhattanLength() <
-        QApplication::startDragDistance())
-        return;
-
-    if (!property_) return;
-
-    QDrag* drag = new QDrag(this);
-    auto mimeData = getPropertyMimeData();
-    // Displayed while dragging property
-    mimeData->setText(utilqt::toLocalQString(property_->getDisplayName()));
-    drag->setMimeData(mimeData.release());
-
-    drag->exec();
+        QDrag* drag = new QDrag(this);
+        auto mimeData = getPropertyMimeData();
+        // Displayed while dragging property
+        mimeData->setText(utilqt::toLocalQString(property_->getDisplayName()));
+        drag->setMimeData(mimeData.release());
+        drag->exec();
+    } else {
+        QWidget::mouseMoveEvent(event);
+    }
 }
 
 void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app) {

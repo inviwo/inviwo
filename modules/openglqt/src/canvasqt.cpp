@@ -146,7 +146,6 @@ void CanvasQt::doContextMenu(QMouseEvent* event) {
 #include <warn/ignore/switch-enum>
 
 bool CanvasQt::event(QEvent* e) {
-    RenderContext::getPtr()->activateDefaultRenderContext();
     switch (e->type()) {
         case QEvent::KeyPress:
             return mapKeyPressEvent(static_cast<QKeyEvent*>(e));
@@ -183,6 +182,7 @@ dvec2 CanvasQt::normalPos(dvec2 pos) const {
 
 bool CanvasQt::mapMousePressEvent(QMouseEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;
+    RenderContext::getPtr()->activateDefaultRenderContext();
 
     const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
 
@@ -202,6 +202,7 @@ bool CanvasQt::mapMousePressEvent(QMouseEvent* e) {
 
 bool CanvasQt::mapMouseDoubleClickEvent(QMouseEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;
+    RenderContext::getPtr()->activateDefaultRenderContext();
 
     const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::DoubleClick,
@@ -218,7 +219,7 @@ bool CanvasQt::mapMouseDoubleClickEvent(QMouseEvent* e) {
 
 bool CanvasQt::mapMouseReleaseEvent(QMouseEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;
-
+    RenderContext::getPtr()->activateDefaultRenderContext();
     const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
 
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::Release,
@@ -238,7 +239,7 @@ bool CanvasQt::mapMouseReleaseEvent(QMouseEvent* e) {
 
 bool CanvasQt::mapMouseMoveEvent(QMouseEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;
-
+    RenderContext::getPtr()->activateDefaultRenderContext();
     const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
 
     MouseEvent mouseEvent(MouseButton::None, MouseState::Move, utilqt::getMouseButtons(e),
@@ -253,6 +254,7 @@ bool CanvasQt::mapMouseMoveEvent(QMouseEvent* e) {
 }
 
 bool CanvasQt::mapWheelEvent(QWheelEvent* e) {
+    RenderContext::getPtr()->activateDefaultRenderContext();
     QPoint numPixels = e->pixelDelta();
     QPoint numDegrees = e->angleDelta() / 8 / 15;
 
@@ -275,6 +277,7 @@ bool CanvasQt::mapWheelEvent(QWheelEvent* e) {
 }
 
 bool CanvasQt::mapKeyPressEvent(QKeyEvent* keyEvent) {
+    RenderContext::getPtr()->activateDefaultRenderContext();
     KeyboardEvent pressKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Press,
                                 utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
                                 utilqt::fromQString(keyEvent->text()));
@@ -299,6 +302,7 @@ bool CanvasQt::mapKeyPressEvent(QKeyEvent* keyEvent) {
 }
 
 bool CanvasQt::mapKeyReleaseEvent(QKeyEvent* keyEvent) {
+    RenderContext::getPtr()->activateDefaultRenderContext();
     KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
                                   utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
                                   utilqt::fromQString(keyEvent->text()));
@@ -312,6 +316,7 @@ bool CanvasQt::mapKeyReleaseEvent(QKeyEvent* keyEvent) {
 }
 
 bool CanvasQt::mapTouchEvent(QTouchEvent* touch) {
+    RenderContext::getPtr()->activateDefaultRenderContext();
 
     // Copy touch points
     std::vector<TouchPoint> touchPoints;
@@ -394,6 +399,8 @@ bool CanvasQt::mapTouchEvent(QTouchEvent* touch) {
 }
 
 bool CanvasQt::mapGestureEvent(QGestureEvent* ge) {
+    RenderContext::getPtr()->activateDefaultRenderContext();
+
     QPanGesture* panGesture = nullptr;
     QPinchGesture* pinchGesture = nullptr;
 
@@ -426,6 +433,8 @@ bool CanvasQt::mapGestureEvent(QGestureEvent* ge) {
 }
 
 bool CanvasQt::mapPanTriggered(QPanGesture* gesture) {
+    RenderContext::getPtr()->activateDefaultRenderContext();
+
     // determine delta position, use canvas dimensions here for normalization
     auto deltaPos =
         dvec2((gesture->lastOffset().x() - gesture->offset().x()) / (getCanvasDimensions().x - 1),
@@ -442,6 +451,8 @@ bool CanvasQt::mapPanTriggered(QPanGesture* gesture) {
 }
 
 bool CanvasQt::mapPinchTriggered(QPinchGesture* gesture) {
+    RenderContext::getPtr()->activateDefaultRenderContext();
+
     auto depth = getDepthValueAtNormalizedCoord(screenPositionNormalized_);
     GestureEvent ge(dvec2(gesture->centerPoint().x(), gesture->centerPoint().y()),
                     static_cast<double>(gesture->scaleFactor()) - 1.0, GestureType::Pinch,

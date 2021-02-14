@@ -106,6 +106,7 @@ void exposeVectorIdentifierWrapper(pybind11::module& m, const std::string& name)
 
     py::class_<VecWrapper>(m, name.c_str())
         .def("__getattr__", &VecWrapper::getFromIdentifier, py::return_value_policy::reference)
+        .def("__getitem__", &VecWrapper::getFromIdentifier, py::return_value_policy::reference)
         .def("__getitem__", &VecWrapper::getFromIndex, py::return_value_policy::reference)
         .def("__len__", &VecWrapper::size)
         .def("__contains__", &VecWrapper::contains)
