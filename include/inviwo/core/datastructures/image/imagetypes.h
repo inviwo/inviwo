@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-enum class ImageType : char {
+enum class ImageType : unsigned char {
     ColorOnly = 0,
     ColorDepth = 1,
     ColorPicking = 2,
@@ -46,16 +46,16 @@ enum class ImageType : char {
     AllLayers = ColorDepthPicking
 };
 
-enum class InterpolationType : char { Linear, Nearest };
-enum class Wrapping : char { Clamp = 0, Repeat, Mirror };
+enum class InterpolationType : unsigned char { Linear, Nearest };
+enum class Wrapping : unsigned char { Clamp = 0, Repeat, Mirror };
 
 using Wrapping1D = std::array<Wrapping, 1>;
 using Wrapping2D = std::array<Wrapping, 2>;
 using Wrapping3D = std::array<Wrapping, 3>;
 
-enum class LayerType : char { Color = 0, Depth = 1, Picking = 2 };
+enum class LayerType : unsigned char { Color = 0, Depth = 1, Picking = 2 };
 
-enum class ImageChannel : char { Red, Green, Blue, Alpha, Zero, One };
+enum class ImageChannel : unsigned char { Red, Green, Blue, Alpha, Zero, One };
 
 using SwizzleMask = std::array<ImageChannel, 4>;
 

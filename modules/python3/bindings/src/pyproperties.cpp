@@ -43,6 +43,7 @@
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/filepatternproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/propertyeditorwidget.h>
 
 #include <inviwo/core/util/stdextensions.h>
@@ -127,7 +128,15 @@ void exposeProperties(py::module& m) {
         .def("hasWidgets", &Property::hasWidgets)
         .def("setCurrentStateAsDefault", &Property::setCurrentStateAsDefault)
         .def("resetToDefaultState", &Property::resetToDefaultState)
-        .def("onChange", [](Property* p, std::function<void()> func) { p->onChange(func); });
+        .def("onChange", [](Property* p, std::function<void()> func) { p->onChange(func); })
+        .def("visibilityDependsOn",
+             [](Property* p, Property* other, std::function<bool(Property&)> func) {
+                 p->visibilityDependsOn(*other, func);
+             })
+        .def("readonlyDependsOn",
+             [](Property* p, Property* other, std::function<bool(Property&)> func) {
+                 p->readonlyDependsOn(*other, func);
+             });
 
     PyPropertyClass<CompositeProperty, Property, PropertyOwner>(m, "CompositeProperty")
         .def(py::init([](const std::string& identifier, const std::string& displayName,
@@ -140,6 +149,8 @@ void exposeProperties(py::module& m) {
              py::arg("semantics") = PropertySemantics::Default)
         .def("setCollapsed", &CompositeProperty::setCollapsed)
         .def("isCollapsed", &CompositeProperty::isCollapsed)
+        .def_property("collapsed", &BoolCompositeProperty::isCollapsed,
+                      &BoolCompositeProperty::setCollapsed)
         .def(
             "__getattr__",
             [](CompositeProperty& po, const std::string& key) {
@@ -152,6 +163,23 @@ void exposeProperties(py::module& m) {
                 }
             },
             py::return_value_policy::reference);
+
+    PyPropertyClass<BoolCompositeProperty, CompositeProperty, PropertyOwner>(
+        m, "BoolCompositeProperty")
+        .def(
+            py::init([](const std::string& identifier, const std::string& displayName, bool checked,
+                        InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                return new BoolCompositeProperty(identifier, displayName, checked,
+                                                 invalidationLevel, semantics);
+            }),
+            py::arg("identifier"), py::arg("displayName"), py::arg("checked"),
+            py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
+            py::arg("semantics") = PropertySemantics::Default)
+        .def("isChecked", &BoolCompositeProperty::isChecked)
+        .def("setChecked", &BoolCompositeProperty::setChecked)
+        .def_property("checked", &BoolCompositeProperty::isChecked,
+                      &BoolCompositeProperty::setChecked)
+        .def("__bool__", &BoolCompositeProperty::isChecked);
 
     PyPropertyClass<BaseOptionProperty, Property>(m, "BaseOptionProperty")
         .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)
@@ -417,14 +445,17 @@ void exposeProperties(py::module& m) {
         .def("clearNameFilters", &FilePatternProperty::clearNameFilters);
 
     PyPropertyClass<BoolProperty, Property> boolProperty(m, "BoolProperty");
-    boolProperty.def(
-        py::init([](const std::string& identifier, const std::string& displayName, bool value,
-                    InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-            return new BoolProperty(identifier, displayName, value, invalidationLevel, semantics);
-        }),
-        py::arg("identifier"), py::arg("displayName"), py::arg("value") = false,
-        py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
-        py::arg("semantics") = PropertySemantics::Default);
+    boolProperty
+        .def(py::init([](const std::string& identifier, const std::string& displayName, bool value,
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                 return new BoolProperty(identifier, displayName, value, invalidationLevel,
+                                         semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("value") = false,
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+             py::arg("semantics") = PropertySemantics::Default)
+        .def("__bool__", &BoolProperty::get);
+
     pyTemplateProperty<bool, BoolProperty>(boolProperty);
 
     PyPropertyClass<ButtonProperty, Property>(m, "ButtonProperty")

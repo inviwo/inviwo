@@ -220,6 +220,7 @@ void ShaderWidget::apply() {
     obj_->setResource(tmp);
     setWindowTitle("<tmp file>[*]");
     revert_->setEnabled(true);
+    shadercode_->document()->setModified(false);
 }
 
 void ShaderWidget::revert() {
@@ -268,7 +269,7 @@ void ShaderWidget::updateState() {
 
                 auto hsv = color::rgb2hsv(vec3(org));
                 auto randH = static_cast<double>(std::hash<std::string_view>{}(resource)) /
-                             std::numeric_limits<size_t>::max();
+                             static_cast<double>(std::numeric_limits<size_t>::max());
 
                 auto adjusted =
                     vec4{color::hsv2rgb(vec3(static_cast<float>(randH), std::max(0.75f, hsv.y),

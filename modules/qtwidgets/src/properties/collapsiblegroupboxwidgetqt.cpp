@@ -351,6 +351,13 @@ void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index)
 }
 
 void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* /*prop*/, size_t index) {
+    setUpdatesEnabled(false);
+    propertyWidgetGroupLayout_->setEnabled(false);
+    util::OnScopeExit enableUpdates([&]() {
+        propertyWidgetGroupLayout_->setEnabled(true);
+        setUpdatesEnabled(true);
+    });
+
     PropertyWidgetQt* propertyWidget = propertyWidgets_[index];
 
     if (propertyWidget) {
@@ -385,6 +392,11 @@ void CollapsibleGroupBoxWidgetQt::onSetSemantics(Property* prop, const PropertyS
     auto factory = app->getPropertyWidgetFactory();
 
     setUpdatesEnabled(false);
+    propertyWidgetGroupLayout_->setEnabled(false);
+    util::OnScopeExit enableUpdates([&]() {
+        propertyWidgetGroupLayout_->setEnabled(true);
+        setUpdatesEnabled(true);
+    });
 
     auto pit = std::find(properties_.begin(), properties_.end(), prop);
     auto wit = std::find_if(propertyWidgets_.begin(), propertyWidgets_.end(),
@@ -406,6 +418,7 @@ void CollapsibleGroupBoxWidgetQt::onSetSemantics(Property* prop, const PropertyS
             newWidget->setNestedDepth(this->getNestedDepth());
             newWidget->setParentPropertyWidget(this);
             newWidget->initState();
+            RenderContext::getPtr()->activateDefaultRenderContext();
 
             // need to re-set tab order for all following widgets to ensure tab order is correct
             // (see http://doc.qt.io/qt-5/qwidget.html#setTabOrder)
@@ -416,7 +429,6 @@ void CollapsibleGroupBoxWidgetQt::onSetSemantics(Property* prop, const PropertyS
             LogWarn("Could not change semantic for property: " << prop->getClassIdentifier());
         }
     }
-    setUpdatesEnabled(true);
 }
 
 void CollapsibleGroupBoxWidgetQt::onSetReadOnly(Property* property, bool readonly) {
@@ -426,6 +438,13 @@ void CollapsibleGroupBoxWidgetQt::onSetReadOnly(Property* property, bool readonl
 }
 
 void CollapsibleGroupBoxWidgetQt::onSetVisible(Property* property, bool visible) {
+    setUpdatesEnabled(false);
+    propertyWidgetGroupLayout_->setEnabled(false);
+    util::OnScopeExit enableUpdates([&]() {
+        propertyWidgetGroupLayout_->setEnabled(true);
+        setUpdatesEnabled(true);
+    });
+
     if (property == property_) {
         PropertyWidgetQt::onSetVisible(property, visible);
     }
@@ -552,7 +571,11 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(QGridLayout* layout, int row, 
 
 void CollapsibleGroupBoxWidgetQt::insertProperty(Property* prop, size_t index) {
     setUpdatesEnabled(false);
-    util::OnScopeExit enableUpdates([&]() { setUpdatesEnabled(true); });
+    propertyWidgetGroupLayout_->setEnabled(false);
+    util::OnScopeExit enableUpdates([&]() {
+        propertyWidgetGroupLayout_->setEnabled(true);
+        setUpdatesEnabled(true);
+    });
 
     const size_t insertIndex = std::min(index, properties_.size());
     const bool insertAtEnd = (insertIndex == properties_.size());
@@ -568,6 +591,7 @@ void CollapsibleGroupBoxWidgetQt::insertProperty(Property* prop, size_t index) {
         propertyWidgets_.insert(widgetInsertPoint, propertyWidget);
 
         insertPropertyWidget(propertyWidget, insertAtEnd);
+        RenderContext::getPtr()->activateDefaultRenderContext();
 
         // need to re-set tab order for all following widgets to ensure tab order is correct
         // (see http://doc.qt.io/qt-5/qwidget.html#setTabOrder)

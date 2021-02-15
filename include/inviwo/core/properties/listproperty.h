@@ -137,7 +137,7 @@ public:
     /**
      * \brief remove all list entries
      */
-    void clear();
+    virtual void clear() override;
 
     /**
      * \brief construct a list entry which is created from the respective prefab object.

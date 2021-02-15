@@ -32,6 +32,7 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/core/properties/propertyvisibility.h>
+#include <inviwo/core/network/processornetworkevaluationobserver.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QWidget>
@@ -72,7 +73,8 @@ private:
     static QEvent::Type PropertyListEventType;
 };
 
-class IVW_MODULE_QTWIDGETS_API PropertyListWidget : public InviwoDockWidget {
+class IVW_MODULE_QTWIDGETS_API PropertyListWidget : public InviwoDockWidget,
+                                                    ProcessorNetworkEvaluationObserver {
 public:
     using WidgetMap = std::unordered_map<Processor*, CollapsibleGroupBoxWidgetQt*>;
 
@@ -85,6 +87,10 @@ public:
 
     // Override QWidget
     virtual bool event(QEvent* e) override;
+
+    // ProcessorNetworkEvaluationObserver
+    virtual void onProcessorNetworkEvaluationBegin() override;
+    virtual void onProcessorNetworkEvaluationEnd() override;
 
 protected:
     WidgetMap widgetMap_;
