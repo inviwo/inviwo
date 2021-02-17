@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <modules/discretedata/properties/datachannelproperty.h>
 #include <type_traits>
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -84,6 +85,8 @@ public:
     DataChannelProperty positionChannel_, colorChannel_;
 
     GridPrimitiveProperty primitive_;
+
+    BoolProperty cutAtBorder_;
 };
 
 }  // namespace discretedata

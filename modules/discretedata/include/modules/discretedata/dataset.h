@@ -263,22 +263,24 @@ struct DataTraits<discretedata::DataSet> {
     static std::string dataName() { return "DataSet"; }
     static uvec3 colorCode() { return uvec3(255, 144, 1); }
     static Document info(const discretedata::DataSet& data) {
-        std::ostringstream oss;
+        Document doc;
+        // doc.append("p", oss.str());
+        // std::ostringstream oss;
         auto grid = data.getGrid();
-        oss << "Data set with " << data.size() << " channels."
-            << "Defined on " << grid->getNumElements() << " vertices and "
-            << grid->getNumElements(grid->getDimension()) << ' ' << int(grid->getDimension())
-            << "D cells.";
+        doc.append("p", fmt::format("Data set with {} channels.", data.size()));
+        doc.append("p", fmt::format(
+                            "Defined on {} vertices and {} {}D cells.", grid->getNumElements(),
+                            grid->getNumElements(grid->getDimension()), int(grid->getDimension())));
 
         auto channelKeyList = data.getChannelNames();
         if (channelKeyList.size() != 0)
             for (auto& channelKey : channelKeyList) {
                 auto channel = data.getChannel(channelKey);
-                oss << "      " << channelKey.first << '[' << channel->getNumComponents() << "]["
-                    << channel->size() << ']' << "(Dim " << (int)channelKey.second << ')';
+                doc.append("p", fmt::format("  {}[{}] [{}] ({}D)", channelKey.first,
+                                            channel->getNumComponents(), channel->size(),
+                                            (int)channelKey.second));
             }
-        Document doc;
-        doc.append("p", oss.str());
+
         return doc;
     }
 };

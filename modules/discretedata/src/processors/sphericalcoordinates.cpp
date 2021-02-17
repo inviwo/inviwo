@@ -46,7 +46,8 @@ SphericalCoordinates::SphericalCoordinates()
     : Processor()
     , dataIn_("DataIn")
     , dataOut_("DataOut")
-    , positions_(dataIn_, "positions", "Lon/Lat Channel")
+    , positions_(dataIn_, "positions", "Lon/Lat Channel",
+                 [](auto channel) { return channel->getNumComponents() >= 2; })
     , name_("outName", "Channel Name", "SphericalCoords")
     , autoName_("autoName", "Auto Name?", true)
     , radius_("radius", "Radius", 10, 0.1, 100)
@@ -54,7 +55,7 @@ SphericalCoordinates::SphericalCoordinates()
 
     addPort(dataIn_);
     addPort(dataOut_);
-    addProperties(positions_, name_, radius_, verticalScale_);
+    addProperties(positions_, name_, autoName_, radius_, verticalScale_);
 }
 
 void SphericalCoordinates::process() {
@@ -75,6 +76,41 @@ void SphericalCoordinates::process() {
                                                       DISCRETEDATA_MAX_NUM_DIMENSIONS>(
             channel->getDataFormatId(), channel->getNumComponents(), dispatcher, channel,
             name_.get(), radius_.get(), verticalScale_.get());
+        std::shared_ptr<DataSet> outData = std::make_shared<DataSet>(*dataIn_.getData());
+        outData->addChannel(spherical);
+        dataOut_.setData(outData);
+
+        auto minmax = dd_util::getMinMax(spherical.get());
+        LogWarn("Spherical " << minmax.first << " bis " << minmax.second);
+        minmax = dd_util::getMinMax(channel.get());
+        LogWarn("Channel " << minmax.first << " bis " << minmax.second);
+
+        spherical->dispatch<void>([this](auto* channel) {
+            std::cout << "===> Spherical Channel:  " << channel->getName() << std::endl;
+            using Vec = typename std::remove_pointer_t<decltype(channel)>::DefaultVec;
+            // Vec vals[10];
+            // channel->fill(vals[0], 0, 10);
+
+            // for (ind i = 0; i < 10; ++i) {
+            //     LogWarn(i << ": " << vals[i]);
+            // }
+            // delete[] vals;
+        });
+
+        // channel->dispatch<void>([this](auto* channel) {
+        //     std::cout << "===> Original Channel:  " << channel->getName() << std::endl;
+        //     // using Vec = typename std::remove_pointer_t<decltype(channel)>::DefaultVec;
+        //     // Vec val;
+        //     // channel->fill(val, 0);
+        //     // // for (ind i = 0; i < 3; ++i) std::cout << val[i] << " | ";
+        //     // std::cout << val;
+        //     // std::cout << "\n" << std::endl;
+
+        //     // for (ind i = 0; i < 10; ++i) {
+        //     //     LogWarn(i << ": " << vals[i]);
+        //     // }
+        //     // delete[] vals;
+        // });
     }
 }
 

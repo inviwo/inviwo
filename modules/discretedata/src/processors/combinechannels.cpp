@@ -54,7 +54,7 @@ CombineChannels::CombineChannels()
 
     addPort(dataIn_);
     addPort(dataOut_);
-    addProperties(channelName_, channelList_);
+    addProperties(channelList_, channelName_);
     channelList_.setSerializationMode(PropertySerializationMode::All);
 }
 
@@ -74,6 +74,7 @@ void CombineChannels::addAllChannelProperties() {
 
 void CombineChannels::process() {
     LogWarn("~*~<=========================================>~*~");
+    LogWarn("First Process? " << (firstProcess_ ? "Yes" : "No"));
     // if (firstProcess_ && channelList_.size() > 0) return;
 
     // Refresh channel list.
@@ -85,8 +86,16 @@ void CombineChannels::process() {
             dataOut_.detachData();
             return;
         }
-        LogWarn("Adding all them channels!");
-        addAllChannelProperties();
+        auto propIt = channelList_.begin();
+        for (auto channel : dataIn_.getData()->getChannels()) {
+            if (propIt == channelList_.end() ||
+                combineString(*channel.second).compare((*propIt)->getIdentifier()) != 0) {
+                LogWarn("Adding all them channels!");
+                addAllChannelProperties();
+                break;
+            }
+            propIt++;
+        }
     }
 
     // Filter out channels that do not match the ones selected.
@@ -119,7 +128,8 @@ void CombineChannels::process() {
         //     const std::string& identifier = prop->getIdentifier();
         //     // std::cout << "Prop " << identifier << std::endl;
 
-        //     if (!identifier.rfind(format, 0) || uncombineString(identifier).second != gridPrim) {
+        //     if (!identifier.rfind(format, 0) || uncombineString(identifier).second !=
+        //     gridPrim) {
         //         std::cout << "Bye bye! " << identifier << std::endl;
         //         channelList_.removeProperty(p);
         //         return;
@@ -129,7 +139,7 @@ void CombineChannels::process() {
 
     firstProcess_ = false;
 
-    // // Create new channel.
+    // Create new channel.
     std::vector<std::shared_ptr<const Channel>> selectedChannels;
 
     for (auto prop : channelList_) {

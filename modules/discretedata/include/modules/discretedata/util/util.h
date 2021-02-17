@@ -35,6 +35,8 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/util/glm.h>
 
+#include <bitset>
+
 namespace inviwo {
 namespace discretedata {
 namespace dd_util {
@@ -110,18 +112,6 @@ inline std::pair<dvec4, dvec4> getMinMax(const Channel* channel) {
     return channel->dispatch<std::pair<dvec4, dvec4>>(dispatcher);
 }
 
-// static bool nextNchooseK(std::vector<ind>& chosenK, ind N) {
-//     for (size_t e = 1; e <= chosenK.size(); ++e) {
-//         if (chosenK[N - e] != N - static_cast<ind>(e)) {
-//             chosenK[N - e]++;
-//             ind valE = chosenK[N - e];
-//             for (ind afterE = N - e + 1; afterE < N; ++afterE) chosenK[afterE] = ++valE;
-//             return true;
-//         }
-//     }
-//     return false;
-// }
-
 /** Get the initial array for choosing Choose many elements (the first Choose numbers). **/
 template <size_t Choose>
 static typename std::array<size_t, Choose> initNchooseK() {
@@ -145,6 +135,16 @@ static constexpr bool nextNchooseK(size_t from, typename std::array<size_t, Choo
     return false;
 }
 
+template <size_t N>
+static constexpr bool nextBitset(std::bitset<N>& bitset) {
+    for (size_t n = 0; n < N; ++n) {
+        if ((bitset[n] = bitset[n] ^ 0x1) == 0x1) {
+            return true;
+        }
+    }
+    return false;
+}
+
 /** Get an array containing the Binomial coefficients for N elements. **/
 template <size_t N>
 static constexpr typename std::array<size_t, N> binomialCoefficients() {
@@ -159,21 +159,6 @@ static constexpr typename std::array<size_t, N> binomialCoefficients() {
 }
 
 /** Get an array containing offsets which have binomial coefficients steps. **/
-// template <size_t N>
-// static constexpr size_t[N + 1] binomialCoefficientOffsets() {
-//     size_t[N + 1] coeffs;
-//     // coeffs[0] = 0;
-//     // // if (N == 0) return coeffs;
-//     // size_t prevSum = 0;
-
-//     // size_t lastCoeff = 1;
-//     // for (size_t c = 1; c <= N; ++c) {
-//     //     // coeffs[c] = prevSum + lastCoeff;
-//     //     // lastCoeff = (lastCoeff * (N + 1 - c)) / c;
-//     //     prevSum = prevSum + lastCoeff;  // coeffs[c];
-//     // }
-//     return coeffs;
-// }
 template <size_t N>
 static constexpr typename std::array<size_t, N + 1> binomialCoefficientOffsets() {
     typename std::array<size_t, N + 1> coeffs{};
@@ -189,18 +174,20 @@ static constexpr typename std::array<size_t, N + 1> binomialCoefficientOffsets()
     return coeffs;
 }
 
-// template <size_t N>
-// static constexpr typename std::array<size_t, N> binomialCoefficientsOffsets() {
-//     typename std::array<size_t, N> coeffs;
-//     if (N == 0) return coeffs;
-
-//     coeffs[0] = 0;
-//     coeffs[1] = 1;
-//     for (size_t c = 2; c < N; ++c) {
-//         coeffs[c] = (coeffs[c - 1] * (N + 1 - c)) / c;
-//     }
-//     return coeffs;
-// }
+/** From a list of sorted indices, fill a bitset where exactly those indices are set. **/
+template <size_t N, size_t K>
+static constexpr typename std::bitset<N> indicesToBitset(const std::array<size_t, K>& indices) {
+    std::bitset<N> bitset;
+    auto indexIt = indices.begin();
+    for (size_t n = 0; n < N; ++n) {
+        if (indexIt != indices.end() && *indexIt == n) {
+            bitset[n] = true;
+            indexIt++;
+        }
+    }
+    ivwAssert(indexIt == indices.end(), "Indices were not unique and sorted.");
+    return bitset;
+}
 
 }  // namespace dd_util
 }  // namespace discretedata

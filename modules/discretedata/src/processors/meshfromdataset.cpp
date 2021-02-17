@@ -54,13 +54,12 @@ MeshFromDataSet::MeshFromDataSet()
                        DataChannelProperty::FilterPassDim<0>)
     , colorChannel_(portInDataSet_, "colorChannel", "Color Channel",
                     DataChannelProperty::FilterPassDim<0>)
-    , primitive_("primitive", "Mesh Primitive") {
+    , primitive_("primitive", "Mesh Primitive")
+    , cutAtBorder_("cutAtBorder", "Don't connect borders", false) {
 
     addPort(portInDataSet_);
     addPort(portOutMesh_);
-    addProperty(positionChannel_);
-    addProperty(colorChannel_);
-    addProperty(primitive_);
+    addProperties(positionChannel_, colorChannel_, primitive_, cutAtBorder_);
 }
 
 // namespace {
@@ -153,9 +152,20 @@ void MeshFromDataSet::process() {
                 for (auto element : pInDataSet->getGrid()->all(GridPrimitive::Face)) {
                     indexData.clear();
                     pInDataSet->getGrid()->getConnections(
-                        indexData, element.getIndex(), GridPrimitive::Face, GridPrimitive::Vertex);
+                        indexData, element.getIndex(), GridPrimitive::Face, GridPrimitive::Vertex,
+                        cutAtBorder_.get());
 
-                    for (size_t tri = 0; tri < indexData.size() - 2; ++tri) {
+                    // Add triagnle "fans".
+                    size_t tri = 0;
+                    for (; tri < indexData.size() - 3; tri += 2) {
+                        indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri]));
+                        indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 1]));
+                        indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 2]));
+                        indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 2]));
+                        indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 1]));
+                        indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 3]));
+                    }
+                    if (tri == indexData.size() - 3) {
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri]));
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 1]));
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 2]));
@@ -166,7 +176,8 @@ void MeshFromDataSet::process() {
                 for (auto element : pInDataSet->getGrid()->all(GridPrimitive::Edge)) {
                     indexData.clear();
                     pInDataSet->getGrid()->getConnections(
-                        indexData, element.getIndex(), GridPrimitive::Edge, GridPrimitive::Vertex);
+                        indexData, element.getIndex(), GridPrimitive::Edge, GridPrimitive::Vertex,
+                        cutAtBorder_.get());
                     ivwAssert(indexData.size() == 2, "An Edge not made out of 2 points...");
 
                     indexMeshData.push_back(static_cast<std::uint32_t>(indexData[0]));

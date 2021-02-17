@@ -57,7 +57,7 @@ public:
 
 private:
     DataSetInport dataIn_;
-    DataSetInport dataOut_;
+    DataSetOutport dataOut_;
     DataChannelProperty positions_;
     StringProperty name_;
     BoolProperty autoName_;
@@ -65,6 +65,12 @@ private:
 };
 
 namespace detail {
+template <class T, std::size_t N>
+std::ostream& operator<<(std::ostream& o, const std::array<T, N>& arr) {
+    std::copy(arr.cbegin(), arr.cend(), std::ostream_iterator<T>(o, " "));
+    return o;
+}
+
 struct SphericalCoordinateDispatcher {
 
     template <typename Result, typename T, ind N, typename... Args>
@@ -73,10 +79,11 @@ struct SphericalCoordinateDispatcher {
         auto dataChannel =
             std::dynamic_pointer_cast<const DataChannel<typename T::type, N>>(channel);
         ivwAssert(dataChannel, "Dispatch failed, dynamic cast to specific type failed.");
-        return std::make_shared<AnalyticChannel<double, std::min(ind(3), N)>>(
-            [dataChannel, radius, verticalScale](auto spVec, ind idx) {
+        return std::make_shared<AnalyticChannel<double, std::max(ind(3), N)>>(
+            [dataChannel, radius, verticalScale](auto& spVec, ind idx) {
                 std::array<typename T::type, N> cVec;
                 dataChannel->fill(cVec, idx);
+
                 double r = radius;
                 if constexpr (N >= 3) {
                     r += verticalScale * cVec[2];
@@ -84,15 +91,10 @@ struct SphericalCoordinateDispatcher {
                 cVec[0] = glm::radians(static_cast<double>(cVec[0]));
                 cVec[1] = glm::radians(static_cast<double>(cVec[1]));
 
-                // // Wiki:
-                // spVec[0] = r * std::sin(cVec[1]) * std::cos(cVec[0]);
-                // spVec[1] = r * std::sin(cVec[1]) * std::sin(cVec[0]);
-                // spVec[2] = r * std::cos(cVec[1]);
-
                 // Pen & Paper:
-                spVec[0] = +r * std::sin(cVec[0]) * std::cos(cVec[1]);
-                spVec[1] = -r * std::cos(cVec[0]) * std::cos(cVec[1]);
-                spVec[2] = +r * std::sin(cVec[1]);
+                spVec[0] = +r * std::sin(cVec[1]) * std::cos(cVec[0]);
+                spVec[1] = -r * std::cos(cVec[1]) * std::cos(cVec[0]);
+                spVec[2] = +r * std::sin(cVec[0]);
 
                 for (ind n = 3; n < N; ++n) {
                     spVec[n] = cVec[n];

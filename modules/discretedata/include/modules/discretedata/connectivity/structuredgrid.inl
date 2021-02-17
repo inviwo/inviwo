@@ -107,40 +107,122 @@ namespace dd_detail {
 template <ind N, typename C, ind From>
 struct GetConnectionsFromToHelper {
     template <typename Result, ind To>
-    Result operator()(const CurvilinearGrid<N, C>& grid, std::vector<ind>& result, ind idxLin) {
+    Result operator()(const CurvilinearGrid<N, C>& grid, std::vector<ind>& result, ind idxLin,
+                      bool render) {
 
-        grid.template getConnectionsDispatched<From, To>(result, idxLin);
+        grid.template getConnectionsDispatched<From, To>(result, idxLin, render);
     }
 };
 template <ind N, typename C>
 struct GetConnectionsFromHelper {
     template <typename Result, ind From>
     Result operator()(const CurvilinearGrid<N, C>& grid, std::vector<ind>& result, ind idxLin,
-                      GridPrimitive to) {
+                      GridPrimitive to, bool render) {
         GetConnectionsFromToHelper<N, C, From> dispatcher;
-        channeldispatching::dispatchNumber<void, 0, N>(ind(to), dispatcher, grid, result, idxLin);
+        channeldispatching::dispatchNumber<void, 0, N>(ind(to), dispatcher, grid, result, idxLin,
+                                                       render);
     }
 };
 }  // namespace dd_detail
 
 template <ind N, typename C>
 void CurvilinearGrid<N, C>::getConnections(std::vector<ind>& result, ind idxLin, GridPrimitive from,
-                                           GridPrimitive to, bool) const {
+                                           GridPrimitive to, bool render) const {
     size_t numResults = result.size();
 
     dd_detail::GetConnectionsFromHelper<N, C> dispatcher;
 
-    channeldispatching::dispatchNumber<void, 0, N>(ind(from), dispatcher, *this, result, idxLin,
-                                                   to);
-    std::sort(result.begin() + numResults, result.end());
+    channeldispatching::dispatchNumber<void, 0, N>(ind(from), dispatcher, *this, result, idxLin, to,
+                                                   render);
+    // std::sort(result.begin() + numResults, result.end());
 }
 
 template <ind N, typename C>
 template <ind From, ind To>
-void CurvilinearGrid<N, C>::getConnectionsDispatched(std::vector<ind>& result, ind index) const {
-    Primitive<GridPrimitive(From)> fromPrim(*this, index);
-    C::template getConnections<GridPrimitive(From), GridPrimitive(To)>(fromPrim, numPrimitives_,
-                                                                       result);
+void CurvilinearGrid<N, C>::getConnectionsDispatched(std::vector<ind>& result, ind index,
+                                                     bool cutAtBorder) const {
+
+    using FromPrimitive = Primitive<GridPrimitive(From)>;
+    using ToPrimitive = Primitive<GridPrimitive(To)>;
+    FromPrimitive fromPrim(*this, index);
+
+    if constexpr (To > From) {  // Going to a higher dimensional primitive? (e.g., edge to face).
+        throw Exception("Not implemented yet.");
+
+    } else if constexpr (N == From && To == From) {  // Going to a neighbor.
+                                                     // Connecting within the same dimension?
+        for (ind dim = 0; dim < From; ++dim) {
+            for (int sign : {-1, 1}) {  //= -1; sign <= 1; sign += 2
+                std::array<ind, size_t(N)> neighCoords = fromPrim.getCoordinates();
+                std::array<size_t, size_t(To)> neighDirs = fromPrim.getDirections();
+                // FromPrimitive neighPrim(fromPrim);
+                neighCoords[dim] += sign;
+                ToPrimitive neighPrim(fromPrim.Grid, std::move(neighCoords), std::move(neighDirs));
+                bool inGrid = (neighPrim.getCoordinates()[dim] >= 0 &&
+                               neighPrim.getCoordinates()[dim] <
+                                   numPrimitives_.NumVerticesPerDimension[dim] - 1);
+                if (inGrid ||  // !cutAtBorder &&
+                    C::template handleBorder<GridPrimitive(To)>(neighPrim)) {
+                    result.push_back(neighPrim.GlobalPrimitiveIndex);
+                }
+            }
+        }
+    } else if (To == From) {
+        throw Exception("Not implemented yet.");
+    } else {  // Going to an element of the original primitive.
+
+        std::array<ind, size_t(N)> neighCoords;
+        std::array<size_t, size_t(To)> neighDirs;
+        std::array<size_t, size_t(From) - size_t(To)> offsetDirections;
+
+        // For iterating through all possible offset combinations.
+        std::bitset<size_t(From) - size_t(To)> posOffset;
+
+        // Cycle through direction combinations of the neighbor.
+        auto dirSelection = dd_util::initNchooseK<size_t(To)>();
+        bool validDirSelection = true;
+        while (validDirSelection) {
+            for (size_t idx = 0; idx < size_t(To); ++idx) {
+                neighDirs[idx] = fromPrim.getDirections()[dirSelection[idx]];
+            }
+
+            // Assemble the directions the primitive will not point to, but be offset by.
+            auto itOffsetDirs = offsetDirections.begin();
+            auto itDirSelection = dirSelection.begin();
+            for (size_t dirIdx = 0; dirIdx < size_t(From); ++dirIdx) {
+                if (itDirSelection != dirSelection.end() && *itDirSelection == dirIdx) {
+                    itDirSelection++;
+                } else {
+                    *itOffsetDirs = fromPrim.getDirections()[dirIdx];
+                    itOffsetDirs++;
+                }
+            }
+
+            // Offset the coordinates into some directions.
+            bool validBitConfig = true;
+
+            while (validBitConfig) {
+                neighCoords = fromPrim.getCoordinates();
+
+                for (size_t bit = 0; bit < posOffset.size(); ++bit) {
+                    if (!posOffset[bit]) continue;
+                    neighCoords[offsetDirections[bit]]++;
+
+                    if (neighCoords[offsetDirections[bit]] >=
+                        numPrimitives_.NumVerticesPerDimension[offsetDirections[bit]]) {
+                        validBitConfig = false;
+                        break;
+                    }
+                }
+                if (validBitConfig) {
+                    ToPrimitive neighPrim(numPrimitives_.Grid, neighCoords, neighDirs);
+                    result.push_back(neighPrim.GlobalPrimitiveIndex);
+                }
+                validBitConfig = dd_util::nextBitset(posOffset);
+            }
+            validDirSelection = dd_util::nextNchooseK(ind(From), dirSelection);
+        }
+    }
 }
 
 template <ind N, typename C>
@@ -438,6 +520,14 @@ CurvilinearGrid<N, C>::Primitive<P>::Primitive(const Primitive<P>& prim)
 
 template <ind N, typename C>
 template <GridPrimitive P>
+CurvilinearGrid<N, C>::Primitive<P>::Primitive(const Primitive<P>&& prim)
+    : Grid(prim.Grid)
+    , GlobalPrimitiveIndex(prim.GlobalPrimitiveIndex)
+    , Coords(std::move(prim.getCoordinates()))
+    , Directions(std::move(prim.getDirections())) {}
+
+template <ind N, typename C>
+template <GridPrimitive P>
 CurvilinearGrid<N, C>::Primitive<P> CurvilinearGrid<N, C>::getPrimitive(ind globalIdx) const {
     return Primitive<P>(*this, globalIdx);
 }
@@ -462,119 +552,15 @@ CurvilinearGrid<N, C>::Primitive<P> CurvilinearGrid<N, C>::getPrimitive(
     return Primitive<P>(*this, perDirIdx, dirs);
 }
 
-namespace dd_detail {
-template <ind N, typename C, GridPrimitive From>
-struct StructuredGetConnectionsFromToHelper {
-    template <typename Result, ind To>
-    Result operator()(
-        const typename CurvilinearGrid<N, StructuredGridConnections<N>>::template Primitive<From>&
-            prim,
-        const typename CurvilinearGrid<N, StructuredGridConnections<N>>::NumPrimitives&
-            numPrimitives,
-        std::vector<ind>& result) {
-
-        C::template getConnections<From, To>(prim, numPrimitives, result);
-    }
-};
-}  // namespace dd_detail
-
-template <ind N>
-template <GridPrimitive From>
-void StructuredGridConnections<N>::getConnections(
-    const typename CurvilinearGrid<N, StructuredGridConnections<N>>::template Primitive<From>& prim,
-    const typename CurvilinearGrid<N, StructuredGridConnections<N>>::NumPrimitives& numPrimitives,
-    std::vector<ind>& result, GridPrimitive toDim) {
-    dd_detail::StructuredGetConnectionsFromToHelper<N, StructuredGridConnections<N>, From>
-        dispatcher;
-    channeldispatching::dispatchNumber<void, 0, N>(ind(toDim), dispatcher, prim, numPrimitives,
-                                                   result);
-}
-
-template <ind N>
-template <GridPrimitive From, GridPrimitive To>
-void StructuredGridConnections<N>::getConnections(
-    typename CurvilinearGrid<N, StructuredGridConnections<N>>::template Primitive<From>& prim,
-    const typename CurvilinearGrid<N, StructuredGridConnections<N>>::NumPrimitives& numPrimitives,
-    std::vector<ind>& result) {
-    using ToPrimitive =
-        typename CurvilinearGrid<N, StructuredGridConnections<N>>::template Primitive<To>;
-
-    if constexpr (To > From) {  // Going to a higher dimensional primitive? (e.g., edge to face).
-        throw Exception("Not implemented yet.");
-
-    } else if constexpr (N == ind(From) && To == From) {  // Going to a neighbor.
-                                                          // Connecting within the same dimension?
-        for (int dim = 0; dim < int(From); ++dim) {
-            for (int sign : {-1, 1}) {  //= -1; sign <= 1; sign += 2
-                std::array<ind, size_t(N)> neighCoords = prim.getCoordinates();
-                std::array<size_t, size_t(To)> neighDirs = prim.getDirections();
-                // FromPrimitive neighPrim(prim);
-                neighCoords[dim] += sign;
-                if (neighCoords[dim] >= 0 &&
-                    neighCoords[dim] < numPrimitives.NumVerticesPerDimension[dim] - 1) {
-                    ToPrimitive neighPrim(prim.Grid, std::move(neighCoords), std::move(neighDirs));
-                    result.push_back(neighPrim.GlobalPrimitiveIndex);
-                }
-            }
-        }
-    } else if (To == From) {
-        throw Exception("Not implemented yet.");
-
-    } else {  // Going to an element of the original primitive.
-
-        std::array<ind, size_t(N)> neighCoords;
-        std::array<size_t, size_t(To)> neighDirs;
-        std::array<size_t, size_t(From) - size_t(To)> offsetDirections;
-
-        // For iterating through all possible offset combinations.
-        std::bitset<size_t(From) - size_t(To)> posOffset;
-
-        // Cycle through direction combinations of the neighbor.
-        auto dirSelection = dd_util::initNchooseK<size_t(To)>();
-        bool validDirSelection = true;
-        while (validDirSelection) {
-            for (size_t idx = 0; idx < size_t(To); ++idx) {
-                neighDirs[idx] = prim.getDirections()[dirSelection[idx]];
-            }
-
-            // Assemble the directions the primitive will not point to, but be offset by.
-            auto itOffsetDirs = offsetDirections.begin();
-            auto itDirSelection = dirSelection.begin();
-            for (size_t dirIdx = 0; dirIdx < size_t(From); ++dirIdx) {
-                if (*itDirSelection == dirIdx) {
-                    itDirSelection++;
-                } else {
-                    *itOffsetDirs = prim.getDirections()[dirIdx];
-                    itOffsetDirs++;
-                }
-            }
-
-            // Offset the coordinates into some directions.
-            bool validBitConfig = true;
-
-            while (validBitConfig) {
-                neighCoords = prim.getCoordinates();
-
-                for (size_t bit = 0; bit < posOffset.size(); ++bit) {
-                    if (!posOffset[bit]) continue;
-                    neighCoords[offsetDirections[bit]]++;
-
-                    if (neighCoords[offsetDirections[bit]] >=
-                        numPrimitives.NumVerticesPerDimension[offsetDirections[bit]]) {
-                        validBitConfig = false;
-                        break;
-                    }
-                }
-                if (validBitConfig) {
-                    ToPrimitive neighPrim(numPrimitives.Grid, neighCoords, neighDirs);
-                    result.push_back(neighPrim.GlobalPrimitiveIndex);
-                }
-                validBitConfig = dd_util::nextBitset(posOffset);
-            }
-            validDirSelection = dd_util::nextNchooseK(ind(From), dirSelection);
-        }
-    }
-}  // namespace discretedata
+// template <ind N>
+// template <GridPrimitive To>
+// bool StructuredGridConnections<N>::handleBorder(
+//     typename CurvilinearGrid<N, StructuredGridConnections<N>>::template Primitive<To>& prim,
+//     bool render) {
+//     // using ToPrimitive =
+//     //     typename CurvilinearGrid<N, StructuredGridConnections<N>>::template Primitive<To>;
+//     return false;
+// }
 
 }  // namespace discretedata
 }  // namespace inviwo
