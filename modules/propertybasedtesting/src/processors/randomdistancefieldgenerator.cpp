@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/propertybasedtesting/processors/randomvolumegenerator.h>
+#include <inviwo/propertybasedtesting/processors/randomdistancefieldgenerator.h>
 
 #include <modules/base/algorithm/volume/volumegeneration.h>
 
@@ -35,16 +35,16 @@
 
 namespace inviwo {
 
-const ProcessorInfo RandomVolumeGenerator::processorInfo_{
-    "org.inviwo.RandomVolumeGenerator",  // Class identifier
-    "Random Volume Generator",           // Display name
+const ProcessorInfo RandomDistanceFieldGenerator::processorInfo_{
+    "org.inviwo.RandomDistanceFieldGenerator",  // Class identifier
+    "Random Distance Field Generator",           // Display name
     "Undefined",                         // Category
     CodeState::Experimental,             // Code state
     Tags::None,                          // Tags
 };
-const ProcessorInfo RandomVolumeGenerator::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo RandomDistanceFieldGenerator::getProcessorInfo() const { return processorInfo_; }
 
-RandomVolumeGenerator::RandomVolumeGenerator()
+RandomDistanceFieldGenerator::RandomDistanceFieldGenerator()
     : Processor()
     , outport_("volume")
     , seed_("seed", "Seed", 42, 0, INT_MAX)
@@ -56,7 +56,7 @@ RandomVolumeGenerator::RandomVolumeGenerator()
     addProperty(numPoints_);
 }
 
-void RandomVolumeGenerator::process() {
+void RandomDistanceFieldGenerator::process() {
     std::default_random_engine generator(seed_.get());
     std::uniform_real_distribution<double> dis(0.0, 1.0);
 

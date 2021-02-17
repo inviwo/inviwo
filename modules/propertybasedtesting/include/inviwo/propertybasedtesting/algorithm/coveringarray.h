@@ -41,16 +41,19 @@ namespace pbt {
 
 /*
  * 2-coverage, randomized discrete SLJ strategy
+ * - vars should contain a set of assignments for each variable
+ *   and no variable should be represented more than once
  */
 std::vector<Test> IVW_MODULE_PROPERTYBASEDTESTING_API
 coveringArray(const std::vector<std::vector<std::shared_ptr<PropertyAssignment>>>& vars);
 
 /*
  * 2-coverage, but using a greedy randomized strategy for optimizing for comparability.
- * Much slower than the procedure above, but also yields much more comparable tests.
+ * Much slower than the procedure above, but also yields tests that are much
+ * more comparable.
  * - num is the maximum number of tests to be generated; useful for preventing
  *   unnecessary calculations
- * - vars should contain a pair for each variable, where the first component is
+ * - vars should contain a single pair for each variable, where the first component is
  *   an AssignmentComparator and the second contains the actual assignments
  */
 std::vector<Test> IVW_MODULE_PROPERTYBASEDTESTING_API optCoveringArray(

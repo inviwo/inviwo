@@ -37,8 +37,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.RandomVolumeGenerator, Random Volume Generator}
- * ![](org.inviwo.RandomVolumeGenerator.png?classIdentifier=org.inviwo.RandomVolumeGenerator)
+/** \docpage{org.inviwo.RandomDistanceFieldGenerator, Random Volume Generator}
+ * ![](org.inviwo.RandomDistanceFieldGenerator.png?classIdentifier=org.inviwo.RandomDistanceFieldGenerator)
  *
  * Generate a pseudo-random volume by generating a given number of points from a
  * given seed. The value of each voxel is the distance to the closest point.
@@ -53,10 +53,10 @@ namespace inviwo {
  *   * __Resolution__ The resolution of the generated volume. If the resolution
  *   is set to n, there are n^3 voxels in the volume.
  */
-class IVW_MODULE_PROPERTYBASEDTESTING_API RandomVolumeGenerator : public Processor {
+class IVW_MODULE_PROPERTYBASEDTESTING_API RandomDistanceFieldGenerator : public Processor {
 public:
-    RandomVolumeGenerator();
-    virtual ~RandomVolumeGenerator() = default;
+    RandomDistanceFieldGenerator();
+    virtual ~RandomDistanceFieldGenerator() = default;
 
     virtual void process() override;
 

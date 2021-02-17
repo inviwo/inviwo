@@ -265,6 +265,10 @@ PropertyAnalyzer::PropertyAnalyzer(InviwoApplication* app)
     app_->getProcessorNetwork()->addObserver(this);
 }
 
+PropertyAnalyzer::~PropertyAnalyzer() {
+    currAlive_.erase(m_id);
+}
+
 void PropertyAnalyzer::onTestPropertyChange() {
     std::string desc;
     for (const auto& [proc, prop] : processors_) {

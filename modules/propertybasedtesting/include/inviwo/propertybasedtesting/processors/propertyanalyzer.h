@@ -166,9 +166,7 @@ class IVW_MODULE_PROPERTYBASEDTESTING_API PropertyAnalyzer : public Processor,
                                                              private ProcessorNetworkObserver {
 public:
     PropertyAnalyzer(InviwoApplication*);
-    virtual ~PropertyAnalyzer() {
-        currAlive_.erase(m_id);
-    }
+    virtual ~PropertyAnalyzer();
 
     virtual void process() override;
 
@@ -243,8 +241,8 @@ void PropertyAnalyzer::dispatchFrontAndForget(F f) {
     const size_t id = m_id;
     app_->dispatchFrontAndForget([id, f]() {
         if (PropertyAnalyzer::currAlive_.count(id)) {
-			f();
-		}
+            f();
+        }
     });
 }
 

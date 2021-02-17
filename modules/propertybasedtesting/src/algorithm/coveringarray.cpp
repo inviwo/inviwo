@@ -56,20 +56,19 @@ std::vector<Test> coveringArray(
         }
     }
 
-    // resulting coveringarray, containing temporary tests consisting of the
-    // indices of the contained interactions
-    std::vector<std::vector<size_t>> coveringArray;
+    // resulting coveringarray
+	std::vector<Test> result;
     while (!uncovered.empty()) {
         size_t expectedCoverage = (uncovered.size() + (maxAssignments * maxAssignments - 1)) /
                                   (maxAssignments * maxAssignments);
         // expectedCoverage > 0, since uncovered.size() > 0 and we are using the
-        // ceil of the fraction (uncovered.size() / // (maxAssignments*maxAssignments)
+        // ceil of the fraction (uncovered.size() / (maxAssignments*maxAssignments)
 
-        // randomly generate a temporary test by uniformly and independently choosing
+        // randomly generate a test by uniformly and independently choosing
         // an assignment for each variable, until the test covers at least as
         // many interactions as expected (i.e. coverage >= expectedCoverage)
         size_t coverage;
-        std::vector<size_t> row(vars.size());
+        std::vector<size_t> row(vars.size()); // indices of the interactions of the test
         do {
             for (size_t i = 0; i < row.size(); i++) {
                 row[i] = std::uniform_int_distribution<size_t>(0, vars[i].size() - 1)(rng);
@@ -90,22 +89,18 @@ std::vector<Test> coveringArray(
                 uncovered.erase(id);
             }
         }
-        coveringArray.emplace_back(std::move(row));
+
+		Test test;
+		for(size_t i = 0; i < vars.size(); i++)
+			test.emplace_back(vars[i][row[i]]);
+		result.emplace_back(std::move(test));
     }
 
-    // contruct result
-    std::vector<Test> res(coveringArray.size());
-    for (size_t c = 0; c < coveringArray.size(); c++) {
-        for (size_t i = 0; i < vars.size(); i++) {
-            res[c].emplace_back(vars[i][coveringArray[c][i]]);
-        }
-    }
-
-    return res;
+    return result;
 }
 
 /*
- * greediy heuristic
+ * greedy heuristic
  */
 std::vector<Test> optCoveringArray(
     const size_t num,
