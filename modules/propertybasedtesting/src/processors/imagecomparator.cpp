@@ -100,17 +100,22 @@ ImageComparator::ImageComparator()
     });
 }
 
-double ImageComparator::difference(const ComparisonType& comp, const glm::dvec4& col1,
-                                   const glm::dvec4& col2) {
+double ImageComparator::difference(const ComparisonType& comp, const dvec4& col1,
+                                   const dvec4& col2) {
     switch (comp) {
         case ComparisonType::AbsARGB:
             return absoluteARGBdifference(col1, col2);
+        default:
+            IVW_ASSERT(false, "ImageComparator: Unknown ComparisonType");
     }
 }
 double ImageComparator::absoluteARGBdifference(const dvec4& col1, const dvec4& col2) {
     double res = 0;
-    for (size_t i = 0; i < DataFormat<dvec4>::components(); i++) res += abs(col1[i] - col2[i]);
-    return res;
+	const size_t comps = DataFormat<dvec4>::components();
+    for (size_t i = 0; i < comps; i++) {
+		res += std::abs(col1[i] - col2[i]);
+	}
+    return res / comps; // clamp result between 0 and 1
 }
 
 void ImageComparator::process() {
@@ -163,17 +168,18 @@ void ImageComparator::process() {
                 const dvec4 col1 = util::glm_convert_normalized<dvec4>(data1[i]);
                 const dvec4 col2 = util::glm_convert_normalized<dvec4>(data2[i]);
 
-                const double diff = difference(comparisonType_.get(), col1, col2);
+                const auto diff = difference(comparisonType_.get(), col1, col2);
                 const bool pixelDifferent = (diff > maxPixelwiseDeviation_.get());
-                const double c = pixelDifferent * 255.0;
+                const double c = pixelDifferent ? 1.0 : 0.0;
 
                 result = combine(reduction, result, diff);
-                diffImageData[i] = static_cast<T>(127.5 + (col1 - col2) / 2.0);
-                maskImageData[i] = static_cast<T>(dvec3(c, c, c));
+                diffImageData[i] = util::glm_convert_normalized<T>(0.5 + (col1 - col2) / 2.0);
+                maskImageData[i] = util::glm_convert_normalized<T>(dvec3(c, c, c));
                 if (pixelDifferent) {
                     diffPixels++;
                 }
             }
+
             return diffPixels;
         });
     });

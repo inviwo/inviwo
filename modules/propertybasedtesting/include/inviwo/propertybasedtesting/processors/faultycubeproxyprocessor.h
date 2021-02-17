@@ -54,6 +54,7 @@ private:
     VolumeInport inport_;
     MeshOutport outport_;
 
+    BoolProperty addFaceNormals_;
     BoolProperty clippingEnabled_;
 
     IntMinMaxProperty clipX_;
