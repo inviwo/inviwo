@@ -290,7 +290,7 @@ struct DataTraits<DataFrame> {
                         ->dispatch<std::pair<std::string, std::string>, dispatching::filter::All>(
                             [](auto brprecision) -> std::pair<std::string, std::string> {
                                 using ValueType = util::PrecisionValueType<decltype(brprecision)>;
-                                using PrecistionType = typename util::value_type<ValueType>::type;
+                                using PrecisionType = typename util::value_type<ValueType>::type;
 
                                 const auto& vec = brprecision->getDataContainer();
 
@@ -298,8 +298,8 @@ struct DataTraits<DataFrame> {
                                     return {"-", "-"};
                                 }
 
-                                auto createSS = [](const PrecistionType& min,
-                                                   const PrecistionType& max)
+                                auto createSS = [](const PrecisionType& min,
+                                                   const PrecisionType& max)
                                     -> std::pair<std::string, std::string> {
                                     if constexpr (std::is_floating_point_v<ValueType>) {
                                         std::stringstream minSS;
@@ -321,8 +321,8 @@ struct DataTraits<DataFrame> {
                                     // call lambda
                                     return createSS(*min, *max);
                                 } else {
-                                    auto min{std::numeric_limits<PrecistionType>::max()};
-                                    auto max{std::numeric_limits<PrecistionType>::min()};
+                                    auto min{std::numeric_limits<PrecisionType>::max()};
+                                    auto max{std::numeric_limits<PrecisionType>::min()};
 
                                     std::for_each(std::begin(vec), std::end(vec),
                                                   [&min, &max](const ValueType& v) {
