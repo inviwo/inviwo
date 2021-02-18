@@ -30,7 +30,6 @@
 #pragma once
 
 #include <glm/gtx/component_wise.hpp>
-#include <glm/detail/func_common.inl>
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/dataframe/datastructures/datapoint.h>
