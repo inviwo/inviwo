@@ -29,12 +29,6 @@
 
 #pragma once
 
-#include <glm/gtx/component_wise.hpp>
-
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/dataframe/datastructures/datapoint.h>
-#include <inviwo/dataframe/datastructures/column.h>
-
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/datatraits.h>
@@ -42,6 +36,11 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/util/exception.h>
+
+#include <inviwo/dataframe/dataframemoduledefine.h>
+#include <inviwo/dataframe/datastructures/datapoint.h>
+#include <inviwo/dataframe/datastructures/column.h>
+
 #include <unordered_map>
 
 #include <fmt/format.h>
