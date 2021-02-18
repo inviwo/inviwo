@@ -234,11 +234,16 @@ void TestPropertyComposite::deserialize(Deserializer& d) {
     d.deserialize("PropertyOwner", propertyOwner_);
     d.deserialize("SubProperties", subProperties);
 
+    for(const auto& p : subProperties) p->addObserver(this);
+
     onNetworkReceive([this](ProcessorNetwork* pn) {
         propertyOwner_.setNetwork(pn);
 
         for (const auto& subProp : subProperties) subProp->setNetwork(pn);
-        if (pn != nullptr) makeOnChange(getBoolComp());
+        if (pn != nullptr) {
+            makeOnChange(getBoolComp());
+            getBoolComp()->onChange([this]() { this->notifyObserversAboutChange(); });
+        }
     });
 }
 
@@ -466,6 +471,12 @@ void TestPropertyTyped<T>::deserialize(Deserializer& d) {
     onNetworkReceive([this](ProcessorNetwork* pn) {
         typedProperty_.setNetwork(pn);
         for (auto& e : effectOption_) e.setNetwork(pn);
+        if(pn != nullptr) {
+            for (size_t i = 0; i < numComponents; i++) {
+                getEffectOption(i)->onChange([this]() { this->notifyObserversAboutChange(); });
+                getBoolComp()->onChange([this]() { this->notifyObserversAboutChange(); });
+            }
+        }
     });
 
     deactivated_ = false;
@@ -501,7 +512,6 @@ void makeOnChange(BoolCompositeProperty* const prop) {
         for (auto boolProp : prop->getPropertiesByType<BoolProperty>())
             if (boolProp != prop->getBoolProperty()) subProps.emplace_back(boolProp);
 
-        std::cerr << "onChange::" << prop->getIdentifier() << " " << subProps.size() << std::endl;
         if (subProps.size() > 0) {
             bool checked = false;
             for (auto* boolProp : subProps) checked |= boolProp->get();

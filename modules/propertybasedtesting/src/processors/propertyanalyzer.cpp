@@ -316,6 +316,12 @@ void PropertyAnalyzer::setNetwork(ProcessorNetwork* pn) {
     Processor::setNetwork(pn);
     for (const auto& [proc, tp] : processors_) tp->setNetwork(pn);
     for (const auto& [proc, tp] : inactiveProcessors_) tp->setNetwork(pn);
+    if(pn) {
+        for (const auto& [proc, tp] : processors_)
+            static_cast<TestPropertyObservable*>(tp.get())->addObserver(this);
+        for (const auto& [proc, tp] : inactiveProcessors_)
+            static_cast<TestPropertyObservable*>(tp.get())->addObserver(this);
+    }
 }
 
 void PropertyAnalyzer::initTesting() {
