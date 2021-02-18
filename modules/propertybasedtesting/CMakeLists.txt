@@ -13,7 +13,7 @@ set(HEADER_FILES
     include/inviwo/propertybasedtesting/processors/faultycubeproxyprocessor.h
     include/inviwo/propertybasedtesting/processors/propertyanalyzer.h
     include/inviwo/propertybasedtesting/processors/imagecomparator.h
-    include/inviwo/propertybasedtesting/processors/randomvolumegenerator.h
+    include/inviwo/propertybasedtesting/processors/randomdistancefieldgenerator.h
     include/inviwo/propertybasedtesting/propertybasedtestingmodule.h
     include/inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h
     include/inviwo/propertybasedtesting/testproperty.h
@@ -33,7 +33,7 @@ set(SOURCE_FILES
     src/processors/faultycubeproxyprocessor.cpp
     src/processors/propertyanalyzer.cpp
     src/processors/imagecomparator.cpp
-    src/processors/randomvolumegenerator.cpp
+    src/processors/randomdistancefieldgenerator.cpp
     src/propertybasedtestingmodule.cpp
     src/testproperty.cpp
     src/testresult.cpp
