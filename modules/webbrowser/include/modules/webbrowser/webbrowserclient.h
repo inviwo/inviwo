@@ -70,7 +70,7 @@ class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
                                                    public CefDisplayHandler,
                                                    public CefResourceRequestHandler {
 public:
-    using BrowserParentHandle = std::shared_ptr<Processor*>; 
+    using BrowserParentHandle = std::shared_ptr<Processor*>;
 
     WebBrowserClient(ModuleManager& moduleManager, const PropertyWidgetCEFFactory* widgetFactory);
 
@@ -84,11 +84,13 @@ public:
      * Enable invalidation when the web page repaints and allow the Inviwo javascript API
      * to access the parent processor.
      * Connection will be removed when the browser closes.
-     * Processor invalidation on repaints will not be called if BrowserParentHandle has been destroyed. 
+     * Processor invalidation on repaints will not be called if BrowserParentHandle has been
+     * destroyed.
      * @param const Processor* parent web browser processor responsible for the browser. Cannot be
      * null.
-     * @return Handle to a dummy object that must be kept alive until no Processor::invalidate calls should be made.
-     * 
+     * @return Handle to a dummy object that must be kept alive until no Processor::invalidate calls
+     * should be made.
+     *
      */
     BrowserParentHandle setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent);
 
@@ -108,8 +110,6 @@ public:
     ProcessorCefSynchronizer::CallbackHandle registerCallback(
         CefRefPtr<CefBrowser> browser, const std::string& name,
         std::function<ProcessorCefSynchronizer::CallbackFunc> callback);
-
-
 
     bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                   CefProcessId source_process,
@@ -217,7 +217,7 @@ public:
 
 protected:
     struct BrowserData {
-        std::weak_ptr<Processor*> processor; // Use weak_ptr since Browser might outlive Processor
+        std::weak_ptr<Processor*> processor;  // Use weak_ptr since Browser might outlive Processor
         CefRefPtr<ProcessorCefSynchronizer> processorCefSynchronizer;
     };
 

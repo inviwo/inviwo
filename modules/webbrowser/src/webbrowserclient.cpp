@@ -82,7 +82,8 @@ WebBrowserClient::WebBrowserClient(ModuleManager& moduleManager,
     });
 }
 
-WebBrowserClient::BrowserParentHandle WebBrowserClient::setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent) {
+WebBrowserClient::BrowserParentHandle WebBrowserClient::setBrowserParent(
+    CefRefPtr<CefBrowser> browser, Processor* parent) {
     CEF_REQUIRE_UI_THREAD();
     auto processor = std::make_shared<Processor*>(parent);
     BrowserData bd{processor, new ProcessorCefSynchronizer(parent)};
