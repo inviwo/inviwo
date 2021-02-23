@@ -42,6 +42,7 @@ const ProcessorInfo FaultyCubePoxyGeometry::processorInfo_{
     "Undefined",                          // Category
     CodeState::Experimental,              // Code state
     Tags::None,                           // Tags
+    false,                                // visible
 };
 const ProcessorInfo FaultyCubePoxyGeometry::getProcessorInfo() const { return processorInfo_; }
 

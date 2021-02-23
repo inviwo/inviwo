@@ -265,9 +265,7 @@ PropertyAnalyzer::PropertyAnalyzer(InviwoApplication* app)
     app_->getProcessorNetwork()->addObserver(this);
 }
 
-PropertyAnalyzer::~PropertyAnalyzer() {
-    currAlive_.erase(m_id);
-}
+PropertyAnalyzer::~PropertyAnalyzer() { currAlive_.erase(m_id); }
 
 void PropertyAnalyzer::onTestPropertyChange() {
     std::string desc;
@@ -310,13 +308,18 @@ void PropertyAnalyzer::deserialize(Deserializer& d) {
     }
     inactiveProcessors_ = std::move(tmp);
     processors_.clear();
+
+    if (getNetwork() != nullptr) {
+        setNetwork(getNetwork());
+        updateProcessors();
+    }
 }
 
 void PropertyAnalyzer::setNetwork(ProcessorNetwork* pn) {
     Processor::setNetwork(pn);
     for (const auto& [proc, tp] : processors_) tp->setNetwork(pn);
     for (const auto& [proc, tp] : inactiveProcessors_) tp->setNetwork(pn);
-    if(pn) {
+    if (pn) {
         for (const auto& [proc, tp] : processors_)
             static_cast<TestPropertyObservable*>(tp.get())->addObserver(this);
         for (const auto& [proc, tp] : inactiveProcessors_)
@@ -553,20 +556,10 @@ void PropertyAnalyzer::setupTest(const Test& test) {
         assignment->apply();
     }
 
-    // Invalidate all predecessors in order to force the update of their output
-    for (Processor* const processor : util::getPredecessors(this)) {
-        if (processor == this) continue;
-        processor->invalidate(InvalidationLevel::InvalidOutput);
-    }
-
-    dispatchPool([this]() {
-        // necessary because of synchronicity issues, TODO: find better solution
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
-        dispatchFrontAndForget([this]() {
-            testingState = TestingState::GATHERING;
-            this->invalidate(InvalidationLevel::InvalidOutput);
-        });
-    });
+    // Invalidate this in order to force the update even if there
+    // are no changes
+    this->invalidate(InvalidationLevel::InvalidOutput);
+    testingState = TestingState::GATHERING;
 }
 
 size_t countPixels(std::shared_ptr<const Image> img, const dvec4& col, const bool useDepth) {
