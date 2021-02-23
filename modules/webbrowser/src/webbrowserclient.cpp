@@ -71,8 +71,8 @@ WebBrowserClient::WebBrowserClient(ModuleManager& moduleManager,
     : widgetFactory_{widgetFactory}
     , renderHandler_(new RenderHandlerGL([&](CefRefPtr<CefBrowser> browser) {
         auto bdIt = browserParents_.find(browser->GetIdentifier());
-        if (bdIt != browserParents_.end()) {
-            bdIt->second.processor->invalidate(InvalidationLevel::InvalidOutput);
+        if (bdIt != browserParents_.end(); auto processor = bdIt->second.processor.lock()) {
+            (*processor)->invalidate(InvalidationLevel::InvalidOutput);
         }
     }))
     , resourceManager_(new CefResourceManager()) {
@@ -82,12 +82,14 @@ WebBrowserClient::WebBrowserClient(ModuleManager& moduleManager,
     });
 }
 
-void WebBrowserClient::setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent) {
+WebBrowserClient::BrowserParentHandle WebBrowserClient::setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent) {
     CEF_REQUIRE_UI_THREAD();
-    BrowserData bd{parent, new ProcessorCefSynchronizer(parent)};
+    auto processor = std::make_shared<Processor*>(parent);
+    BrowserData bd{processor, new ProcessorCefSynchronizer(parent)};
     browserParents_[browser->GetIdentifier()] = bd;
     addLoadHandler(bd.processorCefSynchronizer);
     messageRouter_->AddHandler(bd.processorCefSynchronizer.get(), false);
+    return processor;
 }
 
 ProcessorCefSynchronizer::CallbackHandle WebBrowserClient::registerCallback(

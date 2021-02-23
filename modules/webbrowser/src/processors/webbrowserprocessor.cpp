@@ -125,7 +125,7 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
     // destructor
     browser_ = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient, getSource(),
                                                  browserSettings, nullptr, nullptr);
-    browserClient->setBrowserParent(browser_, this);
+    browserParentHandle_ = browserClient->setBrowserParent(browser_, this);
     // Observe when page has loaded
     browserClient->addLoadHandler(this);
     // Inject events into CEF browser_
