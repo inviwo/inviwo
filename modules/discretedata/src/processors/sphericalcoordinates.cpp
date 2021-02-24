@@ -85,17 +85,17 @@ void SphericalCoordinates::process() {
         minmax = dd_util::getMinMax(channel.get());
         LogWarn("Channel " << minmax.first << " bis " << minmax.second);
 
-        spherical->dispatch<void>([this](auto* channel) {
-            std::cout << "===> Spherical Channel:  " << channel->getName() << std::endl;
-            using Vec = typename std::remove_pointer_t<decltype(channel)>::DefaultVec;
-            // Vec vals[10];
-            // channel->fill(vals[0], 0, 10);
+        // spherical->dispatch<void>([this](auto* channel) {
+        //     std::cout << "===> Spherical Channel:  " << channel->getName() << std::endl;
+        //     using Vec = typename std::remove_pointer_t<decltype(channel)>::DefaultVec;
+        //     // Vec vals[10];
+        //     // channel->fill(vals[0], 0, 10);
 
-            // for (ind i = 0; i < 10; ++i) {
-            //     LogWarn(i << ": " << vals[i]);
-            // }
-            // delete[] vals;
-        });
+        //     // for (ind i = 0; i < 10; ++i) {
+        //     //     LogWarn(i << ": " << vals[i]);
+        //     // }
+        //     // delete[] vals;
+        // });
 
         // channel->dispatch<void>([this](auto* channel) {
         //     std::cout << "===> Original Channel:  " << channel->getName() << std::endl;

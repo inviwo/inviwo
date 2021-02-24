@@ -27,53 +27,40 @@
  *
  *********************************************************************************/
 
-#include <modules/discretedata/processors/createchannel.h>
+#include <modules/discretedata/processors/createindexchannel.h>
+#include <modules/discretedata/channels/analyticchannel.h>
 
 namespace inviwo {
 namespace discretedata {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo CreateConstantChannel::processorInfo_{
-    "org.inviwo.CreateConstantChannel",  // Class identifier
-    "Create Constant Channel",           // Display name
-    "Data Set",                          // Category
-    CodeState::Experimental,             // Code state
-    Tags::None,                          // Tags
+const ProcessorInfo CreateIndexChannel::processorInfo_{
+    "org.inviwo.CreateIndexChannel",  // Class identifier
+    "Create Index Channel",           // Display name
+    "Data Set",                       // Category
+    CodeState::Experimental,          // Code state
+    Tags::None,                       // Tags
 };
 
-const ProcessorInfo CreateConstantChannel::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo CreateIndexChannel::getProcessorInfo() const { return processorInfo_; }
 
-CreateConstantChannel::CreateConstantChannel()
+CreateIndexChannel::CreateIndexChannel()
     : Processor()
     , dataInport("InputData")
     , dataOutport("ExtendedData")
-    , name_("name", "Name", "Constant")
-    , format_("format", "Format")
+    , name_("name", "Name", "Indices")
     , primitive_("primitive", "Primitive")
-    , numComponents_("numComponents", "Number of Components", 1, 1, 7)
-    , value_("value", "Value", 1.0, 0.0, 10.0) {
+    , normalize_("normalize", "Normalize", true) {
 
-    for (int format = static_cast<int>(DataFormatId::Float16);
-         format <= static_cast<int>(DataFormatId::UInt64); ++format) {
-        std::string name =
-            std::string(DataFormatBase::get(static_cast<DataFormatId>(format))->getString());
-        format_.addOption(name, name, format);
-    }
-
-    dataInport.setOptional(true);
     addPort(dataInport);
     addPort(dataOutport);
-    addProperty(name_);
-    addProperty(primitive_);
-    addProperty(numComponents_);
-    addProperty(format_);
-    addProperty(value_);
+    addProperties(name_, primitive_, normalize_);
 
     primitive_.addOption(primitiveName(GridPrimitive::Vertex), primitiveName(GridPrimitive::Vertex),
                          GridPrimitive::Vertex);
 }
 
-void CreateConstantChannel::process() {
+void CreateIndexChannel::process() {
 
     if (!dataInport.getData()) return;
     auto grid = dataInport.getData()->getGrid();
@@ -88,12 +75,25 @@ void CreateConstantChannel::process() {
                                  static_cast<GridPrimitive>(dim));
     }
     dimensionToProcess = primitive_.get();
+    ind numElements = grid->getNumElements(dimensionToProcess);
 
-    // Dispatch to create channel
-    CreateChannelDispatcher dispatcher;
-    Channel* channel = channeldispatching::dispatch<Channel*, dispatching::filter::Scalars, 1, 7>(
-        static_cast<DataFormatId>(format_.get()), numComponents_.get(), dispatcher, value_.get(),
-        name_.get(), dimensionToProcess, grid->getNumElements(dimensionToProcess));
+    Channel* channel;
+    if (normalize_.get()) {
+        channel = new AnalyticChannel<double, 1, double>(
+            [size = numElements - 1](double& result, ind idx) { result = double(idx) / size; },
+            numElements, name_.get(), dimensionToProcess);
+    } else {
+        channel = new AnalyticChannel<int, 1, int>([](int& result, ind idx) { result = idx; },
+                                                   numElements, name_.get(), dimensionToProcess);
+    }
+    // channel->dispatch<void>([](auto* channel) {
+    //     typename std::remove_pointer_t<decltype(channel)>::DefaultVec vec;
+
+    //     for (ind i = 0; i < 1000; ++i) {
+    //         channel->fill(vec, i);
+    //         std::cout << i << ":  " << vec << std::endl;
+    //     }
+    // });
 
     // Generate output data
     auto outData = std::make_shared<DataSet>(*dataInport.getData());

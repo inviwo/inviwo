@@ -32,6 +32,7 @@
 #include <modules/discretedata/util/util.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <modules/base/algorithm/dataminmax.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -54,12 +55,16 @@ MeshFromDataSet::MeshFromDataSet()
                        DataChannelProperty::FilterPassDim<0>)
     , colorChannel_(portInDataSet_, "colorChannel", "Color Channel",
                     DataChannelProperty::FilterPassDim<0>)
+    , textureChannel_(portInDataSet_, "textureChannel", "Texture Coordinate Channel",
+                      DataChannelProperty::FilterPassDim<0>)
+    , normalizeTextureCoords_("normalizeTextureCoords", "Normalize Tex Coords")
     , primitive_("primitive", "Mesh Primitive")
     , cutAtBorder_("cutAtBorder", "Don't connect borders", false) {
 
     addPort(portInDataSet_);
     addPort(portOutMesh_);
-    addProperties(positionChannel_, colorChannel_, primitive_, cutAtBorder_);
+    addProperties(positionChannel_, colorChannel_, textureChannel_, normalizeTextureCoords_,
+                  primitive_, cutAtBorder_);
 }
 
 // namespace {
@@ -102,7 +107,8 @@ void MeshFromDataSet::process() {
 
     auto posChannel = positionChannel_.getCurrentChannel();
     auto colorChannel = colorChannel_.getCurrentChannel();
-    if (!posChannel || !colorChannel) {
+    auto textureChannel = textureChannel_.getCurrentChannel();
+    if (!posChannel) {
         invalidate(InvalidationLevel::InvalidOutput);
         return;
     }
@@ -131,17 +137,54 @@ void MeshFromDataSet::process() {
     result->addBuffer(BufferType::PositionAttrib, positions);
 
     // Add colors.
-    std::shared_ptr<BufferBase> colors;
-    if (colorChannel->getNumComponents() == 4)
-        colors =
-            colorChannel->dispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars, 4, 4>(
-                dd_util::ChannelToBufferDispatcher<vec4>());
-    else
-        colors =
-            colorChannel->dispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars, 1, 3>(
-                dd_util::ChannelToBufferDispatcher<vec3>());
+    if (colorChannel) {
+        std::shared_ptr<BufferBase> colors;
+        if (colorChannel->getNumComponents() == 4) {
+            colors =
+                colorChannel
+                    ->dispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars, 4, 4>(
+                        dd_util::ChannelToBufferDispatcher<vec4>());
+        } else {
+            colors =
+                colorChannel
+                    ->dispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars, 1, 3>(
+                        dd_util::ChannelToBufferDispatcher<vec3>());
+        }
 
-    result->addBuffer(BufferType::ColorAttrib, colors);
+        result->addBuffer(BufferType::ColorAttrib, colors);
+    }
+
+    // Add texture coordinates.
+    if (textureChannel) {
+        std::shared_ptr<BufferBase> texCoords;
+        if (normalizeTextureCoords_.get() && textureChannel->getNumComponents() == 1) {
+            auto minMax = dd_util::getMinMax(textureChannel.get());
+            texCoords =
+                textureChannel
+                    ->dispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars, 1, 1>(
+                        dd_util::ChannelToBufferDispatcher<vec2>(),
+                        [min = minMax.first.x, range = minMax.second.x - minMax.first.x](
+                            const auto& vec) { return vec2((double(vec) - min) / range, 0); });
+        } else if (normalizeTextureCoords_.get()) {
+            auto minMax = dd_util::getMinMax(textureChannel.get());
+            texCoords =
+                textureChannel
+                    ->dispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars, 2, 4>(
+                        dd_util::ChannelToBufferDispatcher<vec2>(),
+                        [min = minMax.first,
+                         range = minMax.second - minMax.first](const auto& vec) -> vec2 {
+                            return vec2((double(vec[0]) - min[0]) / range[0],
+                                        (double(vec[1]) - min[1]) / range[1]);
+                        });
+        } else {
+            texCoords =
+                textureChannel
+                    ->dispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars, 1, 3>(
+                        dd_util::ChannelToBufferDispatcher<vec2>());
+        }
+
+        result->addBuffer(BufferType::TexcoordAttrib, texCoords);
+    }
 
     if (primitive_.get() != GridPrimitive::Vertex) {
         std::vector<ind> indexData;

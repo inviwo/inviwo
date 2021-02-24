@@ -268,9 +268,10 @@ struct DataTraits<discretedata::DataSet> {
         // std::ostringstream oss;
         auto grid = data.getGrid();
         doc.append("p", fmt::format("Data set with {} channels.", data.size()));
-        doc.append("p", fmt::format(
-                            "Defined on {} vertices and {} {}D cells.", grid->getNumElements(),
-                            grid->getNumElements(grid->getDimension()), int(grid->getDimension())));
+        doc.append("p",
+                   fmt::format("{} with {} vertices and {} {} cells.", grid->getIdentifier(),
+                               grid->getNumElements(), grid->getNumElements(grid->getDimension()),
+                               primitiveName(grid->getDimension())));
 
         auto channelKeyList = data.getChannelNames();
         if (channelKeyList.size() != 0)

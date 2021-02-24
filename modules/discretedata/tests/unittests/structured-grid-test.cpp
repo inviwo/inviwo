@@ -116,7 +116,7 @@ TEST(DataSet, StructuredGrid) {
     std::vector<ind> neighbors;
     grid.getConnections(neighbors, cell123.GlobalPrimitiveIndex, GridPrimitive::Volume,
                         GridPrimitive::Volume);
-    /*
+
     std::sort(neighbors.begin(), neighbors.end());
     EXPECT_EQ(neighbors.size(), 3);
     EXPECT_EQ(neighbors[0], 16);
@@ -126,7 +126,7 @@ TEST(DataSet, StructuredGrid) {
     // Get all edges of our voxel. There should be 12.
     std::vector<ind> edges;
     grid.getConnections(edges, cell123.GlobalPrimitiveIndex, GridPrimitive::Volume,
-        GridPrimitive::Edge);
+                        GridPrimitive::Edge);
     EXPECT_EQ(edges.size(), 12);
     // X-pointing edges:
     EXPECT_EQ(edges[0], 28);
@@ -143,7 +143,6 @@ TEST(DataSet, StructuredGrid) {
     EXPECT_EQ(edges[9], 85 + 43);
     EXPECT_EQ(edges[10], 85 + 45);
     EXPECT_EQ(edges[11], 85 + 46);
-    */
 
     // Check one of the edges at random for resolving back to posiiton and direction.
     auto edge124y = grid.getPrimitive<GridPrimitive::Edge>(40 + 43);

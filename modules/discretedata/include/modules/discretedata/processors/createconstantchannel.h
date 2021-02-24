@@ -32,38 +32,26 @@
 #include <modules/discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <modules/discretedata/properties/datachannelproperty.h>
-#include <type_traits>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/datastructures/geometry/meshram.h>
-
 #include <modules/discretedata/ports/datasetport.h>
+#include <modules/discretedata/channels/analyticchannel.h>
+#include <modules/discretedata/channels/channeldispatching.h>
+#include <modules/discretedata/properties/datachannelproperty.h>
 
 namespace inviwo {
 namespace discretedata {
 
-/** \docpage{org.inviwo.MeshFromDataSet, Mesh From Data Set}
-    ![](org.inviwo.MeshFromDataSet.png?classIdentifier=org.inviwo.MeshFromDataSet)
-
-    Converts a DataSet into a Mesh.
-
-    ### Inports
-      * __InDataSet__ Input DataSet to be converted.
-
-    ### Outports
-      * __OutMesh__ Converted Mesh.
+/** \class CreateConstantChannel
+    \brief Create a channel with constant values
 */
+class IVW_MODULE_DISCRETEDATA_API CreateConstantChannel : public Processor {
 
-/** \class MeshFromDataSet
-    \brief Converts a DataSet to a Mesh
-*/
-class IVW_MODULE_DISCRETEDATA_API MeshFromDataSet : public Processor {
     // Construction / Deconstruction
 public:
-    MeshFromDataSet();
-    virtual ~MeshFromDataSet() = default;
+    CreateConstantChannel();
+    virtual ~CreateConstantChannel() = default;
 
     // Methods
 public:
@@ -76,18 +64,40 @@ protected:
 
     // Ports
 public:
-    /// Input dataset
-    DataSetInport portInDataSet_;
+    DataSetInport dataInport;
+    DataSetOutport dataOutport;
 
-    /// Output Mesh
-    MeshOutport portOutMesh_;
+    // Properties
+public:
+    /// Name for the new channel
+    StringProperty name_;
 
-    DataChannelProperty positionChannel_, colorChannel_, textureChannel_;
-    BoolProperty normalizeTextureCoords_;
+    /// Format of data
+    OptionPropertyInt format_;
 
+    /// Where to create
     GridPrimitiveProperty primitive_;
 
-    BoolProperty cutAtBorder_;
+    /// Number of components
+    IntProperty numComponents_;
+
+    // Value to be set, converted to format_
+    DoubleProperty value_;
+
+protected:
+    struct CreateChannelDispatcher {
+        template <typename Result, typename T, ind N, typename... Args>
+        Result operator()(double value, const std::string& name, GridPrimitive primitive,
+                          int numElements) {
+            Channel* channel =
+                new AnalyticChannel<typename T::type, N, std::array<typename T::type, N>>(
+                    [value](std::array<typename T::type, N>& vec, ind) {
+                        for (ind n = 0; n < N; ++n) vec[n] = static_cast<typename T::type>(value);
+                    },
+                    numElements, name, primitive);
+            return channel;
+        }
+    };
 };
 
 }  // namespace discretedata

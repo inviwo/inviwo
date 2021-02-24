@@ -65,7 +65,26 @@ struct ChannelToBufferDispatcher {
         std::vector<ToType> convBuffer;
         convBuffer.reserve(data.size());
 
-        for (const DefaultVec& val : data) convBuffer.push_back(util::glm_convert<ToType>(val));
+        ind tmpCount = 0;
+        for (const DefaultVec& val : data) {
+            convBuffer.push_back(util::glm_convert<ToType>(val));
+        }
+
+        auto buffer = util::makeBuffer(std::move(convBuffer));
+        return buffer;
+    }
+
+    template <typename T, ind N, typename Func>
+    std::shared_ptr<BufferBase> operator()(const DataChannel<T, N>* positions, Func&& transform) {
+        typedef typename DataChannel<T, N>::DefaultVec DefaultVec;
+        ind numElements = positions->size();
+        std::vector<DefaultVec> data(numElements);
+        positions->fill(*data.data(), 0, numElements);
+
+        std::vector<ToType> convBuffer;
+        convBuffer.reserve(data.size());
+
+        for (const DefaultVec& val : data) convBuffer.push_back(transform(val));
 
         auto buffer = util::makeBuffer(std::move(convBuffer));
         return buffer;

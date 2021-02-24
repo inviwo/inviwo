@@ -27,6 +27,7 @@ set(HEADER_FILES
     include/modules/discretedata/connectivity/periodicgrid.h
     include/modules/discretedata/connectivity/structuredgrid.h
     include/modules/discretedata/connectivity/trianglemesh.h
+    include/modules/discretedata/connectivity/tripolargrid.h
     include/modules/discretedata/dataset.h
     include/modules/discretedata/discretedatamodule.h
     include/modules/discretedata/discretedatamoduledefine.h
@@ -35,7 +36,8 @@ set(HEADER_FILES
     include/modules/discretedata/processors/colormapchannel.h
     include/modules/discretedata/processors/combinechannels.h
     include/modules/discretedata/processors/computegridmeasure.h
-    include/modules/discretedata/processors/createchannel.h
+    include/modules/discretedata/processors/createconstantchannel.h
+    include/modules/discretedata/processors/createindexchannel.h
     include/modules/discretedata/processors/createuniformgrid.h
     include/modules/discretedata/processors/datasetfrombase.h
     include/modules/discretedata/processors/datasetsource.h
@@ -72,7 +74,8 @@ set(SOURCE_FILES
     src/processors/colormapchannel.cpp
     src/processors/combinechannels.cpp
     src/processors/computegridmeasure.cpp
-    src/processors/createchannel.cpp
+    src/processors/createconstantchannel.cpp
+    src/processors/createindexchannel.cpp
     src/processors/createuniformgrid.cpp
     src/processors/datasetfrombase.cpp
     src/processors/datasetsource.cpp

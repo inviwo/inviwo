@@ -213,7 +213,7 @@ protected:
     };
     EdgeSettings edgeSettings_;
 
-    enum class ColorSource : int { VertexColor, TransferFunction, ExternalColor };
+    enum class ColorSource : int { VertexColor, TransferFunction, ExternalColor, VertexIndex };
     enum class ShadingMode : int {
         Off,  // no light, no reflection, just diffuse
         Phong

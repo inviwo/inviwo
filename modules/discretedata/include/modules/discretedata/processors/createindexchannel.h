@@ -34,23 +34,23 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <modules/discretedata/ports/datasetport.h>
-#include <modules/discretedata/channels/analyticchannel.h>
 #include <modules/discretedata/channels/channeldispatching.h>
 #include <modules/discretedata/properties/datachannelproperty.h>
 
 namespace inviwo {
 namespace discretedata {
 
-/** \class CreateConstantChannel
-    \brief Create a channel with constant values
+/** \class Create index channel
+    \brief Create a channel with indices or normalized indices.
 */
-class IVW_MODULE_DISCRETEDATA_API CreateConstantChannel : public Processor {
+class IVW_MODULE_DISCRETEDATA_API CreateIndexChannel : public Processor {
 
     // Construction / Deconstruction
 public:
-    CreateConstantChannel();
-    virtual ~CreateConstantChannel() = default;
+    CreateIndexChannel();
+    virtual ~CreateIndexChannel() = default;
 
     // Methods
 public:
@@ -71,32 +71,27 @@ public:
     /// Name for the new channel
     StringProperty name_;
 
-    /// Format of data
-    OptionPropertyInt format_;
-
     /// Where to create
     GridPrimitiveProperty primitive_;
 
-    /// Number of components
-    IntProperty numComponents_;
+    // VWhether to get integers [0, n) or doubles [0, 1]
+    BoolProperty normalize_;
 
-    // Value to be set, converted to format_
-    DoubleProperty value_;
-
-protected:
-    struct CreateChannelDispatcher {
-        template <typename Result, typename T, ind N, typename... Args>
-        Result operator()(double value, const std::string& name, GridPrimitive primitive,
-                          int numElements) {
-            Channel* channel =
-                new AnalyticChannel<typename T::type, N, std::array<typename T::type, N>>(
-                    [value](std::array<typename T::type, N>& vec, ind) {
-                        for (ind n = 0; n < N; ++n) vec[n] = static_cast<typename T::type>(value);
-                    },
-                    numElements, name, primitive);
-            return channel;
-        }
-    };
+    // protected:
+    //     struct CreateChannelDispatcher {
+    //         template <typename Result, typename T, ind N, typename... Args>
+    //         Result operator()(double value, const std::string& name, GridPrimitive primitive,
+    //                           int numElements) {
+    //             Channel* channel =
+    //                 new AnalyticChannel<typename T::type, N, std::array<typename T::type, N>>(
+    //                     [value](std::array<typename T::type, N>& vec, ind) {
+    //                         for (ind n = 0; n < N; ++n) vec[n] = static_cast<typename
+    //                         T::type>(value);
+    //                     },
+    //                     numElements, name, primitive);
+    //             return channel;
+    //         }
+    //     };
 };
 
 }  // namespace discretedata

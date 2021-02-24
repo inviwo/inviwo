@@ -35,6 +35,7 @@
 #include <warn/pop>
 
 #include <modules/discretedata/connectivity/structuredgrid.h>
+#include <modules/discretedata/connectivity/tripolargrid.h>
 
 namespace inviwo {
 using namespace discretedata;
@@ -46,39 +47,34 @@ struct IVW_MODULE_DISCRETEDATA_API CreateStructuredGridDispatcher {
 
     template <typename Result, int N>
     Result operator()(const pybind11::array_t<int>& vertData) {
-        auto ndim = vertData.ndim();
-        ivwAssert(ndim == N, "Given data size does not match template dimension.");
+        ivwAssert(vertData.ndim() == N, "Given data size does not match template dimension.");
 
         std::array<ind, N> numVertices;
         for (ind n = 0; n < N; ++n) numVertices[n] = static_cast<ind>(*vertData.data(N - 1 - n));
         std::shared_ptr<Connectivity> grid =
             std::make_shared<StructuredGrid<ind(N)>>(std::move(numVertices));
         return grid;
-        // std::array<ind, N> numVertices;
-        // for (ind n = 0; n < N; ++n) numVertices[n] = vertData.shape(n);
-        // // ind product =
-        // //     std::accumulate(numVertices.begin(), numVertices.end(), 1,
-        // std::multiplies<ind>());
+    }
+};
 
-        // auto channel = std::make_shared<NumPyChannel<T, N>>(vertData, name,
-        // GridPrimitive::Vertex);
+struct IVW_MODULE_DISCRETEDATA_API CreateTripolarGridDispatcher {
 
-        // // std::array<ind, N> numCellsArray;
-        // // for (size_t n = 0; n < N; ++n) {
-        // //     numCellsArray[n] = vertData.shape(n);
-        // // }
-        // auto grid = std::make_shared<StructuredGrid<ind(N)>>(std::move(numVertices));
+    template <typename Result, int N>
+    Result operator()(const pybind11::array_t<int>& vertData) {
+        ivwAssert(vertData.ndim() == N, "Given data size does not match template dimension.");
 
-        // auto dataSet = std::make_shared<DataSet>(grid);
-        // dataSet->addChannel(channel);
-        // return dataSet;
-        // return std::make_shared<DataSet>(grid);
+        std::array<ind, N> numVertices;
+        for (ind n = 0; n < N; ++n) numVertices[n] = static_cast<ind>(*vertData.data(N - 1 - n));
+        std::shared_ptr<Connectivity> grid =
+            std::make_shared<TripolarGrid<ind(N)>>(std::move(numVertices));
+        return grid;
     }
 };
 
 }  // namespace detail
 
 std::shared_ptr<Connectivity> createStructuredGrid(const pybind11::array_t<int>& data);
+std::shared_ptr<Connectivity> createTripolarGrid(const pybind11::array_t<int>& data);
 }  // namespace discretepyutil
 
 void exposeConnectivities(pybind11::module& m);

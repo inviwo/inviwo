@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2021 Inviwo Foundation
+ * Copyright (c) 2012-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,19 +39,19 @@ namespace discretedata {
  * Assume first point in a dimension equals the last point in that dimension
  */
 template <ind N>
-class PeriodicGrid : public StructuredGrid<N> {
+class TripolarGrid : public StructuredGrid<N> {
 public:
     using StructuredGrid<N>::indexFromLinear;
     using StructuredGrid<N>::indexToLinear;
-    // using StructuredGrid<N>::numPrimitives_;  //::NumVerticesPerDimension;
+    using StructuredGrid<N>::numVerticesPerDimension_;
     /**
      * \brief Create an nD grid
      * @param gridDimension Dimension of grid (not vertices)
      * @param numCellsPerDim Number of cells in each dimension, expect size gridDimension+1
      */
-    PeriodicGrid(const std::array<ind, N>& numCellsPerDim,
+    TripolarGrid(const std::array<ind, N>& numCellsPerDim,
                  const std::array<bool, N>& isDimPeriodic);
-    virtual ~PeriodicGrid() = default;
+    virtual ~TripolarGrid() = default;
 
     virtual ind getNumVerticesInDimension(ind dim) const override;
 
@@ -68,15 +68,9 @@ protected:
 
 protected:
     std::array<bool, N> isDimPeriodic_;
-
-public:
-    inline static const std::string GRID_IDENTIFIER = "PeriodicGrid" + N;
-
-    /** Get a unique identifier of this grid type. **/
-    virtual const std::string& getIdentifier() const override { return GRID_IDENTIFIER; }
 };
 
 }  // namespace discretedata
 }  // namespace inviwo
 
-#include "periodicgrid.inl"
+#include "tripolargrid.inl"

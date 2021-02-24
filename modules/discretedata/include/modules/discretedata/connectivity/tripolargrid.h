@@ -29,45 +29,172 @@
 
 #pragma once
 
-#include <modules/discretedata/connectivity/structuredgrid.h>
+#include <modules/discretedata/connectivity/connectivity.h>
+#include <modules/discretedata/util/util.h>
+#include <modules/discretedata/channels/analyticchannel.h>
+#include <inviwo/core/datastructures/spatialdata.h>
+
+#include <initializer_list>
 
 namespace inviwo {
 namespace discretedata {
 
+class ElementIterator;
+
 /**
- * \brief A curvilinear grid in nD, with some dimensions set to wrap
- * Assume first point in a dimension equals the last point in that dimension
+ * \brief A tripolar grid used for ocean simulations
+ * Extends to nD, N being at least 2 for latitude and longitude.
  */
 template <ind N>
-class TripolarGrid : public StructuredGrid<N> {
+class TripolarGrid : public Connectivity {
 public:
-    using StructuredGrid<N>::indexFromLinear;
-    using StructuredGrid<N>::indexToLinear;
-    using StructuredGrid<N>::numVerticesPerDimension_;
     /**
      * \brief Create an nD grid
-     * @param gridDimension Dimension of grid (not vertices)
-     * @param numCellsPerDim Number of cells in each dimension, expect size gridDimension+1
+     * @param numVertices Number of vertices in each dimension
      */
-    TripolarGrid(const std::array<ind, N>& numCellsPerDim,
-                 const std::array<bool, N>& isDimPeriodic);
+    TripolarGrid(const std::array<ind, N>& numVertices);
+
+    /**
+     * \brief Create an nD grid
+     * @param numVertices Number of vertices in each dimension
+     */
+    TripolarGrid(std::array<ind, N>&& numVertices);
+
+    /**
+     * \brief Create an nD grid
+     * @param val0 Required size of first dimension
+     * @param valX Further N-1 sizes
+     */
+    template <typename... IND>
+    TripolarGrid(ind val0, IND... valX);
+
     virtual ~TripolarGrid() = default;
 
-    virtual ind getNumVerticesInDimension(ind dim) const override;
+    virtual ind getNumVerticesInDimension(ind dim) const;
 
-    bool isPeriodic(ind dim) const { return isDimPeriodic_[dim]; }
+    const std::array<ind, N>& getNumVertices() const;
 
-    void setPeriodic(ind dim, bool periodic = true) { isDimPeriodic_[dim] = periodic; }
+    virtual const CellStructure* getCellType(GridPrimitive dim, ind index) const override;
 
-    virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
-                                GridPrimitive to, bool isPosition = false) const override;
+    /** Append the indices of all primitves connected to the given index. **/
+    virtual void getConnections(std::vector<ind>& result, ind indexLinear, GridPrimitive from,
+                                GridPrimitive to, bool cutAtBorder = false) const override;
 
-protected:
-    void sameLevelConnection(std::vector<ind>& result, ind idxLin,
-                             const std::array<ind, N>& size) const;
+    /** Append the indices of all primitves connected to the given index. Templated. **/
+    template <ind From, ind To>
+    void getConnectionsDispatched(std::vector<ind>& result, ind indexLinear,
+                                  bool cutAtBorder) const;
 
-protected:
-    std::array<bool, N> isDimPeriodic_;
+    // static void sameLevelConnection(std::vector<ind>& result, ind idxLin,
+    //                                 const std::array<ind, N>& size);
+
+    // static std::array<ind, N> indexFromLinear(ind idxLin, const std::array<ind, N>& size);
+
+    // static ind indexToLinear(const std::array<ind, N>& idx, const std::array<ind, N>& size);
+
+private:
+    void calculateSizes();
+
+public:
+    using CoordArray = std::array<ind, size_t(N)>;
+    template <GridPrimitive P>
+    using DirArray = std::array<size_t, size_t(P)>;
+
+    template <GridPrimitive P>
+    struct Primitive {
+        friend class TripolarGrid<N>;
+
+        // private:
+        //     Primitive(const TripolarGrid<N>& grid);
+
+    public:
+        Primitive(const TripolarGrid<N>& grid, ind globalIdx);
+        Primitive(const TripolarGrid<N>& grid, CoordArray idx, DirArray<P> dirs);
+        Primitive(const TripolarGrid<N>& grid, ind perDirIdx, DirArray<P> dirs);
+        Primitive(const Primitive<P>& prim);
+        Primitive(const Primitive<P>&& prim);
+
+        // Copy assignment by placement new copy construction.
+        void operator=(const Primitive& prim) { new (this) Primitive(prim); }
+        void operator=(const Primitive&& prim) { new (this) Primitive(prim); }
+
+        const TripolarGrid& Grid;
+        const ind GlobalPrimitiveIndex;
+
+    private:
+        CoordArray Coords;
+        DirArray<P> Directions;
+
+    public:
+        const CoordArray& getCoordinates() const { return Coords; }
+        const DirArray<P>& getDirections() const { return Directions; }
+    };
+
+    template <GridPrimitive P>
+    Primitive<P> getPrimitive(ind globalIdx) const;
+    template <GridPrimitive P>
+    Primitive<P> getPrimitive(CoordArray coords, DirArray<P> dirs) const;
+    // template <GridPrimitive P>
+    // Primitive<P> getPrimitive(CoordArray&& coords, DirArray<P>&& dirs) const;
+    template <GridPrimitive P>
+    Primitive<P> getPrimitive(ind perDirIdx, DirArray<P> dirs) const;
+
+public:
+    struct NumPrimitives {
+
+        NumPrimitives(TripolarGrid& grid, const CoordArray& numVerticesPerDimension);
+
+        template <GridPrimitive P>
+        constexpr static ind getDirectionsIndex(const DirArray<P>& dirs);
+
+        template <GridPrimitive P>
+        constexpr static DirArray<P> getIndexDirections(ind dirIndex);
+
+        // template <>
+        // constexpr static ind getDirectionsIndex<GridPrimitive::Vertex>(
+        //     const DirArray<GridPrimitive::Vertex>&) {
+        //     return 0;
+        // }
+
+        template <GridPrimitive P>
+        ind globalIndexFromCoordinates(const TripolarGrid& grid, const CoordArray& coords,
+                                       const DirArray<P>& dirs) const;
+
+        template <GridPrimitive P>
+        std::pair<CoordArray, DirArray<P>> coordinatesFromGlobalIndex(ind globalIdx) const;
+
+        // template <GridPrimitive P>
+        // constexpr ind getPrimitiveOffset() constexpr;
+        template <GridPrimitive P>
+        constexpr const ind* getOffset(ind dirsIdx) const;
+        template <GridPrimitive P>
+        constexpr const ind* getOffset(const DirArray<P>& dirs) const;
+
+        template <GridPrimitive P>
+        ind getSize(ind dirsIdx) const;
+        template <GridPrimitive P>
+        ind getSize(const DirArray<P>& dirs) const;
+
+        ind operator[](size_t idx) const { return NumVerticesPerDimension[idx]; }
+
+        /** The global index offsets for primitives with the respective direction combination.
+         * Starts at 0 at all indices indicated by DirectionOffsets. **/
+        std::array<ind, (1 << N)> PerDirectionOffsets;
+
+        /** The offsets into NumPrimitivesSum per primitive type. **/
+        static constexpr typename std::array<size_t, N + 1> PrimitiveOffsets =
+            dd_util::binomialCoefficientOffsets<N>();
+
+        const TripolarGrid& Grid;
+
+        /** The number of vertices in each dimension. **/
+        std::array<ind, N> NumVerticesPerDimension;
+    };
+    NumPrimitives const numPrimitives_;
+
+    inline static const std::string GRID_IDENTIFIER = "TripolarGrid" + std::to_string(N) + "D";
+    /** Get a unique identifier of this grid type. **/
+    virtual const std::string& getIdentifier() const override { return GRID_IDENTIFIER; }
 };
 
 }  // namespace discretedata

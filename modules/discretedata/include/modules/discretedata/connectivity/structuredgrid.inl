@@ -38,109 +38,61 @@
 namespace inviwo {
 namespace discretedata {
 
-template <ind N, typename C>
-CurvilinearGrid<N, C>::CurvilinearGrid(const std::array<ind, N>& numVertices)
+template <ind N>
+CurvilinearGrid<N>::CurvilinearGrid(const std::array<ind, N>& numVertices)
     : Connectivity(static_cast<GridPrimitive>(N)), numPrimitives_(*this, numVertices) {
-
-    // Calculating number of edges, faces etc.
-    calculateSizes();
+    // Constructing numPrimitives_ also writes total sizes to numGridPrimitives_.
 }
 
-template <ind N, typename C>
-CurvilinearGrid<N, C>::CurvilinearGrid(std::array<ind, N>&& numVertices)
+template <ind N>
+CurvilinearGrid<N>::CurvilinearGrid(std::array<ind, N>&& numVertices)
     : Connectivity(static_cast<GridPrimitive>(N)), numPrimitives_(*this, std::move(numVertices)) {
-
-    // Calculating number of edges, faces etc.
-    calculateSizes();
+    // Constructing numPrimitives_ also writes total sizes to numGridPrimitives_.
 }
 
-template <ind N, typename C>
+template <ind N>
 template <typename... IND>
-CurvilinearGrid<N, C>::CurvilinearGrid(ind val0, IND... valX)
+CurvilinearGrid<N>::CurvilinearGrid(ind val0, IND... valX)
     : Connectivity(static_cast<GridPrimitive>(N)), numPrimitives_{*this, {val0, valX...}} {
-
-    // Calculating number of edges, faces etc.
-    calculateSizes();
+    // Constructing numPrimitives_ also writes total sizes to numGridPrimitives_.
 }
-
-// template <ind N, typename C>
-// std::array<ind, N> CurvilinearGrid<N, C>::indexFromLinear(ind idxLin,
-//                                                           const std::array<ind, N>& size) {
-//     std::array<ind, N> index;
-//     for (ind dim = 0; dim < N; ++dim) {
-//         index[dim] = idxLin % size[dim];
-//         idxLin = static_cast<ind>((idxLin) / size[dim]);
-//     }
-
-//     return index;
-// }
-
-// template <ind N, typename C>
-// ind CurvilinearGrid<N, C>::indexToLinear(const std::array<ind, N>& idx,
-//                                          const std::array<ind, N>& size) {
-//     ind linIdx = 0;
-//     ind step = 1;
-
-//     for (size_t dim = 0; dim < N; ++dim) {
-//         IVW_ASSERT((idx[dim] < size[dim] && idx[dim] >= 0), "Index not within bounds.");
-//         linIdx += step * idx[dim];
-//         step *= size[dim];
-//     }
-//     return linIdx;
-// }
-
-// template <ind N, typename C>
-// void CurvilinearGrid<N, C>::sameLevelConnection(std::vector<ind>& result, const ind idxLin,
-//                                                 const std::array<ind, N>& size) {
-//     std::array<ind, N> index = indexFromLinear(idxLin, size);
-
-//     ind dimensionProduct = 1;
-//     for (size_t dim = 0; dim < N; ++dim) {
-//         if (index[dim] > 0) result.push_back(idxLin - dimensionProduct);
-//         if (index[dim] < size[dim] - 1) result.push_back(idxLin + dimensionProduct);
-
-//         dimensionProduct *= size[dim];
-//     }
-// }
 
 namespace dd_detail {
-template <ind N, typename C, ind From>
+template <ind N, ind From>
 struct GetConnectionsFromToHelper {
     template <typename Result, ind To>
-    Result operator()(const CurvilinearGrid<N, C>& grid, std::vector<ind>& result, ind idxLin,
+    Result operator()(const CurvilinearGrid<N>& grid, std::vector<ind>& result, ind idxLin,
                       bool render) {
 
         grid.template getConnectionsDispatched<From, To>(result, idxLin, render);
     }
 };
-template <ind N, typename C>
+template <ind N>
 struct GetConnectionsFromHelper {
     template <typename Result, ind From>
-    Result operator()(const CurvilinearGrid<N, C>& grid, std::vector<ind>& result, ind idxLin,
+    Result operator()(const CurvilinearGrid<N>& grid, std::vector<ind>& result, ind idxLin,
                       GridPrimitive to, bool render) {
-        GetConnectionsFromToHelper<N, C, From> dispatcher;
+        GetConnectionsFromToHelper<N, From> dispatcher;
         channeldispatching::dispatchNumber<void, 0, N>(ind(to), dispatcher, grid, result, idxLin,
                                                        render);
     }
 };
 }  // namespace dd_detail
 
-template <ind N, typename C>
-void CurvilinearGrid<N, C>::getConnections(std::vector<ind>& result, ind idxLin, GridPrimitive from,
-                                           GridPrimitive to, bool render) const {
-    size_t numResults = result.size();
+template <ind N>
+void CurvilinearGrid<N>::getConnections(std::vector<ind>& result, ind idxLin, GridPrimitive from,
+                                        GridPrimitive to, bool render) const {
 
-    dd_detail::GetConnectionsFromHelper<N, C> dispatcher;
+    dd_detail::GetConnectionsFromHelper<N> dispatcher;
 
     channeldispatching::dispatchNumber<void, 0, N>(ind(from), dispatcher, *this, result, idxLin, to,
                                                    render);
-    // std::sort(result.begin() + numResults, result.end());
 }
 
-template <ind N, typename C>
+template <ind N>
 template <ind From, ind To>
-void CurvilinearGrid<N, C>::getConnectionsDispatched(std::vector<ind>& result, ind index,
-                                                     bool cutAtBorder) const {
+void CurvilinearGrid<N>::getConnectionsDispatched(std::vector<ind>& result, ind index,
+                                                  bool cutAtBorder) const {
 
     using FromPrimitive = Primitive<GridPrimitive(From)>;
     using ToPrimitive = Primitive<GridPrimitive(To)>;
@@ -161,8 +113,7 @@ void CurvilinearGrid<N, C>::getConnectionsDispatched(std::vector<ind>& result, i
                 bool inGrid = (neighPrim.getCoordinates()[dim] >= 0 &&
                                neighPrim.getCoordinates()[dim] <
                                    numPrimitives_.NumVerticesPerDimension[dim] - 1);
-                if (inGrid ||  // !cutAtBorder &&
-                    C::template handleBorder<GridPrimitive(To)>(neighPrim)) {
+                if (inGrid) {
                     result.push_back(neighPrim.GlobalPrimitiveIndex);
                 }
             }
@@ -225,19 +176,19 @@ void CurvilinearGrid<N, C>::getConnectionsDispatched(std::vector<ind>& result, i
     }
 }
 
-template <ind N, typename C>
-ind CurvilinearGrid<N, C>::getNumVerticesInDimension(ind dim) const {
+template <ind N>
+ind CurvilinearGrid<N>::getNumVerticesInDimension(ind dim) const {
     IVW_ASSERT(numPrimitives_[dim] >= 2, "Number of elements not known yet.");
     return numPrimitives_[dim];
 }
 
-template <ind N, typename C>
-const std::array<ind, N>& CurvilinearGrid<N, C>::getNumVertices() const {
+template <ind N>
+const std::array<ind, N>& CurvilinearGrid<N>::getNumVertices() const {
     return numPrimitives_.NumVerticesPerDimension;
 }
 
-template <ind N, typename C>
-const CellStructure* CurvilinearGrid<N, C>::getCellType(GridPrimitive dim, ind) const {
+template <ind N>
+const CellStructure* CurvilinearGrid<N>::getCellType(GridPrimitive dim, ind) const {
     CellType cell;
     switch (dim) {
         case GridPrimitive::Vertex:
@@ -258,38 +209,11 @@ const CellStructure* CurvilinearGrid<N, C>::getCellType(GridPrimitive dim, ind) 
     return CellStructureByCellType[(int)cell];
 }
 
-template <ind N, typename C>
-void CurvilinearGrid<N, C>::calculateSizes() {
-#ifdef IVW_DEBUG
-    IVW_ASSERT(static_cast<ind>(gridDimension_) > static_cast<ind>(GridPrimitive::Vertex),
-               "GridPrimitive need to be at least Edge for a structured grid");
-    IVW_ASSERT(N == static_cast<ind>(gridDimension_),
-               "Grid dimension should match cell dimension.");
-    for (ind size : numPrimitives_)
-        IVW_ASSERT(size >= 1, "At least one vertex in each dimension required.");
-#endif
-
-    ind numCombinations = ind(1) << N;
-    for (ind combo = 0; combo < numCombinations; ++combo) {
-        ind numNormal = 0;  // Count number of 1 bits. This is the dimension we add to.
-        ind product = 1;    // Get one term, depending on the combo.
-        for (ind dim = 0; dim < N; ++dim) {
-            if (combo & (ind(1) << dim)) {
-                numNormal++;
-                product *= numPrimitives_[dim] - 1;
-            } else
-                product *= numPrimitives_[dim];
-        }
-
-        // Add to correct dimension.
-        numGridPrimitives_[numNormal] += product;
-    }
-}
-
 namespace dd_detail {
 
-template <ind N, typename C, ind P>
-constexpr void writeSize(typename CurvilinearGrid<N, C>::NumPrimitives& numPrimitives) {
+template <ind N, ind P>
+constexpr void writeSize(typename CurvilinearGrid<N>::NumPrimitives& numPrimitives,
+                         std::vector<ind>& numGridPrimitives) {
     auto dirs = dd_util::initNchooseK<P>();
     bool valid = true;
     size_t dirsIdx = 0;
@@ -313,13 +237,15 @@ constexpr void writeSize(typename CurvilinearGrid<N, C>::NumPrimitives& numPrimi
         valid = dd_util::nextNchooseK(N, dirs);
         dirsIdx++;
     }
+    numGridPrimitives[P] = sizeSum;
 }
 
-template <ind N, typename C, int... Is>
-constexpr void writeAllSizes(typename CurvilinearGrid<N, C>::NumPrimitives& numPrimitives,
+template <ind N, int... Is>
+constexpr void writeAllSizes(typename CurvilinearGrid<N>::NumPrimitives& numPrimitives,
+                             std::vector<ind>& numGridPrimitives,
                              std::integer_sequence<int, Is...> const&) {
 
-    ((writeSize<N, C, Is>(numPrimitives)), ...);
+    ((writeSize<N, Is>(numPrimitives, numGridPrimitives)), ...);
 }
 
 template <ind N, GridPrimitive P>
@@ -343,32 +269,32 @@ constexpr std::enable_if_t<P == GridPrimitive::Vertex, ind> directionsIndex(
 }
 }  // namespace dd_detail
 
-template <ind N, typename C>
-CurvilinearGrid<N, C>::NumPrimitives::NumPrimitives(
-    const CurvilinearGrid& grid, const std::array<ind, size_t(N)>& numVerticesPerDimension)
+template <ind N>
+CurvilinearGrid<N>::NumPrimitives::NumPrimitives(
+    CurvilinearGrid& grid, const std::array<ind, size_t(N)>& numVerticesPerDimension)
     : PerDirectionOffsets({0}), Grid(grid), NumVerticesPerDimension(numVerticesPerDimension) {
-
-    dd_detail::writeAllSizes<N, C>(*this, std::make_integer_sequence<int, N + 1>{});
+    dd_detail::writeAllSizes<N>(*this, grid.numGridPrimitives_,
+                                std::make_integer_sequence<int, N + 1>{});
 }
 
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
-constexpr const ind* CurvilinearGrid<N, C>::NumPrimitives::getOffset(ind dirsIdx) const {
+constexpr const ind* CurvilinearGrid<N>::NumPrimitives::getOffset(ind dirsIdx) const {
     if (dirsIdx < 0) return nullptr;
     return &PerDirectionOffsets[PrimitiveOffsets[size_t(P)] + dirsIdx];
 }
 
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
-constexpr const ind* CurvilinearGrid<N, C>::NumPrimitives::getOffset(
+constexpr const ind* CurvilinearGrid<N>::NumPrimitives::getOffset(
     const std::array<size_t, size_t(P)>& dirs) const {
     ind dirsIdx = getDirectionsIndex<P>(dirs);
     return getOffset<P>(dirsIdx);
 }
 
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
-ind CurvilinearGrid<N, C>::NumPrimitives::getSize(ind dirsIdx) const {
+ind CurvilinearGrid<N>::NumPrimitives::getSize(ind dirsIdx) const {
     if (dirsIdx < 0) return -1;
 
     size_t primOffset = PrimitiveOffsets[size_t(P)];
@@ -381,23 +307,23 @@ ind CurvilinearGrid<N, C>::NumPrimitives::getSize(ind dirsIdx) const {
     return upperLimit - (PerDirectionOffsets[primOffset + dirsIdx]);
 }
 
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
-ind CurvilinearGrid<N, C>::NumPrimitives::getSize(const std::array<size_t, size_t(P)>& dirs) const {
+ind CurvilinearGrid<N>::NumPrimitives::getSize(const std::array<size_t, size_t(P)>& dirs) const {
     ind dirIdx = getDirectionsIndex<P>(dirs);
     return getSize<P>(dirIdx);
 }
 
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
-constexpr ind CurvilinearGrid<N, C>::NumPrimitives::getDirectionsIndex(
+constexpr ind CurvilinearGrid<N>::NumPrimitives::getDirectionsIndex(
     const std::array<size_t, size_t(P)>& dirs) {
     return dd_detail::directionsIndex<N, P>(dirs);
 }
 
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
-constexpr std::array<size_t, size_t(P)> CurvilinearGrid<N, C>::NumPrimitives::getIndexDirections(
+constexpr std::array<size_t, size_t(P)> CurvilinearGrid<N>::NumPrimitives::getIndexDirections(
     ind dirIndex) {
     auto dirs = dd_util::initNchooseK<size_t(P)>();
     for (ind d = 0; d < dirIndex; ++d) {
@@ -408,9 +334,9 @@ constexpr std::array<size_t, size_t(P)> CurvilinearGrid<N, C>::NumPrimitives::ge
     return dirs;
 }
 
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
-ind CurvilinearGrid<N, C>::NumPrimitives::globalIndexFromCoordinates(
+ind CurvilinearGrid<N>::NumPrimitives::globalIndexFromCoordinates(
     const CurvilinearGrid& grid, const std::array<ind, size_t(N)>& coords,
     const std::array<size_t, size_t(P)>& dirs) const {
 
@@ -431,10 +357,10 @@ ind CurvilinearGrid<N, C>::NumPrimitives::globalIndexFromCoordinates(
     return idx;
 }
 
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
 std::pair<std::array<ind, size_t(N)>, std::array<size_t, size_t(P)>>
-CurvilinearGrid<N, C>::NumPrimitives::coordinatesFromGlobalIndex(ind globalIdx) const {
+CurvilinearGrid<N>::NumPrimitives::coordinatesFromGlobalIndex(ind globalIdx) const {
     if (globalIdx < 0 || globalIdx >= Grid.getNumElements(P))
         throw RangeException("Index out of range for this primitive type.");
 
@@ -465,89 +391,73 @@ CurvilinearGrid<N, C>::NumPrimitives::coordinatesFromGlobalIndex(ind globalIdx) 
     }
     return std::make_pair(std::move(coords), std::move(dirs));
 }
-
-// template <ind N, typename C>
-// template <GridPrimitive P>
-// CurvilinearGrid<N, C>::Primitive<P>::Primitive(const CurvilinearGrid<N, C>& grid) : Grid(grid) {}
-
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
-CurvilinearGrid<N, C>::Primitive<P>::Primitive(const CurvilinearGrid<N, C>& grid, ind globalIdx)
+CurvilinearGrid<N>::Primitive<P>::Primitive(const CurvilinearGrid<N>& grid, ind globalIdx)
     : Grid(grid), GlobalPrimitiveIndex(globalIdx) {
     auto coordDirPair = grid.numPrimitives_.template coordinatesFromGlobalIndex<P>(globalIdx);
     Coords = coordDirPair.first;
     Directions = coordDirPair.second;
 }
 
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
-CurvilinearGrid<N, C>::Primitive<P>::Primitive(const CurvilinearGrid<N, C>& grid,
-                                               std::array<ind, size_t(N)> coords,
-                                               std::array<size_t, size_t(P)> dirs)
+CurvilinearGrid<N>::Primitive<P>::Primitive(const CurvilinearGrid<N>& grid,
+                                            std::array<ind, size_t(N)> coords,
+                                            std::array<size_t, size_t(P)> dirs)
     : Grid(grid)
     , GlobalPrimitiveIndex(
           grid.numPrimitives_.template globalIndexFromCoordinates<P>(grid, coords, dirs))
     , Coords(coords)
     , Directions(dirs) {}
 
-// template <ind N, typename C>
-// template <GridPrimitive P>
-// CurvilinearGrid<N, C>::Primitive<P>::Primitive(const CurvilinearGrid<N, C>& grid,
-//                                                std::array<ind, size_t(N)>&& coords,
-//                                                std::array<size_t, size_t(P)>&& dirs)
-//     : Grid(grid)
-//     , GlobalPrimitiveIndex(
-//           grid.numPrimitives_.template globalIndexFromCoordinates<P>(grid, coords, dirs))
-//     , Coords(std::move(coords))
-//     , Directions(std::move(dirs)) {}
-
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
-CurvilinearGrid<N, C>::Primitive<P>::Primitive(const CurvilinearGrid<N, C>& grid, ind perDirIdx,
-                                               std::array<size_t, size_t(P)> dirs)
+CurvilinearGrid<N>::Primitive<P>::Primitive(const CurvilinearGrid<N>& grid, ind perDirIdx,
+                                            std::array<size_t, size_t(P)> dirs)
     : Grid(grid)
     , GlobalPrimitiveIndex(grid.numPrimitives_.getOffset(dirs) + perDirIdx)
     , Coords(grid.numPrimitives_.template coordinatesFromGlobalIndex<P>(GlobalPrimitiveIndex))
     , Directions(dirs) {}
 
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
-CurvilinearGrid<N, C>::Primitive<P>::Primitive(const Primitive<P>& prim)
+CurvilinearGrid<N>::Primitive<P>::Primitive(const Primitive<P>& prim)
     : Grid(prim.Grid)
     , GlobalPrimitiveIndex(prim.GlobalPrimitiveIndex)
     , Coords(prim.getCoordinates())
     , Directions(prim.getDirections()) {}
 
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
-CurvilinearGrid<N, C>::Primitive<P>::Primitive(const Primitive<P>&& prim)
+CurvilinearGrid<N>::Primitive<P>::Primitive(const Primitive<P>&& prim)
     : Grid(prim.Grid)
     , GlobalPrimitiveIndex(prim.GlobalPrimitiveIndex)
     , Coords(std::move(prim.getCoordinates()))
     , Directions(std::move(prim.getDirections())) {}
 
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
-CurvilinearGrid<N, C>::Primitive<P> CurvilinearGrid<N, C>::getPrimitive(ind globalIdx) const {
+CurvilinearGrid<N>::Primitive<P> CurvilinearGrid<N>::getPrimitive(ind globalIdx) const {
     return Primitive<P>(*this, globalIdx);
 }
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
-CurvilinearGrid<N, C>::Primitive<P> CurvilinearGrid<N, C>::getPrimitive(
+CurvilinearGrid<N>::Primitive<P> CurvilinearGrid<N>::getPrimitive(
     std::array<ind, size_t(N)> coords, std::array<size_t, size_t(P)> dirs) const {
     return Primitive<P>(*this, coords, dirs);
 }
 
-// template <ind N, typename C>
+// template <ind N>
 // template <GridPrimitive P>
-// CurvilinearGrid<N, C>::Primitive<P> CurvilinearGrid<N, C>::getPrimitive(
+// CurvilinearGrid<N>::Primitive<P> CurvilinearGrid<N>::getPrimitive(
 //     std::array<ind, size_t(N)>&& coords, std::array<size_t, size_t(P)>&& dirs) const {
 //     return Primitive<P>(*this, std::move(coords), std::move(dirs));
 // }
 
-template <ind N, typename C>
+template <ind N>
 template <GridPrimitive P>
-CurvilinearGrid<N, C>::Primitive<P> CurvilinearGrid<N, C>::getPrimitive(
+CurvilinearGrid<N>::Primitive<P> CurvilinearGrid<N>::getPrimitive(
     ind perDirIdx, std::array<size_t, size_t(P)> dirs) const {
     return Primitive<P>(*this, perDirIdx, dirs);
 }

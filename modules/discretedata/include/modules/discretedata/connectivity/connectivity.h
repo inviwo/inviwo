@@ -110,6 +110,12 @@ public:
      */
     virtual const CellStructure* getCellType(ElementIterator& element) const;
 
+    /**
+     * \brief Get an identifier for this kind of Connectivity.
+     * Should be unique to this kind of grid and maybe allow dispatching one day.
+     */
+    virtual const std::string& getIdentifier() const = 0;
+
     // Attributes
 protected:
     //! Highest dimension of GridPrimitives

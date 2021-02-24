@@ -85,6 +85,8 @@ public:
      */
     virtual void insertProperty(size_t index, Property& property);
 
+
+    virtual void clearProperties();
     virtual Property* removeProperty(std::string_view identifier);
     virtual Property* removeProperty(Property* property);
     virtual Property* removeProperty(Property& property);

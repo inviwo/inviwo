@@ -87,6 +87,11 @@ protected:
     // Map of maps from one primitive type to another
     mutable std::map<std::pair<GridPrimitive, GridPrimitive>, ConnectionMap, PrimitivePairCompare>
         connectionMaps_;
+
+public:
+    inline static const std::string GRID_IDENTIFIER = "ExplicitConnectivity";
+    /** Get a unique identifier of this grid type. **/
+    virtual const std::string& getIdentifier() const override { return GRID_IDENTIFIER; }
 };
 
 }  // namespace discretedata

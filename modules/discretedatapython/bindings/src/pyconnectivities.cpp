@@ -39,6 +39,7 @@
 #include <modules/discretedata/discretedatatypes.h>
 #include <modules/discretedata/connectivity/connectivity.h>
 #include <modules/discretedata/connectivity/structuredgrid.h>
+#include <modules/discretedata/connectivity/tripolargrid.h>
 
 #include <modules/discretedatapython/channels/numpychannel.h>
 
@@ -61,34 +62,34 @@ void exposeConnectivities(pybind11::module& m) {
              "Get the dimension the grid is defined on.")
         .def("getNumElements", &Connectivity::getNumElements, "elementType"_a,
              "Get the number of elements of the specified dimension.")
-        .def("createStructured", &discretepyutil::createStructuredGrid,  //"size"_a,
-             "Create a new structured grid with the given number of vertices.");
+        .def("createStructured", &discretepyutil::createStructuredGrid,
+             "Create a new structured grid with the given number of vertices.")
+        .def("createTripolar", &discretepyutil::createTripolarGrid,
+             "Create a new tripolar grid with the given number of vertices. At least 2D.");
 }
 
 std::shared_ptr<Connectivity> discretepyutil::createStructuredGrid(
     const pybind11::array_t<int>& size) {
 
-    auto ndim = size.ndim();
-    std::cout << "Shape:" << std::endl;
-    for (ind n = 0; n < ndim; ++n) {
-        std::cout << n << ": " << size.shape(n) << std::endl;
-    }
-    ivwAssert(ndim == 1, "Size array should be a vector.");
+    ivwAssert(size.ndim() == 1, "Size array should be a vector.");
     ind numVerts = size.shape(0);
-    // auto combinedFormat = inviwo::pyutil::getDataFormat(ndim == 1 ? 1 : size.shape(1), size);
-    std::cout << "Dimension: " << numVerts << std::endl;
 
     detail::CreateStructuredGridDispatcher dispatcher;
     return channeldispatching::dispatchNumber<std::shared_ptr<Connectivity>, 1,
                                               DISCRETEDATA_MAX_NUM_DIMENSIONS>(numVerts, dispatcher,
                                                                                size);
-    // return channeldispatching::dispatch<std::shared_ptr<DataSet>, dispatching::filter::Scalars,
-    // 1,
-    //                                     DISCRETEDATA_MAX_NUM_DIMENSIONS>(combinedFormat,
-    //                                     dispatcher,
-    //                                                                      size);
-    // std::cout << "I'm fine." << combinedFormat << std::endl;
-    // return nullptr;
+}
+
+std::shared_ptr<Connectivity> discretepyutil::createTripolarGrid(
+    const pybind11::array_t<int>& size) {
+
+    ivwAssert(size.ndim() == 1, "Size array should be a vector.");
+    ind numVerts = size.shape(0);
+
+    detail::CreateTripolarGridDispatcher dispatcher;
+    return channeldispatching::dispatchNumber<std::shared_ptr<Connectivity>, 2,
+                                              DISCRETEDATA_MAX_NUM_DIMENSIONS>(numVerts, dispatcher,
+                                                                               size);
 }
 
 }  // namespace inviwo

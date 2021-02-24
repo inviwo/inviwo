@@ -45,7 +45,7 @@ class ElementIterator;
  * \brief A curvilinear grid in nD
  * N needs to be positive.
  */
-template <ind N, typename GetConnections>
+template <ind N>
 class CurvilinearGrid : public Connectivity {
 public:
     /**
@@ -85,16 +85,6 @@ public:
     void getConnectionsDispatched(std::vector<ind>& result, ind indexLinear,
                                   bool cutAtBorder) const;
 
-    // static void sameLevelConnection(std::vector<ind>& result, ind idxLin,
-    //                                 const std::array<ind, N>& size);
-
-    // static std::array<ind, N> indexFromLinear(ind idxLin, const std::array<ind, N>& size);
-
-    // static ind indexToLinear(const std::array<ind, N>& idx, const std::array<ind, N>& size);
-
-private:
-    void calculateSizes();
-
 public:
     using CoordArray = std::array<ind, size_t(N)>;
     template <GridPrimitive P>
@@ -102,15 +92,15 @@ public:
 
     template <GridPrimitive P>
     struct Primitive {
-        friend class CurvilinearGrid<N, GetConnections>;
+        friend class CurvilinearGrid<N>;
 
         // private:
         //     Primitive(const CurvilinearGrid<N>& grid);
 
     public:
-        Primitive(const CurvilinearGrid<N, GetConnections>& grid, ind globalIdx);
-        Primitive(const CurvilinearGrid<N, GetConnections>& grid, CoordArray idx, DirArray<P> dirs);
-        Primitive(const CurvilinearGrid<N, GetConnections>& grid, ind perDirIdx, DirArray<P> dirs);
+        Primitive(const CurvilinearGrid<N>& grid, ind globalIdx);
+        Primitive(const CurvilinearGrid<N>& grid, CoordArray idx, DirArray<P> dirs);
+        Primitive(const CurvilinearGrid<N>& grid, ind perDirIdx, DirArray<P> dirs);
         Primitive(const Primitive<P>& prim);
         Primitive(const Primitive<P>&& prim);
 
@@ -142,7 +132,7 @@ public:
 public:
     struct NumPrimitives {
 
-        NumPrimitives(const CurvilinearGrid& grid, const CoordArray& numVerticesPerDimension);
+        NumPrimitives(CurvilinearGrid& grid, const CoordArray& numVerticesPerDimension);
 
         template <GridPrimitive P>
         constexpr static ind getDirectionsIndex(const DirArray<P>& dirs);
@@ -192,49 +182,53 @@ public:
         std::array<ind, N> NumVerticesPerDimension;
     };
     NumPrimitives const numPrimitives_;
+
+    inline static const std::string GRID_IDENTIFIER = "StructuredGrid_" + std::to_string(N) + "D";
+    /** Get a unique identifier of this grid type. **/
+    virtual const std::string& getIdentifier() const override { return GRID_IDENTIFIER; }
 };
 
 // // Template type deduction guides.
 // template <ind N, typename GetConnections, GridPrimitive P>
-// CurvilinearGrid<N, GetConnections>::Primitive(const CurvilinearGrid<N, GetConnections>&,
+// CurvilinearGrid<N>::Primitive(const CurvilinearGrid<N>&,
 // CoordArray,
 //                                               DirArray<P>)
 //     ->Primitive<static_cast<GridPrimitive>(DirArray<P>::N)>;
 
 // template <ind N, typename GetConnections>
 // template <GridPrimitive P>
-// Primitive(const CurvilinearGrid<N, GetConnections>&, ind, DirArray<P>)
+// Primitive(const CurvilinearGrid<N>&, ind, DirArray<P>)
 //     -> Primitive<static_cast<GridPrimitive>(DirArray<P>::N)>;
 
+// template <ind N>
+// struct StructuredGridConnections {
+//     static
+
+//         template <GridPrimitive To>
+//         static bool handleBorder(
+//             typename CurvilinearGrid<N, StructuredGridConnections<N>>::template Primitive<To>&
+//                 prim) {
+//         // return false;
+//         auto coords = prim.getCoordinates();
+//         auto dirs = prim.getDirections();
+//         auto dirBits = dd_util::indicesToBitset<size_t(N), size_t(To)>(dirs);
+
+//         ind ySize = prim.Grid.numPrimitives_.NumVerticesPerDimension[1] - (dirBits[1] ? 1 : 0);
+//         if (coords[1] < 0) {
+//             coords[1] = ySize = 1;
+//         } else if (coords[1] >= ySize) {
+//             coords[1] = 0;
+//         } else {
+//             return false;
+//         }
+//         prim = typename CurvilinearGrid<N, StructuredGridConnections<N>>::template Primitive<To>(
+//             prim.Grid, coords, dirs);
+//         return true;
+//     }
+// };
+
 template <ind N>
-struct StructuredGridConnections {
-    static
-
-        template <GridPrimitive To>
-        static bool handleBorder(
-            typename CurvilinearGrid<N, StructuredGridConnections<N>>::template Primitive<To>&
-                prim) {
-        // return false;
-        auto coords = prim.getCoordinates();
-        auto dirs = prim.getDirections();
-        auto dirBits = dd_util::indicesToBitset<size_t(N), size_t(To)>(dirs);
-
-        ind ySize = prim.Grid.numPrimitives_.NumVerticesPerDimension[1] - (dirBits[1] ? 1 : 0);
-        if (coords[1] < 0) {
-            coords[1] = ySize = 1;
-        } else if (coords[1] >= ySize) {
-            coords[1] = 0;
-        } else {
-            return false;
-        }
-        prim = typename CurvilinearGrid<N, StructuredGridConnections<N>>::template Primitive<To>(
-            prim.Grid, coords, dirs);
-        return true;
-    }
-};
-
-template <ind N>
-using StructuredGrid = CurvilinearGrid<N, StructuredGridConnections<N>>;
+using StructuredGrid = CurvilinearGrid<N>;
 
 // Making use of Matrix<N + 1, float> StructuredGridEntity<N>::getIndexMatrix() const.
 template <typename T, ind N, typename Vec = glm::vec<N, T>>

@@ -57,7 +57,8 @@ struct CreateBufferChannelHelper {
     Result operator()(const pybind11::array& data, const std::string& name,
                       GridPrimitive definedOn) {
         auto channel = std::make_shared<BufferChannel<T, N>>(data.size(), name, definedOn);
-        memcpy(channel->data().data(), data.data(0), data.nbytes());
+        memcpy(reinterpret_cast<void*>(channel->data().data()),
+               reinterpret_cast<const void*>(data.data(0)), data.nbytes());
         return channel;
     }
 };
