@@ -71,8 +71,8 @@ WebBrowserClient::WebBrowserClient(ModuleManager& moduleManager,
     : widgetFactory_{widgetFactory}
     , renderHandler_(new RenderHandlerGL([&](CefRefPtr<CefBrowser> browser) {
         auto bdIt = browserParents_.find(browser->GetIdentifier());
-        if (bdIt != browserParents_.end(); auto processor = bdIt->second.processor.lock()) {
-            (*processor)->invalidate(InvalidationLevel::InvalidOutput);
+        if (bdIt != browserParents_.end()) {
+            bdIt->second.processor->invalidate(InvalidationLevel::InvalidOutput);
         }
     }))
     , resourceManager_(new CefResourceManager()) {
@@ -82,15 +82,22 @@ WebBrowserClient::WebBrowserClient(ModuleManager& moduleManager,
     });
 }
 
-WebBrowserClient::BrowserParentHandle WebBrowserClient::setBrowserParent(
+void WebBrowserClient::setBrowserParent(
     CefRefPtr<CefBrowser> browser, Processor* parent) {
     CEF_REQUIRE_UI_THREAD();
-    auto processor = std::make_shared<Processor*>(parent);
-    BrowserData bd{processor, new ProcessorCefSynchronizer(parent)};
+    BrowserData bd{parent, new ProcessorCefSynchronizer(parent)};
     browserParents_[browser->GetIdentifier()] = bd;
     addLoadHandler(bd.processorCefSynchronizer);
     messageRouter_->AddHandler(bd.processorCefSynchronizer.get(), false);
-    return processor;
+}
+
+void WebBrowserClient::removeBrowserParent(CefRefPtr<CefBrowser> browser) {
+    auto bdIt = browserParents_.find(browser->GetIdentifier());
+    if (bdIt != browserParents_.end()) {
+        messageRouter_->RemoveHandler(bdIt->second.processorCefSynchronizer.get());
+        removeLoadHandler(bdIt->second.processorCefSynchronizer);
+        browserParents_.erase(bdIt);
+    }
 }
 
 ProcessorCefSynchronizer::CallbackHandle WebBrowserClient::registerCallback(
@@ -143,12 +150,7 @@ bool WebBrowserClient::DoClose(CefRefPtr<CefBrowser> browser) {
 
 void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     CEF_REQUIRE_UI_THREAD();
-    auto bdIt = browserParents_.find(browser->GetIdentifier());
-    if (bdIt != browserParents_.end()) {
-        messageRouter_->RemoveHandler(bdIt->second.processorCefSynchronizer.get());
-        removeLoadHandler(bdIt->second.processorCefSynchronizer);
-        browserParents_.erase(bdIt);
-    }
+    removeBrowserParent(browser);
 
     if (--browserCount_ == 0) {
         // Free the router when the last browser is closed.

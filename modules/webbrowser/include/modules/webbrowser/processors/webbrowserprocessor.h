@@ -145,7 +145,6 @@ protected:
     // create browser-window
     CefRefPtr<RenderHandlerGL> renderHandler_;
     CefRefPtr<CefBrowser> browser_;
-    WebBrowserClient::BrowserParentHandle browserParentHandle_;
 
     SingleFileObserver fileObserver_;
 

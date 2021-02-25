@@ -70,8 +70,6 @@ class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
                                                    public CefDisplayHandler,
                                                    public CefResourceRequestHandler {
 public:
-    using BrowserParentHandle = std::shared_ptr<Processor*>;
-
     WebBrowserClient(ModuleManager& moduleManager, const PropertyWidgetCEFFactory* widgetFactory);
 
     virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
@@ -83,16 +81,21 @@ public:
     /**
      * Enable invalidation when the web page repaints and allow the Inviwo javascript API
      * to access the parent processor.
-     * Connection will be removed when the browser closes.
-     * Processor invalidation on repaints will not be called if BrowserParentHandle has been
-     * destroyed.
+     * Connection will be removed when the browser closes or removeBrowserParent is called.
+     * A browser can only have one Processor as parent.
+     * @param CefRefPtr<CefBrowser> browser to be associated with a processor.
      * @param const Processor* parent web browser processor responsible for the browser. Cannot be
-     * null.
-     * @return Handle to a dummy object that must be kept alive until no Processor::invalidate calls
-     * should be made.
-     *
+     * null. 
+     * @see ProcessorCefSynchronizer
      */
-    BrowserParentHandle setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent);
+    void setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent);
+    /**
+     * Removes Processor parent associated with the provided browser.
+     * Processor invalidation will not be called on repaints after removing the processor.
+     * Will do nothing if browser has no assoicated Processor.
+     * @param CefRefPtr<CefBrowser> browser to remove processor association from. 
+     */
+    void removeBrowserParent(CefRefPtr<CefBrowser> browser);
 
     /**
      * Register a processor \p callback for a specific \p browser which can be triggered through a
@@ -217,7 +220,7 @@ public:
 
 protected:
     struct BrowserData {
-        std::weak_ptr<Processor*> processor;  // Use weak_ptr since Browser might outlive Processor
+        Processor* processor; 
         CefRefPtr<ProcessorCefSynchronizer> processorCefSynchronizer;
     };
 
