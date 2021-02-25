@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,8 @@ using AssignmentComparator =
     std::function<PropertyEffect(const std::shared_ptr<PropertyAssignment>& oldVal,
                                  const std::shared_ptr<PropertyAssignment>& newVal)>;
 
-IVW_MODULE_PROPERTYBASEDTESTING_API std::ostream& operator<<(std::ostream& out, const PropertyEffect& a);
+IVW_MODULE_PROPERTYBASEDTESTING_API std::ostream& operator<<(std::ostream& out,
+                                                             const PropertyEffect& a);
 
 PropertyEffect IVW_MODULE_PROPERTYBASEDTESTING_API combine(const PropertyEffect& a,
                                                            const PropertyEffect& b);

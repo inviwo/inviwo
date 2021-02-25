@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -17,7 +17,7 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOr
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -226,10 +226,15 @@ PropertyAnalyzer::PropertyAnalyzer(InviwoApplication* app)
         }
     });
 
-    startButton_.onChange([this]() { this->initTesting(); });
+    startButton_.onChange([this]() {
+        if (remainingTests.empty()) {
+            this->initTesting();
+        }
+    });
 
     distillButton_.setVisible(false);  // make visible when errors have been found
     distillButton_.onChange([this]() {
+        distillButton_.setVisible(false);
         this->currently_condensing = true;
         this->checkTestResults();
     });
@@ -488,7 +493,9 @@ void PropertyAnalyzer::checkTestResults() {
         util::log(IVW_CONTEXT, "Wrote report to " + reportFilePath.string(), LogLevel::Info,
                   LogAudience::User);
 
-        distillButton_.setVisible(true);
+        if (!currently_condensing) {
+            distillButton_.setVisible(true);
+        }
     } else {
         util::log(IVW_CONTEXT, "All tests passed.", LogLevel::Info, LogAudience::User);
     }
@@ -518,6 +525,7 @@ void PropertyAnalyzer::checkTestResults() {
             // we have tried to deactivate all properties
             // terminate condensing
             currently_condensing = false;
+            distillButton_.setVisible(true);
             util::log(IVW_CONTEXT, "Condensed tests, see the generated report.", LogLevel::Info,
                       LogAudience::User);
         } else {

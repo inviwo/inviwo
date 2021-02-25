@@ -1,3 +1,32 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2019-2021 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
 #include <inviwo/propertybasedtesting/algorithm/coveringarray.h>
 
 #include <random>
@@ -57,7 +86,7 @@ std::vector<Test> coveringArray(
     }
 
     // resulting coveringarray
-	std::vector<Test> result;
+    std::vector<Test> result;
     while (!uncovered.empty()) {
         size_t expectedCoverage = (uncovered.size() + (maxAssignments * maxAssignments - 1)) /
                                   (maxAssignments * maxAssignments);
@@ -68,7 +97,7 @@ std::vector<Test> coveringArray(
         // an assignment for each variable, until the test covers at least as
         // many interactions as expected (i.e. coverage >= expectedCoverage)
         size_t coverage;
-        std::vector<size_t> row(vars.size()); // indices of the interactions of the test
+        std::vector<size_t> row(vars.size());  // indices of the interactions of the test
         do {
             for (size_t i = 0; i < row.size(); i++) {
                 row[i] = std::uniform_int_distribution<size_t>(0, vars[i].size() - 1)(rng);
@@ -90,10 +119,9 @@ std::vector<Test> coveringArray(
             }
         }
 
-		Test test;
-		for(size_t i = 0; i < vars.size(); i++)
-			test.emplace_back(vars[i][row[i]]);
-		result.emplace_back(std::move(test));
+        Test test;
+        for (size_t i = 0; i < vars.size(); i++) test.emplace_back(vars[i][row[i]]);
+        result.emplace_back(std::move(test));
     }
 
     return result;

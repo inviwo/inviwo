@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -111,11 +111,11 @@ double ImageComparator::difference(const ComparisonType& comp, const dvec4& col1
 }
 double ImageComparator::absoluteARGBdifference(const dvec4& col1, const dvec4& col2) {
     double res = 0;
-	const size_t comps = DataFormat<dvec4>::components();
+    const size_t comps = DataFormat<dvec4>::components();
     for (size_t i = 0; i < comps; i++) {
-		res += std::abs(col1[i] - col2[i]);
-	}
-    return res / comps; // clamp result between 0 and 1
+        res += std::abs(col1[i] - col2[i]);
+    }
+    return res / comps;  // clamp result between 0 and 1
 }
 
 void ImageComparator::process() {
