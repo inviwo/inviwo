@@ -34,6 +34,8 @@
 
 #ifndef WIN32
 #include <signal.h>
+#else
+extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #endif
 
 namespace inviwo {
@@ -61,7 +63,9 @@ void assertion(std::string_view, std::string_view, long, std::string_view) {}
 
 void util::debugBreak() {
 #ifdef WIN32
-    __debugbreak();
+    if (IsDebuggerPresent()) {
+        __debugbreak();
+    }
 #else
     raise(SIGTRAP);
 #endif
