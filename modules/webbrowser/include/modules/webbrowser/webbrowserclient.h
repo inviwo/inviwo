@@ -85,7 +85,7 @@ public:
      * A browser can only have one Processor as parent.
      * @param CefRefPtr<CefBrowser> browser to be associated with a processor.
      * @param const Processor* parent web browser processor responsible for the browser. Cannot be
-     * null. 
+     * null.
      * @see ProcessorCefSynchronizer
      */
     void setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent);
@@ -93,7 +93,7 @@ public:
      * Removes Processor parent associated with the provided browser.
      * Processor invalidation will not be called on repaints after removing the processor.
      * Will do nothing if browser has no assoicated Processor.
-     * @param CefRefPtr<CefBrowser> browser to remove processor association from. 
+     * @param CefRefPtr<CefBrowser> browser to remove processor association from.
      */
     void removeBrowserParent(CefRefPtr<CefBrowser> browser);
 
@@ -220,7 +220,7 @@ public:
 
 protected:
     struct BrowserData {
-        Processor* processor; 
+        Processor* processor;
         CefRefPtr<ProcessorCefSynchronizer> processorCefSynchronizer;
     };
 

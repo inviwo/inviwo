@@ -82,8 +82,7 @@ WebBrowserClient::WebBrowserClient(ModuleManager& moduleManager,
     });
 }
 
-void WebBrowserClient::setBrowserParent(
-    CefRefPtr<CefBrowser> browser, Processor* parent) {
+void WebBrowserClient::setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent) {
     CEF_REQUIRE_UI_THREAD();
     BrowserData bd{parent, new ProcessorCefSynchronizer(parent)};
     browserParents_[browser->GetIdentifier()] = bd;
