@@ -141,20 +141,23 @@ TransferFunction getTransferFunction(const Category& category, const Family& fam
 
     if (category == colorbrewer::Category::Diverging) {
         if (discrete) {
+            double midPointOffset = 0.0;
             if (midPoint > start) {
                 const auto dt = (midPoint - start) / (0.5 * nColors);
+                midPointOffset = 0.5 * dt * (nColors % 2);
                 for (size_t i = 0; i < nColors / 2; i++) {
                     addPoint(start + i * dt, i);
                     addPointAlmost(start + (i + 1) * dt, i);
                 }
             }
-            addPoint(midPoint, nColors / 2);
+            addPoint(midPoint - midPointOffset, nColors / 2);
             if (midPoint < stop) {
                 const auto dt = (stop - midPoint) / (0.5 * nColors);
-                addPointAlmost(midPoint + dt, nColors / 2);
-                for (auto i = nColors / 2 + 1; i < nColors; i++) {
-                    addPoint(start + i * dt, i);
-                    addPointAlmost(start + (i + 1) * dt, i);
+                midPointOffset = 0.5 * dt * (nColors % 2);
+                addPointAlmost(midPoint + dt - midPointOffset, nColors / 2);
+                for (auto i = nColors - 1; i > nColors / 2; i--) {
+                    addPointAlmost(stop - (nColors - 1 - i) * dt, i);
+                    addPoint(stop - (nColors - i) * dt, i);
                 }
             }
         } else {
