@@ -55,7 +55,10 @@ size_t BufferGL::getSize() const { return size_; }
 void BufferGL::setSize(size_t size) {
     if (size != size_) {
         size_ = size;
-        buffer_->setSizeInBytes(size * getSizeOfElement());
+        if (auto bytes = static_cast<GLsizeiptr>(size * getSizeOfElement());
+            bytes > buffer_->getSizeInBytes()) {
+            buffer_->setSizeInBytes(bytes);
+        }
     }
 }
 

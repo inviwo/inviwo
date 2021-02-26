@@ -60,6 +60,11 @@ public:
     virtual ~BufferGL();
     virtual BufferGL* clone() const override;
 
+    /**
+     * \brief set the size of the buffer
+     * Note that the internal BufferObject is only growing in size and never shrinking to avoid
+     * unnecessary reallocations in GPU memory.
+     */
     virtual void setSize(size_t size) override;
     virtual size_t getSize() const override;
 
