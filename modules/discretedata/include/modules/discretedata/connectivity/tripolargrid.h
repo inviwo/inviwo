@@ -150,12 +150,6 @@ public:
         template <GridPrimitive P>
         constexpr static DirArray<P> getIndexDirections(ind dirIndex);
 
-        // template <>
-        // constexpr static ind getDirectionsIndex<GridPrimitive::Vertex>(
-        //     const DirArray<GridPrimitive::Vertex>&) {
-        //     return 0;
-        // }
-
         template <GridPrimitive P>
         ind globalIndexFromCoordinates(const TripolarGrid& grid, const CoordArray& coords,
                                        const DirArray<P>& dirs) const;
@@ -163,8 +157,6 @@ public:
         template <GridPrimitive P>
         std::pair<CoordArray, DirArray<P>> coordinatesFromGlobalIndex(ind globalIdx) const;
 
-        // template <GridPrimitive P>
-        // constexpr ind getPrimitiveOffset() constexpr;
         template <GridPrimitive P>
         constexpr const ind* getOffset(ind dirsIdx) const;
         template <GridPrimitive P>
@@ -181,16 +173,21 @@ public:
          * Starts at 0 at all indices indicated by DirectionOffsets. **/
         std::array<ind, (1 << N)> PerDirectionOffsets;
 
+        /** The number of "normal" cells per dimension, i.e. without the ones wrapping the pole. **/
+        std::array<ind, (1 << N)> PerDirectionNumNormalPrimitives;
+
         /** The offsets into NumPrimitivesSum per primitive type. **/
         static constexpr typename std::array<size_t, N + 1> PrimitiveOffsets =
             dd_util::binomialCoefficientOffsets<N>();
 
         const TripolarGrid& Grid;
 
+        // std::array<ind, N> NumVerticesRegularGrid;
+
         /** The number of vertices in each dimension. **/
         std::array<ind, N> NumVerticesPerDimension;
     };
-    NumPrimitives const numPrimitives_;
+    const NumPrimitives numPrimitives_;
 
     inline static const std::string GRID_IDENTIFIER = "TripolarGrid" + std::to_string(N) + "D";
     /** Get a unique identifier of this grid type. **/

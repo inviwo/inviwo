@@ -64,8 +64,6 @@ struct ChannelToBufferDispatcher {
 
         std::vector<ToType> convBuffer;
         convBuffer.reserve(data.size());
-
-        ind tmpCount = 0;
         for (const DefaultVec& val : data) {
             convBuffer.push_back(util::glm_convert<ToType>(val));
         }
