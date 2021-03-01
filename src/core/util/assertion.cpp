@@ -36,7 +36,7 @@
 #include <signal.h>
 #endif
 
-#if defined(WIN32)
+#if defined(WIN32) && defined(_MSC_VER)
 extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 #elif defined(__APPLE__)
 #include <assert.h>
@@ -46,7 +46,7 @@ extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 // Function is taken from https://developer.apple.com/library/mac/qa/qa1361/_index.html
 // Returns true if the current process is being debugged (either running under the
 // debugger or has a debugger attached post facto).
-static bool runningInDebugger() {
+static bool isDebuggerPresent() {
     int junk;
     int mib[4];
     struct kinfo_proc info;
@@ -66,10 +66,21 @@ static bool runningInDebugger() {
     // Call sysctl.
     size = sizeof(info);
     junk = sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, NULL, 0);
-    ghoul_assert(junk == 0, "sysctl call failed");
+    IVW_ASSERT(junk == 0, "sysctl call failed");
 
     // We're being debugged if the P_TRACED flag is set.
     return ((info.kp_proc.p_flag & P_TRACED) != 0);
+}
+#else
+#include <cstdio>
+#include <cstdlib>
+
+// detect if GDB is present
+// https://stackoverflow.com/questions/3596781/how-to-detect-if-the-current-process-is-being-run-by-gdb/8135517#8135517
+int debuggerPresent = -1;
+static void _sigtrap_handler(int signum) {
+    debuggerPresent = 0;
+    signal(SIGTRAP, SIG_DFL);
 }
 #endif
 
@@ -97,16 +108,19 @@ void assertion(std::string_view, std::string_view, long, std::string_view) {}
 #endif  // _DEBUG
 
 void util::debugBreak() {
-#ifdef WIN32
+#if defined(WIN32) && defined(_MSC_VER)
     if (IsDebuggerPresent()) {
         __debugbreak();
     }
 #elif __APPLE__
-    if (runningInDebugger()) {
+    if (IsDebuggerPresent()) {
         raise(SIGTRAP);
     }
 #else
-    raise(SIGTRAP);
+    if (-1 == debuggerPresent) {
+        signal(SIGTRAP, _sigtrap_handler);
+        __asm__("int3");
+    }
 #endif
 }
 
