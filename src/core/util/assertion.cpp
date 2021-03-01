@@ -38,44 +38,11 @@
 
 #if defined(WIN32) && defined(_MSC_VER)
 extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
-#elif defined(__APPLE__)
-#include <assert.h>
-#include <unistd.h>
-#include <sys/sysctl.h>
-
-// Function is taken from https://developer.apple.com/library/mac/qa/qa1361/_index.html
-// Returns true if the current process is being debugged (either running under the
-// debugger or has a debugger attached post facto).
-static bool isDebuggerPresent() {
-    int junk;
-    int mib[4];
-    struct kinfo_proc info;
-    size_t size;
-
-    // Initialize the flags so that, if sysctl fails for some bizarre
-    // reason, we get a predictable result.
-    info.kp_proc.p_flag = 0;
-
-    // Initialize mib, which tells sysctl the info we want, in this case
-    // we're looking for information about a specific process ID.
-    mib[0] = CTL_KERN;
-    mib[1] = KERN_PROC;
-    mib[2] = KERN_PROC_PID;
-    mib[3] = getpid();
-
-    // Call sysctl.
-    size = sizeof(info);
-    junk = sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, NULL, 0);
-    IVW_ASSERT(junk == 0, "sysctl call failed");
-
-    // We're being debugged if the P_TRACED flag is set.
-    return ((info.kp_proc.p_flag & P_TRACED) != 0);
-}
 #else
 #include <cstdio>
 #include <cstdlib>
 
-// detect if GDB is present
+// detect if GDB/LLDB is present
 // https://stackoverflow.com/questions/3596781/how-to-detect-if-the-current-process-is-being-run-by-gdb/8135517#8135517
 int debuggerPresent = -1;
 static void _sigtrap_handler(int signum) {
@@ -112,14 +79,10 @@ void util::debugBreak() {
     if (IsDebuggerPresent()) {
         __debugbreak();
     }
-#elif __APPLE__
-    if (IsDebuggerPresent()) {
-        raise(SIGTRAP);
-    }
 #else
     if (-1 == debuggerPresent) {
         signal(SIGTRAP, _sigtrap_handler);
-        __asm__("int3");
+        raise(SIGTRAP);
     }
 #endif
 }
