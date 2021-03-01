@@ -2,10 +2,8 @@
 # Inviwo PythonQt Module
 ivw_module(Python3Qt)
 
-find_package(Qt5Core QUIET REQUIRED)
-find_package(Qt5Gui QUIET REQUIRED)
-find_package(Qt5Widgets QUIET REQUIRED)
-find_package(Qt5Svg QUIET REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets Svg REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Svg REQUIRED)
 
 #--------------------------------------------------------------------
 # Add MOC files
@@ -26,7 +24,7 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOCED_FILES})
 
 #--------------------------------------------------------------------
@@ -44,8 +42,15 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 # Create module
 ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
-target_link_libraries(inviwo-module-python3qt PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Svg)
-
+target_link_libraries(inviwo-module-python3qt PRIVATE 
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Svg
+)
+target_compile_definitions(inviwo-module-animationqt PUBLIC 
+    "QT_DEPRECATED_WARNINGS_SINCE=QT_VERSION_CHECK(5, 15, 0)"
+)
 #--------------------------------------------------------------------
 # Add templates directory to packaging
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/templates)

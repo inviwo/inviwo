@@ -1,8 +1,8 @@
 # Inviwo Qt Application
 project(inviwo)
 
-find_package(Qt5Core QUIET REQUIRED)
-find_package(Qt5Widgets QUIET REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Widgets REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets REQUIRED)
 
 # Add MOC files
 set(MOC_FILES  ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h)
@@ -19,7 +19,7 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add moc files
-qt5_wrap_cpp(MOC_FILES ${MOC_FILES})
+qt_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
 
 # Define libraries that should be linked
@@ -47,8 +47,11 @@ target_link_libraries(inviwo PUBLIC
     inviwo::core
     inviwo::qtapplicationbase
     inviwo::qteditor
-    Qt5::Core
-    Qt5::Widgets
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Widgets
+)
+target_compile_definitions(inviwo PUBLIC 
+    "QT_DEPRECATED_WARNINGS_SINCE=QT_VERSION_CHECK(5, 15, 0)"
 )
 set_target_properties(inviwo PROPERTIES OUTPUT_NAME "Inviwo")
 
@@ -74,6 +77,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${IVW_VERSION}"
         MACOSX_BUNDLE_BUNDLE_VERSION "${IVW_VERSION}"
         MACOSX_BUNDLE_COPYRIGHT "C) 2012-${YEAR} Inviwo Foundation"
+        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "org.inviwo.Inviwo"
     )
     #Following http://www.cmake.org/Wiki/BundleUtilitiesExample
     set(plugin_dest_dir Inviwo.app/Contents/MacOS)
@@ -118,8 +122,8 @@ if(WIN32)
         inviwo::core 
         inviwo::qtapplicationbase
         inviwo::qteditor
-        Qt5::Core 
-        Qt5::Widgets
+        Qt${QT_VERSION_MAJOR}::Core 
+        Qt${QT_VERSION_MAJOR}::Widgets
     )
     set_target_properties(inviwo-cli PROPERTIES OUTPUT_NAME "Inviwo-cli")
     ivw_configure_application_module_dependencies(inviwo-cli ${enabled_modules})

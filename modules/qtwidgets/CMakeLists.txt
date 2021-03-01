@@ -2,10 +2,8 @@
 # Inviwo Qt Widgets
 ivw_module(QtWidgets)
 
-find_package(Qt5Core QUIET REQUIRED)
-find_package(Qt5Gui QUIET REQUIRED)
-find_package(Qt5Widgets QUIET REQUIRED)
-find_package(Qt5Svg QUIET REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets Svg REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Svg REQUIRED)
 
 #-------------------------------------------------------------------- 
 # Add MOC files
@@ -180,11 +178,11 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add moc files
-qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOCED_FILES})
 
 # Add resource file
-qt5_add_resources(QRC_FILE "${IVW_RESOURCES_DIR}/inviwo.qrc")
+qt_add_resources(QRC_FILE "${IVW_RESOURCES_DIR}/inviwo.qrc")
 source_group("Resource Files" FILES 
     ${IVW_RESOURCES_DIR}/inviwo.qrc
     ${QRC_FILE}	
@@ -195,16 +193,28 @@ source_group("Resource Files" FILES
 ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${QRC_FILE} ${HEADER_FILES}
     $<$<BOOL:${WIN32}>:${IVW_ROOT_DIR}/tools/natvis/qt5.natvis>
 )
-target_link_libraries(inviwo-module-qtwidgets PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Svg)
-
+target_link_libraries(inviwo-module-qtwidgets PRIVATE 
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Svg
+)
+target_compile_definitions(inviwo-module-qtwidgets PUBLIC 
+    "QT_DEPRECATED_WARNINGS_SINCE=QT_VERSION_CHECK(5, 15, 0)"
+)
 ivw_compile_optimize_on_target(inviwo-module-qtwidgets)
 
 ivw_make_package(InviwoQtWidgetsModule inviwo-module-qtwidgets)
-ivw_qt_add_to_install(qt_widgets Qt5Core Qt5Gui Qt5Widgets Qt5Svg)
+ivw_qt_add_to_install(qt_widgets 
+    Qt${QT_VERSION_MAJOR}Core
+    Qt${QT_VERSION_MAJOR}Gui
+    Qt${QT_VERSION_MAJOR}Widgets
+    Qt${QT_VERSION_MAJOR}Svg
+)
 
 ivw_deploy_qt(inviwo-module-qtwidgets)
 
-ivw_register_license_file(NAME "Qt" VERSION ${Qt5Widgets_VERSION} MODULE QtWidgets TYPE "LGPLv3"
+ivw_register_license_file(NAME "Qt" VERSION ${QtWidgets_VERSION} MODULE QtWidgets TYPE "LGPLv3"
     URL https://www.qt.io/
     FILES ${IVW_EXTENSIONS_DIR}/qt/LICENSE.txt
 )

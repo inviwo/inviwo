@@ -2,8 +2,8 @@
 # Inviwo OpenGLQt Module
 ivw_module(OpenGLQt)
 
-find_package(Qt5OpenGL QUIET REQUIRED)
-find_package(Qt5Svg QUIET REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Svg OpenGL OpenGLWidgets REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Svg OpenGL OpenGLWidgets REQUIRED)
 
 #--------------------------------------------------------------------
 # Add MOC files
@@ -48,14 +48,22 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOCED_FILES})
 
 # Create module
 ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
-target_link_libraries(inviwo-module-openglqt PRIVATE Qt5::OpenGL Qt5::Svg)
+target_link_libraries(inviwo-module-openglqt PRIVATE 
+    Qt${QT_VERSION_MAJOR}::OpenGL
+    Qt${QT_VERSION_MAJOR}::Svg
+    Qt${QT_VERSION_MAJOR}::OpenGLWidgets
+)
+
+target_compile_definitions(inviwo-module-openglqt PUBLIC 
+    "QT_DEPRECATED_WARNINGS_SINCE=QT_VERSION_CHECK(5, 15, 0)"
+)
 
 ivw_deploy_qt(inviwo-module-openglqt)
 
 ivw_make_package(InviwoOpenGLQtModule inviwo-module-openglqt)
-ivw_qt_add_to_install(qt_modules Qt5OpenGL)
+ivw_qt_add_to_install(qt_modules Qt${QT_VERSION_MAJOR}OpenGL)

@@ -113,20 +113,17 @@ endif()
 ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add resource file
-qt5_add_resources(QRC_FILE ${IVW_RESOURCES_DIR}/changelog.qrc)
+qt_add_resources(QRC_FILE ${IVW_RESOURCES_DIR}/changelog.qrc)
 source_group("Resource Files" FILES 
     ${IVW_RESOURCES_DIR}/changelog.qrc
     ${QRC_FILE}
 )
 
 # Create library
-find_package(Qt5Core 5.12 QUIET REQUIRED)
-find_package(Qt5Gui QUIET REQUIRED)
-find_package(Qt5Widgets QUIET REQUIRED)
-find_package(Qt5Help QUIET REQUIRED)
-find_package(Qt5Svg QUIET REQUIRED)
+find_package(QT 5.12 NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets Svg Help REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Svg Help REQUIRED)
 
-qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOCED_FILES})
 add_library(inviwo-qteditor ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES} ${QRC_FILE})
 add_library(inviwo::qteditor ALIAS inviwo-qteditor)
@@ -134,16 +131,20 @@ target_link_libraries(inviwo-qteditor PUBLIC
     inviwo::core 
     inviwo::qtapplicationbase
     inviwo::module::qtwidgets
-    Qt5::Core 
-    Qt5::Gui 
-    Qt5::Widgets 
-    Qt5::Help
-    Qt5::Svg
+    Qt${QT_VERSION_MAJOR}::Core 
+    Qt${QT_VERSION_MAJOR}::Gui 
+    Qt${QT_VERSION_MAJOR}::Widgets 
+    Qt${QT_VERSION_MAJOR}::Help
+    Qt${QT_VERSION_MAJOR}::Svg
 )
 if(TARGET inviwo::meta)
     target_link_libraries(inviwo-qteditor PUBLIC inviwo::meta)
     target_compile_definitions(inviwo-qteditor PRIVATE IVW_INVIWO_META)
 endif()
+
+target_compile_definitions(inviwo-qteditor PUBLIC 
+    "QT_DEPRECATED_WARNINGS_SINCE=QT_VERSION_CHECK(5, 15, 0)"
+)
 
 # Define defintions
 ivw_define_standard_definitions(IVW_QTEDITOR inviwo-qteditor)
@@ -193,7 +194,14 @@ ivw_deploy_qt(inviwo-qteditor)
 
 # Make package (for other projects to find)
 ivw_default_install_targets(inviwo-qteditor)
-ivw_qt_add_to_install(qt_editor Qt5Core Qt5Gui Qt5Widgets Qt5Help Qt5Sql Qt5Svg) # Qt5Sql is needed by Qt5Help
+ivw_qt_add_to_install(qt_editor 
+    Qt${QT_VERSION_MAJOR}Core
+    Qt${QT_VERSION_MAJOR}Gui
+    Qt${QT_VERSION_MAJOR}Widgets
+    Qt${QT_VERSION_MAJOR}Help
+    Qt${QT_VERSION_MAJOR}Sql # QtSql is needed by QtHelp
+    Qt${QT_VERSION_MAJOR}Svg
+) 
 ivw_make_package(InviwoQtEditor inviwo-qteditor)
 
 ivw_register_license_file(NAME "DocumentWindow" MODULE QtWidgets

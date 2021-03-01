@@ -2,9 +2,9 @@
 # Inviwo Qt Application
 project(inviwo_qtminimum)
 
-find_package(Qt5Core QUIET REQUIRED)
-find_package(Qt5Gui QUIET REQUIRED)
-find_package(Qt5Widgets QUIET REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets REQUIRED)
+
 
 #--------------------------------------------------------------------
 # Add source files
@@ -24,9 +24,12 @@ add_executable(inviwo_qtminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
 target_link_libraries(inviwo_qtminimum PUBLIC 
     inviwo::core
     inviwo::qtapplicationbase
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Widgets
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
+    Qt${QT_VERSION_MAJOR}::Widgets
+)
+target_compile_definitions(inviwo_qtminimum PUBLIC 
+    "QT_DEPRECATED_WARNINGS_SINCE=QT_VERSION_CHECK(5, 15, 0)"
 )
 ivw_configure_application_module_dependencies(inviwo_qtminimum ${enabled_modules})
 ivw_define_standard_definitions(inviwo_qtminimum inviwo_qtminimum) 

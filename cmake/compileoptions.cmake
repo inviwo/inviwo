@@ -94,6 +94,7 @@ function(ivw_define_standard_properties)
                 XCODE_ATTRIBUTE_GCC_WARN_SIGN_COMPARE YES
                 XCODE_ATTRIBUTE_CLANG_WARN_ENUM_CONVERSION YES
                 XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code"
+                XCODE_GENERATE_SCHEME YES
             )
          endif()
     endforeach()

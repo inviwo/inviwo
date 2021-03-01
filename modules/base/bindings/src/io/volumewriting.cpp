@@ -49,7 +49,7 @@ void exposeVolumeWriteMethods(pybind11::module& m) {
     m.def("saveIvfVolumeSequence", [](pybind11::list list, std::string name, std::string path,
                                       std::string reltivePathToTimesteps, bool overwrite) {
         VolumeSequence seq;
-        for (const auto& v : list) {
+        for (auto&& v : list) {
             seq.push_back(v.cast<std::shared_ptr<Volume>>());
         }
 
