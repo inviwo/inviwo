@@ -344,7 +344,7 @@ bool InviwoApplicationQt::notify(QObject* receiver, QEvent* e) {
                 break;
             }
 #endif
-            
+
             break;
         }
         case QEvent::KeyRelease: {
