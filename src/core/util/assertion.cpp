@@ -34,8 +34,21 @@
 
 #ifndef WIN32
 #include <signal.h>
-#else
+#endif
+
+#if defined(WIN32) && defined(_MSC_VER)
 extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
+#else
+#include <cstdio>
+#include <cstdlib>
+
+// detect if GDB/LLDB is present
+// https://stackoverflow.com/questions/3596781/how-to-detect-if-the-current-process-is-being-run-by-gdb/8135517#8135517
+int debuggerPresent = -1;
+static void _sigtrap_handler(int signum) {
+    debuggerPresent = 0;
+    signal(SIGTRAP, SIG_DFL);
+}
 #endif
 
 namespace inviwo {
@@ -62,12 +75,15 @@ void assertion(std::string_view, std::string_view, long, std::string_view) {}
 #endif  // _DEBUG
 
 void util::debugBreak() {
-#ifdef WIN32
+#if defined(WIN32) && defined(_MSC_VER)
     if (IsDebuggerPresent()) {
         __debugbreak();
     }
 #else
-    raise(SIGTRAP);
+    if (-1 == debuggerPresent) {
+        signal(SIGTRAP, _sigtrap_handler);
+        raise(SIGTRAP);
+    }
 #endif
 }
 
