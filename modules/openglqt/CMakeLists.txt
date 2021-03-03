@@ -3,7 +3,7 @@
 ivw_module(OpenGLQt)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Svg OpenGL REQUIRED)
-if(QT_VERSION_MAJOR EQUAL 6)
+if(${QT_VERSION_MAJOR} EQUAL 6)
     find_package(Qt6 COMPONENTS Svg OpenGL OpenGLWidgets REQUIRED)
 else()
     find_package(Qt5 COMPONENTS Svg OpenGL REQUIRED)
@@ -61,7 +61,7 @@ target_link_libraries(inviwo-module-openglqt PRIVATE
     Qt${QT_VERSION_MAJOR}::Svg
     Qt${QT_VERSION_MAJOR}::OpenGLWidgets
 )
-if(QT_VERSION_MAJOR EQUAL 6)
+if(${QT_VERSION_MAJOR} EQUAL 6)
     target_link_libraries(inviwo-module-openglqt PRIVATE Qt6::OpenGLWidgets)
 endif()
 
