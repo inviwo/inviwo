@@ -90,6 +90,15 @@ void WebBrowserClient::setBrowserParent(CefRefPtr<CefBrowser> browser, Processor
     messageRouter_->AddHandler(bd.processorCefSynchronizer.get(), false);
 }
 
+void WebBrowserClient::removeBrowserParent(CefRefPtr<CefBrowser> browser) {
+    auto bdIt = browserParents_.find(browser->GetIdentifier());
+    if (bdIt != browserParents_.end()) {
+        messageRouter_->RemoveHandler(bdIt->second.processorCefSynchronizer.get());
+        removeLoadHandler(bdIt->second.processorCefSynchronizer);
+        browserParents_.erase(bdIt);
+    }
+}
+
 ProcessorCefSynchronizer::CallbackHandle WebBrowserClient::registerCallback(
     CefRefPtr<CefBrowser> browser, const std::string& name,
     std::function<ProcessorCefSynchronizer::CallbackFunc> callback) {
@@ -140,12 +149,7 @@ bool WebBrowserClient::DoClose(CefRefPtr<CefBrowser> browser) {
 
 void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     CEF_REQUIRE_UI_THREAD();
-    auto bdIt = browserParents_.find(browser->GetIdentifier());
-    if (bdIt != browserParents_.end()) {
-        messageRouter_->RemoveHandler(bdIt->second.processorCefSynchronizer.get());
-        removeLoadHandler(bdIt->second.processorCefSynchronizer);
-        browserParents_.erase(bdIt);
-    }
+    removeBrowserParent(browser);
 
     if (--browserCount_ == 0) {
         // Free the router when the last browser is closed.

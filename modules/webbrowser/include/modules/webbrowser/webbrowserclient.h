@@ -76,15 +76,26 @@ public:
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return renderHandler_; }
     virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
     virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override { return this; }
+    CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
 
     /**
      * Enable invalidation when the web page repaints and allow the Inviwo javascript API
      * to access the parent processor.
+     * Connection will be removed when the browser closes or removeBrowserParent is called.
+     * A browser can only have one Processor as parent.
+     * @param CefRefPtr<CefBrowser> browser to be associated with a processor.
      * @param const Processor* parent web browser processor responsible for the browser. Cannot be
      * null.
-     * Connection will be removed when the browser closes.
+     * @see ProcessorCefSynchronizer
      */
     void setBrowserParent(CefRefPtr<CefBrowser> browser, Processor* parent);
+    /**
+     * Removes Processor parent associated with the provided browser.
+     * Processor invalidation will not be called on repaints after removing the processor.
+     * Will do nothing if browser has no assoicated Processor.
+     * @param CefRefPtr<CefBrowser> browser to remove processor association from.
+     */
+    void removeBrowserParent(CefRefPtr<CefBrowser> browser);
 
     /**
      * Register a processor \p callback for a specific \p browser which can be triggered through a
@@ -102,8 +113,6 @@ public:
     ProcessorCefSynchronizer::CallbackHandle registerCallback(
         CefRefPtr<CefBrowser> browser, const std::string& name,
         std::function<ProcessorCefSynchronizer::CallbackFunc> callback);
-
-    CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
 
     bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                   CefProcessId source_process,
@@ -211,7 +220,7 @@ public:
 
 protected:
     struct BrowserData {
-        Processor* processor = nullptr;
+        Processor* processor;
         CefRefPtr<ProcessorCefSynchronizer> processorCefSynchronizer;
     };
 

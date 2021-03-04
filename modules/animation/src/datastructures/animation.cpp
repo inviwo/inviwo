@@ -149,9 +149,9 @@ std::unique_ptr<Track> Animation::remove(size_t i) {
     auto track = std::move(tracks_[i]);
     tracks_.erase(tracks_.begin() + i);
     util::erase_remove(priorityTracks_, track.get());
-    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
+    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track.get());
+        auto owner = propertyTrack->getProperty()->getOwner()) {
         // Only stop observing property owner if no other track needs it
-        auto owner = propertyTrack->getProperty()->getOwner();
         auto sameOwnerIt = std::find_if(tracks_.begin(), tracks_.end(), [owner](const auto& elem) {
             if (auto ptrck = dynamic_cast<BasePropertyTrack*>(elem.get())) {
                 return ptrck->getProperty()->getOwner() == owner;

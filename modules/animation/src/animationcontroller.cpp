@@ -364,13 +364,13 @@ void AnimationController::tick() {
         firstTime = animation_->getFirstTime();
         lastTime = animation_->getLastTime();
     }
-
+    auto newState{state_};
     // Ping at the end of time
     if (newTime > lastTime) {
         switch (playMode.get()) {
             case PlaybackMode::Once: {
                 newTime = lastTime;
-                setState(AnimationState::Paused);
+                newState = AnimationState::Paused;
                 break;
             }
             case PlaybackMode::Loop: {
@@ -392,7 +392,7 @@ void AnimationController::tick() {
         switch (playMode.get()) {
             case PlaybackMode::Once: {
                 newTime = firstTime;
-                setState(AnimationState::Paused);
+                newState = AnimationState::Paused;
                 break;
             }
             case PlaybackMode::Loop: {
@@ -411,6 +411,9 @@ void AnimationController::tick() {
 
     // Evaluate animation
     eval(currentTime_, newTime);
+
+    // May be in paused state
+    setState(newState);
 }
 
 void AnimationController::tickRender() {

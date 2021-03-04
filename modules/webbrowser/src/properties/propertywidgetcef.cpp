@@ -135,6 +135,9 @@ void PropertyWidgetCEF::updateFromProperty() {
 }
 
 void PropertyWidgetCEF::onSetIdentifier(Property* /*property*/, const std::string& identifier) {
+    if (!frame_) {
+        return;
+    }
     std::stringstream script;
     auto p = json{{"identifier", identifier}};
     script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
@@ -142,24 +145,36 @@ void PropertyWidgetCEF::onSetIdentifier(Property* /*property*/, const std::strin
 }
 
 void PropertyWidgetCEF::onSetDisplayName(Property* /*property*/, const std::string& displayName) {
+    if (!frame_) {
+        return;
+    }
     std::stringstream script;
     auto p = json{{"displayName", displayName}};
     script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
     frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
 }
 void PropertyWidgetCEF::onSetSemantics(Property* /*property*/, const PropertySemantics& semantics) {
+    if (!frame_) {
+        return;
+    }
     std::stringstream script;
     auto p = json{{"semantics", semantics.getString()}};
     script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
     frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
 }
 void PropertyWidgetCEF::onSetReadOnly(Property* /*property*/, bool readonly) {
+    if (!frame_) {
+        return;
+    }
     std::stringstream script;
     auto p = json{{"readOnly", (readonly ? "true" : "false")}};
     script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
     frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
 }
 void PropertyWidgetCEF::onSetVisible(Property* /*property*/, bool visible) {
+    if (!frame_) {
+        return;
+    }
     std::stringstream script;
     auto p = json{{"visible", (visible ? "true" : "false")}};
     script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
@@ -167,6 +182,9 @@ void PropertyWidgetCEF::onSetVisible(Property* /*property*/, bool visible) {
 }
 
 void PropertyWidgetCEF::onSetUsageMode(Property* /*property*/, UsageMode usageMode) {
+    if (!frame_) {
+        return;
+    }
     std::stringstream script;
     std::stringstream mode;
     mode << usageMode;
