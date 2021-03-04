@@ -1,11 +1,10 @@
-#--------------------------------------------------------------------
 # Inviwo Qt Widgets
 ivw_module(QtWidgets)
 
+# https://doc-snapshots.qt.io/qt6-dev/cmake-qt5-and-qt6-compatibility.html#supporting-older-qt-5-versions   
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets Svg REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Svg REQUIRED)
-
-#-------------------------------------------------------------------- 
+ 
 # Add MOC files
 set(MOC_FILES
     include/modules/qtwidgets/angleradiuswidget.h
@@ -38,7 +37,6 @@ set(MOC_FILES
     include/modules/qtwidgets/tfhelpwindow.h
 )
 
-#--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     ${MOC_FILES}
@@ -95,7 +93,6 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
     src/angleradiuswidget.cpp
@@ -178,22 +175,27 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add moc files
-qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
+else()
+    qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+endif()
 source_group("MOC Files" FILES ${MOCED_FILES})
 
 # Add resource file
-qt_add_resources(QRC_FILE "${IVW_RESOURCES_DIR}/inviwo.qrc")
-source_group("Resource Files" FILES 
-    ${IVW_RESOURCES_DIR}/inviwo.qrc
-    ${QRC_FILE}	
-)
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_add_resources(QRC_FILE "${IVW_RESOURCES_DIR}/inviwo.qrc")
+else()
+    qt5_add_resources(QRC_FILE "${IVW_RESOURCES_DIR}/inviwo.qrc")
+endif()
 
-#--------------------------------------------------------------------
+source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/inviwo.qrc ${QRC_FILE})
+
 # Create module
 ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${QRC_FILE} ${HEADER_FILES}
     $<$<BOOL:${WIN32}>:${IVW_ROOT_DIR}/tools/natvis/qt5.natvis>
 )
-target_link_libraries(inviwo-module-qtwidgets PRIVATE 
+target_link_libraries(inviwo-module-qtwidgets PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets

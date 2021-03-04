@@ -1,11 +1,10 @@
-#--------------------------------------------------------------------
 # Inviwo AnimationQt Module
 ivw_module(AnimationQt)
 
+# https://doc-snapshots.qt.io/qt6-dev/cmake-qt5-and-qt6-compatibility.html#supporting-older-qt-5-versions   
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets REQUIRED)
 
-#--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     include/modules/animationqt/animationeditordockwidgetqt.h
@@ -35,7 +34,6 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
     src/animationeditordockwidgetqt.cpp
@@ -65,13 +63,13 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add some qt specific things
-qt_add_resources(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc")
-source_group("Resource Files" FILES 
-    ${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc 
-    ${QRC_FILE}
-)
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_add_resources(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc")
+else()
+    qt_add_resources(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc")
+endif()
+source_group("Resource Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc ${QRC_FILE})
 
-#--------------------------------------------------------------------
 # Create module
 ivw_create_module(NO_PCH ${SOURCE_FILES} ${HEADER_FILES} ${QRC_FILE})
 target_link_libraries(inviwo-module-animationqt PRIVATE 

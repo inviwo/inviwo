@@ -1,16 +1,14 @@
-#--------------------------------------------------------------------
 # Inviwo PythonQt Module
 ivw_module(Python3Qt)
 
+# https://doc-snapshots.qt.io/qt6-dev/cmake-qt5-and-qt6-compatibility.html#supporting-older-qt-5-versions   
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets Svg REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Svg REQUIRED)
 
-#--------------------------------------------------------------------
 # Add MOC files
 set(MOC_FILES
 )
 
-#--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     include/modules/python3qt/properties/pythoneditordockwidget.h
@@ -24,10 +22,13 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
+else()
+    qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+endif()
 source_group("MOC Files" FILES ${MOCED_FILES})
 
-#--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
     src/properties/pythoneditordockwidget.cpp
@@ -51,7 +52,6 @@ target_link_libraries(inviwo-module-python3qt PRIVATE
 target_compile_definitions(inviwo-module-animationqt PUBLIC 
     "QT_DEPRECATED_WARNINGS_SINCE=QT_VERSION_CHECK(5, 15, 0)"
 )
-#--------------------------------------------------------------------
 # Add templates directory to packaging
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/templates)
 

@@ -1,12 +1,11 @@
-#--------------------------------------------------------------------
 # Inviwo Qt Application
 project(inviwo_qtminimum)
 
+# https://doc-snapshots.qt.io/qt6-dev/cmake-qt5-and-qt6-compatibility.html#supporting-older-qt-5-versions
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets REQUIRED)
 
 
-#--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
     qtminimum.cpp
@@ -35,9 +34,7 @@ ivw_configure_application_module_dependencies(inviwo_qtminimum ${enabled_modules
 ivw_define_standard_definitions(inviwo_qtminimum inviwo_qtminimum) 
 ivw_define_standard_properties(inviwo_qtminimum)
 
-#--------------------------------------------------------------------
 # Move to folder
 ivw_folder(inviwo_qtminimum minimals)
-#--------------------------------------------------------------------
 # Add application to pack
 ivw_default_install_comp_targets(qt_app inviwo_qtminimum)

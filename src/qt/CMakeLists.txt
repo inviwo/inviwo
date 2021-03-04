@@ -1,4 +1,6 @@
 if(IVW_APP_INVIWO OR IVW_APP_QTBASE)
+
+    # https://doc-snapshots.qt.io/qt6-dev/cmake-qt5-and-qt6-compatibility.html#supporting-older-qt-5-versions   
     find_package(QT NAMES Qt6 Qt5 COMPONENTS Core QUIET)
     find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core QUIET)
 

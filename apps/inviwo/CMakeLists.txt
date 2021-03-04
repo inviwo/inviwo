@@ -1,14 +1,15 @@
 # Inviwo Qt Application
 project(inviwo)
 
+# https://doc-snapshots.qt.io/qt6-dev/cmake-qt5-and-qt6-compatibility.html#supporting-older-qt-5-versions   
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets REQUIRED)
 
 # Add MOC files
-set(MOC_FILES  ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h)
+set(MOC_FILES ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h)
 
 # Add header files
-set(HEADER_FILES  ${MOC_FILES})
+set(HEADER_FILES ${MOC_FILES})
 ivw_group("Header Files" ${HEADER_FILES})
 
 # Add source files
@@ -19,8 +20,12 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add moc files
-qt_wrap_cpp(MOC_FILES ${MOC_FILES})
-source_group("MOC Files" FILES ${MOC_FILES})
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
+else()
+    qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+endif()
+source_group("MOC Files" FILES ${MOCED_FILES})
 
 # Define libraries that should be linked
 ivw_retrieve_all_modules(enabled_modules)
@@ -41,7 +46,7 @@ source_group("Resource Files" FILES ${RES_FILES})
 add_executable(inviwo MACOSX_BUNDLE WIN32 
     ${SOURCE_FILES} 
     ${HEADER_FILES} 
-    ${MOC_FILES} 
+    ${MOCED_FILES} 
     ${RES_FILES})
 target_link_libraries(inviwo PUBLIC 
     inviwo::core

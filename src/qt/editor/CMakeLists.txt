@@ -1,8 +1,6 @@
-#--------------------------------------------------------------------
 # Inviwo Qt Editor
 project(inviwo-qteditor)
 
-#--------------------------------------------------------------------
 # Add MOC files
 set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiondraghelper.h
@@ -17,7 +15,6 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/welcomewidget.h
 )
 
-#--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/annotationswidget.h
@@ -61,7 +58,6 @@ endif()
 
 ivw_group("Header Files" BASE ${IVW_INCLUDE_DIR}/inviwo/qt/editor/ ${HEADER_FILES})
 
-#--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
     annotationswidget.cpp
@@ -113,17 +109,22 @@ endif()
 ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add resource file
-qt_add_resources(QRC_FILE ${IVW_RESOURCES_DIR}/changelog.qrc)
-source_group("Resource Files" FILES 
-    ${IVW_RESOURCES_DIR}/changelog.qrc
-    ${QRC_FILE}
-)
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_add_resources(QRC_FILE ${IVW_RESOURCES_DIR}/changelog.qrc)
+else()
+    qt5_add_resources(QRC_FILE ${IVW_RESOURCES_DIR}/changelog.qrc)
+endif()
+source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/changelog.qrc ${QRC_FILE})
 
-# Create library
+# https://doc-snapshots.qt.io/qt6-dev/cmake-qt5-and-qt6-compatibility.html#supporting-older-qt-5-versions   
 find_package(QT 5.12 NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets Svg Help REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Svg Help REQUIRED)
 
-qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_wrap_cpp(MOCED_FILES ${MOC_FILES})
+else()
+    qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+endif()
 source_group("MOC Files" FILES ${MOCED_FILES})
 add_library(inviwo-qteditor ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES} ${QRC_FILE})
 add_library(inviwo::qteditor ALIAS inviwo-qteditor)
