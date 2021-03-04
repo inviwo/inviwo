@@ -14,13 +14,21 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
+#--------------------------------------------------------------------
+# Add Unittests
+set(TEST_FILES
+    tests/unittests/nifti-unittest-main.cpp
+    tests/unittests/nifti-test.cpp
+)
+ivw_add_unittest(${TEST_FILES})
+
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
 option(IVW_USE_EXTERNAL_NIFTI "Nifticlib is provided externaly" OFF)
 if(NOT IVW_USE_EXTERNAL_NIFTI)
 	add_subdirectory(ext/nifticlib-2.0.0)
-	target_link_libraries(inviwo-module-nifti PRIVATE inviwo::niftiio inviwo::znz)
+	target_link_libraries(inviwo-module-nifti PUBLIC inviwo::niftiio inviwo::znz)
 
 	# niftio and znz are under same niftilib license 
 	ivw_register_license_file(ID niftilib NAME "Niftilib" TARGET inviwo::niftiio MODULE Nifti

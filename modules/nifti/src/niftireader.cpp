@@ -198,8 +198,10 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
         niftiImage->dim[1], niftiImage->dim[2], niftiImage->dim[3], 1, 1, 1, 1};
 
     auto volumes = std::make_shared<VolumeSequence>();
+    // Fixes single-volume where dim[4] has been set to zero
+    auto nTimeSteps = niftiImage->dim[4] > 0 ? niftiImage->dim[4] : 1;
     // Lazy loading of time steps
-    for (int t = 0; t < niftiImage->dim[4]; ++t) {
+    for (int t = 0; t < nTimeSteps; ++t) {
         volumes->push_back(std::shared_ptr<Volume>(volume->clone()));
         auto diskRepr = std::make_shared<VolumeDisk>(filePath, dim, format);
         start_index[3] = t;
@@ -209,6 +211,9 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
     }
 
     /*
+     We currently have no good way of considering cal_min and cal_max.
+     See tests/volumes/nifti/volzstat1.nii.gz for an example including cal_min/cal_max.
+
     The cal_min and cal_max fields (if nonzero) are used for mapping (possibly
     scaled) dataset values to display colors:
     - Minimum display intensity (black) corresponds to dataset value cal_min.
@@ -220,45 +225,39 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
     - cal_min and cal_max only make sense when applied to scalar-valued
     datasets (i.e., dim[0] < 5 or dim[5] = 1)
     */
-
     DataMapper dm{format};
 
-    if (niftiImage->cal_min != 0 || niftiImage->cal_max != 0) {
-        dm.dataRange.x = niftiImage->cal_min;
-        dm.dataRange.y = niftiImage->cal_max;
-    } else {
-        // No need to modify range for 8-bit formats since normalization will work well anyway
-        if (format->getPrecision() > 8) {
-            // These formats may have a tricky data range,
-            // so we need to compute it for valid display ranges
+    // No need to modify range for 8-bit formats since normalization will work well anyway
+    if (format->getPrecision() > 8) {
+        // These formats may have a tricky data range,
+        // so we need to compute it for valid display ranges
 
-            auto volRAM = volumes->front()->getRepresentation<VolumeRAM>();
-            auto minmax = util::volumeMinMax(volRAM);
-            // minmax always have four components, unused components are set to zero.
-            // Hence, only consider components used by the data format
-            dvec2 dataRange(minmax.first[0], minmax.second[0]);
-            // min/max of all components
-            for (size_t component = 1; component < format->getComponents(); ++component) {
-                dataRange = dvec2(glm::min(dataRange[0], minmax.first[component]),
-                                  glm::max(dataRange[1], minmax.second[component]));
-            }
-            if (format->getId() == DataFormatId::UInt16) {
-                // Try to make different UInt16 comparable
-                // by not modifying the range
-                if (dataRange.y < 4096.) {
-                    // All values within 12-bit range so we guess that this is a 12-bit data set
-                    dataRange = dvec2(0., 4095.);
-                    LogInfo(
-                        "Guessing 12-bit data range in 16-bit data since all values are below "
-                        "4096. Change data range in VolumeSource to [0 65535] if this is "
-                        "incorrect.");
-                } else {
-                    // This was probably a 16-bit data set after all
-                    dataRange = dvec2(0., format->getMax());
-                }
-            }
-            dm.dataRange = dataRange;
+        auto volRAM = volumes->front()->getRepresentation<VolumeRAM>();
+        auto minmax = util::volumeMinMax(volRAM);
+        // minmax always have four components, unused components are set to zero.
+        // Hence, only consider components used by the data format
+        dvec2 dataRange(minmax.first[0], minmax.second[0]);
+        // min/max of all components
+        for (size_t component = 1; component < format->getComponents(); ++component) {
+            dataRange = dvec2(glm::min(dataRange[0], minmax.first[component]),
+                                glm::max(dataRange[1], minmax.second[component]));
         }
+        if (format->getId() == DataFormatId::UInt16) {
+            // Try to make different UInt16 comparable
+            // by not modifying the range
+            if (dataRange.y < 4096.) {
+                // All values within 12-bit range so we guess that this is a 12-bit data set
+                dataRange = dvec2(0., 4095.);
+                LogInfo(
+                    "Guessing 12-bit data range in 16-bit data since all values are below "
+                    "4096. Change data range in VolumeSource to [0 65535] if this is "
+                    "incorrect.");
+            } else {
+                // This was probably a 16-bit data set after all
+                dataRange = dvec2(0., format->getMax());
+            }
+        }
+        dm.dataRange = dataRange;
     }
 
     if (niftiImage->scl_slope != 0) {
