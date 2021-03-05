@@ -66,7 +66,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_add_resources(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc")
 else()
-    qt_add_resources(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc")
+    qt5_add_resources(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc")
 endif()
 source_group("Resource Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc ${QRC_FILE})
 
