@@ -34,23 +34,41 @@
 #endif
 #endif
 
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/coremodulesharedlibrary.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/consolelogger.h>
 #include <inviwo/testutil/configurablegtesteventlistener.h>
 
 #include <inviwo/core/datastructures/representationutil.h>
 #include <inviwo/core/datastructures/representationfactorymanager.h>
+
+#include <modules/base/basemodulesharedlibrary.h>
+#include <modules/nifti/niftimodulesharedlibrary.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-using namespace inviwo;
-
 int main(int argc, char** argv) {
-    RepresentationFactoryManager rfm;
-    util::registerCoreRepresentations(rfm);
+    using namespace inviwo;
+    LogCentral::init();
+    auto logger = std::make_shared<ConsoleLogger>();
+    LogCentral::getPtr()->setVerbosity(LogVerbosity::Info);
+    LogCentral::getPtr()->registerLogger(logger);
 
+    InviwoApplication app(argc, argv, "Inviwo-Unittests-Nifti");
+    {
+        std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
+        modules.emplace_back(createInviwoCore());
+        modules.emplace_back(createBaseModule());
+        modules.emplace_back(createNiftiModule());
+
+        app.registerModules(std::move(modules));
+    }
+
+    app.processFront();
     int ret = -1;
     {
 

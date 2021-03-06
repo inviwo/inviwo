@@ -41,7 +41,38 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <nifti1.h>
+#include <nifti1_io.h>
+#include <warn/pop>
+
+#include <array>
+
 namespace inviwo {
+
+/**
+ * \brief A loader of Nifti files. Used to create VolumeRAM representations.
+ * This class us used by the NiftiReader.
+ */
+class NiftiVolumeRAMLoader : public DiskRepresentationLoader<VolumeRepresentation> {
+public:
+    NiftiVolumeRAMLoader(std::shared_ptr<nifti_image> nim_, std::array<int, 7> start_index_,
+                         std::array<int, 7> region_size_, std::array<bool, 3> flipAxis);
+    virtual NiftiVolumeRAMLoader* clone() const override;
+    virtual ~NiftiVolumeRAMLoader() = default;
+
+    virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
+        const VolumeRepresentation& src) const override;
+    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
+                                      const VolumeRepresentation& src) const override;
+
+private:
+    std::array<int, 7> start_index;
+    std::array<int, 7> region_size;
+    std::array<bool, 3> flipAxis;  // Flip x,y,z axis?
+    std::shared_ptr<nifti_image> nim;
+};
 
 NiftiReader::NiftiReader() : DataReaderType<VolumeSequence>() {
     addExtension(FileExtension("nii", "NIfTI-1 file format"));
@@ -168,30 +199,29 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
                         niftiIndexToModel * vec4(0.f, 0.f, -0.5f, 1.f);
     basisAndOffset[3] = niftiIndexToModel * vec4(-0.5f, -0.5f, -0.5f, 1.f);
 
-    // Flip coordinate system and data if the data is provided in neurological convention
-    auto modelToWorld = volume->getWorldMatrix();
+    // Flip coordinate system and data if the data is provided in radiological convention
+    // https://nipy.org/nibabel/neuro_radio_conventions.html
     std::array<bool, 3> flipAxis = {false, false, false};
     if (niftiIndexToModel[0][0] < 0.f) {
         // flip x-axis
-        modelToWorld[0] *= -1.f;
-        modelToWorld[3][0] *= -1.f;
+        basisAndOffset[0] *= -1.f;
+        basisAndOffset[3][0] *= -1.f;
         flipAxis[0] = true;
     }
     if (niftiIndexToModel[1][1] < 0.f) {
         // flip y-axis
-        modelToWorld[1] *= -1.f;
-        modelToWorld[3][1] *= -1.f;
+        basisAndOffset[1] *= -1.f;
+        basisAndOffset[3][1] *= -1.f;
         flipAxis[1] = true;
     }
     if (niftiIndexToModel[2][2] < 0.f) {
         // flip z-axis
-        modelToWorld[2] *= -1.f;
-        modelToWorld[3][2] *= -1.f;
+        basisAndOffset[2] *= -1.f;
+        basisAndOffset[3][2] *= -1.f;
         flipAxis[2] = true;
     }
 
     volume->setModelMatrix(basisAndOffset);
-    volume->setWorldMatrix(modelToWorld);
 
     std::array<int, 7> start_index = {0, 0, 0, 0, 0, 0, 0};
     std::array<int, 7> region_size = {
@@ -210,28 +240,54 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
         volumes->back()->addRepresentation(diskRepr);
     }
 
-    /*
-     We currently have no good way of considering cal_min and cal_max.
-     See tests/volumes/nifti/volzstat1.nii.gz for an example including cal_min/cal_max.
-
-    The cal_min and cal_max fields (if nonzero) are used for mapping (possibly
-    scaled) dataset values to display colors:
-    - Minimum display intensity (black) corresponds to dataset value cal_min.
-    - Maximum display intensity (white) corresponds to dataset value cal_max.
-    - Dataset values below cal_min should display as black also, and values
-    above cal_max as white.
-    - Colors "black" and "white", of course, may refer to any scalar display
-    scheme (e.g., a color lookup table specified via aux_file).
-    - cal_min and cal_max only make sense when applied to scalar-valued
-    datasets (i.e., dim[0] < 5 or dim[5] = 1)
-    */
     DataMapper dm{format};
+    // Figure out how to map the stored values into
+    // 1. Normalized domain [0 1] (using dataRange) as used by the Transfer Function (TF)
+    // 2. Value range (physical meaning of values)
+    if (niftiImage->cal_min != 0 || niftiImage->cal_max != 0) {
+        // The values that should map to [0 1] in the TF is provided, i.e. cal_min and cal_max
 
-    // No need to modify range for 8-bit formats since normalization will work well anyway
-    if (format->getPrecision() > 8) {
-        // These formats may have a tricky data range,
-        // so we need to compute it for valid display ranges
+        /*
+            The cal_min and cal_max fields (if nonzero) are used for mapping (possibly
+            scaled) dataset values to display colors:
+            - Minimum display intensity (black) corresponds to dataset value cal_min.
+            - Maximum display intensity (white) corresponds to dataset value cal_max.
+            - Dataset values below cal_min should display as black also, and values
+            above cal_max as white.
+            - Colors "black" and "white", of course, may refer to any scalar display
+            scheme (e.g., a color lookup table specified via aux_file).
+            - cal_min and cal_max only make sense when applied to scalar-valued
+            datasets (i.e., dim[0] < 5 or dim[5] = 1)
+        */
+        // If the scl_slope field is nonzero, then each voxel value in the dataset
+        // should be scaled as
+        //    y = scl_slope  x + scl_inter
+        // where x = stored voxel value and y = "true" voxel value.
+        // Otherwise, we assume scl_slope = 1 and scl_inter = 0.
+        //
+        // Inviwo normalizes data into [0 1] using dataRange and then transforms
+        // the values using valueRange
+        // So, we need to calculate which values in the data domain
+        // that correspond to cal_min/cal_max using:
+        // v_min = (cal_min - scl_inter) / scl_slope
+        // v_max = (cal_max - scl_inter) / scl_slope
+        //
+        // Now v_min and v_max can be used to normalize the stored values.
+        // Values below v_min and above v_max will not be displayed since the fall outside the
+        // normalized [0 1] range.
+        double offset = niftiImage->scl_slope != 0 ? niftiImage->scl_inter : 0;
+        double slope = niftiImage->scl_slope != 0 ? niftiImage->scl_slope : 1;
+        dm.dataRange.x = static_cast<double>(niftiImage->cal_min - offset) / slope;
+        dm.dataRange.y = static_cast<double>(niftiImage->cal_max - offset) / slope;
 
+        dm.valueRange.x = niftiImage->cal_min;
+        dm.valueRange.y = niftiImage->cal_max;
+    } else {
+        // No information about display range is provided so we assume that the whole range should
+        // be displayed.
+        // In other words:
+        // The minimum value will correspond to 0 and the maximum will correspond to 1 in the
+        // Transfer Function
         auto volRAM = volumes->front()->getRepresentation<VolumeRAM>();
         auto minmax = util::volumeMinMax(volRAM);
         // minmax always have four components, unused components are set to zero.
@@ -240,37 +296,23 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
         // min/max of all components
         for (size_t component = 1; component < format->getComponents(); ++component) {
             dataRange = dvec2(glm::min(dataRange[0], minmax.first[component]),
-                                glm::max(dataRange[1], minmax.second[component]));
-        }
-        if (format->getId() == DataFormatId::UInt16) {
-            // Try to make different UInt16 comparable
-            // by not modifying the range
-            if (dataRange.y < 4096.) {
-                // All values within 12-bit range so we guess that this is a 12-bit data set
-                dataRange = dvec2(0., 4095.);
-                LogInfo(
-                    "Guessing 12-bit data range in 16-bit data since all values are below "
-                    "4096. Change data range in VolumeSource to [0 65535] if this is "
-                    "incorrect.");
-            } else {
-                // This was probably a 16-bit data set after all
-                dataRange = dvec2(0., format->getMax());
-            }
+                              glm::max(dataRange[1], minmax.second[component]));
         }
         dm.dataRange = dataRange;
-    }
 
-    if (niftiImage->scl_slope != 0) {
-        // If the scl_slope field is nonzero, then each voxel value in the dataset
-        // should be scaled as
-        //    y = scl_slope  x + scl_inter
-        // where x = stored voxel value and y = "true" voxel value
-        dm.valueRange.x = static_cast<double>(niftiImage->scl_slope) * dm.dataRange.x +
-                          static_cast<double>(niftiImage->scl_inter);
-        dm.valueRange.y = static_cast<double>(niftiImage->scl_slope) * dm.dataRange.y +
-                          static_cast<double>(niftiImage->scl_inter);
-    } else {
-        dm.valueRange = dm.dataRange;
+        if (niftiImage->scl_slope != 0) {
+            // If the scl_slope field is nonzero, then each voxel value in the dataset
+            // should be scaled as
+            //    y = scl_slope  x + scl_inter
+            // where x = stored voxel value and y = "true" voxel value
+            dm.valueRange.x = static_cast<double>(niftiImage->scl_slope) * dm.dataRange.x +
+                              static_cast<double>(niftiImage->scl_inter);
+            dm.valueRange.y = static_cast<double>(niftiImage->scl_slope) * dm.dataRange.y +
+                              static_cast<double>(niftiImage->scl_inter);
+
+        } else {
+            dm.valueRange = dm.dataRange;
+        }
     }
 
     for (auto& vol : *volumes) {
