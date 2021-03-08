@@ -58,8 +58,8 @@ public:
      */
     size_t getNumberOfFiltered() const;
     /*
-    * Return the number of selected columns.
-    */
+     * Return the number of selected columns.
+     */
     size_t getNumberOfSelectedColumns() const;
 
     void remove(const BrushingAndLinkingInport* src);
