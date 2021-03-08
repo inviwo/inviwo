@@ -30,6 +30,7 @@
 #include <modules/nifti/niftireader.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
+#include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/formatdispatching.h>
