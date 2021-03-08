@@ -10,7 +10,7 @@ import refactoring # Note: refactoring.py need to be in the current working dire
 currentYear = 2021
 
 excludespatterns = ["*/ext/*", "*moc_*", "*/proteindocking/*", "*/proteindocking2/*", 
-					"*/genetree/*", "*.DS_Store", "*DS_mapp", ".md", "*.suo" , "*.h5",
+					"*/genetree/*", "*.DS_Store", "*DS_mapp", ".md", "*.suo" , "*.h5", "*.gz",
 					"*.jpg", "*.JPG", "*.jpeg", "*.lib", "*.dll", "*.inv", "*.dat", "*.ivf","*.tiff",
 					"*.png", "*.ttf", "*.tif", "*.pyc", "*.raw", "*.bmp", "*.wav", "*.xcf", "*.ico", "*.icns",
 					"*.qch", "*.qhc", "*.exr", "*.pwm", "*.pvm", "*.pdf", "*.otf", "*.exe", "*.fbx", "*.svg", 
