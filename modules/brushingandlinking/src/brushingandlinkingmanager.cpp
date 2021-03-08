@@ -52,6 +52,8 @@ size_t BrushingAndLinkingManager::getNumberOfSelected() const { return selected_
 
 size_t BrushingAndLinkingManager::getNumberOfFiltered() const { return filtered_.getSize(); }
 
+size_t BrushingAndLinkingManager::getNumberOfSelectedColumns() const { return selectedColumns_.size(); }
+
 void BrushingAndLinkingManager::remove(const BrushingAndLinkingInport* src) {
     filtered_.remove(src);
 }
