@@ -103,6 +103,7 @@ struct DataTraits<BrushingAndLinkingManager> {
         utildoc::TableBuilder tb(doc.handle(), P::end());
         tb(H("Selected Indices"), data.getNumberOfSelected());
         tb(H("Filtered Indices"), data.getNumberOfFiltered());
+        tb(H("Selected Columns"), data.getNumberOfSelectedColumns());
         return doc;
     }
 };
