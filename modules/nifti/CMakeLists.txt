@@ -14,6 +14,14 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
+#--------------------------------------------------------------------
+# Add Unittests
+set(TEST_FILES
+    tests/unittests/nifti-unittest-main.cpp
+    tests/unittests/nifti-test.cpp
+)
+ivw_add_unittest(${TEST_FILES})
+
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 

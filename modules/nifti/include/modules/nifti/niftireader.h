@@ -27,23 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_NIFTIREADER_H
-#define IVW_NIFTIREADER_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/diskrepresentation.h>
 #include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/io/datareader.h>
-#include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/core/util/indexmapper.h>
 #include <modules/nifti/niftimoduledefine.h>
-
-#include <array>
-
-#include <nifti1.h>
-#include <nifti1_io.h>
 
 namespace inviwo {
 
@@ -74,30 +62,4 @@ public:
     static const DataFormatBase* niftiDataTypeToInviwoDataFormat(int niftiDataType);
 };
 
-/**
- * \brief A loader of Nifti files. Used to create VolumeRAM representations.
- * This class us used by the NiftiReader.
- */
-class IVW_MODULE_NIFTI_API NiftiVolumeRAMLoader
-    : public DiskRepresentationLoader<VolumeRepresentation> {
-public:
-    NiftiVolumeRAMLoader(std::shared_ptr<nifti_image> nim_, std::array<int, 7> start_index_,
-                         std::array<int, 7> region_size_, std::array<bool, 3> flipAxis);
-    virtual NiftiVolumeRAMLoader* clone() const override;
-    virtual ~NiftiVolumeRAMLoader() = default;
-
-    virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
-        const VolumeRepresentation& src) const override;
-    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
-                                      const VolumeRepresentation& src) const override;
-
-private:
-    std::array<int, 7> start_index;
-    std::array<int, 7> region_size;
-    std::array<bool, 3> flipAxis;  // Flip x,y,z axis?
-    std::shared_ptr<nifti_image> nim;
-};
-
 }  // namespace inviwo
-
-#endif  // IVW_NIFTIREADER_H
