@@ -120,9 +120,9 @@ void ConstantInterpolation<Key, Result>::operator()(const std::vector<std::uniqu
         }
 
     } else {
-        auto it = std::upper_bound(
+        auto it = std::lower_bound(
             keys.begin(), keys.end(), to,
-            [](const auto& time, const auto& key) { return time < key->getTime(); });
+            [](const auto& key, const auto& time) { return key->getTime() < time; });
 
         if (it == keys.end()) {
             out = (*std::prev(it))->getValue();

@@ -118,6 +118,63 @@ TEST(AnimationTests, FloatInterpolation) {
     EXPECT_EQ(0.0f, floatProperty.get());
 }
 
+TEST(AnimationTests, ConstantInterpolation) {
+
+    FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 100.0f);
+
+    PropertyTrack<FloatProperty, ValueKeyframe<float>> floatTrack(&floatProperty, nullptr);
+
+    std::vector<std::unique_ptr<ValueKeyframe<float>>> fseq;
+    fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{1.0}, 1.0f));
+    fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{2.0}, 2.0f));
+    fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{3.0}, 3.0f));
+    auto sequence = std::make_unique<KeyframeSequenceTyped<ValueKeyframe<float>>>(
+        std::move(fseq), std::make_unique<ConstantInterpolation<ValueKeyframe<float>>>());
+
+    floatTrack.add(std::move(sequence));
+
+    EXPECT_EQ(0.0f, floatProperty.get());
+
+    floatTrack(Seconds{0.0}, Seconds{1.5}, AnimationState::Playing);
+
+    EXPECT_EQ(1.0f, floatProperty.get());
+
+    floatTrack(Seconds{2.5}, Seconds{3.5}, AnimationState::Playing);
+
+    EXPECT_EQ(3.0f, floatProperty.get());
+
+    floatProperty.set(4.0f);
+
+    EXPECT_EQ(4.0f, floatProperty.get());
+
+    floatTrack(Seconds{3.5}, Seconds{4.5}, AnimationState::Playing);
+
+    EXPECT_EQ(4.0f, floatProperty.get());
+
+    floatTrack(Seconds{3.5}, Seconds{1.0}, AnimationState::Playing);
+
+    EXPECT_EQ(1.0f, floatProperty.get());
+
+    floatProperty.set(4.0f);
+    EXPECT_EQ(4.0f, floatProperty.get());
+    floatTrack(Seconds{0.0}, Seconds{1.0}, AnimationState::Playing);
+    EXPECT_EQ(1.0f, floatProperty.get());
+
+    floatProperty.set(4.0f);
+    EXPECT_EQ(4.0f, floatProperty.get());
+    floatTrack(Seconds{1.0}, Seconds{2.0}, AnimationState::Playing);
+    EXPECT_EQ(2.0f, floatProperty.get());
+    floatTrack(Seconds{2.0}, Seconds{3.0}, AnimationState::Playing);
+    EXPECT_EQ(3.0f, floatProperty.get());
+
+    floatProperty.set(4.0f);
+    EXPECT_EQ(4.0f, floatProperty.get());
+    floatTrack(Seconds{3.0}, Seconds{2.0}, AnimationState::Playing);
+    EXPECT_EQ(2.0f, floatProperty.get());
+    floatTrack(Seconds{2.0}, Seconds{1.0}, AnimationState::Playing);
+    EXPECT_EQ(1.0f, floatProperty.get());
+}
+
 TEST(AnimationTests, AnimationTest) {
 
     FloatProperty floatProperty("float", "Float", 0.0f, 0.0f, 100.0f);
