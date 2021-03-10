@@ -53,7 +53,7 @@ T try_cast(pybind11::handle obj, const std::string& errorMsg) {
 }
 
 void addPoints(TFPrimitiveSet* ps, pybind11::list values) {
-    for (auto& item : values) {
+    for (auto&& item : values) {
         const auto data = try_cast<pybind11::list>(
             item, "expected a list of [pos, hex color] and/or [pos, alpha, hex color]");
         if (data.size() == 2) {

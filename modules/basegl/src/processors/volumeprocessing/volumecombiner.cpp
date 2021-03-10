@@ -239,7 +239,7 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
 void VolumeCombiner::updateProperties() {
     std::stringstream desc;
     std::vector<OptionPropertyIntOption> options;
-    for (const auto& p : util::enumerate(inport_.getConnectedOutports())) {
+    for (auto&& p : util::enumerate(inport_.getConnectedOutports())) {
         const std::string str =
             "v" + toString(p.first() + 1) + ": " + p.second()->getProcessor()->getDisplayName();
         desc << str << "\n";

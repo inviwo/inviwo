@@ -40,7 +40,12 @@
 #include <QEvent>
 #include <QHelpEvent>
 #include <QGestureEvent>
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QPointingDevice>
+#else
 #include <QTouchDevice>
+#endif
 #include <QTouchEvent>
 #include <warn/pop>
 
@@ -83,8 +88,12 @@ private:
     bool mapPanTriggered(QPanGesture*);
     bool mapPinchTriggered(QPinchGesture* e);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     //! Links QTouchDevice to inviwo::TouchDevice
+    std::map<const QPointingDevice*, TouchDevice> devices_;
+#else
     std::map<QTouchDevice*, TouchDevice> touchDevices_;
+#endif
     //! Compare with next touch event to prevent duplicates
     std::vector<TouchPoint> prevTouchPoints_;
     Qt::GestureType lastType_{};

@@ -33,13 +33,13 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QSplitter>
+#include <QStringList>
 #include <warn/pop>
 
 class QTabWidget;
 class QTextEdit;
 class QToolButton;
 class QLineEdit;
-class QStringList;
 
 namespace inviwo {
 

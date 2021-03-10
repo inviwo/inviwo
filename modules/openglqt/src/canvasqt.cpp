@@ -315,6 +315,90 @@ bool CanvasQt::mapKeyReleaseEvent(QKeyEvent* keyEvent) {
     return true;
 }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+bool CanvasQt::mapTouchEvent(QTouchEvent* touch) {
+    RenderContext::getPtr()->activateDefaultRenderContext();
+
+    // Copy touch points
+    std::vector<TouchPoint> touchPoints;
+    touchPoints.reserve(touch->points().size());
+    const uvec2 imageSize(getImageDimensions());
+
+    for (const auto& touchPoint : touch->points()) {
+        const auto pos = normalPos(utilqt::toGLM(touchPoint.position()));
+        const auto prevPos = normalPos(utilqt::toGLM(touchPoint.lastPosition()));
+        const auto pressedPos = normalPos(utilqt::toGLM(touchPoint.pressPosition()));
+        const auto pressure = touchPoint.pressure();
+
+        TouchState touchState;
+        switch (touchPoint.state()) {
+            case QEventPoint::Pressed:
+                touchState = TouchState::Started;
+                break;
+            case QEventPoint::Updated:
+                touchState = TouchState::Updated;
+                break;
+            case QEventPoint::Stationary:
+                touchState = TouchState::Stationary;
+                break;
+            case QEventPoint::Released:
+                touchState = TouchState::Finished;
+                break;
+            default:
+                touchState = TouchState::None;
+        }
+        touchPoints.emplace_back(touchPoint.id(), touchState, pos, prevPos, pressedPos, imageSize,
+                                 pressure, getDepthValueAtNormalizedCoord(pos));
+    }
+    // Ensure that the order to the touch points are the same as last touch event.
+    // Note that the ID of a touch point is always the same but the order in which
+    // they are given can vary.
+    std::sort(touchPoints.begin(), touchPoints.end(),
+              [](const auto& a, const auto& b) { return a.id() < b.id(); });
+
+    // Touchpad on Mac sends one event per touch point. Prevent duplicate events from being sent.
+    // We consider an event to be a duplicate if all points in the event are the same as the last
+    // event.
+    if (std::equal(touchPoints.begin(), touchPoints.end(), prevTouchPoints_.begin(),
+                   prevTouchPoints_.end())) {
+        prevTouchPoints_ = touchPoints;
+        touch->accept();
+        return true;
+    }
+    // Store previous touch points
+    prevTouchPoints_ = touchPoints;
+
+    // Get the device generating the event (touch screen or touch pad)
+    auto deviceIt = devices_.find(touch->pointingDevice());
+    TouchDevice* device = nullptr;
+    if (deviceIt != devices_.end()) {
+        device = &(deviceIt->second);
+    } else {
+        // Insert device new device into map
+        TouchDevice::DeviceType deviceType;
+        switch (touch->device()->type()) {
+            case QPointingDevice::DeviceType::TouchScreen:
+                deviceType = TouchDevice::DeviceType::TouchScreen;
+                break;
+            case QPointingDevice::DeviceType::TouchPad:
+                deviceType = TouchDevice::DeviceType::TouchPad;
+                break;
+            default:
+                deviceType = TouchDevice::DeviceType::TouchScreen;
+        }
+        device = &(devices_[touch->pointingDevice()] =
+                       TouchDevice(deviceType, (touch->device()->name().toStdString())));
+    }
+    TouchEvent touchEvent(touchPoints, device, utilqt::getModifiers(touch));
+    touch->accept();
+
+    lastNumFingers_ = static_cast<int>(touch->points().size());
+    screenPositionNormalized_ = touchEvent.centerPointNormalized();
+
+    propagateEvent(&touchEvent);
+    return true;
+}
+#else
 bool CanvasQt::mapTouchEvent(QTouchEvent* touch) {
     RenderContext::getPtr()->activateDefaultRenderContext();
 
@@ -397,6 +481,8 @@ bool CanvasQt::mapTouchEvent(QTouchEvent* touch) {
     propagateEvent(&touchEvent);
     return true;
 }
+
+#endif
 
 bool CanvasQt::mapGestureEvent(QGestureEvent* ge) {
     RenderContext::getPtr()->activateDefaultRenderContext();

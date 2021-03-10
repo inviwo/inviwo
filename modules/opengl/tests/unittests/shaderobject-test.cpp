@@ -150,7 +150,7 @@ TEST(ShaderObject, parseSource) {
 
     EXPECT_EQ(expectedLines.size(), parsedLines.size());
 
-    for (const auto& [expectedLine, parsedLine] : util::zip(expectedLines, parsedLines)) {
+    for (auto&& [expectedLine, parsedLine] : util::zip(expectedLines, parsedLines)) {
         EXPECT_EQ(expectedLine, parsedLine);
     }
 
@@ -190,7 +190,7 @@ TEST(ShaderObject, parseSource) {
                                         "Code1",
                                         "Code1"};
 
-    for (const auto& [exp, refname, refline] : util::zip(lnr, names, lineNum)) {
+    for (auto&& [exp, refname, refline] : util::zip(lnr, names, lineNum)) {
         EXPECT_EQ(exp.first, refname);
         EXPECT_EQ(exp.second, refline);
     }
