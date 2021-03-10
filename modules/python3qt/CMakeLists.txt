@@ -49,7 +49,7 @@ target_link_libraries(inviwo-module-python3qt PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Svg
 )
-target_compile_definitions(inviwo-module-animationqt PUBLIC 
+target_compile_definitions(inviwo-module-python3qt PUBLIC 
     "QT_DEPRECATED_WARNINGS_SINCE=QT_VERSION_CHECK(5, 15, 0)"
 )
 # Add templates directory to packaging
