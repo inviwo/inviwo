@@ -98,22 +98,35 @@ void ImageScaling::process() {
 
 void ImageScaling::propagateEvent(Event* event, Outport* source) {
     if (event->hasVisitedProcessor(this)) return;
+    event->markAsVisited(this);
+
+    invokeEvent(event);
+    if (event->hasBeenUsed()) return;
 
     if (auto resizeEvent = event->getAs<ResizeEvent>()) {
         // cache size of the resize event
         lastValidOutputSize_ = resizeEvent->size();
 
         if (enabled_) {
-            resizeEvent->markAsVisited(this);
-
+            // Propagate a transformed ResizeEvent
             if (resizeInports()) {
                 resizeEvent->markAsUsed();
             }
-            return;
+        } else {
+            // Forward original event
+            if (event->shouldPropagateTo(&inport_, this, source)) {
+                inport_.propagateEvent(event);
+            }
+        }
+    } else {
+
+        auto propagator = [&](Event* newEvent) { inport_.propagateEvent(newEvent); };
+        bool propagated = eventScaler_.propagateEvent(event, propagator);
+
+        if (!propagated && event->shouldPropagateTo(&inport_, this, source)) {
+            inport_.propagateEvent(event);
         }
     }
-
-    Processor::propagateEvent(event, source);
 }
 
 void ImageScaling::deserialize(Deserializer& d) {
@@ -136,8 +149,9 @@ size2_t ImageScaling::calcInputImageSize() const {
 bool ImageScaling::resizeInports() {
     if (deserializing_) return false;
     if (!enabled_) return false;
-
-    ResizeEvent e(calcInputImageSize());
+    auto newSize = calcInputImageSize();
+    eventScaler_.setSize(newSize);
+    ResizeEvent e(newSize);
 
     bool used = e.hasBeenUsed();
     for (auto inport : getInports()) {

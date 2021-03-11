@@ -81,7 +81,7 @@ public:
     ViewManager();
 
     /**
-     * \brief maps a propagates event to the selected view
+     * \brief maps and propagates event to the selected view
      * return whether the event found a view was found
      */
     bool propagateEvent(Event* event, Propagator propagator);

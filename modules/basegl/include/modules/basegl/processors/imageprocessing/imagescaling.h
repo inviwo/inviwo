@@ -30,6 +30,7 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/eventscaler.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -87,6 +88,7 @@ private:
     DoubleProperty customFactor_;
     IntSize2Property absoluteSize_;
 
+    EventScaler eventScaler_;
     size2_t lastValidOutputSize_ = {0u, 0u};
     bool deserializing_ = false;
 };

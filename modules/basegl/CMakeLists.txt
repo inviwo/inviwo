@@ -19,6 +19,7 @@ set(HEADER_FILES
     include/modules/basegl/datavisualizer/meshvisualizer.h
     include/modules/basegl/datavisualizer/volumeraycastvisualizer.h
     include/modules/basegl/datavisualizer/volumeslicevisualizer.h
+    include/modules/basegl/eventscaler.h
     include/modules/basegl/processors/axisalignedcutplane.h
     include/modules/basegl/processors/background.h
     include/modules/basegl/processors/cuberenderer.h
@@ -125,6 +126,7 @@ set(SOURCE_FILES
     src/datavisualizer/meshvisualizer.cpp
     src/datavisualizer/volumeraycastvisualizer.cpp
     src/datavisualizer/volumeslicevisualizer.cpp
+    src/eventscaler.cpp
     src/processors/axisalignedcutplane.cpp
     src/processors/background.cpp
     src/processors/cuberenderer.cpp

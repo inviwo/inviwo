@@ -30,6 +30,7 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/eventscaler.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -70,6 +71,8 @@ public:
 
     virtual void initializeResources() override;
 
+    virtual void propagateEvent(Event*, Outport* source) override;
+
 protected:
     void interpolationTypeChanged();
     void dimensionChanged();
@@ -79,6 +82,8 @@ private:
     OptionPropertyInt interpolationType_;
     OptionPropertyInt outputSizeMode_;
     IntVec2Property targetResolution_;
+
+    EventScaler eventScaler_;
 };
 
 }  // namespace inviwo
