@@ -119,7 +119,7 @@ if(WIN32)
     add_executable(inviwo-cli MACOSX_BUNDLE WIN32 
         ${SOURCE_FILES} 
         ${HEADER_FILES} 
-        ${MOC_FILES} 
+        ${MOCED_FILES} 
         ${QRC_FILE} 
         ${RES_FILES}
     )
