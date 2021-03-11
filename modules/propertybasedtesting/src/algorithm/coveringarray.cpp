@@ -127,6 +127,8 @@ std::vector<Test> coveringArray(
     return result;
 }
 
+
+constexpr double unusedWeight = 5;
 /*
  * greedy heuristic
  */
@@ -202,16 +204,23 @@ std::vector<Test> optCoveringArray(
     // for each test i that is comparable to 'gen' merged with 'ref'
     // (i.e. the score is increased when 'gen' merged with 'ref' is comparable
     // with many tests for which are comparable to few other tests)
-    // if 'disjoint' is true, the score is 0 iff gen and ref are not disjoint
+    // if 'disjoint' is true, the score is 0 iff the assignments in gen and ref
+	// to equal properties are not identical
     const auto cmp = [&](const bool disjoint, auto comparables, const auto& gen, const auto& ref) {
         if (disjoint) {
             if (gen.size() < ref.size()) {
                 for (const auto& [k, v] : gen) {
-                    if (ref.count(k) > 0) return static_cast<size_t>(0);
+					const auto it = ref.find(k);
+					if(it != ref.end() && it->second != k) {
+						return static_cast<size_t>(0);
+					}
                 }
             } else {
                 for (const auto& [k, v] : ref) {
-                    if (gen.count(k) > 0) return static_cast<size_t>(0);
+					const auto it = gen.find(k);
+					if(it != gen.end() && it->second != k) {
+						return static_cast<size_t>(0);
+					}
                 }
             }
         }
@@ -239,21 +248,22 @@ std::vector<Test> optCoveringArray(
         std::cerr << unused.size() << " unused, " << finished.size() << " finished" << std::endl;
         // while the current test does not contain assignments to all variables
         while (gen.size() < vars.size()) {
-            int opt = -1, idx;
+            double opt = -1;
+			size_t idx;
             bool is_unused = false;
 
             // try unused interactions
             for (size_t i = 0; i < unused.size(); i++) {
-                const int val = cmp(true, comparables, gen, unused[i]);
+                const double val = unusedWeight * cmp(true, comparables, gen, unused[i]);
                 if (val > opt) opt = val, idx = i, is_unused = true;
             }
             // try finished tests
             for (size_t i = 0; i < finished.size(); i++) {
-                const int val = cmp(false, comparables, gen, finished[i].first);
+                const double val = cmp(false, comparables, gen, finished[i].first);
                 if (val > opt) opt = val, idx = i, is_unused = false;
             }
 
-            IVW_ASSERT(opt != -1, "Fatal error while creating covering array");
+            IVW_ASSERT(opt >= 0, "Fatal error while creating covering array");
 
             if (is_unused) {
                 gen.insert(unused[idx].begin(), unused[idx].end());
