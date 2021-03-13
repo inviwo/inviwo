@@ -32,7 +32,10 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/core/properties/propertyvisibility.h>
+#include <inviwo/core/properties/propertyownerobserver.h>
 #include <inviwo/core/network/processornetworkevaluationobserver.h>
+#include <inviwo/core/network/processornetworkobserver.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QWidget>
@@ -47,14 +50,43 @@ namespace inviwo {
 
 class CollapsibleGroupBoxWidgetQt;
 class Processor;
+class Property;
 class InviwoApplication;
+class PropertyWidgetFactory;
 
-class IVW_MODULE_QTWIDGETS_API PropertyListFrame : public QWidget {
+class IVW_MODULE_QTWIDGETS_API PropertyListFrame : public QWidget,
+                                                   public ProcessorNetworkObserver,
+                                                   public PropertyOwnerObserver {
 public:
-    PropertyListFrame(QWidget* parent);
-    virtual QSize sizeHint() const;
-    virtual QSize minimumSizeHint() const;
-    void paintEvent(QPaintEvent*);
+    PropertyListFrame(QWidget* parent, PropertyWidgetFactory* factory);
+    virtual QSize sizeHint() const override;
+    virtual QSize minimumSizeHint() const override;
+    virtual void paintEvent(QPaintEvent*) override;
+
+    void addProcessor(Processor* processor);
+    void hideProcessor(Processor* processor);
+    void removeProcessor(Processor* processor);
+
+    void addProperty(Property* property);
+    void hideProperty(Property* property);
+    void removeProperty(Property* property);
+
+    void clear();
+
+private:
+    virtual void onProcessorNetworkWillRemoveProcessor(Processor*) override;
+    virtual void onWillRemoveProperty(Property* property, size_t index) override;
+    
+    QWidget* getProcessor(Processor* processor);
+    QWidget* createProcessor(Processor* processor);
+
+    QWidget* getProperty(Property* property);
+    QWidget* createProperty(Property* property);
+
+    QVBoxLayout* listLayout_;
+    std::unordered_map<Processor*, QWidget*> processorMap_;
+    std::unordered_map<Property*, QWidget*> propertyMap_;
+    PropertyWidgetFactory* factory_;
 };
 
 class IVW_MODULE_QTWIDGETS_API PropertyListEvent : public QEvent {
@@ -76,8 +108,6 @@ private:
 class IVW_MODULE_QTWIDGETS_API PropertyListWidget : public InviwoDockWidget,
                                                     ProcessorNetworkEvaluationObserver {
 public:
-    using WidgetMap = std::unordered_map<Processor*, CollapsibleGroupBoxWidgetQt*>;
-
     PropertyListWidget(QWidget* parent, InviwoApplication* app);
     virtual ~PropertyListWidget();
 
@@ -92,16 +122,10 @@ public:
     virtual void onProcessorNetworkEvaluationBegin() override;
     virtual void onProcessorNetworkEvaluationEnd() override;
 
-protected:
-    WidgetMap widgetMap_;
-
 private:
-    CollapsibleGroupBoxWidgetQt* getPropertiesForProcessor(Processor* processor);
-    CollapsibleGroupBoxWidgetQt* createPropertiesForProcessor(Processor* processor);
-
     InviwoApplication* app_;
-    QVBoxLayout* listLayout_;
-    QWidget* listWidget_;
+
+    PropertyListFrame* frame_;
     QScrollArea* scrollArea_;
 };
 

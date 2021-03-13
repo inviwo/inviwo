@@ -30,7 +30,6 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/processors/processorwidgetobserver.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
 
 namespace inviwo {
@@ -39,8 +38,7 @@ class Processor;
 /**
  * Base class for widgets connected to a Processor
  */
-class IVW_CORE_API ProcessorWidget : public ProcessorWidgetObservable,
-                                     public ProcessorWidgetMetaDataObserver {
+class IVW_CORE_API ProcessorWidget : public ProcessorWidgetMetaDataObserver {
 public:
     ProcessorWidget(Processor* p);
     virtual ~ProcessorWidget() = default;
@@ -48,29 +46,28 @@ public:
     virtual Processor* getProcessor() const;
 
     virtual bool isVisible() const;
-    /**
-     * Show or hide window.
-     * Calls onProcessorWidgetVisibilityChange if state changed.
-     * Calls notifyObserversAboutShow if visible = true and then invalidates processor.
-     * Calls notifyObserversAboutHide if visible = false.
-     */
     virtual void setVisible(bool visible);
-    virtual void show();
-    virtual void hide();
-
     virtual glm::ivec2 getDimensions() const;
     virtual void setDimensions(ivec2);
     virtual glm::ivec2 getPosition() const;
     virtual void setPosition(ivec2);
+    virtual bool isFullScreen() const;
+    virtual void setFullScreen(bool fullscreen);
+    virtual bool isOnTop() const;
+    virtual void setOnTop(bool onTop);
 
 protected:
     virtual void updateVisible(bool visible) = 0;
     virtual void updateDimensions(ivec2) = 0;
     virtual void updatePosition(ivec2) = 0;
+    virtual void updateFullScreen(bool) = 0;
+    virtual void updateOnTop(bool) = 0;
 
     virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) override;
+    virtual void onProcessorWidgetFullScreenChange(ProcessorWidgetMetaData*) override;
+    virtual void onProcessorWidgetOnTopChange(ProcessorWidgetMetaData*) override;
 
     Processor* processor_;               //< non owning reference.
     ProcessorWidgetMetaData* metaData_;  //< non owning reference.

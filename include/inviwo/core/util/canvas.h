@@ -50,15 +50,11 @@ class GestureEvent;
 
 class IVW_CORE_API Canvas {
 public:
-    Canvas(size2_t dimensions);
+    Canvas();
     virtual ~Canvas() = default;
 
     virtual void render(std::shared_ptr<const Image>, LayerType layerType = LayerType::Color,
                         size_t idx = 0) = 0;
-    virtual void resize(size2_t canvasSize);
-
-    size2_t getCanvasDimensions() const;
-    virtual size2_t getImageDimensions() const = 0;
 
     virtual void update() = 0;
     virtual void activate() = 0;
@@ -75,26 +71,10 @@ public:
 
     virtual void releaseContext() = 0;
 
-    bool isFullScreen() const;
-    /**
-     * Sets window state of canvas to cover the entire screen.
-     * Will call setFullScreenInternal after setting full screen flag.
-     * @see setFullScreenInternal
-     */
-    void setFullScreen(bool fullscreen);
-    void propagateEvent(Event* e);
-
 protected:
-    /**
-     * Derived classes should override to implement actual window state.
-     */
-    virtual void setFullScreenInternal(bool fullscreen) = 0;
-
-    size2_t screenDimensions_;
     EventPropagator* propagator_;  //< non-owning reference
     PickingController pickingController_;
     ProcessorWidget* ownerWidget_;  //< non-owning reference
-    bool isFullScreen_ = false;
 };
 
 }  // namespace inviwo

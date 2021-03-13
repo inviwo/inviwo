@@ -241,6 +241,10 @@ struct IVW_MODULE_QTWIDGETS_API WidgetCloseEventFilter : QObject {
     virtual bool eventFilter(QObject* obj, QEvent* ev) override;
 };
 
+IVW_MODULE_QTWIDGETS_API void setFullScreen(QWidget* widget, bool fullScreen);
+IVW_MODULE_QTWIDGETS_API void setOnTop(QWidget* widget, bool onTop);
+
+
 template <typename T>
 int decimals([[maybe_unused]] double inc) {
     if constexpr (std::is_floating_point_v<T>) {

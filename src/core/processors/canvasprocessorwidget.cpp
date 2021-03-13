@@ -45,19 +45,12 @@ CanvasProcessorWidget::CanvasProcessorWidget(Processor* p) : ProcessorWidget(p) 
 void CanvasProcessorWidget::onProcessorNetworkDidAddConnection(const PortConnection& con) {
     const auto successors = util::getSuccessors(con.getInport()->getProcessor());
     if (util::contains(successors, processor_)) {
-        const auto size = getCanvas()->getCanvasDimensions();
-        ResizeEvent event{size, size};
-        getCanvas()->propagateEvent(&event);
+        propagateResizeEvent();
     }
 }
 
 void CanvasProcessorWidget::onProcessorNetworkDidRemoveConnection(const PortConnection& con) {
-    const auto successors = util::getSuccessors(con.getInport()->getProcessor());
-    if (util::contains(successors, processor_)) {
-        const auto size = getCanvas()->getCanvasDimensions();
-        ResizeEvent event{size, size};
-        getCanvas()->propagateEvent(&event);
-    }
+    onProcessorNetworkDidAddConnection(con);
 }
 
 }  // namespace inviwo

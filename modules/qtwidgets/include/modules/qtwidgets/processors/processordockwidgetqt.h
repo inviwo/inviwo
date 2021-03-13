@@ -59,9 +59,7 @@ public:
     virtual ~ProcessorDockWidgetQt() = default;
 
     // Override ProcessorWidget
-    virtual void setVisible(bool visible) override;
-    virtual void show() override;
-    virtual void hide() override;
+    using InviwoDockWidget::setVisible;
     virtual void setPosition(glm::ivec2 pos) override;
     virtual void setDimensions(ivec2 dimensions) override;
 
@@ -69,7 +67,9 @@ protected:
     // Override QWidget events
     virtual void resizeEvent(QResizeEvent*) override;
     virtual void moveEvent(QMoveEvent*) override;
-
+    virtual void showEvent(QShowEvent*) override;
+    virtual void hideEvent(QHideEvent*) override;
+    
     Processor::NameDispatcherHandle idChange_;
 };
 

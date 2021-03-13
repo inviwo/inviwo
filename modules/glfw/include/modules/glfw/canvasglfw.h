@@ -34,6 +34,8 @@
 #include <modules/glfw/glfwuserdata.h>
 #include <modules/glfw/glfwwindoweventmanager.h>
 
+#include <functional>
+
 typedef struct GLFWwindow GLFWwindow;
 
 namespace inviwo {
@@ -48,23 +50,21 @@ public:
     virtual void activate() override;
     virtual void glSwapBuffers() override;
 
-    void show();
-    void hide();
+    void setVisible(bool visible);
 
     void setWindowSize(ivec2);
+    ivec2 getWindowSize() const;
+    ivec2 getFramebufferSize() const;
     void setWindowPosition(ivec2);
+    ivec2 getWindowPosition() const;
 
     void setWindowTitle(std::string);
-
-    static void closeWindow(GLFWwindow*);
+    
     static int getVisibleWindowCount();
 
     virtual void update() override;
 
-    static void reshape(GLFWwindow*, int, int);
-    static void move(GLFWwindow*, int, int);
-
-    static void setAlwaysOnTopByDefault(bool);
+    void setOnTop(bool);
 
     virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
     virtual ContextID activeContext() const override;
@@ -79,8 +79,16 @@ public:
 
     static ivec2 movePointOntoDesktop(ivec2 pos, ivec2 size);
 
+    // CanvasGL override
+    virtual size2_t getCanvasDimensions() const override;
+
+    std::function<void(bool)> onVisibilityChange;
+    std::function<void(ivec2)> onPositionChange;
+    std::function<void(ivec2)> onWindowSizeChange;
+    std::function<void(ivec2)> onFramebufferSizeChange;
+    
 protected:
-    virtual void setFullScreenInternal(bool fullscreen) override;
+    void setFullScreen(bool fullscreen);
     static CanvasGLFW* getCanvasGLFW(GLFWwindow*);
     static CanvasGLFW* getSharedContext();
 

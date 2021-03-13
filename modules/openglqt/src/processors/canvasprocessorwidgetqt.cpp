@@ -27,68 +27,75 @@
  *
  *********************************************************************************/
 
-#include <modules/openglqt/canvasprocessorwidgetqt.h>
-#include <modules/openglqt/canvasqt.h>
+#include <modules/openglqt/processors/canvasprocessorwidgetqt.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/interaction/events/resizeevent.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QResizeEvent>
+#include <QMoveEvent>
 #include <QGridLayout>
+#include <QApplication>
 #include <warn/pop>
 
 namespace inviwo {
 
 CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
-    : QWidget(utilqt::getApplicationMainWindow()), CanvasProcessorWidget(p), canvas_(nullptr) {
+    : CanvasProcessorWidget(p), QWidget{utilqt::getApplicationMainWindow(), Qt::Window}, canvas_{} {
+
+    setWindowTitle(utilqt::toQString(p->getDisplayName()));
+    nameChange_ =
+        processor_->onDisplayNameChange([this](std::string_view newName, std::string_view) {
+            setWindowTitle(utilqt::toQString(newName));
+            RenderContext::getPtr()->setContextName(canvas_->contextId(), newName);
+        });
 
     setMinimumSize(32, 32);
     setFocusPolicy(Qt::NoFocus);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    ivec2 dim = CanvasProcessorWidget::getDimensions();
-    ivec2 pos = CanvasProcessorWidget::getPosition();
+    const ivec2 pysicalDim = CanvasProcessorWidget::getDimensions();
+    const ivec2 pos = CanvasProcessorWidget::getPosition();
 
-    setWindowTitle(QString::fromStdString(processor_->getDisplayName()));
+    const auto dpr = window()->devicePixelRatio();
+    const ivec2 logicalDim = pysicalDim / dpr;
 
-    canvas_ = canvas_ptr(new CanvasQt(nullptr, uvec2(dim.x, dim.y), processor_->getDisplayName()),
-                         [&](CanvasQt* c) {
-                             c->activate();
-                             layout()->removeWidget(c);
-                             delete c;
-                             RenderContext::getPtr()->activateDefaultRenderContext();
-                         });
-
+    canvas_ = std::unique_ptr<CanvasQOpenGLWidget, std::function<void(CanvasQOpenGLWidget*)>>(
+        new CanvasQOpenGLWidget(nullptr, processor_->getDisplayName()),
+        [&](CanvasQOpenGLWidget* c) {
+            c->activate();
+            layout()->removeWidget(c);
+            delete c;
+            RenderContext::getPtr()->activateDefaultRenderContext();
+        });
     canvas_->setEventPropagator(processor_);
     canvas_->setProcessorWidgetOwner(this);
-    canvas_->setMouseTracking(true);
-    canvas_->setAttribute(Qt::WA_OpaquePaintEvent);
 
     QGridLayout* gridLayout = new QGridLayout(this);
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->addWidget(canvas_.get(), 0, 0);
 
-    setWindowFlags(Qt::Tool);
-    setDimensions(dim);
-
     if (auto mainWindow = utilqt::getApplicationMainWindow()) {
         // Move widget relative to main window to make sure that it is visible on screen.
         QPoint newPos =
-            utilqt::movePointOntoDesktop(QPoint(pos.x, pos.y), QSize(dim.x, dim.y), true);
+            utilqt::movePointOntoDesktop(utilqt::toQPoint(pos), utilqt::toQSize(logicalDim), true);
 
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
             util::KeepTrueWhileInScope ignore(&ignoreEvents_);
             // prevent move events, since this will automatically save the "adjusted" position.
             // The processor widget already has its correct pos, i.e. the one de-serialized from
             // file.
-            QWidget::move(newPos);
+            Super::move(newPos);
         } else {  // We guess that this is a new widget and give a new position
             newPos = mainWindow->pos();
             newPos += utilqt::offsetWidget();
-            QWidget::move(newPos);
+            Super::move(newPos);
         }
     }
 
@@ -99,118 +106,128 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
         // Otherwise, a spontaneous event will be triggered which will set the widget
         // to its "initial" size of 160 by 160 at (0, 0) thereby overwriting our values.
         util::KeepTrueWhileInScope ignore(&ignoreEvents_);
-        QWidget::setVisible(true);
-        QWidget::resize(QSize(dim.x, dim.y));
-        QWidget::setVisible(false);
+        Super::setVisible(true);
+        auto delta = size() - canvas_->size();
+        resize(static_cast<int>(logicalDim.x) + delta.width(),
+               static_cast<int>(logicalDim.y) + delta.height());
+        canvas_->resize(static_cast<int>(logicalDim.x), static_cast<int>(logicalDim.y));
+
+        Super::setVisible(false);
     }
 
-    nameChange_ =
-        processor_->onDisplayNameChange([this](std::string_view newName, std::string_view) {
-            setWindowTitle(utilqt::toQString(newName));
-            RenderContext::getPtr()->setContextName(canvas_->contextId(), newName);
-        });
+    setWindowFlag(Qt::WindowStaysOnTopHint, CanvasProcessorWidget::isOnTop());
+    connect(qApp, &QApplication::applicationStateChanged, this, [this](Qt::ApplicationState state) {
+        utilqt::setOnTop(this, isOnTop() && state == Qt::ApplicationActive);
+    });
 
-    canvas_->setVisible(ProcessorWidget::isVisible());
     {
         // ignore internal state updates, i.e. position, when showing the widget
         // On Windows, the widget hasn't got a decoration yet. So it will be positioned using the
         // decoration offset, i.e. the "adjusted" position.
         util::KeepTrueWhileInScope ignore(&ignoreEvents_);
-        QWidget::setVisible(ProcessorWidget::isVisible());
+        Super::setVisible(ProcessorWidget::isVisible());
     }
     RenderContext::getPtr()->activateDefaultRenderContext();
 
     installEventFilter(new utilqt::WidgetCloseEventFilter(this));
 }
 
-CanvasProcessorWidgetQt::~CanvasProcessorWidgetQt() {}
+CanvasProcessorWidgetQt::~CanvasProcessorWidgetQt() = default;
 
 void CanvasProcessorWidgetQt::setVisible(bool visible) {
-    if (visible) {
-        canvas_->show();
-    } else {
-        canvas_->hide();
+    if (Super::isVisible() != visible) {
+        Super::setVisible(visible);  // This will trigger show/hide events.
     }
-    QWidget::setVisible(visible);  // This will trigger show/hide events.
 }
 
-void CanvasProcessorWidgetQt::show() { CanvasProcessorWidgetQt::setVisible(true); }
-void CanvasProcessorWidgetQt::hide() { CanvasProcessorWidgetQt::setVisible(false); }
+void CanvasProcessorWidgetQt::setFullScreen(bool fullScreen) {
+    if (fullScreen != Super::isFullScreen()) {
+        utilqt::setFullScreen(this, fullScreen);
+    }
+    CanvasProcessorWidget::setFullScreen(fullScreen);
+}
+
+void CanvasProcessorWidgetQt::setOnTop(bool onTop) {
+    utilqt::setOnTop(this, onTop);
+    CanvasProcessorWidget::setOnTop(onTop);
+}
 
 void CanvasProcessorWidgetQt::setPosition(ivec2 pos) {
-    if (pos != utilqt::toGLM(QWidget::pos())) {
-        QWidget::move(pos.x, pos.y);  // This will trigger a move event.
+    if (pos != utilqt::toGLM(Super::pos())) {
+        Super::move(pos.x, pos.y);  // This will trigger a move event.
     }
 }
 
 void CanvasProcessorWidgetQt::setDimensions(ivec2 dimensions) {
-    if (dimensions != utilqt::toGLM(QWidget::size())) {
-        QWidget::resize(dimensions.x, dimensions.y);  // This will trigger a resize event.
+    if (dimensions != utilqt::toGLM(Super::size())) {
+        const auto dpr = window()->devicePixelRatio();
+        const ivec2 logicalDim = dimensions / dpr;
+
+        auto delta = size() - canvas_->size();
+        resize(logicalDim.x + delta.width(), logicalDim.y + delta.height());
+        canvas_->resize(logicalDim.x, logicalDim.y);  // This will trigger a resize event.
     }
 }
 
 Canvas* CanvasProcessorWidgetQt::getCanvas() const { return canvas_.get(); }
 
 void CanvasProcessorWidgetQt::resizeEvent(QResizeEvent* event) {
-    if (ignoreEvents_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
-
-    setUpdatesEnabled(false);
-    util::OnScopeExit enable([&]() { setUpdatesEnabled(true); });
-
-    CanvasProcessorWidget::setDimensions(utilqt::toGLM(event->size()));
-
-    if (!event->spontaneous()) {
-        QWidget::resizeEvent(event);
-    }
+    Super::resizeEvent(event);
+    util::KeepTrueWhileInScope ignore(&resizeOngoing_);
+    propagateResizeEvent();
 }
 
-void CanvasProcessorWidgetQt::closeEvent(QCloseEvent* event) {
-    if (ignoreEvents_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
+void CanvasProcessorWidgetQt::propagateResizeEvent() {
+    auto previousScreenDimensions = screenDimensions_;
 
-    canvas_->hide();
-    CanvasProcessorWidget::setVisible(false);
-    QWidget::closeEvent(event);
+    const auto dpr = window()->devicePixelRatio();
+    screenDimensions_ = dpr * utilqt::toGLM(canvas_->size());
+    CanvasProcessorWidget::setDimensions(screenDimensions_);
+
+    NetworkLock lock;
+    RenderContext::getPtr()->activateDefaultRenderContext();
+    ResizeEvent resizeEvent(screenDimensions_, previousScreenDimensions);
+    processor_->propagateEvent(&resizeEvent, nullptr);
 }
 
 void CanvasProcessorWidgetQt::showEvent(QShowEvent* event) {
     if (ignoreEvents_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
-
     CanvasProcessorWidget::setVisible(true);
-    QWidget::showEvent(event);
+    Super::showEvent(event);
 }
 
 void CanvasProcessorWidgetQt::hideEvent(QHideEvent* event) {
     if (ignoreEvents_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
-
     CanvasProcessorWidget::setVisible(false);
-    QWidget::hideEvent(event);
+    Super::hideEvent(event);
 }
 
 void CanvasProcessorWidgetQt::moveEvent(QMoveEvent* event) {
     if (ignoreEvents_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
-
     CanvasProcessorWidget::setPosition(utilqt::toGLM(event->pos()));
-    QWidget::moveEvent(event);
+    Super::moveEvent(event);
 }
 
 void CanvasProcessorWidgetQt::updateVisible(bool visible) {
-    if (ignoreUpdate_) return;
     util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     setVisible(visible);
 }
 void CanvasProcessorWidgetQt::updateDimensions(ivec2 dim) {
-    if (ignoreUpdate_) return;
+    if (resizeOngoing_) return;
     util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     setDimensions(dim);
 }
 void CanvasProcessorWidgetQt::updatePosition(ivec2 pos) {
-    if (ignoreUpdate_) return;
     util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     setPosition(pos);
 }
+
+void CanvasProcessorWidgetQt::updateFullScreen(bool fullScreen) {
+    if (fullScreen != Super::isFullScreen()) {
+        utilqt::setFullScreen(this, fullScreen);
+    }
+}
+
+void CanvasProcessorWidgetQt::updateOnTop(bool onTop) { utilqt::setOnTop(this, onTop); }
+
 }  // namespace inviwo

@@ -77,73 +77,73 @@ ProcessorWidgetQt::ProcessorWidgetQt(Processor* p) : QWidget(nullptr), Processor
     }
 }
 
-void ProcessorWidgetQt::show() { QWidget::setVisible(true); }
-
-void ProcessorWidgetQt::hide() { QWidget::setVisible(false); }
-
 void ProcessorWidgetQt::setPosition(glm::ivec2 pos) {
     if (pos != utilqt::toGLM(QWidget::pos())) {
         QWidget::move(pos.x, pos.y);  // This will trigger a move event.
     }
 }
 
-void ProcessorWidgetQt::move(ivec2 pos) { ProcessorWidgetQt::setPosition(pos); }
-
 void ProcessorWidgetQt::setDimensions(ivec2 dimensions) {
-    // ProcessorWidget::setDimensions(dimensions);  Will be called by the Resize event.
-    QWidget::resize(dimensions.x, dimensions.y);
+    QWidget::resize(dimensions.x, dimensions.y);  // This will trigger a resize event.
+}
+
+void ProcessorWidgetQt::setFullScreen(bool fullScreen) {
+    utilqt::setFullScreen(this, fullScreen);
+    ProcessorWidget::setFullScreen(fullScreen);
+}
+
+void ProcessorWidgetQt::setOnTop(bool onTop) {
+    utilqt::setOnTop(this, onTop);
+    ProcessorWidget::setOnTop(onTop);
 }
 
 void ProcessorWidgetQt::resizeEvent(QResizeEvent* event) {
     if (ignoreEvents_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
     ProcessorWidget::setDimensions(ivec2(event->size().width(), event->size().height()));
     QWidget::resizeEvent(event);
 }
 
 void ProcessorWidgetQt::showEvent(QShowEvent* event) {
     if (ignoreEvents_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
     ProcessorWidget::setVisible(true);
     QWidget::showEvent(event);
 }
 
 void ProcessorWidgetQt::closeEvent(QCloseEvent* event) {
     if (ignoreEvents_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
     ProcessorWidget::setVisible(false);
     QWidget::closeEvent(event);
 }
 
 void ProcessorWidgetQt::hideEvent(QHideEvent* event) {
     if (ignoreEvents_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
-
     ProcessorWidget::setVisible(false);
     QWidget::hideEvent(event);
 }
 
 void ProcessorWidgetQt::moveEvent(QMoveEvent* event) {
     if (ignoreEvents_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
     ProcessorWidget::setPosition(ivec2(event->pos().x(), event->pos().y()));
     QWidget::moveEvent(event);
 }
 
 void ProcessorWidgetQt::updateVisible(bool visible) {
-    if (ignoreUpdate_) return;
     util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     QWidget::setVisible(visible);
 }
 void ProcessorWidgetQt::updateDimensions(ivec2 dim) {
-    if (ignoreUpdate_) return;
     util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     QWidget::move(dim.x, dim.y);
 }
 void ProcessorWidgetQt::updatePosition(ivec2 pos) {
-    if (ignoreUpdate_) return;
     util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     QWidget::move(pos.x, pos.y);
 }
+
+void ProcessorWidgetQt::updateFullScreen(bool fullScreen) {
+    utilqt::setFullScreen(this, fullScreen);
+}
+
+void ProcessorWidgetQt::updateOnTop(bool onTop) { utilqt::setOnTop(this, onTop); }
 
 }  // namespace inviwo

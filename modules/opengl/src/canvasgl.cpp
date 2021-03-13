@@ -47,7 +47,7 @@
 
 namespace inviwo {
 
-CanvasGL::CanvasGL(size2_t dimensions) : Canvas(dimensions) {}
+CanvasGL::CanvasGL() : Canvas() {}
 
 void CanvasGL::defaultGLState() {
     if (!OpenGLCapabilities::hasSupportedOpenGLVersion()) return;
@@ -66,12 +66,6 @@ void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, s
     pickingController_.setPickingSource(image);
     layerIdx_ = idx;
     update();
-}
-
-void CanvasGL::resize(size2_t size) {
-    image_.reset();
-    pickingController_.setPickingSource(nullptr);
-    Canvas::resize(size);
 }
 
 void CanvasGL::update() { renderLayer(); }

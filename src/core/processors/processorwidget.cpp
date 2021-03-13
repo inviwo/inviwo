@@ -33,37 +33,31 @@
 namespace inviwo {
 
 ProcessorWidget::ProcessorWidget(Processor* p)
-    : ProcessorWidgetObservable()
-    , processor_(p)
+    : processor_(p)
     , metaData_(processor_->createMetaData<ProcessorWidgetMetaData>(
           ProcessorWidgetMetaData::CLASS_IDENTIFIER)) {
 
     metaData_->addObserver(this);
 }
 
-void ProcessorWidget::setVisible(bool visible) {
-    metaData_->setVisibile(visible);
-    if (visible) {
-        notifyObserversAboutShow(this);
-        if (processor_) processor_->invalidate(InvalidationLevel::InvalidOutput);
-    } else {
-        notifyObserversAboutHide(this);
-    }
-}
-
+void ProcessorWidget::setVisible(bool visible) { metaData_->setVisibile(visible, this); }
 bool ProcessorWidget::isVisible() const { return metaData_->isVisible(); }
-
-void ProcessorWidget::show() { ProcessorWidget::setVisible(true); }
-
-void ProcessorWidget::hide() { ProcessorWidget::setVisible(false); }
 
 Processor* ProcessorWidget::getProcessor() const { return processor_; }
 
 glm::ivec2 ProcessorWidget::getDimensions() const { return metaData_->getDimensions(); }
-void ProcessorWidget::setDimensions(glm::ivec2 dimensions) { metaData_->setDimensions(dimensions); }
+void ProcessorWidget::setDimensions(glm::ivec2 dimensions) {
+    metaData_->setDimensions(dimensions, this);
+}
 
 glm::ivec2 ProcessorWidget::getPosition() const { return metaData_->getPosition(); }
-void ProcessorWidget::setPosition(glm::ivec2 pos) { metaData_->setPosition(pos); }
+void ProcessorWidget::setPosition(glm::ivec2 pos) { metaData_->setPosition(pos, this); }
+
+bool ProcessorWidget::isFullScreen() const { return metaData_->isFullScreen(); }
+void ProcessorWidget::setFullScreen(bool fullscreen) { metaData_->setFullScreen(fullscreen); }
+
+bool ProcessorWidget::isOnTop() const { return metaData_->isOnTop(); }
+void ProcessorWidget::setOnTop(bool onTop) { metaData_->setOnTop(onTop); }
 
 void ProcessorWidget::onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {
     updatePosition(metaData_->getPosition());
@@ -74,5 +68,10 @@ void ProcessorWidget::onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*)
 void ProcessorWidget::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) {
     updateVisible(metaData_->isVisible());
 }
-
+void ProcessorWidget::onProcessorWidgetFullScreenChange(ProcessorWidgetMetaData*) {
+    updateFullScreen(metaData_->isFullScreen());
+}
+void ProcessorWidget::onProcessorWidgetOnTopChange(ProcessorWidgetMetaData*) {
+    updateOnTop(metaData_->isFullScreen());
+}
 }  // namespace inviwo

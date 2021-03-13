@@ -675,7 +675,8 @@ void Trackball::touchGesture(Event* event) {
             rotation = touchPoints.size() > 1 && touchPoints[0].state() == TouchState::Stationary;
             // Is pinching/panning. Do not pan/zoom when rotating
             panZoom = touchPoints.size() > 1 && !rotation;
-            break;
+            return; // this does not really work at all...
+            // break;
     }
     if (rotation) {
         // Assume that We require two touches when using trackpad since the first one will occur

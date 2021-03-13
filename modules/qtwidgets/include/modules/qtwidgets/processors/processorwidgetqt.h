@@ -49,18 +49,18 @@ public:
     ProcessorWidgetQt(Processor* p);
     virtual ~ProcessorWidgetQt() = default;
 
-    using QWidget::setVisible;
-    virtual void show() override;                     // Override ProcessorWidget
-    virtual void hide() override;                     // Override ProcessorWidget
+    using QWidget::setVisible;                
     virtual void setPosition(ivec2 pos) override;     // Override ProcessorWidget
     virtual void setDimensions(ivec2 dime) override;  // Override ProcessorWidget
-
-    virtual void move(ivec2 pos);  // Mirror QWidget::move
+    virtual void setFullScreen(bool fullScreen) override;
+    virtual void setOnTop(bool onTop) override;
 
 protected:
     virtual void updateVisible(bool visible) override;
     virtual void updateDimensions(ivec2) override;
     virtual void updatePosition(ivec2) override;
+    virtual void updateFullScreen(bool) override;
+    virtual void updateOnTop(bool) override;
 
     // Override QWidget events
     virtual void resizeEvent(QResizeEvent*) override;
@@ -70,7 +70,6 @@ protected:
     virtual void moveEvent(QMoveEvent*) override;
 
     bool ignoreEvents_{false};
-    bool ignoreUpdate_{false};
 };
 
 }  // namespace inviwo

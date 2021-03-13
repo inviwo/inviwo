@@ -216,9 +216,9 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
             domainMin_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(0.0)));
             domainMax_->setText(QString("%1").arg(dataMap.mapFromNormalizedToValue(1.0)));
         };
-        port->onChange(portChange);
-        port->onConnect(portChange);
-        port->onDisconnect(portChange);
+        portCallbacks_.emplace_back(port->onChangeScoped(portChange));
+        portCallbacks_.emplace_back(port->onConnectScoped(portChange));
+        portCallbacks_.emplace_back(port->onDisconnectScoped(portChange));
         portChange();
     }
 
@@ -234,9 +234,9 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<util::TFPropertyConcept> mode
         if (auto port = propertyPtr_->getVolumeInport()) {
             const auto portChange = [this]() { onTFTypeChangedInternal(); };
 
-            port->onChange(portChange);
-            port->onConnect(portChange);
-            port->onDisconnect(portChange);
+            portCallbacks_.emplace_back(port->onChangeScoped(portChange));
+            portCallbacks_.emplace_back(port->onConnectScoped(portChange));
+            portCallbacks_.emplace_back(port->onDisconnectScoped(portChange));
         }
         // update value mapping for position widget with respect to TF type and port
         onTFTypeChangedInternal();

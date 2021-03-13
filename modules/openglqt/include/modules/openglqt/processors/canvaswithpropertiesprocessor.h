@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,31 +29,47 @@
 
 #pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/observer.h>
+#include <modules/openglqt/openglqtmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-class ProcessorWidget;
-class ProcessorWidgetObservable;
+class PWObserver;
 
-class IVW_CORE_API ProcessorWidgetObserver : public Observer {
+class IVW_MODULE_OPENGLQT_API CanvasWithPropertiesProcessor : public Processor {
 public:
-    friend ProcessorWidgetObservable;
-    ProcessorWidgetObserver() = default;
-    virtual ~ProcessorWidgetObserver() = default;
+    CanvasWithPropertiesProcessor();
+    virtual ~CanvasWithPropertiesProcessor();
 
-    virtual void onProcessorWidgetShow(ProcessorWidget*);
-    virtual void onProcessorWidgetHide(ProcessorWidget*);
-};
+    virtual void process() override;
+    virtual void doIfNotReady() override;
+    virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) override;
 
-class IVW_CORE_API ProcessorWidgetObservable : public Observable<ProcessorWidgetObserver> {
-public:
-    ProcessorWidgetObservable() = default;
-    virtual ~ProcessorWidgetObservable() = default;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-    void notifyObserversAboutShow(ProcessorWidget* p);
-    void notifyObserversAboutHide(ProcessorWidget* p);
+    virtual void propagateEvent(Event* event, Outport* source) override;
+
+private:
+    std::unique_ptr<PWObserver> pwObserver_;
+    ImageInport inport_;
+    
+    IntSize2Property dimensions_;
+    IntVec2Property position_;
+    BoolProperty visible_;
+    BoolProperty fullScreen_;
+    BoolProperty onTop_;
+    
+    TemplateOptionProperty<LayerType> layerType_;
+    IntSizeTProperty layerIndex_;
+    
+    StringProperty paths_;
+    
+    
 };
 
 }  // namespace inviwo

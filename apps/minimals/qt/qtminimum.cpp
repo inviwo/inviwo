@@ -67,6 +67,7 @@ int main(int argc, char** argv) {
     QSurfaceFormat::setDefaultFormat(defaultFormat);
 
     InviwoApplicationQt inviwoApp(argc, argv, "Inviwo-Qt");
+    inviwoApp.setStyleSheetFile(":/stylesheets/inviwo.qss");
     inviwoApp.printApplicationInfo();
     inviwoApp.setProgressCallback([](std::string m) {
         LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0,

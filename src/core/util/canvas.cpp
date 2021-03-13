@@ -32,58 +32,19 @@
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
-#include <inviwo/core/interaction/events/gestureevent.h>
-#include <inviwo/core/interaction/events/keyboardevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/wheelevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/network/networklock.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/settings/systemsettings.h>
 
 namespace inviwo {
 
-Canvas::Canvas(size2_t dimensions)
-    : screenDimensions_(dimensions)
-    , propagator_(nullptr)
+Canvas::Canvas()
+    : propagator_(nullptr)
     , pickingController_()
     , ownerWidget_(nullptr) {}
-
-void Canvas::resize(size2_t canvasSize) {
-    auto previousScreenDimensions = screenDimensions_;
-    screenDimensions_ = canvasSize;
-
-    if (propagator_) {
-        NetworkLock lock;
-        RenderContext::getPtr()->activateDefaultRenderContext();
-        ResizeEvent resizeEvent(screenDimensions_, previousScreenDimensions);
-        propagator_->propagateEvent(&resizeEvent, nullptr);
-    }
-}
-
-size2_t Canvas::getCanvasDimensions() const { return screenDimensions_; }
-
-void Canvas::propagateEvent(Event* event) {
-    NetworkLock lock;
-    if (!propagator_) return;
-
-    pickingController_.propagateEvent(event, propagator_);
-    if (event->hasBeenUsed()) return;
-    propagator_->propagateEvent(event, nullptr);
-}
 
 void Canvas::setEventPropagator(EventPropagator* propagator) { propagator_ = propagator; }
 
 ProcessorWidget* Canvas::getProcessorWidgetOwner() const { return ownerWidget_; }
 
 void Canvas::setProcessorWidgetOwner(ProcessorWidget* ownerWidget) { ownerWidget_ = ownerWidget; }
-
-bool Canvas::isFullScreen() const { return isFullScreen_; }
-
-void Canvas::setFullScreen(bool fullscreen) {
-    isFullScreen_ = fullscreen;
-    setFullScreenInternal(fullscreen);
-}
 
 }  // namespace inviwo

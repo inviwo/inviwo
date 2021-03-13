@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -42,12 +42,15 @@
 
 #include <modules/openglqt/openglqtmodule.h>
 #include <modules/openglqt/openglqtcapabilities.h>
-#include <modules/openglqt/canvasprocessorwidgetqt.h>
-#include <modules/openglqt/canvasqt.h>
+
 #include <modules/openglqt/openglqtmenu.h>
 #include <modules/openglqt/glslsyntaxhighlight.h>
 #include <modules/openglqt/properties/glslpropertywidgetqt.h>
 #include <modules/openglqt/properties/glslfilepropertywidgetqt.h>
+
+#include <modules/openglqt/processors/canvaswithpropertiesprocessor.h>
+#include <modules/openglqt/processors/canvaswithpropertiesprocessorwidgetqt.h>
+#include <modules/openglqt/processors/canvasprocessorwidgetqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -99,6 +102,9 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
 
     registerPropertyWidget<GLSLFilePropertyWidgetQt, FileProperty>(PropertySemantics::ShaderEditor);
     registerPropertyWidget<GLSLPropertyWidgetQt, StringProperty>(PropertySemantics::ShaderEditor);
+    
+    registerProcessor<CanvasWithPropertiesProcessor>();
+    registerProcessorWidget<CanvasWithPropertiesProcessorWidgetQt, CanvasWithPropertiesProcessor>();
 }
 
 OpenGLQtModule::~OpenGLQtModule() {

@@ -652,6 +652,30 @@ bool WidgetCloseEventFilter::eventFilter(QObject* obj, QEvent* ev) {
     }
 }
 
+void setFullScreen(QWidget* widget, bool fullScreen) {
+    if (fullScreen) {
+        // Prevent Qt resize event with incorrect size when going full screen.
+        // Reproduce error by loading a workspace with a full screen canvas.
+        // This is equivalent to suggested solution using QTimer
+        // https://stackoverflow.com/questions/19817881/qt-fullscreen-on-startup
+        // No need to process user events, i.e. mouse/keyboard etc.
+        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+        widget->setWindowState(widget->windowState() | Qt::WindowFullScreen);
+    } else {
+        widget->setWindowState(widget->windowState() & ~Qt::WindowFullScreen);
+    }
+}
+
+void setOnTop(QWidget* widget, bool onTop) {
+    if (widget->windowFlags().testFlag(Qt::WindowStaysOnTopHint) == onTop) return;
+    
+    // setWindowFlag will alwyas hide the widget
+    // https://doc.qt.io/qt-5/qwidget.html#windowFlags-prop
+    const auto visible = widget->isVisible();
+    widget->setWindowFlag(Qt::WindowStaysOnTopHint, onTop);
+    widget->setVisible(visible);
+}
+
 }  // namespace utilqt
 
 }  // namespace inviwo

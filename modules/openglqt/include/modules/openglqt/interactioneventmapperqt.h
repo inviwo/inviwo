@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,56 +26,56 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <modules/openglqt/openglqtmoduledefine.h>
-#include <modules/openglqt/canvasqopenglwidget.h>
+
+#include <inviwo/core/util/glmvec.h>
+
 #include <inviwo/core/interaction/events/touchevent.h>
+
+#include <functional>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QMouseEvent>
-#include <QKeyEvent>
-#include <QEvent>
-#include <QHelpEvent>
-#include <QGestureEvent>
-
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-#include <QPointingDevice>
-#else
-#include <QTouchDevice>
-#endif
-#include <QTouchEvent>
+#include <QObject>
 #include <warn/pop>
+
+class QEvent;
+class QTouchEvent;
+class QMouseEvent;
+class QGestureEvent;
+class QPanGesture;
+class QPanGesture;
+class QPinchGesture;
+class QWheelEvent;
+class QKeyEvent;
+class QHelpEvent;
+
+class QPointingDevice;
+class QTouchDevice;
 
 namespace inviwo {
 
-class CanvasQt : public CanvasQOpenGLWidget {
-    friend class CanvasProcessorWidgetQt;
+class EventPropagator;
+class MouseInteractionEvent;
 
+/**
+ * \brief Map Qt interaction events Mouse, Keyboard, Touch to the corresponing inviwo events
+ */
+class IVW_MODULE_OPENGLQT_API InteractionEventMapperQt : public QObject {
 public:
-    explicit CanvasQt(QWidget* parent, size2_t dim = size2_t(256, 256),
-                      std::string_view name = "Canvas");
-    virtual ~CanvasQt();
-
-    virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
-                        size_t idx = 0) override;
-
-    virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
-
-protected:
-    virtual void setFullScreenInternal(bool fullscreen) override;
-    virtual bool event(QEvent* e) override;
-
-    void propagateEvent(Event* e);
-    void propagateEvent(MouseInteractionEvent* e);
-    bool showToolTip(QHelpEvent* e);
-
+    InteractionEventMapperQt(QObject* parent,
+                             EventPropagator* propagator,
+                             std::function<size2_t()> canvasDimensions,
+                             std::function<size2_t()> imageDimensions,
+                             std::function<double(dvec2)> depth,
+                             std::function<void(QMouseEvent*)> contextMenu);
+    virtual bool eventFilter(QObject* obj, QEvent* ev) override;
+    
+    bool blockContextMenu() const { return blockContextMenu_; }
+    
 private:
-    void doContextMenu(QMouseEvent* event);
-    dvec2 normalPos(dvec2 pos) const;
-
     bool mapMousePressEvent(QMouseEvent* e);
     bool mapMouseDoubleClickEvent(QMouseEvent* e);
     bool mapMouseReleaseEvent(QMouseEvent* e);
@@ -87,21 +87,28 @@ private:
     bool mapGestureEvent(QGestureEvent*);
     bool mapPanTriggered(QPanGesture*);
     bool mapPinchTriggered(QPinchGesture* e);
-
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-    //! Links QTouchDevice to inviwo::TouchDevice
-    std::map<const QPointingDevice*, TouchDevice> devices_;
-#else
-    std::map<const QTouchDevice*, TouchDevice> touchDevices_;
-#endif
+    
+    bool showToolTip(QHelpEvent* e);
+    
+    void setToolTipCallback(MouseInteractionEvent* e);
+    
+    EventPropagator* propagator_;
+    std::function<size2_t()> canvasDimensions_;
+    std::function<size2_t()> imageDimensions_;
+    std::function<double(dvec2)> depth_;
+    std::function<void(QMouseEvent*)> contextMenu_;
+    bool blockContextMenu_ = false;
+    
     //! Compare with next touch event to prevent duplicates
     std::vector<TouchPoint> prevTouchPoints_;
+    
+    std::string toolTipText_;
+    
+    // Hacks for gestures
     Qt::GestureType lastType_{};
     int lastNumFingers_{0};
     vec2 screenPositionNormalized_{0};
-    bool blockContextMenu_{false};
-
-    std::string toolTipText_;
+    
 };
 
 }  // namespace inviwo

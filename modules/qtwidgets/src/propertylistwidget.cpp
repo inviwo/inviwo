@@ -30,10 +30,12 @@
 #include <modules/qtwidgets/propertylistwidget.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/util/rendercontext.h>
 
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
@@ -53,11 +55,26 @@
 
 namespace inviwo {
 
-PropertyListFrame::PropertyListFrame(QWidget* parent) : QWidget(parent) {
+PropertyListFrame::PropertyListFrame(QWidget* parent, PropertyWidgetFactory* factory)
+    : QWidget(parent), listLayout_{new QVBoxLayout()}, factory_{factory} {
+
     QSizePolicy sp(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
     sp.setVerticalStretch(0);
     sp.setHorizontalStretch(1);
     QWidget::setSizePolicy(sp);
+
+    setLayout(listLayout_);
+
+    const auto space = utilqt::refSpacePx(this);
+    listLayout_->setAlignment(Qt::AlignTop);
+#ifdef __APPLE__
+    // Add some space for the scrollbar on mac
+    listLayout_->setContentsMargins(0, space, 10, space);
+#else
+    listLayout_->setContentsMargins(0, space, 0, space);
+#endif
+    listLayout_->setSpacing(space);
+    listLayout_->setSizeConstraint(QLayout::SetMinAndMaxSize);
 }
 
 QSize PropertyListFrame::sizeHint() const {
@@ -77,6 +94,130 @@ void PropertyListFrame::paintEvent(QPaintEvent*) {
     opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+}
+
+void PropertyListFrame::addProcessor(Processor* processor) {
+    setUpdatesEnabled(false);
+    listLayout_->setEnabled(false);
+    util::OnScopeExit enableUpdates([&]() {
+        listLayout_->setEnabled(true);
+        setUpdatesEnabled(true);
+    });
+
+    if (auto widget = getProcessor(processor)) {
+        widget->show();
+    }
+}
+
+void PropertyListFrame::hideProcessor(Processor* processor) {
+    auto it = processorMap_.find(processor);
+    if (it != processorMap_.end()) it->second->hide();
+}
+
+void PropertyListFrame::removeProcessor(Processor* processor) {
+    auto it = processorMap_.find(processor);
+    if (it != processorMap_.end()) {
+        it->second->hide();
+        listLayout_->removeWidget(it->second);
+        delete it->second;
+        processorMap_.erase(it);
+    }
+}
+
+void PropertyListFrame::addProperty(Property* property) {
+    setUpdatesEnabled(false);
+    listLayout_->setEnabled(false);
+    util::OnScopeExit enableUpdates([&]() {
+        listLayout_->setEnabled(true);
+        setUpdatesEnabled(true);
+    });
+
+    if (auto widget = getProperty(property)) {
+        widget->show();
+    }
+}
+void PropertyListFrame::hideProperty(Property* property) {
+    auto it = propertyMap_.find(property);
+    if (it != propertyMap_.end()) it->second->hide();
+}
+void PropertyListFrame::removeProperty(Property* property) {
+    auto it = propertyMap_.find(property);
+    if (it != propertyMap_.end()) {
+        it->second->hide();
+        listLayout_->removeWidget(it->second);
+        delete it->second;
+        propertyMap_.erase(it);
+    }
+}
+
+void PropertyListFrame::clear() {
+    for (auto&& [p, w] : processorMap_) {
+        w->hide();
+        listLayout_->removeWidget(w);
+        delete w;
+    }
+    processorMap_.clear();
+
+    for (auto&& [p, w] : propertyMap_) {
+        w->hide();
+        listLayout_->removeWidget(w);
+        delete w;
+    }
+    propertyMap_.clear();
+}
+
+QWidget* PropertyListFrame::getProcessor(Processor* processor) {
+    // check if processor widget has been already generated
+    auto it = processorMap_.find(processor);
+    if (it != processorMap_.end()) {
+        return it->second;
+    } else {
+        return createProcessor(processor);
+    }
+}
+
+QWidget* PropertyListFrame::createProcessor(Processor* processor) {
+    // create property widget and store it in the map
+    auto widget = new CollapsibleGroupBoxWidgetQt(processor);
+    widget->hide();
+    listLayout_->insertWidget(-1, widget, 0, Qt::AlignTop);
+    for (auto prop : processor->getProperties()) {
+        widget->addProperty(prop);
+    }
+    processorMap_[processor] = widget;
+    processor->getNetwork()->addObserver(this);
+    return widget;
+}
+
+QWidget* PropertyListFrame::getProperty(Property* property) {
+    // check if processor widget has been already generated
+    auto it = propertyMap_.find(property);
+    if (it != propertyMap_.end()) {
+        return it->second;
+    } else {
+        return createProperty(property);
+    }
+}
+QWidget* PropertyListFrame::createProperty(Property* property) {
+    // create property widget and store it in the map
+    if (auto widget = static_cast<PropertyWidgetQt*>(factory_->create(property).release())) {
+        widget->hide();
+        listLayout_->insertWidget(-1, widget, 0, Qt::AlignTop);
+        widget->initState();
+        propertyMap_[property] = widget;
+        property->getOwner()->addObserver(this);
+        RenderContext::getPtr()->activateDefaultRenderContext();
+        return widget;
+    }
+    return nullptr;
+}
+
+void PropertyListFrame::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
+    removeProcessor(processor);
+
+}
+void PropertyListFrame::onWillRemoveProperty(Property* property, size_t index) {
+    removeProperty(property);
 }
 
 PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
@@ -105,20 +246,8 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
     scrollArea_->setFrameShape(QFrame::NoFrame);
     scrollArea_->setContentsMargins(0, space, 0, space);
 
-    listWidget_ = new PropertyListFrame(this);
-    listLayout_ = new QVBoxLayout();
-    listWidget_->setLayout(listLayout_);
-    listLayout_->setAlignment(Qt::AlignTop);
-#ifdef __APPLE__
-    // Add some space for the scrollbar on mac
-    listLayout_->setContentsMargins(0, space, 10, space);
-#else
-    listLayout_->setContentsMargins(0, space, 0, space);
-#endif
-    listLayout_->setSpacing(space);
-    listLayout_->setSizeConstraint(QLayout::SetMinAndMaxSize);
-
-    scrollArea_->setWidget(listWidget_);
+    frame_ = new PropertyListFrame(this, app->getPropertyWidgetFactory());
+    scrollArea_->setWidget(frame_);
     setWidget(scrollArea_);
 
     app->getProcessorNetworkEvaluator()->addObserver(this);
@@ -127,55 +256,16 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
 PropertyListWidget::~PropertyListWidget() = default;
 
 void PropertyListWidget::addProcessorProperties(Processor* processor) {
-    setUpdatesEnabled(false);
-    listLayout_->setEnabled(false);
-    util::OnScopeExit enableUpdates([&]() {
-        listLayout_->setEnabled(true);
-        setUpdatesEnabled(true);
-    });
-
-    if (auto widget = getPropertiesForProcessor(processor)) {
-        widget->show();
-    }
+    frame_->addProcessor(processor);
     QWidget::raise();  // Put this tab in front
 }
 
 void PropertyListWidget::removeProcessorProperties(Processor* processor) {
-    auto it = widgetMap_.find(processor);
-    if (it != widgetMap_.end()) it->second->hide();
+    frame_->hideProcessor(processor);
 }
 
 void PropertyListWidget::removeAndDeleteProcessorProperties(Processor* processor) {
-    auto it = widgetMap_.find(processor);
-    if (it != widgetMap_.end()) {
-        it->second->hide();
-        listLayout_->removeWidget(it->second);
-        delete it->second;
-        widgetMap_.erase(it);
-    }
-}
-
-CollapsibleGroupBoxWidgetQt* PropertyListWidget::getPropertiesForProcessor(Processor* processor) {
-    // check if processor widget has been already generated
-    auto it = widgetMap_.find(processor);
-    if (it != widgetMap_.end()) {
-        return it->second;
-    } else {
-        return createPropertiesForProcessor(processor);
-    }
-}
-
-CollapsibleGroupBoxWidgetQt* PropertyListWidget::createPropertiesForProcessor(
-    Processor* processor) {
-    // create property widget and store it in the map
-    auto widget = new CollapsibleGroupBoxWidgetQt(processor);
-    widget->hide();
-    listLayout_->insertWidget(0, widget, 0, Qt::AlignTop);
-    for (auto prop : processor->getProperties()) {
-        widget->addProperty(prop);
-    }
-    widgetMap_[processor] = widget;
-    return widget;
+    frame_->removeProcessor(processor);
 }
 
 bool PropertyListWidget::event(QEvent* e) {
@@ -207,11 +297,11 @@ bool PropertyListWidget::event(QEvent* e) {
 
 void PropertyListWidget::onProcessorNetworkEvaluationBegin() {
     setUpdatesEnabled(false);
-    listLayout_->setEnabled(false);
+    frame_->setEnabled(false);
 }
 
 void PropertyListWidget::onProcessorNetworkEvaluationEnd() {
-    listLayout_->setEnabled(true);
+    frame_->setEnabled(true);
     setUpdatesEnabled(true);
 }
 

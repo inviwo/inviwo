@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2013-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,43 +29,62 @@
 
 #pragma once
 
-#include <modules/glfw/glfwmoduledefine.h>
+#include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
+#include <inviwo/core/processors/processor.h>
+
+#include <modules/openglqt/canvasqopenglwidget.h>
+
+#include <functional>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QWidget>
+#include <warn/pop>
 
 namespace inviwo {
 
-class CanvasGLFW;
-class CanvasProcessor;
+class Processor;
 
-class IVW_MODULE_GLFW_API CanvasProcessorWidgetGLFW : public CanvasProcessorWidget {
+class IVW_MODULE_OPENGLQT_API CanvasProcessorWidgetQt : public CanvasProcessorWidget,
+                                                        public QWidget {
 public:
-    CanvasProcessorWidgetGLFW(Processor* p);
-    virtual ~CanvasProcessorWidgetGLFW();
+    CanvasProcessorWidgetQt(Processor* p);
+    virtual ~CanvasProcessorWidgetQt();
 
+    // Override ProcessorWidget
     virtual void setVisible(bool visible) override;
-    virtual void setDimensions(ivec2) override;
-    virtual void setPosition(ivec2) override;
+    virtual void setPosition(ivec2 pos) override;
+    virtual void setDimensions(ivec2 dimensions) override;
     virtual void setFullScreen(bool fullScreen) override;
     virtual void setOnTop(bool onTop) override;
 
     virtual Canvas* getCanvas() const override;
 
-
 protected:
-    // CanvasProcessorWidget overrides
     virtual void propagateResizeEvent() override;
-private:
 
-    // ProcessorWidget overrides
     virtual void updateVisible(bool visible) override;
     virtual void updateDimensions(ivec2) override;
     virtual void updatePosition(ivec2) override;
     virtual void updateFullScreen(bool) override;
     virtual void updateOnTop(bool) override;
 
-    using canvas_ptr = std::unique_ptr<CanvasGLFW, std::function<void(CanvasGLFW*)>>;
-    canvas_ptr canvas_;
-    ivec2 screenDimensions_;
+    // Override QWidget events
+    virtual void resizeEvent(QResizeEvent*) override;
+    virtual void showEvent(QShowEvent*) override;
+    virtual void hideEvent(QHideEvent*) override;
+    virtual void moveEvent(QMoveEvent*) override;
+
+private:
+    using Super = QWidget;
+    std::unique_ptr<CanvasQOpenGLWidget, std::function<void(CanvasQOpenGLWidget*)>> canvas_;
+
+    bool ignoreEvents_{false};
+    bool resizeOngoing_{false};
+
+    size2_t screenDimensions_{0};
+    Processor::NameDispatcherHandle nameChange_;
 };
 
 }  // namespace inviwo

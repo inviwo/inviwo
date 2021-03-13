@@ -186,6 +186,8 @@ private:
     bool selectNewPrimitives_;
     TFEditorPrimitive::ItemType lastInsertedPrimitiveType_ =
         TFEditorPrimitive::TFEditorUnknownPrimitiveType;
+        
+    std::vector<std::shared_ptr<std::function<void()>>> portCallBacks_;
 };
 
 inline double TFEditor::getControlPointSize() const { return controlPointSize_; }

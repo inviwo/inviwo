@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/numberlineedit.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -158,7 +159,7 @@ std::unique_ptr<NumberLineEditPrivate> NumberLineEdit::nlePrivate_(new NumberLin
 NumberLineEdit::NumberLineEdit(QWidget* parent) : NumberLineEdit(false, parent) {}
 
 NumberLineEdit::NumberLineEdit(bool intMode, QWidget* parent)
-    : QDoubleSpinBox(parent), integerMode_(intMode) {
+    : QDoubleSpinBox(parent), integerMode_(intMode), minimumWidth_{utilqt::emToPx(this, 4)} {
     validator_ = new QDoubleValidator(this);
     validator_->setNotation(QDoubleValidator::ScientificNotation);
     lineEdit()->setValidator(validator_);
@@ -171,27 +172,32 @@ NumberLineEdit::NumberLineEdit(bool intMode, QWidget* parent)
 NumberLineEdit::~NumberLineEdit() = default;
 
 QSize NumberLineEdit::sizeHint() const {
-    QSize hint = QDoubleSpinBox::sizeHint();
-    hint.setWidth(hint.height());
-    return hint;
+    if (cachedMinimumSizeHint_.isEmpty()) {
+        cachedMinimumSizeHint_ = calcMinimumSize();
+    }
+    return cachedMinimumSizeHint_;
 }
 
 QSize NumberLineEdit::minimumSizeHint() const {
     if (cachedMinimumSizeHint_.isEmpty()) {
-        ensurePolished();
-        QSize hint(minimumWidth_, lineEdit()->minimumSizeHint().height());
-        QStyleOptionSpinBox opt;
-        initStyleOption(&opt);
-
-        QSize sizeContents = style()->sizeFromContents(QStyle::CT_SpinBox, &opt, hint, this);
-        // For some odd reason, sizeFromContents always includes the spinbox buttons
-        if (opt.buttonSymbols == QAbstractSpinBox::NoButtons) {
-            sizeContents.setWidth(sizeContents.width() -
-                                  static_cast<int>(sizeContents.height() / 1.2));
-        }
-        cachedMinimumSizeHint_ = sizeContents;
+        cachedMinimumSizeHint_ = calcMinimumSize();
     }
     return cachedMinimumSizeHint_;
+}
+
+QSize NumberLineEdit::calcMinimumSize() const {
+    ensurePolished();
+    QSize hint(minimumWidth_, lineEdit()->minimumSizeHint().height());
+    QStyleOptionSpinBox opt;
+    initStyleOption(&opt);
+    
+    QSize sizeContents = style()->sizeFromContents(QStyle::CT_SpinBox, &opt, hint, this);
+    // For some odd reason, sizeFromContents always includes the spinbox buttons
+    if (opt.buttonSymbols == QAbstractSpinBox::NoButtons) {
+        sizeContents.setWidth(sizeContents.width() -
+                              static_cast<int>(sizeContents.height() / 1.2));
+    }
+    return sizeContents;
 }
 
 bool NumberLineEdit::isValid() const { return !invalid_; }

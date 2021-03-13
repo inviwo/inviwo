@@ -69,8 +69,6 @@ int main(int argc, char** argv) {
                                   m);
     });
 
-    CanvasGLFW::setAlwaysOnTopByDefault(false);
-
     inviwoApp.setFileSystemObserver(std::make_unique<inviwo::FileWatcher>(&inviwoApp));
 
     // Initialize all modules

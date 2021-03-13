@@ -45,6 +45,8 @@ protected:
     virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*){};
     virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*){};
     virtual void onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*){};
+    virtual void onProcessorWidgetFullScreenChange(ProcessorWidgetMetaData*){};
+    virtual void onProcessorWidgetOnTopChange(ProcessorWidgetMetaData*){};
 };
 
 class IVW_CORE_API ProcessorWidgetMetaData : public MetaData,
@@ -62,19 +64,29 @@ public:
     virtual void deserialize(Deserializer& d) override;
     virtual bool equal(const MetaData& rhs) const override;
 
-    void setPosition(const ivec2& pos);
+    void setPosition(const ivec2& pos, const ProcessorWidgetMetaDataObserver* source = nullptr);
     ivec2 getPosition() const;
-    void setDimensions(const size2_t& dim);
+    
+    void setDimensions(const size2_t& dim, const ProcessorWidgetMetaDataObserver* source = nullptr);
     size2_t getDimensions() const;
-    void setVisibile(bool visibility);
+    
+    void setVisibile(bool visibility, const ProcessorWidgetMetaDataObserver* source = nullptr);
     bool isVisible() const;
+    
+    void setFullScreen(bool fullscreen, const ProcessorWidgetMetaDataObserver* source = nullptr);
+    bool isFullScreen() const;
 
+    void setOnTop(bool onTop, const ProcessorWidgetMetaDataObserver* source = nullptr);
+    bool isOnTop() const;
+    
     static const std::string CLASS_IDENTIFIER;
 
 private:
     ivec2 position_;
     size2_t dimensions_;
     bool visibility_;
+    bool fullScreen_;
+    bool onTop_;
 };
 
 }  // namespace inviwo

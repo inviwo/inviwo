@@ -390,12 +390,9 @@ void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 
 void NetworkEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
     if (auto p = getProcessorGraphicsItemAt(e->scenePos())) {
-        Processor* processor = p->getProcessor();
-        if (processor && processor->hasProcessorWidget()) {
-            if (processor->getProcessorWidget()->isVisible()) {
-                processor->getProcessorWidget()->hide();
-            } else {
-                processor->getProcessorWidget()->show();
+        if (auto processor = p->getProcessor()) {
+            if (auto widget = processor->getProcessorWidget()) {
+                widget->setVisible(!widget->isVisible());
             }
         }
         e->accept();
@@ -516,18 +513,12 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         } else if (auto processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             clickedProcessor = processor;
 
-            if (processor->getProcessor()->hasProcessorWidget()) {
+            if (auto widget = processor->getProcessor()->getProcessorWidget()) {
                 QAction* showAction = menu.addAction(tr("&Show Widget"));
                 showAction->setCheckable(true);
-                if (auto processorWidget = processor->getProcessor()->getProcessorWidget()) {
-                    showAction->setChecked(processorWidget->isVisible());
-                }
-                connect(showAction, &QAction::triggered, [processor]() {
-                    if (processor->getProcessor()->getProcessorWidget()->isVisible()) {
-                        processor->getProcessor()->getProcessorWidget()->hide();
-                    } else {
-                        processor->getProcessor()->getProcessorWidget()->show();
-                    }
+                showAction->setChecked(widget->isVisible());
+                connect(showAction, &QAction::triggered, [widget]() {
+                    widget->setVisible(!widget->isVisible());
                 });
             }
 

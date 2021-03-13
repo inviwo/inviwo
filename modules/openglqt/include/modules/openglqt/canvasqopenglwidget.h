@@ -31,6 +31,7 @@
 
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <modules/opengl/canvasgl.h>
+#include <inviwo/core/interaction/events/eventpropagator.h>
 
 #define QT_NO_OPENGL_ES_2
 #define GLEXT_64_TYPES_DEFINED
@@ -41,33 +42,49 @@
 #include <warn/pop>
 
 class QResizeEvent;
+class QHelpEvent;
+class QPointingDevice;
+class QTouchDevice;
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGLQT_API CanvasQOpenGLWidget : public QOpenGLWidget, public CanvasGL {
+class IVW_MODULE_OPENGLQT_API CanvasQOpenGLWidget : public QOpenGLWidget,
+                                                    public CanvasGL,
+                                                    public EventPropagator {
     friend class CanvasProcessorWidgetQt;
 
 public:
-    explicit CanvasQOpenGLWidget(QWidget* parent = nullptr, size2_t dim = size2_t(256, 256),
-                                 std::string_view name = "Canvas");
+    explicit CanvasQOpenGLWidget(QWidget* parent, std::string_view name);
     virtual ~CanvasQOpenGLWidget();
 
     virtual void activate() override;
     virtual void glSwapBuffers() override;
     virtual void update() override;
 
-    virtual void resize(size2_t size) override;
+    virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
+                        size_t idx = 0) override;
+    
     virtual ContextID activeContext() const override;
     virtual ContextID contextId() const override;
-
+    virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
+    
+    virtual size2_t getCanvasDimensions() const override;
+    
 protected:
+    // inviwo::Canvas override
+    virtual void releaseContext() override;
+    virtual void propagateEvent(Event* e, Outport* source) override;
+    
+    // QOpenGLWidget overrides
     virtual void initializeGL() override;
     virtual void paintGL() override;
     virtual void resizeEvent(QResizeEvent* event) override;
 
-    virtual void releaseContext() override;
+private:
+    void doContextMenu(QMouseEvent* event);
 
     std::string name_;
+
 };
 
 }  // namespace inviwo

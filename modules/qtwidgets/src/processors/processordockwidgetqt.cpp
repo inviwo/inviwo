@@ -81,15 +81,6 @@ ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString& title,
     });
 }
 
-void ProcessorDockWidgetQt::setVisible(bool visible) {
-    InviwoDockWidget::setVisible(visible);  // This will trigger show/hide events.
-    ProcessorWidget::setVisible(visible);
-}
-
-void ProcessorDockWidgetQt::show() { ProcessorDockWidgetQt::setVisible(true); }
-
-void ProcessorDockWidgetQt::hide() { ProcessorDockWidgetQt::setVisible(false); }
-
 void ProcessorDockWidgetQt::setPosition(glm::ivec2 pos) {
     InviwoDockWidget::move(pos.x, pos.y);  // This will trigger a move event.
 }
@@ -111,6 +102,16 @@ void ProcessorDockWidgetQt::resizeEvent(QResizeEvent* event) {
 void ProcessorDockWidgetQt::moveEvent(QMoveEvent* event) {
     ProcessorDockWidgetQt::setPosition(ivec2(event->pos().x(), event->pos().y()));
     InviwoDockWidget::moveEvent(event);
+}
+
+void ProcessorDockWidgetQt::showEvent(QShowEvent* event) {
+    ProcessorWidget::setVisible(true);
+    InviwoDockWidget::showEvent(event);
+}
+
+void ProcessorDockWidgetQt::hideEvent(QHideEvent* event) {
+    ProcessorWidget::setVisible(false);
+    InviwoDockWidget::hideEvent(event);
 }
 
 }  // namespace inviwo

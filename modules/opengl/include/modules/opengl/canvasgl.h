@@ -44,20 +44,21 @@ class Shader;
 
 class IVW_MODULE_OPENGL_API CanvasGL : public Canvas {
 public:
-    CanvasGL(size2_t dimensions);
+    CanvasGL();
     virtual ~CanvasGL() = default;
 
     static void defaultGLState();
 
     virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
                         size_t idx = 0) override;
-    virtual void resize(size2_t size) override;
+
     virtual void glSwapBuffers() = 0;
     virtual void update() override;
 
     virtual void setProcessorWidgetOwner(ProcessorWidget*) override;
 
-    virtual size2_t getImageDimensions() const override;
+    virtual size2_t getCanvasDimensions() const = 0;
+    virtual size2_t getImageDimensions() const;
     /**
      * \brief Retrieve depth value in normalized device coordinates at screen coordinate.
      *
