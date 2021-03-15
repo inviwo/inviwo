@@ -386,6 +386,18 @@ public:
     template <typename T>
     T& addPort(T& port, std::string_view portGroup = "default");
 
+    /**
+     * Add ports to processor.
+     * @note Calling this method will add all ports to the default port group. If you wish to
+     * add a port to a certain port group you will need to call addPort(myPort, "myPortGroup")
+     * explicitly instead.
+     * @param ports to add
+     */
+    template <typename... Ts>
+    void addPorts(Ts&... ports) {
+        (addPort(ports), ...);
+    }
+
     Port* removePort(std::string_view identifier);
     Inport* removePort(Inport* port);
     Outport* removePort(Outport* port);
