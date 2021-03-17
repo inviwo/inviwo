@@ -166,7 +166,6 @@ const DataFormatBase* niftiDataTypeToInviwoDataFormat(const nifti_image* niftiIm
     }
 
     return DataFormatBase::get(type, components, precision);
-
 }
 std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::string& filePath) {
 
@@ -279,8 +278,13 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
     volume->setModelMatrix(basisAndOffset);
 
     std::array<int, 7> start_index = {0, 0, 0, 0, 0, 0, 0};
-    std::array<int, 7> region_size = {
-        niftiImage->dim[1], niftiImage->dim[2], niftiImage->dim[3], 1, std::max(niftiImage->dim[5], 1), 1, 1};
+    std::array<int, 7> region_size = {niftiImage->dim[1],
+                                      niftiImage->dim[2],
+                                      niftiImage->dim[3],
+                                      1,
+                                      std::max(niftiImage->dim[5], 1),
+                                      1,
+                                      1};
 
     auto volumes = std::make_shared<VolumeSequence>();
     // Fixes single-volume where dim[4] has been set to zero
