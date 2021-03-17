@@ -62,6 +62,16 @@ public:
     AnimationEditorDockWidgetQt& operator=(AnimationEditorDockWidgetQt&&) = delete;
     virtual ~AnimationEditorDockWidgetQt();
 
+    /**
+     * Shows a file dialog for loading an Animation and AnimationController from an Inviwo
+     * workspace.
+     */
+    void openAnimation();
+    /*
+     * Save the current Animation and AnimationController into a new workspace file.
+     */
+    void saveAnimationAs();
+
 protected:
     virtual void onStateChanged(AnimationController* controller, AnimationState prevState,
                                 AnimationState newState) override;

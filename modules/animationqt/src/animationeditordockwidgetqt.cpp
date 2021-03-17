@@ -32,8 +32,10 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/raiiutils.h>
 
+#include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>
@@ -62,6 +64,7 @@
 #include <QSettings>
 #include <QToolBar>
 #include <QMainWindow>
+#include <QMenuBar>
 #include <QWidget>
 #include <QScrollBar>
 #include <warn/pop>
@@ -84,6 +87,10 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
 
     setWindowIcon(
         QIcon(":/animation/icons/arrow_next_player_previous_recording_right_icon_128.png"));
+
+    mainWindow_ = new QMainWindow();
+    mainWindow_->setContextMenuPolicy(Qt::NoContextMenu);
+    setWidget(mainWindow_);
 
     // right part
     sequenceEditorView_ =
@@ -116,10 +123,6 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
         overlay->setSizePolicy(sp);
     }
 
-    mainWindow_ = new QMainWindow();
-    mainWindow_->setContextMenuPolicy(Qt::NoContextMenu);
-    mainWindow_->setCentralWidget(sequenceEditorView_);
-
     // left part List widget of track labels
     auto animationLabelView = new AnimationLabelViewQt(controller_);
     animationLabelView->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
@@ -133,9 +136,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     splitter->setFrameStyle(QFrame::NoFrame);
     splitter->addWidget(animationLabelView);
     splitter->addWidget(animationView_);
-    splitter->addWidget(mainWindow_);
-
-    setWidget(splitter);
+    splitter->addWidget(sequenceEditorView_);
+    mainWindow_->setCentralWidget(splitter);
 
     connect(animationView_->verticalScrollBar(), &QScrollBar::valueChanged, this,
             [this, animationLabelView](auto val) {
@@ -190,6 +192,34 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     toolBar->setFloatable(false);
     toolBar->setMovable(false);
     mainWindow_->addToolBar(toolBar);
+
+    // Menu
+    auto menu = mainWindow_->menuBar();
+
+    auto fileMenuItem = menu->addMenu(tr("&File"));
+    // file menu entries
+    {
+        auto openAction = new QAction(QIcon(":/svgicons/open.svg"), tr("&Open Animation"), this);
+        openAction->setShortcut(QKeySequence::Open);
+        openAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        addAction(openAction);
+        connect(openAction, &QAction::triggered, this, [this]() { openAnimation(); });
+        fileMenuItem->addAction(openAction);
+        toolBar->addAction(openAction);
+    }
+
+    {
+        auto saveAction = new QAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Animation As"), this);
+        saveAction->setShortcut(QKeySequence::SaveAs);
+        saveAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        addAction(saveAction);
+        connect(saveAction, &QAction::triggered, this, [this]() { saveAnimationAs(); });
+        fileMenuItem->addAction(saveAction);
+        toolBar->addAction(saveAction);
+    }
+
+    toolBar->addSeparator();
+
     {
         auto begin = toolBar->addAction(
             QIcon(":/animation/icons/arrow_media_next_player_previous_song_icon_32.png"),
@@ -268,10 +298,68 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     }
 
     toolBar->addSeparator();
+
     controller_.AnimationControllerObservable::addObserver(this);
 }
 
 AnimationEditorDockWidgetQt::~AnimationEditorDockWidgetQt() = default;
+
+void AnimationEditorDockWidgetQt::openAnimation() {
+    InviwoFileDialog openFileDialog(this, "Import Animation ...", "animation");
+    openFileDialog.addSidebarPath(PathType::Workspaces);
+    openFileDialog.addExtension("inv", "Inviwo File");
+    openFileDialog.setFileMode(FileMode::AnyFile);
+
+    if (openFileDialog.exec()) {
+        QString path = openFileDialog.selectedFiles().at(0);
+        std::string fileName{utilqt::fromQString(path)};
+        fileName = filesystem::cleanupPath(fileName);
+        if (!filesystem::fileExists(fileName)) {
+            LogError("Could not find file: " << fileName);
+            return;
+        }
+        try {
+            std::ifstream anim{std::string(fileName)};
+            auto app_ = InviwoApplication::getPtr();
+            auto deserializer = app_->getWorkspaceManager()->createWorkspaceDeserializer(
+                anim, std::string(fileName));
+            controller_.pause();
+            deserializer.deserialize("Animation", controller_.getAnimation());
+            deserializer.deserialize("AnimationController", controller_);
+        } catch (std::exception ex) {
+            LogError(ex.what());
+        }
+    }
+}
+
+void AnimationEditorDockWidgetQt::saveAnimationAs() {
+    InviwoFileDialog saveFileDialog(this, "Save Animation As...", "animation");
+    saveFileDialog.setFileMode(FileMode::AnyFile);
+    saveFileDialog.setAcceptMode(AcceptMode::Save);
+    saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
+
+    saveFileDialog.addSidebarPath(PathType::Workspaces);
+    saveFileDialog.addExtension("inv", "Inviwo File");
+
+    if (saveFileDialog.exec()) {
+        QString path = saveFileDialog.selectedFiles().at(0);
+        if (!path.endsWith(".inv")) path.append(".inv");
+        std::string fileName{utilqt::fromQString(path)};
+        fileName = filesystem::cleanupPath(fileName);
+        try {
+            Serializer serializer(fileName);
+            controller_.pause();
+            serializer.serialize("Animation", controller_.getAnimation());
+            serializer.serialize("AnimationController", controller_);
+            std::ofstream anim{std::string(fileName)};
+            serializer.writeFile(anim);
+        } catch (SerializationException ex) {
+            LogError(ex.what());
+        } catch (std::exception ex) {
+            LogError(ex.what());
+        }
+    }
+}
 
 void AnimationEditorDockWidgetQt::onStateChanged(AnimationController*, AnimationState,
                                                  AnimationState newState) {
