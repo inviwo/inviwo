@@ -86,22 +86,66 @@ NiftiReader::NiftiReader() : DataReaderType<VolumeSequence>() {
 }
 
 NiftiReader* NiftiReader::clone() const { return new NiftiReader(*this); }
+/**
+ * \brief Convert from Nifti defined data types to inviwo DataFormat.
+ *
+ * @param niftiDataType nifti_image::datatype.
+ * @return Equivalent data type, null if not found.
+ */
+const DataFormatBase* niftiDataTypeToInviwoDataFormat(const nifti_image* niftiImage) {
 
-const DataFormatBase* NiftiReader::niftiDataTypeToInviwoDataFormat(int niftiDataType) {
+    NumericType type;
+    size_t components = 1;
+    size_t precision = 1;
     // clang-format off
-    switch (niftiDataType){
+    switch (niftiImage->datatype){
         case DT_UNKNOWN:    return nullptr;
         case DT_BINARY:     return nullptr;
-        case DT_INT8:       return DataInt8::get();
-        case DT_UINT8:      return DataUInt8::get();
-        case DT_INT16:      return DataInt16::get();
-        case DT_UINT16:     return DataUInt16::get();
-        case DT_INT32:      return DataInt32::get();
-        case DT_UINT32:     return DataUInt32::get();
-        case DT_INT64:      return DataInt64::get();
-        case DT_UINT64:     return DataUInt64::get();
-        case DT_FLOAT32:    return DataFloat32::get();
-        case DT_FLOAT64:    return DataFloat64::get();
+        case DT_INT8:       
+            type = NumericType::SignedInteger;
+            precision = 8;
+            break;
+        case DT_UINT8:      
+            type = NumericType::UnsignedInteger;
+            precision = 8;
+            break;
+        case DT_INT16:      
+            type = NumericType::SignedInteger;
+            precision = 16;
+            break;
+        case DT_UINT16:     
+            type = NumericType::UnsignedInteger;
+            precision = 16;
+            break;
+            return DataUInt16::get();
+        case DT_INT32:      
+            type = NumericType::SignedInteger;
+            precision = 32;
+            break;
+        case DT_UINT32:     
+            type = NumericType::UnsignedInteger;
+            precision = 32;
+            break;
+            return DataUInt32::get();
+        case DT_INT64:      
+            type = NumericType::SignedInteger;
+            precision = 64;
+            break;
+            return DataInt64::get();
+        case DT_UINT64:     
+            type = NumericType::UnsignedInteger;
+            precision = 64;
+            break;
+            return DataUInt64::get();
+        case DT_FLOAT32:    
+            type = NumericType::Float;
+            precision = 32;
+            break;
+            return DataFloat32::get();
+        case DT_FLOAT64:    
+            type = NumericType::Float;
+            precision = 64;
+            break;
         case DT_FLOAT128:   return nullptr;
         case DT_COMPLEX64:  return nullptr;
         case DT_COMPLEX128: return nullptr;
@@ -112,8 +156,18 @@ const DataFormatBase* NiftiReader::niftiDataTypeToInviwoDataFormat(int niftiData
             return nullptr;
     }
     // clang-format on
-}
+    // In NIFTI-1 files, dimensions 1,2,3 are for space, dimension 4 is for time,
+    // and dimension 5 is for storing multiple values at each spatiotemporal voxel
+    if (niftiImage->dim[5] > 0) {
+        components = niftiImage->dim[5];
+    }
+    if (components > 4) {
+        return nullptr;
+    }
 
+    return DataFormatBase::get(type, components, precision);
+
+}
 std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::string& filePath) {
 
     /* read input dataset, but not data */
@@ -138,7 +192,7 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
     glm::mat4 basisAndOffset(2.0f);
     const glm::vec3 spacing(niftiImage->pixdim[1], niftiImage->pixdim[2], niftiImage->pixdim[3]);
 
-    format = niftiDataTypeToInviwoDataFormat(niftiImage->datatype);
+    format = niftiDataTypeToInviwoDataFormat(niftiImage.get());
     if (format == nullptr) {
         std::string datatype(nifti_datatype_string(niftiImage->datatype));
         throw DataReaderException(
@@ -226,7 +280,7 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
 
     std::array<int, 7> start_index = {0, 0, 0, 0, 0, 0, 0};
     std::array<int, 7> region_size = {
-        niftiImage->dim[1], niftiImage->dim[2], niftiImage->dim[3], 1, 1, 1, 1};
+        niftiImage->dim[1], niftiImage->dim[2], niftiImage->dim[3], 1, std::max(niftiImage->dim[5], 1), 1, 1};
 
     auto volumes = std::make_shared<VolumeSequence>();
     // Fixes single-volume where dim[4] has been set to zero
@@ -365,7 +419,7 @@ void flip(char* data, size_t elemSize, size3_t dim, std::array<bool, 3> flipAxis
 std::shared_ptr<VolumeRepresentation> NiftiVolumeRAMLoader::createRepresentation(
     const VolumeRepresentation& src) const {
 
-    const auto format = NiftiReader::niftiDataTypeToInviwoDataFormat(nim->datatype);
+    const auto format = niftiDataTypeToInviwoDataFormat(nim.get());
     const auto voxelSize = format->getSize();
 
     const std::size_t voxels = region_size[0] * region_size[1] * region_size[2] * region_size[3] *
