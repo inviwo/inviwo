@@ -209,7 +209,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     }
 
     {
-        auto saveAction = new QAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Animation As"), this);
+        auto saveAction =
+            new QAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Animation As"), this);
         saveAction->setShortcut(QKeySequence::SaveAs);
         saveAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         addAction(saveAction);
