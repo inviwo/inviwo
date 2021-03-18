@@ -117,7 +117,6 @@ const DataFormatBase* niftiDataTypeToInviwoDataFormat(const nifti_image* niftiIm
             type = NumericType::UnsignedInteger;
             precision = 16;
             break;
-            return DataUInt16::get();
         case DT_INT32:      
             type = NumericType::SignedInteger;
             precision = 32;
@@ -126,17 +125,14 @@ const DataFormatBase* niftiDataTypeToInviwoDataFormat(const nifti_image* niftiIm
             type = NumericType::UnsignedInteger;
             precision = 32;
             break;
-            return DataUInt32::get();
         case DT_INT64:      
             type = NumericType::SignedInteger;
             precision = 64;
             break;
-            return DataInt64::get();
         case DT_UINT64:     
             type = NumericType::UnsignedInteger;
             precision = 64;
             break;
-            return DataUInt64::get();
         case DT_FLOAT32:    
             type = NumericType::Float;
             precision = 32;
@@ -150,8 +146,8 @@ const DataFormatBase* niftiDataTypeToInviwoDataFormat(const nifti_image* niftiIm
         case DT_COMPLEX64:  return nullptr;
         case DT_COMPLEX128: return nullptr;
         case DT_COMPLEX256: return nullptr;
-        case DT_RGB24:      return DataVec3UInt8::get();
-        case DT_RGBA32:     return DataVec4UInt8::get();
+        case DT_RGB24:      return DataVec3UInt8::get(); // Do not know if niftiImage->dim[5] is 1 for this type
+        case DT_RGBA32:     return DataVec4UInt8::get(); // Do not know if niftiImage->dim[5] is 1 for this type
         default:
             return nullptr;
     }
@@ -282,7 +278,7 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
                                       niftiImage->dim[2],
                                       niftiImage->dim[3],
                                       1,
-                                      std::max(niftiImage->dim[5], 1),
+                                      static_cast<int>(format->getComponents()),
                                       1,
                                       1};
 
