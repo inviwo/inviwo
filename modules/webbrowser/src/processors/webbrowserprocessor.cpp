@@ -185,15 +185,11 @@ namespace detail {
 //
 // see https://bugs.chromium.org/p/chromium/issues/detail?id=71484
 
-double percentageToZoomLevel(double percent) {
-    return std::log(percent) / std::log(1.2);
-}
+double percentageToZoomLevel(double percent) { return std::log(percent) / std::log(1.2); }
 
-double zoomLevelToPercentage(double level) {
-    return std::pow(1.2, level);
-}
+double zoomLevelToPercentage(double level) { return std::pow(1.2, level); }
 
-}
+}  // namespace detail
 
 void WebBrowserProcessor::process() {
     if (isLoading_) {
