@@ -64,6 +64,7 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
     , autoReloadFile_("autoReloadFile", "Auto Reload", true)
     , url_("URL", "URL", "http://www.inviwo.org")
     , reload_("reload", "Reload")
+    , zoom_("zoom", "Zoom Factor", 1.0, 0.2, 5.0)
     , runJS_("runJS", "Run JS")
     , js_("js", "JavaScript", "", InvalidationLevel::Valid)
     , sourceType_("sourceType", "Source",
@@ -109,7 +110,8 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
     reload_.onChange(reload);
     isLoading_.setReadOnly(true).setSerializationMode(PropertySerializationMode::None);
 
-    addProperties(sourceType_, fileName_, autoReloadFile_, url_, reload_, runJS_, js_, isLoading_);
+    addProperties(sourceType_, fileName_, autoReloadFile_, url_, reload_, zoom_, runJS_, js_,
+                  isLoading_);
 
     fileObserver_.onChange([this, reload]() {
         if (sourceType_ == SourceType::LocalFile) {
@@ -177,12 +179,28 @@ void WebBrowserProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bo
     }
 }
 
+namespace detail {
+
+// CEF uses a zoom level which increases/decreases by 20% per level
+//
+// see https://bugs.chromium.org/p/chromium/issues/detail?id=71484
+
+double percentageToZoomLevel(double percent) { return std::log(percent) / std::log(1.2); }
+
+double zoomLevelToPercentage(double level) { return std::pow(1.2, level); }
+
+}  // namespace detail
+
 void WebBrowserProcessor::process() {
     if (isLoading_) {
         return;
     }
     if (js_.isModified() && !js_.get().empty()) {
         browser_->GetMainFrame()->ExecuteJavaScript(js_.get(), "", 1);
+    }
+
+    if (zoom_.isModified()) {
+        browser_->GetHost()->SetZoomLevel(detail::percentageToZoomLevel(zoom_));
     }
 
     // Vertical flip of CEF output image
