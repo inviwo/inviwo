@@ -128,6 +128,8 @@ public:
     StringProperty url_;     ///< Web page to show
     ButtonProperty reload_;  ///< Force reload url
 
+    DoubleProperty zoom_;
+
     ButtonProperty runJS_;
     StringProperty js_;
 
