@@ -98,7 +98,9 @@ void TripolarGrid<N>::getConnectionsDispatched(std::vector<ind>& result, ind ind
     using FromPrimitive = Primitive<GridPrimitive(From)>;
     using ToPrimitive = Primitive<GridPrimitive(To)>;
     FromPrimitive fromPrim(*this, index);
-    auto& numVerts = numPrimitives_.NumVerticesPerDimension;
+    const auto& numVerts = numPrimitives_.NumVerticesPerDimension;
+    ind numCellsX = numVerts[0] - 1;
+    ind numCellsY = numVerts[1] - 1;
 
     if constexpr (To > From) {  // Going to a higher dimensional primitive? (e.g., edge to face).
         throw Exception("Not implemented yet.");
@@ -113,53 +115,46 @@ void TripolarGrid<N>::getConnectionsDispatched(std::vector<ind>& result, ind ind
 
                 // Special cases in x and y direction.
                 if (dim == 0) {
-                    // Two very special cases along wrapping layer.
-                    if (neighCoord[0] == -1 && neighCoord[1] == numVerts[1]) {
-                        neighCoords[0] = numVerts[0];
-                        neighCoords[1] = numVerts[1] - 1;
-                    } else if (neighCoord[0] == numVerts[0] / 2 && neighCoord[1] == numVerts[1]) {
-                        neighCoords[1] = numVerts[1] - 1;
+                    // Two very special cases from along wrapping layer to the top normal layer.
+                    if (neighCoords[0] == -1 && neighCoords[1] == numCellsY) {
+                        neighCoords[0] = numCellsX - 1;
+                        neighCoords[1] = numCellsY - 1;
+                    } else if (neighCoords[0] == numCellsX / 2 && neighCoords[1] == numCellsY) {
+                        neighCoords[1] = numCellsY - 1;
                     }
 
                     // Wrapping along equator.
                     if (neighCoords[0] == -1) {
-                        neighCoords[0] = numVerts[0] - 2;
+                        neighCoords[0] = numCellsX - 1;  // Why? - 2;
                     }
-                    if (neighCoords[0] == numVerts[0] - 1) {
+                    if (neighCoords[0] == numCellsX + 1) {  // Why? -1 instad of +1;
                         neighCoords[0] = 0;
                     }
                 } else if (dim == 1) {
-                    // Connect to connecting cells from the side with high x coordinates.
-                    if (neighCoord[1] == numVerts[1] && neighCoord[0] > numVerts[0] / 2) {
-                        neighCoord[0] = numVerts[0] - neighCoord[0] - 1;
+                    if (neighCoords[1] < 0) continue;  // Not inside the grid.
+
+                    // Connect to wrapping cells from the side with high x coordinates.
+                    if (neighCoords[1] == numCellsY && neighCoords[0] > numCellsX / 2) {
+                        neighCoords[0] = numCellsX - neighCoords[0] - 1;
                     }
-                    if (neighCoord[1] == numVerts[1] && neighCoord[0] == numVerts[0] / 2) {
-                        neighCoord[0] = numVerts[0] / 2 - 1;
+                    if (neighCoords[1] == numCellsY && neighCoords[0] == numCellsX / 2) {
+                        neighCoords[0] = numCellsX / 2 - 1;
                     }
-                    if (neighCoord[1] == numVerts[1] && neighCoord[0] == numVerts[0]) {
-                        neighCoord[0] = 0;
+                    if (neighCoords[1] == numCellsY && neighCoords[0] == numCellsX - 1) {
+                        neighCoords[0] = 0;
                     }
 
                     // Connect from wrapping cells across.
-                    if (neighCoord[1] == numVerts[1] + 1 && neighCoord[0] == numVerts[0]) {
-                        neighCoord[0] = numVerts[0] - neighCoords[0] - 1;
-                        neighCoord[1] = numVerts[1] - 1;
+                    if (neighCoords[1] == numCellsY + 1 /* && neighCoords[0] == numCellsX*/) {
+                        neighCoords[0] = numCellsX - neighCoords[0] - 1;
+                        neighCoords[1] = numCellsY - 1;
                     }
                 }
 
-                // Wrapping from high X indices to wrapping layer.
-
-                // {
-                //     ind halfSize = (numPrimitives_.NumVerticesPerDimension[1] - 1) / 2;
-                //     // bool isActualCell = neighCoords[1] < halfSize;
-                //     // This might be a valid cell.
-                //     if (neighCoords[1] < halfSize) {
-                //     }
-                // }
-                // TODOOO TODOOOOO TODODODODODODODODODODODODODODODODODODODODODODO!!!!!!!
-
+                // Return
                 ToPrimitive neighPrim(fromPrim.Grid, std::move(neighCoords), std::move(neighDirs));
-                bool inGrid = (neighPrim.getCoordinates()[dim] >= 0 &&
+                bool inGrid = dim != 0 && dim != 1 &&
+                              (neighPrim.getCoordinates()[dim] >= 0 &&
                                (neighPrim.getCoordinates()[dim] < numVerts[dim] - 1 || dim == 0));
                 if (inGrid) {
                     result.push_back(neighPrim.GlobalPrimitiveIndex);
@@ -200,6 +195,10 @@ void TripolarGrid<N>::getConnectionsDispatched(std::vector<ind>& result, ind ind
             // Offset the coordinates into some directions.
             bool validBitConfig = true;
 
+            bool dirsWrapX = size_t(To) > 0 && neighDirs[0] == 0;
+            bool dirsWrapY =
+                (size_t(To) > 0 && neighDirs[0] == 1) || (size_t(To) > 1 && neighDirs[1] == 1);
+
             while (validBitConfig) {
                 neighCoords = fromPrim.getCoordinates();
 
@@ -209,15 +208,42 @@ void TripolarGrid<N>::getConnectionsDispatched(std::vector<ind>& result, ind ind
                     neighCoords[offsetDir]++;
 
                     if (neighCoords[offsetDir] >= numVerts[offsetDir]) {
-                        if (offsetDir == 0) {
-                            neighCoords[offsetDir] = 0;
-                        } else {
-                            validBitConfig = false;
-                            break;
+                        switch (offsetDir) {
+                            case 0:
+                                neighCoords[0] = 0;
+                                break;
+                            case 1:
+                                neighCoords[0] = numCellsX - neighCoords[0];
+                                neighCoords[1] = numVerts[1];
+                                if (dirsWrapX) {
+                                    neighCoords[0]--;
+                                }
+                                break;
+                            default:
+                                validBitConfig = false;
+                                break;
                         }
                     }
                 }
-                if (validBitConfig) {
+                // Special special case: Coming from a wrapping primitive (as in, spanning both
+                // X and Y) and either the first or last element. Then the left/right side wall
+                // is a top wall of the lat row of normal cells.
+                //        ___________
+                //  _____{__|__|__|__}_____
+                // |__|__|__|__|__|__|__|__|
+                if (dirsWrapY && !dirsWrapX && neighCoords[1] == numCellsY - 1 &&
+                    (neighCoords[0] == 0 || neighCoords[0] == numCellsX / 2)) {
+                    auto specialDirs(neighDirs);
+                    specialDirs[0] = 0;
+                    if (neighCoords[0] == 0) {
+                        neighCoords[0] = numCellsX;
+                    }
+
+                    ToPrimitive neighPrim(numPrimitives_.Grid, neighCoords, specialDirs);
+                    result.push_back(neighPrim.GlobalPrimitiveIndex);
+                }
+
+                else if (validBitConfig) {
                     ToPrimitive neighPrim(numPrimitives_.Grid, neighCoords, neighDirs);
                     result.push_back(neighPrim.GlobalPrimitiveIndex);
                 }
@@ -289,6 +315,7 @@ constexpr void writeSize(typename TripolarGrid<N>::NumPrimitives& numPrimitives,
             size *= dimSize;
         }
 
+        // If these primitives wrap around the top, half a layer must be added.
         size *= numPrimitives.NumVerticesPerDimension[0];
         ind dimSize1 = numPrimitives.NumVerticesPerDimension[1];
         if (wrapsTop) {
@@ -434,11 +461,12 @@ ind TripolarGrid<N>::NumPrimitives::globalIndexFromCoordinates(
     ind idx = *grid.numPrimitives_.getOffset<P>(dirIdx);
     if (idx < 0) return idx;
 
-    bool wrapsTop = ((P >= 1 && dirs[0] == 1) || (P >= 2 && dirs[1] == 1)) &&
+    bool wrapsTop = ((int(P) >= 1 && dirs[0] == 1) || (int(P) >= 2 && dirs[1] == 1)) &&
                     coords[1] == Grid.numPrimitives_.NumVerticesPerDimension[1];
     if (wrapsTop) {
-        idx += numPrimitives
-                   .PerDirectionNumNormalPrimitives[numPrimitives.PrimitiveOffsets[P] + dirIdx];
+        idx += grid.numPrimitives_
+                   .PerDirectionNumNormalPrimitives[grid.numPrimitives_.PrimitiveOffsets[int(P)] +
+                                                    dirIdx];
     }
 
     size_t mult = 1;
@@ -478,8 +506,7 @@ TripolarGrid<N>::NumPrimitives::coordinatesFromGlobalIndex(ind globalIdx) const 
 
     // Is this primitive one wrapping across the pole?
     bool wrapsTop = false;
-    ind numNormalPrimitives =
-        numPrimitives.PerDirectionNumNormalPrimitives[numPrimitives.PrimitiveOffsets[P] + dirIdx];
+    ind numNormalPrimitives = PerDirectionNumNormalPrimitives[PrimitiveOffsets[int(P)] + dirIdx];
     if (globalIdx >= numNormalPrimitives) {
         wrapsTop = true;
         globalIdx -= numNormalPrimitives;
