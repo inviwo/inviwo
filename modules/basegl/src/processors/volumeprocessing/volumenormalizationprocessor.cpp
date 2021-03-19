@@ -48,14 +48,13 @@ VolumeNormalizationProcessor::VolumeNormalizationProcessor()
     : Processor()
     , volumeInport_("volumeInport")
     , volumeOutport_("volumeOutport")
-    , normalize_("normalize", "Normalize", true)
     , channels_("channels", "Channels")
     , originalDataRange_{dvec2{0}}
     , originalValueRange_{dvec2{0}}
     , volumeNormalization_([&]() { this->invalidate(InvalidationLevel::InvalidOutput); }) {
 
     addPorts(volumeInport_, volumeOutport_);
-    addProperties(normalize_, channels_);
+    addProperties(channels_);
 
     volumeInport_.onChange([this]() {
         if (volumeInport_.hasData()) {
