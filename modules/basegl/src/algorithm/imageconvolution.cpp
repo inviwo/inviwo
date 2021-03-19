@@ -28,9 +28,6 @@
  *********************************************************************************/
 
 #include <modules/basegl/algorithm/imageconvolution.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <modules/opengl/image/layergl.h>
 
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
