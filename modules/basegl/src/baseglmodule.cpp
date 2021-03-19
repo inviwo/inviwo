@@ -83,6 +83,7 @@
 #include <modules/basegl/processors/volumeprocessing/volumelowpass.h>
 #include <modules/basegl/processors/volumeprocessing/volumemapping.h>
 #include <modules/basegl/processors/volumeprocessing/volumemerger.h>
+#include <modules/basegl/processors/volumeprocessing/volumenormalizationprocessor.h>
 #include <modules/basegl/processors/volumeprocessing/volumeregionshrink.h>
 #include <modules/basegl/processors/volumeraycaster.h>
 #include <modules/basegl/processors/volumeslicegl.h>
@@ -168,6 +169,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<VolumeLowPass>();
     registerProcessor<VolumeMapping>();
     registerProcessor<VolumeMerger>();
+    registerProcessor<VolumeNormalizationProcessor>();
     registerProcessor<VolumeRegionShrink>();
     registerProcessor<VolumeShader>();
 

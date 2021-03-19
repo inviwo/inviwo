@@ -35,7 +35,37 @@
 
 namespace inviwo {
 
-std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume, const int channel) {
+VolumeNormalization::VolumeNormalization()
+    : shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
+               {ShaderType::Geometry, utilgl::findShaderResource("volume_gpu.geom")},
+               {ShaderType::Fragment, utilgl::findShaderResource("volumenormalization.frag")}},
+              Shader::Build::No)
+    , fbo_()
+    , needsCompilation_(false) {
+    shader_.getFragmentShaderObject()->addShaderDefine("NORMALIZE_CHANNEL_0");
+    shader_.build();
+}
+
+void VolumeNormalization::setNormalizeChannel(const size_t channel, const bool normalize) {
+    needsCompilation_ = true;
+
+    if (normalize) {
+        shader_.getFragmentShaderObject()->addShaderDefine(defines_[channel]);
+    } else {
+        shader_.getFragmentShaderObject()->removeShaderDefine(defines_[channel]);
+    }
+}
+
+void VolumeNormalization::reset() {
+    needsCompilation_ = true;
+
+    setNormalizeChannel(0, true);
+    setNormalizeChannel(1, false);
+    setNormalizeChannel(2, false);
+    setNormalizeChannel(3, false);
+}
+
+std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
     auto outVolume = std::make_shared<Volume>(volume.getDimensions(), volume.getDataFormat(),
                                               volume.getSwizzleMask(), volume.getInterpolation(),
                                               volume.getWrapping());
@@ -43,12 +73,15 @@ std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume, con
     outVolume->setWorldMatrix(volume.getWorldMatrix());
     outVolume->copyMetaDataFrom(volume);
 
+    if (needsCompilation_) {
+        needsCompilation_ = false;
+        shader_.build();
+    }
+
     shader_.activate();
 
     TextureUnitContainer cont;
     utilgl::bindAndSetUniforms(shader_, cont, volume, "volume");
-
-    shader_.setUniform("channel", channel);
 
     const size3_t dim{volume.getDimensions()};
     fbo_.activate();

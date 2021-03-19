@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,40 +30,35 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/opengl/shader/shader.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <modules/opengl/buffer/framebufferobject.h>
-#include <array>
-#include <string_view>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <modules/basegl/algorithm/volumenormalization.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API VolumeNormalization {
+/** \docpage{org.inviwo.VolumeNormalizationProcessor, Volume Normalization}
+ * ![](org.inviwo.VolumeNormalizationProcessor.png?classIdentifier=org.inviwo.VolumeNormalizationProcessor)
+ */
+class IVW_MODULE_BASEGL_API VolumeNormalizationProcessor : public Processor {
 public:
-    template <typename Callback>
-    VolumeNormalization(Callback C) : VolumeNormalization() {
-        shader_.onReload(C);
-    }
-    VolumeNormalization();
+    VolumeNormalizationProcessor();
+    virtual ~VolumeNormalizationProcessor() = default;
 
-    virtual ~VolumeNormalization() {}
+    virtual void process() override;    
 
-    std::shared_ptr<Volume> normalize(const Volume& volume);
-
-    void setNormalizeChannel(const size_t channel, const bool normalize);
-
-    void reset();
-
-protected:
-    Shader shader_;
-    FrameBufferObject fbo_;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 private:
-    // Some string_view indirection...
-    const std::array<std::string_view, 4> defines_{"NORMALIZE_CHANNEL_0", "NORMALIZE_CHANNEL_1",
-                                                   "NORMALIZE_CHANNEL_2", "NORMALIZE_CHANNEL_3"};
-    bool needsCompilation_;
+    VolumeInport volumeInport_;
+    VolumeOutport volumeOutport_;
+    CompositeProperty channels_;
+    dvec2 originalDataRange_;
+    dvec2 originalValueRange_;
+
+    VolumeNormalization volumeNormalization_;
 };
 
 }  // namespace inviwo
