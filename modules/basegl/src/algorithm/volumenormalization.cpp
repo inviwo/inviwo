@@ -63,9 +63,7 @@ void VolumeNormalization::setNormalizeChannels(bvec4 normalize) {
     setNormalizeChannel(3, normalize[3]);
 }
 
-void VolumeNormalization::reset() {
-    setNormalizeChannels({true, false, false, false});
-}
+void VolumeNormalization::reset() { setNormalizeChannels({true, false, false, false}); }
 
 std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
     auto outVolume = std::make_shared<Volume>(volume.getDimensions(), volume.getDataFormat(),

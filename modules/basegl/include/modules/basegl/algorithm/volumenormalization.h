@@ -54,19 +54,21 @@ public:
     virtual ~VolumeNormalization() {}
 
     /**
-    * Performs the normalization on the GPU.
-    * 
-    * @param volume Input volume to be normalized.
-    * @return A volume whose selected channels have been normalized.
-    */
+     * Performs the normalization on the GPU.
+     *
+     * @param volume Input volume to be normalized.
+     * @return A volume whose selected channels have been normalized.
+     */
     std::shared_ptr<Volume> normalize(const Volume& volume);
 
     /**
-    * Sets the channel that are to be normalized. In practice, this method in-/ejects shader defines for every channel.
-    * 
-    * @param channel Channel for which the normalization should be set to true or false.
-    * @param normalize Boolean value indicating whether or not the selected channel should be normalized.
-    */
+     * Sets the channel that are to be normalized. In practice, this method in-/ejects shader
+     * defines for every channel.
+     *
+     * @param channel Channel for which the normalization should be set to true or false.
+     * @param normalize Boolean value indicating whether or not the selected channel should be
+     * normalized.
+     */
     void setNormalizeChannel(const size_t channel, const bool normalize);
 
     /**
@@ -78,8 +80,8 @@ public:
     void setNormalizeChannels(bvec4 normalize);
 
     /**
-    * Resets the normalization settings. Channel 0 is set to true, rest to false.
-    */
+     * Resets the normalization settings. Channel 0 is set to true, rest to false.
+     */
     void reset();
 
 protected:
@@ -87,8 +89,9 @@ protected:
     FrameBufferObject fbo_;
 
 private:
-    const std::array<std::string_view, 4> defines_{"NORMALIZE_CHANNEL_0", "NORMALIZE_CHANNEL_1",
-                                                   "NORMALIZE_CHANNEL_2", "NORMALIZE_CHANNEL_3"}; ///< Some string_view indirection.
+    const std::array<std::string_view, 4> defines_{
+        "NORMALIZE_CHANNEL_0", "NORMALIZE_CHANNEL_1", "NORMALIZE_CHANNEL_2",
+        "NORMALIZE_CHANNEL_3"};  ///< Some string_view indirection.
     bool needsCompilation_;
 };
 
