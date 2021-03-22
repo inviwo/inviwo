@@ -781,6 +781,10 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
     }
 }
 
+void ParallelCoordinates::updateAxisRange(PCPAxisSettings&) {
+    buildLineMesh();
+}
+
 void ParallelCoordinates::updateBrushing(PCPAxisSettings&) { updateBrushing(); }
 
 void ParallelCoordinates::updateBrushing() {

@@ -93,6 +93,7 @@ public:
 
     void adjustMargins();
 
+    void updateAxisRange(PCPAxisSettings& axis);
     void updateBrushing(PCPAxisSettings& axis);
 
     DataInport<DataFrame> dataFrame_;

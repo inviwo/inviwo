@@ -84,9 +84,15 @@ PCPAxisSettings::PCPAxisSettings(std::string identifier, std::string displayName
     invertRange.setSerializationMode(PropertySerializationMode::All);
     usePercentiles.setSerializationMode(PropertySerializationMode::All);
 
+    range.onRangeChange([this]() {
+        updateLabels();
+        if (pcp_) {
+            pcp_->updateAxisRange(*this);
+        }
+    });
+
     range.onChange([this]() {
         updateBrushing();
-        updateLabels();
         if (pcp_) pcp_->updateBrushing(*this);
     });
 }
@@ -102,9 +108,15 @@ PCPAxisSettings::PCPAxisSettings(const PCPAxisSettings& rhs)
     addProperty(invertRange);
     addProperty(usePercentiles);
 
+    range.onRangeChange([this]() {
+        updateLabels();
+        if (pcp_) {
+            pcp_->updateAxisRange(*this);
+        }
+    });
+
     range.onChange([this]() {
         updateBrushing();
-        updateLabels();
         if (pcp_) pcp_->updateBrushing(*this);
     });
 }
