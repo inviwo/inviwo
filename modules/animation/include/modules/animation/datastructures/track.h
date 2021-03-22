@@ -64,8 +64,8 @@ public:
      * Remove all keyframe sequences and call TrackObserver::notifyKeyframeSequenceRemoved
      */
     virtual ~Track() = default;
-    Track(const Track&) = delete;
-    Track& operator=(const Track&) = delete;
+
+    virtual Track* clone() const = 0;
 
     virtual std::string getClassIdentifier() const = 0;
 

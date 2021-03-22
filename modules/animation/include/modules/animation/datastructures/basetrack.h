@@ -73,6 +73,10 @@ public:
                   "Seq has to derive from KeyframeSequence");
 
     BaseTrack(const std::string& identifier, const std::string& name, size_t priority = 0);
+    BaseTrack(const BaseTrack& other);
+    BaseTrack(BaseTrack&& other) = default;
+    BaseTrack& operator=(const BaseTrack&);
+
     virtual ~BaseTrack();
 
     virtual bool isEnabled() const override;
@@ -158,6 +162,34 @@ protected:
 template <typename Seq>
 BaseTrack<Seq>::BaseTrack(const std::string& identifier, const std::string& name, size_t priority)
     : identifier_{identifier}, name_{name}, priority_{priority} {}
+
+template <typename Seq>
+BaseTrack<Seq>::BaseTrack(const BaseTrack<Seq>& other)
+    : KeyframeSequenceObserver(other)
+    , enabled_{other.enabled_}, identifier_{other.identifier_}
+    , name_{other.name_}
+    , priority_{other.priority_} {
+    for (auto& seq : other.sequences_) {
+        add(std::unique_ptr<Seq>(seq->clone()));
+    }
+}
+
+template <typename Seq>
+BaseTrack<Seq>& BaseTrack<Seq>::operator=(const BaseTrack<Seq>& that) {
+    if (this != &that) {
+        while (!sequences_.empty()) {
+            remove(sequences_.back().get());
+        }
+        enabled_ = that.enabled_;
+        identifier_ = that.identifier_;
+        name_ = that.name_;
+        priority_ = that.priority_;
+        for (const auto& seq : that.sequences_) {
+            add(std::unique_ptr<Seq>(seq->clone()));
+        }
+    }
+    return *this;
+}
 
 template <typename Seq>
 BaseTrack<Seq>::~BaseTrack() {

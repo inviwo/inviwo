@@ -74,8 +74,9 @@ public:
      * @param animationManager used for creating PropertyTrack/KeyframeSequence/Keyframe.
      */
     Animation(AnimationManager* animationManager = nullptr);
-    Animation(const Animation&) = delete;
-    Animation& operator=(const Animation& that) = delete;
+    Animation(const Animation&);
+    Animation(Animation&&) = default;
+    Animation& operator=(const Animation& that);
 
     AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
 

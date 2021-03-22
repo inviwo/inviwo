@@ -31,11 +31,37 @@
 #include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/animationmanager.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+
 namespace inviwo {
 
 namespace animation {
 
-Animation::Animation(AnimationManager* am) : am_(am) {}
+Animation::Animation(AnimationManager* am)
+    : AnimationObservable(), TrackObserver(), PropertyOwnerObserver(), am_(am) {}
+
+Animation::Animation(const Animation& other)
+    : AnimationObservable(other)
+    , TrackObserver(other)
+    , PropertyOwnerObserver(other)
+    , am_{other.am_} {
+    for (const auto& tr : other.tracks_) {
+        add(std::unique_ptr<Track>(tr->clone()));
+    }
+}
+
+Animation& Animation::operator=(const Animation& that) {
+    if (this != &that) {
+        while (!tracks_.empty()) {
+            remove(tracks_.back().get());
+        }
+        am_ = that.am_;
+        for (const auto& tr : that.tracks_) {
+            add(std::unique_ptr<Track>(tr->clone()));
+        }
+    }
+    return *this;
+}
 
 AnimationTimeState Animation::operator()(Seconds from, Seconds to, AnimationState state) const {
     AnimationTimeState ts{to, state};

@@ -195,6 +195,8 @@ public:
     static_assert(std::is_same<Key, typename Seq::key_type>::value,
                   "The KeyframeSequence must match Keyframe 'Key'");
 
+    PropertyTrack(const PropertyTrack& other) = default;
+    PropertyTrack(PropertyTrack&& other) = default;
     PropertyTrack(ProcessorNetwork* network);
     PropertyTrack(Prop* property);
     PropertyTrack(Prop* property, ProcessorNetwork* network);
@@ -203,6 +205,8 @@ public:
      * Remove all keyframe sequences and call TrackObserver::notifyKeyframeSequenceRemoved
      */
     virtual ~PropertyTrack();
+
+    virtual PropertyTrack* clone() const override;
 
     static std::string classIdentifier();
     virtual std::string getClassIdentifier() const override;
@@ -281,6 +285,11 @@ private:
     Prop* property_;  ///< non-owning reference
     ProcessorNetwork* network_;
 };
+
+template <typename Prop, typename Key, typename Seq>
+PropertyTrack<Prop, Key, Seq>* PropertyTrack<Prop, Key, Seq>::clone() const {
+    return new PropertyTrack<Prop, Key, Seq>(*this);
+}
 
 template <typename Prop, typename Key, typename Seq>
 bool operator==(const PropertyTrack<Prop, Key, Seq>& a, const PropertyTrack<Prop, Key, Seq>& b) {

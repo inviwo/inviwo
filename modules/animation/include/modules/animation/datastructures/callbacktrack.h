@@ -51,6 +51,8 @@ public:
     CallbackTrack();
     virtual ~CallbackTrack() = default;
 
+    CallbackTrack* clone() const override;
+
     static std::string classIdentifier();
     virtual std::string getClassIdentifier() const override;
 
