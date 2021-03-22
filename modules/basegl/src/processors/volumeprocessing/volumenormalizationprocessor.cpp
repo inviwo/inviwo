@@ -77,10 +77,10 @@ VolumeNormalizationProcessor::VolumeNormalizationProcessor()
 
             dynamic_cast<BoolProperty*>(properties[0])->set(true);
 
-            for (int i = 1; i < channels; i++) {
+            for (int i = 1; i < 4; i++) {
                 auto boolProp = dynamic_cast<BoolProperty*>(properties[i]);
-                boolProp->set(false);
-                boolProp->setVisible(false);
+                boolProp->set(i < channels);
+                boolProp->setVisible(i < channels);
             }
 
             volumeNormalization_.reset();
@@ -89,23 +89,27 @@ VolumeNormalizationProcessor::VolumeNormalizationProcessor()
 }
 
 void VolumeNormalizationProcessor::process() {
-
+    auto inputVolume = volumeInport_.getData();
     auto channelProperties = channels_.getProperties();
 
     bool apply = false;
     for (size_t i{0}; i < channelProperties.size(); ++i) {
         apply = apply || dynamic_cast<BoolProperty*>(channelProperties[i])->get();
     }
+    if (inputVolume->getDataFormat()->getNumericType() != NumericType::Float) {
+        LogWarn("Numeric type of input volume is not floating point, omitting normalization.");
+        apply = false;
+    }
 
     if (!apply) {
-        volumeOutport_.setData(volumeInport_.getData());
+        volumeOutport_.setData(inputVolume);
     } else {
         for (size_t i{0}; i < channelProperties.size(); ++i) {
             volumeNormalization_.setNormalizeChannel(
                 i, dynamic_cast<BoolProperty*>(channelProperties[i])->get());
         }
 
-        volumeOutport_.setData(volumeNormalization_.normalize(*volumeInport_.getData()));
+        volumeOutport_.setData(volumeNormalization_.normalize(*inputVolume));
     }
 }
 
