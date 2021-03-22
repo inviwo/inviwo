@@ -49,30 +49,38 @@ VolumeNormalizationProcessor::VolumeNormalizationProcessor()
     , volumeInport_("volumeInport")
     , volumeOutport_("volumeOutport")
     , channels_("channels", "Channels")
-    , originalDataRange_{dvec2{0}}
-    , originalValueRange_{dvec2{0}}
+    , normalizeChannel0_("normalizeChannel0", "Channel 1", true)
+    , normalizeChannel1_("normalizeChannel1", "Channel 2", false)
+    , normalizeChannel2_("normalizeChannel2", "Channel 3", false)
+    , normalizeChannel3_("normalizeChannel3", "Channel 4", false)
     , volumeNormalization_([&]() { this->invalidate(InvalidationLevel::InvalidOutput); }) {
 
     addPorts(volumeInport_, volumeOutport_);
+
+    normalizeChannel1_.setVisible(false);
+    normalizeChannel2_.setVisible(false);
+    normalizeChannel3_.setVisible(false);
+
+    channels_.addProperties(normalizeChannel0_, normalizeChannel1_, normalizeChannel2_,
+                            normalizeChannel3_);
+
     addProperties(channels_);
 
     volumeInport_.onChange([this]() {
         if (volumeInport_.hasData()) {
             auto volume = volumeInport_.getData();
 
-            originalDataRange_ = volume->dataMap_.dataRange;
-            originalValueRange_ = volume->dataMap_.valueRange;
-
             const auto channels = static_cast<int>(volume->getDataFormat()->getComponents());
             if (channels == static_cast<int>(channels_.getProperties().size())) return;
 
-            NetworkLock l;
+            auto properties = channels_.getProperties();
 
-            channels_.clear();
-            for (int i = 0; i < channels; i++) {
-                const auto numString = std::to_string(i);
-                auto prop = new BoolProperty("channel" + numString, "Channel " + numString, i == 0);
-                channels_.addProperty(prop);
+            dynamic_cast<BoolProperty*>(properties[0])->set(true);
+
+            for (int i = 1; i < channels; i++) {
+                auto boolProp = dynamic_cast<BoolProperty*>(properties[i]);
+                boolProp->set(false);
+                boolProp->setVisible(false);
             }
 
             volumeNormalization_.reset();

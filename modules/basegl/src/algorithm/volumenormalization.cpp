@@ -56,13 +56,15 @@ void VolumeNormalization::setNormalizeChannel(const size_t channel, const bool n
     }
 }
 
-void VolumeNormalization::reset() {
-    needsCompilation_ = true;
+void VolumeNormalization::setNormalizeChannels(bvec4 normalize) {
+    setNormalizeChannel(0, normalize[0]);
+    setNormalizeChannel(1, normalize[1]);
+    setNormalizeChannel(2, normalize[2]);
+    setNormalizeChannel(3, normalize[3]);
+}
 
-    setNormalizeChannel(0, true);
-    setNormalizeChannel(1, false);
-    setNormalizeChannel(2, false);
-    setNormalizeChannel(3, false);
+void VolumeNormalization::reset() {
+    setNormalizeChannels({true, false, false, false});
 }
 
 std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {

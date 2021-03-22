@@ -31,15 +31,33 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/compositeproperty.h>
 #include <modules/basegl/algorithm/volumenormalization.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeNormalizationProcessor, Volume Normalization}
+/** \docpage{org.inviwo.VolumeNormalizationProcessor, Volume Normalization Processor}
  * ![](org.inviwo.VolumeNormalizationProcessor.png?classIdentifier=org.inviwo.VolumeNormalizationProcessor)
+ * 
+ * Normalizes the selected channels of the input volume to range [0,1].
+ * 
+ * ### Inputs
+ *   * __Volume inport__ Input Volume
+ * 
+ * ### Outports
+ *   * __Volume outport__ Normalized volume (if so selected)
+ * 
+ * ### Properties
+ *   * __Channels__ Check the boxes for those channels you wish to normalize to range [0,1}
+ */
+
+/**
+ * \class VolumeNormalizationProcessor
+ * 
+ * Enables the usage of the %VolumeNormalization algorithm. For details about the algorithm,
+ * please see VolumeNormalization.
  */
 class IVW_MODULE_BASEGL_API VolumeNormalizationProcessor : public Processor {
 public:
@@ -54,9 +72,12 @@ public:
 private:
     VolumeInport volumeInport_;
     VolumeOutport volumeOutport_;
+
     CompositeProperty channels_;
-    dvec2 originalDataRange_;
-    dvec2 originalValueRange_;
+    BoolProperty normalizeChannel0_;
+    BoolProperty normalizeChannel1_;
+    BoolProperty normalizeChannel2_;
+    BoolProperty normalizeChannel3_;
 
     VolumeNormalization volumeNormalization_;
 };
