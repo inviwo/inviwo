@@ -58,7 +58,19 @@ public:
     static const ProcessorMimeData* toProcessorMimeData(const QMimeData* data);
 
 private:
-    mutable std::unique_ptr<Processor> processor_;
+    struct ContextAwareDelete {
+        template <typename T>
+        ContextAwareDelete(std::default_delete<T>&&) noexcept {}
+
+        template <typename T>
+        operator std::default_delete<T>() {
+            return {};
+        }
+
+        void operator()(Processor* p) const noexcept;
+    };
+
+    mutable std::unique_ptr<Processor, ContextAwareDelete> processor_;
 };
 
 }  // namespace inviwo
