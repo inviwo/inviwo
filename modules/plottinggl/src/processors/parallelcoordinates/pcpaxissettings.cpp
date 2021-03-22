@@ -86,6 +86,7 @@ PCPAxisSettings::PCPAxisSettings(std::string identifier, std::string displayName
 
     range.onChange([this]() {
         updateBrushing();
+        updateLabels();
         if (pcp_) pcp_->updateBrushing(*this);
     });
 }
@@ -103,6 +104,7 @@ PCPAxisSettings::PCPAxisSettings(const PCPAxisSettings& rhs)
 
     range.onChange([this]() {
         updateBrushing();
+        updateLabels();
         if (pcp_) pcp_->updateBrushing(*this);
     });
 }
@@ -245,14 +247,7 @@ void PCPAxisSettings::setParallelCoordinates(ParallelCoordinates* pcp) {
     major_.setSettings(this);
     minor_.setSettings(this);
 
-    auto updateLabels = [this]() {
-        const auto tickmarks = plot::getMajorTickPositions(major_, range.getRange());
-        labels_.clear();
-        const auto& format = pcp_->labelFormat_.get();
-        std::transform(tickmarks.begin(), tickmarks.end(), std::back_inserter(labels_),
-                       [&](auto tick) { return fmt::sprintf(format, tick); });
-    };
-    labelUpdateCallback_ = pcp_->labelFormat_.onChangeScoped(updateLabels);
+    labelUpdateCallback_ = pcp_->labelFormat_.onChangeScoped([this]() { updateLabels(); });
     updateLabels();
 }
 
@@ -279,6 +274,16 @@ void PCPAxisSettings::updateBrushing() {
         if (filtered == detail::FilterResult::Upper) upperBrushed_ = true;
         if (filtered == detail::FilterResult::Lower) lowerBrushed_ = true;
     }
+}
+
+void PCPAxisSettings::updateLabels() {
+    if (!pcp_) return;
+
+    const auto tickmarks = plot::getMajorTickPositions(major_, range.getRange());
+    labels_.clear();
+    const auto& format = pcp_->labelFormat_.get();
+    std::transform(tickmarks.begin(), tickmarks.end(), std::back_inserter(labels_),
+                   [&](auto tick) { return fmt::sprintf(format, tick); });
 }
 
 dvec2 PCPAxisSettings::getRange() const {
