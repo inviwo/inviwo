@@ -199,6 +199,7 @@ public:
 
 private:
     void updateBrushing();
+    void updateLabels();
 
     PCPCaptionSettings captionSettings_;
     std::vector<std::string> labels_;
