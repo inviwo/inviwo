@@ -71,9 +71,11 @@ VolumeNormalizationProcessor::VolumeNormalizationProcessor()
             channels_.clear();
             for (int i = 0; i < channels; i++) {
                 const auto numString = std::to_string(i);
-                auto prop = new BoolProperty("channel" + numString, "Channel " + numString, true);
+                auto prop = new BoolProperty("channel" + numString, "Channel " + numString, i == 0);
                 channels_.addProperty(prop);
             }
+
+            volumeNormalization_.reset();
         }
     });
 }
