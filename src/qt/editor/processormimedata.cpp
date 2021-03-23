@@ -29,6 +29,7 @@
 
 #include <inviwo/qt/editor/processormimedata.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/util/rendercontext.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -38,6 +39,11 @@
 #include <warn/pop>
 
 namespace inviwo {
+
+void ProcessorMimeData::ContextAwareDelete::operator()(Processor* p) const noexcept {
+    rendercontext::activateDefault();
+    delete p;
+}
 
 ProcessorMimeData::ProcessorMimeData(std::unique_ptr<Processor> processor)
     : QMimeData{}, processor_{std::move(processor)} {
