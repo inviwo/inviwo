@@ -33,9 +33,37 @@
 #include <warn/pop>
 
 #include <modules/discretedata/connectivity/tripolargrid.h>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 namespace discretedata {
+
+template <GridPrimitive From, GridPrimitive To>
+void TestConnections(const TripolarGrid<3>& grid, const std::array<ind, 3>& coord,
+                     const std::array<ind, size_t(From)>& dirs, ind expectedIdx,
+                     const std::vector<std::array<ind, 3>>& neighCoords,
+                     const std::vector<std::array<ind, size_t(To)>> neighDirs,
+                     const std::vector<ind>& neighIndices) {
+
+    auto cell = grid.getPrimitive<From>(coord030, dirs);
+
+    EXPECT_EQ(cell.getCoordinates(), coord);
+    EXPECT_EQ(cell.getDirections(), dirs);
+    EXPECT_EQ(cell.GlobalPrimitiveIndex, expectedIdx);
+
+    cell = grid.getPrimitive<From>(expectedIdx);
+    EXPECT_EQ(cell.getCoordinates(), coord);
+    EXPECT_EQ(cell.getDirections(), dirs);
+
+    for (auto&& neighbor : util::zip(neighCoords, neighDirs, neighIndices)) {
+        auto prim = grid.getPrimitive<To>(neighbor.first(), neighbor.second());
+        EXPECT_EQ(prim.GlobalPrimitiveIndex, neighbor.third());
+    }
+    std::vector<ind> connections;
+    grid.getConnections(connections, cell.GlobalPrimitiveIndex, From, To);
+    std::sort(connections.begin(), connections.end());
+    EXPECT_EQ(neighborIndices, connections);
+}
 
 TEST(DataSet, TripolarGrid) {
     TripolarGrid<3> grid(10, 4, 3);
@@ -53,7 +81,7 @@ TEST(DataSet, TripolarGrid) {
     ind numEdgesZ = 10 * 4 * 2;        // Z-edge
 
     ind numFacesXY = (10 * 3 + 4) * 3;  // XY-face
-    ind numFacesXZ = 10 * 4 * 3;        // XZ-face
+    ind numFacesXZ = 10 * 4 * 2;        // XZ-face
     ind numFacesYZ = (10 * 3 + 3) * 2;  // YZ-face
 
     ind numVoxels = (10 * 3 + 4) * 2;
@@ -125,53 +153,70 @@ TEST(DataSet, TripolarGrid) {
     EXPECT_EQ(*grid.numPrimitives_.getOffset<GridPrimitive::Volume>({0, 1, 2}), 0);
     EXPECT_EQ(*grid.numPrimitives_.getOffset<GridPrimitive::Volume>(0), 0);
 
-    // Create a primitive object representing the voxel at (0, 3, 0), one of two most special cases.
-    std::array<ind, 3> coord030({0, 3, 0});
-    std::array<size_t, 3> dirV({0, 1, 2});
-    auto cell030 = grid.getPrimitive<GridPrimitive::Volume>(coord030, dirV);
+    // Check number of "normal" primitives (excluding the top-wrapping flap).
+    EXPECT_EQ(grid.numPrimitives_.PerDirectionNumNormalPrimitives[0], numVertices);
+    EXPECT_EQ(grid.numPrimitives_.PerDirectionNumNormalPrimitives[1], numEdgesX);
+    EXPECT_EQ(grid.numPrimitives_.PerDirectionNumNormalPrimitives[2], 10 * 3 * 3);
+    EXPECT_EQ(grid.numPrimitives_.PerDirectionNumNormalPrimitives[3], numEdgesZ);
+    EXPECT_EQ(grid.numPrimitives_.PerDirectionNumNormalPrimitives[4], 10 * 3 * 3);
+    EXPECT_EQ(grid.numPrimitives_.PerDirectionNumNormalPrimitives[5], numFacesXZ);
+    EXPECT_EQ(grid.numPrimitives_.PerDirectionNumNormalPrimitives[6], 10 * 3 * 2);
+    EXPECT_EQ(grid.numPrimitives_.PerDirectionNumNormalPrimitives[7], 10 * 3 * 2);
 
-    EXPECT_EQ(cell030.getCoordinates(), coord030);
-    EXPECT_EQ(cell030.getDirections(), dirV);
-    EXPECT_EQ(cell030.GlobalPrimitiveIndex, grid.numPrimitives_.PerDirectionNumNormalPrimitives[7]);
+    std::array<size_t, 3> dirVox({0, 1, 2});
 
-    // // Check all voxel neighbors - since there is only 2 x 3 x 4 voxels, we get 3 of those.
-    // std::vector<ind> neighbors;
-    // grid.getConnections(neighbors, cell123.GlobalPrimitiveIndex, GridPrimitive::Volume,
-    //                     GridPrimitive::Volume);
+    // Create a primitive object connections representing the voxel at (0, 2, 0).
+    // {
+    //     std::array<ind, 3> coord020({0, 2, 0});
+    //     auto cell020 = grid.getPrimitive<GridPrimitive::Volume>(coord020, dirVox);
 
-    // std::sort(neighbors.begin(), neighbors.end());
-    // EXPECT_EQ(neighbors.size(), 3);
-    // EXPECT_EQ(neighbors[0], 16);
-    // EXPECT_EQ(neighbors[1], 20);
-    // EXPECT_EQ(neighbors[2], 23);
+    //     EXPECT_EQ(cell020.getCoordinates(), coord020);
+    //     EXPECT_EQ(cell020.getDirections(), dirVox);
+    //     EXPECT_EQ(cell020.GlobalPrimitiveIndex, 20);
+    //     std::vector<std::array<ind, 3>> neighbors{
+    //         {0, 1, 0}, {1, 2, 0}, {9, 2, 0}, {0, 2, 1}, {0, 3, 0}};
+    //     std::vector<ind> neighborIndices = {10, 21, 29, 50, 60};
+    //     for (auto&& neighbor : util::zip(neighbors, neighborIndices)) {
+    //         auto prim = grid.getPrimitive<GridPrimitive::Volume>(neighbor.first(), dirVox);
+    //         EXPECT_EQ(prim.GlobalPrimitiveIndex, neighbor.second());
+    //     }
+    //     std::vector<ind> connections;
+    //     grid.getConnections(connections, cell020.GlobalPrimitiveIndex, GridPrimitive::Volume,
+    //                         GridPrimitive::Volume);
+    //     std::sort(connections.begin(), connections.end());
+    //     EXPECT_EQ(neighborIndices, connections);
+    // }
 
-    // // Get all edges of our voxel. There should be 12.
-    // std::vector<ind> edges;
-    // grid.getConnections(edges, cell123.GlobalPrimitiveIndex, GridPrimitive::Volume,
-    //                     GridPrimitive::Edge);
-    // EXPECT_EQ(edges.size(), 12);
-    // // X-pointing edges:
-    // EXPECT_EQ(edges[0], 28);
-    // EXPECT_EQ(edges[1], 30);
-    // EXPECT_EQ(edges[2], 36);
-    // EXPECT_EQ(edges[3], 38);
-    // // Y-pointing edges:
-    // EXPECT_EQ(edges[4], 40 + 33);
-    // EXPECT_EQ(edges[5], 40 + 34);
-    // EXPECT_EQ(edges[6], 40 + 42);
-    // EXPECT_EQ(edges[7], 40 + 43);
-    // // Z-pointing edges:
-    // EXPECT_EQ(edges[8], 85 + 42);
-    // EXPECT_EQ(edges[9], 85 + 43);
-    // EXPECT_EQ(edges[10], 85 + 45);
-    // EXPECT_EQ(edges[11], 85 + 46);
+    // Create a primitive object representing the voxel at (0, 3, 0),
+    // one of two most special cases.
+    {
+        std::array<ind, 3> coord030({0, 3, 0});
+        auto cell030 = grid.getPrimitive<GridPrimitive::Volume>(coord030, dirVox);
 
-    // // Check one of the edges at random for resolving back to posiiton and direction.
-    // auto edge124y = grid.getPrimitive<GridPrimitive::Edge>(40 + 43);
-    // std::array<ind, 3> c124({1, 2, 4});
-    // EXPECT_EQ(edge124y.getCoordinates(), c124);
-    // EXPECT_EQ(edge124y.getDirections()[0], 1);
-}
+        EXPECT_EQ(cell030.getCoordinates(), coord030);
+        EXPECT_EQ(cell030.getDirections(), dirVox);
+        EXPECT_EQ(cell030.GlobalPrimitiveIndex,
+                  grid.numPrimitives_.PerDirectionNumNormalPrimitives[7]);
+
+        cell030 = grid.getPrimitive<GridPrimitive::Volume>(60);
+        EXPECT_EQ(cell030.getCoordinates(), coord030);
+        EXPECT_EQ(cell030.getDirections(), dirVox);
+
+        std::vector<std::array<ind, 3>> neighbors{
+            {0, 2, 0}, {8, 2, 0}, {9, 2, 0}, {1, 3, 0}, {0, 3, 1}};
+        std::vector<ind> neighborIndices = {20, 28, 29, 61, 64};
+        for (auto&& neighbor : util::zip(neighbors, neighborIndices)) {
+            auto prim = grid.getPrimitive<GridPrimitive::Volume>(neighbor.first(), dirVox);
+            EXPECT_EQ(prim.GlobalPrimitiveIndex, neighbor.second());
+        }
+        std::vector<ind> connections;
+        grid.getConnections(connections, cell030.GlobalPrimitiveIndex, GridPrimitive::Volume,
+                            GridPrimitive::Volume);
+        std::sort(connections.begin(), connections.end());
+        EXPECT_EQ(neighborIndices, connections);
+    }
+
+}  // namespace discretedata
 
 }  // namespace discretedata
 }  // namespace inviwo
