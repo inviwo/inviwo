@@ -52,7 +52,10 @@ DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
 
     ivec2 dim = getDimensions();
 
-    setWindowTitle(utilqt::toQString(processor_->getDisplayName()));
+    setWindowTitle(utilqt::toQString(p->getDisplayName()));
+    nameChange_ = p->onDisplayNameChange([this](std::string_view newName, std::string_view) {
+        setWindowTitle(utilqt::toQString(newName));
+    });
 
     tableview_ = tableview_ptr(new DataFrameTableView(this), [&](DataFrameTableView* c) {
         layout()->removeWidget(c);
@@ -77,11 +80,6 @@ DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
     layout->addWidget(tableview_.get());
 
     setDimensions(dim);
-
-    nameChange_ =
-        processor_->onDisplayNameChange([this](std::string_view newName, std::string_view) {
-            setWindowTitle(utilqt::toQString(newName));
-        });
 
     {
         util::KeepTrueWhileInScope ignore(&ignoreEvents_);

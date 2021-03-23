@@ -206,7 +206,10 @@ void CanvasQOpenGLWidget::doContextMenu(QMouseEvent* event) {
     menu.exec(event->globalPos());
 }
 
-size2_t CanvasQOpenGLWidget::getCanvasDimensions() const { return 2 * utilqt::toGLM(size()); }
+size2_t CanvasQOpenGLWidget::getCanvasDimensions() const {
+    const auto dpr = window()->devicePixelRatio();
+    return dpr * utilqt::toGLM(size());
+}
 
 void CanvasQOpenGLWidget::propagateEvent(Event* e, Outport* source) {
     if (!propagator_) return;

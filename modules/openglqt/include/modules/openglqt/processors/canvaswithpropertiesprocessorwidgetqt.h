@@ -93,7 +93,7 @@ protected:
     std::unique_ptr<CanvasQOpenGLWidget, std::function<void(CanvasQOpenGLWidget*)>> canvas_;
     Processor::NameDispatcherHandle nameChange_;
 
-    size2_t screenDimensions_{0};
+    size2_t canvasDimensions_{0};
     PropertyListFrame* frame_;
     std::vector<std::string> addedPaths_;
 };

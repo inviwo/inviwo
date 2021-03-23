@@ -271,7 +271,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     resourceManagerDockWidget_->setVisible(false);
     resourceManagerDockWidget_->loadState();
 
-    welcomeWidget_ = new WelcomeWidget(getInviwoApplication(), centralWidget_);
+    welcomeWidget_ = new WelcomeWidget(getInviwoApplication(), this);
     welcomeWidget_->updateRecentWorkspaces(getRecentWorkspaceList());
 
     connect(welcomeWidget_, &WelcomeWidget::loadWorkspace, this,

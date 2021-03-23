@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-class PWObserver;
+struct PWObserver;
 
 class IVW_MODULE_OPENGLQT_API CanvasWithPropertiesProcessor : public Processor {
 public:

@@ -52,7 +52,7 @@ ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString& title,
     ivec2 dim = ProcessorWidget::getDimensions();
     ivec2 pos = ProcessorWidget::getPosition();
 
-    setWindowTitle(utilqt::toQString(processor_->getDisplayName()));
+    setWindowTitle(utilqt::toQString(p->getDisplayName()));
     // make the widget to float and not sticky by default
     this->setFloating(true);
     this->setSticky(false);
@@ -76,7 +76,7 @@ ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString& title,
         }
     }
 
-    idChange_ = processor_->onDisplayNameChange([this](std::string_view newName, std::string_view) {
+    idChange_ = p->onDisplayNameChange([this](std::string_view newName, std::string_view) {
         setWindowTitle(utilqt::toQString(newName));
     });
 }

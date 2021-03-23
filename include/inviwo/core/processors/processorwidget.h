@@ -47,22 +47,28 @@ public:
 
     virtual bool isVisible() const;
     virtual void setVisible(bool visible);
+    
     virtual glm::ivec2 getDimensions() const;
     virtual void setDimensions(ivec2);
+    
     virtual glm::ivec2 getPosition() const;
     virtual void setPosition(ivec2);
+    
     virtual bool isFullScreen() const;
     virtual void setFullScreen(bool fullscreen);
+    
     virtual bool isOnTop() const;
     virtual void setOnTop(bool onTop);
 
 protected:
+    // implement these to respond to metadata changes
     virtual void updateVisible(bool visible) = 0;
     virtual void updateDimensions(ivec2) = 0;
     virtual void updatePosition(ivec2) = 0;
     virtual void updateFullScreen(bool) = 0;
     virtual void updateOnTop(bool) = 0;
 
+private:
     virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) override;

@@ -66,7 +66,7 @@ dvec2 normalizePosition(QPointF pos, size2_t dim) {
 
 template <typename QE>
 dvec2 normalizePosition(QE* e, size2_t dim) {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     return normalizePosition(e->position(), dim);
 #else
     return normalizePosition(e->localPos(), dim);
@@ -335,10 +335,10 @@ bool InteractionEventMapperQt::mapTouchEvent(QTouchEvent* touch) {
 
     // Copy touch points
     std::vector<TouchPoint> touchPoints;
-    touchPoints.reserve(touch->points().size());
+    touchPoints.reserve(touch->touchPoints().size());
     const uvec2 imageSize = imageDimensions_();
 
-    for (const auto& touchPoint : touch->points()) {
+    for (const auto& touchPoint : touch->touchPoints()) {
         const auto pos = normalizePosition(touchPoint.pos(), canvasDimensions_());
         const auto prevPos = normalizePosition(touchPoint.lastPos(), canvasDimensions_());
         const auto pressedPos = normalizePosition(touchPoint.startPos(), canvasDimensions_());

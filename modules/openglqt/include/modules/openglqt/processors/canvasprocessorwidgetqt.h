@@ -83,7 +83,7 @@ private:
     bool ignoreEvents_{false};
     bool resizeOngoing_{false};
 
-    size2_t screenDimensions_{0};
+    size2_t canvasDimensions_{0};
     Processor::NameDispatcherHandle nameChange_;
 };
 

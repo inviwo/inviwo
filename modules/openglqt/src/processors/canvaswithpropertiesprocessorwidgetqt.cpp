@@ -59,11 +59,10 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
     : CanvasProcessorWidget{p}, QMainWindow{nullptr, Qt::Window} {
 
     setWindowTitle(utilqt::toQString(p->getDisplayName()));
-    nameChange_ =
-        processor_->onDisplayNameChange([this](std::string_view newName, std::string_view) {
-            setWindowTitle(utilqt::toQString(newName));
-            RenderContext::getPtr()->setContextName(canvas_->contextId(), newName);
-        });
+    nameChange_ = p->onDisplayNameChange([this](std::string_view newName, std::string_view) {
+        setWindowTitle(utilqt::toQString(newName));
+        RenderContext::getPtr()->setContextName(canvas_->contextId(), newName);
+    });
 
     const ivec2 dim = CanvasProcessorWidget::getDimensions();
     const ivec2 pos = CanvasProcessorWidget::getPosition();
@@ -73,14 +72,13 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
     auto splitter = new QSplitter();
 
     canvas_ = std::unique_ptr<CanvasQOpenGLWidget, std::function<void(CanvasQOpenGLWidget*)>>(
-        new CanvasQOpenGLWidget(nullptr, processor_->getDisplayName()),
-        [&](CanvasQOpenGLWidget* c) {
+        new CanvasQOpenGLWidget(nullptr, p->getDisplayName()), [&](CanvasQOpenGLWidget* c) {
             c->activate();
             c->setParent(nullptr);
             delete c;
             RenderContext::getPtr()->activateDefaultRenderContext();
         });
-    canvas_->setEventPropagator(processor_);
+    canvas_->setEventPropagator(p);
     canvas_->setProcessorWidgetOwner(this);
     canvas_->setMinimumSize(16, 16);
 
@@ -99,7 +97,7 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
     scrollArea->setFrameShape(QFrame::NoFrame);
     scrollArea->setContentsMargins(0, space, 0, space);
 
-    auto app = processor_->getNetwork()->getApplication();
+    auto app = p->getNetwork()->getApplication();
     frame_ = new PropertyListFrame(nullptr, app->getPropertyWidgetFactory());
     frame_->setContentsMargins(space, 0, 0, 0);
     scrollArea->setWidget(frame_);
@@ -121,7 +119,6 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
             utilqt::movePointOntoDesktop(utilqt::toQPoint(pos), utilqt::toQSize(dim), true);
 
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
-            // util::KeepTrueWhileInScope ignore(&ignoreEvents_);
             // prevent move events, since this will automatically save the "adjusted" position.
             // The processor widget already has its correct pos, i.e. the one de-serialized from
             // file.
@@ -153,7 +150,7 @@ void CanvasWithPropertiesProcessorWidgetQt::addProperties(std::string_view paths
 
     addedPaths_.clear();
     frame_->clear();
-    if (auto net = processor_->getNetwork()) {
+    if (auto net = getProcessor()->getNetwork()) {
         util::forEachStringPart(paths, "\n", [&](std::string_view path) {
             auto [proc, prop] = util::splitByFirst(path, ".");
             if (auto processor = net->getProcessorByIdentifier(proc)) {
@@ -204,14 +201,14 @@ void CanvasWithPropertiesProcessorWidgetQt::changeEvent(QEvent* event) {
 void CanvasWithPropertiesProcessorWidgetQt::propagateResizeEvent() {
     CanvasProcessorWidget::setDimensions(utilqt::toGLM(size()));
 
-    auto previousScreenDimensions = screenDimensions_;
+    auto previousCanvasDimensions = canvasDimensions_;
     const auto dpr = window()->devicePixelRatio();
-    screenDimensions_ = dpr * utilqt::toGLM(canvas_->size());
+    canvasDimensions_ = dpr * utilqt::toGLM(canvas_->size());
 
     NetworkLock lock;
     RenderContext::getPtr()->activateDefaultRenderContext();
-    ResizeEvent resizeEvent(screenDimensions_, previousScreenDimensions);
-    processor_->propagateEvent(&resizeEvent, nullptr);
+    ResizeEvent resizeEvent(canvasDimensions_, previousCanvasDimensions);
+    getProcessor()->propagateEvent(&resizeEvent, nullptr);
 }
 
 void CanvasWithPropertiesProcessorWidgetQt::setVisible(bool visible) {
