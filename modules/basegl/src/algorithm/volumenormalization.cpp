@@ -75,19 +75,19 @@ std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
     // Don't dispatch if we don't have to
     if (volume.getDataFormat()->getNumericType() == NumericType::Float) {
         outVolume = std::make_shared<Volume>(volume.getDimensions(), volume.getDataFormat(),
-                                                  volume.getSwizzleMask(),
-                                                  volume.getInterpolation(), volume.getWrapping());
+                                             volume.getSwizzleMask(), volume.getInterpolation(),
+                                             volume.getWrapping());
     } else {
         outVolume = volume.getRepresentation<VolumeRAM>()
-            ->dispatch<std::shared_ptr<Volume>, dispatching::filter::Integers>(
-            [](auto vrprecision) {
-                using ValueType = util::PrecisionValueType<decltype(vrprecision)>;
+                        ->dispatch<std::shared_ptr<Volume>, dispatching::filter::Integers>(
+                            [](auto vrprecision) {
+                                using ValueType = util::PrecisionValueType<decltype(vrprecision)>;
 
-                using P = typename util::same_extent<ValueType, float>::type;
+                                using P = typename util::same_extent<ValueType, float>::type;
 
-                return std::make_shared<Volume>(vrprecision->getDimensions(),
+                                return std::make_shared<Volume>(vrprecision->getDimensions(),
                                                                 DataFormat<P>::get());
-            });
+                            });
     }
 
     outVolume->setModelMatrix(volume.getModelMatrix());
