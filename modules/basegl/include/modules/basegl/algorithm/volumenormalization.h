@@ -42,6 +42,8 @@ namespace inviwo {
  *
  * GL implementation of volume normalization. The algorithm takes in a volume and normalized its
  * data in the selected channels to range [0,1].
+ * Note that this algorithm normalizes channels independently, it does not normalize a multi-channel
+ * volume in terms of vector norms!
  */
 class IVW_MODULE_BASEGL_API VolumeNormalization {
 public:

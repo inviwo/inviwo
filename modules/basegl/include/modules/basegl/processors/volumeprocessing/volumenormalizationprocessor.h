@@ -42,6 +42,8 @@ namespace inviwo {
  * ![](org.inviwo.VolumeNormalizationProcessor.png?classIdentifier=org.inviwo.VolumeNormalizationProcessor)
  *
  * Normalizes the selected channels of the input volume to range [0,1].
+ * Note that this algorithm normalizes channels independently, it does not normalize a multi-channel
+ * volume in terms of vector norms!
  *
  * ### Inputs
  *   * __Volume inport__ Input Volume
@@ -58,6 +60,8 @@ namespace inviwo {
  *
  * Enables the usage of the %VolumeNormalization algorithm. For details about the algorithm,
  * please see VolumeNormalization.
+ * Note that this algorithm normalizes channels independently, it does not normalize a multi-channel
+ * volume in terms of vector norms!
  */
 class IVW_MODULE_BASEGL_API VolumeNormalizationProcessor : public Processor {
 public:
