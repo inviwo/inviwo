@@ -30,6 +30,7 @@
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <modules/animation/datastructures/animationobserver.h>
+#include <modules/animation/animationcontrollerobserver.h>
 #include <modules/animationqt/widgets/editorconstants.h>
 
 #include <warn/push>
@@ -53,11 +54,15 @@ class TrackWidgetQt;
 class TrackWidgetQtFactory;
 
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorQt : public QGraphicsScene,
-                                                     public AnimationObserver {
+                                                     public AnimationObserver,
+                                                     public AnimationControllerObserver {
 public:
     AnimationEditorQt(AnimationController& controller, TrackWidgetQtFactory& widgetFactory,
                       TextLabelOverlay& overlay);
     virtual ~AnimationEditorQt();
+
+    // AnimationControllerObserver overload
+    void onAnimationChanged(AnimationController*, Animation* oldAnim, Animation* newAnim) override; 
 
 protected:
     void updateSceneRect();

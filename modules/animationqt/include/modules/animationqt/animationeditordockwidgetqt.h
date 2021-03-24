@@ -29,6 +29,7 @@
 #pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
+#include <modules/animationqt/workspaceanimationsmodel.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <modules/qtwidgets/inviwodockwidget.h>
@@ -37,6 +38,7 @@
 
 class QToolButton;
 class QMainWindow;
+class QComboBox;
 
 namespace inviwo {
 
@@ -53,7 +55,7 @@ class SequenceEditorFactory;
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget,
                                                                public AnimationControllerObserver {
 public:
-    AnimationEditorDockWidgetQt(AnimationController& controller, AnimationManager& manager,
+    AnimationEditorDockWidgetQt(WorkspaceAnimations& animations, AnimationManager& manager,
                                 const std::string& widgetName, TrackWidgetQtFactory& widgetFactory,
                                 SequenceEditorFactory& editorFactory, QWidget* parent);
     AnimationEditorDockWidgetQt(const AnimationEditorDockWidgetQt&) = delete;
@@ -63,22 +65,19 @@ public:
     virtual ~AnimationEditorDockWidgetQt();
 
     /**
-     * Shows a file dialog for loading an Animation and AnimationController from an Inviwo
-     * workspace.
+     * Shows a file dialog for loading Animations from an Inviwo workspace and imports them.
      */
-    void openAnimation();
-    /*
-     * Save the current Animation and AnimationController into a new workspace file.
-     */
-    void saveAnimationAs();
+    void importAnimation();
 
 protected:
     virtual void onStateChanged(AnimationController* controller, AnimationState prevState,
                                 AnimationState newState) override;
 
+    WorkspaceAnimations& animations_;
     AnimationController& controller_;
 
     // GUI-stuff
+    QComboBox* animationsList_;
     QAction* btnPlayPause_;
     std::unique_ptr<AnimationEditorQt> animationEditor_;
     AnimationViewQt* animationView_;

@@ -57,6 +57,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QComboBox>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -74,10 +75,12 @@ namespace inviwo {
 namespace animation {
 
 AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
-    AnimationController& controller, AnimationManager& manager, const std::string& widgetName,
-    TrackWidgetQtFactory& widgetFactory, SequenceEditorFactory& editorFactory, QWidget* parent)
+    WorkspaceAnimations& animations, AnimationManager& manager,
+    const std::string& widgetName, TrackWidgetQtFactory& widgetFactory,
+    SequenceEditorFactory& editorFactory, QWidget* parent)
     : InviwoDockWidget(utilqt::toQString(widgetName), parent, "AnimationEditorWidget")
-    , controller_{controller} {
+    , animations_(animations)
+    , controller_{animations_.getMainAnimation().getController()} {
 
     resize(utilqt::emToPx(this, QSizeF(100, 40)));  // default size
     setAllowedAreas(Qt::BottomDockWidgetArea);
@@ -93,8 +96,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     setWidget(mainWindow_);
 
     // right part
-    sequenceEditorView_ =
-        new SequenceEditorPanel(controller.getAnimation(), manager, editorFactory, this);
+    sequenceEditorView_ = new SequenceEditorPanel(controller_, manager, editorFactory, this);
 
     auto optionLayout = sequenceEditorView_->getOptionLayout();
     // Settings for the controller
@@ -193,31 +195,52 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     toolBar->setMovable(false);
     mainWindow_->addToolBar(toolBar);
 
-    // Menu
-    auto menu = mainWindow_->menuBar();
-
-    auto fileMenuItem = menu->addMenu(tr("&File"));
-    // file menu entries
     {
-        auto openAction = new QAction(QIcon(":/svgicons/open.svg"), tr("&Open Animation"), this);
-        openAction->setShortcut(QKeySequence::Open);
-        openAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        auto newAction = new QAction(QIcon(":/svgicons/newfile.svg"), tr("&New Animation"), this);
+        newAction->setToolTip("New Animation");
+        addAction(newAction);
+        connect(newAction, &QAction::triggered, this, [this]() {
+            animationsList_->addItem(
+                utilqt::toQString(fmt::format("Animation {}", animations_.get().size() + 1)));
+            animationsList_->setCurrentIndex(animationsList_->count() - 1);
+        });
+        toolBar->addAction(newAction);
+    }
+
+    {
+        auto openAction = new QAction(QIcon(":/svgicons/open.svg"), tr("&Import Animation"), this);
         addAction(openAction);
-        connect(openAction, &QAction::triggered, this, [this]() { openAnimation(); });
-        fileMenuItem->addAction(openAction);
+        connect(openAction, &QAction::triggered, this, [this]() { importAnimation(); });
         toolBar->addAction(openAction);
     }
 
     {
-        auto saveAction =
-            new QAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Animation As"), this);
-        saveAction->setShortcut(QKeySequence::SaveAs);
-        saveAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        addAction(saveAction);
-        connect(saveAction, &QAction::triggered, this, [this]() { saveAnimationAs(); });
-        fileMenuItem->addAction(saveAction);
-        toolBar->addAction(saveAction);
+        auto deleteAction =
+            new QAction(QIcon(":/svgicons/trashcan.svg"), tr("&Remove Animation"), this);
+        deleteAction->setToolTip("Remove Animation");
+        addAction(deleteAction);
+        connect(deleteAction, &QAction::triggered, this,
+                [this]() { animationsList_->removeItem(animationsList_->currentIndex()); });
+        toolBar->addAction(deleteAction);
     }
+
+    {
+        animationsList_ = new QComboBox(toolBar);
+        animationsList_->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+        animationsList_->setInsertPolicy(QComboBox::InsertAtCurrent);
+        animationsList_->setEditable(true);
+        animationsList_->setModel(new AnimationsModel(animations_, animationsList_));
+        animationsList_->setCurrentIndex(animations_.getMainAnimationIndex());
+        connect(animationsList_, QOverload<int>::of(&QComboBox::currentIndexChanged),
+                [=](int index) {
+                    if (index >= 0) {
+                        auto oldIndex = animations_.getMainAnimationIndex();
+                        animations_.setMainAnimationIndex(index);
+                    }
+                });
+        toolBar->addWidget(animationsList_);
+    }
+
 
     toolBar->addSeparator();
 
@@ -305,7 +328,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
 
 AnimationEditorDockWidgetQt::~AnimationEditorDockWidgetQt() = default;
 
-void AnimationEditorDockWidgetQt::openAnimation() {
+void AnimationEditorDockWidgetQt::importAnimation() {
     InviwoFileDialog openFileDialog(this, "Import Animation ...", "animation");
     openFileDialog.addSidebarPath(PathType::Workspaces);
     openFileDialog.addExtension("inv", "Inviwo File");
@@ -320,42 +343,12 @@ void AnimationEditorDockWidgetQt::openAnimation() {
             return;
         }
         try {
-            std::ifstream anim{std::string(fileName)};
-            auto app_ = InviwoApplication::getPtr();
-            auto deserializer = app_->getWorkspaceManager()->createWorkspaceDeserializer(
-                anim, std::string(fileName));
+            auto anim = filesystem::ifstream(fileName);
+            auto app = InviwoApplication::getPtr();
+            auto deserializer =
+                app->getWorkspaceManager()->createWorkspaceDeserializer(anim, fileName);
             controller_.pause();
-            deserializer.deserialize("Animation", controller_.getAnimation());
-            deserializer.deserialize("AnimationController", controller_);
-        } catch (std::exception ex) {
-            LogError(ex.what());
-        }
-    }
-}
-
-void AnimationEditorDockWidgetQt::saveAnimationAs() {
-    InviwoFileDialog saveFileDialog(this, "Save Animation As...", "animation");
-    saveFileDialog.setFileMode(FileMode::AnyFile);
-    saveFileDialog.setAcceptMode(AcceptMode::Save);
-    saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
-
-    saveFileDialog.addSidebarPath(PathType::Workspaces);
-    saveFileDialog.addExtension("inv", "Inviwo File");
-
-    if (saveFileDialog.exec()) {
-        QString path = saveFileDialog.selectedFiles().at(0);
-        if (!path.endsWith(".inv")) path.append(".inv");
-        std::string fileName{utilqt::fromQString(path)};
-        fileName = filesystem::cleanupPath(fileName);
-        try {
-            Serializer serializer(fileName);
-            controller_.pause();
-            serializer.serialize("Animation", controller_.getAnimation());
-            serializer.serialize("AnimationController", controller_);
-            std::ofstream anim{std::string(fileName)};
-            serializer.writeFile(anim);
-        } catch (SerializationException ex) {
-            LogError(ex.what());
+            animations_.import(deserializer);  
         } catch (std::exception ex) {
             LogError(ex.what());
         }

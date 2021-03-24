@@ -66,6 +66,7 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller,
     : QGraphicsScene(), controller_(controller), widgetFactory_{widgetFactory}, overlay_{overlay} {
     auto& animation = controller_.getAnimation();
     animation.addObserver(this);
+    controller_.AnimationControllerObservable::addObserver(this);
 
     // Add Property tracks
     for (auto& track : animation) {
@@ -88,6 +89,18 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller,
 }
 
 AnimationEditorQt::~AnimationEditorQt() = default;
+
+void AnimationEditorQt::onAnimationChanged(AnimationController*, Animation* oldAnim,
+                                             Animation* newAnim) {
+    oldAnim->removeObserver(this);
+    while (!tracks_.empty()) {
+        onTrackRemoved(tracks_.begin()->first);
+    }
+    for (auto& track : *newAnim) {
+        onTrackAdded(&track);
+    }
+    newAnim->addObserver(this);
+}
 
 std::unique_ptr<TrackWidgetQt> AnimationEditorQt::createTrackWidget(Track& track) const {
     auto widgetId = widgetFactory_.getWidgetId(track.getClassIdentifier());

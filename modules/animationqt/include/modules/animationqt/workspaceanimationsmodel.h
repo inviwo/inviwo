@@ -29,40 +29,44 @@
 #pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
-#include <modules/animation/datastructures/animationobserver.h>
-#include <modules/animation/animationcontroller.h>
+#include <modules/animation/workspaceanimations.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QListView>
-#include <QStringList>
+#include <QAbstractListModel>
+#include <QVariant>
 #include <warn/pop>
 
-class QStandardItemModel;
+
 
 namespace inviwo {
 
 namespace animation {
 
-class Animation;
-
-class IVW_MODULE_ANIMATIONQT_API AnimationLabelViewQt : public QListView,
-                                                        public AnimationObserver,
-                                                        public AnimationControllerObserver {
+class IVW_MODULE_ANIMATIONQT_API AnimationsModel : public QAbstractListModel
+{
+#include <warn/push>
+#include <warn/ignore/all>
+    //Q_OBJECT
+#include <warn/pop>
 public:
-    AnimationLabelViewQt(AnimationController& controller);
-    virtual ~AnimationLabelViewQt() = default;
 
-    virtual void onTrackAdded(Track* track) override;
-    virtual void onTrackRemoved(Track* track) override;
+    AnimationsModel(WorkspaceAnimations& animations, QObject* parent = 0);
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
+    QVariant headerData(int section, Qt::Orientation orientation,
+                        int role = Qt::DisplayRole) const override;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 
-    // AnimationControllerObserver overload
-    void onAnimationChanged(AnimationController*, Animation* oldAnim, Animation* newAnim) override; 
+    bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
 
-    AnimationController& controller_;
-    QStandardItemModel* model_;
+    bool insertRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
+    bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
+
+private:
+    WorkspaceAnimations& animations_;
+    WorkspaceAnimations::OnChangedDispatcher::Handle onChangedHandle_;
 };
 
 }  // namespace animation

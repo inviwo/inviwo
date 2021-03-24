@@ -31,6 +31,7 @@ set(HEADER_FILES
     include/modules/animationqt/widgets/keyframewidgetqt.h
     include/modules/animationqt/widgets/propertytrackwidgetqt.h
     include/modules/animationqt/widgets/trackwidgetqt.h
+    include/modules/animationqt/workspaceanimationsmodel.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -59,6 +60,7 @@ set(SOURCE_FILES
     src/widgets/keyframewidgetqt.cpp
     src/widgets/propertytrackwidgetqt.cpp
     src/widgets/trackwidgetqt.cpp
+    src/workspaceanimationsmodel.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

@@ -135,7 +135,7 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     : InviwoModule(app, "Animation")
     , animation::AnimationSupplier(manager_)
     , manager_(app)
-    , mainAnimation_(app, this, manager_)
+    , animations_(app, manager_)
     , demoController_(app) {
 
     using namespace animation;
@@ -177,15 +177,21 @@ AnimationModule::~AnimationModule() {
     unRegisterAll();
 }
 
-int AnimationModule::getVersion() const { return 1; }
+int AnimationModule::getVersion() const { return 2; }
 
 std::unique_ptr<VersionConverter> AnimationModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
 }
 
-animation::MainAnimation& AnimationModule::getMainAnimation() { return mainAnimation_; }
+animation::WorkspaceAnimations& AnimationModule::getWorkspaceAnimations() { return animations_; }
 
-const animation::MainAnimation& AnimationModule::getMainAnimation() const { return mainAnimation_; }
+const animation::WorkspaceAnimations& AnimationModule::getWorkspaceAnimations() const {
+    return animations_;
+}
+
+animation::MainAnimation& AnimationModule::getMainAnimation() { return animations_.getMainAnimation(); }
+
+const animation::MainAnimation& AnimationModule::getMainAnimation() const { return animations_.getMainAnimation(); }
 
 animation::AnimationManager& AnimationModule::getAnimationManager() { return manager_; }
 
@@ -213,11 +219,31 @@ bool AnimationModule::Converter::convert(TxElement* root) {
                 n->SetAttribute("type", attr);
                 res |= true;
             });
-            return res;
+            [[fallthrough]]; 
+        }
+        case 1: {
+            auto aelm = xml::getMatchingElements(root, "Animation");
+            if (!aelm.empty()) {
+                TxElement list("Animations");
+                for (const auto& e : aelm) {
+                    list.InsertEndChild(*e);
+                    root->RemoveChild(e);
+                }
+                root->InsertEndChild(list);
+                TxElement names("AnimationNames");
+                TxElement name("item");
+                name.SetAttribute("content", "Animation 1");
+                names.InsertEndChild(name);
+                root->InsertEndChild(names);
+                res = true;
+            }
+            [[fallthrough]]; 
         }
         default:
-            return false;  // No changes
+            // No changes
+            break;  
     }
+    return res;
 }
 
 }  // namespace inviwo

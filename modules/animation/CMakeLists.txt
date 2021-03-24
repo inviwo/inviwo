@@ -52,6 +52,7 @@ set(HEADER_FILES
     include/modules/animation/interpolation/interpolation.h
     include/modules/animation/interpolation/linearinterpolation.h
     include/modules/animation/mainanimation.h
+    include/modules/animation/workspaceanimations.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -102,6 +103,7 @@ set(SOURCE_FILES
     src/interpolation/camerasphericalinterpolation.cpp
     src/interpolation/interpolation.cpp
     src/mainanimation.cpp
+    src/workspaceanimations.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

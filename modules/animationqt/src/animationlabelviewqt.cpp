@@ -90,6 +90,7 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
     model_ = new AnimationLabelModelQt(this);
     setModel(model_);
 
+    controller_.AnimationControllerObservable::addObserver(this);
     Animation& animation = controller_.getAnimation();
     for (auto& track : animation) {
         onTrackAdded(&track);
@@ -148,6 +149,19 @@ void AnimationLabelViewQt::onTrackRemoved(Track* track) {
             break;
         }
     }
+}
+
+void AnimationLabelViewQt::onAnimationChanged(AnimationController*, Animation* oldAnim,
+                                              Animation* newAnim) {
+    oldAnim->removeObserver(this);
+    model_->clear();
+
+    for (auto& track : *newAnim) {
+        onTrackAdded(&track);
+    }
+
+    newAnim->addObserver(this);
+
 }
 
 }  // namespace animation
