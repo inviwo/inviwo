@@ -70,7 +70,7 @@ public:
     Animation& insert(size_t index, std::string_view name);
     /**
      * Deletes animations in the range [from to) and sets the main animation to the next available
-     * index. 
+     * index.
      * An empty animation will be added if all animations are erased.
      */
     void erase(size_t from, size_t to);
@@ -89,7 +89,7 @@ public:
     MainAnimation& getMainAnimation();
     const MainAnimation& getMainAnimation() const;
 
-    OnChangedDispatcher onChanged_; // Fired when Animation is added/removed or name changed
+    OnChangedDispatcher onChanged_;  // Fired when Animation is added/removed or name changed
 
 private:
     AnimationManager& animationManager_;

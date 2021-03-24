@@ -91,7 +91,7 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller,
 AnimationEditorQt::~AnimationEditorQt() = default;
 
 void AnimationEditorQt::onAnimationChanged(AnimationController*, Animation* oldAnim,
-                                             Animation* newAnim) {
+                                           Animation* newAnim) {
     oldAnim->removeObserver(this);
     while (!tracks_.empty()) {
         onTrackRemoved(tracks_.begin()->first);

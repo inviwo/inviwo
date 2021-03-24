@@ -72,7 +72,8 @@ private:
         int version_;
     };
     animation::AnimationManager manager_;
-    animation::WorkspaceAnimations animations_; /// Used by Animation Editor and stored with workspace. 
+    animation::WorkspaceAnimations
+        animations_;  /// Used by Animation Editor and stored with workspace.
     animation::DemoController demoController_;
 };
 

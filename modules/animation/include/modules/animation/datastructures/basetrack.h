@@ -166,7 +166,8 @@ BaseTrack<Seq>::BaseTrack(const std::string& identifier, const std::string& name
 template <typename Seq>
 BaseTrack<Seq>::BaseTrack(const BaseTrack<Seq>& other)
     : KeyframeSequenceObserver(other)
-    , enabled_{other.enabled_}, identifier_{other.identifier_}
+    , enabled_{other.enabled_}
+    , identifier_{other.identifier_}
     , name_{other.name_}
     , priority_{other.priority_} {
     for (auto& seq : other.sequences_) {

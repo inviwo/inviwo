@@ -37,8 +37,7 @@ namespace inviwo {
 
 namespace animation {
 
-MainAnimation::MainAnimation(InviwoApplication* app,
-                             Animation& animation)
+MainAnimation::MainAnimation(InviwoApplication* app, Animation& animation)
     : controller_{animation, app} {
     AnimationModule* animationModule = app->getModuleByType<AnimationModule>();
     {

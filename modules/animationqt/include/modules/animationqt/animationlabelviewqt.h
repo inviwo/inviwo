@@ -59,7 +59,7 @@ public:
     virtual void onTrackRemoved(Track* track) override;
 
     // AnimationControllerObserver overload
-    void onAnimationChanged(AnimationController*, Animation* oldAnim, Animation* newAnim) override; 
+    void onAnimationChanged(AnimationController*, Animation* oldAnim, Animation* newAnim) override;
 
     AnimationController& controller_;
     QStandardItemModel* model_;

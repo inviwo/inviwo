@@ -62,7 +62,7 @@ public:
     virtual ~AnimationEditorQt();
 
     // AnimationControllerObserver overload
-    void onAnimationChanged(AnimationController*, Animation* oldAnim, Animation* newAnim) override; 
+    void onAnimationChanged(AnimationController*, Animation* oldAnim, Animation* newAnim) override;
 
 protected:
     void updateSceneRect();

@@ -189,9 +189,13 @@ const animation::WorkspaceAnimations& AnimationModule::getWorkspaceAnimations() 
     return animations_;
 }
 
-animation::MainAnimation& AnimationModule::getMainAnimation() { return animations_.getMainAnimation(); }
+animation::MainAnimation& AnimationModule::getMainAnimation() {
+    return animations_.getMainAnimation();
+}
 
-const animation::MainAnimation& AnimationModule::getMainAnimation() const { return animations_.getMainAnimation(); }
+const animation::MainAnimation& AnimationModule::getMainAnimation() const {
+    return animations_.getMainAnimation();
+}
 
 animation::AnimationManager& AnimationModule::getAnimationManager() { return manager_; }
 
@@ -219,7 +223,7 @@ bool AnimationModule::Converter::convert(TxElement* root) {
                 n->SetAttribute("type", attr);
                 res |= true;
             });
-            [[fallthrough]]; 
+            [[fallthrough]];
         }
         case 1: {
             auto aelm = xml::getMatchingElements(root, "Animation");
@@ -237,11 +241,11 @@ bool AnimationModule::Converter::convert(TxElement* root) {
                 root->InsertEndChild(names);
                 res = true;
             }
-            [[fallthrough]]; 
+            [[fallthrough]];
         }
         default:
             // No changes
-            break;  
+            break;
     }
     return res;
 }

@@ -38,20 +38,16 @@
 #include <QVariant>
 #include <warn/pop>
 
-
-
 namespace inviwo {
 
 namespace animation {
 
-class IVW_MODULE_ANIMATIONQT_API AnimationsModel : public QAbstractListModel
-{
+class IVW_MODULE_ANIMATIONQT_API AnimationsModel : public QAbstractListModel {
 #include <warn/push>
 #include <warn/ignore/all>
-    //Q_OBJECT
+    // Q_OBJECT
 #include <warn/pop>
 public:
-
     AnimationsModel(WorkspaceAnimations& animations, QObject* parent = 0);
     Qt::ItemFlags flags(const QModelIndex& index) const override;
     QVariant headerData(int section, Qt::Orientation orientation,

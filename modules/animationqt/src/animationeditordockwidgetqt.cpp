@@ -75,9 +75,8 @@ namespace inviwo {
 namespace animation {
 
 AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
-    WorkspaceAnimations& animations, AnimationManager& manager,
-    const std::string& widgetName, TrackWidgetQtFactory& widgetFactory,
-    SequenceEditorFactory& editorFactory, QWidget* parent)
+    WorkspaceAnimations& animations, AnimationManager& manager, const std::string& widgetName,
+    TrackWidgetQtFactory& widgetFactory, SequenceEditorFactory& editorFactory, QWidget* parent)
     : InviwoDockWidget(utilqt::toQString(widgetName), parent, "AnimationEditorWidget")
     , animations_(animations)
     , controller_{animations_.getMainAnimation().getController()} {
@@ -241,7 +240,6 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
         toolBar->addWidget(animationsList_);
     }
 
-
     toolBar->addSeparator();
 
     {
@@ -348,7 +346,7 @@ void AnimationEditorDockWidgetQt::importAnimation() {
             auto deserializer =
                 app->getWorkspaceManager()->createWorkspaceDeserializer(anim, fileName);
             controller_.pause();
-            animations_.import(deserializer);  
+            animations_.import(deserializer);
         } catch (std::exception ex) {
             LogError(ex.what());
         }

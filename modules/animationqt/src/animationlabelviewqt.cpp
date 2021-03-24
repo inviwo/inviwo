@@ -161,7 +161,6 @@ void AnimationLabelViewQt::onAnimationChanged(AnimationController*, Animation* o
     }
 
     newAnim->addObserver(this);
-
 }
 
 }  // namespace animation
