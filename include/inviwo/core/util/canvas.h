@@ -60,8 +60,6 @@ public:
     virtual void activate() = 0;
 
     void setEventPropagator(EventPropagator* propagator);
-    virtual ProcessorWidget* getProcessorWidgetOwner() const;
-    virtual void setProcessorWidgetOwner(ProcessorWidget*);
 
     // used to create hidden canvases used for context in background threads.
     virtual std::unique_ptr<Canvas> createHiddenCanvas() = 0;
@@ -74,7 +72,6 @@ public:
 protected:
     EventPropagator* propagator_;  //< non-owning reference
     PickingController pickingController_;
-    ProcessorWidget* ownerWidget_;  //< non-owning reference
 };
 
 }  // namespace inviwo

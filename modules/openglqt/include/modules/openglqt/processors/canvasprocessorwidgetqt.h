@@ -63,6 +63,7 @@ public:
 
 protected:
     virtual void propagateResizeEvent() override;
+    bool contextMenu(QMenu& menu);
 
     virtual void updateVisible(bool visible) override;
     virtual void updateDimensions(ivec2) override;
@@ -77,6 +78,7 @@ protected:
     virtual void moveEvent(QMoveEvent*) override;
 
 private:
+
     using Super = QWidget;
     std::unique_ptr<CanvasQOpenGLWidget, std::function<void(CanvasQOpenGLWidget*)>> canvas_;
 

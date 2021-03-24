@@ -281,7 +281,12 @@ bool InteractionEventMapperQt::mapWheelEvent(QWheelEvent* e) {
         numSteps = utilqt::toGLM(numDegrees);
     }
     
-    const auto pos = normalizePosition(e, canvasDimensions_());
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    const auto pos = normalizePosition(e->position(), canvasDimensions_());
+#else
+    const auto pos = normalizePosition(e->pos(), canvasDimensions_());
+#endif
+
     WheelEvent wheelEvent(utilqt::getMouseWheelButtons(e), utilqt::getModifiers(e), numSteps, pos,
                           imageDimensions_(), depth_(pos));
     e->accept();
@@ -369,7 +374,7 @@ bool InteractionEventMapperQt::mapTouchEvent(QTouchEvent* touch) {
     TouchEvent touchEvent(touchPoints, device, utilqt::getModifiers(touch));
     touch->accept();
 
-    lastNumFingers_ = static_cast<int>(touch->points().size());
+    lastNumFingers_ = static_cast<int>(touch->touchPoints().size());
     screenPositionNormalized_ = touchEvent.centerPointNormalized();
 
     propagator_->propagateEvent(&touchEvent, nullptr);

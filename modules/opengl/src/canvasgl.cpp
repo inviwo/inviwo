@@ -164,13 +164,6 @@ double CanvasGL::getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate
     return 1.0;
 }
 
-void CanvasGL::setProcessorWidgetOwner(ProcessorWidget* widget) {
-    // Clear internal state
-    image_.reset();
-    pickingController_.setPickingSource(nullptr);
-    Canvas::setProcessorWidgetOwner(widget);
-}
-
 size2_t CanvasGL::getImageDimensions() const {
     if (auto image = image_.lock()) {
         return image->getDimensions();

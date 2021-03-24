@@ -36,12 +36,9 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/network/networklock.h>
 
-#include <inviwo/core/interaction/events/viewevent.h>
-
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/openglqt/hiddencanvasqt.h>
 #include <modules/opengl/openglcapabilities.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/eventconverterqt.h>
 #include <modules/openglqt/interactioneventmapperqt.h>
 
@@ -52,7 +49,6 @@
 #include <QOpenGLContext>
 #include <QWindow>
 #include <QMenu>
-#include <QAction>
 #include <QResizeEvent>
 #include <QMouseEvent>
 #include <warn/pop>
@@ -75,7 +71,18 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
         this, this, [this]() { return getCanvasDimensions(); },
         [this]() { return getImageDimensions(); },
         [this](dvec2 pos) { return getDepthValueAtNormalizedCoord(pos); },
-        [this](QMouseEvent* e) { doContextMenu(e); }));
+        [this](QMouseEvent* e) {
+            if (!contextMenuCallback_) return;
+
+            QMenu menu(this);
+            if (auto image = image_.lock()) {
+                menu.addSeparator();
+                utilqt::addImageActions(menu, *image, layerType_, layerIdx_);
+            }
+            if (contextMenuCallback_(menu)) {
+                menu.exec(e->globalPos());
+            }
+        }));
 }
 
 CanvasQOpenGLWidget::~CanvasQOpenGLWidget() {
@@ -152,58 +159,8 @@ void CanvasQOpenGLWidget::releaseContext() {
     context()->moveToThread(QApplication::instance()->thread());
 }
 
-void CanvasQOpenGLWidget::doContextMenu(QMouseEvent* event) {
-    if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(ownerWidget_->getProcessor())) {
-        if (!canvasProcessor->isContextMenuAllowed()) return;
-    }
-
-    QMenu menu(this);
-    if (auto procssor = ownerWidget_->getProcessor()) {
-        connect(menu.addAction(QIcon(":svgicons/edit-selectall.svg"), "&Select Processor"),
-                &QAction::triggered, this, [procssor]() {
-                    procssor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
-                        ->setSelected(true);
-                });
-    }
-    connect(menu.addAction(QIcon(":svgicons/canvas-hide.svg"), "&Hide Canvas"), &QAction::triggered,
-            this, [&]() { ownerWidget_->setVisible(false); });
-
-    connect(menu.addAction(QIcon(":svgicons/fullscreen.svg"), "&Toggle Full Screen"),
-            &QAction::triggered, this,
-            [&]() { ownerWidget_->setFullScreen(!ownerWidget_->isFullScreen()); });
-
-    if (auto image = image_.lock()) {
-        menu.addSeparator();
-        utilqt::addImageActions(menu, *image, layerType_, layerIdx_);
-    }
-
-    {
-        menu.addSeparator();
-        auto prop = [&](auto action) {
-            return [this, action]() {
-                ViewEvent e{action};
-                propagateEvent(&e, nullptr);
-            };
-        };
-        connect(menu.addAction(QIcon(":svgicons/view-fit-to-data.svg"), "Fit to data"),
-                &QAction::triggered, this, prop(ViewEvent::FitData{}));
-        connect(menu.addAction(QIcon(":svgicons/view-x-p.svg"), "View from X+"),
-                &QAction::triggered, this, prop(camerautil::Side::XPositive));
-        connect(menu.addAction(QIcon(":svgicons/view-x-m.svg"), "View from X-"),
-                &QAction::triggered, this, prop(camerautil::Side::XNegative));
-        connect(menu.addAction(QIcon(":svgicons/view-y-p.svg"), "View from Y+"),
-                &QAction::triggered, this, prop(camerautil::Side::YPositive));
-        connect(menu.addAction(QIcon(":svgicons/view-y-m.svg"), "View from Y-"),
-                &QAction::triggered, this, prop(camerautil::Side::YNegative));
-        connect(menu.addAction(QIcon(":svgicons/view-z-p.svg"), "View from Z+"),
-                &QAction::triggered, this, prop(camerautil::Side::ZPositive));
-        connect(menu.addAction(QIcon(":svgicons/view-z-m.svg"), "View from Z-"),
-                &QAction::triggered, this, prop(camerautil::Side::ZNegative));
-        connect(menu.addAction(QIcon(":svgicons/view-flip.svg"), "Flip Up Vector"),
-                &QAction::triggered, this, prop(ViewEvent::FlipUp{}));
-    }
-
-    menu.exec(event->globalPos());
+void CanvasQOpenGLWidget::onContextMenu(std::function<bool(QMenu&)> callback) {
+    contextMenuCallback_ = std::move(callback);
 }
 
 size2_t CanvasQOpenGLWidget::getCanvasDimensions() const {

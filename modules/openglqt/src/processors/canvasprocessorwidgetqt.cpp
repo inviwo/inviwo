@@ -42,6 +42,8 @@
 #include <QMoveEvent>
 #include <QGridLayout>
 #include <QApplication>
+#include <QAction>
+#include <QMenu>
 #include <warn/pop>
 
 namespace inviwo {
@@ -73,7 +75,7 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
             RenderContext::getPtr()->activateDefaultRenderContext();
         });
     canvas_->setEventPropagator(p);
-    canvas_->setProcessorWidgetOwner(this);
+    canvas_->onContextMenu([this](QMenu& menu) { return contextMenu(menu); });
 
     QGridLayout* gridLayout = new QGridLayout(this);
     gridLayout->setContentsMargins(0, 0, 0, 0);
@@ -180,6 +182,33 @@ void CanvasProcessorWidgetQt::propagateResizeEvent() {
     RenderContext::getPtr()->activateDefaultRenderContext();
     ResizeEvent resizeEvent(canvasDimensions_, previousCanvasDimensions);
     getProcessor()->propagateEvent(&resizeEvent, nullptr);
+}
+
+bool CanvasProcessorWidgetQt::contextMenu(QMenu& menu) {
+    if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(getProcessor())) {
+        if (!canvasProcessor->isContextMenuAllowed()) return false;
+    }
+
+    connect(menu.addAction(QIcon(":svgicons/edit-selectall.svg"), "&Select Processor"),
+            &QAction::triggered, this, [this]() {
+                getProcessor()
+                    ->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
+                    ->setSelected(true);
+            });
+    connect(menu.addAction(QIcon(":svgicons/canvas-hide.svg"), "&Hide Canvas"), &QAction::triggered,
+            this, [&]() { setVisible(false); });
+
+    connect(menu.addAction(QIcon(":svgicons/fullscreen.svg"), "&Toggle Full Screen"),
+            &QAction::triggered, this, [&]() { setFullScreen(!Super::isFullScreen()); });
+
+    auto ontop = menu.addAction("On Top");
+    ontop->setCheckable(true);
+    ontop->setChecked(isOnTop());
+    connect(ontop, &QAction::triggered, this, [&]() { setOnTop(!isOnTop()); });
+
+    menu.addSeparator();
+    utilqt::addViewActions(menu, getProcessor());
+    return true;
 }
 
 void CanvasProcessorWidgetQt::showEvent(QShowEvent* event) {

@@ -44,7 +44,6 @@ CanvasProcessorWidgetGLFW::CanvasProcessorWidgetGLFW(Processor* p)
                   RenderContext::getPtr()->activateDefaultRenderContext();
               }} {
     canvas_->setEventPropagator(p);
-    canvas_->setProcessorWidgetOwner(this);
     canvas_->setWindowSize(CanvasProcessorWidget::getDimensions());
     canvas_->setWindowPosition(CanvasProcessorWidget::getPosition());
     canvas_->setVisible(CanvasProcessorWidget::isVisible());

@@ -55,8 +55,6 @@ public:
     virtual void glSwapBuffers() = 0;
     virtual void update() override;
 
-    virtual void setProcessorWidgetOwner(ProcessorWidget*) override;
-
     virtual size2_t getCanvasDimensions() const = 0;
     virtual size2_t getImageDimensions() const;
     /**

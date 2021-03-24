@@ -83,6 +83,8 @@ protected:
 
     virtual void propagateResizeEvent() override;
 
+    bool contextMenu(QMenu& menu);
+    
     // ProcessorWidget overrides
     virtual void updateVisible(bool visible) override;
     virtual void updateDimensions(ivec2) override;

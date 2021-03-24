@@ -45,6 +45,7 @@ class QResizeEvent;
 class QHelpEvent;
 class QPointingDevice;
 class QTouchDevice;
+class QMenu;
 
 namespace inviwo {
 
@@ -70,6 +71,8 @@ public:
     
     virtual size2_t getCanvasDimensions() const override;
     
+    void onContextMenu(std::function<bool(QMenu&)> callback);
+    
 protected:
     // inviwo::Canvas override
     virtual void releaseContext() override;
@@ -81,7 +84,7 @@ protected:
     virtual void resizeEvent(QResizeEvent* event) override;
 
 private:
-    void doContextMenu(QMouseEvent* event);
+    std::function<bool(QMenu&)> contextMenuCallback_;
 
     std::string name_;
 

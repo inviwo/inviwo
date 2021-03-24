@@ -28,23 +28,12 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/canvas.h>
-#include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>
-#include <inviwo/core/interaction/events/resizeevent.h>
-#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
-Canvas::Canvas()
-    : propagator_(nullptr)
-    , pickingController_()
-    , ownerWidget_(nullptr) {}
+Canvas::Canvas() : propagator_(nullptr), pickingController_() {}
 
 void Canvas::setEventPropagator(EventPropagator* propagator) { propagator_ = propagator; }
-
-ProcessorWidget* Canvas::getProcessorWidgetOwner() const { return ownerWidget_; }
-
-void Canvas::setProcessorWidgetOwner(ProcessorWidget* ownerWidget) { ownerWidget_ = ownerWidget; }
 
 }  // namespace inviwo

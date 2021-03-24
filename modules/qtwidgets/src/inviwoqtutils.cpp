@@ -31,6 +31,7 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/io/imagewriterutil.h>
+#include <inviwo/core/interaction/events/viewevent.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -525,6 +526,31 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
     addAction("Depth Layer", image.getDepthLayer(), visibleLayer == LayerType::Depth);
 }
 
+void addViewActions(QMenu& menu, EventPropagator* ep) {
+    auto prop = [&](auto action) {
+        return [ep, action]() {
+            ViewEvent e{action};
+            ep->propagateEvent(&e, nullptr);
+        };
+    };
+    menu.connect(menu.addAction(QIcon(":svgicons/view-fit-to-data.svg"), "Fit to data"),
+                 &QAction::triggered, prop(ViewEvent::FitData{}));
+    menu.connect(menu.addAction(QIcon(":svgicons/view-x-p.svg"), "View from X+"),
+                 &QAction::triggered, prop(camerautil::Side::XPositive));
+    menu.connect(menu.addAction(QIcon(":svgicons/view-x-m.svg"), "View from X-"),
+                 &QAction::triggered, prop(camerautil::Side::XNegative));
+    menu.connect(menu.addAction(QIcon(":svgicons/view-y-p.svg"), "View from Y+"),
+                 &QAction::triggered, prop(camerautil::Side::YPositive));
+    menu.connect(menu.addAction(QIcon(":svgicons/view-y-m.svg"), "View from Y-"),
+                 &QAction::triggered, prop(camerautil::Side::YNegative));
+    menu.connect(menu.addAction(QIcon(":svgicons/view-z-p.svg"), "View from Z+"),
+                 &QAction::triggered, prop(camerautil::Side::ZPositive));
+    menu.connect(menu.addAction(QIcon(":svgicons/view-z-m.svg"), "View from Z-"),
+                 &QAction::triggered, prop(camerautil::Side::ZNegative));
+    menu.connect(menu.addAction(QIcon(":svgicons/view-flip.svg"), "Flip Up Vector"),
+                 &QAction::triggered, prop(ViewEvent::FlipUp{}));
+}
+
 std::string toBase64(const QImage& image, const std::string& format, int quality) {
     QByteArray byteArray;
     QBuffer buffer{&byteArray};
@@ -668,7 +694,7 @@ void setFullScreen(QWidget* widget, bool fullScreen) {
 
 void setOnTop(QWidget* widget, bool onTop) {
     if (widget->windowFlags().testFlag(Qt::WindowStaysOnTopHint) == onTop) return;
-    
+
     // setWindowFlag will alwyas hide the widget
     // https://doc.qt.io/qt-5/qwidget.html#windowFlags-prop
     const auto visible = widget->isVisible();

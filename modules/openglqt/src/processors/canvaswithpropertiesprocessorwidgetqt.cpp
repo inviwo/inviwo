@@ -51,6 +51,8 @@
 #include <QScrollArea>
 #include <QSplitter>
 #include <QApplication>
+#include <QAction>
+#include <QMenu>
 #include <warn/pop>
 
 namespace inviwo {
@@ -79,8 +81,8 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
             RenderContext::getPtr()->activateDefaultRenderContext();
         });
     canvas_->setEventPropagator(p);
-    canvas_->setProcessorWidgetOwner(this);
     canvas_->setMinimumSize(16, 16);
+    canvas_->onContextMenu([this](QMenu& menu) { return contextMenu(menu); });
 
     splitter->addWidget(canvas_.get());
 
@@ -209,6 +211,30 @@ void CanvasWithPropertiesProcessorWidgetQt::propagateResizeEvent() {
     RenderContext::getPtr()->activateDefaultRenderContext();
     ResizeEvent resizeEvent(canvasDimensions_, previousCanvasDimensions);
     getProcessor()->propagateEvent(&resizeEvent, nullptr);
+}
+
+bool CanvasWithPropertiesProcessorWidgetQt::contextMenu(QMenu& menu) {
+    connect(menu.addAction(QIcon(":svgicons/edit-selectall.svg"), "&Select Processor"),
+            &QAction::triggered, this, [this]() {
+                getProcessor()
+                    ->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
+                    ->setSelected(true);
+            });
+    connect(menu.addAction(QIcon(":svgicons/canvas-hide.svg"), "&Hide Canvas"), &QAction::triggered,
+            this, [&]() { setVisible(false); });
+
+    connect(menu.addAction(QIcon(":svgicons/fullscreen.svg"), "&Toggle Full Screen"),
+            &QAction::triggered, this, [&]() { setFullScreen(!Super::isFullScreen()); });
+
+    auto ontop = menu.addAction("On Top");
+    ontop->setCheckable(true);
+    ontop->setChecked(isOnTop());
+    connect(ontop, &QAction::triggered, this, [&]() { setOnTop(!isOnTop()); });
+
+    menu.addSeparator();
+    utilqt::addViewActions(menu, getProcessor());
+
+    return true;
 }
 
 void CanvasWithPropertiesProcessorWidgetQt::setVisible(bool visible) {
