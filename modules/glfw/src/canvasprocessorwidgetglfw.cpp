@@ -38,19 +38,19 @@ namespace inviwo {
 
 CanvasProcessorWidgetGLFW::CanvasProcessorWidgetGLFW(Processor* p)
     : CanvasProcessorWidget(p)
-    , canvas_{new CanvasGLFW(processor_->getIdentifier(), getDimensions()), [&](CanvasGLFW* c) {
+    , canvas_{new CanvasGLFW(p->getIdentifier(), getDimensions()), [&](CanvasGLFW* c) {
                   c->activate();
                   delete c;
                   RenderContext::getPtr()->activateDefaultRenderContext();
               }} {
-    canvas_->setEventPropagator(processor_);
+    canvas_->setEventPropagator(p);
     canvas_->setProcessorWidgetOwner(this);
     canvas_->setWindowSize(CanvasProcessorWidget::getDimensions());
     canvas_->setWindowPosition(CanvasProcessorWidget::getPosition());
     canvas_->setVisible(CanvasProcessorWidget::isVisible());
     canvas_->setOnTop(CanvasProcessorWidget::isOnTop());
     canvas_->setFullScreen(CanvasProcessorWidget::isFullScreen());
-    
+
     canvas_->onPositionChange = [this](ivec2 pos) { CanvasProcessorWidget::setPosition(pos); };
     canvas_->onFramebufferSizeChange = [this](ivec2 size) { propagateResizeEvent(); };
 }
@@ -89,14 +89,12 @@ void CanvasProcessorWidgetGLFW::propagateResizeEvent() {
     NetworkLock lock;
     RenderContext::getPtr()->activateDefaultRenderContext();
     ResizeEvent resizeEvent(screenDimensions_, previousScreenDimensions);
-    processor_->propagateEvent(&resizeEvent, nullptr);
+    getProcessor()->propagateEvent(&resizeEvent, nullptr);
 }
 
 Canvas* CanvasProcessorWidgetGLFW::getCanvas() const { return canvas_.get(); }
 
-void CanvasProcessorWidgetGLFW::updateVisible(bool visible) {
-    canvas_->setVisible(visible);
-}
+void CanvasProcessorWidgetGLFW::updateVisible(bool visible) { canvas_->setVisible(visible); }
 void CanvasProcessorWidgetGLFW::updateDimensions(ivec2 dim) {
     canvas_->setWindowSize(uvec2(dim.x, dim.y));
 }
@@ -106,8 +104,6 @@ void CanvasProcessorWidgetGLFW::updatePosition(ivec2 pos) {
 void CanvasProcessorWidgetGLFW::updateFullScreen(bool fullScreen) {
     canvas_->setFullScreen(fullScreen);
 };
-void CanvasProcessorWidgetGLFW::updateOnTop(bool onTop) {
-    canvas_->setOnTop(onTop);
-};
+void CanvasProcessorWidgetGLFW::updateOnTop(bool onTop) { canvas_->setOnTop(onTop); };
 
 }  // namespace inviwo
