@@ -120,14 +120,13 @@ if(BUILD_SHARED_LIBS AND IVW_PACKAGE_EMBED_PYTHON)
 
         set(pip_file "${py_dir}/python/get-pip.py")
         if(NOT EXISTS "${pip_file}")
-            set(pip_urll "https://bootstrap.pypa.io/get-pip.py")
-            set(pip_url2 "https://github.com/pypa/get-pip/raw/master/get-pip.py")
-            ivw_debug_message(STATUS "Download ${pip_url2}")
-            file(DOWNLOAD "${pip_url2}" "${pip_file}" 
+            set(pip_url "https://bootstrap.pypa.io/get-pip.py")
+            ivw_debug_message(STATUS "Download ${pip_url}")
+            file(DOWNLOAD "${pip_url}" "${pip_file}" 
                  STATUS pip_status ${show} LOG get_pip_log)
             if(NOT pip_status EQUAL 0)
                 file(REMOVE "${pip_file}")
-                message(FATAL_ERROR "Could not download '${pip_url2}':\n ${get_pip_log}")
+                message(FATAL_ERROR "Could not download '${pip_url}':\n ${get_pip_log}")
             endif()
         endif()
 
