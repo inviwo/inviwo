@@ -50,7 +50,7 @@ namespace inviwo {
  *   * __Volume outport__ Normalized volume (if so selected)
  *
  * ### Properties
- *   * __Channels__ Check the boxes for those channels you wish to normalize to range [0,1}
+ *   * __Channels__ Check the boxes for those channels you wish to normalize to range [0,1]
  */
 
 /**
