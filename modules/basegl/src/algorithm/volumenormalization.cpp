@@ -33,6 +33,10 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/volume/volumeutils.h>
 
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+
 namespace inviwo {
 
 VolumeNormalization::VolumeNormalization()
@@ -66,9 +70,26 @@ void VolumeNormalization::setNormalizeChannels(bvec4 normalize) {
 void VolumeNormalization::reset() { setNormalizeChannels({true, false, false, false}); }
 
 std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
-    auto outVolume = std::make_shared<Volume>(volume.getDimensions(), volume.getDataFormat(),
-                                              volume.getSwizzleMask(), volume.getInterpolation(),
-                                              volume.getWrapping());
+    std::shared_ptr<Volume> outVolume;
+
+    // Don't dispatch if we don't have to
+    if (volume.getDataFormat()->getNumericType() == NumericType::Float) {
+        outVolume = std::make_shared<Volume>(volume.getDimensions(), volume.getDataFormat(),
+                                                  volume.getSwizzleMask(),
+                                                  volume.getInterpolation(), volume.getWrapping());
+    } else {
+        outVolume = volume.getRepresentation<VolumeRAM>()
+            ->dispatch<std::shared_ptr<Volume>, dispatching::filter::Integers>(
+            [](auto vrprecision) {
+                using ValueType = util::PrecisionValueType<decltype(vrprecision)>;
+
+                using P = typename util::same_extent<ValueType, float>::type;
+
+                return std::make_shared<Volume>(vrprecision->getDimensions(),
+                                                                DataFormat<P>::get());
+            });
+    }
+
     outVolume->setModelMatrix(volume.getModelMatrix());
     outVolume->setWorldMatrix(volume.getWorldMatrix());
     outVolume->copyMetaDataFrom(volume);
@@ -100,5 +121,4 @@ std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
 
     return outVolume;
 }
-
 }  // namespace inviwo
