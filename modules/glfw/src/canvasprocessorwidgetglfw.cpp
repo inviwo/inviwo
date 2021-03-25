@@ -51,7 +51,7 @@ CanvasProcessorWidgetGLFW::CanvasProcessorWidgetGLFW(Processor* p)
     canvas_->setFullScreen(CanvasProcessorWidget::isFullScreen());
 
     canvas_->onPositionChange = [this](ivec2 pos) { CanvasProcessorWidget::setPosition(pos); };
-    canvas_->onFramebufferSizeChange = [this](ivec2 size) { propagateResizeEvent(); };
+    canvas_->onFramebufferSizeChange = [this](ivec2) { propagateResizeEvent(); };
 }
 
 CanvasProcessorWidgetGLFW::~CanvasProcessorWidgetGLFW() { updateVisible(false); }
