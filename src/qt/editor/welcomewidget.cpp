@@ -71,6 +71,7 @@
 #include <QFile>
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 #include <QWindow>
+#include <QGuiApplication>
 #endif
 
 #include <warn/pop>
@@ -317,7 +318,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     // hide changelog on screens with less width than 1920
     auto getScreen = []() {
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-        return utilqt::getApplicationMainWindow()->window()->windowHandle()->screen();
+        return QGuiApplication::screenAt(utilqt::getApplicationMainWindow()->pos());
 #else
         return utilqt::getApplicationMainWindow()->screen();
 #endif
