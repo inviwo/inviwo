@@ -105,7 +105,6 @@ TouchState mapTouchState(const QTouchEvent::TouchPoint& point) {
 }
 #endif
 
-
 TouchDevice::DeviceType mapDeviceType(QTouchEvent* touch) {
     switch (touch->device()->type()) {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
@@ -126,8 +125,6 @@ TouchDevice::DeviceType mapDeviceType(QTouchEvent* touch) {
     }
 }
 
-
-
 const TouchDevice* mapTouchDevice(QTouchEvent* touch) {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     using QInputDevice = QTouchDevice;
@@ -135,25 +132,21 @@ const TouchDevice* mapTouchDevice(QTouchEvent* touch) {
 
     //! Links QPointingDevice to inviwo::TouchDevice
     static std::map<const QInputDevice*, TouchDevice> devices_;
-    
+
     auto deviceIt = devices_.find(touch->device());
     if (deviceIt != devices_.end()) {
         return &(deviceIt->second);
     } else {
         // Insert device new device into map
-        auto [it, inserted] = devices_.try_emplace(touch->device(),
-                                                   mapDeviceType(touch),
+        auto [it, inserted] = devices_.try_emplace(touch->device(), mapDeviceType(touch),
                                                    utilqt::fromQString(touch->device()->name()));
         return &(it->second);
     }
 }
 
+}  // namespace
 
-
-}
-
-InteractionEventMapperQt::InteractionEventMapperQt(QObject* parent,
-                                                   EventPropagator* propagator,
+InteractionEventMapperQt::InteractionEventMapperQt(QObject* parent, EventPropagator* propagator,
                                                    std::function<size2_t()> canvasDimensions,
                                                    std::function<size2_t()> imageDimensions,
                                                    std::function<double(dvec2)> depth,
@@ -165,7 +158,7 @@ InteractionEventMapperQt::InteractionEventMapperQt(QObject* parent,
     , depth_{depth}
     , contextMenu_{contextMenu} {}
 
-bool InteractionEventMapperQt::eventFilter(QObject* obj, QEvent* e) {
+bool InteractionEventMapperQt::eventFilter(QObject*, QEvent* e) {
     switch (e->type()) {
         case QEvent::KeyPress:
             return mapKeyPressEvent(static_cast<QKeyEvent*>(e));
@@ -196,8 +189,6 @@ bool InteractionEventMapperQt::eventFilter(QObject* obj, QEvent* e) {
     }
 }
 
-
-
 bool InteractionEventMapperQt::mapMousePressEvent(QMouseEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;
     RenderContext::getPtr()->activateDefaultRenderContext();
@@ -207,13 +198,11 @@ bool InteractionEventMapperQt::mapMousePressEvent(QMouseEvent* e) {
                           utilqt::getMouseButtons(e), utilqt::getModifiers(e), pos,
                           imageDimensions_(), depth_(pos));
     e->accept();
-    
-   
 
     propagator_->propagateEvent(&mouseEvent, nullptr);
 
     if (e->button() == Qt::RightButton && mouseEvent.hasBeenUsed()) blockContextMenu_ = true;
-    
+
     return true;
 }
 
@@ -229,14 +218,14 @@ bool InteractionEventMapperQt::mapMouseDoubleClickEvent(QMouseEvent* e) {
     e->accept();
     propagator_->propagateEvent(&mouseEvent, nullptr);
     if (e->button() == Qt::RightButton) blockContextMenu_ = true;
-    
+
     return true;
 }
 
 bool InteractionEventMapperQt::mapMouseReleaseEvent(QMouseEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;
     RenderContext::getPtr()->activateDefaultRenderContext();
-    
+
     const auto pos = normalizePosition(e, canvasDimensions_());
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::Release,
                           utilqt::getMouseButtons(e), utilqt::getModifiers(e), pos,
@@ -259,12 +248,11 @@ bool InteractionEventMapperQt::mapMouseMoveEvent(QMouseEvent* e) {
     const auto pos = normalizePosition(e, canvasDimensions_());
 
     MouseEvent mouseEvent(MouseButton::None, MouseState::Move, utilqt::getMouseButtons(e),
-                          utilqt::getModifiers(e), pos, imageDimensions_(),
-                          depth_(pos));
+                          utilqt::getModifiers(e), pos, imageDimensions_(), depth_(pos));
     e->accept();
     propagator_->propagateEvent(&mouseEvent, nullptr);
     if (e->button() == Qt::RightButton) blockContextMenu_ = true;
-    
+
     return true;
 }
 
@@ -280,7 +268,7 @@ bool InteractionEventMapperQt::mapWheelEvent(QWheelEvent* e) {
     } else if (!numDegrees.isNull()) {
         numSteps = utilqt::toGLM(numDegrees);
     }
-    
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     const auto pos = normalizePosition(e->position(), canvasDimensions_());
 #else
@@ -291,7 +279,7 @@ bool InteractionEventMapperQt::mapWheelEvent(QWheelEvent* e) {
                           imageDimensions_(), depth_(pos));
     e->accept();
     propagator_->propagateEvent(&wheelEvent, nullptr);
-    
+
     return true;
 }
 
@@ -325,7 +313,7 @@ bool InteractionEventMapperQt::mapKeyReleaseEvent(QKeyEvent* keyEvent) {
     KeyboardEvent event(utilqt::getKeyButton(keyEvent), KeyState::Release,
                         utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
                         utilqt::fromQString(keyEvent->text()));
-    
+
     propagator_->propagateEvent(&event, nullptr);
     if (event.hasBeenUsed()) {
         keyEvent->accept();
@@ -374,7 +362,11 @@ bool InteractionEventMapperQt::mapTouchEvent(QTouchEvent* touch) {
     TouchEvent touchEvent(touchPoints, device, utilqt::getModifiers(touch));
     touch->accept();
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     lastNumFingers_ = static_cast<int>(touch->touchPoints().size());
+#else
+    lastNumFingers_ = static_cast<int>(touch->points().size());
+#endif
     screenPositionNormalized_ = touchEvent.centerPointNormalized();
 
     propagator_->propagateEvent(&touchEvent, nullptr);
@@ -453,7 +445,7 @@ bool InteractionEventMapperQt::showToolTip(QHelpEvent* e) {
     // Raised when mouse is still for a while
     // Display the saved text from tooltip callback (setToolTipCallback)
     QToolTip::showText(e->globalPos(), utilqt::toLocalQString(toolTipText_));
-    if(toolTipText_.empty()) {
+    if (toolTipText_.empty()) {
         e->ignore();
     } else {
         e->accept();

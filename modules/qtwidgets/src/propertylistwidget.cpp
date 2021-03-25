@@ -216,7 +216,7 @@ void PropertyListFrame::onProcessorNetworkWillRemoveProcessor(Processor* process
     removeProcessor(processor);
 
 }
-void PropertyListFrame::onWillRemoveProperty(Property* property, size_t index) {
+void PropertyListFrame::onWillRemoveProperty(Property* property, size_t) {
     removeProperty(property);
 }
 

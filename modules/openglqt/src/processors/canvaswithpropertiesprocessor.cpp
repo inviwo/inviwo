@@ -151,7 +151,7 @@ CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
     layerIndex_.setSerializationMode(PropertySerializationMode::All);
     layerIndex_.readonlyDependsOn(layerType_, [](const auto& p) { return p != LayerType::Color; });
     inport_.onChange([&]() {
-        int layers = inport_.getData()->getNumberOfColorLayers();
+        int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
         layerIndex_.setMaxValue(layers - 1);
     });
 
@@ -194,7 +194,7 @@ void CanvasWithPropertiesProcessor::setProcessorWidget(
     isReady_.update();
 };
 
-void CanvasWithPropertiesProcessor::propagateEvent(Event* event, Outport* source) {
+void CanvasWithPropertiesProcessor::propagateEvent(Event* event, Outport*) {
     event->markAsVisited(this);
     inport_.propagateEvent(event);
 }
