@@ -7,6 +7,7 @@ ivw_module(BaseGL)
 set(HEADER_FILES
     include/modules/basegl/algorithm/entryexitpoints.h
     include/modules/basegl/algorithm/imageconvolution.h
+    include/modules/basegl/algorithm/volumenormalization.h
     include/modules/basegl/baseglmodule.h
     include/modules/basegl/baseglmoduledefine.h
     include/modules/basegl/datastructures/linesettings.h
@@ -74,6 +75,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/volumeprocessing/volumelowpass.h
     include/modules/basegl/processors/volumeprocessing/volumemapping.h
     include/modules/basegl/processors/volumeprocessing/volumemerger.h
+    include/modules/basegl/processors/volumeprocessing/volumenormalizationprocessor.h
     include/modules/basegl/processors/volumeprocessing/volumeregionshrink.h
     include/modules/basegl/processors/volumeprocessing/volumeshader.h
     include/modules/basegl/processors/volumeraycaster.h
@@ -90,6 +92,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/algorithm/entryexitpoints.cpp
     src/algorithm/imageconvolution.cpp
+    src/algorithm/volumenormalization.cpp
     src/baseglmodule.cpp
     src/datastructures/linesettings.cpp
     src/datastructures/linesettingsinterface.cpp
@@ -156,6 +159,7 @@ set(SOURCE_FILES
     src/processors/volumeprocessing/volumelowpass.cpp
     src/processors/volumeprocessing/volumemapping.cpp
     src/processors/volumeprocessing/volumemerger.cpp
+    src/processors/volumeprocessing/volumenormalizationprocessor.cpp
     src/processors/volumeprocessing/volumeregionshrink.cpp
     src/processors/volumeprocessing/volumeshader.cpp
     src/processors/volumeraycaster.cpp
@@ -231,6 +235,7 @@ set(SHADER_FILES
     glsl/volume_mapping.frag
     glsl/volumegradientmagnitude.frag
     glsl/volumemerger.frag
+    glsl/volumenormalization.frag
     glsl/volumeslice.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
