@@ -87,8 +87,8 @@ std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
 
                                 return std::make_shared<Volume>(
                                     vrprecision->getDimensions(), DataFormat<P>::get(),
-                                    volume.getSwizzleMask(), volume.getInterpolation(),
-                                    volume.getWrapping());
+                                    vrprecision->getSwizzleMask(), vrprecision->getInterpolation(),
+                                    vrprecision->getWrapping());
                             });
     }
 
@@ -123,4 +123,5 @@ std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
 
     return outVolume;
 }
+
 }  // namespace inviwo
