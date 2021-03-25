@@ -85,8 +85,10 @@ std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
 
                                 using P = typename util::same_extent<ValueType, float>::type;
 
-                                return std::make_shared<Volume>(vrprecision->getDimensions(),
-                                                                DataFormat<P>::get());
+                                return std::make_shared<Volume>(
+                                    vrprecision->getDimensions(), DataFormat<P>::get(),
+                                    volume.getSwizzleMask(), volume.getInterpolation(),
+                                    volume.getWrapping());
                             });
     }
 
