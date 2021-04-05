@@ -324,6 +324,7 @@ bool InteractionEventMapperQt::mapKeyReleaseEvent(QKeyEvent* keyEvent) {
 }
 
 bool InteractionEventMapperQt::mapTouchEvent(QTouchEvent* touch) {
+    if (!handleTouch_) return false;
     RenderContext::getPtr()->activateDefaultRenderContext();
 
     // Copy touch points
@@ -374,6 +375,7 @@ bool InteractionEventMapperQt::mapTouchEvent(QTouchEvent* touch) {
 }
 
 bool InteractionEventMapperQt::mapGestureEvent(QGestureEvent* ge) {
+    if (!handleGestures_) return false;
 
     QPanGesture* panGesture = nullptr;
     QPinchGesture* pinchGesture = nullptr;
@@ -452,5 +454,8 @@ bool InteractionEventMapperQt::showToolTip(QHelpEvent* e) {
     }
     return true;
 }
+
+void InteractionEventMapperQt::handleTouch(bool on) { handleTouch_ = on; }
+void InteractionEventMapperQt::handleGestures(bool on) { handleGestures_ = on; }
 
 }  // namespace inviwo

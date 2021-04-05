@@ -71,6 +71,11 @@ public:
     
     virtual size2_t getCanvasDimensions() const override;
     
+    /**
+     * Set a callback to be invoded on contextmeny events.
+     * The callback can add more functionallity to the context menu.
+     * I the function retuns true the menu will be shown, else it will be discarded.
+     */
     void onContextMenu(std::function<bool(QMenu&)> callback);
     
 protected:

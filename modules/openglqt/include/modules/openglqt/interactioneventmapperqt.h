@@ -65,16 +65,16 @@ class MouseInteractionEvent;
  */
 class IVW_MODULE_OPENGLQT_API InteractionEventMapperQt : public QObject {
 public:
-    InteractionEventMapperQt(QObject* parent,
-                             EventPropagator* propagator,
+    InteractionEventMapperQt(QObject* parent, EventPropagator* propagator,
                              std::function<size2_t()> canvasDimensions,
                              std::function<size2_t()> imageDimensions,
                              std::function<double(dvec2)> depth,
                              std::function<void(QMouseEvent*)> contextMenu);
     virtual bool eventFilter(QObject* obj, QEvent* ev) override;
-    
-    bool blockContextMenu() const { return blockContextMenu_; }
-    
+
+    void handleTouch(bool on);
+    void handleGestures(bool on);
+
 private:
     bool mapMousePressEvent(QMouseEvent* e);
     bool mapMouseDoubleClickEvent(QMouseEvent* e);
@@ -87,28 +87,30 @@ private:
     bool mapGestureEvent(QGestureEvent*);
     bool mapPanTriggered(QPanGesture*);
     bool mapPinchTriggered(QPinchGesture* e);
-    
+
     bool showToolTip(QHelpEvent* e);
-    
+
     void setToolTipCallback(MouseInteractionEvent* e);
-    
+
     EventPropagator* propagator_;
     std::function<size2_t()> canvasDimensions_;
     std::function<size2_t()> imageDimensions_;
     std::function<double(dvec2)> depth_;
     std::function<void(QMouseEvent*)> contextMenu_;
     bool blockContextMenu_ = false;
-    
+
     //! Compare with next touch event to prevent duplicates
     std::vector<TouchPoint> prevTouchPoints_;
-    
+
     std::string toolTipText_;
-    
+
     // Hacks for gestures
     Qt::GestureType lastType_{};
     int lastNumFingers_{0};
     vec2 screenPositionNormalized_{0};
-    
+
+    bool handleTouch_{true};
+    bool handleGestures_{true};
 };
 
 }  // namespace inviwo

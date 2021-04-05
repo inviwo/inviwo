@@ -30,16 +30,13 @@
 #include <modules/openglqt/canvasqopenglwidget.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/processors/canvasprocessor.h>
-#include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/openglqt/hiddencanvasqt.h>
 #include <modules/opengl/openglcapabilities.h>
-#include <modules/qtwidgets/eventconverterqt.h>
 #include <modules/openglqt/interactioneventmapperqt.h>
 
 #include <warn/push>
@@ -47,7 +44,6 @@
 
 #include <QApplication>
 #include <QOpenGLContext>
-#include <QWindow>
 #include <QMenu>
 #include <QResizeEvent>
 #include <QMouseEvent>
@@ -60,14 +56,10 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
 
     setFocusPolicy(Qt::StrongFocus);
 
-    grabGesture(Qt::PanGesture);
-    grabGesture(Qt::PinchGesture);
-
     setMouseTracking(true);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    installEventFilter(new utilqt::WidgetCloseEventFilter(this));
-    installEventFilter(new InteractionEventMapperQt(
+    auto interactionEventMapper = new InteractionEventMapperQt(
         this, this, [this]() { return getCanvasDimensions(); },
         [this]() { return getImageDimensions(); },
         [this](dvec2 pos) { return getDepthValueAtNormalizedCoord(pos); },
@@ -76,13 +68,38 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
 
             QMenu menu(this);
             if (auto image = image_.lock()) {
-                menu.addSeparator();
                 utilqt::addImageActions(menu, *image, layerType_, layerIdx_);
+                menu.addSeparator();
             }
             if (contextMenuCallback_(menu)) {
                 menu.exec(e->globalPos());
             }
-        }));
+        });
+
+    auto& settings = InviwoApplication::getPtr()->getSystemSettings();
+    auto setHandleTouch = [this, &settings, interactionEventMapper]() {
+        auto& touch = settings.enableTouchProperty_;
+        auto& gestures = settings.enableGesturesProperty_;
+
+        if (gestures.get()) {
+            grabGesture(Qt::PanGesture);
+            grabGesture(Qt::PinchGesture);
+        } else {
+            ungrabGesture(Qt::PanGesture);
+            ungrabGesture(Qt::PinchGesture);
+        }
+        setAttribute(Qt::WA_AcceptTouchEvents, touch.get());
+        
+        interactionEventMapper->handleTouch(touch.get());
+        interactionEventMapper->handleGestures(gestures.get());
+    };
+
+    settings.enableTouchProperty_.onChange(setHandleTouch);
+    settings.enableGesturesProperty_.onChange(setHandleTouch);
+    setHandleTouch();
+
+    installEventFilter(new utilqt::WidgetCloseEventFilter(this));
+    installEventFilter(interactionEventMapper);
 }
 
 CanvasQOpenGLWidget::~CanvasQOpenGLWidget() {

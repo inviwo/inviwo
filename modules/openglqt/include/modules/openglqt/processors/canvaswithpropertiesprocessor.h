@@ -40,6 +40,28 @@ namespace inviwo {
 
 struct PWObserver;
 
+/** \docpage{org.inviwo.CanvasWithPropertiesProcessor, Canvas With Properties}
+ * ![](org.inviwo.CanvasWithPropertiesProcessor.png?classIdentifier=org.inviwo.CanvasWithPropertiesProcessor)
+ *
+ * Show a processor widget with a split pane with a image on the left, and a list of propertywidgets
+ * on the right
+ *
+ *
+ * ### Inports
+ *   * __inport__ image to render
+ *
+ * ### Properties
+ *   * __Widget Size__ size of the whole widget, not just the image.
+ *   * __Widget Position__ position of the widget
+ *   * __Visible__ Toggle widget visibility
+ *   * __Full Screen__ Toggle if thw widget should be fullscreen
+ *   * __On Top__ Keep the widget on top of the inviwo main window.
+ *   * __Visible Layer__ The layer type to render, color, depth of picking
+ *   * __Color Layer ID__ The color layer index to render
+ *   * __Paths__ A list of processor ids and/or property paths, seperated by new lines to show in the
+ * property list in the widget.
+ *
+ */
 class IVW_MODULE_OPENGLQT_API CanvasWithPropertiesProcessor : public Processor {
 public:
     CanvasWithPropertiesProcessor();
@@ -57,19 +79,17 @@ public:
 private:
     std::unique_ptr<PWObserver> pwObserver_;
     ImageInport inport_;
-    
+
     IntSize2Property dimensions_;
     IntVec2Property position_;
     BoolProperty visible_;
     BoolProperty fullScreen_;
     BoolProperty onTop_;
-    
+
     TemplateOptionProperty<LayerType> layerType_;
     IntSizeTProperty layerIndex_;
-    
+
     StringProperty paths_;
-    
-    
 };
 
 }  // namespace inviwo
