@@ -47,6 +47,7 @@ set(HEADER_FILES
     include/modules/discretedata/processors/sphericalcoordinates.h
     include/modules/discretedata/processors/volumefromdataset.h
     include/modules/discretedata/properties/datachannelproperty.h
+    include/modules/discretedata/sampling/celltree.h
     include/modules/discretedata/util/prefixsumvector.h
     include/modules/discretedata/util/util.h
 )
@@ -98,6 +99,7 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/example-code.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/lineset-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/structured-grid-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/tripolar-grid-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

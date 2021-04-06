@@ -104,9 +104,6 @@ public:
     struct Primitive {
         friend class TripolarGrid<N>;
 
-        // private:
-        //     Primitive(const TripolarGrid<N>& grid);
-
     public:
         Primitive(const TripolarGrid<N>& grid, ind globalIdx);
         Primitive(const TripolarGrid<N>& grid, CoordArray idx, DirArray<P> dirs);

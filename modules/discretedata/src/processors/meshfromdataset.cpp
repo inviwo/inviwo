@@ -199,8 +199,8 @@ void MeshFromDataSet::process() {
                         cutAtBorder_.get());
 
                     // Add triagnle "fans".
-                    size_t tri = 0;
-                    for (; tri < indexData.size() - 3; tri += 2) {
+                    ind tri = 0;
+                    for (; tri < ind(indexData.size()) - 3; tri += 2) {
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri]));
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 1]));
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 2]));
@@ -221,10 +221,12 @@ void MeshFromDataSet::process() {
                     pInDataSet->getGrid()->getConnections(
                         indexData, element.getIndex(), GridPrimitive::Edge, GridPrimitive::Vertex,
                         cutAtBorder_.get());
-                    ivwAssert(indexData.size() == 2, "An Edge not made out of 2 points...");
-
-                    indexMeshData.push_back(static_cast<std::uint32_t>(indexData[0]));
-                    indexMeshData.push_back(static_cast<std::uint32_t>(indexData[1]));
+                    ivwAssert(indexData.size() == 2 || indexData.size() == 0,
+                              "An edge not made out of 2 points...");
+                    if (indexData.size() == 2) {
+                        indexMeshData.push_back(static_cast<std::uint32_t>(indexData[0]));
+                        indexMeshData.push_back(static_cast<std::uint32_t>(indexData[1]));
+                    }
                 }
                 break;
             default:

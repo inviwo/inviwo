@@ -82,12 +82,12 @@ struct GetConnectionsFromHelper {
 
 template <ind N>
 void TripolarGrid<N>::getConnections(std::vector<ind>& result, ind idxLin, GridPrimitive from,
-                                     GridPrimitive to, bool render) const {
+                                     GridPrimitive to, bool cutAtBorder) const {
 
     dd_detail_tripolar::GetConnectionsFromHelper<N> dispatcher;
 
     channeldispatching::dispatchNumber<void, 0, N>(ind(from), dispatcher, *this, result, idxLin, to,
-                                                   render);
+                                                   cutAtBorder);
 }
 
 template <ind N>
@@ -99,8 +99,18 @@ void TripolarGrid<N>::getConnectionsDispatched(std::vector<ind>& result, ind ind
     using ToPrimitive = Primitive<GridPrimitive(To)>;
     FromPrimitive fromPrim(*this, index);
     const auto& numVerts = numPrimitives_.NumVerticesPerDimension;
-    ind numCellsX = numVerts[0] - 1;
-    ind numCellsY = numVerts[1] - 1;
+    const ind numCellsX = numVerts[0] - 1;
+    const ind numCellsY = numVerts[1] - 1;
+    const auto& fromCoords = fromPrim.getCoordinates();
+    const auto& fromDirs = fromPrim.getDirections();
+
+    if (cutAtBorder && From >= 1) {
+        bool borderX = (fromDirs[0] == 0 && fromCoords[0] == numCellsX);
+        bool borderY = From >= 2 &&
+                       (fromDirs[0] == 1 || (From >= 2 && fromCoords[1] == numCellsY)) &&
+                       fromCoords[1] == numCellsY;
+        if (borderX || borderY) return;
+    }
 
     if constexpr (To > From) {  // Going to a higher dimensional primitive? (e.g., edge to face).
         throw Exception("Not implemented yet.");
@@ -114,18 +124,23 @@ void TripolarGrid<N>::getConnectionsDispatched(std::vector<ind>& result, ind ind
                 neighCoords[dim] += sign;
 
                 // Special cases in x and y direction.
+                // std::cout << "Original coord: " << neighCoords[0] << ", " << neighCoords[1]
+                // << ",
+                // "
+                //           << neighCoords[2] << std::endl;
                 if (dim == 0) {
                     // Two very special cases from along wrapping layer to the top normal layer.
                     if (neighCoords[0] == -1 && neighCoords[1] == numCellsY) {
-                        neighCoords[0] = numCellsX - 1;
+                        neighCoords[0] = numCellsX;
                         neighCoords[1] = numCellsY - 1;
+                        // std::cout << "=> Special left wrap" << std::endl;
                     } else if (neighCoords[0] == numCellsX / 2 && neighCoords[1] == numCellsY) {
                         neighCoords[1] = numCellsY - 1;
                     }
 
                     // Wrapping along equator.
                     if (neighCoords[0] == -1) {
-                        neighCoords[0] = numCellsX - 1;  // Why? - 2;
+                        neighCoords[0] = numCellsX;
                     }
                     if (neighCoords[0] == numCellsX + 1) {  // Why? -1 instad of +1;
                         neighCoords[0] = 0;
@@ -152,11 +167,13 @@ void TripolarGrid<N>::getConnectionsDispatched(std::vector<ind>& result, ind ind
                 }
 
                 // Return
-                ToPrimitive neighPrim(fromPrim.Grid, std::move(neighCoords), std::move(neighDirs));
-                bool inGrid = dim != 0 && dim != 1 &&
-                              (neighPrim.getCoordinates()[dim] >= 0 &&
-                               (neighPrim.getCoordinates()[dim] < numVerts[dim] - 1 || dim == 0));
+                bool inGrid = dim == 0 || dim == 1 ||
+                              (neighCoords[dim] >= 0 && neighCoords[dim] < numVerts[dim] - 1);
                 if (inGrid) {
+                    // std::cout << "\t" << neighCoords[0] << ", " << neighCoords[1] << ", "
+                    //           << neighCoords[2] << std::endl;
+                    ToPrimitive neighPrim(fromPrim.Grid, std::move(neighCoords),
+                                          std::move(neighDirs));
                     result.push_back(neighPrim.GlobalPrimitiveIndex);
                 }
             }
@@ -164,7 +181,6 @@ void TripolarGrid<N>::getConnectionsDispatched(std::vector<ind>& result, ind ind
     } else if (To == From) {
         throw Exception("Not implemented yet.");
     } else {  // Going to a part of the input primitive.
-
         std::array<ind, size_t(N)> neighCoords;
         std::array<size_t, size_t(To)> neighDirs;
         std::array<size_t, size_t(From) - size_t(To)> offsetDirections;
@@ -214,7 +230,7 @@ void TripolarGrid<N>::getConnectionsDispatched(std::vector<ind>& result, ind ind
                                 break;
                             case 1:
                                 neighCoords[0] = numCellsX - neighCoords[0];
-                                neighCoords[1] = numVerts[1];
+                                neighCoords[1] = numVerts[1] - 1;
                                 if (dirsWrapX) {
                                     neighCoords[0]--;
                                 }
@@ -302,30 +318,39 @@ constexpr void writeSize(typename TripolarGrid<N>::NumPrimitives& numPrimitives,
         // Assemble size of a single direction combination:
         // multiply all sizes up, one less in dimensions our primitives span.
 
-        auto itDir = dirs.rbegin();
+        auto itDir = dirs.begin();
         ind size = 1;
+        ind sizeNormal = 1;
         // bool wrapsTop = P > 0 && dirs[0] == 0;
         bool wrapsTop = (P > 0 && dirs[0] == 1) || (P > 1 && dirs[1] == 1);
-        for (size_t dim = N - 1; dim > 1; --dim) {
+        for (size_t dim = 0; dim < N; ++dim) {
             ind dimSize = numPrimitives.NumVerticesPerDimension[dim];
-            if (itDir != dirs.rend() && *itDir == dim) {
-                dimSize--;
+            if (itDir != dirs.end() && *itDir == dim) {
+                if (dim != 0) dimSize--;
                 ++itDir;
             }
             size *= dimSize;
+            sizeNormal *= dimSize;
+
+            if (wrapsTop && dim == 1) {
+                size += numPrimitives.NumVerticesPerDimension[0] / 2 - 1;
+                if (dirs[0] != 0) {
+                    size--;
+                }
+            }
         }
 
         // If these primitives wrap around the top, half a layer must be added.
-        size *= numPrimitives.NumVerticesPerDimension[0];
-        ind dimSize1 = numPrimitives.NumVerticesPerDimension[1];
-        if (wrapsTop) {
-            sizeSum += size / 2;
-            size *= dimSize1 - 1;
-        } else {
-            size *= dimSize1;
-        }
+        // size *= numPrimitives.NumVerticesPerDimension[0];
+        // ind dimSize1 = numPrimitives.NumVerticesPerDimension[1];
+        // if (wrapsTop) {
+        //     sizeSum += size / 2;
+        //     size *= dimSize1 - 1;
+        // } else {
+        //     size *= dimSize1;
+        // }
         numPrimitives.PerDirectionNumNormalPrimitives[numPrimitives.PrimitiveOffsets[P] + dirsIdx] =
-            size;
+            sizeNormal;
 
         // auto itDir = dirs.begin();
         // ind size = 1;
@@ -337,8 +362,8 @@ constexpr void writeSize(typename TripolarGrid<N>::NumPrimitives& numPrimitives,
         //         dimSize--;
         //         ++itDir;
         //     }
-        //     // When this primitive spans the longitudinal direction, there is one more layer of
-        //     it. if (wrapsSide && dim == 1) {
+        //     // When this primitive spans the longitudinal direction, there is one more layer
+        //     of it. if (wrapsSide && dim == 1) {
         //         dimSize++;
         //     }
         //     size *= dimSize;
@@ -414,8 +439,8 @@ ind TripolarGrid<N>::NumPrimitives::getSize(ind dirsIdx) const {
 
     size_t primOffset = PrimitiveOffsets[size_t(P)];
     if (primOffset + dirsIdx >= PerDirectionOffsets.size()) return -1;
-    // If we are looking at the last ever index range or the last of a primitive type, we will get a
-    // 0 as offset. We then change it to the known number of total elements of that type.
+    // If we are looking at the last ever index range or the last of a primitive type, we will
+    // get a 0 as offset. We then change it to the known number of total elements of that type.
     ind upperLimit = (primOffset + 1 == PerDirectionOffsets.size())
                          ? 0
                          : PerDirectionOffsets[primOffset + dirsIdx + 1];
@@ -462,7 +487,7 @@ ind TripolarGrid<N>::NumPrimitives::globalIndexFromCoordinates(
     if (idx < 0) return idx;
 
     bool wrapsTop = ((int(P) >= 1 && dirs[0] == 1) || (int(P) >= 2 && dirs[1] == 1)) &&
-                    coords[1] == Grid.numPrimitives_.NumVerticesPerDimension[1];
+                    coords[1] == Grid.numPrimitives_.NumVerticesPerDimension[1] - 1;
     if (wrapsTop) {
         idx += grid.numPrimitives_
                    .PerDirectionNumNormalPrimitives[grid.numPrimitives_.PrimitiveOffsets[int(P)] +
@@ -475,7 +500,7 @@ ind TripolarGrid<N>::NumPrimitives::globalIndexFromCoordinates(
         if (wrapsTop && dim == 1) continue;
         idx += coords[dim] * mult;
         ind dimSize = grid.numPrimitives_.NumVerticesPerDimension[dim];
-        if (wrapsTop && dim == 0) dimSize /= 2;
+        if (wrapsTop && dim == 0) dimSize = dimSize / 2 - 1;
 
         if (itDir != dirs.end() && *itDir == dim) {
             if (dim != 0) dimSize--;
@@ -517,10 +542,10 @@ TripolarGrid<N>::NumPrimitives::coordinatesFromGlobalIndex(ind globalIdx) const 
     CoordArray coords;
     auto itDir = dirs.begin();
     for (size_t dim = 0; dim < N; ++dim) {
-        // In case we are at the cells wrapping across the top, there is only one layer. Skip this
-        // dimension.
+        // In case we are at the cells wrapping across the top, there is only one layer. Skip
+        // this dimension.
         if (wrapsTop && dim == 1) {
-            coords[1] = Grid.numPrimitives_.NumVerticesPerDimension[1];
+            coords[1] = Grid.numPrimitives_.NumVerticesPerDimension[1] - 1;
             continue;
         }
 
