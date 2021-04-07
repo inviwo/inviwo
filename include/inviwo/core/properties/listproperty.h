@@ -46,6 +46,8 @@ enum class ListPropertyUIFlag {
     Remove = 0x02,  //!< items can be removed from the property widget
 };
 
+enum class ListPropertyAction { None, Add, Remove };
+
 ALLOW_FLAGS_FOR_ENUM(ListPropertyUIFlag)
 
 using ListPropertyUIFlags = flags::flags<ListPropertyUIFlag>;
@@ -217,6 +219,8 @@ public:
 
     ListPropertyUIFlags getUIFlags() const;
 
+    ListPropertyAction getLastPerformedAction() const { return lastPerformedAction_; }
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -226,6 +230,7 @@ private:
     ListPropertyUIFlags uiFlags_;
     ValueWrapper<size_t> maxNumElements_;
     std::vector<std::unique_ptr<Property>> prefabs_;
+    ListPropertyAction lastPerformedAction_{ListPropertyAction::None};
 };
 
 }  // namespace inviwo

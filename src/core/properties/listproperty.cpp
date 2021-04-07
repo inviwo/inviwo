@@ -215,16 +215,19 @@ void ListProperty::insertProperty(size_t index, Property* property, bool owner) 
     if (!util::contains_if(prefabs_, [&, id = property->getClassIdentifier()](auto& elem) {
             return elem->getClassIdentifier() == id;
         })) {
+        lastPerformedAction_ = ListPropertyAction::None;
         throw Exception("Unsupported property type, no prefab matching `" +
                             property->getClassIdentifier() + "`.",
                         IVW_CONTEXT);
     }
 
     if ((maxNumElements_ == size_t{0}) || (size() + 1 < maxNumElements_)) {
+        lastPerformedAction_ = ListPropertyAction::Add;
         property->setSerializationMode(PropertySerializationMode::All);
         CompositeProperty::insertProperty(index, property, owner);
         propertyModified();
     } else {
+        lastPerformedAction_ = ListPropertyAction::None;
         LogError("Maximum number of list entries reached (" << this->getDisplayName() << ")");
     }
 }
@@ -234,24 +237,28 @@ void ListProperty::insertProperty(size_t index, Property& property) {
 }
 
 Property* ListProperty::removeProperty(std::string_view identifier) {
+    lastPerformedAction_ = ListPropertyAction::Remove;
     auto result = CompositeProperty::removeProperty(identifier);
     propertyModified();
     return result;
 }
 
 Property* ListProperty::removeProperty(Property* property) {
+    lastPerformedAction_ = ListPropertyAction::Remove;
     auto result = CompositeProperty::removeProperty(property);
     propertyModified();
     return result;
 }
 
 Property* ListProperty::removeProperty(Property& property) {
+    lastPerformedAction_ = ListPropertyAction::Remove;
     auto result = CompositeProperty::removeProperty(property);
     propertyModified();
     return result;
 }
 
 Property* ListProperty::removeProperty(size_t index) {
+    lastPerformedAction_ = ListPropertyAction::Remove;
     auto result = CompositeProperty::removeProperty(index);
     propertyModified();
     return result;
