@@ -1,7 +1,31 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2021-04-19 Font changes
+* namespace in `fontutils.h` changed to `font` (previously `util`) and added a function to query the default type faces (`std::string font::getFont(font::FontType type, font::FullPath path)`)
+* Default font changed to OpenSans semibold
+* Added Lato typeface by Łukasz Dziedzic
+
+## 2021-03-18 Nifti loader, WebBrowser zoom
+Added support for vector data to the Nifti loader (up to vec4).
+The `WebBrowserProcessor` now features a seamless zoom for enlarging/shrinking web contents..
+
+## 2021-02-15 OpenGL 32bit float depth texture, Qt Widgets performance
+Depth layers of `ImageGL` now use 32bit float depth textures by default instead of 24bit int.
+Improved performance in the Qt property lists by disabling and enabling layouting when doing lots of changes. `PropertyOwner` got `clear()` and `empty()` methods.
+
+## 2021-01-28 TF editor update and TF presets
+The functionality of the TF editor was extended and now includes a simplification and more transformations (context menu: `Simplify` and `Transform`).
+TF presets, accessible via the context menu, are shown along with a preview. ColorBrewer color palettes can also be directly accessed and also include a utility function to create a ColorBrewer palette with offsets or more/less colors (context menu: ColorBrewer palette, `Generate...`).
+
+## 2020-12-16 OpenGL Shader refactoring
+The constructor of a Shader now takes a specific type `Shader::Build` as argument for indicating whether the shader should be compiled and linked immediately.
+When using a bool argument, you will see a deprecation warning and should consider using `Shader::Build::Yes` or `No` instead.
+
+## 2020-12-10 Fixes for Qt6 and improved syntax highlighting
+The Qt codebase of Inviwo was updated toward supporting Qt6. The syntax highlighting in the Python and GLSL editors was refactored and improved.
+
 ## 2020-11-10 Improved Filtering in Processor List Widget
- Filtering in the Processor List Widget is now based on matching substrings (space is the separator). For example, searching for `Vol Source` will return `Volume Source`, `Volume Sequence Source`, and `Image Stack Volume Source`.
+Filtering in the Processor List Widget is now based on matching substrings (space is the separator). For example, searching for `Vol Source` will return `Volume Source`, `Volume Sequence Source`, and `Image Stack Volume Source`.
  This also enables searching for processor names and tags at the same time, e.g. `Slice GL`.
 
 ## 2020-10-28 Performance refactoring
