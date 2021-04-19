@@ -93,9 +93,8 @@ int main(int argc, char** argv) {
         1000);
 
     TCLAP::ValueArg<int> fullscreenArg(
-        "f", "fullscreen",
-        "Specify amount of seconds before launching canvas to fullscreen", false, 3,
-        "This will only occur if exactly one canvas is visible during startup");
+        "f", "fullscreen", "Specify amount of seconds before launching canvas to fullscreen", false,
+        3, "This will only occur if exactly one canvas is visible during startup");
 
     cmdparser.add(
         &fullscreenArg,
@@ -121,7 +120,7 @@ int main(int argc, char** argv) {
                     }
                     canvasFullScreenTimer->deleteLater();
                 });
-            canvasFullScreenTimer->start(fullscreenArg.getValue()*1000);
+            canvasFullScreenTimer->start(fullscreenArg.getValue() * 1000);
         },
         1000);
 
