@@ -26,9 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_FONTUTILS_H
-#define IVW_FONTUTILS_H
+#pragma once
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -57,12 +55,42 @@ getAvailableFonts(const std::string& fontPath = std::string());
  *
  * @return default path containing fonts shipped with Inviwo. Corresponds to the font directory
  *                 located in the font rendering module directory.
- *
  */
 std::string IVW_MODULE_FONTRENDERING_API getDefaultFontPath();
+
+/**
+ * \brief returns the default typeface of Inviwo along with the default font path and extension if
+ * \p fullPath is true
+ *
+ * @param fullPath    the function returns the full path of the default font if true
+ * @return default font name
+ */
+std::string IVW_MODULE_FONTRENDERING_API getDefaultFont(bool fullPath = false);
+
+/**
+ * \brief returns the default typeface with more weight
+ *
+ * @param fullPath    the function returns the full path of the bold default font if true
+ * @return bold default font name
+ * 
+ * \see getDefaultFont
+ */
+std::string IVW_MODULE_FONTRENDERING_API getDefaultFontBold(bool fullPath = false);
+
+/**
+ * \brief returns the default typeface of Inviwo with the default font path
+ *
+ * @return full path to default font
+ */
+std::string IVW_MODULE_FONTRENDERING_API getDefaultFontCaptions();
+
+/**
+ * \brief returns the default typeface of Inviwo with the default font path
+ *
+ * @return full path to default font
+ */
+std::string IVW_MODULE_FONTRENDERING_API getDefaultFontLabels();
 
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_FONTUTILS_H

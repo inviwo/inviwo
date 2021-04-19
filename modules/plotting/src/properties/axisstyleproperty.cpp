@@ -59,7 +59,7 @@ AxisStyleProperty::AxisStyleProperty(const std::string& identifier, const std::s
         // use the file name w/o extension as identifier
         fontFace_.addOption(name, font.first, font.second);
     }
-    fontFace_.setSelectedIdentifier("OpenSans-Semibold");
+    fontFace_.setSelectedIdentifier(util::getDefaultFontLabels());
     fontFace_.setCurrentStateAsDefault();
     fontSize_.setSemantics(PropertySemantics("Fontsize"));
     color_.setSemantics(PropertySemantics::Color);

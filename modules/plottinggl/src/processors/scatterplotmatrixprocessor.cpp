@@ -134,9 +134,9 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
         fontFace_.addOption(name, font.first, font.second);
         fontFaceStats_.addOption(name, font.first, font.second);
     }
-    fontFace_.setSelectedIdentifier("OpenSans-Semibold");
+    fontFace_.setSelectedIdentifier(util::getDefaultFontCaptions());
     fontFace_.setCurrentStateAsDefault();
-    fontFaceStats_.setSelectedIdentifier("OpenSans-Regular");
+    fontFaceStats_.setSelectedIdentifier(util::getDefaultFontLabels());
     fontFaceStats_.setCurrentStateAsDefault();
 
     fontSize_.setSemantics(PropertySemantics("Fontsize"));

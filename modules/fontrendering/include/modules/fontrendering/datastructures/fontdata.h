@@ -51,7 +51,7 @@ public:
     virtual float getLineSpacing() const override;
     virtual vec2 getAnchorPos() const override;
 
-    std::string fontFace = util::getDefaultFontPath() + "/OpenSans-Semibold.otf";
+    std::string fontFace = util::getDefaultFont();
     int fontSize = 14;
     float lineSpacing = 0.0f;
     vec2 anchorPos = vec2(-1.0f);

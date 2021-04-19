@@ -91,6 +91,26 @@ std::string getDefaultFontPath() {
            "/fonts";
 }
 
+std::string getDefaultFont(bool fullPath) {
+    if (fullPath) {
+        return getDefaultFontPath() + "/OpenSans-Semibold.ttf";
+    } else {
+        return "OpenSans-Semibold";
+    }
+}
+
+std::string getDefaultFontBold(bool fullPath) {
+    if (fullPath) {
+        return getDefaultFontPath() + "/OpenSans-Bold.ttf";
+    } else {
+        return "OpenSans-Bold";
+    }
+}
+
+std::string getDefaultFontCaptions() { return "OpenSans-Semibold"; }
+
+std::string getDefaultFontLabels() { return "OpenSans-Regular"; }
+
 }  // namespace util
 
 }  // namespace inviwo

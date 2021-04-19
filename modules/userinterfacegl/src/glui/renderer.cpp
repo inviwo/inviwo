@@ -62,8 +62,8 @@ namespace glui {
 
 Renderer::Renderer()
     : uiShader_("renderui.vert", "renderui.frag")
-    , textRenderer_(util::getDefaultFontPath() + "/OpenSans-Semibold.ttf")
-    , textRendererBold_(util::getDefaultFontPath() + "/OpenSans-Bold.ttf")
+    , textRenderer_(util::getDefaultFont(true))
+    , textRendererBold_(util::getDefaultFontBold(true))
     , quadRenderer_(Shader("rendertexturequad.vert", "labelui.frag"))
     , colorUI_(0.8f, 0.8f, 0.8f, 1.0f)
     , colorSecondaryUI_(0.2f, 0.2f, 0.25f, 1.0f)
