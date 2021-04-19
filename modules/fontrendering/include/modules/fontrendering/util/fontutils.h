@@ -35,7 +35,10 @@
 
 namespace inviwo {
 
-namespace util {
+namespace font {
+
+enum class FullPath { Yes, No };
+enum class FontType { Default, Bold, Caption, Label };
 
 /**
  * \brief returns a list of all fonts found in the given directory,  font directory of the
@@ -59,37 +62,23 @@ getAvailableFonts(const std::string& fontPath = std::string());
 std::string IVW_MODULE_FONTRENDERING_API getDefaultFontPath();
 
 /**
- * \brief returns the default typeface of Inviwo along with the default font path and extension if
- * \p fullPath is true
+ * \brief returns the default typeface of Inviwo for \p type along with the default font path and
+ * extension if \p fullPath is true
  *
- * @param fullPath    the function returns the full path of the default font if true
- * @return default font name
+ * @param type    requested font type
+ * @param path    if equal to FullPath::Yes, then the full path of the font including extension is
+ *                returned, only font name otherwise
+ * @return font name
  */
-std::string IVW_MODULE_FONTRENDERING_API getDefaultFont(bool fullPath = false);
+std::string IVW_MODULE_FONTRENDERING_API getFont(FontType type, FullPath path = FullPath::No);
 
-/**
- * \brief returns the default typeface with more weight
- *
- * @param fullPath    the function returns the full path of the bold default font if true
- * @return bold default font name
- * 
- * \see getDefaultFont
- */
-std::string IVW_MODULE_FONTRENDERING_API getDefaultFontBold(bool fullPath = false);
+}  // namespace font
 
-/**
- * \brief returns the default typeface of Inviwo with the default font path
- *
- * @return full path to default font
- */
-std::string IVW_MODULE_FONTRENDERING_API getDefaultFontCaptions();
+// namespace util for backward compatibility
+namespace util {
 
-/**
- * \brief returns the default typeface of Inviwo with the default font path
- *
- * @return full path to default font
- */
-std::string IVW_MODULE_FONTRENDERING_API getDefaultFontLabels();
+using font::getAvailableFonts;
+using font::getDefaultFontPath;
 
 }  // namespace util
 

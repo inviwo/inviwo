@@ -32,6 +32,7 @@
 #include <inviwo/core/network/networklock.h>
 
 #include <modules/plotting/utils/axisutils.h>
+#include <modules/fontrendering/util/fontutils.h>
 
 #include <fmt/format.h>
 #include <fmt/printf.h>
@@ -73,8 +74,8 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
     range_.readonlyDependsOn(useDataRange_, [](const auto& p) { return p.get(); });
 
     // change default fonts, make axis labels slightly less pronounced
-    captionSettings_.font_.fontFace_.setSelectedIdentifier(util::getDefaultFontCaptions());
-    labelSettings_.font_.fontFace_.setSelectedIdentifier(util::getDefaultFontLabels());
+    captionSettings_.font_.fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Caption));
+    labelSettings_.font_.fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Label));
 
     captionSettings_.title_.set("Axis Title");
     captionSettings_.offset_.set(35.0f);

@@ -128,15 +128,15 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     correlectionTF_.get().add(1.0, vec4(0, 0, 1, 1));
     correlectionTF_.setCurrentStateAsDefault();
 
-    for (auto font : util::getAvailableFonts()) {
+    for (auto font : font::getAvailableFonts()) {
         auto name = filesystem::getFileNameWithoutExtension(font.second);
         // use the file name w/o extension as identifier
         fontFace_.addOption(name, font.first, font.second);
         fontFaceStats_.addOption(name, font.first, font.second);
     }
-    fontFace_.setSelectedIdentifier(util::getDefaultFontCaptions());
+    fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Caption));
     fontFace_.setCurrentStateAsDefault();
-    fontFaceStats_.setSelectedIdentifier(util::getDefaultFontLabels());
+    fontFaceStats_.setSelectedIdentifier(font::getFont(font::FontType::Label));
     fontFaceStats_.setCurrentStateAsDefault();
 
     fontSize_.setSemantics(PropertySemantics("Fontsize"));
