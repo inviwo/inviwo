@@ -107,7 +107,8 @@ bool AnimationsModel::removeRows(int row, int count, const QModelIndex& parent) 
         return false;
     }
     beginRemoveRows(QModelIndex(), row, row + count - 1);
-    animations_.erase(static_cast<size_t>(row), static_cast<size_t>(row) + static_cast<size_t>(count));
+    animations_.erase(static_cast<size_t>(row),
+                      static_cast<size_t>(row) + static_cast<size_t>(count));
     endRemoveRows();
     return true;
 }
