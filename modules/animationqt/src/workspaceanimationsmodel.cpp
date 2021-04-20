@@ -65,7 +65,7 @@ inline int AnimationsModel::rowCount(const QModelIndex& parent) const {
     }
 }
 QVariant AnimationsModel::data(const QModelIndex& index, int role) const {
-    if (index.row() < 0 || index.row() >= animations_.size()) {
+    if (index.row() < 0 || index.row() >= static_cast<int>(animations_.size())) {
         return QVariant();
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
         return QVariant(utilqt::toQString(animations_.getName(index.row())));
@@ -75,7 +75,7 @@ QVariant AnimationsModel::data(const QModelIndex& index, int role) const {
 }
 
 bool AnimationsModel::setData(const QModelIndex& index, const QVariant& value, int role) {
-    if (index.row() >= 0 && index.row() < animations_.size() &&
+    if (index.row() >= 0 && index.row() < static_cast<int>(animations_.size()) &&
         (role == Qt::EditRole || role == Qt::DisplayRole)) {
         auto valueString = utilqt::fromQString(value.toString());
         if (animations_.getName(index.row()) == valueString) {
@@ -107,7 +107,7 @@ bool AnimationsModel::removeRows(int row, int count, const QModelIndex& parent) 
         return false;
     }
     beginRemoveRows(QModelIndex(), row, row + count - 1);
-    animations_.erase(static_cast<size_t>(row), static_cast<size_t>(row + count));
+    animations_.erase(static_cast<size_t>(row), static_cast<size_t>(row) + static_cast<size_t>(count));
     endRemoveRows();
     return true;
 }
