@@ -124,14 +124,17 @@
         <file>inviwo/inviwo-logo-300px.png</file>
         <file>inviwo/inviwo-logo-light-600px.png</file>
         
-        <file>images/elliit.png</file>
-        <file>images/kth.png</file>
-        <file>images/liu-black.png</file>
-        <file>images/liu-white-crop.png</file>
-        <file>images/liu-white.png</file>
-        <file>images/serc.png</file>
+        <file>images/bmbf-white.svg</file>
+        <file>images/dfg.svg</file>
+        <file>images/elliit.svg</file>
+        <file>images/kth.svg</file>
+        <file>images/liu-black.svg</file>
+        <file>images/liu-white-crop.svg</file>
+        <file>images/liu-white.svg</file>
+        <file>images/serc.svg</file>
         <file>images/splashscreen.png</file>
-        <file>images/uulm.png</file>
+        <file>images/uulm.svg</file>
+        <file>images/vr.svg</file>
 
         <file>stylesheets/inviwo.qss</file>
     </qresource>

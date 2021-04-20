@@ -44,10 +44,13 @@ Below follow some general information about the framework:
 For help and general discussion join us on our [Slack](https://join.slack.com/t/inviwo/shared_invite/enQtNTc2Nzc2NDQwNzIxLTRiMWM1ZWJiYjljZjkwNWE3OTk3MzYxODZlMDUyMzRmZjUzMzBiZjVhNTM3NWUyNzU1MjI4OWJjMzdkODViMzM) server
 
 #### Sponsors
-This work was supported by Linköping University,  KTH Royal Institute of Technology, Ulm University, and through grants from the Swedish e-Science Research Centre (SeRC) and the Excellence Center at Linköping - Lund in Information Technology (ELLIIT).
+This work is supported by Linköping University, Ulm University, and KTH Royal Institute of Technology as well as grants from the Swedish e-Science Research Centre (SeRC), the Excellence Center at Linköping - Lund in Information Technology (ELLIIT), the Swedish Research Council (Vetenskapsrådet), DFG (German Research Foundation), and the BMBF.
 
-<a href='http://www.liu.se'><img src="docs/images/liu-600x600.png" width="150" style="margin-right:10px;"></a>
-<a href='http://www.kth.se'><img src="docs/images/kth-600x600.png" width="150" style="margin-right:10px;"></a>
-<a href='http://e-science.se'><img src="docs/images/serc-600x600.png" width="150" style="margin-right:10px;"></a>
-<a href='http://www.uni-ulm.de/en/'><img src="docs/images/uulm-600x600.png" width="150" style="margin-right:10px;"></a>
-<a href='https://old.liu.se/elliit?l=en'><img src="docs/images/elliit_logo.jpg" width="150" style="margin-right:10px;"></a>
+<a href='https://www.liu.se'><img src="docs/images/liu-600x600.png" width="150" style="margin-right:10px;"></a>
+<a href='https://www.uni-ulm.de/en/'><img src="docs/images/uulm-600x600.png" width="150" style="margin-right:10px;"></a>
+<a href='https://www.kth.se'><img src="docs/images/kth-600x600.png" width="150" style="margin-right:10px;"></a>
+<a href='https://e-science.se'><img src="docs/images/serc-600x600.png" width="150" style="margin-right:10px;"></a>
+<a href='https://old.liu.se/elliit?l=en'><img src="docs/images/elliit-600x600.png" width="150" style="margin-right:10px;"></a>
+<a href='https://www.vr.se/english.html'><img src='docs/images/vr-600x600.png' width='150' style='margin-right:10px;'></a>
+<a href='https://www.dfg.de/en/index.jsp'><img src='docs/images/dfg-600x600.png' width='150' style='margin-right:10px;'></a>
+<a href='https://www.bmbf.de'><img src='docs/images/bmbf-600x600.png' width='150' style='margin-right:10px;'></a>

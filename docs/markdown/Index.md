@@ -42,20 +42,24 @@ Below follow some general information about the framework:
 For help and general discussion join us on our [Slack](https://join.slack.com/t/inviwo/shared_invite/enQtNTc2Nzc2NDQwNzIxLTRiMWM1ZWJiYjljZjkwNWE3OTk3MzYxODZlMDUyMzRmZjUzMzBiZjVhNTM3NWUyNzU1MjI4OWJjMzdkODViMzM) server
 
 #### Sponsors
-This work was supported by Linköping University,  KTH Royal Institute of Technology, Ulm University, and through grants from the Swedish e-Science Research Centre (SeRC).
+This work is supported by Linköping University, Ulm University, and KTH Royal Institute of Technology as well as grants from the Swedish e-Science Research Centre (SeRC), the Excellence Center at Linköping - Lund in Information Technology (ELLIIT), the Swedish Research Council (Vetenskapsrådet), DFG (German Research Foundation), and the BMBF.
 
 <div class="sponsor-images">
 
-[![](liu-200x200.png)](http://www.liu.se)
+[![](liu-200x200.png)](https://www.liu.se)
 
+[![](uulm-200x200.png)](https://www.uni-ulm.de/en/)
 
-[![](kth-200x200.png)](http://www.kth.se)
-
+[![](kth-200x200.png)](https://www.kth.se)
 
 [![](serc-200x200.png)](http://e-science.se)
 
+[![](elliit-200x200.png)](https://old.liu.se/elliit?l=en)
 
-[![](uulm-200x200.png)](http://www.uni-ulm.de/en/)
+[![](vr-200x200.png)](https://www.vr.se/english.html)
 
+[![](dfg-200x200.png)](https://www.dfg.de/en/index.jsp)
+
+[![](bmbf-200x200.png)](https://www.bmbf.de)
 
 </div>
