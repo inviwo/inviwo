@@ -76,7 +76,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     : InviwoDockWidget("About", mainwindow, "AboutWidget") {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
+    resize(utilqt::emToPx(this, QSizeF(120, 120)));  // default size
 
     auto centralWidget = new QWidget();
     auto vLayout = new QVBoxLayout(centralWidget);
@@ -169,27 +169,37 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         h.append("h3", "Sponsors:");
         h.append("br");
         h.append("span",
-                 "This work was supported by Linköping University, KTH Royal Institute of "
-                 "Technology, Ulm University, and through grants from the Swedish e-Science "
-                 "Research Centre (SeRC) and the Excellence Center at Linköping - Lund in "
-                 "Information Technology (ELLIIT)");
+                 "This work is supported by Linköping University, Ulm University, and KTH Royal "
+                 "Institute of Technology as well as grants from the Swedish e-Science Research "
+                 "Centre (SeRC), the Excellence Center at Linköping - Lund in Information "
+                 "Technology (ELLIIT), the Swedish Research Council (Vetenskapsrådet), DFG (German "
+                 "Research Foundation), and the BMBF.");
         h.append("br");
         auto p = h.append("p");
 
-        auto liu = p.append("a", "", {{"href", "http://www.liu.se"}});
-        liu.append("img", "", makeImg(":/images/liu-white-crop.png", 50));
+        auto liu = p.append("a", "", {{"href", "https://www.liu.se"}});
+        liu.append("img", "", makeImg(":/images/liu-white-crop.svg", 60));
 
-        auto kth = p.append("a", "", {{"href", "http://www.kth.se"}});
-        kth.append("img", "", makeImg(":/images/kth.png", 50));
+        auto uulm = p.append("a", "", {{"href", "https://www.uni-ulm.de/en/"}});
+        uulm.append("img", "", makeImg(":/images/uulm.svg", 60));
 
-        auto serc = p.append("a", "", {{"href", "http://www.e-science.se"}});
-        serc.append("img", "", makeImg(":/images/serc.png", 50));
+        auto kth = p.append("a", "", {{"href", "https://www.kth.se"}});
+        kth.append("img", "", makeImg(":/images/kth.svg", 60));
 
-        auto uulm = p.append("a", "", {{"href", "http://www.uni-ulm.de/en/"}});
-        uulm.append("img", "", makeImg(":/images/uulm.png", 50));
+        auto serc = p.append("a", "", {{"href", "https://www.e-science.se"}});
+        serc.append("img", "", makeImg(":/images/serc.svg", 60));
 
         auto elliit = p.append("a", "", {{"href", "https://old.liu.se/elliit?l=en"}});
-        elliit.append("img", "", makeImg(":/images/elliit.png", 50));
+        elliit.append("img", "", makeImg(":/images/elliit.svg", 60));
+
+        auto vr = p.append("a", "", {{"href", "https://www.vr.se/english.html"}});
+        vr.append("img", "", makeImg(":images/vr.svg", 60));
+
+        auto dfg = p.append("a", "", {{"href", "https://www.dfg.de/en/index.jsp"}});
+        dfg.append("img", "", makeImg(":images/dfg.svg", 60));
+
+        auto bmbf = p.append("a", "", {{"href", "https://www.bmbf.de"}});
+        bmbf.append("img", "", makeImg(":images/bmbf-white.svg", 60));
     }
     {
         const auto& bi = syscap.getBuildInfo();
