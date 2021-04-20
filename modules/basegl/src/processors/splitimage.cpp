@@ -132,8 +132,6 @@ void SplitImage::process() {
         utilgl::singleDrawImagePlaneRect();
         shader->deactivate();
     } else {
-        utilgl::GlBoolState scissor(GL_SCISSOR_TEST, GL_TRUE);
-
         const ivec2 dims(outport_.getDimensions());
 
         ivec4 viewport0;
@@ -149,8 +147,6 @@ void SplitImage::process() {
         }
 
         auto renderPort = [&](const ImageInport& inport, const auto& viewport) {
-            utilgl::ScissorState scissor(viewport);
-
             TextureUnit colorUnit, depthUnit, pickingUnit;
             TextureUnitContainer additionalColorUnits;
             Shader* shader = nullptr;
@@ -181,9 +177,14 @@ void SplitImage::process() {
                 shader = SharedOpenGLResources::getPtr()->getNoiseShader();
             }
 
+            glEnable(GL_SCISSOR_TEST);
+            utilgl::ScissorState scissorviewport(viewport);
+
             shader->activate();
             utilgl::singleDrawImagePlaneRect();
             shader->deactivate();
+
+            glDisable(GL_SCISSOR_TEST);
         };
 
         renderPort(inport0_, viewport0);
