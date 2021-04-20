@@ -87,8 +87,9 @@ public:
     /**
      * @brief Set which of the added animations that should be MainAnimation.
      * The AnimationController in MainAnimation will notify its observers of the animation change.
-     * 
-     * @throws std::out_of_range exception if index is greater than or equal to WorkspaceAnimations::size 
+     *
+     * @throws std::out_of_range exception if index is greater than or equal to
+     * WorkspaceAnimations::size
      */
     void setMainAnimationIndex(size_t index);
     size_t getMainAnimationIndex() const;
