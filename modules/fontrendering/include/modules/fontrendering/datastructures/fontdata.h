@@ -51,7 +51,7 @@ public:
     virtual float getLineSpacing() const override;
     virtual vec2 getAnchorPos() const override;
 
-    std::string fontFace = util::getDefaultFontPath() + "/Montserrat-Medium.otf";
+    std::string fontFace = font::getFont(font::FontType::Default);
     int fontSize = 14;
     float lineSpacing = 0.0f;
     vec2 anchorPos = vec2(-1.0f);

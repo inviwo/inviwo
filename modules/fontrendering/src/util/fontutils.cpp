@@ -33,12 +33,15 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <algorithm>
+#include <tuple>
+#include <fmt/format.h>
 
 namespace inviwo {
 
-namespace util {
+namespace font {
 
 std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::string& fontPath) {
     const std::vector<std::string> supportedExt = {"ttf", "otf", "cff", "pcf"};
@@ -91,6 +94,29 @@ std::string getDefaultFontPath() {
            "/fonts";
 }
 
-}  // namespace util
+std::string getFont(FontType type, FullPath path) {
+    const auto& [name, ext] = [type]() -> std::pair<std::string, std::string> {
+        switch (type) {
+            case FontType::Default:
+                return {"OpenSans-Semibold", "ttf"};
+            case FontType::Bold:
+                return {"OpenSans-Bold", "ttf"};
+            case FontType::Caption:
+                return {"OpenSans-Semibold", "ttf"};
+            case FontType::Label:
+                return {"OpenSans-Regular", "ttf"};
+            default:
+                return {"OpenSans-Semibold", "ttf"};
+        }
+    }();
+
+    if (path == FullPath::Yes) {
+        return fmt::format("{}/{}.{}", getDefaultFontPath(), name, ext);
+    }
+
+    return name;
+}
+
+}  // namespace font
 
 }  // namespace inviwo

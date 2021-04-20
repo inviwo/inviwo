@@ -54,12 +54,12 @@ AxisStyleProperty::AxisStyleProperty(const std::string& identifier, const std::s
 
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 
-    for (auto font : util::getAvailableFonts()) {
+    for (auto font : font::getAvailableFonts()) {
         auto name = filesystem::getFileNameWithoutExtension(font.second);
         // use the file name w/o extension as identifier
         fontFace_.addOption(name, font.first, font.second);
     }
-    fontFace_.setSelectedIdentifier("Montserrat-Medium");
+    fontFace_.setSelectedIdentifier(font::getFont(font::FontType::Label));
     fontFace_.setCurrentStateAsDefault();
     fontSize_.setSemantics(PropertySemantics("Fontsize"));
     color_.setSemantics(PropertySemantics::Color);

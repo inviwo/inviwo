@@ -45,7 +45,7 @@ FontProperty::FontProperty(const std::string& identifier, const std::string& dis
     , fontSize_("fontSize", "Font Size", size, 0, 144, 1)
     , lineSpacing_("lineSpacing", "Line Spacing", lineSpacing, -1.0f, 2.0f)
     , anchorPos_("anchor", "Anchor", anchorPos, vec2(-1.5f), vec2(1.5f), vec2(0.01f)) {
-    auto fonts = util::getAvailableFonts();
+    auto fonts = font::getAvailableFonts();
 
     for (auto font : fonts) {
         auto name = filesystem::getFileNameWithoutExtension(font.second);
@@ -64,8 +64,8 @@ FontProperty::FontProperty(const std::string& identifier, const std::string& dis
 
 FontProperty::FontProperty(const std::string& identifier, const std::string& displayName,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : FontProperty(identifier, displayName, "Montserrat-Medium", 14, 0.0f, vec2{-1.0f},
-                   invalidationLevel, semantics) {}
+    : FontProperty(identifier, displayName, font::getFont(font::FontType::Default), 14, 0.0f,
+                   vec2{-1.0f}, invalidationLevel, semantics) {}
 
 FontProperty::FontProperty(const FontProperty& rhs)
     : CompositeProperty(rhs)
