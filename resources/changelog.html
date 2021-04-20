@@ -26,6 +26,26 @@
 </style>
 </head>
 <body>
+<h2>2021-04-19 Font changes</h2>
+<ul>
+<li>namespace in <code>fontutils.h</code> changed to <code>font</code> (previously <code>util</code>) and added a function to query the default type faces (<code>std::string font::getFont(font::FontType type, font::FullPath path)</code>)</li>
+<li>Default font changed to OpenSans semibold</li>
+<li>Added Lato typeface by Łukasz Dziedzic</li>
+</ul>
+<h2>2021-03-18 Nifti loader, WebBrowser zoom</h2>
+<p>Added support for vector data to the Nifti loader (up to vec4).<br>
+The <code>WebBrowserProcessor</code> now features a seamless zoom for enlarging/shrinking web contents..</p>
+<h2>2021-02-15 OpenGL 32bit float depth texture, Qt Widgets performance</h2>
+<p>Depth layers of <code>ImageGL</code> now use 32bit float depth textures by default instead of 24bit int.<br>
+Improved performance in the Qt property lists by disabling and enabling layouting when doing lots of changes. <code>PropertyOwner</code> got <code>clear()</code> and <code>empty()</code> methods.</p>
+<h2>2021-01-28 TF editor update and TF presets</h2>
+<p>The functionality of the TF editor was extended and now includes a simplification and more transformations (context menu: <code>Simplify</code> and <code>Transform</code>).<br>
+TF presets, accessible via the context menu, are shown along with a preview. ColorBrewer color palettes can also be directly accessed and also include a utility function to create a ColorBrewer palette with offsets or more/less colors (context menu: ColorBrewer palette, <code>Generate...</code>).</p>
+<h2>2020-12-16 OpenGL Shader refactoring</h2>
+<p>The constructor of a Shader now takes a specific type <code>Shader::Build</code> as argument for indicating whether the shader should be compiled and linked immediately.<br>
+When using a bool argument, you will see a deprecation warning and should consider using <code>Shader::Build::Yes</code> or <code>No</code> instead.</p>
+<h2>2020-12-10 Fixes for Qt6 and improved syntax highlighting</h2>
+<p>The Qt codebase of Inviwo was updated toward supporting Qt6. The syntax highlighting in the Python and GLSL editors was refactored and improved.</p>
 <h2>2020-11-10 Improved Filtering in Processor List Widget</h2>
 <p>Filtering in the Processor List Widget is now based on matching substrings (space is the separator). For example, searching for <code>Vol Source</code> will return <code>Volume Source</code>, <code>Volume Sequence Source</code>, and <code>Image Stack Volume Source</code>.<br>
 This also enables searching for processor names and tags at the same time, e.g. <code>Slice GL</code>.</p>
