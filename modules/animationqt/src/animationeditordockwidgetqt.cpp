@@ -45,13 +45,13 @@
 #include <modules/animation/animationcontroller.h>
 #include <modules/animation/datastructures/controlkeyframe.h>
 #include <modules/animation/datastructures/controlkeyframesequence.h>
-#include <modules/animation/workspaceanimations.h>
 
 #include <modules/animationqt/widgets/keyframewidgetqt.h>
 #include <modules/animationqt/widgets/keyframesequencewidgetqt.h>
 #include <modules/animationqt/widgets/trackwidgetqt.h>
 #include <modules/animationqt/animationeditorqt.h>
 #include <modules/animationqt/animationviewqt.h>
+#include <modules/animationqt/workspaceanimationsmodel.h>
 
 #include <modules/animationqt/sequenceeditor/sequenceeditorpanel.h>
 #include <modules/animationqt/animationlabelviewqt.h>
@@ -230,11 +230,10 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
         animationsList_->setInsertPolicy(QComboBox::InsertAtCurrent);
         animationsList_->setEditable(true);
         animationsList_->setModel(new AnimationsModel(animations_, animationsList_));
-        animationsList_->setCurrentIndex(animations_.getMainAnimationIndex());
+        animationsList_->setCurrentIndex(static_cast<int>(animations_.getMainAnimationIndex()));
         connect(animationsList_, QOverload<int>::of(&QComboBox::currentIndexChanged),
                 [=](int index) {
                     if (index >= 0) {
-                        auto oldIndex = animations_.getMainAnimationIndex();
                         animations_.setMainAnimationIndex(index);
                     }
                 });

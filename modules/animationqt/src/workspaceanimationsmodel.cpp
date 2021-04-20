@@ -52,8 +52,8 @@ inline Qt::ItemFlags AnimationsModel::flags(const QModelIndex& index) const {
         return QAbstractListModel::flags(index) | Qt::ItemIsEditable;
     }
 }
-inline QVariant AnimationsModel::headerData(int section, Qt::Orientation orientation,
-                                            int role) const {
+inline QVariant AnimationsModel::headerData([[maybe_unused]] int section, [[maybe_unused]] Qt::Orientation orientation,
+                                            [[maybe_unused]] int role) const {
     return "Animations";
 }
 inline int AnimationsModel::rowCount(const QModelIndex& parent) const {

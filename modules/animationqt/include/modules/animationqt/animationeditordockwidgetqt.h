@@ -29,7 +29,6 @@
 #pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
-#include <modules/animationqt/workspaceanimationsmodel.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <modules/qtwidgets/inviwodockwidget.h>
@@ -51,6 +50,7 @@ class AnimationViewQt;
 class SequenceEditorPanel;
 class TrackWidgetQtFactory;
 class SequenceEditorFactory;
+class WorkspaceAnimations;
 
 class IVW_MODULE_ANIMATIONQT_API AnimationEditorDockWidgetQt : public InviwoDockWidget,
                                                                public AnimationControllerObserver {

@@ -151,7 +151,7 @@ void WorkspaceAnimations::setMainAnimationIndex(size_t index) {
     mainAnimation_.set(anim);
 }
 
-inline size_t WorkspaceAnimations::getMainAnimationIndex() const { return mainAnimationIdx_; }
+size_t WorkspaceAnimations::getMainAnimationIndex() const { return mainAnimationIdx_; }
 
 MainAnimation& WorkspaceAnimations::getMainAnimation() { return mainAnimation_; }
 

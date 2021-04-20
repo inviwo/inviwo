@@ -43,10 +43,6 @@ namespace inviwo {
 namespace animation {
 
 class IVW_MODULE_ANIMATIONQT_API AnimationsModel : public QAbstractListModel {
-#include <warn/push>
-#include <warn/ignore/all>
-    // Q_OBJECT
-#include <warn/pop>
 public:
     AnimationsModel(WorkspaceAnimations& animations, QObject* parent = 0);
     Qt::ItemFlags flags(const QModelIndex& index) const override;
