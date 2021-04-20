@@ -73,7 +73,7 @@ WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManage
     });
 }
 
-Animation& animation::WorkspaceAnimations::get(size_t index) { return animations_[index]; }
+Animation& animation::WorkspaceAnimations::get(size_t index) { return animations_.at(index); }
 
 std::vector<Animation*> WorkspaceAnimations::get(std::string_view name) {
     std::vector<Animation*> animations;
@@ -85,7 +85,7 @@ std::vector<Animation*> WorkspaceAnimations::get(std::string_view name) {
     return animations;
 }
 
-std::string_view WorkspaceAnimations::getName(size_t index) { return names_[index]; }
+std::string_view WorkspaceAnimations::getName(size_t index) { return names_.at(index); }
 
 Animation& WorkspaceAnimations::add(std::string_view name) {
     animations_.emplace_back(Animation(&animationManager_));
@@ -146,8 +146,9 @@ void WorkspaceAnimations::setName(size_t index, std::string_view newName) {
 }
 
 void WorkspaceAnimations::setMainAnimationIndex(size_t index) {
+    Animation& anim = animations_.at(mainAnimationIdx_);
     mainAnimationIdx_ = index;
-    mainAnimation_.set(animations_[mainAnimationIdx_]);
+    mainAnimation_.set(anim);
 }
 
 inline size_t WorkspaceAnimations::getMainAnimationIndex() const { return mainAnimationIdx_; }

@@ -45,6 +45,7 @@
 #include <modules/animation/animationcontroller.h>
 #include <modules/animation/datastructures/controlkeyframe.h>
 #include <modules/animation/datastructures/controlkeyframesequence.h>
+#include <modules/animation/workspaceanimations.h>
 
 #include <modules/animationqt/widgets/keyframewidgetqt.h>
 #include <modules/animationqt/widgets/keyframesequencewidgetqt.h>
