@@ -76,6 +76,7 @@ void SplitterRenderer::render(splitter::Direction direction, float pos, size2_t 
     }
 
     currentDirection_ = direction;
+    const splitter::Style style = settings_.get().getStyle();
 
     float lineWidth = 0.0f;
     float handleWidth = 0.0f;
@@ -84,7 +85,7 @@ void SplitterRenderer::render(splitter::Direction direction, float pos, size2_t 
 
     const float width = settings_.get().getWidth();
 
-    switch (settings_.get().getStyle()) {
+    switch (style) {
         case splitter::Style::Handle:
             lineWidth = width / 3.0f;
             handleWidth = width;
@@ -94,8 +95,11 @@ void SplitterRenderer::render(splitter::Direction direction, float pos, size2_t 
             lineWidth = width;
             handleWidth = width * 0.6f;
             break;
-        case splitter::Style::Invisible:
+        case splitter::Style::Line:
+            lineWidth = width;
             drawHandle = false;
+            break;
+        case splitter::Style::Invisible:
             break;
         default:
             break;
@@ -141,24 +145,30 @@ void SplitterRenderer::render(splitter::Direction direction, float pos, size2_t 
     shader_.setUniform("trafo", m);
     drawer.draw();
 
-    if (drawHandle) {
+    if (style != splitter::Style::Invisible) {
         // draw background line
+        const vec4 lineColor = (style == splitter::Style::Line)
+                                   ? settings_.get().getColor()
+                                   : settings_.get().getBackgroundColor();
+
         shader_.setUniform("pickingEnabled", false);
-        shader_.setUniform("color", settings_.get().getBackgroundColor());
+        shader_.setUniform("color", lineColor);
         shader_.setUniform("lineWidth", lineWidth);
         shader_.setUniform("trafo", m);
         drawer.draw();
 
-        shader_.setUniform("trafo", mHandle);
-        // draw handle border
-        if (drawBorder) {
-            shader_.setUniform("lineWidth", handleWidth + 4.0f);
+        if (drawHandle) {
+            shader_.setUniform("trafo", mHandle);
+            // draw handle border
+            if (drawBorder) {
+                shader_.setUniform("lineWidth", handleWidth + 4.0f);
+                drawer.draw();
+            }
+            // draw handle
+            shader_.setUniform("lineWidth", handleWidth);
+            shader_.setUniform("color", settings_.get().getColor());
             drawer.draw();
         }
-        // draw handle
-        shader_.setUniform("lineWidth", handleWidth);
-        shader_.setUniform("color", settings_.get().getColor());
-        drawer.draw();
     }
     shader_.deactivate();
 

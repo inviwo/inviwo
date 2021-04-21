@@ -37,7 +37,7 @@ namespace inviwo {
 namespace splitter {
 
 enum class Direction { Vertical, Horizontal };
-enum class Style { Handle, Divider, Invisible };
+enum class Style { Handle, Divider, Line, Invisible };
 
 }  // namespace splitter
 

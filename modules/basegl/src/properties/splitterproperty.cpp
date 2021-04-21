@@ -41,6 +41,7 @@ SplitterProperty::SplitterProperty(const std::string& identifier, const std::str
     , style_("style", "Style",
              {{"handle", "Handle", splitter::Style::Handle},
               {"divider", "Divider", splitter::Style::Divider},
+              {"line", "Line", splitter::Style::Line},
               {"invisible", "Invisible", splitter::Style::Invisible}})
     , color_("color", "Color", util::ordinalColor(0.71f, 0.81f, 0.85f, 1.0f))
     , bgColor_("bgColor", "Background Color", util::ordinalColor(0.27f, 0.3f, 0.31f, 1.0f))
