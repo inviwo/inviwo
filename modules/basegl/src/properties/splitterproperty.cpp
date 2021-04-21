@@ -1,0 +1,90 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2021 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+#include <modules/basegl/properties/splitterproperty.h>
+
+namespace inviwo {
+
+const std::string SplitterProperty::classIdentifier = "org.inviwo.SplitterProperty";
+std::string SplitterProperty::getClassIdentifier() const { return classIdentifier; }
+
+SplitterProperty::SplitterProperty(const std::string& identifier, const std::string& displayName,
+                                   bool checked, splitter::Style style,
+                                   InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : BoolCompositeProperty(identifier, displayName, checked, invalidationLevel, semantics)
+    , style_("style", "Style",
+             {{"handle", "Handle", splitter::Style::Handle},
+              {"divider", "Divider", splitter::Style::Divider},
+              {"invisible", "Invisible", splitter::Style::Invisible}})
+    , color_("color", "Color", util::ordinalColor(0.71f, 0.81f, 0.85f, 1.0f))
+    , bgColor_("bgColor", "Background Color", util::ordinalColor(0.27f, 0.3f, 0.31f, 1.0f))
+    , hoverColor_("hoverColor", "Hover Color", util::ordinalColor(1.0f, 0.666f, 0.0f, 1.0f))
+    , length_("length", "Length (pixel)", 75.0f, 0.0f, 200.0f, 1.0f)
+    , width_("width", "Width (pixel)", 9.0f, 0.0f, 50.0f, 0.25f)
+    , triSize_("triSize", "Triangle Size", 10.0f, 0.0f, 50.0f) {
+
+    length_.setSemantics(PropertySemantics("SpinBox"));
+    width_.setSemantics(PropertySemantics("SpinBox"));
+    triSize_.setSemantics(PropertySemantics("SpinBox"));
+
+    addProperties(style_, color_, bgColor_, hoverColor_, length_, width_, triSize_);
+}
+
+SplitterProperty::SplitterProperty(const SplitterProperty& rhs)
+    : BoolCompositeProperty(rhs)
+    , style_(rhs.style_)
+    , color_(rhs.color_)
+    , bgColor_(rhs.bgColor_)
+    , hoverColor_(rhs.hoverColor_)
+    , length_(rhs.length_)
+    , width_(rhs.width_)
+    , triSize_(rhs.triSize_) {
+
+    addProperties(style_, color_, bgColor_, hoverColor_, length_, width_, triSize_);
+}
+
+SplitterProperty* SplitterProperty::clone() const { return new SplitterProperty(*this); }
+
+bool SplitterProperty::enabled() const { return isChecked(); }
+
+splitter::Style SplitterProperty::getStyle() const { return style_; }
+
+vec4 SplitterProperty::getColor() const { return color_; }
+
+vec4 SplitterProperty::getBackgroundColor() const { return bgColor_; }
+
+vec4 SplitterProperty::getHoverColor() const { return hoverColor_; }
+
+float SplitterProperty::getLength() const { return length_; }
+
+float SplitterProperty::getWidth() const { return width_; }
+
+float SplitterProperty::getTriangleSize() const { return triSize_; }
+
+}  // namespace inviwo
