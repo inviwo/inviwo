@@ -76,4 +76,15 @@ std::string MouseInteractionEvent::buttonName() const {
     return ss.str();
 }
 
+void MouseInteractionEvent::setMouseCursor(MouseCursor cursor) const {
+    if (mousecursor_) mousecursor_(cursor);
+}
+
+void MouseInteractionEvent::setMouseCursorCallback(MouseCursorCallback callback) {
+    mousecursor_ = callback;
+}
+auto MouseInteractionEvent::getMouseCursorCallback() const -> const MouseCursorCallback& {
+    return mousecursor_;
+}
+
 }  // namespace inviwo

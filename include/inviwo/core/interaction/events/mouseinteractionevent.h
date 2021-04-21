@@ -32,8 +32,11 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/interaction/events/mousebuttons.h>
+#include <inviwo/core/interaction/events/mousecursors.h>
 
 #include <inviwo/core/util/glmvec.h>
+
+#include <functional>
 
 namespace inviwo {
 
@@ -99,6 +102,21 @@ public:
 
     std::string buttonName() const;
 
+    /**
+     * Change the current mouse cursor using the optionally set mouse cursor callback.
+     * If no mouse cursor callback is set, the function does nothing.
+     */
+    void setMouseCursor(MouseCursor cursor) const;
+
+    using MouseCursorCallback = std::function<void(MouseCursor)>;
+    /**
+     * Set a mouse cursor call back function. The function should change the mouse cursor with the
+     * one given cursor. This function is usually called by the originating event canvas, and not
+     * any regular user code.
+     */
+    void setMouseCursorCallback(MouseCursorCallback callback);
+    const MouseCursorCallback& getMouseCursorCallback() const;
+
 private:
     MouseButtons buttonState_;
 
@@ -106,6 +124,8 @@ private:
     dvec2 position_;
     uvec2 canvasSize_;
     double depth_;  ///< Depth in normalized device coordinates [-1 1].
+
+    MouseCursorCallback mousecursor_;
 };
 
 }  // namespace inviwo

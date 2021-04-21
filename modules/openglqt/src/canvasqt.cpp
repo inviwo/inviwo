@@ -43,6 +43,7 @@
 #include <modules/openglqt/hiddencanvasqt.h>
 #include <modules/qtwidgets/eventconverterqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/mousecursorutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -558,6 +559,7 @@ void CanvasQt::propagateEvent(MouseInteractionEvent* e) {
         // while)
         toolTipText_ = tooltip;
     });
+    e->setMouseCursorCallback([this](MouseCursor c) -> void { setCursor(util::toCursorShape(c)); });
 
     CanvasQOpenGLWidget::propagateEvent(e);
 }

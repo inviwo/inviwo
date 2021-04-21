@@ -45,6 +45,7 @@ set(HEADER_FILES
     include/modules/qtwidgets/eventconverterqt.h
     include/modules/qtwidgets/inviwoqtutils.h
     include/modules/qtwidgets/keyboardutils.h
+    include/modules/qtwidgets/mousecursorutils.h
     include/modules/qtwidgets/labelgraphicsitem.h
     include/modules/qtwidgets/numberlineedit.h
     include/modules/qtwidgets/ordinalbasewidget.h
@@ -109,6 +110,7 @@ set(SOURCE_FILES
     src/inviwoqtutils.cpp
     src/inviwowidgetsqt.cpp
     src/keyboardutils.cpp
+    src/mousecursorutils.cpp
     src/labelgraphicsitem.cpp
     src/lightpositionwidgetqt.cpp
     src/lineeditqt.cpp

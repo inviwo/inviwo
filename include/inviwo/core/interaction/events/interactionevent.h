@@ -61,7 +61,7 @@ public:
     using ToolTipCallback = std::function<void(const std::string&)>;
     /**
      * Set a tool tip call back function. The function should display a tool tip with the given
-     * string at the position if of the event. This function is usually called by the originating
+     * string at the position of the event. This function is usually called by the originating
      * event canvas, and not any regular user code.
      */
     void setToolTipCallback(ToolTipCallback callback);
