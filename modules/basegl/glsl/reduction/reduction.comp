@@ -1,0 +1,92 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2021 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+uniform sampler3D inputTexture;
+
+writeonly uniform image3D outputTexture;
+
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+void main() {
+    ivec3 outputPosition = ivec3(gl_GlobalInvocationID);
+    ivec3 samplePosition000 = outputPosition * ivec3(2, 2, 2);
+    ivec3 samplePosition001 = samplePosition000 + ivec3(0, 0, 1);
+    ivec3 samplePosition010 = samplePosition000 + ivec3(0, 1, 0);
+    ivec3 samplePosition011 = samplePosition000 + ivec3(0, 1, 1);
+    ivec3 samplePosition100 = samplePosition000 + ivec3(1, 0, 0);
+    ivec3 samplePosition101 = samplePosition000 + ivec3(1, 0, 1);
+    ivec3 samplePosition110 = samplePosition000 + ivec3(1, 1, 0);
+    ivec3 samplePosition111 = samplePosition000 + ivec3(1, 1, 1);
+    
+    vec4 val = vec4(0);
+
+// Min operator
+#if OPERATOR == 0
+    // Init with infinity
+    val = vec4(1.0 / 0.0);
+    
+    val = min(val, texelFetch(inputTexture, samplePosition000, 0));
+    val = min(val, texelFetch(inputTexture, samplePosition001, 0));
+    val = min(val, texelFetch(inputTexture, samplePosition010, 0));
+    val = min(val, texelFetch(inputTexture, samplePosition011, 0));
+    val = min(val, texelFetch(inputTexture, samplePosition100, 0));
+    val = min(val, texelFetch(inputTexture, samplePosition101, 0));
+    val = min(val, texelFetch(inputTexture, samplePosition110, 0));
+    val = min(val, texelFetch(inputTexture, samplePosition111, 0));
+#endif
+
+// Max operator
+#if OPERATOR == 1
+    // Init with -infinity
+    val = vec4(-1.0 / 0.0);
+    
+    val = max(val, texelFetch(inputTexture, samplePosition000, 0));
+    val = max(val, texelFetch(inputTexture, samplePosition001, 0));
+    val = max(val, texelFetch(inputTexture, samplePosition010, 0));
+    val = max(val, texelFetch(inputTexture, samplePosition011, 0));
+    val = max(val, texelFetch(inputTexture, samplePosition100, 0));
+    val = max(val, texelFetch(inputTexture, samplePosition101, 0));
+    val = max(val, texelFetch(inputTexture, samplePosition110, 0));
+    val = max(val, texelFetch(inputTexture, samplePosition111, 0));
+#endif
+
+// Sum operator
+#if OPERATOR == 2
+    val = texelFetch(inputTexture, samplePosition000, 0);
+    val = val + texelFetch(inputTexture, samplePosition001, 0);
+    val = val + texelFetch(inputTexture, samplePosition010, 0);
+    val = val + texelFetch(inputTexture, samplePosition011, 0);
+    val = val + texelFetch(inputTexture, samplePosition100, 0);
+    val = val + texelFetch(inputTexture, samplePosition101, 0);
+    val = val + texelFetch(inputTexture, samplePosition110, 0);
+    val = val + texelFetch(inputTexture, samplePosition111, 0);
+#endif
+
+    imageStore (outputTexture, outputPosition, val);
+}
