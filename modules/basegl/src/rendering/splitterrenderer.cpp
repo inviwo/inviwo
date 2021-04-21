@@ -199,10 +199,16 @@ void SplitterRenderer::handlePickingEvent(PickingEvent* e) {
         if (e->getState() == PickingState::Started) {
             // start hover
             hover_ = true;
+
+            const auto cursor = (currentDirection_ == splitter::Direction::Vertical)
+                                    ? MouseCursor::SplitH
+                                    : MouseCursor::SplitV;
+            mouseEvent->setMouseCursor(cursor);
             triggerUpdate = true;
         } else if (e->getState() == PickingState::Finished) {
             // end hover
             hover_ = false;
+            mouseEvent->setMouseCursor(MouseCursor::Arrow);
             triggerUpdate = true;
         } else if (e->getState() == PickingState::Updated) {
             if (mouseMove && (mouseEvent->buttonState() & MouseButton::Left) == MouseButton::Left) {
