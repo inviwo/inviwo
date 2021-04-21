@@ -47,31 +47,25 @@ namespace inviwo {
 SplitterRenderer::SplitterRenderer(const SplitterSettings& settings, Processor* processor)
     : settings_(settings)
     , processor_(processor)
-    , shader_("splitter.vert", "linerenderer.geom", "linerenderer.frag", Shader::Build::No)
-    , triShader_("standard.vert", "standard.frag")
+    , shader_("splitter.vert", "splitter.geom", "linerenderer.frag")
+    , triShader_("splitter.vert", "splittertriangle.geom", "standard.frag")
     , pickingMapper_(processor, 1, [&](PickingEvent* e) { handlePickingEvent(e); }) {
 
-    initializeShaders();
-
-    auto mesh = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::Strip);
-    mesh->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
-                    util::makeBuffer(std::vector<vec2>{vec2(0.0f), vec2(0.0f, 1.0f)}));
-    lineMesh_ = mesh;
+    mesh_ = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
+    mesh_->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
+                     util::makeBuffer(std::vector<vec2>{vec2(0.0f)}));
 }
 
 SplitterRenderer::SplitterRenderer(const SplitterRenderer& rhs)
     : settings_(rhs.settings_)
     , processor_(rhs.processor_)
-    , shader_("splitter.vert", "linerenderer.geom", "linerenderer.frag", Shader::Build::No)
+    , shader_("splitter.vert", "linerenderer.geom", "linerenderer.frag")
     , triShader_("standard.vert", "standard.frag")
     , pickingMapper_(processor_, 1, [&](PickingEvent* e) { handlePickingEvent(e); }) {
 
-    initializeShaders();
-
-    auto mesh = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::Strip);
-    mesh->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
-                    util::makeBuffer(std::vector<vec2>{vec2(0.0f), vec2(0.0f, 1.0f)}));
-    lineMesh_ = mesh;
+    mesh_ = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
+    mesh_->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
+                     util::makeBuffer(std::vector<vec2>{vec2(0.0f)}));
 }
 
 void SplitterRenderer::setDragAction(Callback callback) { dragAction_ = callback; }
@@ -134,17 +128,17 @@ void SplitterRenderer::render(splitter::Direction direction, float pos, size2_t 
 
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    MeshDrawerGL::DrawObject drawer(lineMesh_->getRepresentation<MeshGL>(),
-                                    lineMesh_->getDefaultMeshInfo());
+    MeshDrawerGL::DrawObject drawer(mesh_->getRepresentation<MeshGL>(),
+                                    mesh_->getDefaultMeshInfo());
 
     shader_.activate();
-    shader_.setUniform("screenDim", canvasDimsf);
-    shader_.setUniform("pickId", static_cast<uint32_t>(pickingMapper_.getPickingId(0)));
 
+    shader_.setUniform("screenDim", canvasDimsf);
     // draw picking buffer
     shader_.setUniform("pickingEnabled", true);
+    shader_.setUniform("pickId", static_cast<uint32_t>(pickingMapper_.getPickingId(0)));
     shader_.setUniform("lineWidth", width);
-    shader_.setUniform("geometry.dataToWorld", m);
+    shader_.setUniform("trafo", m);
     drawer.draw();
 
     if (drawHandle) {
@@ -152,10 +146,10 @@ void SplitterRenderer::render(splitter::Direction direction, float pos, size2_t 
         shader_.setUniform("pickingEnabled", false);
         shader_.setUniform("color", settings_.get().getBackgroundColor());
         shader_.setUniform("lineWidth", lineWidth);
-        shader_.setUniform("geometry.dataToWorld", m);
+        shader_.setUniform("trafo", m);
         drawer.draw();
 
-        shader_.setUniform("geometry.dataToWorld", mHandle);
+        shader_.setUniform("trafo", mHandle);
         // draw handle border
         if (drawBorder) {
             shader_.setUniform("lineWidth", handleWidth + 4.0f);
@@ -169,44 +163,14 @@ void SplitterRenderer::render(splitter::Direction direction, float pos, size2_t 
     shader_.deactivate();
 
     if (hover_) {
-        // rescale triangle positions from pixel coords to [-1][1]
-        mTri[0][0] /= canvasDimsf.x;
-        mTri[1][0] /= canvasDimsf.x;
-        mTri[1][1] /= canvasDimsf.y;
-        mTri[0][1] /= canvasDimsf.y;
-
-        triangleMesh_ =
-            getTriMesh(settings_.get().getTriangleSize(), settings_.get().getHoverColor());
-
-        MeshDrawerGL::DrawObject triDrawer(triangleMesh_->getRepresentation<MeshGL>(),
-                                           triangleMesh_->getDefaultMeshInfo());
         triShader_.activate();
-        triShader_.setUniform("dataToClip", mTri);
-        triDrawer.draw();
+        triShader_.setUniform("trafo", mTri);
+        triShader_.setUniform("triangleSize", settings_.get().getTriangleSize());
+        triShader_.setUniform("color", settings_.get().getHoverColor());
+        triShader_.setUniform("screenDimInv", 1.0f / canvasDimsf);
+        drawer.draw();
         triShader_.deactivate();
     }
-}
-
-std::shared_ptr<Mesh> SplitterRenderer::getTriMesh(float triangleSize, vec4 color) {
-    const float offset = 16.0f;
-    const float a = triangleSize;                         // side length of equilateral triangle
-    const float h = a * glm::root_three<float>() * 0.5f;  // height of the equilateral triangle
-
-    auto mesh = std::make_shared<Mesh>(DrawType::Triangles, ConnectivityType::None);
-    mesh->addBuffer(
-        Mesh::BufferInfo(BufferType::PositionAttrib),
-        util::makeBuffer(std::vector<vec2>{vec2(offset, a * 0.5f), vec2(offset, -a * 0.5f),
-                                           vec2(offset + h, 0.0f), vec2(-offset, -a * 0.5f),
-                                           vec2(-offset, a * 0.5f), vec2(-offset - h, 0.0f)}));
-    mesh->addBuffer(Mesh::BufferInfo(BufferType::ColorAttrib),
-                    util::makeBuffer(std::vector<vec4>{6, color}));
-
-    mesh->addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None),
-                     util::makeIndexBuffer({0, 1, 2}));
-    mesh->addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None),
-                     util::makeIndexBuffer({3, 4, 5}));
-
-    return mesh;
 }
 
 void SplitterRenderer::handlePickingEvent(PickingEvent* e) {
@@ -278,23 +242,6 @@ void SplitterRenderer::handlePickingEvent(PickingEvent* e) {
     if (triggerUpdate) {
         processor_->invalidate(InvalidationLevel::InvalidOutput);
     }
-}
-
-void SplitterRenderer::initializeShaders() {
-    shader_.onReload([this]() {
-        shader_[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY", "0");
-        shader_.build();
-        shader_.activate();
-        shader_.setUniform("roundCaps", true);
-
-        processor_->invalidate(InvalidationLevel::InvalidOutput);
-    });
-    triShader_.onReload([&]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
-
-    shader_[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY", "0");
-    shader_.build();
-    shader_.activate();
-    shader_.setUniform("roundCaps", true);
 }
 
 }  // namespace inviwo

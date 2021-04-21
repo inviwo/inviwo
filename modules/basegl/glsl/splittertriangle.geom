@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,5 +26,37 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  *********************************************************************************/
+layout(points) in;
 
-void main() {}
+layout(triangle_strip, max_vertices=6) out;
+
+uniform float triangleSize; // in pixel
+uniform float offset = 16.0f; // in pixel
+uniform vec4 color = vec4(0, 0, 0, 1);
+uniform mat4 trafo;
+uniform vec2 screenDimInv;
+
+out vec4 color_;
+
+void emit(in vec2 pos) {
+    gl_Position = trafo * vec4(pos * screenDimInv, 0, 1);
+    color_ = color;
+    EmitVertex();
+}
+
+void main() {
+    const float sqrt3half = 0.8660254037844386;
+
+    float a = triangleSize * 0.5;
+    float h = triangleSize * sqrt3half;
+
+    emit(vec2(offset, a));
+    emit(vec2(offset, -a));
+    emit(vec2(offset + h, 0));
+    EndPrimitive();
+
+    emit(vec2(-offset, -a));
+    emit(vec2(-offset, a));
+    emit(vec2(-offset - h, 0));
+    EndPrimitive();
+}

@@ -76,9 +76,7 @@ SplitImage::SplitImage()
 
     addProperties(splitDirection_, splitPosition_, splitterSettings_);
 
-    renderer_.setDragAction([this](float pos) {
-        splitPosition_.set(pos);
-    });
+    renderer_.setDragAction([this](float pos) { splitPosition_.set(pos); });
 }
 
 void SplitImage::process() {

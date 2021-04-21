@@ -47,12 +47,13 @@ SplitterProperty::SplitterProperty(const std::string& identifier, const std::str
     , hoverColor_("hoverColor", "Hover Color", util::ordinalColor(1.0f, 0.666f, 0.0f, 1.0f))
     , length_("length", "Length (pixel)", 75.0f, 0.0f, 200.0f, 1.0f)
     , width_("width", "Width (pixel)", 9.0f, 0.0f, 50.0f, 0.25f)
-    , triSize_("triSize", "Triangle Size", 10.0f, 0.0f, 50.0f) {
+    , triSize_("triSize", "Triangle Size", 10.0f, 0.0f, 50.0f, 0.5f) {
 
     length_.setSemantics(PropertySemantics("SpinBox"));
     width_.setSemantics(PropertySemantics("SpinBox"));
     triSize_.setSemantics(PropertySemantics("SpinBox"));
 
+    style_.setSelectedValue(style);
     addProperties(style_, color_, bgColor_, hoverColor_, length_, width_, triSize_);
 }
 

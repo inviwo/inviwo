@@ -70,14 +70,12 @@ public:
      *
      * @param direction   splitter orientation
      * @param pos         position of the splitter in normalized screen coordinates [0,1]
+     * @param canvasDims  dimensions of the output canvas
      */
     void render(splitter::Direction direction, float pos, size2_t canvasDims);
 
 private:
-    void initializeShaders();
     void handlePickingEvent(PickingEvent* e);
-
-    static std::shared_ptr<Mesh> SplitterRenderer::getTriMesh(float triangleSize, vec4 color);
 
     std::reference_wrapper<const SplitterSettings> settings_;
     Processor* processor_;
@@ -85,13 +83,11 @@ private:
 
     Shader shader_;
     Shader triShader_;
-    std::shared_ptr<Mesh> lineMesh_;
-    std::shared_ptr<Mesh> triangleMesh_;
+    std::shared_ptr<Mesh> mesh_;
 
     PickingMapper pickingMapper_;
     bool hover_ = false;
     splitter::Direction currentDirection_ = splitter::Direction::Vertical;
-    float currentTriangleSize_ = 0.0f;
 };
 
 }  // namespace inviwo
