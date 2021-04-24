@@ -214,11 +214,8 @@ QWidget* PropertyListFrame::create(Property* property) {
 
 void PropertyListFrame::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
     remove(processor);
-
 }
-void PropertyListFrame::onWillRemoveProperty(Property* property, size_t) {
-    remove(property);
-}
+void PropertyListFrame::onWillRemoveProperty(Property* property, size_t) { remove(property); }
 
 PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
     : InviwoDockWidget(tr("Properties"), parent, "PropertyListWidget"), app_{app} {

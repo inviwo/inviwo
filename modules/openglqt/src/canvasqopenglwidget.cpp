@@ -89,7 +89,7 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
             ungrabGesture(Qt::PinchGesture);
         }
         setAttribute(Qt::WA_AcceptTouchEvents, touch.get());
-        
+
         interactionEventMapper->handleTouch(touch.get());
         interactionEventMapper->handleGestures(gestures.get());
     };

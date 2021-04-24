@@ -76,7 +76,7 @@ public:
 private:
     virtual void onProcessorNetworkWillRemoveProcessor(Processor*) override;
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
-    
+
     QWidget* get(Processor* processor);
     QWidget* create(Processor* processor);
 

@@ -190,12 +190,11 @@ QSize NumberLineEdit::calcMinimumSize() const {
     QSize hint(minimumWidth_, lineEdit()->minimumSizeHint().height());
     QStyleOptionSpinBox opt;
     initStyleOption(&opt);
-    
+
     QSize sizeContents = style()->sizeFromContents(QStyle::CT_SpinBox, &opt, hint, this);
     // For some odd reason, sizeFromContents always includes the spinbox buttons
     if (opt.buttonSymbols == QAbstractSpinBox::NoButtons) {
-        sizeContents.setWidth(sizeContents.width() -
-                              static_cast<int>(sizeContents.height() / 1.2));
+        sizeContents.setWidth(sizeContents.width() - static_cast<int>(sizeContents.height() / 1.2));
     }
     return sizeContents;
 }

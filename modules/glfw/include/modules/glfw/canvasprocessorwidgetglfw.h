@@ -50,12 +50,11 @@ public:
 
     virtual Canvas* getCanvas() const override;
 
-
 protected:
     // CanvasProcessorWidget overrides
     virtual void propagateResizeEvent() override;
-private:
 
+private:
     // ProcessorWidget overrides
     virtual void updateVisible(bool visible) override;
     virtual void updateDimensions(ivec2) override;

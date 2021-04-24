@@ -58,8 +58,8 @@ struct PWObserver;
  *   * __On Top__ Keep the widget on top of the inviwo main window.
  *   * __Visible Layer__ The layer type to render, color, depth of picking
  *   * __Color Layer ID__ The color layer index to render
- *   * __Paths__ A list of processor ids and/or property paths, seperated by new lines to show in the
- * property list in the widget.
+ *   * __Paths__ A list of processor ids and/or property paths, seperated by new lines to show in
+ * the property list in the widget.
  *
  */
 class IVW_MODULE_OPENGLQT_API CanvasWithPropertiesProcessor : public Processor {

@@ -69,7 +69,7 @@ protected:
     virtual void moveEvent(QMoveEvent*) override;
     virtual void showEvent(QShowEvent*) override;
     virtual void hideEvent(QHideEvent*) override;
-    
+
     Processor::NameDispatcherHandle idChange_;
 };
 

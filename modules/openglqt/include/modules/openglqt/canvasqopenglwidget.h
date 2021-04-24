@@ -64,25 +64,25 @@ public:
 
     virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
                         size_t idx = 0) override;
-    
+
     virtual ContextID activeContext() const override;
     virtual ContextID contextId() const override;
     virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
-    
+
     virtual size2_t getCanvasDimensions() const override;
-    
+
     /**
      * Set a callback to be invoded on contextmeny events.
      * The callback can add more functionallity to the context menu.
      * I the function retuns true the menu will be shown, else it will be discarded.
      */
     void onContextMenu(std::function<bool(QMenu&)> callback);
-    
+
 protected:
     // inviwo::Canvas override
     virtual void releaseContext() override;
     virtual void propagateEvent(Event* e, Outport* source) override;
-    
+
     // QOpenGLWidget overrides
     virtual void initializeGL() override;
     virtual void paintGL() override;
@@ -92,7 +92,6 @@ private:
     std::function<bool(QMenu&)> contextMenuCallback_;
 
     std::string name_;
-
 };
 
 }  // namespace inviwo

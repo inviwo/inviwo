@@ -102,7 +102,7 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
 
     registerPropertyWidget<GLSLFilePropertyWidgetQt, FileProperty>(PropertySemantics::ShaderEditor);
     registerPropertyWidget<GLSLPropertyWidgetQt, StringProperty>(PropertySemantics::ShaderEditor);
-    
+
     registerProcessor<CanvasWithPropertiesProcessor>();
     registerProcessorWidget<CanvasWithPropertiesProcessorWidgetQt, CanvasWithPropertiesProcessor>();
 }

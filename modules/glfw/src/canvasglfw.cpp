@@ -103,7 +103,7 @@ CanvasGLFW::CanvasGLFW(const std::string& windowTitle, uvec2 dimensions)
         auto canvas = getCanvasGLFW(window);
         canvas->image_.reset();
         canvas->pickingController_.setPickingSource(nullptr);
-        
+
         if (canvas->onFramebufferSizeChange) canvas->onFramebufferSizeChange(ivec2(width, height));
     });
     glfwSetWindowPosCallback(glWindow_, [](GLFWwindow* window, int x, int y) {

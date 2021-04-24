@@ -214,7 +214,7 @@ IVW_MODULE_QTWIDGETS_API std::vector<std::pair<std::string, QImage>> getCanvasIm
 IVW_MODULE_QTWIDGETS_API void addImageActions(QMenu& menu, const Image& image,
                                               LayerType visibleLayer = LayerType::Color,
                                               size_t visibleIndex = 10000);
-                                              
+
 IVW_MODULE_QTWIDGETS_API void addViewActions(QMenu& menu, EventPropagator* ep);
 
 /*
@@ -246,7 +246,6 @@ struct IVW_MODULE_QTWIDGETS_API WidgetCloseEventFilter : QObject {
 
 IVW_MODULE_QTWIDGETS_API void setFullScreen(QWidget* widget, bool fullScreen);
 IVW_MODULE_QTWIDGETS_API void setOnTop(QWidget* widget, bool onTop);
-
 
 template <typename T>
 int decimals([[maybe_unused]] double inc) {

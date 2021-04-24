@@ -49,7 +49,7 @@ public:
     ProcessorWidgetQt(Processor* p);
     virtual ~ProcessorWidgetQt() = default;
 
-    using QWidget::setVisible;                
+    using QWidget::setVisible;
     virtual void setPosition(ivec2 pos) override;     // Override ProcessorWidget
     virtual void setDimensions(ivec2 dime) override;  // Override ProcessorWidget
     virtual void setFullScreen(bool fullScreen) override;

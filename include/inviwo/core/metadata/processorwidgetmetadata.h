@@ -66,19 +66,19 @@ public:
 
     void setPosition(const ivec2& pos, const ProcessorWidgetMetaDataObserver* source = nullptr);
     ivec2 getPosition() const;
-    
+
     void setDimensions(const size2_t& dim, const ProcessorWidgetMetaDataObserver* source = nullptr);
     size2_t getDimensions() const;
-    
+
     void setVisibile(bool visibility, const ProcessorWidgetMetaDataObserver* source = nullptr);
     bool isVisible() const;
-    
+
     void setFullScreen(bool fullscreen, const ProcessorWidgetMetaDataObserver* source = nullptr);
     bool isFullScreen() const;
 
     void setOnTop(bool onTop, const ProcessorWidgetMetaDataObserver* source = nullptr);
     bool isOnTop() const;
-    
+
     static const std::string CLASS_IDENTIFIER;
 
 private:

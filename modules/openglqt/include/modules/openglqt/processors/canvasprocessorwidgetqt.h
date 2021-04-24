@@ -78,7 +78,6 @@ protected:
     virtual void moveEvent(QMoveEvent*) override;
 
 private:
-
     using Super = QWidget;
     std::unique_ptr<CanvasQOpenGLWidget, std::function<void(CanvasQOpenGLWidget*)>> canvas_;
 

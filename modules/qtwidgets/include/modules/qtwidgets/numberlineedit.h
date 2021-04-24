@@ -57,7 +57,7 @@ public:
     virtual ~NumberLineEdit() override;
 
     virtual QSize sizeHint() const override;
-    
+
     virtual QSize minimumSizeHint() const override;
 
     // consider the current size of the widget in order to determine the best suitable number

@@ -47,16 +47,16 @@ public:
 
     virtual bool isVisible() const;
     virtual void setVisible(bool visible);
-    
+
     virtual glm::ivec2 getDimensions() const;
     virtual void setDimensions(ivec2);
-    
+
     virtual glm::ivec2 getPosition() const;
     virtual void setPosition(ivec2);
-    
+
     virtual bool isFullScreen() const;
     virtual void setFullScreen(bool fullscreen);
-    
+
     virtual bool isOnTop() const;
     virtual void setOnTop(bool onTop);
 

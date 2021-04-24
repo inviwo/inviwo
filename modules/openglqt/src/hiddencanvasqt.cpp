@@ -46,9 +46,7 @@
 namespace inviwo {
 
 HiddenCanvasQt::HiddenCanvasQt(std::string_view name, QSurfaceFormat format)
-    : Canvas()
-    , context_{new QOpenGLContext()}
-    , offScreenSurface_{new QOffscreenSurface()} {
+    : Canvas(), context_{new QOpenGLContext()}, offScreenSurface_{new QOffscreenSurface()} {
     context_->setFormat(format);
     offScreenSurface_->setFormat(format);
     offScreenSurface_->create();

@@ -59,7 +59,7 @@ public:
     ivec2 getWindowPosition() const;
 
     void setWindowTitle(std::string);
-    
+
     static int getVisibleWindowCount();
 
     virtual void update() override;
@@ -86,7 +86,7 @@ public:
     std::function<void(ivec2)> onPositionChange;
     std::function<void(ivec2)> onWindowSizeChange;
     std::function<void(ivec2)> onFramebufferSizeChange;
-    
+
 protected:
     void setFullScreen(bool fullscreen);
     static CanvasGLFW* getCanvasGLFW(GLFWwindow*);

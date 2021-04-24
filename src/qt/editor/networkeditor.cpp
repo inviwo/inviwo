@@ -517,9 +517,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 QAction* showAction = menu.addAction(tr("&Show Widget"));
                 showAction->setCheckable(true);
                 showAction->setChecked(widget->isVisible());
-                connect(showAction, &QAction::triggered, [widget]() {
-                    widget->setVisible(!widget->isVisible());
-                });
+                connect(showAction, &QAction::triggered,
+                        [widget]() { widget->setVisible(!widget->isVisible()); });
             }
 
             auto editName = menu.addAction(tr("Edit Name"));
