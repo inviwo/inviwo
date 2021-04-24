@@ -165,7 +165,7 @@ CanvasWithPropertiesProcessor::~CanvasWithPropertiesProcessor() = default;
 
 void CanvasWithPropertiesProcessor::process() {
     if (auto widget = static_cast<CanvasWithPropertiesProcessorWidgetQt*>(processorWidget_.get())) {
-        widget->addProperties(paths_.get());
+        widget->setProperties(paths_.get());
 
         if (widget->QMainWindow::isVisible()) {
             if (auto canvas = widget->getCanvas()) {
@@ -177,7 +177,7 @@ void CanvasWithPropertiesProcessor::process() {
 
 void CanvasWithPropertiesProcessor::doIfNotReady() {
     if (auto widget = static_cast<CanvasWithPropertiesProcessorWidgetQt*>(processorWidget_.get())) {
-        widget->addProperties(paths_.get());
+        widget->setProperties(paths_.get());
 
         if (widget->QMainWindow::isVisible()) {
             if (auto canvas = widget->getCanvas()) {

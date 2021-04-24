@@ -147,7 +147,7 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
     installEventFilter(new utilqt::WidgetCloseEventFilter(this));
 }
 
-void CanvasWithPropertiesProcessorWidgetQt::addProperties(std::string_view paths) {
+void CanvasWithPropertiesProcessorWidgetQt::setProperties(std::string_view paths) {
     bool needUpdate = false;
     util::forEachStringPart(paths, "\n", [&, i = size_t{0}](std::string_view path) mutable {
         if (i >= addedPaths_.size() || addedPaths_[i] != path) needUpdate |= true;
@@ -162,10 +162,10 @@ void CanvasWithPropertiesProcessorWidgetQt::addProperties(std::string_view paths
             auto [proc, prop] = util::splitByFirst(path, ".");
             if (auto processor = net->getProcessorByIdentifier(proc)) {
                 if (prop.empty()) {
-                    frame_->addProcessor(processor);
+                    frame_->add(processor);
                     addedPaths_.emplace_back(path);
                 } else if (auto property = processor->getPropertyByPath(prop)) {
-                    frame_->addProperty(property);
+                    frame_->add(property);
                     addedPaths_.emplace_back(path);
                 } else {
                     LogWarn("Property: " << prop << " not found in processor " << proc);

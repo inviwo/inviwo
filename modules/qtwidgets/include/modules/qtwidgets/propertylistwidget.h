@@ -63,13 +63,13 @@ public:
     virtual QSize minimumSizeHint() const override;
     virtual void paintEvent(QPaintEvent*) override;
 
-    void addProcessor(Processor* processor);
-    void hideProcessor(Processor* processor);
-    void removeProcessor(Processor* processor);
+    void add(Processor* processor);
+    void hide(Processor* processor);
+    void remove(Processor* processor);
 
-    void addProperty(Property* property);
-    void hideProperty(Property* property);
-    void removeProperty(Property* property);
+    void add(Property* property);
+    void hide(Property* property);
+    void remove(Property* property);
 
     void clear();
 
@@ -77,11 +77,11 @@ private:
     virtual void onProcessorNetworkWillRemoveProcessor(Processor*) override;
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
     
-    QWidget* getProcessor(Processor* processor);
-    QWidget* createProcessor(Processor* processor);
+    QWidget* get(Processor* processor);
+    QWidget* create(Processor* processor);
 
-    QWidget* getProperty(Property* property);
-    QWidget* createProperty(Property* property);
+    QWidget* get(Property* property);
+    QWidget* create(Property* property);
 
     QVBoxLayout* listLayout_;
     std::unordered_map<Processor*, QWidget*> processorMap_;

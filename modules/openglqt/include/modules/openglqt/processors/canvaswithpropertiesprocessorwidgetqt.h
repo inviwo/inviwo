@@ -76,7 +76,11 @@ public:
     virtual void moveEvent(QMoveEvent*) override;
     virtual void changeEvent(QEvent*) override;
 
-    void addProperties(std::string_view paths);
+    /**
+     * A list of processor ids and/or property paths, seperated by new lines to show in the
+     * property list in the widget
+     */
+    void setProperties(std::string_view paths);
 
 protected:
     using Super = QMainWindow;
@@ -84,7 +88,7 @@ protected:
     virtual void propagateResizeEvent() override;
 
     bool contextMenu(QMenu& menu);
-    
+
     // ProcessorWidget overrides
     virtual void updateVisible(bool visible) override;
     virtual void updateDimensions(ivec2) override;

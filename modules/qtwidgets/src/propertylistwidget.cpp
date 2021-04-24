@@ -96,7 +96,7 @@ void PropertyListFrame::paintEvent(QPaintEvent*) {
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
-void PropertyListFrame::addProcessor(Processor* processor) {
+void PropertyListFrame::add(Processor* processor) {
     setUpdatesEnabled(false);
     listLayout_->setEnabled(false);
     util::OnScopeExit enableUpdates([&]() {
@@ -104,17 +104,17 @@ void PropertyListFrame::addProcessor(Processor* processor) {
         setUpdatesEnabled(true);
     });
 
-    if (auto widget = getProcessor(processor)) {
+    if (auto widget = get(processor)) {
         widget->show();
     }
 }
 
-void PropertyListFrame::hideProcessor(Processor* processor) {
+void PropertyListFrame::hide(Processor* processor) {
     auto it = processorMap_.find(processor);
     if (it != processorMap_.end()) it->second->hide();
 }
 
-void PropertyListFrame::removeProcessor(Processor* processor) {
+void PropertyListFrame::remove(Processor* processor) {
     auto it = processorMap_.find(processor);
     if (it != processorMap_.end()) {
         it->second->hide();
@@ -124,7 +124,7 @@ void PropertyListFrame::removeProcessor(Processor* processor) {
     }
 }
 
-void PropertyListFrame::addProperty(Property* property) {
+void PropertyListFrame::add(Property* property) {
     setUpdatesEnabled(false);
     listLayout_->setEnabled(false);
     util::OnScopeExit enableUpdates([&]() {
@@ -132,15 +132,15 @@ void PropertyListFrame::addProperty(Property* property) {
         setUpdatesEnabled(true);
     });
 
-    if (auto widget = getProperty(property)) {
+    if (auto widget = get(property)) {
         widget->show();
     }
 }
-void PropertyListFrame::hideProperty(Property* property) {
+void PropertyListFrame::hide(Property* property) {
     auto it = propertyMap_.find(property);
     if (it != propertyMap_.end()) it->second->hide();
 }
-void PropertyListFrame::removeProperty(Property* property) {
+void PropertyListFrame::remove(Property* property) {
     auto it = propertyMap_.find(property);
     if (it != propertyMap_.end()) {
         it->second->hide();
@@ -166,17 +166,17 @@ void PropertyListFrame::clear() {
     propertyMap_.clear();
 }
 
-QWidget* PropertyListFrame::getProcessor(Processor* processor) {
+QWidget* PropertyListFrame::get(Processor* processor) {
     // check if processor widget has been already generated
     auto it = processorMap_.find(processor);
     if (it != processorMap_.end()) {
         return it->second;
     } else {
-        return createProcessor(processor);
+        return create(processor);
     }
 }
 
-QWidget* PropertyListFrame::createProcessor(Processor* processor) {
+QWidget* PropertyListFrame::create(Processor* processor) {
     // create property widget and store it in the map
     auto widget = new CollapsibleGroupBoxWidgetQt(processor);
     widget->hide();
@@ -189,16 +189,16 @@ QWidget* PropertyListFrame::createProcessor(Processor* processor) {
     return widget;
 }
 
-QWidget* PropertyListFrame::getProperty(Property* property) {
+QWidget* PropertyListFrame::get(Property* property) {
     // check if processor widget has been already generated
     auto it = propertyMap_.find(property);
     if (it != propertyMap_.end()) {
         return it->second;
     } else {
-        return createProperty(property);
+        return create(property);
     }
 }
-QWidget* PropertyListFrame::createProperty(Property* property) {
+QWidget* PropertyListFrame::create(Property* property) {
     // create property widget and store it in the map
     if (auto widget = static_cast<PropertyWidgetQt*>(factory_->create(property).release())) {
         widget->hide();
@@ -213,11 +213,11 @@ QWidget* PropertyListFrame::createProperty(Property* property) {
 }
 
 void PropertyListFrame::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
-    removeProcessor(processor);
+    remove(processor);
 
 }
 void PropertyListFrame::onWillRemoveProperty(Property* property, size_t) {
-    removeProperty(property);
+    remove(property);
 }
 
 PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
@@ -256,16 +256,16 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
 PropertyListWidget::~PropertyListWidget() = default;
 
 void PropertyListWidget::addProcessorProperties(Processor* processor) {
-    frame_->addProcessor(processor);
+    frame_->add(processor);
     QWidget::raise();  // Put this tab in front
 }
 
 void PropertyListWidget::removeProcessorProperties(Processor* processor) {
-    frame_->hideProcessor(processor);
+    frame_->hide(processor);
 }
 
 void PropertyListWidget::removeAndDeleteProcessorProperties(Processor* processor) {
-    frame_->removeProcessor(processor);
+    frame_->remove(processor);
 }
 
 bool PropertyListWidget::event(QEvent* e) {
