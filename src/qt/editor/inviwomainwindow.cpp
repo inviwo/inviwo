@@ -935,14 +935,42 @@ void InviwoMainWindow::addActions() {
                 if (!widgetProcessors.empty()) windowMenuItem->addSeparator();
 
                 for (const auto p : widgetProcessors) {
-                    auto action =
-                        windowMenuItem->addAction(QString("%1 (%2)")
-                                                      .arg(utilqt::toQString(p->getDisplayName()))
-                                                      .arg(utilqt::toQString(p->getIdentifier())));
-                    action->setCheckable(true);
-                    action->setChecked(p->getProcessorWidget()->isVisible());
-                    QObject::connect(action, &QAction::toggled, this, [p](bool toggle) {
+                    auto item =
+                        windowMenuItem->addMenu(QString("%1 (%2)")
+                                                    .arg(utilqt::toQString(p->getDisplayName()))
+                                                    .arg(utilqt::toQString(p->getIdentifier())));
+                    auto visible = item->addAction("Visible");
+                    visible->setCheckable(true);
+                    visible->setChecked(p->getProcessorWidget()->isVisible());
+                    QObject::connect(visible, &QAction::toggled, this, [p](bool toggle) {
                         p->getProcessorWidget()->setVisible(toggle);
+                    });
+
+                    auto opTop = item->addAction("On Top");
+                    opTop->setCheckable(true);
+                    opTop->setChecked(p->getProcessorWidget()->isOnTop());
+                    QObject::connect(opTop, &QAction::toggled, this, [p](bool toggle) {
+                        p->getProcessorWidget()->setOnTop(toggle);
+                    });
+
+                    auto fullScreen = item->addAction("Full Screen");
+                    fullScreen->setCheckable(true);
+                    fullScreen->setChecked(p->getProcessorWidget()->isFullScreen());
+                    QObject::connect(fullScreen, &QAction::toggled, this, [p](bool toggle) {
+                        p->getProcessorWidget()->setFullScreen(toggle);
+                    });
+
+                    auto raise = item->addAction("Raise");
+                    QObject::connect(raise, &QAction::triggered, this, [p]() {
+                        if (auto w = dynamic_cast<QWidget*>(p->getProcessorWidget())) {
+                            w->raise();
+                        }
+                    });
+                    auto lower = item->addAction("Lower");
+                    QObject::connect(lower, &QAction::triggered, this, [p]() {
+                        if (auto w = dynamic_cast<QWidget*>(p->getProcessorWidget())) {
+                            w->lower();
+                        }
                     });
                 }
 
@@ -1236,7 +1264,7 @@ void InviwoMainWindow::showWelcomeScreen() {
     setUpdatesEnabled(false);
     // The order of hiding and showing widget here is important. Need to hide the dockwidgets first
     // or they will end up being included in the size of the welcome app window even if the are not
-    // visible. 
+    // visible.
     for (auto dw : findChildren<QDockWidget*>()) {
         if (dw->isVisible() && !dw->isFloating()) {
             dw->hide();

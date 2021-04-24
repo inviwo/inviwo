@@ -72,6 +72,6 @@ void ProcessorWidget::onProcessorWidgetFullScreenChange(ProcessorWidgetMetaData*
     updateFullScreen(metaData_->isFullScreen());
 }
 void ProcessorWidget::onProcessorWidgetOnTopChange(ProcessorWidgetMetaData*) {
-    updateOnTop(metaData_->isFullScreen());
+    updateOnTop(metaData_->isOnTop());
 }
 }  // namespace inviwo

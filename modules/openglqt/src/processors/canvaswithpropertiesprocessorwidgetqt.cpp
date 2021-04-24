@@ -138,7 +138,12 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
         utilqt::setOnTop(this, isOnTop() && state == Qt::ApplicationActive);
     });
 
+    if (CanvasProcessorWidget::isFullScreen()) {
+        setWindowState(windowState() | Qt::WindowFullScreen);
+    }
+
     Super::setVisible(CanvasProcessorWidget::isVisible());
+
     installEventFilter(new utilqt::WidgetCloseEventFilter(this));
 }
 
@@ -195,7 +200,7 @@ void CanvasWithPropertiesProcessorWidgetQt::moveEvent(QMoveEvent* event) {
 
 void CanvasWithPropertiesProcessorWidgetQt::changeEvent(QEvent* event) {
     if (event->type() == QEvent::WindowStateChange) {
-        CanvasProcessorWidget::setFullScreen(windowState() == Qt::WindowFullScreen);
+        CanvasProcessorWidget::setFullScreen(windowState().testFlag(Qt::WindowFullScreen));
     }
     Super::changeEvent(event);
 }
