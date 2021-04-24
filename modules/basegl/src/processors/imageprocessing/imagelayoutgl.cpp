@@ -171,6 +171,7 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
             return (prev <= 0 && current > 0) || (prev > 0 && current <= 0);
         };
 
+        bool updated = false;
         for (size_t i = 0; i < minNum; ++i) {
             ResizeEvent e(uvec2(viewManager_[i].size));
             multiinport_.propagateEvent(&e, outports[i]);
@@ -178,18 +179,24 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
             if (i < prevViews.size() &&
                 (changedFromZeroDim(prevViews[i].size.x, viewManager_[i].size.x) ||
                  changedFromZeroDim(prevViews[i].size.y, viewManager_[i].size.y))) {
-                multiinport_.readyUpdate();
-                notifyObserversActiveConnectionsChange(this);
+                updated = true;
             } else if (glm::any(glm::lessThanEqual(viewManager_[i].size, ivec2(0)))) {
                 // New view has zero size
-                multiinport_.readyUpdate();
-                notifyObserversActiveConnectionsChange(this);
+                updated = true;
             }
+        }
+        for (size_t i = minNum; i < outports.size(); ++i) {
+            ResizeEvent e(size2_t(0));
+            multiinport_.propagateEvent(&e, outports[i]);
+        }
+        if (updated || prevViews.size() != viewManager_.size()) {
+            multiinport_.readyUpdate();
+            notifyObserversActiveConnectionsChange(this);
         }
     } else {
         auto& data = multiinport_.getConnectedOutports();
         auto prop = [&](Event* newEvent, size_t ind) {
-            if (ind < data.size()) {
+            if (ind < viewManager_.size()) {
                 multiinport_.propagateEvent(newEvent, data[ind]);
             }
         };

@@ -67,12 +67,11 @@ namespace inviwo {
  * </table>
  *
  * Minimum left/right/top/bottom sizes will be respected until the output size is smaller than the minimum.
- * Maximum left/right/top/bottom sizes will be respected until there is a conflict, 
- * e.g. max left and right is 500 but output size is larger than 500+500, 
- * at which point left/bottom will have presidence.
+ * Maximum left/right/top/bottom sizes will be respected until there is a conflict, for example max left and right set to 500 
+ * but output size is larger than 500+500, at which point left/bottom will have precedence.
  *
  * ### Inports
- *   * __Image Inport__ Multi-inport for multiple images. Only the first four images will be layouted.
+ *   * __Image Inport__ Multi-inport for multiple images.
  * 
  * ### Outports
  *   * __outport__      Resulting layout of input images

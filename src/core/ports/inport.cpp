@@ -112,9 +112,9 @@ void Inport::connectTo(Outport* outport) {
         connectedOutports_.push_back(outport);
         outport->connectTo(this);   // add this to the outport.
         setChanged(true, outport);  // mark that we should call onChange.
+        isReady_.update();
         onConnectCallback_.invokeAll();
         invalidate(InvalidationLevel::InvalidOutput);
-        isReady_.update();
     }
 }
 
@@ -124,9 +124,9 @@ void Inport::disconnectFrom(Outport* outport) {
         connectedOutports_.erase(it);
         outport->disconnectFrom(this);  // remove this from outport.
         setChanged(true, outport);      // mark that we should call onChange.
+        isReady_.update();
         onDisconnectCallback_.invokeAll();
         invalidate(InvalidationLevel::InvalidOutput);
-        isReady_.update();
     }
 }
 
