@@ -55,10 +55,6 @@ void TrackObservable::notifyEnabledChanged(Track* t) {
     forEachObserver([&](TrackObserver* o) { o->onEnabledChanged(t); });
 }
 
-void TrackObservable::notifyIdentifierChanged(Track* t) {
-    forEachObserver([&](TrackObserver* o) { o->onIdentifierChanged(t); });
-}
-
 void TrackObservable::notifyNameChanged(Track* t) {
     forEachObserver([&](TrackObserver* o) { o->onNameChanged(t); });
 }

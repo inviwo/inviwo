@@ -193,16 +193,6 @@ std::unique_ptr<Track> Animation::remove(size_t i) {
     return track;
 }
 
-std::unique_ptr<Track> Animation::remove(const std::string& id) {
-    auto it = std::find_if(tracks_.begin(), tracks_.end(),
-                           [&](const auto& track) { return track->getIdentifier() == id; });
-    if (it != tracks_.end()) {
-        return remove(std::distance(tracks_.begin(), it));
-    } else {
-        return nullptr;
-    }
-}
-
 std::unique_ptr<Track> Animation::remove(Track* track) {
     auto it = std::find_if(tracks_.begin(), tracks_.end(),
                            [&](const auto& t) { return t.get() == track; });
@@ -274,11 +264,12 @@ Seconds Animation::getLastTime() const {
 void Animation::serialize(Serializer& s) const { s.serialize("tracks", tracks_, "track"); }
 
 void Animation::deserialize(Deserializer& d) {
-    util::IdentifiedDeserializer<std::string, std::unique_ptr<Track>>("tracks", "track")
-        .setGetId([](const std::unique_ptr<Track>& t) { return t->getIdentifier(); })
-        .setMakeNew([]() { return std::unique_ptr<Track>(); })
-        .onNew([&](std::unique_ptr<Track>& t) { add(std::move(t)); })
-        .onRemove([&](const std::string& id) { remove(id); })(d, tracks_);
+    std::vector<std::unique_ptr<Track>> tmp;
+    d.deserialize("tracks", tmp, "track");
+    while (!tmp.empty()) {
+        add(std::move(tmp.back()));
+        tmp.pop_back();
+    }
 }
 
 void Animation::onWillRemoveProperty(Property* property, size_t) {

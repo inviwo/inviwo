@@ -48,7 +48,6 @@ public:
     virtual void onLastMoved(Track*){};
 
     virtual void onEnabledChanged(Track*){};
-    virtual void onIdentifierChanged(Track*){};
     virtual void onNameChanged(Track*){};
     virtual void onPriorityChanged(Track*){};
 };
@@ -62,7 +61,6 @@ protected:
     void notifyLastMoved(Track* t);
 
     void notifyEnabledChanged(Track* t);
-    void notifyIdentifierChanged(Track* t);
     void notifyNameChanged(Track* t);
     void notifyPriorityChanged(Track* t);
 };

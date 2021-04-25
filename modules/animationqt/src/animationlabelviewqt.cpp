@@ -58,6 +58,15 @@ namespace inviwo {
 
 namespace animation {
 
+// Simply stores the pointer to the item's Track
+class TrackItem : public QStandardItem {
+public:
+    TrackItem(Track* track)
+        : QStandardItem(QString::fromStdString(track->getName())), track_(track) {}
+
+    Track* track_;
+};
+
 class AnimationLabelModelQt : public QStandardItemModel {
 public:
     AnimationLabelModelQt(QObject* parent) : QStandardItemModel(parent) { setColumnCount(1); }
@@ -123,15 +132,14 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
     connect(deleteAction, &QAction::triggered, this, [this]() {
         auto& animation = controller_.getAnimation();
         for (auto& index : selectionModel()->selection().indexes()) {
-            animation.remove(utilqt::fromQString(model_->data(index, Qt::UserRole + 1).toString()));
+            animation.remove(static_cast<TrackItem*>(model_->itemFromIndex(index))->track_);
         }
     });
 }
 
 void AnimationLabelViewQt::onTrackAdded(Track* track) {
     QList<QStandardItem*> row;
-    auto item = new QStandardItem(QString::fromStdString(track->getName()));
-    item->setData(utilqt::toQString(track->getIdentifier()), Qt::UserRole + 1);
+    auto item = new TrackItem(track);
     row.append(item);
     QWidget* widget = new TrackControlsWidgetQt(item, *track, controller_);
     model_->appendRow(row);
@@ -143,8 +151,7 @@ void AnimationLabelViewQt::onTrackRemoved(Track* track) {
     QModelIndex parent = QModelIndex();
     for (int r = 0; r < model_->rowCount(parent); ++r) {
         QModelIndex index = model_->index(r, 0, parent);
-        auto id = utilqt::toQString(track->getIdentifier());
-        if (model_->data(index, Qt::UserRole + 1).toString() == id) {
+        if (static_cast<TrackItem*>(model_->itemFromIndex(index))->track_ == track) {
             model_->removeRow(r, parent);
             break;
         }

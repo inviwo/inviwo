@@ -34,7 +34,7 @@ namespace inviwo {
 namespace animation {
 
 ControlTrack::ControlTrack()
-    : BaseTrack<ControlKeyframeSequence>{"control-track", "Control Track", 0} {}
+    : BaseTrack<ControlKeyframeSequence>{"Control Track", 0} {}
 
 ControlTrack::~ControlTrack() = default;
 

@@ -126,13 +126,6 @@ public:
     std::unique_ptr<Track> remove(size_t i);
 
     /**
-     * Remove tracks based on Track::getIdentifier
-     * Does nothing if no match was found.
-     * Calls TrackObserver::notifyTrackRemoved after removing track.
-     */
-    std::unique_ptr<Track> remove(const std::string& id);
-
-    /**
      * Remove Track if matching any of the tracks.
      * Calls AnimationObservable::notifyTrackRemoved after removing Track.
      * @note Track will be deleted if removed so do not use pointer after calling this function.

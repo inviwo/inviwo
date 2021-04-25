@@ -217,7 +217,6 @@ public:
     virtual const Prop* getProperty() const override;
     virtual Prop* getProperty() override;
     virtual void setProperty(Property* property) override;
-    virtual const std::string& getIdentifier() const override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -345,17 +344,17 @@ inline std::unique_ptr<Seq> PropertyTrack<Prop, Key, Seq>::createKeyframeSequenc
 
 template <typename Prop, typename Key, typename Seq>
 PropertyTrack<Prop, Key, Seq>::PropertyTrack(ProcessorNetwork* net)
-    : BaseTrack<Seq>{"", "", 100}, property_(nullptr), network_{net} {}
+    : BaseTrack<Seq>{"", 100}, property_(nullptr), network_{net} {}
 
 template <typename Prop, typename Key, typename Seq>
 PropertyTrack<Prop, Key, Seq>::PropertyTrack(Prop* property)
-    : BaseTrack<Seq>{property->getIdentifier(), property->getDisplayName(), 100}
+    : BaseTrack<Seq>{property->getDisplayName(), 100}
     , property_(property)
     , network_{property->getOwner()->getProcessor()->getNetwork()} {}
 
 template <typename Prop, typename Key, typename Seq>
 PropertyTrack<Prop, Key, Seq>::PropertyTrack(Prop* property, ProcessorNetwork* net)
-    : BaseTrack<Seq>{property->getIdentifier(), property->getDisplayName(), 100}
+    : BaseTrack<Seq>{property->getDisplayName(), 100}
     , property_(property)
     , network_{net} {}
 
@@ -369,11 +368,6 @@ std::string PropertyTrack<Prop, Key, Seq>::classIdentifier() {
     std::string id =
         "org.inviwo.animation.PropertyTrack.for." + PropertyTraits<Prop>::classIdentifier();
     return id;
-}
-
-template <typename Prop, typename Key, typename Seq>
-const std::string& PropertyTrack<Prop, Key, Seq>::getIdentifier() const {
-    return BaseTrack<Seq>::getIdentifier();
 }
 
 template <typename Prop, typename Key, typename Seq>
@@ -395,7 +389,6 @@ template <typename Prop, typename Key, typename Seq>
 void PropertyTrack<Prop, Key, Seq>::setProperty(Property* property) {
     if (auto prop = dynamic_cast<Prop*>(property)) {
         property_ = prop;
-        this->setIdentifier(property_->getIdentifier());
         this->setName(property_->getDisplayName());
     } else {
         throw Exception("Invalid property set to track", IVW_CONTEXT);

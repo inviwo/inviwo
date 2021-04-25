@@ -72,9 +72,6 @@ public:
     virtual bool isEnabled() const = 0;
     virtual void setEnabled(bool enabled) = 0;
 
-    virtual const std::string& getIdentifier() const = 0;
-    virtual void setIdentifier(const std::string& identifier) = 0;
-
     /**
      * Set Track name. Used when displaying the track.
      */
