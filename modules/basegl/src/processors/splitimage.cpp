@@ -66,7 +66,7 @@ SplitImage::SplitImage()
                       0)
     , splitPosition_("splitPosition", "Split Position", 0.5f, 0.0f, 1.0f)
     , splitterSettings_("handlebarWidget", "Handle Bar", true, splitter::Style::Handle)
-    , renderer_(splitterSettings_, this) {
+    , renderer_(this) {
 
     inport0_.setOptional(true);
     inport1_.setOptional(true);
@@ -76,6 +76,7 @@ SplitImage::SplitImage()
 
     addProperties(splitDirection_, splitPosition_, splitterSettings_);
 
+    renderer_.setInvalidateAction([this]() { invalidate(InvalidationLevel::InvalidOutput); });
     renderer_.setDragAction([this](float pos) { splitPosition_.set(pos); });
 }
 
@@ -149,9 +150,7 @@ void SplitImage::process() {
         renderPort(inport1_, viewport1);
     }
 
-    if (splitterSettings_.enabled()) {
-        renderer_.render(splitDirection_, splitPosition_, outport_.getDimensions());
-    }
+    renderer_.render(splitterSettings_, splitDirection_, splitPosition_, outport_.getDimensions());
 
     utilgl::deactivateCurrentTarget();
 }

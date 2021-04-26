@@ -32,6 +32,7 @@
 
 #include <modules/basegl/datastructures/splittersettings.h>
 #include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <modules/opengl/shader/shader.h>
 
 #include <functional>
@@ -39,7 +40,6 @@
 namespace inviwo {
 
 class Processor;
-class Mesh;
 class PickingEvent;
 
 /**
@@ -49,41 +49,50 @@ class PickingEvent;
  */
 class IVW_MODULE_BASEGL_API SplitterRenderer {
 public:
-    using Callback = std::function<void(float)>;
+    using InvalidateCallback = std::function<void()>;
+    using DragCallback = std::function<void(float)>;
 
-    SplitterRenderer(const SplitterSettings& settings, Processor* processor);
+    SplitterRenderer(Processor* processor);
     SplitterRenderer(const SplitterRenderer& rhs);
-    SplitterRenderer(SplitterRenderer&& rhs) = delete;
+    SplitterRenderer(SplitterRenderer&& rhs) noexcept = default;
     SplitterRenderer& operator=(const SplitterRenderer& rhs) = delete;
     SplitterRenderer& operator=(SplitterRenderer&& rhs) = default;
     virtual ~SplitterRenderer() = default;
 
     /**
-     * \brief The callback will be called when the splitter is moved by dragging. The new position
-     * will be used as argument.
+     * \brief set the invalidation callback. \p callback is called whenever the splitter requires a
+     * redraw, for example during dragging or for hover events
      */
-    void setDragAction(Callback callback);
+    void setInvalidateAction(InvalidateCallback callback);
+
+    /**
+     * \brief \p callback will be called when the splitter is moved by dragging via mouse or touch.
+     * The new position will be used as argument.
+     */
+    void setDragAction(DragCallback callback);
 
     /*
      * \brief render a splitter at the given position \pos and \p direction using the current
      * settings
      *
+     * @param settings    used to determine the style of the splitter (color, width, ...)
      * @param direction   splitter orientation
      * @param pos         position of the splitter in normalized screen coordinates [0,1]
      * @param canvasDims  dimensions of the output canvas
      */
-    void render(splitter::Direction direction, float pos, size2_t canvasDims);
+    void render(const SplitterSettings& settings, splitter::Direction direction, float pos,
+                size2_t canvasDims);
 
 private:
     void handlePickingEvent(PickingEvent* e);
 
-    std::reference_wrapper<const SplitterSettings> settings_;
     Processor* processor_;
-    Callback dragAction_;
+    InvalidateCallback invalidate_;
+    DragCallback dragAction_;
 
     Shader shader_;
     Shader triShader_;
-    std::shared_ptr<Mesh> mesh_;
+    Mesh mesh_;
 
     PickingMapper pickingMapper_;
     bool hover_ = false;

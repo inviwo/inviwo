@@ -41,12 +41,10 @@ uniform mat4 trafo;
 uniform vec2 screenDim = vec2(512, 512);
 uniform float antialiasing = 0.5; // width of antialised edged [pixel]
 uniform float lineWidth = 2.0; // line width [pixel]
-uniform float miterLimit = 0.8; // limit for miter joins, i.e. cutting off joints between parallel lines 
 uniform bool roundCaps = true;
 
-out float segmentLength_; // total length of the current line segment in screen space
-out float distanceWorld_;  // distance in world coords to segment start
 out vec2 texCoord_; // x = distance to segment start, y = orth. distance to center (in screen coords)
+out float segmentLength_;
 out vec4 color_;
 flat out vec4 pickColor_;
 
@@ -87,142 +85,55 @@ vec4 convertScreenToNDC(vec2 v, float z) {
 void main() {
     vec2 halfScreenDim = screenDim * 0.5;
 
-    const int index1 = 0;
-    const int index2 = 1;
-
     vec4 startPos = trafo * vec4(0.0, 0.0, 0.0, 1.0);
     vec4 endPos = trafo * vec4(0.0, 1.0, 0.0, 1.0);
-
-    vec4 p0in = startPos;
-    vec4 p1in = startPos;
-    vec4 p2in = endPos;
-    vec4 p3in = endPos;
 
     // set pick color equivalent to first vertex
     color_ = (pickingEnabled ? vec4(0) : color);
     pickColor_ = vec4(pickingIndexToColor(pickId), pickId == 0 ? 0.0 : 1.0);
-
     
-    // perform homogeneous clipping
-    if (p1in.w * p2in.w < 0.0) {
-        // TODO: ignore all segments intersecting with the near clip plane due 
-        //       to bug in homogeneous clipping 
-        return;
-    }
+    vec4 p1ndc = startPos / startPos.w;
+    vec4 p2ndc = endPos / endPos.w;
 
-    vec2 p0ndc = p0in.xy / p0in.w;
-    vec4 p1ndc = p1in / p1in.w;
-    vec4 p2ndc = p2in / p2in.w;
-    vec2 p3ndc = p3in.xy / p3in.w;    
-
-    vec2 p0 = convertNDCToScreen(p0ndc);
     vec2 p1 = convertNDCToScreen(p1ndc.xy);
     vec2 p2 = convertNDCToScreen(p2ndc.xy);
-    vec2 p3 = convertNDCToScreen(p3ndc);
 
-    // determine line directions
-    vec2 v0 = normalize(p1 - p0); // previous segment
-    vec2 v1 = normalize(p2 - p1); // current segment
-    vec2 v2 = normalize(p3 - p2); // next segment
-    // compute normals for the three segments
-    vec2 n0 = vec2(-v0.y, v0.x);
+    // determine line direction and normal
+    vec2 v1 = normalize(p2 - p1);
     vec2 n1 = vec2(-v1.y, v1.x);
-    vec2 n2 = vec2(-v2.y, v2.x);
-
-    vec2 depth = vec2(p1ndc.z, p2ndc.z);
-
-    float w = lineWidth * 0.5 + 1.2 * antialiasing;
     segmentLength_ = length(p2 - p1);
 
-    // angle between previous and current segment
-    float d0 = sign(dot(v0, v1));
-    // angle between current and next segment
-    float d1 = sign(dot(v1, v2));
+    float w = lineWidth * 0.5 + 1.2 * antialiasing;
 
-    // Determine miter lines by averaging the normals of the 2 segments
-    vec2 miterBegin = normalize(n0 + n1); // miter at start of current segment
-    vec2 miterEnd = normalize(n1 + n2); // miter at end of current segment
+    // compute start position at p1
+    vec2 leftTop = p1 + w * n1;
+    vec2 leftBottom = p1 - w * n1;
+    vec2 texCoord = vec2(0);
 
-    // Determine the length of the miter by projecting it onto normal
-    float length_a = w / dot(miterBegin, n1);
-    float length_b = w / dot(miterEnd, n1);
-
-    bool capBegin = (p0 == p1);
-    bool capEnd = (p2 == p3);
-
-    // depth delta is computed in NDC, but we need to apply the slope depth in screen space
-    // i.e. normalization with respect to segmentLength_ and not length(p2ndc - p1ndc)
-    float slopeDepth = (depth.y - depth.x) / segmentLength_;
-
-    // avoid sharp corners by cutting them off
-    // corner between previous segment and current one
-    if (dot(v0, v1) < -miterLimit) {
-        miterBegin = normalize(-n0 + n1);
-        length_a = lineWidth * 0.5;
-
-        length_a = w / dot(miterBegin, n1);
-    }
-    // corner between current segment and next one
-    if (dot(v1, v2) < -miterLimit) {
-        miterEnd = normalize(-n2 + n1);
-        length_b = lineWidth * 0.5;
-
-        length_b = w / dot(miterEnd, n1);
+    if (roundCaps) {
+        // extend segment beyond p1 by radius for cap
+        leftTop -= w * v1;
+        leftBottom -= w * v1;
+        texCoord -= w;
     }
 
-    vec2 leftTop, leftBottom;
-    vec2 texCoord;
-    if (capBegin) {
-        // compute start position at p1
-        leftTop = p1 + w * n1;
-        leftBottom = p1 - w * n1;
-        texCoord = vec2(0);
+    emit(convertScreenToNDC(leftTop, p1ndc.z), vec2(texCoord.x, w));
+    emit(convertScreenToNDC(leftBottom, p1ndc.z), vec2(texCoord.y, -w));
 
-        if (roundCaps) {
-            // extend segment beyond p1 by radius for cap
-            leftTop -= w * v1;
-            leftBottom -= w * v1;
-            texCoord -= w;
-        }
-    }
-    else {
-        leftTop = p1 + length_a * miterBegin;
-        leftBottom = p1 - length_a * miterBegin;
-        texCoord.x = projectedDistance(p1, p2, leftTop);
-        texCoord.y = projectedDistance(p1, p2, leftBottom);
+    // compute end position at p2
+    vec2 rightTop = p2 + w * n1;
+    vec2 rightBottom = p2 - w * n1;
+    texCoord = vec2(segmentLength_);
+
+    if (roundCaps) {
+        // extend segment beyond p2 by radius for cap
+        rightTop += w * v1;
+        rightBottom += w * v1;
+        texCoord += w;
     }
 
-    vec2 vertexDepth = slopeDepth * texCoord + depth.x;
-
-    emit(convertScreenToNDC(leftTop, vertexDepth.x), vec2(texCoord.x, w));
-    emit(convertScreenToNDC(leftBottom, vertexDepth.y), vec2(texCoord.y, -w));
-
-
-    vec2 rightTop, rightBottom;
-    if (capEnd) {
-        // compute end position at p2
-        rightTop = p2 + w * n1;
-        rightBottom = p2 - w * n1;
-        texCoord = vec2(segmentLength_);
-
-        if (roundCaps) {
-            // extend segment beyond p2 by radius for cap
-            rightTop += w * v1;
-            rightBottom += w * v1;
-            texCoord += w;
-        }
-    }
-    else {
-        rightTop = p2 + length_b * miterEnd;
-        rightBottom = p2 - length_b * miterEnd;
-        texCoord.x = projectedDistance(p1, p2, rightTop);
-        texCoord.y = projectedDistance(p1, p2, rightBottom);
-    }
-
-    vertexDepth = slopeDepth * texCoord + depth.x;
-
-    emit(convertScreenToNDC(rightTop, vertexDepth.x), vec2(texCoord.x, w));
-    emit(convertScreenToNDC(rightBottom, vertexDepth.y), vec2(texCoord.y, -w));
+    emit(convertScreenToNDC(rightTop, p2ndc.z), vec2(texCoord.x, w));
+    emit(convertScreenToNDC(rightBottom, p2ndc.z), vec2(texCoord.y, -w));
 
     EndPrimitive();
 }

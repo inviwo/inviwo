@@ -40,100 +40,90 @@
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
 
 namespace inviwo {
 
-SplitterRenderer::SplitterRenderer(const SplitterSettings& settings, Processor* processor)
-    : settings_(settings)
-    , processor_(processor)
+SplitterRenderer::SplitterRenderer(Processor* processor)
+    : processor_(processor)
     , shader_("splitter.vert", "splitter.geom", "linerenderer.frag")
     , triShader_("splitter.vert", "splittertriangle.geom", "standard.frag")
+    , mesh_(DrawType::Points, ConnectivityType::None)
     , pickingMapper_(processor, 1, [&](PickingEvent* e) { handlePickingEvent(e); }) {
 
-    mesh_ = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
-    mesh_->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
-                     util::makeBuffer(std::vector<vec2>{vec2(0.0f)}));
+    mesh_.addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
+                    util::makeBuffer(std::vector<vec2>{vec2(0.0f)}));
 }
 
 SplitterRenderer::SplitterRenderer(const SplitterRenderer& rhs)
-    : settings_(rhs.settings_)
-    , processor_(rhs.processor_)
-    , shader_("splitter.vert", "linerenderer.geom", "linerenderer.frag")
-    , triShader_("standard.vert", "standard.frag")
-    , pickingMapper_(processor_, 1, [&](PickingEvent* e) { handlePickingEvent(e); }) {
+    : processor_(rhs.processor_)
+    , shader_(rhs.shader_)
+    , triShader_(rhs.triShader_)
+    , mesh_(rhs.mesh_)
+    , pickingMapper_(processor_, 1, [&](PickingEvent* e) { handlePickingEvent(e); }) {}
 
-    mesh_ = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
-    mesh_->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
-                     util::makeBuffer(std::vector<vec2>{vec2(0.0f)}));
-}
+void SplitterRenderer::setInvalidateAction(InvalidateCallback callback) { invalidate_ = callback; }
 
-void SplitterRenderer::setDragAction(Callback callback) { dragAction_ = callback; }
+void SplitterRenderer::setDragAction(DragCallback callback) { dragAction_ = callback; }
 
-void SplitterRenderer::render(splitter::Direction direction, float pos, size2_t canvasDims) {
-    if (!settings_.get().enabled()) {
+void SplitterRenderer::render(const SplitterSettings& settings, splitter::Direction direction,
+                              float pos, size2_t canvasDims) {
+    if (!settings.enabled()) {
         return;
     }
 
     currentDirection_ = direction;
-    const splitter::Style style = settings_.get().getStyle();
+    const splitter::Style style = settings.getStyle();
 
-    float lineWidth = 0.0f;
-    float handleWidth = 0.0f;
-    bool drawHandle = true;
-    bool drawBorder = false;
+    const auto [lineWidth, handleWidth, drawHandle,
+                drawBorder] = [&]() -> std::tuple<float, float, bool, bool> {
+        const float width = settings.getWidth();
+        switch (style) {
+            case splitter::Style::Handle:
+                return {width / 3.0f, width, true, true};
+            case splitter::Style::Divider:
+                return {width, width * 0.6f, true, false};
+            case splitter::Style::Line:
+                return {width, 0.0f, false, false};
+            case splitter::Style::Invisible:
+                return {0.0f, 0.0f, true, false};
+            default:
+                return {0.0f, 0.0f, true, false};
+        }
+    }();
 
-    const float width = settings_.get().getWidth();
-
-    switch (style) {
-        case splitter::Style::Handle:
-            lineWidth = width / 3.0f;
-            handleWidth = width;
-            drawBorder = true;
-            break;
-        case splitter::Style::Divider:
-            lineWidth = width;
-            handleWidth = width * 0.6f;
-            break;
-        case splitter::Style::Line:
-            lineWidth = width;
-            drawHandle = false;
-            break;
-        case splitter::Style::Invisible:
-            break;
-        default:
-            break;
-    }
-
-    mat4 m(1.0f);
-    m[0][0] = 2.0f;
-    m[1][1] = 2.0f;
-    m[3] = vec4(pos * 2.0f - 1.0f, -1.0f, 0.0f, 1.0f);
+    // create a matrix transforming the splitter position from normalized coords [0,1] to NDC [-1,1]
+    // along x
+    mat4 posToNDC = [pos]() {
+        mat4 m(1.0f);
+        m[0][0] = 2.0f;
+        m[1][1] = 2.0f;
+        m[3] = vec4(pos * 2.0f - 1.0f, -1.0f, 0.0f, 1.0f);
+        return m;
+    }();
 
     const vec2 canvasDimsf(canvasDims);
     const int index = (direction == splitter::Direction::Vertical) ? 1 : 0;
-    const float len = settings_.get().getLength() / canvasDimsf[index];
+    const float len = settings.getLength() / canvasDimsf[index];
 
     // scale matrix so that handle spans n pixel
-    mat4 mHandle(m);
+    mat4 mHandle(posToNDC);
     mHandle[1][1] *= len;
     mHandle[3][1] = -len;
 
-    mat4 mTri(m);
+    mat4 mTri(posToNDC);
     mTri[3][1] = 0.0f;  // no vertical translation for triangle indicators
 
     if (direction == splitter::Direction::Horizontal) {
         // rotate by 90 degree for horizontal split
         mat4 rotMat = glm::rotate(-glm::half_pi<float>(), vec3(0.0f, 0.0f, 1.0f));
-        m = rotMat * m;
+        posToNDC = rotMat * posToNDC;
         mHandle = rotMat * mHandle;
         mTri = rotMat * mTri;
     }
 
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    MeshDrawerGL::DrawObject drawer(mesh_->getRepresentation<MeshGL>(),
-                                    mesh_->getDefaultMeshInfo());
+    MeshDrawerGL::DrawObject drawer(mesh_.getRepresentation<MeshGL>(), mesh_.getDefaultMeshInfo());
 
     shader_.activate();
 
@@ -141,20 +131,18 @@ void SplitterRenderer::render(splitter::Direction direction, float pos, size2_t 
     // draw picking buffer
     shader_.setUniform("pickingEnabled", true);
     shader_.setUniform("pickId", static_cast<uint32_t>(pickingMapper_.getPickingId(0)));
-    shader_.setUniform("lineWidth", width);
-    shader_.setUniform("trafo", m);
+    shader_.setUniform("lineWidth", settings.getWidth());
+    shader_.setUniform("trafo", posToNDC);
     drawer.draw();
 
     if (style != splitter::Style::Invisible) {
         // draw background line
-        const vec4 lineColor = (style == splitter::Style::Line)
-                                   ? settings_.get().getColor()
-                                   : settings_.get().getBackgroundColor();
+        const vec4 lineColor =
+            (style == splitter::Style::Line) ? settings.getColor() : settings.getBackgroundColor();
 
         shader_.setUniform("pickingEnabled", false);
         shader_.setUniform("color", lineColor);
         shader_.setUniform("lineWidth", lineWidth);
-        shader_.setUniform("trafo", m);
         drawer.draw();
 
         if (drawHandle) {
@@ -166,7 +154,7 @@ void SplitterRenderer::render(splitter::Direction direction, float pos, size2_t 
             }
             // draw handle
             shader_.setUniform("lineWidth", handleWidth);
-            shader_.setUniform("color", settings_.get().getColor());
+            shader_.setUniform("color", settings.getColor());
             drawer.draw();
         }
     }
@@ -175,8 +163,8 @@ void SplitterRenderer::render(splitter::Direction direction, float pos, size2_t 
     if (hover_) {
         triShader_.activate();
         triShader_.setUniform("trafo", mTri);
-        triShader_.setUniform("triangleSize", settings_.get().getTriangleSize());
-        triShader_.setUniform("color", settings_.get().getHoverColor());
+        triShader_.setUniform("triangleSize", settings.getTriangleSize());
+        triShader_.setUniform("color", settings.getHoverColor());
         triShader_.setUniform("screenDimInv", 1.0f / canvasDimsf);
         drawer.draw();
         triShader_.deactivate();
@@ -199,15 +187,12 @@ void SplitterRenderer::handlePickingEvent(PickingEvent* e) {
         }
     };
 
-    if (e->getEvent()->hash() == MouseEvent::chash()) {
-        auto mouseEvent = e->getEventAs<MouseEvent>();
-
+    if (auto mouseEvent = e->getEventAs<MouseEvent>()) {
         const bool leftMouseBtn = (mouseEvent->button() == MouseButton::Left);
         const bool mousePress = (mouseEvent->state() == MouseState::Press);
         const bool mouseMove = (mouseEvent->state() == MouseState::Move);
 
         if (e->getState() == PickingState::Started) {
-            // start hover
             hover_ = true;
 
             const auto cursor = (currentDirection_ == splitter::Direction::Vertical)
@@ -232,20 +217,15 @@ void SplitterRenderer::handlePickingEvent(PickingEvent* e) {
                 e->markAsUsed();
             }
         }
-    } else if (e->getEvent()->hash() == TouchEvent::chash()) {
-        auto touchEvent = e->getEventAs<TouchEvent>();
-
+    } else if (auto touchEvent = e->getEventAs<TouchEvent>()) {
         if (touchEvent->touchPoints().size() == 1) {
             // allow interaction only for a single touch point
             const auto& touchPoint = touchEvent->touchPoints().front();
 
             if (touchPoint.state() == TouchState::Started) {
-                // initial activation since touch event began
-                // start hover
                 hover_ = true;
                 triggerUpdate = true;
             } else if (touchPoint.state() == TouchState::Finished) {
-                // end hover
                 hover_ = false;
                 triggerUpdate = true;
             } else if (touchPoint.state() == TouchState::Updated) {
@@ -255,8 +235,8 @@ void SplitterRenderer::handlePickingEvent(PickingEvent* e) {
             }
         }
     }
-    if (triggerUpdate) {
-        processor_->invalidate(InvalidationLevel::InvalidOutput);
+    if (triggerUpdate && invalidate_) {
+        invalidate_();
     }
 }
 
