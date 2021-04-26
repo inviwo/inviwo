@@ -54,7 +54,7 @@ public:
 
     SplitterRenderer(Processor* processor);
     SplitterRenderer(const SplitterRenderer& rhs);
-    SplitterRenderer(SplitterRenderer&& rhs) noexcept = default;
+    SplitterRenderer(SplitterRenderer&& rhs) = default;
     SplitterRenderer& operator=(const SplitterRenderer& rhs) = delete;
     SplitterRenderer& operator=(SplitterRenderer&& rhs) = default;
     virtual ~SplitterRenderer() = default;
