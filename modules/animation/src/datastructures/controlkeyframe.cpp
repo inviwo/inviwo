@@ -54,14 +54,14 @@ void ControlKeyframe::setAction(ControlAction action) { action_ = action; }
 Seconds ControlKeyframe::getJumpTime() const { return jumpTime_; }
 void ControlKeyframe::setJumpTime(Seconds jumpTime) { jumpTime_ = jumpTime; }
 
-AnimationTimeState ControlKeyframe::operator()(Seconds from, Seconds to, AnimationState state) {
+AnimationTimeState ControlKeyframe::operator()(Seconds from, Seconds to, AnimationState state) const {
 
     if (state == AnimationState::Playing) {
         if ((from <= getTime() && to >= getTime()) || (to <= getTime() && from >= getTime())) {
             // We passed over this keyframe
             switch (action_) {
                 case ControlAction::Pause:
-                    return {time_, AnimationState::Paused};
+                    return {getTime(), AnimationState::Paused};
                 case ControlAction::Jump:
                     return {jumpTime_, state};
             }

@@ -36,6 +36,7 @@ namespace inviwo {
 namespace animation {
 
 class Track;
+class Animation;
 
 class IVW_MODULE_ANIMATION_API AnimationObserver : public Observer {
 public:
@@ -44,6 +45,8 @@ public:
 
     virtual void onFirstMoved(){};
     virtual void onLastMoved(){};
+
+    virtual void onNameChanged(Animation*){};
 };
 
 class IVW_MODULE_ANIMATION_API AnimationObservable : public Observable<AnimationObserver> {
@@ -53,6 +56,8 @@ protected:
 
     void notifyFirstMoved();
     void notifyLastMoved();
+
+    void notifyNameChanged(Animation* anim);
 };
 
 }  // namespace animation

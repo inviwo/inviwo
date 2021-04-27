@@ -229,16 +229,13 @@ bool AnimationModule::Converter::convert(TxElement* root) {
             auto aelm = xml::getMatchingElements(root, "Animation");
             if (!aelm.empty()) {
                 TxElement list("Animations");
-                for (const auto& e : aelm) {
-                    list.InsertEndChild(*e);
-                    root->RemoveChild(e);
-                }
-                root->InsertEndChild(list);
-                TxElement names("AnimationNames");
-                TxElement name("item");
+                const auto& e = aelm.front();
+                TxElement name("name");
                 name.SetAttribute("content", "Animation 1");
-                names.InsertEndChild(name);
-                root->InsertEndChild(names);
+                list.InsertEndChild(*e)->InsertEndChild(name);
+                root->RemoveChild(e);
+
+                root->InsertEndChild(list);
                 res = true;
             }
             [[fallthrough]];

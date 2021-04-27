@@ -73,9 +73,6 @@ public:
                   "Seq has to derive from KeyframeSequence");
 
     BaseTrack(const std::string& name, size_t priority = 0);
-    BaseTrack(const BaseTrack& other);
-    BaseTrack(BaseTrack&& other) = default;
-    BaseTrack& operator=(const BaseTrack&);
 
     virtual ~BaseTrack();
 
@@ -144,9 +141,14 @@ public:
     virtual std::unique_ptr<key_type> createKeyframe(Seconds time) const;
 
 protected:
+    BaseTrack(const BaseTrack& other);
+    BaseTrack(BaseTrack&& other) = default;
+    BaseTrack& operator=(const BaseTrack&);
+    BaseTrack& operator=(BaseTrack&& other) = default;
     virtual void onKeyframeSequenceMoved(KeyframeSequence* seq) override;
     key_type* addToClosestSequence(std::unique_ptr<key_type> key);
 
+private:
     bool enabled_{true};
     std::string name_;
     size_t priority_{0};
@@ -166,7 +168,7 @@ BaseTrack<Seq>::BaseTrack(const BaseTrack<Seq>& other)
     , name_{other.name_}
     , priority_{other.priority_} {
     for (auto& seq : other.sequences_) {
-        add(std::unique_ptr<Seq>(seq->clone()));
+        add(std::make_unique<Seq>(*seq));
     }
 }
 
@@ -180,7 +182,7 @@ BaseTrack<Seq>& BaseTrack<Seq>::operator=(const BaseTrack<Seq>& that) {
         name_ = that.name_;
         priority_ = that.priority_;
         for (const auto& seq : that.sequences_) {
-            add(std::unique_ptr<Seq>(seq->clone()));
+            add(std::make_unique<Seq>(*seq));
         }
     }
     return *this;

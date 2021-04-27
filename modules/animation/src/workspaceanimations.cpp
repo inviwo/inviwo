@@ -37,32 +37,27 @@ namespace animation {
 
 WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManager& animationManager)
     : animationManager_{animationManager}
-    , animations_{{Animation(&animationManager_)}}
-    , names_{{"Animation 1"}}
+    , animations_{{Animation(&animationManager_, "Animation 1")}}
     , mainAnimation_(app, animations_.front())
     , mainAnimationIdx_{0} {
 
-    animationClearHandle_ =
-        app->getWorkspaceManager()->onClear([&]() { erase(0, animations_.size()); });
+    animationClearHandle_ = app->getWorkspaceManager()->onClear([&]() { clear(); });
     animationSerializationHandle_ = app->getWorkspaceManager()->onSave([&](Serializer& s) {
         s.serialize("MainAnimationIndex", mainAnimationIdx_);
         s.serialize("Animations", animations_, "Animation");
-        s.serialize("AnimationNames", names_);
     });
     animationDeserializationHandle_ = app->getWorkspaceManager()->onLoad([&](Deserializer& d) {
         size_t mainAnimation = 0;
-        erase(0, animations_.size());
+        clear();
         d.deserialize("MainAnimationIndex", mainAnimation);
-        d.deserialize("AnimationNames", names_);
 
         // Must pass AnimationManager to Animation constructor
         util::IndexedDeserializer<Animation>("Animations", "Animation").setMakeNew([&]() {
             return Animation(&animationManager_);
         })(d, animations_);
 
-        // Failsafe
+        // Failsafe in case no animation was found
         if (animations_.empty()) {
-            names_.clear();
             add("Animation 1");
             setMainAnimationIndex(0);
         } else {
@@ -77,27 +72,43 @@ Animation& animation::WorkspaceAnimations::get(size_t index) { return animations
 
 std::vector<Animation*> WorkspaceAnimations::get(std::string_view name) {
     std::vector<Animation*> animations;
-    for (auto&& [ind, elem] : util::enumerate(names_)) {
-        if (elem == name) {
-            animations.push_back(&animations_[ind]);
+    for (auto& elem : animations_) {
+        if (elem.getName() == name) {
+            animations.push_back(&elem);
         }
     }
     return animations;
 }
 
-std::string_view WorkspaceAnimations::getName(size_t index) { return names_.at(index); }
+Animation& WorkspaceAnimations::operator[](size_t i) { return animations_[i]; }
+
+const Animation& WorkspaceAnimations::operator[](size_t i) const { return animations_[i]; }
+
+std::vector<Animation>::iterator WorkspaceAnimations::begin() { return animations_.begin(); }
+
+std::vector<Animation>::const_iterator WorkspaceAnimations::begin() const {
+    return animations_.begin();
+}
+
+std::vector<Animation>::iterator WorkspaceAnimations::end() { return animations_.end(); }
+
+std::vector<Animation>::const_iterator WorkspaceAnimations::end() const {
+    return animations_.end();
+}
+
+std::string_view WorkspaceAnimations::getName(size_t index) {
+    return animations_.at(index).getName();
+}
 
 Animation& WorkspaceAnimations::add(std::string_view name) {
-    animations_.emplace_back(Animation(&animationManager_));
-    names_.emplace_back(name);
+    animations_.emplace_back(Animation(&animationManager_, name));
     auto idx = static_cast<size_t>(animations_.size() - 1);
     onChanged_.invoke(idx, idx);
     return animations_.back();
 }
 
-Animation& WorkspaceAnimations::add(std::string_view name, Animation anim) {
-    animations_.emplace_back(anim);
-    names_.emplace_back(name);
+Animation& WorkspaceAnimations::add(Animation anim) {
+    animations_.emplace_back(std::move(anim));
     auto idx = static_cast<size_t>(animations_.size() - 1);
     onChanged_.invoke(idx, idx);
     return animations_.back();
@@ -107,46 +118,49 @@ Animation& WorkspaceAnimations::insert(size_t index, std::string_view name) {
     if (index <= getMainAnimationIndex()) {
         mainAnimationIdx_ = index + 1;
     }
-    animations_.insert(animations_.begin() + index, Animation(&animationManager_));
-    names_.insert(names_.begin() + index, std::string(name));
+    animations_.insert(animations_.begin() + index, Animation(&animationManager_, name));
     onChanged_.invoke(index, index);
     return animations_[index];
 }
 
-void WorkspaceAnimations::erase(size_t from, size_t to) {
-    auto numToRemove = to - from;
-
+void WorkspaceAnimations::erase(size_t index) {
     // First ensure that the MainAnimation is valid
-    if (numToRemove == animations_.size()) {
+    if (1 == animations_.size()) {
         add("Animation 1");
         mainAnimation_.set(animations_.back());
         mainAnimationIdx_ = 0;  // all before will be removed
-    } else if (getMainAnimationIndex() >= to) {
-        // numToRemove before will be removed, but the animation itself will not change
-        mainAnimationIdx_ -= numToRemove;
-    } else if (getMainAnimationIndex() >= from) {
+    } else if (getMainAnimationIndex() > index) {
+        // Animation before will be removed, but the animation itself will not change
+        mainAnimationIdx_ -= 1;
+    } else if (getMainAnimationIndex() == index) {
         // The selected one will be removed, select next after
-        auto indexBeforeRemoval = to < animations_.size() ? to : from - 1;
+        auto indexBeforeRemoval = index + 1 == animations_.size() ? index - 1 : index + 1;
         mainAnimation_.set(animations_[indexBeforeRemoval]);
-        mainAnimationIdx_ = static_cast<size_t>(
-            std::clamp(static_cast<int>(getMainAnimationIndex()) - static_cast<int>(numToRemove), 0,
-                       static_cast<int>(animations_.size()) - 1));
+        mainAnimationIdx_ =
+            static_cast<size_t>(std::clamp(static_cast<int>(getMainAnimationIndex()) - 1, 0,
+                                           static_cast<int>(animations_.size()) - 1));
     }
 
-    animations_.erase(animations_.begin() + from, animations_.begin() + to);
-    names_.erase(names_.begin() + from, names_.begin() + to);
-    onChanged_.invoke(from, to - 1);
+    animations_.erase(animations_.begin() + index);
+    onChanged_.invoke(index, index);
+}
+
+void WorkspaceAnimations::clear() {
+    auto nAnimations = static_cast<int>(size()) - 1;
+    for (auto i = nAnimations; i >= 0; i--) {
+        erase(i);
+    }
 }
 
 void WorkspaceAnimations::setName(size_t index, std::string_view newName) {
-    if (index < names_.size()) {
-        names_[index] = newName;
+    if (index < animations_.size()) {
+        animations_[index].setName(newName);
         onChanged_.invoke(index, index);
     }
 }
 
 void WorkspaceAnimations::setMainAnimationIndex(size_t index) {
-    Animation& anim = animations_.at(mainAnimationIdx_);
+    Animation& anim = animations_.at(index);
     mainAnimationIdx_ = index;
     mainAnimation_.set(anim);
 }
@@ -159,15 +173,12 @@ const MainAnimation& WorkspaceAnimations::getMainAnimation() const { return main
 
 size_t WorkspaceAnimations::import(Deserializer& d) {
     std::vector<Animation> animations;
-    std::vector<std::string> names;
-    d.deserialize("AnimationNames", names);
-
     // Must pass AnimationManager to Animation constructor
     util::IndexedDeserializer<Animation>("Animations", "Animation").setMakeNew([&]() {
         return Animation(&animationManager_);
     })(d, animations);
-    for (auto&& [name, anim] : util::zip(names, animations)) {
-        add(name, anim);
+    for (auto& anim : animations) {
+        add(anim);
     }
     return animations.size();
 }

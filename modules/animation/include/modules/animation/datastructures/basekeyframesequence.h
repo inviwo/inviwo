@@ -55,9 +55,6 @@ public:
     BaseKeyframeSequence();
     BaseKeyframeSequence(std::vector<std::unique_ptr<Key>> keyframes);
 
-    BaseKeyframeSequence(const BaseKeyframeSequence& rhs);
-    BaseKeyframeSequence& operator=(const BaseKeyframeSequence& that);
-
     /**
      * Remove all keyframes and call KeyframeObserver::notifyKeyframeRemoved
      */
@@ -104,6 +101,8 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 protected:
+    BaseKeyframeSequence(const BaseKeyframeSequence& rhs);
+    BaseKeyframeSequence& operator=(const BaseKeyframeSequence& that);
     virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) override;
 
     std::vector<std::unique_ptr<Key>> keyframes_;

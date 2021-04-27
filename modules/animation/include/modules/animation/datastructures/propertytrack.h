@@ -129,7 +129,6 @@ public:
     virtual void setProperty(Property* property) = 0;
     virtual const Property* getProperty() const = 0;
     virtual Property* getProperty() = 0;
-    virtual const std::string& getIdentifier() const = 0;
     /*
      * Add KeyFrame at specified time using the current value of supplied property.
      * All keyframes in one sequence uses the same interpolation so the provided interpolation
@@ -195,8 +194,6 @@ public:
     static_assert(std::is_same<Key, typename Seq::key_type>::value,
                   "The KeyframeSequence must match Keyframe 'Key'");
 
-    PropertyTrack(const PropertyTrack& other) = default;
-    PropertyTrack(PropertyTrack&& other) = default;
     PropertyTrack(ProcessorNetwork* network);
     PropertyTrack(Prop* property);
     PropertyTrack(Prop* property, ProcessorNetwork* network);
@@ -270,6 +267,8 @@ public:
     virtual std::unique_ptr<Key> createKeyframe(Seconds time) const override;
 
 protected:
+    PropertyTrack(const PropertyTrack& other) = default;
+    PropertyTrack(PropertyTrack&& other) = default;
     /*
      * Create a Key using the provided property value.
      */

@@ -64,16 +64,29 @@ public:
     std::vector<Animation*> get(std::string_view name);
     const std::vector<Animation>& get() const { return animations_; }
 
+    Animation& operator[](size_t i);
+    const Animation& operator[](size_t i) const;
+
+    std::vector<Animation>::iterator begin();
+    std::vector<Animation>::const_iterator begin() const;
+    std::vector<Animation>::iterator end();
+    std::vector<Animation>::const_iterator end() const;
+
     std::string_view getName(size_t index);
     Animation& add(std::string_view name);
-    Animation& add(std::string_view name, Animation anim);
+    Animation& add(Animation anim);
     Animation& insert(size_t index, std::string_view name);
     /**
-     * Deletes animations in the range [from to) and sets the main animation to the next available
-     * index.
+     * Removes  the animation and adjusts the main animation to the next available
+     * index if needed.
      * An empty animation will be added if all animations are erased.
      */
-    void erase(size_t from, size_t to);
+    void erase(size_t index);
+    /**
+     * Removes all animations leaving an empty Animation, which is set to be the MainAnimation.
+     * The size() will be 1 after clearing.
+     */
+    void clear();
     void setName(size_t index, std::string_view newName);
 
     size_t size() const { return animations_.size(); }
@@ -102,7 +115,6 @@ private:
     AnimationManager& animationManager_;
 
     std::vector<Animation> animations_;
-    std::vector<std::string> names_;
     MainAnimation mainAnimation_;
     size_t mainAnimationIdx_;
 

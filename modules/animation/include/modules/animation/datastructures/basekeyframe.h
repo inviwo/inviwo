@@ -40,9 +40,8 @@ public:
     using value_type = void;
     BaseKeyframe() = default;
     BaseKeyframe(Seconds time);
-    BaseKeyframe(const BaseKeyframe& rhs);
-    BaseKeyframe& operator=(const BaseKeyframe& that);
-    virtual ~BaseKeyframe();
+
+    virtual ~BaseKeyframe() = default;
 
     virtual Seconds getTime() const override;
     virtual void setTime(Seconds time) override;
@@ -54,6 +53,12 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 protected:
+    BaseKeyframe(const BaseKeyframe& rhs) = default;
+    BaseKeyframe(BaseKeyframe&& rhs) = default;
+    BaseKeyframe& operator=(const BaseKeyframe& that);
+    BaseKeyframe& operator=(BaseKeyframe&& that) = default;
+
+private:
     bool isSelected_{false};
     Seconds time_{0.0};
 };

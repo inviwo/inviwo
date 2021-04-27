@@ -34,18 +34,10 @@ namespace inviwo {
 
 namespace animation {
 
-ControlKeyframeSequence::ControlKeyframeSequence() = default;
-
 ControlKeyframeSequence::ControlKeyframeSequence(
     std::vector<std::unique_ptr<ControlKeyframe>> keyframes)
     : BaseKeyframeSequence<ControlKeyframe>(std::move(keyframes)) {}
 
-ControlKeyframeSequence::ControlKeyframeSequence(const ControlKeyframeSequence& rhs) = default;
-
-ControlKeyframeSequence& ControlKeyframeSequence::operator=(const ControlKeyframeSequence& that) =
-    default;
-
-ControlKeyframeSequence::~ControlKeyframeSequence() = default;
 
 ControlKeyframeSequence* ControlKeyframeSequence::clone() const {
     return new ControlKeyframeSequence(*this);
@@ -53,7 +45,7 @@ ControlKeyframeSequence* ControlKeyframeSequence::clone() const {
 
 AnimationTimeState ControlKeyframeSequence::operator()(Seconds from, Seconds to,
                                                        AnimationState state) const {
-    return animateRange(keyframes_.begin(), keyframes_.end(), from, to, state);
+    return animateRange(begin(), end(), from, to, state);
 }
 
 }  // namespace animation

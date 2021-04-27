@@ -64,7 +64,9 @@ public:
      * Remove all keyframe sequences and call TrackObserver::notifyKeyframeSequenceRemoved
      */
     virtual ~Track() = default;
-
+    /**
+     * Create a deep copy of the Track including references to its possibly underlying Property.
+     */
     virtual Track* clone() const = 0;
 
     virtual std::string getClassIdentifier() const = 0;

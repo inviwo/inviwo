@@ -31,6 +31,8 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <inviwo/core/util/zip.h>
+
 namespace inviwo {
 
 namespace animation {
@@ -41,23 +43,26 @@ AnimationsModel::AnimationsModel(WorkspaceAnimations& animations, QObject* paren
     onChangedHandle_ = animations_.onChanged_.add([this](size_t from, size_t to) {
         auto fromI = createIndex(static_cast<int>(from), 0);
         auto toI = createIndex(static_cast<int>(to), 0);
+        for (auto i = from; i < to; i++) {
+            animations_[i].addObserver(this);
+        }
         emit dataChanged(fromI, toI);
     });
 };
 
-inline Qt::ItemFlags AnimationsModel::flags(const QModelIndex& index) const {
+Qt::ItemFlags AnimationsModel::flags(const QModelIndex& index) const {
     if (!index.isValid()) {
         return QAbstractListModel::flags(index) | Qt::ItemIsDropEnabled;
     } else {
         return QAbstractListModel::flags(index) | Qt::ItemIsEditable;
     }
 }
-inline QVariant AnimationsModel::headerData([[maybe_unused]] int section,
-                                            [[maybe_unused]] Qt::Orientation orientation,
-                                            [[maybe_unused]] int role) const {
+QVariant AnimationsModel::headerData([[maybe_unused]] int section,
+                                     [[maybe_unused]] Qt::Orientation orientation,
+                                     [[maybe_unused]] int role) const {
     return "Animations";
 }
-inline int AnimationsModel::rowCount(const QModelIndex& parent) const {
+int AnimationsModel::rowCount(const QModelIndex& parent) const {
     if (parent.isValid()) {
         return 0;
     } else {
@@ -107,10 +112,22 @@ bool AnimationsModel::removeRows(int row, int count, const QModelIndex& parent) 
         return false;
     }
     beginRemoveRows(QModelIndex(), row, row + count - 1);
-    animations_.erase(static_cast<size_t>(row),
-                      static_cast<size_t>(row) + static_cast<size_t>(count));
+    for (int i = row + count - 1; i >= row; i--) {
+        animations_.erase(i);
+    }
     endRemoveRows();
     return true;
+}
+
+void AnimationsModel::onNameChanged(Animation* anim) {
+    for (auto&& [index, elem] : util::enumerate(animations_.get())) {
+        if (&elem == anim) {
+            auto fromI = createIndex(static_cast<int>(index), 0);
+            auto toI = createIndex(static_cast<int>(index), 0);
+            emit dataChanged(fromI, toI);
+            break;
+        }
+    }
 }
 
 }  // namespace animation

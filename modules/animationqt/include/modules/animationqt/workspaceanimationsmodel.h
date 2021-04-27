@@ -42,7 +42,7 @@ namespace inviwo {
 
 namespace animation {
 
-class IVW_MODULE_ANIMATIONQT_API AnimationsModel : public QAbstractListModel {
+class IVW_MODULE_ANIMATIONQT_API AnimationsModel : public QAbstractListModel, public AnimationObserver {
 public:
     AnimationsModel(WorkspaceAnimations& animations, QObject* parent = 0);
     Qt::ItemFlags flags(const QModelIndex& index) const override;
@@ -57,6 +57,8 @@ public:
     bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
 
 private:
+
+    void onNameChanged(Animation* anim);
     WorkspaceAnimations& animations_;
     WorkspaceAnimations::OnChangedDispatcher::Handle onChangedHandle_;
 };

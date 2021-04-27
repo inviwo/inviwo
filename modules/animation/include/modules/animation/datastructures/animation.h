@@ -73,10 +73,11 @@ public:
      * @note nullptr to AnimationManager should mainly be used for unit testing and the likes.
      * @param animationManager used for creating PropertyTrack/KeyframeSequence/Keyframe.
      */
-    Animation(AnimationManager* animationManager = nullptr);
+    Animation(AnimationManager* animationManager = nullptr, std::string_view name = "Animation");
     Animation(const Animation&);
     Animation(Animation&&) = default;
     Animation& operator=(const Animation& that);
+    Animation& operator=(Animation&& that) = default;
 
     AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
 
@@ -182,6 +183,15 @@ public:
      */
     Seconds getLastTime() const;
 
+    /**
+     * Return the name of the Animation. Used for display in the GUI.
+     */
+    std::string_view getName() const;
+    /**
+     * Set new name and notify observers if different from old name.
+     */
+    void setName(std::string_view name);
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -198,6 +208,7 @@ private:
 
     std::vector<std::unique_ptr<Track>> tracks_;
     std::vector<Track*> priorityTracks_;
+    std::string name_;
     AnimationManager* am_;
 };
 

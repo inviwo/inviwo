@@ -37,13 +37,14 @@ namespace inviwo {
 
 namespace animation {
 
-Animation::Animation(AnimationManager* am)
-    : AnimationObservable(), TrackObserver(), PropertyOwnerObserver(), am_(am) {}
+Animation::Animation(AnimationManager* am, std::string_view name)
+    : AnimationObservable(), TrackObserver(), PropertyOwnerObserver(), name_(name), am_(am) {}
 
 Animation::Animation(const Animation& other)
     : AnimationObservable(other)
     , TrackObserver(other)
     , PropertyOwnerObserver(other)
+    , name_{other.name_}
     , am_{other.am_} {
     for (const auto& tr : other.tracks_) {
         add(std::unique_ptr<Track>(tr->clone()));
@@ -55,6 +56,7 @@ Animation& Animation::operator=(const Animation& that) {
         while (!tracks_.empty()) {
             remove(tracks_.back().get());
         }
+        name_ = that.name_;
         am_ = that.am_;
         for (const auto& tr : that.tracks_) {
             add(std::unique_ptr<Track>(tr->clone()));
@@ -261,9 +263,22 @@ Seconds Animation::getLastTime() const {
     return time;
 }
 
-void Animation::serialize(Serializer& s) const { s.serialize("tracks", tracks_, "track"); }
+std::string_view inviwo::animation::Animation::getName() const { return name_; }
+
+void inviwo::animation::Animation::setName(std::string_view name) { 
+    if (name != name_) {
+        name_ = name; 
+        notifyNameChanged(this);
+    }
+}
+
+void Animation::serialize(Serializer& s) const { 
+    s.serialize("name", name_); 
+    s.serialize("tracks", tracks_, "track"); 
+}
 
 void Animation::deserialize(Deserializer& d) {
+    d.deserialize("name", name_); 
     std::vector<std::unique_ptr<Track>> tmp;
     d.deserialize("tracks", tmp, "track");
     while (!tmp.empty()) {

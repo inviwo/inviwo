@@ -44,7 +44,7 @@ std::string CallbackTrack::getClassIdentifier() const { return classIdentifier()
 
 AnimationTimeState CallbackTrack::operator()(Seconds from, Seconds to, AnimationState state) const {
     if (!isEnabled() || empty()) return {to, state};
-    return animateRange(sequences_.begin(), sequences_.end(), from, to, state);
+    return animateRange(begin(), end(), from, to, state);
 }
 
 }  // namespace animation

@@ -208,15 +208,15 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     }
 
     {
-        auto openAction = new QAction(QIcon(":/svgicons/open.svg"), tr("&Import Animation"), this);
-        addAction(openAction);
-        connect(openAction, &QAction::triggered, this, [this]() { importAnimation(); });
-        toolBar->addAction(openAction);
+        auto importAction = new QAction(QIcon(":/svgicons/open.svg"), tr("&Import Animation"), this);
+        addAction(importAction);
+        connect(importAction, &QAction::triggered, this, [this]() { importAnimation(); });
+        toolBar->addAction(importAction);
     }
 
     {
         auto deleteAction =
-            new QAction(QIcon(":/svgicons/trashcan.svg"), tr("&Remove Animation"), this);
+            new QAction(QIcon(":/animation/icons/trashcan.svg"), tr("&Remove Animation"), this);
         deleteAction->setToolTip("Remove Animation");
         addAction(deleteAction);
         connect(deleteAction, &QAction::triggered, this,
