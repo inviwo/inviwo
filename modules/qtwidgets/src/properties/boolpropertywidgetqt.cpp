@@ -29,6 +29,8 @@
 
 #include <modules/qtwidgets/properties/boolpropertywidgetqt.h>
 
+#include <inviwo/core/util/rendercontext.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QCheckBox>
@@ -70,6 +72,7 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
 
         auto setPropertyValueFromString = [=]() {
             QString str(lineEdit_->text());
+            RenderContext::getPtr()->activateDefaultRenderContext();
             property_->set(str == "true" || str == "1");
         };
         connect(lineEdit_, &QLineEdit::editingFinished, setPropertyValueFromString);
@@ -82,7 +85,10 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
         setFocusPolicy(checkBox_->focusPolicy());
         setFocusProxy(checkBox_);
 
-        auto setPropertyValueFromCheckbox = [=](bool checked) { property_->set(checked); };
+        auto setPropertyValueFromCheckbox = [=](bool checked) {
+            RenderContext::getPtr()->activateDefaultRenderContext();
+            property_->set(checked);
+        };
         connect(checkBox_, &QCheckBox::toggled, setPropertyValueFromCheckbox);
         hLayout->addWidget(checkBox_);
     }
