@@ -36,18 +36,14 @@
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 
 VolumeNormalization::VolumeNormalization()
-    : shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
-               {ShaderType::Geometry, utilgl::findShaderResource("volume_gpu.geom")},
-               {ShaderType::Fragment, utilgl::findShaderResource("volumenormalization.frag")}},
+    : shader_({{ShaderType::Compute, utilgl::findShaderResource("volumenormalization.comp")}},
               Shader::Build::No)
-    , fbo_()
     , needsCompilation_(false) {
-    shader_.getFragmentShaderObject()->addShaderDefine("NORMALIZE_CHANNEL_0");
+    shader_.getShaderObject(ShaderType::Compute)->addShaderDefine("NORMALIZE_CHANNEL_0");
     shader_.build();
 }
 
@@ -55,9 +51,11 @@ void VolumeNormalization::setNormalizeChannel(const size_t channel, const bool n
     needsCompilation_ = true;
 
     if (normalize) {
-        shader_.getFragmentShaderObject()->addShaderDefine(defines_[channel]);
+        shader_.getShaderObject(ShaderType::Compute)
+            ->addShaderDefine(StrBuffer{"NORMALIZE_CHANNEL_{}", channel});
     } else {
-        shader_.getFragmentShaderObject()->removeShaderDefine(defines_[channel]);
+        shader_.getShaderObject(ShaderType::Compute)
+            ->removeShaderDefine(StrBuffer{"NORMALIZE_CHANNEL_{}", channel});
     }
 }
 
@@ -82,23 +80,36 @@ std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
         shader_.build();
     }
 
+    const auto dimensions = volume.getDimensions();
+
     shader_.activate();
 
     TextureUnitContainer cont;
-    utilgl::bindAndSetUniforms(shader_, cont, volume, "volume");
+    utilgl::bindAndSetUniforms(shader_, cont, volume, "inputTexture");
+    shader_.setUniform("outputTexture", 0);
 
-    const size3_t dim{volume.getDimensions()};
-    fbo_.activate();
-    glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
+    auto outVolumeGL = outVolume->getEditableRepresentation<VolumeGL>();
+    outVolumeGL->setWrapping({Wrapping::Clamp, Wrapping::Clamp, Wrapping::Clamp});
 
-    VolumeGL* outVolumeGL = outVolume->getEditableRepresentation<VolumeGL>();
+    glActiveTexture(GL_TEXTURE0);
 
-    fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
+    const auto texture = outVolumeGL->getTexture();
+    const auto texHandle = texture->getID();
+    glBindImageTexture(0, texHandle, 0, GL_FALSE, 0, GL_WRITE_ONLY, texture->getInternalFormat());
 
-    utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
+    outVolumeGL->setSwizzleMask(swizzlemasks::rgba);
+
+    outVolumeGL->getTexture()->bind();
+
+    /*
+     * Run normalization.
+     */
+    glDispatchCompute(static_cast<GLuint>(dimensions.x), static_cast<GLuint>(dimensions.y),
+                      static_cast<GLuint>(dimensions.z));
+
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     shader_.deactivate();
-    fbo_.deactivate();
 
     outVolume->dataMap_.dataRange = outVolume->dataMap_.valueRange = dvec2{0, 1};
 

@@ -286,7 +286,7 @@ set(SHADER_FILES
     glsl/volume_mapping.frag
     glsl/volumegradientmagnitude.frag
     glsl/volumemerger.frag
-    glsl/volumenormalization.frag
+    glsl/volumenormalization.comp
     glsl/volumeslice.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})

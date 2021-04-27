@@ -26,42 +26,55 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  *********************************************************************************/
- 
- #include "utils/sampler3d.glsl"
 
-uniform VolumeParameters volumeParameters;
-uniform sampler3D volume;
+#include "utils/structs.glsl"
 
-in vec4 texCoord_;
+uniform sampler3D inputTexture;
+uniform VolumeParameters inputTextureParameters;
+writeonly uniform image3D outputTexture;
+
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+vec4 getNormalizedVoxel(sampler3D volume, VolumeParameters volumeParams, ivec3 samplePos) {
+    return (texelFetch(volume, samplePos, 0) + volumeParams.formatOffset)
+        * (1.0 - volumeParams.formatScaling);
+}
+
+float getNormalizedVoxelChannel(sampler3D volume, VolumeParameters volumeParams, ivec3 samplePos, int channel) {
+    vec4 v = getNormalizedVoxel(volume, volumeParams, samplePos);
+    return v[channel];
+}
 
 void main() {
+    ivec3 samplePos = ivec3(gl_GlobalInvocationID);
 
-    vec4 original = texture(volume, texCoord_.xyz);
+    vec4 original = texelFetch(inputTexture, samplePos, 0);
+    
     float l, m, n, o;
 
 #ifdef NORMALIZE_CHANNEL_0
-    l = getNormalizedVoxelChannel(volume, volumeParameters, texCoord_.xyz, 0);
+    l = getNormalizedVoxelChannel(inputTexture, inputTextureParameters, samplePos, 0);
 #else
     l = original[0];
 #endif
 
 #ifdef NORMALIZE_CHANNEL_1
-    m = getNormalizedVoxelChannel(volume, volumeParameters, texCoord_.xyz, 1);
+    m = getNormalizedVoxelChannel(inputTexture, inputTextureParameters, samplePos, 1);
 #else
     m  = original[1];
 #endif
 
 #ifdef NORMALIZE_CHANNEL_2
-    n = getNormalizedVoxelChannel(volume, volumeParameters, texCoord_.xyz, 2);
+    n = getNormalizedVoxelChannel(inputTexture, inputTextureParameters, samplePos, 2);
 #else
     n = original[2];
 #endif
 
 #ifdef NORMALIZE_CHANNEL_3
-    o = getNormalizedVoxelChannel(volume, volumeParameters, texCoord_.xyz, 3);
+    o = getNormalizedVoxelChannel(inputTexture, inputTextureParameters, samplePos, 3);
 #else
     o = original[3];
 #endif
 
-    FragData0 = vec4(l, m, n, o);
+    imageStore(outputTexture, samplePos, vec4(l, m, n, o));
 }

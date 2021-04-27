@@ -86,6 +86,15 @@ VolumeNormalizationProcessor::VolumeNormalizationProcessor()
             volumeNormalization_.reset();
         }
     });
+
+    normalizeChannel0_.onChange(
+        [this]() { volumeNormalization_.setNormalizeChannel(0, normalizeChannel0_.get()); });
+    normalizeChannel1_.onChange(
+        [this]() { volumeNormalization_.setNormalizeChannel(1, normalizeChannel1_.get()); });
+    normalizeChannel2_.onChange(
+        [this]() { volumeNormalization_.setNormalizeChannel(2, normalizeChannel2_.get()); });
+    normalizeChannel3_.onChange(
+        [this]() { volumeNormalization_.setNormalizeChannel(3, normalizeChannel3_.get()); });
 }
 
 void VolumeNormalizationProcessor::process() {
@@ -97,18 +106,12 @@ void VolumeNormalizationProcessor::process() {
         apply = apply || dynamic_cast<BoolProperty*>(channelProperties[i])->get();
     }
     if (inputVolume->getDataFormat()->getNumericType() != NumericType::Float) {
-        LogWarn("Numeric type of input volume is not floating point, omitting normalization.");
-        apply = false;
+        LogWarn("Numeric type of input volume is not floating point.");
     }
 
     if (!apply) {
         volumeOutport_.setData(inputVolume);
     } else {
-        for (size_t i{0}; i < channelProperties.size(); ++i) {
-            volumeNormalization_.setNormalizeChannel(
-                i, dynamic_cast<BoolProperty*>(channelProperties[i])->get());
-        }
-
         volumeOutport_.setData(volumeNormalization_.normalize(*inputVolume));
     }
 }
