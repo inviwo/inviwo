@@ -201,14 +201,15 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
         addAction(newAction);
         connect(newAction, &QAction::triggered, this, [this]() {
             animationsList_->addItem(
-                utilqt::toQString(fmt::format("Animation {}", animations_.get().size() + 1)));
+                utilqt::toQString(fmt::format("Animation {}", animations_.size() + 1)));
             animationsList_->setCurrentIndex(animationsList_->count() - 1);
         });
         toolBar->addAction(newAction);
     }
 
     {
-        auto importAction = new QAction(QIcon(":/svgicons/open.svg"), tr("&Import Animation"), this);
+        auto importAction =
+            new QAction(QIcon(":/svgicons/open.svg"), tr("&Import Animation"), this);
         addAction(importAction);
         connect(importAction, &QAction::triggered, this, [this]() { importAnimation(); });
         toolBar->addAction(importAction);
@@ -230,11 +231,13 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
         animationsList_->setInsertPolicy(QComboBox::InsertAtCurrent);
         animationsList_->setEditable(true);
         animationsList_->setModel(new AnimationsModel(animations_, animationsList_));
-        animationsList_->setCurrentIndex(static_cast<int>(animations_.getMainAnimationIndex()));
+        // Update currently selected index
+        onAnimationChanged(&controller_, &animations_.getMainAnimation().get(),
+                           &animations_.getMainAnimation().get());
         connect(animationsList_, QOverload<int>::of(&QComboBox::currentIndexChanged),
                 [=](int index) {
-                    if (index >= 0) {
-                        animations_.setMainAnimationIndex(index);
+                    if (index >= 0 && index < animations_.size()) {
+                        animations_.setMainAnimation(animations_[index]);
                     }
                 });
         toolBar->addWidget(animationsList_);
@@ -361,6 +364,17 @@ void AnimationEditorDockWidgetQt::onStateChanged(AnimationController*, Animation
     } else if (newState == AnimationState::Paused) {
         QSignalBlocker block(btnPlayPause_);
         btnPlayPause_->setChecked(false);
+    }
+}
+
+void AnimationEditorDockWidgetQt::onAnimationChanged(AnimationController*, Animation*,
+                                                     Animation* newAnim) {
+
+    if (auto it = animations_.find(newAnim); it != animations_.end()) {
+        auto selectedIndex = static_cast<int>(std::distance(animations_.begin(), it));
+        if (animationsList_->currentIndex() != selectedIndex) {
+            animationsList_->setCurrentIndex(selectedIndex);
+        }
     }
 }
 

@@ -199,6 +199,16 @@ public:
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
 private:
+    /**
+     * Call when a track has been pushed to tracks_.
+     * Adds specified Track to priorityTracks_ and notifies observers.
+     */
+    void trackAddedInternal(Track* t);
+    /**
+     * Call when a track has been removed from tracks_.
+     * Removes specified Track from priorityTracks_ and notifies observers.
+     */
+    void trackRemovedInternal(Track* t);
     AnimationManager* getManager();
     virtual void onPriorityChanged(Track* t) override;
     void doPrioritySort();

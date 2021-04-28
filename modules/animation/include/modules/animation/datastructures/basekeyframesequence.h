@@ -42,7 +42,7 @@ namespace inviwo {
 namespace animation {
 
 template <typename Key>
-class BaseKeyframeSequence : public KeyframeSequence {
+class BaseKeyframeSequence : public KeyframeSequence, public KeyframeObserver {
 public:
     using key_type = Key;
     using value_type = typename Key::value_type;

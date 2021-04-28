@@ -40,13 +40,15 @@ namespace animation {
 AnimationsModel::AnimationsModel(WorkspaceAnimations& animations, QObject* parent)
     : QAbstractListModel(parent), animations_{animations} {
 
-    onChangedHandle_ = animations_.onChanged_.add([this](size_t from, size_t to) {
-        auto fromI = createIndex(static_cast<int>(from), 0);
-        auto toI = createIndex(static_cast<int>(to), 0);
-        for (auto i = from; i < to; i++) {
-            animations_[i].addObserver(this);
+    onChangedHandle_ = animations_.onChanged_.add([this](size_t index, Animation& anim) {
+        auto it = animations_.find(&anim); 
+        if (it != animations_.end()) {
+            anim.addObserver(this);
+        } else {
+            anim.removeObserver(this);
         }
-        emit dataChanged(fromI, toI);
+        auto idx = createIndex(static_cast<int>(index), 0);
+        emit dataChanged(idx, idx);
     });
 };
 
@@ -73,7 +75,7 @@ QVariant AnimationsModel::data(const QModelIndex& index, int role) const {
     if (index.row() < 0 || index.row() >= static_cast<int>(animations_.size())) {
         return QVariant();
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        return QVariant(utilqt::toQString(animations_.getName(index.row())));
+        return QVariant(utilqt::toQString(animations_[index.row()].getName()));
     }
 
     return QVariant();
@@ -83,10 +85,10 @@ bool AnimationsModel::setData(const QModelIndex& index, const QVariant& value, i
     if (index.row() >= 0 && index.row() < static_cast<int>(animations_.size()) &&
         (role == Qt::EditRole || role == Qt::DisplayRole)) {
         auto valueString = utilqt::fromQString(value.toString());
-        if (animations_.getName(index.row()) == valueString) {
+        if (animations_[index.row()].getName() == valueString) {
             return true;
         } else {
-            animations_.setName(index.row(), valueString);
+            animations_[index.row()].setName(valueString);
             emit dataChanged(index, index, {Qt::DisplayRole, Qt::EditRole});
             return true;
         }
@@ -120,13 +122,12 @@ bool AnimationsModel::removeRows(int row, int count, const QModelIndex& parent) 
 }
 
 void AnimationsModel::onNameChanged(Animation* anim) {
-    for (auto&& [index, elem] : util::enumerate(animations_.get())) {
-        if (&elem == anim) {
-            auto fromI = createIndex(static_cast<int>(index), 0);
-            auto toI = createIndex(static_cast<int>(index), 0);
-            emit dataChanged(fromI, toI);
-            break;
-        }
+    
+    if (auto it = animations_.find(anim); it != animations_.end()) {
+        auto index = static_cast<int>(std::distance(animations_.begin(), it));
+        auto fromI = createIndex(static_cast<int>(index), 0);
+        auto toI = createIndex(static_cast<int>(index), 0);
+        emit dataChanged(fromI, toI);
     }
 }
 

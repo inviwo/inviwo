@@ -43,17 +43,29 @@ namespace animation {
  * \brief Responsible for animations saved in the workspace and ensuring that there always is at
  * least one main Animation.
  *
- * One of its animations is set to be the MainAnimation.
- * Each Animation is associated with a name, but the name is not enforced to be unique.
+ * One of its animations is set to be the MainAnimation. The Animation used by MainAnimation must
+ * be set through WorkspaceAnimations.
  *
- * It is responsible for clearing, saving, and loading animations when the workspace is cleared,
- * saved, or loaded.
+ *
+ * WorkspaceAnimations is responsible for clearing, saving, and loading animations when the
+ * workspace is cleared, saved, or loaded. It will also call notifyObserversProcessorNetworkChanged
+ * whenever its animations change to enable undo/redo.
  *
  */
-class IVW_MODULE_ANIMATION_API WorkspaceAnimations {
+class IVW_MODULE_ANIMATION_API WorkspaceAnimations : public AnimationControllerObserver,
+                                                     public AnimationObserver,
+                                                     public TrackObserver,
+                                                     public KeyframeSequenceObserver,
+                                                     public KeyframeObserver {
 public:
-    // Indices of changed elements [from, to], inclusive range
-    using OnChangedDispatcher = Dispatcher<void(size_t, size_t)>;
+    /**
+     * Called when an Animation is added or removed.
+     * In case of removal: The supplied Animation will be removed from WorkspaceAnimation before
+     * this function is called, but it will not be deleted until after this call.
+     * @param Index of changed Animation (as it was before removal)
+     * @param Reference to the added/removed Animation.
+     */
+    using OnChangedDispatcher = Dispatcher<void(size_t, Animation&)>;
     WorkspaceAnimations(InviwoApplication* app, AnimationManager& manager);
     virtual ~WorkspaceAnimations() = default;
 
@@ -62,19 +74,19 @@ public:
      * @return all animations matching name
      */
     std::vector<Animation*> get(std::string_view name);
-    const std::vector<Animation>& get() const { return animations_; }
 
     Animation& operator[](size_t i);
     const Animation& operator[](size_t i) const;
 
-    std::vector<Animation>::iterator begin();
     std::vector<Animation>::const_iterator begin() const;
-    std::vector<Animation>::iterator end();
     std::vector<Animation>::const_iterator end() const;
 
-    std::string_view getName(size_t index);
+    /**
+     * Add an empty Animation with specified name.
+     */
     Animation& add(std::string_view name);
     Animation& add(Animation anim);
+
     Animation& insert(size_t index, std::string_view name);
     /**
      * Removes  the animation and adjusts the main animation to the next available
@@ -87,7 +99,6 @@ public:
      * The size() will be 1 after clearing.
      */
     void clear();
-    void setName(size_t index, std::string_view newName);
 
     size_t size() const { return animations_.size(); }
 
@@ -98,25 +109,56 @@ public:
     size_t import(Deserializer& d);
 
     /**
-     * @brief Set which of the added animations that should be MainAnimation.
+     * @brief Set specified Animation to be the MainAnimation.
+     * A copy of the Animation will be added in case the it has not been added before.
      * The AnimationController in MainAnimation will notify its observers of the animation change.
-     *
-     * @throws std::out_of_range exception if index is greater than or equal to
-     * WorkspaceAnimations::size
      */
-    void setMainAnimationIndex(size_t index);
-    size_t getMainAnimationIndex() const;
+    void setMainAnimation(Animation& anim);
     MainAnimation& getMainAnimation();
     const MainAnimation& getMainAnimation() const;
 
-    OnChangedDispatcher onChanged_;  // Fired when Animation is added/removed or name changed
+    std::vector<Animation>::const_iterator find(const Animation* anim);
+
+    OnChangedDispatcher onChanged_;  // Fired when animations are added/removed
 
 private:
+    size_t getMainAnimationIndex() const;
+    // MainAnimation changed
+    virtual void onAnimationChanged(AnimationController* controller, Animation* oldAnim,
+                                    Animation* newAnim) override;
+
+    // Add observers and fire onChanged_
+    void addInternal(size_t index, Animation& anim);
+
+    // AnimationObserver overloads
+    virtual void onTrackAdded(Track*) override;
+    virtual void onTrackRemoved(Track*) override;
+    virtual void onNameChanged(Animation*) override;
+
+    // TrackObserver overloads, notify network that they it is invalid for undo/redo
+    virtual void onKeyframeSequenceAdded(Track*, KeyframeSequence*) override;
+    virtual void onKeyframeSequenceRemoved(Track*, KeyframeSequence*) override;
+
+    virtual void onEnabledChanged(Track*) override;
+    virtual void onNameChanged(Track*) override;
+    virtual void onPriorityChanged(Track*) override;
+
+    // KeyframeSequenceObserver overloads
+    virtual void onKeyframeAdded(Keyframe*, KeyframeSequence*) override;
+    virtual void onKeyframeRemoved(Keyframe*, KeyframeSequence*) override;
+    virtual void onKeyframeSequenceMoved(KeyframeSequence*) override;
+    virtual void onKeyframeSequenceSelectionChanged(KeyframeSequence*) override;
+
+    // KeyframeObserver
+    virtual void onKeyframeTimeChanged(Keyframe*, Seconds) override;
+    virtual void onKeyframeSelectionChanged(Keyframe*) override;
+
     AnimationManager& animationManager_;
 
     std::vector<Animation> animations_;
     MainAnimation mainAnimation_;
-    size_t mainAnimationIdx_;
+
+    InviwoApplication* app_;
 
     WorkspaceManager::ClearHandle animationClearHandle_;
     WorkspaceManager::SerializationHandle animationSerializationHandle_;

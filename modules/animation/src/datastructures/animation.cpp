@@ -98,15 +98,7 @@ void Animation::add(std::unique_ptr<Track> track) {
         return;
     }
     tracks_.push_back(std::move(track));
-    priorityTracks_.push_back(tracks_.back().get());
-    doPrioritySort();
-    tracks_.back()->addObserver(this);
-    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(tracks_.back().get())) {
-        if (auto propertyOwner = propertyTrack->getProperty()->getOwner()) {
-            propertyOwner->addObserver(this);
-        }
-    }
-    notifyTrackAdded(tracks_.back().get());
+    trackAddedInternal(tracks_.back().get());
 }
 
 Keyframe* Animation::addKeyframe(Property* property, Seconds time) {
@@ -176,22 +168,7 @@ BasePropertyTrack* Animation::add(Property* property) {
 std::unique_ptr<Track> Animation::remove(size_t i) {
     auto track = std::move(tracks_[i]);
     tracks_.erase(tracks_.begin() + i);
-    util::erase_remove(priorityTracks_, track.get());
-    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track.get());
-        auto owner = propertyTrack->getProperty()->getOwner()) {
-        // Only stop observing property owner if no other track needs it
-        auto sameOwnerIt = std::find_if(tracks_.begin(), tracks_.end(), [owner](const auto& elem) {
-            if (auto ptrck = dynamic_cast<BasePropertyTrack*>(elem.get())) {
-                return ptrck->getProperty()->getOwner() == owner;
-            } else {
-                return false;
-            }
-        });
-        if (sameOwnerIt == tracks_.end()) {
-            owner->removeObserver(this);
-        }
-    }
-    notifyTrackRemoved(track.get());
+    trackRemovedInternal(track.get());
     return track;
 }
 
@@ -265,26 +242,24 @@ Seconds Animation::getLastTime() const {
 
 std::string_view inviwo::animation::Animation::getName() const { return name_; }
 
-void inviwo::animation::Animation::setName(std::string_view name) { 
+void inviwo::animation::Animation::setName(std::string_view name) {
     if (name != name_) {
-        name_ = name; 
+        name_ = name;
         notifyNameChanged(this);
     }
 }
 
-void Animation::serialize(Serializer& s) const { 
-    s.serialize("name", name_); 
-    s.serialize("tracks", tracks_, "track"); 
+void Animation::serialize(Serializer& s) const {
+    s.serialize("name", name_);
+    s.serialize("tracks", tracks_, "track");
 }
 
 void Animation::deserialize(Deserializer& d) {
-    d.deserialize("name", name_); 
-    std::vector<std::unique_ptr<Track>> tmp;
-    d.deserialize("tracks", tmp, "track");
-    while (!tmp.empty()) {
-        add(std::move(tmp.back()));
-        tmp.pop_back();
-    }
+    d.deserialize("name", name_);
+    util::IndexedDeserializer<std::unique_ptr<Track>>("tracks", "track")
+        .onNew([&](std::unique_ptr<Track>& track) { trackAddedInternal(track.get()); })
+        .onRemove([&](std::unique_ptr<Track>& track) { trackRemovedInternal(track.get()); })(
+            d, tracks_);
 }
 
 void Animation::onWillRemoveProperty(Property* property, size_t) {
@@ -292,6 +267,37 @@ void Animation::onWillRemoveProperty(Property* property, size_t) {
     if (it != end()) {
         remove(std::distance(tracks_.begin(), it.base()));
     }
+}
+
+void Animation::trackAddedInternal(Track* track) {
+    priorityTracks_.push_back(track);
+    doPrioritySort();
+    track->addObserver(this);
+    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track)) {
+        if (auto propertyOwner = propertyTrack->getProperty()->getOwner()) {
+            propertyOwner->addObserver(this);
+        }
+    }
+    notifyTrackAdded(track);
+}
+
+void Animation::trackRemovedInternal(Track* track) {
+    util::erase_remove(priorityTracks_, track);
+    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track);
+        auto owner = propertyTrack->getProperty()->getOwner()) {
+        // Only stop observing property owner if no other track needs it
+        auto sameOwnerIt = std::find_if(tracks_.begin(), tracks_.end(), [owner](const auto& elem) {
+            if (auto ptrck = dynamic_cast<BasePropertyTrack*>(elem.get())) {
+                return ptrck->getProperty()->getOwner() == owner;
+            } else {
+                return false;
+            }
+        });
+        if (sameOwnerIt == tracks_.end()) {
+            owner->removeObserver(this);
+        }
+    }
+    notifyTrackRemoved(track);
 }
 
 AnimationManager* Animation::getManager() {

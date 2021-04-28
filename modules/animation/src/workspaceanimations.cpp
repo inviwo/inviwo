@@ -29,6 +29,7 @@
 
 #include <modules/animation/workspaceanimations.h>
 
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/zip.h>
 
 namespace inviwo {
@@ -39,32 +40,38 @@ WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManage
     : animationManager_{animationManager}
     , animations_{{Animation(&animationManager_, "Animation 1")}}
     , mainAnimation_(app, animations_.front())
-    , mainAnimationIdx_{0} {
+    , app_{app} {
 
     animationClearHandle_ = app->getWorkspaceManager()->onClear([&]() { clear(); });
     animationSerializationHandle_ = app->getWorkspaceManager()->onSave([&](Serializer& s) {
-        s.serialize("MainAnimationIndex", mainAnimationIdx_);
+        s.serialize("MainAnimationIndex", getMainAnimationIndex());
         s.serialize("Animations", animations_, "Animation");
     });
     animationDeserializationHandle_ = app->getWorkspaceManager()->onLoad([&](Deserializer& d) {
         size_t mainAnimation = 0;
-        clear();
         d.deserialize("MainAnimationIndex", mainAnimation);
 
-        // Must pass AnimationManager to Animation constructor
-        util::IndexedDeserializer<Animation>("Animations", "Animation").setMakeNew([&]() {
-            return Animation(&animationManager_);
-        })(d, animations_);
+        util::IndexedDeserializer<Animation>("Animations", "Animation")
+            .setMakeNew([&]() {
+                // Must pass AnimationManager to Animation constructor
+                return Animation(&animationManager_);
+            })
+            .onNew([&](Animation& anim) { addInternal(size() - 1, anim); })
+            .onRemove([&](Animation& anim) {
+                // Previously last element was removed
+                onChanged_.invoke(size(), anim);
+            })(d, animations_);
 
         // Failsafe in case no animation was found
         if (animations_.empty()) {
             add("Animation 1");
-            setMainAnimationIndex(0);
-        } else {
-            setMainAnimationIndex(mainAnimation);
-            auto idx = static_cast<size_t>(animations_.size() - 1);
-            onChanged_.invoke(0, idx);
         }
+        setMainAnimation(animations_[std::min(mainAnimation, size() - 1)]);
+    });
+
+    onChanged_.add([app = app_](size_t, Animation&) {
+        // Enable undo/redo
+        app->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
     });
 }
 
@@ -84,65 +91,62 @@ Animation& WorkspaceAnimations::operator[](size_t i) { return animations_[i]; }
 
 const Animation& WorkspaceAnimations::operator[](size_t i) const { return animations_[i]; }
 
-std::vector<Animation>::iterator WorkspaceAnimations::begin() { return animations_.begin(); }
-
 std::vector<Animation>::const_iterator WorkspaceAnimations::begin() const {
     return animations_.begin();
 }
-
-std::vector<Animation>::iterator WorkspaceAnimations::end() { return animations_.end(); }
 
 std::vector<Animation>::const_iterator WorkspaceAnimations::end() const {
     return animations_.end();
 }
 
-std::string_view WorkspaceAnimations::getName(size_t index) {
-    return animations_.at(index).getName();
-}
-
 Animation& WorkspaceAnimations::add(std::string_view name) {
-    animations_.emplace_back(Animation(&animationManager_, name));
-    auto idx = static_cast<size_t>(animations_.size() - 1);
-    onChanged_.invoke(idx, idx);
-    return animations_.back();
+    return add(Animation(&animationManager_, name));
 }
 
 Animation& WorkspaceAnimations::add(Animation anim) {
     animations_.emplace_back(std::move(anim));
-    auto idx = static_cast<size_t>(animations_.size() - 1);
-    onChanged_.invoke(idx, idx);
+    addInternal(size() - 1, animations_.back());
     return animations_.back();
 }
 
-Animation& WorkspaceAnimations::insert(size_t index, std::string_view name) {
-    if (index <= getMainAnimationIndex()) {
-        mainAnimationIdx_ = index + 1;
+void WorkspaceAnimations::addInternal(size_t index, Animation& anim) {
+    anim.AnimationObservable::addObserver(this);
+    for (auto& track : anim) {
+        for (auto seqi = 0; seqi < track.size(); seqi++) {
+            for (auto keyi = 0; keyi < track[seqi].size(); keyi++) {
+                track[seqi][keyi].addObserver(this);
+            }
+            track[seqi].addObserver(this);
+        }
+        track.addObserver(this);
     }
+
+    onChanged_.invoke(index, anim);
+}
+
+Animation& WorkspaceAnimations::insert(size_t index, std::string_view name) {
     animations_.insert(animations_.begin() + index, Animation(&animationManager_, name));
-    onChanged_.invoke(index, index);
+    addInternal(index, animations_[index]);
     return animations_[index];
 }
 
 void WorkspaceAnimations::erase(size_t index) {
     // First ensure that the MainAnimation is valid
-    if (1 == animations_.size()) {
-        add("Animation 1");
-        mainAnimation_.set(animations_.back());
-        mainAnimationIdx_ = 0;  // all before will be removed
-    } else if (getMainAnimationIndex() > index) {
-        // Animation before will be removed, but the animation itself will not change
-        mainAnimationIdx_ -= 1;
-    } else if (getMainAnimationIndex() == index) {
+    if (size() == 1) {
+        animations_[0].clear();
+        animations_[0].setName("Animation 1");
+        onChanged_.invoke(0, animations_[0]);
+        return;
+    }
+    if (size() > 1 && getMainAnimationIndex() == index) {
         // The selected one will be removed, select next after
         auto indexBeforeRemoval = index + 1 == animations_.size() ? index - 1 : index + 1;
         mainAnimation_.set(animations_[indexBeforeRemoval]);
-        mainAnimationIdx_ =
-            static_cast<size_t>(std::clamp(static_cast<int>(getMainAnimationIndex()) - 1, 0,
-                                           static_cast<int>(animations_.size()) - 1));
-    }
-
+    } 
+    Animation anim(std::move(animations_[index]));
     animations_.erase(animations_.begin() + index);
-    onChanged_.invoke(index, index);
+
+    onChanged_.invoke(index, anim);
 }
 
 void WorkspaceAnimations::clear() {
@@ -152,24 +156,101 @@ void WorkspaceAnimations::clear() {
     }
 }
 
-void WorkspaceAnimations::setName(size_t index, std::string_view newName) {
-    if (index < animations_.size()) {
-        animations_[index].setName(newName);
-        onChanged_.invoke(index, index);
+void WorkspaceAnimations::setMainAnimation(Animation& anim) {
+    if (auto it = find(&anim); it != end()) {
+        mainAnimation_.set(anim);
+    } else {
+        add(anim);
+        mainAnimation_.set(animations_.back());
     }
 }
 
-void WorkspaceAnimations::setMainAnimationIndex(size_t index) {
-    Animation& anim = animations_.at(index);
-    mainAnimationIdx_ = index;
-    mainAnimation_.set(anim);
+size_t WorkspaceAnimations::getMainAnimationIndex() const {
+    // Note: cannot use WorkspaceAnimations::find here due to const, simply do the same.
+    auto it =
+        std::find_if(animations_.begin(), animations_.end(),
+                     [anim = &getMainAnimation().get()](const auto& a) { return anim == &a; });
+    return std::distance(begin(), it);
 }
-
-size_t WorkspaceAnimations::getMainAnimationIndex() const { return mainAnimationIdx_; }
 
 MainAnimation& WorkspaceAnimations::getMainAnimation() { return mainAnimation_; }
 
 const MainAnimation& WorkspaceAnimations::getMainAnimation() const { return mainAnimation_; }
+
+void WorkspaceAnimations::onAnimationChanged(AnimationController*, Animation*, Animation* newAnim) {
+    if (find(newAnim) == end()) {
+        // WorkspaceAnimations must own the Animation
+        throw Exception("MainAnimation must be set through WorkspaceAnimations");
+    }
+    // Enable undo/redo of currently selected Animation
+    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+}
+
+std::vector<Animation>::const_iterator WorkspaceAnimations::find(const Animation* anim) {
+    return std::find_if(begin(), end(), [anim](const auto& a) { return anim == &a; });
+}
+
+void WorkspaceAnimations::onTrackAdded(Track* track) {
+    track->addObserver(this);
+    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+}
+
+void WorkspaceAnimations::onTrackRemoved(Track* track) {
+    track->removeObserver(this);
+    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+}
+
+void WorkspaceAnimations::onNameChanged(Animation*) {
+    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+}
+
+void WorkspaceAnimations::onKeyframeSequenceAdded(Track*, KeyframeSequence* seq) {
+    seq->addObserver(this);
+    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+}
+
+void WorkspaceAnimations::onKeyframeSequenceRemoved(Track*, KeyframeSequence* seq) {
+    seq->removeObserver(this);
+    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+}
+
+void WorkspaceAnimations::onEnabledChanged(Track*) {
+    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+}
+
+void WorkspaceAnimations::onNameChanged(Track*) {
+    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+}
+
+void WorkspaceAnimations::onPriorityChanged(Track*) {
+    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+}
+
+void WorkspaceAnimations::onKeyframeAdded(Keyframe* key, KeyframeSequence*) {
+    key->addObserver(this);
+    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+}
+
+void WorkspaceAnimations::onKeyframeRemoved(Keyframe* key, KeyframeSequence*) {
+    key->removeObserver(this);
+    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+}
+
+void WorkspaceAnimations::onKeyframeSequenceMoved(KeyframeSequence*) {
+    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+}
+
+void WorkspaceAnimations::onKeyframeSequenceSelectionChanged(KeyframeSequence*) {
+    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+}
+
+void WorkspaceAnimations::onKeyframeTimeChanged(Keyframe*, Seconds) {
+    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+}
+
+void WorkspaceAnimations::onKeyframeSelectionChanged(Keyframe*) {
+    app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
+}
 
 size_t WorkspaceAnimations::import(Deserializer& d) {
     std::vector<Animation> animations;
