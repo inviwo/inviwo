@@ -29,10 +29,14 @@
 #include "utils/structs.glsl"
 #include "utils/pickingutils.glsl"
 
+#if !defined(NUM_SPLITTERS)
+#define NUM_SPLITTERS 1
+#endif
+
 layout(points) in;
+layout(triangle_strip, max_vertices=4 * NUM_SPLITTERS) out;
 
-layout(triangle_strip, max_vertices=4) out;
-
+uniform float positions[NUM_SPLITTERS];
 uniform bool pickingEnabled = true; // disables color output
 uniform vec4 color = vec4(0, 0, 0, 1);
 uniform uint pickId;
@@ -82,15 +86,12 @@ vec4 convertScreenToNDC(vec2 v, float z) {
     return vec4(v / screenDim * 2.0 - 1.0, z, 1.0);
 }
 
-void main() {
-    vec2 halfScreenDim = screenDim * 0.5;
-
-    vec4 startPos = trafo * vec4(0.0, 0.0, 0.0, 1.0);
-    vec4 endPos = trafo * vec4(0.0, 1.0, 0.0, 1.0);
+void createLine(float pos, uint pickingId) {
+    vec4 startPos = trafo * vec4(pos, 0.0, 0.0, 1.0);
+    vec4 endPos = trafo * vec4(pos, 1.0, 0.0, 1.0);
 
     // set pick color equivalent to first vertex
-    color_ = (pickingEnabled ? vec4(0) : color);
-    pickColor_ = vec4(pickingIndexToColor(pickId), pickId == 0 ? 0.0 : 1.0);
+    pickColor_ = vec4(pickingIndexToColor(pickingId), pickId == 0 ? 0.0 : 1.0);
     
     vec4 p1ndc = startPos / startPos.w;
     vec4 p2ndc = endPos / endPos.w;
@@ -136,4 +137,12 @@ void main() {
     emit(convertScreenToNDC(rightBottom, p2ndc.z), vec2(texCoord.y, -w));
 
     EndPrimitive();
+}
+
+void main() {
+    color_ = (pickingEnabled ? vec4(0) : color);
+
+    for (int i = 0; i < NUM_SPLITTERS; ++i) {
+        createLine(positions[i], pickId + i);
+    }
 }

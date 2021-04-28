@@ -43,14 +43,14 @@ class Processor;
 class PickingEvent;
 
 /**
- * \brief utility class for rendering a vertical or horizontal splitter and providing drag
+ * \brief utility class for rendering vertical or horizontal splitters and providing drag
  * interactions. This class will invalidate the processor for hover and drag events in order to
  * trigger a redraw.
  */
 class IVW_MODULE_BASEGL_API SplitterRenderer {
 public:
     using InvalidateCallback = std::function<void()>;
-    using DragCallback = std::function<void(float)>;
+    using DragCallback = std::function<void(float, int)>;
 
     SplitterRenderer(Processor* processor);
     SplitterRenderer(const SplitterRenderer& rhs);
@@ -67,21 +67,22 @@ public:
 
     /**
      * \brief \p callback will be called when the splitter is moved by dragging via mouse or touch.
-     * The new position will be used as argument.
+     * The arguments of the callback correspond to the new position and the index of the dragged
+     * splitter. When only one splitter is rendered the index will be 0.
      */
     void setDragAction(DragCallback callback);
 
     /*
-     * \brief render a splitter at the given position \pos and \p direction using the current
+     * \brief render a splitter at the given positions \pos and \p direction using the \p
      * settings
      *
      * @param settings    used to determine the style of the splitter (color, width, ...)
      * @param direction   splitter orientation
-     * @param pos         position of the splitter in normalized screen coordinates [0,1]
+     * @param pos         position of the splitters in normalized screen coordinates [0,1]
      * @param canvasDims  dimensions of the output canvas
      */
-    void render(const SplitterSettings& settings, splitter::Direction direction, float pos,
-                size2_t canvasDims);
+    void render(const SplitterSettings& settings, splitter::Direction direction,
+                const std::vector<float>& pos, size2_t canvasDims);
 
 private:
     void handlePickingEvent(PickingEvent* e);
@@ -95,7 +96,8 @@ private:
     Mesh mesh_;
 
     PickingMapper pickingMapper_;
-    bool hover_ = false;
+    int hoveredSplitter_ = -1;
+    size_t maxSplittersInShader_ = 1;
     splitter::Direction currentDirection_ = splitter::Direction::Vertical;
 };
 
