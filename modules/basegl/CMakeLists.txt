@@ -13,6 +13,7 @@ set(HEADER_FILES
     include/modules/basegl/datastructures/linesettings.h
     include/modules/basegl/datastructures/linesettingsinterface.h
     include/modules/basegl/datastructures/meshshadercache.h
+    include/modules/basegl/datastructures/splittersettings.h
     include/modules/basegl/datastructures/stipplingsettings.h
     include/modules/basegl/datastructures/stipplingsettingsinterface.h
     include/modules/basegl/datavisualizer/imagebackgroundvisualizer.h
@@ -81,8 +82,10 @@ set(HEADER_FILES
     include/modules/basegl/processors/volumeraycaster.h
     include/modules/basegl/processors/volumeslicegl.h
     include/modules/basegl/properties/linesettingsproperty.h
+    include/modules/basegl/properties/splitterproperty.h
     include/modules/basegl/properties/stipplingproperty.h
     include/modules/basegl/rendering/linerenderer.h
+    include/modules/basegl/rendering/splitterrenderer.h
     include/modules/basegl/viewmanager.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -97,6 +100,7 @@ set(SOURCE_FILES
     src/datastructures/linesettings.cpp
     src/datastructures/linesettingsinterface.cpp
     src/datastructures/meshshadercache.cpp
+    src/datastructures/splittersettings.cpp
     src/datastructures/stipplingsettings.cpp
     src/datastructures/stipplingsettingsinterface.cpp
     src/datavisualizer/imagebackgroundvisualizer.cpp
@@ -165,8 +169,10 @@ set(SOURCE_FILES
     src/processors/volumeraycaster.cpp
     src/processors/volumeslicegl.cpp
     src/properties/linesettingsproperty.cpp
+    src/properties/splitterproperty.cpp
     src/properties/stipplingproperty.cpp
     src/rendering/linerenderer.cpp
+    src/rendering/splitterrenderer.cpp
     src/viewmanager.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
@@ -220,7 +226,9 @@ set(SHADER_FILES
     glsl/sphereglyph.frag
     glsl/sphereglyph.geom
     glsl/sphereglyph.vert
+    glsl/splitter.geom
     glsl/splitter.vert
+    glsl/splittertriangle.geom
     glsl/tuberendering.frag
     glsl/tuberendering.geom
     glsl/tuberendering.vert

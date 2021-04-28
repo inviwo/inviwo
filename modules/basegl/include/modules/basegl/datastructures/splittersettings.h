@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,36 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
+#pragma once
 
-void main() {}
+#include <modules/basegl/baseglmoduledefine.h>
+
+#include <inviwo/core/util/glmvec.h>
+
+namespace inviwo {
+
+namespace splitter {
+
+enum class Direction { Vertical, Horizontal };
+enum class Style { Handle, Divider, Line, Invisible };
+
+}  // namespace splitter
+
+class IVW_MODULE_BASEGL_API SplitterSettings {
+public:
+    SplitterSettings() = default;
+    virtual ~SplitterSettings() = default;
+
+    virtual bool enabled() const = 0;
+    virtual splitter::Style getStyle() const = 0;
+    virtual vec4 getColor() const = 0;
+    virtual vec4 getBackgroundColor() const = 0;
+    virtual vec4 getHoverColor() const = 0;
+    virtual float getLength() const = 0;
+    virtual float getWidth() const = 0;
+    virtual float getTriangleSize() const = 0;
+};
+
+}  // namespace inviwo

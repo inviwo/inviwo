@@ -102,6 +102,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/keyboardevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/keyboardkeys.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/mousebuttons.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/mousecursors.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/mouseevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/mouseinteractionevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/pickingevent.h
@@ -444,6 +445,7 @@ set(SOURCE_FILES
     interaction/events/gestureevent.cpp
     interaction/events/interactionevent.cpp
     interaction/events/keyboardevent.cpp
+    interaction/events/mousecursors.cpp
     interaction/events/mouseevent.cpp
     interaction/events/mouseinteractionevent.cpp
     interaction/events/pickingevent.cpp

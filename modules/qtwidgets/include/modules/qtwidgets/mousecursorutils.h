@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2021 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,26 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
+#pragma once
 
-void main() {}
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/core/interaction/events/mousecursors.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QtCore/qnamespace.h>
+#include <warn/pop>
+
+namespace inviwo {
+
+namespace util {
+
+IVW_MODULE_QTWIDGETS_API MouseCursor fromCursorShape(const Qt::CursorShape cursor);
+
+IVW_MODULE_QTWIDGETS_API Qt::CursorShape toCursorShape(const MouseCursor cursor);
+
+}  // namespace util
+
+}  // namespace inviwo
