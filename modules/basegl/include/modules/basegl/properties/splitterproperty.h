@@ -50,6 +50,8 @@ public:
 
     SplitterProperty(const std::string& identifier, const std::string& displayName,
                      bool checked = true, splitter::Style style = splitter::Style::Divider,
+                     vec4 color = vec4(0.71f, 0.81f, 0.85f, 1.0f),
+                     vec4 bgColor = vec4(0.27f, 0.3f, 0.31f, 1.0f),
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                      PropertySemantics semantics = PropertySemantics::Default);
     SplitterProperty(const SplitterProperty& rhs);

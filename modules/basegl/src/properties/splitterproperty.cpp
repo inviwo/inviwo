@@ -35,7 +35,7 @@ const std::string SplitterProperty::classIdentifier = "org.inviwo.SplitterProper
 std::string SplitterProperty::getClassIdentifier() const { return classIdentifier; }
 
 SplitterProperty::SplitterProperty(const std::string& identifier, const std::string& displayName,
-                                   bool checked, splitter::Style style,
+                                   bool checked, splitter::Style style, vec4 color, vec4 bgColor,
                                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : BoolCompositeProperty(identifier, displayName, checked, invalidationLevel, semantics)
     , style_("style", "Style",
@@ -43,8 +43,8 @@ SplitterProperty::SplitterProperty(const std::string& identifier, const std::str
               {"divider", "Divider", splitter::Style::Divider},
               {"line", "Line", splitter::Style::Line},
               {"invisible", "Invisible", splitter::Style::Invisible}})
-    , color_("color", "Color", util::ordinalColor(0.71f, 0.81f, 0.85f, 1.0f))
-    , bgColor_("bgColor", "Background Color", util::ordinalColor(0.27f, 0.3f, 0.31f, 1.0f))
+    , color_("color", "Color", util::ordinalColor(color))
+    , bgColor_("bgColor", "Background Color", util::ordinalColor(bgColor))
     , hoverColor_("hoverColor", "Hover Color", util::ordinalColor(1.0f, 0.666f, 0.0f, 1.0f))
     , length_("length", "Length (pixel)", 75.0f, 0.0f, 200.0f, 1.0f,
               InvalidationLevel::InvalidOutput, PropertySemantics("SpinBox"))

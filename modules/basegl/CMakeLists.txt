@@ -31,6 +31,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/firstivwprocessor.h
     include/modules/basegl/processors/geometryentryexitpoints.h
     include/modules/basegl/processors/heightfieldprocessor.h
+    include/modules/basegl/processors/imageprocessing/columnrowlayout.h
     include/modules/basegl/processors/imageprocessing/findedges.h
     include/modules/basegl/processors/imageprocessing/imagebinary.h
     include/modules/basegl/processors/imageprocessing/imagechannelcombine.h
@@ -118,6 +119,7 @@ set(SOURCE_FILES
     src/processors/firstivwprocessor.cpp
     src/processors/geometryentryexitpoints.cpp
     src/processors/heightfieldprocessor.cpp
+    src/processors/imageprocessing/columnrowlayout.cpp
     src/processors/imageprocessing/findedges.cpp
     src/processors/imageprocessing/imagebinary.cpp
     src/processors/imageprocessing/imagechannelcombine.cpp
