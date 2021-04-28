@@ -38,7 +38,6 @@ ControlKeyframeSequence::ControlKeyframeSequence(
     std::vector<std::unique_ptr<ControlKeyframe>> keyframes)
     : BaseKeyframeSequence<ControlKeyframe>(std::move(keyframes)) {}
 
-
 ControlKeyframeSequence* ControlKeyframeSequence::clone() const {
     return new ControlKeyframeSequence(*this);
 }

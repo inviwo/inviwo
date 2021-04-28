@@ -142,7 +142,7 @@ void WorkspaceAnimations::erase(size_t index) {
         // The selected one will be removed, select next after
         auto indexBeforeRemoval = index + 1 == animations_.size() ? index - 1 : index + 1;
         mainAnimation_.set(animations_[indexBeforeRemoval]);
-    } 
+    }
     Animation anim(std::move(animations_[index]));
     animations_.erase(animations_.begin() + index);
 

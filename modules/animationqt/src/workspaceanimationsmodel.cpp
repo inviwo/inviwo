@@ -41,7 +41,7 @@ AnimationsModel::AnimationsModel(WorkspaceAnimations& animations, QObject* paren
     : QAbstractListModel(parent), animations_{animations} {
 
     onChangedHandle_ = animations_.onChanged_.add([this](size_t index, Animation& anim) {
-        auto it = animations_.find(&anim); 
+        auto it = animations_.find(&anim);
         if (it != animations_.end()) {
             anim.addObserver(this);
         } else {
@@ -122,7 +122,7 @@ bool AnimationsModel::removeRows(int row, int count, const QModelIndex& parent) 
 }
 
 void AnimationsModel::onNameChanged(Animation* anim) {
-    
+
     if (auto it = animations_.find(anim); it != animations_.end()) {
         auto index = static_cast<int>(std::distance(animations_.begin(), it));
         auto fromI = createIndex(static_cast<int>(index), 0);

@@ -353,9 +353,7 @@ PropertyTrack<Prop, Key, Seq>::PropertyTrack(Prop* property)
 
 template <typename Prop, typename Key, typename Seq>
 PropertyTrack<Prop, Key, Seq>::PropertyTrack(Prop* property, ProcessorNetwork* net)
-    : BaseTrack<Seq>{property->getDisplayName(), 100}
-    , property_(property)
-    , network_{net} {}
+    : BaseTrack<Seq>{property->getDisplayName(), 100}, property_(property), network_{net} {}
 
 template <typename Prop, typename Key, typename Seq>
 PropertyTrack<Prop, Key, Seq>::~PropertyTrack() = default;

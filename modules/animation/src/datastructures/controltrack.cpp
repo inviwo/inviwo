@@ -33,8 +33,7 @@ namespace inviwo {
 
 namespace animation {
 
-ControlTrack::ControlTrack()
-    : BaseTrack<ControlKeyframeSequence>{"Control Track", 0} {}
+ControlTrack::ControlTrack() : BaseTrack<ControlKeyframeSequence>{"Control Track", 0} {}
 
 ControlTrack::~ControlTrack() = default;
 
@@ -53,8 +52,8 @@ AnimationTimeState ControlTrack::operator()(Seconds from, Seconds to, AnimationS
     if (!isEnabled() || empty()) return {to, state};
 
     // 'it' will be the first seq. with a first time larger than 'to'.
-    auto it = std::upper_bound(begin(), end(), to,
-                               [](const auto& a, const auto& b) { return a < b; });
+    auto it =
+        std::upper_bound(begin(), end(), to, [](const auto& a, const auto& b) { return a < b; });
 
     if (it == begin()) {
         if (from > it->getFirstTime()) {  // case 1

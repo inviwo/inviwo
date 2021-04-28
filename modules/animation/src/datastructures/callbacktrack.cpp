@@ -34,8 +34,7 @@ namespace inviwo {
 
 namespace animation {
 
-CallbackTrack::CallbackTrack()
-    : BaseTrack<CallbackKeyframeSequence>{"Callback Track", 0} {}
+CallbackTrack::CallbackTrack() : BaseTrack<CallbackKeyframeSequence>{"Callback Track", 0} {}
 
 CallbackTrack* CallbackTrack::clone() const { return new CallbackTrack(*this); }
 
