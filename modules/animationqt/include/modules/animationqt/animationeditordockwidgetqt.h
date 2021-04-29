@@ -79,6 +79,7 @@ protected:
 
     WorkspaceAnimations& animations_;
     AnimationController& controller_;
+    AnimationManager& manager_;
 
     // GUI-stuff
     QComboBox* animationsList_;

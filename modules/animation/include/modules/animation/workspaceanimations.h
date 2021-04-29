@@ -103,12 +103,6 @@ public:
     size_t size() const { return animations_.size(); }
 
     /**
-     * Appends found animations in the Deserializer stream.
-     * @return the number of added animations.
-     */
-    size_t import(Deserializer& d);
-
-    /**
      * @brief Set specified Animation to be the MainAnimation.
      * A copy of the Animation will be added in case the it has not been added before.
      * The AnimationController in MainAnimation will notify its observers of the animation change.

@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/animation/animationmanager.h>
+#include <modules/animation/datastructures/animation.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/properties/property.h>
@@ -56,6 +57,15 @@ const InterpolationFactory& AnimationManager::getInterpolationFactory() const {
 void AnimationManager::registerPropertyTrackConnection(const std::string& propertyClassID,
                                                        const std::string& trackClassID) {
     trackFactory_.registerPropertyTrackConnection(propertyClassID, trackClassID);
+}
+
+std::vector<Animation> AnimationManager::import(Deserializer& d) {
+    std::vector<Animation> animations;
+    // Must pass AnimationManager to Animation constructor
+    util::IndexedDeserializer<Animation>("Animations", "Animation").setMakeNew([&]() {
+        return Animation(this);
+    })(d, animations);
+    return animations;
 }
 
 }  // namespace animation

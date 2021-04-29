@@ -42,6 +42,8 @@ class Property;
 
 namespace animation {
 
+class Animation;
+
 /**
  * The AnimationManager is responsible for managing the factories related to animations.
  *
@@ -71,6 +73,16 @@ public:
      */
     void registerPropertyTrackConnection(const std::string& propertyClassID,
                                          const std::string& trackClassID);
+
+    /**
+     * Extracts each "Animation" in "Animations" in the Deserializer stream.
+     * This AnimationManager is passed to the Animation constructor to enable its Property-based
+     * adding convenience functions.
+     * @note The animations are often tightly coupled to the processors in the workspace.
+     * @param Deserialization stream
+     * @return All animations found, empty .
+     */
+    std::vector<Animation> import(Deserializer& d);
 
 private:
     InviwoApplication* app_;

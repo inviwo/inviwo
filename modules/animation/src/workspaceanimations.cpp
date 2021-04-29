@@ -252,17 +252,6 @@ void WorkspaceAnimations::onKeyframeSelectionChanged(Keyframe*) {
     app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
 }
 
-size_t WorkspaceAnimations::import(Deserializer& d) {
-    std::vector<Animation> animations;
-    // Must pass AnimationManager to Animation constructor
-    util::IndexedDeserializer<Animation>("Animations", "Animation").setMakeNew([&]() {
-        return Animation(&animationManager_);
-    })(d, animations);
-    for (auto& anim : animations) {
-        add(anim);
-    }
-    return animations.size();
-}
 
 }  // namespace animation
 

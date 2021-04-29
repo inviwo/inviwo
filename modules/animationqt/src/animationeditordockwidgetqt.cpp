@@ -80,7 +80,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     TrackWidgetQtFactory& widgetFactory, SequenceEditorFactory& editorFactory, QWidget* parent)
     : InviwoDockWidget(utilqt::toQString(widgetName), parent, "AnimationEditorWidget")
     , animations_(animations)
-    , controller_{animations_.getMainAnimation().getController()} {
+    , controller_{animations_.getMainAnimation().getController()}
+    , manager_{manager} {
 
     resize(utilqt::emToPx(this, QSizeF(100, 40)));  // default size
     setAllowedAreas(Qt::BottomDockWidgetArea);
@@ -349,7 +350,10 @@ void AnimationEditorDockWidgetQt::importAnimation() {
             auto deserializer =
                 app->getWorkspaceManager()->createWorkspaceDeserializer(anim, fileName);
             controller_.pause();
-            animations_.import(deserializer);
+            auto animations = manager_.import(deserializer);
+            for (auto anim : animations) {
+                animations_.add(std::move(anim));
+            }
         } catch (std::exception ex) {
             LogError(ex.what());
         }
