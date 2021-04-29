@@ -123,6 +123,8 @@ void SplitterRenderer::render(const SplitterSettings& settings, splitter::Direct
 
     if (auto count = pos.size(); maxSplittersInShader_ != count) {
         shader_.getGeometryShaderObject()->addShaderDefine("NUM_SPLITTERS", std::to_string(count));
+        shader_.getGeometryShaderObject()->addShaderDefine("NUM_OUT_VERTICES",
+                                                           std::to_string(4 * count));
         shader_.build();
         maxSplittersInShader_ = count;
     }

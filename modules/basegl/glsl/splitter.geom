@@ -32,9 +32,12 @@
 #if !defined(NUM_SPLITTERS)
 #define NUM_SPLITTERS 1
 #endif
+#if !defined(NUM_OUT_VERTICES)
+#define NUM_OUT_VERTICES 4
+#endif
 
 layout(points) in;
-layout(triangle_strip, max_vertices=4 * NUM_SPLITTERS) out;
+layout(triangle_strip, max_vertices=NUM_OUT_VERTICES) out;
 
 uniform float positions[NUM_SPLITTERS];
 uniform bool pickingEnabled = true; // disables color output
