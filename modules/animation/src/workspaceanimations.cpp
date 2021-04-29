@@ -252,7 +252,6 @@ void WorkspaceAnimations::onKeyframeSelectionChanged(Keyframe*) {
     app_->getProcessorNetwork()->notifyObserversProcessorNetworkChanged();
 }
 
-
 }  // namespace animation
 
 }  // namespace inviwo
