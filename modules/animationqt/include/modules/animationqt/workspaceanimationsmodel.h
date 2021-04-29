@@ -58,7 +58,7 @@ public:
     bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
 
 private:
-    void onNameChanged(Animation* anim);
+    void onNameChanged(Animation* anim) override;
     WorkspaceAnimations& animations_;
     WorkspaceAnimations::OnChangedDispatcher::Handle onChangedHandle_;
 };

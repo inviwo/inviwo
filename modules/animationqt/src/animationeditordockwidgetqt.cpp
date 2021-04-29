@@ -237,7 +237,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
                            &animations_.getMainAnimation().get());
         connect(animationsList_, QOverload<int>::of(&QComboBox::currentIndexChanged),
                 [=](int index) {
-                    if (index >= 0 && index < animations_.size()) {
+                    if (index >= 0 && index < static_cast<int>(animations_.size())) {
                         animations_.setMainAnimation(animations_[index]);
                     }
                 });

@@ -75,7 +75,7 @@ protected:
 
     // Selected Animation in animationsList_ changed
     virtual void onAnimationChanged(AnimationController* controller, Animation* oldAnim,
-                                    Animation* newAnim);
+                                    Animation* newAnim) override;
 
     WorkspaceAnimations& animations_;
     AnimationController& controller_;

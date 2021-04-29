@@ -112,8 +112,8 @@ Animation& WorkspaceAnimations::add(Animation anim) {
 void WorkspaceAnimations::addInternal(size_t index, Animation& anim) {
     anim.AnimationObservable::addObserver(this);
     for (auto& track : anim) {
-        for (auto seqi = 0; seqi < track.size(); seqi++) {
-            for (auto keyi = 0; keyi < track[seqi].size(); keyi++) {
+        for (size_t seqi = 0; seqi < track.size(); seqi++) {
+            for (size_t keyi = 0; keyi < track[seqi].size(); keyi++) {
                 track[seqi][keyi].addObserver(this);
             }
             track[seqi].addObserver(this);
