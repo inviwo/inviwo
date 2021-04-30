@@ -64,16 +64,15 @@ public:
      * Remove all keyframe sequences and call TrackObserver::notifyKeyframeSequenceRemoved
      */
     virtual ~Track() = default;
-    Track(const Track&) = delete;
-    Track& operator=(const Track&) = delete;
+    /**
+     * Create a deep copy of the Track including references to its possibly underlying Property.
+     */
+    virtual Track* clone() const = 0;
 
     virtual std::string getClassIdentifier() const = 0;
 
     virtual bool isEnabled() const = 0;
     virtual void setEnabled(bool enabled) = 0;
-
-    virtual const std::string& getIdentifier() const = 0;
-    virtual void setIdentifier(const std::string& identifier) = 0;
 
     /**
      * Set Track name. Used when displaying the track.

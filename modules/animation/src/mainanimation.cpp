@@ -29,6 +29,7 @@
 
 #include <modules/animation/mainanimation.h>
 #include <modules/animation/animationmodule.h>
+#include <modules/animation/workspaceanimations.h>
 #include <inviwo/core/common/modulecallback.h>
 #include <inviwo/core/common/moduleaction.h>
 
@@ -36,10 +37,9 @@ namespace inviwo {
 
 namespace animation {
 
-MainAnimation::MainAnimation(InviwoApplication* app, AnimationModule* animationModule,
-                             AnimationManager& animationManager)
-    : animation_{&animationManager}, controller_{animation_, app} {
-
+MainAnimation::MainAnimation(InviwoApplication* app, Animation& animation)
+    : controller_{animation, app} {
+    AnimationModule* animationModule = app->getModuleByType<AnimationModule>();
     {
         auto callbackAction = new ModuleCallbackAction("Add Key Frame", animationModule,
                                                        ModuleCallBackActionState::Enabled);
@@ -55,12 +55,6 @@ MainAnimation::MainAnimation(InviwoApplication* app, AnimationModule* animationM
         app->addCallbackAction(callbackAction);
     }
 
-    animationClearHandle_ = app->getWorkspaceManager()->onClear([&]() { animation_.clear(); });
-    animationSerializationHandle_ = app->getWorkspaceManager()->onSave(
-        [&](Serializer& s) { s.serialize("Animation", animation_); });
-    animationDeserializationHandle_ = app->getWorkspaceManager()->onLoad(
-        [&](Deserializer& d) { d.deserialize("Animation", animation_); });
-
     animationControllerClearHandle_ =
         app->getWorkspaceManager()->onClear([&]() { controller_.resetAllPoperties(); });
     animationControllerSerializationHandle_ = app->getWorkspaceManager()->onSave(
@@ -69,20 +63,22 @@ MainAnimation::MainAnimation(InviwoApplication* app, AnimationModule* animationM
         [&](Deserializer& d) { d.deserialize("AnimationController", controller_); });
 }
 
-Animation& MainAnimation::getAnimation() { return animation_; }
+void MainAnimation::set(Animation& animation) { controller_.setAnimation(animation); }
 
-const Animation& MainAnimation::getAnimation() const { return animation_; }
+Animation& MainAnimation::get() { return controller_.getAnimation(); }
 
-AnimationController& MainAnimation::getAnimationController() { return controller_; }
+const Animation& MainAnimation::get() const { return controller_.getAnimation(); }
 
-const AnimationController& MainAnimation::getAnimationController() const { return controller_; }
+AnimationController& MainAnimation::getController() { return controller_; }
+
+const AnimationController& MainAnimation::getController() const { return controller_; }
 
 void MainAnimation::addKeyframeCallback(Property* property) {
-    animation_.addKeyframe(property, controller_.getCurrentTime());
+    controller_.getAnimation().addKeyframe(property, controller_.getCurrentTime());
 }
 
 void MainAnimation::addKeyframeSequenceCallback(Property* property) {
-    animation_.addKeyframeSequence(property, controller_.getCurrentTime());
+    controller_.getAnimation().addKeyframeSequence(property, controller_.getCurrentTime());
 }
 
 }  // namespace animation

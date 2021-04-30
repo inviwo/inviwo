@@ -34,9 +34,7 @@ namespace inviwo {
 namespace animation {
 
 BaseKeyframe::BaseKeyframe(Seconds time) : time_(time) {}
-BaseKeyframe::~BaseKeyframe() = default;
 
-BaseKeyframe::BaseKeyframe(const BaseKeyframe& rhs) = default;
 BaseKeyframe& BaseKeyframe::operator=(const BaseKeyframe& that) {
     if (this != &that) {
         Keyframe::operator=(that);

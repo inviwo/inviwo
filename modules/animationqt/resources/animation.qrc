@@ -253,5 +253,6 @@
 		<file>icons/eye_look_search_view_icon_64.png</file>
 		<file>icons/eye_look_search_view_icon_128.png</file>
 		<file>icons/eye_look_search_view_icon_128.svg</file>
+        <file>icons/trashcan.svg</file>
 	</qresource>
 </RCC>

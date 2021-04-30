@@ -32,42 +32,46 @@
 
 #include <modules/animation/datastructures/animation.h>
 #include <modules/animation/animationcontroller.h>
-#include <modules/animation/animationmanager.h>
 
 #include <inviwo/core/network/workspacemanager.h>
 
 namespace inviwo {
 
-class AnimationModule;
-
 namespace animation {
-
+class WorkspaceAnimations;
 /**
- * \brief Responsible for the main Animation and AnimationController and saving it in the workspace.
- * It is responsible for clearing, saving, and loading the animation and its controller when
- * the workspace is cleared, saved, or loaded.
+ * \brief Responsible for the main AnimationController and saving it in the workspace.
+ *
+ * This class is intented to be owned by WorkspaceAnimations, which is responsible for animations
+ * stored in the workspace. The main Animation can only be changed through WorkspaceAnimations.
+ *
+ * The controller is cleared, saved, and loaded when the workspace is cleared, saved, or loaded.
+ *
  * The MainAnimation also manages the ModuleCallback actions used to
  * create property tracks from the context menu of properties.
  *
  * This object is not intended to be used from within the Network, e.g. in a Processor, but rather
  * from the outside. See the for AnimationQt module for examples.
  *
+ * @see AnimationWorkspaces
  * @see Animation
  * @see AnimationController
  * @see Track
  */
 class IVW_MODULE_ANIMATION_API MainAnimation {
 public:
-    MainAnimation(InviwoApplication* app, AnimationModule* animationModule,
-                  AnimationManager& manager);
+    MainAnimation(InviwoApplication* app, Animation& animation);
     ~MainAnimation() = default;
 
-    Animation& getAnimation();
-    const Animation& getAnimation() const;
-    AnimationController& getAnimationController();
-    const AnimationController& getAnimationController() const;
+    Animation& get();
+    const Animation& get() const;
+    AnimationController& getController();
+    const AnimationController& getController() const;
 
 private:
+    // Only allow changes of main Animation from WorkspaceAnimations
+    friend class WorkspaceAnimations;
+    void set(Animation& animation);
     /**
      * Module callbacks must return void
      * @see addKeyframe(Property* property, Seconds time)
@@ -79,12 +83,7 @@ private:
      */
     void addKeyframeSequenceCallback(Property* property);
 
-    Animation animation_;
     AnimationController controller_;
-
-    WorkspaceManager::ClearHandle animationClearHandle_;
-    WorkspaceManager::SerializationHandle animationSerializationHandle_;
-    WorkspaceManager::DeserializationHandle animationDeserializationHandle_;
 
     WorkspaceManager::ClearHandle animationControllerClearHandle_;
     WorkspaceManager::SerializationHandle animationControllerSerializationHandle_;

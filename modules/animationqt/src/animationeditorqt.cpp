@@ -66,6 +66,7 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller,
     : QGraphicsScene(), controller_(controller), widgetFactory_{widgetFactory}, overlay_{overlay} {
     auto& animation = controller_.getAnimation();
     animation.addObserver(this);
+    controller_.AnimationControllerObservable::addObserver(this);
 
     // Add Property tracks
     for (auto& track : animation) {
@@ -89,6 +90,18 @@ AnimationEditorQt::AnimationEditorQt(AnimationController& controller,
 
 AnimationEditorQt::~AnimationEditorQt() = default;
 
+void AnimationEditorQt::onAnimationChanged(AnimationController*, Animation* oldAnim,
+                                           Animation* newAnim) {
+    oldAnim->removeObserver(this);
+    for (auto& track : *oldAnim) {
+        onTrackRemoved(&track);
+    }
+    for (auto& track : *newAnim) {
+        onTrackAdded(&track);
+    }
+    newAnim->addObserver(this);
+}
+
 std::unique_ptr<TrackWidgetQt> AnimationEditorQt::createTrackWidget(Track& track) const {
     auto widgetId = widgetFactory_.getWidgetId(track.getClassIdentifier());
     return widgetFactory_.create(widgetId, track);
@@ -102,8 +115,10 @@ void AnimationEditorQt::onTrackAdded(Track* track) {
         tracks_[track] = std::move(trackWidget);
         updateSceneRect();
     } else {
-        throw Exception("Not able to create widget for track: " + track->getIdentifier(),
-                        IVW_CONTEXT);
+        throw Exception(
+            fmt::format("Not able to create widget for track: {} of type: {}" + track->getName(),
+                        track->getClassIdentifier()),
+            IVW_CONTEXT);
     }
 }
 

@@ -76,14 +76,14 @@ AnimationTimeState animateRange(Iterator begin, Iterator end, Seconds from, Seco
         auto direction = from <= to ? PlaybackDirection::Forward : PlaybackDirection::Backward;
         AnimationTimeState res{to, state};
         while (begin != end && res.state != AnimationState::Paused) {
-            res = (**begin)(from, to, state);
-            if ((direction == PlaybackDirection::Forward && res.time <= (**begin)) ||
-                (direction == PlaybackDirection::Backward && res.time >= (**begin))) {
+            res = (*begin)(from, to, state);
+            if ((direction == PlaybackDirection::Forward && res.time <= (*begin)) ||
+                (direction == PlaybackDirection::Backward && res.time >= (*begin))) {
                 // We jumped in the opposite direction
                 break;
             }
             // Use jump-to-time if set, previous Keyframe/KeyframeSequence time otherwise
-            from = res.time != to ? res.time : detail::getTimeHelper(**begin, direction);
+            from = res.time != to ? res.time : detail::getTimeHelper(*begin, direction);
 
             ++begin;
         }
@@ -94,10 +94,10 @@ AnimationTimeState animateRange(Iterator begin, Iterator end, Seconds from, Seco
 
     // 'fromIt' will be the first item with a time larger than or equal to 'first'
     auto fromIt = std::lower_bound(begin, end, first,
-                                   [](const auto& it, const auto& val) { return *it < val; });
+                                   [](const auto& it, const auto& val) { return it < val; });
     // 'toIt' will be the first key with a time larger than 'last'
     auto toIt = std::upper_bound(fromIt, end, last,
-                                 [](const auto& val, const auto& it) { return val < *it; });
+                                 [](const auto& val, const auto& it) { return val < it; });
     if (from <= to) {
         return animate(fromIt, toIt, from, to, state);
     } else {

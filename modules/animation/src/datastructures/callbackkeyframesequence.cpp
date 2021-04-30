@@ -44,7 +44,7 @@ CallbackKeyframeSequence* CallbackKeyframeSequence::clone() const {
 
 AnimationTimeState CallbackKeyframeSequence::operator()(Seconds from, Seconds to,
                                                         AnimationState state) const {
-    return animateRange(keyframes_.begin(), keyframes_.end(), from, to, state);
+    return animateRange(begin(), end(), from, to, state);
 }
 
 }  // namespace animation

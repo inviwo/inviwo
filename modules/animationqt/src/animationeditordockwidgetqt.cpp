@@ -32,8 +32,10 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/raiiutils.h>
 
+#include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/properties/ordinalpropertywidgetqt.h>
@@ -49,12 +51,14 @@
 #include <modules/animationqt/widgets/trackwidgetqt.h>
 #include <modules/animationqt/animationeditorqt.h>
 #include <modules/animationqt/animationviewqt.h>
+#include <modules/animationqt/workspaceanimationsmodel.h>
 
 #include <modules/animationqt/sequenceeditor/sequenceeditorpanel.h>
 #include <modules/animationqt/animationlabelviewqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QComboBox>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -62,6 +66,7 @@
 #include <QSettings>
 #include <QToolBar>
 #include <QMainWindow>
+#include <QMenuBar>
 #include <QWidget>
 #include <QScrollBar>
 #include <warn/pop>
@@ -71,10 +76,12 @@ namespace inviwo {
 namespace animation {
 
 AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
-    AnimationController& controller, AnimationManager& manager, const std::string& widgetName,
+    WorkspaceAnimations& animations, AnimationManager& manager, const std::string& widgetName,
     TrackWidgetQtFactory& widgetFactory, SequenceEditorFactory& editorFactory, QWidget* parent)
     : InviwoDockWidget(utilqt::toQString(widgetName), parent, "AnimationEditorWidget")
-    , controller_{controller} {
+    , animations_(animations)
+    , controller_{animations_.getMainAnimation().getController()}
+    , manager_{manager} {
 
     resize(utilqt::emToPx(this, QSizeF(100, 40)));  // default size
     setAllowedAreas(Qt::BottomDockWidgetArea);
@@ -85,9 +92,12 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     setWindowIcon(
         QIcon(":/animation/icons/arrow_next_player_previous_recording_right_icon_128.png"));
 
+    mainWindow_ = new QMainWindow();
+    mainWindow_->setContextMenuPolicy(Qt::NoContextMenu);
+    setWidget(mainWindow_);
+
     // right part
-    sequenceEditorView_ =
-        new SequenceEditorPanel(controller.getAnimation(), manager, editorFactory, this);
+    sequenceEditorView_ = new SequenceEditorPanel(controller_, manager, editorFactory, this);
 
     auto optionLayout = sequenceEditorView_->getOptionLayout();
     // Settings for the controller
@@ -116,10 +126,6 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
         overlay->setSizePolicy(sp);
     }
 
-    mainWindow_ = new QMainWindow();
-    mainWindow_->setContextMenuPolicy(Qt::NoContextMenu);
-    mainWindow_->setCentralWidget(sequenceEditorView_);
-
     // left part List widget of track labels
     auto animationLabelView = new AnimationLabelViewQt(controller_);
     animationLabelView->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
@@ -133,9 +139,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     splitter->setFrameStyle(QFrame::NoFrame);
     splitter->addWidget(animationLabelView);
     splitter->addWidget(animationView_);
-    splitter->addWidget(mainWindow_);
-
-    setWidget(splitter);
+    splitter->addWidget(sequenceEditorView_);
+    mainWindow_->setCentralWidget(splitter);
 
     connect(animationView_->verticalScrollBar(), &QScrollBar::valueChanged, this,
             [this, animationLabelView](auto val) {
@@ -190,6 +195,57 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     toolBar->setFloatable(false);
     toolBar->setMovable(false);
     mainWindow_->addToolBar(toolBar);
+
+    {
+        auto newAction = new QAction(QIcon(":/svgicons/newfile.svg"), tr("&New Animation"), this);
+        newAction->setToolTip("New Animation");
+        addAction(newAction);
+        connect(newAction, &QAction::triggered, this, [this]() {
+            animationsList_->addItem(
+                utilqt::toQString(fmt::format("Animation {}", animations_.size() + 1)));
+            animationsList_->setCurrentIndex(animationsList_->count() - 1);
+        });
+        toolBar->addAction(newAction);
+    }
+
+    {
+        auto importAction =
+            new QAction(QIcon(":/svgicons/open.svg"), tr("&Import Animation"), this);
+        addAction(importAction);
+        connect(importAction, &QAction::triggered, this, [this]() { importAnimation(); });
+        toolBar->addAction(importAction);
+    }
+
+    {
+        auto deleteAction =
+            new QAction(QIcon(":/animation/icons/trashcan.svg"), tr("&Remove Animation"), this);
+        deleteAction->setToolTip("Remove Animation");
+        addAction(deleteAction);
+        connect(deleteAction, &QAction::triggered, this,
+                [this]() { animationsList_->removeItem(animationsList_->currentIndex()); });
+        toolBar->addAction(deleteAction);
+    }
+
+    {
+        animationsList_ = new QComboBox(toolBar);
+        animationsList_->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+        animationsList_->setInsertPolicy(QComboBox::InsertAtCurrent);
+        animationsList_->setEditable(true);
+        animationsList_->setModel(new AnimationsModel(animations_, animationsList_));
+        // Update currently selected index
+        onAnimationChanged(&controller_, &animations_.getMainAnimation().get(),
+                           &animations_.getMainAnimation().get());
+        connect(animationsList_, QOverload<int>::of(&QComboBox::currentIndexChanged),
+                [=](int index) {
+                    if (index >= 0 && index < static_cast<int>(animations_.size())) {
+                        animations_.setMainAnimation(animations_[index]);
+                    }
+                });
+        toolBar->addWidget(animationsList_);
+    }
+
+    toolBar->addSeparator();
+
     {
         auto begin = toolBar->addAction(
             QIcon(":/animation/icons/arrow_media_next_player_previous_song_icon_32.png"),
@@ -268,10 +324,41 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
     }
 
     toolBar->addSeparator();
+
     controller_.AnimationControllerObservable::addObserver(this);
 }
 
 AnimationEditorDockWidgetQt::~AnimationEditorDockWidgetQt() = default;
+
+void AnimationEditorDockWidgetQt::importAnimation() {
+    InviwoFileDialog openFileDialog(this, "Import Animation ...", "animation");
+    openFileDialog.addSidebarPath(PathType::Workspaces);
+    openFileDialog.addExtension("inv", "Inviwo File");
+    openFileDialog.setFileMode(FileMode::AnyFile);
+
+    if (openFileDialog.exec()) {
+        QString path = openFileDialog.selectedFiles().at(0);
+        std::string fileName{utilqt::fromQString(path)};
+        fileName = filesystem::cleanupPath(fileName);
+        if (!filesystem::fileExists(fileName)) {
+            LogError("Could not find file: " << fileName);
+            return;
+        }
+        try {
+            auto anim = filesystem::ifstream(fileName);
+            auto app = InviwoApplication::getPtr();
+            auto deserializer =
+                app->getWorkspaceManager()->createWorkspaceDeserializer(anim, fileName);
+            controller_.pause();
+            auto animations = manager_.import(deserializer);
+            for (auto anim : animations) {
+                animations_.add(std::move(anim));
+            }
+        } catch (std::exception ex) {
+            LogError(ex.what());
+        }
+    }
+}
 
 void AnimationEditorDockWidgetQt::onStateChanged(AnimationController*, AnimationState,
                                                  AnimationState newState) {
@@ -281,6 +368,17 @@ void AnimationEditorDockWidgetQt::onStateChanged(AnimationController*, Animation
     } else if (newState == AnimationState::Paused) {
         QSignalBlocker block(btnPlayPause_);
         btnPlayPause_->setChecked(false);
+    }
+}
+
+void AnimationEditorDockWidgetQt::onAnimationChanged(AnimationController*, Animation*,
+                                                     Animation* newAnim) {
+
+    if (auto it = animations_.find(newAnim); it != animations_.end()) {
+        auto selectedIndex = static_cast<int>(std::distance(animations_.begin(), it));
+        if (animationsList_->currentIndex() != selectedIndex) {
+            animationsList_->setCurrentIndex(selectedIndex);
+        }
     }
 }
 

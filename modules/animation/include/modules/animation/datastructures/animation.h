@@ -73,9 +73,11 @@ public:
      * @note nullptr to AnimationManager should mainly be used for unit testing and the likes.
      * @param animationManager used for creating PropertyTrack/KeyframeSequence/Keyframe.
      */
-    Animation(AnimationManager* animationManager = nullptr);
-    Animation(const Animation&) = delete;
-    Animation& operator=(const Animation& that) = delete;
+    Animation(AnimationManager* animationManager = nullptr, std::string_view name = "Animation");
+    Animation(const Animation&);
+    Animation(Animation&&) = default;
+    Animation& operator=(const Animation& that);
+    Animation& operator=(Animation&& that) = default;
 
     AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
 
@@ -123,13 +125,6 @@ public:
      * Calls TrackObserver::notifyTrackRemoved after removing track.
      */
     std::unique_ptr<Track> remove(size_t i);
-
-    /**
-     * Remove tracks based on Track::getIdentifier
-     * Does nothing if no match was found.
-     * Calls TrackObserver::notifyTrackRemoved after removing track.
-     */
-    std::unique_ptr<Track> remove(const std::string& id);
 
     /**
      * Remove Track if matching any of the tracks.
@@ -188,6 +183,15 @@ public:
      */
     Seconds getLastTime() const;
 
+    /**
+     * Return the name of the Animation. Used for display in the GUI.
+     */
+    std::string_view getName() const;
+    /**
+     * Set new name and notify observers if different from old name.
+     */
+    void setName(std::string_view name);
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -195,6 +199,16 @@ public:
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
 private:
+    /**
+     * Call when a track has been pushed to tracks_.
+     * Adds specified Track to priorityTracks_ and notifies observers.
+     */
+    void trackAddedInternal(Track* t);
+    /**
+     * Call when a track has been removed from tracks_.
+     * Removes specified Track from priorityTracks_ and notifies observers.
+     */
+    void trackRemovedInternal(Track* t);
     AnimationManager* getManager();
     virtual void onPriorityChanged(Track* t) override;
     void doPrioritySort();
@@ -204,6 +218,7 @@ private:
 
     std::vector<std::unique_ptr<Track>> tracks_;
     std::vector<Track*> priorityTracks_;
+    std::string name_;
     AnimationManager* am_;
 };
 

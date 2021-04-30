@@ -61,7 +61,7 @@ class IVW_MODULE_ANIMATIONQT_API SequenceEditorPanel : public QScrollArea,
                                                        public AnimationObserver,
                                                        public TrackObserver {
 public:
-    SequenceEditorPanel(Animation& animation, AnimationManager& manager,
+    SequenceEditorPanel(AnimationController& controller, AnimationManager& manager,
                         SequenceEditorFactory& editorFactory, QWidget* parent = nullptr);
     virtual ~SequenceEditorPanel() = default;
 
@@ -77,7 +77,6 @@ public:
     QLayout* getOptionLayout();
 
 private:
-    Animation& animation_;
     AnimationManager& manager_;
     SequenceEditorFactory& factory_;
 

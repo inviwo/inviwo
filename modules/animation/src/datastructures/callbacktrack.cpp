@@ -34,15 +34,16 @@ namespace inviwo {
 
 namespace animation {
 
-CallbackTrack::CallbackTrack()
-    : BaseTrack<CallbackKeyframeSequence>{"callback-track", "Callback Track", 0} {}
+CallbackTrack::CallbackTrack() : BaseTrack<CallbackKeyframeSequence>{"Callback Track", 0} {}
+
+CallbackTrack* CallbackTrack::clone() const { return new CallbackTrack(*this); }
 
 std::string CallbackTrack::classIdentifier() { return "org.inviwo.animation.CallbackTrack"; }
 std::string CallbackTrack::getClassIdentifier() const { return classIdentifier(); }
 
 AnimationTimeState CallbackTrack::operator()(Seconds from, Seconds to, AnimationState state) const {
     if (!isEnabled() || empty()) return {to, state};
-    return animateRange(sequences_.begin(), sequences_.end(), from, to, state);
+    return animateRange(begin(), end(), from, to, state);
 }
 
 }  // namespace animation

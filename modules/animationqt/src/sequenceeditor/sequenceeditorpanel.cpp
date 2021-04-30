@@ -46,9 +46,9 @@
 namespace inviwo {
 
 namespace animation {
-SequenceEditorPanel::SequenceEditorPanel(Animation& animation, AnimationManager& manager,
+SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, AnimationManager& manager,
                                          SequenceEditorFactory& editorFactory, QWidget* parent)
-    : QScrollArea(parent), animation_(animation), manager_(manager), factory_{editorFactory} {
+    : QScrollArea(parent), manager_(manager), factory_{editorFactory} {
     setObjectName("SequenceEditorPanel");
 
     setWidgetResizable(true);
@@ -86,10 +86,11 @@ SequenceEditorPanel::SequenceEditorPanel(Animation& animation, AnimationManager&
     baseLayout->addWidget(lower);
     setWidget(widget);
 
-    for (auto& track : animation_) {
+    for (auto& track : controller.getAnimation()) {
         onTrackAdded(&track);
     }
-    animation_.addObserver(this);
+    controller.getAnimation().addObserver(this);
+    controller.AnimationControllerObservable::addObserver(this);
 }
 
 QLayout* SequenceEditorPanel::getOptionLayout() { return optionLayout_; }
@@ -97,11 +98,12 @@ QLayout* SequenceEditorPanel::getOptionLayout() { return optionLayout_; }
 void SequenceEditorPanel::onAnimationChanged(AnimationController*, Animation* oldAnim,
                                              Animation* newAnim) {
     oldAnim->removeObserver(this);
-
+    while (!widgets_.empty()) {
+        onTrackRemoved(&widgets_.begin()->second->getTrack());
+    }
     for (auto& track : *newAnim) {
         onTrackAdded(&track);
     }
-
     newAnim->addObserver(this);
 }
 

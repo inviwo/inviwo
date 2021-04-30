@@ -28,36 +28,39 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/util/observer.h>
+#include <modules/animationqt/animationqtmoduledefine.h>
+
+#include <modules/animation/workspaceanimations.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QAbstractListModel>
+#include <QVariant>
+#include <warn/pop>
 
 namespace inviwo {
 
 namespace animation {
 
-class Track;
-class Animation;
-
-class IVW_MODULE_ANIMATION_API AnimationObserver : public Observer {
+class IVW_MODULE_ANIMATIONQT_API AnimationsModel : public QAbstractListModel,
+                                                   public AnimationObserver {
 public:
-    virtual void onTrackAdded(Track*){};
-    virtual void onTrackRemoved(Track*){};
+    AnimationsModel(WorkspaceAnimations& animations, QObject* parent = 0);
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
+    QVariant headerData(int section, Qt::Orientation orientation,
+                        int role = Qt::DisplayRole) const override;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 
-    virtual void onFirstMoved(){};
-    virtual void onLastMoved(){};
+    bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
 
-    virtual void onNameChanged(Animation*){};
-};
+    bool insertRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
+    bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
 
-class IVW_MODULE_ANIMATION_API AnimationObservable : public Observable<AnimationObserver> {
-protected:
-    void notifyTrackAdded(Track* track);
-    void notifyTrackRemoved(Track* track);
-
-    void notifyFirstMoved();
-    void notifyLastMoved();
-
-    void notifyNameChanged(Animation* anim);
+private:
+    void onNameChanged(Animation* anim) override;
+    WorkspaceAnimations& animations_;
+    WorkspaceAnimations::OnChangedDispatcher::Handle onChangedHandle_;
 };
 
 }  // namespace animation

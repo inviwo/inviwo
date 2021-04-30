@@ -44,11 +44,12 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API ControlKeyframeSequence
     : public BaseKeyframeSequence<ControlKeyframe> {
 public:
-    ControlKeyframeSequence();
+    ControlKeyframeSequence() = default;
     ControlKeyframeSequence(std::vector<std::unique_ptr<ControlKeyframe>> keyframes);
-    ControlKeyframeSequence(const ControlKeyframeSequence& rhs);
-    ControlKeyframeSequence& operator=(const ControlKeyframeSequence& that);
-    virtual ~ControlKeyframeSequence();
+    ControlKeyframeSequence(const ControlKeyframeSequence& rhs) = default;
+    ControlKeyframeSequence& operator=(const ControlKeyframeSequence& that) = default;
+    ControlKeyframeSequence& operator=(ControlKeyframeSequence&& that) = default;
+    virtual ~ControlKeyframeSequence() = default;
 
     virtual ControlKeyframeSequence* clone() const override;
 

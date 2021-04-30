@@ -72,14 +72,12 @@ public:
     static_assert(std::is_base_of<KeyframeSequence, Seq>::value,
                   "Seq has to derive from KeyframeSequence");
 
-    BaseTrack(const std::string& identifier, const std::string& name, size_t priority = 0);
+    BaseTrack(const std::string& name, size_t priority = 0);
+
     virtual ~BaseTrack();
 
     virtual bool isEnabled() const override;
     virtual void setEnabled(bool enabled) override;
-
-    virtual const std::string& getIdentifier() const override;
-    virtual void setIdentifier(const std::string& identifier) override;
 
     virtual const std::string& getName() const override;
     virtual void setName(const std::string& name) override;
@@ -143,11 +141,15 @@ public:
     virtual std::unique_ptr<key_type> createKeyframe(Seconds time) const;
 
 protected:
+    BaseTrack(const BaseTrack& other);
+    BaseTrack(BaseTrack&& other) = default;
+    BaseTrack& operator=(const BaseTrack&);
+    BaseTrack& operator=(BaseTrack&& other) = default;
     virtual void onKeyframeSequenceMoved(KeyframeSequence* seq) override;
     key_type* addToClosestSequence(std::unique_ptr<key_type> key);
 
+private:
     bool enabled_{true};
-    std::string identifier_;
     std::string name_;
     size_t priority_{0};
 
@@ -156,8 +158,35 @@ protected:
 };
 
 template <typename Seq>
-BaseTrack<Seq>::BaseTrack(const std::string& identifier, const std::string& name, size_t priority)
-    : identifier_{identifier}, name_{name}, priority_{priority} {}
+BaseTrack<Seq>::BaseTrack(const std::string& name, size_t priority)
+    : name_{name}, priority_{priority} {}
+
+template <typename Seq>
+BaseTrack<Seq>::BaseTrack(const BaseTrack<Seq>& other)
+    : KeyframeSequenceObserver(other)
+    , enabled_{other.enabled_}
+    , name_{other.name_}
+    , priority_{other.priority_} {
+    for (auto& seq : other.sequences_) {
+        add(std::make_unique<Seq>(*seq));
+    }
+}
+
+template <typename Seq>
+BaseTrack<Seq>& BaseTrack<Seq>::operator=(const BaseTrack<Seq>& that) {
+    if (this != &that) {
+        while (!sequences_.empty()) {
+            remove(sequences_.back().get());
+        }
+        enabled_ = that.enabled_;
+        name_ = that.name_;
+        priority_ = that.priority_;
+        for (const auto& seq : that.sequences_) {
+            add(std::make_unique<Seq>(*seq));
+        }
+    }
+    return *this;
+}
 
 template <typename Seq>
 BaseTrack<Seq>::~BaseTrack() {
@@ -175,18 +204,6 @@ void BaseTrack<Seq>::setEnabled(bool enabled) {
     if (enabled_ != enabled) {
         enabled_ = enabled;
         this->notifyEnabledChanged(this);
-    }
-}
-
-template <typename Seq>
-const std::string& BaseTrack<Seq>::getIdentifier() const {
-    return identifier_;
-}
-template <typename Seq>
-void BaseTrack<Seq>::setIdentifier(const std::string& identifier) {
-    if (identifier_ != identifier) {
-        identifier_ = identifier;
-        this->notifyIdentifierChanged(this);
     }
 }
 
@@ -464,7 +481,6 @@ void BaseTrack<Seq>::onKeyframeSequenceMoved(KeyframeSequence* seq) {
 template <typename Seq>
 void BaseTrack<Seq>::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-    s.serialize("identifier", identifier_, SerializationTarget::Attribute);
     s.serialize("name", name_);
     s.serialize("enabled", enabled_);
     s.serialize("priority", priority_);
@@ -473,11 +489,6 @@ void BaseTrack<Seq>::serialize(Serializer& s) const {
 
 template <typename Seq>
 void BaseTrack<Seq>::deserialize(Deserializer& d) {
-    {
-        auto old = identifier_;
-        d.deserialize("identifier", identifier_, SerializationTarget::Attribute);
-        if (old != identifier_) this->notifyIdentifierChanged(this);
-    }
     {
         auto old = name_;
         d.deserialize("name", name_);

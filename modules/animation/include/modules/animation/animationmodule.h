@@ -34,6 +34,7 @@
 #include <modules/animation/animationsupplier.h>
 #include <modules/animation/animationmanager.h>
 #include <modules/animation/mainanimation.h>
+#include <modules/animation/workspaceanimations.h>
 #include <modules/animation/demo/democontroller.h>
 
 namespace inviwo {
@@ -48,7 +49,19 @@ public:
 
     virtual int getVersion() const override;
     virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
-
+    /*
+     * \brief Returns WorkspaceAnimations, which keeps track of animations stored in the workspace.
+     * One of the animations is set to be the MainAnimation, which can be changed from the GUI (see
+     * AnimationQtModule).
+     */
+    animation::WorkspaceAnimations& getWorkspaceAnimations();
+    const animation::WorkspaceAnimations& getWorkspaceAnimations() const;
+    /*
+     * Returns the AnimationController and its associated Animation intended to be used outside of
+     * the Network, e.g. by the AnimationQtModule. The main Animation can only be changed through
+     * WorkspaceAnimations.
+     * @see getWorkspaceAnimations
+     */
     animation::MainAnimation& getMainAnimation();
     const animation::MainAnimation& getMainAnimation() const;
 
@@ -68,8 +81,8 @@ private:
         int version_;
     };
     animation::AnimationManager manager_;
-    animation::MainAnimation
-        mainAnimation_;  /// Used by Animation Editor and stored with workspace.
+    animation::WorkspaceAnimations
+        animations_;  /// Used by Animation Editor and stored with workspace.
     animation::DemoController demoController_;
 };
 

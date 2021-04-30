@@ -31,11 +31,39 @@
 #include <modules/animation/datastructures/propertytrack.h>
 #include <modules/animation/animationmanager.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+
 namespace inviwo {
 
 namespace animation {
 
-Animation::Animation(AnimationManager* am) : am_(am) {}
+Animation::Animation(AnimationManager* am, std::string_view name)
+    : AnimationObservable(), TrackObserver(), PropertyOwnerObserver(), name_(name), am_(am) {}
+
+Animation::Animation(const Animation& other)
+    : AnimationObservable(other)
+    , TrackObserver(other)
+    , PropertyOwnerObserver(other)
+    , name_{other.name_}
+    , am_{other.am_} {
+    for (const auto& tr : other.tracks_) {
+        add(std::unique_ptr<Track>(tr->clone()));
+    }
+}
+
+Animation& Animation::operator=(const Animation& that) {
+    if (this != &that) {
+        while (!tracks_.empty()) {
+            remove(tracks_.back().get());
+        }
+        name_ = that.name_;
+        am_ = that.am_;
+        for (const auto& tr : that.tracks_) {
+            add(std::unique_ptr<Track>(tr->clone()));
+        }
+    }
+    return *this;
+}
 
 AnimationTimeState Animation::operator()(Seconds from, Seconds to, AnimationState state) const {
     AnimationTimeState ts{to, state};
@@ -70,15 +98,7 @@ void Animation::add(std::unique_ptr<Track> track) {
         return;
     }
     tracks_.push_back(std::move(track));
-    priorityTracks_.push_back(tracks_.back().get());
-    doPrioritySort();
-    tracks_.back()->addObserver(this);
-    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(tracks_.back().get())) {
-        if (auto propertyOwner = propertyTrack->getProperty()->getOwner()) {
-            propertyOwner->addObserver(this);
-        }
-    }
-    notifyTrackAdded(tracks_.back().get());
+    trackAddedInternal(tracks_.back().get());
 }
 
 Keyframe* Animation::addKeyframe(Property* property, Seconds time) {
@@ -148,33 +168,8 @@ BasePropertyTrack* Animation::add(Property* property) {
 std::unique_ptr<Track> Animation::remove(size_t i) {
     auto track = std::move(tracks_[i]);
     tracks_.erase(tracks_.begin() + i);
-    util::erase_remove(priorityTracks_, track.get());
-    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track.get());
-        auto owner = propertyTrack->getProperty()->getOwner()) {
-        // Only stop observing property owner if no other track needs it
-        auto sameOwnerIt = std::find_if(tracks_.begin(), tracks_.end(), [owner](const auto& elem) {
-            if (auto ptrck = dynamic_cast<BasePropertyTrack*>(elem.get())) {
-                return ptrck->getProperty()->getOwner() == owner;
-            } else {
-                return false;
-            }
-        });
-        if (sameOwnerIt == tracks_.end()) {
-            owner->removeObserver(this);
-        }
-    }
-    notifyTrackRemoved(track.get());
+    trackRemovedInternal(track.get());
     return track;
-}
-
-std::unique_ptr<Track> Animation::remove(const std::string& id) {
-    auto it = std::find_if(tracks_.begin(), tracks_.end(),
-                           [&](const auto& track) { return track->getIdentifier() == id; });
-    if (it != tracks_.end()) {
-        return remove(std::distance(tracks_.begin(), it));
-    } else {
-        return nullptr;
-    }
 }
 
 std::unique_ptr<Track> Animation::remove(Track* track) {
@@ -245,14 +240,26 @@ Seconds Animation::getLastTime() const {
     return time;
 }
 
-void Animation::serialize(Serializer& s) const { s.serialize("tracks", tracks_, "track"); }
+std::string_view inviwo::animation::Animation::getName() const { return name_; }
+
+void inviwo::animation::Animation::setName(std::string_view name) {
+    if (name != name_) {
+        name_ = name;
+        notifyNameChanged(this);
+    }
+}
+
+void Animation::serialize(Serializer& s) const {
+    s.serialize("name", name_);
+    s.serialize("tracks", tracks_, "track");
+}
 
 void Animation::deserialize(Deserializer& d) {
-    util::IdentifiedDeserializer<std::string, std::unique_ptr<Track>>("tracks", "track")
-        .setGetId([](const std::unique_ptr<Track>& t) { return t->getIdentifier(); })
-        .setMakeNew([]() { return std::unique_ptr<Track>(); })
-        .onNew([&](std::unique_ptr<Track>& t) { add(std::move(t)); })
-        .onRemove([&](const std::string& id) { remove(id); })(d, tracks_);
+    d.deserialize("name", name_);
+    util::IndexedDeserializer<std::unique_ptr<Track>>("tracks", "track")
+        .onNew([&](std::unique_ptr<Track>& track) { trackAddedInternal(track.get()); })
+        .onRemove([&](std::unique_ptr<Track>& track) { trackRemovedInternal(track.get()); })(
+            d, tracks_);
 }
 
 void Animation::onWillRemoveProperty(Property* property, size_t) {
@@ -260,6 +267,37 @@ void Animation::onWillRemoveProperty(Property* property, size_t) {
     if (it != end()) {
         remove(std::distance(tracks_.begin(), it.base()));
     }
+}
+
+void Animation::trackAddedInternal(Track* track) {
+    priorityTracks_.push_back(track);
+    doPrioritySort();
+    track->addObserver(this);
+    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track)) {
+        if (auto propertyOwner = propertyTrack->getProperty()->getOwner()) {
+            propertyOwner->addObserver(this);
+        }
+    }
+    notifyTrackAdded(track);
+}
+
+void Animation::trackRemovedInternal(Track* track) {
+    util::erase_remove(priorityTracks_, track);
+    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track);
+        auto owner = propertyTrack->getProperty()->getOwner()) {
+        // Only stop observing property owner if no other track needs it
+        auto sameOwnerIt = std::find_if(tracks_.begin(), tracks_.end(), [owner](const auto& elem) {
+            if (auto ptrck = dynamic_cast<BasePropertyTrack*>(elem.get())) {
+                return ptrck->getProperty()->getOwner() == owner;
+            } else {
+                return false;
+            }
+        });
+        if (sameOwnerIt == tracks_.end()) {
+            owner->removeObserver(this);
+        }
+    }
+    notifyTrackRemoved(track);
 }
 
 AnimationManager* Animation::getManager() {

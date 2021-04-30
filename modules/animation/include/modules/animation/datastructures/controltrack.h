@@ -50,6 +50,8 @@ public:
     ControlTrack();
     virtual ~ControlTrack();
 
+    virtual ControlTrack* clone() const override;
+
     static std::string classIdentifier();
     virtual std::string getClassIdentifier() const override;
 

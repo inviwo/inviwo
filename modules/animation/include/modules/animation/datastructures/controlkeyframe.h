@@ -60,7 +60,7 @@ public:
     Seconds getJumpTime() const;
     void setJumpTime(Seconds jumpTime);
 
-    AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state);
+    AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

@@ -47,9 +47,12 @@ class IVW_MODULE_ANIMATION_API CallbackKeyframeSequence
 public:
     using key_type = typename BaseKeyframeSequence<CallbackKeyframe>::key_type;
     CallbackKeyframeSequence() = default;
-    CallbackKeyframeSequence(std::vector<std::unique_ptr<CallbackKeyframe>> keyframes);
     CallbackKeyframeSequence(const CallbackKeyframeSequence& rhs) = default;
+    CallbackKeyframeSequence(CallbackKeyframeSequence&& rhs) = default;
+    CallbackKeyframeSequence(std::vector<std::unique_ptr<CallbackKeyframe>> keyframes);
     CallbackKeyframeSequence& operator=(const CallbackKeyframeSequence& that) = default;
+    CallbackKeyframeSequence& operator=(CallbackKeyframeSequence&& that) = default;
+
     virtual ~CallbackKeyframeSequence() = default;
 
     virtual CallbackKeyframeSequence* clone() const override;

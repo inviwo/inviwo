@@ -49,8 +49,7 @@ namespace animation {
  * @see Interpolation
  */
 class IVW_MODULE_ANIMATION_API KeyframeSequence : public Serializable,
-                                                  public KeyframeSequenceObserverble,
-                                                  public KeyframeObserver {
+                                                  public KeyframeSequenceObserverble {
 
 public:
     virtual KeyframeSequence* clone() const = 0;

@@ -42,7 +42,7 @@ namespace inviwo {
 namespace animation {
 
 template <typename Key>
-class BaseKeyframeSequence : public KeyframeSequence {
+class BaseKeyframeSequence : public KeyframeSequence, public KeyframeObserver {
 public:
     using key_type = Key;
     using value_type = typename Key::value_type;
@@ -54,9 +54,6 @@ public:
 
     BaseKeyframeSequence();
     BaseKeyframeSequence(std::vector<std::unique_ptr<Key>> keyframes);
-
-    BaseKeyframeSequence(const BaseKeyframeSequence& rhs);
-    BaseKeyframeSequence& operator=(const BaseKeyframeSequence& that);
 
     /**
      * Remove all keyframes and call KeyframeObserver::notifyKeyframeRemoved
@@ -104,6 +101,8 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 protected:
+    BaseKeyframeSequence(const BaseKeyframeSequence& rhs);
+    BaseKeyframeSequence& operator=(const BaseKeyframeSequence& that);
     virtual void onKeyframeTimeChanged(Keyframe* key, Seconds oldTime) override;
 
     std::vector<std::unique_ptr<Key>> keyframes_;

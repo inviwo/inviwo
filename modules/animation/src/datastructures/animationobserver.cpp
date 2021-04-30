@@ -49,6 +49,10 @@ void AnimationObservable::notifyLastMoved() {
     forEachObserver([&](AnimationObserver* o) { o->onLastMoved(); });
 }
 
+void AnimationObservable::notifyNameChanged(Animation* anim) {
+    forEachObserver([&](AnimationObserver* o) { o->onNameChanged(anim); });
+}
+
 }  // namespace animation
 
 }  // namespace inviwo
