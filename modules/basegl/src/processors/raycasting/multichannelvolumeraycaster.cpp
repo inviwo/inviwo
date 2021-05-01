@@ -27,58 +27,42 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/basegl/processors/raycasting/multichannelvolumeraycaster.h>
+#include <inviwo/core/util/stdextensions.h>
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/buffer/framebufferobject.h>
-#include <modules/opengl/shader/shaderresource.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeRegionShrink, Volume Region Shrink}
- * ![](org.inviwo.VolumeRegionShrink.png?classIdentifier=org.inviwo.VolumeRegionShrink)
- * Shrinks regions of identical values. The processor will assign 0 to each border voxel in each
- * iteration. A voxel is considered on the border if the value of any of the 26 closest neighbors is
- * different. The procedure is repeated number of iterations times.
- *
- * ### Inports
- *   * __inputVolume__ Input volume
- *
- * ### Outports
- *   * __outputVolume__ Output volume
- *
- * ### Properties
- *   * __iterations__ How many iterations to use
- */
-class IVW_MODULE_BASEGL_API VolumeRegionShrink : public Processor {
-public:
-    VolumeRegionShrink();
-    virtual ~VolumeRegionShrink() = default;
-
-    virtual void process() override;
-
-    virtual void initializeResources() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    VolumeInport inport_;
-    VolumeOutport outport_;
-    IntProperty iterations_;
-
-    std::string shaderType_;
-    bool blockShaderReload_ = false;
-    std::shared_ptr<StringShaderResource> fragShader_;
-    Shader shader_;
-
-    std::array<std::shared_ptr<Volume>, 2> out_;
-    FrameBufferObject fbo_;
-
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo MultiChannelVolumeRaycaster::processorInfo_{
+    "org.inviwo.MultichannelVolumeRaycaster",   // Class identifier
+    "Multichannel Volume Raycaster",            // Display name
+    "Volume Rendering",                         // Category
+    CodeState::Experimental,                    // Code state
+    Tag::GL | Tag{"Volume"} | Tag{"Raycaster"}  // Tags
 };
+const ProcessorInfo MultiChannelVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
+
+MultiChannelVolumeRaycaster::MultiChannelVolumeRaycaster(std::string_view identifier,
+                                                         std::string_view displayName)
+    : VolumeRaycasterBase(identifier, displayName)
+    , volume_("volume")
+    , classify_{volume_.getName()}
+    , background_{*this}
+    , raycasting_{volume_.getName()}
+    , isoTF_{&volume_.volumePort}
+    , camera_{"camera", util::boundingBox(volume_.volumePort)}
+    , light_{&camera_.camera}
+    , positionIndicator_{}
+    , sampleTransform_{} {
+
+    std::array<RaycasterComponent*, 9> comps{
+        &volume_, &classify_, &background_,        &raycasting_,     &isoTF_,
+        &camera_, &light_,    &positionIndicator_, &sampleTransform_};
+    registerComponents(comps);
+}
+
+void MultiChannelVolumeRaycaster::process() { VolumeRaycasterBase::process(); }
 
 }  // namespace inviwo

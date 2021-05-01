@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,52 +26,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/basegl/baseglmoduledefine.h>
+
+#include <modules/basegl/raycasting/raycastercomponent.h>
+#include <inviwo/core/util/timer.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+
+#include <string>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.BrushingAndLinkingProcessor, Brushing And Linking Processor}
- * ![](org.inviwo.BrushingAndLinkingProcessor.png?classIdentifier=org.inviwo.BrushingAndLinkingProcessor)
- * Central point for handling brushing and linking events. Handles selection events, filter events,
- * and column selection.
- *
- * ### Outports
- *   * __outport__  brushing and linking port for connecting "linked" processors
- *
- */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingProcessor : public Processor {
+class IVW_MODULE_BASEGL_API TimeComponent : public RaycasterComponent {
 public:
-    BrushingAndLinkingProcessor();
-    virtual ~BrushingAndLinkingProcessor() = default;
+    TimeComponent(std::string_view name, std::function<void(InvalidationLevel)> invalidate);
 
-    virtual void process() override;
+    virtual std::string_view getName() const override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual void process(Shader& shader, TextureUnitContainer&) override;
 
-    virtual void invokeEvent(Event* event) override;
+    virtual std::vector<Segment> getSegments() override;
 
-    static const ProcessorInfo processorInfo_;
-
-    BrushingAndLinkingOutport& getOutport() { return outport_; }
-
+    Timer timer;
 private:
-    BrushingAndLinkingOutport outport_;
-
-    ButtonProperty clearSelection_;
-    ButtonProperty clearFilter_;
-    ButtonProperty clearCols_;
-    ButtonProperty clearAll_;
-
-    std::shared_ptr<BrushingAndLinkingManager> manager_;
+    std::string name_;
 };
 
 }  // namespace inviwo
-

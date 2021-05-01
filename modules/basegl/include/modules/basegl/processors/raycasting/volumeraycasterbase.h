@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2019-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,49 +29,53 @@
 
 #pragma once
 
-#include <inviwo/core/ports/imageport.h>
+#include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <inviwo/core/ports/imageport.h>
+
+#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/raycasting/raycastercomponent.h>
+
+#include <inviwo/core/util/stdextensions.h>
+#include <functional>
+#include <string_view>
+#include <tcb/span.hpp>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.BrushingAndLinkingProcessor, Brushing And Linking Processor}
- * ![](org.inviwo.BrushingAndLinkingProcessor.png?classIdentifier=org.inviwo.BrushingAndLinkingProcessor)
- * Central point for handling brushing and linking events. Handles selection events, filter events,
- * and column selection.
- *
- * ### Outports
- *   * __outport__  brushing and linking port for connecting "linked" processors
- *
+namespace util {
+
+constexpr auto bind_front = [](auto&& func, auto&& obj) constexpr {
+    return [f = std::forward<decltype(func)>(func), o = std::forward<decltype(obj)>(obj)](
+               auto&&... args) { return std::invoke(f, o, std::forward<decltype(args)>(args)...); };
+};
+
+}  // namespace util
+
+/**
+ * @brief Base class for volume raycasters.
+ * Derived classes should register a set of RaycasterComponents to customize behavior
  */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingProcessor : public Processor {
-public:
-    BrushingAndLinkingProcessor();
-    virtual ~BrushingAndLinkingProcessor() = default;
+class IVW_MODULE_BASEGL_API VolumeRaycasterBase : public Processor {
+protected:
+    VolumeRaycasterBase(std::string_view identifier = "", std::string_view displayName = "");
+    VolumeRaycasterBase(const VolumeRaycasterBase&) = delete;
+    VolumeRaycasterBase& operator=(const VolumeRaycasterBase&) = delete;
+    virtual ~VolumeRaycasterBase();
+
+    void registerComponents(util::span<RaycasterComponent*> comps);
+
+    virtual void initializeResources() override;
 
     virtual void process() override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual void handleError(std::string_view action, std::string_view name) const;
 
-    virtual void invokeEvent(Event* event) override;
-
-    static const ProcessorInfo processorInfo_;
-
-    BrushingAndLinkingOutport& getOutport() { return outport_; }
-
-private:
-    BrushingAndLinkingOutport outport_;
-
-    ButtonProperty clearSelection_;
-    ButtonProperty clearFilter_;
-    ButtonProperty clearCols_;
-    ButtonProperty clearAll_;
-
-    std::shared_ptr<BrushingAndLinkingManager> manager_;
+    ImageInport entryPort_;
+    ImageInport exitPort_;
+    ImageOutport outport_;
+    Shader shader_;
+    std::vector<RaycasterComponent*> components_;
 };
 
 }  // namespace inviwo
-

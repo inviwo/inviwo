@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,51 +27,37 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/basegl/raycasting/timecomponent.h>
+#include <modules/opengl/shader/shader.h>
 
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <chrono>
+#include <functional>
+#include <fmt/format.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.BrushingAndLinkingProcessor, Brushing And Linking Processor}
- * ![](org.inviwo.BrushingAndLinkingProcessor.png?classIdentifier=org.inviwo.BrushingAndLinkingProcessor)
- * Central point for handling brushing and linking events. Handles selection events, filter events,
- * and column selection.
- *
- * ### Outports
- *   * __outport__  brushing and linking port for connecting "linked" processors
- *
- */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingProcessor : public Processor {
-public:
-    BrushingAndLinkingProcessor();
-    virtual ~BrushingAndLinkingProcessor() = default;
+TimeComponent::TimeComponent(std::string_view name,
+                             std::function<void(InvalidationLevel)> invalidate)
+    : RaycasterComponent{}
+    , timer{std::chrono::milliseconds{33},
+            [invalidate = std::move(invalidate)]() {
+                invalidate(InvalidationLevel::InvalidOutput);
+            }}
+    , name_{name} {
 
-    virtual void process() override;
+    timer.start();
+}
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+std::string_view TimeComponent::getName() const { return name_; }
 
-    virtual void invokeEvent(Event* event) override;
+void TimeComponent::process(Shader& shader, TextureUnitContainer&) {
+    shader.setUniform(name_, std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(
+                                 std::chrono::steady_clock::now().time_since_epoch())
+                                 .count());
+}
 
-    static const ProcessorInfo processorInfo_;
-
-    BrushingAndLinkingOutport& getOutport() { return outport_; }
-
-private:
-    BrushingAndLinkingOutport outport_;
-
-    ButtonProperty clearSelection_;
-    ButtonProperty clearFilter_;
-    ButtonProperty clearCols_;
-    ButtonProperty clearAll_;
-
-    std::shared_ptr<BrushingAndLinkingManager> manager_;
-};
+auto TimeComponent::getSegments() -> std::vector<Segment> {
+    return {Segment{fmt::format(FMT_STRING("uniform float {};"), name_), Segment::uniform, 600}};
+}
 
 }  // namespace inviwo
-

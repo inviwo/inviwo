@@ -37,7 +37,7 @@ vec4 drawPlanes(in vec4 oldres, in vec3 pos, in vec3 dir, in float inc, PlanePar
     float e = dot(pos - plane.position, plane.normal);
     float step = abs(dot(plane.normal, inc * dir));
     if (e <= 0.0 && e > -step) {
-        if (tDepth == -1.0 && oldres.a > 0.0) tDepth = t;
+        if (tDepth == -1.0) tDepth = t;
         result.rgb = result.rgb + (1.0 - result.a) * plane.color.a * plane.color.rgb;
         result.a = result.a + (1.0 - result.a) * plane.color.a;
     }

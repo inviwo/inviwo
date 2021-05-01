@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,51 +27,36 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/basegl/raycasting/cameracomponent.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.BrushingAndLinkingProcessor, Brushing And Linking Processor}
- * ![](org.inviwo.BrushingAndLinkingProcessor.png?classIdentifier=org.inviwo.BrushingAndLinkingProcessor)
- * Central point for handling brushing and linking events. Handles selection events, filter events,
- * and column selection.
- *
- * ### Outports
- *   * __outport__  brushing and linking port for connecting "linked" processors
- *
- */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingProcessor : public Processor {
-public:
-    BrushingAndLinkingProcessor();
-    virtual ~BrushingAndLinkingProcessor() = default;
+CameraComponent::CameraComponent(std::string_view name,
+                                 std::function<std::optional<mat4>()> boundingBox)
+    : RaycasterComponent(), camera(std::string(name), "Camera", boundingBox) {}
 
-    virtual void process() override;
+std::string_view CameraComponent::getName() const { return camera.getIdentifier(); }
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+void CameraComponent::initializeResources(Shader& shader) { utilgl::addDefines(shader, camera); }
 
-    virtual void invokeEvent(Event* event) override;
+void CameraComponent::process(Shader& shader, TextureUnitContainer&) {
+    utilgl::setUniforms(shader, camera);
+}
 
-    static const ProcessorInfo processorInfo_;
+std::vector<Property*> CameraComponent::getProperties() { return {&camera}; }
 
-    BrushingAndLinkingOutport& getOutport() { return outport_; }
+namespace {
 
-private:
-    BrushingAndLinkingOutport outport_;
+constexpr std::string_view uniforms = util::trim(R"(
+uniform CameraParameters {0};
+)");
 
-    ButtonProperty clearSelection_;
-    ButtonProperty clearFilter_;
-    ButtonProperty clearCols_;
-    ButtonProperty clearAll_;
+}
 
-    std::shared_ptr<BrushingAndLinkingManager> manager_;
-};
+auto CameraComponent::getSegments() -> std::vector<Segment> {
+    return {Segment{fmt::format(uniforms, getName()), Segment::uniform, 500}};
+}
 
 }  // namespace inviwo
-

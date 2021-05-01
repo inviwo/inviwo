@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2019-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,52 +26,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/basegl/baseglmoduledefine.h>
+
+#include <modules/basegl/raycasting/raycastercomponent.h>
+#include <inviwo/core/properties/isotfproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.BrushingAndLinkingProcessor, Brushing And Linking Processor}
- * ![](org.inviwo.BrushingAndLinkingProcessor.png?classIdentifier=org.inviwo.BrushingAndLinkingProcessor)
- * Central point for handling brushing and linking events. Handles selection events, filter events,
- * and column selection.
- *
- * ### Outports
- *   * __outport__  brushing and linking port for connecting "linked" processors
- *
- */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingProcessor : public Processor {
+class IVW_MODULE_BASEGL_API IsoTFComponent : public RaycasterComponent {
 public:
-    BrushingAndLinkingProcessor();
-    virtual ~BrushingAndLinkingProcessor() = default;
+    IsoTFComponent(VolumeInport* volumeInport);
 
-    virtual void process() override;
+    virtual std::string_view getName() const override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
 
-    virtual void invokeEvent(Event* event) override;
+    virtual void initializeResources(Shader& shader) override;
 
-    static const ProcessorInfo processorInfo_;
+    virtual std::vector<Property*> getProperties() override;
 
-    BrushingAndLinkingOutport& getOutport() { return outport_; }
+    virtual std::vector<Segment> getSegments() override;
 
 private:
-    BrushingAndLinkingOutport outport_;
-
-    ButtonProperty clearSelection_;
-    ButtonProperty clearFilter_;
-    ButtonProperty clearCols_;
-    ButtonProperty clearAll_;
-
-    std::shared_ptr<BrushingAndLinkingManager> manager_;
+    IsoTFProperty isotfComposite_;
 };
 
 }  // namespace inviwo
-

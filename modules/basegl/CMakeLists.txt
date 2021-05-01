@@ -62,6 +62,11 @@ set(HEADER_FILES
     include/modules/basegl/processors/meshrenderprocessorgl.h
     include/modules/basegl/processors/multichannelraycaster.h
     include/modules/basegl/processors/pointrenderer.h
+    include/modules/basegl/processors/raycasting/atlasvolumeraycaster.h
+    include/modules/basegl/processors/raycasting/multichannelvolumeraycaster.h
+    include/modules/basegl/processors/raycasting/sphericalvolumeraycaster.h
+    include/modules/basegl/processors/raycasting/standardvolumeraycaster.h
+    include/modules/basegl/processors/raycasting/volumeraycasterbase.h
     include/modules/basegl/processors/redgreenprocessor.h
     include/modules/basegl/processors/sphererenderer.h
     include/modules/basegl/processors/splitimage.h
@@ -84,6 +89,20 @@ set(HEADER_FILES
     include/modules/basegl/properties/linesettingsproperty.h
     include/modules/basegl/properties/splitterproperty.h
     include/modules/basegl/properties/stipplingproperty.h
+    include/modules/basegl/raycasting/atlascomponent.h
+    include/modules/basegl/raycasting/backgroundcomponent.h
+    include/modules/basegl/raycasting/cameracomponent.h
+    include/modules/basegl/raycasting/classifycomponent.h
+    include/modules/basegl/raycasting/entryexitcomponent.h
+    include/modules/basegl/raycasting/isotfcomponent.h
+    include/modules/basegl/raycasting/lightcomponent.h
+    include/modules/basegl/raycasting/positionindicatorcomponent.h
+    include/modules/basegl/raycasting/raycastercomponent.h
+    include/modules/basegl/raycasting/raycastingcomponent.h
+    include/modules/basegl/raycasting/sampletransformcomponent.h
+    include/modules/basegl/raycasting/sphericalcomponent.h
+    include/modules/basegl/raycasting/timecomponent.h
+    include/modules/basegl/raycasting/volumecomponent.h
     include/modules/basegl/rendering/linerenderer.h
     include/modules/basegl/rendering/splitterrenderer.h
     include/modules/basegl/viewmanager.h
@@ -149,6 +168,11 @@ set(SOURCE_FILES
     src/processors/meshrenderprocessorgl.cpp
     src/processors/multichannelraycaster.cpp
     src/processors/pointrenderer.cpp
+    src/processors/raycasting/atlasvolumeraycaster.cpp
+    src/processors/raycasting/multichannelvolumeraycaster.cpp
+    src/processors/raycasting/sphericalvolumeraycaster.cpp
+    src/processors/raycasting/standardvolumeraycaster.cpp
+    src/processors/raycasting/volumeraycasterbase.cpp
     src/processors/redgreenprocessor.cpp
     src/processors/sphererenderer.cpp
     src/processors/splitimage.cpp
@@ -171,6 +195,20 @@ set(SOURCE_FILES
     src/properties/linesettingsproperty.cpp
     src/properties/splitterproperty.cpp
     src/properties/stipplingproperty.cpp
+    src/raycasting/atlascomponent.cpp
+    src/raycasting/backgroundcomponent.cpp
+    src/raycasting/cameracomponent.cpp
+    src/raycasting/classifycomponent.cpp
+    src/raycasting/entryexitcomponent.cpp
+    src/raycasting/isotfcomponent.cpp
+    src/raycasting/lightcomponent.cpp
+    src/raycasting/positionindicatorcomponent.cpp
+    src/raycasting/raycastercomponent.cpp
+    src/raycasting/raycastingcomponent.cpp
+    src/raycasting/sampletransformcomponent.cpp
+    src/raycasting/sphericalcomponent.cpp
+    src/raycasting/timecomponent.cpp
+    src/raycasting/volumecomponent.cpp
     src/rendering/linerenderer.cpp
     src/rendering/splitterrenderer.cpp
     src/viewmanager.cpp
@@ -223,6 +261,9 @@ set(SHADER_FILES
     glsl/multichannelraycaster.frag
     glsl/pointrenderer.frag
     glsl/pointrenderer.vert
+    glsl/raycasting/raycaster.frag
+    glsl/raycasting/dvr.glsl
+    glsl/raycasting/iso.glsl
     glsl/sphereglyph.frag
     glsl/sphereglyph.geom
     glsl/sphereglyph.vert

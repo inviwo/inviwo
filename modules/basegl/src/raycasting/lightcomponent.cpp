@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2019-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,51 +27,31 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/basegl/raycasting/lightcomponent.h>
+#include <modules/opengl/shader/shaderutils.h>
 
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <string_view>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.BrushingAndLinkingProcessor, Brushing And Linking Processor}
- * ![](org.inviwo.BrushingAndLinkingProcessor.png?classIdentifier=org.inviwo.BrushingAndLinkingProcessor)
- * Central point for handling brushing and linking events. Handles selection events, filter events,
- * and column selection.
- *
- * ### Outports
- *   * __outport__  brushing and linking port for connecting "linked" processors
- *
- */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingProcessor : public Processor {
-public:
-    BrushingAndLinkingProcessor();
-    virtual ~BrushingAndLinkingProcessor() = default;
+LightComponent::LightComponent(CameraProperty* camera)
+    : RaycasterComponent(), lighting_("lighting", "Lighting", camera) {}
 
-    virtual void process() override;
+std::string_view LightComponent::getName() const { return lighting_.getIdentifier(); }
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+void LightComponent::initializeResources(Shader& shader) { utilgl::addDefines(shader, lighting_); }
 
-    virtual void invokeEvent(Event* event) override;
+std::vector<Property*> LightComponent::getProperties() { return {&lighting_}; }
 
-    static const ProcessorInfo processorInfo_;
+auto LightComponent::getSegments() -> std::vector<Segment> {
 
-    BrushingAndLinkingOutport& getOutport() { return outport_; }
+    return {{"uniform LightParameters lighting;", Segment::uniform, 500},
+            {R"(#include "utils/shading.glsl")", Segment::include, 500}};
+}
 
-private:
-    BrushingAndLinkingOutport outport_;
-
-    ButtonProperty clearSelection_;
-    ButtonProperty clearFilter_;
-    ButtonProperty clearCols_;
-    ButtonProperty clearAll_;
-
-    std::shared_ptr<BrushingAndLinkingManager> manager_;
-};
-
+void LightComponent::process(Shader& shader, TextureUnitContainer&) {
+    if (lighting_.shadingMode_ != ShadingMode::None) {
+        utilgl::setUniforms(shader, lighting_);
+    }
+}
 }  // namespace inviwo
-

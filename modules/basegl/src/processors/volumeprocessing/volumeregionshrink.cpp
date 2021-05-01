@@ -33,6 +33,10 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/shader/shadermanager.h>
 
+#include <inviwo/core/util/raiiutils.h>
+
+#include <fmt/format.h>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -51,26 +55,28 @@ constexpr std::string_view fragStr = R"(
 #include "utils/structs.glsl"
 #include "utils/sampler3d.glsl"
 
-uniform sampler3D volume;
+layout(location = 0) out {0}vec4 FragData0;
+
+uniform {0}sampler3D volume;
 uniform VolumeParameters volumeParameters;
 
 in vec4 texCoord_;
 
-void main() {
-    vec4 value = getVoxel(volume, volumeParameters, texCoord_.xyz);
+void main() {{
+    {0}vec4 value = texture(volume, texCoord_.xyz);
 
     bool border = false;
-    for (int z = -1; z < 1; z++) {
-        for (int y = -1; y < 1; y++) {
-            for (int x = -1; x < 1; x++) {
-                border = border || value != getVoxel(volume, volumeParameters, 
+    for (int z = -1; z < 1; z++) {{
+        for (int y = -1; y < 1; y++) {{
+            for (int x = -1; x < 1; x++) {{
+                border = border || value != texture(volume, 
                                             texCoord_.xyz + vec3(x,y,z) * 
                                             volumeParameters.reciprocalDimensions); 
-            }
-        }
-    }
-    FragData0 = mix(value, vec4(0.0), bvec4(border));
-}   
+            }}
+        }}
+    }}
+    FragData0 = mix(value, {0}vec4(0), bvec4(border));
+}}
 )";
 
 }
@@ -80,18 +86,23 @@ VolumeRegionShrink::VolumeRegionShrink()
     , inport_{"inputVolume"}
     , outport_{"outputVolume"}
     , iterations_{"iterations", "Iterations", 3, 0, 25}
-    , fragShader_{std::make_shared<StringShaderResource>("VolumeRegionShrink.frag", fragStr)}
+    , shaderType_{""}
+    , fragShader_{std::make_shared<StringShaderResource>("VolumeRegionShrink.frag",
+                                                         fmt::format(fragStr, shaderType_))}
     , shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
                {ShaderType::Geometry, utilgl::findShaderResource("volume_gpu.geom")},
                {ShaderType::Fragment, fragShader_}},
-              Shader::Build::Yes) {
+              Shader::Build::No) {
 
     addPort(inport_);
     addPort(outport_);
 
     addProperty(iterations_);
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this]() {
+        if (blockShaderReload_) return;
+        invalidate(InvalidationLevel::InvalidResources);
+    });
     ShaderManager::getPtr()->addShaderResource(fragShader_);
 }
 
@@ -101,6 +112,19 @@ void VolumeRegionShrink::process() {
     if (iterations_ == 0) {
         outport_.setData(volume);
         return;
+    }
+
+    auto* vf = volume->getDataFormat();
+    std::string shaderType = "";
+    if (vf->getPrecision() == 32 && vf->getNumericType() == NumericType::SignedInteger) {
+        shaderType = "i";
+    } else if (vf->getPrecision() == 32 && vf->getNumericType() == NumericType::UnsignedInteger) {
+        shaderType = "u";
+    }
+    if (shaderType != shaderType_) {
+        shaderType_ = shaderType;
+        util::KeepTrueWhileInScope block(&blockShaderReload_);
+        initializeResources();
     }
 
     if (!out_[0] || out_[0]->getDataFormat() != volume->getDataFormat() ||
@@ -171,6 +195,10 @@ void VolumeRegionShrink::process() {
     outport_.setData(out_[dst]);
 }
 
-void VolumeRegionShrink::initializeResources() { shader_.build(); }
+void VolumeRegionShrink::initializeResources() {
+    fragShader_->setSource(fmt::format(fragStr, shaderType_));
+    shader_.getFragmentShaderObject()->clearOutDeclarations();
+    shader_.build();
+}
 
 }  // namespace inviwo

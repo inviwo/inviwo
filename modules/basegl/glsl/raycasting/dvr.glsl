@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2019-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,50 +27,19 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PICKING_UTILS_GLSL
-#define IVW_PICKING_UTILS_GLSL
+ #include "utils/compositing.glsl"
 
-uint reverseByte(uint b) {
-    b = (b & uint(0xF0)) >> 4 | (b & uint(0x0F)) << 4;
-    b = (b & uint(0xCC)) >> 2 | (b & uint(0x33)) << 2;
-    b = (b & uint(0xAA)) >> 1 | (b & uint(0x55)) << 1;
-    return b;
-}
-
-vec3 pickingIndexToColor(uint id) {
-    uint index = id;
-
-    uint r = 0u;
-    uint g = 0u;
-    uint b = 0u;
-
-    for (int i = 0; i < 8; ++i) {
-        r |= ((index & uint(1 << (3 * i + 2))) >> (2 * i + 2));
-        g |= ((index & uint(1 << (3 * i + 1))) >> (2 * i + 1));
-        b |= ((index & uint(1 << (3 * i + 0))) >> (2 * i + 0));
+ vec4 drawDVR(in vec4 result, in sampler2D tf, in vec3 samplePos, in vec4 voxel, in int channel, 
+    in vec3 gradient, in mat4 textureToWorld, in LightParameters lighting, in vec3 toCameraDir, 
+    in float t, in float tIncr, inout float tDepth) {
+    vec4 color = APPLY_CLASSIFICATION(tf, voxel, channel);
+    if (color.a > 0) {
+        #if defined(SHADING_ENABLED)
+        vec3 worldSpacePosition = (textureToWorld * vec4(samplePos, 1.0)).xyz;
+        color.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0), worldSpacePosition,
+                                   -gradient, toCameraDir);
+        #endif
+        result = compositeDVR(result, color, t, tDepth, tIncr);
     }
-
-    return vec3(reverseByte(r), reverseByte(g), reverseByte(b)) / 255.0;
-}
-
-uint pickingColorToIndex(vec3 color) {
-    uint r = reverseByte(uint(color[0] * 255.0));
-    uint g = reverseByte(uint(color[1] * 255.0));
-    uint b = reverseByte(uint(color[2] * 255.0));
-
-    uint index = 0u;
-    for (int i = 0; i < 8; ++i) {
-        index |= (((b & uint(1 << i)) << (0 + 2 * i)));
-        index |= (((g & uint(1 << i)) << (1 + 2 * i)));
-        index |= (((r & uint(1 << i)) << (2 + 2 * i)));
-    }
-    return index;
-}
-
-vec4 highlight(vec4 volume, vec4 color1, vec4 color2, float time) {
-    float x = 0.5 * (sin(time / 200.0) + 1.0);
-    return vec4(mix(color1.xyz, color2.xyz, x), 
-                mix(color1.a, color2.a, x) * volume.a);
-}
-
-#endif  // IVW_PICKING_UTILS_GLSL
+    return result;
+ }

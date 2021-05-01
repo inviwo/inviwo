@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2021 Inviwo Foundation
+ * Copyright (c) 2019-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,51 +27,36 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/basegl/raycasting/isotfcomponent.h>
 
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.BrushingAndLinkingProcessor, Brushing And Linking Processor}
- * ![](org.inviwo.BrushingAndLinkingProcessor.png?classIdentifier=org.inviwo.BrushingAndLinkingProcessor)
- * Central point for handling brushing and linking events. Handles selection events, filter events,
- * and column selection.
- *
- * ### Outports
- *   * __outport__  brushing and linking port for connecting "linked" processors
- *
- */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingProcessor : public Processor {
-public:
-    BrushingAndLinkingProcessor();
-    virtual ~BrushingAndLinkingProcessor() = default;
+IsoTFComponent::IsoTFComponent(VolumeInport* volumeInport)
+    : RaycasterComponent()
+    , isotfComposite_("isotfComposite", "TF & Isovalues", volumeInport,
+                      InvalidationLevel::InvalidResources) {}
 
-    virtual void process() override;
+std::string_view IsoTFComponent::getName() const { return isotfComposite_.getIdentifier(); }
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+void IsoTFComponent::process(Shader& shader, TextureUnitContainer& cont) {
+    utilgl::bindAndSetUniforms(shader, cont, isotfComposite_);
+    utilgl::setUniforms(shader, isotfComposite_);
+}
 
-    virtual void invokeEvent(Event* event) override;
+void IsoTFComponent::initializeResources(Shader& shader) {
+    // need to ensure there is always at least one isovalue due to the use of the macro
+    // as array size in IsovalueParameters
+    shader.getFragmentShaderObject()->addShaderDefine(
+        "MAX_ISOVALUE_COUNT",
+        toString(std::max<size_t>(1, isotfComposite_.isovalues_.get().size())));
+}
 
-    static const ProcessorInfo processorInfo_;
+std::vector<Property*> IsoTFComponent::getProperties() { return {&isotfComposite_}; }
 
-    BrushingAndLinkingOutport& getOutport() { return outport_; }
-
-private:
-    BrushingAndLinkingOutport outport_;
-
-    ButtonProperty clearSelection_;
-    ButtonProperty clearFilter_;
-    ButtonProperty clearCols_;
-    ButtonProperty clearAll_;
-
-    std::shared_ptr<BrushingAndLinkingManager> manager_;
-};
-
+auto IsoTFComponent::getSegments() -> std::vector<Segment> {
+    return {Segment{"uniform sampler2D transferFunction;", Segment::uniform, 1000}};
+}
 }  // namespace inviwo
-
