@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2021-04-28 Column & Row Layout
+Added two processors for interactive layouting with splitters using the mouse or touch events: `Column Layout` and `Row Layout`. `Column Layout` renders all connected image ports side-by-side whereas `Row Layout` renders them on top of each other. The interaction handles of the splitters are rendered using a `SplitterRenderer` which also handles the interactions.
+
 ## 2021-04-19 Font changes
 * namespace in `fontutils.h` changed to `font` (previously `util`) and added a function to query the default type faces (`std::string font::getFont(font::FontType type, font::FullPath path)`)
 * Default font changed to OpenSans semibold

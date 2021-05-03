@@ -77,7 +77,7 @@ SplitImage::SplitImage()
     addProperties(splitDirection_, splitPosition_, splitterSettings_);
 
     renderer_.setInvalidateAction([this]() { invalidate(InvalidationLevel::InvalidOutput); });
-    renderer_.setDragAction([this](float pos) { splitPosition_.set(pos); });
+    renderer_.setDragAction([this](float pos, int) { splitPosition_.set(pos); });
 }
 
 void SplitImage::process() {
@@ -150,7 +150,8 @@ void SplitImage::process() {
         renderPort(inport1_, viewport1);
     }
 
-    renderer_.render(splitterSettings_, splitDirection_, splitPosition_, outport_.getDimensions());
+    renderer_.render(splitterSettings_, splitDirection_, {splitPosition_},
+                     outport_.getDimensions());
 
     utilgl::deactivateCurrentTarget();
 }

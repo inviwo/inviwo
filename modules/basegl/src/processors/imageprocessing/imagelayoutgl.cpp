@@ -29,10 +29,7 @@
 
 #include <modules/basegl/processors/imageprocessing/imagelayoutgl.h>
 #include <modules/opengl/texture/textureunit.h>
-#include <inviwo/core/interaction/events/gestureevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
 #include <modules/opengl/shader/shader.h>
-#include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/opengl/texture/textureutils.h>
 

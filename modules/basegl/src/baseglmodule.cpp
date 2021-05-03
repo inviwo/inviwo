@@ -39,6 +39,7 @@
 #include <modules/basegl/processors/firstivwprocessor.h>
 #include <modules/basegl/processors/geometryentryexitpoints.h>
 #include <modules/basegl/processors/heightfieldprocessor.h>
+#include <modules/basegl/processors/imageprocessing/columnrowlayout.h>
 #include <modules/basegl/processors/imageprocessing/findedges.h>
 #include <modules/basegl/processors/imageprocessing/imagebinary.h>
 #include <modules/basegl/processors/imageprocessing/imagechannelcombine.h>
@@ -122,12 +123,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<FirstIvwProcessor>();
     registerProcessor<GeometryEntryExitPoints>();
     registerProcessor<HeightFieldProcessor>();
-    registerProcessor<ImageCompositeProcessorGL>();
-    registerProcessor<ImageLayoutGL>();
-    registerProcessor<ImageMixer>();
-    registerProcessor<ImageOverlayGL>();
     registerProcessor<ISORaycaster>();
-    registerProcessor<Jacobian2D>();
     registerProcessor<LightingRaycaster>();
     registerProcessor<LightVolumeGL>();
     registerProcessor<LineRendererProcessor>();
@@ -138,28 +134,35 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<PointRenderer>();
     registerProcessor<RedGreenProcessor>();
     registerProcessor<SphereRenderer>();
+    registerProcessor<SplitImage>();
     registerProcessor<TubeRendering>();
     registerProcessor<VolumeRaycaster>();
     registerProcessor<VolumeSliceGL>();
 
     // image processing
+    registerProcessor<ColumnLayout>();
     registerProcessor<FindEdges>();
     registerProcessor<ImageBinary>();
     registerProcessor<ImageChannelCombine>();
     registerProcessor<ImageChannelSelect>();
+    registerProcessor<ImageCompositeProcessorGL>();
     registerProcessor<ImageGamma>();
     registerProcessor<ImageGradient>();
     registerProcessor<ImageGrayscale>();
     registerProcessor<ImageHighPass>();
     registerProcessor<ImageInvert>();
     registerProcessor<ImageLayer>();
+    registerProcessor<ImageLayoutGL>();
     registerProcessor<ImageLowPass>();
     registerProcessor<ImageMapping>();
+    registerProcessor<ImageMixer>();
     registerProcessor<ImageNormalizationProcessor>();
+    registerProcessor<ImageOverlayGL>();
     registerProcessor<ImageResample>();
     registerProcessor<ImageScaling>();
     registerProcessor<ImageSubsetGL>();
-    registerProcessor<SplitImage>();
+    registerProcessor<Jacobian2D>();
+    registerProcessor<RowLayout>();
 
     // volume processing
     registerProcessor<VectorMagnitudeProcessor>();
