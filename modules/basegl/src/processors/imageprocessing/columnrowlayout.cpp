@@ -84,7 +84,8 @@ Layout::Layout(splitter::Direction direction)
         return inport_.isConnected() &&
                util::all_of(inport_.getConnectedOutports(), [](Outport* p) {
                    auto ip = static_cast<ImageOutport*>(p);
-                   return (ip->hasData() && glm::any(glm::equal(ip->getDimensions(), size2_t(1))))
+                   return (ip->hasData() &&
+                           glm::any(glm::lessThanEqual(ip->getDimensions(), size2_t(1))))
                               ? true
                               : p->isReady();
                });
