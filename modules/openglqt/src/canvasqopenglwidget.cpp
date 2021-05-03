@@ -60,7 +60,7 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
     setAttribute(Qt::WA_OpaquePaintEvent);
 
     auto interactionEventMapper = new InteractionEventMapperQt(
-        this, this, [this]() { return getCanvasDimensions(); },
+        this, this, [this]() { return utilqt::toGLM(size()); },
         [this]() { return getImageDimensions(); },
         [this](dvec2 pos) { return getDepthValueAtNormalizedCoord(pos); },
         [this](QMouseEvent* e) {
