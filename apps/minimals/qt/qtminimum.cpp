@@ -48,7 +48,6 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QSurfaceFormat>
-#include <QTimer>
 #include <warn/pop>
 
 using namespace inviwo;
@@ -92,38 +91,24 @@ int main(int argc, char** argv) {
         },
         1000);
 
-    TCLAP::ValueArg<int> fullscreenArg(
-        "f", "fullscreen",
-        "Specify amount of seconds before launching canvas to fullscreen", false, 3,
-        "This will only occur if exactly one canvas is visible during startup");
+    TCLAP::SwitchArg fullscreenArg("f", "fullscreen", "Specify fullscreen if only one canvas");
 
-    cmdparser.add(
-        &fullscreenArg,
-        [&]() {
-            QTimer* canvasFullScreenTimer = new QTimer();
-            QObject::connect(
-                canvasFullScreenTimer, &QTimer::timeout, [&inviwoApp, canvasFullScreenTimer]() {
-                    auto allCanvases =
-                        inviwoApp.getProcessorNetwork()->getProcessorsByType<CanvasProcessor>();
-                    std::vector<CanvasProcessor*> activeCanvases;
-                    std::copy_if(allCanvases.begin(), allCanvases.end(),
-                                 std::back_inserter(activeCanvases), [](auto canvas) {
-                                     return canvas->isSink() &&
-                                            canvas->getProcessorWidget()->isVisible();
-                                 });
+    cmdparser.add(&fullscreenArg, [&]() {
+        auto allCanvases = inviwoApp.getProcessorNetwork()->getProcessorsByType<CanvasProcessor>();
+        std::vector<CanvasProcessor*> activeCanvases;
+        std::copy_if(allCanvases.begin(), allCanvases.end(), std::back_inserter(activeCanvases),
+                     [](auto canvas) {
+                         return canvas->isSink() && canvas->getProcessorWidget()->isVisible();
+                     });
 
-                    if (activeCanvases.size() == 1) {
-                        if (auto canvasWidget = static_cast<CanvasProcessorWidget*>(
-                                activeCanvases[0]->getProcessorWidget())) {
-                            Canvas* canvas = canvasWidget->getCanvas();
-                            canvas->setFullScreen(true);
-                        }
-                    }
-                    canvasFullScreenTimer->deleteLater();
-                });
-            canvasFullScreenTimer->start(fullscreenArg.getValue()*1000);
-        },
-        1000);
+        if (activeCanvases.size() == 1) {
+            if (auto canvasWidget =
+                    static_cast<CanvasProcessorWidget*>(activeCanvases[0]->getProcessorWidget())) {
+                Canvas* canvas = canvasWidget->getCanvas();
+                canvas->setFullScreen(true);
+            }
+        }
+    });
 
     // Do this after registerModules if some arguments were added
     cmdparser.parse(inviwo::CommandLineParser::Mode::Normal);
