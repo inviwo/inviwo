@@ -154,7 +154,7 @@ target_include_directories(inviwo-module-webbrowser PUBLIC ${CEF_INCLUDE_PATH})
 
 find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(inviwo-module-webbrowser PUBLIC
-    $<$<NOT:$<BOOL:${OS_MACOSX}>>:libcef_lib>
+    $<$<NOT:$<BOOL:${OS_MAC}>>:libcef_lib>
     libcef_dll_wrapper 
     nlohmann_json::nlohmann_json
     ${CEF_STANDARD_LIBS}
@@ -177,7 +177,7 @@ ivw_register_license_file(NAME "Chromium Embedded Framework" VERSION ${CEF_VERSI
     FILES ${CEF_ROOT}/LICENSE.txt
 )
 
-if (OS_MACOSX)
+if (OS_MAC)
 	# Output path for the main app bundle.
 	set(CEF_APP "${CEF_TARGET_OUT_DIR}/${IVW_APP_INSTALL_NAME}.app")
 	# Copy the CEF framework into the Frameworks directory
@@ -190,6 +190,7 @@ if (OS_MACOSX)
         "${CEF_APP}/Contents/Frameworks/Chromium Embedded Framework.framework"
         VERBATIM
     )
+
     # Copy the CEF framework into the Frameworks directory (used by installer)
     install(DIRECTORY "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
             DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/Chromium Embedded Framework.framework"
