@@ -33,6 +33,13 @@
 
 option(IVW_CFG_TREAT_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 option(IVW_CFG_FORCE_ASSERTIONS "Force use of assertions when not in debug mode" OFF)
+if(CMAKE_GENERATOR STREQUAL "Xcode")
+    # Prevent Xcode 11 from doing automatic codesigning because it will fail the build. 
+    # Causes build to fail if Webbrowser module is enabled due to the added CEF framework
+    # This fix is also performed in the CEF example projects:
+    # https://bitbucket.org/chromiumembedded/cef/src/2de07250dc6c25ccb5484f25002450afb164782b/cmake/cef_variables.cmake.in#lines-339
+    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "")
+endif()
 
 function(ivw_define_standard_properties)
     foreach(target ${ARGN})
