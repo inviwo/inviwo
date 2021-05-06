@@ -37,6 +37,8 @@
 
 namespace inviwo {
 
+class AnimationModule;
+
 namespace animation {
 class WorkspaceAnimations;
 /**
@@ -60,7 +62,7 @@ class WorkspaceAnimations;
  */
 class IVW_MODULE_ANIMATION_API MainAnimation {
 public:
-    MainAnimation(InviwoApplication* app, Animation& animation);
+    MainAnimation(InviwoApplication* app, Animation& animation, AnimationModule& module);
     ~MainAnimation() = default;
 
     Animation& get();

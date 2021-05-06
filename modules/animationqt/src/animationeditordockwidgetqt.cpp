@@ -351,8 +351,8 @@ void AnimationEditorDockWidgetQt::importAnimation() {
                 app->getWorkspaceManager()->createWorkspaceDeserializer(anim, fileName);
             controller_.pause();
             auto animations = manager_.import(deserializer);
-            for (auto anim : animations) {
-                animations_.add(std::move(anim));
+            for (auto animation : animations) {
+                animations_.add(std::move(animation));
             }
         } catch (std::exception ex) {
             LogError(ex.what());

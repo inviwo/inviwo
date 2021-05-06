@@ -135,7 +135,7 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     : InviwoModule(app, "Animation")
     , animation::AnimationSupplier(manager_)
     , manager_(app)
-    , animations_(app, manager_)
+    , animations_(app, manager_, *this)
     , demoController_(app) {
 
     using namespace animation;
