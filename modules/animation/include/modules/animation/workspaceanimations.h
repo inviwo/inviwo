@@ -68,8 +68,7 @@ public:
      * @param Reference to the added/removed Animation.
      */
     using OnChangedDispatcher = Dispatcher<void(size_t, Animation&)>;
-    WorkspaceAnimations(InviwoApplication* app, AnimationManager& manager,
-                        AnimationModule& module);
+    WorkspaceAnimations(InviwoApplication* app, AnimationManager& manager, AnimationModule& module);
     virtual ~WorkspaceAnimations() = default;
 
     Animation& get(size_t index);
