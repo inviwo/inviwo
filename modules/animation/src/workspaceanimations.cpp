@@ -36,10 +36,11 @@ namespace inviwo {
 
 namespace animation {
 
-WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManager& animationManager)
+WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManager& animationManager,
+                                         AnimationModule& module)
     : animationManager_{animationManager}
     , animations_{{Animation(&animationManager_, "Animation 1")}}
-    , mainAnimation_(app, animations_.front())
+    , mainAnimation_(app, animations_.front(), module)
     , app_{app} {
 
     animationClearHandle_ = app->getWorkspaceManager()->onClear([&]() { clear(); });

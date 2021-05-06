@@ -38,6 +38,8 @@
 
 namespace inviwo {
 
+class AnimationModule;
+
 namespace animation {
 /**
  * \brief Responsible for animations saved in the workspace and ensuring that there always is at
@@ -66,7 +68,7 @@ public:
      * @param Reference to the added/removed Animation.
      */
     using OnChangedDispatcher = Dispatcher<void(size_t, Animation&)>;
-    WorkspaceAnimations(InviwoApplication* app, AnimationManager& manager);
+    WorkspaceAnimations(InviwoApplication* app, AnimationManager& manager, AnimationModule& module);
     virtual ~WorkspaceAnimations() = default;
 
     Animation& get(size_t index);

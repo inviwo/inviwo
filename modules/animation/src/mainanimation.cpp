@@ -37,19 +37,19 @@ namespace inviwo {
 
 namespace animation {
 
-MainAnimation::MainAnimation(InviwoApplication* app, Animation& animation)
+MainAnimation::MainAnimation(InviwoApplication* app, Animation& animation, AnimationModule& module)
     : controller_{animation, app} {
-    AnimationModule* animationModule = app->getModuleByType<AnimationModule>();
+
     {
-        auto callbackAction = new ModuleCallbackAction("Add Key Frame", animationModule,
-                                                       ModuleCallBackActionState::Enabled);
+        auto callbackAction =
+            new ModuleCallbackAction("Add Key Frame", &module, ModuleCallBackActionState::Enabled);
 
         callbackAction->getCallBack().addMemberFunction(this, &MainAnimation::addKeyframeCallback);
         app->addCallbackAction(callbackAction);
     }
     {
-        auto callbackAction = new ModuleCallbackAction("Add Sequence", animationModule,
-                                                       ModuleCallBackActionState::Enabled);
+        auto callbackAction =
+            new ModuleCallbackAction("Add Sequence", &module, ModuleCallBackActionState::Enabled);
         callbackAction->getCallBack().addMemberFunction(
             this, &MainAnimation::addKeyframeSequenceCallback);
         app->addCallbackAction(callbackAction);
