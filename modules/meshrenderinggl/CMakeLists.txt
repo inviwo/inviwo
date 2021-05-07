@@ -5,37 +5,39 @@ ivw_module(MeshRenderingGL)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    include/modules/meshrenderinggl/algorithm/calcnormals.h
     include/modules/meshrenderinggl/datastructures/halfedges.h
     include/modules/meshrenderinggl/datastructures/rasterization.h
     include/modules/meshrenderinggl/datastructures/transformedrasterization.h
-    include/modules/meshrenderinggl/algorithm/calcnormals.h
+    include/modules/meshrenderinggl/meshrenderingglmodule.h
+    include/modules/meshrenderinggl/meshrenderingglmoduledefine.h
     include/modules/meshrenderinggl/ports/rasterizationport.h
     include/modules/meshrenderinggl/processors/calcnormalsprocessor.h
     include/modules/meshrenderinggl/processors/linerasterizer.h
     include/modules/meshrenderinggl/processors/meshrasterizer.h
     include/modules/meshrenderinggl/processors/rasterizationrenderer.h
+    include/modules/meshrenderinggl/processors/sphererasterizer.h
     include/modules/meshrenderinggl/processors/transformrasterization.h
     include/modules/meshrenderinggl/rendering/fragmentlistrenderer.h
-    include/modules/meshrenderinggl/meshrenderingglmodule.h
-    include/modules/meshrenderinggl/meshrenderingglmoduledefine.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/algorithm/calcnormals.cpp
     src/datastructures/halfedges.cpp
     src/datastructures/rasterization.cpp
     src/datastructures/transformedrasterization.cpp
-    src/algorithm/calcnormals.cpp
-    src/processors/calcnormalsprocessor.cpp
+    src/meshrenderingglmodule.cpp
     src/ports/rasterizationport.cpp
+    src/processors/calcnormalsprocessor.cpp
     src/processors/linerasterizer.cpp
     src/processors/meshrasterizer.cpp
     src/processors/rasterizationrenderer.cpp
+    src/processors/sphererasterizer.cpp
     src/processors/transformrasterization.cpp
     src/rendering/fragmentlistrenderer.cpp
-    src/meshrenderingglmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -43,9 +45,6 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
-    glsl/fancymeshrenderer.frag
-    glsl/fancymeshrenderer.geom
-    glsl/fancymeshrenderer.vert
     glsl/illustration/display.frag
     glsl/illustration/illustrationbuffer.glsl
     glsl/illustration/neighbors.frag
@@ -57,7 +56,11 @@ set(SHADER_FILES
     glsl/oit/display.frag
     glsl/oit/simplequad.vert
     glsl/oit/sort.glsl
+    glsl/fancymeshrenderer.frag
+    glsl/fancymeshrenderer.geom
+    glsl/fancymeshrenderer.vert
     glsl/oit-linerenderer.frag
+    glsl/oit-sphereglyph.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
