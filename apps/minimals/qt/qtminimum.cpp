@@ -38,6 +38,9 @@
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
+#include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/processors/canvasprocessorwidget.h>
+#include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
@@ -87,6 +90,25 @@ int main(int argc, char** argv) {
             util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, snapshotArg.getValue());
         },
         1000);
+
+    TCLAP::SwitchArg fullscreenArg("f", "fullscreen", "Specify fullscreen if only one canvas");
+
+    cmdparser.add(&fullscreenArg, [&]() {
+        auto allCanvases = inviwoApp.getProcessorNetwork()->getProcessorsByType<CanvasProcessor>();
+        std::vector<CanvasProcessor*> activeCanvases;
+        std::copy_if(allCanvases.begin(), allCanvases.end(), std::back_inserter(activeCanvases),
+                     [](auto canvas) {
+                         return canvas->isSink() && canvas->getProcessorWidget()->isVisible();
+                     });
+
+        if (activeCanvases.size() == 1) {
+            if (auto canvasWidget =
+                    static_cast<CanvasProcessorWidget*>(activeCanvases[0]->getProcessorWidget())) {
+                Canvas* canvas = canvasWidget->getCanvas();
+                canvas->setFullScreen(true);
+            }
+        }
+    });
 
     // Do this after registerModules if some arguments were added
     cmdparser.parse(inviwo::CommandLineParser::Mode::Normal);
