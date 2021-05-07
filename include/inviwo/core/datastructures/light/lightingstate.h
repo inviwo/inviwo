@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,51 +26,29 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/serialization/versionconverter.h>
-
-#include <set>
+#include <inviwo/core/util/glmvec.h>
 
 namespace inviwo {
 
-/**
- * \class ProcessorNetworkConverter
- * \brief A utility to handle conversion of ProcessorNetwork versions.
- */
-class IVW_CORE_API ProcessorNetworkConverter : public VersionConverter {
-public:
-    typedef void (ProcessorNetworkConverter::*updateType)(TxElement*);
-    ProcessorNetworkConverter(int from);
-    virtual bool convert(TxElement* root);
-    int from_;
+enum class ShadingMode {
+    None,
+    Ambient,
+    Diffuse,
+    Specular,
+    BlinnPhong,
+    Phong,
+};
 
-private:
-    void updateProcessorType(TxElement* node);
-    void updateMetaDataTree(TxElement* node);
-    void updatePropertType(TxElement* node);
-    void updateMetaDataType(TxElement* node);
-    void updateMetaDataKeys(TxElement* node);
-    void updateShadingMode(TxElement* node);
-    void updateShadingModeEnum(TxElement* node);
-    void updateCameraToComposite(TxElement* node);
-    void updateDimensionTag(TxElement* node);
-    void updatePropertyLinks(TxElement* node);
-    void updatePortsInProcessors(TxElement* node);
-    void updateNoSpaceInProcessorClassIdentifers(TxElement* node);
-    void updateDisplayName(TxElement* node);
-    void updateProcessorIdentifiers(TxElement* node);
-    void updateTransferfunctions(TxElement* node);
-    void updateProcessorIdentifiersStriped(TxElement* node);
-    void updatePropertyEditorMetadata(TxElement* node);
-    void updateCameraPropertyToRefs(TxElement* node);
-    void updateLinkAndConnections(TxElement* node);
-
-    void traverseNodes(TxElement* node, updateType update);
-
-    std::set<std::string> usedIdentifier_;
+struct IVW_CORE_API LightingState {
+    ShadingMode shadingMode;
+    vec3 position;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float exponent;
 };
 
 }  // namespace inviwo

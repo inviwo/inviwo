@@ -49,10 +49,14 @@ namespace inviwo {
 namespace utilgl {
 
 void addShaderDefines(Shader& shader, const SimpleLightingProperty& property) {
-    addShaderDefines(shader, ShadingMode::Modes(property.shadingMode_.get()));
+    addShaderDefines(shader, property.shadingMode_.get());
 }
 
-void addShaderDefines(Shader& shader, const ShadingMode::Modes& mode) {
+void addShaderDefines(Shader& shader, const LightingState& state) {
+    addShaderDefines(shader, state.shadingMode);
+}
+
+void addShaderDefines(Shader& shader, const ShadingMode& mode) {
     // implementations in  modules/opengl/glsl/utils/shading.glsl
     constexpr std::string_view shadingKey =
         "APPLY_LIGHTING(lighting, materialAmbientColor, materialDiffuseColor, "
@@ -84,12 +88,16 @@ void addShaderDefines(Shader& shader, const ShadingMode::Modes& mode) {
 
 void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property,
                        std::string_view name) {
+    setShaderUniforms(shader, property.getState(), name);
+}
+
+void setShaderUniforms(Shader& shader, const LightingState& state, std::string_view name) {
     StrBuffer buff;
-    shader.setUniform(buff.replace("{}.position", name), property.getTransformedPosition());
-    shader.setUniform(buff.replace("{}.ambientColor", name), property.ambientColor_.get());
-    shader.setUniform(buff.replace("{}.diffuseColor", name), property.diffuseColor_.get());
-    shader.setUniform(buff.replace("{}.specularColor", name), property.specularColor_.get());
-    shader.setUniform(buff.replace("{}.specularExponent", name), property.specularExponent_.get());
+    shader.setUniform(buff.replace("{}.position", name), state.position);
+    shader.setUniform(buff.replace("{}.ambientColor", name), state.ambient);
+    shader.setUniform(buff.replace("{}.diffuseColor", name), state.diffuse);
+    shader.setUniform(buff.replace("{}.specularColor", name), state.specular);
+    shader.setUniform(buff.replace("{}.specularExponent", name), state.exponent);
 }
 
 void addShaderDefines(Shader& /*shader*/, const CameraProperty& /*property*/) {}

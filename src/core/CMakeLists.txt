@@ -67,6 +67,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/baselightsource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/diffuselight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/directionallight.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/lightingstate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/pointlight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/spotlight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationconverter.h
@@ -417,6 +418,7 @@ set(SOURCE_FILES
     datastructures/light/baselightsource.cpp
     datastructures/light/diffuselight.cpp
     datastructures/light/directionallight.cpp
+    datastructures/light/lightingstate.cpp
     datastructures/light/pointlight.cpp
     datastructures/light/spotlight.cpp
     datastructures/representationconvertermetafactory.cpp

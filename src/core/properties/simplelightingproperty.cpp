@@ -89,6 +89,11 @@ SimpleLightingProperty* SimpleLightingProperty::clone() const {
 
 SimpleLightingProperty::~SimpleLightingProperty() = default;
 
+LightingState SimpleLightingProperty::getState() const {
+    return {shadingMode_,  getTransformedPosition(), ambientColor_,
+            diffuseColor_, specularColor_,           specularExponent_};
+}
+
 vec3 SimpleLightingProperty::getTransformedPosition() const {
     switch (static_cast<Space>(referenceFrame_.getSelectedValue())) {
         case Space::VIEW:
