@@ -163,9 +163,8 @@ void ImageSourceSeries::updateFileName() {
 }
 
 bool ImageSourceSeries::isValidImageFile(std::string fileName) {
-    std::string fileExtension = filesystem::getFileExtension(fileName);
     return util::contains_if(validExtensions_,
-                             [&](const FileExtension& f) { return f.extension_ == fileExtension; });
+                             [&](const FileExtension& f) { return f.matches(fileName); });
 }
 
 }  // namespace inviwo

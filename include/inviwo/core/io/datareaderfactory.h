@@ -51,8 +51,8 @@ public:
     bool registerObject(DataReader* reader);
     bool unRegisterObject(DataReader* reader);
     virtual std::unique_ptr<DataReader> create(const FileExtension& key) const override;
-    virtual std::unique_ptr<DataReader> create(const std::string& key) const;
-    virtual bool hasKey(const std::string& key) const;
+    virtual std::unique_ptr<DataReader> create(std::string_view key) const;
+    virtual bool hasKey(std::string_view key) const;
     virtual bool hasKey(const FileExtension& key) const override;
 
     template <typename T>

@@ -107,8 +107,7 @@ void util::insertNetworkForData(const std::string& dataFile, ProcessorNetwork* n
                                 bool alwaysFirst, bool onlySource, QWidget* parent) {
     auto app = net->getApplication();
 
-    auto visualizers = app->getDataVisualizerManager()->getDataVisualizersForExtension(
-        toLower(filesystem::getFileExtension(dataFile)));
+    auto visualizers = app->getDataVisualizerManager()->getDataVisualizersForExtension(dataFile);
 
     if (visualizers.empty()) return;
 

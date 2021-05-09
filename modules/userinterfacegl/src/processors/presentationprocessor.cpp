@@ -232,9 +232,8 @@ void PresentationProcessor::updateFileName() {
 }
 
 bool PresentationProcessor::isValidImageFile(std::string fileName) {
-    std::string fileExtension = toLower(filesystem::getFileExtension(fileName));
     return util::contains_if(validExtensions_,
-                             [&](const FileExtension& f) { return f.extension_ == fileExtension; });
+                             [&](const FileExtension& f) { return f.matches(fileName); });
 }
 
 void PresentationProcessor::nextSlide(Event* e) {

@@ -131,28 +131,13 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
         return nullptr;
     }
 
-    using ReaderMap = std::map<std::string, std::unique_ptr<DataReaderType<Layer>>>;
-    ReaderMap readerMap;
-
-    const auto getReader = [&](const std::string& filename) {
-        const auto fext = toLower(filesystem::getFileExtension(filename));
-        const auto it = readerMap.find(fext);
-        if (it != readerMap.end()) {
-            return it->second.get();
-        }
-        const auto sext = filePattern_.getSelectedExtension();
-        auto reader = readerFactory_->getReaderForTypeAndExtension<Layer>(sext, fext);
-        auto ptr = reader.get();
-        readerMap.emplace(fext, std::move(reader));
-        return ptr;
-    };
-
-    std::vector<std::pair<std::string, DataReaderType<Layer>*>> slices;
+    std::vector<std::pair<std::string, std::unique_ptr<DataReaderType<Layer>>>> slices;
     slices.reserve(files.size());
 
     std::transform(files.begin(), files.end(), std::back_inserter(slices),
-                   [&](const auto& file) -> std::pair<std::string, DataReaderType<Layer>*> {
-                       return {file, getReader(file)};
+                   [&](const auto& file) -> std::pair<std::string, std::unique_ptr<DataReaderType<Layer>>> {
+                       return {file, std::move(readerFactory_->getReaderForTypeAndExtension<Layer>(
+                                         filePattern_.getSelectedExtension(), file))};
                    });
     if (skipUnsupportedFiles_) {
         slices.erase(std::remove_if(slices.begin(), slices.end(),
@@ -218,7 +203,7 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
             for (auto&& elem : util::enumerate(slices)) {
                 const auto slice = elem.first();
                 const auto file = elem.second().first;
-                const auto reader = elem.second().second;
+                const auto reader = elem.second().second.get();
                 if (!reader) {
                     fill(slice);
                     continue;

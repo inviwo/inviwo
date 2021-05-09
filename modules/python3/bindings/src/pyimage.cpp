@@ -148,13 +148,11 @@ void exposeImage(py::module& m) {
         .def_property("wrapping", &Layer::getWrapping, &Layer::setWrapping)
         .def("save",
              [](Layer& self, std::string filepath) {
-                 auto ext = filesystem::getFileExtension(filepath);
-
                  auto writer = InviwoApplication::getPtr()
                                    ->getDataWriterFactory()
-                                   ->getWriterForTypeAndExtension<Layer>(ext);
+                                   ->getWriterForTypeAndExtension<Layer>(filepath);
                  if (!writer) {
-                     throw Exception("No write for extension " + ext,
+                     throw Exception("No write for " + filepath,
                                      IVW_CONTEXT_CUSTOM("exposeImage"));
                  }
                  writer->writeData(&self, filepath);

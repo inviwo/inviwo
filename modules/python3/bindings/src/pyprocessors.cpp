@@ -300,14 +300,12 @@ void exposeProcessors(pybind11::module& m) {
         .def_property_readonly("ready", &CanvasProcessor::isReady)
         .def("snapshot",
              [](CanvasProcessor* canvas, std::string filepath) {
-                 auto ext = filesystem::getFileExtension(filepath);
-
                  auto writer = canvas->getNetwork()
                                    ->getApplication()
                                    ->getDataWriterFactory()
-                                   ->getWriterForTypeAndExtension<Layer>(ext);
+                                   ->getWriterForTypeAndExtension<Layer>(filepath);
                  if (!writer) {
-                     throw Exception("No writer for extension " + ext,
+                     throw Exception("No writer for " + filepath,
                                      IVW_CONTEXT_CUSTOM("exposeProcessors"));
                  }
 
@@ -320,15 +318,13 @@ void exposeProcessors(pybind11::module& m) {
              })
 
         .def("snapshotAsync", [](CanvasProcessor* canvas, std::string filepath) {
-            auto ext = filesystem::getFileExtension(filepath);
-
             auto writer = std::shared_ptr<DataWriterType<Layer>>{
                 canvas->getNetwork()
                     ->getApplication()
                     ->getDataWriterFactory()
-                    ->getWriterForTypeAndExtension<Layer>(ext)};
+                    ->getWriterForTypeAndExtension<Layer>(filepath)};
             if (!writer) {
-                throw Exception("No writer for extension " + ext,
+                throw Exception("No writer for " + filepath,
                                 IVW_CONTEXT_CUSTOM("exposeProcessors"));
             }
 
