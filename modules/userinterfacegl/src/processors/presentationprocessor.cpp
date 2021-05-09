@@ -175,10 +175,9 @@ void PresentationProcessor::updateSlideImage() {
     }
 
     const std::string currentFileName = fileList_[index];
-    const std::string ext = filesystem::getFileExtension(currentFileName);
 
     auto factory = getNetwork()->getApplication()->getDataReaderFactory();
-    auto reader = factory->getReaderForTypeAndExtension<Layer>(ext);
+    auto reader = factory->getReaderForTypeAndExtension<Layer>(currentFileName);
 
     // there should always be a reader since we asked the reader for valid extensions
     ivwAssert(reader != nullptr, "Could not find reader for \"" << currentFileName << "\"");

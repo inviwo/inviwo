@@ -74,8 +74,7 @@ void flipImageHorizontal(Image& img) { img.forEachLayer(flipLayerHorizontal); }
 std::shared_ptr<Image> readImageFromDisk(std::string filename) {
     auto app = InviwoApplication::getPtr();
     auto factory = app->getDataReaderFactory();
-    auto ext = filesystem::getFileExtension(filename);
-    if (auto reader = factory->getReaderForTypeAndExtension<Layer>(ext)) {
+    if (auto reader = factory->getReaderForTypeAndExtension<Layer>(filename)) {
         auto outLayer = reader->readData(filename);
         return std::make_shared<Image>(outLayer);
     } else {

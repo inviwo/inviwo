@@ -117,9 +117,8 @@ void ToolButton::renderWidget(const ivec2& origin, const size2_t& canvasDim) {
 }
 
 std::shared_ptr<Texture2D> ToolButton::loadImage(const std::string& filename) {
-    auto ext = filesystem::getFileExtension(filename);
     auto factory = InviwoApplication::getPtr()->getDataReaderFactory();
-    if (auto reader = factory->getReaderForTypeAndExtension<Layer>(ext)) {
+    if (auto reader = factory->getReaderForTypeAndExtension<Layer>(filename)) {
         try {
             // try to load texture data from current file
             auto layer = reader->readData(filename);
@@ -132,7 +131,7 @@ std::shared_ptr<Texture2D> ToolButton::loadImage(const std::string& filename) {
         }
     } else {
         LogErrorCustom("ToolButton::loadImage",
-                       "Could not find a data reader for texture data (" << ext << ").");
+                       "Could not find a data reader for texture data (" << filename << ").");
         return nullptr;
     }
 }

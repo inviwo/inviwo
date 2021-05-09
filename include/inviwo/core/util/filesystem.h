@@ -311,6 +311,20 @@ IVW_CORE_API std::string addBasePath(std::string_view url);
 IVW_CORE_API std::string getFileDirectory(std::string_view url);
 IVW_CORE_API std::string getFileNameWithExtension(std::string_view url);
 IVW_CORE_API std::string getFileNameWithoutExtension(std::string_view url);
+/**
+ * \brief Returns the characters after last dot (.).
+ *
+ * @note Avoid using this function for extracting file extensions if you are not sure that the
+ * expected extension only contains one dot. In general, there is no way to safely consider cases
+ * with multiple dots. File extensions with multiple dots can exist for compressed files (for
+ * example nii.gz). Instead, compare the url with registered extensions, see inviwo::FileExtension
+ * and inviwo::DataReaderFactory
+ *
+ * @see DataReaderFactory
+ * @see getFileNameWithExtension
+ * @param url Path to extract extension from.
+ * @return Extension excluding ., empty if no dot or filename are found.
+ */
 IVW_CORE_API std::string getFileExtension(std::string_view url);
 
 /**

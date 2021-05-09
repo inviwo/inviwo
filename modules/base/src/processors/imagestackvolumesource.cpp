@@ -122,8 +122,7 @@ void ImageStackVolumeSource::process() {
 }
 
 bool ImageStackVolumeSource::isValidImageFile(std::string fileName) {
-    return readerFactory_->hasReaderForTypeAndExtension<Layer>(
-        filesystem::getFileExtension(fileName));
+    return readerFactory_->hasReaderForTypeAndExtension<Layer>(fileName);
 }
 
 std::shared_ptr<Volume> ImageStackVolumeSource::load() {
