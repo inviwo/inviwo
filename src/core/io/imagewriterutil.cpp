@@ -50,7 +50,8 @@ void saveLayer(const Layer& layer, std::string_view path, const FileExtension& e
     if (!writer) {
 
         LogInfoCustom("ImageWriterUtil",
-                      fmt::format("Could not find a writer for {} of the specified extension {}", path, extension));
+                      fmt::format("Could not find a writer for {} of the specified extension {}",
+                                  path, extension));
         return;
     }
 

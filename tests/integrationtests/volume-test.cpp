@@ -71,10 +71,9 @@ template <typename T>
 void testDatVolumeLoad(std::string filename) {
     std::string file = filesystem::getPath(PathType::Tests) + "/volumes/" + filename;
 
-    auto reader =
-        InviwoApplication::getPtr()
-            ->getDataReaderFactory()
-            ->getReaderForTypeAndExtension<std::vector<std::shared_ptr<Volume>>>(file);
+    auto reader = InviwoApplication::getPtr()
+                      ->getDataReaderFactory()
+                      ->getReaderForTypeAndExtension<std::vector<std::shared_ptr<Volume>>>(file);
     ASSERT_TRUE(reader.get() != nullptr);
     auto volumeSeq = reader->readData(file);
     ASSERT_EQ(1, volumeSeq->size());
@@ -168,10 +167,9 @@ void testVolumeClone(Volume* volume) {
 template <typename T>
 void testDatVolumeClone(std::string filename) {
     std::string file = filesystem::getPath(PathType::Tests) + "/volumes/" + filename;
-    auto reader =
-        InviwoApplication::getPtr()
-            ->getDataReaderFactory()
-            ->getReaderForTypeAndExtension<std::vector<std::shared_ptr<Volume>>>(file);
+    auto reader = InviwoApplication::getPtr()
+                      ->getDataReaderFactory()
+                      ->getReaderForTypeAndExtension<std::vector<std::shared_ptr<Volume>>>(file);
     ASSERT_TRUE(reader.get() != nullptr);
     auto volumeSeq = reader->readData(file);
     ASSERT_EQ(1, volumeSeq->size());
