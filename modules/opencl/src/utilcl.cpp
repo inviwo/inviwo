@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,31 +27,21 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/opencl/openclmoduledefine.h>
-#include <inviwo/core/datastructures/light/lightingstate.h>
+#include <modules/opencl/utilcl.h>
 
 namespace inviwo {
 
 namespace utilcl {
 
-// Struct that can be transferred to OpenCL.
-// Equivalent to struct in
-// opencl/datastructures/lightsource.cl
-// Note that float3 in OpenCL is same as vec4
-typedef struct LightParameters {
-    vec4 position;
-    vec4 ambientColor;
-    vec4 diffuseColor;
-    vec4 specularColor;
-    float specularExponent;
-    ShadingMode shadingMode;
-
-    char padding[56];  // Align to power of two bytes (128)
-} LightParameters;
-
-LightParameters IVW_MODULE_OPENCL_API fromLightingState(const LightingState& state);
+LightParameters fromLightingState(const LightingState& state) {
+    return {vec4(state.position, 1.f),
+            vec4(state.ambient, 1.f),
+            vec4(state.diffuse, 1.f),
+            vec4(state.specular, 1.f),
+            state.exponent,
+            state.shadingMode,
+            0};
+}
 
 }  // namespace utilcl
 
