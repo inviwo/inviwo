@@ -63,7 +63,7 @@ public:
     std::vector<FileExtension> getExtensionsForType() const;
     /**
      * \brief Return a writer matching the file extension of DataWriterType of type T.
-     * Does case insensive comparison between the last part of filePathOrExtension and each
+     * Does case insensitive comparison between the last part of filePathOrExtension and each
      * registered extension.
      * @param filePathOrExtension Path to file, or simply the extension.
      * @return First available DataWriterType<T> if found, nullptr otherwise.

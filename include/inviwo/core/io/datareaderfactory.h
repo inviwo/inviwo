@@ -60,7 +60,7 @@ public:
 
     /**
      * \brief Return a reader matching the file extension of DataReader of type T.
-     * Does case insensive comparison between the last part of filePathOrExtension and each
+     * Does case insensitive comparison between the last part of filePathOrExtension and each
      * registered extension.
      * @param filePathOrExtension Path to file, or simply the extension.
      * @return First available DataReaderType<T> if found, nullptr otherwise.
