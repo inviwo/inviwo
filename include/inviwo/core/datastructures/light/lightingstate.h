@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-enum class ShadingMode {
+enum class ShadingMode : int {
     None,
     Ambient,
     Diffuse,
