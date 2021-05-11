@@ -315,8 +315,8 @@ bool iCaseLess(std::string_view l, std::string_view r) {
 
 bool iCaseEndsWith(std::string_view str, std::string_view suffix) {
     return str.size() >= suffix.size() &&
-        // Compare last part of path with the extension
-        iCaseCmp(str.substr(str.size() - suffix.size()), suffix);
+           // Compare last part of path with the extension
+           iCaseCmp(str.substr(str.size() - suffix.size()), suffix);
 }
 
 // trim from start

@@ -329,7 +329,6 @@ struct IVW_CORE_API CaseInsensitiveCompare {
     bool operator()(std::string_view a, std::string_view b) const;
 };
 
-
 /*
  * \brief Checks if provided string ends with suffix using case insensitive equal comparison.
  * @param str string to check last part of. Allowed to be smaller than suffix.
