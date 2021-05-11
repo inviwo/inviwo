@@ -98,7 +98,7 @@ bool FileExtension::matches(std::string_view str) const {
     if (extension_.empty()) {
         return true;  // wildcard '*' matches everything
     }
-    return iCaseEndsWith(str, extension_);
+    return util::iCaseEndsWith(str, extension_);
 }
 
 void FileExtension::serialize(Serializer& s) const {

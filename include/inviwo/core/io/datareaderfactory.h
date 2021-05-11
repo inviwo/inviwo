@@ -58,7 +58,8 @@ public:
     /**
      * \brief Return a reader matching the file extension of DataReader of type T.
      * Does case insensitive comparison between the last part of filePathOrExtension and each
-     * registered extension.
+     * registered extension. Does not check for "." before the extension, so it is valid to pass for
+     * example "png".
      * @param filePathOrExtension Path to file, or simply the extension.
      * @return First available DataReaderType<T> if found, nullptr otherwise.
      */
@@ -115,7 +116,7 @@ template <typename T>
 std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
     std::string_view path) const {
     for (auto& elem : map_) {
-        if (iCaseEndsWith(path, elem.first.extension_)) {
+        if (util::iCaseEndsWith(path, elem.first.extension_)) {
             if (auto r = dynamic_cast<DataReaderType<T>*>(elem.second)) {
                 return std::unique_ptr<DataReaderType<T>>(r->clone());
             }
