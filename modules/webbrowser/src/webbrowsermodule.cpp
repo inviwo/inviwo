@@ -93,6 +93,19 @@ struct OptionCEFWidgetReghelper {
     }
 };
 
+struct OptionEnumCEFWidgetReghelper {
+    template <typename T>
+    auto operator()(WebBrowserModule& m) {
+        using type = enum class e : T;
+        using PropertyType = TemplateOptionProperty<type>;
+        m.registerPropertyWidgetCEF<PropertyWidgetCEF, PropertyType>();
+
+        using typeU = enum class eU : std::make_unsigned_t<T>;
+        using PropertyTypeU = TemplateOptionProperty<typeU>;
+        m.registerPropertyWidgetCEF<PropertyWidgetCEF, PropertyTypeU>();
+    }
+};
+
 WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     : InviwoModule(app, "WebBrowser")
     // Call 60 times per second
@@ -123,6 +136,9 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     // Register option property widgets
     using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
     util::for_each_type<OptionTypes>{}(OptionCEFWidgetReghelper{}, *this);
+
+    using OptionEnumTypes = std::tuple<char, /*short,*/ int, /*long,*/ long long>;
+    util::for_each_type<OptionEnumTypes>{}(OptionEnumCEFWidgetReghelper{}, *this);
 
     if (!app->getSystemSettings().enablePickingProperty_) {
         LogInfo(
