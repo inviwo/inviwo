@@ -114,7 +114,8 @@ JSONModule::JSONModule(InviwoApplication* app) : InviwoModule(app, "JSON") {
     using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
     util::for_each_type<OptionTypes>{}(OptionReghelper{}, *this);
 
-    using OptionEnumTypes = std::tuple<char, /*short,*/ int, /*long,*/ long long>;
+    // Register option property widgets for enums, commented types not yet supported by Inviwo
+    using OptionEnumTypes = std::tuple<char, int /*short, long, long long*/>;
     util::for_each_type<OptionEnumTypes>{}(OptionEnumReghelper{}, *this);
 }
 

@@ -137,7 +137,8 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
     util::for_each_type<OptionTypes>{}(OptionCEFWidgetReghelper{}, *this);
 
-    using OptionEnumTypes = std::tuple<char, /*short,*/ int, /*long,*/ long long>;
+    // Register option property widgets for enums, commented types not yet supported by Inviwo
+    using OptionEnumTypes = std::tuple<char, int /*short, long, long long*/>;
     util::for_each_type<OptionEnumTypes>{}(OptionEnumCEFWidgetReghelper{}, *this);
 
     if (!app->getSystemSettings().enablePickingProperty_) {
