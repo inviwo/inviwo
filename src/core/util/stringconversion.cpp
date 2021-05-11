@@ -126,8 +126,8 @@ std::string fromWstring(std::wstring_view str) {
 
 bool iCaseEndsWith(std::string_view str, std::string_view suffix) {
     return str.size() >= suffix.size() &&
-        // Compare last part of path with the extension
-        iCaseCmp(str.substr(str.size() - suffix.size()), suffix);
+           // Compare last part of path with the extension
+           iCaseCmp(str.substr(str.size() - suffix.size()), suffix);
 }
 
 }  // namespace util
