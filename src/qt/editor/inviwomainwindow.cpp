@@ -1426,7 +1426,7 @@ void InviwoMainWindow::dragMoveEvent(QDragMoveEvent* event) {
         auto ext = toLower(filesystem::getFileExtension(filename));
 
         if (ext == "inv" ||
-            !app_->getDataVisualizerManager()->getDataVisualizersForExtension(filename).empty()) {
+            !app_->getDataVisualizerManager()->getDataVisualizersForFile(filename).empty()) {
 
             if (event->keyboardModifiers() & Qt::ControlModifier) {
                 event->setDropAction(Qt::CopyAction);

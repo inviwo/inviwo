@@ -329,6 +329,15 @@ struct IVW_CORE_API CaseInsensitiveCompare {
     bool operator()(std::string_view a, std::string_view b) const;
 };
 
+
+/*
+ * \brief Checks if provided string ends with suffix using case insensitive equal comparison.
+ * @param str string to check last part of. Allowed to be smaller than suffix.
+ * @param suffix Ending to match.
+ * @return True if last part of str is equal to suffix, false otherwise.
+ */
+IVW_CORE_API bool iCaseEndsWith(std::string_view str, std::string_view suffix);
+
 /**
  * \brief convert the given duration from milliseconds to a string.
  * The returned string will have the format "%dd %dh %dmin %dsec %.3fms", where days, hours,

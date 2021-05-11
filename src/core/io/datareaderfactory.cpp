@@ -41,7 +41,7 @@ bool DataReaderFactory::registerObject(DataReader* reader) {
 
 bool DataReaderFactory::unRegisterObject(DataReader* reader) {
     size_t removed = util::map_erase_remove_if(
-        map_, [reader](Map::value_type& elem) { return elem.second == reader; });
+        map_, [reader](auto& elem) { return elem.second == reader; });
 
     return removed > 0;
 }

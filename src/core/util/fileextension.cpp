@@ -98,12 +98,7 @@ bool FileExtension::matches(std::string_view str) const {
     if (extension_.empty()) {
         return true;  // wildcard '*' matches everything
     }
-    if (str.size() >= extension_.size()) {
-        // Compare last part of path with the extension
-        return iCaseCmp(str.substr(str.size() - extension_.size()), extension_);
-    } else {
-        return false;
-    }
+    return iCaseEndsWith(str, extension_);
 }
 
 void FileExtension::serialize(Serializer& s) const {

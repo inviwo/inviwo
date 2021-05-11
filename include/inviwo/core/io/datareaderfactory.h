@@ -42,9 +42,6 @@ namespace inviwo {
 
 class IVW_CORE_API DataReaderFactory : public Factory<DataReader, const FileExtension&> {
 public:
-    using Map = std::map<FileExtension, DataReader*,
-                         std::function<bool(const FileExtension&, const FileExtension&)>>;
-
     DataReaderFactory() = default;
     virtual ~DataReaderFactory() = default;
 
@@ -90,14 +87,16 @@ public:
 protected:
     // Sort extensions by length to first compare long extensions. Avoids selecting extension xyz in
     // case xyzw exist, see getReaderForTypeAndExtension
-    Map map_ = Map([](const auto& a, const auto& b) -> bool {
-        if (a.extension_.size() != b.extension_.size()) {
-            return a.extension_.size() > b.extension_.size();
-        } else {
-            // Order does not matter
-            return a < b;
-        }
-    });
+    std::map<FileExtension, DataReader*,
+             std::function<bool(const FileExtension&, const FileExtension&)>>
+        map_{[](const FileExtension& a, const FileExtension& b) {
+            if (a.extension_.size() != b.extension_.size()) {
+                return a.extension_.size() > b.extension_.size();
+            } else {
+                // Order does not matter
+                return a < b;
+            }
+        }};
 };
 
 template <typename T>
@@ -116,10 +115,7 @@ template <typename T>
 std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
     std::string_view path) const {
     for (auto& elem : map_) {
-        if (path.size() >= elem.first.extension_.size() &&
-            // Compare last part of path with the extension
-            iCaseCmp(path.substr(path.size() - elem.first.extension_.size()),
-                     elem.first.extension_)) {
+        if (iCaseEndsWith(path, elem.first.extension_)) {
             if (auto r = dynamic_cast<DataReaderType<T>*>(elem.second)) {
                 return std::unique_ptr<DataReaderType<T>>(r->clone());
             }
