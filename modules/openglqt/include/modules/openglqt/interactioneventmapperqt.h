@@ -69,7 +69,8 @@ public:
                              std::function<size2_t()> canvasDimensions,
                              std::function<size2_t()> imageDimensions,
                              std::function<double(dvec2)> depth,
-                             std::function<void(QMouseEvent*)> contextMenu);
+                             std::function<void(QMouseEvent*)> contextMenu,
+                             std::function<void(Qt::CursorShape)> cursorChange);
     virtual bool eventFilter(QObject* obj, QEvent* ev) override;
 
     void handleTouch(bool on);
@@ -97,6 +98,7 @@ private:
     std::function<size2_t()> imageDimensions_;
     std::function<double(dvec2)> depth_;
     std::function<void(QMouseEvent*)> contextMenu_;
+    std::function<void(Qt::CursorShape)> cursorChange_;
     bool blockContextMenu_ = false;
 
     //! Compare with next touch event to prevent duplicates

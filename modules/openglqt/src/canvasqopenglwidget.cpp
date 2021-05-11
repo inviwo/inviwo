@@ -74,7 +74,8 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
             if (contextMenuCallback_(menu)) {
                 menu.exec(e->globalPos());
             }
-        });
+        },
+        [this](Qt::CursorShape cursor) { setCursor(cursor); });
 
     auto& settings = InviwoApplication::getPtr()->getSystemSettings();
     auto setHandleTouch = [this, &settings, interactionEventMapper]() {

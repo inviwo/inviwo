@@ -41,6 +41,7 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/eventconverterqt.h>
+#include <modules/qtwidgets/mousecursorutils.h>
 
 #include <map>
 
@@ -146,17 +147,18 @@ const TouchDevice* mapTouchDevice(QTouchEvent* touch) {
 
 }  // namespace
 
-InteractionEventMapperQt::InteractionEventMapperQt(QObject* parent, EventPropagator* propagator,
-                                                   std::function<size2_t()> canvasDimensions,
-                                                   std::function<size2_t()> imageDimensions,
-                                                   std::function<double(dvec2)> depth,
-                                                   std::function<void(QMouseEvent*)> contextMenu)
+InteractionEventMapperQt::InteractionEventMapperQt(
+    QObject* parent, EventPropagator* propagator, std::function<size2_t()> canvasDimensions,
+    std::function<size2_t()> imageDimensions, std::function<double(dvec2)> depth,
+    std::function<void(QMouseEvent*)> contextMenu,
+    std::function<void(Qt::CursorShape)> cursorChange)
     : QObject(parent)
     , propagator_{propagator}
     , canvasDimensions_{canvasDimensions}
     , imageDimensions_{imageDimensions}
     , depth_{depth}
-    , contextMenu_{contextMenu} {}
+    , contextMenu_{contextMenu}
+    , cursorChange_{cursorChange} {}
 
 bool InteractionEventMapperQt::eventFilter(QObject*, QEvent* e) {
     switch (e->type()) {
@@ -441,6 +443,9 @@ bool InteractionEventMapperQt::mapPinchTriggered(QPinchGesture* gesture) {
 void InteractionEventMapperQt::setToolTipCallback(MouseInteractionEvent* e) {
     // Save tooltip text to be displayed when Qt raises a QHelpEvent (mouse is still for a while)
     e->setToolTipCallback([this](const std::string& tooltip) -> void { toolTipText_ = tooltip; });
+    e->setMouseCursorCallback([this](MouseCursor c) -> void {
+        if (cursorChange_) cursorChange_(util::toCursorShape(c));
+    });
 }
 
 bool InteractionEventMapperQt::showToolTip(QHelpEvent* e) {

@@ -95,19 +95,21 @@ int main(int argc, char** argv) {
     TCLAP::SwitchArg fullscreenArg("f", "fullscreen", "Specify fullscreen if only one canvas");
 
     cmdparser.add(&fullscreenArg, [&]() {
-        auto allCanvases = inviwoApp.getProcessorNetwork()->getProcessorsByType<CanvasProcessor>();
-        std::vector<CanvasProcessor*> activeCanvases;
-        std::copy_if(allCanvases.begin(), allCanvases.end(), std::back_inserter(activeCanvases),
-                     [](auto canvas) {
-                         return canvas->isSink() && canvas->getProcessorWidget()->isVisible();
-                     });
+        auto network = inviwoApp.getProcessorNetwork();
 
-        if (activeCanvases.size() == 1) {
-            if (auto canvasWidget =
-                    static_cast<CanvasProcessorWidget*>(activeCanvases[0]->getProcessorWidget())) {
-                Canvas* canvas = canvasWidget->getCanvas();
-                canvas->setFullScreen(true);
+        std::vector<ProcessorWidget*> widgets;
+        network->forEachProcessor([&](Processor* p) {
+            if (p->isSink()) {
+                if (auto widget = p->getProcessorWidget()) {
+                    if (widget->isVisible()) {
+                        widgets.push_back(widget);
+                    }
+                }
             }
+        });
+
+        if (widgets.size() == 1) {
+            widgets[0]->setFullScreen(true);
         }
     });
 
