@@ -45,7 +45,7 @@ float convertEyeToScreen(CameraParameters camera, float depthEye) {
 }
 
 float calculateDepthValue(CameraParameters camera, float t, float entryDepthScreen, float exitDepthScreen) {
-    // to calculate the correct depth values, which are not linear in the deph buffer,
+    // to calculate the correct depth values, which are not linear in the depth buffer,
     // we must first convert our screen space coordinates into eye coordinates and interpolate there.
     // transform into eye space
     float entryDepthEye = convertScreenToEye(camera, entryDepthScreen);

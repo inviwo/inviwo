@@ -78,9 +78,8 @@ SphereRasterizer::SphereRasterizer()
     , forceRadius_("forceRadius", "Force Radius", false, InvalidationLevel::InvalidResources)
     , defaultRadius_("defaultRadius", "Default Radius", 0.05f, 0.00001f, 2.0f, 0.01f)
     , forceColor_("forceColor", "Force Color", false, InvalidationLevel::InvalidResources)
-    , defaultColor_("defaultColor", "Default Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
-                    vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
-                    PropertySemantics::Color)
+    , defaultColor_("defaultColor", "Default Color",
+                    util::ordinalColor(vec4(0.7f, 0.7f, 0.7f, 1.0f)))
     , useMetaColor_("useMetaColor", "Use meta color mapping", false,
                     InvalidationLevel::InvalidResources)
     , metaColor_("metaColor", "Meta Color Mapping")
@@ -115,10 +114,10 @@ SphereRasterizer::SphereRasterizer()
     addProperties(renderMode_, forceOpaque_, useUniformAlpha_, uniformAlpha_, sphereProperties_,
                   clipping_, transformSetting_, camera_, lighting_, trackball_);
 
-    clipMode_.onChange([&]() {
-        clipShadingFactor_.setReadOnly(clipMode_.get() == GlyphClippingMode::Discard);
-        shadeClippedArea_.setReadOnly(clipMode_.get() == GlyphClippingMode::Discard);
-    });
+    clipShadingFactor_.readonlyDependsOn(
+        clipMode_, [](const auto& p) { return p == GlyphClippingMode::Discard; });
+    shadeClippedArea_.readonlyDependsOn(
+        clipMode_, [](const auto& p) { return p == GlyphClippingMode::Discard; });
 
     transformSetting_.setCollapsed(true);
     camera_.setCollapsed(true);
@@ -196,8 +195,6 @@ void SphereRasterization::rasterize(const ivec2& imageSize, const mat4& worldMat
         auto& shader = shaders_->getShader(*mesh);
 
         shader.activate();
-
-        setUniforms(shader);
 
         TextureUnit texUnit;
         const LayerGL* tf = metaColorTF_->getRepresentation<LayerGL>();

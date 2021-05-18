@@ -139,7 +139,7 @@ private:
  *   * __Render Mode__               render only input meshes marked as points or everything
  *   * __Clip Mode__                 defines the handling of spheres clipped at the camera
  *   * __Clip Surface Adjustment__   brighten/darken glyph color on clip surface
- *   * __Shaded Clipped Area__       enable illumination computations for the clipped surface
+ *   * __Shade Clipped Area__        enable illumination computations for the clipped surface
  *   * __Force Radius__              enable a fixed user-defined radius for all spheres
  *   * __Default Radius__            radius of the rendered spheres (in world coordinates)
  *   * __Force Color__               if enabled, all spheres will share the same custom color

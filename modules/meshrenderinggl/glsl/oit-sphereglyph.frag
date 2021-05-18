@@ -29,6 +29,7 @@
 
 #include "utils/structs.glsl"
 #include "utils/shading.glsl"
+#include "utils/glyphs.glsl"
 
 #ifdef USE_FRAGMENT_LIST
 #include "oit/abufferlinkedlist.glsl"
@@ -46,29 +47,11 @@ uniform float uniformAlpha = 1.0;
 uniform vec4 viewport; // holds viewport offset x, offset y, 2 / viewport width, 2 / viewport height
 uniform float clipShadingFactor = 0.9;
 
-in vec4 color_;
-in float radius_;
-in vec3 camPos_;
-in vec4 center_;
-flat in vec4 pickColor_;
-
-
-void clipToSolid(in vec4 coord, in vec3 srcColor, out vec4 dstColor, out float dstDepth) { 
-    dstDepth = 0.000001;
-
-#if defined(SHADE_CLIPPED_AREA)
-    // need to compute proper ray-near plane intersection for shading.
-    // Use initial glyph coordinate for now since this should be precise enough for smaller glyphs.
-
-    // clip surface is orthogonal to view direction of the camera, use viewDir as normal
-    vec3 normal = normalize((camera.viewToWorld[2]).xyz);
-    vec3 shadedColor = color_.rgb * clipShadingFactor;
-    dstColor.rgb = APPLY_LIGHTING(lighting, srcColor, srcColor, vec3(1.0f), coord.xyz,
-                           normal, normalize(camPos_ - coord.xyz));
-#else
-    dstColor.rgb = color_.rgb * clipShadingFactor;
-#endif // SHADE_CLIPPED_AREA
-}
+in vec4 color;
+in float radius;
+in vec3 camPos;
+in vec4 center;
+flat in vec4 pickColor;
 
 void main() {
     vec4 pixelPos = gl_FragCoord;
@@ -82,15 +65,15 @@ void main() {
     //coord = gl_ModelViewProjectionMatrixInverse * coord;
     coord = camera.clipToWorld * coord;
     coord /= coord.w;
-    coord -= center_;
+    coord -= center;
     // setup viewing ray
-    vec3 ray = normalize(coord.xyz - camPos_);
+    vec3 ray = normalize(coord.xyz - camPos);
     
     // calculate sphere-ray intersection
     // start ray at current coordinate and not at the camera
     float d1 = -dot(coord.xyz, ray);
     float d2s = dot(coord.xyz, coord.xyz) - d1*d1;
-    float radicand = radius_*radius_ - d2s;
+    float radicand = radius*radius - d2s;
     
     if (radicand < 0.0) {
         // no valid intersection found
@@ -100,47 +83,35 @@ void main() {
     // calculate intersection point
     vec3 intersection = (d1 - sqrt(radicand))*ray + coord.xyz;
     
-    vec3 normal = intersection / radius_;
+    vec3 normal = intersection / radius;
 
     // shading
     vec4 glyphColor;
-    glyphColor.rgb = APPLY_LIGHTING(lighting, color_.rgb, color_.rgb, vec3(1.0f), intersection,
-                               normal, normalize(camPos_ - intersection));
+    glyphColor.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0f), intersection,
+                               normal, normalize(camPos - intersection));
 #if defined(UNIFORM_ALPHA)
     glyphColor.a = uniformAlpha;
 #else
-    glyphColor.a = color_.a;
+    glyphColor.a = color.a;
 #endif // UNIFORM_ALPHA
     if (glyphColor.a < 0.01) discard;
 
     // depth correction for glyph
-    mat4 mvpTranspose = transpose(camera.worldToClip);
+    float depth = glyphDepth(intersection + center.xyz, camera.worldToClip);
 
-    vec4 pos = vec4(intersection + center_.xyz, 1.0);
-    float depth = dot(mvpTranspose[2], pos);
-    float depthW = dot(mvpTranspose[3], pos);
-
-    depth = ((depth / depthW) + 1.0) * 0.5;
-
-    if (depth <= 0.0) {
-        // first intersection lies behind the camera
-#ifdef DISCARD_CLIPPED_GLYPHS
+    if (clipGlypNearPlane(coord, camPos - coord.xyz, camera.viewToWorld[2].xyz, lighting,
+        color.rgb * clipShadingFactor, glyphColor, depth)) {
         discard;
-#else
-        clipToSolid(coord, color_.rgb * clipShadingFactor, glyphColor, depth);
-#endif // DISCARD_CLIPPED_GLYPHS
     }
 
 #if defined(USE_FRAGMENT_LIST)
     // fragment list rendering
-    if (glyphColor.a > 0.0) {
-        ivec2 coords = ivec2(gl_FragCoord.xy);
-        abufferRender(coords, depth, glyphColor);
-    }
+    ivec2 coords = ivec2(gl_FragCoord.xy);
+    abufferRender(coords, depth, glyphColor);
     discard;
 #else
     FragData0 = glyphColor;
     gl_FragDepth = depth;
-    PickingData = pickColor_;
+    PickingData = pickColor;
 #endif  // USE_FRAGMENT_LIST
 }
