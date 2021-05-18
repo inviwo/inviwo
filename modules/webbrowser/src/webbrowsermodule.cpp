@@ -96,12 +96,12 @@ struct OptionCEFWidgetReghelper {
 struct OptionEnumCEFWidgetReghelper {
     template <typename T>
     auto operator()(WebBrowserModule& m) {
-        using type = enum class e : T;
-        using PropertyType = TemplateOptionProperty<type>;
+        enum class e : T;
+        using PropertyType = TemplateOptionProperty<e>;
         m.registerPropertyWidgetCEF<PropertyWidgetCEF, PropertyType>();
 
-        using typeU = enum class eU : std::make_unsigned_t<T>;
-        using PropertyTypeU = TemplateOptionProperty<typeU>;
+        enum class eU : std::make_unsigned_t<T>;
+        using PropertyTypeU = TemplateOptionProperty<eU>;
         m.registerPropertyWidgetCEF<PropertyWidgetCEF, PropertyTypeU>();
     }
 };

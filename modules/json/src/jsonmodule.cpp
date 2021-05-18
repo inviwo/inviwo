@@ -76,12 +76,12 @@ struct OptionReghelper {
 struct OptionEnumReghelper {
     template <typename T>
     auto operator()(JSONModule& m) {
-        using type = enum class e : T;
-        using PropertyType = TemplateOptionProperty<type>;
+        enum class e : T;
+        using PropertyType = TemplateOptionProperty<e>;
         m.registerPropertyJSONConverter<PropertyType>();
 
-        using typeU = enum class eU : std::make_unsigned_t<T>;
-        using PropertyTypeU = TemplateOptionProperty<typeU>;
+        enum class eU : std::make_unsigned_t<T>;
+        using PropertyTypeU = TemplateOptionProperty<eU>;
         m.registerPropertyJSONConverter<PropertyTypeU>();
     }
 };
