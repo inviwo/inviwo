@@ -16,7 +16,7 @@
 # FATAL:async_layer_tree_frame_sink.cc
 # Known issue: Dropdown does not work.
 # Probably due to https://magpcss.org/ceforum/viewtopic.php?f=6&t=11618
-set(CEF_VERSION "87.1.6+g315d248+chromium-87.0.4280.66")
+set(CEF_VERSION "89.0.12+g2b76680+chromium-89.0.4389.90")
 
 # Determine the platform.
 include("cmake/cef_platform.cmake")
@@ -35,7 +35,9 @@ if (WIN32)
     option(USE_SANDBOX "Enable or disable use of the sandbox." OFF)
 endif()
 
-set(PROJECT_ARCH "x86_64") # CEF Wants this on OS X.
+if(NOT PROJECT_ARCH)
+    set(PROJECT_ARCH ${CMAKE_SYSTEM_PROCESSOR}) # CEF Wants this on OS X.
+endif()
 
 # Load the CEF configuration.
 # Execute FindCEF.cmake which must exist in CMAKE_MODULE_PATH.
