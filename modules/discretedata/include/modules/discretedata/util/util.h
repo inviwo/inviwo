@@ -40,6 +40,24 @@
 namespace inviwo {
 namespace discretedata {
 namespace dd_util {
+template <typename T>
+struct Comparer {
+    static int compare(const T& u, const T& v) { return u < v ? -1 : (u == v) ? 0 : 1; }
+};
+
+template <>
+struct Comparer<std::string> {
+    static int compare(const std::string& u, const std::string& v) { return u.compare(v); }
+};
+
+template <typename S, typename T>
+struct PairCompare {
+    bool operator()(const std::pair<S, T>& u, const std::pair<S, T>& v) const {
+        return (Comparer<T>::compare(u.second, v.second) < 0 ||
+                (Comparer<T>::compare(u.second, v.second) == 0 &&
+                 Comparer<S>::compare(u.first, v.first) < 0));
+    }
+};
 
 inline double tetrahedronVolume(double corners[4][3]) {
     const glm::dvec3 a(corners[0][0] - corners[1][0], corners[0][1] - corners[1][1],

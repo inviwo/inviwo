@@ -34,6 +34,8 @@
 namespace inviwo {
 namespace discretedata {
 
+DataChannelMap DataSet::getChannels() const { return DataChannelMap(channels_); }
+
 std::shared_ptr<const Channel> DataSet::addChannel(const Channel* channel) {
     std::shared_ptr<const Channel> sharedChannel(channel);
     addChannel(sharedChannel);
@@ -87,6 +89,8 @@ std::vector<std::pair<std::string, GridPrimitive>> DataSet::getChannelNames() co
 
     return channelNames;
 }
+
+SamplerMap DataSet::getSamplers() const { return SamplerMap(samplers_); }
 
 }  // namespace discretedata
 }  // namespace inviwo

@@ -119,13 +119,16 @@ enum class CellType {
 extern const std::array<const CellStructure*, (int)CellType::NumberOfCellTypes>
     CellStructureByCellType;
 
+/** Description of a cell type by the sub-primitives it divides into.
+ * Assume a polytope, i.e. straight edges and plane sides.
+ **/
 struct CellStructure {
     const GridPrimitive primitive_;
     CellStructure(GridPrimitive prim) : primitive_(prim) {}
     /** Number of primitves (e.g., edges) of this cell type **/
     virtual ind getNumElements(GridPrimitive dim, const std::vector<ind>& vertices) const = 0;
 
-    /** Get the primitves (e.g., edges) by the vertices that make them up **/
+    /** Get the primitives (e.g., edges) by the vertices that make them up **/
     virtual void getElementsByVertices(dd_util::PrefixSumVector<ind>& elementsOut,
                                        GridPrimitive dim,
                                        const std::vector<ind>& vertices) const = 0;
@@ -193,6 +196,23 @@ struct PolygonCellStructure : CellStructure {
     virtual const CellStructure* getElementCellStructure(GridPrimitive dim,
                                                          ind index) const override;
 } static const POLYGON_CELL;
+
+// struct SkewedBoxCellStructure : CellStructure {
+//     SkewedBoxCellStructure(GridPrimitive prim) : CellStructure(prim) {}
+
+//     virtual ind getNumElements(GridPrimitive dim, const std::vector<ind>& vertices) const
+//     override {
+//         // if (dim == GridPrimitive::Edge) return vertices.size();
+//         return 0;
+//     }
+
+//     /** Get the primitves (e.g., edges) by the vertices that make them up **/
+//     virtual void getElementsByVertices(dd_util::PrefixSumVector<ind>& elementsOut,
+//                                        GridPrimitive dim,
+//                                        const std::vector<ind>& vertices) const override;
+//     virtual const CellStructure* getElementCellStructure(GridPrimitive dim,
+//                                                          ind index) const override;
+// } static const POLYGON_CELL;
 
 }  // namespace discretedata
 }  // namespace inviwo

@@ -36,16 +36,10 @@
 #include <modules/discretedata/channels/bufferchannel.h>
 #include <modules/discretedata/connectivity/connectivity.h>
 #include <modules/discretedata/connectivity/structuredgrid.h>
+#include <modules/discretedata/sampling/celltreesampler.h>
 
 namespace inviwo {
 namespace discretedata {
-
-struct ChannelCompare {
-    bool operator()(const std::pair<std::string, GridPrimitive>& u,
-                    const std::pair<std::string, GridPrimitive>& v) const {
-        return (u.second < v.second) || (u.second == v.second && u.first.compare(v.first) < 0);
-    }
-};
 
 struct DataSetInitializer {
     std::shared_ptr<const Connectivity> grid_;
@@ -56,9 +50,13 @@ struct DataSetInitializer {
 // Ordering by both name and GridPrimitive type,
 using DataChannelMap =
     std::map<std::pair<std::string, GridPrimitive>,
-             std::shared_ptr<const Channel>,  // Shared channels, type information only as meta
-                                              // property
-             ChannelCompare>;                 // Lesser operator on string-Primitve pairs
+             std::shared_ptr<const Channel>,                     // Shared base channels pointers
+             dd_util::PairCompare<std::string, GridPrimitive>>;  // Lesser operator on
+                                                                 // string-Primitve pairs
+
+using SamplerMap =
+    std::map<std::pair<std::string, std::string>, std::shared_ptr<const DatasetSamplerBase>,
+             dd_util::PairCompare<std::string, std::string>>;
 
 /**
  * \brief Data package containing structure by cell connectivity and data
@@ -137,7 +135,7 @@ public:
     /**
      * Returns the channel list (map from name and primitive to channel shared pointer).
      */
-    DataChannelMap getChannels() const { return DataChannelMap(channels_); };
+    DataChannelMap getChannels() const;
 
     /**
      * Returns the first channel from an unordered list.
@@ -200,6 +198,11 @@ public:
     DataChannelMap::const_iterator cbegin() const { return channels_.cbegin(); }
     DataChannelMap::const_iterator cend() const { return channels_.cend(); }
 
+    /**
+     * Returns the list of DatasetSamplers (map from long name to Sampler shared pointer).
+     */
+    SamplerMap getSamplers() const;
+
 protected:
     /**
      * Set of data channels
@@ -212,6 +215,13 @@ protected:
      * Several grid types are possible (rectlinear, structured, unstructured)
      */
     const std::shared_ptr<const Connectivity> grid_;
+
+    /**
+     * Samplers for various position channels.
+     * Possibly including spatial datastructures for quick cell location.
+     * Can be used to create inviwo SpatialSamplers when a channel to sample from is selected.
+     */
+    SamplerMap samplers_;
 };
 
 template <typename T, ind N>

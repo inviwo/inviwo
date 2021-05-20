@@ -2,7 +2,7 @@
 # Inviwo discrete data Module
 ivw_module(DiscreteData)
 
-SET(IVW_DISCRETEDATA_MAX_NUM_DIMENSIONS 7 CACHE INTEGER "The default maximum number of dimensions compiled for")
+SET(IVW_DISCRETEDATA_MAX_NUM_DIMENSIONS 4 CACHE INTEGER "The default maximum number of dimensions compiled for")
 add_definitions( -DDISCRETEDATA_MAX_NUM_DIMENSIONS=${IVW_DISCRETEDATA_MAX_NUM_DIMENSIONS} )
 
 #--------------------------------------------------------------------
@@ -32,6 +32,7 @@ set(HEADER_FILES
     include/modules/discretedata/discretedatamodule.h
     include/modules/discretedata/discretedatamoduledefine.h
     include/modules/discretedata/discretedatatypes.h
+    include/modules/discretedata/interpolation/interpolant.h
     include/modules/discretedata/ports/datasetport.h
     include/modules/discretedata/processors/colormapchannel.h
     include/modules/discretedata/processors/combinechannels.h
@@ -41,6 +42,7 @@ set(HEADER_FILES
     include/modules/discretedata/processors/createuniformgrid.h
     include/modules/discretedata/processors/datasetfrombase.h
     include/modules/discretedata/processors/datasetsource.h
+    include/modules/discretedata/processors/datasettospatialsampler.h
     include/modules/discretedata/processors/exampledataset.h
     include/modules/discretedata/processors/meshfromdataset.h
     include/modules/discretedata/processors/segmentationvoxelizer.h
@@ -48,8 +50,10 @@ set(HEADER_FILES
     include/modules/discretedata/processors/volumefromdataset.h
     include/modules/discretedata/properties/datachannelproperty.h
     include/modules/discretedata/sampling/celltree.h
+    include/modules/discretedata/sampling/celltreesampler.h
     include/modules/discretedata/util/prefixsumvector.h
     include/modules/discretedata/util/util.h
+    include/modules/discretedata/util/spatialentitychannel.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 

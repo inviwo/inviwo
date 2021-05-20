@@ -35,6 +35,7 @@
 #include <modules/discretedata/processors/datasetfrombase.h>
 #include <modules/discretedata/processors/datasetsource.h>
 #include <modules/discretedata/processors/computegridmeasure.h>
+// #include <modules/discretedata/processors/datasettospatialsampler.h>
 #include <modules/discretedata/processors/volumefromdataset.h>
 #include <modules/discretedata/processors/meshfromdataset.h>
 #include <modules/discretedata/processors/segmentationvoxelizer.h>
@@ -48,6 +49,8 @@ namespace inviwo {
 
 DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(app, "discretedata") {
     // Processors
+    // registerProcessor<discretedata::DataSetToSpatialSampler2D>();
+    // registerProcessor<discretedata::DataSetToSpatialSampler3D>();
     registerProcessor<discretedata::SphericalCoordinates>();
     registerProcessor<discretedata::ColormapChannel>();
     registerProcessor<discretedata::CombineChannels>();

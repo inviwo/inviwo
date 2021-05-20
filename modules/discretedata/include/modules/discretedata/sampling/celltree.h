@@ -31,6 +31,8 @@
 
 #include <modules/discretedata/connectivity/connectivity.h>
 #include <modules/discretedata/channels/datachannel.h>
+#include <modules/discretedata/interpolation/interpolant.h>
+#include <modules/discretedata/sampling/datasetsampler.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -39,20 +41,30 @@ namespace discretedata {
  * Allows all types of cell in up to 8 dimensions.
  * Following the 2010 paper by Garth and Joy (https://doi.org/10.1109/TVCG.2010.156).
  **/
-template <unsigned int SpatialDims>  //, std::enable_if_t<SpatialDims <= 8>
-class CellTree {
+template <unsigned int SpatialDims>
+class CellTree : public DatasetSampler<SpatialDims> {
 public:
-    CellTree(std::shared_ptr<const Connectivity> grid, std::shared_ptr<const Channel> coordinates);
+    CellTree(std::shared_ptr<const Connectivity> grid,
+             std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates,
+             const Interpolant<SpatialDims>& interpolant);
     ~CellTree() = default;
-    CellTree(CellTree&& tree);
-    CellTree(CellTree& tree) = delete;
-    CellTree& operator=(CellTree&& tree) = delete;
-    CellTree& operator=(CellTree& tree) = delete;
+    CellTree(CellTree<SpatialDims>&& tree);
+    CellTree(CellTree<SpatialDims>& tree) = delete;
+    CellTree& operator=(CellTree<SpatialDims>&& tree) = delete;
+    CellTree& operator=(CellTree<SpatialDims>& tree) = delete;
 
-    ind locateCell(const std::array<float, SpatialDims>& pos) const;
+    template <typename T>
+    bool sampleCell(ind cellId, const std::array<float, SpatialDims>& pos,
+                    std::vector<double>& weights,
+                    InterpolationType interpolationType = InterpolationType::Ignore) const;
+    ind locateAndSampleCell(const std::array<float, SpatialDims>& pos,
+                            std::vector<double>& returnWeights,
+                            InterpolationType interpolationType = InterpolationType::Ignore) const;
 
     template <typename T, ind N>
-    ind locateCell(const std::array<float, SpatialDims>& pos) const;
+    ind locateAndSampleCell(const std::array<float, SpatialDims>& pos,
+                            std::vector<double>& returnWeights,
+                            InterpolationType interpolationType = InterpolationType::Ignore) const;
 
 protected:
     struct Node {
@@ -65,9 +77,9 @@ protected:
                 float Lmax, Rmin;
             } node;
             struct {
-                unsigned int start, size
+                unsigned int start, size;
             } leaf;
-        }
+        };
     };
 
     struct CellTreeBuilder {
@@ -78,15 +90,16 @@ protected:
     std::vector<Node> nodes_;
     std::vector<ind> cells_;
     std::array<float, SpatialDims> coordsMin_, coordsMax_;
-    ind (CellTree<SpatialDims>::*locateCellFunction)(const glm::vec<float, SpatialDims>&);
+    ind (CellTree<SpatialDims>::*locateCellFunction)(const glm::vec<SpatialDims, float>&);
 
     // Fixed values taken from the paper.
-    constexpr unsigned MAX_CELLS_PER_NODE = 32;
-    constexpr unsigned NUM_SPLIT_BUCKETS = 5;
+    static constexpr unsigned MAX_CELLS_PER_NODE = 32;
+    static constexpr unsigned NUM_SPLIT_BUCKETS = 5;
 
 public:
     const std::shared_ptr<const Connectivity> grid_;
     const std::shared_ptr<const Channel> coordinates_;
+    const Interpolant<SpatialDims> interpolant_;
 };
 
 }  // namespace discretedata
