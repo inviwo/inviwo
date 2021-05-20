@@ -37,6 +37,7 @@
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
+#include <modules/opengl/openglcapabilities.h>
 #include <modules/opengl/image/layergl.h>
 
 #include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
@@ -101,7 +102,12 @@ SphereRasterizer::SphereRasterizer()
           [&](Shader& shader) -> void {
               shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
               configureShader(shader);
-          })} {
+          })}
+    , oitExtensionsAvailable_(
+          OpenGLCapabilities::isExtensionSupported("GL_NV_gpu_shader5") &&
+          OpenGLCapabilities::isExtensionSupported("GL_EXT_shader_image_load_store") &&
+          OpenGLCapabilities::isExtensionSupported("GL_NV_shader_buffer_load") &&
+          OpenGLCapabilities::isExtensionSupported("GL_EXT_bindable_uniform")) {
 
     addPort(inport_);
     addPort(outport_);
@@ -160,13 +166,16 @@ void SphereRasterizer::configureShader(Shader& shader) {
 void SphereRasterizer::configureOITShader(Shader& shader) {
     auto fso = shader.getFragmentShaderObject();
 
-    fso->addShaderExtension("GL_NV_gpu_shader5", true);
-    fso->addShaderExtension("GL_EXT_shader_image_load_store", true);
-    fso->addShaderExtension("GL_NV_shader_buffer_load", true);
-    fso->addShaderExtension("GL_EXT_bindable_uniform", true);
+    if (oitExtensionsAvailable_) {
+        fso->addShaderExtension("GL_NV_gpu_shader5", true);
+        fso->addShaderExtension("GL_EXT_shader_image_load_store", true);
+        fso->addShaderExtension("GL_NV_shader_buffer_load", true);
+        fso->addShaderExtension("GL_EXT_bindable_uniform", true);
+    }
 
-    fso->setShaderDefine("USE_FRAGMENT_LIST",
-                         !forceOpaque_.get() && FragmentListRenderer::supportsFragmentLists());
+    fso->setShaderDefine("USE_FRAGMENT_LIST", !forceOpaque_.get() &&
+                                                  FragmentListRenderer::supportsFragmentLists() &&
+                                                  oitExtensionsAvailable_);
 
     fso->setShaderDefine("UNIFORM_ALPHA", useUniformAlpha_.get());
 }
@@ -181,7 +190,8 @@ SphereRasterization::SphereRasterization(const SphereRasterizer& processor)
     , metaColorTF_(processor.metaColor_->getData())
     , lighting_(processor.lighting_.getState())
     , shaders_(processor.shaders_)
-    , meshes_(processor.inport_.getVectorData()) {}
+    , meshes_(processor.inport_.getVectorData())
+    , oitExtensionsAvailable_(processor.oitExtensionsAvailable_) {}
 
 void SphereRasterization::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
                                     std::function<void(Shader&)> setUniforms) const {
@@ -245,7 +255,7 @@ void SphereRasterization::rasterize(const ivec2& imageSize, const mat4& worldMat
 }
 
 bool SphereRasterization::usesFragmentLists() const {
-    return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
+    return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists() && oitExtensionsAvailable_;
 }
 
 Document SphereRasterization::getInfo() const {
