@@ -104,7 +104,7 @@ void DataExport<DataType, PortType>::exportData() {
         auto factory = getNetwork()->getApplication()->getDataWriterFactory();
 
         auto writer = factory->template getWriterForTypeAndExtension<DataType>(
-            file_.getSelectedExtension(), filesystem::getFileExtension(file_.get()));
+            file_.getSelectedExtension(), file_.get());
 
         if (!writer) {
             LogProcessorError(

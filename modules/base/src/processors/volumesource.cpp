@@ -101,7 +101,6 @@ void VolumeSource::load(bool deserialize) {
     auto rm = app_->getResourceManager();
 
     const auto sext = reader_.getSelectedValue();
-    const auto fext = filesystem::getFileExtension(file_.get());
 
     // use resource unless the "Reload data"-button (reload_) was pressed,
     // Note: reload_ will be marked as modified when deserializing.
@@ -110,11 +109,13 @@ void VolumeSource::load(bool deserialize) {
         volumes_ = rm->getResource<VolumeSequence>(file_.get());
     } else {
         try {
-            if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeSequence>(sext, fext)) {
+            if (auto volVecReader =
+                    rf->getReaderForTypeAndExtension<VolumeSequence>(sext, file_.get())) {
                 auto volumes = volVecReader->readData(file_.get(), this);
                 std::swap(volumes, volumes_);
                 rm->addResource(file_.get(), volumes_, reload_.isModified());
-            } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(sext, fext)) {
+            } else if (auto volreader =
+                           rf->getReaderForTypeAndExtension<Volume>(sext, file_.get())) {
                 auto volume = volreader->readData(file_.get(), this);
                 auto volumes = std::make_shared<VolumeSequence>();
                 volumes->push_back(volume);

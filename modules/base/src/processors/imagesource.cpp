@@ -87,8 +87,7 @@ void ImageSource::process() {
     if (file_.get().empty()) return;
 
     const auto sext = reader_.getSelectedValue();
-    const auto fext = filesystem::getFileExtension(file_.get());
-    if (auto reader = rf_->getReaderForTypeAndExtension<Layer>(sext, fext)) {
+    if (auto reader = rf_->getReaderForTypeAndExtension<Layer>(sext, file_.get())) {
         try {
             auto outLayer = reader->readData(file_.get());
             outport_.setData(std::make_shared<Image>(outLayer));

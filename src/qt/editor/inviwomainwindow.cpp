@@ -1422,11 +1422,11 @@ void InviwoMainWindow::dragMoveEvent(QDragMoveEvent* event) {
     auto mimeData = event->mimeData();
     if (mimeData->hasUrls()) {
         QList<QUrl> urlList = mimeData->urls();
-        auto filename = urlList.front().toLocalFile();
-        auto ext = toLower(filesystem::getFileExtension(utilqt::fromQString(filename)));
+        auto filename = utilqt::fromQString(urlList.front().toLocalFile());
+        auto ext = toLower(filesystem::getFileExtension(filename));
 
         if (ext == "inv" ||
-            !app_->getDataVisualizerManager()->getDataVisualizersForExtension(ext).empty()) {
+            !app_->getDataVisualizerManager()->getDataVisualizersForFile(filename).empty()) {
 
             if (event->keyboardModifiers() & Qt::ControlModifier) {
                 event->setDropAction(Qt::CopyAction);

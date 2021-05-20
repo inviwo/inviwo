@@ -45,20 +45,14 @@ void saveLayer(const Layer& layer, std::string_view path, const FileExtension& e
     auto factory = InviwoApplication::getPtr()->getDataWriterFactory();
 
     auto writer = std::shared_ptr<DataWriterType<Layer>>(
-        factory->getWriterForTypeAndExtension<Layer>(extension));
+        factory->getWriterForTypeAndExtension<Layer>(extension, path));
 
     if (!writer) {
-        // could not find a reader for the given extension, extension might be invalid
-        // try to get reader for the extension extracted from the file name, i.e. path
-        const auto ext = filesystem::getFileExtension(path);
-        writer = std::shared_ptr<DataWriterType<Layer>>(
-            factory->getWriterForTypeAndExtension<Layer>(ext));
-        if (!writer) {
-            LogInfoCustom(
-                "ImageWriterUtil",
-                "Could not find a writer for the specified file extension (\"" << ext << "\")");
-            return;
-        }
+
+        LogInfoCustom("ImageWriterUtil",
+                      fmt::format("Could not find a writer for {} of the specified extension {}",
+                                  path, extension.toString()));
+        return;
     }
 
     try {

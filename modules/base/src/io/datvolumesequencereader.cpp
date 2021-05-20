@@ -73,7 +73,6 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
     }
 
     std::string fileDirectory = filesystem::getFileDirectory(fileName);
-    std::string fileExtension = filesystem::getFileExtension(fileName);
 
     // Read the dat file content
     auto f = filesystem::ifstream(fileName);

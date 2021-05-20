@@ -40,8 +40,8 @@ bool DataReaderFactory::registerObject(DataReader* reader) {
 }
 
 bool DataReaderFactory::unRegisterObject(DataReader* reader) {
-    size_t removed = util::map_erase_remove_if(
-        map_, [reader](Map::value_type& elem) { return elem.second == reader; });
+    size_t removed =
+        util::map_erase_remove_if(map_, [reader](auto& elem) { return elem.second == reader; });
 
     return removed > 0;
 }
@@ -51,20 +51,18 @@ std::unique_ptr<DataReader> DataReaderFactory::create(const FileExtension& key) 
         util::map_find_or_null(map_, key, [](DataReader* o) { return o->clone(); }));
 }
 
-std::unique_ptr<DataReader> DataReaderFactory::create(const std::string& key) const {
-    auto lkey = toLower(key);
+std::unique_ptr<DataReader> DataReaderFactory::create(std::string_view key) const {
     for (auto& elem : map_) {
-        if (toLower(elem.first.extension_) == toLower(lkey)) {
+        if (iCaseCmp(elem.first.extension_, key)) {
             return std::unique_ptr<DataReader>(elem.second->clone());
         }
     }
     return nullptr;
 }
 
-bool DataReaderFactory::hasKey(const std::string& key) const {
-    auto lkey = toLower(key);
+bool DataReaderFactory::hasKey(std::string_view key) const {
     for (auto& elem : map_) {
-        if (toLower(elem.first.extension_) == toLower(lkey)) return true;
+        if (iCaseCmp(elem.first.extension_, key)) return true;
     }
     return false;
 }

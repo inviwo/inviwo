@@ -186,9 +186,8 @@ void FilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
                             case FileMode::AnyFile:
                             case FileMode::ExistingFile:
                             case FileMode::ExistingFiles: {
-                                auto ext = toLower(filesystem::getFileExtension(file));
                                 for (const auto& filter : property_->getNameFilters()) {
-                                    if (filter.extension_ == ext) {
+                                    if (filter.matches(file)) {
                                         event->accept();
                                         return;
                                     }

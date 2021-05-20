@@ -70,12 +70,10 @@ void testVolumeLoad(Volume* volume) {
 template <typename T>
 void testDatVolumeLoad(std::string filename) {
     std::string file = filesystem::getPath(PathType::Tests) + "/volumes/" + filename;
-    std::string fileExtension = filesystem::getFileExtension(file);
 
-    auto reader =
-        InviwoApplication::getPtr()
-            ->getDataReaderFactory()
-            ->getReaderForTypeAndExtension<std::vector<std::shared_ptr<Volume>>>(fileExtension);
+    auto reader = InviwoApplication::getPtr()
+                      ->getDataReaderFactory()
+                      ->getReaderForTypeAndExtension<std::vector<std::shared_ptr<Volume>>>(file);
     ASSERT_TRUE(reader.get() != nullptr);
     auto volumeSeq = reader->readData(file);
     ASSERT_EQ(1, volumeSeq->size());
@@ -88,10 +86,9 @@ void testDatVolumeLoad(std::string filename) {
 template <typename T>
 void testIvfVolumeLoad(std::string filename) {
     std::string file = filesystem::getPath(PathType::Tests) + "/volumes/" + filename;
-    std::string fileExtension = filesystem::getFileExtension(file);
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Volume>(
-            fileExtension);
+            file);
     ASSERT_TRUE(reader.get() != nullptr);
     auto volume = reader->readData(file);
 
@@ -170,11 +167,9 @@ void testVolumeClone(Volume* volume) {
 template <typename T>
 void testDatVolumeClone(std::string filename) {
     std::string file = filesystem::getPath(PathType::Tests) + "/volumes/" + filename;
-    std::string fileExtension = filesystem::getFileExtension(file);
-    auto reader =
-        InviwoApplication::getPtr()
-            ->getDataReaderFactory()
-            ->getReaderForTypeAndExtension<std::vector<std::shared_ptr<Volume>>>(fileExtension);
+    auto reader = InviwoApplication::getPtr()
+                      ->getDataReaderFactory()
+                      ->getReaderForTypeAndExtension<std::vector<std::shared_ptr<Volume>>>(file);
     ASSERT_TRUE(reader.get() != nullptr);
     auto volumeSeq = reader->readData(file);
     ASSERT_EQ(1, volumeSeq->size());
@@ -187,10 +182,9 @@ void testDatVolumeClone(std::string filename) {
 template <typename T>
 void testIvfVolumeClone(std::string filename) {
     std::string file = filesystem::getPath(PathType::Tests) + "/volumes/" + filename;
-    std::string fileExtension = filesystem::getFileExtension(file);
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Volume>(
-            fileExtension);
+            file);
     ASSERT_TRUE(reader.get() != nullptr);
     auto volume = reader->readData(file);
 

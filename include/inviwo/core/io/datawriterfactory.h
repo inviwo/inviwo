@@ -45,45 +45,63 @@ class DataWriterType;
 
 class IVW_CORE_API DataWriterFactory : public Factory<DataWriter, const FileExtension&> {
 public:
-    using Map = std::unordered_map<FileExtension, DataWriter*>;
     DataWriterFactory() = default;
     virtual ~DataWriterFactory() = default;
 
     bool registerObject(DataWriter* reader);
     bool unRegisterObject(DataWriter* reader);
 
-    virtual std::unique_ptr<DataWriter> create(const std::string& key) const;
+    virtual std::unique_ptr<DataWriter> create(std::string_view key) const;
     virtual std::unique_ptr<DataWriter> create(const FileExtension& key) const override;
 
-    virtual bool hasKey(const std::string& key) const;
+    virtual bool hasKey(std::string_view key) const;
     virtual bool hasKey(const FileExtension& key) const override;
 
     template <typename T>
-    std::vector<FileExtension> getExtensionsForType();
+    std::vector<FileExtension> getExtensionsForType() const;
+    /**
+     * \brief Return a writer matching the file extension of DataWriterType of type T.
+     * Does case insensitive comparison between the last part of filePathOrExtension and each
+     * registered extension. Does not check for "." before the extension, so it is valid to pass for
+     * example "png".
+     * @param filePathOrExtension Path to file, or simply the extension.
+     * @return First available DataWriterType<T> if found, nullptr otherwise.
+     */
+    template <typename T>
+    std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(
+        std::string_view filePathOrExtension) const;
 
     template <typename T>
-    std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(const std::string& ext);
-
-    template <typename T>
-    std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(const FileExtension& ext);
+    std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(const FileExtension& ext) const;
 
     /**
      * First look for a writer using the FileExtension ext, and if no writer was found look for a
-     * writer using the fallbackExt. This is often used with a file open dialog, where the dialog
-     * will have a selectedFileExtension that will be used as ext, and the fallbackExt is taken from
-     * the file to be written. This way any selected writer will have priority over the file
-     * extension.
+     * writer using the fallbackFilePathOrExtension. This is often used with a file open dialog,
+     * where the dialog will have a selectedFileExtension that will be used as ext, and the
+     * fallbackFilePathOrExtension is taken from the file to be written. This way any selected
+     * writer will have priority over the file extension.
      */
     template <typename T>
-    std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(const FileExtension& ext,
-                                                                    const std::string& fallbackExt);
+    std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(
+        const FileExtension& ext, std::string_view fallbackFilePathOrExtension) const;
 
 protected:
-    Map map_;
+    // Sort extensions by length to first compare long extensions. Avoids selecting extension xyz in
+    // case xyzw exist, see getReaderForTypeAndExtension
+    std::map<FileExtension, DataWriter*,
+             std::function<bool(const FileExtension&, const FileExtension&)>>
+        map_{[](const auto& a, const auto& b) -> bool {
+            if (a.extension_.size() != b.extension_.size()) {
+                return a.extension_.size() > b.extension_.size();
+            } else {
+                // Order does not matter
+                return a < b;
+            }
+        }};
 };
 
 template <typename T>
-std::vector<FileExtension> DataWriterFactory::getExtensionsForType() {
+std::vector<FileExtension> DataWriterFactory::getExtensionsForType() const {
     std::vector<FileExtension> ext;
 
     for (auto& writer : map_) {
@@ -96,22 +114,20 @@ std::vector<FileExtension> DataWriterFactory::getExtensionsForType() {
 
 template <typename T>
 std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtension(
-    const std::string& ext) {
-    auto lkey = toLower(ext);
+    std::string_view path) const {
     for (auto& elem : map_) {
-        if (toLower(elem.first.extension_) == lkey) {
+        if (util::iCaseEndsWith(path, elem.first.extension_)) {
             if (auto r = dynamic_cast<DataWriterType<T>*>(elem.second)) {
                 return std::unique_ptr<DataWriterType<T>>(r->clone());
             }
         }
     }
-
     return std::unique_ptr<DataWriterType<T>>();
 }
 
 template <typename T>
 std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtension(
-    const FileExtension& ext) {
+    const FileExtension& ext) const {
     return util::map_find_or_null(map_, ext, [](DataWriter* o) {
         if (auto r = dynamic_cast<DataWriterType<T>*>(o)) {
             return std::unique_ptr<DataWriterType<T>>(r->clone());
@@ -123,11 +139,11 @@ std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtensi
 
 template <typename T>
 std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtension(
-    const FileExtension& ext, const std::string& fallbackExt) {
+    const FileExtension& ext, std::string_view fallbackFilePathOrExtension) const {
     if (auto writer = this->getWriterForTypeAndExtension<T>(ext)) {
         return writer;
     }
-    return this->getWriterForTypeAndExtension<T>(fallbackExt);
+    return this->getWriterForTypeAndExtension<T>(fallbackFilePathOrExtension);
 }
 
 }  // namespace inviwo

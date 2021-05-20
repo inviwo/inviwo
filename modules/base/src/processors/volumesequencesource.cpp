@@ -138,8 +138,7 @@ void VolumeSequenceSource::loadFile(bool deserialize) {
     if (file_.get().empty()) return;
 
     const auto sext = file_.getSelectedExtension();
-    const auto fext = filesystem::getFileExtension(file_.get());
-    if (auto reader = rf_->getReaderForTypeAndExtension<VolumeSequence>(sext, fext)) {
+    if (auto reader = rf_->getReaderForTypeAndExtension<VolumeSequence>(sext, file_.get())) {
         try {
             volumes_ = reader->readData(file_.get(), this);
         } catch (DataReaderException const& e) {
@@ -170,14 +169,13 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
     for (auto f : files) {
         auto file = folder_.get() + "/" + f;
         if (filesystem::wildcardStringMatch(filter_, file)) {
-            std::string ext = filesystem::getFileExtension(file);
             try {
-                if (auto reader1 = rf_->getReaderForTypeAndExtension<Volume>(ext)) {
+                if (auto reader1 = rf_->getReaderForTypeAndExtension<Volume>(file)) {
                     auto volume = reader1->readData(file, this);
                     volume->setMetaData<StringMetaData>("filename", file);
                     volumes_->push_back(volume);
 
-                } else if (auto reader2 = rf_->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
+                } else if (auto reader2 = rf_->getReaderForTypeAndExtension<VolumeSequence>(file)) {
                     auto volumes = reader2->readData(file, this);
                     for (auto volume : *volumes) {
                         volume->setMetaData<StringMetaData>("filename", file);

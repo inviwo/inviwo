@@ -52,12 +52,12 @@ std::vector<FileExtension> DataVisualizerManager::getSupportedFileExtensions() c
     return res;
 }
 
-std::vector<DataVisualizer*> DataVisualizerManager::getDataVisualizersForExtension(
-    const std::string& ext) const {
+std::vector<DataVisualizer*> DataVisualizerManager::getDataVisualizersForFile(
+    std::string_view path) const {
     return util::copy_if(visualizers_, [&](auto& visualizer) {
         return visualizer->hasSourceProcessor() &&
                util::contains_if(visualizer->getSupportedFileExtensions(),
-                                 [&](const auto& item) { return item.extension_ == ext; });
+                                 [&](const auto& item) { return item.matches(path); });
     });
 }
 

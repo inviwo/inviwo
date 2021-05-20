@@ -180,17 +180,13 @@ void TransferFunction::save(const std::string& filename, const FileExtension& ex
 }
 
 void TransferFunction::load(const std::string& filename, const FileExtension& ext) {
-    std::string extension = toLower(filesystem::getFileExtension(filename));
-
-    if (ext.extension_ == "itf" || (ext.empty() && extension == "itf")) {
+    if (ext.extension_ == "itf" ||
+        (ext.empty() && iCaseCmp(filesystem::getFileExtension(filename), "itf"))) {
         Deserializer deserializer(filename);
         deserialize(deserializer);
     } else {
         auto factory = InviwoApplication::getPtr()->getDataReaderFactory();
-        auto reader = factory->getReaderForTypeAndExtension<Layer>(ext);
-        if (!reader) {
-            reader = factory->getReaderForTypeAndExtension<Layer>(extension);
-        }
+        auto reader = factory->getReaderForTypeAndExtension<Layer>(ext, filename);
         if (!reader) {
             throw DataReaderException("Data reader not found for requested format", IVW_CONTEXT);
         }

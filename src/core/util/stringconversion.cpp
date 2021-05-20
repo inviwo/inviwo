@@ -124,6 +124,12 @@ std::string fromWstring(std::wstring_view str) {
 #endif
 }
 
+bool iCaseEndsWith(std::string_view str, std::string_view suffix) {
+    return str.size() >= suffix.size() &&
+           // Compare last part of path with the extension
+           iCaseCmp(str.substr(str.size() - suffix.size()), suffix);
+}
+
 }  // namespace util
 
 std::vector<std::string> util::splitString(std::string_view str, char delimiter) {

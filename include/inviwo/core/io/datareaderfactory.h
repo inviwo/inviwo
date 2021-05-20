@@ -42,44 +42,62 @@ namespace inviwo {
 
 class IVW_CORE_API DataReaderFactory : public Factory<DataReader, const FileExtension&> {
 public:
-    using Map = std::unordered_map<FileExtension, DataReader*>;
-
     DataReaderFactory() = default;
     virtual ~DataReaderFactory() = default;
 
     bool registerObject(DataReader* reader);
     bool unRegisterObject(DataReader* reader);
     virtual std::unique_ptr<DataReader> create(const FileExtension& key) const override;
-    virtual std::unique_ptr<DataReader> create(const std::string& key) const;
-    virtual bool hasKey(const std::string& key) const;
+    virtual std::unique_ptr<DataReader> create(std::string_view key) const;
+    virtual bool hasKey(std::string_view key) const;
     virtual bool hasKey(const FileExtension& key) const override;
 
     template <typename T>
     std::vector<FileExtension> getExtensionsForType() const;
 
+    /**
+     * \brief Return a reader matching the file extension of DataReader of type T.
+     * Does case insensitive comparison between the last part of filePathOrExtension and each
+     * registered extension. Does not check for "." before the extension, so it is valid to pass for
+     * example "png".
+     * @param filePathOrExtension Path to file, or simply the extension.
+     * @return First available DataReaderType<T> if found, nullptr otherwise.
+     */
     template <typename T>
-    std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(const std::string& ext) const;
+    std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(
+        std::string_view filePathOrExtension) const;
     template <typename T>
     std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(const FileExtension& ext) const;
 
     /**
      * First look for a reader using the FileExtension ext, and if no reader was found look for a
-     * reader using the fallbackExt. This is often used with a file open dialog, where the dialog
-     * will have a selectedFileExtension that will be used as ext, and the fallbackExt is taken from
-     * the file to be opened. This way any selected reader will have priority over the file
-     * extension.
+     * reader using the fallbackFilePathOrExtension. This is often used with a file open dialog,
+     * where the dialog will have a selectedFileExtension that will be used as ext, and the
+     * fallbackFilePathOrExtension is taken from the file to be opened. This way any selected reader
+     * will have priority over the file extension.
      */
     template <typename T>
     std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(
-        const FileExtension& ext, const std::string& fallbackExt) const;
+        const FileExtension& ext, std::string_view fallbackFilePathOrExtension) const;
 
     template <typename T>
-    bool hasReaderForTypeAndExtension(const std::string& ext) const;
+    bool hasReaderForTypeAndExtension(std::string_view filePathOrExtension) const;
     template <typename T>
     bool hasReaderForTypeAndExtension(const FileExtension& ext) const;
 
 protected:
-    Map map_;
+    // Sort extensions by length to first compare long extensions. Avoids selecting extension xyz in
+    // case xyzw exist, see getReaderForTypeAndExtension
+    std::map<FileExtension, DataReader*,
+             std::function<bool(const FileExtension&, const FileExtension&)>>
+        map_{[](const FileExtension& a, const FileExtension& b) {
+            if (a.extension_.size() != b.extension_.size()) {
+                return a.extension_.size() > b.extension_.size();
+            } else {
+                // Order does not matter
+                return a < b;
+            }
+        }};
 };
 
 template <typename T>
@@ -96,11 +114,9 @@ std::vector<FileExtension> DataReaderFactory::getExtensionsForType() const {
 
 template <typename T>
 std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
-    const std::string& ext) const {
-
-    auto lkey = toLower(ext);
+    std::string_view path) const {
     for (auto& elem : map_) {
-        if (toLower(elem.first.extension_) == lkey) {
+        if (util::iCaseEndsWith(path, elem.first.extension_)) {
             if (auto r = dynamic_cast<DataReaderType<T>*>(elem.second)) {
                 return std::unique_ptr<DataReaderType<T>>(r->clone());
             }
@@ -123,24 +139,16 @@ std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtensi
 
 template <typename T>
 std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
-    const FileExtension& ext, const std::string& fallbackExt) const {
+    const FileExtension& ext, std::string_view fallbackFilePathOrExtension) const {
     if (auto reader = getReaderForTypeAndExtension<T>(ext)) {
         return reader;
     }
-    return getReaderForTypeAndExtension<T>(fallbackExt);
+    return getReaderForTypeAndExtension<T>(fallbackFilePathOrExtension);
 }
 
 template <typename T>
-bool DataReaderFactory::hasReaderForTypeAndExtension(const std::string& ext) const {
-    auto lkey = toLower(ext);
-    for (auto& elem : map_) {
-        if (toLower(elem.first.extension_) == lkey) {
-            if (auto r = dynamic_cast<DataReaderType<T>*>(elem.second)) {
-                return true;
-            }
-        }
-    }
-    return false;
+bool DataReaderFactory::hasReaderForTypeAndExtension(std::string_view path) const {
+    return getReaderForTypeAndExtension<T>(path) != nullptr;
 }
 
 template <typename T>

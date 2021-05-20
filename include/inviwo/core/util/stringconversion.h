@@ -261,6 +261,14 @@ constexpr std::string_view trim(std::string_view str) noexcept {
     return str.substr(idx1, idx2 + 1 - idx1);
 }
 
+/*
+ * \brief Checks if provided string ends with suffix using case insensitive equal comparison.
+ * @param str string to check last part of. Allowed to be smaller than suffix.
+ * @param suffix Ending to match.
+ * @return True if last part of str is equal to suffix, false otherwise.
+ */
+IVW_CORE_API bool iCaseEndsWith(std::string_view str, std::string_view suffix);
+
 }  // namespace util
 
 // Keep this here to avoid breaking old code

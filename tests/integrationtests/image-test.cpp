@@ -57,7 +57,7 @@ TEST(ImageTests, ImageLoadWhite) {
 
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(
-            ext);
+            imgFile);
     ASSERT_TRUE(reader != 0);
     auto layer = reader->readData(imgFile);
 
@@ -97,7 +97,7 @@ TEST(ImageTests, ImageLoadRGB) {
 
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(
-            ext);
+            imgFile);
     ASSERT_TRUE(reader != 0);
     auto layer = reader->readData(imgFile);
 
@@ -136,7 +136,7 @@ TEST(ImageTests, ImageLoadRange) {
 
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(
-            ext);
+            imgFile);
     ASSERT_TRUE(reader != 0);
     auto layer = reader->readData(imgFile);
 
@@ -165,7 +165,7 @@ TEST(ImageTests, ImageResize) {
 
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(
-            ext);
+            imgFile);
     ASSERT_TRUE(reader != 0);
     auto layer = reader->readData(imgFile);
 

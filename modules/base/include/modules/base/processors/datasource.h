@@ -175,8 +175,7 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
     if (file_.get().empty()) return;
 
     const auto sext = reader_.getSelectedValue();
-    const auto fext = filesystem::getFileExtension(file_.get());
-    if (auto reader = rf_->template getReaderForTypeAndExtension<DataType>(sext, fext)) {
+    if (auto reader = rf_->template getReaderForTypeAndExtension<DataType>(sext, file_.get())) {
         try {
             auto data = reader->readData(file_.get());
             port_.setData(data);

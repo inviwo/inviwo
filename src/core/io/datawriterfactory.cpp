@@ -43,16 +43,15 @@ bool DataWriterFactory::registerObject(DataWriter* writer) {
 }
 
 bool DataWriterFactory::unRegisterObject(DataWriter* writer) {
-    size_t removed = util::map_erase_remove_if(
-        map_, [writer](Map::value_type& elem) { return elem.second == writer; });
+    size_t removed =
+        util::map_erase_remove_if(map_, [writer](auto& elem) { return elem.second == writer; });
 
     return removed > 0;
 }
 
-std::unique_ptr<DataWriter> DataWriterFactory::create(const std::string& key) const {
-    auto lkey = toLower(key);
+std::unique_ptr<DataWriter> DataWriterFactory::create(std::string_view key) const {
     for (auto& elem : map_) {
-        if (toLower(elem.first.extension_) == toLower(lkey)) {
+        if (iCaseCmp(elem.first.extension_, key)) {
             return std::unique_ptr<DataWriter>(elem.second->clone());
         }
     }
@@ -66,10 +65,9 @@ std::unique_ptr<DataWriter> DataWriterFactory::create(const FileExtension& key) 
 
 bool DataWriterFactory::hasKey(const FileExtension& key) const { return util::has_key(map_, key); }
 
-bool DataWriterFactory::hasKey(const std::string& key) const {
-    auto lkey = toLower(key);
+bool DataWriterFactory::hasKey(std::string_view key) const {
     for (auto& elem : map_) {
-        if (toLower(elem.first.extension_) == toLower(lkey)) return true;
+        if (iCaseCmp(elem.first.extension_, key)) return true;
     }
     return false;
 }
