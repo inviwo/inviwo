@@ -141,6 +141,7 @@ private:
 
     TransformListProperty transformSetting_;
     std::shared_ptr<MeshShaderCache> shaders_;
+    const bool oitExtensionsAvailable_;
 };
 
 /**
@@ -168,6 +169,7 @@ protected:
 
     std::shared_ptr<MeshShaderCache> shaders_;
     std::vector<std::shared_ptr<const Mesh>> meshes_;
+    bool oitExtensionsAvailable_;
 };
 
 }  // namespace inviwo
