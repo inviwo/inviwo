@@ -255,7 +255,8 @@ void SphereRasterization::rasterize(const ivec2& imageSize, const mat4& worldMat
 }
 
 bool SphereRasterization::usesFragmentLists() const {
-    return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists() && oitExtensionsAvailable_;
+    return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists() &&
+           oitExtensionsAvailable_;
 }
 
 Document SphereRasterization::getInfo() const {
