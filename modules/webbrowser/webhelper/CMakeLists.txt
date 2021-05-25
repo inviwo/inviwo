@@ -27,7 +27,7 @@ set(WEBBROWSER_HELPER_SOURCES
 set(CEF_HELPER_TARGET "cef_inviwo_helper" CACHE INTERNAL "CEF_HELPER_TARGET")
 
 
-if (NOT OS_MACOSX)
+if (NOT OS_MAC)
     add_executable(${CEF_HELPER_TARGET} WIN32 MACOSX_BUNDLE ${WEBBROWSER_HELPER_SOURCES})
 	set(CEF_HELPER_OUTPUT_NAME "cef_web_helper")
 	set_target_properties(${CEF_HELPER_TARGET} PROPERTIES OUTPUT_NAME ${CEF_HELPER_OUTPUT_NAME})
@@ -36,7 +36,7 @@ if (NOT OS_MACOSX)
     # Build helper before module so that we can copy it
     add_dependencies(inviwo-module-webbrowser ${CEF_HELPER_TARGET})
     target_link_libraries(${CEF_HELPER_TARGET} PRIVATE
-        $<$<NOT:$<BOOL:${OS_MACOSX}>>:libcef_lib>
+        $<$<NOT:$<BOOL:${OS_MAC}>>:libcef_lib>
         libcef_dll_wrapper
         ${CEF_STANDARD_LIBS}
         inviwo::warn
@@ -58,7 +58,7 @@ if (NOT OS_MACOSX)
     ivw_folder(${CEF_HELPER_TARGET} ext/CEF)
 endif()
 
-if (OS_MACOSX)
+if (OS_MAC)
 	# Mac: CEF uses 3 different applications according to following structure:
 	# "<app name> + Helper<type>", e.g. Inviwo Helper (GPU)
 	set(CEF_HELPER_OUTPUT_NAME "${IVW_APP_INSTALL_NAME} Helper")
@@ -100,6 +100,10 @@ if (OS_MACOSX)
         target_link_libraries(${_helper_target} libcef_dll_wrapper ${CEF_STANDARD_LIBS} inviwo::warn)
         set_target_properties(${_helper_target} PROPERTIES
             MACOSX_BUNDLE_INFO_PLIST ${_helper_info_plist}
+            # Remove XCode warning (must match plist)
+            XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "org.inviwo.helper${_plist_suffix}"
+            # See also https://www.magpcss.org/ceforum/viewtopic.php?f=6&t=16481&start=10
+            XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_CURRENT_BINARY_DIR}/helper${_target_suffix}-entitlements.plist"
             OUTPUT_NAME ${_helper_output_name}
         )
         # Output paths for the app bundles: bin/configuration, for example bin/Debug.
@@ -140,10 +144,6 @@ if (OS_MACOSX)
         install(DIRECTORY "${_helper_app}"
             DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/${_helper_output_name}.app"
             COMPONENT Application)
-
-        set_target_properties(${_helper_target} PROPERTIES
-            MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/mac/helper-Info.plist
-        )
     endforeach()
 
 elseif (WIN32)

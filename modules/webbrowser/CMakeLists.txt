@@ -16,7 +16,7 @@
 # FATAL:async_layer_tree_frame_sink.cc
 # Known issue: Dropdown does not work.
 # Probably due to https://magpcss.org/ceforum/viewtopic.php?f=6&t=11618
-set(CEF_VERSION "87.1.6+g315d248+chromium-87.0.4280.66")
+set(CEF_VERSION "89.0.12+g2b76680+chromium-89.0.4389.90")
 
 # Determine the platform.
 include("cmake/cef_platform.cmake")
@@ -35,7 +35,9 @@ if (WIN32)
     option(USE_SANDBOX "Enable or disable use of the sandbox." OFF)
 endif()
 
-set(PROJECT_ARCH "x86_64") # CEF Wants this on OS X.
+if(NOT PROJECT_ARCH)
+    set(PROJECT_ARCH ${CMAKE_SYSTEM_PROCESSOR}) # CEF Wants this on OS X.
+endif()
 
 # Load the CEF configuration.
 # Execute FindCEF.cmake which must exist in CMAKE_MODULE_PATH.
@@ -154,7 +156,7 @@ target_include_directories(inviwo-module-webbrowser PUBLIC ${CEF_INCLUDE_PATH})
 
 find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(inviwo-module-webbrowser PUBLIC
-    $<$<NOT:$<BOOL:${OS_MACOSX}>>:libcef_lib>
+    $<$<NOT:$<BOOL:${OS_MAC}>>:libcef_lib>
     libcef_dll_wrapper 
     nlohmann_json::nlohmann_json
     ${CEF_STANDARD_LIBS}
@@ -177,7 +179,7 @@ ivw_register_license_file(NAME "Chromium Embedded Framework" VERSION ${CEF_VERSI
     FILES ${CEF_ROOT}/LICENSE.txt
 )
 
-if (OS_MACOSX)
+if (OS_MAC)
 	# Output path for the main app bundle.
 	set(CEF_APP "${CEF_TARGET_OUT_DIR}/${IVW_APP_INSTALL_NAME}.app")
 	# Copy the CEF framework into the Frameworks directory
@@ -190,6 +192,7 @@ if (OS_MACOSX)
         "${CEF_APP}/Contents/Frameworks/Chromium Embedded Framework.framework"
         VERBATIM
     )
+
     # Copy the CEF framework into the Frameworks directory (used by installer)
     install(DIRECTORY "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
             DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/Chromium Embedded Framework.framework"
