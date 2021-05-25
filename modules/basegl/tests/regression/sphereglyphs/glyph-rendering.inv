@@ -927,7 +927,7 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.CanvasGL" identifier="OverrrideColor" displayName="OverrideColor">
+            <Processor type="org.inviwo.CanvasGL" identifier="OverrideColor" displayName="OverrideColor">
                 <PortGroups />
                 <Properties>
                     <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -1116,7 +1116,7 @@
             <Connection src="Background4.outport" dst="LargeGlyph.inport" />
             <Connection src="SphereGlyphRenderer4.image" dst="Background4.inport" />
             <Connection src="MeshCreator.outport" dst="SphereGlyphRenderer4.geometry" />
-            <Connection src="Background5.outport" dst="OverrrideColor.inport" />
+            <Connection src="Background5.outport" dst="OverrideColor.inport" />
             <Connection src="SphereGlyphRenderer5.image" dst="Background5.inport" />
             <Connection src="MeshCreator.outport" dst="SphereGlyphRenderer5.geometry" />
         </Connections>

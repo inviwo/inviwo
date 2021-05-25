@@ -9,7 +9,7 @@ lineWidth = network.LineRenderer.lineSettings.lineWidth;
 while (lineWidth.value != 2): 
     inviwopy.qt.update();
 # HACK: Wait for as little as possible while ensuring that the webpage has re-rendered. 
-time.sleep(0.25);
+time.sleep(1.5);
 inviwopy.qt.update();
 canvas = network.Canvas;
 ivw.regression.saveCanvas(canvas, "Canvas");
