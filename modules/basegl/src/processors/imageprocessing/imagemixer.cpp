@@ -51,6 +51,7 @@ ImageMixer::ImageMixer()
     , blendingMode_("blendMode", "Blend Mode", InvalidationLevel::InvalidResources)
     , weight_("weight", "Weight", 0.5f, 0.0f, 1.0f)
     , clamp_("clamp", "Clamp values to zero and one", false, InvalidationLevel::InvalidResources)
+    , depth_("depth", "Blend based on depth", false, InvalidationLevel::InvalidResources)
     , shader_("img_mix.frag", Shader::Build::No) {
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -77,6 +78,7 @@ ImageMixer::ImageMixer()
     addProperty(blendingMode_);
     addProperty(weight_);
     addProperty(clamp_);
+    addProperty(depth_);
 
     blendingMode_.onChange([&]() { weight_.setVisible(blendingMode_.get() == BlendModes::Mix); });
 }
@@ -176,6 +178,12 @@ void ImageMixer::initializeResources() {
         shader_.getFragmentShaderObject()->addShaderDefine("CLAMP_VALUES");
     } else {
         shader_.getFragmentShaderObject()->removeShaderDefine("CLAMP_VALUES");
+    }
+
+    if (depth_) {
+        shader_.getFragmentShaderObject()->addShaderDefine("BLEND_BASED_ON_DEPTH");
+    } else {
+        shader_.getFragmentShaderObject()->removeShaderDefine("BLEND_BASED_ON_DEPTH");
     }
 
     shader_.getFragmentShaderObject()->addShaderDefine(compositingKey, compositingValue);

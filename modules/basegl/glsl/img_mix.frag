@@ -114,11 +114,40 @@ vec4 brightenOnly(vec4 colorA, vec4 colorB) {
     return vec4(max(colorA.rgb, colorB.rgb), max(colorA.a,colorB.a));
 }
 
-
 void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+
     vec4 color0 = texture(inport0Color, texCoords);
     vec4 color1 = texture(inport1Color, texCoords);
+    float depth0 = texture(inport0Depth, texCoords).r;
+    float depth1 = texture(inport1Depth, texCoords).r;
+    vec4 picking0 = texture(inport0Picking, texCoords);
+    vec4 picking1 = texture(inport1Picking, texCoords);
+
+#ifdef BLEND_BASED_ON_DEPTH
+    if(depth0 < depth1){
+        vec4 result = COLOR_BLENDING(color1, color0);
+  
+#ifdef CLAMP_VALUES
+        result = clamp(result,0,1);
+#endif
+
+        FragData0 = result;
+        gl_FragDepth = depth0;
+        PickingData = picking0;
+    }
+    else{
+        vec4 result = COLOR_BLENDING(color0, color1);
+  
+#ifdef CLAMP_VALUES
+        result = clamp(result,0,1);
+#endif
+
+        FragData0 = result;
+        gl_FragDepth = depth1;
+        PickingData = picking1;
+    }
+#else
     vec4 result = COLOR_BLENDING(color0, color1);
   
 #ifdef CLAMP_VALUES
@@ -126,9 +155,7 @@ void main() {
 #endif
 
     FragData0 = result;
-    gl_FragDepth = min(texture(inport0Depth, texCoords).r,texture(inport1Depth, texCoords).r);
-
-    vec4 picking0 = texture(inport0Picking, texCoords);
-    vec4 picking1 = texture(inport1Picking, texCoords);
+    gl_FragDepth = min(depth0, depth1);
     PickingData = (picking0.a > 0.0 ? picking0 : picking1);
+#endif
 }
