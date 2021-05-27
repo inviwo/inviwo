@@ -615,7 +615,7 @@
                                 <MetaDataMap>
                                     <MetaDataItem type="org.inviwo.StringStringStdUnorderedMapMetaData" key="SavedState" />
                                 </MetaDataMap>
-                                <value content="2" />
+                                <value content="1.0" />
                             </Property>
                         </Properties>
                     </Property>
