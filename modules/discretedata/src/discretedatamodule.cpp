@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/discretedata/discretedatamodule.h>
+#include <modules/discretedata/processors/adddatasetsampler.h>
 #include <modules/discretedata/processors/colormapchannel.h>
 #include <modules/discretedata/processors/combinechannels.h>
 #include <modules/discretedata/processors/createconstantchannel.h>
@@ -35,7 +36,7 @@
 #include <modules/discretedata/processors/datasetfrombase.h>
 #include <modules/discretedata/processors/datasetsource.h>
 #include <modules/discretedata/processors/computegridmeasure.h>
-// #include <modules/discretedata/processors/datasettospatialsampler.h>
+#include <modules/discretedata/processors/datasettospatialsampler.h>
 #include <modules/discretedata/processors/volumefromdataset.h>
 #include <modules/discretedata/processors/meshfromdataset.h>
 #include <modules/discretedata/processors/segmentationvoxelizer.h>
@@ -45,12 +46,17 @@
 #include <modules/discretedata/processors/exampledataset.h>
 #include <modules/discretedata/processors/sphericalcoordinates.h>
 
+#include <modules/discretedata/interpolation/interpolant.h>
+#include <modules/discretedata/sampling/celltree.h>
+
 namespace inviwo {
 
 DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(app, "discretedata") {
     // Processors
-    // registerProcessor<discretedata::DataSetToSpatialSampler2D>();
-    // registerProcessor<discretedata::DataSetToSpatialSampler3D>();
+    registerProcessor<discretedata::AddDataSetSampler>();
+    // registerProcessor<discretedata::DataSetToSpatialSampler>();
+    registerProcessor<discretedata::DataSetToSpatialSampler2D>();
+    registerProcessor<discretedata::DataSetToSpatialSampler3D>();
     registerProcessor<discretedata::SphericalCoordinates>();
     registerProcessor<discretedata::ColormapChannel>();
     registerProcessor<discretedata::CombineChannels>();
@@ -63,7 +69,7 @@ DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(ap
     registerProcessor<discretedata::VolumeFromDataSet>();
     registerProcessor<discretedata::SegmentationVoxelizer>();
     registerProcessor<discretedata::DataSetSource>();
-    registerProcessor<discretedata::ExampleDataset>();
+    registerProcessor<discretedata::ExampleDataSet>();
 
     // Ports
     registerPort<discretedata::DataSetOutport>();
@@ -71,6 +77,10 @@ DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(ap
 
     // Properties
     registerProperty<discretedata::DimensionProperty>();
+
+    discretedata::AddDataSetSampler::addInterpolantType<discretedata::SkewedBoxInterpolant>(
+        "skewedBox", "Skewed Box");
+    discretedata::AddDataSetSampler::addSamplerType<discretedata::CellTree>("celltree", "CellTree");
 }
 
 }  // namespace inviwo

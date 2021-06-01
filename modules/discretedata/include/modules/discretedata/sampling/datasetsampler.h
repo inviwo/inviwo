@@ -35,36 +35,45 @@
 
 namespace inviwo {
 namespace discretedata {
-class DatasetSamplerBase {
-protected:
-    DatasetSamplerBase(unsigned int dimension) : dimension_(dimension) {}
-
+class DataSetSamplerBase {
 public:
-    const unsigned int dimension_;
+    virtual unsigned int getDimension() const = 0;
+    bool setInterpolant(const InterpolantBase& interpolant);
+    // InterpolantBase* getInterpolantBase();
+    const InterpolantBase& getInterpolantBase() const;
 };
 /**
  * \brief Base class for sampling a grid connectivity.
  **/
 template <unsigned int SpatialDims>
-class DatasetSampler : public DatasetSamplerBase {
+class DataSetSampler : public DataSetSamplerBase {
 protected:
-    DatasetSampler(std::shared_ptr<const Connectivity> grid,
-                   std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates);
+    DataSetSampler(std::shared_ptr<const Connectivity> grid,
+                   std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates,
+                   const Interpolant<SpatialDims>& interpolant);
 
 public:
-    virtual ~DatasetSampler() = default;
-    DatasetSampler(DatasetSampler&& tree);
-    DatasetSampler(DatasetSampler& tree) = delete;
-    DatasetSampler& operator=(DatasetSampler&& tree) = delete;
-    DatasetSampler& operator=(DatasetSampler& tree) = delete;
+    virtual ~DataSetSampler();
+    DataSetSampler(DataSetSampler&& tree);
+    DataSetSampler(DataSetSampler& tree) = delete;
+    DataSetSampler& operator=(DataSetSampler&& tree) = delete;
+    DataSetSampler& operator=(DataSetSampler& tree) = delete;
+
+    virtual unsigned int getDimension() const { return SpatialDims; }
 
     virtual ind locateAndSampleCell(
         const std::array<float, SpatialDims>& pos, std::vector<double>& returnWeights,
+        std::vector<ind>& returnVertices,
         InterpolationType interpolationType = InterpolationType::Ignore) const = 0;
+    void setInterpolant(const Interpolant<SpatialDims>& interpolant);
+    const Interpolant<SpatialDims>& getInterpolant() const;
 
 public:
     const std::shared_ptr<const Connectivity> grid_;
     const std::shared_ptr<const Channel> coordinates_;
+
+protected:
+    Interpolant<SpatialDims>* interpolant_;
 };
 
 }  // namespace discretedata

@@ -40,7 +40,6 @@ DataChannelProperty::DataChannelProperty(DataSetInport& dataInport, const std::s
     , datasetInput_(dataInport)
     , channelFilter_(filter)
     , channelName_("channelName", "Channel name")
-    //, format_("format", "Data format")
     , gridPrimitive_("gridPrimitive", "Primitive with data")
     , ongoingChange_(false) {
     auto updateCallback = [&]() { updateChannelList(); };
@@ -49,7 +48,6 @@ DataChannelProperty::DataChannelProperty(DataSetInport& dataInport, const std::s
 
     addProperty(gridPrimitive_);
     addProperty(channelName_);
-    // addProperty(format_);
 }
 
 std::shared_ptr<const Channel> DataChannelProperty::getCurrentChannel() {

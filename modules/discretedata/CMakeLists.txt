@@ -34,6 +34,7 @@ set(HEADER_FILES
     include/modules/discretedata/discretedatatypes.h
     include/modules/discretedata/interpolation/interpolant.h
     include/modules/discretedata/ports/datasetport.h
+    include/modules/discretedata/processors/adddatasetsampler.h
     include/modules/discretedata/processors/colormapchannel.h
     include/modules/discretedata/processors/combinechannels.h
     include/modules/discretedata/processors/computegridmeasure.h
@@ -50,10 +51,10 @@ set(HEADER_FILES
     include/modules/discretedata/processors/volumefromdataset.h
     include/modules/discretedata/properties/datachannelproperty.h
     include/modules/discretedata/sampling/celltree.h
-    include/modules/discretedata/sampling/celltreesampler.h
+    include/modules/discretedata/sampling/datasetspatialsampler.h
     include/modules/discretedata/util/prefixsumvector.h
-    include/modules/discretedata/util/util.h
     include/modules/discretedata/util/spatialentitychannel.h
+    include/modules/discretedata/util/util.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -76,6 +77,7 @@ set(SOURCE_FILES
     src/dataset.cpp
     src/discretedatamodule.cpp
     src/discretedatatypes.cpp
+    src/processors/adddatasetsampler.cpp
     src/processors/colormapchannel.cpp
     src/processors/combinechannels.cpp
     src/processors/computegridmeasure.cpp

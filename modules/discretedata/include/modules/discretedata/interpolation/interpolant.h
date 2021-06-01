@@ -41,11 +41,12 @@ enum InterpolationType { Ignore, Nearest, SquaredDistance, Linear };
  */
 class IVW_MODULE_DISCRETEDATA_API InterpolantBase {
 public:
-    const unsigned int dimension_;
+    virtual ~InterpolantBase() = default;
+    // virtual InterpolantBase* copy() const = 0;
+    virtual unsigned int getDimension() const = 0;
     virtual bool supportsInterpolationType(InterpolationType type) const = 0;
 
 protected:
-    InterpolantBase(unsigned int dim) : dimension_(dim) {}
 };
 
 /**
@@ -55,15 +56,21 @@ protected:
  */
 template <unsigned int Dim>
 struct IVW_MODULE_DISCRETEDATA_API Interpolant : public InterpolantBase {
-    Interpolant() : InterpolantBase(Dim){};
+protected:
+    Interpolant() = default;
+
+public:
+    Interpolant(const Interpolant<Dim>&) = default;
+    Interpolant<Dim>& operator=(const Interpolant<Dim>&) = default;
+    virtual Interpolant<Dim>* copy() const = 0;
+
+    virtual unsigned int getDimension() const override { return Dim; }
 
     virtual bool supportsInterpolationType(InterpolationType type) const override;
     virtual bool getWeights(InterpolationType type,
                             const std::vector<std::array<float, Dim>>& coordinates,
                             std::vector<float> weights,
                             const std::array<float, Dim>& position) const;
-    // virtual bool isInside(const std::vector<std::array<float, Dim>>& coordinates,
-    //                       const std::array<float, Dim>& position) const = 0;
 };
 
 template <unsigned int Dim>
@@ -72,8 +79,7 @@ struct IVW_MODULE_DISCRETEDATA_API SkewedBoxInterpolant : public Interpolant<Dim
                             const std::vector<std::array<float, Dim>>& coordinates,
                             std::vector<float> weights,
                             const std::array<float, Dim>& position) const override;
-    // virtual bool isInside(const std::vector<std::array<float, Dim>>& coordinates,
-    //                       const std::array<float, Dim>& position) const override;
+    Interpolant<Dim>* copy() const override;
 };
 
 }  // namespace discretedata

@@ -33,9 +33,10 @@
 #include <inviwo/core/processors/processor.h>
 #include <modules/discretedata/ports/datasetport.h>
 #include <modules/discretedata/properties/datachannelproperty.h>
-#include <modules/discretedata/sampling/celltreesampler.h>
+#include <modules/discretedata/sampling/celltree.h>
 #include <modules/discretedata/interpolation/interpolant.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <modules/discretedata/sampling/datasetspatialsampler.h>
 #include <fmt/format.h>
 
 namespace inviwo {
@@ -58,8 +59,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    typedef Interpolant<SpatialDims> (*createInterpolantFunc)(
-        std::shared_ptr<const DataChannel<double, SpatialDims>>);
+    // typedef Interpolant<SpatialDims> (*createInterpolantFunc)(
+    //     std::shared_ptr<const DataChannel<double, SpatialDims>>);
     DataSetInport dataIn_;
     DataOutport<SpatialSampler<SpatialDims, DataDims, T>> sampler_;
     DataChannelProperty coordinateChannel_, dataChannel_;
@@ -113,9 +114,11 @@ void DataSetToSpatialSampler<SpatialDims, DataDims, T>::process() {
             sampler_.setData(nullptr);
             return;
         }
-        auto sampler = std::make_shared<const CellTreeSampler<SpatialDims, DataDims, T>>(
-            dataIn_.getData()->getGrid(), coordsTN, dataTN);
-        sampler_.setData(sampler);
+        auto sampler = std::make_shared<const CellTree<SpatialDims>>(dataIn_.getData()->getGrid(),
+                                                                     coordsTN, dataTN);
+        auto spatialSampler = std::make_shared<DataSetSpatialSampler<SpatialDims, DataDims, T>>(
+            sampler, interpolationType_.get(), dataTN);
+        sampler_.setData(spatialSampler);
     } else {
         sampler_.setData(nullptr);
     }

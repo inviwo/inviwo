@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/discretedata/sampling/celltree.h>
-#include <modules/discretedata/util/spatialentitychannel.h>
 #include <inviwo/core/util/interpolation.h>
 #include <inviwo/core/util/spatialsampler.h>
 
@@ -38,30 +37,30 @@ namespace inviwo {
 namespace discretedata {
 
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
-CellTreeSampler<SpatialDims, DataDims, T>::CellTreeSampler(
-    std::shared_ptr<const Connectivity> grid,
-    std::shared_ptr<const DataChannel<double, SpatialDims>> coords,
-    std::shared_ptr<const DataChannel<T, DataDims>> data)
-    : tree_(grid, coords)
-    , coordinates_(coords)
-    , data_(data)
-    , SpatialSampler<SpatialDims, DataDims, T>(SpatialEntityChannel<T, SpatialDims>(coords)) {}
+class DataSetSpatialSampler : public SpatialSampler<SpatialDims, DataDims, T> {
+public:
+    DataSetSpatialSampler(std::shared_ptr<const DataSetSampler<SpatialDims>> sampler,
+                          InterpolationType interpolationType,
+                          std::shared_ptr<const DataChannel<T, DataDims>> data);
+    virtual ~DataSetSpatialSampler() = default;
 
-// template <unsigned int SpatialDims, unsigned int DataDims, typename T>
-// CellTreeSampler<SpatialDims, DataDims, T>::CellTreeSampler(const Volume& vol,
-//                                                            CoordinateSpace space) {}
+    virtual Vector<DataDims, T> sampleDataSpace(
+        const Vector<SpatialDims, double>& pos) const override;
+    virtual bool withinBoundsDataSpace(const Vector<SpatialDims, double>& pos) const override;
 
-template <unsigned int SpatialDims, unsigned int DataDims, typename T>
-Vector<DataDims, T> CellTreeSampler<SpatialDims, DataDims, T>::sampleDataSpace(
-    const Vector<SpatialDims, double>& pos) const {}
+protected:
+    // Vector<DataDims, double> getVoxel(const size3_t& pos) const;
 
-template <unsigned int SpatialDims, unsigned int DataDims, typename T>
-bool CellTreeSampler<SpatialDims, DataDims, T>::withinBoundsDataSpace(
-    const Vector<SpatialDims, double>& pos) const {}
+    std::shared_ptr<const DataSetSampler<SpatialDims>> sampler_;
+    std::shared_ptr<const DataChannel<T, DataDims>> data_;
+    InterpolationType interpolationType_;
+};
 
-// template <unsigned int SpatialDims, unsigned int DataDims, typename T>
-// Vector<DataDims, double> CellTreeSampler<SpatialDims, DataDims, T>::getVoxel(
-//     const size3_t& pos) const {}
+using DataSetSpatialSampler2D = DataSetSpatialSampler<2, 2, double>;
+using DataSetSpatialSampler3D = DataSetSpatialSampler<3, 3, double>;
+using DataSetSpatialSampler4D = DataSetSpatialSampler<4, 4, double>;
 
 }  // namespace discretedata
 }  // namespace inviwo
+
+#include "datasetspatialsampler.inl"

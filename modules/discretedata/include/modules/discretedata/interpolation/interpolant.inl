@@ -30,6 +30,11 @@
 namespace inviwo {
 namespace discretedata {
 
+// template <unsigned int Dim>
+// Interpolant<Dim>* Interpolant<Dim>::copy() const {
+//     return new Interpolant<Dim>();
+// }
+
 template <unsigned int Dim>
 bool Interpolant<Dim>::supportsInterpolationType(InterpolationType type) const {
     return (type == InterpolationType::Ignore || type == InterpolationType::Nearest ||
@@ -51,11 +56,11 @@ bool Interpolant<Dim>::getWeights(InterpolationType type,
             for (size_t c = 0; c < weights.size(); ++c) {
                 weights[c] = 0;
                 for (size_t d = 0; d < Dim; ++d) {
-                    weights += std::sqrt(coordinates[d] - position[d]);
+                    weights[c] += std::pow((coordinates[c])[d] - position[d], 2);
                 }
             }
             if (type == InterpolationType::Nearest) {
-                auto& min = std::min_element(weights.begin(), weights.end());
+                auto min = std::min_element(weights.begin(), weights.end());
                 std::fill(weights.begin(), weights.end(), 0.f);
                 *min = 1.f;
             } else {
@@ -87,6 +92,11 @@ bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
         default:
             return false;
     }
+}
+
+template <unsigned int Dim>
+Interpolant<Dim>* SkewedBoxInterpolant<Dim>::copy() const {
+    return new SkewedBoxInterpolant<Dim>();
 }
 
 // template <GridPrimitive Dim>

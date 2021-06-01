@@ -36,19 +36,19 @@ namespace inviwo {
 namespace discretedata {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ExampleDataset::processorInfo_{
-    "org.inviwo.ExampleDataset",  // Class identifier
-    "Example Dataset",            // Display name
+const ProcessorInfo ExampleDataSet::processorInfo_{
+    "org.inviwo.ExampleDataSet",  // Class identifier
+    "Example DataSet",            // Display name
     "Data Set",                   // Category
     CodeState::Stable,            // Code state
     Tags::None,                   // Tags
 };
 
-const ProcessorInfo ExampleDataset::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo ExampleDataSet::getProcessorInfo() const { return processorInfo_; }
 
-ExampleDataset::ExampleDataset() : Processor(), dataOutport("ExampleData") { addPort(dataOutport); }
+ExampleDataSet::ExampleDataSet() : Processor(), dataOutport("ExampleData") { addPort(dataOutport); }
 
-void ExampleDataset::process() {
+void ExampleDataSet::process() {
 
     const std::array<ind, 3> dataSize = {9, 6, 11};
     auto dataset = std::make_shared<DataSet>(dataSize);

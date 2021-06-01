@@ -29,7 +29,8 @@
 
 #pragma once
 
-#include <modules/discretedata/sampling/celltree.h>
+#include <modules/discretedata/sampling/datasetsampler.h>
+#include <modules/discretedata/channels/channeldispatching.h>
 #include <inviwo/core/util/zip.h>
 
 #include <stack>
@@ -37,11 +38,48 @@
 namespace inviwo {
 namespace discretedata {
 
+namespace dd_detail {
+struct SetInterpolantDispatcher {
+    template <typename Result, ind N>
+    Result operator()(const InterpolantBase& interpolant, DataSetSamplerBase* sampler) {
+        auto* usableInterpolant = dynamic_cast<const Interpolant<unsigned(N)>*>(&interpolant);
+        auto usableSampler = dynamic_cast<DataSetSampler<unsigned(N)>*>(sampler);
+        if (!usableInterpolant || !usableSampler) return false;
+
+        usableSampler->setInterpolant(*usableInterpolant);
+        return true;
+    }
+};
+
+struct GetInterpolantDispatcher {
+    template <typename Result, ind N>
+    Result operator()(const DataSetSamplerBase* sampler) {
+        auto usableSampler = dynamic_cast<const DataSetSampler<unsigned(N)>*>(sampler);
+
+        return static_cast<const InterpolantBase&>((usableSampler->getInterpolant()));
+    }
+};
+}  // namespace dd_detail
+
+bool DataSetSamplerBase::setInterpolant(const InterpolantBase& interpolant) {
+    dd_detail::SetInterpolantDispatcher dispatcher;
+    return channeldispatching::dispatchNumber<bool, 1, DISCRETEDATA_MAX_NUM_DIMENSIONS>(
+        getDimension(), dispatcher, interpolant, this);
+}
+
+const InterpolantBase& DataSetSamplerBase::getInterpolantBase() const {
+    dd_detail::GetInterpolantDispatcher dispatcher;
+    return channeldispatching::dispatchNumber<const InterpolantBase&, 1,
+                                              DISCRETEDATA_MAX_NUM_DIMENSIONS>(getDimension(),
+                                                                               dispatcher, this);
+}
+
 template <unsigned int SpatialDims>
-DatasetSampler<SpatialDims>::DatasetSampler(
+DataSetSampler<SpatialDims>::DataSetSampler(
     std::shared_ptr<const Connectivity> grid,
-    std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates)
-    : DatasetSamplerBase(SpatialDims), grid_(grid), coordinates_(coordinates) {
+    std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates,
+    const Interpolant<SpatialDims>& interpolant)
+    : grid_(grid), coordinates_(coordinates), interpolant_(interpolant.copy()) {
     if (coordinates_->getGridPrimitiveType() != GridPrimitive::Vertex ||
         coordinates_->getNumComponents() != SpatialDims ||
         coordinates_->size() != grid->getNumElements()) {
@@ -51,8 +89,23 @@ DatasetSampler<SpatialDims>::DatasetSampler(
 }
 
 template <unsigned int SpatialDims>
-DatasetSampler<SpatialDims>::DatasetSampler(DatasetSampler&& tree)
+DataSetSampler<SpatialDims>::~DataSetSampler() {
+    delete interpolant_;
+}
+
+template <unsigned int SpatialDims>
+DataSetSampler<SpatialDims>::DataSetSampler(DataSetSampler&& tree)
     : grid_(tree.grid_), coordinates_(tree.coordinates_) {}
+
+template <unsigned int SpatialDims>
+void DataSetSampler<SpatialDims>::setInterpolant(const Interpolant<SpatialDims>& interpolant) {
+    interpolant_ = interpolant.copy();
+}
+
+template <unsigned int SpatialDims>
+const Interpolant<SpatialDims>& DataSetSampler<SpatialDims>::getInterpolant() const {
+    return *interpolant_;
+}
 
 }  // namespace discretedata
 }  // namespace inviwo

@@ -36,7 +36,7 @@
 #include <modules/discretedata/channels/bufferchannel.h>
 #include <modules/discretedata/connectivity/connectivity.h>
 #include <modules/discretedata/connectivity/structuredgrid.h>
-#include <modules/discretedata/sampling/celltreesampler.h>
+#include <modules/discretedata/sampling/datasetsampler.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -55,7 +55,7 @@ using DataChannelMap =
                                                                  // string-Primitve pairs
 
 using SamplerMap =
-    std::map<std::pair<std::string, std::string>, std::shared_ptr<const DatasetSamplerBase>,
+    std::map<std::pair<std::string, std::string>, std::shared_ptr<const DataSetSamplerBase>,
              dd_util::PairCompare<std::string, std::string>>;
 
 /**
@@ -199,7 +199,7 @@ public:
     DataChannelMap::const_iterator cend() const { return channels_.cend(); }
 
     /**
-     * Returns the list of DatasetSamplers (map from long name to Sampler shared pointer).
+     * Returns the list of DataSetSamplers (map from long name to Sampler shared pointer).
      */
     SamplerMap getSamplers() const;
 

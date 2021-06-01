@@ -200,7 +200,7 @@ void MeshFromDataSet::process() {
 
                     // Add triagnle "fans".
                     ind tri = 0;
-                    for (; tri < ind(indexData.size()) - 3; tri += 2) {
+                    for (; tri < static_cast<ind>(indexData.size()) - 3; tri += 2) {
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri]));
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 1]));
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 2]));
@@ -208,7 +208,7 @@ void MeshFromDataSet::process() {
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 1]));
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 3]));
                     }
-                    if (tri == indexData.size() - 3) {
+                    if (tri == static_cast<ind>(indexData.size() - 3)) {
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri]));
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 1]));
                         indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 2]));

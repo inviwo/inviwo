@@ -45,12 +45,12 @@ namespace discretedata {
 /** \class CreateConstantChannel
     \brief Create a channel with constant values
 */
-class IVW_MODULE_DISCRETEDATA_API ExampleDataset : public Processor {
+class IVW_MODULE_DISCRETEDATA_API ExampleDataSet : public Processor {
 
     // Construction / Deconstruction
 public:
-    ExampleDataset();
-    virtual ~ExampleDataset() = default;
+    ExampleDataSet();
+    virtual ~ExampleDataSet() = default;
 
     // Methods
 public:

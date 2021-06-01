@@ -44,7 +44,7 @@
 namespace inviwo {
 namespace discretedata {
 
-TEST(Using, Dataset) {
+TEST(Using, DataSet) {
 #if false
     // Create a curvelinear grid.
     std::array<ind, 3> gridSize = {11, 2, 2};

@@ -41,7 +41,7 @@ template <unsigned int SpatialDims>
 CellTree<SpatialDims>::CellTree(std::shared_ptr<const Connectivity> grid,
                                 std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates,
                                 const Interpolant<SpatialDims>& interpolant)
-    : DatasetSampler<SpatialDims>(grid, coordinates), interpolant_(interpolant) {
+    : DataSetSampler<SpatialDims>(grid, coordinates, interpolant) {
     if (coordinates_->getGridPrimitiveType() != GridPrimitive::Vertex ||
         coordinates_->getNumComponents() != SpatialDims ||
         coordinates_->size() != grid->getNumElements()) {
@@ -49,16 +49,40 @@ CellTree<SpatialDims>::CellTree(std::shared_ptr<const Connectivity> grid,
         return;
     }
 
-    CellTreeBuilder dispatcher;
-    coordinates_->dispatch<void, dispatching::filter::Scalars, SpatialDims, SpatialDims>(dispatcher,
-                                                                                         *this);
+    // CellTreeBuilder dispatcher;
+    // coordinates_->dispatch<void, dispatching::filter::Scalars, SpatialDims,
+    // SpatialDims>(dispatcher,
+    //                                                                                      *this);
 }
 
 template <unsigned int SpatialDims>
+CellTree<SpatialDims>::CellTree(CellTree<SpatialDims>& tree)
+    : DataSetSampler<SpatialDims>(
+          tree.grid_,
+          std::dynamic_pointer_cast<const DataChannel<double, SpatialDims>>(tree.coordinates_),
+          *tree.interpolant_)
+    , nodes_(tree.nodes_)
+    , cells_(tree.cells_) {}
+
+template <unsigned int SpatialDims>
 CellTree<SpatialDims>::CellTree(CellTree<SpatialDims>&& tree)
-    : DatasetSampler<SpatialDims>(tree.grid_, tree.coordinates_)
+    : DataSetSampler<SpatialDims>(tree.grid_, tree.coordinates_, tree.interpolant_)
     , nodes_(std::move(tree.nodes_))
     , cells_(std::move(tree.cells_)) {}
+
+template <unsigned int SpatialDims>
+CellTree<SpatialDims>& CellTree<SpatialDims>::operator=(CellTree<SpatialDims>& tree) {
+    nodes_ = tree.nodes_;
+    cells_ = tree.cells_;
+    this->interpolant_ = tree.interpolant_->copy();
+}
+
+template <unsigned int SpatialDims>
+CellTree<SpatialDims>& CellTree<SpatialDims>::operator=(CellTree<SpatialDims>&& tree) {
+    nodes_ = std::move(tree.nodes_);
+    cells_ = std::move(tree.cells_);
+    this->interpolant_ = std::move(tree.interpolant);
+}
 
 template <unsigned int SpatialDims>
 template <typename T>
@@ -93,7 +117,13 @@ bool CellTree<SpatialDims>::sampleCell(ind cellId, const std::array<float, Spati
 template <unsigned int SpatialDims>
 ind CellTree<SpatialDims>::locateAndSampleCell(const std::array<float, SpatialDims>& pos,
                                                std::vector<double>& returnWeights,
+                                               std::vector<ind>& returnVertices,
                                                InterpolationType interpolationType) const {
+    // glm::vec<SpatialDims, float> posVec;
+    // for (unsigned i = 0; i < SpatialDims; ++i) posVec[i] = pos[i];
+    // const glm::vec<SpatialDims, float>&
+    // return std::invoke<decltype(locateCellFunction), CellTree<SpatialDims>&,
+    //                    const glm::vec<SpatialDims, float>&>(locateCellFunction, *this, posVec);
     return (this->*locateCellFunction)(pos);
 }
 
@@ -101,6 +131,7 @@ template <unsigned int SpatialDims>
 template <typename T, ind N>
 ind CellTree<SpatialDims>::locateAndSampleCell(const std::array<float, SpatialDims>& pos,
                                                std::vector<double>& returnWeights,
+                                               std::vector<ind>& returnVertices,
                                                InterpolationType interpolationType) const {
 
     for (size_t dim = 0; dim < SpatialDims; ++dim) {
