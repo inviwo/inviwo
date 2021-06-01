@@ -49,7 +49,7 @@ These can be added through the CMake option `IVW_EXTERNAL_MODULES`, see [Inviwo 
 The following modules add a variety of functionalities to Inviwo. Please refer to the respective repository for possible issues related to them.
 
 - [Dicom reader](https://github.com/inviwo/modules/tree/master/medvis/dicom) Adds support for reading DICOM image/volume files (.dcm file ending)
-- [Molecular visualization](https://github.com/inviwo/modules/tree/master/molvis) Adds support for reading PDB and CIB files. Adds visual representations for van-der-Waalsm Licorice, Ball and Stick.
+- [Molecular visualization](https://github.com/inviwo/modules/tree/master/molvis) Adds support for molecular data structures along with reading PDB and mmCIF files. Molecules are rendered in van-der-Waals, Licorice, and Ball and Stick representations.
 -  [Tensor visualization](https://github.com/inviwo/modules/tree/master/tensorvis) Adds support for reading/writing tensor fields. Includes algorithms such as HyperLIC and Anisotropy raycasting.
 -  [Topology visualization](https://github.com/inviwo/modules/tree/master/topovis) Integrates the [Topology Toolkit](https://topology-tool-kit.github.io/) into Inviwo. Includes algorithms for critical points, integral lines, persistence diagrams, persistence curves, merge trees, contour trees, Reeb graphs, Morse-Smale complexes, topological simplification, topology-aware compression, harmonic design, fiber surfaces, continuous scatterplots, Jacobi sets, Reeb spaces, bottleneck and Wasserstein distances between persistence diagrams etc.
 -  [Clustering](https://github.com/inviwo/modules/tree/master/misc/dataframeclustering) Cluster rows of a DataFrame. Supported clustering methods are k-means, DBSCAN, agglomerative, and spectral clustering
@@ -61,6 +61,7 @@ The following modules add a variety of functionalities to Inviwo. Please refer t
 - [Photon mapping](https://github.com/ResearchDaniel/Correlated-Photon-Mapping-for-Interactive-Global-Illumination-of-Time-Varying-Volumetric-Data) Volume illumination algorithm for time-varying heterogenous media.
 - [Temporal Tree Maps](https://github.com/Wiebke/TemporalTreeMaps) Temporal treemaps for visualizing trees whose topology and data change over time.
 - [Developer tools](https://github.com/inviwo/modules/tree/master/misc/devtools) Log inviwo events, useful for debugging interaction.
+- 
 #### Applications 
 - [Visual Neuro](https://github.com/SciVis/VisualNeuro) A visual analysis tool understanding cohorts of brain imaging and clinical data. Also includes algorithms for statistical computation.
 - [ENVISIoN](https://github.com/rartino/ENVISIoN) Visualization of electronic structure quantities from ab-initio calculations.
