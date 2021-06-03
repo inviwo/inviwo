@@ -29,10 +29,16 @@
 
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/stdextensions.h>
 
 #include <sstream>
 #include <iomanip>
+#include <chrono>
+#include <array>
+
+#include <fmt/format.h>
+#include <fmt/chrono.h>
+#include <fmt/ostream.h>
 
 #ifdef WIN32
 #define NOMINMAX
@@ -82,10 +88,10 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
 
 #else
 
-    const std::string none{""};
-    const std::string red{"\x1B[31m"};
-    const std::string yellow{"\x1B[33m"};
-    const std::string reset{"\x1B[0m"};
+    constexpr std::string_view none{""};
+    constexpr std::string_view red{"\x1B[31m"};
+    constexpr std::string_view yellow{"\x1B[33m"};
+    constexpr std::string_view reset{"\x1B[0m"};
 
     switch (logLevel) {
         case LogLevel::Info:
@@ -107,28 +113,28 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
     const auto width = w.ws_col;
 #endif
 
-    const size_t reserved = 33;
+    constexpr size_t reserved = 45; // Length of time + logLevel + logSource.
     const auto maxWidth = width - reserved - 1;
-
-    std::vector<std::string_view> res;
+    
     util::forEachStringPart(logMsg, "\n", [&](std::string_view line) {
         if (line.size() < maxWidth) {
-            res.push_back(line);
+            sublines_.push_back(line);
         } else {
             size_t pos = 0;
             while (pos < line.size()) {
-                res.push_back(util::trim(line.substr(pos, maxWidth)));
+                sublines_.push_back(util::trim(line.substr(pos, maxWidth)));
                 pos += maxWidth;
             }
         }
     });
 
-    std::stringstream ss;
-    auto joiner = util::make_ostream_joiner(ss, "\n" + std::string(reserved, ' '));
-    std::copy(res.begin(), res.end(), joiner);
-
-    os << std::left << std::setw(5) << logLevel << " " << std::setw(25) << logSource << ": "
-       << ss.str() << std::endl;
+    static constexpr auto delim =
+        util::make_array<reserved + 1>([](auto i) -> char { return i == 0 ? '\n' : ' '; });
+    static constexpr std::string_view delimiter{delim.data(), delim.size()};
+    const auto time = std::chrono::system_clock::now();
+    fmt::print(os, "{:%H:%M}:{:%S} {:5} {:25} {}\n", time, time.time_since_epoch(), logLevel,
+               logSource, fmt::join(sublines_, delimiter));
+    sublines_.clear();
 
 #ifdef WIN32
     SetConsoleTextAttribute(hConsole, oldState.wAttributes);
