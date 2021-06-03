@@ -113,9 +113,9 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
     const auto width = w.ws_col;
 #endif
 
-    constexpr size_t reserved = 45; // Length of time + logLevel + logSource.
+    constexpr size_t reserved = 45;  // Length of time + logLevel + logSource.
     const auto maxWidth = width - reserved - 1;
-    
+
     util::forEachStringPart(logMsg, "\n", [&](std::string_view line) {
         if (line.size() < maxWidth) {
             sublines_.push_back(line);

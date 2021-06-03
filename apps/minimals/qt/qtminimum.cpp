@@ -101,9 +101,8 @@ int main(int argc, char** argv) {
         [&]() {
             inviwoApp.getProcessorNetwork()->addObserver(&obs);
             inviwoApp.getProcessorNetworkEvaluator()->addObserver(&obs);
-            inviwoApp.getProcessorNetwork()->forEachProcessor([&](auto* p){
-                p->ProcessorObservable::addObserver(&obs);
-            });
+            inviwoApp.getProcessorNetwork()->forEachProcessor(
+                [&](auto* p) { p->ProcessorObservable::addObserver(&obs); });
         },
         200);
 
