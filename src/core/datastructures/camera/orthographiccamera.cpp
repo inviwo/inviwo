@@ -85,7 +85,13 @@ void OrthographicCamera::configureProperties(CameraProperty& cp, bool attach) {
     Camera::configureProperties(cp, attach);
     if (attach) {
         util::updateOrCreateCameraWidthProperty(
-            cp, [this]() { return getWidth(); }, [this](const float& val) { setWidth(val); });
+            cp, [this]() { return getWidth(); },
+            [this](const float& val) {
+                if (width_ != val) {
+                    width_ = val;
+                    invalidateProjectionMatrix();
+                }
+            });
     } else if (auto width = util::getCameraWidthProperty(cp)) {
         width->setGetAndSet([val = width->get()]() { return val; }, [](const float&) {});
     }

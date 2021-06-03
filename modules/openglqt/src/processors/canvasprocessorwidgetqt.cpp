@@ -114,6 +114,7 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
 
     setWindowFlag(Qt::WindowStaysOnTopHint, CanvasProcessorWidget::isOnTop());
     connect(qApp, &QApplication::applicationStateChanged, this, [this](Qt::ApplicationState state) {
+        util::KeepTrueWhileInScope ignore(&ignoreEvents_);
         utilqt::setOnTop(this, isOnTop() && state == Qt::ApplicationActive);
     });
 
