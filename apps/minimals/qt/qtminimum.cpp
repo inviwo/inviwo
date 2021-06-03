@@ -40,10 +40,10 @@
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
-#include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/util/networkdebugobserver.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -91,6 +91,21 @@ int main(int argc, char** argv) {
             util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, snapshotArg.getValue());
         },
         1000);
+
+    TCLAP::SwitchArg debugProcess("d", "debug",
+                                  "Add debug logging for processor evaluation to the log");
+
+    NetworkDebugObserver obs;
+    cmdparser.add(
+        &debugProcess,
+        [&]() {
+            inviwoApp.getProcessorNetwork()->addObserver(&obs);
+            inviwoApp.getProcessorNetworkEvaluator()->addObserver(&obs);
+            inviwoApp.getProcessorNetwork()->forEachProcessor([&](auto* p){
+                p->ProcessorObservable::addObserver(&obs);
+            });
+        },
+        200);
 
     TCLAP::SwitchArg fullscreenArg("f", "fullscreen", "Specify fullscreen if only one canvas");
 

@@ -327,6 +327,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/metadatatoproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/moduleutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/moveonlyvalue.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/networkdebugobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/observer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/ostreamjoiner.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/pathtype.h
@@ -631,6 +632,7 @@ set(SOURCE_FILES
     util/metadatatoproperty.cpp
     util/moduleutils.cpp
     util/moveonlyvalue.cpp
+    util/networkdebugobserver.cpp
     util/observer.cpp
     util/rendercontext.cpp
     util/safecstr.cpp

@@ -44,11 +44,14 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/util/networkdebugobserver.h>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -88,6 +91,41 @@ int main(int argc, char** argv) {
             util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, snapshotArg.getValue());
         },
         1000);
+
+    TCLAP::SwitchArg debugProcess("d", "debug",
+                                  "Add debug logging for processor evaluation to the log");
+
+    NetworkDebugObserver obs;
+    cmdparser.add(
+        &debugProcess,
+        [&]() {
+            inviwoApp.getProcessorNetwork()->addObserver(&obs);
+            inviwoApp.getProcessorNetworkEvaluator()->addObserver(&obs);
+            inviwoApp.getProcessorNetwork()->forEachProcessor(
+                [&](auto* p) { p->ProcessorObservable::addObserver(&obs); });
+        },
+        200);
+
+    TCLAP::SwitchArg fullscreenArg("f", "fullscreen", "Specify fullscreen if only one canvas");
+
+    cmdparser.add(&fullscreenArg, [&]() {
+        auto network = inviwoApp.getProcessorNetwork();
+
+        std::vector<ProcessorWidget*> widgets;
+        network->forEachProcessor([&](Processor* p) {
+            if (p->isSink()) {
+                if (auto widget = p->getProcessorWidget()) {
+                    if (widget->isVisible()) {
+                        widgets.push_back(widget);
+                    }
+                }
+            }
+        });
+
+        if (widgets.size() == 1) {
+            widgets[0]->setFullScreen(true);
+        }
+    });
 
     // Do this after registerModules if some arguments were added
     cmdparser.parse(inviwo::CommandLineParser::Mode::Normal);
