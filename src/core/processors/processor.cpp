@@ -287,10 +287,9 @@ const std::vector<Port*>& Processor::getPortsInSameGroup(Port* port) const {
 }
 
 void Processor::invalidate(InvalidationLevel invalidationLevel, Property* modifiedProperty) {
-    if (invalidationLevel <= getInvalidationLevel()) return;
     notifyObserversInvalidationBegin(this);
-    PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
-    if (!isValid()) {
+    if (invalidationLevel > getInvalidationLevel()) {
+        PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
         for (auto& port : outports_) port->invalidate(InvalidationLevel::InvalidOutput);
     }
     notifyObserversInvalidationEnd(this);
