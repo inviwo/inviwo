@@ -10,6 +10,7 @@ set(HEADER_FILES
     include/inviwopy/pyflags.h
     include/inviwopy/pyglmmattypes.h
     include/inviwopy/pyglmtypes.h
+    include/inviwopy/pyglmports.h
     include/inviwopy/pyimage.h
     include/inviwopy/pyinviwoapplication.h
     include/inviwopy/pyinviwomodule.h
@@ -38,6 +39,7 @@ set(SOURCE_FILES
     src/pyflags.cpp
     src/pyglmmattypes.cpp
     src/pyglmtypes.cpp
+    src/pyglmports.cpp
     src/pyimage.cpp
     src/pyinviwoapplication.cpp
     src/pyinviwomodule.cpp

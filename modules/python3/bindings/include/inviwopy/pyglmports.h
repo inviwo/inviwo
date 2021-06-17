@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,17 +29,15 @@
 
 #pragma once
 
-#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/util/glm.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <warn/pop>
 
-PYBIND11_MAKE_OPAQUE(inviwo::SwizzleMask)
-
 namespace inviwo {
 
-void exposeImage(pybind11::module& m);
+void exposeGLMPorts(pybind11::module& m);
 
 }  // namespace inviwo

@@ -30,7 +30,12 @@
 #pragma once
 
 #include <inviwo/core/interaction/pickingstate.h>
+#include <inviwo/core/util/safecstr.h>
+#include <inviwo/core/util/typetraits.h>
+
 #include <flags/flags.h>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -50,7 +55,7 @@ void exposeFlags(pybind11::module& m, std::string_view name) {
 
     using Iter = typename flags::flags<E>::iterator;
 
-    py::class_<Iter>(m, (std::string(name) + "Iterator").c_str())
+    py::class_<Iter>(m, fmt::format("{}Iterator", name).c_str())
         .def(py::init<Iter>())
         .def("__iter__", [](Iter& self) { return Iter{self}; })
         .def("__next__", [](Iter& self) {
@@ -61,8 +66,8 @@ void exposeFlags(pybind11::module& m, std::string_view name) {
             }
         });
 
-    py::class_<flags::flags<E>>(m, name.data())
-        .def(py::init([]() { return flags::flags<E>{flags::empty}; }))
+    py::class_<flags::flags<E>> flags(m, SafeCStr{name}.c_str());
+    flags.def(py::init([]() { return flags::flags<E>{flags::empty}; }))
         .def(py::init<E>())
         .def(py::init<flags::flags<E>>())
         .def(py::init([](py::args args) {
@@ -96,8 +101,31 @@ void exposeFlags(pybind11::module& m, std::string_view name) {
         .def("erase", static_cast<size_t (flags::flags<E>::*)(E e)>(&flags::flags<E>::erase))
         .def("clear", &flags::flags<E>::clear)
         .def("empty", &flags::flags<E>::empty)
-
         .def("__iter__", &flags::flags<E>::begin);
+
+    if constexpr (util::is_stream_insertable<flags::flags<E>>::value) {
+        flags.def("__str__", [name](const flags::flags<E>& e) {
+            if (e.empty()) {
+                return fmt::format("{}.{}", name, E{0});
+            } else {
+                return fmt::format("{}.{}", name, e);
+            }
+        });
+        flags.def("__repr__", [name](const flags::flags<E>& e) {
+            if (e.empty()) {
+                return fmt::format("<{}.{}: {}>", name, E{0}, e.underlying_value());
+            } else {
+                return fmt::format("<{}.{}: {}>", name, e, e.underlying_value());
+            }
+        });
+    } else {
+        flags.def("__str__", [name](const flags::flags<E>& e) {
+            return fmt::format("{}.{}", name, e.underlying_value());
+        });
+        flags.def("__repr__", [name](const flags::flags<E>& e) {
+            return fmt::format("<{}: {}>", name, e.underlying_value());
+        });
+    }
 }
 
 #include <warn/pop>

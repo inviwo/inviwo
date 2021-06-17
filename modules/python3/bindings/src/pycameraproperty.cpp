@@ -34,6 +34,7 @@
 
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/algorithm/camerautils.h>
+#include <inviwo/core/ports/inport.h>
 
 #include <pybind11/functional.h>
 
@@ -43,14 +44,11 @@ namespace py = pybind11;
 
 namespace inviwo {
 
-template <typename P, typename... Extra>
-using PyPropertyClass = py::class_<P, Extra..., PropertyPtr<P>>;
-
 void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) {
 
-    auto CUmodule = main.def_submodule("camerautil", "Camera utilities");
+    auto cameraModule = main.def_submodule("camerautil", "Camera utilities");
 
-    py::enum_<camerautil::Side>(CUmodule, "Side")
+    py::enum_<camerautil::Side>(cameraModule, "Side")
         .value("XNegative", camerautil::Side::XNegative)
         .value("XPositive", camerautil::Side::XPositive)
         .value("YNegative", camerautil::Side::YNegative)
@@ -58,19 +56,19 @@ void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) 
         .value("ZNegative", camerautil::Side::ZNegative)
         .value("ZPositive", camerautil::Side::ZPositive);
 
-    py::enum_<camerautil::UpdateNearFar>(CUmodule, "UpdateNearFar")
+    py::enum_<camerautil::UpdateNearFar>(cameraModule, "UpdateNearFar")
         .value("Yes", camerautil::UpdateNearFar::Yes)
         .value("No", camerautil::UpdateNearFar::No);
 
-    py::enum_<camerautil::UpdateLookRanges>(CUmodule, "UpdateLookRanges")
+    py::enum_<camerautil::UpdateLookRanges>(cameraModule, "UpdateLookRanges")
         .value("Yes", camerautil::UpdateLookRanges::Yes)
         .value("No", camerautil::UpdateLookRanges::No);
 
-    CUmodule.def("setCameraLookRanges", &camerautil::setCameraLookRanges);
-    CUmodule.def("computeCameraNearFar", &camerautil::computeCameraNearFar);
-    CUmodule.def("setCameraNearFar", &camerautil::setCameraNearFar);
+    cameraModule.def("setCameraLookRanges", &camerautil::setCameraLookRanges);
+    cameraModule.def("computeCameraNearFar", &camerautil::computeCameraNearFar);
+    cameraModule.def("setCameraNearFar", &camerautil::setCameraNearFar);
 
-    CUmodule.def(
+    cameraModule.def(
         "setCameraView",
         [](CameraProperty& cam, const mat4& boundingBox, float fitRatio,
            camerautil::UpdateNearFar updateNearFar, camerautil::UpdateLookRanges updateLookRanges) {
@@ -80,7 +78,7 @@ void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) 
         py::arg("updateNearFar") = camerautil::UpdateNearFar::No,
         py::arg("updateLookRanges") = camerautil::UpdateLookRanges::No);
 
-    CUmodule.def(
+    cameraModule.def(
         "setCameraView",
         [](CameraProperty& cam, const mat4& boundingBox, camerautil::Side side, float fitRatio,
            camerautil::UpdateNearFar updateNearFar, camerautil::UpdateLookRanges updateLookRanges) {
@@ -91,7 +89,7 @@ void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) 
         py::arg("fitRatio") = 1.05f, py::arg("updateNearFar") = camerautil::UpdateNearFar::No,
         py::arg("updateLookRanges") = camerautil::UpdateLookRanges::No);
 
-    CUmodule.def(
+    cameraModule.def(
         "setCameraView",
         [](CameraProperty& cam, const mat4& boundingBox, vec3 viewDir, vec3 lookUp, float fitRatio,
            camerautil::UpdateNearFar updateNearFar, camerautil::UpdateLookRanges updateLookRanges) {
@@ -102,7 +100,7 @@ void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) 
         py::arg("fitRatio") = 1.05f, py::arg("updateNearFar") = camerautil::UpdateNearFar::No,
         py::arg("updateLookRanges") = camerautil::UpdateLookRanges::No);
 
-    PyPropertyClass<CameraProperty, CompositeProperty>(properties, "CameraProperty")
+    py::class_<CameraProperty, CompositeProperty>(properties, "CameraProperty")
         .def(py::init([](const std::string& identifier, const std::string& displayName, vec3 eye,
                          vec3 center, vec3 lookUp, Inport* inport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {

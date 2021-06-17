@@ -59,8 +59,7 @@ struct BufferRAMHelper {
         using T = typename DataFormat::type;
 
         std::string className = fmt::format("Buffer{}", DataFormat::str());
-        py::class_<Buffer<T, BufferTarget::Data>, BufferBase,
-                   std::shared_ptr<Buffer<T, BufferTarget::Data>>>(m, className.c_str())
+        py::class_<Buffer<T, BufferTarget::Data>, BufferBase>(m, className.c_str())
             .def(py::init<size_t>(), py::arg("size"))
             .def(py::init<size_t, BufferUsage>(), py::arg("size"),
                  py::arg("usage") = BufferUsage::Static)
@@ -74,8 +73,7 @@ struct BufferRAMHelper {
                  py::arg("data"), py::arg("usage") = BufferUsage::Static);
 
         className = fmt::format("IndexBuffer{}", DataFormat::str());
-        py::class_<Buffer<T, BufferTarget::Index>, BufferBase,
-                   std::shared_ptr<Buffer<T, BufferTarget::Index>>>(m, className.c_str())
+        py::class_<Buffer<T, BufferTarget::Index>, BufferBase>(m, className.c_str())
             .def(py::init<size_t>())
             .def(py::init<size_t, BufferUsage>())
             .def(py::init([](py::array data, BufferUsage usage) {
@@ -126,7 +124,7 @@ void exposeBuffer(pybind11::module& m) {
         .value("Adjacency", ConnectivityType::Adjacency)
         .value("StripAdjacency", ConnectivityType::StripAdjacency);
 
-    py::class_<BufferBase, std::shared_ptr<BufferBase>>(m, "Buffer")
+    py::class_<BufferBase>(m, "Buffer")
         .def(py::init([](py::array data) { return pyutil::createBuffer(data).release(); }))
         .def("clone", [](BufferBase& self) { return self.clone(); })
         .def_property("size", &BufferBase::getSize, &BufferBase::setSize)

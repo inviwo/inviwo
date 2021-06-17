@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,20 +26,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/python3gl/python3glmoduledefine.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <warn/pop>
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>
+#include <inviwo/core/datastructures/representationconverter.h>
 
-PYBIND11_MAKE_OPAQUE(inviwo::SwizzleMask)
+#include <modules/python3/volumepy.h>
+#include <modules/opengl/volume/volumegl.h>
 
 namespace inviwo {
 
-void exposeImage(pybind11::module& m);
+class IVW_MODULE_PYTHON3GL_API VolumeGL2PyConverter
+    : public RepresentationConverterType<VolumeRepresentation, VolumeGL, VolumePy> {
+public:
+    virtual std::shared_ptr<VolumePy> createFrom(
+        std::shared_ptr<const VolumeGL> source) const override;
+    virtual void update(std::shared_ptr<const VolumeGL> source,
+                        std::shared_ptr<VolumePy> destination) const override;
+};
+
+class IVW_MODULE_PYTHON3GL_API VolumePy2GLConverter
+    : public RepresentationConverterType<VolumeRepresentation, VolumePy, VolumeGL> {
+public:
+    virtual std::shared_ptr<VolumeGL> createFrom(
+        std::shared_ptr<const VolumePy> source) const override;
+    virtual void update(std::shared_ptr<const VolumePy> source,
+                        std::shared_ptr<VolumeGL> destination) const override;
+};
 
 }  // namespace inviwo

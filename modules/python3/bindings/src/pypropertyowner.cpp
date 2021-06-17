@@ -29,12 +29,14 @@
 
 #include <inviwopy/pypropertyowner.h>
 #include <inviwo/core/properties/propertyowner.h>
+#include <inviwo/core/processors/processor.h>
 
 #include <inviwopy/inviwopy.h>
 #include <inviwopy/vectoridentifierwrapper.h>
 #include <inviwopy/pyproperties.h>
 
 #include <pybind11/detail/common.h>
+
 
 namespace inviwo {
 
@@ -44,7 +46,7 @@ void exposePropertyOwner(pybind11::module& m) {
     using PropertyVecWrapper = VectorIdentifierWrapper<std::vector<Property*>>;
     exposeVectorIdentifierWrapper<std::vector<Property*>>(m, "PropertyVecWrapper");
 
-    py::class_<PropertyOwner, std::unique_ptr<PropertyOwner, py::nodelete>>(m, "PropertyOwner")
+    py::class_<PropertyOwner>(m, "PropertyOwner")
         .def(
             "__getattr__",
             [](PropertyOwner& po, const std::string& key) {
@@ -63,13 +65,13 @@ void exposePropertyOwner(pybind11::module& m) {
         .def(
             "addProperty",
             [](PropertyOwner& po, Property* prop, bool owner) { po.addProperty(prop, owner); },
-            py::arg("prop"), py::arg("owner") = true, py::keep_alive<1, 2>{})
+            py::arg("prop"), py::arg("owner") = false, py::keep_alive<1, 2>{})
         .def(
             "insertProperty",
             [](PropertyOwner& po, size_t index, Property* prop, bool owner) {
                 po.insertProperty(index, prop, owner);
             },
-            py::arg("index"), py::arg("prop"), py::arg("owner") = true, py::keep_alive<1, 2>{})
+            py::arg("index"), py::arg("prop"), py::arg("owner") = false, py::keep_alive<1, 3>{})
         .def("removeProperty",
              [](PropertyOwner& po, Property* prop) { return po.removeProperty(prop); })
         .def("removeProperty",

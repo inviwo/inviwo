@@ -39,6 +39,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <modules/python3/processortrampoline.h>
+
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
@@ -52,20 +54,18 @@ namespace inviwo {
 PythonProcessorFactoryObject::PythonProcessorFactoryObject(InviwoApplication* app,
                                                            const std::string& file)
     : PythonProcessorFactoryObjectBase(load(file)), FileObserver(app), app_{app} {
-
     startFileObservation(file);
 }
 
 std::unique_ptr<Processor> PythonProcessorFactoryObject::create(InviwoApplication*) {
     namespace py = pybind11;
-    const auto pi = getProcessorInfo();
+    const auto& pi = getProcessorInfo();
 
     try {
-        py::object proc = py::eval<py::eval_expr>(fmt::format(
-            R"({}("{}", "{}"))", name_, util::stripIdentifier(pi.displayName), pi.displayName));
-        auto p = std::unique_ptr<Processor>(proc.cast<Processor*>());
-        proc.release();
-        return p;
+        py::object proc =
+            py::module::import("__main__")
+                .attr(name_.c_str())(util::stripIdentifier(pi.displayName), pi.displayName);
+        return proc.cast<std::unique_ptr<Processor>>();
 
     } catch (std::exception& e) {
         throw Exception(
@@ -91,13 +91,14 @@ void PythonProcessorFactoryObject::fileChanged(const std::string&) {
 
 void PythonProcessorFactoryObject::reloadProcessors() {
     auto net = app_->getProcessorNetwork();
-    auto processors = net->getProcessors();
+    auto processors = net->getProcessors();  // Save a list of the processors here since we will be
+                                             // modifying the list below by replacing them
     for (auto p : processors) {
         if (p->getClassIdentifier() == getProcessorInfo().classIdentifier) {
             LogInfo("Updating python processor: \"" << name_ << "\" id: \"" << p->getIdentifier()
                                                     << "\"");
-            if (auto replacement = create(app_)) {
-                util::replaceProcessor(net, std::move(replacement), p);
+            if (auto replacement = std::shared_ptr<Processor>(create(app_))) {
+                util::replaceProcessor(net, replacement, p);
             }
         }
     }
@@ -111,7 +112,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(const std::s
     ss << ifs.rdbuf();
     const auto script = std::move(ss).str();
 
-    const auto nameLabel = std::string{"# Name: "};
+    constexpr std::string_view nameLabel{"# Name: "};
 
     const auto name = [&]() {
         if (script.compare(0, nameLabel.size(), nameLabel) == 0) {
@@ -150,7 +151,6 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(const std::s
     try {
         py::object proc = py::eval<py::eval_expr>(name + ".processorInfo()");
         auto p = proc.cast<ProcessorInfo>();
-        proc.release();
         return {p, name, file};
     } catch (const std::exception& e) {
         throw Exception(IVW_CONTEXT_CUSTOM("Python"),

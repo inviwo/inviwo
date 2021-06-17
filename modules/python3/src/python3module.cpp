@@ -48,8 +48,24 @@
 #include <modules/python3/processors/pythonscriptprocessor.h>
 
 #include <modules/python3/pythonprocessorfactoryobject.h>
+#include <modules/python3/volumepy.h>
 
 namespace inviwo {
+
+namespace {
+class VolumePyFactoryObject
+    : public RepresentationFactoryObjectTemplate<VolumeRepresentation, VolumePy> {
+public:
+    virtual std::unique_ptr<VolumeRepresentation> create(
+        const typename VolumeRepresentation::ReprOwner* volume) {
+        auto volumePy = std::make_unique<VolumePy>(
+            volume->getDimensions(), volume->getDataFormat(), volume->getSwizzleMask(),
+            volume->getInterpolation(), volume->getWrapping());
+
+        return volumePy;
+    }
+};
+}  // namespace
 
 Python3Module::Python3Module(InviwoApplication* app)
     : InviwoModule(app, "Python3")
@@ -74,6 +90,13 @@ Python3Module::Python3Module(InviwoApplication* app)
                               *this} {
 
     pythonInterpreter_->addObserver(&pythonLogger_);
+
+    registerRepresentationFactoryObject<VolumeRepresentation>(
+        std::make_unique<VolumePyFactoryObject>());
+    registerRepresentationConverter<VolumeRepresentation>(
+        std::make_unique<VolumeRAM2PyConverter>());
+    registerRepresentationConverter<VolumeRepresentation>(
+        std::make_unique<VolumePy2RAMConverter>());
 
     registerProcessor<NumPyVolume>();
     registerProcessor<NumpyMandelbrot>();

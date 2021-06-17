@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,20 +26,33 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <modules/python3/python3moduledefine.h>
+#include <inviwo/core/processors/processor.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <warn/pop>
 
-PYBIND11_MAKE_OPAQUE(inviwo::SwizzleMask)
-
 namespace inviwo {
 
-void exposeImage(pybind11::module& m);
+class IVW_MODULE_PYTHON3_API ProcessorTrampoline : public Processor,
+                                                   public pybind11::trampoline_self_life_support {
+public:
+    /* Inherit the constructors */
+    using Processor::Processor;
 
+    /* Trampoline (need one for each virtual function) */
+    virtual void initializeResources() override;
+    virtual void process() override;
+    virtual void doIfNotReady() override;
+    virtual void setValid() override;
+    virtual void invalidate(InvalidationLevel invalidationLevel,
+                            Property* modifiedProperty = nullptr) override;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual void invokeEvent(Event* event) override;
+    virtual void propagateEvent(Event* event, Outport* source) override;
+};
 }  // namespace inviwo

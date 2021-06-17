@@ -29,10 +29,11 @@
 #pragma once
 
 #include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/core/util/fileobserver.h>
+
+#include <string>
 
 namespace inviwo {
 

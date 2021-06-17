@@ -42,6 +42,7 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <pybind11/stl.h>
 
 #include <fmt/format.h>
 
@@ -87,9 +88,10 @@ void exposeMesh(pybind11::module& m) {
         return list;
     };
 
-    py::class_<Mesh, std::shared_ptr<Mesh>>(m, "Mesh")
+    py::class_<Mesh>(m, "Mesh")
         .def(py::init<>())
-        .def(py::init<DrawType, ConnectivityType>(), py::arg("dt"), py::arg("ct"))
+        .def(py::init<DrawType, ConnectivityType>(), py::arg("dt") = DrawType::Points,
+             py::arg("ct") = ConnectivityType::None)
         .def(py::init<Mesh::MeshInfo>(), py::arg("meshInfo"))
         .def_property_readonly("defaultMeshInfo", &Mesh::getDefaultMeshInfo)
 
@@ -164,48 +166,139 @@ void exposeMesh(pybind11::module& m) {
                                toString(meshinfo.dt), toString(meshinfo.ct), ossBuffers.str());
         });
 
-    py::class_<BasicMesh::Vertex>(m, "BasicMeshVertex")
-        .def(py::init<>())
-        .def(py::init([](vec3 pos, vec3 normal, vec3 tex, vec4 color) {
-            return BasicMesh::Vertex{pos, normal, tex, color};
-        }));
+    auto buffertraits = m.def_submodule("buffertraits", "Module containing mesh buffertraits");
 
-    py::class_<BasicMesh, Mesh, std::shared_ptr<BasicMesh>>(m, "BasicMesh")
+    py::class_<buffertraits::PositionsBuffer3D>(buffertraits, "PositionsBuffer3D")
+        .def("getVertices", &buffertraits::PositionsBuffer3D::getEditableVertices)
+        .def("setVertexPosition", &buffertraits::PositionsBuffer3D::setVertexPosition);
+
+    py::class_<buffertraits::PositionsBuffer2D>(buffertraits, "PositionsBuffer2D")
+        .def("getVertices", &buffertraits::PositionsBuffer2D::getEditableVertices)
+        .def("setVertexPosition", &buffertraits::PositionsBuffer2D::setVertexPosition);
+
+    py::class_<buffertraits::PositionsBuffer1D>(buffertraits, "PositionsBuffer1D")
+        .def("getVertices", &buffertraits::PositionsBuffer1D::getEditableVertices)
+        .def("setVertexPosition", &buffertraits::PositionsBuffer1D::setVertexPosition);
+
+    py::class_<buffertraits::NormalBuffer>(buffertraits, "NormalBuffer")
+        .def("getNormals", &buffertraits::NormalBuffer::getEditableNormals)
+        .def("setVertexNormal", &buffertraits::NormalBuffer::setVertexNormal);
+
+    py::class_<buffertraits::ColorsBuffer>(buffertraits, "ColorsBuffer")
+        .def("getColors", &buffertraits::ColorsBuffer::getEditableColors)
+        .def("setVertexColor", &buffertraits::ColorsBuffer::setVertexColor);
+
+    py::class_<buffertraits::TexCoordBuffer<3>>(buffertraits, "TexCoordBuffer3D")
+        .def("getTexCoords", &buffertraits::TexCoordBuffer<3>::getEditableTexCoords)
+        .def("setVertexTexCoord", &buffertraits::TexCoordBuffer<3>::setVertexTexCoord);
+
+    py::class_<buffertraits::TexCoordBuffer<2>>(buffertraits, "TexCoordBuffer2D")
+        .def("getTexCoords", &buffertraits::TexCoordBuffer<2>::getEditableTexCoords)
+        .def("setVertexTexCoord", &buffertraits::TexCoordBuffer<2>::setVertexTexCoord);
+
+    py::class_<buffertraits::TexCoordBuffer<1>>(buffertraits, "TexCoordBuffer1D")
+        .def("getTexCoords", &buffertraits::TexCoordBuffer<1>::getEditableTexCoords)
+        .def("setVertexTexCoord", &buffertraits::TexCoordBuffer<1>::setVertexTexCoord);
+
+    py::class_<buffertraits::CurvatureBuffer>(buffertraits, "CurvatureBuffer")
+        .def("getCurvatures", &buffertraits::CurvatureBuffer::getEditableCurvatures)
+        .def("setVertexCurvature", &buffertraits::CurvatureBuffer::setVertexCurvature);
+
+    py::class_<buffertraits::IndexBuffer>(buffertraits, "IndexBuffer")
+        .def("getIndex", &buffertraits::IndexBuffer::getEditableIndex)
+        .def("setVertexIndex", &buffertraits::IndexBuffer::setVertexIndex);
+
+    py::class_<buffertraits::RadiiBuffer>(buffertraits, "RadiiBuffer")
+        .def("getRadii", &buffertraits::RadiiBuffer::getEditableRadii)
+        .def("setVertexRadius", &buffertraits::RadiiBuffer::setVertexRadius);
+
+    py::class_<buffertraits::PickingBuffer>(buffertraits, "PickingBuffer")
+        .def("getPicking", &buffertraits::PickingBuffer::getEditablePicking)
+        .def("setVertexPicking", &buffertraits::PickingBuffer::setVertexPicking);
+
+    py::class_<buffertraits::ScalarMetaBuffer>(buffertraits, "ScalarMetaBuffer")
+        .def("getScalarMeta", &buffertraits::ScalarMetaBuffer::getEditableScalarMeta)
+        .def("setVertexScalarMeta", &buffertraits::ScalarMetaBuffer::setVertexScalarMeta);
+
+    py::class_<BasicMesh, Mesh, buffertraits::PositionsBuffer, buffertraits::NormalBuffer,
+               buffertraits::TexCoordBuffer<3>, buffertraits::ColorsBuffer>(m, "BasicMesh")
         .def(py::init<>())
+        .def(py::init<DrawType, ConnectivityType>(), py::arg("dt") = DrawType::Points,
+             py::arg("ct") = ConnectivityType::None)
+        .def(py::init<DrawType, ConnectivityType, const std::vector<BasicMesh::Vertex>&,
+                      const std::vector<std::uint32_t>&>(),
+             py::arg("dt"), py::arg("ct"), py::arg("vertices"), py::arg("indices"))
         .def("addVertices", &BasicMesh::addVertices)
 
         .def("addVertex", [](BasicMesh& self, vec3 pos, vec3 norm, vec3 texCoord,
                              vec4 color) { return self.addVertex(pos, norm, texCoord, color); })
-        .def("addVertex",
-             [](BasicMesh& self, const BasicMesh::Vertex& vertex) {
-                 return self.addVertex(std::get<0>(vertex), std::get<1>(vertex),
-                                       std::get<2>(vertex), std::get<3>(vertex));
-             })
-
         .def("setVertex", [](BasicMesh& self, size_t i, vec3 pos, vec3 norm, vec3 texCoord,
                              vec4 color) { self.setVertex(i, pos, norm, texCoord, color); })
-        .def("setVertex",
-             [](BasicMesh& self, size_t i, const BasicMesh::Vertex& vertex) {
-                 self.setVertex(i, std::get<0>(vertex), std::get<1>(vertex), std::get<2>(vertex),
-                                std::get<3>(vertex));
-             })
-        .def("setVertexPosition", &BasicMesh::setVertexPosition)
-        .def("setVertexNormal", &BasicMesh::setVertexNormal)
-        .def("setVertexTexCoord", &BasicMesh::setVertexTexCoord)
-        .def("setVertexColor", &BasicMesh::setVertexColor)
+        .def("setVertex", [](BasicMesh& self, size_t i,
+                             const BasicMesh::Vertex& vertex) { self.setVertex(i, vertex); })
+        .def("addVertex", [](BasicMesh& self, const BasicMesh::Vertex& vertex) {
+            return self.addVertex(vertex);
+        });
 
-        .def(
-            "addIndexBuffer",
-            [](BasicMesh* mesh, DrawType dt, ConnectivityType ct) {
-                mesh->addIndexBuffer(dt, ct);
-                return mesh->getIndexBuffers().back().second.get();
-            },
-            py::return_value_policy::reference)
+    py::class_<ColoredMesh, Mesh, buffertraits::PositionsBuffer, buffertraits::ColorsBuffer>(
+        m, "ColoredMesh")
+        .def(py::init<>())
+        .def(py::init<DrawType, ConnectivityType>(), py::arg("dt") = DrawType::Points,
+             py::arg("ct") = ConnectivityType::None)
+        .def(py::init<DrawType, ConnectivityType, const std::vector<ColoredMesh::Vertex>&,
+                      const std::vector<std::uint32_t>&>(),
+             py::arg("dt"), py::arg("ct"), py::arg("vertices"), py::arg("indices"))
+        .def("addVertices", &ColoredMesh::addVertices)
 
-        .def("getVertices", &BasicMesh::getEditableVertices, py::return_value_policy::reference)
-        .def("getTexCoords", &BasicMesh::getEditableTexCoords, py::return_value_policy::reference)
-        .def("getColors", &BasicMesh::getEditableColors, py::return_value_policy::reference)
-        .def("getNormals", &BasicMesh::getEditableNormals, py::return_value_policy::reference);
+        .def("addVertex",
+             [](ColoredMesh& self, vec3 pos, vec4 color) { return self.addVertex(pos, color); })
+        .def("setVertex", [](ColoredMesh& self, size_t i, vec3 pos,
+                             vec4 color) { self.setVertex(i, pos, color); })
+        .def("setVertex", [](ColoredMesh& self, size_t i,
+                             const ColoredMesh::Vertex& vertex) { self.setVertex(i, vertex); })
+        .def("addVertex", [](ColoredMesh& self, const ColoredMesh::Vertex& vertex) {
+            return self.addVertex(vertex);
+        });
+
+    py::class_<SphereMesh, Mesh, buffertraits::PositionsBuffer, buffertraits::RadiiBuffer,
+               buffertraits::ColorsBuffer>(m, "SphereMesh")
+        .def(py::init<>())
+        .def(py::init<DrawType, ConnectivityType>(), py::arg("dt") = DrawType::Points,
+             py::arg("ct") = ConnectivityType::None)
+        .def(py::init<DrawType, ConnectivityType, const std::vector<SphereMesh::Vertex>&,
+                      const std::vector<std::uint32_t>&>(),
+             py::arg("dt"), py::arg("ct"), py::arg("vertices"), py::arg("indices"))
+        .def("addVertices", &SphereMesh::addVertices)
+
+        .def("addVertex", [](SphereMesh& self, vec3 pos, float radii,
+                             vec4 color) { return self.addVertex(pos, radii, color); })
+        .def("setVertex", [](SphereMesh& self, size_t i, vec3 pos, float radii,
+                             vec4 color) { self.setVertex(i, pos, radii, color); })
+        .def("setVertex", [](SphereMesh& self, size_t i,
+                             const SphereMesh::Vertex& vertex) { self.setVertex(i, vertex); })
+        .def("addVertex", [](SphereMesh& self, const SphereMesh::Vertex& vertex) {
+            return self.addVertex(vertex);
+        });
+
+    py::class_<PosTexColorMesh, Mesh, buffertraits::PositionsBuffer,
+               buffertraits::TexCoordBuffer<3>, buffertraits::ColorsBuffer>(m, "PosTexColorMesh")
+        .def(py::init<>())
+        .def(py::init<DrawType, ConnectivityType>(), py::arg("dt") = DrawType::Points,
+             py::arg("ct") = ConnectivityType::None)
+        .def(py::init<DrawType, ConnectivityType, const std::vector<PosTexColorMesh::Vertex>&,
+                      const std::vector<std::uint32_t>&>(),
+             py::arg("dt"), py::arg("ct"), py::arg("vertices"), py::arg("indices"))
+        .def("addVertices", &PosTexColorMesh::addVertices)
+
+        .def("addVertex", [](PosTexColorMesh& self, vec3 pos, vec3 texCoord,
+                             vec4 color) { return self.addVertex(pos, texCoord, color); })
+        .def("setVertex", [](PosTexColorMesh& self, size_t i, vec3 pos, vec3 texCoord,
+                             vec4 color) { self.setVertex(i, pos, texCoord, color); })
+        .def("setVertex", [](PosTexColorMesh& self, size_t i,
+                             const PosTexColorMesh::Vertex& vertex) { self.setVertex(i, vertex); })
+        .def("addVertex", [](PosTexColorMesh& self, const PosTexColorMesh::Vertex& vertex) {
+            return self.addVertex(vertex);
+        });
 
     exposeStandardDataPorts<Mesh>(m, "Mesh");
 }

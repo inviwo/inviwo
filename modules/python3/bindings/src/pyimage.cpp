@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
@@ -38,6 +39,8 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwoapplication.h>
+
+#include <inviwo/core/ports/imageport.h>
 
 #include <inviwopy/inviwopy.h>
 #include <inviwopy/pynetwork.h>
@@ -52,8 +55,6 @@
 #include <warn/pop>
 
 #include <fmt/format.h>
-
-PYBIND11_MAKE_OPAQUE(inviwo::SwizzleMask)
 
 namespace py = pybind11;
 
@@ -108,7 +109,7 @@ void exposeImage(py::module& m) {
         .value("Repeat", Wrapping::Repeat)
         .value("Mirror", Wrapping::Mirror);
 
-    py::class_<Image, std::shared_ptr<Image>>(m, "Image")
+    py::class_<Image>(m, "Image")
         .def(py::init<size2_t, const DataFormatBase*>())
         .def(py::init<std::shared_ptr<Layer>>())
         .def(py::init<std::vector<std::shared_ptr<Layer>>>())
@@ -135,7 +136,7 @@ void exposeImage(py::module& m) {
                             : toString(static_cast<double>(dims.x) / static_cast<double>(dims.y)));
         });
 
-    py::class_<Layer, std::shared_ptr<Layer>>(m, "Layer")
+    py::class_<Layer>(m, "Layer")
         .def(py::init<size2_t, const DataFormatBase*>())
         .def(py::init<size2_t, const DataFormatBase*, LayerType, const SwizzleMask&,
                       InterpolationType, const Wrapping2D&>())

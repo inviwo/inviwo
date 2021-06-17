@@ -32,6 +32,7 @@
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include <warn/pop>
 
 #include <inviwopy/inviwopy.h>
@@ -45,12 +46,8 @@
 
 #include <fmt/format.h>
 
-namespace pybind11 {
-namespace detail {
-using namespace inviwo;
-
 /*
- * The python type caster for polymorphic types only can lookup exact
+ * The python type caster for polymorphic types can only lookup exact
  * matches. I.e. if we have a property Basis that derives from CompositeProperty
  * which derives from Property, and we try to cast a Property pointer pointing to a Basis
  * and only Property and CompositeProperty are exposed to python and not Basis. Python will
@@ -59,44 +56,41 @@ using namespace inviwo;
  * derived from CompositeProperty and BaseOptionProperty we add a specialization here
  * that will mean that in the example above we will get a CompositeProperty wrapper instead of
  * of a Property wrapper.
+ * see polymorphic_type_hook at the end of include/pybind11/detail/type_caster_base.h
  */
+namespace pybind11 {
 template <>
-struct type_caster<Property> : type_caster_base<Property> {
-    static handle cast(Property&& src, return_value_policy, handle parent) {
-        return cast(&src, return_value_policy::move, parent);
-    }
-    static handle cast(const Property& src, return_value_policy policy, handle parent) {
-        if (policy == return_value_policy::automatic ||
-            policy == return_value_policy::automatic_reference)
-            policy = return_value_policy::copy;
-        return cast(&src, policy, parent);
-    }
-    static handle cast(const Property* prop, return_value_policy policy, handle parent) {
-        if (auto cp = dynamic_cast<const CompositeProperty*>(prop)) {
-            return type_caster_base<CompositeProperty>::cast(cp, policy, parent);
-        } else if (auto op = dynamic_cast<const BaseOptionProperty*>(prop)) {
-            return type_caster_base<BaseOptionProperty>::cast(op, policy, parent);
-        } else {
-            return type_caster_base<Property>::cast(prop, policy, parent);
+struct polymorphic_type_hook<inviwo::Property> {
+    static const void* get(const inviwo::Property* prop, const std::type_info*& type) {
+        if (!prop) {  // default implementation if prop is null
+            type = nullptr;
+            return dynamic_cast<const void*>(prop);
         }
+
+        // check if the exact type is registed in python, then return that.
+        const auto& id = typeid(*prop);
+        if (detail::get_type_info(id)) {
+            type = &id;
+            return dynamic_cast<const void*>(prop);
+        }
+
+        // else check if we know a more derived base then Property and return that.
+        if (auto cp = dynamic_cast<const inviwo::CompositeProperty*>(prop)) {
+            type = &typeid(inviwo::CompositeProperty);
+            return dynamic_cast<const void*>(cp);
+        } else if (auto op = dynamic_cast<const inviwo::BaseOptionProperty*>(prop)) {
+            type = &typeid(inviwo::BaseOptionProperty);
+            return dynamic_cast<const void*>(op);
+        }
+
+        // default implementation for prop != null
+        type = &id;
+        return dynamic_cast<const void*>(prop);
     }
 };
-}  // namespace detail
 }  // namespace pybind11
 
 namespace inviwo {
-
-namespace detail {
-template <typename T>
-struct PropertyDeleter {
-    void operator()(T* p) {
-        if (p && p->getOwner() == nullptr) delete p;
-    }
-};
-}  // namespace detail
-
-template <typename T>
-using PropertyPtr = std::unique_ptr<T, detail::PropertyDeleter<T>>;
 
 template <typename T, typename P, typename C>
 void pyTemplateProperty(C& prop) {
@@ -167,7 +161,7 @@ struct OrdinalPropertyHelper {
 
         auto classname = Defaultvalues<T>::getName() + "Property";
 
-        py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
+        py::class_<P, Property> prop(m, classname.c_str());
         prop.def(py::init([](std::string_view identifier, std::string_view name, const T& value,
                              const T& min, const T& max, const T& increment,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -220,7 +214,7 @@ struct OrdinalRefPropertyHelper {
 
         auto classname = Defaultvalues<T>::getName() + "RefProperty";
 
-        py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
+        py::class_<P, Property> prop(m, classname.c_str());
         prop.def(py::init([](std::string_view identifier, std::string_view name,
                              std::function<T()> get, std::function<void(const T&)> set,
                              const std::pair<T, ConstraintBehavior>& min,
@@ -263,7 +257,7 @@ struct MinMaxHelper {
 
         auto classname = Defaultvalues<T>::getName() + "MinMaxProperty";
 
-        py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
+        py::class_<P, Property> prop(m, classname.c_str());
         prop.def(py::init([](std::string_view identifier, std::string_view name, const T& valueMin,
                              const T& valueMax, const T& rangeMin, const T& rangeMax,
                              const T& increment, const T& minSeperation,
@@ -309,7 +303,7 @@ struct OptionPropertyHelper {
             .def_readwrite("name", &O::name_)
             .def_readwrite("value", &O::value_);
 
-        py::class_<P, BaseOptionProperty, PropertyPtr<P>> prop(m, classname.c_str());
+        py::class_<P, BaseOptionProperty> prop(m, classname.c_str());
         prop.def(py::init([](std::string_view identifier, std::string_view name,
                              std::vector<OptionPropertyOption<T>> options, size_t selectedIndex,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {

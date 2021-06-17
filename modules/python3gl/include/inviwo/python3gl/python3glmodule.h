@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,20 +26,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <inviwo/core/datastructures/image/imagetypes.h>
-
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <warn/pop>
-
-PYBIND11_MAKE_OPAQUE(inviwo::SwizzleMask)
+#include <inviwo/python3gl/python3glmoduledefine.h>
+#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 
-void exposeImage(pybind11::module& m);
+class IVW_MODULE_PYTHON3GL_API Python3GLModule : public InviwoModule {
+public:
+    Python3GLModule(InviwoApplication* app);
+    virtual ~Python3GLModule() = default;
+};
 
 }  // namespace inviwo

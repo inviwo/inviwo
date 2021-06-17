@@ -60,9 +60,6 @@ namespace py = pybind11;
 
 namespace inviwo {
 
-template <typename P, typename... Extra>
-using PyPropertyClass = py::class_<P, Extra..., PropertyPtr<P>>;
-
 void exposeProperties(py::module& m) {
 
     py::enum_<ConstraintBehavior>(m, "ConstraintBehavior")
@@ -121,7 +118,7 @@ void exposeProperties(py::module& m) {
         .def_property("position", &PropertyEditorWidget::getPosition,
                       &PropertyEditorWidget::setPosition);
 
-    PyPropertyClass<Property>(m, "Property")
+    py::class_<Property>(m, "Property")
         .def_property("identifier", &Property::getIdentifier, &Property::setIdentifier)
         .def_property("displayName", &Property::getDisplayName, &Property::setDisplayName)
         .def_property("readOnly", &Property::getReadOnly, &Property::setReadOnly)
@@ -147,7 +144,7 @@ void exposeProperties(py::module& m) {
                  p->readonlyDependsOn(*other, func);
              });
 
-    PyPropertyClass<CompositeProperty, Property, PropertyOwner>(m, "CompositeProperty")
+    py::class_<CompositeProperty, Property, PropertyOwner>(m, "CompositeProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new CompositeProperty(identifier, displayName, invalidationLevel,
@@ -173,22 +170,23 @@ void exposeProperties(py::module& m) {
             },
             py::return_value_policy::reference);
 
-    PyPropertyClass<BoolCompositeProperty, CompositeProperty>(m, "BoolCompositeProperty")
-        .def(py::init([](std::string_view identifier, std::string_view displayName, bool checked,
-                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                 return new BoolCompositeProperty(identifier, displayName, checked,
-                                                  invalidationLevel, semantics);
-             }),
-             py::arg("identifier"), py::arg("displayName"), py::arg("checked"),
-             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
-             py::arg("semantics") = PropertySemantics::Default)
+    py::class_<BoolCompositeProperty, CompositeProperty, PropertyOwner>(m, "BoolCompositeProperty")
+        .def(
+            py::init([](std::string_view identifier, std::string_view displayName, bool checked,
+                        InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                return new BoolCompositeProperty(identifier, displayName, checked,
+                                                 invalidationLevel, semantics);
+            }),
+            py::arg("identifier"), py::arg("displayName"), py::arg("checked"),
+            py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
+            py::arg("semantics") = PropertySemantics::Default)
         .def("isChecked", &BoolCompositeProperty::isChecked)
         .def("setChecked", &BoolCompositeProperty::setChecked)
         .def_property("checked", &BoolCompositeProperty::isChecked,
                       &BoolCompositeProperty::setChecked)
         .def("__bool__", &BoolCompositeProperty::isChecked);
 
-    PyPropertyClass<ListProperty, CompositeProperty>(m, "ListProperty")
+    py::class_<ListProperty, CompositeProperty>(m, "ListProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -212,7 +210,7 @@ void exposeProperties(py::module& m) {
             return list.getPrefabs()[idx].get();
         });
 
-    PyPropertyClass<BaseOptionProperty, Property>(m, "BaseOptionProperty")
+    py::class_<BaseOptionProperty, Property>(m, "BaseOptionProperty")
         .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)
         .def_property_readonly("size", &BaseOptionProperty::size)
 
@@ -241,7 +239,7 @@ void exposeProperties(py::module& m) {
     util::for_each_type<OptionPropertyTypes>{}(OptionPropertyHelper{}, m);
     util::for_each_type<MinMaxPropertyTypes>{}(MinMaxHelper{}, m);
 
-    PyPropertyClass<TransferFunctionProperty, Property>(m, "TransferFunctionProperty")
+    py::class_<TransferFunctionProperty, Property>(m, "TransferFunctionProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          const TransferFunction& value, VolumeInport* volumeInport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -295,7 +293,7 @@ void exposeProperties(py::module& m) {
             return oss.str();
         });
 
-    PyPropertyClass<IsoValueProperty, Property>(m, "IsoValueProperty")
+    py::class_<IsoValueProperty, Property>(m, "IsoValueProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          const IsoValueCollection& value, VolumeInport* volumeInport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -339,7 +337,7 @@ void exposeProperties(py::module& m) {
             return oss.str();
         });
 
-    PyPropertyClass<IsoTFProperty, Property>(m, "IsoTFProperty")
+    py::class_<IsoTFProperty, Property>(m, "IsoTFProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          const IsoValueCollection& isovalues, const TransferFunction& tf,
                          VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
@@ -372,7 +370,7 @@ void exposeProperties(py::module& m) {
         .def_property("zoomH", &IsoTFProperty::getZoomH, &IsoTFProperty::setZoomH)
         .def_property("zoomV", &IsoTFProperty::getZoomV, &IsoTFProperty::setZoomV);
 
-    PyPropertyClass<StringProperty, Property> strProperty(m, "StringProperty");
+    py::class_<StringProperty, Property> strProperty(m, "StringProperty");
     strProperty.def(py::init([](std::string_view identifier, std::string_view displayName,
                                 std::string_view value, InvalidationLevel invalidationLevel,
                                 PropertySemantics semantics) {
@@ -406,7 +404,7 @@ void exposeProperties(py::module& m) {
         .def_readwrite("extension", &FileExtension::extension_)
         .def_readwrite("description", &FileExtension::description_);
 
-    PyPropertyClass<FileProperty, Property> fileProperty(m, "FileProperty");
+    py::class_<FileProperty, Property> fileProperty(m, "FileProperty");
     fileProperty
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          std::string_view value, std::string_view contentType,
@@ -433,7 +431,7 @@ void exposeProperties(py::module& m) {
                       &FileProperty::setSelectedExtension);
     pyTemplateProperty<std::string, FileProperty>(fileProperty);
 
-    PyPropertyClass<DirectoryProperty, FileProperty> dirProperty(m, "DirectoryProperty");
+    py::class_<DirectoryProperty, FileProperty> dirProperty(m, "DirectoryProperty");
     dirProperty.def(py::init([](std::string_view identifier, std::string_view displayName,
                                 std::string_view value, std::string_view contentType,
                                 InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -446,7 +444,7 @@ void exposeProperties(py::module& m) {
                     py::arg("semantics") = PropertySemantics::Default);
     pyTemplateProperty<std::string, DirectoryProperty>(dirProperty);
 
-    PyPropertyClass<FilePatternProperty, CompositeProperty>(m, "FilePatternProperty")
+    py::class_<FilePatternProperty, CompositeProperty>(m, "FilePatternProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          std::string_view pattern, std::string_view directory,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -475,7 +473,7 @@ void exposeProperties(py::module& m) {
                                   &FilePatternProperty::addNameFilter))
         .def("clearNameFilters", &FilePatternProperty::clearNameFilters);
 
-    PyPropertyClass<BoolProperty, Property> boolProperty(m, "BoolProperty");
+    py::class_<BoolProperty, Property> boolProperty(m, "BoolProperty");
     boolProperty
         .def(py::init([](std::string_view identifier, std::string_view displayName, bool value,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -489,7 +487,7 @@ void exposeProperties(py::module& m) {
 
     pyTemplateProperty<bool, BoolProperty>(boolProperty);
 
-    PyPropertyClass<ButtonProperty, Property>(m, "ButtonProperty")
+    py::class_<ButtonProperty, Property>(m, "ButtonProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new ButtonProperty(identifier, displayName, invalidationLevel, semantics);
@@ -512,7 +510,7 @@ void exposeProperties(py::module& m) {
         .def(py::init<std::optional<std::string>, std::optional<std::string>,
                       std::optional<std::string>, std::function<void()>>());
 
-    PyPropertyClass<ButtonGroupProperty, Property>(m, "ButtonGroupProperty")
+    py::class_<ButtonGroupProperty, Property>(m, "ButtonGroupProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new ButtonGroupProperty(identifier, displayName, invalidationLevel,

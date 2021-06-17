@@ -34,8 +34,10 @@
 #include <inviwopy/inviwopy.h>
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pyglmtypes.h>
+#include <inviwopy/pyimage.h>  // for the opaque swizzlemask
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pyportutils.h>
+#include <modules/python3/volumepy.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -50,19 +52,49 @@
 #include <inviwo/core/ports/volumeport.h>
 
 #include <fmt/format.h>
-
+#include <fmt/ostream.h>
 #include <units/units.hpp>
 
-PYBIND11_MAKE_OPAQUE(VolumeSequence)
+PYBIND11_MAKE_OPAQUE(inviwo::VolumeSequence)
 
 namespace inviwo {
 
 void exposeVolume(pybind11::module& m) {
     namespace py = pybind11;
-    py::class_<Volume, std::shared_ptr<Volume>>(m, "Volume")
-        .def(py::init<size3_t, const DataFormatBase*>())
+
+    py::class_<VolumeRepresentation>(m, "VolumeRepresentation")
+        .def_property("dimensions", &VolumeRepresentation::getDimensions,
+                      &VolumeRepresentation::setDimensions)
+        .def_property("swizzleMask", &VolumeRepresentation::getSwizzleMask,
+                      &VolumeRepresentation::setSwizzleMask)
+        .def_property("interpolation", &VolumeRepresentation::getInterpolation,
+                      &VolumeRepresentation::setInterpolation)
+        .def_property("wrapping", &VolumeRepresentation::getWrapping,
+                      &VolumeRepresentation::setWrapping)
+        .def("isValid", &VolumeRepresentation::isValid)
+        .def("setValid", &VolumeRepresentation::setValid)
+        .def("getOwner", &VolumeRepresentation::getOwner)
+        .def_property_readonly("format", &VolumeRepresentation::getDataFormat);
+
+    py::class_<VolumePy, VolumeRepresentation>(m, "VolumePy")
+        .def(py::init<py::array, const SwizzleMask&, InterpolationType, const Wrapping3D&>(),
+             py::arg("data"), py::arg("swizzleMask") = swizzlemasks::rgba,
+             py::arg("interpolation") = InterpolationType::Linear,
+             py::arg("wrapping") = wrapping3d::clampAll)
         .def(py::init<size3_t, const DataFormatBase*, const SwizzleMask&, InterpolationType,
-                      const Wrapping3D&>())
+                      const Wrapping3D&>(),
+             py::arg("size"), py::arg("format"), py::arg("swizzleMask") = swizzlemasks::rgba,
+             py::arg("interpolation") = InterpolationType::Linear,
+             py::arg("wrapping") = wrapping3d::clampAll)
+        .def_property_readonly("data", static_cast<py::array& (VolumePy::*)()>(&VolumePy::data));
+
+    py::class_<Volume>(m, "Volume")
+        .def(py::init<std::shared_ptr<VolumeRepresentation>>())
+        .def(py::init<size3_t, const DataFormatBase*, const SwizzleMask&, InterpolationType,
+                      const Wrapping3D&>(),
+             py::arg("size"), py::arg("format"), py::arg("swizzleMask") = swizzlemasks::rgba,
+             py::arg("interpolation") = InterpolationType::Linear,
+             py::arg("wrapping") = wrapping3d::clampAll)
         .def(py::init([](py::array data) { return pyutil::createVolume(data).release(); }))
         .def("clone", [](Volume& self) { return self.clone(); })
         .def_property("modelMatrix", &Volume::getModelMatrix, &Volume::setModelMatrix)
@@ -76,7 +108,17 @@ void exposeVolume(pybind11::module& m) {
         .def_property("interpolation", &Volume::getInterpolation, &Volume::setInterpolation)
         .def_property("wrapping", &Volume::getWrapping, &Volume::setWrapping)
         .def_readwrite("dataMap", &Volume::dataMap_)
-        .def_readwrite("axes", &Volume::axes)
+		.def_readwrite("axes", &Volume::axes)
+        .def("hasRepresentations", &Volume::hasRepresentations)
+        .def("addRepresentation", &Volume::addRepresentation)
+        .def("removeRepresentation", &Volume::removeRepresentation)
+        .def("removeOtherRepresentations", &Volume::removeOtherRepresentations)
+        .def("clearRepresentations", &Volume::clearRepresentations)
+        .def("invalidateAllOther", &Volume::invalidateAllOther)
+        .def("getVolumePyRepresentation",
+             [](Volume& self) { return self.getRepresentation<VolumePy>(); })
+        .def("getEditableVolumePyRepresentation",
+             [](Volume& self) { return self.getEditableRepresentation<VolumePy>(); })
         .def_property(
             "data",
             [&](Volume* volume) -> py::array {

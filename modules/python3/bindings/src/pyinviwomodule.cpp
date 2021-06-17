@@ -56,7 +56,8 @@ public:
     pybind11::object pfo_;
 };
 
-class InviwoModuleFactoryObjectTrampoline : public InviwoModuleFactoryObject {
+class InviwoModuleFactoryObjectTrampoline : public InviwoModuleFactoryObject,
+                                            public pybind11::trampoline_self_life_support {
 public:
     using InviwoModuleFactoryObject::InviwoModuleFactoryObject;
 
