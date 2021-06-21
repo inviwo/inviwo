@@ -86,9 +86,9 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
     };
     updateVisibility();
 
-    auto reload = [this]() { 
+    auto reload = [this]() {
         isLoading_ = true;
-        browser_->GetMainFrame()->LoadURL(getSource()); 
+        browser_->GetMainFrame()->LoadURL(getSource());
     };
 
     sourceType_.onChange([reload, updateVisibility]() {
