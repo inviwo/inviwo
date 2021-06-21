@@ -70,7 +70,7 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
     , sourceType_("sourceType", "Source",
                   {{"localFile", "Local File", SourceType::LocalFile},
                    {"webAddress", "Web Address", SourceType::WebAddress}})
-    , isLoading_("isLoading", "Loading", false, InvalidationLevel::Valid)
+    , isLoading_("isLoading", "Loading", true, InvalidationLevel::Valid)
     , picking_(this, 1, [&](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); })
     , cefToInviwoImageConverter_(picking_.getColor())
     , renderHandler_{static_cast<RenderHandlerGL*>(
@@ -86,7 +86,10 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
     };
     updateVisibility();
 
-    auto reload = [this]() { browser_->GetMainFrame()->LoadURL(getSource()); };
+    auto reload = [this]() { 
+        isLoading_ = true;
+        browser_->GetMainFrame()->LoadURL(getSource()); 
+    };
 
     sourceType_.onChange([reload, updateVisibility]() {
         updateVisibility();
