@@ -72,6 +72,7 @@ set(SOURCE_FILES
     src/openclmodule.cpp
     src/settings/openclsettings.cpp
     src/syncclgl.cpp
+    src/utilcl.cpp
     src/volume/volumecl.cpp
     src/volume/volumeclbase.cpp
     src/volume/volumeclconverter.cpp

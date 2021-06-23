@@ -191,21 +191,13 @@ void VolumeRaycasterCL::setKernelArguments() {
     outputOffset(outputOffset_);
     outputSize(outputSize_);
     samplingRate(samplingRate());
-    setLightingProperties(light_.shadingMode, vec3(light_.position), vec3(light_.ambientColor),
-                          vec3(light_.diffuseColor), vec3(light_.specularColor),
-                          light_.specularExponent);
+    setLightingProperties(light_);
 }
 
-void VolumeRaycasterCL::setLightingProperties(ShadingMode::Modes mode, const vec3& lightPosition,
-                                              const vec3& ambientColor, const vec3& diffuseColor,
-                                              const vec3& specularColor, float specularExponent) {
-    light_.position = vec4(lightPosition, 1.f);
-    light_.ambientColor = vec4(ambientColor, 1.f);
-    light_.diffuseColor = vec4(diffuseColor, 1.f);
-    light_.specularColor = vec4(specularColor, 1.f);
-    light_.specularExponent = specularExponent;
-    if (mode != light_.shadingMode) {
-        light_.shadingMode = mode;
+void VolumeRaycasterCL::setLightingProperties(const utilcl::LightParameters& params) {
+    const bool compile = (params.shadingMode != light_.shadingMode);
+    light_ = params;
+    if (compile) {
         compileKernel();
     }
     if (kernel_) {
@@ -221,9 +213,11 @@ void VolumeRaycasterCL::setLightingProperties(ShadingMode::Modes mode, const vec
 }
 
 void VolumeRaycasterCL::setLightingProperties(const SimpleLightingProperty& light) {
-    setLightingProperties(ShadingMode::Modes(light.shadingMode_.get()), light.lightPosition_.get(),
-                          light.ambientColor_.get(), light.diffuseColor_.get(),
-                          light.specularColor_.get(), light.specularExponent_.get());
+    setLightingProperties(utilcl::fromLightingState(light.getState()));
+}
+
+void VolumeRaycasterCL::setLightingProperties(const LightingState& state) {
+    setLightingProperties(utilcl::fromLightingState(state));
 }
 
 void VolumeRaycasterCL::setDefaultBackgroundColor(const vec4 color) {
@@ -239,7 +233,9 @@ void VolumeRaycasterCL::compileKernel() {
         removeKernel(kernel_);
     }
     std::stringstream defines;
-    if (light_.shadingMode != 0) defines << " -D SHADING_MODE=" << light_.shadingMode;
+    if (light_.shadingMode != ShadingMode::None) {
+        defines << " -D SHADING_MODE=" << static_cast<int>(light_.shadingMode);
+    }
     // Will compile kernel and make sure that it it
     // recompiled whenever the file changes
     // If the kernel fails to compile it will be set to nullptr

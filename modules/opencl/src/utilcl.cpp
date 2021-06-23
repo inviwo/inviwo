@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,48 +27,22 @@
  *
  *********************************************************************************/
 
-// Owned by the SphereRenderer Processor
+#include <modules/opencl/utilcl.h>
 
-#include "utils/structs.glsl"
+namespace inviwo {
 
-uniform GeometryParameters geometry;
+namespace utilcl {
 
-uniform vec4 defaultColor = vec4(1, 0, 0, 1);
-uniform float defaultRadius = 0.1f;
-uniform sampler2D metaColor;
-
-uniform float selectionMix = 0.0;
-uniform float selectionScaleFactor = 1.0;
-uniform vec4 selectionColor = vec4(1.0, 0.769, 0.247, 1.0);
-
-out vec4 worldPosition;
-out vec4 sphereColor;
-flat out float sphereRadius;
-flat out uint pickID;
-
-void main(void) {
-#if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR) && !defined(FORCE_COLOR)
-    sphereColor = texture(metaColor, vec2(in_ScalarMeta, 0.5));
-#elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
-    sphereColor = in_Color;
-#else
-    sphereColor = defaultColor;
-#endif
-    sphereColor = mix(sphereColor, selectionColor, selectionMix);
-
-#if defined(HAS_RADII) && !defined(FORCE_RADIUS)
-    sphereRadius = in_Radii;
-#else 
-    sphereRadius = defaultRadius;
-#endif
-    sphereRadius = mix(sphereRadius, sphereRadius * selectionScaleFactor, selectionMix);
-
-#if defined(HAS_PICKING)
-    pickID = in_Picking;
-#else 
-    pickID = 0;
-#endif
-
-    worldPosition = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
-    gl_Position = worldPosition;
+LightParameters fromLightingState(const LightingState& state) {
+    return {vec4(state.position, 1.f),
+            vec4(state.ambient, 1.f),
+            vec4(state.diffuse, 1.f),
+            vec4(state.specular, 1.f),
+            state.exponent,
+            state.shadingMode,
+            0};
 }
+
+}  // namespace utilcl
+
+}  // namespace inviwo

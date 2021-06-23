@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,8 +29,7 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/ports/meshport.h>
@@ -48,92 +47,29 @@
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/base/properties/transformlistproperty.h>
 
-#include <inviwo/core/util/zip.h>
-#include <unordered_map>
+#include <modules/meshrenderinggl/datastructures/rasterization.h>
+#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>
+#include <modules/meshrenderinggl/ports/rasterizationport.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API SphereRendererSelection {
-public:
-    SphereRendererSelection(Inport& inport, BrushingAndLinkingInport& brushLinkPort)
-        : properties("selection", "Show Selection", true)
-        , color("selectionColor", "Color", vec4(1.0f, 0.769f, 0.247f, 1), vec4(0.0f), vec4(1.0f),
-                vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-        , radiusFactor("selectionRadiusFactor", "Radius Scaling", 1.5f, 0.0f, 10.0f)
-        , inport_{inport}
-        , brushLinkPort_{brushLinkPort} {
-
-        properties.addProperties(color, radiusFactor);
-
-        inport_.onDisconnect([&]() {
-            util::map_erase_remove_if(
-                selectionIndices_, [&](auto elem) { return !inport_.isConnectedTo(elem.first); });
-        });
-    }
-
-    std::vector<uint32_t>* getIndices(const Outport* port, const Mesh& mesh) {
-        if (properties.isChecked()) {
-            std::vector<uint32_t>& indices = selectionIndices_[port];
-
-            if (properties.isModified() || brushLinkPort_.isChanged() ||
-                util::contains(inport_.getChangedOutports(), port)) {
-                const auto& selection = brushLinkPort_.getSelectedIndices();
-
-                indices.clear();
-                if (auto res = mesh.findBuffer(BufferType::IndexAttrib);
-                    res.first &&
-                    res.first->getDataFormat()->getId() == DataFormat<uint32_t>::id()) {
-
-                    const auto& indexBuffer =
-                        static_cast<const BufferRAMPrecision<uint32_t, BufferTarget::Data>*>(
-                            res.first->getRepresentation<BufferRAM>())
-                            ->getDataContainer();
-
-                    const auto seq = util::make_sequence(
-                        uint32_t{0}, static_cast<uint32_t>(indexBuffer.size()), uint32_t{1});
-                    std::copy_if(seq.begin(), seq.end(), std::back_inserter(indices),
-                                 [&](uint32_t i) { return selection.count(indexBuffer[i]) > 0; });
-
-                } else {
-                    std::transform(selection.begin(), selection.end(), std::back_inserter(indices),
-                                   [](size_t i) { return static_cast<uint32_t>(i); });
-                }
-            }
-            if (!indices.empty()) {
-                return &indices;
-            }
-        }
-        return nullptr;
-    }
-
-    BoolCompositeProperty properties;
-    FloatVec4Property color;
-    FloatProperty radiusFactor;
-
-private:
-    Inport& inport_;
-    BrushingAndLinkingInport& brushLinkPort_;
-    std::unordered_map<const Outport*, std::vector<uint32_t>> selectionIndices_;
-};
-
-/** \docpage{org.inviwo.SphereRenderer, Sphere Renderer}
- * ![](org.inviwo.SphereRenderer.png?classIdentifier=org.inviwo.SphereRenderer)
- * This processor renders a set of point meshes using spherical glyphs in OpenGL.
- * The glyphs are resolution independent and consist only of a single point.
+/** \docpage{org.inviwo.SphereRasterizer, Sphere Rasterizer}
+ * ![](org.inviwo.SphereRasterizer.png?classIdentifier=org.inviwo.SphereRasterizer)
+ * Create a rasterization object to render one or more point meshes using spherical glyphs in
+ * OpenGL. The glyphs are resolution independent and consist only of a single point.
  *
  * ### Inports
  *   * __geometry__ Input meshes
  *       The input mesh uses the following buffers:
- * PositionAttrib vec3
- * ColorAttrib    vec4   (optional will fall-back to use __Custom Color__)
- * RadiiAttrib    float  (optional will fall-back to use __Custom Radius__)
- * PickingAttrib  uint32 (optional will fall-back to not draw any picking)
- *   * __imageInport__ Optional background image
+ *          PositionAttrib vec3
+ *          ColorAttrib    vec4   (optional will fall-back to use __Custom Color__)
+ *          RadiiAttrib    float  (optional will fall-back to use __Custom Radius__)
  *
  * ### Outports
- *   * __image__    output image containing the rendered spheres and the optional input image
+ *   * __rasterization__ rasterization functor rendering  the molecule either opaquely or into
+ *                    fragment buffer
  *
  * ### Properties
  *   * __Render Mode__               render only input meshes marked as points or everything
@@ -145,19 +81,12 @@ private:
  *   * __Force Color__               if enabled, all spheres will share the same custom color
  *   * __Default Color__             custom color when overwriting the input colors
  */
+class IVW_MODULE_MESHRENDERINGGL_API SphereRasterizer : public Processor {
+    friend class SphereRasterization;
 
-/**
- * \class SphereRenderer
- * \brief Renders input geometry with 3D sphere glyphs using OpenGL shaders
- */
-class IVW_MODULE_BASEGL_API SphereRenderer : public Processor {
 public:
-    SphereRenderer();
-    virtual ~SphereRenderer() = default;
-    SphereRenderer(const SphereRenderer&) = delete;
-    SphereRenderer(SphereRenderer&&) = delete;
-    SphereRenderer& operator=(const SphereRenderer&) = delete;
-    SphereRenderer& operator=(SphereRenderer&&) = delete;
+    SphereRasterizer();
+    virtual ~SphereRasterizer() = default;
 
     virtual void process() override;
 
@@ -168,6 +97,7 @@ public:
 
 private:
     void configureShader(Shader& shader);
+    void configureOITShader(Shader& shader);
 
     enum class RenderMode {
         EntireMesh,  //!< render all vertices of the input mesh as glyphs
@@ -184,11 +114,13 @@ private:
     };
 
     MeshFlatMultiInport inport_;
-    ImageInport imageInport_;
-    BrushingAndLinkingInport brushLinkPort_;
-    ImageOutport outport_;
+    RasterizationOutport outport_;
 
     TemplateOptionProperty<RenderMode> renderMode_;
+
+    BoolProperty forceOpaque_;
+    BoolProperty useUniformAlpha_;
+    FloatProperty uniformAlpha_;
 
     CompositeProperty clipping_;
     TemplateOptionProperty<GlyphClippingMode> clipMode_;
@@ -203,13 +135,41 @@ private:
     BoolProperty useMetaColor_;
     TransferFunctionProperty metaColor_;
 
-    SphereRendererSelection selection_;
-
     CameraProperty camera_;
     CameraTrackball trackball_;
     SimpleLightingProperty lighting_;
 
-    MeshShaderCache shaders_;
+    TransformListProperty transformSetting_;
+    std::shared_ptr<MeshShaderCache> shaders_;
+    const bool oitExtensionsAvailable_;
+};
+
+/**
+ * \brief Functor object that will render molecular data into a fragment list.
+ */
+class IVW_MODULE_MESHRENDERINGGL_API SphereRasterization : public Rasterization {
+public:
+    SphereRasterization(const SphereRasterizer& processor);
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
+                           std::function<void(Shader&)> setUniforms) const override;
+    virtual bool usesFragmentLists() const override;
+    virtual Document getInfo() const override;
+    virtual Rasterization* clone() const override;
+
+protected:
+    SphereRasterizer::RenderMode renderMode_;
+    float uniformAlpha_;
+    const bool forceOpaque_;
+    float clipShadingFactor_;
+
+    float defaultRadius_;
+    vec4 defaultColor_;
+    const Layer* metaColorTF_;
+    LightingState lighting_;
+
+    std::shared_ptr<MeshShaderCache> shaders_;
+    std::vector<std::shared_ptr<const Mesh>> meshes_;
+    bool oitExtensionsAvailable_;
 };
 
 }  // namespace inviwo

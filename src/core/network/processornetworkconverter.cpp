@@ -95,6 +95,9 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
             [[fallthrough]];
         case 17:
             updateLinkAndConnections(root);
+            [[fallthrough]];
+        case 18:
+            traverseNodes(root, &ProcessorNetworkConverter::updateShadingModeEnum);
             return true;  // Changes has been made.
         default:
             return false;  // No changes
@@ -270,6 +273,19 @@ void ProcessorNetworkConverter::updateShadingMode(TxElement* node) {
         std::string identifier = node->GetAttributeOrDefault("identifier", "");
         if (type == "org.inviwo.OptionPropertyString" && identifier == "shadingMode") {
             node->SetAttribute("type", "org.inviwo.OptionPropertyInt");
+        }
+    }
+}
+
+void ProcessorNetworkConverter::updateShadingModeEnum(TxElement* node) {
+    std::string key;
+    node->GetValue(&key);
+
+    if (key == "Property") {
+        std::string type = node->GetAttributeOrDefault("type", "");
+        std::string identifier = node->GetAttributeOrDefault("identifier", "");
+        if (type == "org.inviwo.OptionPropertyInt" && identifier == "shadingMode") {
+            node->SetAttribute("type", "org.inviwo.OptionPropertyEnumInt");
         }
     }
 }
