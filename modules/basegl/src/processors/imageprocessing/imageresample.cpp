@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/imageprocessing/imageresample.h>
+#include <inviwo/core/interaction/events/resizeevent.h>
 #include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
@@ -73,6 +74,36 @@ void ImageResample::initializeResources() {
     interpolationTypeChanged();
     dimensionSourceChanged();
     ImageGLProcessor::initializeResources();
+}
+
+void ImageResample::propagateEvent(Event* event, Outport* source) {
+    if (event->hasVisitedProcessor(this)) return;
+    event->markAsVisited(this);
+
+    invokeEvent(event);
+    if (event->hasBeenUsed()) return;
+
+    if (auto resizeEvent = event->getAs<ResizeEvent>()) {
+        bool used = event->hasBeenUsed();
+        for (auto inport : getInports()) {
+            if (event->shouldPropagateTo(inport, this, source)) {
+                inport->propagateEvent(event);
+                used |= event->markAsUnused();
+            }
+        }
+        event->setUsed(used);
+        if (inport_.hasData()) {
+            eventScaler_.setSize(inport_.getData()->getDimensions());
+        }
+    } else {
+
+        auto propagator = [&](Event* newEvent) { inport_.propagateEvent(newEvent); };
+        bool propagated = eventScaler_.propagateEvent(event, propagator);
+
+        if (!propagated && event->shouldPropagateTo(&inport_, this, source)) {
+            inport_.propagateEvent(event);
+        }
+    }
 }
 
 void ImageResample::interpolationTypeChanged() {
