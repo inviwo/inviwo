@@ -1,0 +1,159 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2019-2021 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+#pragma once
+
+#include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/directoryproperty.h>
+#include <inviwo/core/ports/imageport.h>
+
+#include <filesystem>
+
+namespace inviwo {
+
+/** \docpage{org.inviwo.ImageComparator, Image Comparator}
+ * ![](org.inviwo.ImageComparator.png?classIdentifier=org.inviwo.ImageComparator)
+ *
+ * This processor takes two images (of same dimensions) and computes the
+ * difference according to a given metric. If the total difference is larger than
+ * a given threshold, a report with the input images as well as the relevant
+ * data (Time, difference, number of different pixels, difference in percent)
+ * is written on disk.
+ *
+ * ### Inports
+ *   * __<inport1>__ The first image
+ *   * __<inport2>__ The second image
+ *
+ * ### Outports
+ *   * __<difference>__ The (pixelwise) difference of the two input images
+ *   * __<mask>__ The mask of the difference, that is, a pixel is black, if
+ *   and only if the difference of the pixels in the reference images
+ *   (at the same position) exceeds the pixelwise threshold (and white
+ *   otherwise).
+ *
+ * ### Properties
+ *   * __<Maximum deviation>__ The maximum deviation of the total difference,
+ *   that if exceeded, a report is generated
+ *   * __<Maximum pixelwise deviation (%)>__ The maximum deviation of a pixel,
+ *   such that a pixel is counted as 'different' the maximum deviation is exceeded.
+ *   * __<Comparison Type>__ The method according to which the (pixelwise)
+ *   difference is computed. Right now, only 'Absolute ARGB differences' is available.
+ *   * __<Reduction>__ The method according to which the pixelwise differences
+ *   are accumulated. Available are 'Mean', 'Maximum', 'Minimum' and 'Sum'.
+ *   * __<Report Directory>__ The directory where the report and all relevant
+ *   images are saved to.
+ */
+class IVW_MODULE_PROPERTYBASEDTESTING_API ImageComparator : public Processor {
+public:
+    ImageComparator();
+    virtual ~ImageComparator() = default;
+
+    virtual void process() override;
+
+    virtual void createReport();
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    enum class ComparisonType { AbsARGB };
+    enum class ReductionType { MEAN, MAX, MIN, SUM };
+    std::string reductionTypeName(const ReductionType& r) {
+        switch (r) {
+            case ReductionType::MEAN:
+                return "MEAN";
+            case ReductionType::MAX:
+                return "MAX";
+            case ReductionType::MIN:
+                return "MIN";
+            case ReductionType::SUM:
+                return "SUM";
+        };
+    }
+
+    template <typename T>
+    T getUnitForReduction(const ReductionType& r) {
+        switch (r) {
+            case ReductionType::MEAN:
+                return 0;
+            case ReductionType::MAX:
+                return Defaultvalues<T>::getMin();
+            case ReductionType::MIN:
+                return Defaultvalues<T>::getMax();
+            case ReductionType::SUM:
+                return 0;
+        };
+    }
+    template <typename T>
+    T combine(const ReductionType& r, const T& a, const T& b) {
+        switch (r) {
+            case ReductionType::MEAN:
+            case ReductionType::SUM:
+                return a + b;
+            case ReductionType::MIN:
+                return std::min(a, b);
+            case ReductionType::MAX:
+                return std::max(a, b);
+        }
+    }
+
+    ImageInport inport1_;
+    ImageInport inport2_;
+    ImageOutport differencePort_;
+    ImageOutport maskPort_;
+
+    FloatProperty maxDeviation_;
+    FloatProperty maxPixelwiseDeviation_;
+    TemplateOptionProperty<ComparisonType> comparisonType_;
+    TemplateOptionProperty<ReductionType> reductionType_;
+    DirectoryProperty reportDir_;
+    int imageCompCount_ = 0;
+
+    double difference(const ComparisonType&, const glm::dvec4&, const glm::dvec4&);
+    double absoluteARGBdifference(const glm::dvec4&, const glm::dvec4&);
+
+    struct Comparison {
+        time_t timestamp;
+        double result;
+        ReductionType reduction;
+        size_t differentPixels;
+        size_t pixelCount;
+        std::filesystem::path img1;
+        std::filesystem::path img2;
+        std::filesystem::path diff;
+        std::filesystem::path mask;
+    };
+    std::vector<Comparison> comparisons_;
+};
+
+}  // namespace inviwo

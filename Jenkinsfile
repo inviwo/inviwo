@@ -17,7 +17,7 @@ node {
             state: this,
             modulePaths: [], 
             onModules: ["DiscreteData", "HDF5", "OpenCL", "BaseCL",
-                        "WebBrowser", "Example"],  
+                        "WebBrowser", "Example", "PropertyBasedTesting"],  
             offModules: ["ABufferGL"],
             opts: [:]
         )
