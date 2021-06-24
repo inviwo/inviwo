@@ -77,7 +77,7 @@ void TextureAtlas::fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEnt
 
     const auto minArea = std::accumulate(
         bboxes.begin(), bboxes.end(), 0.0, [&](double sum, const TextBoundingBox& bbox) {
-            return sum + (bbox.glyphsExtent.x + margin_) * (bbox.glyphsExtent.y + margin_);
+            return sum + (bbox.glyphsExtent.x + 2 * margin_) * (bbox.glyphsExtent.y + 2 * margin_);
         });
 
     if (minArea > static_cast<double>(maxTexSize_ * maxTexSize_)) {
@@ -150,7 +150,7 @@ ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices,
         if (line == lineLengths.size()) {
             // no space found, create new line
             entries[i].texPos = ivec2(margin_, line);
-            lineLengths.push_back(extent.x);
+            lineLengths.push_back(margin_ + extent.x);
             lineHeights.push_back(extent.y);
             conservativeHeight += extent.y;
             if (conservativeHeight > maxTexSize_) {
@@ -159,6 +159,7 @@ ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices,
         }
     }
     // update y positions of all elements
+    lineHeights.back() += margin_;
     std::partial_sum(lineHeights.begin(), lineHeights.end(), lineHeights.begin());
     lineHeights.insert(lineHeights.begin(), 0);
     for (auto& elem : entries) {
