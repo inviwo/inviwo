@@ -84,73 +84,44 @@ Volume::~Volume() = default;
 
 void Volume::setDimensions(const size3_t& dim) {
     defaultDimensions_ = dim;
-
-    if (lastValidRepresentation_) {
-        // Resize last valid representation
-        lastValidRepresentation_->setDimensions(dim);
-        invalidateAllOther(lastValidRepresentation_.get());
-    }
+    setLastAndInvalidateOther(&VolumeRepresentation::setDimensions, dim);
 }
 
 size3_t Volume::getDimensions() const {
-    if (lastValidRepresentation_) {
-        return lastValidRepresentation_->getDimensions();
-    }
-    return defaultDimensions_;
+    return getLastOr(&VolumeRepresentation::getDimensions, defaultDimensions_);
 }
 
 void Volume::setDataFormat(const DataFormatBase* format) { defaultDataFormat_ = format; }
 
 const DataFormatBase* Volume::getDataFormat() const {
-    if (lastValidRepresentation_) {
-        return lastValidRepresentation_->getDataFormat();
-    }
-    return defaultDataFormat_;
+    return getLastOr(&VolumeRepresentation::getDataFormat, defaultDataFormat_);
 }
 
 void Volume::setSwizzleMask(const SwizzleMask& mask) {
     defaultSwizzleMask_ = mask;
-    if (lastValidRepresentation_) {
-        lastValidRepresentation_->setSwizzleMask(mask);
-        invalidateAllOther(lastValidRepresentation_.get());
-    }
+    setLastAndInvalidateOther(&VolumeRepresentation::setSwizzleMask, mask);
 }
 
 SwizzleMask Volume::getSwizzleMask() const {
-    if (lastValidRepresentation_) {
-        return lastValidRepresentation_->getSwizzleMask();
-    }
-    return defaultSwizzleMask_;
+    return getLastOr(&VolumeRepresentation::getSwizzleMask, defaultSwizzleMask_);
 }
 
 void Volume::setInterpolation(InterpolationType interpolation) {
     defaultInterpolation_ = interpolation;
-    if (lastValidRepresentation_) {
-        lastValidRepresentation_->setInterpolation(interpolation);
-        invalidateAllOther(lastValidRepresentation_.get());
-    }
+    setLastAndInvalidateOther(&VolumeRepresentation::setInterpolation, interpolation);
 }
 
 InterpolationType Volume::getInterpolation() const {
-    if (lastValidRepresentation_) {
-        return lastValidRepresentation_->getInterpolation();
-    }
-    return defaultInterpolation_;
+    return getLastOr(&VolumeRepresentation::getInterpolation, defaultInterpolation_);
 }
 
 void Volume::setWrapping(const Wrapping3D& wrapping) {
     defaultWrapping_ = wrapping;
-    if (lastValidRepresentation_) {
-        lastValidRepresentation_->setWrapping(wrapping);
-        invalidateAllOther(lastValidRepresentation_.get());
-    }
+    setLastAndInvalidateOther(&VolumeRepresentation::setWrapping, wrapping);
 }
 
 Wrapping3D Volume::getWrapping() const {
-    if (lastValidRepresentation_) {
-        return lastValidRepresentation_->getWrapping();
-    }
-    return defaultWrapping_;
+    return getLastOr(&VolumeRepresentation::getWrapping, defaultWrapping_);
 }
 
 Document Volume::getInfo() const {
@@ -241,10 +212,8 @@ const StructuredCameraCoordinateTransformer<3>& Volume::getCoordinateTransformer
 }
 
 std::shared_ptr<HistogramCalculationState> Volume::calculateHistograms(size_t bins) const {
-
-    getRepresentation<VolumeRAM>();  // make sure lastValidRepresentation_ is VolumeRAM
-    return HistogramSupplier::startCalculation(
-        std::static_pointer_cast<VolumeRAM>(lastValidRepresentation_), dataMap_.dataRange, bins);
+    return HistogramSupplier::startCalculation(getRepresentationShared<VolumeRAM>(),
+                                               dataMap_.dataRange, bins);
 }
 
 template class IVW_CORE_TMPL_INST DataReaderType<Volume>;

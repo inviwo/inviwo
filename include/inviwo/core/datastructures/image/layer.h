@@ -97,12 +97,6 @@ public:
     Wrapping2D getWrapping() const;
 
     /**
-     * Copy and resize the representation of this onto the representations of target.
-     * Does not change the dimensions of target.
-     */
-    void copyRepresentationsTo(Layer* target);
-
-    /**
      * \brief encode the layer contents to a buffer considering the requested image format
      *
      * @param fileExtension   file extension of the requested image format
