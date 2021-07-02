@@ -104,18 +104,13 @@ TFEditor::TFEditor(util::TFPropertyConcept* tfProperty,
     setItemIndexMethod(QGraphicsScene::NoIndex);
 
     if (auto port = tfProperty->getVolumeInport()) {
-
         const auto portChange = [this, port]() {
             dataMap_ = port->hasData() ? port->getData()->dataMap_ : DataMapper{};
         };
-
-        port->onChange(portChange);
-        port->onConnect(portChange);
-        port->onDisconnect(portChange);
-
-        if (port->hasData()) {
-            dataMap_ = port->getData()->dataMap_;
-        }
+        portCallBacks_.push_back(port->onChangeScoped(portChange));
+        portCallBacks_.push_back(port->onConnectScoped(portChange));
+        portCallBacks_.push_back(port->onDisconnectScoped(portChange));
+        portChange();
     }
 
     // initialize editor with current tf

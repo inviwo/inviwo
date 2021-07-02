@@ -63,7 +63,7 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
                   }())
     , camera_{factory_->create(cameraType_)}
     , defaultCamera_{}
-    , cameraActions_("actions", "Actions", buttons())
+    , cameraActions_("actions", "Actions", buttons(), InvalidationLevel::Valid)
     , lookFrom_(
           "lookFrom", "Look from", []() { return vec3{}; }, [](const vec3&) {},
           {-vec3(100.0f), ConstraintBehavior::Ignore}, {vec3(100.0f), ConstraintBehavior::Ignore},
@@ -200,7 +200,8 @@ void CameraProperty::set(const Property* srcProperty) {
             setAspectRatio(aspect);
         }
 
-        propertyModified();
+        // no need to call propertyModified here since updateFrom will call propertyModified for any
+        // modified sub property
     }
 }
 

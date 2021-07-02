@@ -28,29 +28,79 @@
  *********************************************************************************/
 
 #include <modules/openglqt/canvasqopenglwidget.h>
-#include <inviwo/core/datastructures/image/layerram.h>
+
 #include <inviwo/core/common/inviwoapplication.h>
-#include <modules/opengl/openglcapabilities.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/settings/systemsettings.h>
+
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/openglqt/hiddencanvasqt.h>
+#include <modules/opengl/openglcapabilities.h>
+#include <modules/openglqt/interactioneventmapperqt.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
+
 #include <QApplication>
 #include <QOpenGLContext>
+#include <QMenu>
 #include <QResizeEvent>
+#include <QMouseEvent>
 #include <warn/pop>
 
 namespace inviwo {
 
-CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, size2_t dim, std::string_view name)
-    : QOpenGLWidget(parent), CanvasGL(dim), name_{name} {
+CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
+    : QOpenGLWidget{parent}, CanvasGL{}, name_{name} {
 
     setFocusPolicy(Qt::StrongFocus);
 
-    grabGesture(Qt::PanGesture);
-    grabGesture(Qt::PinchGesture);
+    setMouseTracking(true);
+    setAttribute(Qt::WA_OpaquePaintEvent);
+
+    auto interactionEventMapper = new InteractionEventMapperQt(
+        this, this, [this]() { return utilqt::toGLM(size()); },
+        [this]() { return getImageDimensions(); },
+        [this](dvec2 pos) { return getDepthValueAtNormalizedCoord(pos); },
+        [this](QMouseEvent* e) {
+            if (!contextMenuCallback_) return;
+
+            QMenu menu(this);
+            if (auto image = image_.lock()) {
+                utilqt::addImageActions(menu, *image, layerType_, layerIdx_);
+                menu.addSeparator();
+            }
+            if (contextMenuCallback_(menu)) {
+                menu.exec(e->globalPos());
+            }
+        },
+        [this](Qt::CursorShape cursor) { setCursor(cursor); });
+
+    auto& settings = InviwoApplication::getPtr()->getSystemSettings();
+    auto setHandleTouch = [this, &settings, interactionEventMapper]() {
+        auto& touch = settings.enableTouchProperty_;
+        auto& gestures = settings.enableGesturesProperty_;
+
+        if (gestures.get()) {
+            grabGesture(Qt::PanGesture);
+            grabGesture(Qt::PinchGesture);
+        } else {
+            ungrabGesture(Qt::PanGesture);
+            ungrabGesture(Qt::PinchGesture);
+        }
+        setAttribute(Qt::WA_AcceptTouchEvents, touch.get());
+
+        interactionEventMapper->handleTouch(touch.get());
+        interactionEventMapper->handleGestures(gestures.get());
+    };
+
+    settings.enableTouchProperty_.onChange(setHandleTouch);
+    settings.enableGesturesProperty_.onChange(setHandleTouch);
+    setHandleTouch();
+
     installEventFilter(new utilqt::WidgetCloseEventFilter(this));
+    installEventFilter(interactionEventMapper);
 }
 
 CanvasQOpenGLWidget::~CanvasQOpenGLWidget() {
@@ -92,9 +142,11 @@ void CanvasQOpenGLWidget::update() {
 
 void CanvasQOpenGLWidget::paintGL() { CanvasGL::update(); }
 
-void CanvasQOpenGLWidget::resize(size2_t size) {
-    // this should trigger a resize event.
-    QOpenGLWidget::resize(static_cast<int>(size.x), static_cast<int>(size.y));
+void CanvasQOpenGLWidget::render(std::shared_ptr<const Image> image, LayerType layerType,
+                                 size_t idx) {
+    if (isVisible() && isValid()) {
+        CanvasGL::render(image, layerType, idx);
+    }
 }
 
 Canvas::ContextID CanvasQOpenGLWidget::activeContext() const {
@@ -104,20 +156,42 @@ Canvas::ContextID CanvasQOpenGLWidget::contextId() const {
     return static_cast<ContextID>(context());
 }
 
+std::unique_ptr<Canvas> CanvasQOpenGLWidget::createHiddenCanvas() {
+    return HiddenCanvasQt::createHiddenQtCanvas();
+}
+
 void CanvasQOpenGLWidget::resizeEvent(QResizeEvent* event) {
     if (event->spontaneous()) {
         return;
     }
+    image_.reset();
+    pickingController_.setPickingSource(nullptr);
+
     setUpdatesEnabled(false);
     util::OnScopeExit enable([&]() { setUpdatesEnabled(true); });
     QOpenGLWidget::resizeEvent(event);
-    // CanvasGL::resize may switch to default context so call this last
-    CanvasGL::resize(uvec2(event->size().width(), event->size().height()));
 }
 
 void CanvasQOpenGLWidget::releaseContext() {
     doneCurrent();
     context()->moveToThread(QApplication::instance()->thread());
+}
+
+void CanvasQOpenGLWidget::onContextMenu(std::function<bool(QMenu&)> callback) {
+    contextMenuCallback_ = std::move(callback);
+}
+
+size2_t CanvasQOpenGLWidget::getCanvasDimensions() const {
+    const auto dpr = window()->devicePixelRatio();
+    return dpr * utilqt::toGLM(size());
+}
+
+void CanvasQOpenGLWidget::propagateEvent(Event* e, Outport* source) {
+    if (!propagator_) return;
+    NetworkLock lock;
+    pickingController_.propagateEvent(e, propagator_);
+    if (e->hasBeenUsed()) return;
+    propagator_->propagateEvent(e, source);
 }
 
 }  // namespace inviwo

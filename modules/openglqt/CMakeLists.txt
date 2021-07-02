@@ -10,7 +10,6 @@ else()
 endif()
 # Add MOC files
 set(MOC_FILES
-    include/modules/openglqt/canvasprocessorwidgetqt.h
     include/modules/openglqt/openglqtmenu.h
 )
 
@@ -18,12 +17,15 @@ set(MOC_FILES
 set(HEADER_FILES
     ${MOC_FILES}
     include/modules/openglqt/canvasqopenglwidget.h
-    include/modules/openglqt/canvasqt.h
     include/modules/openglqt/glslsyntaxhighlight.h
     include/modules/openglqt/hiddencanvasqt.h
+    include/modules/openglqt/interactioneventmapperqt.h
     include/modules/openglqt/openglqtcapabilities.h
     include/modules/openglqt/openglqtmodule.h
     include/modules/openglqt/openglqtmoduledefine.h
+    include/modules/openglqt/processors/canvaswithpropertiesprocessorwidgetqt.h
+    include/modules/openglqt/processors/canvaswithpropertiesprocessor.h
+    include/modules/openglqt/processors/canvasprocessorwidgetqt.h
     include/modules/openglqt/properties/glsleditordockwidget.h
     include/modules/openglqt/properties/glslfilepropertywidgetqt.h
     include/modules/openglqt/properties/glslpropertywidgetqt.h
@@ -33,14 +35,16 @@ ivw_group("Header Files" ${HEADER_FILES})
 
 # Add source files
 set(SOURCE_FILES
-    src/canvasprocessorwidgetqt.cpp
     src/canvasqopenglwidget.cpp
-    src/canvasqt.cpp
     src/glslsyntaxhighlight.cpp
     src/hiddencanvasqt.cpp
+    src/interactioneventmapperqt.cpp
     src/openglqtcapabilities.cpp
     src/openglqtmenu.cpp
     src/openglqtmodule.cpp
+    src/processors/canvasprocessorwidgetqt.cpp
+    src/processors/canvaswithpropertiesprocessor.cpp
+    src/processors/canvaswithpropertiesprocessorwidgetqt.cpp
     src/properties/glsleditordockwidget.cpp
     src/properties/glslfilepropertywidgetqt.cpp
     src/properties/glslpropertywidgetqt.cpp

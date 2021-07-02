@@ -36,7 +36,6 @@
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/processors/processorpair.h>
-#include <inviwo/core/processors/processorwidgetobserver.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 
 #include <warn/push>

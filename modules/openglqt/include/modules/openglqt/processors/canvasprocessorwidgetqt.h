@@ -32,7 +32,10 @@
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/processors/processor.h>
-#include <modules/openglqt/canvasqt.h>
+
+#include <modules/openglqt/canvasqopenglwidget.h>
+
+#include <functional>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -41,47 +44,47 @@
 
 namespace inviwo {
 
-class CanvasProcessor;
+class Processor;
 
-class IVW_MODULE_OPENGLQT_API CanvasProcessorWidgetQt : public QWidget,
-                                                        public CanvasProcessorWidget {
-
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
+class IVW_MODULE_OPENGLQT_API CanvasProcessorWidgetQt : public CanvasProcessorWidget,
+                                                        public QWidget {
 public:
     CanvasProcessorWidgetQt(Processor* p);
     virtual ~CanvasProcessorWidgetQt();
 
     // Override ProcessorWidget
     virtual void setVisible(bool visible) override;
-    virtual void show() override;
-    virtual void hide() override;
     virtual void setPosition(ivec2 pos) override;
     virtual void setDimensions(ivec2 dimensions) override;
+    virtual void setFullScreen(bool fullScreen) override;
+    virtual void setOnTop(bool onTop) override;
 
     virtual Canvas* getCanvas() const override;
 
 protected:
+    virtual void propagateResizeEvent() override;
+    bool contextMenu(QMenu& menu);
+
     virtual void updateVisible(bool visible) override;
     virtual void updateDimensions(ivec2) override;
     virtual void updatePosition(ivec2) override;
+    virtual void updateFullScreen(bool) override;
+    virtual void updateOnTop(bool) override;
 
     // Override QWidget events
     virtual void resizeEvent(QResizeEvent*) override;
-    virtual void closeEvent(QCloseEvent*) override;
     virtual void showEvent(QShowEvent*) override;
     virtual void hideEvent(QHideEvent*) override;
     virtual void moveEvent(QMoveEvent*) override;
 
 private:
-    using canvas_ptr = std::unique_ptr<CanvasQt, std::function<void(CanvasQt*)>>;
-    canvas_ptr canvas_;
+    using Super = QWidget;
+    std::unique_ptr<CanvasQOpenGLWidget, std::function<void(CanvasQOpenGLWidget*)>> canvas_;
 
     bool ignoreEvents_{false};
-    bool ignoreUpdate_{false};
+    bool resizeOngoing_{false};
 
+    size2_t canvasDimensions_{0};
     Processor::NameDispatcherHandle nameChange_;
 };
 

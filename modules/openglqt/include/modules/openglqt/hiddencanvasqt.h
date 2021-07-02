@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/openglqt/openglqtmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/canvas.h>
 
 #include <warn/push>
@@ -79,7 +78,6 @@ public:
                         [[maybe_unused]] LayerType layerType = LayerType::Color,
                         [[maybe_unused]] size_t idx = 0) override{};
 
-    virtual size2_t getImageDimensions() const override { return size2_t{0}; }
     virtual void update() override;
     virtual void activate() override;
 
@@ -96,10 +94,6 @@ public:
     QOpenGLContext* getContext() { return context_; };
 
 protected:
-    /**
-     * Derived classes should override to implement actual window state.
-     */
-    virtual void setFullScreenInternal([[maybe_unused]] bool fullscreen) override{};
     QOpenGLContext* context_;
     QOffscreenSurface* offScreenSurface_;
 };

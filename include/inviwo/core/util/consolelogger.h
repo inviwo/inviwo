@@ -46,6 +46,9 @@ public:
     virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,
                      std::string_view fileName, std::string_view functionName, int lineNumber,
                      std::string_view logMsg) override;
+
+private:
+    std::vector<std::string_view> sublines_;
 };
 
 }  // namespace inviwo

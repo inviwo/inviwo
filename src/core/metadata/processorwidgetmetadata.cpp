@@ -38,48 +38,80 @@ ProcessorWidgetMetaData::ProcessorWidgetMetaData()
     , Observable<ProcessorWidgetMetaDataObserver>()
     , position_(0, 0)
     , dimensions_(256, 256)
-    , visibility_(true) {}
+    , visibility_(true)
+    , fullScreen_(false)
+    , onTop_(true) {}
 
 ProcessorWidgetMetaData* ProcessorWidgetMetaData::clone() const {
     return new ProcessorWidgetMetaData(*this);
 }
 
-void ProcessorWidgetMetaData::setPosition(const ivec2& pos) {
+void ProcessorWidgetMetaData::setPosition(const ivec2& pos,
+                                          const ProcessorWidgetMetaDataObserver* source) {
     if (pos != position_) {
         position_ = pos;
-        forEachObserver(
-            [&](ProcessorWidgetMetaDataObserver* o) { o->onProcessorWidgetPositionChange(this); });
+        forEachObserver([&](ProcessorWidgetMetaDataObserver* o) {
+            if (o != source) o->onProcessorWidgetPositionChange(this);
+        });
     }
 }
 
 ivec2 ProcessorWidgetMetaData::getPosition() const { return position_; }
 
-void ProcessorWidgetMetaData::setDimensions(const size2_t& dim) {
+void ProcessorWidgetMetaData::setDimensions(const size2_t& dim,
+                                            const ProcessorWidgetMetaDataObserver* source) {
     if (dim != dimensions_) {
         dimensions_ = dim;
-        forEachObserver(
-            [&](ProcessorWidgetMetaDataObserver* o) { o->onProcessorWidgetDimensionChange(this); });
+        forEachObserver([&](ProcessorWidgetMetaDataObserver* o) {
+            if (o != source) o->onProcessorWidgetDimensionChange(this);
+        });
     }
 }
 
 size2_t ProcessorWidgetMetaData::getDimensions() const { return dimensions_; }
 
-void ProcessorWidgetMetaData::setVisibile(bool visibility) {
+void ProcessorWidgetMetaData::setVisibile(bool visibility,
+                                          const ProcessorWidgetMetaDataObserver* source) {
     if (visibility != visibility_) {
         visibility_ = visibility;
         forEachObserver([&](ProcessorWidgetMetaDataObserver* o) {
-            o->onProcessorWidgetVisibilityChange(this);
+            if (o != source) o->onProcessorWidgetVisibilityChange(this);
         });
     }
 }
 
 bool ProcessorWidgetMetaData::isVisible() const { return visibility_; }
 
+void ProcessorWidgetMetaData::setFullScreen(bool fullScreen,
+                                            const ProcessorWidgetMetaDataObserver* source) {
+    if (fullScreen != fullScreen_) {
+        fullScreen_ = fullScreen;
+        forEachObserver([&](ProcessorWidgetMetaDataObserver* o) {
+            if (o != source) o->onProcessorWidgetFullScreenChange(this);
+        });
+    }
+}
+
+bool ProcessorWidgetMetaData::isFullScreen() const { return fullScreen_; }
+
+void ProcessorWidgetMetaData::setOnTop(bool onTop, const ProcessorWidgetMetaDataObserver* source) {
+    if (onTop != onTop_) {
+        onTop_ = onTop;
+        forEachObserver([&](ProcessorWidgetMetaDataObserver* o) {
+            if (o != source) o->onProcessorWidgetOnTopChange(this);
+        });
+    }
+}
+
+bool ProcessorWidgetMetaData::isOnTop() const { return onTop_; }
+
 void ProcessorWidgetMetaData::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     s.serialize("position", position_);
     s.serialize("dimensions", dimensions_);
     s.serialize("visibility", visibility_);
+    s.serialize("fullScreen", fullScreen_);
+    s.serialize("onTop", onTop_);
 }
 
 void ProcessorWidgetMetaData::deserialize(Deserializer& d) {
@@ -94,12 +126,21 @@ void ProcessorWidgetMetaData::deserialize(Deserializer& d) {
     bool visibility{true};
     d.deserialize("visibility", visibility);
     setVisibile(visibility);
+
+    bool fullScreen{false};
+    d.deserialize("fullScreen", fullScreen);
+    setFullScreen(fullScreen);
+
+    bool onTop{true};
+    d.deserialize("onTop", onTop);
+    setOnTop(onTop);
 }
 
 bool ProcessorWidgetMetaData::equal(const MetaData& rhs) const {
     if (auto tmp = dynamic_cast<const ProcessorWidgetMetaData*>(&rhs)) {
         return tmp->position_ == position_ && tmp->visibility_ == visibility_ &&
-               tmp->dimensions_ == dimensions_;
+               tmp->dimensions_ == dimensions_ && tmp->fullScreen_ == fullScreen_ &&
+               tmp->onTop_ == onTop_;
     } else {
         return false;
     }

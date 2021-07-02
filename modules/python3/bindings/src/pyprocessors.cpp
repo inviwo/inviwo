@@ -191,9 +191,7 @@ void exposeProcessors(pybind11::module& m) {
         .def_property("visibility", &ProcessorWidget::isVisible, &ProcessorWidget::setVisible)
         .def_property("dimensions", &ProcessorWidget::getDimensions,
                       &ProcessorWidget::setDimensions)
-        .def_property("position", &ProcessorWidget::getPosition, &ProcessorWidget::setPosition)
-        .def("show", &ProcessorWidget::show)
-        .def("hide", &ProcessorWidget::hide);
+        .def_property("position", &ProcessorWidget::getPosition, &ProcessorWidget::setPosition);
 
     py::class_<ProcessorWidgetFactory>(m, "ProcessorWidgetFactory")
         .def("registerObject", &ProcessorWidgetFactory::registerObject)

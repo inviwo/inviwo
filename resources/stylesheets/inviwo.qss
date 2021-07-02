@@ -479,13 +479,25 @@ QTreeView {
     border: 0em;
     show-decoration-selected: 1;
     outline: 0;
+    color: #9d9995;
 }
-QTreeView::branch:hover, QTreeView::item:hover {
+QTreeView::item:hover {
     background-color: #47474b;
+    color: #9d9995;
 }
-QTreeView::item:selected, QTreeView::branch:selected {
+QTreeView::item:selected {
+    background-color: #47474b;
+    color: #9d9995;
+}
+QTreeView::item:focus {
     background-color: #65696d;
+    color: #9d9995;
 }
+QTreeView::branch {
+    background-color: #323235;
+    color: #9d9995;
+}
+
 QTreeView::branch:has-children:!has-siblings:closed,
 QTreeView::branch:closed:has-children:has-siblings {
     border-image: none;
@@ -1032,3 +1044,14 @@ QSplitter#WelcomeWidget::handle:horizontal:hover {
 QSplitter#WelcomeWidget::handle:horizontal:pressed {
     background: #1e70a8;
 }
+
+QSplitter#WelcomeWidget QToolButton {
+    font-size: 16pt;
+}
+QSplitter#WelcomeWidget QLineEdit {
+    color: #c8ccd0;
+    font-size: 16pt;
+    padding: 0.25em;
+}
+
+

@@ -185,22 +185,37 @@ void Camera::updateFrom(const Camera& source) {
     setAspectRatio(source.getAspectRatio());
 }
 
+namespace {
+template <auto Dst, auto Call, typename Obj>
+auto set(Obj* obj) {
+    return [obj](const auto& val) {
+        auto& dst = std::invoke(Dst, obj);
+        if (dst != val) {
+            dst = val;
+            std::invoke(Call, obj);
+        }
+    };
+};
+}  // namespace
+
 void Camera::configureProperties(CameraProperty& cp, bool attach) {
     if (attach) {
         camprop_ = &cp;
         cp.lookFrom_.setGetAndSet([this]() { return getLookFrom(); },
-                                  [this](const vec3& val) { setLookFrom(val); });
+                                  set<&Camera::lookFrom_, &Camera::invalidateViewMatrix>(this));
         cp.lookTo_.setGetAndSet([this]() { return getLookTo(); },
-                                [this](const vec3& val) { setLookTo(val); });
+                                set<&Camera::lookTo_, &Camera::invalidateViewMatrix>(this));
         cp.lookUp_.setGetAndSet([this]() { return getLookUp(); },
-                                [this](const vec3& val) { setLookUp(val); });
-        cp.aspectRatio_.setGetAndSet([this]() { return getAspectRatio(); },
-                                     [this](const float& val) { setAspectRatio(val); });
-        cp.nearPlane_.setGetAndSet([this]() { return getNearPlaneDist(); },
-                                   [this](const float& val) { setNearPlaneDist(val); });
-        cp.farPlane_.setGetAndSet([this]() { return getFarPlaneDist(); },
-                                  [this](const float& val) { setFarPlaneDist(val); });
-
+                                set<&Camera::lookUp_, &Camera::invalidateViewMatrix>(this));
+        cp.aspectRatio_.setGetAndSet(
+            [this]() { return getAspectRatio(); },
+            set<&Camera::aspectRatio_, &Camera::invalidateProjectionMatrix>(this));
+        cp.nearPlane_.setGetAndSet(
+            [this]() { return getNearPlaneDist(); },
+            set<&Camera::nearPlaneDist_, &Camera::invalidateProjectionMatrix>(this));
+        cp.farPlane_.setGetAndSet(
+            [this]() { return getFarPlaneDist(); },
+            set<&Camera::farPlaneDist_, &Camera::invalidateProjectionMatrix>(this));
     } else {
         camprop_ = nullptr;
         cp.lookFrom_.setGetAndSet([val = cp.lookFrom_.get()]() { return val; }, [](const vec3&) {});

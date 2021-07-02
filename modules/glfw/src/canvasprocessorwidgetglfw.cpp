@@ -29,6 +29,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/glfw/canvasglfw.h>
 #include <modules/glfw/canvasprocessorwidgetglfw.h>
@@ -37,57 +38,71 @@ namespace inviwo {
 
 CanvasProcessorWidgetGLFW::CanvasProcessorWidgetGLFW(Processor* p)
     : CanvasProcessorWidget(p)
-    , canvas_{new CanvasGLFW(processor_->getIdentifier(), getDimensions()), [&](CanvasGLFW* c) {
+    , canvas_{new CanvasGLFW(p->getIdentifier(), getDimensions()), [&](CanvasGLFW* c) {
                   c->activate();
                   delete c;
                   RenderContext::getPtr()->activateDefaultRenderContext();
               }} {
-    canvas_->setEventPropagator(processor_);
-    canvas_->setProcessorWidgetOwner(this);
-    canvas_->setWindowSize(getDimensions());
-    canvas_->setWindowPosition(getPosition());
-    if (ProcessorWidget::isVisible()) {
-        canvas_->show();
-    } else {
-        canvas_->hide();
-    }
+    canvas_->setEventPropagator(p);
+    canvas_->setWindowSize(CanvasProcessorWidget::getDimensions());
+    canvas_->setWindowPosition(CanvasProcessorWidget::getPosition());
+    canvas_->setVisible(CanvasProcessorWidget::isVisible());
+    canvas_->setOnTop(CanvasProcessorWidget::isOnTop());
+    canvas_->setFullScreen(CanvasProcessorWidget::isFullScreen());
+
+    canvas_->onPositionChange = [this](ivec2 pos) { CanvasProcessorWidget::setPosition(pos); };
+    canvas_->onFramebufferSizeChange = [this](ivec2) { propagateResizeEvent(); };
 }
 
-CanvasProcessorWidgetGLFW::~CanvasProcessorWidgetGLFW() { this->hide(); }
+CanvasProcessorWidgetGLFW::~CanvasProcessorWidgetGLFW() { updateVisible(false); }
 
 void CanvasProcessorWidgetGLFW::setVisible(bool visible) {
-    CanvasProcessorWidget::setVisible(visible);
     updateVisible(visible);
+    CanvasProcessorWidget::setVisible(visible);
 }
 
-void CanvasProcessorWidgetGLFW::show() { CanvasProcessorWidgetGLFW::setVisible(true); }
-
-void CanvasProcessorWidgetGLFW::hide() { CanvasProcessorWidgetGLFW::setVisible(false); }
-
 void CanvasProcessorWidgetGLFW::setDimensions(ivec2 dim) {
-    CanvasProcessorWidget::setDimensions(dim);
     updateDimensions(dim);
+    CanvasProcessorWidget::setDimensions(dim);
 }
 
 void CanvasProcessorWidgetGLFW::setPosition(ivec2 pos) {
-    CanvasProcessorWidget::setPosition(pos);
     updatePosition(pos);
+    CanvasProcessorWidget::setPosition(pos);
+}
+
+void CanvasProcessorWidgetGLFW::setFullScreen(bool fullScreen) {
+    updateFullScreen(fullScreen);
+    CanvasProcessorWidget::setFullScreen(fullScreen);
+}
+void CanvasProcessorWidgetGLFW::setOnTop(bool onTop) {
+    updateOnTop(onTop);
+    CanvasProcessorWidget::setOnTop(onTop);
+}
+
+void CanvasProcessorWidgetGLFW::propagateResizeEvent() {
+    auto previousScreenDimensions = screenDimensions_;
+    screenDimensions_ = canvas_->getFramebufferSize();
+    CanvasProcessorWidget::setDimensions(screenDimensions_);
+
+    NetworkLock lock;
+    RenderContext::getPtr()->activateDefaultRenderContext();
+    ResizeEvent resizeEvent(screenDimensions_, previousScreenDimensions);
+    getProcessor()->propagateEvent(&resizeEvent, nullptr);
 }
 
 Canvas* CanvasProcessorWidgetGLFW::getCanvas() const { return canvas_.get(); }
 
-void CanvasProcessorWidgetGLFW::updateVisible(bool visible) {
-    if (visible) {
-        canvas_->show();
-    } else {
-        canvas_->hide();
-    }
-}
+void CanvasProcessorWidgetGLFW::updateVisible(bool visible) { canvas_->setVisible(visible); }
 void CanvasProcessorWidgetGLFW::updateDimensions(ivec2 dim) {
     canvas_->setWindowSize(uvec2(dim.x, dim.y));
 }
 void CanvasProcessorWidgetGLFW::updatePosition(ivec2 pos) {
     canvas_->setWindowPosition(uvec2(pos.x, pos.y));
 }
+void CanvasProcessorWidgetGLFW::updateFullScreen(bool fullScreen) {
+    canvas_->setFullScreen(fullScreen);
+};
+void CanvasProcessorWidgetGLFW::updateOnTop(bool onTop) { canvas_->setOnTop(onTop); };
 
 }  // namespace inviwo

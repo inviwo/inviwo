@@ -34,6 +34,13 @@
 option(IVW_CFG_TREAT_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 option(IVW_CFG_FORCE_ASSERTIONS "Force use of assertions when not in debug mode" OFF)
 if(CMAKE_GENERATOR STREQUAL "Xcode")
+    option(IVW_CFG_XCODE_ADDRESS_SANITIZER "Enable XCode Addess Sanatizer" OFF)
+    set(CMAKE_XCODE_SCHEME_ADDRESS_SANITIZER ${IVW_CFG_XCODE_ADDRESS_SANITIZER})
+    set(CMAKE_XCODE_SCHEME_ADDRESS_SANITIZER_USE_AFTER_RETURN ${IVW_CFG_XCODE_ADDRESS_SANITIZER})
+    set(CMAKE_XCODE_SCHEME_MAIN_THREAD_CHECKER_STOP ${IVW_CFG_XCODE_ADDRESS_SANITIZER})
+    set(CMAKE_XCODE_SCHEME_UNDEFINED_BEHAVIOUR_SANITIZER ${IVW_CFG_XCODE_ADDRESS_SANITIZER})
+    set(CMAKE_XCODE_SCHEME_UNDEFINED_BEHAVIOUR_SANITIZER_STOP ${IVW_CFG_XCODE_ADDRESS_SANITIZER})
+
     # Prevent Xcode 11 from doing automatic codesigning because it will fail the build. 
     # Causes build to fail if Webbrowser module is enabled due to the added CEF framework
     # This fix is also performed in the CEF example projects:
@@ -103,7 +110,7 @@ function(ivw_define_standard_properties)
                 XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code"
                 XCODE_GENERATE_SCHEME YES
             )
-         endif()
+        endif()
     endforeach()
 endfunction()
 
