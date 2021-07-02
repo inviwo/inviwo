@@ -54,10 +54,10 @@ glm::ivec2 ProcessorWidget::getPosition() const { return metaData_->getPosition(
 void ProcessorWidget::setPosition(glm::ivec2 pos) { metaData_->setPosition(pos, this); }
 
 bool ProcessorWidget::isFullScreen() const { return metaData_->isFullScreen(); }
-void ProcessorWidget::setFullScreen(bool fullscreen) { metaData_->setFullScreen(fullscreen); }
+void ProcessorWidget::setFullScreen(bool fullscreen) { metaData_->setFullScreen(fullscreen, this); }
 
 bool ProcessorWidget::isOnTop() const { return metaData_->isOnTop(); }
-void ProcessorWidget::setOnTop(bool onTop) { metaData_->setOnTop(onTop); }
+void ProcessorWidget::setOnTop(bool onTop) { metaData_->setOnTop(onTop, this); }
 
 void ProcessorWidget::onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {
     updatePosition(metaData_->getPosition());

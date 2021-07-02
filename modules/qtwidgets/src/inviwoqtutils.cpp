@@ -679,6 +679,8 @@ bool WidgetCloseEventFilter::eventFilter(QObject* obj, QEvent* ev) {
 }
 
 void setFullScreen(QWidget* widget, bool fullScreen) {
+    if (widget->windowState().testFlag(Qt::WindowFullScreen) == fullScreen) return;
+    const auto visible = widget->isVisible();
     if (fullScreen) {
         // Prevent Qt resize event with incorrect size when going full screen.
         // Reproduce error by loading a workspace with a full screen canvas.
@@ -686,19 +688,48 @@ void setFullScreen(QWidget* widget, bool fullScreen) {
         // https://stackoverflow.com/questions/19817881/qt-fullscreen-on-startup
         // No need to process user events, i.e. mouse/keyboard etc.
         QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+        widget->setWindowFlags(
+            widget->windowFlags().setFlag(Qt::Tool, false).setFlag(Qt::Window, true));
         widget->setWindowState(widget->windowState() | Qt::WindowFullScreen);
     } else {
         widget->setWindowState(widget->windowState() & ~Qt::WindowFullScreen);
+        widget->setWindowFlags(widget->windowFlags().setFlag(Qt::Tool, true));
     }
+    widget->setVisible(visible);
 }
 
-void setOnTop(QWidget* widget, bool onTop) {
-    if (widget->windowFlags().testFlag(Qt::WindowStaysOnTopHint) == onTop) return;
+void setFullScreenAndOnTop(QWidget* widget, bool fullScreen, bool onTop) {
+    if (widget->windowFlags().testFlag(Qt::Tool) == onTop &&
+        widget->windowState().testFlag(Qt::WindowFullScreen) == fullScreen) {
+        return;
+    }
 
     // setWindowFlag will alwyas hide the widget
     // https://doc.qt.io/qt-5/qwidget.html#windowFlags-prop
     const auto visible = widget->isVisible();
-    widget->setWindowFlag(Qt::WindowStaysOnTopHint, onTop);
+
+    // Prevent Qt resize event with incorrect size when going full screen.
+    // Reproduce error by loading a workspace with a full screen canvas.
+    // This is equivalent to suggested solution using QTimer
+    // https://stackoverflow.com/questions/19817881/qt-fullscreen-on-startup
+    // No need to process user events, i.e. mouse/keyboard etc.
+    QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    if (fullScreen) {
+        // Always use window mode for fullscreen
+        widget->setWindowFlags(
+            widget->windowFlags().setFlag(Qt::Tool, false).setFlag(Qt::Window, true));
+        widget->setWindowState(widget->windowState() | Qt::WindowFullScreen);
+    } else {
+        widget->setWindowState(widget->windowState() & ~Qt::WindowFullScreen);
+
+        if (onTop) {
+            widget->setWindowFlags(widget->windowFlags().setFlag(Qt::Tool, true));
+        } else {
+            widget->setWindowFlags(
+                widget->windowFlags().setFlag(Qt::Tool, false).setFlag(Qt::Window, true));
+        }
+    }
+
     widget->setVisible(visible);
 }
 

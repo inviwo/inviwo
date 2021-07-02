@@ -50,7 +50,6 @@
 #include <QFrame>
 #include <QScrollArea>
 #include <QSplitter>
-#include <QApplication>
 #include <QAction>
 #include <QMenu>
 #include <warn/pop>
@@ -58,28 +57,30 @@
 namespace inviwo {
 
 CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Processor* p)
-    : CanvasProcessorWidget{p}, QMainWindow{nullptr, Qt::Window} {
-
-    setWindowTitle(utilqt::toQString(p->getDisplayName()));
-    nameChange_ = p->onDisplayNameChange([this](std::string_view newName, std::string_view) {
+    : CanvasProcessorWidget{p}
+    , QMainWindow{utilqt::getApplicationMainWindow(),
+                  CanvasProcessorWidget::isOnTop() ? Qt::Tool : Qt::Window}
+    , canvas_{std::unique_ptr<CanvasQOpenGLWidget, std::function<void(CanvasQOpenGLWidget*)>>(
+          new CanvasQOpenGLWidget(nullptr, p->getDisplayName()),
+          [](CanvasQOpenGLWidget* c) {
+              c->activate();
+              c->setParent(nullptr);
+              delete c;
+              RenderContext::getPtr()->activateDefaultRenderContext();
+          })}
+    , nameChange_{p->onDisplayNameChange([this](std::string_view newName, std::string_view) {
         setWindowTitle(utilqt::toQString(newName));
         RenderContext::getPtr()->setContextName(canvas_->contextId(), newName);
-    });
+    })} {
+
+    setWindowTitle(utilqt::toQString(p->getDisplayName()));
 
     const ivec2 dim = CanvasProcessorWidget::getDimensions();
     const ivec2 pos = CanvasProcessorWidget::getPosition();
-
     const auto space = utilqt::emToPx(this, utilqt::refSpaceEm());
 
     auto splitter = new QSplitter();
 
-    canvas_ = std::unique_ptr<CanvasQOpenGLWidget, std::function<void(CanvasQOpenGLWidget*)>>(
-        new CanvasQOpenGLWidget(nullptr, p->getDisplayName()), [&](CanvasQOpenGLWidget* c) {
-            c->activate();
-            c->setParent(nullptr);
-            delete c;
-            RenderContext::getPtr()->activateDefaultRenderContext();
-        });
     canvas_->setEventPropagator(p);
     canvas_->setMinimumSize(16, 16);
     canvas_->onContextMenu([this](QMenu& menu) { return contextMenu(menu); });
@@ -133,14 +134,10 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
     }
 
     resize(dim.x, dim.y);
-    setWindowFlag(Qt::WindowStaysOnTopHint, CanvasProcessorWidget::isOnTop());
-    connect(qApp, &QApplication::applicationStateChanged, this, [this](Qt::ApplicationState state) {
-        utilqt::setOnTop(this, isOnTop() && state == Qt::ApplicationActive);
-    });
+    setAttribute(Qt::WA_MacAlwaysShowToolWindow, true);
 
-    if (CanvasProcessorWidget::isFullScreen()) {
-        setWindowState(windowState() | Qt::WindowFullScreen);
-    }
+    utilqt::setFullScreenAndOnTop(this, CanvasProcessorWidget::isFullScreen(),
+                                  CanvasProcessorWidget::isOnTop());
 
     Super::setVisible(CanvasProcessorWidget::isVisible());
 
@@ -255,11 +252,12 @@ void CanvasWithPropertiesProcessorWidgetQt::setPosition(ivec2 pos) {
 }
 
 void CanvasWithPropertiesProcessorWidgetQt::setFullScreen(bool fullScreen) {
-    utilqt::setFullScreen(this, fullScreen);  // This will trigger a change event.
+    // This will trigger a change event.
+    utilqt::setFullScreenAndOnTop(this, fullScreen, CanvasProcessorWidget::isOnTop());
 }
 
 void CanvasWithPropertiesProcessorWidgetQt::setOnTop(bool onTop) {
-    utilqt::setOnTop(this, onTop);
+    utilqt::setFullScreenAndOnTop(this, CanvasProcessorWidget::isFullScreen(), onTop);
     CanvasProcessorWidget::setOnTop(onTop);
 }
 
@@ -275,11 +273,12 @@ void CanvasWithPropertiesProcessorWidgetQt::updatePosition(ivec2 pos) {
 }
 
 void CanvasWithPropertiesProcessorWidgetQt::updateFullScreen(bool fullScreen) {
-    utilqt::setFullScreen(this, fullScreen);  // This will trigger a change event.
+    // This will trigger a change event.
+    utilqt::setFullScreenAndOnTop(this, fullScreen, CanvasProcessorWidget::isOnTop());
 }
 
 void CanvasWithPropertiesProcessorWidgetQt::updateOnTop(bool onTop) {
-    utilqt::setOnTop(this, onTop);
+    utilqt::setFullScreenAndOnTop(this, CanvasProcessorWidget::isFullScreen(), onTop);
 }
 
 }  // namespace inviwo

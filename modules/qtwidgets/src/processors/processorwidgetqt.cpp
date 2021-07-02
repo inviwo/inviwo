@@ -88,12 +88,12 @@ void ProcessorWidgetQt::setDimensions(ivec2 dimensions) {
 }
 
 void ProcessorWidgetQt::setFullScreen(bool fullScreen) {
-    utilqt::setFullScreen(this, fullScreen);
+    utilqt::setFullScreenAndOnTop(this, fullScreen, ProcessorWidget::isOnTop());
     ProcessorWidget::setFullScreen(fullScreen);
 }
 
 void ProcessorWidgetQt::setOnTop(bool onTop) {
-    utilqt::setOnTop(this, onTop);
+    utilqt::setFullScreenAndOnTop(this, ProcessorWidget::isFullScreen(), onTop);
     ProcessorWidget::setOnTop(onTop);
 }
 
@@ -141,9 +141,11 @@ void ProcessorWidgetQt::updatePosition(ivec2 pos) {
 }
 
 void ProcessorWidgetQt::updateFullScreen(bool fullScreen) {
-    utilqt::setFullScreen(this, fullScreen);
+    utilqt::setFullScreenAndOnTop(this, fullScreen, ProcessorWidget::isOnTop());
 }
 
-void ProcessorWidgetQt::updateOnTop(bool onTop) { utilqt::setOnTop(this, onTop); }
+void ProcessorWidgetQt::updateOnTop(bool onTop) {
+    utilqt::setFullScreenAndOnTop(this, ProcessorWidget::isFullScreen(), onTop);
+}
 
 }  // namespace inviwo
