@@ -73,7 +73,8 @@ TODO: do
 ## Build Options
 TODO: do
 
-
+## Using an IDE
+You may use your favorite IDE to build and run the inviwo code base. [This article](https://preshing.com/20170511/how-to-build-a-cmake-based-project/) explains how cmake based projects and be imported and built using various IDEs like Visual Studio, Qt Creator, XCode etc. 
 
 ## Recommended Visual studio setup (Optional)
 
@@ -84,3 +85,5 @@ Make sure that multiplying the two following options does not exceed the number 
 **1)** Visual Studio: Tools->Options->Projects and Solutions->Build and Run->maximum number of parallel project builds
 
 **2)** CMake: Set IVW_MULTIPROCESSOR_COUNT
+
+**3)** Qt Creator: Projects->Build & Run->Build->Build Steps->Details->CMake arguments:-> Add -j<number-of-cores-you-want-to-build-on> eg. -j4 if you need 4 cores.
