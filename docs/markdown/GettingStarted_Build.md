@@ -14,7 +14,7 @@ You will need at least
 1. `git clone --recurse-submodules https://github.com/inviwo/inviwo`\
 The `--recurse-submodules` is necessary to pull dependencies.
 
-2. Open CMake (we recommend using the GUI here), enter the source path and the preferred build directory (outside the inviwo directory!) and hit configure. You can then select the desired Inviwo modules (`IVW_MODULE_*`) and configure again. When selecting the compiler, make sure to select the correct Visual Studio version that you use on 64-bit. 32-bit is not supported.
+2. Generate build pipeline (e.g. Visual Studio project, or make files): Open CMake (see [the CMake GUI tutorial](https://cmake.org/cmake/help/latest/guide/user-interaction/index.html#guide:User%20Interaction%20Guide) for more instructions on its usage), enter the source path and the preferred build directory (outside the inviwo directory!) and hit configure. You can then select the desired Inviwo modules (`IVW_MODULE_*`) and configure again. When selecting the compiler, make sure to select the correct Visual Studio version that you use on 64-bit. 32-bit is not supported.
 3. (Optional) To add external Inviwo modules, add those in `IVW_EXTERNAL_MODULES` in the format of\
 `C:/Inviwo/otherrepo/modules;C:/mysite/myrepo/mymodules;`\
  Use front slashes and no space between modules. Configure again. External modules are developed in the [inviwo modules repository](https://github.com/inviwo/modules).
@@ -58,7 +58,7 @@ The first two commands add the Kitware APT Repo and the appropriate signing key,
 ### Building
 1. `git clone --recurse-submodules https://github.com/inviwo/inviwo`\
 The `--recurse-submodules` is necessary to pull dependencies.
-2. Open CMake (we recommend using the GUI here), enter the source path and the preferred build directory (outside the inviwo directory!) and hit configure. You can then select the desired Inviwo modules (`IVW_MODULE_*`) and configure again.\
+2. Generate build pipeline (e.g. Visual Studio project, or make files): Open CMake (see [the CMake GUI tutorial](https://cmake.org/cmake/help/latest/guide/user-interaction/index.html#guide:User%20Interaction%20Guide) for more instructions on its usage), enter the source path and the preferred build directory (outside the inviwo directory!) and hit configure. You can then select the desired Inviwo modules (`IVW_MODULE_*`) and configure again.\
 If CMake cannot find Qt, make sure you adjust your `CMAKE_PREFIX_PATH` as described above.
 3. (Optional) To add external Inviwo modules, add those in `IVW_EXTERNAL_MODULES` in the format of\
 `C:/Inviwo/otherrepo/modules;C:/mysite/myrepo/mymodules;`\
@@ -69,12 +69,6 @@ If CMake cannot find Qt, make sure you adjust your `CMAKE_PREFIX_PATH` as descri
 
 ## Mac
 TODO: do
-
-## Build Options
-TODO: do
-
-## Using an IDE
-You may use your favorite IDE to build and run the inviwo code base. [This article](https://preshing.com/20170511/how-to-build-a-cmake-based-project/) explains how cmake based projects and be imported and built using various IDEs like Visual Studio, Qt Creator, XCode etc. 
 
 ## Recommended Visual studio setup (Optional)
 
