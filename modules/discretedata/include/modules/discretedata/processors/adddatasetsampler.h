@@ -34,6 +34,8 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <modules/discretedata/properties/datachannelproperty.h>
 #include <modules/discretedata/ports/datasetport.h>
+#include <modules/discretedata/channels/formatconversionchannel.h>
+#include <inviwo/core/ports/meshport.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -45,7 +47,7 @@ namespace discretedata {
 class IVW_MODULE_DISCRETEDATA_API AddDataSetSampler : public Processor {
 public:
     typedef std::function<std::shared_ptr<DataSetSamplerBase>(
-        ind baseDim, std::shared_ptr<const Connectivity>, std::shared_ptr<const Channel>,
+        ind, std::shared_ptr<const Connectivity>, std::shared_ptr<const Channel>,
         const InterpolantBase*)>
         CreateSampler;
 
@@ -59,12 +61,12 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    template <template <unsigned int> class Sampler>
+    template <template <unsigned int> class SamplerType>
     static void addSamplerType(std::string identifier, std::string displayName);
     static void addSamplerType(std::string identifier, std::string displayName,
                                CreateSampler creator);
 
-    template <template <unsigned int> class interpolant>
+    template <template <unsigned int> class InterpolantType>
     static void addInterpolantType(std::string identifier, std::string displayName);
     static void addInterpolantType(std::string identifier, std::string displayName,
                                    CreateInterpolant creator);
@@ -73,6 +75,8 @@ private:
     void fillInterpolationTypes();
 
     DataSetInport dataIn_;
+    DataSetOutport dataOut_;
+    MeshOutport meshOut_;
     DataChannelProperty positionChannel_;
     // TemplateOptionProperty<CreateInterpolant> interpolantCreator_;
     OptionPropertyUInt samplerCreator_, interpolantCreator_;
@@ -81,52 +85,65 @@ private:
     const InterpolantBase* interpolant_;
     std::shared_ptr<DataSetSamplerBase> sampler_;
 
-    bool interpolationChanged_, interpolantChanged_, samplerChanged_;
+    bool interpolantChanged_, interpolationChanged_, samplerChanged_;
 
     static std::map<std::string, std::pair<std::string, CreateSampler>> samplerCreatorList_;
     static std::map<std::string, std::pair<std::string, CreateInterpolant>> interpolantCreatorList_;
 
-    template <template <unsigned int> class Sampler>
+    template <template <unsigned int> class SamplerType>
     struct SamplerDispatcher {
         template <typename Result, ind N>
         Result operator()(std::shared_ptr<const Connectivity> grid,
                           std::shared_ptr<const Channel> coordinates,
                           const InterpolantBase* interpolant) {
+
             auto* usableInterpolant = dynamic_cast<const Interpolant<N>*>(interpolant);
             auto usableCoords =
                 std::dynamic_pointer_cast<const DataChannel<double, N>>(coordinates);
-            if (!usableInterpolant || !usableCoords) return nullptr;
-            return std::make_shared<Sampler<N>>(grid, usableCoords, *usableInterpolant);
-            // return nullptr;
+            if (!usableCoords) {
+                dd_detail::CreateFormatConversionChannelToTN<double, N> dispatcher;
+                usableCoords = dispatching::dispatch<std::shared_ptr<DataChannel<double, N>>,
+                                                     dispatching::filter::Scalars>(
+                    coordinates->getDataFormatId(), dispatcher, coordinates,
+                    fmt::format("{}_as_Coordinate", coordinates->getName()));
+            }
+            if (!usableInterpolant || !usableCoords) {
+                // std::cout << "Interpolant or coordinates of wrong type!" << std::endl;
+                // if (!usableInterpolant) std::cout << "= It's the interpolant!" << std::endl;
+                // if (!usableCoords) std::cout << "= It's the coords!" << std::endl;
+                return nullptr;
+            }
+            return std::make_shared<SamplerType<N>>(grid, usableCoords, *usableInterpolant);
         }
     };
 
-    template <template <unsigned int> class Interpolant>
+    template <template <unsigned int> class InterpolantType>
     struct InterpolantDispatcher {
         template <typename Result, ind N>
         Result operator()() {
-            return new Interpolant<N>();
+            return new InterpolantType<N>();
         }
     };
 };
 
-template <template <unsigned int> class Sampler>
+template <template <unsigned int> class SamplerType>
 void AddDataSetSampler::addSamplerType(std::string identifier, std::string displayName) {
     AddDataSetSampler::addSamplerType(
         identifier, displayName,
         [](ind baseDim, std::shared_ptr<const Connectivity> grid,
            std::shared_ptr<const Channel> coordinates, const InterpolantBase* interpolant) {
-            SamplerDispatcher<Sampler> dispatcher;
-            return channeldispatching::dispatchNumber<std::shared_ptr<DataSetSamplerBase>, 1,
-                                                      DISCRETEDATA_MAX_NUM_DIMENSIONS>(
+            SamplerDispatcher<SamplerType> dispatcher;
+            return channeldispatching::dispatchNumber<std::shared_ptr<DataSetSamplerBase>, 1, 3>(
                 baseDim, dispatcher, grid, coordinates, interpolant);
         });
+    std::cout << "Added interpolant option " << displayName << std::endl;
 }
 
-template <template <unsigned int> class Interpolant>
+template <template <unsigned int> class InterpolantType>
 void AddDataSetSampler::addInterpolantType(std::string identifier, std::string displayName) {
     AddDataSetSampler::addInterpolantType(identifier, displayName, [](ind baseDim) {
-        InterpolantDispatcher<Interpolant> dispatcher;
+        InterpolantDispatcher<InterpolantType> dispatcher;
+        std::cout << "Creating Interpolant!" << std::endl;
         return channeldispatching::dispatchNumber<const InterpolantBase*, 1,
                                                   DISCRETEDATA_MAX_NUM_DIMENSIONS>(baseDim,
                                                                                    dispatcher);

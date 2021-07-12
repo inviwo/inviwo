@@ -52,11 +52,9 @@ using DataChannelMap =
     std::map<std::pair<std::string, GridPrimitive>,
              std::shared_ptr<const Channel>,                     // Shared base channels pointers
              dd_util::PairCompare<std::string, GridPrimitive>>;  // Lesser operator on
-                                                                 // string-Primitve pairs
+                                                                 // String-Primitve pairs
 
-using SamplerMap =
-    std::map<std::pair<std::string, std::string>, std::shared_ptr<const DataSetSamplerBase>,
-             dd_util::PairCompare<std::string, std::string>>;
+using SamplerMap = std::map<std::string, std::shared_ptr<const DataSetSamplerBase>>;
 
 /**
  * \brief Data package containing structure by cell connectivity and data
@@ -118,6 +116,8 @@ public:
     std::shared_ptr<const Connectivity> getGrid() const { return grid_; }
 
     // Channels
+
+    bool hasChannel(std::shared_ptr<const Channel> channel) const;
 
     /**
      * Add a new channel to the set
@@ -201,7 +201,15 @@ public:
     /**
      * Returns the list of DataSetSamplers (map from long name to Sampler shared pointer).
      */
-    SamplerMap getSamplers() const;
+    const SamplerMap& getSamplers() const;
+
+    /**
+     * Try to add a new sampler.
+     * Will be rejected if the sampler is based on a channel not in this dataset
+     * or not of maximal dimension (e.g., a 2D sampler for a 3D dataset).
+     * @return Successful - a valid sampler for this dataset, now available in the sampler list.
+     */
+    bool addSampler(std::shared_ptr<const DataSetSamplerBase> sampler);
 
 protected:
     /**
@@ -277,12 +285,16 @@ struct DataTraits<discretedata::DataSet> {
         // doc.append("p", oss.str());
         // std::ostringstream oss;
         auto grid = data.getGrid();
-        doc.append("p", fmt::format("Data set with {} channels.", data.size()));
+        doc.append("p", fmt::format("Data set with {} channels and {} samplers.", data.size(),
+                                    data.getSamplers().size()));
         doc.append("p",
                    fmt::format("{} with {} vertices and {} {} cells.", grid->getIdentifier(),
                                grid->getNumElements(), grid->getNumElements(grid->getDimension()),
                                primitiveName(grid->getDimension())));
 
+        // Channels.
+        doc.append("p", "");
+        doc.append("b", "Channels", {{"style", "color:white;"}});
         auto channelKeyList = data.getChannelNames();
         if (channelKeyList.size() != 0)
             for (auto& channelKey : channelKeyList) {
@@ -292,6 +304,12 @@ struct DataTraits<discretedata::DataSet> {
                                             (int)channelKey.second));
             }
 
+        // Samplers.
+        doc.append("p", "");
+        doc.append("b", "Samplers", {{"style", "color:white;"}});
+        for (auto& sampler : data.getSamplers()) {
+            doc.append("p", fmt::format("   {}", sampler.second->getIdentifier()));
+        }
         return doc;
     }
 };

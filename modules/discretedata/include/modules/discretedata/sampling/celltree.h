@@ -31,7 +31,7 @@
 
 #include <modules/discretedata/connectivity/connectivity.h>
 #include <modules/discretedata/channels/datachannel.h>
-#include <modules/discretedata/interpolation/interpolant.h>
+#include <modules/discretedata/sampling/interpolant.h>
 #include <modules/discretedata/sampling/datasetsampler.h>
 
 namespace inviwo {
@@ -43,6 +43,8 @@ namespace discretedata {
  **/
 template <unsigned int SpatialDims>
 class CellTree : public DataSetSampler<SpatialDims> {
+    static_assert(SpatialDims < 8, "More than 8 dimensions exceed the node capacity.");
+
 public:
     CellTree(std::shared_ptr<const Connectivity> grid,
              std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates,
@@ -53,7 +55,7 @@ public:
     CellTree& operator=(CellTree<SpatialDims>&& tree);
     CellTree& operator=(CellTree<SpatialDims>& tree);
 
-    template <typename T>
+    // template <typename T>
     bool sampleCell(ind cellId, const std::array<float, SpatialDims>& pos,
                     std::vector<double>& weights,
                     InterpolationType interpolationType = InterpolationType::Ignore) const;
@@ -61,16 +63,22 @@ public:
                             std::vector<double>& returnWeights, std::vector<ind>& returnVertices,
                             InterpolationType interpolationType = InterpolationType::Ignore) const;
 
-    template <typename T, ind N>
-    ind locateAndSampleCell(const std::array<float, SpatialDims>& pos,
-                            std::vector<double>& returnWeights, std::vector<ind>& returnVertices,
-                            InterpolationType interpolationType = InterpolationType::Ignore) const;
+    // template <typename T, ind N>
+    // ind locateAndSampleCell(const std::array<float, SpatialDims>& pos,
+    //                         std::vector<double>& returnWeights, std::vector<ind>& returnVertices,
+    //                         InterpolationType interpolationType = InterpolationType::Ignore)
+    //                         const;
+
+    virtual std::string getIdentifier() const override;
+
+    virtual Mesh* getDebugMesh() const override;
 
 protected:
+    void buildCellTree(std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates);
     struct Node {
         unsigned int dim : 3;
         unsigned int child : 29;  // This index and next.
-        bool isLeaf() { return child == 0; }
+        bool isLeaf() const { return child == 0; }
 
         union {
             struct {
@@ -82,23 +90,24 @@ protected:
         };
     };
 
-    struct CellTreeBuilder {
-        template <typename T, ind N>
-        void operator()(const DataChannel<T, N>* positions, CellTree<SpatialDims>& tree);
-    };
+    // struct CellTreeBuilder {
+    //     template <typename T, ind N>
+    //     void operator()(const DataChannel<T, N>* positions, CellTree<SpatialDims>* tree);
+    // };
 
     std::vector<Node> nodes_;
     std::vector<ind> cells_;
     std::array<float, SpatialDims> coordsMin_, coordsMax_;
-    ind (CellTree<SpatialDims>::*locateCellFunction)(const std::array<float, SpatialDims>&) const;
+    // ind (CellTree<SpatialDims>::*locateCellFunction)(const std::array<float, SpatialDims>&,
+    //                                                  std::vector<double>&, std::vector<ind>&,
+    //                                                  InterpolationType) const;
 
     // Fixed values taken from the paper.
     static constexpr unsigned MAX_CELLS_PER_NODE = 32;
     static constexpr unsigned NUM_SPLIT_BUCKETS = 5;
 
-public:
-    const std::shared_ptr<const Connectivity> grid_;
-    const std::shared_ptr<const Channel> coordinates_;
+    using DataSetSamplerBase::coordinates_;
+    using DataSetSamplerBase::grid_;
 };
 
 }  // namespace discretedata

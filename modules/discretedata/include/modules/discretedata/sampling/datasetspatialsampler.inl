@@ -30,9 +30,10 @@
 #pragma once
 
 #include <modules/discretedata/sampling/datasetspatialsampler.h>
-#include <modules/discretedata/util/spatialentitychannel.h>
 #include <inviwo/core/util/interpolation.h>
 #include <inviwo/core/util/spatialsampler.h>
+
+// #include <modules/base
 
 namespace inviwo {
 namespace discretedata {
@@ -41,11 +42,16 @@ template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 DataSetSpatialSampler<SpatialDims, DataDims, T>::DataSetSpatialSampler(
     std::shared_ptr<const DataSetSampler<SpatialDims>> sampler, InterpolationType interpolationType,
     std::shared_ptr<const DataChannel<T, DataDims>> data)
-    : sampler_(sampler)
+    : SpatialSampler<SpatialDims, DataDims, T>(spatialChannel_)
+    , spatialChannel_(sampler_)
+    //   std::dynamic_pointer_cast<const DataChannel<double, SpatialDims>>(sampler->coordinates_))
     , interpolationType_(interpolationType)
-    , data_(data)
-    , SpatialSampler<SpatialDims, DataDims, T>(
-          SpatialEntityChannel<T, SpatialDims>(sampler.coordinates_)) {
+    , sampler_(sampler)
+    , data_(data) {
+    std::cout << "Creating Spatial Sampler" << std::endl;
+    std::cout << "Spatial entity in DatasetSampler? " << &spatialChannel_ << std::endl;
+
+    // std::dynamic_pointer_cast<const DataChannel<double, SpatialDims>>(sampler->coordinates_);
     if (interpolationType == InterpolationType::Ignore) {
         interpolationType = InterpolationType::Nearest;
         LogWarn(
@@ -53,12 +59,19 @@ DataSetSpatialSampler<SpatialDims, DataDims, T>::DataSetSpatialSampler(
     }
 }
 
+// template <unsigned int SpatialDims, unsigned int DataDims, typename T>
+// SpatialEntity<N>* DataSetSpatialSampler<SpatialDims, DataDims, T>::clone() const {
+//     std::cout << "Cloned Entity Channel" << std::endl;
+//     return new SpatialEntityChannel<T, N>(*this);
+// }
+
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 Vector<DataDims, T> DataSetSpatialSampler<SpatialDims, DataDims, T>::sampleDataSpace(
     const Vector<SpatialDims, double>& pos) const {
-
+    std::cout << "Sample!" << std::endl;
     // Sample weights by position.
-    std::array<float, SpatialDims> arrayPos(pos.begin(), pos.end());
+    std::array<float, SpatialDims> arrayPos;
+    for (size_t i = 0; i < SpatialDims; ++i) arrayPos[i] = pos[i];
     std::vector<double> returnWeights;
     std::vector<ind> returnVertices;
     ind cell =
@@ -82,13 +95,15 @@ Vector<DataDims, T> DataSetSpatialSampler<SpatialDims, DataDims, T>::sampleDataS
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 bool DataSetSpatialSampler<SpatialDims, DataDims, T>::withinBoundsDataSpace(
     const Vector<SpatialDims, double>& pos) const {
+    std::cout << "Withing bounds?" << std::endl;
     // Sample weights by position.
-    std::array<float, SpatialDims> arrayPos(pos.begin(), pos.end());
+    std::array<float, SpatialDims> arrayPos;
+    for (size_t i = 0; i < SpatialDims; ++i) arrayPos[i] = pos[i];
     std::vector<double> returnWeights;
     std::vector<ind> returnVertices;
     ind cell =
         sampler_->locateAndSampleCell(arrayPos, returnWeights, returnVertices, interpolationType_);
-    return cell >= 0;
+    return cell >= 0 && returnVertices.size() > 0;
 }
 
 }  // namespace discretedata

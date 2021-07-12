@@ -77,7 +77,6 @@ void CreateUniformGrid::process() {
         offsetCells.push_back(dimProp->gridOffset_.get());
     }
     auto dataSet = channeldispatching::dispatchNumber<std::shared_ptr<DataSet>, 1, 4>(
-        //   DISCRETEDATA_MAX_NUM_DIMENSIONS>(
         numDims, dispatcher, numCells, sizeCells, offsetCells, name_.get());
 
     dataSetOutport_.setData(dataSet);

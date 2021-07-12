@@ -27,4 +27,4 @@
  *
  *********************************************************************************/
 
-#include <modules/discretedata/channels/analyticchannel.h>
+#include <modules/discretedata/channels/formatconversionchannel.h>

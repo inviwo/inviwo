@@ -47,7 +47,7 @@ using GridPrimitiveProperty = TemplateOptionProperty<GridPrimitive>;
 
 class IVW_MODULE_DISCRETEDATA_API DataChannelProperty : public CompositeProperty {
 public:
-    using ChannelFilter = std::function<bool(const std::shared_ptr<const Channel>)>;
+    using ChannelFilter = std::function<bool(const std::shared_ptr<const Channel>&)>;
     static bool FilterPassAll(const std::shared_ptr<const Channel>) { return true; }
     template <ind Dim>
     static bool FilterPassDim(const std::shared_ptr<const Channel> channel) {

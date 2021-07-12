@@ -30,6 +30,7 @@
 #pragma once
 
 #include <modules/discretedata/sampling/celltree.h>
+#include <modules/discretedata/util/spatialentitychannel.h>
 #include <inviwo/core/util/interpolation.h>
 #include <inviwo/core/util/spatialsampler.h>
 
@@ -37,23 +38,32 @@ namespace inviwo {
 namespace discretedata {
 
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
-class DataSetSpatialSampler : public SpatialSampler<SpatialDims, DataDims, T> {
+class DataSetSpatialSampler :  // public SpatialEntity<SpatialDims>,
+                               public SpatialSampler<SpatialDims, DataDims, T> {
 public:
     DataSetSpatialSampler(std::shared_ptr<const DataSetSampler<SpatialDims>> sampler,
                           InterpolationType interpolationType,
                           std::shared_ptr<const DataChannel<T, DataDims>> data);
     virtual ~DataSetSpatialSampler() = default;
+    // virtual SpatialEntity<SpatialDims>* clone() const override;
 
     virtual Vector<DataDims, T> sampleDataSpace(
         const Vector<SpatialDims, double>& pos) const override;
     virtual bool withinBoundsDataSpace(const Vector<SpatialDims, double>& pos) const override;
+    // const SpatialCoordinateTransformer<SpatialDims>& getCoordinateTransformer() const override {
+    //     std::cout << "Spatial entity in DATASET spatial sampler? "
+    //               << &SpatialSampler<SpatialDims, DataDims, T>::spatialEntity_ << std::endl;
+    //     return SpatialSampler<SpatialDims, DataDims,
+    //     T>::spatialEntity_.getCoordinateTransformer();
+    // }
 
 protected:
     // Vector<DataDims, double> getVoxel(const size3_t& pos) const;
 
+    SpatialEntityChannel<T, SpatialDims> spatialChannel_;
     std::shared_ptr<const DataSetSampler<SpatialDims>> sampler_;
-    std::shared_ptr<const DataChannel<T, DataDims>> data_;
     InterpolationType interpolationType_;
+    std::shared_ptr<const DataChannel<T, DataDims>> data_;
 };
 
 using DataSetSpatialSampler2D = DataSetSpatialSampler<2, 2, double>;

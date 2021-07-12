@@ -46,7 +46,7 @@
 #include <modules/discretedata/processors/exampledataset.h>
 #include <modules/discretedata/processors/sphericalcoordinates.h>
 
-#include <modules/discretedata/interpolation/interpolant.h>
+#include <modules/discretedata/sampling/interpolant.h>
 #include <modules/discretedata/sampling/celltree.h>
 
 namespace inviwo {

@@ -32,6 +32,8 @@
 #include <modules/discretedata/connectivity/elementiterator.h>
 #include <modules/discretedata/channels/channeldispatching.h>
 
+#include <signal.h>
+
 #include <inviwo/core/util/assertion.h>
 #include <numeric>
 
@@ -515,8 +517,12 @@ template <ind N>
 template <GridPrimitive P>
 std::pair<std::array<ind, size_t(N)>, std::array<size_t, size_t(P)>>
 TripolarGrid<N>::NumPrimitives::coordinatesFromGlobalIndex(ind globalIdx) const {
-    if (globalIdx < 0 || globalIdx >= Grid.getNumElements(P))
+    if (globalIdx < 0 || globalIdx >= Grid.getNumElements(P)) {
+        std::cout << "Tripolar Index out of range :( " << globalIdx << " not in [0, "
+                  << Grid.getNumElements(P) << ")" << std::endl;
+        raise(SIGTRAP);
         throw RangeException("Index out of range for this primitive type.");
+    }
 
     // Find the range the index is in.
     auto dirBegin = PerDirectionOffsets.begin() + PrimitiveOffsets[size_t(P)];

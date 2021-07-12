@@ -109,7 +109,10 @@ private:
 };
 
 template <unsigned int N>
-struct cameratype {};
+struct cameratype {
+    struct CameraND{};
+    typedef CameraND type;
+};
 
 template <>
 struct cameratype<2> {
@@ -120,6 +123,7 @@ template <>
 struct cameratype<3> {
     typedef Camera type;
 };
+
 }
 template <unsigned int N>
 using CameraND = typename util::cameratype<N>::type;

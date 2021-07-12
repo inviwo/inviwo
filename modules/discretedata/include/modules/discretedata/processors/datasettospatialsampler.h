@@ -31,11 +31,12 @@
 
 #include <modules/discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <modules/discretedata/ports/datasetport.h>
 #include <modules/discretedata/properties/datachannelproperty.h>
 #include <modules/discretedata/sampling/celltree.h>
-#include <modules/discretedata/interpolation/interpolant.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <modules/discretedata/sampling/interpolant.h>
 #include <modules/discretedata/sampling/datasetspatialsampler.h>
 #include <fmt/format.h>
 
@@ -44,8 +45,10 @@ namespace discretedata {
 
 /** \docpage{org.inviwo.DataSetToSpatialSampler, Data Set To Spatial Sampler}
  * ![](org.inviwo.DataSetToSpatialSampler.png?classIdentifier=org.inviwo.DataSetToSpatialSampler)
- * Creates a SpatialSampler from a DataSet. The type of sampler should some day be chosen by the
- * user.
+ * Creates a SpatialSampler from a DatasetSampler already created for a DataSet.
+ * This processor basically just combines the weighted sampler with a Channel to sampler from.
+ * This allows several SpatialSamplers to use the same data structure, for example on velocity and
+ * pressure in the same DataSet.
  */
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 class IVW_MODULE_DISCRETEDATA_API DataSetToSpatialSampler : public Processor {
@@ -59,23 +62,23 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    // typedef Interpolant<SpatialDims> (*createInterpolantFunc)(
-    //     std::shared_ptr<const DataChannel<double, SpatialDims>>);
     DataSetInport dataIn_;
     DataOutport<SpatialSampler<SpatialDims, DataDims, T>> sampler_;
-    DataChannelProperty coordinateChannel_, dataChannel_;
+
+    OptionPropertyString datasetSamplerName_;
     TemplateOptionProperty<InterpolationType> interpolationType_;
+    DataChannelProperty dataChannel_;
 };
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 const ProcessorInfo DataSetToSpatialSampler<SpatialDims, DataDims, T>::processorInfo_{
-    fmt::format("org.inviwo.VolumeToSpatialSampler{}to{}", SpatialDims,
-                DataDims),                                                     // Class identifier
-    fmt::format("Volume To Spatial Sampler {} to {}", SpatialDims, DataDims),  // Display name
-    "Spatial Sampler",                                                         // Category
-    CodeState::Experimental,                                                   // Code state
-    Tags::None,                                                                // Tags
+    fmt::format("org.inviwo.DataSetToSpatialSampler{}to{}", SpatialDims,
+                DataDims),                                                      // Class identifier
+    fmt::format("DataSet To Spatial Sampler {} to {}", SpatialDims, DataDims),  // Display name
+    "Spatial Sampler",                                                          // Category
+    CodeState::Experimental,                                                    // Code state
+    Tags::None,                                                                 // Tags
 };
 
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
@@ -88,40 +91,111 @@ DataSetToSpatialSampler<SpatialDims, DataDims, T>::DataSetToSpatialSampler()
     : Processor()
     , dataIn_("dataset")
     , sampler_("sampler")
-    , coordinateChannel_(
-          dataIn_, "coordChannel", "Coordinate Channel",
-          [](const std::shared_ptr<const Channel> ch) -> bool {
-              return std::dynamic_pointer_cast<const DataChannel<double, SpatialDims>>(ch).get();
-          })
+    , datasetSamplerName_("datasetSampler", "DataSet Sampler")
+    , interpolationType_("interpolationType", "Interpolation Type")
     , dataChannel_(dataIn_, "dataChannel", "Data Channel",
                    [](const std::shared_ptr<const Channel> ch) -> bool {
                        return std::dynamic_pointer_cast<const DataChannel<T, DataDims>>(ch).get();
-                   })
-    , interpolationType_("interpolationType", "Interpolation Type") {
+                   }) {
     addPort(dataIn_);
     addPort(sampler_);
-    addProperties(coordinateChannel_, dataChannel_);
+    addProperties(datasetSamplerName_, dataChannel_);
 }
 
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 void DataSetToSpatialSampler<SpatialDims, DataDims, T>::process() {
-    if (dataIn_.hasData()) {
-        auto coordsTN = std::dynamic_pointer_cast<const DataChannel<double, SpatialDims>>(
-            coordinateChannel_.getCurrentChannel());
-        auto dataTN = std::dynamic_pointer_cast<const DataChannel<T, DataDims>>(
-            dataChannel_.getCurrentChannel());
-        if (!coordsTN || !dataTN) {
-            sampler_.setData(nullptr);
-            return;
-        }
-        auto sampler = std::make_shared<const CellTree<SpatialDims>>(dataIn_.getData()->getGrid(),
-                                                                     coordsTN, dataTN);
-        auto spatialSampler = std::make_shared<DataSetSpatialSampler<SpatialDims, DataDims, T>>(
-            sampler, interpolationType_.get(), dataTN);
-        sampler_.setData(spatialSampler);
-    } else {
+    std::cout << "Making a SpatialSampler!!!" << std::endl;
+    if (!dataIn_.isChanged() && !dataIn_.hasData()) return;
+    std::cout << "Actually making a SpatialSampler!!!" << std::endl;
+
+    // No samplers in the dataset??
+    if (dataIn_.isChanged() &&
+        (!dataIn_.hasData() || dataIn_.getData()->getSamplers().size() == 0)) {
+        datasetSamplerName_.clearOptions();
         sampler_.setData(nullptr);
+        return;
     }
+    std::cout << "A" << std::endl;
+
+    const auto& samplerMap = dataIn_.getData()->getSamplers();
+
+    // Refresh the sampler options.
+    if (dataIn_.isChanged() && dataIn_.hasData()) {
+
+        std::cout << "B" << std::endl;
+
+        std::string selected =
+            datasetSamplerName_.size() ? datasetSamplerName_.getSelectedIdentifier() : "";
+        std::cout << "B1" << std::endl;
+        datasetSamplerName_.clearOptions();
+        std::cout << "B2" << std::endl;
+        for (auto& sampler : samplerMap) {
+            std::cout << "BX" << std::endl;
+            std::cout << "Added " << sampler.first << std::endl;
+            datasetSamplerName_.addOption(sampler.first, sampler.first);
+            // removeFromString(sampler.first, ' '), sampler.first);
+        }
+        datasetSamplerName_.setSelectedValue(selected);
+
+        std::cout << "C" << std::endl;
+    }
+
+    std::cout << "D" << std::endl;
+
+    // Something missing to create a SpatialSampler?
+    if (!datasetSamplerName_.size() || !dataChannel_.getCurrentChannel()) {
+
+        std::cout << "E" << std::endl;
+        sampler_.setData(nullptr);
+        return;
+    }
+
+    std::cout << "F" << std::endl;
+    // Actually build a SpatialSampler.
+    auto dataTN =
+        std::dynamic_pointer_cast<const DataChannel<T, DataDims>>(dataChannel_.getCurrentChannel());
+    if (!dataTN) {
+
+        std::cout << "G" << std::endl;
+        LogError("The given data channel is not of the expected type.");
+        sampler_.setData(nullptr);
+        return;
+    }
+
+    std::cout << "H" << std::endl;
+    std::cout << "Selected value: " << datasetSamplerName_.getSelectedValue() << std::endl;
+    auto samplerIt = samplerMap.find(datasetSamplerName_.getSelectedValue());
+    if (samplerIt == samplerMap.end()) {
+        // throw Exception("Sampler option does not name a valid sampler");
+        std::cout << "I" << std::endl;
+        return;
+    }
+
+    InterpolationType interpolation = InterpolationType::Nearest;
+    if (interpolationType_.size() &&
+        interpolationType_.getSelectedIndex() < interpolationType_.size()) {
+        interpolation = interpolationType_.get();
+    }
+    std::cout << "Interpolation type " << int(interpolation) << std::endl;
+
+    auto datasetSampler =
+        std::dynamic_pointer_cast<const DataSetSampler<SpatialDims>>(samplerIt->second);
+    std::cout << "DatasetSampler adress: " << datasetSampler.get() << std::endl;
+
+    // auto datasetSamplerTN =
+    //     std::dynamic_pointer_cast<const DataSetSampler<SpatialDims>>(datasetSampler);
+    auto spatialSampler = std::make_shared<DataSetSpatialSampler<SpatialDims, DataDims, T>>(
+        datasetSampler, interpolation, dataTN);
+
+    std::cout << "New spatial sampler " << spatialSampler.get() << std::endl;
+    // Replace interpolation type options;
+    // std::vector<Interpola
+    auto interpolationOptions = InterpolantBase::InterpolationTypeOptions;
+    interpolationType_.replaceOptions(interpolationOptions);
+
+    sampler_.setData(spatialSampler);
+
+    std::cout << "M" << std::endl;
 }
 
 using DataSetToSpatialSampler2D = DataSetToSpatialSampler<2, 2, double>;

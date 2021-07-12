@@ -27,4 +27,13 @@
  *
  *********************************************************************************/
 
-#include <modules/discretedata/channels/analyticchannel.h>
+#include <modules/discretedata/sampling/datasetsampler.h>
+
+namespace inviwo {
+namespace discretedata {
+
+const std::vector<InterpolantBase::InterpolationOption> InterpolantBase::InterpolationTypeOptions =
+    {InterpolantBase::InterpolationOption("Ignore", "Ignore", InterpolationType::Ignore)};
+
+}
+}  // namespace inviwo

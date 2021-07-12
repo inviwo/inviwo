@@ -38,54 +38,22 @@
 namespace inviwo {
 namespace discretedata {
 
-namespace dd_detail {
-struct SetInterpolantDispatcher {
-    template <typename Result, ind N>
-    Result operator()(const InterpolantBase& interpolant, DataSetSamplerBase* sampler) {
-        auto* usableInterpolant = dynamic_cast<const Interpolant<unsigned(N)>*>(&interpolant);
-        auto usableSampler = dynamic_cast<DataSetSampler<unsigned(N)>*>(sampler);
-        if (!usableInterpolant || !usableSampler) return false;
-
-        usableSampler->setInterpolant(*usableInterpolant);
-        return true;
-    }
-};
-
-struct GetInterpolantDispatcher {
-    template <typename Result, ind N>
-    Result operator()(const DataSetSamplerBase* sampler) {
-        auto usableSampler = dynamic_cast<const DataSetSampler<unsigned(N)>*>(sampler);
-
-        return static_cast<const InterpolantBase&>((usableSampler->getInterpolant()));
-    }
-};
-}  // namespace dd_detail
-
-bool DataSetSamplerBase::setInterpolant(const InterpolantBase& interpolant) {
-    dd_detail::SetInterpolantDispatcher dispatcher;
-    return channeldispatching::dispatchNumber<bool, 1, DISCRETEDATA_MAX_NUM_DIMENSIONS>(
-        getDimension(), dispatcher, interpolant, this);
-}
-
-const InterpolantBase& DataSetSamplerBase::getInterpolantBase() const {
-    dd_detail::GetInterpolantDispatcher dispatcher;
-    return channeldispatching::dispatchNumber<const InterpolantBase&, 1,
-                                              DISCRETEDATA_MAX_NUM_DIMENSIONS>(getDimension(),
-                                                                               dispatcher, this);
-}
-
 template <unsigned int SpatialDims>
 DataSetSampler<SpatialDims>::DataSetSampler(
     std::shared_ptr<const Connectivity> grid,
     std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates,
     const Interpolant<SpatialDims>& interpolant)
-    : grid_(grid), coordinates_(coordinates), interpolant_(interpolant.copy()) {
-    if (coordinates_->getGridPrimitiveType() != GridPrimitive::Vertex ||
-        coordinates_->getNumComponents() != SpatialDims ||
-        coordinates_->size() != grid->getNumElements()) {
-        LogError("Incompatible grid and coordinate channel given, aborting.");
-        return;
-    }
+    : DataSetSamplerBase(grid, std::static_pointer_cast<const Channel>(coordinates))
+    , interpolant_(interpolant.copy()) {
+    std::cout << "" << std::endl;
+    if (!coordinates_) std::cout << "Oopsie doo coordinates!" << std::endl;
+    if (!grid_) std::cout << "Oopsie doo grid!" << std::endl;
+    // if (coordinates_->getGridPrimitiveType() != GridPrimitive::Vertex ||
+    //     coordinates_->getNumComponents() != SpatialDims ||
+    //     coordinates_->size() != grid->getNumElements()) {
+    //     LogError("Incompatible grid and coordinate channel given, aborting.");
+    //     return;
+    // }
 }
 
 template <unsigned int SpatialDims>
@@ -95,7 +63,13 @@ DataSetSampler<SpatialDims>::~DataSetSampler() {
 
 template <unsigned int SpatialDims>
 DataSetSampler<SpatialDims>::DataSetSampler(DataSetSampler&& tree)
-    : grid_(tree.grid_), coordinates_(tree.coordinates_) {}
+    : DataSetSampler(tree.grid_, tree.coordinates_) {}
+
+template <unsigned int SpatialDims>
+SpatialEntity<SpatialDims>* DataSetSampler<SpatialDims>::clone() const {
+    std::cout << "Cloned DataSetSampler (being a good spatial entity)" << std::endl;
+    return new DataSetSampler<SpatialDims>(*this);
+}
 
 template <unsigned int SpatialDims>
 void DataSetSampler<SpatialDims>::setInterpolant(const Interpolant<SpatialDims>& interpolant) {

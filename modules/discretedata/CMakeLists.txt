@@ -17,6 +17,7 @@ set(HEADER_FILES
     include/modules/discretedata/channels/channeliterator.h
     include/modules/discretedata/channels/combinedchannel.h
     include/modules/discretedata/channels/datachannel.h
+    include/modules/discretedata/channels/formatconversionchannel.h
     include/modules/discretedata/connectivity/cell.h
     include/modules/discretedata/connectivity/connectioniterator.h
     include/modules/discretedata/connectivity/connectivity.h
@@ -32,7 +33,6 @@ set(HEADER_FILES
     include/modules/discretedata/discretedatamodule.h
     include/modules/discretedata/discretedatamoduledefine.h
     include/modules/discretedata/discretedatatypes.h
-    include/modules/discretedata/interpolation/interpolant.h
     include/modules/discretedata/ports/datasetport.h
     include/modules/discretedata/processors/adddatasetsampler.h
     include/modules/discretedata/processors/colormapchannel.h
@@ -52,6 +52,8 @@ set(HEADER_FILES
     include/modules/discretedata/properties/datachannelproperty.h
     include/modules/discretedata/sampling/celltree.h
     include/modules/discretedata/sampling/datasetspatialsampler.h
+    include/modules/discretedata/sampling/interpolant.h
+    include/modules/discretedata/util/arrayutil.h
     include/modules/discretedata/util/prefixsumvector.h
     include/modules/discretedata/util/spatialentitychannel.h
     include/modules/discretedata/util/util.h
@@ -61,11 +63,13 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/channels/analyticchannel.cpp
     src/channels/buffergetter.cpp
     src/channels/cachedgetter.cpp
     src/channels/channel.cpp
     src/channels/combinedchannel.cpp
     src/channels/datachannel.cpp
+    src/channels/formatconversionchannel.cpp
     src/connectivity/cell.cpp
     src/connectivity/connectioniterator.cpp
     src/connectivity/connectivity.cpp
@@ -92,6 +96,8 @@ set(SOURCE_FILES
     src/processors/sphericalcoordinates.cpp
     src/processors/volumefromdataset.cpp
     src/properties/datachannelproperty.cpp
+    src/sampling/datasetsampler.cpp
+    src/sampling/interpolant.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -103,6 +109,7 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/dataset-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/data-access-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/example-code.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/interpolation-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/lineset-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/structured-grid-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/tripolar-grid-test.cpp

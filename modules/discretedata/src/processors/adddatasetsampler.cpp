@@ -34,6 +34,11 @@
 namespace inviwo {
 namespace discretedata {
 
+std::map<std::string, std::pair<std::string, AddDataSetSampler::CreateSampler>>
+    AddDataSetSampler::samplerCreatorList_;
+std::map<std::string, std::pair<std::string, AddDataSetSampler::CreateInterpolant>>
+    AddDataSetSampler::interpolantCreatorList_;
+
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo AddDataSetSampler::processorInfo_{
     "org.inviwo.AddDataSetSampler",  // Class identifier
@@ -44,37 +49,15 @@ const ProcessorInfo AddDataSetSampler::processorInfo_{
 };
 const ProcessorInfo AddDataSetSampler::getProcessorInfo() const { return processorInfo_; }
 
-// namespace dd_detail {
-// // struct CelltreeDispatcher {
-// //     template <typename Result, ind N>
-// //     Result operator()(std::shared_ptr<const Connectivity> grid,
-// //                       std::shared_ptr<const Channel> coordinates,
-// //                       const InterpolantBase* interpolant) {
-// //         auto* usableInterpolant = dynamic_cast<const Interpolant<N>*>(interpolant);
-// //         auto usableCoords = std::dynamic_pointer_cast<const DataChannel<double,
-// N>>(coordinates);
-// //         if (!usableInterpolant || !usableCoords) return nullptr;
-// //         // return std::make_shared<CellTree<N>>(grid, usableCoords, *usableInterpolant);
-// //         return nullptr;
-// //     }
-// // };
-
-// // struct SkewedBoxDispatcher {
-// //     template <typename Result, ind N>
-// //     Result operator()() {
-// //         return new SkewedBoxInterpolant<N>();
-// //     }
-// // };
-// }  // namespace dd_detail
-
 AddDataSetSampler::AddDataSetSampler()
     : Processor()
-    , dataIn_("addDataSetSampler")
+    , dataIn_("datasetIn")
+    , dataOut_("datasetWithSamplerOut")
+    , meshOut_("debugMeshOut")
     , positionChannel_(
-          dataIn_, "positionChannel", "Position Channel",
+          dataIn_, "positionChannel", "Position Channel (double)",
           [&](const std::shared_ptr<const Channel> channel) {
-              return dataIn_.hasData() &&
-                     channel->getGridPrimitiveType() == GridPrimitive::Vertex &&
+              return channel->getGridPrimitiveType() == GridPrimitive::Vertex &&
                      channel->getNumComponents() ==
                          static_cast<ind>(dataIn_.getData()->getGrid()->getDimension());
           })
@@ -84,29 +67,19 @@ AddDataSetSampler::AddDataSetSampler()
                          {{"nearest", "Nearest Neighbor", InterpolationType::Nearest},
                           {"squared", "Squared Distance", InterpolationType::SquaredDistance},
                           {"linear", "Linear", InterpolationType::Linear}},
-                         2) {
+                         2)
+    , interpolant_(nullptr)
+    , sampler_(nullptr)
+    , interpolantChanged_(true)
+    , interpolationChanged_(true)
+    , samplerChanged_(true) {
 
     addPort(dataIn_);
+    addPort(dataOut_);
+    addPort(meshOut_);
     addProperties(positionChannel_, samplerCreator_, interpolantCreator_, interpolationType_);
+    positionChannel_.gridPrimitive_.setVisible(false);
     interpolationType_.setCurrentStateAsDefault();
-
-    // samplerCreator_.addOption(
-    //     "celltree", "Cell Tree",
-    //     [baseDim](std::shared_ptr<const Connectivity> grid,
-    //               std::shared_ptr<const Channel> coordinates, const InterpolantBase* interpolant)
-    //               {
-    //         dd_detail::CelltreeDispatcher dispatcher;
-    //         return channeldispatching::dispatchNumber<std::shared_ptr<DataSetSamplerBase>, 1,
-    //                                                   DISCRETEDATA_MAX_NUM_DIMENSIONS>(
-    //             baseDim, dispatcher, grid, coordinates, interpolant);
-    //     });
-
-    // interpolantCreator_.addOption("skewedCube", "Skewed Cube", [baseDim]() {
-    //     dd_detail::SkewedBoxDispatcher dispatcher;
-    //     return channeldispatching::dispatchNumber<const InterpolantBase*, 1,
-    //                                               DISCRETEDATA_MAX_NUM_DIMENSIONS>(baseDim,
-    //                                                                                dispatcher);
-    // });
 
     for (auto& creator : samplerCreatorList_) {
         samplerCreator_.addOption(creator.first, creator.second.first, samplerCreator_.size());
@@ -117,17 +90,47 @@ AddDataSetSampler::AddDataSetSampler()
                                       interpolantCreator_.size());
     }
 
-    interpolantCreator_.onChange([this]() { interpolantChanged_ = true; });
-    interpolationType_.onChange([this]() { interpolationChanged_ = true; });
-    samplerCreator_.onChange([this]() { samplerChanged_ = true; });
+    interpolantCreator_.onChange([this]() {
+        interpolantChanged_ = true;
+        invalidate(InvalidationLevel::InvalidOutput);
+        std::cout << "Changed interpolant" << std::endl;
+    });
+    interpolationType_.onChange([this]() {
+        interpolationChanged_ = true;
+        invalidate(InvalidationLevel::InvalidOutput);
+        std::cout << "Changed interpolation" << std::endl;
+    });
+    samplerCreator_.onChange([this]() {
+        samplerChanged_ = true;
+        invalidate(InvalidationLevel::InvalidOutput);
+        std::cout << "Changed sampler" << std::endl;
+    });
 }
 
 void AddDataSetSampler::process() {
+    static bool firstTime = true;
+    if (!firstTime) return;
+    firstTime = false;
 
-    if (!dataIn_.hasData() || positionChannel_.size() < 1) return;
+    LogWarn("= Process!");
+    std::cout << "X== Proccess! ==" << std::endl;
+    auto removeChangedFlags = [this]() {
+        interpolantChanged_ = false;
+        interpolationChanged_ = false;
+        samplerChanged_ = false;
+    };
+
+    if (!dataIn_.hasData() || positionChannel_.size() < 1) {
+        std::cout << "ASDf" << std::endl;
+        dataOut_.setData(std::shared_ptr<DataSet>(nullptr));
+        meshOut_.setData(nullptr);
+        removeChangedFlags();
+        return;
+    }
 
     ind baseDim = static_cast<ind>(dataIn_.getData()->getGrid()->getDimension());
     if (interpolantChanged_) {
+        std::cout << "GHJK" << std::endl;
         delete interpolant_;
 
         interpolant_ =
@@ -136,12 +139,35 @@ void AddDataSetSampler::process() {
         if (!samplerChanged_ && sampler_) sampler_->setInterpolant(*interpolant_);
     }
 
-    if (samplerChanged_) {
+    if (samplerChanged_ || dataIn_.isChanged()) {
+        std::cout << "X Getting new sampler of type " << samplerCreator_.getSelectedIdentifier()
+                  << std::endl;
+        removeChangedFlags();
+        LogWarn("Getting new sampler of type " << samplerCreator_.getSelectedIdentifier());
         sampler_ = samplerCreatorList_[samplerCreator_.getSelectedIdentifier()].second(
             baseDim, dataIn_.getData()->getGrid(), positionChannel_.getCurrentChannel(),
             interpolant_);
+        LogWarn("Sampler address: " << sampler_);
+        std::cout << "X Sampler address: " << sampler_ << std::endl;
     }
-    // outport_.setData(myImage);
+
+    removeChangedFlags();
+
+    if (!sampler_) {
+        LogWarn("Sampler does not exist :(");
+        return;
+    }
+
+    std::cout << "New dataset" << std::endl;
+    auto datasetWithSampler = std::make_shared<DataSet>(*dataIn_.getData());
+    std::cout << "Made dataset" << std::endl;
+
+    datasetWithSampler->addChannel(sampler_->coordinates_);
+    datasetWithSampler->addSampler(sampler_);
+    dataOut_.setData(datasetWithSampler);
+
+    meshOut_.setData(sampler_->getDebugMesh());
+    std::cout << "Ended process AddDataSetSampler" << std::endl;
 }
 
 void AddDataSetSampler::fillInterpolationTypes() {

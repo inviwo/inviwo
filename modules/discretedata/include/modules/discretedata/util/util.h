@@ -163,7 +163,10 @@ static constexpr bool nextNchooseK(size_t from, typename std::array<size_t, Choo
         if (choice[Choose - k] != from - k) {
             choice[Choose - k]++;
             ind valE = choice[from - k];
-            for (size_t afterC = from - k + 1; afterC < Choose; ++afterC) choice[afterC] = ++valE;
+            if constexpr (Choose > 0) {
+                for (size_t afterC = from - k + 1; afterC < Choose; ++afterC)
+                    choice[afterC] = ++valE;
+            }
             return true;
         }
     }
@@ -172,9 +175,11 @@ static constexpr bool nextNchooseK(size_t from, typename std::array<size_t, Choo
 
 template <size_t N>
 static constexpr bool nextBitset(std::bitset<N>& bitset) {
-    for (size_t n = 0; n < N; ++n) {
-        if ((bitset[n] = bitset[n] ^ 0x1) == 0x1) {
-            return true;
+    if constexpr (N > 0) {
+        for (size_t n = 0; n < N; ++n) {
+            if ((bitset[n] = bitset[n] ^ 0x1) == 0x1) {
+                return true;
+            }
         }
     }
     return false;

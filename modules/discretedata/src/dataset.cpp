@@ -34,6 +34,13 @@
 namespace inviwo {
 namespace discretedata {
 
+bool DataSet::hasChannel(std::shared_ptr<const Channel> channel) const {
+    for (auto& c : channels_) {
+        if (c.second == channel) return true;
+    }
+    return false;
+}
+
 DataChannelMap DataSet::getChannels() const { return DataChannelMap(channels_); }
 
 std::shared_ptr<const Channel> DataSet::addChannel(const Channel* channel) {
@@ -90,7 +97,29 @@ std::vector<std::pair<std::string, GridPrimitive>> DataSet::getChannelNames() co
     return channelNames;
 }
 
-SamplerMap DataSet::getSamplers() const { return SamplerMap(samplers_); }
+const SamplerMap& DataSet::getSamplers() const { return samplers_; }
+
+bool DataSet::addSampler(std::shared_ptr<const DataSetSamplerBase> sampler) {
+    if (!sampler) LogError("Sampler null");
+    if (sampler->getDimension() != static_cast<unsigned int>(grid_->getDimension()))
+        LogError("Sampler and Grid not same dimension.");
+
+    if (!hasChannel(sampler->coordinates_)) LogError("That channel is not in this dataset");
+    util::validateIdentifier(sampler->coordinates_->getName(), "DataSetSampler", IVW_CONTEXT);
+    if (!sampler || sampler->getDimension() != static_cast<unsigned int>(grid_->getDimension()) ||
+        !hasChannel(sampler->coordinates_)) {
+        LogError("Could not add sampler.");
+        if (!sampler) LogError("  Sampler is null");
+        if (sampler && sampler->getDimension() != static_cast<unsigned int>(grid_->getDimension()))
+            LogError(fmt::format("  Wrong format: {} != {}", sampler->getDimension(),
+                                 static_cast<unsigned int>(grid_->getDimension())));
+        return false;
+    }
+
+    samplers_.insert({sampler->getIdentifier(), sampler});
+    LogInfo("Added new sampler: " << sampler->getIdentifier());
+    return true;
+}
 
 }  // namespace discretedata
 }  // namespace inviwo

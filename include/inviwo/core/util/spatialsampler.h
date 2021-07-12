@@ -174,6 +174,7 @@ bool SpatialSampler<SpatialDims, DataDims, T>::withinBounds(const Vector<Spatial
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 const SpatialCoordinateTransformer<SpatialDims>&
 SpatialSampler<SpatialDims, DataDims, T>::getCoordinateTransformer() const {
+    std::cout << "Spatial entity in spatial sampler? " << &spatialEntity_ << std::endl;
     return spatialEntity_.getCoordinateTransformer();
 }
 

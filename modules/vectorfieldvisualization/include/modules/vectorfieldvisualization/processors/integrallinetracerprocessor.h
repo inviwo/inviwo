@@ -101,18 +101,37 @@ IntegralLineTracerProcessor<Tracer>::~IntegralLineTracerProcessor() {}
 
 template <typename Tracer>
 void IntegralLineTracerProcessor<Tracer>::process() {
+    std::cout << "0" << std::endl;
     auto sampler = sampler_.getData();
+    std::cout << "1" << std::endl;
     auto lines =
         std::make_shared<IntegralLineSet>(sampler->getModelMatrix(), sampler->getWorldMatrix());
+    std::cout << "2" << std::endl;
+
+    // std::cout << "2a" << int(properties_.getIntegrationScheme()) << std::endl;
+    // std::cout << "2b: " << properties_.getNumberOfSteps() << std::endl;
+    // std::cout << "2c: " << properties_.getStepSize() << std::endl;
+    // std::cout << "2d: " << int(properties_.getStepDirection()) << std::endl;
+    // std::cout << "2e: " << int(properties_.getNormalizeSamples()) << std::endl;
+    // std::cout << "2f1: " << sampler->getModelMatrix() << std::endl;
+    // std::cout << "2f2: " << typename Tracer::DataMatrix(sampler->getModelMatrix()) << std::endl;
+    // std::cout << "2f3: " << glm::inverse(typename Tracer::DataMatrix(sampler->getModelMatrix()))
+    //           << std::endl;
+    // sampler->getCoordinateTransformer();
+    // std::cout << "2g1: " << std::endl;
+    // std::cout << "2g2: "
+    //           <<
+    //           properties_.getSeedPointTransformationMatrix(sampler->getCoordinateTransformer())
+    //           << std::endl;
 
     Tracer tracer(sampler, properties_);
-
+    std::cout << "3" << std::endl;
     for (auto meta : annotationSamplers_.getSourceVectorData()) {
         auto key = meta.first->getProcessor()->getIdentifier();
         key = util::stripIdentifier(key);
         tracer.addMetaDataSampler(key, meta.second);
     }
-
+    std::cout << "4" << std::endl;
     std::mutex mutex;
     size_t startID = 0;
     for (const auto& seeds : seeds_) {
@@ -126,13 +145,15 @@ void IntegralLineTracerProcessor<Tracer>::process() {
         });
         startID += seeds->size();
     }
-
+    std::cout << "5" << std::endl;
     if (calculateCurvature_) {
         util::curvature(*lines);
     }
+    std::cout << "6" << std::endl;
     if (calculateTortuosity_) {
         util::tortuosity(*lines);
     }
+    std::cout << "7" << std::endl;
 
     lines_.setData(lines);
 }

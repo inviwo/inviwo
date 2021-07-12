@@ -30,11 +30,12 @@
 #pragma once
 
 #include <modules/discretedata/discretedatatypes.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 namespace discretedata {
 
-enum InterpolationType { Ignore, Nearest, SquaredDistance, Linear };
+enum InterpolationType { Ignore, Nearest, SquaredDistance, Linear, NUM_TYPES };
 
 /*
  * Base class to be cast into correct dimensionality.
@@ -46,7 +47,8 @@ public:
     virtual unsigned int getDimension() const = 0;
     virtual bool supportsInterpolationType(InterpolationType type) const = 0;
 
-protected:
+    using InterpolationOption = OptionPropertyOption<InterpolationType>;
+    static const std::vector<InterpolationOption> InterpolationTypeOptions;
 };
 
 /**
@@ -69,15 +71,16 @@ public:
     virtual bool supportsInterpolationType(InterpolationType type) const override;
     virtual bool getWeights(InterpolationType type,
                             const std::vector<std::array<float, Dim>>& coordinates,
-                            std::vector<float> weights,
+                            std::vector<float>& weights,
                             const std::array<float, Dim>& position) const;
 };
 
 template <unsigned int Dim>
 struct IVW_MODULE_DISCRETEDATA_API SkewedBoxInterpolant : public Interpolant<Dim> {
+    virtual bool supportsInterpolationType(InterpolationType type) const override;
     virtual bool getWeights(InterpolationType type,
                             const std::vector<std::array<float, Dim>>& coordinates,
-                            std::vector<float> weights,
+                            std::vector<float>& weights,
                             const std::array<float, Dim>& position) const override;
     Interpolant<Dim>* copy() const override;
 };

@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
+#include <modules/discretedata/util/arrayutil.h>
 namespace inviwo {
 namespace discretedata {
 
@@ -44,7 +44,7 @@ bool Interpolant<Dim>::supportsInterpolationType(InterpolationType type) const {
 template <unsigned int Dim>
 bool Interpolant<Dim>::getWeights(InterpolationType type,
                                   const std::vector<std::array<float, Dim>>& coordinates,
-                                  std::vector<float> weights,
+                                  std::vector<float>& weights,
                                   const std::array<float, Dim>& position) const {
     switch (type) {
         case InterpolationType::Ignore:
@@ -76,19 +76,81 @@ bool Interpolant<Dim>::getWeights(InterpolationType type,
 }
 
 template <unsigned int Dim>
+bool SkewedBoxInterpolant<Dim>::supportsInterpolationType(InterpolationType type) const {
+    return (type == InterpolationType::Ignore || type == InterpolationType::Nearest ||
+            type == InterpolationType::SquaredDistance ||
+            (type == InterpolationType::Linear && Dim >= 2));
+}
+
+template <unsigned int Dim>
 bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
                                            const std::vector<std::array<float, Dim>>& coordinates,
-                                           std::vector<float> weights,
-                                           const std::array<float, Dim>& position) const {
+                                           std::vector<float>& weights,
+                                           const std::array<float, Dim>& pos) const {
+
+    std::cout << "Doing the skewed box weights!" << std::endl;
+    if (Dim < 2 || coordinates.size() != (1 << Dim)) return false;
+    weights.resize(5);
+
+    // The important part: the relative position within the cell.
+    double u, v;
+
+    // Blindly assume all faces are planar.
+    auto a = coordinates[0];                        // TODO: Is this the order?
+    auto b = dd_util::arrMinus(coordinates[1], a);  // a--b
+    auto c = dd_util::arrMinus(coordinates[2], a);  // |  |
+    auto d = dd_util::arrMinus(coordinates[3], a);  // c--d
+    auto p = dd_util::arrMinus(pos, a);
+    a = {0};
+
+    bool parallelX = dd_util::arrParallel(b, dd_util::arrMinus(d, c));
+    bool parallelY = dd_util::arrParallel(c, dd_util::arrMinus(d, b));
+    // double dotProdX = dd_util::arrDotProduct(b, dd_util::arrMinus(d, c));
+    // double dotProdY = dd_util::arrDotProduct(c, dd_util::arrMinus(d, b));
+    if (parallelX && parallelY) {
+        u = (p[1] * c[0] - p[0] * c[1]) / (b[1] * c[0] - b[0] * c[1]);
+        v = (p[1] * b[0] - p[0] * b[1]) / (c[1] * b[0] - c[0] * b[1]);
+        // std::cout << "u: " << u << " - v: " << v << std::endl;
+
+    } else {
+        // double lx = d[0] - b[0];
+        // double ly = d[1] - b[1];
+        // double t = double(a[1] - b[1]) / (ly * (1.0 - (lx * c[1]) / (ly * c[0])));
+
+        // DBG
+        // weights.resize(3);
+        static bool first = true;
+        if (first) std::cerr << "more complicated case!" << std::endl;
+        first = false;
+        // TODO!
+        return false;
+    }
+    // Check if outside.
+    if (u < 0 || u > 1 || v < 0 || v > 1) {
+        static bool firstUV = true;
+        if (firstUV) std::cerr << "Not inside [0,1]" << std::endl;
+        firstUV = false;
+
+        return false;
+    }
+    std::cerr << "nomnom?" << std::endl;
+
     switch (type) {
         case InterpolationType::Ignore:
             return false;
         case InterpolationType::Nearest:
         case InterpolationType::SquaredDistance:
-            return Interpolant<Dim>::getWeights(type, coordinates, weights, position);
+            return Interpolant<Dim>::getWeights(type, coordinates, weights, pos);
         case InterpolationType::Linear:
             // TODO: Do interpolation!
-            return false;
+            weights.resize(coordinates.size());
+
+            // ONLY 2D FOR NOW!
+            weights[0] = (1.0 - u) * (1.0 - v);
+            weights[1] = u * (1 - v);
+            weights[2] = (1.0 - u) * v;
+            weights[3] = u * v;
+            return true;
         default:
             return false;
     }

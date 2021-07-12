@@ -361,8 +361,10 @@ template <ind N>
 template <GridPrimitive P>
 std::pair<std::array<ind, size_t(N)>, std::array<size_t, size_t(P)>>
 CurvilinearGrid<N>::NumPrimitives::coordinatesFromGlobalIndex(ind globalIdx) const {
-    if (globalIdx < 0 || globalIdx >= Grid.getNumElements(P))
+    if (globalIdx < 0 || globalIdx >= Grid.getNumElements(P)) {
+        std::cout << "Structured Index out of range :(" << std::endl;
         throw RangeException("Index out of range for this primitive type.");
+    }
 
     // Find the range the index is in.
     auto dirBegin = PerDirectionOffsets.begin() + PrimitiveOffsets[size_t(P)];

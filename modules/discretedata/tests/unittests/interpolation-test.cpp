@@ -27,38 +27,46 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
-#include <modules/discretedata/channels/datachannel.h>
-#include <inviwo/core/datastructures/spatialdata.h>
+#include <modules/discretedata/sampling/interpolant.h>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 namespace discretedata {
 
-template <typename T, ind N>
-class SpatialEntityChannel : public SpatialEntity<(unsigned int)N> {
-public:
-    SpatialEntityChannel(std::shared_ptr<const DataChannel<T, N>> channel)
-        : SpatialEntity<(unsigned int)N>(), channel_(channel) {
-        std::cout << "Created Entity Channel" << std::endl;
-    }
-    SpatialEntityChannel(const SpatialEntityChannel& other)
-        : SpatialEntity<(unsigned int)N>(other), channel_(other.channel_) {
-        std::cout << "Copied Entity Channel" << std::endl;
-    }
-    SpatialEntityChannel& operator=(const SpatialEntityChannel& other) = delete;
+TEST(DataSet, Interpolation) {
 
-    virtual SpatialEntityChannel<T, N>* clone() const {
-        std::cout << "Cloned Entity Channel" << std::endl;
-        return new SpatialEntityChannel<T, N>(*this);
-    }
+    using arr2 = std::array<float, 2>;
+    SkewedBoxInterpolant<2> interpolant;
 
-    virtual const SpatialCoordinateTransformer<N>& getCoordinateTransformer() const override {
-        std::cout << "Spatial Entity Channel get Coordinate Transformer" << std::endl;
-        return SpatialEntity<(unsigned int)N>::getCoordinateTransformer();
-    }
+    std::vector<float> weights;
+    bool inside;
+    vec3 baseX(4, 2, 0), baseY(-1, 1, 0), baseT(1, 1, 1);
+    mat3 baseMat(baseX, baseY, baseT);
 
-    const std::shared_ptr<const DataChannel<T, N>> channel_;
-};
+    vec3 position = {0.25, 0.5, 1};
+    std::array<vec3, 5> points = {vec3{0, 0, 1}, {1, 0, 1}, {0, 1, 1}, {1, 1, 1}, position};
+    std::vector<arr2> coords;
+    for (const vec3& p : points) {
+        vec3 transformedPoint = baseMat * p;
+        coords.push_back(arr2{transformedPoint.x, transformedPoint.y});
+        std::cerr << "point " << transformedPoint.x << ", " << transformedPoint.y << std::endl;
+    }
+    EXPECT_NO_THROW(inside = interpolant.getWeights(discretedata::InterpolationType::Linear,
+                                                    {coords[0], coords[1], coords[2], coords[3]},
+                                                    weights, coords[4]));
+
+    EXPECT_TRUE(inside);
+    EXPECT_EQ(weights.size(), 4);
+    EXPECT_DOUBLE_EQ(weights[0], (1 - position[0]) * (1 - position[1]));
+    EXPECT_DOUBLE_EQ(weights[1], position[0] * (1 - position[1]));
+    EXPECT_DOUBLE_EQ(weights[2], (1 - position[0]) * position[1]);
+    EXPECT_DOUBLE_EQ(weights[3], position[0] * position[1]);
+}  // namespace discretedata
+
 }  // namespace discretedata
 }  // namespace inviwo
