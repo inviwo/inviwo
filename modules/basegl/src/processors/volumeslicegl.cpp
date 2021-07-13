@@ -448,9 +448,11 @@ void VolumeSliceGL::process() {
         auto volume = inport_.getData();
         const mat4 worldToIndex(volume->getCoordinateTransformer().getWorldToIndexMatrix());
         const vec3 indexPos(ivec3(worldToIndex * vec4(worldPosition_.get(), 1)));
-        const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
-        normalizedSample_.set(volumeRAM->getAsNormalizedDVec4(indexPos));
-        volumeSample_.set(volumeRAM->getAsDVec4(indexPos));
+        if (glm::all(glm::greaterThanEqual(indexPos, vec3(0))) && glm::all(glm::lessThan(indexPos, vec3(volume->getDimensions())))) {
+            const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
+            normalizedSample_.set(volumeRAM->getAsNormalizedDVec4(indexPos));
+            volumeSample_.set(volumeRAM->getAsDVec4(indexPos));
+        }
     }
 }
 
