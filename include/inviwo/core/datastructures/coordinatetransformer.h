@@ -107,11 +107,21 @@ private:
     Matrix<3, float> view_;
     Matrix<3, float> projection_;
 };
+template <unsigned int N>
+class GeneralCamera {
+public:
+    GeneralCamera() : view_(1.0f), projection_(1.0f) {}
+    const Matrix<N+1, float>& getViewMatrix() const { return view_; }
+    const Matrix<N+1, float>& getProjectionMatrix() const { return projection_; }
+
+private:
+    Matrix<N+1, float> view_;
+    Matrix<N+1, float> projection_;
+};
 
 template <unsigned int N>
 struct cameratype {
-    struct CameraND{};
-    typedef CameraND type;
+    typedef GeneralCamera<N> type;
 };
 
 template <>

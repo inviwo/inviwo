@@ -67,7 +67,6 @@ public:
     DataSetSampler(DataSetSampler& tree) = delete;
     DataSetSampler& operator=(DataSetSampler&& tree) = delete;
     DataSetSampler& operator=(DataSetSampler& tree) = delete;
-    virtual SpatialEntity<SpatialDims>* clone() const override;
 
     virtual unsigned int getDimension() const { return SpatialDims; }
 

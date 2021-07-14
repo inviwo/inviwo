@@ -42,14 +42,14 @@ template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 DataSetSpatialSampler<SpatialDims, DataDims, T>::DataSetSpatialSampler(
     std::shared_ptr<const DataSetSampler<SpatialDims>> sampler, InterpolationType interpolationType,
     std::shared_ptr<const DataChannel<T, DataDims>> data)
-    : SpatialSampler<SpatialDims, DataDims, T>(spatialChannel_)
-    , spatialChannel_(sampler_)
+    : SpatialSampler<SpatialDims, DataDims, T>(*sampler)
+    // , spatialChannel_(sampler_)
     //   std::dynamic_pointer_cast<const DataChannel<double, SpatialDims>>(sampler->coordinates_))
     , interpolationType_(interpolationType)
     , sampler_(sampler)
     , data_(data) {
     std::cout << "Creating Spatial Sampler" << std::endl;
-    std::cout << "Spatial entity in DatasetSampler? " << &spatialChannel_ << std::endl;
+    // std::cout << "Spatial entity in DatasetSampler? " << &spatialChannel_ << std::endl;
 
     // std::dynamic_pointer_cast<const DataChannel<double, SpatialDims>>(sampler->coordinates_);
     if (interpolationType == InterpolationType::Ignore) {

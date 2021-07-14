@@ -66,12 +66,6 @@ DataSetSampler<SpatialDims>::DataSetSampler(DataSetSampler&& tree)
     : DataSetSampler(tree.grid_, tree.coordinates_) {}
 
 template <unsigned int SpatialDims>
-SpatialEntity<SpatialDims>* DataSetSampler<SpatialDims>::clone() const {
-    std::cout << "Cloned DataSetSampler (being a good spatial entity)" << std::endl;
-    return new DataSetSampler<SpatialDims>(*this);
-}
-
-template <unsigned int SpatialDims>
 void DataSetSampler<SpatialDims>::setInterpolant(const Interpolant<SpatialDims>& interpolant) {
     interpolant_ = interpolant.copy();
 }

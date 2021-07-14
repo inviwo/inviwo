@@ -541,7 +541,7 @@ TripolarGrid<N>::NumPrimitives::coordinatesFromGlobalIndex(ind globalIdx) const 
     if (globalIdx >= numNormalPrimitives) {
         wrapsTop = true;
         globalIdx -= numNormalPrimitives;
-        ivwAssert((P >= 1 && dirs[0] == 1) || (P >= 2 && dirs[1] == 1),
+        ivwAssert(((int)P >= 1 && dirs[0] == 1) || ((int)P >= 2 && dirs[1] == 1),
                   "Index out of normal index range but not wrapping the top.");
     }
 

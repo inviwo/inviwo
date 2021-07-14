@@ -3,7 +3,7 @@
 ivw_module(DiscreteData)
 
 SET(IVW_DISCRETEDATA_MAX_NUM_DIMENSIONS 4 CACHE INTEGER "The default maximum number of dimensions compiled for")
-add_definitions( -DDISCRETEDATA_MAX_NUM_DIMENSIONS=${IVW_DISCRETEDATA_MAX_NUM_DIMENSIONS} )
+add_definitions(-DDISCRETEDATA_MAX_NUM_DIMENSIONS=${IVW_DISCRETEDATA_MAX_NUM_DIMENSIONS})
 
 #--------------------------------------------------------------------
 # Add header files

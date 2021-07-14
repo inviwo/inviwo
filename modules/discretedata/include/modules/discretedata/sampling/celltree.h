@@ -51,9 +51,10 @@ public:
              const Interpolant<SpatialDims>& interpolant);
     ~CellTree() = default;
     CellTree(CellTree<SpatialDims>&& tree);
-    CellTree(CellTree<SpatialDims>& tree);
+    CellTree(const CellTree<SpatialDims>& tree);
     CellTree& operator=(CellTree<SpatialDims>&& tree);
-    CellTree& operator=(CellTree<SpatialDims>& tree);
+    CellTree& operator=(const CellTree<SpatialDims>& tree);
+    virtual SpatialEntity<SpatialDims>* clone() const override;
 
     // template <typename T>
     bool sampleCell(ind cellId, const std::array<float, SpatialDims>& pos,

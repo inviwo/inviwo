@@ -55,7 +55,7 @@ CellTree<SpatialDims>::CellTree(std::shared_ptr<const Connectivity> grid,
 }
 
 template <unsigned int SpatialDims>
-CellTree<SpatialDims>::CellTree(CellTree<SpatialDims>& tree)
+CellTree<SpatialDims>::CellTree(const CellTree<SpatialDims>& tree)
     : DataSetSampler<SpatialDims>(
           tree.grid_,
           std::dynamic_pointer_cast<const DataChannel<double, SpatialDims>>(tree.coordinates_),
@@ -70,7 +70,7 @@ CellTree<SpatialDims>::CellTree(CellTree<SpatialDims>&& tree)
     , cells_(std::move(tree.cells_)) {}
 
 template <unsigned int SpatialDims>
-CellTree<SpatialDims>& CellTree<SpatialDims>::operator=(CellTree<SpatialDims>& tree) {
+CellTree<SpatialDims>& CellTree<SpatialDims>::operator=(const CellTree<SpatialDims>& tree) {
     nodes_ = tree.nodes_;
     cells_ = tree.cells_;
     this->interpolant_ = tree.interpolant_->copy();
@@ -81,6 +81,12 @@ CellTree<SpatialDims>& CellTree<SpatialDims>::operator=(CellTree<SpatialDims>&& 
     nodes_ = std::move(tree.nodes_);
     cells_ = std::move(tree.cells_);
     this->interpolant_ = std::move(tree.interpolant);
+}
+
+template <unsigned int SpatialDims>
+SpatialEntity<SpatialDims>* CellTree<SpatialDims>::clone() const {
+    std::cout << "Cloned CellTree (being a good spatial entity, but a bad cell tree!)" << std::endl;
+    return new CellTree<SpatialDims>(*this);
 }
 
 template <unsigned int SpatialDims>

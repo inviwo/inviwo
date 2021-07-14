@@ -76,7 +76,7 @@ inline std::string primitiveName(GridPrimitive primitive) {
 
 template <>
 struct InviwoDefaults<discretedata::GridPrimitive> {
-    static InviwoDefaultData<discretedata::GridPrimitive> get() {
+    static InviwoDefaultData<discretedata::GridPrimitive, 13> get() {
         return {"GridPrimitive",
                 uvec2(1, 1),
                 discretedata::GridPrimitive::Vertex,
