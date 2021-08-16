@@ -59,9 +59,12 @@ CombineChannels::CombineChannels()
 }
 
 void CombineChannels::addAllChannelProperties() {
-    channelList_.clearProperties();
-    // LogWarn("Cleared properties, left " << channelList_.size());
-    if (!dataIn_.hasData()) return;
+    LogWarn("Updating properties, left " << channelList_.size());
+    if (!dataIn_.hasData()) {
+        channelList_.clearProperties();
+        return;
+    }
+    LogWarn("Adding channels");
 
     for (auto channel : dataIn_.getData()->getChannels()) {
         channelList_.addProperty(new BoolProperty(combineString(*channel.second),
@@ -70,6 +73,7 @@ void CombineChannels::addAllChannelProperties() {
                                                   false),
                                  true);
     }
+    // channelList_.
 }
 
 void CombineChannels::process() {

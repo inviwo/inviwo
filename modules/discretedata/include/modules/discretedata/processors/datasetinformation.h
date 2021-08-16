@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2019 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,45 +30,57 @@
 #pragma once
 
 #include <modules/discretedata/discretedatamoduledefine.h>
-#include <modules/discretedata/ports/datasetport.h>
-#include <modules/discretedata/properties/datachannelproperty.h>
-
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <modules/discretedata/ports/datasetport.h>
+#include <modules/discretedata/dataset.h>
 
 namespace inviwo {
 namespace discretedata {
 
-class IVW_MODULE_DISCRETEDATA_API DataSetFromVolume : public Processor {
-
+class IVW_MODULE_DISCRETEDATA_API GridInformationProperty : public CompositeProperty {
 public:
-    DataSetFromVolume();
-    virtual ~DataSetFromVolume() = default;
+    GridInformationProperty() = delete;
+    GridInformationProperty(const std::string& identifier, const std::string& name,
+                            const Connectivity& grid);
+
+    StringProperty gridType_;
+    StringProperty numDimensions_;
+    CompositeProperty numElements_;
+};
+
+class IVW_MODULE_DISCRETEDATA_API ChannelInformationProperty : public CompositeProperty {
+public:
+    ChannelInformationProperty() = delete;
+    ChannelInformationProperty(const std::string& identifier, const std::string& name,
+                               const Channel& channel);
+    StringProperty channelName_, channelPrimitive_, dataType_, dataRange_;
+    // using DoubleVec2Property = OrdinalProperty<dvec2>;
+};
+
+/** \docpage{org.inviwo.DataSetInformation, Data Set Info}
+ * ![](org.inviwo.DataSetInformation.png?classIdentifier=org.inviwo.DataSetInformation)
+ * Displays information about a single DataSet.
+ */
+class IVW_MODULE_DISCRETEDATA_API DataSetInformation : public Processor {
+public:
+    DataSetInformation();
+    virtual ~DataSetInformation() = default;
+
+    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
-    virtual void process() override;
-
 private:
-    /// Data to be processed
-    VolumeInport portInData;
+    DataSetInport dataIn_;
 
-    /// DataSet to add to, not necessary
-    DataSetInport portInDataSet;
-
-    /// DataSet output
-    DataSetOutport portOutData;
-
-    /// Name given to DataSet and inout data in DataSet
-    StringProperty dataSetName, channelName;
-
-    /// Which kind of primitive to save to.
-    GridPrimitiveProperty saveToPrimitive;
+    StringProperty overview_;
+    // GridInformationProperty gridInformation_;
+    CompositeProperty channelInformation_;
+    CompositeProperty samplerInformation_;
 };
 
 }  // namespace discretedata

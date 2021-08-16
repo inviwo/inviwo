@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,33 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
+#pragma once
 
-#include <modules/discretedata/sampling/interpolant.h>
-#include <inviwo/core/util/zip.h>
+#include <modules/discretedata/connectivity/connectivity.h>
+#include <modules/discretedata/util/util.h>
+#include <inviwo/core/datastructures/spatialdata.h>
+
+#include <initializer_list>
 
 namespace inviwo {
 namespace discretedata {
 
-TEST(DataSet, Interpolation) {
+/**
+ * \brief A point cloud grid
+ * Just vertices without any connection.
+ * Most simple possible grid.
+ */
+class PointCloud : public Connectivity {
+public:
+    PointCloud(ind size) : Connectivity(GridPrimitive::Vertex) { numGridPrimitives_[0] = size; }
 
-    using arr2 = std::array<float, 2>;
-    SkewedBoxInterpolant<2> interpolant;
+    virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
+                                GridPrimitive to, bool isPosition = false) const override {}
 
-    std::vector<double> weights;
-    bool inside;
-    vec3 baseX(4, 2, 0), baseY(-1, 1, 0), baseT(1, 1, 1);
-    mat3 baseMat(baseX, baseY, baseT);
+    inline static const std::string GRID_IDENTIFIER = "PointCloud";
 
-    vec3 position = {0.25, 0.5, 1};
-    std::array<vec3, 5> points = {vec3{0, 0, 1}, {1, 0, 1}, {0, 1, 1}, {1, 1, 1}, position};
-    std::vector<arr2> coords;
-    for (const vec3& p : points) {
-        vec3 transformedPoint = baseMat * p;
-        coords.push_back(arr2{transformedPoint.x, transformedPoint.y});
-        std::cerr << "point " << transformedPoint.x << ", " << transformedPoint.y << std::endl;
-    }
-    EXPECT_NO_THROW(inside = interpolant.getWeights(discretedata::InterpolationType::Linear,
-                                                    {coords[0], coords[1], coords[2], coords[3]},
-                                                    weights, coords[4]));
-
-    EXPECT_TRUE(inside);
-    EXPECT_EQ(weights.size(), 4);
-    EXPECT_DOUBLE_EQ(weights[0], (1.0 - position[0]) * (1.0 - position[1]));
-    EXPECT_DOUBLE_EQ(weights[1], position[0] * (1.0 - position[1]));
-    EXPECT_DOUBLE_EQ(weights[2], (1.0 - position[0]) * position[1]);
-    EXPECT_DOUBLE_EQ(weights[3], position[0] * position[1]);
-}  // namespace discretedata
+    virtual const std::string& getIdentifier() const override { return GRID_IDENTIFIER; }
+};
 
 }  // namespace discretedata
 }  // namespace inviwo

@@ -48,7 +48,7 @@ DataSetSpatialSampler<SpatialDims, DataDims, T>::DataSetSpatialSampler(
     , interpolationType_(interpolationType)
     , sampler_(sampler)
     , data_(data) {
-    std::cout << "Creating Spatial Sampler" << std::endl;
+    std::cout << "Creating Spatial Sampler, interpolation type " << interpolationType_ << std::endl;
     // std::cout << "Spatial entity in DatasetSampler? " << &spatialChannel_ << std::endl;
 
     // std::dynamic_pointer_cast<const DataChannel<double, SpatialDims>>(sampler->coordinates_);
@@ -81,13 +81,22 @@ Vector<DataDims, T> DataSetSpatialSampler<SpatialDims, DataDims, T>::sampleDataS
 
     // If the cell does not exist, return zero vector.
     if (cell < 0 || cell > data_->size()) return result;
+    std::cout << "Found a cell!" << std::endl;
 
     // Add up weighted samples
     Vector<DataDims, T> sample;
+    std::cout << "Num weights: " << returnVertices.size() << " = " << returnWeights.size()
+              << std::endl;
     for (auto&& [weight, index] : util::zip(returnWeights, returnVertices)) {
-        if (weight == 0) continue;
+        if (weight == 0) {
+            std::cout << "Weight of 0" << std::endl;
+            continue;
+        }
         data_->fill(sample, index, 1);
         result += sample * weight;
+        std::cout << fmt::format("\tWeighting ({}, {}) by {}", sample[0],
+                                 DataDims > 1 ? sample[1] : sample[0], weight)
+                  << std::endl;
     }
     return result;
 }

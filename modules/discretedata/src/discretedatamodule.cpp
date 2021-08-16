@@ -31,11 +31,13 @@
 #include <modules/discretedata/processors/adddatasetsampler.h>
 #include <modules/discretedata/processors/colormapchannel.h>
 #include <modules/discretedata/processors/combinechannels.h>
+#include <modules/discretedata/processors/combinedatasets.h>
 #include <modules/discretedata/processors/createconstantchannel.h>
 #include <modules/discretedata/processors/createuniformgrid.h>
 #include <modules/discretedata/processors/datasetfrombase.h>
 #include <modules/discretedata/processors/datasetsource.h>
 #include <modules/discretedata/processors/computegridmeasure.h>
+#include <modules/discretedata/processors/datasetinformation.h>
 #include <modules/discretedata/processors/datasettospatialsampler.h>
 #include <modules/discretedata/processors/volumefromdataset.h>
 #include <modules/discretedata/processors/meshfromdataset.h>
@@ -53,6 +55,8 @@ namespace inviwo {
 
 DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(app, "discretedata") {
     // Processors
+    registerProcessor<discretedata::CombineDataSets>();
+    registerProcessor<discretedata::DataSetInformation>();
     registerProcessor<discretedata::AddDataSetSampler>();
     // registerProcessor<discretedata::DataSetToSpatialSampler>();
     registerProcessor<discretedata::DataSetToSpatialSampler2D>();

@@ -26,6 +26,7 @@ set(HEADER_FILES
     include/modules/discretedata/connectivity/explicitconnectivity.h
     include/modules/discretedata/connectivity/lineset.h
     include/modules/discretedata/connectivity/periodicgrid.h
+    include/modules/discretedata/connectivity/pointcloud.h
     include/modules/discretedata/connectivity/structuredgrid.h
     include/modules/discretedata/connectivity/trianglemesh.h
     include/modules/discretedata/connectivity/tripolargrid.h
@@ -37,11 +38,13 @@ set(HEADER_FILES
     include/modules/discretedata/processors/adddatasetsampler.h
     include/modules/discretedata/processors/colormapchannel.h
     include/modules/discretedata/processors/combinechannels.h
+    include/modules/discretedata/processors/combinedatasets.h
     include/modules/discretedata/processors/computegridmeasure.h
     include/modules/discretedata/processors/createconstantchannel.h
     include/modules/discretedata/processors/createindexchannel.h
     include/modules/discretedata/processors/createuniformgrid.h
     include/modules/discretedata/processors/datasetfrombase.h
+    include/modules/discretedata/processors/datasetinformation.h
     include/modules/discretedata/processors/datasetsource.h
     include/modules/discretedata/processors/datasettospatialsampler.h
     include/modules/discretedata/processors/exampledataset.h
@@ -77,6 +80,7 @@ set(SOURCE_FILES
     src/connectivity/euclideanmeasure.cpp
     src/connectivity/explicitconnectivity.cpp
     src/connectivity/lineset.cpp
+    src/connectivity/pointcloud.cpp
     src/connectivity/trianglemesh.cpp
     src/dataset.cpp
     src/discretedatamodule.cpp
@@ -84,11 +88,13 @@ set(SOURCE_FILES
     src/processors/adddatasetsampler.cpp
     src/processors/colormapchannel.cpp
     src/processors/combinechannels.cpp
+    src/processors/combinedatasets.cpp
     src/processors/computegridmeasure.cpp
     src/processors/createconstantchannel.cpp
     src/processors/createindexchannel.cpp
     src/processors/createuniformgrid.cpp
     src/processors/datasetfrombase.cpp
+    src/processors/datasetinformation.cpp
     src/processors/datasetsource.cpp
     src/processors/exampledataset.cpp
     src/processors/meshfromdataset.cpp

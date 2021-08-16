@@ -85,9 +85,10 @@ public:
     template <typename VecNT = T>
     using const_iterator = ConstChannelIterator<DataChannel<T, N>, VecNT>;
 
+    using ArrayType = std::array<T, N>;
     using DefaultVec =
         typename std::conditional<(N <= 4), typename inviwo::util::glmtype<T, N>::type,
-                                  std::array<T, N>>::type;
+                                  ArrayType>::type;
 
 public:
     /**

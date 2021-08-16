@@ -56,14 +56,15 @@ using namespace discretedata;
 void exposeDataSet(pybind11::module& m) {
 
     py::class_<DataSetInitializer>(m, "DataSetInitializer")
+        .def_readwrite("name", &DataSetInitializer::name_)
         .def_readwrite("grid", &DataSetInitializer::grid_)
         .def_readwrite("channels", &DataSetInitializer::channels_);
 
     // std::shared_ptr<const Connectivity> (DataSet::*gridPtr)(void) = &DataSet::getGrid<>;
     py::class_<DataSet, std::shared_ptr<DataSet>> dataSet(m, "DataSet");
     dataSet
-        .def(py::init<std::shared_ptr<const Connectivity>>(), "grid"_a,
-             "Create an empty DataSet from a given grid.")
+        .def(py::init<const std::string&, std::shared_ptr<const Connectivity>>(), "name"_a,
+             "grid"_a, "Create an empty DataSet from a given grid.")
         .def(py::init<const DataSetInitializer&>(), "initializer"_a,
              "Create a DataSet from a given grid and channel list.")
         .def("addChannel", py::overload_cast<std::shared_ptr<const Channel>>(&DataSet::addChannel),

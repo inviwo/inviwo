@@ -58,7 +58,7 @@ public:
 
     // template <typename T>
     bool sampleCell(ind cellId, const std::array<float, SpatialDims>& pos,
-                    std::vector<double>& weights,
+                    std::vector<ind>& vertices, std::vector<double>& weights,
                     InterpolationType interpolationType = InterpolationType::Ignore) const;
     ind locateAndSampleCell(const std::array<float, SpatialDims>& pos,
                             std::vector<double>& returnWeights, std::vector<ind>& returnVertices,
@@ -99,6 +99,7 @@ protected:
     std::vector<Node> nodes_;
     std::vector<ind> cells_;
     std::array<float, SpatialDims> coordsMin_, coordsMax_;
+    // const Interpolant<SpatialDims>* interpolant;
     // ind (CellTree<SpatialDims>::*locateCellFunction)(const std::array<float, SpatialDims>&,
     //                                                  std::vector<double>&, std::vector<ind>&,
     //                                                  InterpolationType) const;

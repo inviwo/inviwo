@@ -77,7 +77,7 @@ std::shared_ptr<const Channel> DataSet::getChannel(const std::string& name,
 }
 
 std::shared_ptr<const Channel> DataSet::getChannel(
-    std::pair<std::string, GridPrimitive>& key) const {
+    const std::pair<std::string, GridPrimitive>& key) const {
     auto it = channels_.find(key);
 
     if (it == channels_.end()) return std::shared_ptr<const Channel>();

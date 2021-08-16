@@ -51,7 +51,7 @@ ExampleDataSet::ExampleDataSet() : Processor(), dataOutport("ExampleData") { add
 void ExampleDataSet::process() {
 
     const std::array<ind, 3> dataSize = {9, 6, 11};
-    auto dataset = std::make_shared<DataSet>(dataSize);
+    auto dataset = std::make_shared<DataSet>("ExampleData", dataSize);
     auto wave = std::make_shared<AnalyticChannel<double, 3, glm::dvec3>>(
         [dataSize](auto& vec, ind idx) {
             glm::dvec3 pos = {

@@ -30,6 +30,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
+#include <glm/gtx/normal.hpp>
 #include <warn/pop>
 
 #include <cmath>
@@ -38,8 +39,6 @@
 
 #include <modules/base/algorithm/volume/marchingcubes.h>
 #include <modules/base/algorithm/volume/marchingcubesopt.h>
-
-#include <glm/gtx/normal.hpp>
 
 namespace inviwo {
 

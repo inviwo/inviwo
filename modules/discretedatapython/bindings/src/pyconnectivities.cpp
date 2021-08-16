@@ -38,6 +38,7 @@
 
 #include <modules/discretedata/discretedatatypes.h>
 #include <modules/discretedata/connectivity/connectivity.h>
+#include <modules/discretedata/connectivity/pointcloud.h>
 #include <modules/discretedata/connectivity/structuredgrid.h>
 #include <modules/discretedata/connectivity/tripolargrid.h>
 
@@ -65,7 +66,9 @@ void exposeConnectivities(pybind11::module& m) {
         .def("createStructured", &discretepyutil::createStructuredGrid,
              "Create a new structured grid with the given number of vertices.")
         .def("createTripolar", &discretepyutil::createTripolarGrid,
-             "Create a new tripolar grid with the given number of vertices. At least 2D.");
+             "Create a new tripolar grid with the given number of vertices. At least 2D.")
+        .def("createPointCloud", &discretepyutil::createPointCloudGrid,
+             "Create a new point cloud grid with the given number of vertices. No Connectivities.");
 }
 
 std::shared_ptr<Connectivity> discretepyutil::createStructuredGrid(
@@ -90,6 +93,14 @@ std::shared_ptr<Connectivity> discretepyutil::createTripolarGrid(
     return channeldispatching::dispatchNumber<std::shared_ptr<Connectivity>, 2,
                                               DISCRETEDATA_MAX_NUM_DIMENSIONS>(numVerts, dispatcher,
                                                                                size);
+}
+
+std::shared_ptr<Connectivity> discretepyutil::createPointCloudGrid(
+    const pybind11::array_t<int>& size) {
+    ivwAssert(size.ndim() == 1, "Size array should be a vector.");
+    ind numVerts = size.shape(0);
+
+    return std::make_shared<PointCloud>(numVerts);
 }
 
 }  // namespace inviwo

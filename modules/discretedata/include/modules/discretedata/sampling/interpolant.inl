@@ -44,11 +44,11 @@ bool Interpolant<Dim>::supportsInterpolationType(InterpolationType type) const {
 template <unsigned int Dim>
 bool Interpolant<Dim>::getWeights(InterpolationType type,
                                   const std::vector<std::array<float, Dim>>& coordinates,
-                                  std::vector<float>& weights,
+                                  std::vector<double>& weights,
                                   const std::array<float, Dim>& position) const {
     switch (type) {
         case InterpolationType::Ignore:
-            return false;
+            return true;
         case InterpolationType::Nearest:
             [[fallthrough]];
         case InterpolationType::SquaredDistance:
@@ -69,7 +69,7 @@ bool Interpolant<Dim>::getWeights(InterpolationType type,
                     weight /= sum;
                 }
             }
-            return false;
+            return true;
         default:
             return false;
     }
@@ -85,7 +85,7 @@ bool SkewedBoxInterpolant<Dim>::supportsInterpolationType(InterpolationType type
 template <unsigned int Dim>
 bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
                                            const std::vector<std::array<float, Dim>>& coordinates,
-                                           std::vector<float>& weights,
+                                           std::vector<double>& weights,
                                            const std::array<float, Dim>& pos) const {
 
     std::cout << "Doing the skewed box weights!" << std::endl;
@@ -97,17 +97,30 @@ bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
 
     // Blindly assume all faces are planar.
     auto a = coordinates[0];                        // TODO: Is this the order?
-    auto b = dd_util::arrMinus(coordinates[1], a);  // a--b
+    auto b = dd_util::arrMinus(coordinates[1], a);  // b--d
     auto c = dd_util::arrMinus(coordinates[2], a);  // |  |
-    auto d = dd_util::arrMinus(coordinates[3], a);  // c--d
+    auto d = dd_util::arrMinus(coordinates[3], a);  // a--c
     auto p = dd_util::arrMinus(pos, a);
     a = {0};
+    std::cout
+        << fmt::format(
+               "Relative positions:\n\ta = ({}, {})\n\tb = ({}, {})\n\tc = ({}, {})\n\td = ({}, "
+               "{})\n\tp = ({}, {})",
+               a[0], a[1], b[0], b[1], c[0], c[1], d[0], d[1], p[0], p[1])
+        << std::endl;
 
     bool parallelX = dd_util::arrParallel(b, dd_util::arrMinus(d, c));
     bool parallelY = dd_util::arrParallel(c, dd_util::arrMinus(d, b));
     // double dotProdX = dd_util::arrDotProduct(b, dd_util::arrMinus(d, c));
     // double dotProdY = dd_util::arrDotProduct(c, dd_util::arrMinus(d, b));
     if (parallelX && parallelY) {
+        std::cerr << "Interpolant says both parallel!" << std::endl;
+        std::cout << fmt::format("u = {} = ({} - {}) / ({} - {})", u, p[1] * c[0], p[0] * c[1],
+                                 b[1] * c[0], b[0] * c[1])
+                  << std::endl;
+        std::cout << fmt::format("v = {} = ({} - {}) / ({} - {})", v, p[1] * b[0], p[0] * b[1],
+                                 b[0] * c[1], b[1] * c[0])
+                  << std::endl;
         u = (p[1] * c[0] - p[0] * c[1]) / (b[1] * c[0] - b[0] * c[1]);
         v = (p[1] * b[0] - p[0] * b[1]) / (c[1] * b[0] - c[0] * b[1]);
         // std::cout << "u: " << u << " - v: " << v << std::endl;
@@ -119,16 +132,16 @@ bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
 
         // DBG
         // weights.resize(3);
-        static bool first = true;
-        if (first) std::cerr << "more complicated case!" << std::endl;
-        first = false;
+        // static bool first = true;
+        std::cerr << "more complicated case!" << std::endl;
+        // first = false;
         // TODO!
         return false;
     }
     // Check if outside.
     if (u < 0 || u > 1 || v < 0 || v > 1) {
         static bool firstUV = true;
-        if (firstUV) std::cerr << "Not inside [0,1]" << std::endl;
+        if (firstUV) std::cerr << fmt::format("({}, {}) not inside [0,1]", u, v) << std::endl;
         firstUV = false;
 
         return false;
@@ -137,9 +150,12 @@ bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
 
     switch (type) {
         case InterpolationType::Ignore:
-            return false;
+            std::cout << "Ignored interpolation" << std::endl;
+            return true;
         case InterpolationType::Nearest:
+            [[fallthrough]];
         case InterpolationType::SquaredDistance:
+            std::cout << "Nearest/squares interpolation" << std::endl;
             return Interpolant<Dim>::getWeights(type, coordinates, weights, pos);
         case InterpolationType::Linear:
             // TODO: Do interpolation!
@@ -150,8 +166,10 @@ bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
             weights[1] = u * (1 - v);
             weights[2] = (1.0 - u) * v;
             weights[3] = u * v;
+            std::cout << "Some nice weights!" << std::endl;
             return true;
         default:
+            std::cout << "...what interpolation?!" << std::endl;
             return false;
     }
 }

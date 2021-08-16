@@ -41,8 +41,13 @@
 #include <inviwo/core/util/timer.h>
 #include <inviwo/core/util/glm.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+
 #include <glm/gtx/vec_swizzle.hpp>
 #include <glm/gtc/epsilon.hpp>
+
+#include <warn/pop>
 
 namespace inviwo {
 

@@ -53,23 +53,29 @@ enum class GridPrimitive : int {
     HyperVolume = 4
 };
 
-inline std::string primitiveName(GridPrimitive primitive) {
+inline std::string primitiveName(GridPrimitive primitive, bool plural = false) {
+    std::string result;
     switch (primitive) {
         case GridPrimitive::Vertex:
-            return "Vertex";
+            return plural ? "Vertices" : "Vertex";
         case GridPrimitive::Edge:
-            return "Edge";
+            result = "Edge";
+            break;
         case GridPrimitive::Face:
-            return "Face";
+            result = "Face";
+            break;
         case GridPrimitive::Volume:
-            return "Volume";
+            result = "Volume";
+            break;
         case GridPrimitive::HyperVolume:
-            return "HyperVolume";
+            result = "HyperVolume";
+            break;
         default:
-            std::string nD = std::to_string(static_cast<ind>(primitive));
-            nD += 'D';
-            return nD;
+            result = std::to_string(static_cast<ind>(primitive));
+            result += "D Element";
     }
+    if (plural) result += 's';
+    return result;
 }
 
 }  // namespace discretedata

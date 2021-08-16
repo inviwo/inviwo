@@ -47,17 +47,17 @@ DataSetFromVolume::DataSetFromVolume()
     , portInData("BaseData")
     , portInDataSet("PriorDataSet")
     , portOutData("DataSetOutput")
+    , dataSetName("dataSetName", "DataSet Name", "VolumeData")
     , channelName("dataName", "Data Name", "default")
     , saveToPrimitive("saveToType", "Primitive with Data") {
     addPort(portInData);
     addPort(portOutData);
     addPort(portInDataSet);
     portInDataSet.setOptional(true);
-    addProperty(channelName);
 
     saveToPrimitive.addOption("vertex", "Vertex", GridPrimitive::Vertex);
     saveToPrimitive.addOption("volume", "Volume", GridPrimitive::Volume);
-    addProperty(saveToPrimitive);
+    addProperties(dataSetName, channelName, saveToPrimitive);
 }
 
 void DataSetFromVolume::process() {
@@ -66,207 +66,207 @@ void DataSetFromVolume::process() {
 
     // Read volume information.
     auto volume = portInData.getData();
-    const VolumeRAM *dataRAM = volume->getRepresentation<VolumeRAM>();
+    const VolumeRAM* dataRAM = volume->getRepresentation<VolumeRAM>();
 
     auto dims = dataRAM->getDimensions();
     size3_t dimGrid = dims;
 
     ind numElements = dimGrid.x * dimGrid.y * dimGrid.z;
 
-    DataSet *dataSet;
+    DataSet* dataSet;
 
     if (portInDataSet.isConnected() && portInDataSet.hasData())
         dataSet = new DataSet(*portInDataSet.getData());
     else {
         // Build a new grid.
         ind offset = dimensionTo == GridPrimitive::Vertex ? 0 : 1;
-        dataSet =
-            new DataSet((ind)dimGrid.x + offset, (ind)dimGrid.y + offset, (ind)dimGrid.z + offset);
+        dataSet = new DataSet(dataSetName.get(), (ind)dimGrid.x + offset, (ind)dimGrid.y + offset,
+                              (ind)dimGrid.z + offset);
     }
 
     // Copy data.
-    const void *dataConst = dataRAM->getData();
-    char *data = new char[dataRAM->getNumberOfBytes()];
+    const void* dataConst = dataRAM->getData();
+    char* data = new char[dataRAM->getNumberOfBytes()];
     memcpy(data, dataConst, dataRAM->getNumberOfBytes());
 
     DataFormatId type = dataRAM->getDataFormatId();
-    Channel *channel = nullptr;
+    Channel* channel = nullptr;
 
     switch (type) {
         case DataFormatId::Float16:
             channel =
-                new BufferChannel<f16, 1>((f16 *)data, numElements, channelName.get(), dimensionTo);
+                new BufferChannel<f16, 1>((f16*)data, numElements, channelName.get(), dimensionTo);
             break;
         case DataFormatId::Float32:
-            channel = new BufferChannel<glm::f32, 1>((glm::f32 *)data, numElements,
+            channel = new BufferChannel<glm::f32, 1>((glm::f32*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Float64:
-            channel = new BufferChannel<glm::f64, 1>((glm::f64 *)data, numElements,
+            channel = new BufferChannel<glm::f64, 1>((glm::f64*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Int8:
-            channel = new BufferChannel<glm::i8, 1>((glm::i8 *)data, numElements, channelName.get(),
+            channel = new BufferChannel<glm::i8, 1>((glm::i8*)data, numElements, channelName.get(),
                                                     dimensionTo);
             break;
         case DataFormatId::Int16:
-            channel = new BufferChannel<glm::i16, 1>((glm::i16 *)data, numElements,
+            channel = new BufferChannel<glm::i16, 1>((glm::i16*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Int32:
-            channel = new BufferChannel<glm::i32, 1>((glm::i32 *)data, numElements,
+            channel = new BufferChannel<glm::i32, 1>((glm::i32*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Int64:
-            channel = new BufferChannel<glm::i64, 1>((glm::i64 *)data, numElements,
+            channel = new BufferChannel<glm::i64, 1>((glm::i64*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::UInt8:
-            channel = new BufferChannel<glm::u8, 1>((glm::u8 *)data, numElements, channelName.get(),
+            channel = new BufferChannel<glm::u8, 1>((glm::u8*)data, numElements, channelName.get(),
                                                     dimensionTo);
             break;
         case DataFormatId::UInt16:
-            channel = new BufferChannel<glm::u16, 1>((glm::u16 *)data, numElements,
+            channel = new BufferChannel<glm::u16, 1>((glm::u16*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::UInt32:
-            channel = new BufferChannel<glm::u32, 1>((glm::u32 *)data, numElements,
+            channel = new BufferChannel<glm::u32, 1>((glm::u32*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::UInt64:
-            channel = new BufferChannel<glm::u64, 1>((glm::u64 *)data, numElements,
+            channel = new BufferChannel<glm::u64, 1>((glm::u64*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec2Float16:
             channel =
-                new BufferChannel<f16, 2>((f16 *)data, numElements, channelName.get(), dimensionTo);
+                new BufferChannel<f16, 2>((f16*)data, numElements, channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec2Float32:
-            channel = new BufferChannel<glm::f32, 2>((glm::f32 *)data, numElements,
+            channel = new BufferChannel<glm::f32, 2>((glm::f32*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec2Float64:
-            channel = new BufferChannel<glm::f64, 2>((glm::f64 *)data, numElements,
+            channel = new BufferChannel<glm::f64, 2>((glm::f64*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec2Int8:
-            channel = new BufferChannel<glm::i8, 2>((glm::i8 *)data, numElements, channelName.get(),
+            channel = new BufferChannel<glm::i8, 2>((glm::i8*)data, numElements, channelName.get(),
                                                     dimensionTo);
             break;
         case DataFormatId::Vec2Int16:
-            channel = new BufferChannel<glm::i16, 2>((glm::i16 *)data, numElements,
+            channel = new BufferChannel<glm::i16, 2>((glm::i16*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec2Int32:
-            channel = new BufferChannel<glm::i32, 2>((glm::i32 *)data, numElements,
+            channel = new BufferChannel<glm::i32, 2>((glm::i32*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec2Int64:
-            channel = new BufferChannel<glm::i64, 2>((glm::i64 *)data, numElements,
+            channel = new BufferChannel<glm::i64, 2>((glm::i64*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec2UInt8:
-            channel = new BufferChannel<glm::u8, 2>((glm::u8 *)data, numElements, channelName.get(),
+            channel = new BufferChannel<glm::u8, 2>((glm::u8*)data, numElements, channelName.get(),
                                                     dimensionTo);
             break;
         case DataFormatId::Vec2UInt16:
-            channel = new BufferChannel<glm::u16, 2>((glm::u16 *)data, numElements,
+            channel = new BufferChannel<glm::u16, 2>((glm::u16*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec2UInt32:
-            channel = new BufferChannel<glm::u32, 2>((glm::u32 *)data, numElements,
+            channel = new BufferChannel<glm::u32, 2>((glm::u32*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec2UInt64:
-            channel = new BufferChannel<glm::u64, 2>((glm::u64 *)data, numElements,
+            channel = new BufferChannel<glm::u64, 2>((glm::u64*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec3Float16:
             channel =
-                new BufferChannel<f16, 3>((f16 *)data, numElements, channelName.get(), dimensionTo);
+                new BufferChannel<f16, 3>((f16*)data, numElements, channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec3Float32:
-            channel = new BufferChannel<glm::f32, 3>((glm::f32 *)data, numElements,
+            channel = new BufferChannel<glm::f32, 3>((glm::f32*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec3Float64:
-            channel = new BufferChannel<glm::f64, 3>((glm::f64 *)data, numElements,
+            channel = new BufferChannel<glm::f64, 3>((glm::f64*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec3Int8:
-            channel = new BufferChannel<glm::i8, 3>((glm::i8 *)data, numElements, channelName.get(),
+            channel = new BufferChannel<glm::i8, 3>((glm::i8*)data, numElements, channelName.get(),
                                                     dimensionTo);
             break;
         case DataFormatId::Vec3Int16:
-            channel = new BufferChannel<glm::i16, 3>((glm::i16 *)data, numElements,
+            channel = new BufferChannel<glm::i16, 3>((glm::i16*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec3Int32:
-            channel = new BufferChannel<glm::i32, 3>((glm::i32 *)data, numElements,
+            channel = new BufferChannel<glm::i32, 3>((glm::i32*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec3Int64:
-            channel = new BufferChannel<glm::i64, 3>((glm::i64 *)data, numElements,
+            channel = new BufferChannel<glm::i64, 3>((glm::i64*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec3UInt8:
-            channel = new BufferChannel<glm::u8, 3>((glm::u8 *)data, numElements, channelName.get(),
+            channel = new BufferChannel<glm::u8, 3>((glm::u8*)data, numElements, channelName.get(),
                                                     dimensionTo);
             break;
         case DataFormatId::Vec3UInt16:
-            channel = new BufferChannel<glm::u16, 3>((glm::u16 *)data, numElements,
+            channel = new BufferChannel<glm::u16, 3>((glm::u16*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec3UInt32:
-            channel = new BufferChannel<glm::u32, 3>((glm::u32 *)data, numElements,
+            channel = new BufferChannel<glm::u32, 3>((glm::u32*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec3UInt64:
-            channel = new BufferChannel<glm::u64, 3>((glm::u64 *)data, numElements,
+            channel = new BufferChannel<glm::u64, 3>((glm::u64*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec4Float16:
             channel =
-                new BufferChannel<f16, 4>((f16 *)data, numElements, channelName.get(), dimensionTo);
+                new BufferChannel<f16, 4>((f16*)data, numElements, channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec4Float32:
-            channel = new BufferChannel<glm::f32, 4>((glm::f32 *)data, numElements,
+            channel = new BufferChannel<glm::f32, 4>((glm::f32*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec4Float64:
-            channel = new BufferChannel<glm::f64, 4>((glm::f64 *)data, numElements,
+            channel = new BufferChannel<glm::f64, 4>((glm::f64*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec4Int8:
-            channel = new BufferChannel<glm::i8, 4>((glm::i8 *)data, numElements, channelName.get(),
+            channel = new BufferChannel<glm::i8, 4>((glm::i8*)data, numElements, channelName.get(),
                                                     dimensionTo);
             break;
         case DataFormatId::Vec4Int16:
-            channel = new BufferChannel<glm::i16, 4>((glm::i16 *)data, numElements,
+            channel = new BufferChannel<glm::i16, 4>((glm::i16*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec4Int32:
-            channel = new BufferChannel<glm::i32, 4>((glm::i32 *)data, numElements,
+            channel = new BufferChannel<glm::i32, 4>((glm::i32*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec4Int64:
-            channel = new BufferChannel<glm::i64, 4>((glm::i64 *)data, numElements,
+            channel = new BufferChannel<glm::i64, 4>((glm::i64*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec4UInt8:
-            channel = new BufferChannel<glm::u8, 4>((glm::u8 *)data, numElements, channelName.get(),
+            channel = new BufferChannel<glm::u8, 4>((glm::u8*)data, numElements, channelName.get(),
                                                     dimensionTo);
             break;
         case DataFormatId::Vec4UInt16:
-            channel = new BufferChannel<glm::u16, 4>((glm::u16 *)data, numElements,
+            channel = new BufferChannel<glm::u16, 4>((glm::u16*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec4UInt32:
-            channel = new BufferChannel<glm::u32, 4>((glm::u32 *)data, numElements,
+            channel = new BufferChannel<glm::u32, 4>((glm::u32*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         case DataFormatId::Vec4UInt64:
-            channel = new BufferChannel<glm::u64, 4>((glm::u64 *)data, numElements,
+            channel = new BufferChannel<glm::u64, 4>((glm::u64*)data, numElements,
                                                      channelName.get(), dimensionTo);
             break;
         default:

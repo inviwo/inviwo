@@ -90,35 +90,42 @@ SpatialEntity<SpatialDims>* CellTree<SpatialDims>::clone() const {
 }
 
 template <unsigned int SpatialDims>
-// template <typename T>
 bool CellTree<SpatialDims>::sampleCell(ind cellId, const std::array<float, SpatialDims>& pos,
-                                       std::vector<double>& weights,
+                                       std::vector<ind>& vertices, std::vector<double>& weights,
                                        InterpolationType interpolationType) const {
+    std::cout << "Cell ID " << cellId << std::endl;
     if (cellId >= coordinates_->size()) return false;
     auto coordinatesT = dynamic_cast<const DataChannel<double, SpatialDims>*>(coordinates_.get());
     ivwAssert(coordinatesT, "Coordinate channel not of the detected type.");
     if (!coordinatesT) return false;
+    std::cout << "\tGetting verts" << std::endl;
 
     // Get cell vertices.
-    std::vector<ind> vertIndices;
-    grid_->getConnections(vertIndices, cellId, GridPrimitive(SpatialDims), GridPrimitive::Vertex);
-    if (vertIndices.size() == 0) return false;
+    // std::vector<ind> vertices;
+    vertices.clear();
+    grid_->getConnections(vertices, cellId, GridPrimitive(SpatialDims), GridPrimitive::Vertex);
+    if (vertices.size() == 0) return false;
 
-    std::vector<std::array<float, SpatialDims>> vertices;
-    // vertices.resize(vertIndices.size());
+    std::vector<std::array<float, SpatialDims>> vertCoords;
+    // vertices.resize(vertices.size());
     std::array<double, SpatialDims> originalCoord;
-    for (ind v : vertIndices) {
+    for (ind v : vertices) {
         coordinatesT->fill(originalCoord, v);
-        vertices.emplace_back();
-        for (unsigned dim = 0; dim < SpatialDims; ++dim)
-            vertices.back()[dim] = static_cast<float>(originalCoord[dim]);
+        vertCoords.emplace_back();
+        // std::cout << "\t\tp" << v << " - ";
+        for (unsigned dim = 0; dim < SpatialDims; ++dim) {
+            vertCoords.back()[dim] = static_cast<float>(originalCoord[dim]);
+            // std::cout << originalCoord[dim] << ", ";
+        }
+        // std::cout << std::endl;
     }
 
-    // TODO: interpolant
-    // return dynamic_cast<Interpolant<SpatialDims>>(grid_->getInterpolant())
-    //     .getWeights(interpolationType, coordinatesT, weights, pos);
-
-    return true;
+    if (DataSetSampler<SpatialDims>::getInterpolant().getWeights(interpolationType, vertCoords,
+                                                                 weights, pos)) {
+        std::cout << "Yeeeeeesh!" << std::endl;
+        return true;
+    }
+    return false;
 }
 
 template <unsigned int SpatialDims>
@@ -126,9 +133,12 @@ ind CellTree<SpatialDims>::locateAndSampleCell(const std::array<float, SpatialDi
                                                std::vector<double>& returnWeights,
                                                std::vector<ind>& returnVertices,
                                                InterpolationType interpolationType) const {
-    static bool firstSample = true;
-    if (firstSample) std::cout << "Sampling first cell" << std::endl;
-    firstSample = false;
+    // static bool firstSample = true;
+    // if (firstSample) {
+
+    std::cout << fmt::format("Sampling position: ({}, {})", pos[0], pos[1]) << std::endl;
+    // }
+    // firstSample = false;
     // glm::vec<SpatialDims, float> posVec;
     // for (unsigned i = 0; i < SpatialDims; ++i) posVec[i] = pos[i];
     // const glm::vec<SpatialDims, float>&
@@ -145,7 +155,7 @@ ind CellTree<SpatialDims>::locateAndSampleCell(const std::array<float, SpatialDi
     //                                                InterpolationType interpolationType) const {
     // return -1;
     for (size_t dim = 0; dim < SpatialDims; ++dim) {
-        if (pos[dim] <= coordsMin_[dim] || pos[dim] >= coordsMax_[dim]) return -1;
+        if (pos[dim] < coordsMin_[dim] || pos[dim] > coordsMax_[dim]) return -1;
     }
 
     std::stack<ind> todoNodes;
@@ -170,9 +180,13 @@ ind CellTree<SpatialDims>::locateAndSampleCell(const std::array<float, SpatialDi
                 continue;
             }
             if (inLeftChild) {
+                std::cout << "\tIn left child, < " << node->node.Lmax << " - "
+                          << (node->dim ? 'Y' : 'X') << std::endl;
                 node = &nodes_[node->child];
                 continue;
             }
+            std::cout << "\tIn right child, > " << node->node.Rmin << " - "
+                      << (node->dim ? 'Y' : 'X') << std::endl;
             node = &nodes_[node->child + 1];
             continue;
         }
@@ -182,8 +196,12 @@ ind CellTree<SpatialDims>::locateAndSampleCell(const std::array<float, SpatialDi
         firstBox = false;
 
         for (ind c = node->leaf.start; c < node->leaf.start + node->leaf.size; ++c) {
-            if (sampleCell(cells_[c], pos, returnWeights, interpolationType)) return c;
+            if (sampleCell(cells_[c], pos, returnVertices, returnWeights, interpolationType)) {
+                std::cout << "This one worked! c=" << c << std::endl;
+                return cells_[c];
+            }
         }
+        std::cout << "Not in this subtree :(" << std::endl;
     } while (!todoNodes.empty());
 
     return -1;
@@ -237,12 +255,12 @@ void CellTree<SpatialDims>::buildCellTree(
         auto& node = nodes_[nodeInfo.Index];
         unsigned& numCells = node.leaf.size;
 
-        std::cout << "\t\t= Node " << nodeInfo.Index << " :" << std::endl;
-        std::cout << "\t\t= Number of cells: " << numCells << std::endl;
+        // std::cout << "\t\t= Node " << nodeInfo.Index << " :" << std::endl;
+        // std::cout << "\t\t= Number of cells: " << numCells << std::endl;
         // Should be leaf?
         if (numCells <= MAX_CELLS_PER_NODE) {
             node.child = 0;
-            std::cout << "\t\t= is a leafy! " << nodeInfo.Index << std::endl;
+            // std::cout << "\t\t= is a leafy! " << nodeInfo.Index << std::endl;
             continue;
         }
 
@@ -283,7 +301,7 @@ void CellTree<SpatialDims>::buildCellTree(
             }
         }
 
-        std::cout << " (num Cells now " << numCells << ')' << std::endl;
+        // std::cout << " (num Cells now " << numCells << ')' << std::endl;
 
         // Find best dimension to split in, and between which two buckets.
         // Tuple: bucket to split after, num elements in lower half, is it larger than half
@@ -344,34 +362,34 @@ void CellTree<SpatialDims>::buildCellTree(
         // auto itMiddle = it + firstHalfSize;          // Middle split.
         auto itEnd = it + node.leaf.size;  // Last element.
 
-        std::cout << "Optimal Split: " << bestSplit << " in dim " << bestDimIdx << " ("
-                  << (100 * bestDim->numCellsLeft) / numCells << "%)" << std::endl;
+        // std::cout << "Optimal Split: " << bestSplit << " in dim " << bestDimIdx << " ("
+        //           << (100 * bestDim->numCellsLeft) / numCells << "%)" << std::endl;
 
         // bool initialized[2] = {false, false};
 
         bool badSplit = (bestDim->numCellsLeft == numCells || bestDim->numCellsLeft == 0);
         if (badSplit) {
-            std::cout << "Splitting " << bestDim->numCellsLeft << " to "
-                      << numCells - bestDim->numCellsLeft << " from bucket "
-                      << bestDim->splitFromBucket << std::endl;
+            // std::cout << "Splitting " << bestDim->numCellsLeft << " to "
+            //           << numCells - bestDim->numCellsLeft << " from bucket "
+            //           << bestDim->splitFromBucket << std::endl;
             for (size_t b = 0; b < optimalSplitPerDimensions.size(); ++b) {
                 auto& bucket = optimalSplitPerDimensions[b];
-                std::cout << "\t= Alternatives " << bucket.numCellsLeft << " to "
-                          << numCells - bucket.numCellsLeft << " in dim " << b << " ("
-                          << (100 * bucket.numCellsLeft) / numCells << "%)\n\t  for range "
-                          << nodeInfo.Min[b] << " -> " << nodeInfo.Max[b] << std::endl;
+                // std::cout << "\t= Alternatives " << bucket.numCellsLeft << " to "
+                //           << numCells - bucket.numCellsLeft << " in dim " << b << " ("
+                //           << (100 * bucket.numCellsLeft) / numCells << "%)\n\t  for range "
+                //           << nodeInfo.Min[b] << " -> " << nodeInfo.Max[b] << std::endl;
             }
 
             for (auto buckCount : bucketsPerSplitDimension)
-                std::cout << "      bucket count " << buckCount << std::endl;
+                // std::cout << "      bucket count " << buckCount << std::endl;
 
-            for (ind b = 0; b < NUM_SPLIT_BUCKETS; ++b) {
-                std::cout << "\t" << b << ": "
-                          << nodeInfo.Min[bestDimIdx] +
-                                 ((nodeInfo.Max[bestDimIdx] - nodeInfo.Min[bestDimIdx]) * b) /
-                                     NUM_SPLIT_BUCKETS
-                          << std::endl;
-            }
+                for (ind b = 0; b < NUM_SPLIT_BUCKETS; ++b) {
+                    std::cout << "\t" << b << ": "
+                              << nodeInfo.Min[bestDimIdx] +
+                                     ((nodeInfo.Max[bestDimIdx] - nodeInfo.Min[bestDimIdx]) * b) /
+                                         NUM_SPLIT_BUCKETS
+                              << std::endl;
+                }
         }
 
         NodeInfo children[2] = {NodeInfo{ind(nodes_.size()), FloatCoord{0}, FloatCoord{0}},
@@ -503,7 +521,7 @@ void CellTree<SpatialDims>::buildCellTree(
         todoNodes.push(children[0]);
         todoNodes.push(children[1]);
 
-        std::cout << "\t= Done iterating!\n" << std::endl;
+        // std::cout << "\t= Done iterating!\n" << std::endl;
     }
     std::cout << "\t= made a cell tree!" << std::endl;
 }

@@ -90,6 +90,11 @@ void SeedPointGenerator2D::process() {
     switch (generator_.get()) {
         case Generator::Random: {
             std::uniform_real_distribution<float> dis(0, 1);
+            // if (useSameSeed_.get()) {
+            mt_.seed(useSameSeed_.get() ? seed_ : rd_());
+            // } else {
+            //     mt_ = std::mt19937(rd_());
+            // }
             seeds->resize(numPoints_.get());
             util::randomSequence<float>(reinterpret_cast<float*>(seeds->data()),
                                         numPoints_.get() * 2, mt_, dis);

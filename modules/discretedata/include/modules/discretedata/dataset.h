@@ -42,6 +42,7 @@ namespace inviwo {
 namespace discretedata {
 
 struct DataSetInitializer {
+    std::string name_;
     std::shared_ptr<const Connectivity> grid_;
     std::vector<std::shared_ptr<Channel>> channels_;
 };
@@ -64,32 +65,36 @@ class IVW_MODULE_DISCRETEDATA_API DataSet {
 public:
     /**
      * \brief Create a DataSet from an existing grid
+     * @param name The (preferably unique) name of this DataSet
      * @param grid Existing grid to base the DataSet on
      */
-    DataSet(std::shared_ptr<const Connectivity> grid) : grid_(grid) {}
+    DataSet(const std::string& name, std::shared_ptr<const Connectivity> grid)
+        : grid_(grid), name_(name) {}
 
     /**
      * \brief Create a DataSet on an nD StructuredGrid
+     * @param name The (preferably unique) name of this DataSet
      * @param numVertices Number of vertices in N dimensions
      */
     template <size_t N>
-    DataSet(const std::array<ind, N>& numVertices)
-        : grid_(std::make_shared<StructuredGrid<static_cast<ind>(N)>>(numVertices)) {}
+    DataSet(const std::string& name, const std::array<ind, N>& numVertices)
+        : grid_(std::make_shared<StructuredGrid<static_cast<ind>(N)>>(numVertices)), name_(name) {}
 
     /**
      * \brief Create a DataSet on an nD StructuredGrid
+     * @param name The (preferably unique) name of this DataSet
      * @param val0 Required size of first dimension
      * @param valX Further N-1 sizes
      */
     template <typename... IND>
-    DataSet(ind val0, IND... valX)
-        : grid_(std::make_shared<StructuredGrid<sizeof...(IND) + 1>>(val0, valX...)) {}
+    DataSet(const std::string& name, ind val0, IND... valX)
+        : grid_(std::make_shared<StructuredGrid<sizeof...(IND) + 1>>(val0, valX...)), name_(name) {}
 
     /**
      * \brief Create a DataSet from an existing grid and channel list
      * @param data Existing grid and channels to base the DataSet on
      */
-    DataSet(const DataSetInitializer& data) : grid_(data.grid_) {
+    DataSet(const DataSetInitializer& data) : grid_(data.grid_), name_(data.name_) {
         for (auto channel : data.channels_)
             addChannel(std::const_pointer_cast<const Channel, Channel>(channel));
     }
@@ -114,6 +119,8 @@ public:
      * Returns a shared pointer to the virtual grid.
      */
     std::shared_ptr<const Connectivity> getGrid() const { return grid_; }
+
+    const std::string& getName() const { return name_; }
 
     // Channels
 
@@ -160,7 +167,8 @@ public:
      * Returns the specified channel if it is in the desired format, returns first instance found
      * @param key Unique name and GridPrimitive type the channel is defined on
      */
-    std::shared_ptr<const Channel> getChannel(std::pair<std::string, GridPrimitive>& key) const;
+    std::shared_ptr<const Channel> getChannel(
+        const std::pair<std::string, GridPrimitive>& key) const;
 
     /**
      * Returns the specified channel if it is in the desired format, returns first instance found
@@ -230,6 +238,12 @@ protected:
      * Can be used to create inviwo SpatialSamplers when a channel to sample from is selected.
      */
     SamplerMap samplers_;
+
+    /**
+     * The identifying name of this DataSet.
+     * Will be displayed to the user, and can be used to loosely identify this DataSet.
+     */
+    const std::string name_;
 };
 
 template <typename T, ind N>
@@ -285,8 +299,8 @@ struct DataTraits<discretedata::DataSet> {
         // doc.append("p", oss.str());
         // std::ostringstream oss;
         auto grid = data.getGrid();
-        doc.append("p", fmt::format("Data set with {} channels and {} samplers.", data.size(),
-                                    data.getSamplers().size()));
+        doc.append("p", fmt::format("{} - {} channels and {} samplers.", data.getName(),
+                                    data.size(), data.getSamplers().size()));
         doc.append("p",
                    fmt::format("{} with {} vertices and {} {} cells.", grid->getIdentifier(),
                                grid->getNumElements(), grid->getNumElements(grid->getDimension()),

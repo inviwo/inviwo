@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2020 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,45 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
-
-#include <modules/discretedata/sampling/interpolant.h>
-#include <inviwo/core/util/zip.h>
+#include <modules/vectorfieldvisualization/processors/2d/seedstomesh2d.h>
 
 namespace inviwo {
-namespace discretedata {
 
-TEST(DataSet, Interpolation) {
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo SeedsToMesh2D::processorInfo_{
+    "org.inviwo.SeedsToMesh2D",  // Class identifier
+    "Seeds To Mesh 2D",          // Display name
+    "Seed Points",               // Category
+    CodeState::Stable,           // Code state
+    Tags::None,                  // Tags
+};
+const ProcessorInfo SeedsToMesh2D::getProcessorInfo() const { return processorInfo_; }
 
-    using arr2 = std::array<float, 2>;
-    SkewedBoxInterpolant<2> interpolant;
+SeedsToMesh2D::SeedsToMesh2D() : Processor(), seedPointsIn_("seedsIn"), meshOut_("pointMeshOut") {
 
-    std::vector<double> weights;
-    bool inside;
-    vec3 baseX(4, 2, 0), baseY(-1, 1, 0), baseT(1, 1, 1);
-    mat3 baseMat(baseX, baseY, baseT);
+    addPort(seedPointsIn_);
+    addPort(meshOut_);
+}
 
-    vec3 position = {0.25, 0.5, 1};
-    std::array<vec3, 5> points = {vec3{0, 0, 1}, {1, 0, 1}, {0, 1, 1}, {1, 1, 1}, position};
-    std::vector<arr2> coords;
-    for (const vec3& p : points) {
-        vec3 transformedPoint = baseMat * p;
-        coords.push_back(arr2{transformedPoint.x, transformedPoint.y});
-        std::cerr << "point " << transformedPoint.x << ", " << transformedPoint.y << std::endl;
+void SeedsToMesh2D::process() {
+    if (!seedPointsIn_.hasData()) {
+        meshOut_.detachData();
+        return;
     }
-    EXPECT_NO_THROW(inside = interpolant.getWeights(discretedata::InterpolationType::Linear,
-                                                    {coords[0], coords[1], coords[2], coords[3]},
-                                                    weights, coords[4]));
 
-    EXPECT_TRUE(inside);
-    EXPECT_EQ(weights.size(), 4);
-    EXPECT_DOUBLE_EQ(weights[0], (1.0 - position[0]) * (1.0 - position[1]));
-    EXPECT_DOUBLE_EQ(weights[1], position[0] * (1.0 - position[1]));
-    EXPECT_DOUBLE_EQ(weights[2], (1.0 - position[0]) * position[1]);
-    EXPECT_DOUBLE_EQ(weights[3], position[0] * position[1]);
-}  // namespace discretedata
+    auto mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
+    std::vector<vec3> positions;
+    positions.reserve(seedPointsIn_.getData()->size());
 
-}  // namespace discretedata
+    for (const auto& seeds : seedPointsIn_) {
+        for (const auto& seed : *seeds) {
+            positions.push_back(vec3{seed[0], seed[1], 0});
+        }
+    }
+    auto posBuffer = util::makeBuffer(std::move(positions));
+    mesh->addBuffer(BufferType::PositionAttrib, posBuffer);
+
+    meshOut_.setData(mesh);
+}
+
 }  // namespace inviwo

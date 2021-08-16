@@ -150,7 +150,7 @@ struct IVW_MODULE_DISCRETEDATA_API CreateUniformGridDispatcher {
         std::copy_n(numCells.begin(), N, numCellsArray.begin());
         auto grid = std::make_shared<StructuredGrid<static_cast<ind>(N)>>(std::move(numCellsArray));
 
-        auto dataSet = std::make_shared<DataSet>(grid);
+        auto dataSet = std::make_shared<DataSet>(name, grid);
         dataSet->addChannel(channel);
         return dataSet;
     }

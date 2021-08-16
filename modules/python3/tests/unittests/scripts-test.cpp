@@ -30,6 +30,8 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
+#include <glm/gtc/epsilon.hpp>
+
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -40,8 +42,6 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-
-#include <glm/gtc/epsilon.hpp>
 
 namespace inviwo {
 

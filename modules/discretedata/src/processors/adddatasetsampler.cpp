@@ -63,11 +63,11 @@ AddDataSetSampler::AddDataSetSampler()
           })
     , samplerCreator_("sampler", "Sampler Type")
     , interpolantCreator_("interpolation", "Cell Interpolant")
-    , interpolationType_("interpolationType", "Interpolation Type",
-                         {{"nearest", "Nearest Neighbor", InterpolationType::Nearest},
-                          {"squared", "Squared Distance", InterpolationType::SquaredDistance},
-                          {"linear", "Linear", InterpolationType::Linear}},
-                         2)
+    // , interpolationType_("interpolationType", "Interpolation Type",
+    //                      {{"nearest", "Nearest Neighbor", InterpolationType::Nearest},
+    //                       {"squared", "Squared Distance", InterpolationType::SquaredDistance},
+    //                       {"linear", "Linear", InterpolationType::Linear}},
+    //                      2)
     , interpolant_(nullptr)
     , sampler_(nullptr)
     , interpolantChanged_(true)
@@ -77,9 +77,9 @@ AddDataSetSampler::AddDataSetSampler()
     addPort(dataIn_);
     addPort(dataOut_);
     addPort(meshOut_);
-    addProperties(positionChannel_, samplerCreator_, interpolantCreator_, interpolationType_);
+    addProperties(positionChannel_, samplerCreator_, interpolantCreator_);
     positionChannel_.gridPrimitive_.setVisible(false);
-    interpolationType_.setCurrentStateAsDefault();
+    // interpolationType_.setCurrentStateAsDefault();
 
     for (auto& creator : samplerCreatorList_) {
         samplerCreator_.addOption(creator.first, creator.second.first, samplerCreator_.size());
@@ -95,11 +95,11 @@ AddDataSetSampler::AddDataSetSampler()
         invalidate(InvalidationLevel::InvalidOutput);
         std::cout << "Changed interpolant" << std::endl;
     });
-    interpolationType_.onChange([this]() {
-        interpolationChanged_ = true;
-        invalidate(InvalidationLevel::InvalidOutput);
-        std::cout << "Changed interpolation" << std::endl;
-    });
+    // interpolationType_.onChange([this]() {
+    //     interpolationChanged_ = true;
+    //     invalidate(InvalidationLevel::InvalidOutput);
+    //     std::cout << "Changed interpolation" << std::endl;
+    // });
     samplerCreator_.onChange([this]() {
         samplerChanged_ = true;
         invalidate(InvalidationLevel::InvalidOutput);
@@ -135,7 +135,7 @@ void AddDataSetSampler::process() {
 
         interpolant_ =
             interpolantCreatorList_[interpolantCreator_.getSelectedIdentifier()].second(baseDim);
-        fillInterpolationTypes();
+        // fillInterpolationTypes();
         if (!samplerChanged_ && sampler_) sampler_->setInterpolant(*interpolant_);
     }
 
@@ -152,6 +152,7 @@ void AddDataSetSampler::process() {
     }
 
     removeChangedFlags();
+    // sampler_->interpolationType_ = interpolationType_.get();
 
     if (!sampler_) {
         LogWarn("Sampler does not exist :(");
@@ -170,23 +171,23 @@ void AddDataSetSampler::process() {
     std::cout << "Ended process AddDataSetSampler" << std::endl;
 }
 
-void AddDataSetSampler::fillInterpolationTypes() {
-    if (!interpolant_) {
-        interpolationType_.clearOptions();
-        return;
-    }
-    if (interpolationType_.size() < 3)
-        interpolationType_.replaceOptions(
-            {{"nearest", "Nearest Neighbor", InterpolationType::Nearest},
-             {"squared", "Squared Distance", InterpolationType::SquaredDistance},
-             {"linear", "Linear", InterpolationType::Linear}});
+// void AddDataSetSampler::fillInterpolationTypes() {
+//     if (!interpolant_) {
+//         interpolationType_.clearOptions();
+//         return;
+//     }
+//     if (interpolationType_.size() < 3)
+//         interpolationType_.replaceOptions(
+//             {{"nearest", "Nearest Neighbor", InterpolationType::Nearest},
+//              {"squared", "Squared Distance", InterpolationType::SquaredDistance},
+//              {"linear", "Linear", InterpolationType::Linear}});
 
-    // Remove interpolation options that are not supported by the selected interpolant.
-    for (auto& opt : interpolationType_.getOptions()) {
-        if (!interpolant_->supportsInterpolationType(opt.value_))
-            interpolationType_.removeOption(opt.id_);
-    }
-}
+//     // Remove interpolation options that are not supported by the selected interpolant.
+//     for (auto& opt : interpolationType_.getOptions()) {
+//         if (!interpolant_->supportsInterpolationType(opt.value_))
+//             interpolationType_.removeOption(opt.id_);
+//     }
+// }
 
 void AddDataSetSampler::addSamplerType(std::string identifier, std::string displayName,
                                        CreateSampler creator) {

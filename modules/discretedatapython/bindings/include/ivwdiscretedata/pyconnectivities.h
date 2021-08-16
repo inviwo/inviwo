@@ -36,6 +36,7 @@
 
 #include <modules/discretedata/connectivity/structuredgrid.h>
 #include <modules/discretedata/connectivity/tripolargrid.h>
+#include <fmt/format.h>
 
 namespace inviwo {
 using namespace discretedata;
@@ -47,7 +48,13 @@ struct IVW_MODULE_DISCRETEDATA_API CreateStructuredGridDispatcher {
 
     template <typename Result, int N>
     Result operator()(const pybind11::array_t<int>& vertData) {
-        ivwAssert(vertData.ndim() == N, "Given data size does not match template dimension.");
+        // for (ind n = 0; n < vertData.size(); ++n)
+        //     std::cout << static_cast<ind>(*vertData.data(n)) << " ";
+        // std::cout << std::endl;
+
+        // ivwAssert(vertData.ndim() == N,
+        //           fmt::format("Given data size does not match template dimension: {} != {}",
+        //                       vertData.ndim(), N));
 
         std::array<ind, N> numVertices;
         for (ind n = 0; n < N; ++n) numVertices[n] = static_cast<ind>(*vertData.data(N - 1 - n));
@@ -61,7 +68,9 @@ struct IVW_MODULE_DISCRETEDATA_API CreateTripolarGridDispatcher {
 
     template <typename Result, int N>
     Result operator()(const pybind11::array_t<int>& vertData) {
-        ivwAssert(vertData.ndim() == N, "Given data size does not match template dimension.");
+        // ivwAssert(vertData.ndim() == N,
+        //           fmt::format("Given data size {} does not match template dimension {}.",
+        //                       vertData.ndim(), N));
 
         std::array<ind, N> numVertices;
         for (ind n = 0; n < N; ++n) numVertices[n] = static_cast<ind>(*vertData.data(N - 1 - n));
@@ -73,8 +82,9 @@ struct IVW_MODULE_DISCRETEDATA_API CreateTripolarGridDispatcher {
 
 }  // namespace detail
 
-std::shared_ptr<Connectivity> createStructuredGrid(const pybind11::array_t<int>& data);
-std::shared_ptr<Connectivity> createTripolarGrid(const pybind11::array_t<int>& data);
+std::shared_ptr<Connectivity> createStructuredGrid(const pybind11::array_t<int>& size);
+std::shared_ptr<Connectivity> createTripolarGrid(const pybind11::array_t<int>& size);
+std::shared_ptr<Connectivity> createPointCloudGrid(const pybind11::array_t<int>& size);
 }  // namespace discretepyutil
 
 void exposeConnectivities(pybind11::module& m);

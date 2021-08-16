@@ -53,9 +53,9 @@ struct OrdinalPropertyState {
         std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable};
     T increment = Defaultvalues<T>::getInc();
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput;
-    PropertySemantics semantics = defaltSemantics();
+    PropertySemantics semantics = defaultSemantics();
 
-    static PropertySemantics defaltSemantics() {
+    static PropertySemantics defaultSemantics() {
         if constexpr (util::extent<T, 1>::value > 1) {
             return PropertySemantics::Text;
         } else {
@@ -78,7 +78,7 @@ public:
                     const T& minValue, const T& maxValue = Defaultvalues<T>::getMax(),
                     const T& increment = Defaultvalues<T>::getInc(),
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                    PropertySemantics semantics = OrdinalPropertyState<T>::defaltSemantics());
+                    PropertySemantics semantics = OrdinalPropertyState<T>::defaultSemantics());
 
     OrdinalProperty(
         const std::string& identifier, const std::string& displayName,
@@ -89,7 +89,7 @@ public:
                                                                      ConstraintBehavior::Editable},
         const T& increment = Defaultvalues<T>::getInc(),
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = OrdinalPropertyState<T>::defaltSemantics());
+        PropertySemantics semantics = OrdinalPropertyState<T>::defaultSemantics());
 
     OrdinalProperty(const std::string& identifier, const std::string& displayName,
                     OrdinalPropertyState<T> state);

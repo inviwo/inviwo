@@ -71,7 +71,7 @@ public:
     virtual bool supportsInterpolationType(InterpolationType type) const override;
     virtual bool getWeights(InterpolationType type,
                             const std::vector<std::array<float, Dim>>& coordinates,
-                            std::vector<float>& weights,
+                            std::vector<double>& weights,
                             const std::array<float, Dim>& position) const;
 };
 
@@ -80,7 +80,7 @@ struct IVW_MODULE_DISCRETEDATA_API SkewedBoxInterpolant : public Interpolant<Dim
     virtual bool supportsInterpolationType(InterpolationType type) const override;
     virtual bool getWeights(InterpolationType type,
                             const std::vector<std::array<float, Dim>>& coordinates,
-                            std::vector<float>& weights,
+                            std::vector<double>& weights,
                             const std::array<float, Dim>& position) const override;
     Interpolant<Dim>* copy() const override;
 };

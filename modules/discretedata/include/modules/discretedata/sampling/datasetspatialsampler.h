@@ -56,13 +56,13 @@ public:
     //     return SpatialSampler<SpatialDims, DataDims,
     //     T>::spatialEntity_.getCoordinateTransformer();
     // }
+    InterpolationType interpolationType_;
 
 protected:
     // Vector<DataDims, double> getVoxel(const size3_t& pos) const;
 
     // SpatialEntityChannel<T, SpatialDims> spatialChannel_;
     std::shared_ptr<const DataSetSampler<SpatialDims>> sampler_;
-    InterpolationType interpolationType_;
     std::shared_ptr<const DataChannel<T, DataDims>> data_;
 };
 

@@ -80,7 +80,7 @@ private:
     DataChannelProperty positionChannel_;
     // TemplateOptionProperty<CreateInterpolant> interpolantCreator_;
     OptionPropertyUInt samplerCreator_, interpolantCreator_;
-    TemplateOptionProperty<InterpolationType> interpolationType_;
+    // TemplateOptionProperty<InterpolationType> interpolationType_;
 
     const InterpolantBase* interpolant_;
     std::shared_ptr<DataSetSamplerBase> sampler_;

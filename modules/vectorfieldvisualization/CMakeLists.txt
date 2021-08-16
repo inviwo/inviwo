@@ -12,6 +12,7 @@ set(HEADER_FILES
     include/modules/vectorfieldvisualization/integrallinetracer.h
     include/modules/vectorfieldvisualization/ports/seedpointsport.h
     include/modules/vectorfieldvisualization/processors/2d/seedpointgenerator2d.h
+    include/modules/vectorfieldvisualization/processors/2d/seedstomesh2d.h
     include/modules/vectorfieldvisualization/processors/3d/pathlines.h
     include/modules/vectorfieldvisualization/processors/3d/streamlines.h
     include/modules/vectorfieldvisualization/processors/3d/streamribbons.h
@@ -43,6 +44,7 @@ set(SOURCE_FILES
     src/datastructures/integrallineset.cpp
     src/integrallinetracer.cpp
     src/processors/2d/seedpointgenerator2d.cpp
+    src/processors/2d/seedstomesh2d.cpp
     src/processors/3d/pathlines.cpp
     src/processors/3d/streamlines.cpp
     src/processors/3d/streamribbons.cpp

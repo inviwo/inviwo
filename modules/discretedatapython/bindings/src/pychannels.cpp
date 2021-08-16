@@ -105,7 +105,7 @@ std::shared_ptr<Channel> discretepyutil::createPyChannel(const pybind11::array& 
                                                          GridPrimitive definedOn) {
 
     auto ndim = data.ndim();
-    ivwAssert(ndim == 1 || ndim == 2, "ndims must be either 1 or 2");
+    // ivwAssert(ndim == 1 || ndim == 2, "ndims must be either 1 or 2");
     std::cout << "Got data type " << data.dtype().kind() << std::endl;
     // auto combinedFormat = inviwo::pyutil::getDataFormat(1, data);
     auto combinedFormat = DataFormatBase::get(DataFormatId::Float32);

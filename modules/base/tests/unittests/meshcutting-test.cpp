@@ -30,6 +30,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
+#include <glm/gtx/perpendicular.hpp>
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwo.h>
@@ -40,8 +41,6 @@
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <modules/base/algorithm/meshutils.h>
-
-#include <glm/gtx/perpendicular.hpp>
 
 namespace inviwo {
 

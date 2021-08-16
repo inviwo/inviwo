@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <modules/vectorfieldvisualization/processors/2d/seedstomesh2d.h>
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmodule.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h>
@@ -94,6 +95,7 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<SeedPointGenerator2D>();
     registerProcessor<LineSetSelector>();
     registerProcessor<SeedsFromMesh>();
+    registerProcessor<SeedsToMesh2D>();
 
     registerProperty<StreamLineProperties>();
     registerProperty<PathLineProperties>();
