@@ -131,9 +131,9 @@ if(BUILD_SHARED_LIBS AND IVW_PACKAGE_EMBED_PYTHON)
         endif()
 
         if(NOT EXISTS ${py_dir}/python/Scripts)
-            execute_process(COMMAND ./python.exe get-pip.py --no-warn-script-location 
-                WORKING_DIRECTORY "${py_dir}/python")    
-            execute_process(COMMAND ./python.exe -m pip install numpy --no-warn-script-location 
+            execute_process(COMMAND ${py_dir}/python/python.exe -I get-pip.py --no-warn-script-location 
+                WORKING_DIRECTORY "${py_dir}/python")
+            execute_process(COMMAND ${py_dir}/python/python.exe -I -m pip install numpy --isolated --no-warn-script-location 
                 WORKING_DIRECTORY "${py_dir}/python")
         endif()
 
