@@ -1,5 +1,27 @@
 import inviwopy as ivw
 import inviwopyapp as qt
+import signal
+
+
+def addIpythonGuiHook(inviwoApp: qt.InviwoApplicationQt, name: str = "inviwo") -> bool:
+    '''
+        Add a event loop hook in IPyhton to enable simultanious use of the IPython terminal and the inviwo qt gui
+        use the IPython magic function '#gui inviwo' to start the event loop after calling this function.
+        See https://ipython.readthedocs.io/en/stable/config/eventloops.html
+
+    '''
+    try:
+        import IPython
+    except ImportError:
+        return False
+
+    def inputhook(context):
+        while not context.input_is_ready():
+            app.update()
+    IPython.terminal.pt_inputhooks.register(name, inputhook)
+
+    return True
+
 
 if __name__ == '__main__':
     # Inviwo requires that a logcentral is created.
@@ -30,8 +52,13 @@ if __name__ == '__main__':
     app.update()
     app.waitForPool()
     app.update()
+
     # Save a snapshot
-    app.network.Canvas.snapshot("snapshot.png") 
+    #app.network.Canvas.snapshot("snapshot.png") 
 
     # run the app event loop
     app.run()
+
+    # addIpythonGuiHook(app)
+
+    
