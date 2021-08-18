@@ -92,7 +92,7 @@ private:
     //! Links QTouchDevice to inviwo::TouchDevice
     std::map<const QPointingDevice*, TouchDevice> devices_;
 #else
-    std::map<QTouchDevice*, TouchDevice> touchDevices_;
+    std::map<const QTouchDevice*, TouchDevice> touchDevices_;
 #endif
     //! Compare with next touch event to prevent duplicates
     std::vector<TouchPoint> prevTouchPoints_;
