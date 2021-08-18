@@ -37,7 +37,7 @@ const ProcessorInfo CombineDataSets::processorInfo_{
     "org.inviwo.CombineDataSets",  // Class identifier
     "Combine Data Sets",           // Display name
     "Undefined",                   // Category
-    CodeState::Experimental,       // Code state
+    CodeState::Stable,             // Code state
     Tags::None,                    // Tags
 };
 const ProcessorInfo CombineDataSets::getProcessorInfo() const { return processorInfo_; }
@@ -51,25 +51,16 @@ CombineDataSets::CombineDataSets()
     addPort(baseDataSetIn_);
     addPort(additionalDataSetsIn_);
     addPort(dataOut_);
-    // addProperty(position_);
-
-    std::cout << fmt::format("=> Num Props at init: {} ({} DataSet Props)", getProperties().size(),
-                             getPropertiesByType<DataSetChannelsProperty>().size())
-              << std::endl;
 }
 
 void CombineDataSets::process() {
-    std::cout << fmt::format("=> Num Props at process: {} ({} DataSet Props)",
-                             getProperties().size(),
-                             getPropertiesByType<DataSetChannelsProperty>().size())
-              << std::endl;
+
     auto dataSets = additionalDataSetsIn_.getVectorData();
     size_t numDataSets = dataSets.size();
 
     if (!baseDataSetIn_.hasData() || numDataSets < 1) {
         dataOut_.clear();
         clearProperties();
-        std::cout << "Clearing up" << std::endl;
         return;
     }
 
@@ -78,51 +69,14 @@ void CombineDataSets::process() {
     std::vector<Property*> removeProps;
 
     for (auto* dataSetProp : getPropertiesByType<DataSetChannelsProperty>()) {
-        // for (auto& prop : getProperties()) {
-        // auto* dataSetProp = dynamic_cast<DataSetChannelsProperty*>(prop);
-        // // At startup, we might retain some properties.
-        // if (!dataSetProp) {
-        //     // This was loaded. Is it at least a composite property?
-        //     auto* compositeProp = dynamic_cast<CompositeProperty*>(prop);
-        //     if (!compositeProp) {
-        //         std::cout << fmt::format("Okay, what the fuck is this thing? {} called \'{}\'",
-        //                                  prop->getIdentifier(), prop->getDisplayName())
-        //                   << std::endl;
-        //         removeProps.push_back(prop);
-        //         continue;
-        //     }
-        //     continue;
-        // }
 
         bool matched = false;
-        // if (DataSetChannelsProperty) {
-        //      bool matched = true;
-        // // Test for unchanged DataSets.
-        // for (size_t i = 0; i < numDataSets; ++i) {
-        //     if (prop->dataSet_ == dataSets[i]) {
-        //         isRepresented[i] = true;
-        //         matched = true;
-        //         std::cout << "  Which we recognize!"
-        //         break;
-        //     }
-        // }
-        // if (matched) continue;
-        // // Test for DataSets with same name.
-        // for (size_t i = 0; i < numDataSets; ++i) {
-        //     if (prop->dataSet_->getName().compare(dataSets[i]->getName()) == 0) {
-        //         prop->updateDataSet(dataSets[i], grid);
-        //         matched = true;
-        //         break;
-        //     }
-        // }
-        // std::cout << "Has prop " << prop->getIdentifier() << std::endl;
 
         // Test for unchanged DataSets.
         for (size_t i = 0; i < numDataSets; ++i) {
-            if (dataSetProp->dataSet_ == dataSets[i]) {
+            if (!isRepresented[i] && dataSetProp->dataSet_ == dataSets[i]) {
                 isRepresented[i] = true;
                 matched = true;
-                std::cout << "  Which we recognize!" << std::endl;
                 break;
             }
         }
@@ -130,10 +84,11 @@ void CombineDataSets::process() {
 
         // Test for DataSets with same name.
         for (size_t i = 0; i < numDataSets; ++i) {
-            if (dataSetProp->dataSet_->getName().compare(dataSets[i]->getName()) == 0) {
+            if (!isRepresented[i] &&
+                dataSetProp->dataSet_->getName().compare(dataSets[i]->getName()) == 0) {
                 dataSetProp->updateDataSet(dataSets[i], grid);
+                isRepresented[i] = true;
                 matched = true;
-                std::cout << "  Which we recognize, by name at least!" << std::endl;
                 break;
             }
         }
@@ -142,13 +97,9 @@ void CombineDataSets::process() {
         // Throw out.
         removeProps.push_back(dataSetProp);
     }
-    std::cout << fmt::format("Removing {} properties.", removeProps.size()) << std::endl;
     for (auto* prop : removeProps) removeProperty(prop);
 
     for (auto&& [data, represented] : util::zip(dataSets, isRepresented)) {
-        // std::cout << fmt::format("{} is {}", data->getName(),
-        //                          represented ? "represented" : "not represented")
-        // << std::endl;
         if (represented) continue;
 
         auto ident = fmt::format("dataset{}_{}", data->getName(), rand());
@@ -156,11 +107,7 @@ void CombineDataSets::process() {
         while (getPropertyByIdentifier(ident)) {
             ident = fmt::format("dataset{}_{}", data->getName(), rand());
         }
-        std::cout << "  ident: " << ident << std::endl;
         addProperty(new DataSetChannelsProperty(ident, data, grid));
-
-        // addProperty(new IntProperty(fmt::format("s{}", rand()), ident, 42));
-        std::cout << "Added " << data->getName() << std::endl;
     }
 
     // Is this the first process after deserializing?
@@ -170,44 +117,56 @@ void CombineDataSets::process() {
         DataSetChannelsProperty* dataSetProp = nullptr;
 
         do {
+            auto isValid = [&]() {
+                if (strIt != deserializedChannels_.end())
+                    return strIt != deserializedChannels_.end();
+            };
             auto isDataSet = [&]() { return strIt->rfind("_dataset_", 0) == 0; };
 
             // Check if this string denotes a dataset, not channel.
-            while (isDataSet()) {
+            while (isValid() && isDataSet()) {
                 std::string dataSetStr = strIt->substr(9, strIt->length() - 9);
 
-                bool foundChannel = false;
-                strIt++;
+                DataSetChannelsProperty* property = nullptr;
+                for (auto* dataSetProp : getPropertiesByType<DataSetChannelsProperty>()) {
+                    if (dataSetProp->getDisplayName().compare(dataSetStr) == 0) {
+                        property = dataSetProp;
+                        break;
+                    }
+                }
+                if (!property) break;
 
+                strIt++;
                 // Read the next strings denoting channels that should be set.
-                while (strIt != deserializedChannels_.end() && !isDataSet()) {
+                while (isValid() && !isDataSet()) {
 
                     // Check all datasets.
-                    for (auto* dataSetProp : getPropertiesByType<DataSetChannelsProperty>()) {
-                        if (dataSetProp->getDisplayName().compare(dataSetStr) == 0) {
-                            while (!isDataSet()) {
-                                auto* channProp = dynamic_cast<ChannelPickingListProperty*>(
-                                    dataSetProp->getPropertyByIdentifier(*strIt));
-                                if (channProp) {
-                                    channProp->set(true);
-                                    std::cout << "===> Did set " << *strIt << " - Hallelujah!"
-                                              << std::endl;
-                                    foundChannel = true;
-                                    break;
-                                }
-                            }
+                    while (!isDataSet()) {
+                        auto* channProp = dynamic_cast<ChannelPickingListProperty*>(
+                            dataSetProp->getPropertyByIdentifier(*strIt));
+                        if (channProp) {
+                            channProp->set(true);
+
+                            break;
                         }
-                        if (foundChannel) break;
                     }
                     strIt++;
                 }
             }
+        } while (isValid());
 
-            strIt++;
-        } while (strIt != deserializedChannels_.end());
-
-        // return;
         deserializedChannels_.clear();
+
+        // Actually process!
+        auto dataSetOut = std::make_shared<DataSet>(*baseDataSetIn_.getData());
+        for (auto* dataSetProp : getPropertiesByType<DataSetChannelsProperty>()) {
+
+            for (auto* channProp : dataSetProp->getPropertiesByType<ChannelPickingListProperty>()) {
+                if (channProp->get()) dataSetOut->addChannel(channProp->channel_);
+            }
+        }
+
+        dataOut_.setData(dataSetOut);
     }
 }
 
@@ -215,6 +174,9 @@ void CombineDataSets::deserialize(Deserializer& d) {
     Processor::deserialize(d);
 
     d.deserialize("selectedChannels", deserializedChannels_);
+
+    for (auto& str : deserializedChannels_) {
+    }
 }
 
 void CombineDataSets::serialize(Serializer& s) const {
@@ -228,6 +190,9 @@ void CombineDataSets::serialize(Serializer& s) const {
         }
     }
 
+    for (auto& str : channelString) {
+    }
+
     s.serialize("selectedChannels", channelString);
 }
 
@@ -238,6 +203,55 @@ ChannelPickingListProperty::ChannelPickingListProperty(
     if (channel->size() != grid.getNumElements(channel->getGridPrimitiveType())) {
         this->setReadOnly(true);
         return;
+    }
+}
+
+DataSetChannelsProperty::DataSetChannelsProperty(
+    const std::string& identifier,  // const std::string& name,
+    std::shared_ptr<const DataSet>& dataSet, const Connectivity& grid)
+    : CompositeProperty(identifier, dataSet->getName()), dataSet_(dataSet) {
+
+    for (const auto& it : dataSet->getChannels()) {
+        const Channel& channel = *it.second;
+        auto* channelProp = new ChannelPickingListProperty(it.second, grid);
+        addProperty(channelProp);
+    }
+}
+
+void DataSetChannelsProperty::updateDataSet(std::shared_ptr<const DataSet>& dataSet,
+                                            const Connectivity& grid) {
+    const auto newChannelNames = dataSet->getChannelNames();
+    std::vector<bool> channelHasProperty(newChannelNames.size(), false);
+
+    std::vector<ChannelPickingListProperty*> removeProps;
+    for (auto* channProp : getPropertiesByType<ChannelPickingListProperty>()) {
+
+        bool channelInNewDataSetToo = false;
+
+        for (size_t i = 0; i < newChannelNames.size(); ++i) {
+            auto& name = newChannelNames[i];
+            if (name.first.compare(channProp->getIdentifier()) == 0 &&
+                channProp->channel_->size() == dataSet->getChannel(name)->size()) {
+
+                channProp->channel_ = dataSet->getChannel(name);
+                channelInNewDataSetToo = true;
+                channelHasProperty[i] = true;
+                break;
+            }
+        }
+
+        if (!channelInNewDataSetToo) {
+            removeProps.push_back(channProp);
+        }
+    }
+    for (auto* prop : removeProps) {
+        removeProperty(prop);
+    }
+
+    for (auto&& [name, hasProperty] : util::zip(newChannelNames, channelHasProperty)) {
+        if (!hasProperty) {
+            addProperty(new ChannelPickingListProperty(dataSet->getChannel(name), grid));
+        }
     }
 }
 

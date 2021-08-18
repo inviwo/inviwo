@@ -51,13 +51,6 @@ public:
 
     ChannelPickingListProperty(const std::shared_ptr<const Channel>& channel,
                                const Connectivity& grid);
-    //     : BoolCompositeProperty(channel->getName(), channel->getName()), channel_(channel) {
-
-    //     if (channel.size() != grid.getNumElements(channel.getGridPrimitiveType())) {
-    //         this->setReadOnly(true);
-    //         return;
-    //     }
-    // }
 
     std::shared_ptr<const Channel> channel_;
 };
@@ -67,59 +60,9 @@ class IVW_MODULE_DISCRETEDATA_API DataSetChannelsProperty : public CompositeProp
 public:
     DataSetChannelsProperty() = delete;
     DataSetChannelsProperty(const std::string& identifier,  // const std::string& name,
-                            std::shared_ptr<const DataSet>& dataSet, const Connectivity& grid)
-        : CompositeProperty(identifier, dataSet->getName()), dataSet_(dataSet) {
-        // addProperty(new IntProperty("myInt", "a Property", 1337, 0, 2000, 1));
-        std::cout << "\t Created a DataSetChannel Property" << std::endl;
+                            std::shared_ptr<const DataSet>& dataSet, const Connectivity& grid);
 
-        for (const auto& it : dataSet->getChannels()) {
-            const Channel& channel = *it.second;
-            auto* channelProp = new ChannelPickingListProperty(it.second, grid);
-            addProperty(channelProp);
-        }
-    }
-
-    void updateDataSet(std::shared_ptr<const DataSet>& dataSet, const Connectivity& grid) {
-        const auto newChannelNames = dataSet->getChannelNames();
-        std::vector<bool> channelHasProperty(newChannelNames.size(), false);
-
-        for (auto* channProp : getPropertiesByType<ChannelPickingListProperty>()) {
-            // for (auto* prop : getProperties()) {
-            //     ChannelPickingListProperty* channProp =
-            //     dynamic_cast<ChannelPickingListProperty*>(prop); if (!channProp) continue;
-
-            bool channelInNewDataSetToo = false;
-            // ind idx = 0;
-            // for (auto& name : newChannelNames) {
-            // for (auto&& [name, hasProperty] : util::zip(newChannelNames, channelHasProperty))
-            // {
-            for (size_t i = 0; i < newChannelNames.size(); ++i) {
-                auto& name = newChannelNames[i];
-                if (name.first.compare(channProp->getIdentifier()) == 0 &&
-                    channProp->channel_->size() == dataSet->getChannel(name)->size()) {
-                    channProp->channel_ = dataSet->getChannel(name);
-                    channelInNewDataSetToo = true;
-                    channelHasProperty[i] = true;
-                    break;
-                }
-            }
-
-            if (!channelInNewDataSetToo) {
-                removeProperty(channProp);
-            }
-
-            for (auto&& [name, hasProperty] : util::zip(newChannelNames, channelHasProperty)) {
-                if (!hasProperty) {
-                    addProperty(new ChannelPickingListProperty(dataSet->getChannel(name), grid));
-                }
-            }
-        }
-    }
-
-    void updateGrid(const Connectivity& grid) {}
-
-    // std::map<std::string, ChannelPickingListProperty> channelList_;
-    // std::vector<ChannelPickingListProperty> channelList_;
+    void updateDataSet(std::shared_ptr<const DataSet>& dataSet, const Connectivity& grid);
 
     std::shared_ptr<const DataSet> dataSet_;
 };
@@ -148,10 +91,6 @@ private:
     DataSetOutport dataOut_;
 
     std::vector<std::string> deserializedChannels_;
-    // CompositeProperty channelList_;
-
-    // std::unordered_map<std::shared_ptr<const DataSet>, CompositeProperty>
-    // additionalChannels_;
 };
 
 }  // namespace discretedata
