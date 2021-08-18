@@ -128,18 +128,21 @@ function(ivw_vcpkg_install name)
                 --triplet ${VCPKG_TARGET_TRIPLET}
                 ${overlay}
                 ${install}
+            RESULT_VARIABLE returnCode
             OUTPUT_VARIABLE pkgInfo
             ERROR_VARIABLE pkgError
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
-        if(NOT pkgInfo)
+        if(NOT returnCode EQUAL "0")
             message(WARNING "  Unable to retrive vcpkg package info for ${name}.\n" 
                 "  vcpkg: ${_VCPKG_EXECUTABLE}\n"
                 "  triplet: ${VCPKG_TARGET_TRIPLET}\n"
                 "  package: ${lowercase_name}\n"
                 "  overlay: ${overlay}\n"
                 "  install: ${install}\n"
-                "  Error: ${pkgError}"
+                "  return:  ${returnCode}\n"
+                "  stdout:  ${pkgInfo}\n"  
+                "  stderr:  ${pkgError}\n"
             )
         else()
             set("ivw_vcpkg_info_${lowercase_name}" "${pkgInfo}" CACHE INTERNAL "Vcpkg meta data")

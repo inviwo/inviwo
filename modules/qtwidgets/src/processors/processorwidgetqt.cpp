@@ -77,9 +77,9 @@ ProcessorWidgetQt::ProcessorWidgetQt(Processor* p) : QWidget(nullptr), Processor
     }
 }
 
-void ProcessorWidgetQt::show() { ProcessorWidgetQt::setVisible(true); }
+void ProcessorWidgetQt::show() { QWidget::setVisible(true); }
 
-void ProcessorWidgetQt::hide() { ProcessorWidgetQt::setVisible(false); }
+void ProcessorWidgetQt::hide() { QWidget::setVisible(false); }
 
 void ProcessorWidgetQt::setPosition(glm::ivec2 pos) {
     if (pos != utilqt::toGLM(QWidget::pos())) {

@@ -1,4 +1,4 @@
-#*********************************************************************************
+# ********************************************************************************
 #
 # Inviwo - Interactive Visualization Workshop
 #
@@ -24,96 +24,138 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
-#*********************************************************************************
+#
+# ********************************************************************************
 
-import os
 import sys
 import argparse
 import subprocess
 import json
 
-## Needs to work with python 3.6 on github
 
+# Needs to work with python 3.6 on github
 def makeCmdParser():
-	parser = argparse.ArgumentParser(
-		description="Get vcpkg package info",
-		formatter_class=argparse.ArgumentDefaultsHelpFormatter
-	)
-	parser.add_argument('-v', '--vcpkg', type=str, action="store", dest="vcpkg", help='Paths to vcpkg executable')
-	parser.add_argument('-p', '--pkg', type=str, action="store", dest="pkg", help='Vcpkg package name')
-	parser.add_argument('-t', '--triplet', type=str, action="store", dest="triplet", help='Triplet')
-	parser.add_argument('-o', '--overlay', type=str, action="store", dest="overlay", help='Extra vcpkg overlay', default="")
-	parser.add_argument('-i', '--install', type=str, action="store", dest="install", help='Vcpkg install root', default="")
+    parser = argparse.ArgumentParser(
+        description="Get vcpkg package info",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument('-v', '--vcpkg', type=str, action="store", dest="vcpkg",
+                        help='Paths to vcpkg executable', required=True)
+    parser.add_argument('-p', '--pkg', type=str, action="store", dest="pkg",
+                        help='Vcpkg package name', required=True)
+    parser.add_argument('-t', '--triplet', type=str, action="store", dest="triplet",
+                        help='Triplet')
+    parser.add_argument('-o', '--overlay', nargs='*', action="store", dest="overlay",
+                        help='Extra vcpkg overlays', default="")
+    parser.add_argument('-i', '--install', type=str, action="store", dest="install",
+                        help='Vcpkg install root', default="")
 
-	return parser.parse_args()
+    return parser
+
 
 def toString(items):
-	return ';'.join(items)
+    return ';'.join(items)
+
 
 if __name__ == '__main__':
-	args = makeCmdParser()
+    parser = makeCmdParser()
+    args = parser.parse_args()
 
-	#  x-package-info --x-installed --x-json zlib:x64-windows 
-	
-	if len(args.overlay) > 0:
-		overlay = "--overlay-ports=" + args.overlay
-	else:
-		overlay = ""
+    #  x-package-info --x-installed --x-json zlib:x64-windows
+    if len(args.overlay) > 0:
+        overlay = [f"--overlay-ports={o}" for o in args.overlay]
+    else:
+        overlay = ""
 
-	if len(args.install) > 0:
-		install = "--x-install-root=" + args.install
-	else:
-		install = ""
+    if len(args.install) > 0:
+        install = "--x-install-root=" + args.install
+    else:
+        install = ""
 
-	cmd = subprocess.run([
-		args.vcpkg, 
-		overlay,
-		install,
-		"x-package-info", 
-		"--x-json", 
-		f"{args.pkg}"],
-		stdout=subprocess.PIPE,
-		stderr=subprocess.STDOUT
-	)
-	portInfo = json.loads(cmd.stdout)
+    cmd = subprocess.run(
+        [
+            args.vcpkg,
+            *overlay,
+            install,
+            "x-package-info",
+            "--x-json",
+            args.pkg
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+    if cmd.returncode != 0 and len(cmd.stderr) > 0:
+        print(f"Error calling vcpkg return {cmd.returncode}", file=sys.stderr)
+        print(f"Stdout: {cmd.stdout}", file=sys.stderr)
+        print(f"Stderr: {cmd.stderr}", file=sys.stderr)
+        print("Call:", file=sys.stderr)
+        print([args.vcpkg, *overlay, install, "x-package-info", "--x-json", f"{args.pkg}"],
+              file=sys.stderr)
+        exit(100)
 
-	if args.pkg in portInfo['results']:
-		portInfo = portInfo['results'][args.pkg]
-	else:
-		print(f"Package {args.pkg}:{args.triplet} not found in vcpkg", file=sys.stderr)
-		exit(1)
+    try:
+        portInfo = json.loads(cmd.stdout)
+    except Exception as e:
+        print("Error parsing json", file=sys.stderr)
+        print(e, file=sys.stderr)
+        print(cmd.stdout, file=sys.stderr)
+        exit(2)
 
-	cmd = subprocess.run([
-		args.vcpkg, 
-		overlay,
-		install,
-		"x-package-info", 
-		"--x-installed", 
-		"--x-json", 
-		f"{args.pkg}:{args.triplet}"],
-		stdout=subprocess.PIPE,
-		stderr=subprocess.STDOUT
-	)
-	installInfo = json.loads(cmd.stdout)
+    if args.pkg in portInfo['results']:
+        portInfo = portInfo['results'][args.pkg]
+    else:
+        print(f"Package {args.pkg}:{args.triplet} not found in vcpkg", file=sys.stderr)
+        exit(3)
 
-	if f"{args.pkg}:{args.triplet}" in installInfo['results']:
-		installInfo = installInfo['results'][f"{args.pkg}:{args.triplet}"]
-	else:
-		print(f"Package {args.pkg}:{args.triplet} not found in vcpkg", file=sys.stderr)
-		exit(1)
-	
-	result = ""
-	if "version-string" in portInfo:
-		result += f"VCPKG_VERSION;{portInfo['version-string']};"
+    cmd = subprocess.run(
+        [
+            args.vcpkg,
+            *overlay,
+            install,
+            "x-package-info",
+            "--x-installed",
+            "--x-json",
+            f"{args.pkg}:{args.triplet}"
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+    if cmd.returncode != 0 and len(cmd.stderr) > 0:
+        print(f"Error calling vcpkg return {cmd.returncode}", file=sys.stderr)
+        print(f"Stdout: {cmd.stdout}", file=sys.stderr)
+        print(f"Stderr: {cmd.stderr}", file=sys.stderr)
+        print("Call:", file=sys.stderr)
+        print([args.vcpkg, *overlay, install, "x-package-info", "--x-json", f"{args.pkg}"],
+              file=sys.stderr)
+        exit(4)
 
-	if "homepage" in portInfo:
-		result += f"VCPKG_HOMEPAGE;{portInfo['homepage']};"
+    try:
+        installInfo = json.loads(cmd.stdout)
+    except Exception as e:
+        print("Error parsing json", file=sys.stderr)
+        print(e, file=sys.stderr)
+        print(cmd.stdout, file=sys.stderr)
+        exit(5)
 
-	if "dependencies" in installInfo and len(installInfo['dependencies'])>0:
-		result += f"VCPKG_DEPENDENCIES;{toString(installInfo['dependencies'])};"
+    if f"{args.pkg}:{args.triplet}" in installInfo['results']:
+        installInfo = installInfo['results'][f"{args.pkg}:{args.triplet}"]
+    else:
+        print(f"Package {args.pkg}:{args.triplet} not found in vcpkg", file=sys.stderr)
+        exit(6)
 
-	if "owns" in installInfo and len(installInfo['owns'])>0:
-		result += f"VCPKG_OWNED_FILES;{toString(installInfo['owns'])};"
+    result = ""
+    if "version-string" in portInfo:
+        result += f"VCPKG_VERSION;{portInfo['version-string']};"
 
-	print(result)
+    if "homepage" in portInfo:
+        result += f"VCPKG_HOMEPAGE;{portInfo['homepage']};"
+
+    if "dependencies" in installInfo and len(installInfo['dependencies']) > 0:
+        result += f"VCPKG_DEPENDENCIES;{toString(installInfo['dependencies'])};"
+
+    if "owns" in installInfo and len(installInfo['owns']) > 0:
+        result += f"VCPKG_OWNED_FILES;{toString(installInfo['owns'])};"
+
+    print(result)
