@@ -40,7 +40,7 @@
 
 namespace inviwo {
 
-// Or minimal opengl version is 3.3 and glsl version 330
+// Our minimal opengl version is 3.3 and glsl version 330
 
 bool OpenGLCapabilities::glewInitialized_ = false;
 int OpenGLCapabilities::glVersion_ = 0;
@@ -360,7 +360,13 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     } else if (contextMask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT) {
         glProfileStr_ = "compatibility";
     } else {
-        LogError("Error retrieving OpenGL profile, assuming core profile");
+        LogError("Error retrieving OpenGL profile, assuming core profile found:\n" <<
+            "glVersionStr: " << glVersionStr_ << "\n"
+            "glVersion:    " << glVersion_ << "\n"
+            "glVendorStr:  " << glVendorStr_ << "\n"
+            "glRenderStr:  " << glRenderStr_ << "\n"
+            "contextMask:  " << contextMask
+        );
         glProfileStr_ = "core";
     }
     // GLSL

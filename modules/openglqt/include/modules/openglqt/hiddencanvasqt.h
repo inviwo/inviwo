@@ -58,7 +58,15 @@ class IVW_MODULE_OPENGLQT_API HiddenCanvasQt : public Canvas {
 public:
     /*
      * Must be created in the main thread.
-     * Must call initializeGL before using it for
+     * Must call initializeGL before using it
+     * The default format is usually set globally beforehand, usually directly in the main function.
+     *     // Must be set before constructing QApplication
+     *     QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+     *     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+     *     QSurfaceFormat defaultFormat;
+     *     defaultFormat.setMajorVersion(10);
+     *     defaultFormat.setProfile(QSurfaceFormat::CoreProfile);
+     *     QSurfaceFormat::setDefaultFormat(defaultFormat);
      */
     HiddenCanvasQt(std::string_view name, QSurfaceFormat format = QSurfaceFormat::defaultFormat());
     HiddenCanvasQt(const HiddenCanvasQt&) = delete;
