@@ -16,10 +16,10 @@ namespace flags {
 
 
 struct empty_t {
-    constexpr empty_t() noexcept {}
+    constexpr empty_t() noexcept = default;
 };
 struct any_t {
-    constexpr any_t() noexcept {}
+    constexpr any_t() noexcept = default;
 };
 constexpr empty_t empty;
 constexpr empty_t none;
