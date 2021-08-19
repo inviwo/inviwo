@@ -54,6 +54,7 @@ public:
     BoolProperty enablePortInspectors_;
     IntProperty portInspectorSize_;
     BoolProperty enableTouchProperty_;
+    BoolProperty enableGesturesProperty_;
     BoolProperty enablePickingProperty_;
     BoolProperty enableSoundProperty_;
     BoolProperty logStackTraceProperty_;

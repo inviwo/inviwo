@@ -48,6 +48,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
 #else
     , enableTouchProperty_("enableTouch", "Enable touch", true)
 #endif
+    , enableGesturesProperty_("enableGestures", "Enable gestures", false)
     , enablePickingProperty_("enablePicking", "Enable picking", true)
     , enableSoundProperty_("enableSound", "Enable sound", true)
     , logStackTraceProperty_("logStackTraceProperty", "Error stack trace log", false)
@@ -63,22 +64,11 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     , redirectCout_{"redirectCout", "Redirect cout to LogCentral", false}
     , redirectCerr_{"redirectCerr", "Redirect cerr to LogCentral", false} {
 
-    addProperty(workspaceAuthor_);
-    addProperty(applicationUsageMode_);
-    addProperty(poolSize_);
-    addProperty(enablePortInspectors_);
-    addProperty(portInspectorSize_);
-    addProperty(enableTouchProperty_);
-    addProperty(enablePickingProperty_);
-    addProperty(enableSoundProperty_);
-    addProperty(logStackTraceProperty_);
-    addProperty(runtimeModuleReloading_);
-    addProperty(enableResourceManager_);
-    addProperty(breakOnMessage_);
-    addProperty(breakOnException_);
-    addProperty(stackTraceInException_);
-    addProperty(redirectCout_);
-    addProperty(redirectCerr_);
+    addProperties(workspaceAuthor_, applicationUsageMode_, poolSize_, enablePortInspectors_,
+                  portInspectorSize_, enableTouchProperty_, enableGesturesProperty_,
+                  enablePickingProperty_, enableSoundProperty_, logStackTraceProperty_,
+                  runtimeModuleReloading_, enableResourceManager_, breakOnMessage_,
+                  breakOnException_, stackTraceInException_, redirectCout_, redirectCerr_);
 
     logStackTraceProperty_.onChange(
         [this]() { LogCentral::getPtr()->setLogStacktrace(logStackTraceProperty_.get()); });

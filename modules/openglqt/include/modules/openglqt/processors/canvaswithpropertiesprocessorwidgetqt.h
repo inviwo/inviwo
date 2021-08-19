@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,35 +26,78 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/glfw/glfwmoduledefine.h>
+#include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
+#include <inviwo/core/processors/processor.h>
+
+#include <modules/openglqt/canvasqopenglwidget.h>
+
+#include <functional>
+#include <vector>
+#include <string>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QMainWindow>
+#include <warn/pop>
+
+class QResizeEvent;
+class QShowEvent;
+class QHideEvent;
+class QMoveEvent;
 
 namespace inviwo {
 
-class CanvasGLFW;
-class CanvasProcessor;
+class Processor;
+class PropertyListFrame;
 
-class IVW_MODULE_GLFW_API CanvasProcessorWidgetGLFW : public CanvasProcessorWidget {
+class IVW_MODULE_OPENGLQT_API CanvasWithPropertiesProcessorWidgetQt : public CanvasProcessorWidget,
+                                                                      public QMainWindow {
 public:
-    CanvasProcessorWidgetGLFW(Processor* p);
-    virtual ~CanvasProcessorWidgetGLFW();
+    CanvasWithPropertiesProcessorWidgetQt(Processor* p);
+    virtual ~CanvasWithPropertiesProcessorWidgetQt() = default;
 
+    // CanvasProcessorWidget overrides
+    virtual Canvas* getCanvas() const override;
+
+    // ProcessorWidget overrides
     virtual void setVisible(bool visible) override;
-    virtual void setDimensions(ivec2) override;
-    virtual void setPosition(ivec2) override;
+
+    /**
+     * Set the dimensions of the widget, i.e both canvas and properties, not just the canvas
+     * This uses logical dimension, to be consistent with other widget
+     */
+    virtual void setDimensions(ivec2 dimensions) override;
+    virtual void setPosition(ivec2 position) override;
     virtual void setFullScreen(bool fullScreen) override;
     virtual void setOnTop(bool onTop) override;
 
-    virtual Canvas* getCanvas() const override;
+    // QMainWindow overrides
+    virtual void resizeEvent(QResizeEvent* event) override;
+    virtual void showEvent(QShowEvent*) override;
+    virtual void hideEvent(QHideEvent*) override;
+    virtual void moveEvent(QMoveEvent*) override;
+    virtual void changeEvent(QEvent*) override;
+
+    /**
+     * A list of processor ids and/or property paths, separated by new lines to show in the
+     * property list in the widget
+     */
+    void setProperties(std::string_view paths);
 
 protected:
-    // CanvasProcessorWidget overrides
+    using Super = QMainWindow;
+
+    /**
+     * Propagated an event with the physical (pixel) dimensions of the canvas
+     * Note: QWidget::size() will return logical dimensions
+     */
     virtual void propagateResizeEvent() override;
 
-private:
+    bool contextMenu(QMenu& menu);
+
     // ProcessorWidget overrides
     virtual void updateVisible(bool visible) override;
     virtual void updateDimensions(ivec2) override;
@@ -62,9 +105,12 @@ private:
     virtual void updateFullScreen(bool) override;
     virtual void updateOnTop(bool) override;
 
-    using canvas_ptr = std::unique_ptr<CanvasGLFW, std::function<void(CanvasGLFW*)>>;
-    canvas_ptr canvas_;
-    ivec2 screenDimensions_;
+    std::unique_ptr<CanvasQOpenGLWidget, std::function<void(CanvasQOpenGLWidget*)>> canvas_;
+    Processor::NameDispatcherHandle nameChange_;
+
+    size2_t canvasDimensions_{0};
+    PropertyListFrame* frame_;
+    std::vector<std::string> addedPaths_;
 };
 
 }  // namespace inviwo

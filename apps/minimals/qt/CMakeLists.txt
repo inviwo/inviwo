@@ -12,6 +12,15 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
+set(RES_FILES "")
+if(WIN32)
+    set(RES_FILES ${RES_FILES} "${IVW_RESOURCES_DIR}/inviwo.rc")
+elseif(APPLE)
+    set_source_files_properties(${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    set(RES_FILES ${RES_FILES} ${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns)
+endif()
+source_group("Resource Files" FILES ${RES_FILES})
+
 ivw_retrieve_all_modules(enabled_modules)
 # Only include one OpenGL context creation module
 list(REMOVE_ITEM enabled_modules InviwoGLFWModule)
@@ -19,7 +28,7 @@ list(REMOVE_ITEM enabled_modules InviwoGLFWModule)
 list(REMOVE_ITEM enabled_modules InviwoPython3QtModule)
 
 # Create application
-add_executable(inviwo_qtminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
+add_executable(inviwo_qtminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES} ${RES_FILES})
 target_link_libraries(inviwo_qtminimum PUBLIC 
     inviwo::core
     inviwo::qtapplicationbase

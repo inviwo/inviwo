@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/core/util/networkdebugobserver.h>
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/observer.h>
-
-namespace inviwo {
-
-class ProcessorWidget;
-class ProcessorWidgetObservable;
-
-class IVW_CORE_API ProcessorWidgetObserver : public Observer {
-public:
-    friend ProcessorWidgetObservable;
-    ProcessorWidgetObserver() = default;
-    virtual ~ProcessorWidgetObserver() = default;
-
-    virtual void onProcessorWidgetShow(ProcessorWidget*);
-    virtual void onProcessorWidgetHide(ProcessorWidget*);
-};
-
-class IVW_CORE_API ProcessorWidgetObservable : public Observable<ProcessorWidgetObserver> {
-public:
-    ProcessorWidgetObservable() = default;
-    virtual ~ProcessorWidgetObservable() = default;
-
-    void notifyObserversAboutShow(ProcessorWidget* p);
-    void notifyObserversAboutHide(ProcessorWidget* p);
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

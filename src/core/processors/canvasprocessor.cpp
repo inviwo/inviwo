@@ -110,30 +110,32 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
     , previousImageSize_(customInputDimensions_)
     , widgetMetaData_{
           createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::CLASS_IDENTIFIER)} {
+
+    addPort(inport_);
     widgetMetaData_->addObserver(this);
 
     setEvaluateWhenHidden(false);
 
-    addPort(inport_);
-
     dimensions_.setSerializationMode(PropertySerializationMode::None);
+
     dimensions_.onChange([this]() { widgetMetaData_->setDimensions(dimensions_.get()); });
+    position_.onChange([this]() { widgetMetaData_->setPosition(position_.get()); });
+    fullScreen_.onChange([this]() { widgetMetaData_->setFullScreen(fullScreen_.get()); });
 
     enableCustomInputDimensions_.onChange([this]() { sizeChanged(); });
-
     customInputDimensions_.onChange([this]() { sizeChanged(); });
-    customInputDimensions_.setVisible(false);
-
     keepAspectRatio_.onChange([this]() { sizeChanged(); });
-    keepAspectRatio_.setVisible(false);
-
     aspectRatioScaling_.onChange([this]() { sizeChanged(); });
+
+    keepAspectRatio_.setVisible(false);
+    customInputDimensions_.setVisible(false);
     aspectRatioScaling_.setVisible(false);
 
-    position_.onChange([this]() { widgetMetaData_->setPosition(position_.get()); });
+    inputSize_.addProperties(dimensions_, enableCustomInputDimensions_, customInputDimensions_,
+                             keepAspectRatio_, aspectRatioScaling_);
 
-    colorLayer_.setSerializationMode(PropertySerializationMode::All);
     colorLayer_.setVisible(false);
+    colorLayer_.setSerializationMode(PropertySerializationMode::All);
 
     visibleLayer_.onChange([&]() {
         if (inport_.hasData()) {
@@ -142,18 +144,9 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
         }
     });
 
-    fullScreen_.onChange([this]() {
-        if (auto c = getCanvas()) {
-            c->setFullScreen(fullScreen_.get());
-        }
-    });
-
     evaluateWhenHidden_.onChange([this]() { setEvaluateWhenHidden(evaluateWhenHidden_.get()); });
 
     imageTypeExt_.setSerializationMode(PropertySerializationMode::None);
-
-    inputSize_.addProperties(dimensions_, enableCustomInputDimensions_, customInputDimensions_,
-                             keepAspectRatio_, aspectRatioScaling_);
 
     addProperties(inputSize_, position_, visibleLayer_, colorLayer_, saveLayerDirectory_,
                   imageTypeExt_, saveLayerButton_, saveLayerToFileButton_, fullScreen_,
@@ -164,7 +157,6 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
         colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
         colorLayer_.setMaxValue(layers - 1);
     });
-
     inport_.onConnect([&]() { sizeChanged(); });
 
     setAllPropertiesCurrentStateAsDefault();
@@ -172,7 +164,7 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
 
 CanvasProcessor::~CanvasProcessor() {
     if (processorWidget_) {
-        processorWidget_->hide();
+        processorWidget_->setVisible(false);
         getCanvas()->setEventPropagator(nullptr);
     }
 }
@@ -183,10 +175,6 @@ void CanvasProcessor::setProcessorWidget(std::unique_ptr<ProcessorWidget> proces
                         IVW_CONTEXT);
     }
     Processor::setProcessorWidget(std::move(processorWidget));
-    // Widget may be set after deserialization
-    if (auto c = getCanvas()) {
-        c->setFullScreen(fullScreen_.get());
-    }
     isSink_.update();
     isReady_.update();
 }
@@ -240,7 +228,7 @@ void CanvasProcessor::sizeChanged() {
 
     if (keepAspectRatio_) {
         Property::OnChangeBlocker block{customInputDimensions_};  // avoid recursive onChange
-        customInputDimensions_ = calcSize();
+        customInputDimensions_.set(calcScaledSize(dimensions_, aspectRatioScaling_));
     }
 
     ResizeEvent resizeEvent{enableCustomInputDimensions_ ? customInputDimensions_ : dimensions_,
@@ -251,21 +239,12 @@ void CanvasProcessor::sizeChanged() {
     inport_.propagateEvent(&resizeEvent);
 }
 
-size2_t CanvasProcessor::calcSize() {
-    size2_t size = dimensions_;
+size2_t CanvasProcessor::calcScaledSize(size2_t size, float scale) {
+    const int maxDim = size.x >= size.y ? 0 : 1;
+    const int minDim = size.x >= size.y ? 1 : 0;
 
-    int maxDim, minDim;
-
-    if (size.x >= size.y) {
-        maxDim = 0;
-        minDim = 1;
-    } else {
-        maxDim = 1;
-        minDim = 0;
-    }
-
-    double ratio = static_cast<double>(size[minDim]) / static_cast<double>(size[maxDim]);
-    size[maxDim] = static_cast<int>(static_cast<double>(size[maxDim]) * aspectRatioScaling_);
+    const double ratio = static_cast<double>(size[minDim]) / static_cast<double>(size[maxDim]);
+    size[maxDim] = static_cast<int>(static_cast<double>(size[maxDim]) * scale);
     size[minDim] = static_cast<int>(static_cast<double>(size[maxDim]) * ratio);
 
     return size;

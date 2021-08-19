@@ -218,7 +218,7 @@ private:
     ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;
     HelpWidget* helpWidget_;
-    std::unique_ptr<WelcomeWidget> welcomeWidget_;
+    WelcomeWidget* welcomeWidget_;
     std::vector<QDockWidget*> welcomeHidden_;
     AnnotationsWidget* annotationsWidget_ = nullptr;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;

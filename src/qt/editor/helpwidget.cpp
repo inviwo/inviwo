@@ -144,6 +144,10 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
     const std::string helpfile = app->getPath(PathType::Settings, "/inviwo.qhc", true);
 
     helpEngine_ = new QHelpEngineCore(utilqt::toQString(helpfile), this);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    helpEngine_->setReadOnly(false);
+#endif
+
     // Any old data will be left in the since last time, we want to clear that so we can load the
     // new qch files.
     for (const auto& ns : helpEngine_->registeredDocumentations()) {

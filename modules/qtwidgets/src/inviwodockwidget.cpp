@@ -83,23 +83,22 @@ bool InviwoDockWidget::isSticky() const { return dockWidgetTitleBar_->isSticky()
 void InviwoDockWidget::setContents(QWidget* widget) {
     QWidget* oldWidget = this->widget();
     if (oldWidget) {
-        this->setWidget(nullptr);
+        setWidget(nullptr);
         delete oldWidget;
     }
-
-    this->setWidget(widget);
+    setWidget(widget);
 }
 
 void InviwoDockWidget::setContents(QLayout* layout) {
     QWidget* oldWidget = this->widget();
     if (oldWidget) {
-        this->setWidget(nullptr);
+        setWidget(nullptr);
         delete oldWidget;
     }
 
     QWidget* centralWidget = new QWidget();
     centralWidget->setLayout(layout);
-    this->setWidget(centralWidget);
+    setWidget(centralWidget);
 }
 
 void InviwoDockWidget::saveState() {
