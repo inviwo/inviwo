@@ -64,6 +64,11 @@ public:
 
     // ProcessorWidget overrides
     virtual void setVisible(bool visible) override;
+
+    /**
+     * Set the dimensions of the widget, i.e both canvas and properties, not just the canvas
+     * This uses logical dimension, to be consistent with other widget
+     */
     virtual void setDimensions(ivec2 dimensions) override;
     virtual void setPosition(ivec2 position) override;
     virtual void setFullScreen(bool fullScreen) override;
@@ -77,7 +82,7 @@ public:
     virtual void changeEvent(QEvent*) override;
 
     /**
-     * A list of processor ids and/or property paths, seperated by new lines to show in the
+     * A list of processor ids and/or property paths, separated by new lines to show in the
      * property list in the widget
      */
     void setProperties(std::string_view paths);
@@ -85,6 +90,10 @@ public:
 protected:
     using Super = QMainWindow;
 
+    /**
+     * Propagated an event with the physical (pixel) dimensions of the canvas
+     * Note: QWidget::size() will return logical dimensions
+     */
     virtual void propagateResizeEvent() override;
 
     bool contextMenu(QMenu& menu);

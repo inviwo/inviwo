@@ -55,6 +55,13 @@ public:
     // Override ProcessorWidget
     virtual void setVisible(bool visible) override;
     virtual void setPosition(ivec2 pos) override;
+
+    /**
+     * Sets the physical (pixel) dimensions of the widget and the contained canvas
+     * Note: QWidget::resize() uses logical dimensions. We use the physical dimensions and not the
+     * logical ones here since there dimensions traditionally have corresponded to the texture
+     * dimensions of the canvas, this way we keep that behavior even also for retina systems.
+     */
     virtual void setDimensions(ivec2 dimensions) override;
     virtual void setFullScreen(bool fullScreen) override;
     virtual void setOnTop(bool onTop) override;
@@ -62,6 +69,10 @@ public:
     virtual Canvas* getCanvas() const override;
 
 protected:
+    /**
+     * Propagated an event with the physical (pixel) dimensions of the canvas
+     * Note: QWidget::size() will return logical dimensions
+     */
     virtual void propagateResizeEvent() override;
     bool contextMenu(QMenu& menu);
 
