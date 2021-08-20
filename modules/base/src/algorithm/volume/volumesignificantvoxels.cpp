@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <modules/base/algorithm/volume/volumesignificantvoxels.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 #include <algorithm>

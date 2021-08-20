@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SEQUENCETIMERPROPERTY_H
-#define IVW_SEQUENCETIMERPROPERTY_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/timer.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
@@ -70,5 +68,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SEQUENCETIMERPROPERTY_H

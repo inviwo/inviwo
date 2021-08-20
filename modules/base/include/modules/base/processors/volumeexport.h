@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEEXPORT_H
-#define IVW_VOLUMEEXPORT_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/base/processors/dataexport.h>
 #include <inviwo/core/datastructures/volume/volume.h>
@@ -66,5 +64,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEEXPORT_H

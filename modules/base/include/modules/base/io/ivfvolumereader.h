@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IVFVOLUMEREADER_H
-#define IVW_IVFVOLUMEREADER_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
@@ -51,5 +49,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IVFVOLUMEREADER_H

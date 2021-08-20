@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BASE_DATASTRUCTUES_IMAGECACHE_H
-#define IVW_BASE_DATASTRUCTUES_IMAGECACHE_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -76,5 +74,3 @@ std::pair<std::shared_ptr<Image>, LayerRAMPrecision<T>*> ImageReuseCache::getTyp
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_BASE_DATASTRUCTUES_IMAGECACHE_H

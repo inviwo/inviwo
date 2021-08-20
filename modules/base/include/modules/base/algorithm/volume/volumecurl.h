@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMECURL_H
-#define IVW_VOLUMECURL_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <modules/base/algorithm/algorithmoptions.h>
 
@@ -46,5 +44,3 @@ IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume(const Volume& volume);
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMECURL_H

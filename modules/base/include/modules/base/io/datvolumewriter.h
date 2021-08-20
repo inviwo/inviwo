@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATVOLUMEWRITER_H
-#define IVW_DATVOLUMEWRITER_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
@@ -56,5 +54,3 @@ IVW_MODULE_BASE_API void writeDatVolume(const Volume& data, const std::string fi
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_DATVOLUMEWRITER_H

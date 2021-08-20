@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESEQUENCEELEMENTSELECTORPROCESSOR_H
-#define IVW_VOLUMESEQUENCEELEMENTSELECTORPROCESSOR_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/base/processors/vectorelementselectorprocessor.h>
@@ -62,5 +60,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESEQUENCEELEMENTSELECTORPROCESSOR_H

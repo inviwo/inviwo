@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESIGNIFICANTVOXELS_H
-#define IVW_VOLUMESIGNIFICANTVOXELS_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/base/algorithm/algorithmoptions.h>
 
 namespace inviwo {
@@ -46,5 +44,3 @@ IVW_MODULE_BASE_API size_t volumeSignificantVoxels(
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESIGNIFICANTVOXELS_H

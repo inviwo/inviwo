@@ -27,15 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GAUSSIANPROPERTY_H
-#define IVW_GAUSSIANPROPERTY_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/propertyowner.h>
+#include <inviwo/core/util/formats.h>
 
 namespace inviwo {
 
@@ -101,5 +100,3 @@ struct PropertyTraits<Gaussian3DProperty> {
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_GAUSSIANPROPERTY_H

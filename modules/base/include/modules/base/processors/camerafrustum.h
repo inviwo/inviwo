@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CAMERAFRUSTUM_H
-#define IVW_CAMERAFRUSTUM_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/cameraproperty.h>
@@ -72,5 +70,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CAMERAFRUSTUM_H

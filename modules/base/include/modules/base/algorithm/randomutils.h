@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_RANDOMUTILS_H
-#define IVW_RANDOMUTILS_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -422,5 +420,3 @@ std::shared_ptr<Image> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
 
 }  // namespace util
 }  // namespace inviwo
-
-#endif  // IVW_RANDOMUTILS_H

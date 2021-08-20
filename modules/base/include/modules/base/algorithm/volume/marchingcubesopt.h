@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MARCHINGCUBESOPT_H
-#define IVW_MARCHINGCUBESOPT_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
@@ -164,5 +162,3 @@ struct IVW_MODULE_BASE_API Config {
 }  // namespace marching
 
 }  // namespace inviwo
-
-#endif  // IVW_MARCHINGCUBESOPT_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEGENERATION_H
-#define IVW_VOLUMEGENERATION_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
@@ -136,5 +134,3 @@ std::unique_ptr<Volume> makeMarchingCubeVolume(const size_t& index) {
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEGENERATION_H

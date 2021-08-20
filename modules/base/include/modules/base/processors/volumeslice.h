@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESLICE_H
-#define IVW_VOLUMESLICE_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
@@ -102,4 +100,3 @@ private:
 };
 
 }  // namespace inviwo
-#endif  // IVW_VOLUMESLICE_H

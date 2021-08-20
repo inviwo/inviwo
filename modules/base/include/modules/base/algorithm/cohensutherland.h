@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_COHENSUTHERLAND_H
-#define IVW_COHENSUTHERLAND_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/util/glmvec.h>
 
 #include <tuple>
 
@@ -75,4 +75,3 @@ IVW_MODULE_BASE_API bool insideRect(const vec2& p, const vec2& rectMin, const ve
 
 }  // namespace inviwo
 
-#endif  // IVW_COHENSUTHERLAND_H

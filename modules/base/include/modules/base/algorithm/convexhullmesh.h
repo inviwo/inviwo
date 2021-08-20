@@ -27,11 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CONVEXHULLMESH_H
-#define IVW_CONVEXHULLMESH_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/util/glmvec.h>
+
+#include <vector>
+#include <memory>
 
 namespace inviwo {
 
@@ -46,4 +49,3 @@ std::shared_ptr<Mesh> IVW_MODULE_BASE_API convertHullToMesh(const std::vector<ve
 
 }  // namespace inviwo
 
-#endif  // IVW_CONVEXHULLMESH_H

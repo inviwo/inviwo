@@ -27,12 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAMINMAX_H
-#define IVW_DATAMINMAX_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/base/algorithm/algorithmoptions.h>
+
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/formats.h>
+
+#include <numeric>
 
 namespace inviwo {
 
@@ -131,5 +134,3 @@ std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAMINMAX_H

@@ -27,12 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATASOURCE_H
-#define IVW_DATASOURCE_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
@@ -208,4 +206,3 @@ void DataSource<DataType, PortType>::deserialize(Deserializer& d) {
 
 }  // namespace inviwo
 
-#endif  // IVW_DATASOURCE_H
