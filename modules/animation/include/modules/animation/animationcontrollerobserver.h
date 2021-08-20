@@ -29,8 +29,6 @@
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 #include <inviwo/core/util/observer.h>
 
 #include <modules/animation/datastructures/animationtime.h>

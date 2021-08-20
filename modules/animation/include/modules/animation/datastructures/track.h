@@ -29,16 +29,16 @@
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/io/serialization/serializable.h>
-
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/valuekeyframesequence.h>
 #include <modules/animation/datastructures/trackobserver.h>
 #include <modules/animation/datastructures/animationstate.h>
+
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/io/serialization/serializable.h>
+
 
 namespace inviwo {
 

@@ -29,7 +29,6 @@
 #pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/factory.h>
 
 #include <modules/animation/datastructures/track.h>

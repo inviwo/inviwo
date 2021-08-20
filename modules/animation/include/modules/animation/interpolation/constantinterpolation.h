@@ -29,8 +29,6 @@
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 #include <modules/animation/interpolation/interpolation.h>
 
 #include <algorithm>
