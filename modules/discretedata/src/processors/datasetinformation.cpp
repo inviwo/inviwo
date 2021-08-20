@@ -69,6 +69,7 @@ void DataSetInformation::process() {
     addProperty(overview_);
     addProperty(new GridInformationProperty("grid", "Grid", *(dataIn_.getData()->getGrid())));
     addProperties(channelInformation_, samplerInformation_);
+    channelInformation_.clearProperties();
 
     size_t channelID = 0;
     for (auto channel : data.getChannels()) {

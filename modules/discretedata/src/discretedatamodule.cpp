@@ -35,6 +35,7 @@
 #include <modules/discretedata/processors/createconstantchannel.h>
 #include <modules/discretedata/processors/createuniformgrid.h>
 #include <modules/discretedata/processors/datasetfrombase.h>
+#include <modules/discretedata/processors/datasetroi.h>
 #include <modules/discretedata/processors/datasetsource.h>
 #include <modules/discretedata/processors/computegridmeasure.h>
 #include <modules/discretedata/processors/datasetinformation.h>
@@ -55,6 +56,7 @@ namespace inviwo {
 
 DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(app, "discretedata") {
     // Processors
+    registerProcessor<discretedata::DataSetROI>();
     registerProcessor<discretedata::CombineDataSets>();
     registerProcessor<discretedata::DataSetInformation>();
     registerProcessor<discretedata::AddDataSetSampler>();

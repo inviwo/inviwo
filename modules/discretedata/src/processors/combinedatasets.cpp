@@ -113,65 +113,73 @@ void CombineDataSets::process() {
     // Is this the first process after deserializing?
     // Then set the channels we deserialized.
     if (deserializedChannels_.size()) {
-        auto strIt = deserializedChannels_.begin();
-        DataSetChannelsProperty* dataSetProp = nullptr;
+        deserializeSelection();
+        deserializedChannels_.clear();
+    }
 
-        do {
-            auto isValid = [&]() {
-                if (strIt != deserializedChannels_.end())
-                    return strIt != deserializedChannels_.end();
-            };
-            auto isDataSet = [&]() { return strIt->rfind("_dataset_", 0) == 0; };
+    // Actually process!
+    LogWarn("@ Processing! Like, for real!");
+    auto dataSetOut = std::make_shared<DataSet>(*baseDataSetIn_.getData());
+    for (auto* dataSetProp : getPropertiesByType<DataSetChannelsProperty>()) {
 
-            // Check if this string denotes a dataset, not channel.
-            while (isValid() && isDataSet()) {
-                std::string dataSetStr = strIt->substr(9, strIt->length() - 9);
+        for (auto* channProp : dataSetProp->getPropertiesByType<ChannelPickingListProperty>()) {
+            if (channProp->get()) dataSetOut->addChannel(channProp->channel_);
+        }
+    }
 
-                DataSetChannelsProperty* property = nullptr;
-                for (auto* dataSetProp : getPropertiesByType<DataSetChannelsProperty>()) {
-                    if (dataSetProp->getDisplayName().compare(dataSetStr) == 0) {
-                        property = dataSetProp;
+    dataOut_.setData(dataSetOut);
+}
+
+void CombineDataSets::deserializeSelection() {
+    auto strIt = deserializedChannels_.begin();
+
+    do {
+        auto isValid = [&]() { return strIt != deserializedChannels_.end(); };
+        auto isDataSet = [&]() { return strIt->rfind("_dataset_", 0) == 0; };
+
+        // Check if this string denotes a dataset, not channel.
+        while (isValid() && isDataSet()) {
+            std::string dataSetStr = strIt->substr(9, strIt->length() - 9);
+
+            DataSetChannelsProperty* currentDataSetProp = nullptr;
+            for (auto* dataSetProp : getPropertiesByType<DataSetChannelsProperty>()) {
+                if (dataSetProp->getDisplayName().compare(dataSetStr) == 0) {
+                    currentDataSetProp = dataSetProp;
+                    break;
+                }
+            }
+            if (!currentDataSetProp) {
+                LogError("Error deserialising");
+                return;
+            }
+
+            strIt++;
+            // Read the next strings denoting channels that should be set.
+            while (isValid() && !isDataSet()) {
+                std::cout << "\nNow,\n* All Properties" << std::endl;
+                for (auto* prop : currentDataSetProp->getProperties()) {
+                    std::cout << "*   Prop: " << prop->getDisplayName() << std::endl;
+                }
+
+                // Check all datasets.
+                while (!isDataSet()) {
+                    std::cout << "Strign to pick up property from: " << *strIt << std::endl;
+                    auto* channProp = dynamic_cast<ChannelPickingListProperty*>(
+                        currentDataSetProp->getPropertyByIdentifier(*strIt));
+                    if (channProp) {
+                        channProp->set(true);
+
                         break;
                     }
                 }
-                if (!property) break;
-
                 strIt++;
-                // Read the next strings denoting channels that should be set.
-                while (isValid() && !isDataSet()) {
-
-                    // Check all datasets.
-                    while (!isDataSet()) {
-                        auto* channProp = dynamic_cast<ChannelPickingListProperty*>(
-                            dataSetProp->getPropertyByIdentifier(*strIt));
-                        if (channProp) {
-                            channProp->set(true);
-
-                            break;
-                        }
-                    }
-                    strIt++;
-                }
-            }
-        } while (isValid());
-
-        deserializedChannels_.clear();
-
-        // Actually process!
-        auto dataSetOut = std::make_shared<DataSet>(*baseDataSetIn_.getData());
-        for (auto* dataSetProp : getPropertiesByType<DataSetChannelsProperty>()) {
-
-            for (auto* channProp : dataSetProp->getPropertiesByType<ChannelPickingListProperty>()) {
-                if (channProp->get()) dataSetOut->addChannel(channProp->channel_);
             }
         }
-
-        dataOut_.setData(dataSetOut);
-    }
+    } while (isValid());
 }
 
 void CombineDataSets::deserialize(Deserializer& d) {
-    Processor::deserialize(d);
+    // Processor::deserialize(d);
 
     d.deserialize("selectedChannels", deserializedChannels_);
 
@@ -215,6 +223,13 @@ DataSetChannelsProperty::DataSetChannelsProperty(
         const Channel& channel = *it.second;
         auto* channelProp = new ChannelPickingListProperty(it.second, grid);
         addProperty(channelProp);
+        std::cout << fmt::format("* Channel {} -> {} ({})", channel.getName(),
+                                 channelProp->getDisplayName(), channelProp->getIdentifier())
+                  << std::endl;
+        std::cout << "* All Properties" << std::endl;
+        for (auto* prop : getProperties()) {
+            std::cout << "*    Prop: " << prop->getDisplayName() << std::endl;
+        }
     }
 }
 

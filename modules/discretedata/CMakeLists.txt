@@ -18,6 +18,7 @@ set(HEADER_FILES
     include/modules/discretedata/channels/combinedchannel.h
     include/modules/discretedata/channels/datachannel.h
     include/modules/discretedata/channels/formatconversionchannel.h
+    include/modules/discretedata/channels/roichannel.h
     include/modules/discretedata/connectivity/cell.h
     include/modules/discretedata/connectivity/connectioniterator.h
     include/modules/discretedata/connectivity/connectivity.h
@@ -45,6 +46,7 @@ set(HEADER_FILES
     include/modules/discretedata/processors/createuniformgrid.h
     include/modules/discretedata/processors/datasetfrombase.h
     include/modules/discretedata/processors/datasetinformation.h
+    include/modules/discretedata/processors/datasetroi.h
     include/modules/discretedata/processors/datasetsource.h
     include/modules/discretedata/processors/datasettospatialsampler.h
     include/modules/discretedata/processors/exampledataset.h
@@ -95,6 +97,7 @@ set(SOURCE_FILES
     src/processors/createuniformgrid.cpp
     src/processors/datasetfrombase.cpp
     src/processors/datasetinformation.cpp
+    src/processors/datasetroi.cpp
     src/processors/datasetsource.cpp
     src/processors/exampledataset.cpp
     src/processors/meshfromdataset.cpp

@@ -81,6 +81,8 @@ void CombineChannels::process() {
     LogWarn("First Process? " << (firstProcess_ ? "Yes" : "No"));
     // if (firstProcess_ && channelList_.size() > 0) return;
 
+    if (firstProcess_ && channelList_.size() == 0) addAllChannelProperties();
+
     // Refresh channel list.
     if (dataIn_.isChanged() && !firstProcess_) {
 
@@ -145,14 +147,16 @@ void CombineChannels::process() {
 
     // Create new channel.
     std::vector<std::shared_ptr<const Channel>> selectedChannels;
+    LogWarn("Hej channels!");
 
-    for (auto prop : channelList_) {
+    for (auto* boolProp : channelList_.getPropertiesByType<BoolProperty>()) {
 
-        BoolProperty* boolProp = dynamic_cast<BoolProperty*>(prop);
-        if (!boolProp || !boolProp->get()) {
-            continue;
-        }
-
+        if (!boolProp->get()) continue;
+        // BoolProperty* boolProp = dynamic_cast<BoolProperty*>(prop);
+        // if (!boolProp || !boolProp->get()) {
+        //     continue;
+        // }
+        LogWarn("+ Channel: " << boolProp->getDisplayName());
         const std::string& identifier = boolProp->getIdentifier();
         auto key = uncombineString(identifier);
 

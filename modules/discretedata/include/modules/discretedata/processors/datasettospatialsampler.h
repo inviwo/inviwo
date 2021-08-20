@@ -113,15 +113,12 @@ DataSetToSpatialSampler<SpatialDims, DataDims, T>::DataSetToSpatialSampler()
     interpolationType_.onChange([this]() {
         // interpolationChanged_ = true;
         invalidate(InvalidationLevel::InvalidOutput);
-        std::cout << "Changed interpolation" << std::endl;
-        LogWarn("Changed interpolation type!");
     });
 }
 
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 void DataSetToSpatialSampler<SpatialDims, DataDims, T>::process() {
     if (!dataIn_.isChanged() && !dataIn_.hasData()) return;
-    std::cout << "Actually making a SpatialSampler!!!" << std::endl;
 
     // No samplers in the dataset??
     if (dataIn_.isChanged() &&
@@ -162,7 +159,6 @@ void DataSetToSpatialSampler<SpatialDims, DataDims, T>::process() {
         return;
     }
 
-    std::cout << "Selected value: " << datasetSamplerName_.getSelectedValue() << std::endl;
     auto samplerIt = samplerMap.find(datasetSamplerName_.getSelectedValue());
     if (samplerIt == samplerMap.end()) {
         // throw Exception("Sampler option does not name a valid sampler");

@@ -68,7 +68,7 @@ DataSetSpatialSampler<SpatialDims, DataDims, T>::DataSetSpatialSampler(
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 Vector<DataDims, T> DataSetSpatialSampler<SpatialDims, DataDims, T>::sampleDataSpace(
     const Vector<SpatialDims, double>& pos) const {
-    std::cout << "Sample!" << std::endl;
+    // std::cout << "Sample!" << std::endl;
     // Sample weights by position.
     std::array<float, SpatialDims> arrayPos;
     for (size_t i = 0; i < SpatialDims; ++i) arrayPos[i] = pos[i];
@@ -81,22 +81,23 @@ Vector<DataDims, T> DataSetSpatialSampler<SpatialDims, DataDims, T>::sampleDataS
 
     // If the cell does not exist, return zero vector.
     if (cell < 0 || cell > data_->size()) return result;
-    std::cout << "Found a cell!" << std::endl;
+    // std::cout << "Found a cell!" << std::endl;
 
     // Add up weighted samples
     Vector<DataDims, T> sample;
-    std::cout << "Num weights: " << returnVertices.size() << " = " << returnWeights.size()
-              << std::endl;
+    // std::cout << "Num weights: " << returnVertices.size() << " = " << returnWeights.size()
+    //           << std::endl;
     for (auto&& [weight, index] : util::zip(returnWeights, returnVertices)) {
         if (weight == 0) {
-            std::cout << "Weight of 0" << std::endl;
+            // std::cout << "Weight of 0" << std::endl;
             continue;
         }
         data_->fill(sample, index, 1);
+        if (sample[0] < 1.0e-19) return Vector<DataDims, T>(0.0);
         result += sample * weight;
-        std::cout << fmt::format("\tWeighting ({}, {}) by {}", sample[0],
-                                 DataDims > 1 ? sample[1] : sample[0], weight)
-                  << std::endl;
+        // std::cout << fmt::format("\tWeighting ({}, {}) by {}", sample[0],
+        //                          DataDims > 1 ? sample[1] : sample[0], weight)
+        //           << std::endl;
     }
     return result;
 }

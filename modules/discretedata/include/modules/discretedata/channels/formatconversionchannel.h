@@ -104,23 +104,17 @@ template <typename T, ind N>
 struct CreateFormatConversionChannelToTN {
     template <typename Result, typename FromT>
     Result operator()(std::shared_ptr<const Channel> channel, const std::string& name) {
-        std::cout << "Hello Helper!" << std::endl;
         auto dataChannel =
             std::dynamic_pointer_cast<const DataChannel<typename FromT::type, N>>(channel);
 
-        std::cout << "Created Channel!" << std::endl;
         if (!dataChannel) {
-            std::cout << "Still not valid :(!" << std::endl;
             return nullptr;
         }
-        std::cout << "Conversion worked apparently!" << std::endl;
         auto convertedChannel =
             std::make_shared<FormatConversionChannel<T, typename FromT::type, N>>(dataChannel,
                                                                                   name);
 
-        std::cout << "Let's go!" << std::endl;
         auto ret = std::static_pointer_cast<DataChannel<T, N>>(convertedChannel);
-        std::cout << "It went!" << std::endl;
         return ret;
     }
 };

@@ -126,16 +126,12 @@ void TripolarGrid<N>::getConnectionsDispatched(std::vector<ind>& result, ind ind
                 neighCoords[dim] += sign;
 
                 // Special cases in x and y direction.
-                // std::cout << "Original coord: " << neighCoords[0] << ", " << neighCoords[1]
-                // << ",
-                // "
-                //           << neighCoords[2] << std::endl;
+
                 if (dim == 0) {
                     // Two very special cases from along wrapping layer to the top normal layer.
                     if (neighCoords[0] == -1 && neighCoords[1] == numCellsY) {
                         neighCoords[0] = numCellsX;
                         neighCoords[1] = numCellsY - 1;
-                        // std::cout << "=> Special left wrap" << std::endl;
                     } else if (neighCoords[0] == numCellsX / 2 && neighCoords[1] == numCellsY) {
                         neighCoords[1] = numCellsY - 1;
                     }
@@ -172,8 +168,6 @@ void TripolarGrid<N>::getConnectionsDispatched(std::vector<ind>& result, ind ind
                 bool inGrid = dim == 0 || dim == 1 ||
                               (neighCoords[dim] >= 0 && neighCoords[dim] < numVerts[dim] - 1);
                 if (inGrid) {
-                    // std::cout << "\t" << neighCoords[0] << ", " << neighCoords[1] << ", "
-                    //           << neighCoords[2] << std::endl;
                     ToPrimitive neighPrim(fromPrim.Grid, std::move(neighCoords),
                                           std::move(neighDirs));
                     result.push_back(neighPrim.GlobalPrimitiveIndex);

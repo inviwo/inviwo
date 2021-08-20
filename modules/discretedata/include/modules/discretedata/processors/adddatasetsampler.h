@@ -108,9 +108,6 @@ private:
                     fmt::format("{}_as_Coordinate", coordinates->getName()));
             }
             if (!usableInterpolant || !usableCoords) {
-                // std::cout << "Interpolant or coordinates of wrong type!" << std::endl;
-                // if (!usableInterpolant) std::cout << "= It's the interpolant!" << std::endl;
-                // if (!usableCoords) std::cout << "= It's the coords!" << std::endl;
                 return nullptr;
             }
             return std::make_shared<SamplerType<N>>(grid, usableCoords, *usableInterpolant);
