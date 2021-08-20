@@ -29,7 +29,6 @@
 
 #include <modules/animationqt/animationeditorqt.h>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/zip.h>
 
 #include <modules/qtwidgets/textlabeloverlay.h>
