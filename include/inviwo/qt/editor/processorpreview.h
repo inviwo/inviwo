@@ -30,7 +30,6 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QImage>
@@ -40,6 +39,7 @@
 namespace inviwo {
 
 class InviwoApplication;
+class Processor;
 
 namespace utilqt {
 /**

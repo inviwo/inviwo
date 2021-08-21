@@ -29,7 +29,6 @@
 #pragma once
 
 #include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

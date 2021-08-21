@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/basecl/baseclmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/datastructures/light/lightingstate.h>

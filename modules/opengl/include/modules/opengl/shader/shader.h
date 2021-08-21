@@ -35,7 +35,6 @@
 #include <modules/opengl/shader/shaderobject.h>
 #include <modules/opengl/shader/shadertype.h>
 #include <modules/opengl/shader/uniformutils.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/callback.h>
 #include <inviwo/core/util/stdextensions.h>
 

@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/opencl/openclmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/fileobserver.h>

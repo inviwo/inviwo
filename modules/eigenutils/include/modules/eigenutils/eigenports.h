@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/eigenutils/eigenutilsmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/eigenutils/eigenutils.h>
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/ports/datainport.h>

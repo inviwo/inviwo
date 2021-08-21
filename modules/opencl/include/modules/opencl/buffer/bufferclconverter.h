@@ -29,7 +29,6 @@
 
 #pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <modules/opencl/buffer/buffercl.h>
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/openclmoduledefine.h>

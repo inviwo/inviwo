@@ -32,7 +32,6 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/textureunit.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 

@@ -30,8 +30,9 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/qtwidgets/properties/doublevaluedragspinbox.h>
+
+#include <inviwo/core/util/glmvec.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

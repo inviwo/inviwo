@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/postprocessing/postprocessingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/camera/perspectivecamera.h>
 #include <inviwo/core/datastructures/camera/skewedperspectivecamera.h>
 #include <inviwo/core/datastructures/image/imageram.h>

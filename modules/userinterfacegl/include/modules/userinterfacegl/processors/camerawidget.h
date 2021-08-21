@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmodule.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/camera/camera.h>
 #include <inviwo/core/datastructures/camera/perspectivecamera.h>
 #include <inviwo/core/processors/processor.h>

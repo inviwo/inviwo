@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 #include <modules/opengl/texture/texture3d.h>
 #include <inviwo/core/datastructures/representationtraits.h>

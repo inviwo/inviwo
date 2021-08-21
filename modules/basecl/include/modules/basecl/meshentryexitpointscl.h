@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/basecl/baseclmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <modules/opencl/inviwoopencl.h>

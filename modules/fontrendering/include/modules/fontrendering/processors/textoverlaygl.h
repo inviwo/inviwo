@@ -33,7 +33,6 @@
 #include <modules/fontrendering/textrenderer.h>
 #include <modules/fontrendering/properties/fontproperty.h>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/optionproperty.h>

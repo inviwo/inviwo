@@ -29,7 +29,6 @@
 #pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 

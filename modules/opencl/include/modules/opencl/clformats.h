@@ -30,8 +30,9 @@
 #pragma once
 
 #include <modules/opencl/openclmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/opencl/inviwoopencl.h>
+
+#include <inviwo/core/util/formats.h>
 
 namespace inviwo {
 

@@ -31,6 +31,8 @@
 #include <inviwo/core/common/inviwoapplicationutil.h>
 #include <inviwo/core/util/filesystem.h>
 
+#include <sstream>
+
 namespace inviwo {
 
 FileShaderResource::FileShaderResource(std::string_view key, std::string_view fileName)

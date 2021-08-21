@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/basecl/baseclmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/ports/meshport.h>

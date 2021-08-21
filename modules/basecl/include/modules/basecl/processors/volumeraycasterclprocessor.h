@@ -31,7 +31,6 @@
 
 #include <modules/basecl/baseclmoduledefine.h>
 #include <modules/basecl/volumeraycastercl.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>

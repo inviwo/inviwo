@@ -31,7 +31,6 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/datagrouprepresentation.h>
-#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 

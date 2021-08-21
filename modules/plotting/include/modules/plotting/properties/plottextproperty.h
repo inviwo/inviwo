@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/stringproperty.h>

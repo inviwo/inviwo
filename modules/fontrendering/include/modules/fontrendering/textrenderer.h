@@ -34,7 +34,6 @@
 #include <modules/fontrendering/datastructures/texatlasentry.h>
 #include <modules/fontrendering/datastructures/fontsettings.h>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/opengl/inviwoopengl.h>
@@ -45,6 +44,7 @@
 
 #include <unordered_map>
 #include <tuple>
+#include <string>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H

@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/propertyeditorwidget.h>
 #include <inviwo/core/properties/propertyobserver.h>
 #include <modules/qtwidgets/inviwodockwidget.h>

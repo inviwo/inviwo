@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/glfw/glfwmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {

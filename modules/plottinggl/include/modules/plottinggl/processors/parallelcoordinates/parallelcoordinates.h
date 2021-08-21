@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/ports/imageport.h>

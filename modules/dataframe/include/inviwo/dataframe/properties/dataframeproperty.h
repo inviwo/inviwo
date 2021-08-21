@@ -31,7 +31,6 @@
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {

@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QString>

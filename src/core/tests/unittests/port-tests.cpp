@@ -33,7 +33,6 @@
 #include <gmock/gmock.h>
 #include <warn/pop>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
 #include <inviwo/core/processors/processor.h>

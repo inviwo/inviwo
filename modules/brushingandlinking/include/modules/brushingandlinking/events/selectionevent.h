@@ -29,7 +29,6 @@
  
 #pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/events/brushingandlinkingevent.h>
 

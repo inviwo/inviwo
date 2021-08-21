@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/fontrendering/textrenderer.h>
 #include <modules/fontrendering/datastructures/texatlasentry.h>

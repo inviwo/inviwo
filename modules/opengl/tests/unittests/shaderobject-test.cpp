@@ -32,7 +32,6 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/zip.h>
 #include <modules/opengl/shader/shaderobject.h>

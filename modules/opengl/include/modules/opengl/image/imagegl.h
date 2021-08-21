@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/imagerepresentation.h>
 #include <modules/opengl/image/layergl.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>

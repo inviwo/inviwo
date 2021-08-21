@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/processors/canvasprocessor.h>

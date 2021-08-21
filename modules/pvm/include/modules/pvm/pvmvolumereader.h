@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/pvm/pvmmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/io/datareader.h>
 

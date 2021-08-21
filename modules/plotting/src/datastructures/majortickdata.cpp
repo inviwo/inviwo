@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/plotting/datastructures/majortickdata.h>
+#include <inviwo/core/util/glmvec.h>
 
 namespace inviwo {
 

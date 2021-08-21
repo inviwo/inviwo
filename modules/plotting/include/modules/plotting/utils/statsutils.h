@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/util/formatdispatching.h>
 #include <ostream>

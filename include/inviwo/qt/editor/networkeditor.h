@@ -36,6 +36,7 @@
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/processors/processorpair.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
+#include <inviwo/core/util/glmvec.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

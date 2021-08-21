@@ -29,7 +29,8 @@
 #pragma once
 
 #include <inviwo/png/pngmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+
+#include <string>
 
 namespace inviwo {
 

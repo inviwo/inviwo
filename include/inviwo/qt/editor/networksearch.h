@@ -30,11 +30,11 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <functional>
 #include <vector>
 #include <unordered_map>
+#include <string>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -46,6 +46,7 @@ class QLineEdit;
 namespace inviwo {
 class InviwoApplication;
 class InviwoMainWindow;
+class Processor;
 
 /**
  * Widget for searching the processor network. Will highlight matching processors.

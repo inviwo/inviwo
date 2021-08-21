@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/qt/editor/inviwomainwindow.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/util/commandlineparser.h>

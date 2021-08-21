@@ -31,7 +31,6 @@
 #pragma comment(linker, "/SUBSYSTEM:CONSOLE")
 #endif
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/common/coremodulesharedlibrary.h>

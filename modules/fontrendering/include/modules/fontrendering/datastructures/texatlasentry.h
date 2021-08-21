@@ -30,8 +30,12 @@
 #pragma once
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/fontrendering/datastructures/textboundingbox.h>
+
+#include <inviwo/core/util/glm.h>
+
+#include <string>
+#include <vector>
 
 namespace inviwo {
 

@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/shader/shader.h>

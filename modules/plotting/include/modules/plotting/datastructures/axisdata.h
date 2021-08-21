@@ -29,13 +29,17 @@
 #pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/plotting/datastructures/axissettings.h>
 
 #include <modules/plotting/datastructures/plottextdata.h>
 #include <modules/plotting/datastructures/majortickdata.h>
 #include <modules/plotting/datastructures/minortickdata.h>
+
+#include <inviwo/core/util/glmvec.h>
+
+#include <vector>
+#include <string>
 
 namespace inviwo {
 

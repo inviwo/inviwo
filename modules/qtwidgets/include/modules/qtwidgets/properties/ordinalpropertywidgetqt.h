@@ -42,6 +42,7 @@
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/formats.h>
 #include <inviwo/core/properties/propertyowner.h>
 
 #include <cmath>

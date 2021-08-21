@@ -30,7 +30,6 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/core/resourcemanager/resourcemanagerobserver.h>

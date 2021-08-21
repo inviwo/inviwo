@@ -34,7 +34,6 @@
 #endif
 #endif
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/testutil/configurablegtesteventlistener.h>
 
 #include <inviwo/core/datastructures/representationutil.h>
