@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_SELECTIONEVENT_H
-#define IVW_SELECTIONEVENT_H
+ 
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
@@ -48,5 +47,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SELECTIONEVENT_H

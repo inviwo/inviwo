@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_KERNEL_MANAGER_H
-#define IVW_KERNEL_MANAGER_H
+ 
+#pragma once
 
 #include <modules/opencl/openclmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -128,5 +127,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_KERNEL_MANAGER_H

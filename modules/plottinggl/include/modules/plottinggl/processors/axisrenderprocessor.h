@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_AXISRENDERPROCESSOR_H
-#define IVW_AXISRENDERPROCESSOR_H
+ 
+#pragma once
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -86,5 +85,3 @@ private:
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_AXISRENDERPROCESSOR_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_SCATTERPLOTMATRIXPROCESSOR_H
-#define IVW_SCATTERPLOTMATRIXPROCESSOR_H
+ 
+#pragma once
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -129,5 +128,3 @@ private:
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_SCATTERPLOTMATRIXPROCESSOR_H

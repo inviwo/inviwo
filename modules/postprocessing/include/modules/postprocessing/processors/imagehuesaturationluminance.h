@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_IMAGEHUESATURATIONLUMINANCE_H
-#define IVW_IMAGEHUESATURATIONLUMINANCE_H
+ 
+#pragma once
 
 #include <modules/postprocessing/postprocessingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -83,5 +82,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGEHUESATURATIONLUMINANCE_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_GRAYSCALE_CL_H
-#define IVW_GRAYSCALE_CL_H
+ 
+#pragma once
 
 #include <modules/basecl/baseclmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -79,5 +78,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_GRAYSCALE_CL_H

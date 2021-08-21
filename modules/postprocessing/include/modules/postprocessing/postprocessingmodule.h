@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_POSTPROCESSINGMODULE_H
-#define IVW_POSTPROCESSINGMODULE_H
+ 
+#pragma once
 
 #include <modules/postprocessing/postprocessingmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -42,5 +41,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_POSTPROCESSINGMODULE_H

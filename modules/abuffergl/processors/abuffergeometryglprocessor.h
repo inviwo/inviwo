@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_ABUFFER_GEOMETRYGL_RENDERING_PROCESSOR_H
-#define IVW_ABUFFER_GEOMETRYGL_RENDERING_PROCESSOR_H
+ 
+#pragma once
 
 #include <modules/abuffergl/abufferglmoduledefine.h>
 
@@ -98,5 +97,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ABUFFER_GEOMETRYGL_RENDERING_PROCESSOR_H

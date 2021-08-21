@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_CIMGVOLUMEREADER_H
-#define IVW_CIMGVOLUMEREADER_H
+ 
+#pragma once
 
 #include <modules/cimg/cimgmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -72,5 +71,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CIMGVOLUMEREADER_H

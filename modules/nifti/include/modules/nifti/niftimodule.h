@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_NIFTIMODULE_H
-#define IVW_NIFTIMODULE_H
+ 
+#pragma once
 
 #include <modules/nifti/niftimoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -41,5 +40,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_NIFTIMODULE_H

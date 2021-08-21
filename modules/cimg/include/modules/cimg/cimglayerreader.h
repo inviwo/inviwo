@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_CIMGLAYERREADER_H
-#define IVW_CIMGLAYERREADER_H
+ 
+#pragma once
 
 #include <modules/cimg/cimgmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -56,5 +55,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CIMGLAYERREADER_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYTHONINTERPRETER_H
-#define IVW_PYTHONINTERPRETER_H
+#pragma once
 
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -53,5 +52,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PYINVIWO_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_GLUIBUTTONPROPERTYWIDGET_H
-#define IVW_GLUIBUTTONPROPERTYWIDGET_H
+ 
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -100,5 +99,3 @@ private:
 }  // namespace glui
 
 }  // namespace inviwo
-
-#endif  // IVW_GLUIBUTTONPROPERTYWIDGET_H

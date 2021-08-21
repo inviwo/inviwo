@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_BUFFERGL_OBJECT_OBSERVER_H
-#define IVW_BUFFERGL_OBJECT_OBSERVER_H
+ 
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -64,5 +63,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BUFFERGL_OBJECT_OBSERVER_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_EXAMPLEMODULE_H
-#define IVW_EXAMPLEMODULE_H
+ 
+#pragma once
 
 #include <modules/example/examplemoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -41,5 +40,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EXAMPLEMODULE_H

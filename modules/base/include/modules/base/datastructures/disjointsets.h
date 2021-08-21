@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_DISJOINTSETS_H
-#define IVW_DISJOINTSETS_H
+ 
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/util/assertion.h>
@@ -136,5 +135,3 @@ inline std::size_t DisjointSets<T>::size() {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_DISJOINTSETS_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_MESHGLDRAWER_H
-#define IVW_MESHGLDRAWER_H
+ 
+#pragma once
 
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/geometry/meshgl.h>
@@ -135,5 +134,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_MESHGLDRAWER_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VOLUMERAMSUBSAMPLE_H
-#define IVW_VOLUMERAMSUBSAMPLE_H
+ 
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/util/glm.h>
@@ -46,5 +45,3 @@ IVW_MODULE_BASE_API std::shared_ptr<VolumeRAM> volumeSubSample(const VolumeRAM* 
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMERAMSUBSAMPLE_H

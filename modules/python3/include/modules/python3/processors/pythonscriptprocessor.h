@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_PYTHONMESHSCRIPTSOURCE_H
-#define IVW_PYTHONMESHSCRIPTSOURCE_H
+ 
+#pragma once
 
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -121,5 +120,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PYTHONMESHSCRIPTSOURCE_H

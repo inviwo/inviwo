@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef _KDTREE_H_
-#define _KDTREE_H_
+#pragma once
 
 #include <vector>
 #include <sstream>
@@ -742,4 +741,3 @@ void KDNode<N, T, P>::findNNearest(const P pos[N], size_t amount,
     }
 }
 }  // namespace inviwo
-#endif

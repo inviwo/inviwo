@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
-#define IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
+ 
+#pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -81,5 +80,3 @@ private:
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_EIGENNORMALIZE_H
-#define IVW_EIGENNORMALIZE_H
+ 
+#pragma once
 
 #include <modules/eigenutils/eigenutilsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -88,5 +87,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EIGENNORMALIZE_H

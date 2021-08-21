@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_OPENGLSETTINGS_H
-#define IVW_OPENGLSETTINGS_H
+ 
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/util/settings/settings.h>
@@ -57,5 +56,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_OPENGLSETTINGS_H

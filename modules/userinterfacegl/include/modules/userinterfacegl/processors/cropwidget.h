@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_CLIPPINGWIDGET_H
-#define IVW_CLIPPINGWIDGET_H
+ 
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -164,5 +163,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CLIPPINGWIDGET_H

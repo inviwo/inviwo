@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_FONTRENDERINGMODULE_H
-#define IVW_FONTRENDERINGMODULE_H
+ 
+#pragma once
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -55,5 +54,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FONTRENDERINGMODULE_H

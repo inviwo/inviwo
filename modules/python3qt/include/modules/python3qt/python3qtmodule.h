@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_PYTHON3QTMODULE_H
-#define IVW_PYTHON3QTMODULE_H
+ 
+#pragma once
 
 #include <modules/python3qt/python3qtmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -61,5 +60,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PYTHON3QTMODULE_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VOLUMEGRADIENT_H
-#define IVW_VOLUMEGRADIENT_H
+ 
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
 #include <memory>
@@ -45,5 +44,3 @@ IVW_MODULE_BASE_API std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEGRADIENT_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_GLUIHBOXLAYOUT_H
-#define IVW_GLUIHBOXLAYOUT_H
+ 
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -52,5 +51,3 @@ public:
 }  // namespace glui
 
 }  // namespace inviwo
-
-#endif  // IVW_GLUIHBOXLAYOUT_H

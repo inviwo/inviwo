@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_CSVSOURCE_H
-#define IVW_CSVSOURCE_H
+ 
+#pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 
@@ -75,5 +74,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CSVSOURCE_H

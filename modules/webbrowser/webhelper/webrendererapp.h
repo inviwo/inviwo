@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_WEBBROWSERAPP_H
-#define IVW_WEBBROWSERAPP_H
+ 
+#pragma once
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -82,4 +81,3 @@ private:
 };
 
 };      // namespace inviwo
-#endif  // IVW_WEBBROWSERAPP_H

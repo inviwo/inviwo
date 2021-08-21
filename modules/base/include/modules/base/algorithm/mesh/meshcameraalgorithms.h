@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_MESHCAMERAALGORITHMS_H
-#define IVW_MESHCAMERAALGORITHMS_H
+ 
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -68,5 +67,3 @@ IVW_MODULE_BASE_API std::pair<float, float> computeNearFarPlanes(
 }  // namespace meshutil
 
 }  // namespace inviwo
-
-#endif  // IVW_MESHCAMERAALGORITHMS_H

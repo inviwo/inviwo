@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_KERNEL_OWNER_H
-#define IVW_KERNEL_OWNER_H
+ 
+#pragma once
 
 #include <modules/opencl/openclmoduledefine.h>
 #include <modules/opencl/inviwoopencl.h>
@@ -125,5 +124,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_KERNEL_OWNER_H

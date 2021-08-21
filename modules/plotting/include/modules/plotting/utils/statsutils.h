@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STATSUTILS_H
-#define IVW_STATSUTILS_H
+#pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -113,5 +112,3 @@ std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& perce
 }  // namespace statsutil
 
 }  // namespace inviwo
-
-#endif  // IVW_STATISUTILS_H

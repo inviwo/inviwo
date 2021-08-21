@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_CIMGSAVEBUFFER_H
-#define IVW_CIMGSAVEBUFFER_H
+ 
+#pragma once
 
 #include <modules/cimg/cimgmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -148,5 +147,3 @@ const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_libra
 }  // namespace cimgutil
 
 }  // namespace inviwo
-
-#endif  // IVW_CIMGSAVEBUFFER_H

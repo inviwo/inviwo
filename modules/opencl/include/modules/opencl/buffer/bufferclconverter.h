@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BUFFERCL_CONVERTER_H
-#define IVW_BUFFERCL_CONVERTER_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <modules/opencl/buffer/buffercl.h>
@@ -57,5 +56,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BUFFERCL_CONVERTER_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HDR_BLOOM_H
-#define IVW_HDR_BLOOM_H
+#pragma once
 
 #include <modules/postprocessing/postprocessingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -103,5 +102,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FXAA_H

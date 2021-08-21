@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GLFORMATS_H
-#define IVW_GLFORMATS_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/util/formats.h>
@@ -189,5 +188,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif

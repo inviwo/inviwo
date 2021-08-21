@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_BUFFERCLGLCONVERTER_H
-#define IVW_BUFFERCLGLCONVERTER_H
+ 
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <modules/opencl/buffer/buffercl.h>
@@ -76,5 +75,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BUFFERCLGLCONVERTER_H

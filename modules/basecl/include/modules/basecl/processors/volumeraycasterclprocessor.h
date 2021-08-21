@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VOLUMERAYCASTERCLPROCESSOR_H
-#define IVW_VOLUMERAYCASTERCLPROCESSOR_H
+ 
+#pragma once
 
 #include <modules/basecl/baseclmoduledefine.h>
 #include <modules/basecl/volumeraycastercl.h>
@@ -102,5 +101,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMERAYCASTERCLPROCESSOR_H

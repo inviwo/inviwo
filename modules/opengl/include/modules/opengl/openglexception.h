@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_OPENGLEXCEPTION_H
-#define IVW_OPENGLEXCEPTION_H
+ 
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/util/exception.h>
@@ -49,5 +48,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_OPENGLEXCEPTION_H

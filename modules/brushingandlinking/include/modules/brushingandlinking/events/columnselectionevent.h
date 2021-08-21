@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_COLUMNSELECTIONEVENT_H
-#define IVW_COLUMNSELECTIONEVENT_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
@@ -49,5 +48,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SELECTIONEVENT_H

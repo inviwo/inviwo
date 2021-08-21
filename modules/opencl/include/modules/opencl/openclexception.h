@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_OPENCLEXCEPTION_H
-#define IVW_OPENCLEXCEPTION_H
+ 
+#pragma once
 
 #include <modules/opencl/openclmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -45,5 +44,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_OPENCLEXCEPTION_H

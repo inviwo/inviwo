@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_TEXTUREATLAS_H
-#define IVW_TEXTUREATLAS_H
+ 
+#pragma once
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -86,5 +85,3 @@ private:
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_TEXTUREATLAS_H

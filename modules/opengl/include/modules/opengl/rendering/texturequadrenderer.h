@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_TEXTUREQUADRENDERER_H
-#define IVW_TEXTUREQUADRENDERER_H
+ 
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/shader/shader.h>
@@ -322,5 +321,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TEXTUREQUADRENDERER_H

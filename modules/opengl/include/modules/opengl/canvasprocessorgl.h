@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_CANVASPROCESSORGL_H
-#define IVW_CANVASPROCESSORGL_H
+ 
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -71,5 +70,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CANVASPROCESSORGL_H

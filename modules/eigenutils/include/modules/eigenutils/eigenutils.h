@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_EIGENUTILS_H
-#define IVW_EIGENUTILS_H
+ 
+#pragma once
 
 #include <modules/eigenutils/eigenutilsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -134,5 +133,3 @@ std::shared_ptr<Image> eigenMatToImage(const T& m, bool flipY = false, std::stri
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_EIGENUTILS_H

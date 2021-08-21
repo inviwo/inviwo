@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_BASECLMODULE_H
-#define IVW_BASECLMODULE_H
+ 
+#pragma once
 
 #include <modules/basecl/baseclmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -56,5 +55,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BASECLMODULE_H

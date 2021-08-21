@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_MARGINPROPERTY_H
-#define IVW_MARGINPROPERTY_H
+ 
+#pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -102,5 +101,3 @@ public:
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_MARGINPROPERTY_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_CLOCK_CL_H
-#define IVW_CLOCK_CL_H
+ 
+#pragma once
 
 #include <modules/opencl/openclmoduledefine.h>
 #include <modules/opencl/inviwoopencl.h>
@@ -79,5 +78,3 @@ private:
 #define IVW_OPENCL_PROFILING(var, message) cl::Event* var = nullptr;
 #endif
 }  // namespace inviwo
-
-#endif  // IVW_CLOCK_CL_H

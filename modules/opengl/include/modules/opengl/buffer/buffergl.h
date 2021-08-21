@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_BUFFERGL_H
-#define IVW_BUFFERGL_H
+ 
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
@@ -90,5 +89,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BUFFERGL_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VOLUMESEQUENCETODATAFRAME_H
-#define IVW_VOLUMESEQUENCETODATAFRAME_H
+ 
+#pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
@@ -83,5 +82,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESEQUENCETODATAFRAME_H

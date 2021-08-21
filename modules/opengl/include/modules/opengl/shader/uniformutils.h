@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_UNIFORMUTILS_H
-#define IVW_UNIFORMUTILS_H
+ 
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/shader/shader.h>
@@ -262,5 +261,3 @@ struct UniformSetter<TextureUnit> {
 }  // namespace utilgl
 
 }  // namespace inviwo
-
-#endif  // IVW_UNIFORMUTILS_H

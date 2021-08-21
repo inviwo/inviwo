@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VOLUMECLGLCONVERTER_H
-#define IVW_VOLUMECLGLCONVERTER_H
+ 
+#pragma once
 
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
@@ -78,5 +77,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMECLGLCONVERTER_H

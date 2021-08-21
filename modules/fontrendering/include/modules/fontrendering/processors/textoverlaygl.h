@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_TEXTOVERLAYGL_H
-#define IVW_TEXTOVERLAYGL_H
+ 
+#pragma once
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 #include <modules/fontrendering/textrenderer.h>
@@ -123,5 +122,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TEXTOVERLAYGL_H

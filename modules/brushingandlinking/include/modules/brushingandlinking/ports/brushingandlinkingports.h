@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_BRUSHINGANDLINKINGOUTPORT_H
-#define IVW_BRUSHINGANDLINKINGOUTPORT_H
+ 
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/datainport.h>
@@ -125,5 +124,3 @@ inline bool BrushingAndLinkingInport::isSelected(size_t idx) const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_BRUSHINGANDLINKINGOUTPORT_H

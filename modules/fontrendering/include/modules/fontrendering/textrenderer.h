@@ -1,7 +1,6 @@
 ﻿/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
- * Version 0.9
  *
  * Copyright (c) 2012-2021 Inviwo Foundation
  * All rights reserved.
@@ -28,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TEXTRENDERER_H
-#define IVW_TEXTRENDERER_H
+#pragma once
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 #include <modules/fontrendering/util/fontutils.h>
@@ -384,5 +382,3 @@ IVW_MODULE_FONTRENDERING_API std::shared_ptr<Texture2D> createTextTexture(
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_TEXTRENDERER_H

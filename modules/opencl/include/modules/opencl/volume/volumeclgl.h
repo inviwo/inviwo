@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VOLUMECLGL_H
-#define IVW_VOLUMECLGL_H
+ 
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
@@ -122,5 +121,3 @@ template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::VolumeCLGL& value);
 
 }  // namespace cl
-
-#endif  // IVW_VOLUMECLGL_H

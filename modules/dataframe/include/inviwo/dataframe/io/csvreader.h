@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_CSVREADER_H
-#define IVW_CSVREADER_H
+ 
+#pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -111,5 +110,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CSVREADER_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VOLUMEGL_H
-#define IVW_VOLUMEGL_H
+ 
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -96,5 +95,3 @@ struct representation_traits<Volume, kind::GL> {
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEGL_H

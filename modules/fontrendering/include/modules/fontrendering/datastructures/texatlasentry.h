@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_TEXATLASENTRY_H
-#define IVW_TEXATLASENTRY_H
+ 
+#pragma once
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -50,5 +49,3 @@ struct IVW_MODULE_FONTRENDERING_API TexAtlasRenderInfo {
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TEXATLASENTRY_H

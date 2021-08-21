@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_BUFFERCL_BASE_H
-#define IVW_BUFFERCL_BASE_H
+ 
+#pragma once
 
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/openclmoduledefine.h>
@@ -55,5 +54,3 @@ template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::BufferCLBase& value);
 
 }  // namespace cl
-
-#endif  // IVW_BUFFERCL_BASE_H

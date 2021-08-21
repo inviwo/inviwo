@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef INDICATORWIDGET_H
-#define INDICATORWIDGET_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -65,5 +64,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // INDICATORWIDGET_H

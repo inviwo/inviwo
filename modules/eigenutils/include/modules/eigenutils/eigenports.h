@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EIGENPORTS_H
-#define IVW_EIGENPORTS_H
+#pragma once
 
 #include <modules/eigenutils/eigenutilsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -57,5 +56,3 @@ struct DataTraits<Eigen::MatrixXf> {
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PORTS_H
