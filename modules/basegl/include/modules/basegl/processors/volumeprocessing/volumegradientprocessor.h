@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_GRADIENTVOLUMEPROCESSOR_H
-#define IVW_GRADIENTVOLUMEPROCESSOR_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -80,5 +79,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_GRADIENTVOLUMEPROCESSOR_H

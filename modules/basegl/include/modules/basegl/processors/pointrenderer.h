@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_POINTRENDERER_H
-#define IVW_POINTRENDERER_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
@@ -95,5 +94,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_POINTRENDERER_H

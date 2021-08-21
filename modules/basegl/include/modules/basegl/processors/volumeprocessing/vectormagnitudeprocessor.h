@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VECTORMAGNITUDEPROCESSOR_H
-#define IVW_VECTORMAGNITUDEPROCESSOR_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
@@ -65,5 +64,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VECTORMAGNITUDEPROCESSOR_H

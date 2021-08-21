@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_HEIGHTFIELDPROCESSOR_H
-#define IVW_HEIGHTFIELDPROCESSOR_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
@@ -117,5 +116,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_HEIGHTFIELDPROCESSOR_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_IMAGECHANNELSELECT_H
-#define IVW_IMAGECHANNELSELECT_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
@@ -63,5 +62,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGECHANNELSELECT_H

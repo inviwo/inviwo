@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_IMAGEINVERT_H
-#define IVW_IMAGEINVERT_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
@@ -69,5 +68,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGEINVERT_H

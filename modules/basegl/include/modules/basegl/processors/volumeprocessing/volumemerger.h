@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VOLUMEMERGER_H
-#define IVW_VOLUMEMERGER_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 
@@ -72,5 +71,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEMERGER_H

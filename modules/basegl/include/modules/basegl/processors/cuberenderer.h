@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_CUBERENDERER_H
-#define IVW_CUBERENDERER_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
@@ -107,5 +106,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CUBERENDERER_H

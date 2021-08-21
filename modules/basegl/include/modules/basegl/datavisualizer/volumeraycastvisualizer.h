@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VOLUMERAYCASTVISUALIZER_H
-#define IVW_VOLUMERAYCASTVISUALIZER_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/rendering/datavisualizer.h>
@@ -60,5 +59,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMERAYCASTVISUALIZER_H

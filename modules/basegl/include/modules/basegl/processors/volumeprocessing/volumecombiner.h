@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VOLUMECOMBINER_H
-#define IVW_VOLUMECOMBINER_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -122,5 +121,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMECOMBINER_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VOLUMESLICEGL_H
-#define IVW_VOLUMESLICEGL_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 
@@ -213,5 +212,3 @@ private:
     mat4 texToWorld_;
 };
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESLICEGL_H

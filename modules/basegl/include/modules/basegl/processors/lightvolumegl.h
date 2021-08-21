@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_LIGHTVOLUMEGL_H
-#define IVW_LIGHTVOLUMEGL_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
@@ -144,5 +143,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LIGHTVOLUMEGL_H

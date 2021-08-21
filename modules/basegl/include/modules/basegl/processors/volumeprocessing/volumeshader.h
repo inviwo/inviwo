@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VOLUMESHADER_H
-#define IVW_VOLUMESHADER_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/properties/fileproperty.h>
@@ -55,5 +54,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESHADER_H

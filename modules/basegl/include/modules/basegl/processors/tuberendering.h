@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_TUBERENDERING_H
-#define IVW_TUBERENDERING_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/ports/meshport.h>
@@ -83,5 +82,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TUBERENDERING_H

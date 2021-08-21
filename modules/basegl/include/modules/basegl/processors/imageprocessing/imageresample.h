@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_IMAGERESAMPLE_H
-#define IVW_IMAGERESAMPLE_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
@@ -83,5 +82,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGERESAMPLE_H

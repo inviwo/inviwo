@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_IMAGECONVOLUTION_H
-#define IVW_IMAGECONVOLUTION_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <modules/opengl/shader/shader.h>
@@ -65,5 +64,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGECONVOLUTION_H

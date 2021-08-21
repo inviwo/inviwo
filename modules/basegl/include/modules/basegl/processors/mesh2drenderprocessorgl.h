@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MESH2DRENDERPROCESSORGL_H
-#define IVW_MESH2DRENDERPROCESSORGL_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
@@ -66,5 +65,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_MESH2DRENDERER_H

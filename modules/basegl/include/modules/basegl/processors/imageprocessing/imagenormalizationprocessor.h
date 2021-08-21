@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_IMAGENORMALIZATIONPROCESSOR_H
-#define IVW_IMAGENORMALIZATIONPROCESSOR_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/ports/imageport.h>
@@ -80,5 +79,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGENORMALIZATIONPROCESSOR_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_IMAGEGLPROCESSOR_H
-#define IVW_IMAGEGLPROCESSOR_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
@@ -105,5 +104,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGEGLPROCESSOR_H

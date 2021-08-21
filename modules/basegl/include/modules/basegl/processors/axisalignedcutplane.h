@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VOLUMECUTPLANE_H
-#define IVW_VOLUMECUTPLANE_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
@@ -184,5 +183,3 @@ vec3 AxisAlignedCutPlane::SliceProperty<axis>::forSlice(int axes, double a, doub
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMECUTPLANE_H

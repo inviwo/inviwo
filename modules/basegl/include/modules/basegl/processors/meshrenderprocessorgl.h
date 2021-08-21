@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_MESHRENDERPROCESSORGL_H
-#define IVW_MESHRENDERPROCESSORGL_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
@@ -121,5 +120,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_GEOMETRYRENDERPROCESSORGL_H

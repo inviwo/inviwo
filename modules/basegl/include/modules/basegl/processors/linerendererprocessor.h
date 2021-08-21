@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_LINERENDERER_H
-#define IVW_LINERENDERER_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
@@ -100,5 +99,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LINERENDERER_H

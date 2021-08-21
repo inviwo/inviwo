@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VOLUMEDIFF_H
-#define IVW_VOLUMEDIFF_H
+ 
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 
@@ -63,5 +62,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEDIFF_H
