@@ -65,8 +65,7 @@
  * or implied, of Gerolf Reinwardt.
  */
 
-#ifndef IVW_FILEASSOCIATIONS_H
-#define IVW_FILEASSOCIATIONS_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -156,5 +155,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FILEASSOCIATIONS_H

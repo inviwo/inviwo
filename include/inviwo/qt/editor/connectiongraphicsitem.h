@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_CONNECTIONGRAPHICSITEM_H
-#define IVW_CONNECTIONGRAPHICSITEM_H
+ 
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <warn/push>
@@ -164,5 +163,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CONNECTIONGRAPHICSITEM_H

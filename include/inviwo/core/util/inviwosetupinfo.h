@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_INVIWOSETUPINFO_H
-#define IVW_INVIWOSETUPINFO_H
+ 
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serializable.h>
@@ -63,5 +62,3 @@ struct IVW_CORE_API InviwoSetupInfo : public Serializable {
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_INVIWOSETUPINFO_H

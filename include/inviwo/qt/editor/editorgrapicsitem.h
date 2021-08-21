@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_EDITORGRAPHICSITEM_H
-#define IVW_EDITORGRAPHICSITEM_H
+ 
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
@@ -83,5 +82,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EDITORGRAPHICSITEM_H

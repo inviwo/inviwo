@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_LINKDIALOG_H
-#define IVW_LINKDIALOG_H
+ 
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
@@ -46,5 +45,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LINKDIALOG_H

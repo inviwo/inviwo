@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_PROCESSORPROGRESSGRAPHICSITEM_H
-#define IVW_PROCESSORPROGRESSGRAPHICSITEM_H
+ 
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/editorgrapicsitem.h>
@@ -71,5 +70,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORPROGRESSGRAPHICSITEM_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_NETWORKEDITOR_H
-#define IVW_NETWORKEDITOR_H
+ 
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/networkeditorobserver.h>
@@ -257,5 +256,3 @@ T* inviwo::NetworkEditor::getGraphicsItemAt(const QPointF pos) const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_NETWORKEDITOR_H

@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_LINKDIALOG_GRAPHICSITEMS_H
-#define IVW_LINKDIALOG_GRAPHICSITEMS_H
+ 
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/properties/property.h>
@@ -141,5 +140,3 @@ inline void LinkDialogTreeItem::setExpanded(bool expand) { isExpanded_ = expand;
 inline bool LinkDialogTreeItem::isExpanded() const { return isExpanded_; }
 
 }  // namespace inviwo
-
-#endif  // IVW_LINKDIALOG_GRAPHICSITEMS_H

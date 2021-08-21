@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_INVIWOAPPLICATIONQT_H
-#define IVW_INVIWOAPPLICATIONQT_H
+ 
+#pragma once
 
 #include <inviwo/qt/applicationbase/qtapplicationbasemoduledefine.h>
 #include <warn/push>
@@ -115,5 +114,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_INVIWOAPPLICATIONQT_H

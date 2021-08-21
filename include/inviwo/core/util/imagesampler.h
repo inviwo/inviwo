@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGESAMPLER_H
-#define IVW_IMAGESAMPLER_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
@@ -251,5 +250,3 @@ T TemplateImageSampler<T, P>::sample(const Vector<2, P>& pos) {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGESAMPLER_H

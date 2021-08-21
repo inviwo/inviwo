@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_LOGERRORCOUNTER_H
-#define IVW_LOGERRORCOUNTER_H
+ 
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/logcentral.h>
@@ -59,5 +58,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LOGERRORCOUNTER_H

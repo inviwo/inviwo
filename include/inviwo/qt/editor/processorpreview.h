@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_PROCESSORPREVIEW_H
-#define IVW_PROCESSORPREVIEW_H
+ 
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -65,5 +64,3 @@ IVW_QTEDITOR_API void saveProcessorPreviews(InviwoApplication* app, std::string&
 }  // namespace utilqt
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORPREVIEW_H

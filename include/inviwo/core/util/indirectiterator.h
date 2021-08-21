@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_INDIRECTITERATOR_H
-#define IVW_INDIRECTITERATOR_H
+ 
+#pragma once
 
 #include <iterator>
 #include <type_traits>
@@ -254,5 +253,3 @@ IndirectIterator<Iter, PropagateConst> makeIndirectIterator(Iter&& iter) {
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_INDIRECTITERATOR_H

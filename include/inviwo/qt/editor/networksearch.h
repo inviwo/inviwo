@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_NETWORKSEARCH_H
-#define IVW_NETWORKSEARCH_H
+ 
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -81,5 +80,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_NETWORKSEARCH_H

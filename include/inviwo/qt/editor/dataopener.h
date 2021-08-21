@@ -26,9 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_DATAOPENER_H
-#define IVW_DATAOPENER_H
+ 
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -47,5 +46,3 @@ void IVW_QTEDITOR_API insertNetworkForData(const std::string& dataFile, Processo
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAOPENER_H
