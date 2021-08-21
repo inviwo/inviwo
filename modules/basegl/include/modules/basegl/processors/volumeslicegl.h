@@ -32,7 +32,6 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>

@@ -31,7 +31,6 @@
 #define IVW_IMAGECONVOLUTION_H
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/shader/shader.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/image.h>

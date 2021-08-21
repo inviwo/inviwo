@@ -30,10 +30,11 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/util/glmvec.h>
 
 #include <unordered_map>
+#include <functional>
 
 namespace inviwo {
 

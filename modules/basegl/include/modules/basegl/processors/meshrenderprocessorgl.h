@@ -31,7 +31,6 @@
 #define IVW_MESHRENDERPROCESSORGL_H
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/ports/meshport.h>

@@ -31,7 +31,6 @@
 #define IVW_HEIGHTFIELDPROCESSOR_H
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/ports/dataoutport.h>

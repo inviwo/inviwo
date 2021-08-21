@@ -31,7 +31,6 @@
 #define IVW_MESHVISUALIZER_H
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/rendering/datavisualizer.h>
 
 namespace inviwo {

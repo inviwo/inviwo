@@ -31,7 +31,6 @@
 #define IVW_VOLUMEGRADIENTMAGNITUDEPROCESSOR_H
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 

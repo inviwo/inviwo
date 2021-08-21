@@ -35,6 +35,9 @@
 #include <inviwo/core/interaction/events/pickingevent.h>
 
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stdextensions.h>
+
+
 
 namespace inviwo {
 

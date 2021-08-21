@@ -31,7 +31,6 @@
 #define IVW_GRADIENTVOLUMEPROCESSOR_H
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>

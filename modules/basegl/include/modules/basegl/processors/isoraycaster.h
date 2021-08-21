@@ -31,7 +31,6 @@
 #define IVW_ISORAYCASTER_H
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>

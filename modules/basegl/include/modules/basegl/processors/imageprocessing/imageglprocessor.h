@@ -31,7 +31,6 @@
 #define IVW_IMAGEGLPROCESSOR_H
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/textureunit.h>

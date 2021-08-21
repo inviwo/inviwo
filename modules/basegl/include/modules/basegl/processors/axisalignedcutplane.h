@@ -31,7 +31,6 @@
 #define IVW_VOLUMECUTPLANE_H
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/ports/imageport.h>

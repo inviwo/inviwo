@@ -31,7 +31,6 @@
 #define IVW_VOLUMECOMBINER_H
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
