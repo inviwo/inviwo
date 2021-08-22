@@ -46,27 +46,27 @@ template <typename T, typename M>
 void testserialization(T def, T in) {
     T indata = in;
     T outdata1 = def;
+
     std::string filename = filesystem::findBasePath();
-    MetaDataOwner* mdo1;
-    MetaDataOwner* mdo2;
-    mdo1 = new MetaDataOwner();
-    mdo2 = new MetaDataOwner();
-    mdo1->setMetaData<M>("data", indata);
-    outdata1 = mdo1->getMetaData<M>("data", outdata1);
+    MetaDataOwner mdo1;
+    mdo1.setMetaData<M>("data", indata);
+    EXPECT_TRUE(mdo1.hasMetaData<M>("data"));
+    outdata1 = mdo1.getMetaData<M>("data", outdata1);
     EXPECT_EQ(indata, outdata1);
 
-    std::stringstream ss;
-
     Serializer serializer(filename);
-    mdo1->getMetaDataMap()->serialize(serializer);
+    mdo1.getMetaDataMap()->serialize(serializer);
+    std::stringstream ss;
     serializer.writeFile(ss);
-    Deserializer deserializer(ss, filename);
-    mdo2->getMetaDataMap()->deserialize(deserializer);
+    auto wm = InviwoApplication::getPtr()->getWorkspaceManager();
+    auto deserializer = wm->createWorkspaceDeserializer(ss, filename);
+    MetaDataOwner mdo2;
+    mdo2.getMetaDataMap()->deserialize(deserializer);
+    EXPECT_TRUE(mdo2.hasMetaData<M>("data"));
+
     T outdata2 = def;
-    outdata2 = mdo2->getMetaData<M>("data", outdata2);
+    outdata2 = mdo2.getMetaData<M>("data", outdata2);
     EXPECT_EQ(indata, outdata2);
-    delete mdo1;
-    delete mdo2;
 }
 
 #define MetaDataMacro(n, t, d, v) \
