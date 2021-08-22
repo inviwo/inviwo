@@ -29,7 +29,6 @@
 
 #pragma once
 
-
 #include <inviwo/core/util/glm.h>
 
 #include <nlohmann/json.hpp>

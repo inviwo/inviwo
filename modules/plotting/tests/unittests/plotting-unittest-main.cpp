@@ -31,7 +31,6 @@
 #pragma comment(linker, "/SUBSYSTEM:CONSOLE")
 #endif
 
-
 #include <inviwo/testutil/configurablegtesteventlistener.h>
 
 #include <inviwo/core/datastructures/representationutil.h>

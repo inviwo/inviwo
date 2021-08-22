@@ -74,4 +74,3 @@ IVW_MODULE_BASE_API bool insideRect(const vec2& p, const vec2& rectMin, const ve
 }  // namespace algorithm
 
 }  // namespace inviwo
-

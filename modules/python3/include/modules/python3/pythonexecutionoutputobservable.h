@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
- 
+
 #pragma once
 
 #include <modules/python3/python3moduledefine.h>

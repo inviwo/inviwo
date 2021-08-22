@@ -76,6 +76,7 @@
 #include <functional>
 #include <unordered_map>
 #include <memory>
+#include <vector>
 #include <warn/pop>
 
 class QMainWindow;

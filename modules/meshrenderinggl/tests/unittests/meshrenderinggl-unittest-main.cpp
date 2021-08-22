@@ -36,7 +36,6 @@
 
 #include <inviwo/testutil/configurablegtesteventlistener.h>
 
-
 #include <inviwo/core/datastructures/representationutil.h>
 #include <inviwo/core/datastructures/representationfactorymanager.h>
 

@@ -32,7 +32,6 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-
 #include <inviwo/core/util/utilities.h>
 
 #include <string>

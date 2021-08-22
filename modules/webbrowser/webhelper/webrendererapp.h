@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
- 
+
 #pragma once
 
 #include <warn/push>
@@ -80,4 +80,4 @@ private:
     DISALLOW_COPY_AND_ASSIGN(CefWebRendererApp);
 };
 
-};      // namespace inviwo
+};  // namespace inviwo

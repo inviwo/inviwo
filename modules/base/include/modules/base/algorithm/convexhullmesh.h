@@ -48,4 +48,3 @@ std::shared_ptr<Mesh> IVW_MODULE_BASE_API convertHullToMesh(const std::vector<ve
 }  // namespace util
 
 }  // namespace inviwo
-

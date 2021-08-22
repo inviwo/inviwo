@@ -205,4 +205,3 @@ void DataSource<DataType, PortType>::deserialize(Deserializer& d) {
 }
 
 }  // namespace inviwo
-

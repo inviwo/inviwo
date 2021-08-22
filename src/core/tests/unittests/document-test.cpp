@@ -35,7 +35,6 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/stringconversion.h>
 
-
 #include <iostream>
 
 namespace inviwo {

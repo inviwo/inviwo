@@ -12393,5 +12393,5 @@ public:
 #endif // _WIN32
 
 #include <warn/pop>
-    
+
 // clang-format on
