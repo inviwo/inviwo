@@ -1,0 +1,25 @@
+# libc++ headers
+[
+  { include: ["<__functional_base>", private, "<functional>", public ] },
+  { include: ["<__mutex_base>", private, "<mutex>", public ] },
+  { symbol: [ "std::declval", private, "<utility>", public ] },
+  { symbol: [ "std::forward", private, "<utility>", public ] },
+  { symbol: [ "std::move", private, "<utility>", public ] },
+  { symbol: [ "std::nullptr_t", private, "<cstddef>", public ] },
+  { symbol: [ "std::string", private, "<string>", public ] },
+
+  { "symbol": ["size_t", "private", "<cstddef>", "public"] },
+  { "include": ["<__hash_table>", "private", "<unordered_map>", "public"] },
+  { "include": ["<__locale>", "private", "<locale>", "public"] },
+  { "include": ["<__mutex_base>", "private", "<mutex>", "public"] },
+  { "include": ["<__nullptr>", "private", "<cstddef>", "public"] },
+  { "include": ["<__errc>", "private", "<system_error>", "public"] },
+  { "include": ["<__functional_base>", "private", "<functional>", "public"] },
+  { "include": ["<__threading_support>", "private", "<thread>", "public"] },
+  { "include": ["<__tree>", "private", "<map>", "public"] },
+  { "include": ["<__tuple>", "private", "<tuple>", "public"] },
+  { "include": ["<__bit_reference>", "private", "<vector>", "public"] },
+  { "include": ["<_ctype.h>", "private", "<cctype>", "public"] },
+]
+
+<__bit_reference>  

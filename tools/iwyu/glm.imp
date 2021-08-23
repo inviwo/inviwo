@@ -1,0 +1,2322 @@
+[
+    {
+        "include": [
+            "\"glm/ext/quaternion_common.inl\"",
+            "private",
+            "<glm/ext/quaternion_common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/quaternion_common.inl>",
+            "private",
+            "<glm/ext/quaternion_common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/matrix_transform.inl\"",
+            "private",
+            "<glm/ext/matrix_transform.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/matrix_transform.inl>",
+            "private",
+            "<glm/ext/matrix_transform.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/quaternion_exponential.inl\"",
+            "private",
+            "<glm/ext/quaternion_exponential.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/quaternion_exponential.inl>",
+            "private",
+            "<glm/ext/quaternion_exponential.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/quaternion_transform.inl\"",
+            "private",
+            "<glm/ext/quaternion_transform.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/quaternion_transform.inl>",
+            "private",
+            "<glm/ext/quaternion_transform.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/matrix_clip_space.inl\"",
+            "private",
+            "<glm/ext/matrix_clip_space.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/matrix_clip_space.inl>",
+            "private",
+            "<glm/ext/matrix_clip_space.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/matrix_common.inl\"",
+            "private",
+            "<glm/ext/matrix_common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/matrix_common.inl>",
+            "private",
+            "<glm/ext/matrix_common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/scalar_common.inl\"",
+            "private",
+            "<glm/ext/scalar_common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/scalar_common.inl>",
+            "private",
+            "<glm/ext/scalar_common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/vector_relational.inl\"",
+            "private",
+            "<glm/ext/vector_relational.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/vector_relational.inl>",
+            "private",
+            "<glm/ext/vector_relational.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/quaternion_common_simd.inl\"",
+            "private",
+            "<glm/ext/quaternion_common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/quaternion_common_simd.inl>",
+            "private",
+            "<glm/ext/quaternion_common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/scalar_constants.inl\"",
+            "private",
+            "<glm/ext/scalar_constants.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/scalar_constants.inl>",
+            "private",
+            "<glm/ext/scalar_constants.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/vector_common.inl\"",
+            "private",
+            "<glm/ext/vector_common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/vector_common.inl>",
+            "private",
+            "<glm/ext/vector_common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/matrix_projection.inl\"",
+            "private",
+            "<glm/ext/matrix_projection.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/matrix_projection.inl>",
+            "private",
+            "<glm/ext/matrix_projection.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/quaternion_trigonometric.inl\"",
+            "private",
+            "<glm/ext/quaternion_trigonometric.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/quaternion_trigonometric.inl>",
+            "private",
+            "<glm/ext/quaternion_trigonometric.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/vector_ulp.inl\"",
+            "private",
+            "<glm/ext/vector_ulp.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/vector_ulp.inl>",
+            "private",
+            "<glm/ext/vector_ulp.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/quaternion_relational.inl\"",
+            "private",
+            "<glm/ext/quaternion_relational.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/quaternion_relational.inl>",
+            "private",
+            "<glm/ext/quaternion_relational.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/scalar_ulp.inl\"",
+            "private",
+            "<glm/ext/scalar_ulp.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/scalar_ulp.inl>",
+            "private",
+            "<glm/ext/scalar_ulp.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/quaternion_geometric.inl\"",
+            "private",
+            "<glm/ext/quaternion_geometric.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/quaternion_geometric.inl>",
+            "private",
+            "<glm/ext/quaternion_geometric.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/scalar_relational.inl\"",
+            "private",
+            "<glm/ext/scalar_relational.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/scalar_relational.inl>",
+            "private",
+            "<glm/ext/scalar_relational.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/ext/matrix_relational.inl\"",
+            "private",
+            "<glm/ext/matrix_relational.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/ext/matrix_relational.inl>",
+            "private",
+            "<glm/ext/matrix_relational.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_exponential.inl\"",
+            "private",
+            "<glm/exponential.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_exponential.inl>",
+            "private",
+            "<glm/exponential.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_integer_simd.inl\"",
+            "private",
+            "<glm/integer.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_integer_simd.inl>",
+            "private",
+            "<glm/integer.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_vector_relational.inl\"",
+            "private",
+            "<glm/vector_relational.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_vector_relational.inl>",
+            "private",
+            "<glm/vector_relational.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_packing.inl\"",
+            "private",
+            "<glm/packing.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_packing.inl>",
+            "private",
+            "<glm/packing.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_quat.inl\"",
+            "private",
+            "<glm/detail/type_quat.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_quat.inl>",
+            "private",
+            "<glm/detail/type_quat.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_half.inl\"",
+            "private",
+            "<glm/detail/type_half.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_half.inl>",
+            "private",
+            "<glm/detail/type_half.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_vector_relational_simd.inl\"",
+            "private",
+            "<glm/vector_relational.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_vector_relational_simd.inl>",
+            "private",
+            "<glm/vector_relational.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_matrix_simd.inl\"",
+            "private",
+            "<glm/matrix.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_matrix_simd.inl>",
+            "private",
+            "<glm/matrix.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_integer.inl\"",
+            "private",
+            "<glm/integer.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_integer.inl>",
+            "private",
+            "<glm/integer.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_geometric.inl\"",
+            "private",
+            "<glm/geometric.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_geometric.inl>",
+            "private",
+            "<glm/geometric.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_common.inl\"",
+            "private",
+            "<glm/common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_common.inl>",
+            "private",
+            "<glm/common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_quat_simd.inl\"",
+            "private",
+            "<glm/detail/type_quat.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_quat_simd.inl>",
+            "private",
+            "<glm/detail/type_quat.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_trigonometric.inl\"",
+            "private",
+            "<glm/trigonometric.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_trigonometric.inl>",
+            "private",
+            "<glm/trigonometric.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat2x4.hpp\"",
+            "private",
+            "<glm/mat2x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat2x4.hpp>",
+            "private",
+            "<glm/mat2x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat2x4.inl\"",
+            "private",
+            "<glm/mat2x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat2x4.inl>",
+            "private",
+            "<glm/mat2x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat4x2.hpp\"",
+            "private",
+            "<glm/mat4x2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat4x2.hpp>",
+            "private",
+            "<glm/mat4x2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat4x2.inl\"",
+            "private",
+            "<glm/mat4x2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat4x2.inl>",
+            "private",
+            "<glm/mat4x2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat4x3.hpp\"",
+            "private",
+            "<glm/mat4x3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat4x3.hpp>",
+            "private",
+            "<glm/mat4x3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat4x3.inl\"",
+            "private",
+            "<glm/mat4x3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat4x3.inl>",
+            "private",
+            "<glm/mat4x3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_packing_simd.inl\"",
+            "private",
+            "<glm/packing.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_packing_simd.inl>",
+            "private",
+            "<glm/packing.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_vec4.hpp\"",
+            "private",
+            "<glm/vec4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_vec4.hpp>",
+            "private",
+            "<glm/vec4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_vec4.inl\"",
+            "private",
+            "<glm/vec4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_vec4.inl>",
+            "private",
+            "<glm/vec4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_trigonometric_simd.inl\"",
+            "private",
+            "<glm/trigonometric.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_trigonometric_simd.inl>",
+            "private",
+            "<glm/trigonometric.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat2x2.hpp\"",
+            "private",
+            "<glm/mat2x2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat2x2.hpp>",
+            "private",
+            "<glm/mat2x2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat2x2.inl\"",
+            "private",
+            "<glm/mat2x2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat2x2.inl>",
+            "private",
+            "<glm/mat2x2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_vec1.inl\"",
+            "private",
+            "<glm/detail/type_vec1.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_vec1.inl>",
+            "private",
+            "<glm/detail/type_vec1.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_common_simd.inl\"",
+            "private",
+            "<glm/common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_common_simd.inl>",
+            "private",
+            "<glm/common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat4x4.hpp\"",
+            "private",
+            "<glm/mat4x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat4x4.hpp>",
+            "private",
+            "<glm/mat4x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat4x4.inl\"",
+            "private",
+            "<glm/mat4x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat4x4.inl>",
+            "private",
+            "<glm/mat4x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_geometric_simd.inl\"",
+            "private",
+            "<glm/geometric.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_geometric_simd.inl>",
+            "private",
+            "<glm/geometric.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat2x3.hpp\"",
+            "private",
+            "<glm/mat2x3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat2x3.hpp>",
+            "private",
+            "<glm/mat2x3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat2x3.inl\"",
+            "private",
+            "<glm/mat2x3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat2x3.inl>",
+            "private",
+            "<glm/mat2x3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_vec2.hpp\"",
+            "private",
+            "<glm/vec2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_vec2.hpp>",
+            "private",
+            "<glm/vec2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_vec2.inl\"",
+            "private",
+            "<glm/vec2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_vec2.inl>",
+            "private",
+            "<glm/vec2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_vec3.hpp\"",
+            "private",
+            "<glm/vec3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_vec3.hpp>",
+            "private",
+            "<glm/vec3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_vec3.inl\"",
+            "private",
+            "<glm/vec3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_vec3.inl>",
+            "private",
+            "<glm/vec3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat4x4.hpp\"",
+            "private",
+            "<glm/mat4x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat4x4.hpp>",
+            "private",
+            "<glm/mat4x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat4x4_simd.inl\"",
+            "private",
+            "<glm/mat4x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat4x4_simd.inl>",
+            "private",
+            "<glm/mat4x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_matrix.inl\"",
+            "private",
+            "<glm/matrix.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_matrix.inl>",
+            "private",
+            "<glm/matrix.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_vec4.hpp\"",
+            "private",
+            "<glm/vec4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_vec4.hpp>",
+            "private",
+            "<glm/vec4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_vec4_simd.inl\"",
+            "private",
+            "<glm/vec4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_vec4_simd.inl>",
+            "private",
+            "<glm/vec4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat3x4.hpp\"",
+            "private",
+            "<glm/mat3x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat3x4.hpp>",
+            "private",
+            "<glm/mat3x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat3x4.inl\"",
+            "private",
+            "<glm/mat3x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat3x4.inl>",
+            "private",
+            "<glm/mat3x4.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/func_exponential_simd.inl\"",
+            "private",
+            "<glm/exponential.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/func_exponential_simd.inl>",
+            "private",
+            "<glm/exponential.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat3x2.hpp\"",
+            "private",
+            "<glm/mat3x2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat3x2.hpp>",
+            "private",
+            "<glm/mat3x2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat3x2.inl\"",
+            "private",
+            "<glm/mat3x2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat3x2.inl>",
+            "private",
+            "<glm/mat3x2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat3x3.hpp\"",
+            "private",
+            "<glm/mat3x3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat3x3.hpp>",
+            "private",
+            "<glm/mat3x3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/detail/type_mat3x3.inl\"",
+            "private",
+            "<glm/mat3x3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/detail/type_mat3x3.inl>",
+            "private",
+            "<glm/mat3x3.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/matrix_inverse.inl\"",
+            "private",
+            "<glm/gtc/matrix_inverse.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/matrix_inverse.inl>",
+            "private",
+            "<glm/gtc/matrix_inverse.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/quaternion.inl\"",
+            "private",
+            "<glm/gtc/quaternion.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/quaternion.inl>",
+            "private",
+            "<glm/gtc/quaternion.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/packing.inl\"",
+            "private",
+            "<glm/gtc/packing.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/packing.inl>",
+            "private",
+            "<glm/gtc/packing.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/matrix_transform.inl\"",
+            "private",
+            "<glm/gtc/matrix_transform.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/matrix_transform.inl>",
+            "private",
+            "<glm/gtc/matrix_transform.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/type_precision.inl\"",
+            "private",
+            "<glm/gtc/type_precision.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/type_precision.inl>",
+            "private",
+            "<glm/gtc/type_precision.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/bitfield.inl\"",
+            "private",
+            "<glm/gtc/bitfield.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/bitfield.inl>",
+            "private",
+            "<glm/gtc/bitfield.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/round.inl\"",
+            "private",
+            "<glm/gtc/round.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/round.inl>",
+            "private",
+            "<glm/gtc/round.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/quaternion_simd.inl\"",
+            "private",
+            "<glm/gtc/quaternion.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/quaternion_simd.inl>",
+            "private",
+            "<glm/gtc/quaternion.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/ulp.inl\"",
+            "private",
+            "<glm/gtc/ulp.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/ulp.inl>",
+            "private",
+            "<glm/gtc/ulp.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/integer.inl\"",
+            "private",
+            "<glm/gtc/integer.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/integer.inl>",
+            "private",
+            "<glm/gtc/integer.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/epsilon.inl\"",
+            "private",
+            "<glm/gtc/epsilon.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/epsilon.inl>",
+            "private",
+            "<glm/gtc/epsilon.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/matrix_access.inl\"",
+            "private",
+            "<glm/gtc/matrix_access.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/matrix_access.inl>",
+            "private",
+            "<glm/gtc/matrix_access.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/reciprocal.inl\"",
+            "private",
+            "<glm/gtc/reciprocal.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/reciprocal.inl>",
+            "private",
+            "<glm/gtc/reciprocal.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/color_space.inl\"",
+            "private",
+            "<glm/gtc/color_space.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/color_space.inl>",
+            "private",
+            "<glm/gtc/color_space.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/noise.inl\"",
+            "private",
+            "<glm/gtc/noise.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/noise.inl>",
+            "private",
+            "<glm/gtc/noise.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/random.inl\"",
+            "private",
+            "<glm/gtc/random.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/random.inl>",
+            "private",
+            "<glm/gtc/random.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/constants.inl\"",
+            "private",
+            "<glm/gtc/constants.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/constants.inl>",
+            "private",
+            "<glm/gtc/constants.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtc/type_ptr.inl\"",
+            "private",
+            "<glm/gtc/type_ptr.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtc/type_ptr.inl>",
+            "private",
+            "<glm/gtc/type_ptr.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/log_base.inl\"",
+            "private",
+            "<glm/gtx/log_base.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/log_base.inl>",
+            "private",
+            "<glm/gtx/log_base.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/matrix_query.inl\"",
+            "private",
+            "<glm/gtx/matrix_query.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/matrix_query.inl>",
+            "private",
+            "<glm/gtx/matrix_query.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/extend.inl\"",
+            "private",
+            "<glm/gtx/extend.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/extend.inl>",
+            "private",
+            "<glm/gtx/extend.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/associated_min_max.inl\"",
+            "private",
+            "<glm/gtx/associated_min_max.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/associated_min_max.inl>",
+            "private",
+            "<glm/gtx/associated_min_max.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/matrix_transform_2d.inl\"",
+            "private",
+            "<glm/gtx/matrix_transform_2d.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/matrix_transform_2d.inl>",
+            "private",
+            "<glm/gtx/matrix_transform_2d.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/quaternion.inl\"",
+            "private",
+            "<glm/gtx/quaternion.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/quaternion.inl>",
+            "private",
+            "<glm/gtx/quaternion.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/exterior_product.inl\"",
+            "private",
+            "<glm/gtx/exterior_product.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/exterior_product.inl>",
+            "private",
+            "<glm/gtx/exterior_product.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/gradient_paint.inl\"",
+            "private",
+            "<glm/gtx/gradient_paint.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/gradient_paint.inl>",
+            "private",
+            "<glm/gtx/gradient_paint.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/type_trait.inl\"",
+            "private",
+            "<glm/gtx/type_trait.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/type_trait.inl>",
+            "private",
+            "<glm/gtx/type_trait.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/euler_angles.inl\"",
+            "private",
+            "<glm/gtx/euler_angles.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/euler_angles.inl>",
+            "private",
+            "<glm/gtx/euler_angles.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/raw_data.inl\"",
+            "private",
+            "<glm/gtx/raw_data.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/raw_data.inl>",
+            "private",
+            "<glm/gtx/raw_data.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/matrix_cross_product.inl\"",
+            "private",
+            "<glm/gtx/matrix_cross_product.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/matrix_cross_product.inl>",
+            "private",
+            "<glm/gtx/matrix_cross_product.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/optimum_pow.inl\"",
+            "private",
+            "<glm/gtx/optimum_pow.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/optimum_pow.inl>",
+            "private",
+            "<glm/gtx/optimum_pow.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/number_precision.inl\"",
+            "private",
+            "<glm/gtx/number_precision.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/number_precision.inl>",
+            "private",
+            "<glm/gtx/number_precision.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/mixed_product.inl\"",
+            "private",
+            "<glm/gtx/mixed_product.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/mixed_product.inl>",
+            "private",
+            "<glm/gtx/mixed_product.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/transform.inl\"",
+            "private",
+            "<glm/gtx/transform.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/transform.inl>",
+            "private",
+            "<glm/gtx/transform.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/bit.inl\"",
+            "private",
+            "<glm/gtx/bit.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/bit.inl>",
+            "private",
+            "<glm/gtx/bit.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/io.inl\"",
+            "private",
+            "<glm/gtx/io.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/io.inl>",
+            "private",
+            "<glm/gtx/io.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/fast_trigonometry.inl\"",
+            "private",
+            "<glm/gtx/fast_trigonometry.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/fast_trigonometry.inl>",
+            "private",
+            "<glm/gtx/fast_trigonometry.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/spline.inl\"",
+            "private",
+            "<glm/gtx/spline.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/spline.inl>",
+            "private",
+            "<glm/gtx/spline.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/fast_square_root.inl\"",
+            "private",
+            "<glm/gtx/fast_square_root.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/fast_square_root.inl>",
+            "private",
+            "<glm/gtx/fast_square_root.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/color_space_YCoCg.inl\"",
+            "private",
+            "<glm/gtx/color_space_YCoCg.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/color_space_YCoCg.inl>",
+            "private",
+            "<glm/gtx/color_space_YCoCg.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/extended_min_max.inl\"",
+            "private",
+            "<glm/gtx/extended_min_max.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/extended_min_max.inl>",
+            "private",
+            "<glm/gtx/extended_min_max.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/closest_point.inl\"",
+            "private",
+            "<glm/gtx/closest_point.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/closest_point.inl>",
+            "private",
+            "<glm/gtx/closest_point.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/dual_quaternion.inl\"",
+            "private",
+            "<glm/gtx/dual_quaternion.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/dual_quaternion.inl>",
+            "private",
+            "<glm/gtx/dual_quaternion.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/integer.inl\"",
+            "private",
+            "<glm/gtx/integer.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/integer.inl>",
+            "private",
+            "<glm/gtx/integer.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/vector_angle.inl\"",
+            "private",
+            "<glm/gtx/vector_angle.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/vector_angle.inl>",
+            "private",
+            "<glm/gtx/vector_angle.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/string_cast.inl\"",
+            "private",
+            "<glm/gtx/string_cast.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/string_cast.inl>",
+            "private",
+            "<glm/gtx/string_cast.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/functions.inl\"",
+            "private",
+            "<glm/gtx/functions.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/functions.inl>",
+            "private",
+            "<glm/gtx/functions.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/rotate_vector.inl\"",
+            "private",
+            "<glm/gtx/rotate_vector.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/rotate_vector.inl>",
+            "private",
+            "<glm/gtx/rotate_vector.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/matrix_interpolation.inl\"",
+            "private",
+            "<glm/gtx/matrix_interpolation.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/matrix_interpolation.inl>",
+            "private",
+            "<glm/gtx/matrix_interpolation.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/hash.inl\"",
+            "private",
+            "<glm/gtx/hash.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/hash.inl>",
+            "private",
+            "<glm/gtx/hash.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/vector_query.inl\"",
+            "private",
+            "<glm/gtx/vector_query.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/vector_query.inl>",
+            "private",
+            "<glm/gtx/vector_query.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/orthonormalize.inl\"",
+            "private",
+            "<glm/gtx/orthonormalize.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/orthonormalize.inl>",
+            "private",
+            "<glm/gtx/orthonormalize.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/component_wise.inl\"",
+            "private",
+            "<glm/gtx/component_wise.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/component_wise.inl>",
+            "private",
+            "<glm/gtx/component_wise.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/normalize_dot.inl\"",
+            "private",
+            "<glm/gtx/normalize_dot.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/normalize_dot.inl>",
+            "private",
+            "<glm/gtx/normalize_dot.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/std_based_type.inl\"",
+            "private",
+            "<glm/gtx/std_based_type.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/std_based_type.inl>",
+            "private",
+            "<glm/gtx/std_based_type.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/matrix_factorisation.inl\"",
+            "private",
+            "<glm/gtx/matrix_factorisation.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/matrix_factorisation.inl>",
+            "private",
+            "<glm/gtx/matrix_factorisation.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/type_aligned.inl\"",
+            "private",
+            "<glm/gtx/type_aligned.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/type_aligned.inl>",
+            "private",
+            "<glm/gtx/type_aligned.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/compatibility.inl\"",
+            "private",
+            "<glm/gtx/compatibility.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/compatibility.inl>",
+            "private",
+            "<glm/gtx/compatibility.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/rotate_normalized_axis.inl\"",
+            "private",
+            "<glm/gtx/rotate_normalized_axis.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/rotate_normalized_axis.inl>",
+            "private",
+            "<glm/gtx/rotate_normalized_axis.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/color_encoding.inl\"",
+            "private",
+            "<glm/gtx/color_encoding.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/color_encoding.inl>",
+            "private",
+            "<glm/gtx/color_encoding.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/matrix_major_storage.inl\"",
+            "private",
+            "<glm/gtx/matrix_major_storage.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/matrix_major_storage.inl>",
+            "private",
+            "<glm/gtx/matrix_major_storage.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/matrix_operation.inl\"",
+            "private",
+            "<glm/gtx/matrix_operation.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/matrix_operation.inl>",
+            "private",
+            "<glm/gtx/matrix_operation.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/intersect.inl\"",
+            "private",
+            "<glm/gtx/intersect.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/intersect.inl>",
+            "private",
+            "<glm/gtx/intersect.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/perpendicular.inl\"",
+            "private",
+            "<glm/gtx/perpendicular.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/perpendicular.inl>",
+            "private",
+            "<glm/gtx/perpendicular.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/transform2.inl\"",
+            "private",
+            "<glm/gtx/transform2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/transform2.inl>",
+            "private",
+            "<glm/gtx/transform2.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/common.inl\"",
+            "private",
+            "<glm/gtx/common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/common.inl>",
+            "private",
+            "<glm/gtx/common.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/easing.inl\"",
+            "private",
+            "<glm/gtx/easing.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/easing.inl>",
+            "private",
+            "<glm/gtx/easing.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/color_space.inl\"",
+            "private",
+            "<glm/gtx/color_space.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/color_space.inl>",
+            "private",
+            "<glm/gtx/color_space.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/normal.inl\"",
+            "private",
+            "<glm/gtx/normal.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/normal.inl>",
+            "private",
+            "<glm/gtx/normal.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/norm.inl\"",
+            "private",
+            "<glm/gtx/norm.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/norm.inl>",
+            "private",
+            "<glm/gtx/norm.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/texture.inl\"",
+            "private",
+            "<glm/gtx/texture.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/texture.inl>",
+            "private",
+            "<glm/gtx/texture.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/handed_coordinate_space.inl\"",
+            "private",
+            "<glm/gtx/handed_coordinate_space.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/handed_coordinate_space.inl>",
+            "private",
+            "<glm/gtx/handed_coordinate_space.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/fast_exponential.inl\"",
+            "private",
+            "<glm/gtx/fast_exponential.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/fast_exponential.inl>",
+            "private",
+            "<glm/gtx/fast_exponential.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/matrix_decompose.inl\"",
+            "private",
+            "<glm/gtx/matrix_decompose.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/matrix_decompose.inl>",
+            "private",
+            "<glm/gtx/matrix_decompose.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/polar_coordinates.inl\"",
+            "private",
+            "<glm/gtx/polar_coordinates.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/polar_coordinates.inl>",
+            "private",
+            "<glm/gtx/polar_coordinates.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/scalar_relational.inl\"",
+            "private",
+            "<glm/gtx/scalar_relational.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/scalar_relational.inl>",
+            "private",
+            "<glm/gtx/scalar_relational.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/wrap.inl\"",
+            "private",
+            "<glm/gtx/wrap.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/wrap.inl>",
+            "private",
+            "<glm/gtx/wrap.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "\"glm/gtx/projection.inl\"",
+            "private",
+            "<glm/gtx/projection.hpp>",
+            "public"
+        ]
+    },
+    {
+        "include": [
+            "<glm/gtx/projection.inl>",
+            "private",
+            "<glm/gtx/projection.hpp>",
+            "public"
+        ]
+    }
+]

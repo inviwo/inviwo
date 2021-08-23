@@ -1,0 +1,8 @@
+[
+	{ "ref": "libcxx.imp"},
+	{ "ref": "libcxxgen.imp"},
+	{ "ref": "glm.imp" },
+	{ "ref": "python3.8.imp"},
+	{ "ref": "qt5_11.imp"},
+	{ "ref": "cheaders.imp"},
+]
