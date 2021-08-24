@@ -27,13 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CIMGSAVEBUFFER_H
-#define IVW_CIMGSAVEBUFFER_H
+#pragma once
 
 #include <modules/cimg/cimgmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/util/memoryfilehandle.h>
+#include <inviwo/core/util/exception.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -148,5 +147,3 @@ const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_libra
 }  // namespace cimgutil
 
 }  // namespace inviwo
-
-#endif  // IVW_CIMGSAVEBUFFER_H

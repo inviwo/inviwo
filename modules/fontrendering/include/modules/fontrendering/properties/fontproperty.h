@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FONTPROPERTY_H
-#define IVW_FONTPROPERTY_H
+#pragma once
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -73,5 +71,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FONTPROPERTY_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BUFFERGL_OBJECT_OBSERVER_H
-#define IVW_BUFFERGL_OBJECT_OBSERVER_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/observer.h>
 
 namespace inviwo {
@@ -64,5 +62,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BUFFERGL_OBJECT_OBSERVER_H

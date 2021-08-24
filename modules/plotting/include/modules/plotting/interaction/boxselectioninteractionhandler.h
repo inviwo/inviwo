@@ -31,7 +31,6 @@
 #include <modules/plotting/plottingmoduledefine.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/boxselectionproperty.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/interaction/interactionhandler.h>
 

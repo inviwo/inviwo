@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_WEBBROWSERAPP_H
-#define IVW_WEBBROWSERAPP_H
+#pragma once
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -81,5 +80,4 @@ private:
     DISALLOW_COPY_AND_ASSIGN(CefWebRendererApp);
 };
 
-};      // namespace inviwo
-#endif  // IVW_WEBBROWSERAPP_H
+};  // namespace inviwo

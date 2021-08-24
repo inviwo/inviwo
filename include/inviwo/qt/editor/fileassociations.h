@@ -65,11 +65,9 @@
  * or implied, of Gerolf Reinwardt.
  */
 
-#ifndef IVW_FILEASSOCIATIONS_H
-#define IVW_FILEASSOCIATIONS_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -78,6 +76,7 @@
 #include <functional>
 #include <unordered_map>
 #include <memory>
+#include <vector>
 #include <warn/pop>
 
 class QMainWindow;
@@ -156,5 +155,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FILEASSOCIATIONS_H

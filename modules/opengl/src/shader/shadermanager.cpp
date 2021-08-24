@@ -34,7 +34,6 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/opengl/openglsettings.h>
 #include <modules/opengl/openglmodule.h>

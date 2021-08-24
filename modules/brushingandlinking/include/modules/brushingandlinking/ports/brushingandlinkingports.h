@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGANDLINKINGOUTPORT_H
-#define IVW_BRUSHINGANDLINKINGOUTPORT_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/port.h>
@@ -125,5 +123,3 @@ inline bool BrushingAndLinkingInport::isSelected(size_t idx) const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_BRUSHINGANDLINKINGOUTPORT_H

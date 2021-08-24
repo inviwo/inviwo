@@ -27,7 +27,6 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/processors/processorwidgetqt.h>

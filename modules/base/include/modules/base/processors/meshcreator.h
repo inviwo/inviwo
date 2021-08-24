@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MESHCREATOR_H
-#define IVW_MESHCREATOR_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/datastructures/geometry/simplemesh.h>
@@ -131,5 +129,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_MESHCREATOR_H

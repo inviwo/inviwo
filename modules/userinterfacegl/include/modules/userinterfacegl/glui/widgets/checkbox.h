@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GLUICHECKBOX_H
-#define IVW_GLUICHECKBOX_H
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/userinterfacegl/glui/element.h>
 
@@ -72,5 +70,3 @@ private:
 }  // namespace glui
 
 }  // namespace inviwo
-
-#endif  // IVW_GLUICHECKBOX_H

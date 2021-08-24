@@ -27,15 +27,18 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_AXISUTILS_H
-#define IVW_AXISUTILS_H
+#pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/plotting/datastructures/axissettings.h>
 
+#include <inviwo/core/util/glmvec.h>
+
 #include <tuple>
+#include <vector>
+#include <limits>
+#include <memory>
 
 namespace inviwo {
 
@@ -147,5 +150,3 @@ IVW_MODULE_PLOTTING_API std::pair<vec2, vec2> tickBoundingRect(const AxisSetting
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_AXISUTILS_H

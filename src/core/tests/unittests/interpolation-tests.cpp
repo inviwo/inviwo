@@ -33,6 +33,7 @@
 #include <warn/pop>
 
 #include <inviwo/core/util/interpolation.h>
+#include <inviwo/core/util/glmvec.h>
 
 namespace inviwo {
 

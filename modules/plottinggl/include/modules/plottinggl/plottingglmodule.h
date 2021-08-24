@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PLOTTINGGLMODULE_H
-#define IVW_PLOTTINGGLMODULE_H
+#pragma once
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -55,5 +54,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PLOTTINGGLMODULE_H

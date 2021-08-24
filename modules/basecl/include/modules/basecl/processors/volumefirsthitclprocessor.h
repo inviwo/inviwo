@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUME_FIRST_HIT_CL_H
-#define IVW_VOLUME_FIRST_HIT_CL_H
+#pragma once
 
 #include <modules/basecl/baseclmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
@@ -100,5 +98,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUME_FIRST_HIT_CL_H

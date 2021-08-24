@@ -26,8 +26,8 @@
  *OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#ifndef IVW_OPTIONCONVERTER_H
-#define IVW_OPTIONCONVERTER_H
+
+#pragma once
 
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -60,5 +60,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_OPTIONCONVERTER_H

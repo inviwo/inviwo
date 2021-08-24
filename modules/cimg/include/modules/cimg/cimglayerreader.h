@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CIMGLAYERREADER_H
-#define IVW_CIMGLAYERREADER_H
+#pragma once
 
 #include <modules/cimg/cimgmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
@@ -56,5 +54,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CIMGLAYERREADER_H

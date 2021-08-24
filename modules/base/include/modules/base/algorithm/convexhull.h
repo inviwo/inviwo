@@ -27,13 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CONVEXHULL_H
-#define IVW_CONVEXHULL_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/glm.h>
 
 #include <vector>
 #include <algorithm>
@@ -180,5 +179,3 @@ std::vector<T> convexHull(const std::vector<T>& /*points*/) {
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_CONVEXHULL2D_H

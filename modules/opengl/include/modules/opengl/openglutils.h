@@ -30,9 +30,9 @@
 #pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/glm.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/util/moveonlyvalue.h>
 

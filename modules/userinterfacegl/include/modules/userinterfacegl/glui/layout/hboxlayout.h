@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GLUIHBOXLAYOUT_H
-#define IVW_GLUIHBOXLAYOUT_H
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/userinterfacegl/glui/layout/boxlayout.h>
 
@@ -52,5 +50,3 @@ public:
 }  // namespace glui
 
 }  // namespace inviwo
-
-#endif  // IVW_GLUIHBOXLAYOUT_H

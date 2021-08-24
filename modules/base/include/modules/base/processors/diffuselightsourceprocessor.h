@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DIFFUSE_LIGHT_SOURCE_PROCESSOR_H
-#define IVW_DIFFUSE_LIGHT_SOURCE_PROCESSOR_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/processors/processor.h>
@@ -94,5 +92,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DIFFUSE_LIGHT_SOURCE_PROCESSOR_H

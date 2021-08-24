@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>

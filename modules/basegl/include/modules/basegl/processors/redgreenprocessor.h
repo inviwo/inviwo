@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_REDGREENPROCESSOR_H
-#define IVW_REDGREENPROCESSOR_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
@@ -67,5 +65,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_REDGREENPROCESSOR_H

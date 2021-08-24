@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGESEQUENCEELEMENTSELECTORPROCESSOR_H
-#define IVW_IMAGESEQUENCEELEMENTSELECTORPROCESSOR_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/base/processors/vectorelementselectorprocessor.h>
@@ -62,5 +60,3 @@ public:
     static const ProcessorInfo processorInfo_;
 };
 }  // namespace inviwo
-
-#endif  // IVW_IMAGESEQUENCEELEMENTSELECTORPROCESSOR_H

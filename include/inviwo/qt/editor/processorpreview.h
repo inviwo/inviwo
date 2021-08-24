@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORPREVIEW_H
-#define IVW_PROCESSORPREVIEW_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QImage>
@@ -41,6 +39,7 @@
 namespace inviwo {
 
 class InviwoApplication;
+class Processor;
 
 namespace utilqt {
 /**
@@ -65,5 +64,3 @@ IVW_QTEDITOR_API void saveProcessorPreviews(InviwoApplication* app, std::string&
 }  // namespace utilqt
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORPREVIEW_H

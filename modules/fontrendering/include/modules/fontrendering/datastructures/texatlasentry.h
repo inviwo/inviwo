@@ -27,12 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TEXATLASENTRY_H
-#define IVW_TEXATLASENTRY_H
+#pragma once
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/fontrendering/datastructures/textboundingbox.h>
+
+#include <inviwo/core/util/glm.h>
+
+#include <string>
+#include <vector>
 
 namespace inviwo {
 
@@ -50,5 +53,3 @@ struct IVW_MODULE_FONTRENDERING_API TexAtlasRenderInfo {
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TEXATLASENTRY_H

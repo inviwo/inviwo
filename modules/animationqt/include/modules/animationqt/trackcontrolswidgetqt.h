@@ -30,7 +30,6 @@
 
 #include <modules/animationqt/animationqtmoduledefine.h>
 #include <modules/animation/animationcontroller.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/trackobserver.h>
 #include <modules/animation/datastructures/keyframe.h>

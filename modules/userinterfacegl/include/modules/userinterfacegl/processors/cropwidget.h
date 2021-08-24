@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CLIPPINGWIDGET_H
-#define IVW_CLIPPINGWIDGET_H
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -164,5 +162,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CLIPPINGWIDGET_H

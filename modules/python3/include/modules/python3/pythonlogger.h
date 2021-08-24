@@ -30,7 +30,6 @@
 #ifndef IVW_PYTHONLOGGER_H
 #define IVW_PYTHONLOGGER_H
 
-#include <inviwo/core/common/inviwo.h>
 #include <modules/python3/python3moduledefine.h>
 #include <modules/python3/pythonexecutionoutputobservable.h>
 

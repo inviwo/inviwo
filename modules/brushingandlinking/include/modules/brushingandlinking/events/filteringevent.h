@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FILTERINGEVENT_H
-#define IVW_FILTERINGEVENT_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 
 #include <modules/brushingandlinking/events/brushingandlinkingevent.h>
@@ -49,5 +47,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FILTERINGEVENT_H

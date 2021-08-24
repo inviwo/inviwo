@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BASEGLMODULE_H
-#define IVW_BASEGLMODULE_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -55,5 +54,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BASEGLMODULE_H

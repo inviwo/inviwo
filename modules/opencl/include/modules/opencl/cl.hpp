@@ -47,8 +47,7 @@
 
 // clang-format off
 
-#ifndef CL_HPP_
-#define CL_HPP_
+#pragma once
 
 ///////////////////////////// inviwo modifications /////////////////////////////////////////////
 // The following modifications have been made:
@@ -12394,7 +12393,5 @@ public:
 #endif // _WIN32
 
 #include <warn/pop>
-    
-#endif // CL_HPP_
 
 // clang-format on

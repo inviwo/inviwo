@@ -27,12 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SHADERTYPE_H
-#define IVW_SHADERTYPE_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
+
+#include <string>
 
 namespace inviwo {
 
@@ -81,5 +81,3 @@ struct hash<inviwo::ShaderType> {
     }
 };
 }  // namespace std
-
-#endif  // IVW_SHADERTYPE_H

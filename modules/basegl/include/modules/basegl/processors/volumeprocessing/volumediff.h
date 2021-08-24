@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEDIFF_H
-#define IVW_VOLUMEDIFF_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
@@ -64,5 +62,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEDIFF_H

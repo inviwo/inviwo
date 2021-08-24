@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_NETWORKEDITOROBSERVER_H
-#define IVW_NETWORKEDITOROBSERVER_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/observer.h>
 
 namespace inviwo {
@@ -44,5 +42,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_NETWORKEDITOROBSERVER_H

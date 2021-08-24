@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TEXTUREATLAS_H
-#define IVW_TEXTUREATLAS_H
+#pragma once
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/fontrendering/textrenderer.h>
 #include <modules/fontrendering/datastructures/texatlasentry.h>
@@ -86,5 +84,3 @@ private:
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_TEXTUREATLAS_H

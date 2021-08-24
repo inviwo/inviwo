@@ -30,7 +30,6 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/bytereaderutil.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/datastructures/diskrepresentation.h>

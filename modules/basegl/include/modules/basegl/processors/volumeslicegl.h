@@ -27,12 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESLICEGL_H
-#define IVW_VOLUMESLICEGL_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
@@ -214,5 +212,3 @@ private:
     mat4 texToWorld_;
 };
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESLICEGL_H

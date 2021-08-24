@@ -34,7 +34,7 @@
 #include <warn/pop>
 
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
-#include <inviwo/core/common/inviwo.h>
+
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>

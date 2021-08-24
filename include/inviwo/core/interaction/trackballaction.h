@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TRACKBALLACTION_H
-#define IVW_TRACKBALLACTION_H
+#pragma once
 
 #include <inviwo/core/interaction/action.h>
 #include <inviwo/core/common/inviwocoredefine.h>
@@ -78,5 +77,3 @@ inviwo::TrackballAction::TrackballAction(TrackballAction::Actions action, T* obj
     : Action(actionNames_[action], obj, m), action_(action) {}
 
 }  // namespace inviwo
-
-#endif  // IVW_TRACKBALLACTION_H

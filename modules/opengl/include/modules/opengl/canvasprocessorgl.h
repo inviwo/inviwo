@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CANVASPROCESSORGL_H
-#define IVW_CANVASPROCESSORGL_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/processors/canvasprocessor.h>
@@ -71,5 +69,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CANVASPROCESSORGL_H

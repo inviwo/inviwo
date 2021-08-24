@@ -31,7 +31,6 @@
 #pragma comment(linker, "/SUBSYSTEM:CONSOLE")
 #endif
 
-#include <inviwo/core/common/inviwo.h>
 #include <modules/base/algorithm/volume/volumegeneration.h>
 
 #include <modules/base/algorithm/volume/marchingcubes.h>

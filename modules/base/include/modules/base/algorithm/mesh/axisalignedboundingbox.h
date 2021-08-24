@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MESHAXISALIGNEDBOUNDINGBOX_H
-#define IVW_MESHAXISALIGNEDBOUNDINGBOX_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -58,5 +57,3 @@ IVW_MODULE_BASE_API std::pair<vec3, vec3> axisAlignedBoundingBox(const Mesh& mes
 }  // namespace meshutil
 
 }  // namespace inviwo
-
-#endif  // IVW_MESHAXISALIGNEDBOUNDINGBOX_H

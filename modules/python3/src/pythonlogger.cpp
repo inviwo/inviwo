@@ -29,6 +29,8 @@
 
 #include <modules/python3/pythonlogger.h>
 
+#include <inviwo/core/util/logcentral.h>
+
 namespace inviwo {
 
 void PythonLogger::onPyhonExecutionOutput(const std::string& msg, PythonOutputType outputType) {

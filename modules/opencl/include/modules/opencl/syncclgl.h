@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SYNC_CL_GL_H
-#define IVW_SYNC_CL_GL_H
+#pragma once
 
 #include <modules/opencl/openclmoduledefine.h>
 #include <modules/opencl/inviwoopencl.h>
@@ -135,5 +134,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SYNC_CL_GL_H

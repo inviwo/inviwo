@@ -32,8 +32,6 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <inviwo/core/common/inviwo.h>
-
 #include <modules/base/algorithm/mesh/meshclipping.h>
 
 #include <inviwo/core/datastructures/buffer/buffer.h>

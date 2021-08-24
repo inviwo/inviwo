@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEDIVERGENCE_H
-#define IVW_VOLUMEDIVERGENCE_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
 namespace inviwo {
@@ -42,5 +40,3 @@ IVW_MODULE_BASE_API std::unique_ptr<Volume> divergenceVolume(std::shared_ptr<con
 
 }  // namespace util
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEDIVERGENCE_H

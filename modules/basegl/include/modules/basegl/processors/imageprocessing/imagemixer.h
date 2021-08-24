@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGEMIXER_H
-#define IVW_IMAGEMIXER_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -123,5 +121,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGEMIXER_H

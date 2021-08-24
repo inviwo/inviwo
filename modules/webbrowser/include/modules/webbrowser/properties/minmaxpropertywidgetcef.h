@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MINMAXPROPERTYWIDGETCEF_H
-#define IVW_MINMAXPROPERTYWIDGETCEF_H
+#pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/webbrowser/properties/templatepropertywidgetcef.h>
@@ -150,6 +149,5 @@ using IntMinMaxPropertyWidgetCEF = MinMaxPropertyWidgetCEF<int>;
 using IntSizeTMinMaxPropertyWidgetCEF = MinMaxPropertyWidgetCEF<size_t>;
 
 using Int64MinMaxPropertyWidgetCEF = MinMaxPropertyWidgetCEF<glm::i64>;
-}  // namespace inviwo
 
-#endif  // IVW_ORDINALPROPERTYWIDGETCEF_H
+}  // namespace inviwo

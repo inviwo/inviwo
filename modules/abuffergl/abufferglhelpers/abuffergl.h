@@ -32,8 +32,7 @@
  * Copyright Cyril Crassin, June/July 2010
  **/
 
-#ifndef IVW_ABUFFERGL4_H
-#define IVW_ABUFFERGL4_H
+#pragma once
 
 #include <modules/abuffergl/abufferglmoduledefine.h>
 #include <inviwo/core/properties/compositeproperty.h>
@@ -167,5 +166,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ABUFFERGL4_H

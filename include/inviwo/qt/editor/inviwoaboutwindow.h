@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOABOUTWINDOW_H
-#define IVW_INVIWOABOUTWINDOW_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
 
 namespace inviwo {
@@ -45,5 +43,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_INVIWOABOUTWINDOW_H

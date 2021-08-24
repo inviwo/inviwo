@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MESHEXPORT_H
-#define IVW_MESHEXPORT_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/base/processors/dataexport.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -65,5 +63,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_MESHEXPORT_H

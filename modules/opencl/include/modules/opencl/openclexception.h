@@ -27,11 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENCLEXCEPTION_H
-#define IVW_OPENCLEXCEPTION_H
+#pragma once
 
 #include <modules/opencl/openclmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/util/exception.h>
+
+#include <string>
 
 namespace inviwo {
 
@@ -45,5 +47,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_OPENCLEXCEPTION_H

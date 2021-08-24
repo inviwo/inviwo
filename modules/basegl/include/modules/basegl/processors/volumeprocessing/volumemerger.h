@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEMERGER_H
-#define IVW_VOLUMEMERGER_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
@@ -73,5 +71,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEMERGER_H

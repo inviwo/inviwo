@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ISORAYCASTER_H
-#define IVW_ISORAYCASTER_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -100,5 +98,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ISORAYCASTER_H

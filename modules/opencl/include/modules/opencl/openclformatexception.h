@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENCLFORMATEXCEPTION_H
-#define IVW_OPENCLFORMATEXCEPTION_H
+#pragma once
 
 #include <modules/opencl/openclmoduledefine.h>
 #include <inviwo/core/util/exception.h>
@@ -49,5 +48,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_OPENCLFORMATEXCEPTION_H

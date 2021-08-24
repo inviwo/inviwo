@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TICKPROPERTY_H
-#define IVW_TICKPROPERTY_H
+#pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -122,5 +120,3 @@ public:
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_TICKPROPERTY_H

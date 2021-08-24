@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LAYERGL_H
-#define IVW_LAYERGL_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/texture/textureunit.h>
@@ -86,5 +84,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LAYERGL_H

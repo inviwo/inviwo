@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SURFACEEXTRACTIONUTIL_H
-#define IVW_SURFACEEXTRACTIONUTIL_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
@@ -184,5 +182,3 @@ void encloseSurfce(const T* src, const size3_t& dim, IndexBufferRAM* indexBuffer
 }  // namespace marching
 
 }  // namespace inviwo
-
-#endif  // IVW_SURFACEEXTRACTIONUTIL_H

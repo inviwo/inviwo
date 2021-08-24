@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BUFFERCLGLCONVERTER_H
-#define IVW_BUFFERCLGLCONVERTER_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <modules/opencl/buffer/buffercl.h>
 #include <modules/opencl/buffer/bufferclgl.h>
 #include <modules/opencl/inviwoopencl.h>
@@ -76,5 +74,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BUFFERCLGLCONVERTER_H

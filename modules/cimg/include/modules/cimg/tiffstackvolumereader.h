@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TIFFSTACKVOLUMEREADER_H
-#define IVW_TIFFSTACKVOLUMEREADER_H
+#pragma once
 
 #include <modules/cimg/cimgmoduledefine.h>
 
@@ -74,5 +73,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TIFFSTACKVOLUMEREADER_H

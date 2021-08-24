@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GRAYSCALE_CL_H
-#define IVW_GRAYSCALE_CL_H
+#pragma once
 
 #include <modules/basecl/baseclmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -79,5 +77,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_GRAYSCALE_CL_H

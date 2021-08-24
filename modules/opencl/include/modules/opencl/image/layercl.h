@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LAYERCL_H
-#define IVW_LAYERCL_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/openclmoduledefine.h>
@@ -111,5 +109,3 @@ template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::LayerCL& value);
 
 }  // namespace cl
-
-#endif  // IVW_LAYERCL_H

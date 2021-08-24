@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PRESENTATIONPROCESSOR_H
-#define IVW_PRESENTATIONPROCESSOR_H
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -115,5 +113,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PRESENTATIONPROCESSOR_H

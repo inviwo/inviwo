@@ -32,8 +32,8 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <iostream>
 

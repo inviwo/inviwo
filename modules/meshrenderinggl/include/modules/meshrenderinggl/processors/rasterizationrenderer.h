@@ -32,7 +32,6 @@
 #include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
 #include <modules/meshrenderinggl/datastructures/halfedges.h>
 #include <modules/meshrenderinggl/ports/rasterizationport.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GLUIFLOATPROPERTYWIDGET_H
-#define IVW_GLUIFLOATPROPERTYWIDGET_H
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/userinterfacegl/glui/widgets/slider.h>
 
@@ -78,5 +76,3 @@ private:
 }  // namespace glui
 
 }  // namespace inviwo
-
-#endif  // IVW_GLUIFLOATPROPERTYWIDGET_H

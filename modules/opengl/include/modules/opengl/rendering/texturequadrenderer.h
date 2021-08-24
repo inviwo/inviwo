@@ -27,13 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TEXTUREQUADRENDERER_H
-#define IVW_TEXTUREQUADRENDERER_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/shader/shader.h>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/camera.h>
 
@@ -322,5 +320,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TEXTUREQUADRENDERER_H

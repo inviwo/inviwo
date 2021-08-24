@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/shader/shader.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <modules/opengl/buffer/framebufferobject.h>

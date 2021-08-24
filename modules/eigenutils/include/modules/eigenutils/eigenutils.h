@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EIGENUTILS_H
-#define IVW_EIGENUTILS_H
+#pragma once
 
 #include <modules/eigenutils/eigenutilsmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
@@ -134,5 +132,3 @@ std::shared_ptr<Image> eigenMatToImage(const T& m, bool flipY = false, std::stri
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_EIGENUTILS_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENCLMODULE_H
-#define IVW_OPENCLMODULE_H
+#pragma once
 
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/opencl/openclmoduledefine.h>
@@ -44,5 +43,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_OPENGLMODULE_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PLOTTEXTPROPERTY_H
-#define IVW_PLOTTEXTPROPERTY_H
+#pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
@@ -78,5 +76,3 @@ public:
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_PLOTTEXTPROPERTY_H

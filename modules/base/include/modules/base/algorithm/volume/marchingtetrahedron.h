@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MARCHINGTETRAHEDRON_H
-#define IVW_MARCHINGTETRAHEDRON_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
@@ -81,5 +79,3 @@ std::shared_ptr<Mesh> marchingtetrahedron(
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_MARCHINGTETRAHEDRON_H

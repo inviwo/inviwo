@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MESHCONVERTERPROCESSOR_H
-#define IVW_MESHCONVERTERPROCESSOR_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/meshport.h>
@@ -70,5 +68,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_MESHCONVERTERPROCESSOR_H

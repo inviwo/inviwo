@@ -29,7 +29,6 @@
 #pragma once
 
 #include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwomodule.h>
 
 #include <inviwo/core/util/fileobserver.h>

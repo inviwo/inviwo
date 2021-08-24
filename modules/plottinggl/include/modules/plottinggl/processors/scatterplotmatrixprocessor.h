@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SCATTERPLOTMATRIXPROCESSOR_H
-#define IVW_SCATTERPLOTMATRIXPROCESSOR_H
+#pragma once
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -129,5 +127,3 @@ private:
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_SCATTERPLOTMATRIXPROCESSOR_H

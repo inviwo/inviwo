@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENGLMODULE_H
-#define IVW_OPENGLMODULE_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -55,5 +54,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_OPENGLMODULE_H

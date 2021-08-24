@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SHAREDOPENGLRESOURCES_H
-#define IVW_SHAREDOPENGLRESOURCES_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 
@@ -70,5 +68,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SHAREDOPENGLRESOURCES_H

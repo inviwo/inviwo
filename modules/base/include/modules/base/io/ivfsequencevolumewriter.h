@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IVFSEQUENCEVOLUMEWRITER_H
-#define IVW_IVFSEQUENCEVOLUMEWRITER_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/base/io/ivfvolumewriter.h>
 
 namespace inviwo {
@@ -127,5 +125,3 @@ IVW_MODULE_BASE_API std::string writeIvfVolumeSequence(const VolumeSequence& vol
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_IVFSEQUENCEVOLUMEWRITER_H

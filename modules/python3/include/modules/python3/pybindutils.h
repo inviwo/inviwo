@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYBINDUTILS_H
-#define IVW_PYBINDUTILS_H
+#pragma once
 
 #include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 // push/pop warning state to prevent disabling some warnings by pybind headers
 #include <warn/push>
@@ -133,5 +131,3 @@ pybind11::array toNpArray(const std::vector<T>& v) {
 }  // namespace pyutil
 
 }  // namespace inviwo
-
-#endif  // IVW_NUMPYUTILS_H

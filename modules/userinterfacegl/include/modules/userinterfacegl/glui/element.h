@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GLUIELEMENT_H
-#define IVW_GLUIELEMENT_H
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/userinterfacegl/glui/renderer.h>
 
@@ -267,5 +265,3 @@ protected:
 }  // namespace glui
 
 }  // namespace inviwo
-
-#endif  // IVW_GLUIELEMENT_H

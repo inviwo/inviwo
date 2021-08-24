@@ -29,7 +29,6 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/util/fileobserver.h>
 

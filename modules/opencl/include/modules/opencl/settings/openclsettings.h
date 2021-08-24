@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENCL_SETTINGS_H
-#define IVW_OPENCL_SETTINGS_H
+#pragma once
 
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -56,5 +55,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_OPENCL_SETTINGS_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_NETWORKEDITOR_H
-#define IVW_NETWORKEDITOR_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/networkeditorobserver.h>
@@ -37,6 +36,7 @@
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/processors/processorpair.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
+#include <inviwo/core/util/glmvec.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -257,5 +257,3 @@ T* inviwo::NetworkEditor::getGraphicsItemAt(const QPointF pos) const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_NETWORKEDITOR_H

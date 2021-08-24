@@ -29,7 +29,6 @@
 #pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/shader/shadertype.h>

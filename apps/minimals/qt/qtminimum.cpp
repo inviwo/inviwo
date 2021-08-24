@@ -32,7 +32,6 @@
 #endif
 
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/util/utilities.h>

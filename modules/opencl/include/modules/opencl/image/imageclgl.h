@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGECLGL_H
-#define IVW_IMAGECLGL_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/imagerepresentation.h>
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/openclmoduledefine.h>
@@ -77,5 +75,3 @@ template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::ImageCLGL& value);
 
 }  // namespace cl
-
-#endif  // IVW_IMAGECLGL_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEGLCONVERTER_H
-#define IVW_VOLUMEGLCONVERTER_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/datastructures/representationconverter.h>
@@ -58,5 +57,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEGLCONVERTER_H

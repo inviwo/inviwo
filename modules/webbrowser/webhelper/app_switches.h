@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_APP_SWITCHES_H
-#define IVW_APP_SWITCHES_H
+#pragma once
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -45,5 +44,3 @@ enum ProcessType {
 CefRefPtr<CefCommandLine> CreateCommandLine(const CefMainArgs& main_args);
 
 ProcessType GetProcessType(const CefRefPtr<CefCommandLine>& command_line);
-
-#endif  // IVW_APP_SWITCHES_H

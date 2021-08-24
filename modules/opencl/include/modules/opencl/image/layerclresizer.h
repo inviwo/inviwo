@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGE_CL_RESIZER_H
-#define IVW_IMAGE_CL_RESIZER_H
+#pragma once
 
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/openclmoduledefine.h>
@@ -70,5 +69,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGE_CL_RESIZER_H

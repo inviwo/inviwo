@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PIXELTOBUFFERPROCESSOR_H
-#define IVW_PIXELTOBUFFERPROCESSOR_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/bufferport.h>
@@ -90,5 +88,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PIXELTOBUFFERPROCESSOR_H

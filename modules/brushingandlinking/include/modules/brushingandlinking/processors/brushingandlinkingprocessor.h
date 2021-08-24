@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGANDLINKINGPROCESSOR_H
-#define IVW_BRUSHINGANDLINKINGPROCESSOR_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/buttonproperty.h>
@@ -76,5 +74,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BRUSHINGANDLINKINGPROCESSOR_H

@@ -27,15 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DISTANCETRANSFORMRAM_H
-#define IVW_DISTANCETRANSFORMRAM_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
 
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/clock.h>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -129,5 +127,3 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_DISTANCETRANSFORMRAM_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMECUTPLANE_H
-#define IVW_VOLUMECUTPLANE_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/ports/imageport.h>
@@ -185,5 +183,3 @@ vec3 AxisAlignedCutPlane::SliceProperty<axis>::forSlice(int axes, double a, doub
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMECUTPLANE_H

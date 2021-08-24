@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/fileobserver.h>
 #include <inviwo/core/util/dispatcher.h>
 

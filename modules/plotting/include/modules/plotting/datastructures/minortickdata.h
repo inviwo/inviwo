@@ -29,9 +29,9 @@
 #pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-
 #include <modules/plotting/datastructures/minorticksettings.h>
+
+#include <inviwo/core/util/glmvec.h>
 
 namespace inviwo {
 

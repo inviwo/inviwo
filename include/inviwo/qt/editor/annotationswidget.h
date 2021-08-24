@@ -29,7 +29,6 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
 #include <modules/qtwidgets/inviwodockwidget.h>

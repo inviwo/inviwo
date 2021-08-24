@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ORDINALPROPERTYWIDGETCEF_H
-#define IVW_ORDINALPROPERTYWIDGETCEF_H
+#pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/webbrowser/properties/templatepropertywidgetcef.h>
@@ -107,5 +106,3 @@ using IntSizeTPropertyWidgetCEF = OrdinalPropertyWidgetCEF<size_t>;
 
 using Int64PropertyWidgetCEF = OrdinalPropertyWidgetCEF<glm::i64>;
 }  // namespace inviwo
-
-#endif  // IVW_ORDINALPROPERTYWIDGETCEF_H

@@ -32,7 +32,6 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>

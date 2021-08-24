@@ -34,7 +34,6 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 

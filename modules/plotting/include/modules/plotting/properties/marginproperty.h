@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MARGINPROPERTY_H
-#define IVW_MARGINPROPERTY_H
+#pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 
@@ -102,5 +100,3 @@ public:
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_MARGINPROPERTY_H

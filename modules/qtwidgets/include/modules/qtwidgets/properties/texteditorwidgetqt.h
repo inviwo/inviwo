@@ -31,7 +31,6 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/property.h>
 
 #include <modules/qtwidgets/properties/propertywidgetqt.h>

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ALGORITHMOPTIONS_H
-#define IVW_ALGORITHMOPTIONS_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
 
@@ -37,5 +36,3 @@ namespace inviwo {
 enum class IgnoreSpecialValues { No, Yes };
 
 }  // namespace inviwo
-
-#endif  // IVW_ALGORITHMOPTIONS_H

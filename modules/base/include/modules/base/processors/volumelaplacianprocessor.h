@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMELAPLACIANPROCESSOR_H
-#define IVW_VOLUMELAPLACIANPROCESSOR_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -77,5 +75,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMELAPLACIANPROCESSOR_H
