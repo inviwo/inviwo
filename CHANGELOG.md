@@ -1,5 +1,20 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2021-08-24 Guard and include cleanup
+We have removed all uses of the `<inviwo/core/common/inviwo.h>` from the core. 
+Rather include the needed headers directly. We have also changed all include guards
+to use `#pragma once` instead of the ifdef dance. There is a helper script in 
+`tools/refactoring/update-inc-guard.py` that can be used on other repos.
+
+## 2021-08-19 Canvas With Properties
+A new canvas processor was added which holds a canvas together with a list of
+configurable properties from the network. Properties are added to the widget by appending the
+property path to the `paths` property in the processor. There is an example workspace in 
+`modules/openglqt/data/workspaces/canvas_with_properties.inv`
+
+## 2021-08-19 Canvas refactoring
+Major clanup of the canvas system. Mac retina screens should now work as expected.
+
 ## 2021-04-28 Column & Row Layout
 Added two processors for interactive layouting with splitters using the mouse or touch events: `Column Layout` and `Row Layout`. `Column Layout` renders all connected image ports side-by-side whereas `Row Layout` renders them on top of each other. The interaction handles of the splitters are rendered using a `SplitterRenderer` which also handles the interactions.
 
