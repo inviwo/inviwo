@@ -39,7 +39,6 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/io/serialization/serializable.h>
 
-
 namespace inviwo {
 
 namespace animation {
