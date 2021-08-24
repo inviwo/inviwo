@@ -360,13 +360,20 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     } else if (contextMask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT) {
         glProfileStr_ = "compatibility";
     } else {
-        LogError("Error retrieving OpenGL profile, assuming core profile found:\n" <<
-            "glVersionStr: " << glVersionStr_ << "\n"
-            "glVersion:    " << glVersion_ << "\n"
-            "glVendorStr:  " << glVendorStr_ << "\n"
-            "glRenderStr:  " << glRenderStr_ << "\n"
-            "contextMask:  " << contextMask
-        );
+        LogError("Error retrieving OpenGL profile, assuming core profile found:\n"
+                 << "glVersionStr: " << glVersionStr_
+                 << "\n"
+                    "glVersion:    "
+                 << glVersion_
+                 << "\n"
+                    "glVendorStr:  "
+                 << glVendorStr_
+                 << "\n"
+                    "glRenderStr:  "
+                 << glRenderStr_
+                 << "\n"
+                    "contextMask:  "
+                 << contextMask);
         glProfileStr_ = "core";
     }
     // GLSL
