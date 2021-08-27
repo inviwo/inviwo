@@ -29,12 +29,11 @@
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/serialization/serializable.h>
-
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/keyframeobserver.h>
 #include <modules/animation/datastructures/keyframesequenceobserver.h>
+
+#include <inviwo/core/io/serialization/serializable.h>
 
 namespace inviwo {
 

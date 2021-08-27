@@ -29,9 +29,6 @@
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/observer.h>
-
 #include <modules/animation/datastructures/basekeyframesequence.h>
 #include <modules/animation/datastructures/camerakeyframe.h>
 #include <modules/animation/datastructures/valuekeyframe.h>
@@ -40,6 +37,8 @@
 #include <modules/animation/interpolation/linearinterpolation.h>
 #include <modules/animation/factories/interpolationfactory.h>
 #include <modules/animation/factories/interpolationfactoryobject.h>
+
+#include <inviwo/core/util/observer.h>
 
 namespace inviwo {
 

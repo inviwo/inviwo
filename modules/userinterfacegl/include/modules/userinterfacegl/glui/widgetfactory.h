@@ -29,7 +29,6 @@
 #pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/util/factory.h>
 #include <modules/userinterfacegl/glui/element.h>
