@@ -4,17 +4,17 @@ set(SKIP_INSTALL_ALL TRUE)
 
 # Try to explicity control what dependencies freetype uses. 
 # Otherwise it will go ahread and depend on what ever it finds.
-set(FT_WITH_ZLIB ON)
-set(FT_WITH_BZIP2 ON)
-set(FT_WITH_PNG ON)
-set(FT_WITH_HARFBUZZ OFF)
-set(FT_WITH_BROTLI OFF)
+option(FT_WITH_ZLIB "Use system zlib instead of internal library." ON)
+option(FT_WITH_BZIP2 "Support bzip2 compressed fonts." OFF)
+option(FT_WITH_PNG "Support PNG compressed OpenType embedded bitmaps." ON)
+option(FT_WITH_HARFBUZZ "Improve auto-hinting of OpenType fonts." OFF)
+option(FT_WITH_BROTLI "Support compressed WOFF2 fonts." OFF)
 
-set(CMAKE_DISABLE_FIND_PACKAGE_ZLIB OFF)
-set(CMAKE_DISABLE_FIND_PACKAGE_BZip2 OFF)
-set(CMAKE_DISABLE_FIND_PACKAGE_PNG OFF)
-set(CMAKE_DISABLE_FIND_PACKAGE_HarfBuzz ON)
-set(CMAKE_DISABLE_FIND_PACKAGE_BrotliDec ON)
+set(CMAKE_DISABLE_FIND_PACKAGE_ZLIB FALSE)
+set(CMAKE_DISABLE_FIND_PACKAGE_BZip2 FALSE)
+set(CMAKE_DISABLE_FIND_PACKAGE_PNG FALSE)
+set(CMAKE_DISABLE_FIND_PACKAGE_HarfBuzz TRUE)
+set(CMAKE_DISABLE_FIND_PACKAGE_BrotliDec TRUE)
 
 add_subdirectory(freetype)
 ivw_get_targets_in_dir_recursive(targets ${CMAKE_CURRENT_SOURCE_DIR})
