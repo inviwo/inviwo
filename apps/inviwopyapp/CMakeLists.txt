@@ -14,12 +14,23 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
+# Add source files
+set(PYTHON_FILES
+    inviwo.py
+)
+ivw_group("Python Files" ${PYTHON_FILES})
+
+set(CMAKE_FILES
+    CMakeLists.txt
+)
+ivw_group("CMake Files" ${CMAKE_FILES})
+
 ivw_retrieve_all_modules(enabled_modules)
 # Only include one OpenGL context creation module
 list(REMOVE_ITEM enabled_modules InviwoGLFWModule)
 
 # Create application
-pybind11_add_module(inviwopyapp ${SOURCE_FILES})
+pybind11_add_module(inviwopyapp ${SOURCE_FILES} ${PYTHON_FILES} ${CMAKE_FILES})
 
 set_target_properties(inviwopyapp PROPERTIES DEBUG_POSTFIX "")
 set_target_properties(inviwopyapp PROPERTIES PREFIX "")
