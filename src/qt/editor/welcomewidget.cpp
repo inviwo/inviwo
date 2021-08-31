@@ -145,7 +145,6 @@ protected:
         }
         return QTextEdit::loadResource(type, name);
     }
-
 };
 
 WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
