@@ -145,7 +145,7 @@ constexpr auto unindent(std::string_view str) {
  * Remove the leading indentation from each line of the string.
  * The first indented line determines the amount of indentation to remove, If any of the following
  * lines as less indentation a runtime_error will thrown
- * 
+ *
  * Example:
  * ```{.cpp}
  * auto str = R"(
@@ -173,7 +173,7 @@ inline std::string operator"" _unindent(const char* str, size_t len) {
  * Remove leading indentation from each line of the string.
  * The first indented line determines the amount of indentation to remove, If any of the following
  * lines as less indentation a runtime_error will thrown
- * 
+ *
  * Example:
  * ```{.cpp}
  * constexpr auto str = IVW_UNINDENT(R"(

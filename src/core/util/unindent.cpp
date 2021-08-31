@@ -52,5 +52,4 @@ static_assert(IVW_UNINDENT(R"(0123456789)") == StaticString(R"(0123456789)"));
 
 static_assert(IVW_UNINDENT(R"()") == StaticString(R"()"));
 
-
 }  // namespace inviwo
