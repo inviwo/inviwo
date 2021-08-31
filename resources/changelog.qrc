@@ -3,4 +3,7 @@
     <qresource prefix="/">
         <file>changelog.html</file>
     </qresource>
+     <qresource prefix="/resources/changelog/">
+        <file alias="canvas-with-properties.png">changelog/canvas-with-properties.png</file>
+    </qresource>
 </RCC>

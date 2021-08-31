@@ -192,7 +192,7 @@ void CanvasWithPropertiesProcessor::setProcessorWidget(
     Processor::setProcessorWidget(std::move(processorWidget));
     isSink_.update();
     isReady_.update();
-};
+}
 
 void CanvasWithPropertiesProcessor::propagateEvent(Event* event, Outport*) {
     event->markAsVisited(this);

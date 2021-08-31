@@ -50,7 +50,7 @@ AnimationsModel::AnimationsModel(WorkspaceAnimations& animations, QObject* paren
         auto idx = createIndex(static_cast<int>(index), 0);
         emit dataChanged(idx, idx);
     });
-};
+}
 
 Qt::ItemFlags AnimationsModel::flags(const QModelIndex& index) const {
     if (!index.isValid()) {

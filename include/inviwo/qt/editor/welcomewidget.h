@@ -34,17 +34,19 @@
 #include <warn/ignore/all>
 #include <QSplitter>
 #include <QStringList>
+#include <QTextEdit>
 #include <warn/pop>
 
 class QTabWidget;
-class QTextEdit;
 class QToolButton;
 class QLineEdit;
+class QTextEdit;
 
 namespace inviwo {
 
 class FileTreeWidget;
 class InviwoApplication;
+class ChangeLog;
 
 class IVW_QTEDITOR_API WelcomeWidget : public QSplitter {
 #include <warn/push>
@@ -70,8 +72,6 @@ protected:
     virtual void keyPressEvent(QKeyEvent* event) override;
 
 private:
-    void initChangelog();
-
     void updateDetails(const QString& filename);
 
     InviwoApplication* app_;
@@ -79,7 +79,7 @@ private:
     FileTreeWidget* filetree_;
     QLineEdit* filterLineEdit_;
     QTextEdit* details_;
-    QTextEdit* changelog_;
+    ChangeLog* changelog_;
     QToolButton* loadWorkspaceBtn_;
     QToolButton* restoreButton_;
 };

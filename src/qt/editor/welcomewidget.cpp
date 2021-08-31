@@ -57,7 +57,6 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QLabel>
-#include <QTextEdit>
 #include <QFrame>
 #include <QSettings>
 #include <QToolButton>
@@ -69,6 +68,8 @@
 #include <QKeyEvent>
 #include <QAction>
 #include <QFile>
+#include <QImage>
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 #include <QWindow>
 #include <QGuiApplication>
@@ -86,6 +87,65 @@ struct InitQtChangelogResources {
 #endif
 
 namespace inviwo {
+
+constexpr std::string_view placeholder = R"(<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style type="text/css">
+    body {color: #9d9995;}
+    a {color: #268bd2;}
+    a:visited { color: #1E6A9E; }
+    h1 { font-size: xx-large; color: #268bd2; margin-bottom:1em; }
+    h2 { font-size: larger; color: #268bd2; margin-top:1em; margin-bottom:0em; }
+    p { margin-bottom: 0.2em; margin-top: 0.1em; }
+</style>
+</head>
+<body >
+<p>For latest changes see <a href='https://github.com/inviwo/inviwo/blob/master/CHANGELOG.md'>
+https://github.com/inviwo/inviwo/blob/master/CHANGELOG.md</a>.
+</body>
+</html>
+)";
+
+class ChangeLog : public QTextEdit {
+public:
+    ChangeLog(QWidget* parent) : QTextEdit(parent) {
+        setObjectName("Changelog");
+        setFrameShape(QFrame::NoFrame);
+        setTextInteractionFlags(Qt::TextBrowserInteraction);
+        document()->setIndentWidth(utilqt::emToPx(this, 1.5));
+        document()->setDocumentMargin(0.0);
+        setContentsMargins(0, 0, 0, 0);
+    }
+
+    void resizeEvent(QResizeEvent* event) {
+        loadLog();
+        QTextEdit::resizeEvent(event);
+    }
+
+    void loadLog() {
+        QFile file(":/changelog.html");
+        if (file.open(QFile::ReadOnly | QFile::Text) && file.size() > 0) {
+            setHtml(file.readAll());
+        } else {
+            setHtml(utilqt::toQString(placeholder));
+        }
+    }
+
+protected:
+    QVariant loadResource(int type, const QUrl& name) {
+        if (type == QTextDocument::ImageResource) {
+            const auto path = ":/" + name.path();
+            if (QFile{path}.exists()) {
+                auto img = QImage{path};
+                return img.scaled(std::min(img.width(), width()), img.height(),
+                                  Qt::KeepAspectRatio);
+            }
+        }
+        return QTextEdit::loadResource(type, name);
+    }
+};
 
 WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     : QSplitter(parent), app_(app) {
@@ -264,16 +324,10 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
         }
 
         {
-            changelog_ = new QTextEdit(rightColumn);
-            changelog_->setObjectName("Changelog");
+            changelog_ = new ChangeLog(rightColumn);
             QSizePolicy sizePolicy1(changelog_->sizePolicy());
             sizePolicy1.setVerticalStretch(100);
             changelog_->setSizePolicy(sizePolicy1);
-            changelog_->setFrameShape(QFrame::NoFrame);
-            changelog_->setTextInteractionFlags(Qt::TextBrowserInteraction);
-            changelog_->document()->setIndentWidth(utilqt::emToPx(this, 1.5));
-            changelog_->document()->setDocumentMargin(0.0);
-            changelog_->setContentsMargins(0, 0, 0, 0);
             rightColumnLayout->addWidget(changelog_);
         }
 
@@ -332,7 +386,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     setTabOrder(filetree_, loadWorkspaceBtn_);
     setTabOrder(details_, changelog_);
 
-    initChangelog();
+    changelog_->loadLog();
 }
 
 void WelcomeWidget::updateRecentWorkspaces(const QStringList& list) {
@@ -381,33 +435,6 @@ void WelcomeWidget::keyPressEvent(QKeyEvent* event) {
         event->accept();
     }
     QWidget::keyPressEvent(event);
-}
-
-void WelcomeWidget::initChangelog() {
-    QFile file(":/changelog.html");
-    if (file.open(QFile::ReadOnly | QFile::Text) && file.size() > 0) {
-        changelog_->setHtml(file.readAll());
-    } else {
-        changelog_->setHtml(
-            R"(<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<style type="text/css">
-    body {color: #9d9995;}
-    a {color: #268bd2;}
-    a:visited { color: #1E6A9E; }
-    h1 { font-size: xx-large; color: #268bd2; margin-bottom:1em; }
-    h2 { font-size: larger; color: #268bd2; margin-top:1em; margin-bottom:0em; }
-    p { margin-bottom: 0.2em; margin-top: 0.1em; }
-</style>
-</head>
-<body >
-<p>For latest changes see <a href='https://github.com/inviwo/inviwo/blob/master/CHANGELOG.md'>https://github.com/inviwo/inviwo/blob/master/CHANGELOG.md</a>.
-</body>
-</html>
-    )");
-    }
 }
 
 void WelcomeWidget::updateDetails(const QString& filename) {
