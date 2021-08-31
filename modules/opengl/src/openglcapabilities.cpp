@@ -37,6 +37,9 @@
 #include <modules/opengl/openglsettings.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <modules/opengl/shader/shadermanager.h>
+#include <inviwo/core/util/unindent.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -360,20 +363,16 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     } else if (contextMask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT) {
         glProfileStr_ = "compatibility";
     } else {
-        LogError("Error retrieving OpenGL profile, assuming core profile found:\n"
-                 << "glVersionStr: " << glVersionStr_
-                 << "\n"
-                    "glVersion:    "
-                 << glVersion_
-                 << "\n"
-                    "glVendorStr:  "
-                 << glVendorStr_
-                 << "\n"
-                    "glRenderStr:  "
-                 << glRenderStr_
-                 << "\n"
-                    "contextMask:  "
-                 << contextMask);
+        constexpr auto err = IVW_UNINDENT(R"(
+            Error retrieving OpenGL profile, assuming core profile found:
+            glVersionStr: {}
+            glVersion:    {}
+            glVendorStr:  {}
+            glRenderStr:  {}
+            contextMask:  {}
+        )");
+        LogError(
+            fmt::format(err, glVersionStr_, glVersion_, glVendorStr_, glRenderStr_, contextMask));
         glProfileStr_ = "core";
     }
     // GLSL
