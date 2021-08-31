@@ -584,8 +584,8 @@ void util::interpolateAlpha(const std::vector<TFPrimitive*>& selection) {
     const auto maxPosition = (*max)->getPosition();
 
     for (auto& elem : selection) {
-        const auto t = static_cast<decltype(minAlpha)>((elem->getPosition() - minPosition) /
-                                                       (maxPosition - minPosition));
+        const auto t = static_cast<std::remove_const_t<decltype(minAlpha)>>(
+            (elem->getPosition() - minPosition) / (maxPosition - minPosition));
         elem->setAlpha(glm::mix(minAlpha, maxAlpha, t));
     }
 }

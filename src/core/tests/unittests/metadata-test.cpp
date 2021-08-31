@@ -72,26 +72,27 @@ void testserialization(T def, T in) {
 #define MetaDataMacro(n, t, d, v) \
     TEST(MetaDataTest, n##SerializationTest) { testserialization<t, n##MetaData>(d, v); }
 
-MetaDataMacro(Bool, bool, false, true);
-MetaDataMacro(Int, int, 0, 1);
-MetaDataMacro(Float, float, 0.0f, 1.0f);
-MetaDataMacro(Double, double, 0.0f, 1.0f);
-MetaDataMacro(String, std::string, "", "test");
-MetaDataMacro(IntVec2, ivec2, ivec2(0), ivec2(1, 2));
-MetaDataMacro(IntVec3, ivec3, ivec3(0), ivec3(1, 2, 3));
-MetaDataMacro(IntVec4, ivec4, ivec4(0), ivec4(1, 2, 3, 4));
-MetaDataMacro(FloatVec2, vec2, vec2(0), vec2(0.0f, 1.0f));
-MetaDataMacro(FloatVec3, vec3, vec3(0), vec3(0.0f, 1.0f, 2.0f));
-MetaDataMacro(FloatVec4, vec4, vec4(0), vec4(0.0f, 1.0f, 2.0f, 3.0f));
-MetaDataMacro(DoubleVec2, dvec2, dvec2(0), dvec2(0.0, 1.0));
-MetaDataMacro(DoubleVec3, dvec3, dvec3(0), dvec3(0.0, 1.0, 2.0));
-MetaDataMacro(DoubleVec4, dvec4, dvec4(0), dvec4(0.0, 1.0, 2.0, 3.0));
-MetaDataMacro(UIntVec2, uvec2, uvec2(0), uvec2(1, 2));
-MetaDataMacro(UIntVec3, uvec3, uvec3(0), uvec3(1, 2, 3));
-MetaDataMacro(UIntVec4, uvec4, uvec4(0), uvec4(1, 2, 3, 4));
-MetaDataMacro(FloatMat2, mat2, mat2(0), mat2(1.0));
-MetaDataMacro(FloatMat3, mat3, mat3(0), mat3(1.0));
-MetaDataMacro(FloatMat4, mat4, mat4(0), mat4(1.0));
+MetaDataMacro(Bool, bool, false, true)
+MetaDataMacro(Int, int, 0, 1)
+MetaDataMacro(Float, float, 0.0f, 1.0f)
+MetaDataMacro(Double, double, 0.0f, 1.0f)
+MetaDataMacro(String, std::string, "", "test")
+MetaDataMacro(IntVec2, ivec2, ivec2(0), ivec2(1, 2))
+MetaDataMacro(IntVec3, ivec3, ivec3(0), ivec3(1, 2, 3))
+MetaDataMacro(IntVec4, ivec4, ivec4(0), ivec4(1, 2, 3, 4))
+MetaDataMacro(FloatVec2, vec2, vec2(0), vec2(0.0f, 1.0f))
+MetaDataMacro(FloatVec3, vec3, vec3(0), vec3(0.0f, 1.0f, 2.0f))
+MetaDataMacro(FloatVec4, vec4, vec4(0), vec4(0.0f, 1.0f, 2.0f, 3.0f))
+MetaDataMacro(DoubleVec2, dvec2, dvec2(0), dvec2(0.0, 1.0))
+MetaDataMacro(DoubleVec3, dvec3, dvec3(0), dvec3(0.0, 1.0, 2.0))
+MetaDataMacro(DoubleVec4, dvec4, dvec4(0), dvec4(0.0, 1.0, 2.0, 3.0))
+MetaDataMacro(UIntVec2, uvec2, uvec2(0), uvec2(1, 2))
+MetaDataMacro(UIntVec3, uvec3, uvec3(0), uvec3(1, 2, 3))
+MetaDataMacro(UIntVec4, uvec4, uvec4(0), uvec4(1, 2, 3, 4))
+MetaDataMacro(FloatMat2, mat2, mat2(0), mat2(1.0))
+MetaDataMacro(FloatMat3, mat3, mat3(0), mat3(1.0))
+MetaDataMacro(FloatMat4, mat4, mat4(0), mat4(1.0))
+
 #undef MetaDataMacro
 
 }  // namespace inviwo

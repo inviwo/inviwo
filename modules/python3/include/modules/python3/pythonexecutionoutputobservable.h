@@ -32,6 +32,8 @@
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/util/observer.h>
 
+#include <string>
+
 namespace inviwo {
 
 enum class PythonOutputType { sysstdout, sysstderr };

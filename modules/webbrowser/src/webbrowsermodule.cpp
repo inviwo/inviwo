@@ -42,6 +42,7 @@
 #include <modules/json/io/json/templatepropertyjsonconverter.h>
 
 #include <inviwo/dataframe/io/json/dataframepropertyjsonconverter.h>
+#include <inviwo/dataframe/properties/dataframeproperty.h>
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>

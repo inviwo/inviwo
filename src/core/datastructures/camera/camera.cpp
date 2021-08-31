@@ -195,7 +195,7 @@ auto set(Obj* obj) {
             std::invoke(Call, obj);
         }
     };
-};
+}
 }  // namespace
 
 void Camera::configureProperties(CameraProperty& cp, bool attach) {

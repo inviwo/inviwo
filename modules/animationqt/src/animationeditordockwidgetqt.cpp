@@ -354,7 +354,7 @@ void AnimationEditorDockWidgetQt::importAnimation() {
             for (auto animation : animations) {
                 animations_.add(std::move(animation));
             }
-        } catch (std::exception ex) {
+        } catch (const std::exception& ex) {
             LogError(ex.what());
         }
     }

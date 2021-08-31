@@ -260,7 +260,7 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
                 dialog.middle->setDisabled(true);
             }
 
-            if (auto port = property->getVolumeInport()) {
+            if (property->getVolumeInport()) {
                 dialog.normalized->setEnabled(true);
             }
 
