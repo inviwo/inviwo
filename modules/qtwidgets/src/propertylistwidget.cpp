@@ -265,6 +265,15 @@ void PropertyListWidget::removeAndDeleteProcessorProperties(Processor* processor
     frame_->remove(processor);
 }
 
+void PropertyListWidget::addPropertyWidgets(Property* property) {
+    frame_->add(property);
+    QWidget::raise();  // Put this tab in front
+}
+void PropertyListWidget::removePropertyWidgets(Property* property) { frame_->hide(property); }
+void PropertyListWidget::removeAndDeletePropertyWidgets(Property* property) {
+    frame_->remove(property);
+}
+
 bool PropertyListWidget::event(QEvent* e) {
     // The network editor will post these events.
     if (e->type() == PropertyListEvent::type()) {

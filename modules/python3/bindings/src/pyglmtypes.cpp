@@ -40,6 +40,8 @@
 #include <pybind11/stl_bind.h>
 #include <warn/pop>
 
+#include <fmt/format.h>
+
 #include <map>
 #include <string>
 #include <algorithm>
