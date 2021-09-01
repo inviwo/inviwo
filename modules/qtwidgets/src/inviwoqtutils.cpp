@@ -600,25 +600,25 @@ QString windowTitleHelper(const QString& title, const QWidget* widget) {
     QString cap = title;
 
     QLatin1String placeHolder("[*]");
-    int index = cap.indexOf(placeHolder);
+    int index = static_cast<int>(cap.indexOf(placeHolder));
 
     // here the magic begins
     while (index != -1) {
-        index += placeHolder.size();
+        index += static_cast<int>(placeHolder.size());
         int count = 1;
         while (cap.indexOf(placeHolder, index) == index) {
             ++count;
-            index += placeHolder.size();
+            index += static_cast<int>(placeHolder.size());
         }
         if (count % 2) {  // odd number of [*] -> replace last one
-            int lastIndex = cap.lastIndexOf(placeHolder, index - 1);
+            int lastIndex = static_cast<int>(cap.lastIndexOf(placeHolder, index - 1));
             if (widget->isWindowModified() &&
                 widget->style()->styleHint(QStyle::SH_TitleBar_ModifyNotification, 0, widget))
                 cap.replace(lastIndex, 3, QWidget::tr("*"));
             else
                 cap.remove(lastIndex, 3);
         }
-        index = cap.indexOf(placeHolder, index);
+        index = static_cast<int>(cap.indexOf(placeHolder, index));
     }
     cap.replace(QLatin1String("[*][*]"), placeHolder);
 

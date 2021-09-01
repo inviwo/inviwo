@@ -55,9 +55,9 @@ public:
 
     void clear();
 
-    int getPrecision(int availableWidth, uint fontHash, const QFontMetrics& fm);
+    int getPrecision(int availableWidth, size_t fontHash, const QFontMetrics& fm);
 
-    QString formatAsScientific(double value, int availableWidth, uint fontHash,
+    QString formatAsScientific(double value, int availableWidth, size_t fontHash,
                                const QFontMetrics& fm);
     QString formatAsScientific(double value, int precision);
     QString formatAsNonscientific(double v) const;
@@ -71,14 +71,14 @@ private:
     QLocale locale_;
     // hash map with qHash(QFont) as a key and the value mapping the available width of a QLineEdit
     // to the number of digits fitting inside the widget
-    std::unordered_map<unsigned int, std::array<int, 513>> widthToDigits_;
+    std::unordered_map<size_t, std::array<int, 513>> widthToDigits_;
 };
 
 NumberLineEditPrivate::NumberLineEditPrivate() { updateLocale(); }
 
 void NumberLineEditPrivate::clear() { widthToDigits_.clear(); }
 
-int NumberLineEditPrivate::getPrecision(int availableWidth, uint fontHash, const QFontMetrics& fm) {
+int NumberLineEditPrivate::getPrecision(int availableWidth, size_t fontHash, const QFontMetrics& fm) {
     availableWidth = std::min(std::max(availableWidth, 0), 512);
     auto it = widthToDigits_.find(fontHash);
     if (it == widthToDigits_.end()) {
@@ -107,7 +107,7 @@ int NumberLineEditPrivate::getPrecision(int availableWidth, uint fontHash, const
     return precision;
 }
 
-QString NumberLineEditPrivate::formatAsScientific(double value, int availableWidth, uint fontHash,
+QString NumberLineEditPrivate::formatAsScientific(double value, int availableWidth, size_t fontHash,
                                                   const QFontMetrics& fm) {
     return formatAsScientific(value, getPrecision(availableWidth, fontHash, fm));
 }
