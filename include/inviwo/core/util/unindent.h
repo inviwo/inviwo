@@ -55,8 +55,8 @@ namespace indent {
  * asdfasdfas
  * )"
  * ```
- * The first indented line determines the amount of indentation to remove, If any of the following
- * lines as less indentation a runtime_error will thrown
+ * The first indented line determines the amount of indentation to remove. If any of the following
+ * lines have less indentation a runtime_error will thrown.
  */
 template <bool ThrowOnError, typename It, typename Func>
 constexpr void withoutIndent(It begin, It end, Func&& action) {
@@ -143,8 +143,8 @@ constexpr auto unindent(std::string_view str) {
 
 /**
  * Remove the leading indentation from each line of the string.
- * The first indented line determines the amount of indentation to remove, If any of the following
- * lines as less indentation a runtime_error will thrown
+ * The first indented line determines the amount of indentation to remove. If any of the following
+ * lines have less indentation a runtime_error will thrown.
  *
  * Example:
  * ```{.cpp}
