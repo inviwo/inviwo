@@ -774,7 +774,7 @@ target_compile_definitions(inviwo-core
 target_link_libraries(inviwo-core 
     PUBLIC
         ticpp
-        glm
+        glm::glm
         inviwo::tclap
         inviwo::warn
         inviwo::sml

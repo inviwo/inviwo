@@ -29,7 +29,7 @@
 
 # Retrive the git sha of the VCPKG installation, once for later use in ivw_vcpkg_install
 if(VCPKG_TOOLCHAIN)
-    ivw_git_get_hash(${_VCPKG_ROOT_DIR} ivw_vcpkg_sha)
+    ivw_git_get_hash(${Z_VCPKG_ROOT_DIR} ivw_vcpkg_sha)
 endif()
 
 # A helper function to get to various vcpkg paths
@@ -64,19 +64,19 @@ function(ivw_vcpkg_paths)
     endif()
 
     if(ARG_BIN)
-        set(${ARG_BIN} "${_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/bin" PARENT_SCOPE)
+        set(${ARG_BIN} "${Z_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/bin" PARENT_SCOPE)
     endif()
     if(ARG_INCLUDE)
-        set(${ARG_INCLUDE} "${_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/include" PARENT_SCOPE)
+        set(${ARG_INCLUDE} "${Z_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/include" PARENT_SCOPE)
     endif()
     if(ARG_LIB)
-        set(${ARG_LIB} "${_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/lib" PARENT_SCOPE)
+        set(${ARG_LIB} "${Z_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/lib" PARENT_SCOPE)
     endif()
     if(ARG_SHARE)
-        set(${ARG_SHARE} "${_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/share" PARENT_SCOPE)
+        set(${ARG_SHARE} "${Z_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}/share" PARENT_SCOPE)
     endif()
     if(ARG_BASE)
-        set(${ARG_SHARE} "${_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}" PARENT_SCOPE)
+        set(${ARG_SHARE} "${Z_VCPKG_ROOT_DIR}/installed/${VCPKG_TARGET_TRIPLET}" PARENT_SCOPE)
     endif()
 endfunction()
 
@@ -115,7 +115,7 @@ function(ivw_vcpkg_install name)
         set(installdir "${CMAKE_BINARY_DIR}/vcpkg_installed/")
     else()
         set(install "")
-        set(installdir "${_VCPKG_ROOT_DIR}/installed/")
+        set(installdir "${Z_VCPKG_ROOT_DIR}/installed/")
     endif()
 
     if(NOT DEFINED ivw_vcpkg_info_${lowercase_name} OR 
@@ -123,7 +123,7 @@ function(ivw_vcpkg_install name)
         message(STATUS "Vcpkg fetching metadata for: ${name}")
         execute_process(
             COMMAND "${Python3_EXECUTABLE}" "${IVW_TOOLS_DIR}/vcpkginfo.py"
-                --vcpkg "${_VCPKG_EXECUTABLE}" 
+                --vcpkg "${Z_VCPKG_EXECUTABLE}" 
                 --pkg ${lowercase_name}
                 --triplet ${VCPKG_TARGET_TRIPLET}
                 ${overlay}
@@ -135,7 +135,7 @@ function(ivw_vcpkg_install name)
         )
         if(NOT returnCode EQUAL "0")
             message(WARNING "  Unable to retrive vcpkg package info for ${name}.\n" 
-                "  vcpkg: ${_VCPKG_EXECUTABLE}\n"
+                "  vcpkg: ${Z_VCPKG_EXECUTABLE}\n"
                 "  triplet: ${VCPKG_TARGET_TRIPLET}\n"
                 "  package: ${lowercase_name}\n"
                 "  overlay: ${overlay}\n"
