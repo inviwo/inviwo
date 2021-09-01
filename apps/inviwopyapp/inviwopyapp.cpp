@@ -47,6 +47,7 @@
 #include <QTimer>
 #include <QObject>
 #include <QFile>
+#include <QSurfaceFormat>
 #include <warn/pop>
 
 namespace py = pybind11;
@@ -59,6 +60,14 @@ PYBIND11_MODULE(inviwopyapp, m) {
     py::class_<InviwoApplicationQt, InviwoApplication>(m, "InviwoApplicationQt",
                                                        py::multiple_inheritance{})
         .def(py::init([](std::string appName) {
+                 // Must be set before constructing QApplication
+                 QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+                 QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+                 QSurfaceFormat defaultFormat;
+                 defaultFormat.setMajorVersion(10);
+                 defaultFormat.setProfile(QSurfaceFormat::CoreProfile);
+                 QSurfaceFormat::setDefaultFormat(defaultFormat);
+
                  auto app = new InviwoApplicationQt(appName);
                  app->setStyleSheetFile(":/stylesheets/inviwo.qss");
 
@@ -85,6 +94,7 @@ PYBIND11_MODULE(inviwopyapp, m) {
 
                  app->exec();
              })
+        .def("exit", [](InviwoApplicationQt* app, int i) { app->exit(i); })
         .def("update", [](InviwoApplicationQt* app) { app->processEvents(); })
         .def("registerModules",
              [](InviwoApplicationQt* app) { app->registerModules(inviwo::getModuleList()); })

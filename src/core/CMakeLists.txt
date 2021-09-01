@@ -358,6 +358,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tinydirinterface.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/typetraits.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/unindent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeramutils.h
@@ -656,6 +657,7 @@ set(SOURCE_FILES
     util/timer.cpp
     util/tinydirinterface.cpp
     util/typetraits.cpp
+    util/unindent.cpp
     util/utilities.cpp
     util/volumesampler.cpp
     util/volumesequencesampler.cpp

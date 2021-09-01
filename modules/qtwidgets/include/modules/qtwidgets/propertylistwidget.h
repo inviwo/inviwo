@@ -115,6 +115,10 @@ public:
     void removeProcessorProperties(Processor* processor);
     void removeAndDeleteProcessorProperties(Processor* processor);
 
+    void addPropertyWidgets(Property* property);
+    void removePropertyWidgets(Property* property);
+    void removeAndDeletePropertyWidgets(Property* property);
+
     // Override QWidget
     virtual bool event(QEvent* e) override;
 

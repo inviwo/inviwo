@@ -40,6 +40,8 @@
 #include <pybind11/stl_bind.h>
 #include <warn/pop>
 
+#include <fmt/format.h>
+
 #include <map>
 #include <string>
 #include <algorithm>
@@ -109,11 +111,26 @@ void vecx(py::module& m, const std::string& prefix, const std::string& name,
         .def(py::init<Vec>())
         .def(py::init<>())
         .def(py::init([](py::array_t<T> arr) {
-            if (arr.ndim() != 1) throw std::invalid_argument{"Invalid dimensions"};
-            if (arr.shape(0) != Dim) throw std::invalid_argument{"Invalid dimensions"};
+            if (arr.ndim() != 1)
+                throw std::invalid_argument{
+                    fmt::format("Invalid ndim: got {}, expected {}", arr.ndim(), 1)};
+            if (arr.shape(0) != Dim)
+                throw std::invalid_argument{
+                    fmt::format("Invalid shape: got {}, expected {}", arr.shape(0), Dim)};
 
             Vec res;
             std::copy(arr.data(0), arr.data(0) + Dim, glm::value_ptr(res));
+            return res;
+        }))
+        .def(py::init([](py::list list) {
+            if (list.size() != Dim)
+                throw std::invalid_argument{
+                    fmt::format("Invalid size: got {}, expected {}", list.size(), Dim)};
+
+            Vec res;
+            for (int i = 0; i < Dim; ++i) {
+                res[i] = list[i].cast<T>();
+            }
             return res;
         }))
 
@@ -273,6 +290,9 @@ void vecx(py::module& m, const std::string& prefix, const std::string& name,
         default:
             break;
     }
+
+    py::implicitly_convertible<py::list, Vec>();
+    py::implicitly_convertible<py::array_t<T>, Vec>();
 }
 
 template <typename T>

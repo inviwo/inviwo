@@ -120,6 +120,7 @@ void exposeProperties(py::module& m) {
         .def_property("readOnly", &Property::getReadOnly, &Property::setReadOnly)
         .def_property("visible", &Property::getVisible, &Property::setVisible)
         .def_property("semantics", &Property::getSemantics, &Property::setSemantics)
+        .def_property_readonly("classIdentifier", &Property::getClassIdentifier)
         .def_property_readonly("classIdentifierForWidget", &Property::getClassIdentifierForWidget)
         .def_property_readonly("path", &Property::getPath)
         .def_property_readonly("invalidationLevel", &Property::getInvalidationLevel)
@@ -197,7 +198,7 @@ void exposeProperties(py::module& m) {
         .def("isSelectedDisplayName", &BaseOptionProperty::isSelectedDisplayName)
 
         .def_property_readonly("identifiers", &BaseOptionProperty::getIdentifiers)
-        .def_property_readonly("displayName", &BaseOptionProperty::getDisplayNames);
+        .def_property_readonly("displayNames", &BaseOptionProperty::getDisplayNames);
 
     using OptionPropetyTypes = std::tuple<double, float, int, std::string>;
     using MinMaxPropertyTypes = std::tuple<float, double, size_t, glm::i64, int>;
@@ -264,7 +265,7 @@ void exposeProperties(py::module& m) {
             return oss.str();
         });
 
-    PyPropertyClass<IsoValueProperty>(m, "IsoValueProperty")
+    PyPropertyClass<IsoValueProperty, Property>(m, "IsoValueProperty")
         .def(py::init([](const std::string& identifier, const std::string& displayName,
                          const IsoValueCollection& value, VolumeInport* volumeInport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -308,7 +309,7 @@ void exposeProperties(py::module& m) {
             return oss.str();
         });
 
-    PyPropertyClass<IsoTFProperty>(m, "IsoTFProperty")
+    PyPropertyClass<IsoTFProperty, Property>(m, "IsoTFProperty")
         .def(py::init([](const std::string& identifier, const std::string& displayName,
                          const IsoValueCollection& isovalues, const TransferFunction& tf,
                          VolumeInport* volumeInport, InvalidationLevel invalidationLevel,

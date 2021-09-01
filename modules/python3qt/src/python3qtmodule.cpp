@@ -101,6 +101,14 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
             }))
             .def("addProcessorProperties", &PropertyListWidget::addProcessorProperties)
             .def("removeProcessorProperties", &PropertyListWidget::removeProcessorProperties)
+            .def("removeAndDeleteProcessorProperties",
+                 &PropertyListWidget::removeAndDeleteProcessorProperties)
+
+            .def("addPropertyWidgets", &PropertyListWidget::addPropertyWidgets)
+            .def("removePropertyWidgets", &PropertyListWidget::removePropertyWidgets)
+            .def("removeAndDeletePropertyWidgets",
+                 &PropertyListWidget::removeAndDeletePropertyWidgets)
+
             .def("show", &PropertyListWidget::show)
             .def("hide", &PropertyListWidget::hide)
             .def("move", [](PropertyListWidget* w, int x, int y) { w->move(x, y); });
