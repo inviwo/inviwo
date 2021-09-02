@@ -280,9 +280,10 @@ private:
         LONG lRetVal = RegCreateKey(HKEY_CURRENT_USER, (const wchar_t*)key.utf16(), &hKey);
 
         if (ERROR_SUCCESS == lRetVal) {
-            LONG lResult = ::RegSetValueExW(
-                hKey, valueName.isEmpty() ? 0 : (const wchar_t*)valueName.utf16(), 0, REG_SZ,
-                (CONST BYTE*)value.utf16(), static_cast<DWORD>((value.length() + 1) * sizeof(wchar_t)));
+            LONG lResult =
+                ::RegSetValueExW(hKey, valueName.isEmpty() ? 0 : (const wchar_t*)valueName.utf16(),
+                                 0, REG_SZ, (CONST BYTE*)value.utf16(),
+                                 static_cast<DWORD>((value.length() + 1) * sizeof(wchar_t)));
 
             if (::RegCloseKey(hKey) == ERROR_SUCCESS && lResult == ERROR_SUCCESS) return true;
 

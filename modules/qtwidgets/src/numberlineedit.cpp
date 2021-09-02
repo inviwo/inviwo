@@ -78,7 +78,8 @@ NumberLineEditPrivate::NumberLineEditPrivate() { updateLocale(); }
 
 void NumberLineEditPrivate::clear() { widthToDigits_.clear(); }
 
-int NumberLineEditPrivate::getPrecision(int availableWidth, size_t fontHash, const QFontMetrics& fm) {
+int NumberLineEditPrivate::getPrecision(int availableWidth, size_t fontHash,
+                                        const QFontMetrics& fm) {
     availableWidth = std::min(std::max(availableWidth, 0), 512);
     auto it = widthToDigits_.find(fontHash);
     if (it == widthToDigits_.end()) {
