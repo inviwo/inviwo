@@ -111,7 +111,8 @@ struct IVW_CORE_API NetworkDebugObserver : ProcessorNetworkObserver,
             l.getDestination()->getIdentifier());
     }
 
-    virtual void onProcessorBackgroundJobsChanged(Processor* p, int diff, int total) override {
+    virtual void onProcessorBackgroundJobsChanged(Processor* p, [[maybe_unused]] int diff,
+                                                  [[maybe_unused]] int total) override {
         log(IVW_SOURCE_LOCATION, p->getIdentifier());
     }
 
@@ -133,10 +134,10 @@ struct IVW_CORE_API NetworkDebugObserver : ProcessorNetworkObserver,
     virtual void onProcessorInvalidationEnd(Processor* p) override {
         log(IVW_SOURCE_LOCATION, p->getIdentifier());
     };
-    virtual void onProcessorPortAdded(Processor* p, Port* port) override {
+    virtual void onProcessorPortAdded(Processor* p, [[maybe_unused]] Port* port) override {
         log(IVW_SOURCE_LOCATION, p->getIdentifier());
     };
-    virtual void onProcessorPortRemoved(Processor* p, Port* port) override {
+    virtual void onProcessorPortRemoved(Processor* p, [[maybe_unused]] Port* port) override {
         log(IVW_SOURCE_LOCATION, p->getIdentifier());
     };
     virtual void onProcessorAboutToProcess(Processor* p) override {
@@ -157,10 +158,12 @@ struct IVW_CORE_API NetworkDebugObserver : ProcessorNetworkObserver,
     virtual void onProcessorActiveConnectionsChanged(Processor* p) override {
         log(IVW_SOURCE_LOCATION, p->getIdentifier());
     };
-    virtual void onProcessorStartBackgroundWork(Processor* p, size_t jobs) override {
+    virtual void onProcessorStartBackgroundWork(Processor* p,
+                                                [[maybe_unused]] size_t jobs) override {
         log(IVW_SOURCE_LOCATION, p->getIdentifier());
     };
-    virtual void onProcessorFinishBackgroundWork(Processor* p, size_t jobs) override {
+    virtual void onProcessorFinishBackgroundWork(Processor* p,
+                                                 [[maybe_unused]] size_t jobs) override {
         log(IVW_SOURCE_LOCATION, p->getIdentifier());
     };
 };

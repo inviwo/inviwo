@@ -962,8 +962,8 @@ void NetworkEditor::drawBackground(QPainter* painter, const QRectF& rect) {
     for (qreal y = top; y < rect.bottom(); y += gridSpacing_)
         linesY.append(QLineF(rect.left(), y, rect.right(), y));
 
-    painter->drawLines(linesX.data(), linesX.size());
-    painter->drawLines(linesY.data(), linesY.size());
+    painter->drawLines(linesX.data(), static_cast<int>(linesX.size()));
+    painter->drawLines(linesY.data(), static_cast<int>(linesY.size()));
     painter->restore();
 }
 

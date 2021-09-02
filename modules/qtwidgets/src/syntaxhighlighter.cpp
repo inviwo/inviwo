@@ -61,13 +61,14 @@ SyntaxHighlighter::~SyntaxHighlighter() = default;
 const QTextCharFormat& SyntaxHighlighter::defaultFormat() const { return defaultFormat_; }
 
 void SyntaxHighlighter::highlightBlock(const QString& text) {
-    setFormat(0, text.size(), defaultFormat_);
+    setFormat(0, static_cast<int>(text.size()), defaultFormat_);
 
     for (auto& rule : rules_) {
         auto it = rule.pattern.globalMatch(text);
         while (it.hasNext()) {
             auto m = it.next();
-            setFormat(m.capturedStart(), m.capturedLength(), rule.format);
+            setFormat(static_cast<int>(m.capturedStart()), static_cast<int>(m.capturedLength()),
+                      rule.format);
         }
     }
 
@@ -81,8 +82,8 @@ void SyntaxHighlighter::highlightBlock(const QString& text) {
 
         if (prevState <= 0) {
             if (auto beginMatch = rule.begin.match(text); beginMatch.hasMatch()) {
-                startIndex = beginMatch.capturedStart();
-                currPos = beginMatch.capturedEnd();
+                startIndex = static_cast<int>(beginMatch.capturedStart());
+                currPos = static_cast<int>(beginMatch.capturedEnd());
             } else {
                 startIndex = -1;
             }
@@ -95,17 +96,17 @@ void SyntaxHighlighter::highlightBlock(const QString& text) {
             int commentLength;
 
             if (endMatch.hasMatch()) {
-                commentLength = endMatch.capturedEnd() - startIndex;
+                commentLength = static_cast<int>(endMatch.capturedEnd()) - startIndex;
             } else {
                 setCurrentBlockState(rule.name);
-                commentLength = text.length() - startIndex;
+                commentLength = static_cast<int>(text.length()) - startIndex;
             }
             setFormat(startIndex, commentLength, rule.format);
 
             if (auto beginMatch = rule.begin.match(text, startIndex + commentLength);
                 beginMatch.hasMatch()) {
-                startIndex = beginMatch.capturedStart();
-                currPos = beginMatch.capturedEnd();
+                startIndex = static_cast<int>(beginMatch.capturedStart());
+                currPos = static_cast<int>(beginMatch.capturedEnd());
             } else {
                 startIndex = -1;
             }
