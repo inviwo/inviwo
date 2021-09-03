@@ -79,18 +79,18 @@ template <typename T>
 class NetworkPath : public Serializable {
 private:
     mutable std::string path_;
-    mutable T* ptr_;
+    std::unique_ptr<T*> ptr_;
     bool isProcessor_;  // dynamic, since this may not be clear from T alone, e.g. if T is
                         // PropertyOwner
 
     ProcessorNetwork* pn_;
 
     const std::string& path() const {
-        if (ptr_ == nullptr) {
+        if (*ptr_ == nullptr) {
             IVW_ASSERT(!path_.empty(), "NetworkPath: ptr is null but path is empty");
             return path_;
         } else {
-            if (auto p = dynamic_cast<Processor*>(ptr_)) {
+            if (auto p = dynamic_cast<Processor*>(*ptr_)) {
                 IVW_ASSERT(isProcessor_,
                            "NetworkPath: ptr points to Processor but isProcessor_ disagrees");
                 return path_ = p->getIdentifier();
@@ -98,7 +98,7 @@ private:
                 IVW_ASSERT(
                     !isProcessor_,
                     "NetworkPath: ptr does not point to Processor but isProcessor_ disagrees");
-                auto p2 = dynamic_cast<Property*>(ptr_);
+                auto p2 = dynamic_cast<Property*>(*ptr_);
                 IVW_ASSERT(p2 != nullptr,
                            "NetworkPath: ptr points not to Processor and not to a Property");
                 return path_ = p2->getPath();
@@ -112,11 +112,11 @@ public:
     NetworkPath() = default;
 
     NetworkPath(T* ptr, ProcessorNetwork* pn = nullptr)
-        : path_(""), ptr_(ptr), isProcessor_(dynamic_cast<Processor*>(ptr) != nullptr), pn_(pn) {}
+        : path_(""), ptr_(std::make_unique<T*>(ptr)), isProcessor_(dynamic_cast<Processor*>(ptr) != nullptr), pn_(pn) {}
     void setNetwork(ProcessorNetwork* pn) {
         if (pn == nullptr) {
             path_ = path();
-            ptr_ = nullptr;
+            *ptr_ = nullptr;
             pn_ = nullptr;
         } else {
             pn_ = pn;
@@ -136,7 +136,7 @@ public:
      * not contain the referenced object.
      */
     T* maybeGet() const {
-        if (ptr_ == nullptr) {
+        if (*ptr_ == nullptr) {
             IVW_ASSERT(pn_ != nullptr,
                        "NetworkPath::get(): \"" + path_ + "\" ptr and network are both nullptr");
             if (isProcessor_) {
@@ -144,21 +144,21 @@ public:
                 if (t == nullptr) {  // processor does not exist in the network
                     return nullptr;
                 }
-                ptr_ = dynamic_cast<T*>(t);
-                IVW_ASSERT(ptr_ != nullptr, "NetworkPath::get(): \"" + path_ +
-                                                "\" referenced processor has wrong type");
-                return ptr_;
+                *ptr_ = dynamic_cast<T*>(t);
+                IVW_ASSERT(*ptr_ != nullptr, "NetworkPath::get(): \"" + path_ +
+                                                 "\" referenced processor has wrong type");
+                return *ptr_;
             } else {
                 Property* const tmp = pn_->getProperty(path_);
                 if (tmp == nullptr) {  // property does not exist in the network
                     return nullptr;
                 }
-                ptr_ = dynamic_cast<T*>(tmp);
-                IVW_ASSERT(ptr_ != nullptr, "NetworkPath::get(): \"" + path_ +
-                                                "\" referenced object has wrong type");
+                *ptr_ = dynamic_cast<T*>(tmp);
+                IVW_ASSERT(*ptr_ != nullptr, "NetworkPath::get(): \"" + path_ +
+                                                 "\" referenced object has wrong type");
             }
         }
-        return ptr_;
+        return *ptr_;
     }
     /*
      * Note: only works under the assumption that maybeGet() does not
@@ -182,7 +182,7 @@ public:
         d.deserialize("Path", path_);
         d.deserialize("IsProcessor", isProcessor_);
         pn_ = nullptr;
-        ptr_ = nullptr;
+        ptr_ = std::make_unique<T*>(nullptr);
     }
 };
 

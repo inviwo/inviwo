@@ -92,7 +92,7 @@ IVW_MODULE_PROPERTYBASEDTESTING_API std::ostream& operator<<(std::ostream& out,
 PropertyEffect IVW_MODULE_PROPERTYBASEDTESTING_API combine(const PropertyEffect& a,
                                                            const PropertyEffect& b);
 
-const PropertyEffect& IVW_MODULE_PROPERTYBASEDTESTING_API reverseEffect(const PropertyEffect& pe);
+IVW_MODULE_PROPERTYBASEDTESTING_API const PropertyEffect& reverseEffect(const PropertyEffect& pe);
 
 /**
  * returns the desired effect on the number of counted pixels,
@@ -134,7 +134,7 @@ struct GetComponentHelper<T, 1> {
 template <typename T>
 struct GetComponent : public GetComponentHelper<T, DataFormat<T>::components()> {};
 
-Processor* IVW_MODULE_PROPERTYBASEDTESTING_API getOwningProcessor(Property* const prop);
+IVW_MODULE_PROPERTYBASEDTESTING_API Processor* getOwningProcessor(Property* const prop);
 
 }  // namespace pbt
 

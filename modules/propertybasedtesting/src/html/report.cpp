@@ -112,8 +112,8 @@ void reportError(Document::DocumentHandle tb, const TestingError& e, const std::
     details(row1.append("td"), "Equal Values", std::bind(reportValues, _1, testResult1, testResult2, false, props));
 
     auto row2 = tb.append("tr");
-    row2.append("td","",{{"colspan","3"}}).append("img","",{{"src", testResult1->getImagePath()}});
-    row2.append("td","",{{"colspan","3"}}).append("img","",{{"src", testResult2->getImagePath()}});
+    row2.append("td","",{{"colspan","3"}}).append("img","",{{"src", testResult1->getImagePath().string()}});
+    row2.append("td","",{{"colspan","3"}}).append("img","",{{"src", testResult2->getImagePath().string()}});
 }
 
 void propertyBasedTestingReport(
