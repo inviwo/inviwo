@@ -239,6 +239,8 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
                 });
                 break;
             }
+            case ColoringAction::None:
+                break;
         }
 
         coloringAction_ = ColoringAction::None;

@@ -78,11 +78,6 @@ result = drawISO(result, isovalues, {0}Voxel[channel], {0}VoxelPrev[channel],
                 lighting, samplePosition, rayDirection, 
                 cameraDir, rayPosition, rayStep, rayDepth);)");
 
-constexpr std::string_view dvr2 = util::trim(R"(
-result = drawDVR(result, transferFunction, samplePosition, {0}Voxel, channel, {0}Gradient,
-                 {0}Parameters.textureToWorld, lighting, 
-                 cameraDir, rayPosition, rayStep, rayDepth);)");
-
 constexpr std::string_view dvr = util::trim(R"(
 if ({0}Color.a > 0) {{
     #if defined(SHADING_ENABLED)
