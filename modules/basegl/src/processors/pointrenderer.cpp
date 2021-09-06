@@ -30,6 +30,7 @@
 #include <modules/basegl/processors/pointrenderer.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureutils.h>
 #include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {

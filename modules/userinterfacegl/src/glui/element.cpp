@@ -38,6 +38,7 @@
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <modules/fontrendering/textrenderer.h>
 #include <modules/opengl/openglutils.h>
+#include <modules/opengl/texture/texture2d.h>
 
 #include <numeric>
 

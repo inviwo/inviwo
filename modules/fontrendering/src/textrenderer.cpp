@@ -40,6 +40,7 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/texture/texture2d.h>                        // for Texture2D
 #include <modules/opengl/sharedopenglresources.h>
 
 #include <utf8.h>

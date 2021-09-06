@@ -35,6 +35,7 @@
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/image/imagegl.h>
+#include <modules/opengl/image/layergl.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
 

@@ -31,6 +31,8 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/openglutils.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/shader/shadermanager.h>
 
 #include <inviwo/core/util/raiiutils.h>

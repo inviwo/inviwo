@@ -34,6 +34,7 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/image/imagegl.h>
+#include <modules/opengl/image/layergl.h>
 
 namespace inviwo {
 

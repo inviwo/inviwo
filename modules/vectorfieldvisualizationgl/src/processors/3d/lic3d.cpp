@@ -33,6 +33,7 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/base/algorithm/dataminmax.h>
+#include <modules/opengl/volume/volumeutils.h>
 
 #include <random>
 

@@ -47,6 +47,7 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
+#include <modules/opengl/texture/textureutils.h>
 
 #include <glm/gtc/epsilon.hpp>
 

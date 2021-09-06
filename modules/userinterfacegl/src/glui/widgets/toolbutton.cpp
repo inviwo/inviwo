@@ -40,6 +40,7 @@
 #include <modules/opengl/image/layergl.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/texture2d.h>
+#include <modules/opengl/texture/texture2darray.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 
