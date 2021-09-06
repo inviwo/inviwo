@@ -186,7 +186,7 @@ public:
     /**
      * Return the name of the Animation. Used for display in the GUI.
      */
-    std::string_view getName() const;
+    const std::string& getName() const;
     /**
      * Set new name and notify observers if different from old name.
      */
