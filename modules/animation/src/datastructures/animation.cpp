@@ -240,7 +240,7 @@ Seconds Animation::getLastTime() const {
     return time;
 }
 
-std::string_view inviwo::animation::Animation::getName() const { return name_; }
+const std::string& Animation::getName() const { return name_; }
 
 void inviwo::animation::Animation::setName(std::string_view name) {
     if (name != name_) {
