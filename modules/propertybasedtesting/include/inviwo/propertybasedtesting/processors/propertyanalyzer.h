@@ -223,6 +223,7 @@ private:
 
     // Testing stuff
     void initTesting();
+    void forceUpdate();
 
     bool testIsSetUp(const Test& test) const;
     void setupTest(const Test& test);

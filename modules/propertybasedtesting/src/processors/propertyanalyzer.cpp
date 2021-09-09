@@ -214,8 +214,13 @@ PropertyAnalyzer::PropertyAnalyzer(InviwoApplication* app)
 
     countPixelsButton_.onChange([this]() {
         NetworkLock lock(this);
+        if (!outport_.isConnected()) {
+            util::log(IVW_CONTEXT, "Outport of the PropertyAnalyzer must be connected to a Canvas.",
+                      LogLevel::Error, LogAudience::User);
+            return;
+        }
+        forceUpdate();
         testingState = TestingState::SINGLE_COUNT;
-        this->invalidate(InvalidationLevel::InvalidOutput);
     });
 
     useDepth_.onChange([this]() {
@@ -335,6 +340,13 @@ void PropertyAnalyzer::setNetwork(ProcessorNetwork* pn) {
 void PropertyAnalyzer::initTesting() {
     IVW_ASSERT(remainingTests.empty(),
                "PropertyAnalyzer: initTesting() in spite of remaining tests");
+
+    if (!outport_.isConnected()) {
+        util::log(IVW_CONTEXT, "Outport of the PropertyAnalyzer must be connected to a Canvas.", LogLevel::Error,
+                  LogAudience::User);
+        return;
+    }
+
     deactivated_.clear();
     testResults.clear();
 
@@ -508,7 +520,7 @@ void PropertyAnalyzer::checkTestResults() {
         for (const auto& error : errors) testingErrorToBinary(tmpData, props_, error);
 
         outputImage_ = generateImageFromData<F>(tmpData);
-        this->invalidate(InvalidationLevel::InvalidOutput);
+        forceUpdate();
     }
 
     if (currently_condensing) {
@@ -564,10 +576,16 @@ void PropertyAnalyzer::setupTest(const Test& test) {
         assignment->apply();
     }
 
+    forceUpdate();
+    testingState = TestingState::GATHERING;
+}
+
+void PropertyAnalyzer::forceUpdate() {
+    IVW_ASSERT(outport_.isConnected(),
+               "PropertyAnalyzer: Outport must be connected.");
     // Invalidate this in order to force the update even if there
     // are no changes
     this->invalidate(InvalidationLevel::InvalidOutput);
-    testingState = TestingState::GATHERING;
 }
 
 size_t countPixels(std::shared_ptr<const Image> img, const dvec4& col, const bool useDepth) {
