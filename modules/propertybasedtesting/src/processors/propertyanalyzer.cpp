@@ -98,7 +98,7 @@ auto generateImageFromData(const std::vector<unsigned char>& data) {
 const ProcessorInfo PropertyAnalyzer::processorInfo_{
     "org.inviwo.PropertyAnalyzer",  // Class identifier
     "PropertyAnalyzer",             // Display name
-    "Undefined",                    // Category
+    "Testing",                      // Category
     CodeState::Experimental,        // Code state
     Tags::None,                     // Tags
 };

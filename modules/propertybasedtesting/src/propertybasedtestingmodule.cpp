@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#include <inviwo/propertybasedtesting/processors/faultycubeproxyprocessor.h>
 #include <inviwo/propertybasedtesting/processors/propertyanalyzer.h>
 #include <inviwo/propertybasedtesting/processors/imagecomparator.h>
-#include <inviwo/propertybasedtesting/processors/randomdistancefieldgenerator.h>
 #include <inviwo/propertybasedtesting/propertybasedtestingmodule.h>
 
 namespace inviwo {
@@ -47,9 +45,7 @@ PropertyBasedTestingModule::PropertyBasedTestingModule(InviwoApplication* app)
 
     // Processors
     registerProcessor<PropertyAnalyzer>();
-    registerProcessor<FaultyCubePoxyGeometry>();
     registerProcessor<ImageComparator>();
-    registerProcessor<RandomDistanceFieldGenerator>();
 
     // Properties
     // registerProperty<PropertyBasedTestingProperty>();

@@ -46,7 +46,7 @@ namespace inviwo {
 const ProcessorInfo ImageComparator::processorInfo_{
     "org.inviwo.ImageComparator",  // Class identifier
     "Image Comparator",            // Display name
-    "Undefined",                   // Category
+    "Testing",                     // Category
     CodeState::Experimental,       // Code state
     Tags::None,                    // Tags
 };

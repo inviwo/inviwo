@@ -10,10 +10,8 @@ set(HEADER_FILES
     include/inviwo/propertybasedtesting/algorithm/propertyanalyzing.h
     include/inviwo/propertybasedtesting/algorithm/reservoirsampling.h
     include/inviwo/propertybasedtesting/html/report.h
-    include/inviwo/propertybasedtesting/processors/faultycubeproxyprocessor.h
     include/inviwo/propertybasedtesting/processors/propertyanalyzer.h
     include/inviwo/propertybasedtesting/processors/imagecomparator.h
-    include/inviwo/propertybasedtesting/processors/randomdistancefieldgenerator.h
     include/inviwo/propertybasedtesting/propertybasedtestingmodule.h
     include/inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h
     include/inviwo/propertybasedtesting/testproperty.h
@@ -30,10 +28,8 @@ set(SOURCE_FILES
     src/algorithm/propertyanalyzing.cpp
     src/algorithm/reservoirsampling.cpp
     src/html/report.cpp
-    src/processors/faultycubeproxyprocessor.cpp
     src/processors/propertyanalyzer.cpp
     src/processors/imagecomparator.cpp
-    src/processors/randomdistancefieldgenerator.cpp
     src/propertybasedtestingmodule.cpp
     src/testproperty.cpp
     src/testresult.cpp
