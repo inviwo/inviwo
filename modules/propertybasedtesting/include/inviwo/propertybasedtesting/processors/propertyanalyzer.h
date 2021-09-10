@@ -203,6 +203,7 @@ private:
     ButtonProperty distillButton_;
     IntSizeTProperty numTests_;
     StringProperty description_;
+    IntSizeTProperty errorSelector_;
 
     // updates the textual description
     void onTestPropertyChange() override;
@@ -232,6 +233,7 @@ private:
     std::vector<Test> allTests;
     std::queue<Test> remainingTests;
     std::vector<std::shared_ptr<TestResult>> testResults;
+    std::vector<TestingError> errors;
     void checkTestResults();
 };
 

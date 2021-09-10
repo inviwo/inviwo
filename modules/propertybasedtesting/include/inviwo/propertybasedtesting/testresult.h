@@ -58,6 +58,7 @@ private:
 public:
     size_t getNumberOfPixels() { return pixels; }
     const std::filesystem::path& getImagePath() { return imgPath; }
+    const Test& getTest() { return test; }
 
     template <typename T>
     typename T::value_type getValue(const T* prop) const;

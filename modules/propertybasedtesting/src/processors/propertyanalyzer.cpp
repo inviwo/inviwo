@@ -206,6 +206,7 @@ PropertyAnalyzer::PropertyAnalyzer(InviwoApplication* app)
     , startButton_("startButton", "Update Test Results")
     , distillButton_("distillButton", "Distill Failed Tests")
     , numTests_("numTests", "Maximum number of tests", 200, 1, 10000)
+    , errorSelector_("errorSelector", "Inspect Failed Test")
     , description_("description", "Description", "", InvalidationLevel::InvalidOutput,
                    PropertySemantics::Multiline) {
 
@@ -237,6 +238,24 @@ PropertyAnalyzer::PropertyAnalyzer(InviwoApplication* app)
         }
     });
 
+    errorSelector_.onChange([this]() {
+        if (!errors.empty()) {
+            auto errorId = errorSelector_.get();
+            resetAllProps();
+            if (errorId >= 1) {     // errorId 0 is used to restore the original configuration
+                errorId--;          // Convert errorId to array index. -1 because errorId 0 is used to restore the original configuration
+                const auto& error = errors[errorId / 2];    // and / 2 because each error consists of 2 configurations
+                const auto& testResult = (errorId % 2 == 0 ? std::get<0>(error) : std::get<1>(error));
+                const auto& test = testResult->getTest();
+
+                // then set relevant properties
+                for (const auto& assignment : test) {
+                    assignment->apply();
+                }
+            }
+        }
+    });
+
     distillButton_.setVisible(false);  // make visible when errors have been found
     distillButton_.onChange([this]() {
         distillButton_.setVisible(false);
@@ -263,6 +282,7 @@ PropertyAnalyzer::PropertyAnalyzer(InviwoApplication* app)
     addProperty(numTests_);
     addProperty(startButton_);
     addProperty(distillButton_);
+    addProperty(errorSelector_);
     addProperty(description_);
 
     if (std::filesystem::create_directory(tempDir_.string())) {
@@ -351,6 +371,7 @@ void PropertyAnalyzer::initTesting() {
     testResults.clear();
 
     distillButton_.setVisible(false);
+    errorSelector_.setVisible(false);
 
     props_.clear();
 
@@ -365,6 +386,12 @@ void PropertyAnalyzer::initTesting() {
     if (props_.empty()) {
         return;
     }
+
+    // Avoid storing properties from investigating errors
+    if (errorSelector_.get() != 0) {
+        resetAllProps();
+    }
+    errorSelector_.set(size_t(0));
 
     // store current state in order to reset it after testing
     for (auto prop : props_) {
@@ -440,7 +467,7 @@ std::ostream& printError(std::ostream& out, const std::vector<TestProperty*>& pr
 void PropertyAnalyzer::checkTestResults() {
     IVW_ASSERT(remainingTests.empty(),
                "PropertyAnalyzer: checking test results() in spite of remaining tests");
-    std::vector<TestingError> errors;
+    errors.clear();
 
     size_t numComparable = 0;
 
@@ -556,6 +583,8 @@ void PropertyAnalyzer::checkTestResults() {
             }
         }
     }
+    errorSelector_.setVisible(!errors.empty());
+    errorSelector_.setMaxValue(errors.size() * 2 - 1 + 1);  // - 1 because max value is inclusive, + 1 because we use 0 to restore the original configuration
     std::cout << "done checking Test results" << std::endl;
 }
 
