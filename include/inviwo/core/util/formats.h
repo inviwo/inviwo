@@ -258,58 +258,58 @@ template <typename T>
 constexpr DataFormatId DataFormat<T>::id() {
     // clang-format off
     if constexpr(std::is_same_v<T, half_float::half>) { return DataFormatId::Float16; }
-    if constexpr(std::is_same_v<T, glm::f32>) { return DataFormatId::Float32; }
-    if constexpr(std::is_same_v<T, glm::f64>) { return DataFormatId::Float64; }
-    if constexpr(std::is_same_v<T, glm::i8>)  { return DataFormatId::Int8; }
-    if constexpr(std::is_same_v<T, glm::i16>) { return DataFormatId::Int16; }
-    if constexpr(std::is_same_v<T, glm::i32>) { return DataFormatId::Int32; }
-    if constexpr(std::is_same_v<T, glm::i64>) { return DataFormatId::Int64; }
-    if constexpr(std::is_same_v<T, glm::u8>)  { return DataFormatId::UInt8; }
-    if constexpr(std::is_same_v<T, glm::u16>) { return DataFormatId::UInt16; }
-    if constexpr(std::is_same_v<T, glm::u32>) { return DataFormatId::UInt32; }
-    if constexpr(std::is_same_v<T, glm::u64>) { return DataFormatId::UInt64; }
+    else if constexpr(std::is_same_v<T, glm::f32>) { return DataFormatId::Float32; }
+    else if constexpr(std::is_same_v<T, glm::f64>) { return DataFormatId::Float64; }
+    else if constexpr(std::is_same_v<T, glm::i8>)  { return DataFormatId::Int8; }
+    else if constexpr(std::is_same_v<T, glm::i16>) { return DataFormatId::Int16; }
+    else if constexpr(std::is_same_v<T, glm::i32>) { return DataFormatId::Int32; }
+    else if constexpr(std::is_same_v<T, glm::i64>) { return DataFormatId::Int64; }
+    else if constexpr(std::is_same_v<T, glm::u8>)  { return DataFormatId::UInt8; }
+    else if constexpr(std::is_same_v<T, glm::u16>) { return DataFormatId::UInt16; }
+    else if constexpr(std::is_same_v<T, glm::u32>) { return DataFormatId::UInt32; }
+    else if constexpr(std::is_same_v<T, glm::u64>) { return DataFormatId::UInt64; }
 
-    if constexpr(std::is_same_v<T, glm::tvec2<half_float::half, glm::defaultp>>) {
+    else if constexpr(std::is_same_v<T, glm::tvec2<half_float::half, glm::defaultp>>) {
         return DataFormatId::Vec2Float16;
     }
-    if constexpr(std::is_same_v<T, glm::f32vec2>) { return DataFormatId::Vec2Float32; }
-    if constexpr(std::is_same_v<T, glm::f64vec2>) { return DataFormatId::Vec2Float64; }
-    if constexpr(std::is_same_v<T, glm::i8vec2>) { return DataFormatId::Vec2Int8; }
-    if constexpr(std::is_same_v<T, glm::i16vec2>) { return DataFormatId::Vec2Int16; }
-    if constexpr(std::is_same_v<T, glm::i32vec2>) { return DataFormatId::Vec2Int32; }
-    if constexpr(std::is_same_v<T, glm::i64vec2>) { return DataFormatId::Vec2Int64; }
-    if constexpr(std::is_same_v<T, glm::u8vec2>) { return DataFormatId::Vec2UInt8; }
-    if constexpr(std::is_same_v<T, glm::u16vec2>) { return DataFormatId::Vec2UInt16; }
-    if constexpr(std::is_same_v<T, glm::u32vec2>) { return DataFormatId::Vec2UInt32; }
-    if constexpr(std::is_same_v<T, glm::u64vec2>) { return DataFormatId::Vec2UInt64; }
+    else if constexpr(std::is_same_v<T, glm::f32vec2>) { return DataFormatId::Vec2Float32; }
+    else if constexpr(std::is_same_v<T, glm::f64vec2>) { return DataFormatId::Vec2Float64; }
+    else if constexpr(std::is_same_v<T, glm::i8vec2>) { return DataFormatId::Vec2Int8; }
+    else if constexpr(std::is_same_v<T, glm::i16vec2>) { return DataFormatId::Vec2Int16; }
+    else if constexpr(std::is_same_v<T, glm::i32vec2>) { return DataFormatId::Vec2Int32; }
+    else if constexpr(std::is_same_v<T, glm::i64vec2>) { return DataFormatId::Vec2Int64; }
+    else if constexpr(std::is_same_v<T, glm::u8vec2>) { return DataFormatId::Vec2UInt8; }
+    else if constexpr(std::is_same_v<T, glm::u16vec2>) { return DataFormatId::Vec2UInt16; }
+    else if constexpr(std::is_same_v<T, glm::u32vec2>) { return DataFormatId::Vec2UInt32; }
+    else if constexpr(std::is_same_v<T, glm::u64vec2>) { return DataFormatId::Vec2UInt64; }
 
-    if constexpr(std::is_same_v<T, glm::tvec3<half_float::half, glm::defaultp>>) {
+    else if constexpr(std::is_same_v<T, glm::tvec3<half_float::half, glm::defaultp>>) {
         return DataFormatId::Vec3Float16;
     }
-    if constexpr(std::is_same_v<T, glm::f32vec3>) { return DataFormatId::Vec3Float32; }
-    if constexpr(std::is_same_v<T, glm::f64vec3>) { return DataFormatId::Vec3Float64; }
-    if constexpr(std::is_same_v<T, glm::i8vec3>) { return DataFormatId::Vec3Int8; }
-    if constexpr(std::is_same_v<T, glm::i16vec3>) { return DataFormatId::Vec3Int16; }
-    if constexpr(std::is_same_v<T, glm::i32vec3>) { return DataFormatId::Vec3Int32; }
-    if constexpr(std::is_same_v<T, glm::i64vec3>) { return DataFormatId::Vec3Int64; }
-    if constexpr(std::is_same_v<T, glm::u8vec3>) { return DataFormatId::Vec3UInt8; }
-    if constexpr(std::is_same_v<T, glm::u16vec3>) { return DataFormatId::Vec3UInt16; }
-    if constexpr(std::is_same_v<T, glm::u32vec3>) { return DataFormatId::Vec3UInt32; }
-    if constexpr(std::is_same_v<T, glm::u64vec3>) { return DataFormatId::Vec3UInt64; }
+    else if constexpr(std::is_same_v<T, glm::f32vec3>) { return DataFormatId::Vec3Float32; }
+    else if constexpr(std::is_same_v<T, glm::f64vec3>) { return DataFormatId::Vec3Float64; }
+    else if constexpr(std::is_same_v<T, glm::i8vec3>) { return DataFormatId::Vec3Int8; }
+    else if constexpr(std::is_same_v<T, glm::i16vec3>) { return DataFormatId::Vec3Int16; }
+    else if constexpr(std::is_same_v<T, glm::i32vec3>) { return DataFormatId::Vec3Int32; }
+    else if constexpr(std::is_same_v<T, glm::i64vec3>) { return DataFormatId::Vec3Int64; }
+    else if constexpr(std::is_same_v<T, glm::u8vec3>) { return DataFormatId::Vec3UInt8; }
+    else if constexpr(std::is_same_v<T, glm::u16vec3>) { return DataFormatId::Vec3UInt16; }
+    else if constexpr(std::is_same_v<T, glm::u32vec3>) { return DataFormatId::Vec3UInt32; }
+    else if constexpr(std::is_same_v<T, glm::u64vec3>) { return DataFormatId::Vec3UInt64; }
 
-    if constexpr(std::is_same_v<T, glm::tvec4<half_float::half, glm::defaultp>>) {
+    else if constexpr(std::is_same_v<T, glm::tvec4<half_float::half, glm::defaultp>>) {
         return DataFormatId::Vec4Float16;
     }
-    if constexpr(std::is_same_v<T, glm::f32vec4>) { return DataFormatId::Vec4Float32; }
-    if constexpr(std::is_same_v<T, glm::f64vec4>) { return DataFormatId::Vec4Float64; }
-    if constexpr(std::is_same_v<T, glm::i8vec4>) { return DataFormatId::Vec4Int8; }
-    if constexpr(std::is_same_v<T, glm::i16vec4>) { return DataFormatId::Vec4Int16; }
-    if constexpr(std::is_same_v<T, glm::i32vec4>) { return DataFormatId::Vec4Int32; }
-    if constexpr(std::is_same_v<T, glm::i64vec4>) { return DataFormatId::Vec4Int64; }
-    if constexpr(std::is_same_v<T, glm::u8vec4>) { return DataFormatId::Vec4UInt8; }
-    if constexpr(std::is_same_v<T, glm::u16vec4>) { return DataFormatId::Vec4UInt16; }
-    if constexpr(std::is_same_v<T, glm::u32vec4>) { return DataFormatId::Vec4UInt32; }
-    if constexpr(std::is_same_v<T, glm::u64vec4>) { return DataFormatId::Vec4UInt64; }
+    else if constexpr(std::is_same_v<T, glm::f32vec4>) { return DataFormatId::Vec4Float32; }
+    else if constexpr(std::is_same_v<T, glm::f64vec4>) { return DataFormatId::Vec4Float64; }
+    else if constexpr(std::is_same_v<T, glm::i8vec4>) { return DataFormatId::Vec4Int8; }
+    else if constexpr(std::is_same_v<T, glm::i16vec4>) { return DataFormatId::Vec4Int16; }
+    else if constexpr(std::is_same_v<T, glm::i32vec4>) { return DataFormatId::Vec4Int32; }
+    else if constexpr(std::is_same_v<T, glm::i64vec4>) { return DataFormatId::Vec4Int64; }
+    else if constexpr(std::is_same_v<T, glm::u8vec4>) { return DataFormatId::Vec4UInt8; }
+    else if constexpr(std::is_same_v<T, glm::u16vec4>) { return DataFormatId::Vec4UInt16; }
+    else if constexpr(std::is_same_v<T, glm::u32vec4>) { return DataFormatId::Vec4UInt32; }
+    else if constexpr(std::is_same_v<T, glm::u64vec4>) { return DataFormatId::Vec4UInt64; }
     else return DataFormatId::NotSpecialized;
     // clang-format on
 }
