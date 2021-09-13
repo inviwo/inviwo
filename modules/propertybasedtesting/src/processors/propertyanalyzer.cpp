@@ -380,10 +380,17 @@ void PropertyAnalyzer::initTesting() {
             props_.emplace_back(comp.get());
         }
     }
-
+    // This method is called the very first time when the outport gets connected or when the
+    // workspace is opened (for example for regression testing).
+    // In both cases we do not want to show the error.
+    const bool firstCall = !outputImage_;
     // create Image with (empty) results
     outputImage_ = generateImageFromData<DataFormat<glm::u8vec4>>({});
     if (props_.empty()) {
+        if (!firstCall) {
+            util::log(IVW_CONTEXT, "No property has been selected for testing.",
+                      LogLevel::Error, LogAudience::User);
+        }
         return;
     }
 
