@@ -70,6 +70,7 @@ private:
     TemplateOptionProperty<InterpolationType> interpolationType_;
     DataChannelProperty dataChannel_;
 
+    bool firstProcess_ = true;
     // bool interpolationChanged_;
 };
 
@@ -118,11 +119,12 @@ DataSetToSpatialSampler<SpatialDims, DataDims, T>::DataSetToSpatialSampler()
 
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 void DataSetToSpatialSampler<SpatialDims, DataDims, T>::process() {
-    if (!dataIn_.isChanged() && !dataIn_.hasData()) return;
+    if (!firstProcess_ && !dataIn_.isChanged() && !dataIn_.hasData()) return;
 
     // No samplers in the dataset??
     if (dataIn_.isChanged() &&
         (!dataIn_.hasData() || dataIn_.getData()->getSamplers().size() == 0)) {
+        firstProcess_ = false;
         datasetSamplerName_.clearOptions();
         sampler_.setData(nullptr);
         return;
@@ -131,7 +133,7 @@ void DataSetToSpatialSampler<SpatialDims, DataDims, T>::process() {
     const auto& samplerMap = dataIn_.getData()->getSamplers();
 
     // Refresh the sampler options.
-    if (dataIn_.isChanged() && dataIn_.hasData()) {
+    if ((firstProcess_ || dataIn_.isChanged()) && dataIn_.hasData()) {
 
         std::string selected =
             datasetSamplerName_.size() ? datasetSamplerName_.getSelectedIdentifier() : "";
@@ -143,12 +145,16 @@ void DataSetToSpatialSampler<SpatialDims, DataDims, T>::process() {
         }
         datasetSamplerName_.setSelectedValue(selected);
     }
+    firstProcess_ = false;
 
     // Something missing to create a SpatialSampler?
+    std::cout << "# Try'na get a channel." << std::endl;
     if (!datasetSamplerName_.size() || !dataChannel_.getCurrentChannel()) {
+        std::cout << "We didn't get a channel!" << std::endl;
         sampler_.setData(nullptr);
         return;
     }
+    std::cout << "# Got a channel..." << std::endl;
 
     // Actually build a SpatialSampler.
     auto dataTN =
@@ -161,8 +167,6 @@ void DataSetToSpatialSampler<SpatialDims, DataDims, T>::process() {
 
     auto samplerIt = samplerMap.find(datasetSamplerName_.getSelectedValue());
     if (samplerIt == samplerMap.end()) {
-        // throw Exception("Sampler option does not name a valid sampler");
-        std::cout << "I" << std::endl;
         return;
     }
 
@@ -172,22 +176,14 @@ void DataSetToSpatialSampler<SpatialDims, DataDims, T>::process() {
         interpolation = interpolationType_.get();
         LogWarn("Interpolation found!");
     }
-    std::cout << "Interpolation type " << int(interpolation) << std::endl;
 
     auto datasetSampler =
         std::dynamic_pointer_cast<const DataSetSampler<SpatialDims>>(samplerIt->second);
-    std::cout << "DatasetSampler adress: " << datasetSampler.get() << std::endl;
 
-    // auto datasetSamplerTN =
-    //     std::dynamic_pointer_cast<const DataSetSampler<SpatialDims>>(datasetSampler);
     auto spatialSampler = std::make_shared<DataSetSpatialSampler<SpatialDims, DataDims, T>>(
         datasetSampler, interpolation, dataTN);
 
-    std::cout << "New spatial sampler " << spatialSampler.get() << std::endl;
-    // Replace interpolation type options;
-    // std::vector<Interpola
-    // auto interpolationOptions = InterpolantBase::InterpolationTypeOptions;
-    // interpolationType_.replaceOptions(interpolationOptions);
+    // Replace interpolation type options
     fillInterpolationTypes(*(samplerIt->second));
     spatialSampler->interpolationType_ = interpolation;
     sampler_.setData(spatialSampler);
@@ -196,10 +192,6 @@ void DataSetToSpatialSampler<SpatialDims, DataDims, T>::process() {
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 void DataSetToSpatialSampler<SpatialDims, DataDims, T>::fillInterpolationTypes(
     const DataSetSamplerBase& sampler) {
-    // if (!interpolant_) {
-    //     interpolationType_.clearOptions();
-    //     return;
-    // }
     if (interpolationType_.size() < 3)
         interpolationType_.replaceOptions(
             {{"nearest", "Nearest Neighbor", InterpolationType::Nearest},

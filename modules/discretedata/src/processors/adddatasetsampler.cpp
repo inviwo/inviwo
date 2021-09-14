@@ -120,13 +120,17 @@ void AddDataSetSampler::process() {
         samplerChanged_ = false;
     };
 
-    if (!dataIn_.hasData() || positionChannel_.size() < 1) {
+    if (!dataIn_.hasData() || !positionChannel_.hasSelectableChannels() ||
+        !positionChannel_.getCurrentChannel()) {
         std::cout << "ASDf" << std::endl;
         dataOut_.setData(std::shared_ptr<DataSet>(nullptr));
         meshOut_.setData(nullptr);
         removeChangedFlags();
         return;
     }
+    std::cout << "# Okay, channel options:" << std::endl;
+    for (auto opt : positionChannel_.channelName_.getOptions())
+        std::cout << " #   " << opt.value_ << std::endl;
 
     ind baseDim = static_cast<ind>(dataIn_.getData()->getGrid()->getDimension());
     if (interpolantChanged_) {

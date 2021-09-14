@@ -137,10 +137,14 @@ void IntegralLineTracerProcessor<Tracer>::process() {
     for (const auto& seeds : seeds_) {
         util::forEachParallel(*seeds, [&](const auto& p, size_t i) {
             IntegralLine line = tracer.traceFrom(p);
+
             auto size = line.getPositions().size();
             if (size > 1) {
                 std::lock_guard<std::mutex> lock(mutex);
                 lines->push_back(std::move(line), startID + i);
+
+                std::cout << fmt::format("Reason: {}", (int)line.getForwardTerminationReason())
+                          << std::endl;
             }
         });
         startID += seeds->size();

@@ -59,12 +59,14 @@ class DataSetSampler : public DataSetSamplerBase, public SpatialEntity<SpatialDi
 protected:
     DataSetSampler(std::shared_ptr<const Connectivity> grid,
                    std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates,
-                   const Interpolant<SpatialDims>& interpolant);
+                   const Interpolant<SpatialDims>& interpolant,
+                   const std::array<float, SpatialDims>& coordsMin,
+                   const std::array<float, SpatialDims>& coordsMax);
 
 public:
     virtual ~DataSetSampler();
-    DataSetSampler(DataSetSampler&& tree);
-    DataSetSampler(DataSetSampler& tree) = delete;
+    DataSetSampler(DataSetSampler&& sampler);
+    DataSetSampler(DataSetSampler& sampler) = delete;
     DataSetSampler& operator=(DataSetSampler&& tree) = delete;
     DataSetSampler& operator=(DataSetSampler& tree) = delete;
 
@@ -76,9 +78,12 @@ public:
         InterpolationType interpolationType = InterpolationType::Ignore) const = 0;
     void setInterpolant(const Interpolant<SpatialDims>& interpolant);
     const Interpolant<SpatialDims>& getInterpolant() const;
+    virtual std::array<float, SpatialDims> getMin() const { return coordsMin_; };
+    virtual std::array<float, SpatialDims> getMax() const { return coordsMax_; };
 
 protected:
     Interpolant<SpatialDims>* interpolant_;
+    const std::array<float, SpatialDims> coordsMin_, coordsMax_;
 };
 
 }  // namespace discretedata

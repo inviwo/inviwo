@@ -88,8 +88,12 @@ bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
                                            std::vector<double>& weights,
                                            const std::array<float, Dim>& pos) const {
 
-    std::cout << "Doing the skewed box weights!" << std::endl;
+    static const bool debugOutput = false;
+    if (debugOutput)
+        std::cout << "% Doing the skewed box weights! Dim " << Dim
+                  << ", num coordinates: " << coordinates.size() << std::endl;
     if (Dim < 2 || coordinates.size() != (1 << Dim)) return false;
+    if (debugOutput) std::cout << "%   Now for real!" << std::endl;
     weights.resize(5);
 
     // The important part: the relative position within the cell.
@@ -102,51 +106,60 @@ bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
     auto d = dd_util::arrMinus(coordinates[3], a);  // a--c
     auto p = dd_util::arrMinus(pos, a);
     a = {0};
-    std::cout
-        << fmt::format(
-               "Relative positions:\n\ta = ({}, {})\n\tb = ({}, {})\n\tc = ({}, {})\n\td = ({}, "
-               "{})\n\tp = ({}, {})",
-               a[0], a[1], b[0], b[1], c[0], c[1], d[0], d[1], p[0], p[1])
-        << std::endl;
+    if (debugOutput)
+        std::cout << fmt::format(
+                         "Relative positions:\n\ta = ({}, {})\n\tb = ({}, {})\n\tc = ({}, {})\n\td "
+                         "= ({}, "
+                         "{})\n\tp = ({}, {})",
+                         a[0], a[1], b[0], b[1], c[0], c[1], d[0], d[1], p[0], p[1])
+                  << std::endl;
 
     bool parallelX = dd_util::arrParallel(b, dd_util::arrMinus(d, c));
     bool parallelY = dd_util::arrParallel(c, dd_util::arrMinus(d, b));
     // double dotProdX = dd_util::arrDotProduct(b, dd_util::arrMinus(d, c));
     // double dotProdY = dd_util::arrDotProduct(c, dd_util::arrMinus(d, b));
     if (parallelX && parallelY) {
-        std::cerr << "Interpolant says both parallel!" << std::endl;
-        std::cout << fmt::format("u = {} = ({} - {}) / ({} - {})", u, p[1] * c[0], p[0] * c[1],
-                                 b[1] * c[0], b[0] * c[1])
-                  << std::endl;
-        std::cout << fmt::format("v = {} = ({} - {}) / ({} - {})", v, p[1] * b[0], p[0] * b[1],
-                                 b[0] * c[1], b[1] * c[0])
-                  << std::endl;
+        // std::cerr << "Interpolant says both parallel!" << std::endl;
+        // std::cout << fmt::format("u = {} = ({} - {}) / ({} - {})", u, p[1] * c[0], p[0] * c[1],
+        //                          b[1] * c[0], b[0] * c[1])
+        //           << std::endl;
+        // std::cout << fmt::format("v = {} = ({} - {}) / ({} - {})", v, p[1] * b[0], p[0] * b[1],
+        //                          b[0] * c[1], b[1] * c[0])
+        //           << std::endl;
         u = (p[1] * c[0] - p[0] * c[1]) / (b[1] * c[0] - b[0] * c[1]);
         v = (p[1] * b[0] - p[0] * b[1]) / (c[1] * b[0] - c[0] * b[1]);
         // std::cout << "u: " << u << " - v: " << v << std::endl;
 
     } else {
-        // double lx = d[0] - b[0];
-        // double ly = d[1] - b[1];
+        double lx = d[0] - b[0];
+        double ly = d[1] - b[1];
         // double t = double(a[1] - b[1]) / (ly * (1.0 - (lx * c[1]) / (ly * c[0])));
+        double s = (b[0] / lx - b[1] / ly) / (c[0] / lx - c[1] / ly);
+        double fx = s * c[0];
+        double fy = s * c[1];
+        double jx = p[0] - fx;
+        double jy = p[1] - fy;
+        u = (fx / jx - fy / jy) / (b[0] / jx - b[1] / jy);
+        v = (p[0] - u * b[0]) / (c[0] - u * b[0] - u * c[0] + u * d[0]);
 
         // DBG
         // weights.resize(3);
         // static bool first = true;
-        std::cerr << "more complicated case!" << std::endl;
+        // std::cerr << "more complicated case!" << std::endl;
         // first = false;
         // TODO!
-        return false;
+        // return false;
     }
     // Check if outside.
     if (u < 0 || u > 1 || v < 0 || v > 1) {
-        static bool firstUV = true;
-        if (firstUV) std::cerr << fmt::format("({}, {}) not inside [0,1]", u, v) << std::endl;
-        firstUV = false;
+        // static bool firstUV = true;
+        // if (firstUV)
+        if (debugOutput) std::cout << fmt::format("% ({}, {}) not inside [0,1]", u, v) << std::endl;
+        // firstUV = false;
 
         return false;
     }
-    std::cerr << "nomnom?" << std::endl;
+    if (debugOutput) std::cerr << "% Point inside cell" << std::endl;
 
     switch (type) {
         case InterpolationType::Ignore:
@@ -155,7 +168,7 @@ bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
         case InterpolationType::Nearest:
             [[fallthrough]];
         case InterpolationType::SquaredDistance:
-            std::cout << "Nearest/squares interpolation" << std::endl;
+            // std::cout << "Nearest/squares interpolation" << std::endl;
             return Interpolant<Dim>::getWeights(type, coordinates, weights, pos);
         case InterpolationType::Linear:
             // TODO: Do interpolation!
@@ -166,7 +179,7 @@ bool SkewedBoxInterpolant<Dim>::getWeights(InterpolationType type,
             weights[1] = u * (1 - v);
             weights[2] = (1.0 - u) * v;
             weights[3] = u * v;
-            std::cout << "Some nice weights!" << std::endl;
+            // std::cout << "Some nice weights!" << std::endl;
             return true;
         default:
             std::cout << "...what interpolation?!" << std::endl;

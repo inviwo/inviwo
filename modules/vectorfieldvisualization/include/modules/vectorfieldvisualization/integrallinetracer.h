@@ -214,6 +214,8 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector& old
 
     auto k1 = sampler_->sample(oldPos);
 
+    // std::cout << "=  Stepped " << k1 << std::endl;
+
     switch (integrationScheme_) {
         case inviwo::IntegralLineProperties::IntegrationScheme::Euler:
             return {move(oldPos, k1, stepSize), k1};

@@ -179,12 +179,10 @@ void CombineDataSets::deserializeSelection() {
 }
 
 void CombineDataSets::deserialize(Deserializer& d) {
-    // Processor::deserialize(d);
+    Processor::deserialize(d);
+    clearProperties();
 
     d.deserialize("selectedChannels", deserializedChannels_);
-
-    for (auto& str : deserializedChannels_) {
-    }
 }
 
 void CombineDataSets::serialize(Serializer& s) const {

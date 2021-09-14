@@ -110,7 +110,17 @@ private:
             if (!usableInterpolant || !usableCoords) {
                 return nullptr;
             }
-            return std::make_shared<SamplerType<N>>(grid, usableCoords, *usableInterpolant);
+
+            std::array<double, N> coordsMinDouble, coordsMaxDouble;
+            usableCoords->getMinMax(coordsMinDouble, coordsMaxDouble);
+            std::array<float, N> coordsMin, coordsMax;
+            for (unsigned dim = 0; dim < N; ++dim) {
+                coordsMin[dim] = static_cast<float>(coordsMinDouble[dim]);
+                coordsMax[dim] = static_cast<float>(coordsMaxDouble[dim]);
+            }
+
+            return std::make_shared<SamplerType<N>>(grid, usableCoords, *usableInterpolant,
+                                                    coordsMin, coordsMax);
         }
     };
 
@@ -133,14 +143,12 @@ void AddDataSetSampler::addSamplerType(std::string identifier, std::string displ
             return channeldispatching::dispatchNumber<std::shared_ptr<DataSetSamplerBase>, 1, 3>(
                 baseDim, dispatcher, grid, coordinates, interpolant);
         });
-    std::cout << "Added interpolant option " << displayName << std::endl;
 }
 
 template <template <unsigned int> class InterpolantType>
 void AddDataSetSampler::addInterpolantType(std::string identifier, std::string displayName) {
     AddDataSetSampler::addInterpolantType(identifier, displayName, [](ind baseDim) {
         InterpolantDispatcher<InterpolantType> dispatcher;
-        std::cout << "Creating Interpolant!" << std::endl;
         return channeldispatching::dispatchNumber<const InterpolantBase*, 1,
                                                   DISCRETEDATA_MAX_NUM_DIMENSIONS>(baseDim,
                                                                                    dispatcher);

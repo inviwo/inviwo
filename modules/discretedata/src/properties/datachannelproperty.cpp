@@ -39,7 +39,7 @@ DataChannelProperty::DataChannelProperty(DataSetInport& dataInport, const std::s
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , datasetInput_(dataInport)
     , channelFilter_(filter)
-    , channelName_("channelName", "Channel name")
+    , channelName_("channelName", "Channel name", {{"NONE", "NONE"}})
     , gridPrimitive_("gridPrimitive", "Primitive with data")
     , ongoingChange_(false) {
     auto updateCallback = [&]() { updateChannelList(); };
@@ -49,10 +49,27 @@ DataChannelProperty::DataChannelProperty(DataSetInport& dataInport, const std::s
     addProperty(gridPrimitive_);
     addProperty(channelName_);
 }
+DataChannelProperty::DataChannelProperty(const DataChannelProperty& prop)
+    : CompositeProperty(prop)
+    , datasetInput_(prop.datasetInput_)
+    , channelFilter_(prop.channelFilter_)
+    , channelName_("channelName", "Channel name", {{"NONE", "NONE"}})
+    , gridPrimitive_("gridPrimitive", "Primitive with data")
+    , ongoingChange_(false) {
+    auto updateCallback = [&]() { updateChannelList(); };
+    datasetInput_.onChange(updateCallback);
+    gridPrimitive_.onChange(updateCallback);
 
-std::shared_ptr<const Channel> DataChannelProperty::getCurrentChannel() {
+    addProperty(gridPrimitive_);
+    addProperty(channelName_);
+    updateChannelList();
+}
+
+std::shared_ptr<const Channel> DataChannelProperty::getCurrentChannel() const {
     auto pInDataSet = datasetInput_.getData();
-    if (!pInDataSet || channelName_.size() == 0 || gridPrimitive_.size() == 0) return nullptr;
+    if (!pInDataSet || channelName_.size() == 0 || gridPrimitive_.size() == 0 ||
+        channelName_.get().compare("NONE") == 0)
+        return nullptr;
     return pInDataSet->getChannel(channelName_.get(), gridPrimitive_.get());
 }
 
@@ -61,12 +78,13 @@ void DataChannelProperty::updateChannelList() {
     auto dataset = datasetInput_.getData();
 
     // Get the current name to select same name if possible.
-    std::string lastName = channelName_.size() ? channelName_.get() : "";
+    std::string lastName = channelName_.get();  // channelName_.size() ? channelName_.get() : "";
     GridPrimitive lastPrimitive =
         gridPrimitive_.size() ? gridPrimitive_.get() : GridPrimitive::Vertex;
 
     channelName_.clearOptions();
     gridPrimitive_.clearOptions();
+    channelName_.addOption("NONE", "NONE");
 
     if (!dataset) return;
 

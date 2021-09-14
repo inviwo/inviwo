@@ -38,8 +38,7 @@ namespace inviwo {
 namespace discretedata {
 
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
-class DataSetSpatialSampler :  // public SpatialEntity<SpatialDims>,
-                               public SpatialSampler<SpatialDims, DataDims, T> {
+class DataSetSpatialSampler : public SpatialSampler<SpatialDims, DataDims, T> {
 public:
     DataSetSpatialSampler(std::shared_ptr<const DataSetSampler<SpatialDims>> sampler,
                           InterpolationType interpolationType,

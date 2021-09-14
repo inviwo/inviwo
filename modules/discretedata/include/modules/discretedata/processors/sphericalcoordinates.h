@@ -33,6 +33,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <modules/discretedata/ports/datasetport.h>
 #include <modules/discretedata/properties/datachannelproperty.h>
@@ -58,10 +59,12 @@ public:
 private:
     DataSetInport dataIn_;
     DataSetOutport dataOut_;
-    DataChannelProperty positions_;
+    DataChannelProperty positions_, velocities_;
     StringProperty name_;
     BoolProperty autoName_;
     DoubleProperty radius_, verticalScale_;
+
+    // ListProperty velocities_;
 };
 
 namespace detail {
@@ -75,11 +78,14 @@ struct SphericalCoordinateDispatcher {
 
     template <typename Result, typename T, ind N, typename... Args>
     Result operator()(std::shared_ptr<const Channel> channel, const std::string& name,
-                      double radius, double verticalScale) {
+                      double radius, double verticalScale,
+                      std::shared_ptr<const DataChannel<float, 2>>& velocityChannel) {
+        std::array<std::shared_ptr<const Channel>, 2> results{nullptr, nullptr};
+
         auto dataChannel =
             std::dynamic_pointer_cast<const DataChannel<typename T::type, N>>(channel);
         ivwAssert(dataChannel, "Dispatch failed, dynamic cast to specific type failed.");
-        return std::make_shared<AnalyticChannel<double, std::max(ind(3), N)>>(
+        results[0] = std::make_shared<AnalyticChannel<double, std::max(ind(3), N)>>(
             [dataChannel, radius, verticalScale](auto& spVec, ind idx) {
                 std::array<typename T::type, N> cVec;
                 dataChannel->fill(cVec, idx);
@@ -101,8 +107,43 @@ struct SphericalCoordinateDispatcher {
                 }
             },
             channel->size(), name, channel->getGridPrimitiveType());
+
+        // Convert velocity channel from m/s to latlon/s (if any is given).
+        if (velocityChannel) {
+            results[1] = std::make_shared<AnalyticChannel<double, 2, std::array<double, 2>>>(
+                [velocityChannel, dataChannel](std::array<double, 2>& velocityDegrees, ind idx) {
+                    static const double AVG_EARTH_RADIUS = 6371000.0f;
+                    static const double DEGREE_TO_RAD = M_PI / 180.0;
+                    // static const double DEGREE_TO_METER_MULT = 180.0 / (M_PI * AVG_EARTH_RADIUS);
+                    std::array<typename T::type, N> latLon;
+                    dataChannel->fill(latLon, idx);
+
+                    std::array<float, 2> uv{0};
+                    velocityChannel->fill(uv, idx);
+
+                    velocityDegrees[0] = uv[0] / (DEGREE_TO_RAD * AVG_EARTH_RADIUS);
+                    double latRadius = std::cos(latLon[0] * DEGREE_TO_RAD) * AVG_EARTH_RADIUS;
+                    velocityDegrees[1] = uv[1] / (DEGREE_TO_RAD * latRadius);
+
+                    velocityDegrees[0] = std::cos(latLon[0] * DEGREE_TO_RAD);
+                },
+                velocityChannel->size(),
+                fmt::format("{}_in_lat_lon_per_second", velocityChannel->getName()));
+        }
+
+        return results;
     }
 };
+
+// struct SphericalVelocityDispatcher {
+
+//     template <typename Result, typename T, ind N, typename... Args>
+//     Result operator()(std::shared_ptr<const Channel> positionChannel, std::shared_ptr<const
+//     DataChannel<float, 2>> velocityChannel) {
+
+//                       }
+// };
+
 }  // namespace detail
 
 }  // namespace discretedata

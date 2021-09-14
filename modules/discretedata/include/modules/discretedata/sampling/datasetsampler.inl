@@ -42,10 +42,12 @@ template <unsigned int SpatialDims>
 DataSetSampler<SpatialDims>::DataSetSampler(
     std::shared_ptr<const Connectivity> grid,
     std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates,
-    const Interpolant<SpatialDims>& interpolant)
+    const Interpolant<SpatialDims>& interpolant, const std::array<float, SpatialDims>& coordsMin,
+    const std::array<float, SpatialDims>& coordsMax)
     : DataSetSamplerBase(grid, std::static_pointer_cast<const Channel>(coordinates))
-    , interpolant_(interpolant.copy()) {
-    std::cout << "" << std::endl;
+    , interpolant_(interpolant.copy())
+    , coordsMin_(coordsMin)
+    , coordsMax_(coordsMax) {
     if (!coordinates_) std::cout << "Oopsie doo coordinates!" << std::endl;
     if (!grid_) std::cout << "Oopsie doo grid!" << std::endl;
     // if (coordinates_->getGridPrimitiveType() != GridPrimitive::Vertex ||
@@ -54,6 +56,14 @@ DataSetSampler<SpatialDims>::DataSetSampler(
     //     LogError("Incompatible grid and coordinate channel given, aborting.");
     //     return;
     // }
+    // }
+
+    Matrix<SpatialDims + 1, float> modelMat;
+    for (unsigned dim = 0; dim < SpatialDims; ++dim) {
+        modelMat[dim][dim] = coordsMax[dim] - coordsMin[dim];
+        modelMat[SpatialDims][dim] = coordsMin[dim];
+    }
+    this->setModelMatrix(modelMat);
 }
 
 template <unsigned int SpatialDims>

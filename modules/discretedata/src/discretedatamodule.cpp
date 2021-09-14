@@ -29,6 +29,7 @@
 
 #include <modules/discretedata/discretedatamodule.h>
 #include <modules/discretedata/processors/adddatasetsampler.h>
+#include <modules/discretedata/processors/channeloperations.h>
 #include <modules/discretedata/processors/colormapchannel.h>
 #include <modules/discretedata/processors/combinechannels.h>
 #include <modules/discretedata/processors/combinedatasets.h>
@@ -40,6 +41,7 @@
 #include <modules/discretedata/processors/computegridmeasure.h>
 #include <modules/discretedata/processors/datasetinformation.h>
 #include <modules/discretedata/processors/datasettospatialsampler.h>
+#include <modules/discretedata/processors/imagefromdataset.h>
 #include <modules/discretedata/processors/volumefromdataset.h>
 #include <modules/discretedata/processors/meshfromdataset.h>
 #include <modules/discretedata/processors/segmentationvoxelizer.h>
@@ -56,6 +58,7 @@ namespace inviwo {
 
 DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(app, "discretedata") {
     // Processors
+    registerProcessor<discretedata::ChannelOperations>();
     registerProcessor<discretedata::DataSetROI>();
     registerProcessor<discretedata::CombineDataSets>();
     registerProcessor<discretedata::DataSetInformation>();
@@ -72,6 +75,7 @@ DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(ap
     registerProcessor<discretedata::DataSetFromVolume>();
     registerProcessor<discretedata::ComputeGridMeasure>();
     registerProcessor<discretedata::MeshFromDataSet>();
+    registerProcessor<discretedata::ImageFromDataSet>();
     registerProcessor<discretedata::VolumeFromDataSet>();
     registerProcessor<discretedata::SegmentationVoxelizer>();
     registerProcessor<discretedata::DataSetSource>();

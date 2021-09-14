@@ -48,7 +48,9 @@ class CellTree : public DataSetSampler<SpatialDims> {
 public:
     CellTree(std::shared_ptr<const Connectivity> grid,
              std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates,
-             const Interpolant<SpatialDims>& interpolant);
+             const Interpolant<SpatialDims>& interpolant,
+             const std::array<float, SpatialDims>& coordsMin,
+             const std::array<float, SpatialDims>& coordsMax);
     ~CellTree() = default;
     CellTree(CellTree<SpatialDims>&& tree);
     CellTree(const CellTree<SpatialDims>& tree);
@@ -74,6 +76,11 @@ public:
 
     virtual Mesh* getDebugMesh() const override;
 
+    // static CellTree* createSampler(
+    //     std::shared_ptr<const Connectivity> grid,
+    //     std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates,
+    //     const Interpolant<SpatialDims>& interpolant);
+
 protected:
     void buildCellTree(std::shared_ptr<const DataChannel<double, SpatialDims>> coordinates);
     struct Node {
@@ -98,7 +105,6 @@ protected:
 
     std::vector<Node> nodes_;
     std::vector<ind> cells_;
-    std::array<float, SpatialDims> coordsMin_, coordsMax_;
     // const Interpolant<SpatialDims>* interpolant;
     // ind (CellTree<SpatialDims>::*locateCellFunction)(const std::array<float, SpatialDims>&,
     //                                                  std::vector<double>&, std::vector<ind>&,
@@ -110,6 +116,11 @@ protected:
 
     using DataSetSamplerBase::coordinates_;
     using DataSetSamplerBase::grid_;
+    using DataSetSampler<SpatialDims>::coordsMin_;
+    using DataSetSampler<SpatialDims>::coordsMax_;
+
+    // virtual std::array<float, SpatialDims> getMin() const override { return coordsMin_; }
+    // virtual std::array<float, SpatialDims> getMax() const override { return coordsMax_; }
 };
 
 }  // namespace discretedata

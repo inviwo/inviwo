@@ -65,11 +65,13 @@ public:
                         const std::string& displayName, ChannelFilter filter = &FilterPassAll,
                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                         PropertySemantics semantics = PropertySemantics::Default);
+    DataChannelProperty(const DataChannelProperty& prop);
     virtual DataChannelProperty* clone() const override { return new DataChannelProperty(*this); }
     virtual ~DataChannelProperty() {}
 
     virtual void updateChannelList();
-    std::shared_ptr<const Channel> getCurrentChannel();
+    std::shared_ptr<const Channel> getCurrentChannel() const;
+    bool hasSelectableChannels() const { return channelName_.size() > 1; }
 
     DataSetInport& datasetInput_;
     ChannelFilter channelFilter_;

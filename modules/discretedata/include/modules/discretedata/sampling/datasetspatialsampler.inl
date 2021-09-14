@@ -67,17 +67,22 @@ DataSetSpatialSampler<SpatialDims, DataDims, T>::DataSetSpatialSampler(
 
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 Vector<DataDims, T> DataSetSpatialSampler<SpatialDims, DataDims, T>::sampleDataSpace(
-    const Vector<SpatialDims, double>& pos) const {
+    const Vector<SpatialDims, double>& posData) const {
     // std::cout << "Sample!" << std::endl;
     // Sample weights by position.
+    const auto min = sampler_->getMin();
+    const auto max = sampler_->getMax();
+
     std::array<float, SpatialDims> arrayPos;
-    for (size_t i = 0; i < SpatialDims; ++i) arrayPos[i] = pos[i];
+    for (size_t i = 0; i < SpatialDims; ++i) {
+        arrayPos[i] = (posData[i] * (max[i] - min[i])) + min[i];
+    }
     std::vector<double> returnWeights;
     std::vector<ind> returnVertices;
     ind cell =
         sampler_->locateAndSampleCell(arrayPos, returnWeights, returnVertices, interpolationType_);
 
-    Vector<DataDims, T> result;
+    Vector<DataDims, T> result{0};
 
     // If the cell does not exist, return zero vector.
     if (cell < 0 || cell > data_->size()) return result;
@@ -93,19 +98,29 @@ Vector<DataDims, T> DataSetSpatialSampler<SpatialDims, DataDims, T>::sampleDataS
             continue;
         }
         data_->fill(sample, index, 1);
-        if (sample[0] < 1.0e-19) return Vector<DataDims, T>(0.0);
-        result += sample * weight;
+
+        /////////////// removing this for now!!!!!!! ///////////////
+        // ------------------------------------------------------ //
+        // if (sample[0] < 1.0e-19) {
+        //     // std::cout << "= Ran into a border!" << std::endl;
+        //     return Vector<DataDims, T>(0.0);
+        // }
+        // result += sample * weight;
+        if (sample[0] > 1.0e-19) {
+            result += sample * weight;
+        }
         // std::cout << fmt::format("\tWeighting ({}, {}) by {}", sample[0],
         //                          DataDims > 1 ? sample[1] : sample[0], weight)
         //           << std::endl;
     }
+    // std::cout << "=  Stepped " << result << std::endl;
     return result;
 }
 
 template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 bool DataSetSpatialSampler<SpatialDims, DataDims, T>::withinBoundsDataSpace(
     const Vector<SpatialDims, double>& pos) const {
-    std::cout << "Withing bounds?" << std::endl;
+
     // Sample weights by position.
     std::array<float, SpatialDims> arrayPos;
     for (size_t i = 0; i < SpatialDims; ++i) arrayPos[i] = pos[i];

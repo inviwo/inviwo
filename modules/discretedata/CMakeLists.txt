@@ -37,6 +37,7 @@ set(HEADER_FILES
     include/modules/discretedata/discretedatatypes.h
     include/modules/discretedata/ports/datasetport.h
     include/modules/discretedata/processors/adddatasetsampler.h
+    include/modules/discretedata/processors/channeloperations.h
     include/modules/discretedata/processors/colormapchannel.h
     include/modules/discretedata/processors/combinechannels.h
     include/modules/discretedata/processors/combinedatasets.h
@@ -50,12 +51,15 @@ set(HEADER_FILES
     include/modules/discretedata/processors/datasetsource.h
     include/modules/discretedata/processors/datasettospatialsampler.h
     include/modules/discretedata/processors/exampledataset.h
+    include/modules/discretedata/processors/imagefromdataset.h
     include/modules/discretedata/processors/meshfromdataset.h
     include/modules/discretedata/processors/segmentationvoxelizer.h
     include/modules/discretedata/processors/sphericalcoordinates.h
     include/modules/discretedata/processors/volumefromdataset.h
     include/modules/discretedata/properties/datachannelproperty.h
     include/modules/discretedata/sampling/celltree.h
+    include/modules/discretedata/sampling/datasetsampler.h
+    include/modules/discretedata/sampling/datasetsampler.inl
     include/modules/discretedata/sampling/datasetspatialsampler.h
     include/modules/discretedata/sampling/interpolant.h
     include/modules/discretedata/util/arrayutil.h
@@ -88,6 +92,7 @@ set(SOURCE_FILES
     src/discretedatamodule.cpp
     src/discretedatatypes.cpp
     src/processors/adddatasetsampler.cpp
+    src/processors/channeloperations.cpp
     src/processors/colormapchannel.cpp
     src/processors/combinechannels.cpp
     src/processors/combinedatasets.cpp
@@ -100,6 +105,7 @@ set(SOURCE_FILES
     src/processors/datasetroi.cpp
     src/processors/datasetsource.cpp
     src/processors/exampledataset.cpp
+    src/processors/imagefromdataset.cpp
     src/processors/meshfromdataset.cpp
     src/processors/segmentationvoxelizer.cpp
     src/processors/sphericalcoordinates.cpp

@@ -38,8 +38,8 @@ namespace discretedata {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeFromDataSet::processorInfo_{
     "org.inviwo.VolumeFromDataSet",  // Class identifier
-    "Volume From Data Set",          // Display name
-    "Data Set",                     // Category
+    "Volume From DataSet",           // Display name
+    "DataSet",                       // Category
     CodeState::Experimental,         // Code state
     Tags::None,                      // Tags
 };

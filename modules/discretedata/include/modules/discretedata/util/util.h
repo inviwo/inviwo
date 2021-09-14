@@ -33,7 +33,9 @@
 #include <modules/discretedata/channels/datachannel.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <warn/push>
 #include <inviwo/core/util/glm.h>
+#include <warn/pop>
 
 #include <bitset>
 
