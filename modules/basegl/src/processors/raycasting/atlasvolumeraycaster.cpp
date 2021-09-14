@@ -49,7 +49,8 @@ AtlasVolumeRaycaster::AtlasVolumeRaycaster(std::string_view identifier,
                                            std::string_view displayName)
     : VolumeRaycasterBase(identifier, displayName)
     , time_{"time", [this](InvalidationLevel level) { invalidate(level); }}
-    , volume_("volume")
+    , volume_{"volume"}
+    , entryExit_{}
     , classify_{volume_.getName()}
     , background_{*this}
     , raycasting_{volume_.getName()}
@@ -60,17 +61,9 @@ AtlasVolumeRaycaster::AtlasVolumeRaycaster(std::string_view identifier,
     , sampleTransform_{}
     , atlas_{this, volume_.getName(), &time_} {
 
-    std::array<RaycasterComponent*, 11> comps{&time_,
-                                              &volume_,
-                                              &isoTF_,
-                                              &atlas_,
-                                              &classify_,
-                                              &background_,
-                                              &sampleTransform_,
-                                              &raycasting_,
-                                              &camera_,
-                                              &light_,
-                                              &positionIndicator_};
+    std::array<RaycasterComponent*, 12> comps{
+        &time_,       &volume_,          &entryExit_,  &isoTF_,  &atlas_, &classify_,
+        &background_, &sampleTransform_, &raycasting_, &camera_, &light_, &positionIndicator_};
     registerComponents(comps);
 }
 

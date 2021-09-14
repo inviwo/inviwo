@@ -29,17 +29,26 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/raycasting/raycastercomponent.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_BASEGL_API EntryExitComponent {
+class IVW_MODULE_BASEGL_API EntryExitComponent : public RaycasterComponent {
 public:
     EntryExitComponent();
-    virtual ~EntryExitComponent() = default;
+
+    virtual std::string_view getName() const override;
+
+    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
+
+    virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
+
+    virtual std::vector<Segment> getSegments() override;
+
+private:
+    ImageInport entryPort_;
+    ImageInport exitPort_;
 };
 
 }  // namespace inviwo

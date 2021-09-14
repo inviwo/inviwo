@@ -71,8 +71,6 @@ protected:
 
     virtual void handleError(std::string_view action, std::string_view name) const;
 
-    ImageInport entryPort_;
-    ImageInport exitPort_;
     ImageOutport outport_;
     Shader shader_;
     std::vector<RaycasterComponent*> components_;

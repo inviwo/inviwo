@@ -50,12 +50,6 @@ vec3 calcCameraDir(in vec3 entryPoint, in vec3 exitPoint, in mat4 textureToWorld
 layout(location = 0) out vec4 FragData0;
 layout(location = 1) out vec4 PickingData;
 
-uniform ImageParameters entryParameters;
-uniform sampler2D entryColor;
-uniform sampler2D entryDepth;
-uniform ImageParameters exitParameters;
-uniform sampler2D exitColor;
-uniform sampler2D exitDepth;
 uniform ImageParameters outportParameters;
 uniform float samplingRate = 2.0;
 
@@ -68,27 +62,15 @@ uniform int channel = 0;
 
 
 void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
-
-    vec3 entryPoint = texture(entryColor, texCoords).rgb;
-    vec3 exitPoint = texture(exitColor, texCoords).rgb;
-    float entryPointDepth = texture(entryDepth, texCoords).x;
-    float exitPointDepth = texture(exitDepth, texCoords).x;
-
-    // The length of the ray in texture space
-    float rayLength = length(exitPoint - entryPoint);
-
-    // The normalized direction of the ray
-    vec3 rayDirection = normalize(exitPoint - entryPoint);
-
-    // The step size in texture space
-    float rayStep = calcStep(rayLength, rayDirection, samplingRate, 
-                             volumeParameters.dimensions);
-
     vec4 result = vec4(0.0);  // The accumulated color along the ray;
     vec4 picking = vec4(0.0); // The picking color of the ray
     float rayDepth = -1.0;    // The ray depth value (0 to ray length, -1 mean "no" depth
-    float depth = 1.0;        // The image depth 
+    float depth = 1.0;        // The image depth
+
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+ 
+    // The setup is expected to define
+    // entryPoint, exitPoint, entryPointDepth, exitPointDepth, rayLength, rayDirection
 
     #pragma IVW_SETUP
 
@@ -98,6 +80,10 @@ void main() {
         gl_FragDepth = depth;
         return;
     }
+
+    // The step size in texture space
+    float rayStep = calcStep(rayLength, rayDirection, samplingRate,
+                             volumeParameters.dimensions);
 
     vec3 cameraDir = calcCameraDir(entryPoint, exitPoint, 
                                    volumeParameters.textureToWorld);

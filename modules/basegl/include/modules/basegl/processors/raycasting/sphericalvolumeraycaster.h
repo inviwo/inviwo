@@ -42,23 +42,10 @@
 #include <modules/basegl/raycasting/sampletransformcomponent.h>
 #include <modules/basegl/raycasting/sphericalcomponent.h>
 #include <modules/basegl/raycasting/volumecomponent.h>
+#include <modules/basegl/raycasting/entryexitcomponent.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.SphericalVolumeRaycaster, Spherical Volume Raycaster}
- * ![](org.inviwo.SphericalVolumeRaycaster.png?classIdentifier=org.inviwo.SphericalVolumeRaycaster)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
 class IVW_MODULE_BASEGL_API SphericalVolumeRaycaster : public VolumeRaycasterBase {
 public:
     SphericalVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
@@ -71,6 +58,7 @@ public:
 
 private:
     VolumeComponent volume_;
+    EntryExitComponent entryExit_;
     ClassifyComponent classify_;
     BackgroundComponent background_;
     RaycastingComponent raycasting_;

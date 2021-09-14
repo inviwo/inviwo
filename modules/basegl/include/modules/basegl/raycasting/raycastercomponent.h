@@ -73,36 +73,37 @@ public:
 
     /**
      * @brief Called from VolumeRaycasterBase::initializeResources
-     * Set and shader defines and so on here. The Shader will be recompiles after this.
+     * Override to set defines in the \p shader. This function will be called before the \p shader
+     * is compiled
      * @param shader in current use
      */
     virtual void initializeResources(Shader& shader);
 
     /**
      * @brief Called from VolumeRaycasterBase::process
-     * Set any needed uniforms here, and bind textures etc.
+     * Override to set uniforms, bind textures etc.
      * @param shader in current use
      * @param container add any used TextureUnits here
      */
     virtual void process(Shader& shader, TextureUnitContainer& container);
 
     /**
-     * @brief Return all Inports and there port groups
-     * This gets called in VolumeRaycasterBase::registerComponents which will add then to the
+     * @brief Return all Inports and their port groups
+     * This gets called in VolumeRaycasterBase::registerComponents which will add them to the
      * processor.
      */
     virtual std::vector<std::tuple<Inport*, std::string>> getInports() { return {}; }
 
     /**
      * @brief Return all Properties
-     * This gets called in VolumeRaycasterBase::registerComponents which will add then to the
+     * This gets called in VolumeRaycasterBase::registerComponents which will add them to the
      * processor.
      */
     virtual std::vector<Property*> getProperties() { return {}; }
 
     /**
      * @brief Return all Segments to be injected into the shader.
-     * VolumeRaycasterBase::initializeResources after the call to
+     * This gets called in VolumeRaycasterBase::initializeResources after the call to
      * RaycasterComponent::initializeResources.
      */
     virtual std::vector<Segment> getSegments() { return {}; }

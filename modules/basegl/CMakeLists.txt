@@ -264,7 +264,6 @@ set(SHADER_FILES
     glsl/pointrenderer.frag
     glsl/pointrenderer.vert
     glsl/raycasting/raycaster.frag
-    glsl/raycasting/dvr.glsl
     glsl/raycasting/iso.glsl
     glsl/sphereglyph.frag
     glsl/sphereglyph.geom

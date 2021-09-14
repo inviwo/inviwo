@@ -758,12 +758,16 @@ void NetworkEditor::showProcessorHelp(const std::string& classIdentifier, bool r
 }
 
 void NetworkEditor::progagateEventToSelecedProcessors(KeyboardEvent& pressKeyEvent) {
-    for (auto& item : selectedItems()) {
-        if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
-            Processor* p = pgi->getProcessor();
-            p->propagateEvent(&pressKeyEvent, nullptr);
-            if (pressKeyEvent.hasBeenUsed()) break;
+    try {
+        for (auto& item : selectedItems()) {
+            if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+                Processor* p = pgi->getProcessor();
+                p->propagateEvent(&pressKeyEvent, nullptr);
+                if (pressKeyEvent.hasBeenUsed()) break;
+            }
         }
+    } catch (const Exception& e) {
+        util::log(e.getContext(), e.getFullMessage());
     }
 }
 
@@ -1021,33 +1025,28 @@ void NetworkEditor::resetAllTimeMeasurements() {
 void NetworkEditor::helpEvent(QGraphicsSceneHelpEvent* e) {
     QList<QGraphicsItem*> graphicsItems = items(e->scenePos());
     for (auto item : graphicsItems) {
-        switch (item->type()) {
-            case ProcessorGraphicsItem::Type:
-                qgraphicsitem_cast<ProcessorGraphicsItem*>(item)->showToolTip(e);
-                return;
-            case ConnectionGraphicsItem::Type:
-                qgraphicsitem_cast<ConnectionGraphicsItem*>(item)->showToolTip(e);
-                return;
-            case LinkConnectionGraphicsItem::Type:
-                qgraphicsitem_cast<LinkConnectionGraphicsItem*>(item)->showToolTip(e);
-                return;
-
-            // case ProcessorLinkGraphicsItem::Type:
-            //    qgraphicsitem_cast<ProcessorLinkGraphicsItem*>(item)->showToolTip(e);
-            //    return;
-            case ProcessorInportGraphicsItem::Type:
-                qgraphicsitem_cast<ProcessorInportGraphicsItem*>(item)->showToolTip(e);
-                return;
-            case ProcessorOutportGraphicsItem::Type:
-                qgraphicsitem_cast<ProcessorOutportGraphicsItem*>(item)->showToolTip(e);
-                return;
-                // case ProcessorStatusGraphicsItem::Type:
-                //    qgraphicsitem_cast<ProcessorStatusGraphicsItem*>(item)->showToolTip(e);
-                //    return;
-                // case ProcessorProgressGraphicsItem::Type:
-                //    qgraphicsitem_cast<ProcessorProgressGraphicsItem*>(item)->showToolTip(e);
-                //    return;
-        };
+        try {
+            switch (item->type()) {
+                case ProcessorGraphicsItem::Type:
+                    qgraphicsitem_cast<ProcessorGraphicsItem*>(item)->showToolTip(e);
+                    return;
+                case ConnectionGraphicsItem::Type:
+                    qgraphicsitem_cast<ConnectionGraphicsItem*>(item)->showToolTip(e);
+                    return;
+                case LinkConnectionGraphicsItem::Type:
+                    qgraphicsitem_cast<LinkConnectionGraphicsItem*>(item)->showToolTip(e);
+                    return;
+                case ProcessorInportGraphicsItem::Type:
+                    qgraphicsitem_cast<ProcessorInportGraphicsItem*>(item)->showToolTip(e);
+                    return;
+                case ProcessorOutportGraphicsItem::Type:
+                    qgraphicsitem_cast<ProcessorOutportGraphicsItem*>(item)->showToolTip(e);
+                    return;
+            }
+        } catch (const Exception& e) {
+            util::log(e.getContext(), e.getFullMessage());
+            return;
+        }
     }
     QGraphicsScene::helpEvent(e);
 }

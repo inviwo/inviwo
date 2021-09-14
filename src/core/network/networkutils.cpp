@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/linksettings.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/zip.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/network/autolinker.h>
@@ -430,29 +431,44 @@ void replaceProcessor(ProcessorNetwork* network, std::unique_ptr<Processor> aNew
 
     util::setPosition(newProcessor, util::getPosition(oldProcessor));
 
-    const std::vector<Inport*>& inports = newProcessor->getInports();
-    const std::vector<Outport*>& outports = newProcessor->getOutports();
-    const std::vector<Inport*>& oldInports = oldProcessor->getInports();
-    const std::vector<Outport*>& oldOutports = oldProcessor->getOutports();
-
     NetworkLock lock(network);
 
     std::vector<PortConnection> newConnections;
+    {
+        std::vector<Inport*> oldInports = oldProcessor->getInports();
+        for (auto* newInport : newProcessor->getInports()) {
+            auto it = std::find_if(oldInports.begin(), oldInports.end(), [&](Inport* oldInport) {
+                return std::all_of(oldInport->getConnectedOutports().begin(),
+                                   oldInport->getConnectedOutports().end(), [&](Outport* outport) {
+                                       return newInport->canConnectTo(outport);
+                                   });
+            });
 
-    for (size_t i = 0; i < std::min(inports.size(), oldInports.size()); ++i) {
-        for (auto outport : oldInports[i]->getConnectedOutports()) {
-            if (inports[i]->canConnectTo(outport)) {
-                // save new connection connectionOutportoldInport-processorInport
-                newConnections.emplace_back(outport, inports[i]);
+            if (it != oldInports.end()) {
+                for (auto* outport : (*it)->getConnectedOutports()) {
+                    newConnections.emplace_back(outport, newInport);
+                }
+                oldInports.erase(it);
             }
         }
     }
 
-    for (size_t i = 0; i < std::min(outports.size(), oldOutports.size()); ++i) {
-        for (auto inport : oldOutports[i]->getConnectedInports()) {
-            if (inport->canConnectTo(outports[i])) {
-                // save new connection processorOutport-connectionInport
-                newConnections.emplace_back(outports[i], inport);
+    {
+        std::vector<Outport*> oldOutports = oldProcessor->getOutports();
+        for (auto* newOutport : newProcessor->getOutports()) {
+            auto it =
+                std::find_if(oldOutports.begin(), oldOutports.end(), [&](Outport* oldOutport) {
+                    return std::all_of(
+                        oldOutport->getConnectedInports().begin(),
+                        oldOutport->getConnectedInports().end(),
+                        [&](Inport* inport) { return inport->canConnectTo(newOutport); });
+                });
+
+            if (it != oldOutports.end()) {
+                for (auto* inport : (*it)->getConnectedInports()) {
+                    newConnections.emplace_back(newOutport, inport);
+                }
+                oldOutports.erase(it);
             }
         }
     }

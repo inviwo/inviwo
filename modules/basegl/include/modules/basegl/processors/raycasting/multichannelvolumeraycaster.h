@@ -41,23 +41,10 @@
 #include <modules/basegl/raycasting/positionindicatorcomponent.h>
 #include <modules/basegl/raycasting/sampletransformcomponent.h>
 #include <modules/basegl/raycasting/volumecomponent.h>
+#include <modules/basegl/raycasting/entryexitcomponent.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MultiChannelVolumeRaycaster, Multi Channel Volume Raycaster}
- * ![](org.inviwo.MultiChannelVolumeRaycaster.png?classIdentifier=org.inviwo.MultiChannelVolumeRaycaster)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
 class IVW_MODULE_BASEGL_API MultiChannelVolumeRaycaster : public VolumeRaycasterBase {
 public:
     MultiChannelVolumeRaycaster(std::string_view identifier = "",
@@ -71,6 +58,7 @@ public:
 
 private:
     VolumeComponent volume_;
+    EntryExitComponent entryExit_;
     ClassifyComponent classify_;
     BackgroundComponent background_;
     RaycastingComponent raycasting_;

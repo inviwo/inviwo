@@ -46,7 +46,8 @@ const ProcessorInfo SphericalVolumeRaycaster::getProcessorInfo() const { return 
 SphericalVolumeRaycaster::SphericalVolumeRaycaster(std::string_view identifier,
                                                    std::string_view displayName)
     : VolumeRaycasterBase(identifier, displayName)
-    , volume_("volume")
+    , volume_{"volume"}
+    , entryExit_{}
     , classify_{volume_.getName()}
     , background_{*this}
     , raycasting_{volume_.getName()}
@@ -57,9 +58,9 @@ SphericalVolumeRaycaster::SphericalVolumeRaycaster(std::string_view identifier,
     , sphericalTransform_{}
     , sampleTransform_{} {
 
-    std::array<RaycasterComponent*, 10> comps{
-        &volume_, &classify_, &background_,        &raycasting_,         &isoTF_,
-        &camera_, &light_,    &positionIndicator_, &sphericalTransform_, &sampleTransform_};
+    std::array<RaycasterComponent*, 11> comps{
+        &volume_, &entryExit_, &classify_,          &background_,         &raycasting_,     &isoTF_,
+        &camera_, &light_,     &positionIndicator_, &sphericalTransform_, &sampleTransform_};
     registerComponents(comps);
 }
 

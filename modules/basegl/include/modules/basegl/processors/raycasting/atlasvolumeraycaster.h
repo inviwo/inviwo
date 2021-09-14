@@ -43,23 +43,10 @@
 #include <modules/basegl/raycasting/sampletransformcomponent.h>
 #include <modules/basegl/raycasting/timecomponent.h>
 #include <modules/basegl/raycasting/volumecomponent.h>
+#include <modules/basegl/raycasting/entryexitcomponent.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.AtlasVolumeRaycaster, Atlas Volume Raycaster}
- * ![](org.inviwo.AtlasVolumeRaycaster.png?classIdentifier=org.inviwo.AtlasVolumeRaycaster)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
 class IVW_MODULE_BASEGL_API AtlasVolumeRaycaster : public VolumeRaycasterBase {
 public:
     AtlasVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
@@ -73,6 +60,7 @@ public:
 private:
     TimeComponent time_;
     VolumeComponent volume_;
+    EntryExitComponent entryExit_;
     ClassifyComponent classify_;
     BackgroundComponent background_;
     RaycastingComponent raycasting_;

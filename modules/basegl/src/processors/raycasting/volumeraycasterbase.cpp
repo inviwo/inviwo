@@ -43,16 +43,12 @@ namespace inviwo {
 
 VolumeRaycasterBase::VolumeRaycasterBase(std::string_view identifier, std::string_view displayName)
     : Processor(identifier, displayName)
-    , entryPort_("entry")
-    , exitPort_("exit")
     , outport_("outport")
     , shader_{"raycasting/raycaster.frag", Shader::Build::No}
     , components_{} {
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    addPort(entryPort_, "images");
-    addPort(exitPort_, "images");
     addPort(outport_, "images");
 }
 
@@ -103,8 +99,6 @@ void VolumeRaycasterBase::process() {
 
     TextureUnitContainer units;
     utilgl::setUniforms(shader_, outport_);
-    utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepth);
-    utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
     for (auto& comp : components_) {
         try {
             comp->process(shader_, units);

@@ -116,9 +116,9 @@ AtlasComponent::AtlasComponent(Processor* p, std::string_view volume, TimeCompon
                      "Coloring Group",
                      {{"all", "All Segments", ColoringGroup::All},
                       {"selected", "Selected Segments", ColoringGroup::Selected},
-                      {"notSelected", "Not Selected Segments", ColoringGroup::NotSelected},
+                      {"unselected", "Unselected Segments", ColoringGroup::Unselected},
                       {"filtered", "Filtered Segments", ColoringGroup::Filtered},
-                      {"notFiltered", "Not Filtered Segments", ColoringGroup::NotFiltered},
+                      {"unfiltered", "Unfiltered Segments", ColoringGroup::Unfiltered},
                       {"zero", "Non Segment", ColoringGroup::Zero}},
                      0,
                      InvalidationLevel::Valid}
@@ -176,7 +176,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
                             fun(i + 1);
                         }
                     };
-                case ColoringGroup::NotSelected:
+                case ColoringGroup::Unselected:
                     return [&](std::function<void(size_t)> fun) {
                         for (size_t i = 1; i <= nsegments; ++i) {
                             if (!brushing_.isSelected(i - 1)) fun(i);
@@ -188,7 +188,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
                             fun(i + 1);
                         }
                     };
-                case ColoringGroup::NotFiltered:
+                case ColoringGroup::Unfiltered:
                     return [&](std::function<void(size_t)> fun) {
                         for (size_t i = 1; i <= nsegments; ++i) {
                             if (!brushing_.isFiltered(i - 1)) fun(i);
