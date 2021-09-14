@@ -102,19 +102,22 @@ public:
     /**
      * \brief Indexed point access, copy dataerror
      * Thread safe.
-     * @param dest Position to write to, expect T[NumComponents]
+     * @param dest Vector to write to, expect T[NumComponents]
      * @param index Linear point index
+     * @returns Is the result valid, i.e. not starting with the invalid value?
      */
     template <typename VecNT>
-    void fill(VecNT& dest, ind index, ind numElements = 1) const {
+    bool fill(VecNT& dest, ind index, ind numElements = 1) const {
         static_assert(sizeof(VecNT) == sizeof(T) * N,
                       "Size and type do not agree with the vector type.");
-        this->fillRaw(reinterpret_cast<T*>(&dest), index, numElements);
+        T* rawPtr = reinterpret_cast<T*>(&dest);
+        this->fillRaw(rawPtr, index, numElements);
+        return isValid(rawPtr[0]);
     }
 
     template <typename VecNT>
-    void operator()(VecNT& dest, ind index) const {
-        fill(dest, index);
+    bool operator()(VecNT& dest, ind index) const {
+        return fill(dest, index);
     }
 
     template <typename VecNT = DefaultVec>
@@ -194,6 +197,10 @@ public:
     template <typename VecNT>
     void getMinMax(VecNT& min, VecNT& max) const;
 
+    bool isValid(T val) const;
+    T getInvalidValue() const;
+    void setInvalidValue(T val);
+
 protected:
     void computeMinMax() const;
 
@@ -201,6 +208,7 @@ private:
     mutable std::array<double, N> min_;
     mutable std::array<double, N> max_;
     mutable bool validMinMax_ = false;
+    T invalidValue_ = std::numeric_limits<T>::min();
 };
 
 template <typename T, ind N>
@@ -255,14 +263,16 @@ void DataChannel<T, N>::computeMinMax() const {
     Vec minT;
     Vec maxT;
 
-    this->fill(minT, 0);
-    this->fill(maxT, 0);
+    // this->fill(minT, 0);
+    // this->fill(maxT, 0);
+    bool initialized = false;
 
     for (const Vec& val : this->all<Vec>()) {
-        for (ind dim = 0; dim < N; ++dim) {
-            minT[dim] = std::min(minT[dim], val[dim]);
-            maxT[dim] = std::max(maxT[dim], val[dim]);
-        }
+        if (val[0] == invalidValue_())
+            for (ind dim = 0; dim < N; ++dim) {
+                minT[dim] = std::min(minT[dim], val[dim]);
+                maxT[dim] = std::max(maxT[dim], val[dim]);
+            }
     }
 
     for (ind dim = 0; dim < N; ++dim) {
@@ -271,6 +281,21 @@ void DataChannel<T, N>::computeMinMax() const {
     }
 
     validMinMax_ = true;
+}
+
+template <typename T, ind N>
+bool DataChannel<T, N>::isValid(T val) const {
+    return !std::isnan(val) && val != invalidValue_;
+}
+
+template <typename T, ind N>
+T DataChannel<T, N>::getInvalidValue() const {
+    return invalidValue_;
+}
+
+template <typename T, ind N>
+void DataChannel<T, N>::setInvalidValue(T val) {
+    invalidValue_ = val;
 }
 
 }  // namespace discretedata
