@@ -195,7 +195,7 @@ Property* ListProperty::constructProperty(size_t prefabIndex) {
         }
 
         CompositeProperty::addProperty(property, true);
-        propertyModified();
+        invalidate(Property::getInvalidationLevel());
         return property;
     } else {
         LogError("Maximum number of list entries reached (" << this->getDisplayName() << ")");
@@ -223,7 +223,7 @@ void ListProperty::insertProperty(size_t index, Property* property, bool owner) 
     if ((maxNumElements_ == size_t{0}) || (size() + 1 < maxNumElements_)) {
         property->setSerializationMode(PropertySerializationMode::All);
         CompositeProperty::insertProperty(index, property, owner);
-        propertyModified();
+        invalidate(Property::getInvalidationLevel());
     } else {
         LogError("Maximum number of list entries reached (" << this->getDisplayName() << ")");
     }
@@ -235,25 +235,25 @@ void ListProperty::insertProperty(size_t index, Property& property) {
 
 Property* ListProperty::removeProperty(std::string_view identifier) {
     auto result = CompositeProperty::removeProperty(identifier);
-    propertyModified();
+    invalidate(Property::getInvalidationLevel());
     return result;
 }
 
 Property* ListProperty::removeProperty(Property* property) {
     auto result = CompositeProperty::removeProperty(property);
-    propertyModified();
+    invalidate(Property::getInvalidationLevel());
     return result;
 }
 
 Property* ListProperty::removeProperty(Property& property) {
     auto result = CompositeProperty::removeProperty(property);
-    propertyModified();
+    invalidate(Property::getInvalidationLevel());
     return result;
 }
 
 Property* ListProperty::removeProperty(size_t index) {
     auto result = CompositeProperty::removeProperty(index);
-    propertyModified();
+    invalidate(Property::getInvalidationLevel());
     return result;
 }
 
