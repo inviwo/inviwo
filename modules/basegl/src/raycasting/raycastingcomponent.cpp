@@ -73,7 +73,7 @@ void RaycastingComponent::initializeResources(Shader& shader) {
 namespace {
 
 constexpr std::string_view iso = util::trim(R"(
-result = drawISO(result, isoparams, {0}Voxel[channel], {0}VoxelPrev[channel],
+result = drawISO(result, isovalues, {0}Voxel[channel], {0}VoxelPrev[channel],
                 {0}Gradient, {0}GradientPrev, {0}Parameters.textureToWorld,
                 lighting, samplePosition, rayDirection,
                 cameraDir, rayPosition, rayStep, rayDepth);)");
@@ -99,7 +99,7 @@ auto RaycastingComponent::getSegments() -> std::vector<Segment> {
         segments.push_back(
             Segment{std::string(R"(#include "raycasting/iso.glsl")"), Segment::include, 1100});
         segments.push_back(
-            Segment{std::string("uniform IsovalueParameters isoparams;"), Segment::uniform, 1050});
+            Segment{std::string("uniform IsovalueParameters isovalues;"), Segment::uniform, 1050});
         segments.push_back(Segment{fmt::format(FMT_STRING(iso), volume_), Segment::first, 1050});
         segments.push_back(Segment{fmt::format(FMT_STRING(iso), volume_), Segment::loop, 1050});
     }
