@@ -39,6 +39,8 @@
 #include <QMenu>
 #include <warn/pop>
 
+#include <memory>
+
 class QAction;
 class QWidget;
 class QMenu;

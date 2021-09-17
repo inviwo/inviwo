@@ -34,6 +34,8 @@
 
 #include <modules/animation/animationcontrollerobserver.h>
 
+#include <memory>
+
 class QToolButton;
 class QMainWindow;
 class QComboBox;

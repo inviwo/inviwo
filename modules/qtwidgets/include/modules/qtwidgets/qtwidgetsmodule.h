@@ -33,6 +33,8 @@
 #include <modules/qtwidgets/tfhelpwindow.h>
 #include <inviwo/core/common/inviwomodule.h>
 
+#include <memory>
+
 namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API QtWidgetsModule : public InviwoModule {

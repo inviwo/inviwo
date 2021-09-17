@@ -37,6 +37,8 @@
 
 #include <unordered_set>
 
+#include <memory>
+
 namespace inviwo {
 
 class DataFrame;
