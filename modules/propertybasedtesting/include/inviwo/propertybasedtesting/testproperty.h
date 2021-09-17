@@ -39,7 +39,6 @@
 
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
 #include <inviwo/propertybasedtesting/algorithm/propertyanalyzing.h>
-#include <inviwo/propertybasedtesting/testresult.h>
 
 namespace inviwo {
 
@@ -49,6 +48,7 @@ template <typename T>
 class TestPropertyFactoryObjectTemplate;
 
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyObservable;
+class IVW_MODULE_PROPERTYBASEDTESTING_API TestResult;
 
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyObserver : public Observer {
 public:
@@ -305,7 +305,7 @@ public:
  * returns the combined expected effect (if any) of two values, given the
  * effect of each of the components.
  */
-template <typename T, size_t numComp = DataFormat<T>::components()>
+template <typename T, size_t numComp>
 PropertyEffect propertyEffect(const T& val_old, const T& val_new,
                               const std::array<pbt::PropertyEffect, numComp>& selectedEffects);
 

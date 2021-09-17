@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/propertybasedtesting/testproperty.h>
+#include <inviwo/propertybasedtesting/testresult.h>
 
 namespace inviwo {
 

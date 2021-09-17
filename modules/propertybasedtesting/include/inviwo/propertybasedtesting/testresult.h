@@ -31,15 +31,13 @@
 
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
 #include <inviwo/propertybasedtesting/algorithm/propertyanalyzing.h>
+#include <inviwo/propertybasedtesting/testproperty.h>
 
 #include <filesystem>
 
 namespace inviwo {
 
 namespace pbt {
-
-class IVW_MODULE_PROPERTYBASEDTESTING_API TestProperty;
-class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyComposite;
 template <typename T>
 class IVW_MODULE_PROPERTYBASEDTESTING_API TestPropertyTyped;
 

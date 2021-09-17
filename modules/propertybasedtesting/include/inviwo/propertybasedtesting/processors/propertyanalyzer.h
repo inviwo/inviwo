@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
 #include <inviwo/propertybasedtesting/testproperty.h>
+#include <inviwo/propertybasedtesting/testresult.h>
 #include <inviwo/propertybasedtesting/algorithm/coveringarray.h>
 #include <inviwo/propertybasedtesting/algorithm/propertyanalyzing.h>
 #include <inviwo/propertybasedtesting/algorithm/generatingassignments.h>

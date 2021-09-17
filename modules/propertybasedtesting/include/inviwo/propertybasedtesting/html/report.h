@@ -31,6 +31,7 @@
 
 #include <inviwo/propertybasedtesting/propertybasedtestingmoduledefine.h>
 #include <inviwo/propertybasedtesting/testproperty.h>
+#include <inviwo/propertybasedtesting/testresult.h>
 
 #include <iostream>
 
