@@ -35,6 +35,8 @@
 #include <QDoubleSpinBox>
 #include <warn/pop>
 
+#include <memory>
+
 namespace inviwo {
 
 class NumberLineEditPrivate;

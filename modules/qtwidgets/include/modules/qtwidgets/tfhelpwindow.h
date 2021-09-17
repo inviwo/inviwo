@@ -37,6 +37,8 @@
 #include <QObject>
 #include <warn/pop>
 
+#include <memory>
+
 class QAction;
 class QWidget;
 
