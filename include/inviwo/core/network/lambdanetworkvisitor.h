@@ -75,16 +75,16 @@ struct LambdaNetworkVisitor : NetworkVisitor, Funcs... {
 
     virtual bool visit([[maybe_unused]] Processor& processor) override {
         if constexpr (util::is_detected_exact_v<bool, ProcessorOverload, decltype(*this)>) {
-            return operator()(processor);
+            return this->operator()(processor);
         } else {
             return true;
         }
     }
     virtual bool visit([[maybe_unused]] CanvasProcessor& processor) override {
         if constexpr (util::is_detected_exact_v<bool, CanvasProcessorOverload, decltype(*this)>) {
-            return operator()(processor);
+            return this->operator()(processor);
         } else if constexpr (util::is_detected_exact_v<bool, ProcessorOverload, decltype(*this)>) {
-            return operator()(processor);
+            return this->operator()(processor);
         } else {
             return true;
         }
@@ -92,16 +92,16 @@ struct LambdaNetworkVisitor : NetworkVisitor, Funcs... {
 
     virtual bool visit([[maybe_unused]] Property& property) override {
         if constexpr (util::is_detected_exact_v<bool, PropertyOverload, decltype(*this)>) {
-            return operator()(property);
+            return this->operator()(property);
         } else {
             return true;
         }
     }
     virtual bool visit([[maybe_unused]] CompositeProperty& compositeProperty) override {
         if constexpr (util::is_detected_exact_v<bool, CompositePropertyOverload, decltype(*this)>) {
-            return operator()(compositeProperty);
+            return this->operator()(compositeProperty);
         } else if constexpr (util::is_detected_exact_v<bool, PropertyOverload, decltype(*this)>) {
-            return operator()(compositeProperty);
+            return this->operator()(compositeProperty);
         } else {
             return true;
         }
