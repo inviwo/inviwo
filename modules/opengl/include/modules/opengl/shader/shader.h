@@ -135,10 +135,16 @@ public:
     const ShaderObject* getVertexShaderObject() const;
     const ShaderObject* getGeometryShaderObject() const;
     const ShaderObject* getFragmentShaderObject() const;
+    const ShaderObject* getComputeShaderObject() const;
+    const ShaderObject* getTesselationControlShaderObject() const;
+    const ShaderObject* getTesselationEvaluationShaderObject() const;
 
     ShaderObject* getVertexShaderObject();
     ShaderObject* getGeometryShaderObject();
     ShaderObject* getFragmentShaderObject();
+    ShaderObject* getComputeShaderObject();
+    ShaderObject* getTesselationControlShaderObject();
+    ShaderObject* getTesselationEvaluationShaderObject();
 
     void activate();
     void deactivate();

@@ -476,11 +476,33 @@ const ShaderObject* Shader::getVertexShaderObject() const {
     return getShaderObject(ShaderType::Vertex);
 }
 
+const ShaderObject* Shader::getComputeShaderObject() const {
+    return getShaderObject(ShaderType::Compute);
+}
+
+const ShaderObject* Shader::getTesselationControlShaderObject() const {
+    return getShaderObject(ShaderType::TessellationControl);
+}
+
+const ShaderObject* Shader::getTesselationEvaluationShaderObject() const {
+    return getShaderObject(ShaderType::TessellationEvaluation);
+}
+
 ShaderObject* Shader::getFragmentShaderObject() { return getShaderObject(ShaderType::Fragment); }
 
 ShaderObject* Shader::getGeometryShaderObject() { return getShaderObject(ShaderType::Geometry); }
 
 ShaderObject* Shader::getVertexShaderObject() { return getShaderObject(ShaderType::Vertex); }
+
+ShaderObject* Shader::getComputeShaderObject() { return getShaderObject(ShaderType::Compute); }
+
+ShaderObject* Shader::getTesselationControlShaderObject() {
+    return getShaderObject(ShaderType::TessellationControl);
+}
+
+ShaderObject* Shader::getTesselationEvaluationShaderObject() {
+    return getShaderObject(ShaderType::TessellationEvaluation);
+}
 
 auto Shader::begin() -> iterator { return shaderObjects_.begin(); }
 auto Shader::end() -> iterator { return shaderObjects_.end(); }
