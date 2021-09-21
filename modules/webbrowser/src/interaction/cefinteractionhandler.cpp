@@ -246,9 +246,9 @@ CefKeyEvent CEFInteractionHandler::mapKeyEvent(const KeyboardEvent* e) {
     cefEvent.is_system_key = false;
 #endif
     if (e->state() & KeyState::Press) {
-        modifiers_ |= cef::keyModifiers(e->modifiers(), e->key());
+        modifiers_ |= utilcef::keyModifiers(e->modifiers(), e->key());
     } else {
-        modifiers_ &= ~cef::keyModifiers(e->modifiers(), e->key());
+        modifiers_ &= ~utilcef::keyModifiers(e->modifiers(), e->key());
     }
     cefEvent.modifiers = modifiers_;
     return cefEvent;

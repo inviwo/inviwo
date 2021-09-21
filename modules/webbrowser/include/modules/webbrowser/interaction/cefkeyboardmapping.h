@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-namespace cef {
+namespace utilcef {
 
 /*
  * Map IvwKey to CEF key
@@ -46,6 +46,6 @@ int IVW_MODULE_WEBBROWSER_API mapKey(IvwKey key);
  */
 unsigned int IVW_MODULE_WEBBROWSER_API keyModifiers(KeyModifiers modifiers, IvwKey key);
 
-};  // namespace cef
+}  // namespace utilcef
 
-};  // namespace inviwo
+}  // namespace inviwo
