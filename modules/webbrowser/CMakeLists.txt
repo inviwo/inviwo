@@ -103,6 +103,7 @@ set(HEADER_FILES
     include/modules/webbrowser/webbrowserclient.h
     include/modules/webbrowser/webbrowsermodule.h
     include/modules/webbrowser/webbrowsermoduledefine.h
+    include/modules/webbrowser/webbrowsersettings.h
     include/modules/webbrowser/webbrowserutil.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -124,6 +125,7 @@ set(SOURCE_FILES
     src/webbrowserapp.cpp
     src/webbrowserclient.cpp
     src/webbrowsermodule.cpp
+    src/webbrowsersettings.cpp
     src/webbrowserutil.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
