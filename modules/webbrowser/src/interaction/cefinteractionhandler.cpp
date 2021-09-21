@@ -122,8 +122,10 @@ void CEFInteractionHandler::handlePickingEvent(PickingEvent* p) {
 
     } else if (auto wheelEvent = p->getEventAs<WheelEvent>()) {
         auto cefMouseEvent = mapMouseEvent(wheelEvent);
-        host_->SendMouseWheelEvent(cefMouseEvent, static_cast<int>(wheelEvent->delta().x),
-                                   static_cast<int>(wheelEvent->delta().y));
+        // cef expects the wheel delta in multiples of 120
+        // see https://magpcss.org/ceforum/viewtopic.php?f=6&t=18203
+        host_->SendMouseWheelEvent(cefMouseEvent, static_cast<int>(wheelEvent->delta().x * 120),
+                                   static_cast<int>(wheelEvent->delta().y * 120));
         p->markAsUsed();
     }
 }
