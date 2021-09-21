@@ -35,6 +35,11 @@
 #include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <include/base/cef_logging.h>
+#include <warn/pop>
+
 #include <iostream>
 #include <string>
 #include <locale>

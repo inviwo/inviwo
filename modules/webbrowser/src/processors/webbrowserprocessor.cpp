@@ -135,7 +135,7 @@ WebBrowserProcessor::WebBrowserProcessor(InviwoApplication* app)
     browserClient->addLoadHandler(this);
     // Inject events into CEF browser_
     cefInteractionHandler_.setHost(browser_->GetHost());
-    cefInteractionHandler_.setRenderHandler(renderHandler_);
+    cefInteractionHandler_.setRenderHandler(renderHandler_.get());
     addInteractionHandler(&cefInteractionHandler_);
 }
 

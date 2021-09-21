@@ -48,27 +48,27 @@ public:
     CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
 
     // CefRenderProcessHandler methods:
-    void OnWebKitInitialized() OVERRIDE {
+    void OnWebKitInitialized() override {
         // Create the renderer-side router for query handling.
         CefMessageRouterConfig config;
         messageRouter_ = CefMessageRouterRendererSide::Create(config);
     }
 
     void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                          CefRefPtr<CefV8Context> context) OVERRIDE {
+                          CefRefPtr<CefV8Context> context) override {
         // Register the JavaScripts functions with the new context.
         messageRouter_->OnContextCreated(browser, frame, context);
     }
 
     void OnContextReleased(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                           CefRefPtr<CefV8Context> context) OVERRIDE {
+                           CefRefPtr<CefV8Context> context) override {
 
         messageRouter_->OnContextReleased(browser, frame, context);
     }
 
     bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                   CefProcessId source_process,
-                                  CefRefPtr<CefProcessMessage> message) OVERRIDE {
+                                  CefRefPtr<CefProcessMessage> message) override {
         return messageRouter_->OnProcessMessageReceived(browser, frame, source_process, message);
     }
 
