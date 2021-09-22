@@ -199,6 +199,9 @@ bool InteractionEventMapperQt::mapMousePressEvent(QMouseEvent* e) {
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::Press,
                           utilqt::getMouseButtons(e), utilqt::getModifiers(e), pos,
                           imageDimensions_(), depth_(pos));
+    mouseEvent.setMouseCursorCallback([this](MouseCursor c) -> void {
+        if (cursorChange_) cursorChange_(util::toCursorShape(c));
+    });
     e->accept();
 
     propagator_->propagateEvent(&mouseEvent, nullptr);
@@ -216,7 +219,9 @@ bool InteractionEventMapperQt::mapMouseDoubleClickEvent(QMouseEvent* e) {
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::DoubleClick,
                           utilqt::getMouseButtons(e), utilqt::getModifiers(e), pos,
                           imageDimensions_(), depth_(pos));
-
+    mouseEvent.setMouseCursorCallback([this](MouseCursor c) -> void {
+        if (cursorChange_) cursorChange_(util::toCursorShape(c));
+    });
     e->accept();
     propagator_->propagateEvent(&mouseEvent, nullptr);
     if (e->button() == Qt::RightButton) blockContextMenu_ = true;
@@ -232,6 +237,9 @@ bool InteractionEventMapperQt::mapMouseReleaseEvent(QMouseEvent* e) {
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::Release,
                           utilqt::getMouseButtons(e), utilqt::getModifiers(e), pos,
                           imageDimensions_(), depth_(pos));
+    mouseEvent.setMouseCursorCallback([this](MouseCursor c) -> void {
+        if (cursorChange_) cursorChange_(util::toCursorShape(c));
+    });
     e->accept();
     propagator_->propagateEvent(&mouseEvent, nullptr);
 
@@ -251,6 +259,9 @@ bool InteractionEventMapperQt::mapMouseMoveEvent(QMouseEvent* e) {
 
     MouseEvent mouseEvent(MouseButton::None, MouseState::Move, utilqt::getMouseButtons(e),
                           utilqt::getModifiers(e), pos, imageDimensions_(), depth_(pos));
+    mouseEvent.setMouseCursorCallback([this](MouseCursor c) -> void {
+        if (cursorChange_) cursorChange_(util::toCursorShape(c));
+    });
     e->accept();
     propagator_->propagateEvent(&mouseEvent, nullptr);
     if (e->button() == Qt::RightButton) blockContextMenu_ = true;
@@ -279,6 +290,9 @@ bool InteractionEventMapperQt::mapWheelEvent(QWheelEvent* e) {
 
     WheelEvent wheelEvent(utilqt::getMouseWheelButtons(e), utilqt::getModifiers(e), numSteps, pos,
                           imageDimensions_(), depth_(pos));
+    wheelEvent.setMouseCursorCallback([this](MouseCursor c) -> void {
+        if (cursorChange_) cursorChange_(util::toCursorShape(c));
+    });
     e->accept();
     propagator_->propagateEvent(&wheelEvent, nullptr);
 
