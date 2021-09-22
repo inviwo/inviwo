@@ -110,14 +110,14 @@ struct OptionEnumCEFWidgetReghelper {
 
 WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     : InviwoModule(app, "WebBrowser")
-    // Call 60 times per second
-    , doChromiumWork_(Timer::Milliseconds(1000 / 60), []() { CefDoMessageLoopWork(); }) {
+    , doChromiumWork_(Timer::Milliseconds(16), []() { CefDoMessageLoopWork(); }) {
 
     auto moduleSettings = std::make_unique<WebBrowserSettings>();
 
-    moduleSettings->refreshrate_.onChange([this, ptr = moduleSettings.get()]() {
-        doChromiumWork_.setInterval(Timer::Milliseconds(1000 / ptr->refreshrate_));
+    moduleSettings->refreshRate_.onChange([this, ptr = moduleSettings.get()]() {
+        doChromiumWork_.setInterval(Timer::Milliseconds(1000 / ptr->refreshRate_));
     });
+    doChromiumWork_.setInterval(Timer::Milliseconds(1000 / moduleSettings->refreshRate_));
 
     registerSettings(std::move(moduleSettings));
 

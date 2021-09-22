@@ -38,7 +38,7 @@ class IVW_MODULE_WEBBROWSER_API WebBrowserSettings : public Settings {
 public:
     WebBrowserSettings();
 
-    IntProperty refreshrate_;
+    IntProperty refreshRate_;
 };
 
 }  // namespace inviwo

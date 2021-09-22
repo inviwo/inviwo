@@ -33,11 +33,11 @@ namespace inviwo {
 
 WebBrowserSettings::WebBrowserSettings()
     : Settings("Web Browser")
-    , refreshrate_("refreshrate", "Refresh Rate (Hz)", 30, {0, ConstraintBehavior::Immutable},
+    , refreshRate_("refreshRate", "Refresh Rate (Hz)", 60, {1, ConstraintBehavior::Immutable},
                    {240, ConstraintBehavior::Editable}, 1, InvalidationLevel::InvalidOutput,
                    PropertySemantics::Text) {
 
-    addProperty(refreshrate_);
+    addProperty(refreshRate_);
 
     load();
 }
