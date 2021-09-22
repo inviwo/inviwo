@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,26 +26,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <inviwo/core/interaction/events/keyboardkeys.h>
+#include <inviwo/core/util/settings/settings.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
-namespace utilcef {
+class IVW_MODULE_WEBBROWSER_API WebBrowserSettings : public Settings {
+public:
+    WebBrowserSettings();
 
-/*
- * Map IvwKey to CEF key
- */
-int IVW_MODULE_WEBBROWSER_API mapKey(IvwKey key);
-
-/*
- * Map KeyModifiers to CEF modifiers
- */
-unsigned int IVW_MODULE_WEBBROWSER_API keyModifiers(KeyModifiers modifiers, IvwKey key);
-
-}  // namespace utilcef
+    IntProperty refreshRate_;
+};
 
 }  // namespace inviwo

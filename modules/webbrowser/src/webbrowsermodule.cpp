@@ -30,6 +30,7 @@
 #include <modules/webbrowser/webbrowsermodule.h>
 #include <modules/webbrowser/processors/webbrowserprocessor.h>
 #include <modules/webbrowser/webbrowserapp.h>
+#include <modules/webbrowser/webbrowsersettings.h>
 
 #include <modules/json/io/json/boolpropertyjsonconverter.h>
 #include <modules/json/io/json/buttonpropertyjsonconverter.h>
@@ -109,8 +110,16 @@ struct OptionEnumCEFWidgetReghelper {
 
 WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     : InviwoModule(app, "WebBrowser")
-    // Call 60 times per second
-    , doChromiumWork_(Timer::Milliseconds(1000 / 60), []() { CefDoMessageLoopWork(); }) {
+    , doChromiumWork_(Timer::Milliseconds(16), []() { CefDoMessageLoopWork(); }) {
+
+    auto moduleSettings = std::make_unique<WebBrowserSettings>();
+
+    moduleSettings->refreshRate_.onChange([this, ptr = moduleSettings.get()]() {
+        doChromiumWork_.setInterval(Timer::Milliseconds(1000 / ptr->refreshRate_));
+    });
+    doChromiumWork_.setInterval(Timer::Milliseconds(1000 / moduleSettings->refreshRate_));
+
+    registerSettings(std::move(moduleSettings));
 
     // Register widgets
     registerPropertyWidgetCEF<PropertyWidgetCEF, BoolProperty>();

@@ -46,7 +46,7 @@ public:
                    const CefRefPtr<CefFrame> frame)
         : CefStringVisitor(), stringToFind_(stringToFind), widget_(widget), frame_(frame){};
 
-    void Visit(const CefString& string) OVERRIDE {
+    void Visit(const CefString& string) override {
         std::string domString = string;
 
         // Remove all the html comments to avoid finding element id's in the comments.

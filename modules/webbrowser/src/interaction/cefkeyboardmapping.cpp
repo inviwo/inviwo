@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-namespace cef {
+namespace utilcef {
 
 int mapKey(IvwKey key) {
     switch (key) {
@@ -140,6 +140,6 @@ unsigned int keyModifiers(KeyModifiers modifiers, IvwKey key) {
     return cefModifiers;
 }
 
-};  // namespace cef
+}  // namespace utilcef
 
-};  // namespace inviwo
+}  // namespace inviwo

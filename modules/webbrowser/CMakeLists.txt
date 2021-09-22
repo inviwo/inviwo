@@ -16,7 +16,7 @@
 # FATAL:async_layer_tree_frame_sink.cc
 # Known issue: Dropdown does not work.
 # Probably due to https://magpcss.org/ceforum/viewtopic.php?f=6&t=11618
-set(CEF_VERSION "89.0.12+g2b76680+chromium-89.0.4389.90")
+set(CEF_VERSION "93.1.14+gf38ce34+chromium-93.0.4577.82")
 
 # Determine the platform.
 include("cmake/cef_platform.cmake")
@@ -103,6 +103,7 @@ set(HEADER_FILES
     include/modules/webbrowser/webbrowserclient.h
     include/modules/webbrowser/webbrowsermodule.h
     include/modules/webbrowser/webbrowsermoduledefine.h
+    include/modules/webbrowser/webbrowsersettings.h
     include/modules/webbrowser/webbrowserutil.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -124,6 +125,7 @@ set(SOURCE_FILES
     src/webbrowserapp.cpp
     src/webbrowserclient.cpp
     src/webbrowsermodule.cpp
+    src/webbrowsersettings.cpp
     src/webbrowserutil.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

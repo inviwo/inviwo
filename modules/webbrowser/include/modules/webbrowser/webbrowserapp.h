@@ -66,9 +66,9 @@ public:
     ///
     /*--cef(optional_param=process_type)--*/
     virtual void OnBeforeCommandLineProcessing(const CefString& process_type,
-                                               CefRefPtr<CefCommandLine> command_line) OVERRIDE;
+                                               CefRefPtr<CefCommandLine> command_line) override;
     // CefBrowserProcessHandler methods:
-    CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() OVERRIDE { return this; }
+    CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override { return this; }
 
 private:
     IMPLEMENT_REFCOUNTING(WebBrowserApp);
