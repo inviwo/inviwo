@@ -129,6 +129,9 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
     playOptions.setCollapsed(true);
     addProperty(playOptions);
 
+    framesPerSecond.onChange([this](){ setPlaySpeed(framesPerSecond); });
+    setPlaySpeed(framesPerSecond);
+
     // Rendering Settings
     renderWindowMode.onChange([&]() { renderWindow.setVisible(renderWindowMode.get() == 1); });
     renderWindow.setVisible(renderWindowMode.get() == 1);
