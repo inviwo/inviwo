@@ -301,15 +301,9 @@ bool PropertyListWidget::event(QEvent* e) {
     }
 }
 
-void PropertyListWidget::onProcessorNetworkEvaluationBegin() {
-    setUpdatesEnabled(false);
-    frame_->setEnabled(false);
-}
+void PropertyListWidget::onProcessorNetworkEvaluationBegin() { setUpdatesEnabled(false); }
 
-void PropertyListWidget::onProcessorNetworkEvaluationEnd() {
-    frame_->setEnabled(true);
-    setUpdatesEnabled(true);
-}
+void PropertyListWidget::onProcessorNetworkEvaluationEnd() { setUpdatesEnabled(true); }
 
 PropertyListEvent::PropertyListEvent(Action action, std::string processorId)
     : QEvent(PropertyListEvent::type()), action_(action), processorId_(processorId) {}
