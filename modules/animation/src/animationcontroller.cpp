@@ -65,15 +65,20 @@ size_t imageExtIndex(InviwoApplication* app, std::string_view ext) {
 }  // namespace
 
 AnimationController::AnimationController(Animation& animation, InviwoApplication* app)
-    : playOptions("PlayOptions", "Play Settings")
+    : deltaTime_(Seconds(1.0 / 25.0))
+    , playOptions("PlayOptions", "Play Settings")
     , playWindowMode("PlayFirstLastTimeOption", "Time",
                      {{"FullTimeWindow", "Play full animation", 0},
                       {"UserTimeWindow", "Selected time window", 1}},
                      0)
     , playWindow("PlayFirstLastTime", "Window", 0, 10, 0, 1e5, 1, 0.0,
                  InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , framesPerSecond("PlayFramesPerSecond", "Frames per Second", 25.0, 000.1, 1000.0, 1.0,
-                      InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , framesPerSecond(
+          "PlayFramesPerSecond", "Frames per Second",
+          [this]() { return 1.0 / std::abs(deltaTime_.count()); },
+          [this](const double& value) { deltaTime_ = Seconds(1.0 / value); },
+          {000.1, ConstraintBehavior::Immutable}, {1000.0, ConstraintBehavior::Immutable}, 1.0,
+          InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , playMode("PlayMode", "Mode",
                {{"Once", "Play once", PlaybackMode::Once},
                 {"Loop", "Loop animation", PlaybackMode::Loop},
@@ -113,7 +118,6 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
     , app_(app)
     , state_(AnimationState::Paused)
     , currentTime_(0)
-    , deltaTime_(Seconds(1.0 / 60.0))
     , timer_{std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime_), [this] {
                  if (state_ == AnimationState::Rendering)
                      tickRender();
@@ -129,8 +133,10 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
     playOptions.setCollapsed(true);
     addProperty(playOptions);
 
-    framesPerSecond.onChange([this](){ setPlaySpeed(framesPerSecond); });
-    setPlaySpeed(framesPerSecond);
+    framesPerSecond.onChange([this]() {
+        timer_.setInterval(
+            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::abs(deltaTime_)));
+    });
 
     // Rendering Settings
     renderWindowMode.onChange([&]() { renderWindow.setVisible(renderWindowMode.get() == 1); });
@@ -477,12 +483,6 @@ void AnimationController::setAnimation(Animation& animation) {
     setTime(Seconds(0.0));
 }
 
-void AnimationController::setPlaySpeed(double fps) {
-    deltaTime_ = Seconds(1.0 / fps);
-    timer_.setInterval(
-        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::abs(deltaTime_)));
-}
-
 const Animation& AnimationController::getAnimation() const { return *animation_; }
 
 Animation& AnimationController::getAnimation() { return *animation_; }
@@ -517,6 +517,7 @@ void AnimationController::resetAllPoperties() {
 
 void AnimationController::serialize(Serializer& s) const {
     PropertyOwner::serialize(s);
+    s.serialize("framesPerSecond", framesPerSecond.get());
     if (renderImageExtension.size() > 0) {
         s.serialize("renderImageExtension", renderImageExtension.getSelectedValue());
     }
@@ -528,6 +529,9 @@ void AnimationController::deserialize(Deserializer& d) {
     const auto options = imageExts(app_);
     std::string selectedValue{defaultImageExt};
 
+    double fps = framesPerSecond;
+    d.deserialize("framesPerSecond", fps);
+    framesPerSecond.set(fps);
     d.deserialize("renderImageExtension", selectedValue);
 
     renderImageExtension.replaceOptions(options);
