@@ -62,9 +62,9 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
 
     {
         QIcon enableTrackIcon;
-        enableTrackIcon.addFile(":/animation/icons/crossedeye_32.png", iconSize, QIcon::Normal,
+        enableTrackIcon.addFile(":/animation/icons/crossedeye.svg", iconSize, QIcon::Normal,
                                 QIcon::On);
-        enableTrackIcon.addFile(":/animation/icons/eye_look_search_view_icon_32.png", iconSize,
+        enableTrackIcon.addFile(":/animation/icons/eye_look_search_view_icon_128.svg", iconSize,
                                 QIcon::Normal, QIcon::Off);
         QAction* disable = new QAction(enableTrackIcon, "Enable/Disable Track", this);
         connect(disable, &QAction::triggered, this,
@@ -80,10 +80,10 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
     {
         QIcon lockTrackIcon;
         lockTrackIcon.addFile(
-            ":/animation/icons/account_lock_password_protect_save_saving_security_icon_32.png",
+            ":/animation/icons/account_lock_password_protect_save_saving_security_icon_128.svg",
             iconSize, QIcon::Normal, QIcon::Off);
         lockTrackIcon.addFile(
-            ":/animation/icons/lock_open_opened_protection_safety_security_unlocked_icon_32.png",
+            ":/animation/icons/lock_open_opened_protection_safety_security_unlocked_icon_128.svg",
             iconSize, QIcon::Normal, QIcon::On);
         QAction* lock = new QAction(lockTrackIcon, "Lock/Unlock Track", this);
         connect(lock, &QAction::triggered, this,
@@ -102,7 +102,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
 
     {
         QIcon prevIcon;
-        prevIcon.addFile(":/animation/icons/arrow_direction_left_next_previous_return_icon_32.png",
+        prevIcon.addFile(":/animation/icons/arrow_direction_left_next_previous_return_icon_128.svg",
                          iconSize, QIcon::Normal, QIcon::On);
         QAction* prev = new QAction(prevIcon, "Prev Keyframe", this);
         connect(prev, &QAction::triggered, this, [this]() {
@@ -119,10 +119,10 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
 
     {
         QIcon keyFrameHandlingIcon;
-        keyFrameHandlingIcon.addFile(":/animation/icons/add_create_new_plus_icon_32.png", iconSize,
+        keyFrameHandlingIcon.addFile(":/animation/icons/add_create_new_plus_icon_128.svg", iconSize,
                                      QIcon::Normal, QIcon::On);
         keyFrameHandlingIcon.addFile(
-            ":/animation/icons/basket_delete_garbage_trash_waste_icon_32.png", iconSize,
+            ":/animation/icons/basket_delete_garbage_trash_waste_icon_128.svg", iconSize,
             QIcon::Normal, QIcon::Off);
         QAction* addAndDelete = new QAction(keyFrameHandlingIcon, "Add Keyframe", this);
 
@@ -139,7 +139,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
 
     {
         QIcon nextIcon;
-        nextIcon.addFile(":/animation/icons/arrow_direction_previous_right_icon_32.png", iconSize,
+        nextIcon.addFile(":/animation/icons/arrow_direction_previous_right_icon_128.svg", iconSize,
                          QIcon::Normal, QIcon::On);
         QAction* next = new QAction(nextIcon, "Next Keyframe", this);
         connect(next, &QAction::triggered, this, [this]() {
