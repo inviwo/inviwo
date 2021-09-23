@@ -177,7 +177,7 @@ AnimationModule::~AnimationModule() {
     unRegisterAll();
 }
 
-int AnimationModule::getVersion() const { return 2; }
+int AnimationModule::getVersion() const { return 3; }
 
 std::unique_ptr<VersionConverter> AnimationModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -236,7 +236,18 @@ bool AnimationModule::Converter::convert(TxElement* root) {
                 root->RemoveChild(e);
 
                 root->InsertEndChild(list);
-                res = true;
+                res |= true;
+            }
+            [[fallthrough]];
+        }
+        case 2: {
+            auto ac = xml::getMatchingElements(root, "AnimationController");
+            if (!ac.empty()) {
+                res |= xml::changeAttribute(ac.front(),
+                                            {xml::Kind::property("org.inviwo.CompositeProperty"),
+                                             xml::Kind::property("org.inviwo.DoubleProperty")},
+                                            "type", "org.inviwo.DoubleProperty",
+                                            "org.inviwo.DoubleRefProperty");
             }
             [[fallthrough]];
         }
