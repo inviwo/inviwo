@@ -81,10 +81,10 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
         QIcon lockTrackIcon;
         lockTrackIcon.addFile(
             ":/animation/icons/account_lock_password_protect_save_saving_security_icon_128.svg",
-            iconSize, QIcon::Normal, QIcon::Off);
+            iconSize, QIcon::Normal, QIcon::On);
         lockTrackIcon.addFile(
             ":/animation/icons/lock_open_opened_protection_safety_security_unlocked_icon_128.svg",
-            iconSize, QIcon::Normal, QIcon::On);
+            iconSize, QIcon::Normal, QIcon::Off);
         QAction* lock = new QAction(lockTrackIcon, "Lock/Unlock Track", this);
         connect(lock, &QAction::triggered, this,
                 [=]() { LogWarn("Locking tracks is not implemented yet."); });
