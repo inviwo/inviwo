@@ -248,7 +248,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
 
     {
         auto begin = toolBar->addAction(
-            QIcon(":/animation/icons/arrow_media_next_player_previous_song_icon_32.png"),
+            QIcon(":/animation/icons/arrow_media_next_player_previous_song_icon_128.svg"),
             "To Beginning");
         begin->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         begin->setToolTip("To Beginning");
@@ -259,7 +259,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
 
     {
         auto prev = toolBar->addAction(
-            QIcon(":/animation/icons/arrow_arrows_direction_previous_icon_32.png"), "Prev Key");
+            QIcon(":/animation/icons/arrow_arrows_direction_previous_icon_128.svg"), "Prev Key");
         prev->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         prev->setToolTip("Prev Key");
         mainWindow_->addAction(prev);
@@ -274,9 +274,9 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
 
     {
         QIcon icon;
-        icon.addFile(":/animation/icons/arrow_play_player_record_right_start_icon_32.png", QSize(),
+        icon.addFile(":/animation/icons/arrow_play_player_record_right_start_icon_128.svg", QSize(),
                      QIcon::Normal, QIcon::Off);
-        icon.addFile(":/animation/icons/film_movie_pause_player_sound_icon_32.png", QSize(),
+        icon.addFile(":/animation/icons/film_movie_pause_player_sound_icon_128.svg", QSize(),
                      QIcon::Normal, QIcon::On);
         btnPlayPause_ = toolBar->addAction(icon, "Play/Pause");
         btnPlayPause_->setShortcut(Qt::Key_P);
@@ -297,7 +297,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
 
     {
         auto next = toolBar->addAction(
-            QIcon(":/animation/icons/arrow_arrows_direction_next_previous_icon_32.png"),
+            QIcon(":/animation/icons/arrow_arrows_direction_next_previous_icon_128.svg"),
             "Next Key");
         next->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         next->setToolTip("Next Key");
@@ -313,7 +313,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(
 
     {
         auto end = toolBar->addAction(
-            QIcon(":/animation/icons/arrow_next_player_previous_icon_32.png"), "To End");
+            QIcon(":/animation/icons/arrow_next_player_previous_icon_128.svg"), "To End");
         end->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         end->setToolTip("To End");
         mainWindow_->addAction(end);

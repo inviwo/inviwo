@@ -42,6 +42,7 @@
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 
@@ -84,7 +85,6 @@ public:
     void eval(Seconds oldTime, Seconds newTime);
 
     void setAnimation(Animation& animation);
-    void setPlaySpeed(double framesPerSecond);
 
     /// Returns mutable controlled animation.
     Animation& getAnimation();
@@ -108,10 +108,15 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+protected:
+    /// Time span between two frames. Needs to be defined prior framesPerSecond (DoubleRefProperty)
+    Seconds deltaTime_;
+
+public:
     CompositeProperty playOptions;
     OptionPropertyInt playWindowMode;
     DoubleMinMaxProperty playWindow;
-    DoubleProperty framesPerSecond;
+    DoubleRefProperty framesPerSecond;
     TemplateOptionProperty<PlaybackMode> playMode;
 
     CompositeProperty renderOptions;
@@ -148,9 +153,6 @@ protected:
 
     /// Current time of the animation. This is an important variable to keep consistent!
     Seconds currentTime_;
-
-    /// Time span between two frames.
-    Seconds deltaTime_;
 
     /// Timer for calling the tick function is regular intervals.
     Timer timer_;
