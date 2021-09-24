@@ -77,7 +77,7 @@ AnimationController::AnimationController(Animation& animation, InviwoApplication
           "PlayFramesPerSecond", "Frames per Second",
           [this]() { return 1.0 / std::abs(deltaTime_.count()); },
           [this](const double& value) { deltaTime_ = Seconds(1.0 / value); },
-          {000.1, ConstraintBehavior::Immutable}, {1000.0, ConstraintBehavior::Immutable}, 1.0,
+          {0.001, ConstraintBehavior::Immutable}, {1000.0, ConstraintBehavior::Immutable}, 1.0,
           InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , playMode("PlayMode", "Mode",
                {{"Once", "Play once", PlaybackMode::Once},
