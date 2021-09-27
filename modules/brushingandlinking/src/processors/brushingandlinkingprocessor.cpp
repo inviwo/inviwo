@@ -30,6 +30,8 @@
 #include <modules/brushingandlinking/events/brushingandlinkingevent.h>
 #include <modules/brushingandlinking/events/filteringevent.h>
 #include <modules/brushingandlinking/events/selectionevent.h>
+#include <modules/brushingandlinking/events/highlightevent.h>
+#include <modules/brushingandlinking/events/columnselectionevent.h>
 #include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
 
 namespace inviwo {
@@ -70,6 +72,9 @@ void BrushingAndLinkingProcessor::invokeEvent(Event* event) {
             event->markAsUsed();
         } else if (dynamic_cast<SelectionEvent*>(event)) {
             manager_->setSelected(brushingEvent->getSource(), brushingEvent->getIndices());
+            event->markAsUsed();
+        } else if (dynamic_cast<HighlightEvent*>(event)) {
+            manager_->setHighlighted(brushingEvent->getSource(), brushingEvent->getIndices());
             event->markAsUsed();
         } else if (dynamic_cast<ColumnSelectionEvent*>(event)) {
             manager_->setSelectedColumn(brushingEvent->getSource(), brushingEvent->getIndices());

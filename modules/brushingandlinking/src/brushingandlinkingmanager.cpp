@@ -52,6 +52,8 @@ size_t BrushingAndLinkingManager::getNumberOfSelected() const { return selected_
 
 size_t BrushingAndLinkingManager::getNumberOfFiltered() const { return filtered_.getSize(); }
 
+size_t BrushingAndLinkingManager::getNumberOfHighlighted() const { return highlighted_.size(); }
+
 size_t BrushingAndLinkingManager::getNumberOfSelectedColumns() const {
     return selectedColumns_.size();
 }
@@ -82,6 +84,17 @@ void BrushingAndLinkingManager::setFiltered(const BrushingAndLinkingInport* src,
 
 void BrushingAndLinkingManager::clearFiltered() { filtered_.clear(); }
 
+void BrushingAndLinkingManager::setHighlighted(const BrushingAndLinkingInport*,
+                                               const std::unordered_set<size_t>& indices) {
+    highlighted_ = indices;
+    owner_->invalidate(invalidationLevel_);
+}
+
+void BrushingAndLinkingManager::clearHighlighted() {
+    highlighted_.clear();
+    owner_->invalidate(invalidationLevel_);
+}
+
 void BrushingAndLinkingManager::setSelectedColumn(const BrushingAndLinkingInport*,
                                                   const std::unordered_set<size_t>& indices) {
     selectedColumns_ = indices;
@@ -99,6 +112,10 @@ const std::unordered_set<size_t>& BrushingAndLinkingManager::getSelectedIndices(
 
 const std::unordered_set<size_t>& BrushingAndLinkingManager::getFilteredIndices() const {
     return filtered_.getIndices();
+}
+
+const std::unordered_set<size_t>& BrushingAndLinkingManager::getHighlightedIndices() const {
+    return highlighted_;
 }
 
 const std::unordered_set<size_t>& BrushingAndLinkingManager::getSelectedColumns() const {

@@ -57,6 +57,9 @@ public:
      * displayed.
      */
     size_t getNumberOfFiltered() const;
+
+    size_t getNumberOfHighlighted() const;
+
     /*
      * Return the number of selected columns.
      */
@@ -66,6 +69,7 @@ public:
 
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
+    bool isHighlighted(size_t idx) const;
 
     bool isColumnSelected(size_t column) const;
 
@@ -75,16 +79,21 @@ public:
     void setFiltered(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& idx);
     void clearFiltered();
 
+    void setHighlighted(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& idx);
+    void clearHighlighted();
+
     void setSelectedColumn(const BrushingAndLinkingInport* src,
                            const std::unordered_set<size_t>& columnIndices);
     void clearColumns();
 
     const std::unordered_set<size_t>& getSelectedIndices() const;
     const std::unordered_set<size_t>& getFilteredIndices() const;
+    const std::unordered_set<size_t>& getHighlightedIndices() const;
     const std::unordered_set<size_t>& getSelectedColumns() const;
 
 private:
     std::unordered_set<size_t> selected_;
+    std::unordered_set<size_t> highlighted_;
     std::unordered_set<size_t> selectedColumns_;
     IndexList filtered_;  // Use IndexList to be able to remove filtered rows on port disconnection
     std::shared_ptr<std::function<void()>> onFilteringChangeCallback_;
@@ -97,6 +106,10 @@ inline bool BrushingAndLinkingManager::isFiltered(size_t idx) const { return fil
 
 inline bool BrushingAndLinkingManager::isSelected(size_t idx) const {
     return selected_.find(idx) != selected_.end();
+}
+
+inline bool BrushingAndLinkingManager::isHighlighted(size_t idx) const {
+    return highlighted_.find(idx) != highlighted_.end();
 }
 
 }  // namespace inviwo

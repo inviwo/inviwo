@@ -34,9 +34,6 @@
 #include <inviwo/core/ports/port.h>
 #include <modules/brushingandlinking/brushingandlinkingmanager.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/events/filteringevent.h>
-#include <modules/brushingandlinking/events/selectionevent.h>
-#include <modules/brushingandlinking/events/columnselectionevent.h>
 #include <inviwo/core/datastructures/datatraits.h>
 
 namespace inviwo {
@@ -51,21 +48,26 @@ public:
 
     void sendSelectionEvent(const std::unordered_set<size_t>& indices);
 
+    void sendHighlightEvent(const std::unordered_set<size_t>& indices);
+
     void sendColumnSelectionEvent(const std::unordered_set<size_t>& indices);
 
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
+    bool isHighlighted(size_t idx) const;
 
     bool isColumnSelected(size_t idx) const;
 
     const std::unordered_set<size_t>& getSelectedIndices() const;
     const std::unordered_set<size_t>& getFilteredIndices() const;
+    const std::unordered_set<size_t>& getHighlightedIndices() const;
     const std::unordered_set<size_t>& getSelectedColumns() const;
 
     virtual std::string getClassIdentifier() const override;
 
     std::unordered_set<size_t> filterCache_;
     std::unordered_set<size_t> selectionCache_;
+    std::unordered_set<size_t> highlightCache_;
     std::unordered_set<size_t> selectionColumnCache_;
 };
 
@@ -101,6 +103,7 @@ struct DataTraits<BrushingAndLinkingManager> {
         utildoc::TableBuilder tb(doc.handle(), P::end());
         tb(H("Selected Indices"), data.getNumberOfSelected());
         tb(H("Filtered Indices"), data.getNumberOfFiltered());
+        tb(H("Highlighted Indices"), data.getNumberOfHighlighted());
         tb(H("Selected Columns"), data.getNumberOfSelectedColumns());
         return doc;
     }
@@ -119,6 +122,14 @@ inline bool BrushingAndLinkingInport::isSelected(size_t idx) const {
         return getData()->isSelected(idx);
     } else {
         return selectionCache_.find(idx) != selectionCache_.end();
+    }
+}
+
+inline bool BrushingAndLinkingInport::isHighlighted(size_t idx) const {
+    if (isConnected()) {
+        return getData()->isHighlighted(idx);
+    } else {
+        return highlightCache_.find(idx) != highlightCache_.end();
     }
 }
 

@@ -29,6 +29,11 @@
 
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
+#include <modules/brushingandlinking/events/filteringevent.h>
+#include <modules/brushingandlinking/events/selectionevent.h>
+#include <modules/brushingandlinking/events/highlightevent.h>
+#include <modules/brushingandlinking/events/columnselectionevent.h>
+
 namespace inviwo {
 
 BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
@@ -38,6 +43,8 @@ BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
     onConnect([&]() {
         sendFilterEvent(filterCache_);
         sendSelectionEvent(selectionCache_);
+        sendHighlightEvent(highlightCache_);
+        sendColumnSelectionEvent(selectionColumnCache_);
     });
 }
 
@@ -49,10 +56,8 @@ void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t>&
 }
 
 void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t>& indices) {
-    bool noRemoteSelections = false;
-    if (isConnected() && hasData()) {
-        noRemoteSelections = getData()->getSelectedIndices().empty();
-    }
+    const bool noRemoteSelections =
+        (isConnected() && hasData() && getData()->getSelectedIndices().empty());
     if (selectionCache_.empty() && indices.empty() && noRemoteSelections) {
         return;
     }
@@ -61,11 +66,20 @@ void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_
     propagateEvent(&event, nullptr);
 }
 
-void BrushingAndLinkingInport::sendColumnSelectionEvent(const std::unordered_set<size_t>& indices) {
-    bool noRemoteSelections = false;
-    if (isConnected() && hasData()) {
-        noRemoteSelections = getData()->getSelectedColumns().empty();
+void BrushingAndLinkingInport::sendHighlightEvent(const std::unordered_set<size_t>& indices) {
+    const bool noRemoteSelections =
+        (isConnected() && hasData() && getData()->getHighlightedIndices().empty());
+    if (highlightCache_.empty() && indices.empty() && noRemoteSelections) {
+        return;
     }
+    highlightCache_ = indices;
+    HighlightEvent event(this, highlightCache_);
+    propagateEvent(&event, nullptr);
+}
+
+void BrushingAndLinkingInport::sendColumnSelectionEvent(const std::unordered_set<size_t>& indices) {
+    const bool noRemoteSelections =
+        (isConnected() && hasData() && getData()->getSelectedColumns().empty());
     if (selectionColumnCache_.empty() && indices.empty() && noRemoteSelections) {
         return;
     }
@@ -95,6 +109,14 @@ const std::unordered_set<size_t>& BrushingAndLinkingInport::getFilteredIndices()
         return getData()->getFilteredIndices();
     } else {
         return filterCache_;
+    }
+}
+
+const std::unordered_set<size_t>& BrushingAndLinkingInport::getHighlightedIndices() const {
+    if (isConnected()) {
+        return getData()->getHighlightedIndices();
+    } else {
+        return highlightCache_;
     }
 }
 
