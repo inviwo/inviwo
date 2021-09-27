@@ -91,7 +91,7 @@ private:
     size2_t rangePressedY_;
 
     Shader shader_;
-    TypedMesh<buffertraits::PositionsBuffer2D, buffertraits::TexcoordBuffer<2>> rect_;
+    TypedMesh<buffertraits::PositionsBuffer2D, buffertraits::TexCoordBuffer<2>> rect_;
     std::shared_ptr<Buffer<vec2>> texCoordsBuffer_;
 };
 

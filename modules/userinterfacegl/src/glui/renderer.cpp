@@ -193,7 +193,7 @@ void Renderer::setupRectangleMesh() {
 
     rectangleMesh_ = std::make_shared<Mesh>();
     rectangleMesh_->addBuffer(BufferType::PositionAttrib, verticesBuffer);
-    rectangleMesh_->addBuffer(BufferType::TexcoordAttrib, texCoordsBuffer);
+    rectangleMesh_->addBuffer(BufferType::TexCoordAttrib, texCoordsBuffer);
 
     // first row
     auto indices = util::makeIndexBuffer({0, 4, 1, 5, 2, 6, 3, 7});

@@ -97,7 +97,7 @@ void BufferToMeshProcessor::process() {
             throw Exception("Number of texture coordinates does not match number of vertices",
                             IVW_CONTEXT);
         }
-        mesh->addBuffer(BufferType::TexcoordAttrib,
+        mesh->addBuffer(BufferType::TexCoordAttrib,
                         std::const_pointer_cast<BufferBase>(textureCoordinates_.getData()));
     }
     if (vertexColors_.isConnected()) {

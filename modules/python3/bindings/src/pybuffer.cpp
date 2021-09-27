@@ -96,7 +96,7 @@ void exposeBuffer(pybind11::module& m) {
         .value("PositionAttrib", BufferType::PositionAttrib)
         .value("NormalAttrib", BufferType::NormalAttrib)
         .value("ColorAttrib", BufferType::ColorAttrib)
-        .value("TexcoordAttrib", BufferType::TexcoordAttrib)
+        .value("TexCoordAttrib", BufferType::TexCoordAttrib)
         .value("CurvatureAttrib", BufferType::CurvatureAttrib)
         .value("IndexAttrib", BufferType::IndexAttrib)
         .value("RadiiAttrib", BufferType::RadiiAttrib)
