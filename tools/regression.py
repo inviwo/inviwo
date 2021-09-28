@@ -162,6 +162,10 @@ if __name__ == '__main__':
 	logging.getLogger().setLevel(getattr(logging, str(args.log).upper(), logging.WARN))
 
 	if args.inviwo:
+		if not os.path.exists(args.inviwo):
+			print_error("Path to inviwo executable is invalid: " + args.inviwo)
+			sys.exit(1)
+
 		inviwopath = os.path.abspath(args.inviwo)
 		configpath = find_pyconfig(inviwopath)
 		config.read([
