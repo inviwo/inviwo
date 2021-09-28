@@ -161,10 +161,10 @@ public:
  * BufferTrait for Texture Coordinate buffers
  */
 template <unsigned DIMS = 3>
-class TexcoordBuffer
-    : public TypedMeshBufferBase<float, DIMS, static_cast<int>(BufferType::TexcoordAttrib)> {
+class TexCoordBuffer
+    : public TypedMeshBufferBase<float, DIMS, static_cast<int>(BufferType::TexCoordAttrib)> {
 public:
-    using Base = TypedMeshBufferBase<float, DIMS, static_cast<int>(BufferType::TexcoordAttrib)>;
+    using Base = TypedMeshBufferBase<float, DIMS, static_cast<int>(BufferType::TexCoordAttrib)>;
     using Base::Base;
 
     std::shared_ptr<const Buffer<typename Base::type>> getTexCoords() const {
@@ -297,7 +297,7 @@ public:
  * If texture coordinates are also needed for each vertex in the mesh then one could instead use:
  *
  * \code{.cpp}
- * using MyMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::TexcoordBuffer,
+ * using MyMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::TexCoordBuffer,
  * buffertraits::ColorsBuffer>;
  * MyMesh mesh;
  * mesh.addVertex(vec3(0.0f), vec3(0.0f), vec4(1,0,0,1) );
@@ -633,7 +633,7 @@ using ColoredMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::Color
  * coordinates(vec3) and colors(vec4).
  */
 using BasicMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::NormalBuffer,
-                            buffertraits::TexcoordBuffer<3>, buffertraits::ColorsBuffer>;
+                            buffertraits::TexCoordBuffer<3>, buffertraits::ColorsBuffer>;
 
 /**
  * \ingroup typedmesh
@@ -641,7 +641,7 @@ using BasicMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::NormalB
  * coordinates(vec3) and colors(vec4). Example usage:
  * \snippet modules/base/src/algorithm/meshutils.cpp Using PosTexColorMesh
  */
-using PosTexColorMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::TexcoordBuffer<3>,
+using PosTexColorMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::TexCoordBuffer<3>,
                                   buffertraits::ColorsBuffer>;
 
 }  // namespace inviwo

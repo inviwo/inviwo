@@ -98,7 +98,7 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
     bool hasTextures = false;
     {
         auto tit = util::find_if(data->getBuffers(), [](const auto& buf) {
-            return buf.first.type == BufferType::TexcoordAttrib;
+            return buf.first.type == BufferType::TexCoordAttrib;
         });
         if (tit != data->getBuffers().end()) {
             if (const auto texRam = tit->second->getRepresentation<BufferRAM>()) {

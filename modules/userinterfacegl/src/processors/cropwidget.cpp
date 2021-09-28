@@ -256,9 +256,6 @@ void CropWidget::initializeResources() {
     lineShader_[ShaderType::Vertex]->addInDeclaration("in_" + toString(BufferType::ColorAttrib),
                                                       static_cast<int>(BufferType::ColorAttrib),
                                                       "vec4");
-    lineShader_[ShaderType::Vertex]->addInDeclaration("in_" + toString(BufferType::TexcoordAttrib),
-                                                      static_cast<int>(BufferType::TexcoordAttrib),
-                                                      "vec2");
     lineShader_.build();
     lineShader_.activate();
     lineShader_.setUniform("antialiasing", 1.0f);
@@ -310,14 +307,11 @@ void CropWidget::createLineStripMesh() {
     auto linestrip = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::StripAdjacency);
     auto vertices = std::make_shared<Buffer<vec3>>();
     auto colors = std::make_shared<Buffer<vec4>>();
-    auto texCoords = std::make_shared<Buffer<vec2>>();
 
     auto vBuffer = vertices->getEditableRAMRepresentation();
     auto colorBuffer = colors->getEditableRAMRepresentation();
-    auto texBuffer = texCoords->getEditableRAMRepresentation();
 
     vec3 p(0.0f);
-    vec2 t(0.0f, 0.0f);
     vec3 mask[5] = {{0.0f, 0.0f, 0.0f},
                     {1.0f, 0.0f, 0.0f},
                     {1.0f, 1.0f, 0.0f},
@@ -326,7 +320,6 @@ void CropWidget::createLineStripMesh() {
     for (int i = 0; i < 5; ++i) {
         vBuffer->add(p + mask[i]);
         colorBuffer->add(cropLineColor_.get());
-        texBuffer->add(t + vec2(i / 4.0f, 0.0f));
     }
 
     auto indices = std::make_shared<IndexBuffer>();
@@ -335,7 +328,6 @@ void CropWidget::createLineStripMesh() {
 
     linestrip->addBuffer(BufferType::PositionAttrib, vertices);
     linestrip->addBuffer(BufferType::ColorAttrib, colors);
-    linestrip->addBuffer(BufferType::TexcoordAttrib, texCoords);
     linestrip->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::StripAdjacency),
                           indices);
 

@@ -117,7 +117,7 @@ void ImageSubsetGL::process() {
         // Texture coordinates of the region we should copy
         vec2 texOffset = vec2(offset) / vec2(inputDim);
         vec2 texEnd = vec2(offset + dim) / vec2(inputDim);
-        auto texCoordsBuffer = rect_.getTypedBuffer<buffertraits::TexcoordBuffer<2>>();
+        auto texCoordsBuffer = rect_.getTypedBuffer<buffertraits::TexCoordBuffer<2>>();
         auto coords = texCoordsBuffer->getEditableRAMRepresentation();
         coords->set(0, texOffset);
         coords->set(1, {texEnd.x, texOffset.y});

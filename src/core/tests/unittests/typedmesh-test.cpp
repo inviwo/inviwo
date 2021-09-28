@@ -126,11 +126,11 @@ TEST(buffertraits, normalbuffer) {
 }
 
 TEST(buffertraits, texcoordbuffer2) {
-    EXPECT_EQ(BufferType::TexcoordAttrib, buffertraits::TexcoordBuffer<2>::bi().type);
-    ASSERT_EQ(2, util::extent<buffertraits::TexcoordBuffer<2>::type>::value)
-        << "buffertraits::TexcoordBuffer<2> expected to hold vec2";
+    EXPECT_EQ(BufferType::TexCoordAttrib, buffertraits::TexCoordBuffer<2>::bi().type);
+    ASSERT_EQ(2, util::extent<buffertraits::TexCoordBuffer<2>::type>::value)
+        << "buffertraits::TexCoordBuffer<2> expected to hold vec2";
 
-    buffertraits::TexcoordBuffer<2> texcoordbuf;
+    buffertraits::TexCoordBuffer<2> texcoordbuf;
     texcoordbuf.getEditableTexCoords()->setSize(1);
     texcoordbuf.setVertexTexCoord(0, vec2(0.25f, 1.0f));
 
