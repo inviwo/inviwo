@@ -48,14 +48,6 @@ DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
     this->setParent(utilqt::getApplicationMainWindow());
     setMinimumSize(32, 32);
     QObject::setProperty("bgType", "window");
-    setWindowFlags(Qt::Window);
-
-    ivec2 dim = getDimensions();
-
-    setWindowTitle(utilqt::toQString(p->getDisplayName()));
-    nameChange_ = p->onDisplayNameChange([this](std::string_view newName, std::string_view) {
-        setWindowTitle(utilqt::toQString(newName));
-    });
 
     tableview_ = tableview_ptr(new DataFrameTableView(this), [&](DataFrameTableView* c) {
         layout()->removeWidget(c);
@@ -78,13 +70,6 @@ DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
     auto* layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(tableview_.get());
-
-    setDimensions(dim);
-
-    {
-        util::KeepTrueWhileInScope ignore(&ignoreEvents_);
-        QWidget::setVisible(ProcessorWidget::isVisible());
-    }
 }
 
 void DataFrameTableProcessorWidget::setDataFrame(std::shared_ptr<const DataFrame> dataframe,

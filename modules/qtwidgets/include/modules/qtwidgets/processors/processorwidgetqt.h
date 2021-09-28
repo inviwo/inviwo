@@ -31,6 +31,7 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/processors/processor.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -39,12 +40,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API ProcessorWidgetQt : public QWidget, public ProcessorWidget {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-
+class IVW_MODULE_QTWIDGETS_API ProcessorWidgetQt : public ProcessorWidget, public QWidget {
 public:
     ProcessorWidgetQt(Processor* p);
     virtual ~ProcessorWidgetQt() = default;
@@ -70,6 +66,9 @@ protected:
     virtual void moveEvent(QMoveEvent*) override;
 
     bool ignoreEvents_{false};
+    bool resizeOngoing_{false};
+
+    Processor::NameDispatcherHandle nameChange_;
 };
 
 }  // namespace inviwo
