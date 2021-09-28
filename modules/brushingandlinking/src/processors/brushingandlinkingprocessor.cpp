@@ -51,16 +51,19 @@ BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
     , outport_("outport")
     , clearSelection_("clearSelection", "Clear Selection", [&]() { manager_->clearSelected(); })
     , clearFilter_("clearFilter", "Clear Filtering", [&]() { manager_->clearFiltered(); })
+    , clearHighlight_("clearHighlight", "Clear Highlighting",
+                      [&]() { manager_->clearHighlighted(); })
     , clearCols_("clearCols", "Clear Columns", [&]() { manager_->clearColumns(); })
     , clearAll_("clearAll", "Clear All",
                 [&]() {
                     manager_->clearSelected();
                     manager_->clearFiltered();
+                    manager_->clearHighlighted();
                     manager_->clearColumns();
                 })
     , manager_(std::make_shared<BrushingAndLinkingManager>(this)) {
     addPort(outport_);
-    addProperties(clearSelection_, clearFilter_, clearCols_, clearAll_);
+    addProperties(clearSelection_, clearFilter_, clearHighlight_, clearCols_, clearAll_);
 }
 
 void BrushingAndLinkingProcessor::process() { outport_.setData(manager_); }

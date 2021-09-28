@@ -67,6 +67,7 @@ private:
 
     ButtonProperty clearSelection_;
     ButtonProperty clearFilter_;
+    ButtonProperty clearHighlight_;
     ButtonProperty clearCols_;
     ButtonProperty clearAll_;
 
