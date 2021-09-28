@@ -37,6 +37,10 @@
 #include <modules/opengl/volume/volumeutils.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/stringconversion.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -58,18 +62,22 @@ MultichannelRaycaster::MultichannelRaycaster()
     , backgroundPort_("bg")
     , outport_("outport")
     , transferFunctions_("transfer-functions", "Transfer functions")
+    , tfs_{{{"transferFunction1", "Channel 1", &volumePort_},
+            {"transferFunction2", "Channel 2", &volumePort_},
+            {"transferFunction3", "Channel 3", &volumePort_},
+            {"transferFunction4", "Channel 4", &volumePort_}}}
     , raycasting_("raycaster", "Raycasting")
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , lighting_("lighting", "Lighting", &camera_)
     , positionIndicator_("positionindicator", "Position Indicator") {
-    transferFunctions_.addProperty(
-        new TransferFunctionProperty("transferFunction1", "Channel 1", &volumePort_), true);
-    transferFunctions_.addProperty(
-        new TransferFunctionProperty("transferFunction2", "Channel 2", &volumePort_), true);
-    transferFunctions_.addProperty(
-        new TransferFunctionProperty("transferFunction3", "Channel 3", &volumePort_), true);
-    transferFunctions_.addProperty(
-        new TransferFunctionProperty("transferFunction4", "Channel 4", &volumePort_), true);
+
+    transferFunctions_.addProperties(tfs_[0], tfs_[1], tfs_[2], tfs_[3]);
+    for (auto&& [i, tf] : util::enumerate(tfs_)) {
+        HistogramSelection selection{};
+        selection[i] = true;
+        tf.setHistogramSelection(selection);
+        tf.setCurrentStateAsDefault();
+    }
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
@@ -81,11 +89,7 @@ MultichannelRaycaster::MultichannelRaycaster()
 
     backgroundPort_.setOptional(true);
 
-    addProperty(raycasting_);
-    addProperty(camera_);
-    addProperty(lighting_);
-    addProperty(positionIndicator_);
-    addProperty(transferFunctions_);
+    addProperties(raycasting_, camera_, lighting_, positionIndicator_, transferFunctions_);
 
     volumePort_.onChange([this]() { initializeResources(); });
 
@@ -102,22 +106,20 @@ void MultichannelRaycaster::initializeResources() {
 
     if (volumePort_.hasData()) {
         size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
-
-        auto tfs = transferFunctions_.getPropertiesByType<TransferFunctionProperty>();
-        for (size_t i = 0; i < tfs.size(); i++) {
-            tfs[i]->setVisible(i < channels ? true : false);
+        for (auto&& [i, tf] : util::enumerate(tfs_)) {
+            tf.setVisible(i < channels);
         }
 
-        std::stringstream ss;
-        ss << channels;
-        shader_.getFragmentShaderObject()->addShaderDefine("NUMBER_OF_CHANNELS", ss.str());
-
-        std::stringstream ss2;
+        shader_.getFragmentShaderObject()->addShaderDefine("NUMBER_OF_CHANNELS",
+                                                           fmt::format("{}", channels));
+        StrBuffer str;
         for (size_t i = 0; i < channels; ++i) {
-            ss2 << "color[" << i << "] = APPLY_CHANNEL_CLASSIFICATION(transferFunction" << i + 1
-                << ", voxel, " << i << ");";
+            str.append(
+                "color[{0}] = APPLY_CHANNEL_CLASSIFICATION(transferFunction{1}, voxel, {0});", i,
+                i + 1);
         }
-        shader_.getFragmentShaderObject()->addShaderDefine("SAMPLE_CHANNELS", ss2.str());
+        shader_.getFragmentShaderObject()->addShaderDefine("SAMPLE_CHANNELS", str.view());
+
         shader_.build();
     }
 }
@@ -134,10 +136,9 @@ void MultichannelRaycaster::process() {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
     }
 
-    auto tfs = transferFunctions_.getPropertiesByType<TransferFunctionProperty>();
     size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
     for (size_t channel = 0; channel < channels; channel++) {
-        utilgl::bindAndSetUniforms(shader_, units, *tfs[channel]);
+        utilgl::bindAndSetUniforms(shader_, units, tfs_[channel]);
     }
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_);
 

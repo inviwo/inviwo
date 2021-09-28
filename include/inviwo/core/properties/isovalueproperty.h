@@ -85,8 +85,10 @@ public:
     void setZoomV(double zoomVMin, double zoomVMax);
     const dvec2& getZoomV() const;
 
-    void setHistogramMode(HistogramMode mode);
-    HistogramMode getHistogramMode();
+    IsoValueProperty& setHistogramMode(HistogramMode mode);
+    HistogramMode getHistogramMode() const;
+    IsoValueProperty& setHistogramSelection(HistogramSelection selection);
+    HistogramSelection getHistogramSelection() const;
 
     VolumeInport* getVolumeInport();
 
@@ -110,6 +112,7 @@ private:
     ValueWrapper<dvec2> zoomH_;
     ValueWrapper<dvec2> zoomV_;
     ValueWrapper<HistogramMode> histogramMode_;
+    ValueWrapper<HistogramSelection> histogramSelection_;
 
     VolumeInport* volumeInport_;
 };

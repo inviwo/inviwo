@@ -46,13 +46,15 @@ public:
     virtual void onZoomHChange(const dvec2& zoomH);
     virtual void onZoomVChange(const dvec2& zoomV);
     virtual void onHistogramModeChange(HistogramMode mode);
+    virtual void onHistogramSelectionChange(HistogramSelection selection);
 };
 class IVW_CORE_API TFPropertyObservable : public Observable<TFPropertyObserver> {
 protected:
-    virtual void notifyMaskChange(const dvec2& mask);
-    virtual void notifyZoomHChange(const dvec2& zoomH);
-    virtual void notifyZoomVChange(const dvec2& zoomV);
-    virtual void notifyHistogramModeChange(HistogramMode mode);
+    void notifyMaskChange(const dvec2& mask);
+    void notifyZoomHChange(const dvec2& zoomH);
+    void notifyZoomVChange(const dvec2& zoomV);
+    void notifyHistogramModeChange(HistogramMode mode);
+    void notifyHistogramSelectionChange(HistogramSelection selection);
 };
 
 /**
@@ -104,7 +106,10 @@ public:
     const dvec2& getZoomV() const;
 
     TransferFunctionProperty& setHistogramMode(HistogramMode type);
-    HistogramMode getHistogramMode();
+    HistogramMode getHistogramMode() const;
+    TransferFunctionProperty& setHistogramSelection(HistogramSelection selection);
+    HistogramSelection getHistogramSelection() const;
+
     VolumeInport* getVolumeInport();
 
     virtual TransferFunctionProperty& setCurrentStateAsDefault() override;
@@ -128,6 +133,7 @@ private:
     ValueWrapper<dvec2> zoomH_;
     ValueWrapper<dvec2> zoomV_;
     ValueWrapper<HistogramMode> histogramMode_;
+    ValueWrapper<HistogramSelection> histogramSelection_;
 
     VolumeInport* volumeInport_;
 };

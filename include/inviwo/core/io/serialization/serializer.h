@@ -141,7 +141,7 @@ public:
     void serialize(std::string_view key, const Mat& data);
 
     // bitsets
-    template <unsigned N>
+    template <size_t N>
     void serialize(std::string_view key, const std::bitset<N>& bits);
 
     // serializable classes
@@ -300,7 +300,7 @@ void Serializer::serialize(std::string_view key, const Mat& data) {
     }
 }
 
-template <unsigned N>
+template <size_t N>
 void Serializer::serialize(std::string_view key, const std::bitset<N>& bits) {
     serialize(key, bits.to_string());
 }

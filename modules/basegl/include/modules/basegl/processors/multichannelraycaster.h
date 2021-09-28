@@ -87,6 +87,7 @@ private:
     ImageOutport outport_;
 
     CompositeProperty transferFunctions_;
+    std::array<TransferFunctionProperty,4> tfs_;
 
     SimpleRaycastingProperty raycasting_;
     CameraProperty camera_;

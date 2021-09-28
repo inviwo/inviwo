@@ -92,8 +92,11 @@ public:
     void setZoomV(double zoomVMin, double zoomVMax);
     const dvec2& getZoomV() const;
 
-    void setHistogramMode(HistogramMode type);
-    HistogramMode getHistogramMode();
+    IsoTFProperty& setHistogramMode(HistogramMode type);
+    HistogramMode getHistogramMode() const;
+    IsoTFProperty& setHistogramSelection(HistogramSelection selection);
+    HistogramSelection getHistogramSelection() const;
+
     VolumeInport* getVolumeInport();
 
     IsoValueProperty isovalues_;
@@ -104,6 +107,7 @@ protected:
     virtual void onZoomHChange(const dvec2& zoomH) override;
     virtual void onZoomVChange(const dvec2& zoomV) override;
     virtual void onHistogramModeChange(HistogramMode mode) override;
+    virtual void onHistogramSelectionChange(HistogramSelection selection) override;
 };
 
 }  // namespace inviwo

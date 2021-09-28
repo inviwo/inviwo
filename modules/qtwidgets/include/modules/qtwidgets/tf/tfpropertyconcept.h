@@ -71,7 +71,11 @@ struct IVW_MODULE_QTWIDGETS_API TFPropertyConcept {
     virtual const dvec2& getZoomV() const = 0;
 
     virtual void setHistogramMode(HistogramMode type) = 0;
-    virtual HistogramMode getHistogramMode() = 0;
+    virtual HistogramMode getHistogramMode() const = 0;
+
+    virtual void setHistogramSelection(HistogramSelection selection) = 0;
+    virtual HistogramSelection getHistogramSelection() const = 0;
+
     virtual VolumeInport* getVolumeInport() = 0;
     virtual void addObserver(TFPropertyObserver* observer) = 0;
     virtual void removeObserver(TFPropertyObserver* observer) = 0;
@@ -156,7 +160,15 @@ public:
     virtual const dvec2& getZoomV() const override { return data_->getZoomV(); }
 
     virtual void setHistogramMode(HistogramMode type) override { data_->setHistogramMode(type); }
-    virtual HistogramMode getHistogramMode() override { return data_->getHistogramMode(); }
+    virtual HistogramMode getHistogramMode() const override { return data_->getHistogramMode(); }
+
+    virtual void setHistogramSelection(HistogramSelection selection) override {
+        data_->setHistogramSelection(selection);
+    }
+    virtual HistogramSelection getHistogramSelection() const override {
+        return data_->getHistogramSelection();
+    }
+
     virtual VolumeInport* getVolumeInport() override { return data_->getVolumeInport(); }
 
     virtual void addObserver(TFPropertyObserver* observer) override {

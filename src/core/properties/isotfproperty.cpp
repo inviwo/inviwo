@@ -42,8 +42,7 @@ IsoTFProperty::IsoTFProperty(const std::string& identifier, const std::string& d
     , isovalues_("isovalues", "Iso Values", isovalues, volumeInport)
     , tf_("transferFunction", "Transfer Function", tf, volumeInport) {
 
-    addProperty(isovalues_);
-    addProperty(tf_);
+    addProperties(isovalues_, tf_);
 
     tf_.TFPropertyObservable::addObserver(this);
     isovalues_.TFPropertyObservable::addObserver(this);
@@ -59,8 +58,7 @@ IsoTFProperty::IsoTFProperty(const std::string& identifier, const std::string& d
 IsoTFProperty::IsoTFProperty(const IsoTFProperty& rhs)
     : CompositeProperty(rhs), isovalues_(rhs.isovalues_), tf_(rhs.tf_) {
 
-    addProperty(isovalues_);
-    addProperty(tf_);
+    addProperties(isovalues_, tf_);
 
     tf_.TFPropertyObservable::addObserver(this);
     isovalues_.TFPropertyObservable::addObserver(this);
@@ -106,12 +104,23 @@ void IsoTFProperty::setZoomV(double zoomVMin, double zoomVMax) {
 
 const dvec2& IsoTFProperty::getZoomV() const { return tf_.getZoomV(); }
 
-void IsoTFProperty::setHistogramMode(HistogramMode type) {
+IsoTFProperty& IsoTFProperty::setHistogramMode(HistogramMode type) {
     tf_.setHistogramMode(type);
     isovalues_.setHistogramMode(type);
+    return *this;
 }
 
-HistogramMode IsoTFProperty::getHistogramMode() { return tf_.getHistogramMode(); }
+HistogramMode IsoTFProperty::getHistogramMode() const { return tf_.getHistogramMode(); }
+
+IsoTFProperty& IsoTFProperty::setHistogramSelection(HistogramSelection selection) {
+    tf_.setHistogramSelection(selection);
+    isovalues_.setHistogramSelection(selection);
+    return *this;
+}
+
+HistogramSelection IsoTFProperty::getHistogramSelection() const {
+    return tf_.getHistogramSelection();
+}
 
 VolumeInport* IsoTFProperty::getVolumeInport() { return tf_.getVolumeInport(); }
 
@@ -122,5 +131,9 @@ void IsoTFProperty::onZoomHChange(const dvec2& zoomH) { notifyZoomHChange(zoomH)
 void IsoTFProperty::onZoomVChange(const dvec2& zoomV) { notifyZoomVChange(zoomV); }
 
 void IsoTFProperty::onHistogramModeChange(HistogramMode mode) { notifyHistogramModeChange(mode); }
+
+void IsoTFProperty::onHistogramSelectionChange(HistogramSelection selection) {
+    notifyHistogramSelectionChange(selection);
+}
 
 }  // namespace inviwo

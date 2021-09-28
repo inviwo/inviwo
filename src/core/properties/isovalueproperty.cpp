@@ -44,6 +44,7 @@ IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::str
     , zoomH_("zoomH_", dvec2(0.0, 1.0))
     , zoomV_("zoomV_", dvec2(0.0, 1.0))
     , histogramMode_("showHistogram_", HistogramMode::All)
+    , histogramSelection_("histogramSelection", histgramSelectionAll)
     , volumeInport_(volumeInport) {
 
     iso_.value.addObserver(this);
@@ -60,6 +61,7 @@ IsoValueProperty::IsoValueProperty(const IsoValueProperty& rhs)
     , zoomH_(rhs.zoomH_)
     , zoomV_(rhs.zoomV_)
     , histogramMode_(rhs.histogramMode_)
+    , histogramSelection_(rhs.histogramSelection_)
     , volumeInport_(rhs.volumeInport_) {
 
     iso_.value.addObserver(this);
@@ -96,14 +98,27 @@ void IsoValueProperty::setZoomV(double zoomVMin, double zoomVMax) {
 
 const dvec2& IsoValueProperty::getZoomV() const { return zoomV_; }
 
-void IsoValueProperty::setHistogramMode(HistogramMode mode) {
+IsoValueProperty& IsoValueProperty::setHistogramMode(HistogramMode mode) {
     if (histogramMode_ != mode) {
         histogramMode_ = mode;
         notifyHistogramModeChange(histogramMode_);
     }
+    return *this;
 }
 
-HistogramMode IsoValueProperty::getHistogramMode() { return histogramMode_; }
+HistogramMode IsoValueProperty::getHistogramMode() const { return histogramMode_; }
+
+IsoValueProperty& IsoValueProperty::setHistogramSelection(HistogramSelection selection) {
+    if (histogramSelection_ != selection) {
+        histogramSelection_ = selection;
+        notifyHistogramSelectionChange(histogramSelection_);
+    }
+    return *this;
+}
+
+auto IsoValueProperty::getHistogramSelection() const -> HistogramSelection {
+    return histogramSelection_;
+}
 
 VolumeInport* IsoValueProperty::getVolumeInport() { return volumeInport_; }
 
@@ -113,6 +128,7 @@ IsoValueProperty& IsoValueProperty::setCurrentStateAsDefault() {
     zoomH_.setAsDefault();
     zoomV_.setAsDefault();
     histogramMode_.setAsDefault();
+    histogramSelection_.setAsDefault();
     return *this;
 }
 
@@ -124,6 +140,7 @@ IsoValueProperty& IsoValueProperty::resetToDefaultState() {
     modified |= zoomH_.reset();
     modified |= zoomV_.reset();
     modified |= histogramMode_.reset();
+    modified |= histogramSelection_.reset();
     if (modified) this->propertyModified();
     return *this;
 }
@@ -135,6 +152,7 @@ void IsoValueProperty::serialize(Serializer& s) const {
     zoomH_.serialize(s, this->serializationMode_);
     zoomV_.serialize(s, this->serializationMode_);
     histogramMode_.serialize(s, this->serializationMode_);
+    histogramSelection_.serialize(s, this->serializationMode_);
 }
 
 void IsoValueProperty::deserialize(Deserializer& d) {
@@ -145,6 +163,7 @@ void IsoValueProperty::deserialize(Deserializer& d) {
     modified |= zoomH_.deserialize(d, this->serializationMode_);
     modified |= zoomV_.deserialize(d, this->serializationMode_);
     modified |= histogramMode_.deserialize(d, this->serializationMode_);
+    modified |= histogramSelection_.deserialize(d, this->serializationMode_);
     if (modified) propertyModified();
 }
 
