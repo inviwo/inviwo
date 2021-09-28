@@ -19,8 +19,7 @@ set(MOC_FILES
     include/modules/qtwidgets/lightpositionwidgetqt.h
     include/modules/qtwidgets/lineeditqt.h
     include/modules/qtwidgets/ordinaleditorwidget.h
-    include/modules/qtwidgets/processors/processordockwidgetqt.h
-    include/modules/qtwidgets/processors/processorwidgetqt.h
+    include/modules/qtwidgets/processors/processordockwidgetqt.h    
     include/modules/qtwidgets/properties/colorlineedit.h
     include/modules/qtwidgets/properties/doublevaluedragspinbox.h
     include/modules/qtwidgets/properties/ordinalspinboxwidget.h
@@ -45,10 +44,11 @@ set(HEADER_FILES
     include/modules/qtwidgets/eventconverterqt.h
     include/modules/qtwidgets/inviwoqtutils.h
     include/modules/qtwidgets/keyboardutils.h
-    include/modules/qtwidgets/mousecursorutils.h
     include/modules/qtwidgets/labelgraphicsitem.h
+    include/modules/qtwidgets/mousecursorutils.h
     include/modules/qtwidgets/numberlineedit.h
     include/modules/qtwidgets/ordinalbasewidget.h
+    include/modules/qtwidgets/processors/processorwidgetqt.h
     include/modules/qtwidgets/properties/anglepropertywidgetqt.h
     include/modules/qtwidgets/properties/boolcompositepropertywidgetqt.h
     include/modules/qtwidgets/properties/boolpropertywidgetqt.h
