@@ -54,6 +54,9 @@ public:
         const Mesh* data, const std::string& fileExtension) const override;
 
 private:
+    void writePrimitives(std::ostream& f, const Mesh::MeshInfo& info, const IndexBuffer& ib,
+                         bool hasNormals, bool hasTextures) const;
+
     void writeData(const Mesh* data, std::ostream& os) const;
 };
 
