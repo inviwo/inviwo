@@ -62,8 +62,8 @@ bool ViewManager::propagatePickingEvent(PickingEvent* pe, Propagator propagator)
                                pe->getPreviousGlobalPickingId(), pressNDC, previousNDC);
 
             propagator(&newPe, ind);
-            if (newPe.hasBeenUsed()) newEvent->markAsUsed();
-            for (auto p : newPe.getVisitedProcessors()) newEvent->markAsVisited(p);
+            if (newPe.hasBeenUsed()) pe->markAsUsed();
+            for (auto p : newPe.getVisitedProcessors()) pe->markAsVisited(p);
         }
     };
 
@@ -86,8 +86,6 @@ bool ViewManager::propagatePickingEvent(PickingEvent* pe, Propagator propagator)
             propagated = false;
             break;
     }
-    if (e->hasBeenUsed()) pe->markAsUsed();
-    for (auto p : e->getVisitedProcessors()) pe->markAsVisited(p);
 
     return propagated;
 }
@@ -104,7 +102,6 @@ bool ViewManager::propagateMouseEvent(MouseEvent* me, Propagator propagator) {
         newEvent.setPosNormalized(scale * (newEvent.posNormalized() - offset));
         propagator(&newEvent, selectedView_.second);
         if (newEvent.hasBeenUsed()) me->markAsUsed();
-        for (auto p : newEvent.getVisitedProcessors()) me->markAsVisited(p);
 
         return true;
     } else {
@@ -124,7 +121,6 @@ bool ViewManager::propagateWheelEvent(WheelEvent* we, Propagator propagator) {
         newEvent.setPosNormalized(scale * (newEvent.posNormalized() - offset));
         propagator(&newEvent, selectedView_.second);
         if (newEvent.hasBeenUsed()) we->markAsUsed();
-        for (auto p : newEvent.getVisitedProcessors()) we->markAsVisited(p);
 
         return true;
     } else {
@@ -144,7 +140,6 @@ bool ViewManager::propagateGestureEvent(GestureEvent* ge, Propagator propagator)
         newEvent.setScreenPosNormalized(scale * (newEvent.screenPosNormalized() - offset));
         propagator(&newEvent, selectedView_.second);
         if (newEvent.hasBeenUsed()) ge->markAsUsed();
-        for (auto p : newEvent.getVisitedProcessors()) ge->markAsVisited(p);
 
         return true;
     } else {
