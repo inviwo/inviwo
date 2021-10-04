@@ -48,6 +48,10 @@ flat in vec4 pickColor_;
 
 void main() {
     vec4 fragColor = color_;
+	
+	if(color_.a == 0)
+		discard;
+	
     vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
 
     fragColor.rgb = APPLY_LIGHTING(lighting, color_.rgb, color_.rgb, vec3(1.0f), worldPosition_.xyz,
