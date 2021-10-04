@@ -157,10 +157,10 @@ private:
     };
 
     bool propagatePickingEvent(PickingEvent* pe, Propagator propagator);
-    bool propagateMouseEvent(MouseEvent* me, Propagator propagator);
-    bool propagateWheelEvent(WheelEvent* we, Propagator propagator);
-    bool propagateGestureEvent(GestureEvent* ge, Propagator propagator);
-    bool propagateTouchEvent(TouchEvent* te, Propagator propagator);
+    bool propagateMouseEvent(MouseEvent* me, Propagator propagator, bool isFromPicking);
+    bool propagateWheelEvent(WheelEvent* we, Propagator propagator, bool isFromPicking);
+    bool propagateGestureEvent(GestureEvent* ge, Propagator propagator, bool isFromPicking);
+    bool propagateTouchEvent(TouchEvent* te, Propagator propagator, bool isFromPicking);
 
     std::pair<bool, ViewId> findView(ivec2 pos) const;
     static bool inView(const View& view, const ivec2& pos);
