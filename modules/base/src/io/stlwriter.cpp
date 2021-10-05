@@ -31,6 +31,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datawriterexception.h>
+#include <modules/base/algorithm/meshutils.h>
 
 #include <fstream>
 #include <sstream>
@@ -143,7 +144,6 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
     f << "solid inviwo stl file\n";
 
     for (const auto& inds : data->getIndexBuffers()) {
-
         if (inds.first.dt != DrawType::Triangles) {
             std::stringstream err;
             err << "Draw type: \n" << inds.first.dt << "\" not supported";
@@ -151,45 +151,7 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
             continue;
         }
 
-        const auto& indices = inds.second->getRAMRepresentation()->getDataContainer();
-        switch (inds.first.ct) {
-            case ConnectivityType::None: {
-                for (size_t i = 0; i < indices.size(); i += 3) {
-                    triangle(indices[i], indices[i + 1], indices[i + 2]);
-                }
-                break;
-            }
-            case ConnectivityType::Strip: {
-                for (size_t i = 0; i < indices.size() - 3u; i += 2) {
-                    triangle(indices[i + 0], indices[i + 1], indices[i + 2]);
-                    triangle(indices[i + 2], indices[i + 1], indices[i + 3]);
-                }
-                break;
-            }
-            case ConnectivityType::Fan: {
-                for (size_t i = 1; i < indices.size() - 1u; i += 1) {
-                    triangle(indices[0], indices[i], indices[i + 1]);
-                }
-                break;
-            }
-            case ConnectivityType::Adjacency: {
-                for (size_t i = 0; i < indices.size() - 1u; i += 6) {
-                    triangle(indices[i], indices[i + 2], indices[i + 4]);
-                }
-                break;
-            }
-            case ConnectivityType::StripAdjacency: {
-                for (size_t i = 0; i < indices.size() - 6u; i += 4) {
-                    triangle(indices[i], indices[i + 2], indices[i + 4]);
-                    triangle(indices[i + 4], indices[i + 2], indices[i + 6]);
-                }
-                break;
-            }
-            case ConnectivityType::Loop:
-            case ConnectivityType::NumberOfConnectivityTypes:
-            default:
-                break;
-        }
+        meshutil::forEachTriangle(inds.first, *inds.second, triangle);
     }
 
     f << "endsolid inviwo stl file\n";
