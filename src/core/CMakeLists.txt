@@ -761,6 +761,7 @@ target_include_directories(inviwo-core PUBLIC
 find_package(fmt REQUIRED)
 find_package(glm REQUIRED)
 find_package(tclap REQUIRED)
+find_package(roaring REQUIRED)
 if(APPLE)
    find_library(CORESERVICES_LIBRARY CoreServices)
 endif()
@@ -791,6 +792,7 @@ target_link_libraries(inviwo-core
         $<$<BOOL:${WIN32}>:inviwo::stackwalker>
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
         inviwo::tinydir
+        roaring
 )
 
 #Optimize compiliation with PCH etc
