@@ -92,6 +92,14 @@ BitSet::BitSet()
 
 BitSet::BitSet(util::span<const uint32_t> span) : BitSet() { addMany(span.size(), span.data()); }
 
+BitSet::BitSet(const roaring::Roaring& roaring)
+    : roaring_(std::unique_ptr<roaring::Roaring, RoaringDeleter>(new roaring::Roaring(roaring),
+                                                                 RoaringDeleter())) {}
+
+BitSet::BitSet(roaring::Roaring&& roaring)
+    : roaring_(std::unique_ptr<roaring::Roaring, RoaringDeleter>(
+          new roaring::Roaring(std::move(roaring)), RoaringDeleter())) {}
+
 BitSet::BitSet(const BitSet& rhs)
     : roaring_(std::unique_ptr<roaring::Roaring, RoaringDeleter>(
           new roaring::Roaring(*rhs.roaring_), RoaringDeleter())) {}
@@ -115,6 +123,8 @@ auto BitSet::begin() const -> BitSetIterator { return BitSetIterator(*this, fals
 auto BitSet::end() const -> BitSetIterator { return BitSetIterator(*this, true); }
 
 uint32_t BitSet::cardinality() const { return static_cast<uint32_t>(roaring_->cardinality()); }
+
+size_t BitSet::size() const { return static_cast<size_t>(roaring_->cardinality()); }
 
 bool BitSet::empty() const { return roaring_->isEmpty(); }
 
@@ -222,6 +232,17 @@ BitSet BitSet::operator^(const BitSet& b) const {
     BitSet result;
     *result.roaring_ = roaring_->operator^(*(b.roaring_));
     return result;
+}
+
+BitSet BitSet::fastUnion(util::span<const BitSet*> bitsets) { 
+    using namespace roaring;
+
+    std::vector<const Roaring*> inputs;
+    for (auto b : bitsets) {
+        inputs.push_back(b->roaring_.get());
+    }
+
+    return BitSet(Roaring::fastunion(inputs.size(), inputs.data())); 
 }
 
 std::vector<uint32_t> BitSet::toVector() const {

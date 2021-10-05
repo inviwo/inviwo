@@ -118,8 +118,16 @@ public:
 
     /**
      * return the number of elements the bitset holds
+     *
+     * \see size()
      */
     uint32_t cardinality() const;
+    /**
+     * return the number of elements the bitset holds
+     *
+     * \see cardinality()
+     */
+    size_t size() const;
 
     bool empty() const;
 
@@ -311,6 +319,11 @@ public:
     BitSet operator^(const BitSet& b) const;
 
     /**
+     * compute the union of multiple \p bitsets
+     */
+    static BitSet fastUnion(util::span<const BitSet*> bitsets);
+
+    /**
      * Convert bitset to a std::vector holding only set elements
      */
     std::vector<uint32_t> toVector() const;
@@ -367,6 +380,9 @@ public:
     size_t shrinkToFit();
 
 private:
+    BitSet(const roaring::Roaring& roaring);
+    BitSet(roaring::Roaring&& roaring);
+
     void addSingle(uint32_t value_);
     void addMany(size_t size, const uint32_t* data);
 
