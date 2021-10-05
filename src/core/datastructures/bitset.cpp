@@ -62,7 +62,7 @@ BitSet::BitSetIterator& BitSet::BitSetIterator::operator++() {
 BitSet::BitSetIterator BitSet::BitSetIterator::operator++(int) {
     BitSet::BitSetIterator it(*it_);
     it_->operator++();
-    return it;  // <- attempting to reference deleted function BitSetIterator(const BitSetIterator&)
+    return it;
 }
 
 BitSet::BitSetIterator& BitSet::BitSetIterator::operator--() {
@@ -90,7 +90,7 @@ BitSet::BitSet()
     : roaring_(std::unique_ptr<roaring::Roaring, RoaringDeleter>(new roaring::Roaring(),
                                                                  RoaringDeleter())) {}
 
-BitSet::BitSet(const std::vector<uint32_t>& values) { addMany(values.size(), values.data()); }
+BitSet::BitSet(util::span<const uint32_t> span) : BitSet() { addMany(span.size(), span.data()); }
 
 BitSet::BitSet(const BitSet& rhs)
     : roaring_(std::unique_ptr<roaring::Roaring, RoaringDeleter>(
@@ -126,9 +126,7 @@ bool BitSet::isStrictSubsetOf(const BitSet& b) const {
     return roaring_->isStrictSubset(*(b.roaring_));
 }
 
-void BitSet::add(uint32_t v) { roaring_->add(v); }
-
-void BitSet::add(const std::vector<uint32_t>& values) { addMany(values.size(), values.data()); }
+void BitSet::add(util::span<const uint32_t> span) { addMany(span.size(), span.data()); }
 
 bool BitSet::addChecked(uint32_t v) { return roaring_->addChecked(v); }
 
@@ -234,11 +232,11 @@ std::vector<uint32_t> BitSet::toVector() const {
 
 std::string BitSet::toString() const { return roaring_->toString(); }
 
-size_t BitSet::getSizeInBytes() const { return roaring_->getSizeInBytes(false); }
+size_t BitSet::getSizeInBytes() const { return roaring_->getSizeInBytes(true); }
 
 void BitSet::writeData(std::ostream& os) const {
     std::vector<char> buf(getSizeInBytes());
-    const size_t numBytes = roaring_->write(buf.data(), false);
+    const size_t numBytes = roaring_->write(buf.data(), true);
     os << static_cast<uint32_t>(numBytes);
     os.write(buf.data(), numBytes);
 }
@@ -249,7 +247,7 @@ void BitSet::readData(std::istream& is) {
         is >> numBytes;
         std::vector<char> buf(numBytes);
         is.read(buf.data(), numBytes);
-        *roaring_ = std::move(roaring::Roaring::read(buf.data(), false));
+        *roaring_ = roaring::Roaring::read(buf.data(), true);
     } catch (std::runtime_error) {
         throw Exception("Error reading BitSet", IVW_CONTEXT);
     }
@@ -260,6 +258,8 @@ void BitSet::optimize() { roaring_->runOptimize(); }
 void BitSet::removeRLECompression() { roaring_->removeRunCompression(); }
 
 size_t BitSet::shrinkToFit() { return roaring_->shrinkToFit(); }
+
+void BitSet::addSingle(uint32_t v) { roaring_->add(v); }
 
 void BitSet::addMany(size_t size, const uint32_t* data) { roaring_->addMany(size, data); }
 

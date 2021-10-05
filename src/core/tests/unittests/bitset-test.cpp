@@ -33,6 +33,10 @@
 #include <warn/pop>
 
 #include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/io/serialization/deserializer.h>
+
+#include <tcb/span.hpp>
 
 #include <vector>
 #include <unordered_set>
@@ -62,7 +66,8 @@ TEST(bitset, constructors) {
     BitSet(2, 3, 5);
 
     std::vector<uint32_t> indices = getIndices(20);
-    // BitSet(indices);
+    BitSet{indices};
+    BitSet(util::span<uint32_t>(indices));
     BitSet(indices.begin(), indices.end());
 
     EXPECT_TRUE(true);
@@ -123,6 +128,17 @@ TEST(bitset, contains) {
     EXPECT_TRUE(b.contains(5));
     EXPECT_TRUE(b.contains(2));
     EXPECT_FALSE(b.contains(42));
+
+    std::vector<uint32_t> indices = getIndices(20);
+    BitSet b1(indices);
+    for (auto index : indices) {
+        EXPECT_TRUE(b1.contains(index));
+    }
+
+    BitSet b2(indices.begin(), indices.end());
+    for (auto index : indices) {
+        EXPECT_TRUE(b2.contains(index));
+    }
 }
 
 TEST(bitset, minmax) {
@@ -135,6 +151,22 @@ TEST(bitset, minmax) {
 }
 
 TEST(bitset, serialization) {
+    std::vector<uint32_t> indices = getIndices(20);
+
+    std::stringstream ss;
+    Serializer serializer("");
+
+    auto b = BitSet(indices.begin(), indices.end());
+    b.serialize(serializer);
+    serializer.writeFile(ss);
+
+    BitSet result;
+    Deserializer deserializer(ss, "");
+    result.deserialize(deserializer);
+    EXPECT_EQ(b, result);
+}
+
+TEST(bitset, binarySerialization) {
     std::vector<uint32_t> indices = getIndices(20);
 
     std::stringstream ss;
