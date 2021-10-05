@@ -36,14 +36,6 @@
 
 namespace inviwo {
 
-BitSet::BitSetIterator::~BitSetIterator() = default;
-
-BitSet::BitSetIterator::BitSetIterator(const BitSet& b, bool exhausted)
-    : it_(std::make_unique<RoaringIt>(*b.roaring_, exhausted)) {}
-
-BitSet::BitSetIterator::BitSetIterator(const RoaringIt& it)
-    : it_(std::make_unique<RoaringIt>(it)) {}
-
 BitSet::BitSetIterator::BitSetIterator(const BitSetIterator& rhs)
     : it_(std::make_unique<RoaringIt>(*rhs.it_)) {}
 
@@ -54,6 +46,14 @@ auto BitSet::BitSetIterator::operator=(const BitSetIterator& rhs) -> BitSetItera
     return *this;
 }
 
+BitSet::BitSetIterator::~BitSetIterator() = default;
+
+BitSet::BitSetIterator::BitSetIterator(const BitSet& b, bool exhausted)
+    : it_(std::make_unique<RoaringIt>(*b.roaring_, exhausted)) {}
+
+BitSet::BitSetIterator::BitSetIterator(const RoaringIt& it)
+    : it_(std::make_unique<RoaringIt>(it)) {}
+
 BitSet::BitSetIterator& BitSet::BitSetIterator::operator++() {
     it_->operator++();
     return *this;
@@ -62,7 +62,7 @@ BitSet::BitSetIterator& BitSet::BitSetIterator::operator++() {
 BitSet::BitSetIterator BitSet::BitSetIterator::operator++(int) {
     BitSet::BitSetIterator it(*it_);
     it_->operator++();
-    return it;  // <- attempting to reference deleted function BitSetIterator(const BitSetIterator&)
+    return it;
 }
 
 BitSet::BitSetIterator& BitSet::BitSetIterator::operator--() {
@@ -86,17 +86,21 @@ bool BitSet::BitSetIterator::operator!=(const BitSetIterator& rhs) const {
     return it_->operator!=(*rhs.it_);
 }
 
-BitSet::BitSet()
-    : roaring_(std::unique_ptr<roaring::Roaring, RoaringDeleter>(new roaring::Roaring(),
-                                                                 RoaringDeleter())) {}
+BitSet::BitSet() : roaring_(std::make_unique<roaring::Roaring>()) {}
 
-BitSet::BitSet(const std::vector<uint32_t>& values) { addMany(values.size(), values.data()); }
+BitSet::BitSet(util::span<const uint32_t> span) : BitSet() { addMany(span.size(), span.data()); }
 
-BitSet::BitSet(const BitSet& rhs)
-    : roaring_(std::unique_ptr<roaring::Roaring, RoaringDeleter>(
-          new roaring::Roaring(*rhs.roaring_), RoaringDeleter())) {}
+BitSet::BitSet(const roaring::Roaring& roaring)
+    : roaring_(std::make_unique<roaring::Roaring>(roaring)) {}
+
+BitSet::BitSet(roaring::Roaring&& roaring)
+    : roaring_(std::make_unique<roaring::Roaring>(std::move(roaring))) {}
+
+BitSet::BitSet(const BitSet& rhs) : roaring_(std::make_unique<roaring::Roaring>(*rhs.roaring_)) {}
 
 BitSet::BitSet(BitSet&& rhs) noexcept : roaring_(std::move(rhs.roaring_)) {}
+
+BitSet::~BitSet() = default;
 
 BitSet& BitSet::operator=(const BitSet& rhs) {
     if (this != &rhs) {
@@ -116,6 +120,8 @@ auto BitSet::end() const -> BitSetIterator { return BitSetIterator(*this, true);
 
 uint32_t BitSet::cardinality() const { return static_cast<uint32_t>(roaring_->cardinality()); }
 
+size_t BitSet::size() const { return static_cast<size_t>(roaring_->cardinality()); }
+
 bool BitSet::empty() const { return roaring_->isEmpty(); }
 
 void BitSet::clear() { roaring::api::roaring_bitmap_clear(&roaring_->roaring); }
@@ -126,9 +132,7 @@ bool BitSet::isStrictSubsetOf(const BitSet& b) const {
     return roaring_->isStrictSubset(*(b.roaring_));
 }
 
-void BitSet::add(uint32_t v) { roaring_->add(v); }
-
-void BitSet::add(const std::vector<uint32_t>& values) { addMany(values.size(), values.data()); }
+void BitSet::add(util::span<const uint32_t> span) { addMany(span.size(), span.data()); }
 
 bool BitSet::addChecked(uint32_t v) { return roaring_->addChecked(v); }
 
@@ -151,6 +155,8 @@ bool BitSet::contains(uint32_t v) const { return roaring_->contains(v); }
 bool BitSet::containsRange(uint32_t min, uint32_t max) const {
     return roaring_->containsRange(min, max);
 }
+
+void BitSet::flip(uint32_t v) { roaring_->flip(v, v + 1); }
 
 void BitSet::flipRange(uint32_t min, uint32_t max) { roaring_->flip(min, max); }
 
@@ -226,6 +232,17 @@ BitSet BitSet::operator^(const BitSet& b) const {
     return result;
 }
 
+BitSet BitSet::fastUnion(util::span<const BitSet*> bitsets) {
+    using namespace roaring;
+
+    std::vector<const Roaring*> inputs;
+    for (auto b : bitsets) {
+        inputs.push_back(b->roaring_.get());
+    }
+
+    return BitSet(Roaring::fastunion(inputs.size(), inputs.data()));
+}
+
 std::vector<uint32_t> BitSet::toVector() const {
     std::vector<uint32_t> v(cardinality());
     roaring_->toUint32Array(v.data());
@@ -234,11 +251,11 @@ std::vector<uint32_t> BitSet::toVector() const {
 
 std::string BitSet::toString() const { return roaring_->toString(); }
 
-size_t BitSet::getSizeInBytes() const { return roaring_->getSizeInBytes(false); }
+size_t BitSet::getSizeInBytes() const { return roaring_->getSizeInBytes(true); }
 
 void BitSet::writeData(std::ostream& os) const {
     std::vector<char> buf(getSizeInBytes());
-    const size_t numBytes = roaring_->write(buf.data(), false);
+    const size_t numBytes = roaring_->write(buf.data(), true);
     os << static_cast<uint32_t>(numBytes);
     os.write(buf.data(), numBytes);
 }
@@ -249,7 +266,7 @@ void BitSet::readData(std::istream& is) {
         is >> numBytes;
         std::vector<char> buf(numBytes);
         is.read(buf.data(), numBytes);
-        *roaring_ = std::move(roaring::Roaring::read(buf.data(), false));
+        *roaring_ = roaring::Roaring::read(buf.data(), true);
     } catch (std::runtime_error) {
         throw Exception("Error reading BitSet", IVW_CONTEXT);
     }
@@ -261,8 +278,8 @@ void BitSet::removeRLECompression() { roaring_->removeRunCompression(); }
 
 size_t BitSet::shrinkToFit() { return roaring_->shrinkToFit(); }
 
-void BitSet::addMany(size_t size, const uint32_t* data) { roaring_->addMany(size, data); }
+void BitSet::addSingle(uint32_t v) { roaring_->add(v); }
 
-void BitSet::RoaringDeleter::operator()(roaring::Roaring* ptr) const { delete ptr; }
+void BitSet::addMany(size_t size, const uint32_t* data) { roaring_->addMany(size, data); }
 
 }  // namespace inviwo

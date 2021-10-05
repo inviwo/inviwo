@@ -797,7 +797,8 @@ target_link_libraries(inviwo-core
         $<$<BOOL:${WIN32}>:inviwo::stackwalker>
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
         inviwo::tinydir
-        roaring
+    PRIVATE
+        roaring::roaring
 )
 
 #Optimize compiliation with PCH etc

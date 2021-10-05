@@ -32,6 +32,8 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/detected.h>
 
+#include <tcb/span.hpp>
+
 #include <memory>
 #include <vector>
 #include <array>
@@ -47,26 +49,17 @@ class RoaringSetBitForwardIterator;
 
 namespace inviwo {
 
-namespace detail {
-
-template <typename...>
-using void_t = void;
-
-template <class T, class = void>
-struct is_iterator : std::false_type {};
-
-template <class T>
-struct is_iterator<T, void_t<typename std::iterator_traits<T>::iterator_category>>
-    : std::true_type {};
-
-}  // namespace detail
-
 /**
  * \brief represents a bitset based on roaring bitmaps provided by the CRoaring library
  */
 class IVW_CORE_API BitSet {
 public:
-    class BitSetIterator {
+    template <typename T>
+    using iterator_category = typename std::iterator_traits<T>::iterator_category;
+    template <class T>
+    using is_iterator = util::is_detected<iterator_category, T>;
+
+    class IVW_CORE_API BitSetIterator {
     public:
         using iterator_category = std::bidirectional_iterator_tag;
         using value_type = uint32_t;
@@ -75,6 +68,8 @@ public:
         using reference = const uint32_t&;
 
         BitSetIterator() = default;
+        BitSetIterator(const BitSetIterator& rhs);
+        BitSetIterator& operator=(const BitSetIterator& rhs);
         ~BitSetIterator();
 
         BitSetIterator& operator++();
@@ -93,45 +88,46 @@ public:
         friend BitSet;
         BitSetIterator(const BitSet& b, bool exhausted = false);
         BitSetIterator(const RoaringIt& it);
-        BitSetIterator(const BitSetIterator& rhs);
-        BitSetIterator& operator=(const BitSetIterator& rhs);
 
         std::unique_ptr<RoaringIt> it_;
     };
 
     BitSet();
 
-    BitSet(const std::vector<uint32_t>& values);
+    BitSet(util::span<const uint32_t> span);
 
-    template <size_t N>
-    BitSet(const std::array<uint32_t, N>& values) : BitSet() {
-        addMany(values.size(), values.data());
-    }
-
-    template <typename InputIt,
-              class = typename std::enable_if_t<detail::is_iterator<InputIt>::value>>
-    explicit BitSet(InputIt begin, InputIt end) : BitSet() {
+    template <typename InputIt, class = std::enable_if_t<is_iterator<InputIt>::value>>
+    BitSet(InputIt begin, InputIt end) : BitSet() {
         add(begin, end);
     }
 
-    template <typename... uint32_ts>
-    explicit BitSet(uint32_t val, uint32_ts&&... values) : BitSet() {
-        add(val, values...);
+    template <typename... Ts, class = std::enable_if_t<
+                                  std::conjunction<std::is_convertible<Ts, uint32_t>...>::value>>
+    BitSet(Ts&&... values) : BitSet() {
+        add(values...);
     }
 
     BitSet(const BitSet& rhs);
     BitSet(BitSet&& rhs) noexcept;
     BitSet& operator=(const BitSet& rhs);
     BitSet& operator=(BitSet&& rhs) noexcept;
-    ~BitSet() = default;
+    ~BitSet();
 
     BitSetIterator begin() const;
     BitSetIterator end() const;
 
     /**
      * return the number of elements the bitset holds
+     *
+     * \see size()
      */
     uint32_t cardinality() const;
+    /**
+     * return the number of elements the bitset holds
+     *
+     * \see cardinality()
+     */
+    size_t size() const;
 
     bool empty() const;
 
@@ -146,33 +142,25 @@ public:
      */
     bool isStrictSubsetOf(const BitSet& b) const;
 
-    /**
-     * Add value \p v to the bitset
-     *
-     * @param v  value
-     */
-    void add(uint32_t v);
+    void add(util::span<const uint32_t> span);
 
-    void add(const std::vector<uint32_t>& values);
-
-    template <size_t N>
-    void add(const std::array<uint32_t, N>& values) {
-        addMany(values.size(), values.data());
-    }
-
-    template <typename InputIt,
-              class = typename std::enable_if_t<detail::is_iterator<InputIt>::value>>
+    template <typename InputIt, class = typename std::enable_if_t<is_iterator<InputIt>::value>>
     void add(InputIt begin, InputIt end) {
         while (begin != end) {
-            add(*begin);
+            addSingle(*begin);
             ++begin;
         }
     }
 
-    template <typename... Ts>
-    void add(uint32_t val, Ts&&... values) {
-        add(val);
-        add(values...);
+    /**
+     * Add value(s) \p values to the bitset
+     *
+     * @param values  one or more values
+     */
+    template <typename... Ts,
+              typename = std::enable_if_t<std::conjunction_v<std::is_convertible<Ts, uint32_t>...>>>
+    void add(Ts&&... values) {
+        (addSingle(values), ...);
     }
 
     /**
@@ -243,6 +231,13 @@ public:
      * @return true if [\p min, \p max) exists
      */
     bool containsRange(uint32_t min, uint32_t max) const;
+
+    /**
+     * flip the value \p v, that is add it to the bitset if not part of it, otherwise remove it
+     *
+     * @param v  value to flip
+     */
+    void flip(uint32_t v);
 
     /**
      * Flip all bits in the open range [\p min, \p max)
@@ -331,6 +326,11 @@ public:
     BitSet operator^(const BitSet& b) const;
 
     /**
+     * compute the union of multiple \p bitsets
+     */
+    static BitSet fastUnion(util::span<const BitSet*> bitsets);
+
+    /**
      * Convert bitset to a std::vector holding only set elements
      */
     std::vector<uint32_t> toVector() const;
@@ -387,13 +387,13 @@ public:
     size_t shrinkToFit();
 
 private:
+    BitSet(const roaring::Roaring& roaring);
+    BitSet(roaring::Roaring&& roaring);
+
+    void addSingle(uint32_t value_);
     void addMany(size_t size, const uint32_t* data);
 
-    struct IVW_CORE_API RoaringDeleter {
-        void operator()(roaring::Roaring* ptr) const;
-    };
-
-    std::unique_ptr<roaring::Roaring, RoaringDeleter> roaring_;
+    std::unique_ptr<roaring::Roaring> roaring_;
 };
 
 }  // namespace inviwo
