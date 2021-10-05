@@ -91,7 +91,7 @@ private:
 
     bool showToolTip(QHelpEvent* e);
 
-    void setToolTipCallback(MouseInteractionEvent* e);
+    void setCallbacks(MouseInteractionEvent* e);
 
     EventPropagator* propagator_;
     std::function<size2_t()> canvasDimensions_;
