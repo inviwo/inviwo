@@ -2,6 +2,7 @@
 project(inviwo-core)
 
 set(HEADER_FILES
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/base64.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/boundingbox.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/camerautils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/cubeplaneintersection.h
@@ -371,6 +372,7 @@ set(HEADER_FILES
 ivw_group("Header Files" BASE "${IVW_INCLUDE_DIR}/inviwo/core" ${HEADER_FILES})
 
 set(SOURCE_FILES
+    algorithm/base64.cpp
     algorithm/boundingbox.cpp
     algorithm/camerautils.cpp
     algorithm/cubeplaneintersection.cpp
@@ -818,6 +820,12 @@ get_property(ext_license_list DIRECTORY ${IVW_ROOT_DIR}/ext PROPERTY IVW_LICENSE
 get_property(meta_license_list DIRECTORY ${IVW_TOOLS_DIR}/meta PROPERTY IVW_LICENSE_LIST)
 list(APPEND core_license_list ${ext_license_list} ${meta_license_list})
 set_property(TARGET inviwo-core PROPERTY IVW_LICENSE_LIST ${core_license_list})
+
+ivw_register_license_file(NAME "base64" VERSION 2.rc.08 MODULE Core
+    URL https://github.com/ReneNyffenegger/cpp-base64
+    TYPE "Copyright (C) 2004-2017, 2020, 2021 René Nyffenegger"
+    FILES ${IVW_ROOT_DIR}/include/inviwo/core/algorithm/base64_license.txt
+)
 
 #----------------------------------------------------------------
 # Generate build info - the build info will be updated during every compilation
