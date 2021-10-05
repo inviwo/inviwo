@@ -76,6 +76,7 @@
 #include <modules/basegl/processors/raycasting/sphericalvolumeraycaster.h>
 #include <modules/basegl/processors/raycasting/standardvolumeraycaster.h>
 #include <modules/basegl/processors/redgreenprocessor.h>
+#include <modules/basegl/processors/shadercomponentprocessorbase.h>
 #include <modules/basegl/processors/sphererenderer.h>
 #include <modules/basegl/processors/splitimage.h>
 #include <modules/basegl/processors/tuberendering.h>

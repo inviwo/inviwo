@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,30 +26,39 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/basegl/raycasting/raycastercomponent.h>
+#include <modules/basegl/shadercomponents/timecomponent.h>
+#include <modules/opengl/shader/shader.h>
+
+#include <chrono>
+#include <functional>
+#include <fmt/format.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API SampleTransformComponent : public RaycasterComponent {
-public:
-    SampleTransformComponent();
-    virtual ~SampleTransformComponent() = default;
+TimeComponent::TimeComponent(std::string_view name,
+                             std::function<void(InvalidationLevel)> invalidate)
+    : ShaderComponent{}
+    , timer{std::chrono::milliseconds{33},
+            [invalidate = std::move(invalidate)]() {
+                invalidate(InvalidationLevel::InvalidOutput);
+            }}
+    , name_{name} {
 
-    virtual std::string_view getName() const override;
+    timer.start();
+}
 
-    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
+std::string_view TimeComponent::getName() const { return name_; }
 
-    virtual std::vector<Property*> getProperties() override;
+void TimeComponent::process(Shader& shader, TextureUnitContainer&) {
+    shader.setUniform(name_, std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(
+                                 std::chrono::steady_clock::now().time_since_epoch())
+                                 .count());
+}
 
-    virtual std::vector<Segment> getSegments() override;
-
-private:
-    FloatVec3Property shift_;
-    IntVec3Property repeat_;
-};
+auto TimeComponent::getSegments() -> std::vector<Segment> {
+    return {
+        Segment{fmt::format(FMT_STRING("uniform float {};"), name_), placeholder::uniform, 600}};
+}
 
 }  // namespace inviwo

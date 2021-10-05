@@ -51,22 +51,24 @@ AtlasVolumeRaycaster::AtlasVolumeRaycaster(std::string_view identifier,
     , time_{"time", [this](InvalidationLevel level) { invalidate(level); }}
     , volume_{"volume"}
     , entryExit_{}
-    , classify_{volume_.getName()}
     , background_{*this}
-    , raycasting_{volume_.getName()}
-    , isoTF_{&volume_.volumePort}
+    , isoTF_{volume_.volumePort}
+    , raycasting_{volume_.getName(), isoTF_.isotfs[0]}
     , camera_{"camera", util::boundingBox(volume_.volumePort)}
     , light_{&camera_.camera}
     , positionIndicator_{}
     , sampleTransform_{}
-    , atlas_{this, volume_.getName(), &time_} {
+    , atlas_{this, "color", &time_} {
 
-    std::array<RaycasterComponent*, 12> comps{
-        &time_,       &volume_,          &entryExit_,  &isoTF_,  &atlas_, &classify_,
-        &background_, &sampleTransform_, &raycasting_, &camera_, &light_, &positionIndicator_};
-    registerComponents(comps);
+    volume_.volumePort.onChange([this]() {
+        if (volume_.volumePort.hasData()) {
+            const auto channels = volume_.volumePort.getData()->getDataFormat()->getComponents();
+            raycasting_.setUsedChannels(channels);
+        }
+    });
+
+    registerComponents(time_, volume_, entryExit_, isoTF_, atlas_, background_, sampleTransform_,
+                       raycasting_, camera_, light_, positionIndicator_);
 }
-
-void AtlasVolumeRaycaster::process() { VolumeRaycasterBase::process(); }
 
 }  // namespace inviwo

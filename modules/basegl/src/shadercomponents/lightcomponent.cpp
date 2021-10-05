@@ -26,29 +26,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/shadercomponents/lightcomponent.h>
+#include <modules/opengl/shader/shaderutils.h>
 
-#include <modules/basegl/raycasting/raycastercomponent.h>
-#include <inviwo/core/properties/volumeindicatorproperty.h>
+#include <string_view>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API PositionIndicatorComponent : public RaycasterComponent {
-public:
-    PositionIndicatorComponent();
+LightComponent::LightComponent(CameraProperty* camera)
+    : ShaderComponent(), lighting_("lighting", "Lighting", camera) {}
 
-    virtual std::string_view getName() const override;
+std::string_view LightComponent::getName() const { return lighting_.getIdentifier(); }
 
-    virtual void process(Shader& shader, TextureUnitContainer&) override;
+void LightComponent::initializeResources(Shader& shader) {
+    utilgl::addShaderDefines(shader, lighting_);
+}
 
-    virtual std::vector<Property*> getProperties() override;
+void LightComponent::process(Shader& shader, TextureUnitContainer&) {
+    if (lighting_.shadingMode_ != ShadingMode::None) {
+        utilgl::setUniforms(shader, lighting_);
+    }
+}
 
-    virtual std::vector<Segment> getSegments() override;
+std::vector<Property*> LightComponent::getProperties() { return {&lighting_}; }
 
-private:
-    VolumeIndicatorProperty positionIndicator_;
-};
+auto LightComponent::getSegments() -> std::vector<Segment> {
+    return {{"uniform LightParameters lighting;", placeholder::uniform, 500},
+            {R"(#include "utils/shading.glsl")", placeholder::include, 500}};
+}
 
 }  // namespace inviwo

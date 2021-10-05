@@ -26,38 +26,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/basegl/raycasting/timecomponent.h>
-#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/baseglmoduledefine.h>
 
-#include <chrono>
-#include <functional>
-#include <fmt/format.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <inviwo/core/util/timer.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+
+#include <string>
 
 namespace inviwo {
 
-TimeComponent::TimeComponent(std::string_view name,
-                             std::function<void(InvalidationLevel)> invalidate)
-    : RaycasterComponent{}
-    , timer{std::chrono::milliseconds{33},
-            [invalidate = std::move(invalidate)]() {
-                invalidate(InvalidationLevel::InvalidOutput);
-            }}
-    , name_{name} {
+class IVW_MODULE_BASEGL_API TimeComponent : public ShaderComponent {
+public:
+    TimeComponent(std::string_view name, std::function<void(InvalidationLevel)> invalidate);
 
-    timer.start();
-}
+    virtual std::string_view getName() const override;
 
-std::string_view TimeComponent::getName() const { return name_; }
+    virtual void process(Shader& shader, TextureUnitContainer&) override;
 
-void TimeComponent::process(Shader& shader, TextureUnitContainer&) {
-    shader.setUniform(name_, std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(
-                                 std::chrono::steady_clock::now().time_since_epoch())
-                                 .count());
-}
+    virtual std::vector<Segment> getSegments() override;
 
-auto TimeComponent::getSegments() -> std::vector<Segment> {
-    return {Segment{fmt::format(FMT_STRING("uniform float {};"), name_), Segment::uniform, 600}};
-}
+    Timer timer;
+
+private:
+    std::string name_;
+};
 
 }  // namespace inviwo

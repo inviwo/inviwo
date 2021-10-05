@@ -27,13 +27,15 @@
  *
  *********************************************************************************/
 
+// The special //? and //! comments are helpers for the visual studio shader validation
+
 //? #version 460
 
 #include "utils/structs.glsl"   //! #include "../../../opengl/glsl/utils/structs.glsl"
 #include "utils/sampler3d.glsl" //! #include "../../../opengl/glsl/utils/sampler3d.glsl"
 #include "utils/depth.glsl"     //! #include "../../../opengl/glsl/utils/depth.glsl"
 
-#pragma IVW_INCLUDE
+#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_INCLUDE
 
 float calcStep(in float rayLength, in vec3 direction, in float samplingRate, in vec3 dimensions) {
     float incr = min(rayLength, rayLength / (samplingRate * length(direction * dimensions)));
@@ -53,12 +55,10 @@ layout(location = 1) out vec4 PickingData;
 uniform ImageParameters outportParameters;
 uniform float samplingRate = 2.0;
 
-uniform int channel = 0;
-
 //? uniform VolumeParameters volumeParameters;
 //? uniform CameraParameters camera;
 
-#pragma IVW_UNIFORM
+#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_UNIFORM
 
 
 void main() {
@@ -72,7 +72,7 @@ void main() {
     // The setup is expected to define
     // entryPoint, exitPoint, entryPointDepth, exitPointDepth, rayLength, rayDirection
 
-    #pragma IVW_SETUP
+    #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP
 
     if (entryPoint == exitPoint) {
         FragData0 = result;
@@ -93,18 +93,18 @@ void main() {
     // Current sample position in texture spcase
     vec3 samplePosition = entryPoint + rayPosition * rayDirection;
 
-    #pragma IVW_FIRST
+    #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_FIRST
 
     for (rayPosition += rayStep; rayPosition < rayLength; rayPosition += rayStep) {
         samplePosition = entryPoint + rayPosition * rayDirection;
 
-        #pragma IVW_LOOP
+        #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP
 
         if (result.a > 0.99) break; // early ray termination
     }
 
 
-    #pragma IVW_POST
+    #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_POST
 
     depth = mix(calculateDepthValue(camera, rayDepth / rayLength, 
                                     entryPointDepth, exitPointDepth), 

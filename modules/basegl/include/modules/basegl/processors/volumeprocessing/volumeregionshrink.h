@@ -71,7 +71,7 @@ private:
     VolumeOutport outport_;
     IntProperty iterations_;
 
-    std::string shaderType_;
+    std::string volumeNumericType_;
     bool blockShaderReload_ = false;
     std::shared_ptr<StringShaderResource> fragShader_;
     Shader shader_;

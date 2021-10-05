@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,24 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/shadercomponents/isotfcomponent.h>
 
-#include <modules/basegl/raycasting/raycastercomponent.h>
-
-namespace inviwo {
-
-class IVW_MODULE_BASEGL_API ClassifyComponent : public RaycasterComponent {
-public:
-    ClassifyComponent(std::string_view volume);
-
-    virtual std::string_view getName() const override;
-
-    virtual std::vector<Segment> getSegments() override;
-
-private:
-    std::string volume_;
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

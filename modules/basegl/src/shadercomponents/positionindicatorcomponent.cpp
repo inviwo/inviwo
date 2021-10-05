@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,28 +27,56 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/raycasting/classifycomponent.h>
+#include <modules/basegl/shadercomponents/positionindicatorcomponent.h>
+
+#include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#include <string_view>
 #include <fmt/format.h>
 
 namespace inviwo {
 
-ClassifyComponent::ClassifyComponent(std::string_view volume)
-    : RaycasterComponent(), volume_{volume} {}
+PositionIndicatorComponent::PositionIndicatorComponent()
+    : ShaderComponent(), positionIndicator_("positionindicator", "Position Indicator") {}
 
-std::string_view ClassifyComponent::getName() const { return "classify"; }
+std::string_view PositionIndicatorComponent::getName() const {
+    return positionIndicator_.getIdentifier();
+}
+
+void PositionIndicatorComponent::process(Shader& shader, TextureUnitContainer&) {
+    utilgl::setUniforms(shader, positionIndicator_);
+}
+
+std::vector<Property*> PositionIndicatorComponent::getProperties() { return {&positionIndicator_}; }
 
 namespace {
 
-constexpr std::string_view classify = util::trim(R"(
-vec4 {0}Color = texture(transferFunction, vec2({0}Voxel[channel], 0.5));
+constexpr std::string_view uniforms = util::trim(R"(
+uniform VolumeIndicatorParameters {};
 )");
 
+constexpr std::string_view code = util::trim(R"(
+result = drawPlanes(result, samplePosition, rayDirection, rayStep, 
+                    {}.plane{}, rayPosition, rayDepth);
+)");
+
+}  // namespace
+auto PositionIndicatorComponent::getSegments() -> std::vector<Segment> {
+    StrBuffer buff;
+
+    if (positionIndicator_) {
+        if (positionIndicator_.plane1_) buff.append(code, getName(), 1);
+        if (positionIndicator_.plane2_) buff.append(code, getName(), 2);
+        if (positionIndicator_.plane3_) buff.append(code, getName(), 3);
+
+        return {{R"(#include "utils/raycastgeometry.glsl")", placeholder::include, 1100},
+                {fmt::format(uniforms, getName()), placeholder::uniform, 1100},
+                {std::string{buff}, placeholder::first, 1100},
+                {std::string{buff}, placeholder::loop, 1100}};
+    } else {
+        return {};
+    }
 }
 
-auto ClassifyComponent::getSegments() -> std::vector<Segment> {
-    return {{fmt::format(FMT_STRING(classify), volume_), Segment::first, 600},
-            {fmt::format(FMT_STRING(classify), volume_), Segment::loop, 600}};
-}
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,26 +29,65 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/raycasting/raycastercomponent.h>
-#include <inviwo/core/ports/imageport.h>
+
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <inviwo/core/properties/raycastingproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+
+#include <functional>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API EntryExitComponent : public RaycasterComponent {
+class IsoTFProperty;
+
+class IVW_MODULE_BASEGL_API RaycastingComponent : public ShaderComponent {
 public:
-    EntryExitComponent();
+    RaycastingComponent(std::string_view volume, IsoTFProperty& isotf);
 
     virtual std::string_view getName() const override;
 
-    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
+    virtual void process(Shader& shader, TextureUnitContainer&) override;
 
-    virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
+    virtual void initializeResources(Shader& shader) override;
+
+    virtual std::vector<Property*> getProperties() override;
 
     virtual std::vector<Segment> getSegments() override;
 
+    bool setUsedChannels(size_t channels);
+
 private:
-    ImageInport entryPort_;
-    ImageInport exitPort_;
+    std::string volume_;
+    IsoTFProperty& isotf_;
+
+    OptionPropertyInt channel_;
+    RaycastingProperty raycasting_;
+};
+
+class IVW_MODULE_BASEGL_API MultiRaycastingComponent : public ShaderComponent {
+public:
+    MultiRaycastingComponent(std::string_view volume,
+                             std::array<std::reference_wrapper<IsoTFProperty>, 4> isotfs);
+
+    virtual std::string_view getName() const override;
+
+    virtual void process(Shader& shader, TextureUnitContainer&) override;
+
+    virtual void initializeResources(Shader& shader) override;
+
+    virtual std::vector<Property*> getProperties() override;
+
+    virtual std::vector<Segment> getSegments() override;
+
+    bool setUsedChannels(size_t channels);
+
+private:
+    size_t usedChannels_;
+    std::string volume_;
+    std::array<std::reference_wrapper<IsoTFProperty>, 4> isotfs_;
+
+    RaycastingProperty raycasting_;
 };
 
 }  // namespace inviwo

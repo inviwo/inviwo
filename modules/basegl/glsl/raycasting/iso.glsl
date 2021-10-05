@@ -27,13 +27,14 @@
  *
  *********************************************************************************/
 
- #if !defined MAX_ISOVALUE_COUNT
- #define MAX_ISOVALUE_COUNT 1
- #endif
+#if !defined MAX_ISOVALUE_COUNT
+#define MAX_ISOVALUE_COUNT 1
+#endif
 
 struct IsovalueParameters {
     float values[MAX_ISOVALUE_COUNT];
     vec4 colors[MAX_ISOVALUE_COUNT];
+    int size;
 };
 
 /**
@@ -42,7 +43,7 @@ struct IsovalueParameters {
  * between the last valid isosurface and the current sampling position. That is
  * if no isosurface was found, tIncr is not modified.
  *
- * @param result        color accumulated so far during raycasting
+ * @param result           color accumulated so far during raycasting
  * @param isovalue         isovalue of isosurface to be drawn
  * @param isocolor         color of the isosurface used for blending
  * @param voxel            scalar values of current sampling position
@@ -50,10 +51,11 @@ struct IsovalueParameters {
  * @return in case of an isosurface, result is blended with the color of the isosurface.
  *       Otherwise result is returned
  */
- vec4 drawISO(in vec4 result, in float isovalue, in vec4 isocolor, in float value,
-     in float previousValue, in vec3 gradient, in vec3 previousGradient, in mat4 textureToWorld,
-     in LightParameters lighting, in vec3 rayPosition, in vec3 rayDirection,
-     in vec3 toCameraDir, in float t, in float tIncr, inout float tDepth) {
+vec4 drawISO(in vec4 result, in float isovalue, in vec4 isocolor, in float value,
+             in float previousValue, in vec3 gradient, in vec3 previousGradient,
+             in mat4 textureToWorld, in LightParameters lighting, in vec3 rayPosition,
+             in vec3 rayDirection, in vec3 toCameraDir, in float t, in float tIncr,
+             inout float tDepth) {
 
     // check if the isovalue is lying in between current and previous sample
     // found isosurface if differences between current/prev sample and isovalue have different signs
@@ -66,7 +68,7 @@ struct IsovalueParameters {
 
         vec3 isopos = rayPosition - tIncr * a * rayDirection;
 
-        #if defined(SHADING_ENABLED)
+        #if defined(SHADING_ENABLED) && defined(GRADIENTS_ENABLED)
         vec3 isoGradient = mix(gradient, previousGradient, a);
         if (dot(isoGradient, rayDirection) < 0.0) {  // two-sided lighting
             isoGradient = -isoGradient;
@@ -74,39 +76,43 @@ struct IsovalueParameters {
 
         vec3 isoposWorld = (textureToWorld * vec4(isopos, 1.0)).xyz;
         isocolor.rgb = APPLY_LIGHTING(lighting, isocolor.rgb, isocolor.rgb, vec3(1.0), isoposWorld,
-          -isoGradient, toCameraDir);
-        #endif  // SHADING_ENABLED
+                                      -isoGradient, toCameraDir);
+        #endif
 
-        if (tDepth < 0.0) {           // blend isosurface color and adjust first-hit depth if necessary
+        if (tDepth < 0.0) {  // blend isosurface color and adjust first-hit depth if necessary
             tDepth = t - a * tIncr;  // store depth of first hit, i.e. voxel with non-zero alpha
         }
-        isocolor.rgb *= isocolor.a;             // use pre-multiplied alpha
-        result += (1.0 - result.a) * isocolor;  // blend isosurface color with result accumulated so far
+        isocolor.rgb *= isocolor.a;  // use pre-multiplied alpha
+        
+        // blend isosurface color with result accumulated so far
+        result += (1.0 - result.a) * isocolor;
     }
-
 
     return result;
 }
 
-vec4 drawISO(in vec4 result, in IsovalueParameters isoparams, in float value, in float previousValue,
-     in vec3 gradient, in vec3 previousGradient, in mat4 textureToWorld,
-     in LightParameters lighting, in vec3 rayPosition, in vec3 rayDirection,
-     in vec3 toCameraDir, in float t, in float tIncr, inout float tDepth) {
+vec4 drawISO(in vec4 result, in IsovalueParameters isoparams, in float value,
+             in float previousValue, in vec3 gradient, in vec3 previousGradient,
+             in mat4 textureToWorld, in LightParameters lighting, in vec3 rayPosition,
+             in vec3 rayDirection, in vec3 toCameraDir, in float t, in float tIncr,
+             inout float tDepth) {
 
     #if MAX_ISOVALUE_COUNT == 1
-    result = drawISO(result, isoparams.values[0], isoparams.colors[0], value, previousValue, gradient,
-                     previousGradient, textureToWorld, lighting, rayPosition, rayDirection, toCameraDir,
-                    t, tIncr, tDepth);
+    if (isoparams.size > 0 ) {
+        result = drawISO(result, isoparams.values[0], isoparams.colors[0], value, previousValue,
+                         gradient, previousGradient, textureToWorld, lighting, rayPosition,
+                         rayDirection, toCameraDir, t, tIncr, tDepth);
+    }
     #else
     // multiple isosurfaces, need to determine order of traversal
-    if (voxel[channel] - previousVoxel[channel] > 0) {
-        for (int i = 0; i < MAX_ISOVALUE_COUNT; ++i) {
+    if (value - previousValue > 0) {
+        for (int i = 0; i < isoparams.size; ++i) {
             result = drawISO(result, isoparams.values[i], isoparams.colors[i], value, previousValue,
                              gradient, previousGradient, textureToWorld, lighting, rayPosition,
                              rayDirection, toCameraDir, t, tIncr, tDepth);
         }
     } else {
-        for (int i = MAX_ISOVALUE_COUNT; i > 0; --i) {
+        for (int i = isoparams.size; i > 0; --i) {
             result = drawISO(result, isoparams.values[i - 1], isoparams.colors[i - 1], value,
                              previousValue, gradient, previousGradient, textureToWorld, lighting,
                              rayPosition, rayDirection, toCameraDir, t, tIncr, tDepth);

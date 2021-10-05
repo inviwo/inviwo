@@ -27,15 +27,15 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/raycasting/volumecomponent.h>
+#include <modules/basegl/shadercomponents/volumecomponent.h>
 #include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
-VolumeComponent::VolumeComponent(std::string_view name)
-    : RaycasterComponent(), volumePort(std::string(name)) {}
+VolumeComponent::VolumeComponent(std::string_view name, Gradients graidents)
+    : ShaderComponent(), volumePort(std::string(name)), graidents{graidents} {}
 
 std::string_view VolumeComponent::getName() const { return volumePort.getIdentifier(); }
 
@@ -65,13 +65,45 @@ constexpr std::string_view voxel = util::trim(R"(
 )");
 
 constexpr std::string_view gradientFirst = util::trim(R"(
+#if defined(GRADIENTS_ENABLED)
 vec3 {0}GradientPrev = vec3(0);
-vec3 {0}Gradient = normalize(COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters, samplePosition, channel));
+vec3 {0}Gradient = useSurfaceNormals ? -texture(surfaceNormal, texCoords).xyz :
+    normalize(COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters,
+                                           samplePosition, channel));
+#endif
 )");
 
 constexpr std::string_view gradient = util::trim(R"(
+#if defined(GRADIENTS_ENABLED)
 {0}GradientPrev = {0}Gradient;
-{0}Gradient = normalize(COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters, samplePosition, channel));
+{0}Gradient = normalize(COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters,
+                                                     samplePosition, channel));
+#endif
+)");
+
+constexpr std::string_view allGradientsFirst = util::trim(R"(
+#if defined(GRADIENTS_ENABLED)
+mat4x3 {0}AllGradientsPrev = mat4x3(0);
+vec3 surfaceNormal = useSurfaceNormals ? -texture(surfaceNormal, texCoords).xyz : vec3(0);
+mat4x3 {0}AllGradients = useSurfaceNormals ?
+    mat4x3(surfaceNormal, surfaceNormal, surfaceNormal, surfaceNormal) :
+    COMPUTE_ALL_GRADIENTS({0}Voxel, {0}, {0}Parameters, samplePosition);
+{0}AllGradients[0] = normalize({0}AllGradients[0]);
+{0}AllGradients[1] = normalize({0}AllGradients[1]);
+{0}AllGradients[2] = normalize({0}AllGradients[2]);
+{0}AllGradients[3] = normalize({0}AllGradients[3]);
+#endif
+)");
+
+constexpr std::string_view allGradients = util::trim(R"(
+#if defined(GRADIENTS_ENABLED)
+{0}AllGradientsPrev = {0}AllGradients;
+{0}AllGradients = COMPUTE_ALL_GRADIENTS({0}Voxel, {0}, {0}Parameters, samplePosition);
+{0}AllGradients[0] = normalize({0}AllGradients[0]);
+{0}AllGradients[1] = normalize({0}AllGradients[1]);
+{0}AllGradients[2] = normalize({0}AllGradients[2]);
+{0}AllGradients[3] = normalize({0}AllGradients[3]);
+#endif
 )");
 
 }  // namespace
@@ -79,16 +111,26 @@ constexpr std::string_view gradient = util::trim(R"(
 auto VolumeComponent::getSegments() -> std::vector<Segment> {
 
     std::vector<Segment> segments{
-        {fmt::format(FMT_STRING(uniforms), getName()), Segment::uniform, 400},
-        {fmt::format(FMT_STRING(voxelFirst), getName()), Segment::first, 400},
-        {fmt::format(FMT_STRING(voxel), getName()), Segment::loop, 400}};
+        {fmt::format(FMT_STRING(uniforms), getName()), placeholder::uniform, 400},
+        {fmt::format(FMT_STRING(voxelFirst), getName()), placeholder::first, 400},
+        {fmt::format(FMT_STRING(voxel), getName()), placeholder::loop, 400}};
 
-    if (calculateGradient) {
-        segments.push_back(Segment{R"(#include "utils/gradients.glsl")", Segment::include, 400});
+    if (graidents != Gradients::None) {
         segments.push_back(
-            Segment{fmt::format(FMT_STRING(gradientFirst), getName()), Segment::first, 410});
+            Segment{std::string{R"(#include "utils/gradients.glsl")"}, placeholder::include, 400});
+    }
+    if (graidents == Gradients::Single) {
         segments.push_back(
-            Segment{fmt::format(FMT_STRING(gradient), getName()), Segment::loop, 410});
+            Segment{fmt::format(FMT_STRING(gradientFirst), getName()), placeholder::first, 410});
+        segments.push_back(
+            Segment{fmt::format(FMT_STRING(gradient), getName()), placeholder::loop, 410});
+    }
+
+    if (graidents == Gradients::All) {
+        segments.push_back(Segment{fmt::format(FMT_STRING(allGradientsFirst), getName()),
+                                   placeholder::first, 410});
+        segments.push_back(
+            Segment{fmt::format(FMT_STRING(allGradients), getName()), placeholder::loop, 410});
     }
 
     return segments;

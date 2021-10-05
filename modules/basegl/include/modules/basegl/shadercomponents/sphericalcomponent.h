@@ -29,14 +29,14 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/raycasting/raycastercomponent.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API SphericalComponent : public RaycasterComponent {
+class IVW_MODULE_BASEGL_API SphericalComponent : public ShaderComponent {
 public:
     SphericalComponent();
     virtual ~SphericalComponent() = default;

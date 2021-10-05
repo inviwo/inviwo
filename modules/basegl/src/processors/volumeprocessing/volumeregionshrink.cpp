@@ -69,9 +69,9 @@ void main() {{
     for (int z = -1; z < 1; z++) {{
         for (int y = -1; y < 1; y++) {{
             for (int x = -1; x < 1; x++) {{
-                border = border || value != texture(volume, 
-                                            texCoord_.xyz + vec3(x,y,z) * 
-                                            volumeParameters.reciprocalDimensions); 
+                border = border || value != texture(volume,
+                                            texCoord_.xyz + vec3(x,y,z) *
+                                            volumeParameters.reciprocalDimensions);
             }}
         }}
     }}
@@ -86,9 +86,9 @@ VolumeRegionShrink::VolumeRegionShrink()
     , inport_{"inputVolume"}
     , outport_{"outputVolume"}
     , iterations_{"iterations", "Iterations", 3, 0, 25}
-    , shaderType_{""}
+    , volumeNumericType_{""}
     , fragShader_{std::make_shared<StringShaderResource>("VolumeRegionShrink.frag",
-                                                         fmt::format(fragStr, shaderType_))}
+                                                         fmt::format(fragStr, volumeNumericType_))}
     , shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
                {ShaderType::Geometry, utilgl::findShaderResource("volume_gpu.geom")},
                {ShaderType::Fragment, fragShader_}},
@@ -115,14 +115,14 @@ void VolumeRegionShrink::process() {
     }
 
     auto* vf = volume->getDataFormat();
-    std::string shaderType = "";
+    std::string volumeNumericType = "";
     if (vf->getPrecision() == 32 && vf->getNumericType() == NumericType::SignedInteger) {
-        shaderType = "i";
+        volumeNumericType = "i";
     } else if (vf->getPrecision() == 32 && vf->getNumericType() == NumericType::UnsignedInteger) {
-        shaderType = "u";
+        volumeNumericType = "u";
     }
-    if (shaderType != shaderType_) {
-        shaderType_ = shaderType;
+    if (volumeNumericType != volumeNumericType_) {
+        volumeNumericType_ = volumeNumericType;
         util::KeepTrueWhileInScope block(&blockShaderReload_);
         initializeResources();
     }
@@ -196,7 +196,7 @@ void VolumeRegionShrink::process() {
 }
 
 void VolumeRegionShrink::initializeResources() {
-    fragShader_->setSource(fmt::format(fragStr, shaderType_));
+    fragShader_->setSource(fmt::format(fragStr, volumeNumericType_));
     shader_.getFragmentShaderObject()->clearOutDeclarations();
     shader_.build();
 }

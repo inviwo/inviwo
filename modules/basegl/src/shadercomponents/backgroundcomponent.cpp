@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/raycasting/backgroundcomponent.h>
+#include <modules/basegl/shadercomponents/backgroundcomponent.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <inviwo/core/util/stringconversion.h>
 
@@ -37,7 +37,7 @@
 namespace inviwo {
 
 BackgroundComponent::BackgroundComponent(Processor& processor)
-    : RaycasterComponent(), background_("bg") {
+    : ShaderComponent(), background_("bg") {
     background_.setOptional(true);
 
     background_.onConnect([&]() { processor.invalidate(InvalidationLevel::InvalidResources); });
@@ -103,11 +103,11 @@ auto BackgroundComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
     const auto comp = fmt::format(composite, "bg"_a = getName());
     if (background_.isConnected()) {
-        return {{fmt::format(uniforms, "bg"_a = getName()), Segment::uniform, 900},
-                {fmt::format(setup, "bg"_a = getName(), "comp"_a = comp), Segment::setup, 900},
-                {fmt::format(first, "bg"_a = getName(), "comp"_a = comp), Segment::first, 900},
-                {fmt::format(loop, "bg"_a = getName(), "comp"_a = comp), Segment::loop, 900},
-                {fmt::format(post, "bg"_a = getName(), "comp"_a = comp), Segment::post, 900}};
+        return {{fmt::format(uniforms, "bg"_a = getName()), placeholder::uniform, 900},
+                {fmt::format(setup, "bg"_a = getName(), "comp"_a = comp), placeholder::setup, 900},
+                {fmt::format(first, "bg"_a = getName(), "comp"_a = comp), placeholder::first, 900},
+                {fmt::format(loop, "bg"_a = getName(), "comp"_a = comp), placeholder::loop, 900},
+                {fmt::format(post, "bg"_a = getName(), "comp"_a = comp), placeholder::post, 900}};
     } else {
         return {};
     }

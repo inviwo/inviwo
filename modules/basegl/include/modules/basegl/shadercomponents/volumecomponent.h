@@ -26,37 +26,28 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/basegl/raycasting/cameracomponent.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <inviwo/core/ports/volumeport.h>
+
+#include <string_view>
 
 namespace inviwo {
 
-CameraComponent::CameraComponent(std::string_view name,
-                                 std::function<std::optional<mat4>()> boundingBox)
-    : RaycasterComponent(), camera(std::string(name), "Camera", boundingBox) {}
+class IVW_MODULE_BASEGL_API VolumeComponent : public ShaderComponent {
+public:
+    enum class Gradients { None, Single, All };
+    VolumeComponent(std::string_view name, Gradients graidents = Gradients::Single);
 
-std::string_view CameraComponent::getName() const { return camera.getIdentifier(); }
+    virtual std::string_view getName() const override;
+    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
+    virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
+    virtual std::vector<Segment> getSegments() override;
 
-void CameraComponent::initializeResources(Shader& shader) { utilgl::addDefines(shader, camera); }
-
-void CameraComponent::process(Shader& shader, TextureUnitContainer&) {
-    utilgl::setUniforms(shader, camera);
-}
-
-std::vector<Property*> CameraComponent::getProperties() { return {&camera}; }
-
-namespace {
-
-constexpr std::string_view uniforms = util::trim(R"(
-uniform CameraParameters {0};
-)");
-
-}
-
-auto CameraComponent::getSegments() -> std::vector<Segment> {
-    return {Segment{fmt::format(uniforms, getName()), Segment::uniform, 500}};
-}
+    VolumeInport volumePort;
+    Gradients graidents;
+};
 
 }  // namespace inviwo

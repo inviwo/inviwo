@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/raycasting/raycastercomponent.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
 
 namespace inviwo {
 
-void RaycasterComponent::process(Shader&, TextureUnitContainer&) {}
-void RaycasterComponent::initializeResources(Shader&) {}
+void ShaderComponent::process(Shader&, TextureUnitContainer&) {}
+void ShaderComponent::initializeResources(Shader&) {}
 
 }  // namespace inviwo

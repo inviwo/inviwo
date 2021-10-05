@@ -48,22 +48,24 @@ SphericalVolumeRaycaster::SphericalVolumeRaycaster(std::string_view identifier,
     : VolumeRaycasterBase(identifier, displayName)
     , volume_{"volume"}
     , entryExit_{}
-    , classify_{volume_.getName()}
     , background_{*this}
-    , raycasting_{volume_.getName()}
-    , isoTF_{&volume_.volumePort}
+    , isoTF_{volume_.volumePort}
+    , raycasting_{volume_.getName(), isoTF_.isotfs[0]}
     , camera_{"camera", util::boundingBox(volume_.volumePort)}
     , light_{&camera_.camera}
     , positionIndicator_{}
     , sphericalTransform_{}
     , sampleTransform_{} {
 
-    std::array<RaycasterComponent*, 11> comps{
-        &volume_, &entryExit_, &classify_,          &background_,         &raycasting_,     &isoTF_,
-        &camera_, &light_,     &positionIndicator_, &sphericalTransform_, &sampleTransform_};
-    registerComponents(comps);
-}
+    volume_.volumePort.onChange([this]() {
+        if (volume_.volumePort.hasData()) {
+            const auto channels = volume_.volumePort.getData()->getDataFormat()->getComponents();
+            raycasting_.setUsedChannels(channels);
+        }
+    });
 
-void SphericalVolumeRaycaster::process() { VolumeRaycasterBase::process(); }
+    registerComponents(volume_, entryExit_, background_, isoTF_, raycasting_, camera_, light_,
+                       positionIndicator_, sphericalTransform_, sampleTransform_);
+}
 
 }  // namespace inviwo

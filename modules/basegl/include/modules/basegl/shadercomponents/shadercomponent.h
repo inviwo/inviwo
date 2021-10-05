@@ -42,37 +42,41 @@ class Inport;
 class Shader;
 class TextureUnitContainer;
 
-class IVW_MODULE_BASEGL_API RaycasterComponent {
-public:
-    using Placeholder = typename ShaderSegment::Placeholder;
+namespace placeholder {
+using Placeholder = typename ShaderSegment::Placeholder;
 
+constexpr Placeholder include{"#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_INCLUDE", "include"};
+constexpr Placeholder uniform{"#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_UNIFORM", "uniform"};
+constexpr Placeholder setup{"#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP", "setup"};
+constexpr Placeholder first{"#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_FIRST", "first"};
+constexpr Placeholder loop{"#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_LOOP", "loop"};
+constexpr Placeholder post{"#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_POST", "post"};
+
+}  // namespace placeholder
+
+class IVW_MODULE_BASEGL_API ShaderComponent {
+public:
     /**
      * Represents a placeholder in shader code that will be replaced
      */
     struct Segment {
-        static constexpr Placeholder include{"#pragma IVW_INCLUDE", "include"};
-        static constexpr Placeholder uniform{"#pragma IVW_UNIFORM", "uniform"};
-        static constexpr Placeholder setup{"#pragma IVW_SETUP", "setup"};
-        static constexpr Placeholder first{"#pragma IVW_FIRST", "first"};
-        static constexpr Placeholder loop{"#pragma IVW_LOOP", "loop"};
-        static constexpr Placeholder post{"#pragma IVW_POST", "post"};
-
-        std::string snippet;             //!< The replacement code
-        Placeholder placeholder = loop;  //!< The placeholder that will be replaced
-        size_t priority = 1000;          //!< Different replace
+        using Placeholder = typename ShaderSegment::Placeholder;
+        std::string snippet;                          //!< The replacement code
+        Placeholder placeholder = placeholder::loop;  //!< The placeholder that will be replaced
+        size_t priority = 1000;  //!< Segments are ordered by priority, lower first.
     };
 
-    virtual ~RaycasterComponent() = default;
+    virtual ~ShaderComponent() = default;
 
     /**
-     * @brief The name of the RaycasterComponent.
+     * @brief The name of the ShaderComponent.
      * Will show up as the source of the line in the shaderwidget when the file is preprocessed and
      * in error messages.
      */
     virtual std::string_view getName() const = 0;
 
     /**
-     * @brief Called from VolumeRaycasterBase::initializeResources
+     * @brief Called from Processor::initializeResources
      * Override to set defines in the \p shader. This function will be called before the \p shader
      * is compiled
      * @param shader in current use
@@ -80,7 +84,7 @@ public:
     virtual void initializeResources(Shader& shader);
 
     /**
-     * @brief Called from VolumeRaycasterBase::process
+     * @brief Called from Processor::process
      * Override to set uniforms, bind textures etc.
      * @param shader in current use
      * @param container add any used TextureUnits here
@@ -89,14 +93,14 @@ public:
 
     /**
      * @brief Return all Inports and their port groups
-     * This gets called in VolumeRaycasterBase::registerComponents which will add them to the
+     * This gets called in Processor::registerComponents which will add them to the
      * processor.
      */
     virtual std::vector<std::tuple<Inport*, std::string>> getInports() { return {}; }
 
     /**
      * @brief Return all Properties
-     * This gets called in VolumeRaycasterBase::registerComponents which will add them to the
+     * This gets called in Processor::registerComponents which will add them to the
      * processor.
      */
     virtual std::vector<Property*> getProperties() { return {}; }

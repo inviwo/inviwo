@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/raycasting/atlascomponent.h>
+#include <modules/basegl/shadercomponents/atlascomponent.h>
 
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/datastructures/volume/volume.h>
@@ -40,7 +40,7 @@
 #include <modules/opengl/image/layergl.h>
 #include <modules/opengl/texture/texture2d.h>
 
-#include <modules/basegl/raycasting/timecomponent.h>
+#include <modules/basegl/shadercomponents/timecomponent.h>
 
 #include <algorithm>
 #include <functional>
@@ -57,15 +57,6 @@ OrdinalPropertyState<float> ordinalAlpha(
             0.01f,
             invalidationLevel,
             PropertySemantics::Default};
-}
-
-std::vector<colorbrewer::Family> listFamilies() {
-    using Index = std::underlying_type_t<colorbrewer::Family>;
-    std::vector<colorbrewer::Family> res;
-    for (Index i = 0; i < static_cast<Index>(colorbrewer::Family::NumberOfColormapFamilies); ++i) {
-        res.push_back(static_cast<colorbrewer::Family>(i));
-    }
-    return res;
 }
 
 void orderTf(TransferFunction& tf, size_t nSegments) {
@@ -100,8 +91,8 @@ void orderTf(TransferFunction& tf, size_t nSegments) {
 
 }  // namespace
 
-AtlasComponent::AtlasComponent(Processor* p, std::string_view volume, TimeComponent* time)
-    : RaycasterComponent{}
+AtlasComponent::AtlasComponent(Processor* p, std::string_view color, TimeComponent* time)
+    : ShaderComponent{}
     , atlas_{"atlas"}
     , brushing_{"brushing"}
     , selectionColor_{"selectionColor", "Selection Color",
@@ -126,7 +117,7 @@ AtlasComponent::AtlasComponent(Processor* p, std::string_view volume, TimeCompon
                      util::ordinalColor(vec3{0.0f, 1.0f, 0.0f}, InvalidationLevel::Valid)}
     , coloringAlpha_{"coloringAlpha", "Coloring Alpha",
                      ordinalAlpha(1.0f, InvalidationLevel::Valid)}
-    , coloringScheme_{"coloringScheme", "Coloring Scheme", listFamilies(), 0,
+    , coloringScheme_{"coloringScheme", "Coloring Scheme", colorbrewer::getFamilies(), 0,
                       InvalidationLevel::Valid}
     , coloringApply_{"coloringApply",
                      "Apply Coloring",
@@ -141,7 +132,7 @@ AtlasComponent::AtlasComponent(Processor* p, std::string_view volume, TimeCompon
     , coloringAction_{ColoringAction::None}
     , colors_{size2_t{64, 2},     DataFormat<vec4>::get(),    LayerType::Color,
               swizzlemasks::rgba, InterpolationType::Nearest, wrapping2d::clampAll}
-    , volume_{volume}
+    , color_{color}
     , picking_{p, 0, [this](PickingEvent* e) { onPickingEvent(e); }}
     , time_{time} {
 
@@ -365,9 +356,9 @@ float {atlas}Segment = getNormalizedVoxel({atlas}, {atlas}Parameters, samplePosi
 
 vec4 {atlas}Color1 = texture({atlas}Colors, vec2({atlas}Segment * {atlas}Scale, 0.25));
 vec4 {atlas}Color2 = texture({atlas}Colors, vec2({atlas}Segment * {atlas}Scale, 0.75));
-{volume}Color = highlight({volume}Color, {atlas}Color1, {atlas}Color2, time);
+{color} = highlight({color}, {atlas}Color1, {atlas}Color2, time);
 
-if (picking.a == 0.0 && {volume}Color.a > 0.0 && {atlas}Segment != 0.0) {{
+if (picking.a == 0.0 && {color}.a > 0.0 && {atlas}Segment != 0.0) {{
     uint pid = {atlas}PickingStart + uint({atlas}Size * {atlas}Segment + 0.5);
     picking = vec4(pickingIndexToColor(pid), 1.0);
 }}
@@ -377,9 +368,9 @@ constexpr std::string_view loop = util::trim(R"(
 {atlas}Segment = getNormalizedVoxel({atlas}, {atlas}Parameters, samplePosition).x;
 {atlas}Color1 = texture({atlas}Colors, vec2({atlas}Segment * {atlas}Scale, 0.25));
 {atlas}Color2 = texture({atlas}Colors, vec2({atlas}Segment * {atlas}Scale, 0.75));
-{volume}Color = highlight({volume}Color, {atlas}Color1, {atlas}Color2, time);
+{color} = highlight({color}, {atlas}Color1, {atlas}Color2, time);
 
-if (picking.a == 0.0 && {volume}Color.a > 0.0 && {atlas}Segment != 0.0) {{
+if (picking.a == 0.0 && {color}.a > 0.0 && {atlas}Segment != 0.0) {{
     uint pid = {atlas}PickingStart + uint({atlas}Size * {atlas}Segment + 0.5);
     picking = vec4(pickingIndexToColor(pid), 1.0);
 }}
@@ -390,10 +381,11 @@ if (picking.a == 0.0 && {volume}Color.a > 0.0 && {atlas}Segment != 0.0) {{
 auto AtlasComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
 
-    return {{R"(#include "utils/pickingutils.glsl")", Segment::include, 800},
-            {fmt::format(uniforms, "atlas"_a = getName()), Segment::uniform, 800},
-            {fmt::format(first, "atlas"_a = getName(), "volume"_a = volume_), Segment::first, 800},
-            {fmt::format(loop, "atlas"_a = getName(), "volume"_a = volume_), Segment::loop, 800}};
+    return {
+        {R"(#include "utils/pickingutils.glsl")", placeholder::include, 800},
+        {fmt::format(uniforms, "atlas"_a = getName()), placeholder::uniform, 800},
+        {fmt::format(first, "atlas"_a = getName(), "color"_a = color_), placeholder::first, 800},
+        {fmt::format(loop, "atlas"_a = getName(), "color"_a = color_), placeholder::loop, 800}};
 }
 
 }  // namespace inviwo

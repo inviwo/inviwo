@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,29 +29,25 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-
-#include <modules/basegl/raycasting/raycastercomponent.h>
-#include <inviwo/core/util/timer.h>
-#include <inviwo/core/properties/invalidationlevel.h>
-
-#include <string>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API TimeComponent : public RaycasterComponent {
+class IVW_MODULE_BASEGL_API BackgroundComponent : public ShaderComponent {
 public:
-    TimeComponent(std::string_view name, std::function<void(InvalidationLevel)> invalidate);
+    BackgroundComponent(Processor& processor);
 
     virtual std::string_view getName() const override;
 
-    virtual void process(Shader& shader, TextureUnitContainer&) override;
+    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
+
+    virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
 
     virtual std::vector<Segment> getSegments() override;
 
-    Timer timer;
-
 private:
-    std::string name_;
+    ImageInport background_;
 };
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,28 +29,28 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/raycasting/raycastercomponent.h>
-#include <inviwo/core/ports/volumeport.h>
 
-#include <string_view>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <inviwo/core/properties/simplelightingproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API VolumeComponent : public RaycasterComponent {
+class IVW_MODULE_BASEGL_API LightComponent : public ShaderComponent {
 public:
-    VolumeComponent(std::string_view name);
+    LightComponent(CameraProperty* camera);
 
     virtual std::string_view getName() const override;
 
-    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
+    virtual void process(Shader& shader, TextureUnitContainer&) override;
 
-    virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
+    virtual void initializeResources(Shader& shader) override;
+
+    virtual std::vector<Property*> getProperties() override;
 
     virtual std::vector<Segment> getSegments() override;
 
-    VolumeInport volumePort;
-
-    bool calculateGradient = true;
+private:
+    SimpleLightingProperty lighting_;
 };
 
 }  // namespace inviwo

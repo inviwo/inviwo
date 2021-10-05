@@ -36,101 +36,19 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/shader/shadermanager.h>
+#include <modules/opengl/shader/standardshaders.h>
 
-#include <modules/basegl/raycasting/raycastingcomponent.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
 
 namespace inviwo {
 
 VolumeRaycasterBase::VolumeRaycasterBase(std::string_view identifier, std::string_view displayName)
-    : Processor(identifier, displayName)
-    , outport_("outport")
-    , shader_{"raycasting/raycaster.frag", Shader::Build::No}
-    , components_{} {
-
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-
-    addPort(outport_, "images");
-}
+    : ShaderComponentProcessorBase(
+          {utilgl::imgIdentityVert(),
+           {ShaderType::Fragment,
+            utilgl::findShaderResource("raycasting/raycaster-template.frag")}},
+          identifier, displayName) {}
 
 VolumeRaycasterBase::~VolumeRaycasterBase() = default;
-
-void VolumeRaycasterBase::registerComponents(util::span<RaycasterComponent*> components) {
-    components_.insert(components_.end(), components.begin(), components.end());
-    for (auto* comp : components) {
-        for (const auto& [port, group] : comp->getInports()) {
-            addPort(*port, group);
-        }
-        for (auto prop : comp->getProperties()) {
-            addProperty(*prop);
-        }
-    }
-}
-
-void VolumeRaycasterBase::initializeResources() {
-    for (auto* comp : components_) {
-        try {
-            comp->initializeResources(shader_);
-        } catch (...) {
-            handleError("setting shader defines", comp->getName());
-        }
-    }
-
-    auto* fso = shader_.getFragmentShaderObject();
-    fso->clearOutDeclarations();
-
-    fso->clearSegments();
-    for (auto* comp : components_) {
-        try {
-            for (auto&& segment : comp->getSegments()) {
-                fso->addSegment(ShaderSegment{segment.placeholder, std::string(comp->getName()),
-                                              segment.snippet, segment.priority});
-            }
-        } catch (...) {
-            handleError("adding segments", comp->getName());
-        }
-    }
-
-    shader_.build();
-}
-
-void VolumeRaycasterBase::process() {
-    utilgl::activateAndClearTarget(outport_);
-    shader_.activate();
-
-    TextureUnitContainer units;
-    utilgl::setUniforms(shader_, outport_);
-    for (auto& comp : components_) {
-        try {
-            comp->process(shader_, units);
-        } catch (...) {
-            handleError("setting shader uniforms", comp->getName());
-        }
-    }
-
-    utilgl::singleDrawImagePlaneRect();
-
-    shader_.deactivate();
-    utilgl::deactivateCurrentTarget();
-}
-
-void VolumeRaycasterBase::handleError(std::string_view action, std::string_view name) const {
-    try {
-        throw;
-    } catch (Exception& e) {
-        throw Exception{fmt::format("Error while {} in raycasting segment: {}, message: {}", action,
-                                    name, e.getMessage()),
-                        e.getContext()};
-
-    } catch (fmt::format_error& e) {
-        throw Exception{
-            fmt::format("Error while {} in raycasting segment: {}, fmt::format_error: {}", action,
-                        name, e.what()),
-            IVW_CONTEXT};
-    } catch (std::exception& e) {
-        throw Exception{fmt::format("Error while {} in raycasting segment: {}, message: {}", action,
-                                    name, e.what()),
-                        IVW_CONTEXT};
-    }
-}
 
 }  // namespace inviwo

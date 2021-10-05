@@ -28,9 +28,11 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/raycasting/multichannelvolumeraycaster.h>
-#include <inviwo/core/util/stdextensions.h>
 
 #include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -47,23 +49,40 @@ const ProcessorInfo MultiChannelVolumeRaycaster::getProcessorInfo() const { retu
 MultiChannelVolumeRaycaster::MultiChannelVolumeRaycaster(std::string_view identifier,
                                                          std::string_view displayName)
     : VolumeRaycasterBase(identifier, displayName)
-    , volume_{"volume"}
+    , volume_{"volume", VolumeComponent::Gradients::All}
     , entryExit_{}
-    , classify_{volume_.getName()}
     , background_{*this}
-    , raycasting_{volume_.getName()}
-    , isoTF_{&volume_.volumePort}
+    , isoTFs_{volume_.volumePort}
+    , raycasting_{volume_.getName(),
+                  util::make_array<4>([&](auto i) { return std::ref(isoTFs_.isotfs[i]); })}
     , camera_{"camera", util::boundingBox(volume_.volumePort)}
     , light_{&camera_.camera}
     , positionIndicator_{}
     , sampleTransform_{} {
 
-    std::array<RaycasterComponent*, 10> comps{
-        &volume_, &entryExit_, &classify_, &background_,        &raycasting_,
-        &isoTF_,  &camera_,    &light_,    &positionIndicator_, &sampleTransform_};
-    registerComponents(comps);
-}
+    for (auto&& [i, isotf] : util::enumerate(isoTFs_.isotfs)) {
+        HistogramSelection selection{};
+        selection[i] = true;
+        isotf.setHistogramSelection(selection).setCurrentStateAsDefault();
+    }
 
-void MultiChannelVolumeRaycaster::process() { VolumeRaycasterBase::process(); }
+    volume_.volumePort.onChange([this]() {
+        const auto channels = volume_.volumePort.hasData()
+                                  ? volume_.volumePort.getData()->getDataFormat()->getComponents()
+                                  : 4;
+        if (raycasting_.setUsedChannels(channels)) {
+            // The port onchange callback is invoked while evaluating the network
+            // hence it is safe to call initializeResources here.
+            // Also calls to invalidate will be ignored
+            initializeResources();
+        }
+        for (auto&& [i, isotf] : util::enumerate(isoTFs_.isotfs)) {
+            isotf.setVisible(i < channels);
+        }
+    });
+
+    registerComponents(volume_, entryExit_, background_, isoTFs_, raycasting_, camera_, light_,
+                       positionIndicator_, sampleTransform_);
+}
 
 }  // namespace inviwo

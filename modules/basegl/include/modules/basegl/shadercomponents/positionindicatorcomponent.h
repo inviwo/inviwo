@@ -29,25 +29,26 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/raycasting/raycastercomponent.h>
-#include <inviwo/core/ports/imageport.h>
+
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <inviwo/core/properties/volumeindicatorproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API BackgroundComponent : public RaycasterComponent {
+class IVW_MODULE_BASEGL_API PositionIndicatorComponent : public ShaderComponent {
 public:
-    BackgroundComponent(Processor& processor);
+    PositionIndicatorComponent();
 
     virtual std::string_view getName() const override;
 
-    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
+    virtual void process(Shader& shader, TextureUnitContainer&) override;
 
-    virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
+    virtual std::vector<Property*> getProperties() override;
 
     virtual std::vector<Segment> getSegments() override;
 
 private:
-    ImageInport background_;
+    VolumeIndicatorProperty positionIndicator_;
 };
 
 }  // namespace inviwo

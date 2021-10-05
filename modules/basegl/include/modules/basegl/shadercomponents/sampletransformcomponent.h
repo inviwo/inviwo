@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2021 Inviwo Foundation
+ * Copyright (c) 2020-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,28 +29,30 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-
-#include <modules/basegl/raycasting/raycastercomponent.h>
-#include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API IsoTFComponent : public RaycasterComponent {
+/**
+ * This component
+ */
+class IVW_MODULE_BASEGL_API SampleTransformComponent : public ShaderComponent {
 public:
-    IsoTFComponent(VolumeInport* volumeInport);
+    SampleTransformComponent();
+    virtual ~SampleTransformComponent() = default;
 
     virtual std::string_view getName() const override;
 
     virtual void process(Shader& shader, TextureUnitContainer& cont) override;
-
-    virtual void initializeResources(Shader& shader) override;
 
     virtual std::vector<Property*> getProperties() override;
 
     virtual std::vector<Segment> getSegments() override;
 
 private:
-    IsoTFProperty isotfComposite_;
+    FloatVec3Property shift_;
+    IntVec3Property repeat_;
 };
 
 }  // namespace inviwo

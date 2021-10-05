@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2021 Inviwo Foundation
+ * Copyright (c) 2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,37 +26,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/basegl/raycasting/isotfcomponent.h>
+#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+#include <inviwo/core/properties/cameraproperty.h>
 
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureutils.h>
+#include <string_view>
+#include <functional>
+#include <optional>
 
 namespace inviwo {
 
-IsoTFComponent::IsoTFComponent(VolumeInport* volumeInport)
-    : RaycasterComponent()
-    , isotfComposite_("isotfComposite", "TF & Isovalues", volumeInport,
-                      InvalidationLevel::InvalidResources) {}
+class IVW_MODULE_BASEGL_API CameraComponent : public ShaderComponent {
+public:
+    CameraComponent(std::string_view name, std::function<std::optional<mat4>()> boundingBox);
 
-std::string_view IsoTFComponent::getName() const { return isotfComposite_.getIdentifier(); }
+    virtual std::string_view getName() const override;
 
-void IsoTFComponent::process(Shader& shader, TextureUnitContainer& cont) {
-    utilgl::bindAndSetUniforms(shader, cont, isotfComposite_);
-    utilgl::setUniforms(shader, isotfComposite_);
-}
+    virtual void initializeResources(Shader& shader) override;
+    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
 
-void IsoTFComponent::initializeResources(Shader& shader) {
-    // need to ensure there is always at least one isovalue due to the use of the macro
-    // as array size in IsovalueParameters
-    shader.getFragmentShaderObject()->addShaderDefine(
-        "MAX_ISOVALUE_COUNT",
-        toString(std::max<size_t>(1, isotfComposite_.isovalues_.get().size())));
-}
+    virtual std::vector<Property*> getProperties() override;
 
-std::vector<Property*> IsoTFComponent::getProperties() { return {&isotfComposite_}; }
+    virtual std::vector<Segment> getSegments() override;
 
-auto IsoTFComponent::getSegments() -> std::vector<Segment> {
-    return {Segment{"uniform sampler2D transferFunction;", Segment::uniform, 1000}};
-}
+    CameraProperty camera;
+};
+
 }  // namespace inviwo
