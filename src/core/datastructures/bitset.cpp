@@ -28,6 +28,9 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/bitset.h>
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/io/serialization/deserializer.h>
+#include <inviwo/core/algorithm/base64.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -277,6 +280,21 @@ void BitSet::optimize() { roaring_->runOptimize(); }
 void BitSet::removeRLECompression() { roaring_->removeRunCompression(); }
 
 size_t BitSet::shrinkToFit() { return roaring_->shrinkToFit(); }
+
+void BitSet::serialize(Serializer& s) const {
+    std::vector<char> buf(getSizeInBytes());
+    roaring_->write(buf.data(), true);
+
+    s.serialize("bitset", util::base64_encode(buf));
+}
+
+void BitSet::deserialize(Deserializer& d) {
+    std::string str;
+    d.deserialize("bitset", str);
+
+    util::span<char> buf = util::base64_decode(str);
+    *roaring_ = roaring::Roaring::read(buf.data(), true);
+}
 
 void BitSet::addSingle(uint32_t v) { roaring_->add(v); }
 

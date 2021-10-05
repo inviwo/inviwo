@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/detected.h>
+#include <inviwo/core/io/serialization/serializable.h>
 
 #include <tcb/span.hpp>
 
@@ -52,7 +53,7 @@ namespace inviwo {
 /**
  * \brief represents a bitset based on roaring bitmaps provided by the CRoaring library
  */
-class IVW_CORE_API BitSet {
+class IVW_CORE_API BitSet : public Serializable {
 public:
     template <typename T>
     using iterator_category = typename std::iterator_traits<T>::iterator_category;
@@ -385,6 +386,9 @@ public:
      * @return number of bytes saved
      */
     size_t shrinkToFit();
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 private:
     BitSet(const roaring::Roaring& roaring);
