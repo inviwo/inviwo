@@ -1,5 +1,10 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2021-10-06 Updated Brushing & Linking
+Brushing & Linking is now using `BitSet` (see `inviwo/core/datastructures/bitset.h`) to represent selections and filtering. Note that the data type of Brushing & Linking indices was changed to `uint32_t`. There is now also support for serialization and deserialization of Brushing & Linking.
+
+A new `HighlightEvent` allows to have an additional set of indices for highlighting things besides a regular selection. Simply use `BrushingAndLinkingInport::sendHighlightEvent()` to send your highlighted indices to the Brushing & Linking manager.
+
 ## 2021-09-27
 Fixed some naming inconsistencies regarding texture coordinate vertex attributes and buffers. Renamed `BufferType::TexcoordAttrib` to `BufferType::TexCoordAttrib` (`geometrytypes.h`) and `buffertraits::TexcoordBuffer` to `buffertraits::TexCoordBuffer` (`typedmesh.h`). The buffer name of `TexCoordAttrib` now maps to `TexCoord` (previously `Texture`), which is relevant when using the `MeshShaderCache`.
 

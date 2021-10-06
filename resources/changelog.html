@@ -26,6 +26,9 @@
 </style>
 </head>
 <body>
+<h2>2021-10-06 Updated Brushing &amp; Linking</h2>
+<p>Brushing &amp; Linking is now using <code>BitSet</code> (see <code>inviwo/core/datastructures/bitset.h</code>) to represent selections and filtering. Note that the data type of Brushing &amp; Linking indices was changed to <code>uint32_t</code>. There is now also support for serialization and deserialization of Brushing &amp; Linking.</p>
+<p>A new <code>HighlightEvent</code> allows to have an additional set of indices for highlighting things besides a regular selection. Simply use <code>BrushingAndLinkingInport::sendHighlightEvent()</code> to send your highlighted indices to the Brushing &amp; Linking manager.</p>
 <h2>2021-09-27</h2>
 <p>Fixed some naming inconsistencies regarding texture coordinate vertex attributes and buffers. Renamed <code>BufferType::TexcoordAttrib</code> to <code>BufferType::TexCoordAttrib</code> (<code>geometrytypes.h</code>) and <code>buffertraits::TexcoordBuffer</code> to <code>buffertraits::TexCoordBuffer</code> (<code>typedmesh.h</code>). The buffer name of <code>TexCoordAttrib</code> now maps to <code>TexCoord</code> (previously <code>Texture</code>), which is relevant when using the <code>MeshShaderCache</code>.</p>
 <p>In case you use the <code>MeshShaderCache</code> in connection with <code>TexCoordAttrib</code> you may need to adjust your shader. If the attribute is available, <code>HAS_TEXCOORD</code> is defined and <code>in_TexCoord</code> holds the value (previously <code>HAS_TEXTURE/in_Texture</code>).</p>
