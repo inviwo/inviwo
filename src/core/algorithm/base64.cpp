@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-namespace base64util {
+namespace util {
 
 // clang-format off
 
@@ -123,26 +123,6 @@ static std::string insert_linebreaks(std::string str, size_t distance) {
     return str;
 }
 
-template <typename String, unsigned int line_length>
-static std::string encode_with_line_breaks(String s) {
-  return insert_linebreaks(base64_encode(s, false), line_length);
-}
-
-template <typename String>
-static std::string encode_pem(String s) {
-  return encode_with_line_breaks<String, 64>(s);
-}
-
-template <typename String>
-static std::string encode_mime(String s) {
-  return encode_with_line_breaks<String, 76>(s);
-}
-
-template <typename String>
-static std::string encode(String s, bool url) {
-  return base64_encode(reinterpret_cast<const unsigned char*>(s.data()), s.length(), url);
-}
-
 std::string base64_encode(unsigned char const* bytes_to_encode, size_t in_len, bool url) {
 
     size_t len_encoded = (in_len +2) / 3 * 4;
@@ -194,6 +174,27 @@ std::string base64_encode(unsigned char const* bytes_to_encode, size_t in_len, b
     return ret;
 }
 
+std::string encode(util::span<char> s, bool url);
+
+template <typename String, unsigned int line_length>
+static std::string encode_with_line_breaks(String s) {
+  return insert_linebreaks(encode(s, false), line_length);
+}
+
+template <typename String>
+static std::string encode_pem(String s) {
+  return encode_with_line_breaks<String, 64>(s);
+}
+
+template <typename String>
+static std::string encode_mime(String s) {
+  return encode_with_line_breaks<String, 76>(s);
+}
+
+std::string encode(util::span<char> s, bool url) {
+  return base64_encode(reinterpret_cast<const unsigned char*>(s.data()), s.size(), url);
+}
+
 template <typename String>
 static std::string decode(String encoded_string, bool remove_linebreaks) {
  //
@@ -209,7 +210,7 @@ static std::string decode(String encoded_string, bool remove_linebreaks) {
 
        copy.erase(std::remove(copy.begin(), copy.end(), '\n'), copy.end());
 
-       return base64_decode(copy, false);
+       return decode<std::string>(copy, false);
     }
 
     size_t length_of_string = encoded_string.length();
@@ -275,46 +276,19 @@ static std::string decode(String encoded_string, bool remove_linebreaks) {
     return ret;
 }
 
-std::string base64_decode(std::string const& s, bool remove_linebreaks) {
-   return decode(s, remove_linebreaks);
-}
-
-std::string base64_encode(std::string const& s, bool url) {
-   return encode(s, url);
-}
-
-std::string base64_encode_pem (std::string const& s) {
-   return encode_pem(s);
-}
-
-std::string base64_encode_mime(std::string const& s) {
-   return encode_mime(s);
-}
-
-//
-// Interface with std::string_view rather than const std::string&
-// Requires C++17
-// Provided by Yannic Bonenberger (https://github.com/Yannic)
-//
-
-std::string base64_encode(std::string_view s, bool url) {
-   return encode(s, url);
-}
-
-std::string base64_encode_pem(std::string_view s) {
-   return encode_pem(s);
-}
-
-std::string base64_encode_mime(std::string_view s) {
-   return encode_mime(s);
-}
-
-std::string base64_decode(std::string_view s, bool remove_linebreaks) {
-   return decode(s, remove_linebreaks);
-}
-
 // clang-format on
 
-}  // namespace base64util
+std::string base64_encode(util::span<char> s, bool url) { return encode(s, url); }
+
+std::string base64_encode_pem(util::span<char> s) { return encode_pem(s); }
+
+std::string base64_encode_mime(util::span<char> s) { return encode_mime(s); }
+
+util::span<char> base64_decode(std::string_view s, bool remove_linebreaks) {
+    std::string str = decode(s, remove_linebreaks);
+    return {str.data(), str.size()};
+}
+
+}  // namespace util
 
 }  // namespace inviwo
