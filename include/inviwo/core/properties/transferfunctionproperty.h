@@ -105,8 +105,26 @@ public:
     TransferFunctionProperty& setZoomV(double zoomVMin, double zoomVMax);
     const dvec2& getZoomV() const;
 
+    /**
+     * Set the HistogramMode to control how to scale the histogram
+     * The options are:
+     *
+     * * Off Don't show any histograms
+     * * All Make sure all the bars are fully visible
+     * * P99 Make sure 99% of the bars are fully visible
+     * * P95 Make sure 95% of the bars are fully visible
+     * * P90 Make sure 90% of the bars are fully visible
+     * * Log Apply logarithmic scaling to each bar.
+     *
+     */
     TransferFunctionProperty& setHistogramMode(HistogramMode type);
     HistogramMode getHistogramMode() const;
+
+    /**
+     * Set the HistogramSelection. The selection determine which of the histograms from the volume
+     * in the optional volume port to show. The selection is a bitset, up to 32 histograms are
+     * supported. By default all available histograms will be shown.
+     */
     TransferFunctionProperty& setHistogramSelection(HistogramSelection selection);
     HistogramSelection getHistogramSelection() const;
 

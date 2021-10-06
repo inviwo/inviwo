@@ -44,7 +44,7 @@ IsoValueProperty::IsoValueProperty(const std::string& identifier, const std::str
     , zoomH_("zoomH_", dvec2(0.0, 1.0))
     , zoomV_("zoomV_", dvec2(0.0, 1.0))
     , histogramMode_("showHistogram_", HistogramMode::All)
-    , histogramSelection_("histogramSelection", histgramSelectionAll)
+    , histogramSelection_("histogramSelection", histogramSelectionAll)
     , volumeInport_(volumeInport) {
 
     iso_.value.addObserver(this);

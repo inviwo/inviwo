@@ -40,7 +40,7 @@ namespace inviwo {
 enum class HistogramMode { Off, All, P99, P95, P90, Log };
 
 using HistogramSelection = std::bitset<32>;
-constexpr HistogramSelection histgramSelectionAll{0xffffffff};
+constexpr HistogramSelection histogramSelectionAll{0xffffffff};
 
 /**
  *The NormalizedHistogram has a array of bins and all bins are normalized.
