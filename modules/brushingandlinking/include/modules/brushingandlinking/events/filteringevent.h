@@ -40,7 +40,7 @@ namespace inviwo {
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API FilteringEvent : public BrushingAndLinkingEvent {
 public:
-    FilteringEvent(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& indices);
+    FilteringEvent(const BrushingAndLinkingInport* src, const BitSet& indices);
     virtual ~FilteringEvent() = default;
 
     virtual void print(std::ostream& os) const override;

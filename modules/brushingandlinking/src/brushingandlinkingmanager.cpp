@@ -31,6 +31,9 @@
 #include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/io/serialization/deserializer.h>
+
 namespace inviwo {
 
 BrushingAndLinkingManager::BrushingAndLinkingManager(Processor* p,
@@ -50,7 +53,7 @@ BrushingAndLinkingManager::~BrushingAndLinkingManager() {}
 
 size_t BrushingAndLinkingManager::getNumberOfSelected() const { return selected_.size(); }
 
-size_t BrushingAndLinkingManager::getNumberOfFiltered() const { return filtered_.getSize(); }
+size_t BrushingAndLinkingManager::getNumberOfFiltered() const { return filtered_.size(); }
 
 size_t BrushingAndLinkingManager::getNumberOfHighlighted() const { return highlighted_.size(); }
 
@@ -62,12 +65,12 @@ void BrushingAndLinkingManager::remove(const BrushingAndLinkingInport* src) {
     filtered_.remove(src);
 }
 
-bool BrushingAndLinkingManager::isColumnSelected(size_t idx) const {
-    return selectedColumns_.find(idx) != selectedColumns_.end();
+bool BrushingAndLinkingManager::isColumnSelected(uint32_t idx) const {
+    return selectedColumns_.contains(idx);
 }
 
 void BrushingAndLinkingManager::setSelected(const BrushingAndLinkingInport*,
-                                            const std::unordered_set<size_t>& indices) {
+                                            const BitSet& indices) {
     selected_ = indices;
     owner_->invalidate(invalidationLevel_);
 }
@@ -78,14 +81,14 @@ void BrushingAndLinkingManager::clearSelected() {
 }
 
 void BrushingAndLinkingManager::setFiltered(const BrushingAndLinkingInport* src,
-                                            const std::unordered_set<size_t>& indices) {
+                                            const BitSet& indices) {
     filtered_.set(src, indices);
 }
 
 void BrushingAndLinkingManager::clearFiltered() { filtered_.clear(); }
 
 void BrushingAndLinkingManager::setHighlighted(const BrushingAndLinkingInport*,
-                                               const std::unordered_set<size_t>& indices) {
+                                               const BitSet& indices) {
     highlighted_ = indices;
     owner_->invalidate(invalidationLevel_);
 }
@@ -96,7 +99,7 @@ void BrushingAndLinkingManager::clearHighlighted() {
 }
 
 void BrushingAndLinkingManager::setSelectedColumn(const BrushingAndLinkingInport*,
-                                                  const std::unordered_set<size_t>& indices) {
+                                                  const BitSet& indices) {
     selectedColumns_ = indices;
     owner_->invalidate(invalidationLevel_);
 }
@@ -106,20 +109,30 @@ void BrushingAndLinkingManager::clearColumns() {
     owner_->invalidate(invalidationLevel_);
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingManager::getSelectedIndices() const {
-    return selected_;
-}
+const BitSet& BrushingAndLinkingManager::getSelectedIndices() const { return selected_; }
 
-const std::unordered_set<size_t>& BrushingAndLinkingManager::getFilteredIndices() const {
+const BitSet& BrushingAndLinkingManager::getFilteredIndices() const {
     return filtered_.getIndices();
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingManager::getHighlightedIndices() const {
-    return highlighted_;
+const BitSet& BrushingAndLinkingManager::getHighlightedIndices() const { return highlighted_; }
+
+const BitSet& BrushingAndLinkingManager::getSelectedColumns() const { return selectedColumns_; }
+
+void BrushingAndLinkingManager::serialize(Serializer& s) const {
+    s.serialize("selected", selected_);
+    s.serialize("highlighted", highlighted_);
+    s.serialize("selectedColumns", selectedColumns_);
+    filtered_.serialize(s);
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingManager::getSelectedColumns() const {
-    return selectedColumns_;
+void BrushingAndLinkingManager::deserialize(Deserializer& d,
+                                            const BrushingAndLinkingOutport& port) {
+    d.deserialize("selected", selected_);
+    d.deserialize("highlighted", highlighted_);
+    d.deserialize("selectedColumns", selectedColumns_);
+    filtered_.deserialize(d, port);  // TODO: check for double invalidation caused by filtered_
+    owner_->invalidate(invalidationLevel_);
 }
 
 }  // namespace inviwo

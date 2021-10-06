@@ -76,9 +76,7 @@ PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
             }
         });
     selectionChangedCallBack_ = persistenceDiagramPlot_.addSelectionChangedCallback(
-        [this](const std::unordered_set<size_t>& indices) {
-            brushingPort_.sendSelectionEvent(indices);
-        });
+        [this](const BitSet& indices) { brushingPort_.sendSelectionEvent(indices); });
 
     addProperty(persistenceDiagramPlot_.properties_);
     addProperty(xAxis_);

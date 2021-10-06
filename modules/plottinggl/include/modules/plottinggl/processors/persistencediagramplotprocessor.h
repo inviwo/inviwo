@@ -95,8 +95,7 @@ private:
     using CallbackHandle = std::shared_ptr<std::function<void(PickingEvent*, size_t)>>;
     CallbackHandle tooltipCallBack_;
 
-    using SelectionCallbackHandle =
-        std::shared_ptr<std::function<void(const std::unordered_set<size_t>&)>>;
+    using SelectionCallbackHandle = std::shared_ptr<std::function<void(const BitSet&)>>;
     SelectionCallbackHandle selectionChangedCallBack_;
 };
 

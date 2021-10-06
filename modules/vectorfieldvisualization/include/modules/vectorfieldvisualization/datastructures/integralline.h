@@ -87,8 +87,8 @@ public:
     template <typename T>
     T getMetaDataAtDistance(std::string md, double d) const;
 
-    size_t getIndex() const;
-    void setIndex(size_t idx);
+    uint32_t getIndex() const;
+    void setIndex(uint32_t idx);
 
     void setBackwardTerminationReason(TerminationReason terminationReason);
     void setForwardTerminationReason(TerminationReason terminationReason);
@@ -108,7 +108,7 @@ private:
 
     mutable double length_ = -1;  // length is only calculated on demand hence it need to be mutable
 
-    size_t idx_;
+    uint32_t idx_;
 };
 
 template <typename T>

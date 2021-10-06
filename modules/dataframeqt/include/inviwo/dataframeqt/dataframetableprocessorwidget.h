@@ -31,9 +31,8 @@
 #include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
 #include <modules/qtwidgets/processors/processorwidgetqt.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/datastructures/bitset.h>
 #include <inviwo/core/util/dispatcher.h>
-
-#include <unordered_set>
 
 namespace inviwo {
 
@@ -49,7 +48,7 @@ class IVW_MODULE_DATAFRAMEQT_API DataFrameTableProcessorWidget : public Processo
     Q_OBJECT
 #include <warn/pop>
 public:
-    using SelectionChangedFunc = void(const std::unordered_set<size_t>&);
+    using SelectionChangedFunc = void(const BitSet&);
     using CallbackHandle = std::shared_ptr<std::function<SelectionChangedFunc>>;
 
     DataFrameTableProcessorWidget(Processor* p);
@@ -59,8 +58,7 @@ public:
                       bool categoryIndices = false);
     void setIndexColumnVisible(bool visible);
 
-    void updateSelection(const std::unordered_set<size_t>& columns,
-                         const std::unordered_set<size_t>& rows);
+    void updateSelection(const BitSet& columns, const BitSet& rows);
 
     CallbackHandle setColumnSelectionChangedCallback(std::function<SelectionChangedFunc> callback);
     CallbackHandle setRowSelectionChangedCallback(std::function<SelectionChangedFunc> callback);

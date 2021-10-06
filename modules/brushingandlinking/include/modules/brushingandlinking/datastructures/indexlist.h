@@ -30,6 +30,7 @@
 #pragma once
 
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
+#include <inviwo/core/datastructures/bitset.h>
 #include <inviwo/core/util/dispatcher.h>
 
 #include <unordered_map>
@@ -37,31 +38,37 @@
 
 namespace inviwo {
 class BrushingAndLinkingInport;
+class BrushingAndLinkingOutport;
 class BrushingAndLinkingManager;
+class Serializer;
+class Deserializer;
 
 class IVW_MODULE_BRUSHINGANDLINKING_API IndexList {
 public:
     IndexList() = default;
 
-    size_t getSize() const;
-    bool has(size_t idx) const;
+    size_t size() const;
+    bool contains(uint32_t idx) const;
 
-    void set(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& incices);
+    void set(const BrushingAndLinkingInport* src, const BitSet& incices);
     void remove(const BrushingAndLinkingInport* src);
 
     std::shared_ptr<std::function<void()>> onChange(std::function<void()> V);
 
     void update();
     void clear();
-    const std::unordered_set<size_t>& getIndices() const { return indices_; }
+    const BitSet& getIndices() const { return indices_; }
+
+    void serialize(Serializer& s) const;
+    void deserialize(Deserializer& d, const BrushingAndLinkingOutport& port);
 
 private:
-    std::unordered_map<const BrushingAndLinkingInport*, std::unordered_set<size_t>>
-        indicesBySource_;
-    std::unordered_set<size_t> indices_;
+    using PortIndexMap = std::unordered_map<const BrushingAndLinkingInport*, BitSet>;
+    PortIndexMap indicesBySource_;
+    BitSet indices_;
     Dispatcher<void()> onUpdate_;
 };
 
-inline bool IndexList::has(size_t idx) const { return indices_.find(idx) != indices_.end(); }
+inline bool IndexList::contains(uint32_t idx) const { return indices_.contains(idx); }
 
 }  // namespace inviwo

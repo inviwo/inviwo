@@ -32,6 +32,7 @@
 #include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
+#include <inviwo/core/datastructures/bitset.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -61,7 +62,7 @@ class DataFrameTableProcessorWidget;
 class IVW_MODULE_DATAFRAMEQT_API DataFrameTable : public Processor,
                                                   public ProcessorWidgetMetaDataObserver {
 public:
-    using SelectionChangedFunc = void(const std::unordered_set<size_t>&);
+    using SelectionChangedFunc = void(const BitSet&);
     using CallbackHandle = std::shared_ptr<std::function<SelectionChangedFunc>>;
 
     DataFrameTable();

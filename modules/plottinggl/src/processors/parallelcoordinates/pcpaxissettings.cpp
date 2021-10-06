@@ -72,7 +72,7 @@ PCPAxisSettings::PCPAxisSettings(std::string identifier, std::string displayName
     , usePercentiles("usePercentiles", "Use Percentiles", false)
     , invertRange("invertRange", "Invert Range")
     , range("range", "Axis Range")
-    , columnId_{columnId} {
+    , columnId_{static_cast<uint32_t>(columnId)} {
 
     addProperty(range);
     addProperty(invertRange);

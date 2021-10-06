@@ -39,7 +39,7 @@
 namespace inviwo {
 
 BrushingAndLinkingEvent::BrushingAndLinkingEvent(const BrushingAndLinkingInport* src,
-                                                 const std::unordered_set<size_t>& indices)
+                                                 const BitSet& indices)
     : source_(src), indices_(indices) {}
 
 BrushingAndLinkingEvent* BrushingAndLinkingEvent::clone() const {
@@ -50,7 +50,7 @@ const inviwo::BrushingAndLinkingInport* BrushingAndLinkingEvent::getSource() con
     return source_;
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingEvent::getIndices() const { return indices_; }
+const BitSet& BrushingAndLinkingEvent::getIndices() const { return indices_; }
 
 uint64_t BrushingAndLinkingEvent::hash() const { return chash(); }
 

@@ -30,12 +30,15 @@
 #include <modules/brushingandlinking/datastructures/indexlist.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/io/serialization/deserializer.h>
+#include <inviwo/core/util/stdextensions.h>
+
 namespace inviwo {
 
-size_t IndexList::getSize() const { return indices_.size(); }
+size_t IndexList::size() const { return indices_.size(); }
 
-void IndexList::set(const BrushingAndLinkingInport* src,
-                    const std::unordered_set<size_t>& indices) {
+void IndexList::set(const BrushingAndLinkingInport* src, const BitSet& indices) {
     indicesBySource_[src] = indices;
     update();
 }
@@ -52,16 +55,16 @@ std::shared_ptr<std::function<void()>> IndexList::onChange(std::function<void()>
 void IndexList::update() {
     indices_.clear();
 
-    using T =
-        std::unordered_map<const BrushingAndLinkingInport*, std::unordered_set<size_t>>::value_type;
+    using T = PortIndexMap::value_type;
     util::map_erase_remove_if(indicesBySource_, [](const T& p) {
-        return !p.first->isConnected() ||
-               p.second.empty();  // remove if port is disconnected or if the set is empty
+        // remove if port is disconnected or if the set is empty
+        return !p.first->isConnected() || p.second.empty();
     });
 
-    for (auto p : indicesBySource_) {
-        indices_.insert(p.second.begin(), p.second.end());
-    }
+    auto bitsets =
+        util::transform(indicesBySource_, [](auto& p) -> const BitSet* { return &p.second; });
+    indices_ = BitSet::fastUnion(bitsets);
+
     onUpdate_.invoke();
 }
 
@@ -69,6 +72,29 @@ void IndexList::clear() {
     indices_.clear();
     indicesBySource_.clear();
     onUpdate_.invoke();
+}
+
+void IndexList::serialize(Serializer& s) const {
+    s.serialize(
+        "ports", indicesBySource_, "indices", {},
+        [](const BrushingAndLinkingInport* p) { return p->getPath(); }, util::identity());
+}
+
+void IndexList::deserialize(Deserializer& d, const BrushingAndLinkingOutport& port) {
+    indicesBySource_.clear();
+
+    std::unordered_map<std::string, BitSet> map;
+    d.deserialize("ports", map, "indices");
+
+    const auto connectedPorts = port.getConnectedInports();
+    for (auto&& [key, indices] : map) {
+        auto it =
+            util::find_if(connectedPorts, [path = key](Inport* p) { return p->getPath() == path; });
+        if (it != connectedPorts.end()) {
+            indicesBySource_[static_cast<BrushingAndLinkingInport*>(*it)] = std::move(indices);
+        }
+    }
+    update();
 }
 
 }  // namespace inviwo

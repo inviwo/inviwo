@@ -93,7 +93,7 @@ public:
                     const auto seq = util::make_sequence(
                         uint32_t{0}, static_cast<uint32_t>(indexBuffer.size()), uint32_t{1});
                     std::copy_if(seq.begin(), seq.end(), std::back_inserter(indices),
-                                 [&](uint32_t i) { return selection.count(indexBuffer[i]) > 0; });
+                                 [&](uint32_t i) { return selection.contains(indexBuffer[i]); });
 
                 } else {
                     std::transform(selection.begin(), selection.end(), std::back_inserter(indices),

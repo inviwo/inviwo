@@ -35,6 +35,7 @@
 #include <modules/brushingandlinking/brushingandlinkingmanager.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/datastructures/bitset.h>
 
 namespace inviwo {
 
@@ -44,31 +45,31 @@ public:
     BrushingAndLinkingInport(std::string identifier);
     virtual ~BrushingAndLinkingInport() = default;
 
-    void sendFilterEvent(const std::unordered_set<size_t>& indices);
+    void sendFilterEvent(const BitSet& indices);
 
-    void sendSelectionEvent(const std::unordered_set<size_t>& indices);
+    void sendSelectionEvent(const BitSet& indices);
 
-    void sendHighlightEvent(const std::unordered_set<size_t>& indices);
+    void sendHighlightEvent(const BitSet& indices);
 
-    void sendColumnSelectionEvent(const std::unordered_set<size_t>& indices);
+    void sendColumnSelectionEvent(const BitSet& indices);
 
-    bool isFiltered(size_t idx) const;
-    bool isSelected(size_t idx) const;
-    bool isHighlighted(size_t idx) const;
+    bool isFiltered(uint32_t idx) const;
+    bool isSelected(uint32_t idx) const;
+    bool isHighlighted(uint32_t idx) const;
 
-    bool isColumnSelected(size_t idx) const;
+    bool isColumnSelected(uint32_t idx) const;
 
-    const std::unordered_set<size_t>& getSelectedIndices() const;
-    const std::unordered_set<size_t>& getFilteredIndices() const;
-    const std::unordered_set<size_t>& getHighlightedIndices() const;
-    const std::unordered_set<size_t>& getSelectedColumns() const;
+    const BitSet& getSelectedIndices() const;
+    const BitSet& getFilteredIndices() const;
+    const BitSet& getHighlightedIndices() const;
+    const BitSet& getSelectedColumns() const;
 
     virtual std::string getClassIdentifier() const override;
 
-    std::unordered_set<size_t> filterCache_;
-    std::unordered_set<size_t> selectionCache_;
-    std::unordered_set<size_t> highlightCache_;
-    std::unordered_set<size_t> selectionColumnCache_;
+    BitSet filterCache_;
+    BitSet selectionCache_;
+    BitSet highlightCache_;
+    BitSet selectionColumnCache_;
 };
 
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport
@@ -109,27 +110,27 @@ struct DataTraits<BrushingAndLinkingManager> {
     }
 };
 
-inline bool BrushingAndLinkingInport::isFiltered(size_t idx) const {
+inline bool BrushingAndLinkingInport::isFiltered(uint32_t idx) const {
     if (isConnected()) {
         return getData()->isFiltered(idx);
     } else {
-        return filterCache_.find(idx) != filterCache_.end();
+        return filterCache_.contains(idx);
     }
 }
 
-inline bool BrushingAndLinkingInport::isSelected(size_t idx) const {
+inline bool BrushingAndLinkingInport::isSelected(uint32_t idx) const {
     if (isConnected()) {
         return getData()->isSelected(idx);
     } else {
-        return selectionCache_.find(idx) != selectionCache_.end();
+        return selectionCache_.contains(idx);
     }
 }
 
-inline bool BrushingAndLinkingInport::isHighlighted(size_t idx) const {
+inline bool BrushingAndLinkingInport::isHighlighted(uint32_t idx) const {
     if (isConnected()) {
         return getData()->isHighlighted(idx);
     } else {
-        return highlightCache_.find(idx) != highlightCache_.end();
+        return highlightCache_.contains(idx);
     }
 }
 

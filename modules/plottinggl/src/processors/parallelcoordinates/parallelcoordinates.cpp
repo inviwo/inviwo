@@ -360,7 +360,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
             return ptr;
         }();
         previousProperties.erase(prop);
-        prop->setColumnId(axes_.size());
+        prop->setColumnId(static_cast<uint32_t>(axes_.size()));
         prop->setVisible(true);
 
         // Create axis for rendering
@@ -529,7 +529,7 @@ void ParallelCoordinates::drawHandles(size2_t size) {
         axis.sliderWidget->setWidgetExtent(
             ivec2{handleSize_.get(), ap.second.y - ap.first.y + handleWidth});
 
-        if (brushingAndLinking_.isColumnSelected(i)) {
+        if (brushingAndLinking_.isColumnSelected(static_cast<uint32_t>(i))) {
             sliderWidgetRenderer_.setUIColor(axisSelectedColor_);
         } else if (axis.pcp->isFiltering()) {
             sliderWidgetRenderer_.setUIColor(handleFilteredColor_);
@@ -659,11 +659,7 @@ void ParallelCoordinates::linePicked(PickingEvent* p) {
         auto id = p->getPickedId();
 
         auto selection = brushingAndLinking_.getSelectedIndices();
-        if (brushingAndLinking_.isSelected(indexCol[id])) {
-            selection.erase(indexCol[id]);
-        } else {
-            selection.insert(indexCol[id]);
-        }
+        selection.flip(indexCol[id]);
         brushingAndLinking_.sendSelectionEvent(selection);
 
         p->markAsUsed();
@@ -686,6 +682,8 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
         }
     };
 
+    const uint32_t index = static_cast<uint32_t>(pickedID);
+
     if (p->getHoverState() == PickingHoverState::Enter) {
         hoveredAxis_ = static_cast<int>(pickedID);
         showValuesAsToolTip(pickedID, pt);
@@ -703,13 +701,13 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
         pt != PickType::Upper && !isDragging_) {
 
         auto selection = brushingAndLinking_.getSelectedColumns();
-        if (brushingAndLinking_.isColumnSelected(pickedID)) {
-            selection.erase(pickedID);
+        if (brushingAndLinking_.isColumnSelected(index)) {
+            selection.remove(index);
         } else if (axisSelection_.get() == AxisSelection::Multiple) {
-            selection.insert(pickedID);
+            selection.add(index);
         } else if (axisSelection_.get() == AxisSelection::Single) {
             selection.clear();
-            selection.insert(pickedID);
+            selection.add(index);
         }
         brushingAndLinking_.sendColumnSelectionEvent(selection);
 
@@ -722,11 +720,7 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
         axes_[pickedID].pcp->invertRange.set(!axes_[pickedID].pcp->invertRange);
         // undo spurious axis selection caused by the single click event prior to the double click
         auto selection = brushingAndLinking_.getSelectedColumns();
-        if (brushingAndLinking_.isColumnSelected(pickedID)) {
-            selection.erase(pickedID);
-        } else {
-            selection.insert(pickedID);
-        }
+        selection.flip(index);
         brushingAndLinking_.sendColumnSelectionEvent(selection);
 
         p->markAsUsed();
@@ -806,9 +800,9 @@ void ParallelCoordinates::updateBrushing() {
         }
     }
 
-    std::unordered_set<size_t> brushedID;
-    for (size_t i = 0; i < nRows; ++i) {
-        if (brushed[i]) brushedID.insert(indexCol[i]);
+    BitSet brushedID;
+    for (auto&& [selected, index] : util::zip(brushed, indexCol)) {
+        if (selected) brushedID.add(index);
     }
     brushingAndLinking_.sendFilterEvent(brushedID);
 }

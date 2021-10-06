@@ -31,6 +31,7 @@
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/datastructures/bitset.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -67,7 +68,7 @@ class IVW_MODULE_PLOTTINGGL_API PersistenceDiagramPlotGL {
 public:
     using ToolTipFunc = void(PickingEvent*, size_t);
     using ToolTipCallbackHandle = std::shared_ptr<std::function<ToolTipFunc>>;
-    using SelectionFunc = void(const std::unordered_set<size_t>&);
+    using SelectionFunc = void(const BitSet&);
     using SelectionCallbackHandle = std::shared_ptr<std::function<SelectionFunc>>;
 
     class Properties : public CompositeProperty {
@@ -143,7 +144,7 @@ public:
 
     void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
 
-    void setSelectedIndices(const std::unordered_set<size_t>& indices);
+    void setSelectedIndices(const BitSet& indices);
 
     ToolTipCallbackHandle addToolTipCallback(std::function<ToolTipFunc> callback);
     SelectionCallbackHandle addSelectionChangedCallback(std::function<SelectionFunc> callback);
@@ -176,7 +177,7 @@ protected:
     std::array<AxisRenderer, 2> axisRenderers_;
 
     PickingMapper picking_;
-    std::unordered_set<size_t> selectedIndices_;
+    BitSet selectedIndices_;
     std::set<uint32_t> hoveredIndices_;
 
     Processor* processor_;

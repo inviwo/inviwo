@@ -29,15 +29,12 @@
 #pragma once
 
 #include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
+#include <inviwo/core/datastructures/bitset.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QTableWidget>
 #include <warn/pop>
-
-#include <unordered_set>
-
-#include <memory>
 
 namespace inviwo {
 
@@ -62,15 +59,15 @@ public:
     void setIndexColumnVisible(bool visible);
     bool isIndexColumnVisible() const;
 
-    void selectColumns(const std::unordered_set<size_t>& columns);
-    void selectRows(const std::unordered_set<size_t>& rows);
+    void selectColumns(const BitSet& columns);
+    void selectRows(const BitSet& rows);
 
 signals:
-    void columnSelectionChanged(const std::unordered_set<size_t>& columns);
-    void rowSelectionChanged(const std::unordered_set<size_t>& rows);
+    void columnSelectionChanged(const BitSet& columns);
+    void rowSelectionChanged(const BitSet& rows);
 
 private:
-    QStringList generateHeaders(const std::unordered_set<size_t>& selectedCols = {}) const;
+    QStringList generateHeaders(const BitSet& selectedCols = {}) const;
 
     bool indexVisible_ = false;
     bool vectorsIntoCols_ = false;

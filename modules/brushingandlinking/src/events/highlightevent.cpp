@@ -31,8 +31,7 @@
 
 namespace inviwo {
 
-HighlightEvent::HighlightEvent(const BrushingAndLinkingInport* src,
-                               const std::unordered_set<size_t>& indices)
+HighlightEvent::HighlightEvent(const BrushingAndLinkingInport* src, const BitSet& indices)
     : BrushingAndLinkingEvent(src, indices) {}
 
 void HighlightEvent::print(std::ostream& os) const { printEvent("HighlightEvent", os); }

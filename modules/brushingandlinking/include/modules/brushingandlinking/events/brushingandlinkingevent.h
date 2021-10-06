@@ -32,8 +32,7 @@
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/util/constexprhash.h>
-
-#include <unordered_set>
+#include <inviwo/core/datastructures/bitset.h>
 
 namespace inviwo {
 
@@ -44,14 +43,14 @@ class BrushingAndLinkingInport;
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingEvent : public Event {
 public:
     BrushingAndLinkingEvent(const BrushingAndLinkingInport* src,
-                            const std::unordered_set<size_t>& indices);
+                            const BitSet& indices);
     virtual ~BrushingAndLinkingEvent() = default;
 
     virtual BrushingAndLinkingEvent* clone() const override;
 
     const BrushingAndLinkingInport* getSource() const;
 
-    const std::unordered_set<size_t>& getIndices() const;
+    const BitSet& getIndices() const;
 
     virtual uint64_t hash() const override;
     static constexpr uint64_t chash() {
@@ -65,7 +64,7 @@ protected:
 
 private:
     const BrushingAndLinkingInport* source_;
-    const std::unordered_set<size_t>& indices_;
+    const BitSet& indices_;
 };
 
 }  // namespace inviwo

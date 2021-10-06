@@ -48,14 +48,14 @@ BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
     });
 }
 
-void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t>& indices) {
+void BrushingAndLinkingInport::sendFilterEvent(const BitSet& indices) {
     if (filterCache_.size() == 0 && indices.size() == 0) return;
     filterCache_ = indices;
     FilteringEvent event(this, filterCache_);
     propagateEvent(&event, nullptr);
 }
 
-void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t>& indices) {
+void BrushingAndLinkingInport::sendSelectionEvent(const BitSet& indices) {
     const bool noRemoteSelections =
         (isConnected() && hasData() && getData()->getSelectedIndices().empty());
     if (selectionCache_.empty() && indices.empty() && noRemoteSelections) {
@@ -66,7 +66,7 @@ void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_
     propagateEvent(&event, nullptr);
 }
 
-void BrushingAndLinkingInport::sendHighlightEvent(const std::unordered_set<size_t>& indices) {
+void BrushingAndLinkingInport::sendHighlightEvent(const BitSet& indices) {
     const bool noRemoteSelections =
         (isConnected() && hasData() && getData()->getHighlightedIndices().empty());
     if (highlightCache_.empty() && indices.empty() && noRemoteSelections) {
@@ -77,7 +77,7 @@ void BrushingAndLinkingInport::sendHighlightEvent(const std::unordered_set<size_
     propagateEvent(&event, nullptr);
 }
 
-void BrushingAndLinkingInport::sendColumnSelectionEvent(const std::unordered_set<size_t>& indices) {
+void BrushingAndLinkingInport::sendColumnSelectionEvent(const BitSet& indices) {
     const bool noRemoteSelections =
         (isConnected() && hasData() && getData()->getSelectedColumns().empty());
     if (selectionColumnCache_.empty() && indices.empty() && noRemoteSelections) {
@@ -88,15 +88,15 @@ void BrushingAndLinkingInport::sendColumnSelectionEvent(const std::unordered_set
     propagateEvent(&event, nullptr);
 }
 
-bool BrushingAndLinkingInport::isColumnSelected(size_t idx) const {
+bool BrushingAndLinkingInport::isColumnSelected(uint32_t idx) const {
     if (isConnected()) {
         return getData()->isColumnSelected(idx);
     } else {
-        return selectionColumnCache_.find(idx) != selectionColumnCache_.end();
+        return selectionColumnCache_.contains(idx);
     }
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingInport::getSelectedIndices() const {
+const BitSet& BrushingAndLinkingInport::getSelectedIndices() const {
     if (isConnected()) {
         return getData()->getSelectedIndices();
     } else {
@@ -104,7 +104,7 @@ const std::unordered_set<size_t>& BrushingAndLinkingInport::getSelectedIndices()
     }
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingInport::getFilteredIndices() const {
+const BitSet& BrushingAndLinkingInport::getFilteredIndices() const {
     if (isConnected()) {
         return getData()->getFilteredIndices();
     } else {
@@ -112,7 +112,7 @@ const std::unordered_set<size_t>& BrushingAndLinkingInport::getFilteredIndices()
     }
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingInport::getHighlightedIndices() const {
+const BitSet& BrushingAndLinkingInport::getHighlightedIndices() const {
     if (isConnected()) {
         return getData()->getHighlightedIndices();
     } else {
@@ -120,7 +120,7 @@ const std::unordered_set<size_t>& BrushingAndLinkingInport::getHighlightedIndice
     }
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingInport::getSelectedColumns() const {
+const BitSet& BrushingAndLinkingInport::getSelectedColumns() const {
     if (isConnected()) {
         return getData()->getSelectedColumns();
     } else {

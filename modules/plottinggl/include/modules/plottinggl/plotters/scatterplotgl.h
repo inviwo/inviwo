@@ -29,6 +29,7 @@
 
 #pragma once
 #include <modules/plottinggl/plottingglmoduledefine.h>
+#include <inviwo/core/datastructures/bitset.h>
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/interaction/pickingmapper.h>
@@ -143,7 +144,7 @@ public:
     void setRadiusData(std::shared_ptr<const BufferBase> buffer);
     void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
 
-    void setSelectedIndices(const std::unordered_set<size_t>& indices);
+    void setSelectedIndices(const BitSet& indices);
 
     ToolTipCallbackHandle addToolTipCallback(std::function<ToolTipFunc> callback);
     SelectionCallbackHandle addSelectionChangedCallback(std::function<SelectionFunc> callback);

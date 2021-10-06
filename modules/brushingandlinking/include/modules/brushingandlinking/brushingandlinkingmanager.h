@@ -32,6 +32,7 @@
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/datastructures/indexlist.h>
 #include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/datastructures/bitset.h>
 
 #include <unordered_set>
 
@@ -39,6 +40,9 @@ namespace inviwo {
 
 class BrushingAndLinkingInport;
 class Processor;
+class Serializer;
+class Deserializer;
+
 /**
  * \class BrushingAndLinkingManager
  * \brief Manages row filtering, row selection and column selection from multiple sources.
@@ -67,34 +71,36 @@ public:
 
     void remove(const BrushingAndLinkingInport* src);
 
-    bool isFiltered(size_t idx) const;
-    bool isSelected(size_t idx) const;
-    bool isHighlighted(size_t idx) const;
+    bool isFiltered(uint32_t idx) const;
+    bool isSelected(uint32_t idx) const;
+    bool isHighlighted(uint32_t idx) const;
 
-    bool isColumnSelected(size_t column) const;
+    bool isColumnSelected(uint32_t column) const;
 
-    void setSelected(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& idx);
+    void setSelected(const BrushingAndLinkingInport* src, const BitSet& idx);
     void clearSelected();
 
-    void setFiltered(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& idx);
+    void setFiltered(const BrushingAndLinkingInport* src, const BitSet& idx);
     void clearFiltered();
 
-    void setHighlighted(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& idx);
+    void setHighlighted(const BrushingAndLinkingInport* src, const BitSet& idx);
     void clearHighlighted();
 
-    void setSelectedColumn(const BrushingAndLinkingInport* src,
-                           const std::unordered_set<size_t>& columnIndices);
+    void setSelectedColumn(const BrushingAndLinkingInport* src, const BitSet& columnIndices);
     void clearColumns();
 
-    const std::unordered_set<size_t>& getSelectedIndices() const;
-    const std::unordered_set<size_t>& getFilteredIndices() const;
-    const std::unordered_set<size_t>& getHighlightedIndices() const;
-    const std::unordered_set<size_t>& getSelectedColumns() const;
+    const BitSet& getSelectedIndices() const;
+    const BitSet& getFilteredIndices() const;
+    const BitSet& getHighlightedIndices() const;
+    const BitSet& getSelectedColumns() const;
+
+    void serialize(Serializer& s) const;
+    void deserialize(Deserializer& d, const BrushingAndLinkingOutport& port);
 
 private:
-    std::unordered_set<size_t> selected_;
-    std::unordered_set<size_t> highlighted_;
-    std::unordered_set<size_t> selectedColumns_;
+    BitSet selected_;
+    BitSet highlighted_;
+    BitSet selectedColumns_;
     IndexList filtered_;  // Use IndexList to be able to remove filtered rows on port disconnection
     std::shared_ptr<std::function<void()>> onFilteringChangeCallback_;
 
@@ -102,14 +108,16 @@ private:
     InvalidationLevel invalidationLevel_;
 };
 
-inline bool BrushingAndLinkingManager::isFiltered(size_t idx) const { return filtered_.has(idx); }
-
-inline bool BrushingAndLinkingManager::isSelected(size_t idx) const {
-    return selected_.find(idx) != selected_.end();
+inline bool BrushingAndLinkingManager::isFiltered(uint32_t idx) const {
+    return filtered_.contains(idx);
 }
 
-inline bool BrushingAndLinkingManager::isHighlighted(size_t idx) const {
-    return highlighted_.find(idx) != highlighted_.end();
+inline bool BrushingAndLinkingManager::isSelected(uint32_t idx) const {
+    return selected_.contains(idx);
+}
+
+inline bool BrushingAndLinkingManager::isHighlighted(uint32_t idx) const {
+    return highlighted_.contains(idx);
 }
 
 }  // namespace inviwo

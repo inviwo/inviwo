@@ -39,8 +39,7 @@ namespace inviwo {
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API ColumnSelectionEvent : public BrushingAndLinkingEvent {
 public:
-    ColumnSelectionEvent(const BrushingAndLinkingInport* src,
-                         const std::unordered_set<size_t>& indices);
+    ColumnSelectionEvent(const BrushingAndLinkingInport* src, const BitSet& indices);
     virtual ~ColumnSelectionEvent() = default;
 
     virtual void print(std::ostream& os) const override;

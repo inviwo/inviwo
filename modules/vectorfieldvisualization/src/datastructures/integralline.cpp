@@ -125,9 +125,9 @@ dvec3 IntegralLine::getPointAtDistance(double d) const {
     return Interpolation<dvec3, double>::linear(*prev, *next, x);
 }
 
-size_t IntegralLine::getIndex() const { return idx_; }
+uint32_t IntegralLine::getIndex() const { return idx_; }
 
-void IntegralLine::setIndex(size_t idx) { idx_ = idx; }
+void IntegralLine::setIndex(uint32_t idx) { idx_ = idx; }
 
 void IntegralLine::setBackwardTerminationReason(TerminationReason terminationReason) {
     backwardTerminationReason_ = terminationReason;

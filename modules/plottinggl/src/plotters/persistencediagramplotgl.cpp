@@ -436,7 +436,7 @@ void PersistenceDiagramPlotGL::setIndexColumn(
     }
 }
 
-void PersistenceDiagramPlotGL::setSelectedIndices(const std::unordered_set<size_t>& indices) {
+void PersistenceDiagramPlotGL::setSelectedIndices(const BitSet& indices) {
     selectedIndices_ = indices;
 }
 
@@ -512,11 +512,7 @@ void PersistenceDiagramPlotGL::objectPicked(PickingEvent* p) {
     if ((p->getPressState() == PickingPressState::Release) &&
         (p->getPressItem() == PickingPressItem::Primary) &&
         (p->getCurrentGlobalPickingId() == p->getPressedGlobalPickingId())) {
-        if (selectedIndices_.count(id)) {
-            selectedIndices_.erase(id);
-        } else {
-            selectedIndices_.insert(id);
-        }
+        selectedIndices_.flip(id);
         // selection changed, inform processor
         selectionChangedCallback_.invoke(selectedIndices_);
     }

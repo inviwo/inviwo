@@ -107,10 +107,8 @@ void DataFrameTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> process
     }
 
     if (widget) {
-        rowSelectionChanged_ =
-            widget->setRowSelectionChangedCallback([this](const std::unordered_set<size_t>& rows) {
-                brushLinkPort_.sendSelectionEvent(rows);
-            });
+        rowSelectionChanged_ = widget->setRowSelectionChangedCallback(
+            [this](const BitSet& rows) { brushLinkPort_.sendSelectionEvent(rows); });
     }
 
     Processor::setProcessorWidget(std::move(processorWidget));

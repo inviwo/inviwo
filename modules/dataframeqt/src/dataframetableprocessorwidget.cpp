@@ -58,12 +58,9 @@ DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
     tableview_->setAttribute(Qt::WA_OpaquePaintEvent);
 
     QObject::connect(tableview_.get(), &DataFrameTableView::columnSelectionChanged, this,
-                     [this](const std::unordered_set<size_t>& columns) {
-                         columnSelectionChanged_.invoke(columns);
-                     });
-    QObject::connect(
-        tableview_.get(), &DataFrameTableView::rowSelectionChanged, this,
-        [this](const std::unordered_set<size_t>& rows) { rowSelectionChanged_.invoke(rows); });
+                     [this](const BitSet& columns) { columnSelectionChanged_.invoke(columns); });
+    QObject::connect(tableview_.get(), &DataFrameTableView::rowSelectionChanged, this,
+                     [this](const BitSet& rows) { rowSelectionChanged_.invoke(rows); });
 
     setFocusProxy(tableview_.get());
 
@@ -81,8 +78,7 @@ void DataFrameTableProcessorWidget::setIndexColumnVisible(bool visible) {
     tableview_->setIndexColumnVisible(visible);
 }
 
-void DataFrameTableProcessorWidget::updateSelection(const std::unordered_set<size_t>& columns,
-                                                    const std::unordered_set<size_t>& rows) {
+void DataFrameTableProcessorWidget::updateSelection(const BitSet& columns, const BitSet& rows) {
     tableview_->selectColumns(columns);
     tableview_->selectRows(rows);
 }

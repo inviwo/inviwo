@@ -75,11 +75,11 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     selectionChangedCallBack_ =
         scatterPlot_.addSelectionChangedCallback([this](const std::vector<bool>& selected) {
             if (brushingPort_.isConnected()) {
-                std::unordered_set<size_t> selectedIndices;
+                BitSet selectedIndices;
                 auto iCol = dataFramePort_.getData()->getIndexColumn();
                 auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
                 for (size_t i = 0; i < selected.size(); ++i) {
-                    if (selected[i]) selectedIndices.insert(indexCol[i]);
+                    if (selected[i]) selectedIndices.add(indexCol[i]);
                 }
                 brushingPort_.sendSelectionEvent(selectedIndices);
             } else {
@@ -89,11 +89,11 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     filteringChangedCallBack_ =
         scatterPlot_.addFilteringChangedCallback([this](const std::vector<bool>& filtered) {
             if (brushingPort_.isConnected()) {
-                std::unordered_set<size_t> filteredIndices;
+                BitSet filteredIndices;
                 auto iCol = dataFramePort_.getData()->getIndexColumn();
                 auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
                 for (size_t i = 0; i < filtered.size(); ++i) {
-                    if (filtered[i]) filteredIndices.insert(indexCol[i]);
+                    if (filtered[i]) filteredIndices.add(indexCol[i]);
                 }
                 brushingPort_.sendFilterEvent(filteredIndices);
             } else {
