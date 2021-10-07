@@ -43,7 +43,7 @@ IVW_CORE_API std::string base64_encode(util::span<char> s, bool url = false);
 IVW_CORE_API std::string base64_encode_pem(util::span<char> s);
 IVW_CORE_API std::string base64_encode_mime(util::span<char> s);
 
-IVW_CORE_API util::span<char> base64_decode(std::string_view s, bool remove_linebreaks = false);
+IVW_CORE_API std::string base64_decode(std::string_view s, bool remove_linebreaks = false);
 
 }  // namespace util
 

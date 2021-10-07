@@ -20,6 +20,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/runtimemoduleregistration.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/version.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/bitset.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/buffer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/bufferram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/bufferramprecision.h
@@ -385,6 +386,7 @@ set(SOURCE_FILES
     common/moduleaction.cpp
     common/modulemanager.cpp
     common/version.cpp
+    datastructures/bitset.cpp
     datastructures/buffer/buffer.cpp
     datastructures/buffer/bufferram.cpp
     datastructures/buffer/bufferrepresentation.cpp
@@ -683,6 +685,7 @@ else()
 endif()
 
 set(TEST_FILES
+    tests/unittests/bitset-test.cpp
     tests/unittests/brickiterator-test.cpp
     tests/unittests/colorconversion-test.cpp
     tests/unittests/commandlineparser-test.cpp
@@ -794,7 +797,8 @@ target_link_libraries(inviwo-core
         $<$<BOOL:${WIN32}>:inviwo::stackwalker>
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
         inviwo::tinydir
-        roaring
+    PRIVATE
+        roaring::roaring
 )
 
 #Optimize compiliation with PCH etc
