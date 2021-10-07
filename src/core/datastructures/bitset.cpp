@@ -292,8 +292,8 @@ void BitSet::deserialize(Deserializer& d) {
     std::string str;
     d.deserialize("bitset", str);
 
-    util::span<char> buf = util::base64_decode(str);
-    *roaring_ = roaring::Roaring::read(buf.data(), true);
+    str = util::base64_decode(str);
+    *roaring_ = roaring::Roaring::read(str.data(), true);
 }
 
 void BitSet::addSingle(uint32_t v) { roaring_->add(v); }

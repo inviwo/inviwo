@@ -48,7 +48,8 @@ namespace inviwo {
 
 std::vector<uint32_t> getIndices(const std::size_t count) {
     std::mt19937 gen;
-    std::uniform_int_distribution<uint32_t> distrib;
+    gen.seed(1);
+    std::uniform_int_distribution<uint32_t> distrib(0, 4096);
 
     std::unordered_set<uint32_t> indices;
     while (indices.size() < count) {
@@ -189,7 +190,9 @@ TEST(bitset, iterators) {
 
     std::vector<uint32_t> vec(b.begin(), b.end());
     EXPECT_EQ(b.size(), vec.size());
-    EXPECT_EQ(indices, vec);
+    for (auto index : vec) {
+        EXPECT_TRUE(util::contains(indices, index));
+    }
 }
 
 }  // namespace inviwo

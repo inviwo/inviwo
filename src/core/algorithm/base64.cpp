@@ -284,9 +284,8 @@ std::string base64_encode_pem(util::span<char> s) { return encode_pem(s); }
 
 std::string base64_encode_mime(util::span<char> s) { return encode_mime(s); }
 
-util::span<char> base64_decode(std::string_view s, bool remove_linebreaks) {
-    std::string str = decode(s, remove_linebreaks);
-    return {str.data(), str.size()};
+std::string base64_decode(std::string_view s, bool remove_linebreaks) {
+    return decode(s, remove_linebreaks);
 }
 
 }  // namespace util
