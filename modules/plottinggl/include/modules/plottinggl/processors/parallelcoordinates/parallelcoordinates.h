@@ -218,7 +218,7 @@ private:
     Lines lines_;
 
     std::pair<vec2, vec2> marginsInternal_;  // Margins with/without considering labels
-    int hoveredLine_ = -1;
+    BitSet highlightedLines_;
     int hoveredAxis_ = -1;
 
     bool brushingDirty_;

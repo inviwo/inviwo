@@ -463,8 +463,6 @@ void ParallelCoordinates::buildLineIndices() {
 
     buildAxisPositions();
     partitionLines();
-
-    hoveredLine_ = -1;  // reset the hover line since the sizes might have changed.
 }
 
 void ParallelCoordinates::buildAxisPositions() {
@@ -622,13 +620,17 @@ void ParallelCoordinates::drawLines(size2_t size) {
                 static_cast<GLsizei>(end - begin));
         }
 
-        if (hoveredLine_ >= 0 && hoveredLine_ < static_cast<int>(lines_.sizes.size()) &&
-            !brushingAndLinking_.isFiltered(hoveredLine_)) {
+        if (!brushingAndLinking_.getHighlightedIndices().empty()) {
+            const size_t numLines = lines_.sizes.size();
             lineShader_.setUniform("fallofPower", 0.5f * falllofPower_.get());
-
-            glDrawElements(GL_LINE_STRIP, lines_.sizes[hoveredLine_], GL_UNSIGNED_INT,
-                           reinterpret_cast<GLvoid*>(
-                               Lines::indexToOffset(hoveredLine_, lines_.sizes[hoveredLine_])));
+            for (auto index : brushingAndLinking_.getHighlightedIndices()) {
+                if (index >= numLines || brushingAndLinking_.isFiltered(index)) {
+                    continue;
+                }
+                glDrawElements(
+                    GL_LINE_STRIP, lines_.sizes[index], GL_UNSIGNED_INT,
+                    reinterpret_cast<GLvoid*>(Lines::indexToOffset(index, lines_.sizes[index])));
+            }
         }
     }
     lineShader_.deactivate();
@@ -640,12 +642,13 @@ void ParallelCoordinates::linePicked(PickingEvent* p) {
         if (p->getHoverState() == PickingHoverState::Move ||
             p->getHoverState() == PickingHoverState::Enter) {
             p->setToolTip(dataframe::createToolTipForRow(*df, p->getPickedId()));
-            hoveredLine_ = static_cast<int>(p->getPickedId());
+            BitSet b;
+            b.add(static_cast<uint32_t>(p->getPickedId()));
+            brushingAndLinking_.sendHighlightEvent(b);
             invalidate(InvalidationLevel::InvalidOutput);
-
         } else {
             p->setToolTip("");
-            hoveredLine_ = -1;
+            brushingAndLinking_.sendHighlightEvent({});
             invalidate(InvalidationLevel::InvalidOutput);
         }
     }
