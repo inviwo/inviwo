@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/zip.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <type_traits>
@@ -48,9 +49,26 @@ namespace inviwo {
 DataFrameTableView::DataFrameTableView(QWidget* parent) : QTableWidget(3, 3, parent) {
     horizontalHeader()->setStretchLastSection(true);
 
+    // need mouse tracking for issuing highlight events when entering a cell
+    setMouseTracking(true);
+
     // make it read-only
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     setAlternatingRowColors(true);
+
+    QObject::connect(this, &QAbstractItemView::entered, this, [this](const QModelIndex& index) {
+        if (ignoreEvents_) return;
+        if (data_) {
+            // translate model indices to row IDs
+            const auto& indexCol = data_->getIndexColumn()
+                                       ->getTypedBuffer()
+                                       ->getRAMRepresentation()
+                                       ->getDataContainer();
+            BitSet highlighted;
+            highlighted.add(indexCol[index.row()]);
+            emit rowHighlightChanged(highlighted);
+        }
+    });
 
     QObject::connect(selectionModel(), &QItemSelectionModel::selectionChanged, this,
                      [this](const QItemSelection&, const QItemSelection&) {
@@ -218,6 +236,33 @@ void DataFrameTableView::selectRows(const BitSet& rows) {
         }
     }
     selectionModel()->select(s, QItemSelectionModel::Select);
+}
+
+void DataFrameTableView::highlightRows(const BitSet& rows) {
+    if (!data_ || ignoreUpdate_) return;
+
+    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+
+    auto setRowBackground = [this, colCount = columnCount()](size_t row, bool highlight) {
+        for (auto&& c : util::make_sequence<int>(0, static_cast<int>(colCount))) {
+            auto item = itemFromIndex(model()->index(static_cast<int>(row), c));
+            item->setBackground(highlight ? QBrush(QColor(102, 87, 50)) : QBrush());
+        }
+    };
+
+    if (rows.empty()) {
+        for (size_t i = 0; i < rowCount(); ++i) {
+            setRowBackground(i, false);
+        }
+    }
+
+    // translate row IDs into row numbers and fetch corresponding model indices
+    const auto& indexCol =
+        data_->getIndexColumn()->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+
+    for (size_t i = 0; i < indexCol.size(); ++i) {
+        setRowBackground(i, rows.contains(indexCol[i]));
+    }
 }
 
 QStringList DataFrameTableView::generateHeaders(const BitSet& selectedCols) const {

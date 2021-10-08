@@ -61,6 +61,8 @@ DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
                      [this](const BitSet& columns) { columnSelectionChanged_.invoke(columns); });
     QObject::connect(tableview_.get(), &DataFrameTableView::rowSelectionChanged, this,
                      [this](const BitSet& rows) { rowSelectionChanged_.invoke(rows); });
+    QObject::connect(tableview_.get(), &DataFrameTableView::rowHighlightChanged, this,
+                     [this](const BitSet& rows) { rowHighlightChanged_.invoke(rows); });
 
     setFocusProxy(tableview_.get());
 
@@ -78,9 +80,11 @@ void DataFrameTableProcessorWidget::setIndexColumnVisible(bool visible) {
     tableview_->setIndexColumnVisible(visible);
 }
 
-void DataFrameTableProcessorWidget::updateSelection(const BitSet& columns, const BitSet& rows) {
+void DataFrameTableProcessorWidget::updateSelection(const BitSet& columns, const BitSet& rows,
+                                                    const BitSet& highlightedRows) {
     tableview_->selectColumns(columns);
     tableview_->selectRows(rows);
+    tableview_->highlightRows(highlightedRows);
 }
 
 auto DataFrameTableProcessorWidget::setColumnSelectionChangedCallback(
@@ -91,6 +95,11 @@ auto DataFrameTableProcessorWidget::setColumnSelectionChangedCallback(
 auto DataFrameTableProcessorWidget::setRowSelectionChangedCallback(
     std::function<SelectionChangedFunc> callback) -> CallbackHandle {
     return rowSelectionChanged_.add(callback);
+}
+
+auto DataFrameTableProcessorWidget::setRowHighlightChangedCallback(
+    std::function<SelectionChangedFunc> callback) -> CallbackHandle {
+    return rowHighlightChanged_.add(callback);
 }
 
 }  // namespace inviwo

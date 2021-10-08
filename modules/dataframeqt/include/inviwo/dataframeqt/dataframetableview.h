@@ -61,10 +61,12 @@ public:
 
     void selectColumns(const BitSet& columns);
     void selectRows(const BitSet& rows);
+    void highlightRows(const BitSet& rows);
 
 signals:
     void columnSelectionChanged(const BitSet& columns);
     void rowSelectionChanged(const BitSet& rows);
+    void rowHighlightChanged(const BitSet& rows);
 
 private:
     QStringList generateHeaders(const BitSet& selectedCols = {}) const;

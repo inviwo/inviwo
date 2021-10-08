@@ -98,6 +98,7 @@ private:
     ProcessorWidgetMetaData* widgetMetaData_;
 
     CallbackHandle rowSelectionChanged_;
+    CallbackHandle rowHighlightChanged_;
 };
 
 }  // namespace inviwo

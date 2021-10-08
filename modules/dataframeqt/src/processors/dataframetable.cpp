@@ -86,14 +86,16 @@ DataFrameTable::~DataFrameTable() {
 
 void DataFrameTable::process() {
     if (auto w = getWidget()) {
+        bool updateSelection = brushLinkPort_.isChanged();
         if (inport_.isChanged() || vectorCompAsColumn_.isModified() ||
             showCategoryIndices_.isModified()) {
             w->setDataFrame(inport_.getData(), vectorCompAsColumn_, showCategoryIndices_);
+            updateSelection |= true;
+        }
+        if (updateSelection) {
             w->updateSelection(brushLinkPort_.getSelectedColumns(),
-                               brushLinkPort_.getSelectedIndices());
-        } else if (brushLinkPort_.isChanged()) {
-            w->updateSelection(brushLinkPort_.getSelectedColumns(),
-                               brushLinkPort_.getSelectedIndices());
+                               brushLinkPort_.getSelectedIndices(),
+                               brushLinkPort_.getHighlightedIndices());
         }
     }
 }
@@ -109,6 +111,8 @@ void DataFrameTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> process
     if (widget) {
         rowSelectionChanged_ = widget->setRowSelectionChangedCallback(
             [this](const BitSet& rows) { brushLinkPort_.sendSelectionEvent(rows); });
+        rowHighlightChanged_ = widget->setRowHighlightChangedCallback(
+            [this](const BitSet& rows) { brushLinkPort_.sendHighlightEvent(rows); });
     }
 
     Processor::setProcessorWidget(std::move(processorWidget));

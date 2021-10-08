@@ -58,10 +58,11 @@ public:
                       bool categoryIndices = false);
     void setIndexColumnVisible(bool visible);
 
-    void updateSelection(const BitSet& columns, const BitSet& rows);
+    void updateSelection(const BitSet& columns, const BitSet& rows, const BitSet& highlightedRows);
 
     CallbackHandle setColumnSelectionChangedCallback(std::function<SelectionChangedFunc> callback);
     CallbackHandle setRowSelectionChangedCallback(std::function<SelectionChangedFunc> callback);
+    CallbackHandle setRowHighlightChangedCallback(std::function<SelectionChangedFunc> callback);
 
 private:
     using tableview_ptr =
@@ -70,6 +71,7 @@ private:
 
     Dispatcher<SelectionChangedFunc> columnSelectionChanged_;
     Dispatcher<SelectionChangedFunc> rowSelectionChanged_;
+    Dispatcher<SelectionChangedFunc> rowHighlightChanged_;
 
     Processor::NameDispatcherHandle nameChange_;
 };
