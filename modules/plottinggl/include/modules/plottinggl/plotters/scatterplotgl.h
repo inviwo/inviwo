@@ -69,6 +69,8 @@ class IVW_MODULE_PLOTTINGGL_API ScatterPlotGL : public InteractionHandler {
 public:
     using ToolTipFunc = void(PickingEvent*, size_t);
     using ToolTipCallbackHandle = std::shared_ptr<std::function<ToolTipFunc>>;
+    using HighlightFunc = void(const BitSet&);
+    using HighlightCallbackHandle = std::shared_ptr<std::function<HighlightFunc>>;
     using SelectionFunc = void(const std::vector<bool>&);
     using SelectionCallbackHandle = std::shared_ptr<std::function<SelectionFunc>>;
 
@@ -145,8 +147,10 @@ public:
     void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
 
     void setSelectedIndices(const BitSet& indices);
+    void setHighlightedIndices(const BitSet& indices);
 
     ToolTipCallbackHandle addToolTipCallback(std::function<ToolTipFunc> callback);
+    HighlightCallbackHandle addHighlightChangedCallback(std::function<HighlightFunc> callback);
     SelectionCallbackHandle addSelectionChangedCallback(std::function<SelectionFunc> callback);
     SelectionCallbackHandle addFilteringChangedCallback(std::function<SelectionFunc> callback);
 
@@ -186,15 +190,15 @@ protected:
     PickingMapper picking_;
     std::vector<bool> filtered_;
     std::vector<bool> selected_;
+    BitSet highlighted_;
     size_t nSelectedButNotFiltered_ = 0;
     bool filteringDirty_ = true;
     bool selectedIndicesGLDirty_ = true;
+    bool highlightDirty_ = true;
     BufferObject selectedIndicesGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(),
                                                    BufferUsage::Dynamic, BufferTarget::Index);
-    std::optional<uint32_t> hoverIndex_;
-    bool hoverIndexDirty_ = true;
-    BufferObject hoverIndexGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(),
-                                              BufferUsage::Dynamic, BufferTarget::Index);
+    BufferObject highlightIndexGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(),
+                                                  BufferUsage::Dynamic, BufferTarget::Index);
 
     std::unique_ptr<IndexBuffer> indices_;
     std::unique_ptr<BufferObjectArray> boa_;
@@ -202,6 +206,7 @@ protected:
     Processor* processor_;
 
     Dispatcher<ToolTipFunc> tooltipCallback_;
+    Dispatcher<HighlightFunc> highlightChangedCallback_;
     Dispatcher<SelectionFunc> selectionChangedCallback_;
     Dispatcher<SelectionFunc> filteringChangedCallback_;
 

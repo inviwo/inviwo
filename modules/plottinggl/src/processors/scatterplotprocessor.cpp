@@ -72,6 +72,20 @@ ScatterPlotProcessor::ScatterPlotProcessor()
             p->setToolTip(dataframe::createToolTipForRow(*dataFramePort_.getData(), rowId));
         }
     });
+    highlightChangedCallBack_ =
+        scatterPlot_.addHighlightChangedCallback([this](const BitSet& highlighted) {
+            if (brushingPort_.isConnected()) {
+                BitSet indices;
+                auto iCol = dataFramePort_.getData()->getIndexColumn();
+                auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+                for (auto idx : highlighted) {
+                    indices.add(indexCol[idx]);
+                }
+                brushingPort_.sendHighlightEvent(indices);
+            } else {
+                invalidate(InvalidationLevel::InvalidOutput);
+            }
+        });
     selectionChangedCallBack_ =
         scatterPlot_.addSelectionChangedCallback([this](const std::vector<bool>& selected) {
             if (brushingPort_.isConnected()) {
@@ -134,6 +148,7 @@ void ScatterPlotProcessor::process() {
     if (brushingPort_.isConnected()) {
         if (brushingPort_.isChanged()) {
             scatterPlot_.setSelectedIndices(brushingPort_.getSelectedIndices());
+            scatterPlot_.setHighlightedIndices(brushingPort_.getHighlightedIndices());
         }
 
         auto dfSize = dataframe->getNumberOfRows();

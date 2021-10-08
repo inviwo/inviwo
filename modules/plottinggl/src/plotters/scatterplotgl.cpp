@@ -165,7 +165,8 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
     }
     properties_.hovering_.onChange([this]() {
         if (!properties_.hovering_.get()) {
-            hoverIndex_ = std::nullopt;
+            highlighted_.clear();
+            highlightChangedCallback_.invoke(highlighted_);
         }
     });
 
@@ -429,19 +430,21 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
             selectedIndicesGL_.unbind();
         }
     }
-    if (hoverIndex_) {
+    if (!highlighted_.empty()) {
         shader_.setUniform("has_color", 0);
         shader_.setUniform("default_color", properties_.hoverColor_.get());
 
-        if (hoverIndexDirty_) {
+        if (highlightDirty_) {
             // Will both bind and upload
-            hoverIndexGL_.upload(static_cast<const void*>(&(*hoverIndex_)), sizeof(uint32_t));
-            hoverIndexDirty_ = false;
+            highlightIndexGL_.upload(static_cast<const void*>(highlighted_.toVector().data()),
+                                     sizeof(uint32_t) * highlighted_.size());
+            highlightDirty_ = false;
         } else {
-            hoverIndexGL_.bind();
+            highlightIndexGL_.bind();
         }
-        glDrawElements(GL_POINTS, 1, hoverIndexGL_.getFormatType(), nullptr);
-        hoverIndexGL_.unbind();
+        glDrawElements(GL_POINTS, highlighted_.cardinality(), highlightIndexGL_.getFormatType(),
+                       nullptr);
+        highlightIndexGL_.unbind();
     }
 
     shader_.deactivate();
@@ -532,6 +535,11 @@ void ScatterPlotGL::setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t
     }
 }
 
+void ScatterPlotGL::setHighlightedIndices(const BitSet& indices) {
+    highlighted_ = indices;
+    highlightDirty_ = true;
+}
+
 void ScatterPlotGL::setSelectedIndices(const BitSet& indices) {
     ensureSelectAndFilterSizes();
     std::fill(selected_.begin(), selected_.end(), false);
@@ -545,6 +553,11 @@ void ScatterPlotGL::setSelectedIndices(const BitSet& indices) {
 auto ScatterPlotGL::addToolTipCallback(std::function<ToolTipFunc> callback)
     -> ToolTipCallbackHandle {
     return tooltipCallback_.add(callback);
+}
+
+auto ScatterPlotGL::addHighlightChangedCallback(std::function<HighlightFunc> callback)
+    -> HighlightCallbackHandle {
+    return highlightChangedCallback_.add(callback);
 }
 
 auto ScatterPlotGL::addSelectionChangedCallback(std::function<SelectionFunc> callback)
@@ -611,17 +624,15 @@ void ScatterPlotGL::objectPicked(PickingEvent* p) {
     }
 
     if (properties_.hovering_.get()) {
-        if (p->getHoverState() == PickingHoverState::Enter) {
-            hoverIndex_ = id;
-            hoverIndexDirty_ = true;
-            if (processor_) {
-                processor_->invalidate(InvalidationLevel::InvalidOutput);
-            }
+        if (p->getHoverState() == PickingHoverState::Enter ||
+            (p->getGlobalPickingId() != p->getPreviousGlobalPickingId())) {
+            highlighted_.clear();
+            highlighted_.add(id);
+            highlightChangedCallback_.invoke(highlighted_);
+            highlightDirty_ = true;
         } else if (p->getHoverState() == PickingHoverState::Exit) {
-            hoverIndex_ = std::nullopt;
-            if (processor_) {
-                processor_->invalidate(InvalidationLevel::InvalidOutput);
-            }
+            highlighted_.clear();
+            highlightChangedCallback_.invoke(highlighted_);
         }
     }
 

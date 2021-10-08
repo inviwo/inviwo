@@ -85,6 +85,7 @@ private:
     using CallbackHandle = std::shared_ptr<std::function<void(PickingEvent*, size_t)>>;
     CallbackHandle tooltipCallBack_;
 
+    ScatterPlotGL::HighlightCallbackHandle highlightChangedCallBack_;
     ScatterPlotGL::SelectionCallbackHandle selectionChangedCallBack_;
     ScatterPlotGL::SelectionCallbackHandle filteringChangedCallBack_;
 };
