@@ -162,18 +162,13 @@ QMainWindow* getApplicationMainWindow() {
 }
 
 QPixmap toQPixmap(const TransferFunction& tf, const QSize& size) {
-    QVector<QGradientStop> gradientStops;
+    QLinearGradient gradient;
     for (const auto& tfpoint : tf) {
         vec4 curColor = tfpoint.getColor();
         // increase alpha to allow better visibility by 1 - (1 - a)^4
         curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
-
-        gradientStops.append(QGradientStop(tfpoint.getPosition(), utilqt::toQColor(curColor)));
+        gradient.setColorAt(tfpoint.getPosition(), utilqt::toQColor(curColor));
     }
-
-    // set bounds of the gradient
-    QLinearGradient gradient;
-    gradient.setStops(gradientStops);
 
     // gradient should stretch entire pixmap from left to right
     gradient.setStart(QPointF(0.0, 0.0));
@@ -286,18 +281,13 @@ QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept, const QSize& s
     if (propertyConcept.hasTF() && !propertyConcept.getTransferFunction()->empty()) {
         // draw TF gradient on top
 
-        QVector<QGradientStop> gradientStops;
+        QLinearGradient gradient;
         for (const auto& tfpoint : *propertyConcept.getTransferFunction()) {
             vec4 curColor = tfpoint.getColor();
             // increase alpha to allow better visibility by 1 - (1 - a)^4
             curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
-
-            gradientStops.append(QGradientStop(tfpoint.getPosition(), utilqt::toQColor(curColor)));
+            gradient.setColorAt(tfpoint.getPosition(), utilqt::toQColor(curColor));
         }
-
-        // set bounds of the gradient
-        QLinearGradient gradient;
-        gradient.setStops(gradientStops);
 
         // gradient should stretch entire pixmap from left to right
         gradient.setStart(QPointF(0.0, 0.0));
