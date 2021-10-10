@@ -117,7 +117,9 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
                     return true;
                 }
             } else {
-                callback->Failure(0, fmt::format("Could not find property: {}", path));
+                auto msg = fmt::format("Could not find property: {}", path);
+                LogWarn(msg);
+                callback->Failure(0, msg);
             }
         } else if (!command.compare(0, propCommand.size(), propCommand)) {
             const auto path = j.at("path").get<std::string_view>();
