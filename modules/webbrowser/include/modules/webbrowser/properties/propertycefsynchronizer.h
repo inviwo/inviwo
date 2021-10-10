@@ -49,6 +49,9 @@ namespace inviwo {
  * Handles "property.set", "property.get" and "property.subscribe" commands sent
  * from the Inviwo javascript API (see webbrowser/data/js/inviwoapi.js).
  *
+ * The path can be to a Processor (myprocessor.myproperty) or 
+ * system/module Settings (mysetting.myproperty) properties.
+ *
  * Flow of information between PropertyWidgetCEF and browser.
  * Changes can start from Inviwo (left) or browser (right).
  * Information is encoded in JSON format, e.g.
