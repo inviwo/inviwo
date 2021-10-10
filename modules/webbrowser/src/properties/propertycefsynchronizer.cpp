@@ -44,11 +44,15 @@
 
 namespace inviwo {
 
-PropertyCefSynchronizer::PropertyCefSynchronizer(const PropertyWidgetCEFFactory* htmlWidgetFactory)
-    : htmlWidgetFactory_(htmlWidgetFactory) {}
+PropertyCefSynchronizer::PropertyCefSynchronizer(CefRefPtr<CefBrowser> browser,
+                                                 const PropertyWidgetCEFFactory* htmlWidgetFactory)
+    : htmlWidgetFactory_(htmlWidgetFactory), browserIdentifier_(browser->GetIdentifier()) {}
 
 void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                         int /*httpStatusCode*/) {
+    if (browser->GetIdentifier() != browserIdentifier_) {
+        return;
+    }
     // synchronize all properties
     // Ok to send javascript commands when frame loaded
     for (auto& widget : widgets_) {
@@ -59,24 +63,26 @@ void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr
 bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                       int64 query_id, const CefString& request, bool persistent,
                                       CefRefPtr<Callback> callback) {
-
+    if (browser->GetIdentifier() != browserIdentifier_) {
+        return false;
+    }
     const std::string& requestStr = request;
     // Assume format "id":"htmlId"
     const auto j = json::parse(requestStr);
-    // Searches first for the property in Processors and then in Settings 
+    // Searches first for the property in Processors and then in Settings
     auto findProperty = [](const std::string_view path) -> Property* {
         auto network = InviwoApplication::getPtr()->getProcessorNetwork();
         Property* prop = network->getProperty(path);
         if (!prop) {
             // Retrieves both system and module settings
-            auto moduleSettings = InviwoApplication::getPtr()->getModuleSettings();
-            const auto [moduleIdentifier, propertyPath] = util::splitByFirst(path, '.');
-            auto mIt = util::find_if(moduleSettings,
-                                     [moduleIdentifier = moduleIdentifier](const auto setting) {
-                                         return setting->getIdentifier() == moduleIdentifier;
-                                     });
-            if (mIt != moduleSettings.end()) {
-                prop = (*mIt)->getPropertyByPath(propertyPath);
+            auto settings = InviwoApplication::getPtr()->getModuleSettings();
+            const auto [settingsIdentifier, propertyPath] = util::splitByFirst(path, '.');
+            auto it = util::find_if(settings,
+                                    [settingsIdentifier = settingsIdentifier](const auto setting) {
+                                        return setting->getIdentifier() == settingsIdentifier;
+                                    });
+            if (it != settings.end()) {
+                prop = (*it)->getPropertyByPath(propertyPath);
             }
         }
         return prop;

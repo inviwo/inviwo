@@ -79,7 +79,10 @@ class IVW_MODULE_WEBBROWSER_API PropertyCefSynchronizer
       public CefLoadHandler,
       public PropertyOwnerObserver {
 public:
-    explicit PropertyCefSynchronizer(const PropertyWidgetCEFFactory* htmlWidgetFactory);
+    /* 
+     * Only handles events from the provided browser
+     */
+    explicit PropertyCefSynchronizer(CefRefPtr<CefBrowser> browser, const PropertyWidgetCEFFactory* htmlWidgetFactory);
     virtual ~PropertyCefSynchronizer() = default;
 
     /**
@@ -126,6 +129,7 @@ private:
 
     std::vector<std::unique_ptr<PropertyWidgetCEF>> widgets_;
     const PropertyWidgetCEFFactory* htmlWidgetFactory_;  /// Non-owning reference
+    int browserIdentifier_; /// Only handle events with the associated browser
     IMPLEMENT_REFCOUNTING(PropertyCefSynchronizer);
 };
 #include <warn/pop>

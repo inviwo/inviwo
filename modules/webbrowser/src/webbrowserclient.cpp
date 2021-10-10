@@ -129,12 +129,12 @@ void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
         // Create the browser-side router for query handling.
         CefMessageRouterConfig config;
         messageRouter_ = CefMessageRouterBrowserSide::Create(config);
-
-        // Register handlers with the router
-        propertyCefSynchronizer_ = new PropertyCefSynchronizer(widgetFactory_);
-        addLoadHandler(propertyCefSynchronizer_.get());
-        messageRouter_->AddHandler(propertyCefSynchronizer_.get(), false);
     }
+    // Create a Property synchronizer for the browser
+    propertyCefSynchronizers_[browser->GetIdentifier()] = std::make_unique<PropertyCefSynchronizer>(browser, widgetFactory_);
+    auto synchronizer = propertyCefSynchronizers_[browser->GetIdentifier()].get();
+    addLoadHandler(synchronizer);
+    messageRouter_->AddHandler(synchronizer, false);
 
     browserCount_++;
 
@@ -150,13 +150,12 @@ bool WebBrowserClient::DoClose(CefRefPtr<CefBrowser> browser) {
 void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     CEF_REQUIRE_UI_THREAD();
     removeBrowserParent(browser);
-
+    // Remove associated Property synchronizer
+    messageRouter_->RemoveHandler(propertyCefSynchronizers_[browser->GetIdentifier()].get());
+    removeLoadHandler(propertyCefSynchronizers_[browser->GetIdentifier()].get());
+    propertyCefSynchronizers_.erase(browser->GetIdentifier());
     if (--browserCount_ == 0) {
         // Free the router when the last browser is closed.
-        messageRouter_->RemoveHandler(propertyCefSynchronizer_.get());
-        removeLoadHandler(propertyCefSynchronizer_.get());
-        propertyCefSynchronizer_ = nullptr;
-
         messageRouter_.reset();
     }
 
