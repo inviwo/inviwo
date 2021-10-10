@@ -223,6 +223,13 @@ void WebBrowserClient::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool 
     }
 }
 
+void WebBrowserClient::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                   TransitionType transition_type) {
+    for (const auto& loadHandler : loadHandlers_) {
+        loadHandler->OnLoadStart(browser, frame, transition_type);
+    }
+}
+
 void WebBrowserClient::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                  int httpStatusCode) {
     for (const auto& loadHandler : loadHandlers_) {

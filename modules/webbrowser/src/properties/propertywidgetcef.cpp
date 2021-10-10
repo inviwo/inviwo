@@ -38,42 +38,6 @@ using json = nlohmann::json;
 
 namespace inviwo {
 
-// Checks if widget html id exist in the frame and sets it if it does.
-// Note: Cannot use CefDOMVisitor since it requires the renderer process.
-class CefDOMSearchId : public CefStringVisitor {
-public:
-    CefDOMSearchId(const std::string& stringToFind, PropertyWidgetCEF* widget,
-                   const CefRefPtr<CefFrame> frame)
-        : CefStringVisitor(), stringToFind_(stringToFind), widget_(widget), frame_(frame){};
-
-    void Visit(const CefString& string) override {
-        std::string domString = string;
-
-        // Remove all the html comments to avoid finding element id's in the comments.
-        while (true) {
-            auto start = domString.find("<!--");
-            auto stop = domString.find("-->");
-            if (start != std::string::npos)
-                domString.erase(start, stop - start + 3);
-            else
-                break;
-        }
-        // If the widget's html-id is in the given frame's DOM-document, set it's frame.
-        if (domString.find(stringToFind_) != std::string::npos) {
-            widget_->frame_ = frame_;
-            widget_->updateFromProperty();
-        }
-    };
-
-private:
-    std::string stringToFind_;
-    PropertyWidgetCEF* widget_;
-    const CefRefPtr<CefFrame> frame_;
-#include <warn/push>
-#include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
-    IMPLEMENT_REFCOUNTING(CefDOMSearchId);
-#include <warn/pop>
-};
 
 PropertyWidgetCEF::PropertyWidgetCEF(Property* prop,
                                      std::unique_ptr<PropertyJSONConverter> converter,
@@ -83,15 +47,9 @@ PropertyWidgetCEF::PropertyWidgetCEF(Property* prop,
         prop->addObserver(this);
     }
 }
-void PropertyWidgetCEF::setFrame(CefRefPtr<CefFrame> frame) { setFrameIfPartOfFrame(frame); }
-
-void PropertyWidgetCEF::setFrameIfPartOfFrame(CefRefPtr<CefFrame> frame) {
-    // Create a visitor from this widget and run it on the frame to see if the widget id can be
-    // found in the frame's html code.
-    std::stringstream function;
-    function << "function " << getOnChange();
-    CefRefPtr<CefDOMSearchId> visitor = new CefDOMSearchId(function.str(), this, frame);
-    frame->GetSource(visitor);
+void PropertyWidgetCEF::setFrame(CefRefPtr<CefFrame> frame) { 
+    frame_ = frame;
+    updateFromProperty(); 
 }
 
 bool PropertyWidgetCEF::onQuery(

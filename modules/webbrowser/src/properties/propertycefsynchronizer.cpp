@@ -48,6 +48,14 @@ PropertyCefSynchronizer::PropertyCefSynchronizer(CefRefPtr<CefBrowser> browser,
                                                  const PropertyWidgetCEFFactory* htmlWidgetFactory)
     : htmlWidgetFactory_(htmlWidgetFactory), browserIdentifier_(browser->GetIdentifier()) {}
 
+void PropertyCefSynchronizer::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                          [[maybe_unused]] TransitionType transition_type) {
+    if (browser->GetIdentifier() != browserIdentifier_) {
+        return;
+    }
+    widgets_.clear();
+}
+
 void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                         int /*httpStatusCode*/) {
     if (browser->GetIdentifier() != browserIdentifier_) {

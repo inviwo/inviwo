@@ -139,6 +139,7 @@ public:
     /*
      * Added handlers will receive CefLoadHandler calls.
      * @see OnLoadingStateChange
+     * @see OnLoadStart
      * @see OnLoadEnd
      * @see OnLoadError
      * @see removeLoadHandler
@@ -155,6 +156,9 @@ public:
     /*--cef()--*/
     virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack,
                                       bool canGoForward) override;
+
+    virtual void OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                             TransitionType transition_type) override;
     /**
      * Synchronizes all widgets and sets their frame, called when frame has loaded.
      */

@@ -84,6 +84,11 @@ public:
      */
     explicit PropertyCefSynchronizer(CefRefPtr<CefBrowser> browser, const PropertyWidgetCEFFactory* htmlWidgetFactory);
     virtual ~PropertyCefSynchronizer() = default;
+    /**
+     * Removes all property synchronizations.
+     */
+    virtual void OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                             TransitionType transition_type) override;
 
     /**
      * Synchronizes all widgets and sets their frame, called when frame has loaded.
