@@ -131,7 +131,8 @@ void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
         messageRouter_ = CefMessageRouterBrowserSide::Create(config);
     }
     // Create a Property synchronizer for the browser
-    propertyCefSynchronizers_[browser->GetIdentifier()] = std::make_unique<PropertyCefSynchronizer>(browser, widgetFactory_);
+    propertyCefSynchronizers_[browser->GetIdentifier()] =
+        std::make_unique<PropertyCefSynchronizer>(browser, widgetFactory_);
     auto synchronizer = propertyCefSynchronizers_[browser->GetIdentifier()].get();
     addLoadHandler(synchronizer);
     messageRouter_->AddHandler(synchronizer, false);

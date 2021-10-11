@@ -38,7 +38,6 @@ using json = nlohmann::json;
 
 namespace inviwo {
 
-
 PropertyWidgetCEF::PropertyWidgetCEF(Property* prop,
                                      std::unique_ptr<PropertyJSONConverter> converter,
                                      CefRefPtr<CefFrame> frame, std::string onChange)
@@ -47,9 +46,9 @@ PropertyWidgetCEF::PropertyWidgetCEF(Property* prop,
         prop->addObserver(this);
     }
 }
-void PropertyWidgetCEF::setFrame(CefRefPtr<CefFrame> frame) { 
+void PropertyWidgetCEF::setFrame(CefRefPtr<CefFrame> frame) {
     frame_ = frame;
-    updateFromProperty(); 
+    updateFromProperty();
 }
 
 bool PropertyWidgetCEF::onQuery(

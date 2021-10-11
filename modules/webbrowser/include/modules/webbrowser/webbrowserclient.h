@@ -226,8 +226,9 @@ protected:
         CefRefPtr<ProcessorCefSynchronizer> processorCefSynchronizer;
     };
 
-    std::map<int, BrowserData> browserParents_;      /// Owner of each browser
-    std::map<int, std::unique_ptr<PropertyCefSynchronizer>> propertyCefSynchronizers_; /// One synchronizer per browser
+    std::map<int, BrowserData> browserParents_;  /// Owner of each browser
+    std::map<int, std::unique_ptr<PropertyCefSynchronizer>>
+        propertyCefSynchronizers_;                   /// One synchronizer per browser
     const PropertyWidgetCEFFactory* widgetFactory_;  /// Non-owning reference
 
     CefRefPtr<RenderHandlerGL> renderHandler_;
