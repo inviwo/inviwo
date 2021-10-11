@@ -139,6 +139,7 @@ public:
     /*
      * Added handlers will receive CefLoadHandler calls.
      * @see OnLoadingStateChange
+     * @see OnLoadStart
      * @see OnLoadEnd
      * @see OnLoadError
      * @see removeLoadHandler
@@ -155,6 +156,9 @@ public:
     /*--cef()--*/
     virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack,
                                       bool canGoForward) override;
+
+    virtual void OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                             TransitionType transition_type) override;
     /**
      * Synchronizes all widgets and sets their frame, called when frame has loaded.
      */
@@ -174,8 +178,6 @@ public:
     virtual void OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                              CefLoadHandler::ErrorCode errorCode, const CefString& errorText,
                              const CefString& failedUrl) override;
-
-    CefRefPtr<PropertyCefSynchronizer> propertyCefSynchronizer_;
 
     ///
     // Inviwo: Overload to log console.log message from js to inviwo the inviwo::LogCentral
@@ -224,7 +226,9 @@ protected:
         CefRefPtr<ProcessorCefSynchronizer> processorCefSynchronizer;
     };
 
-    std::map<int, BrowserData> browserParents_;      /// Owner of each browser
+    std::map<int, BrowserData> browserParents_;  /// Owner of each browser
+    std::map<int, std::unique_ptr<PropertyCefSynchronizer>>
+        propertyCefSynchronizers_;                   /// One synchronizer per browser
     const PropertyWidgetCEFFactory* widgetFactory_;  /// Non-owning reference
 
     CefRefPtr<RenderHandlerGL> renderHandler_;

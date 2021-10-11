@@ -49,6 +49,9 @@ namespace inviwo {
  * Handles "property.set", "property.get" and "property.subscribe" commands sent
  * from the Inviwo javascript API (see webbrowser/data/js/inviwoapi.js).
  *
+ * The path can be to a Processor (myprocessor.myproperty) or
+ * system/module Settings (mysetting.myproperty) properties.
+ *
  * Flow of information between PropertyWidgetCEF and browser.
  * Changes can start from Inviwo (left) or browser (right).
  * Information is encoded in JSON format, e.g.
@@ -76,8 +79,17 @@ class IVW_MODULE_WEBBROWSER_API PropertyCefSynchronizer
       public CefLoadHandler,
       public PropertyOwnerObserver {
 public:
-    explicit PropertyCefSynchronizer(const PropertyWidgetCEFFactory* htmlWidgetFactory);
+    /*
+     * Only handles events from the provided browser
+     */
+    explicit PropertyCefSynchronizer(CefRefPtr<CefBrowser> browser,
+                                     const PropertyWidgetCEFFactory* htmlWidgetFactory);
     virtual ~PropertyCefSynchronizer() = default;
+    /**
+     * Removes all property synchronizations.
+     */
+    virtual void OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                             TransitionType transition_type) override;
 
     /**
      * Synchronizes all widgets and sets their frame, called when frame has loaded.
@@ -123,6 +135,7 @@ private:
 
     std::vector<std::unique_ptr<PropertyWidgetCEF>> widgets_;
     const PropertyWidgetCEFFactory* htmlWidgetFactory_;  /// Non-owning reference
+    int browserIdentifier_;  /// Only handle events with the associated browser
     IMPLEMENT_REFCOUNTING(PropertyCefSynchronizer);
 };
 #include <warn/pop>

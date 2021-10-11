@@ -82,10 +82,11 @@ public:
     virtual ~PropertyWidgetCEF() = default;
 
     /*
-     * Checks if frame contains the html id of the widget and sets it if it is.
+     * Set the frame containing the onChange function.
+     * Calls onChange if frame is not null.
      * CefFrame is required for communication between Inviwo and the web browser.
      */
-    void setFrameIfPartOfFrame(CefRefPtr<CefFrame> frame);
+    void setFrame(CefRefPtr<CefFrame> frame);
 
     void setOnChange(std::string_view onChange) { onChange_ = onChange; }
     const std::string& getOnChange() const { return onChange_; }
@@ -162,10 +163,6 @@ protected:
      * @see setPropertyObserverCallback
      */
     virtual void onSetUsageMode(Property* property, UsageMode usageMode) override;
-    /*
-     * Set frame containing html item.
-     */
-    void setFrame(CefRefPtr<CefFrame> frame);
 
     std::unique_ptr<PropertyJSONConverter> converter_;
 

@@ -30,6 +30,7 @@
 #include <modules/webbrowser/properties/propertycefsynchronizer.h>
 #include <modules/webbrowser/webbrowsermodule.h>
 
+#include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/stringconversion.h>
 
 #include <fmt/format.h>
@@ -43,11 +44,23 @@
 
 namespace inviwo {
 
-PropertyCefSynchronizer::PropertyCefSynchronizer(const PropertyWidgetCEFFactory* htmlWidgetFactory)
-    : htmlWidgetFactory_(htmlWidgetFactory) {}
+PropertyCefSynchronizer::PropertyCefSynchronizer(CefRefPtr<CefBrowser> browser,
+                                                 const PropertyWidgetCEFFactory* htmlWidgetFactory)
+    : htmlWidgetFactory_(htmlWidgetFactory), browserIdentifier_(browser->GetIdentifier()) {}
+
+void PropertyCefSynchronizer::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                          [[maybe_unused]] TransitionType transition_type) {
+    if (browser->GetIdentifier() != browserIdentifier_) {
+        return;
+    }
+    widgets_.clear();
+}
 
 void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                         int /*httpStatusCode*/) {
+    if (browser->GetIdentifier() != browserIdentifier_) {
+        return;
+    }
     // synchronize all properties
     // Ok to send javascript commands when frame loaded
     for (auto& widget : widgets_) {
@@ -58,19 +71,38 @@ void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr
 bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                       int64 query_id, const CefString& request, bool persistent,
                                       CefRefPtr<Callback> callback) {
-
+    if (browser->GetIdentifier() != browserIdentifier_) {
+        return false;
+    }
     const std::string& requestStr = request;
     // Assume format "id":"htmlId"
     const auto j = json::parse(requestStr);
+    // Searches first for the property in Processors and then in Settings
+    auto findProperty = [](const std::string_view path) -> Property* {
+        auto network = InviwoApplication::getPtr()->getProcessorNetwork();
+        Property* prop = network->getProperty(path);
+        if (!prop) {
+            // Retrieves both system and module settings
+            auto settings = InviwoApplication::getPtr()->getModuleSettings();
+            const auto [settingsIdentifier, propertyPath] = util::splitByFirst(path, '.');
+            auto it = util::find_if(settings,
+                                    [settingsIdentifier = settingsIdentifier](const auto setting) {
+                                        return setting->getIdentifier() == settingsIdentifier;
+                                    });
+            if (it != settings.end()) {
+                prop = (*it)->getPropertyByPath(propertyPath);
+            }
+        }
+        return prop;
+    };
 
     try {
         const auto command = j.at("command").get<std::string_view>();
         constexpr std::string_view subscribeCommand = "subscribe";
         constexpr std::string_view propCommand = "property";
         if (command == subscribeCommand) {
-            auto network = InviwoApplication::getPtr()->getProcessorNetwork();
             const auto path = j.at("path").get<std::string_view>();
-            if (auto prop = network->getProperty(path)) {
+            if (auto prop = findProperty(path)) {
                 const auto onChange = j.at("onChange").get<std::string_view>();
                 auto widget =
                     std::find_if(widgets_.begin(), widgets_.end(), [&](const auto& widget) {
@@ -85,12 +117,13 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
                     return true;
                 }
             } else {
-                callback->Failure(0, fmt::format("Could not find property: {}", path));
+                auto msg = fmt::format("Could not find property: {}", path);
+                LogWarn(msg);
+                callback->Failure(0, msg);
             }
         } else if (!command.compare(0, propCommand.size(), propCommand)) {
-            auto network = InviwoApplication::getPtr()->getProcessorNetwork();
             const auto path = j.at("path").get<std::string_view>();
-            auto prop = network->getProperty(path);
+            auto prop = findProperty(path);
             if (!prop) {
                 throw Exception(fmt::format("Could not find property: {}", path), IVW_CONTEXT);
             }
