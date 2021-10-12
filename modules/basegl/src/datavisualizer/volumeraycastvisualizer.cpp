@@ -84,25 +84,6 @@ std::pair<Processor*, Outport*> VolumeRaycastVisualizer::addSourceProcessor(
     return {source, outport};
 }
 
-template <typename T, typename V>
-T& trySetProperty(Processor* proc, std::string_view identifier, V&& val, bool recursive = false) {
-
-    if (auto* p = recursive ? proc->getPropertyByIdentifier(identifier, true)
-                            : proc->getPropertyByPath(identifier)) {
-        if (auto* tp = dynamic_cast<T*>(p)) {
-            tp->set(std::forward<V>(val));
-            return *tp;
-        } else {
-            throw Exception(
-                fmt::format("Property '{}' not of type '{}'", identifier, typeid(T).name()),
-                IVW_CONTEXT_CUSTOM("VolumeRaycastVisualizer"));
-        }
-    } else {
-        throw Exception(fmt::format("Could not find property: '{}'", identifier),
-                        IVW_CONTEXT_CUSTOM("VolumeRaycastVisualizer"));
-    }
-}
-
 std::vector<Processor*> VolumeRaycastVisualizer::addVisualizerNetwork(Outport* outport,
                                                                       ProcessorNetwork* net) const {
 
