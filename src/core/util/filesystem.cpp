@@ -71,6 +71,7 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 #include <array>
 #include <algorithm>
 #include <string_view>
+#include <filesystem>
 
 #include <fmt/format.h>
 
@@ -255,30 +256,13 @@ std::string getInviwoUserSettingsPath() {
 }
 
 bool fileExists(std::string_view filePath) {
-// http://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
-#if defined(_WIN32)
-    struct _stat64 buffer;
-    return (_wstat64(util::toWstring(filePath).c_str(), &buffer) == 0);
-#else
-    struct stat buffer;
-    return (stat(SafeCStr<256>{filePath}.c_str(), &buffer) == 0);
-#endif
+    const auto p = std::filesystem::path{filePath};
+    return std::filesystem::exists(p) && std::filesystem::is_regular_file(p);
 }
 
 bool directoryExists(std::string_view path) {
-// If path contains the location of a directory, it cannot contain a trailing backslash.
-// If it does, -1 will be returned and errno will be set to ENOENT.
-// https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
-// We therefore check if path ends with a backslash
-#if defined(_WIN32)
-    struct _stat buffer;
-    int retVal = _wstat(util::toWstring(detail::removeTrailingSlash(path)).c_str(), &buffer);
-    return (retVal == 0 && (buffer.st_mode & S_IFDIR));
-#else
-    struct stat buffer;
-    return (stat(SafeCStr<256>{detail::removeTrailingSlash(path)}.c_str(), &buffer) == 0 &&
-            (buffer.st_mode & S_IFDIR));
-#endif
+    const auto p = std::filesystem::path{path};
+    return std::filesystem::exists(p) && std::filesystem::is_directory(p);
 }
 
 std::time_t fileModificationTime(std::string_view filePath) {
