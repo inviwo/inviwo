@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/processors/processor.h>
 
 #include <type_traits>
 #include <string_view>
