@@ -139,8 +139,8 @@ protected:
             const auto path = ":/" + name.path();
             if (QFile{path}.exists()) {
                 auto img = QImage{path};
-                return img.scaled(std::min(img.width(), width()), img.height(),
-                                  Qt::KeepAspectRatio);
+                return img.scaled(std::min(img.width(), width()), img.height(), Qt::KeepAspectRatio,
+                                  Qt::SmoothTransformation);
             }
         }
         return QTextEdit::loadResource(type, name);
