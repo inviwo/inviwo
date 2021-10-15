@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ENTRYEXITPOINTSCLPROCESSOR_H
-#define IVW_ENTRYEXITPOINTSCLPROCESSOR_H
+#pragma once
 
 #include <modules/basecl/baseclmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/ports/meshport.h>
@@ -96,5 +94,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ENTRYEXITPOINTSCLPROCESSOR_H

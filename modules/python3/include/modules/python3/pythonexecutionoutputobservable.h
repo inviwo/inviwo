@@ -27,12 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYTHONEXECUTIONOUTPUTOBSERVABLE_H
-#define IVW_PYTHONEXECUTIONOUTPUTOBSERVABLE_H
+#pragma once
 
 #include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/observer.h>
+
+#include <string>
 
 namespace inviwo {
 
@@ -50,5 +50,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PYTHONEXECUTIONOUTPUTOBSERVABLE_H

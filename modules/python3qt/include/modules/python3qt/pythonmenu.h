@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYTHONMENU_H
-#define IVW_PYTHONMENU_H
+#pragma once
 
 #include <modules/python3qt/python3qtmoduledefine.h>
 
@@ -54,5 +53,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PYTHONMENU_H

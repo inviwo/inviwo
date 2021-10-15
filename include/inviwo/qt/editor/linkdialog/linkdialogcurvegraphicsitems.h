@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LINKDIALOG_CURVEGRAPHICSITEMS_H
-#define IVW_LINKDIALOG_CURVEGRAPHICSITEMS_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
@@ -96,5 +95,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LINKDIALOG_CURVEGRAPHICSITEMS_H

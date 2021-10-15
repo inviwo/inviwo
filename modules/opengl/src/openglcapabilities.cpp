@@ -37,10 +37,13 @@
 #include <modules/opengl/openglsettings.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <modules/opengl/shader/shadermanager.h>
+#include <inviwo/core/util/unindent.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
-// Or minimal opengl version is 3.3 and glsl version 330
+// Our minimal opengl version is 3.3 and glsl version 330
 
 bool OpenGLCapabilities::glewInitialized_ = false;
 int OpenGLCapabilities::glVersion_ = 0;
@@ -360,7 +363,16 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     } else if (contextMask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT) {
         glProfileStr_ = "compatibility";
     } else {
-        LogError("Error retrieving OpenGL profile, assuming core profile");
+        constexpr auto err = IVW_UNINDENT(R"(
+            Error retrieving OpenGL profile, assuming core profile found:
+            glVersionStr: {}
+            glVersion:    {}
+            glVendorStr:  {}
+            glRenderStr:  {}
+            contextMask:  {}
+        )");
+        LogError(
+            fmt::format(err, glVersionStr_, glVersion_, glVendorStr_, glRenderStr_, contextMask));
         glProfileStr_ = "core";
     }
     // GLSL

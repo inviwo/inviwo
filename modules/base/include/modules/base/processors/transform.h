@@ -31,7 +31,6 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <modules/base/properties/transformlistproperty.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/boolproperty.h>

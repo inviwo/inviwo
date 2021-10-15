@@ -29,7 +29,6 @@
 #pragma once
 
 #include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -37,6 +36,8 @@
 #include <warn/pop>
 
 #include <unordered_set>
+
+#include <memory>
 
 namespace inviwo {
 

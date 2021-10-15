@@ -32,7 +32,7 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/formats.h>
 
 namespace inviwo {
 

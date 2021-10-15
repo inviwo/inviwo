@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef __GLMCL_H__
-#define __GLMCL_H__
+#pragma once
 
 #include <modules/opencl/cl.hpp>
 #include <glm/glm.hpp>
@@ -66,4 +65,3 @@ template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const glm::vec3& value);
 
 }  // namespace cl
-#endif

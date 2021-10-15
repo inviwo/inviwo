@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MESHSEQUENCEELEMENTSELECTORPROCESSOR_H
-#define IVW_MESHSEQUENCEELEMENTSELECTORPROCESSOR_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/ports/meshport.h>
 #include <modules/base/processors/vectorelementselectorprocessor.h>
@@ -63,5 +61,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_MESHSEQUENCEELEMENTSELECTORPROCESSOR_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GLUIBUTTONPROPERTYWIDGET_H
-#define IVW_GLUIBUTTONPROPERTYWIDGET_H
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/userinterfacegl/glui/widgets/button.h>
 #include <modules/userinterfacegl/glui/widgets/toolbutton.h>
@@ -100,5 +98,3 @@ private:
 }  // namespace glui
 
 }  // namespace inviwo
-
-#endif  // IVW_GLUIBUTTONPROPERTYWIDGET_H

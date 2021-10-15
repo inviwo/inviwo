@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMETODATAFRAME_H
-#define IVW_VOLUMETODATAFRAME_H
+#pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -87,5 +85,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMETODATAFRAME_H

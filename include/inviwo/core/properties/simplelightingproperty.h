@@ -35,19 +35,9 @@
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/datastructures/light/lightingstate.h>
 
 namespace inviwo {
-
-namespace ShadingMode {
-enum Modes {
-    None,
-    Ambient,
-    Diffuse,
-    Specular,
-    BlinnPhong,
-    Phong,
-};
-}
 
 class CameraProperty;
 /**
@@ -71,8 +61,10 @@ public:
     virtual SimpleLightingProperty* clone() const override;
     virtual ~SimpleLightingProperty();
 
+    LightingState getState() const;
+
     // Light properties
-    OptionPropertyInt shadingMode_;
+    TemplateOptionProperty<ShadingMode> shadingMode_;
     OptionPropertyInt referenceFrame_;
     FloatVec3Property lightPosition_;
 

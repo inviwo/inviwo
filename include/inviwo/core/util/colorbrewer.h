@@ -53,6 +53,11 @@ public:
 };
 
 /**
+ * Returns all families.
+ **/
+IVW_CORE_API std::vector<Family> getFamilies();
+
+/**
  * Returns the colormap specified by its family and number of colors containted in the colormap. For
  * reference see http://colorbrewer2.org/. If the colormap is not available for the given number of
  * colors, a ColorBrewerException is thrown.

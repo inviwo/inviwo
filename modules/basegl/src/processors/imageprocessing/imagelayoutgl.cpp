@@ -193,7 +193,7 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
     } else {
         auto& data = multiinport_.getConnectedOutports();
         auto prop = [&](Event* newEvent, size_t ind) {
-            if (ind < viewManager_.size()) {
+            if (ind < viewManager_.size() && ind < data.size()) {
                 multiinport_.propagateEvent(newEvent, data[ind]);
             }
         };

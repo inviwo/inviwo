@@ -33,7 +33,7 @@
  **/
 
 #ifndef IVW_ABUFFERGL4_LINKEDLIST_H
-#define IVW_ABUFFERGL4_LINKEDLIST_H
+#pragma once
 
 #include <modules/abuffergl/abufferglmoduledefine.h>
 #include <modules/abuffergl/abufferglhelpers/abuffergl.h>
@@ -118,5 +118,3 @@ private:
 typedef Inviwo_ABufferGL4_LinkedList InviwoABuffer;
 
 }  // namespace inviwo
-
-#endif  // IVW_ABUFFERGL4_LINKEDLIST_H

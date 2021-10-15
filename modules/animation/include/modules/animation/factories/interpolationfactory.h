@@ -33,7 +33,6 @@
 
 #include <inviwo/core/util/factory.h>
 #include <modules/animation/interpolation/interpolation.h>
-
 #include <modules/animation/factories/interpolationfactoryobject.h>
 
 namespace inviwo {

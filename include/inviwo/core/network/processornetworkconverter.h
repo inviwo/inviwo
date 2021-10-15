@@ -54,6 +54,7 @@ private:
     void updateMetaDataType(TxElement* node);
     void updateMetaDataKeys(TxElement* node);
     void updateShadingMode(TxElement* node);
+    void updateShadingModeEnum(TxElement* node);
     void updateCameraToComposite(TxElement* node);
     void updateDimensionTag(TxElement* node);
     void updatePropertyLinks(TxElement* node);

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CLOCK_GL_H
-#define IVW_CLOCK_GL_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
@@ -240,5 +239,3 @@ using ScopedClockGL = ScopedClock<ClockGL>;
 #endif
 
 }  // namespace inviwo
-
-#endif  // IVW_CLOCK_GL_H

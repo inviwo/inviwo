@@ -27,22 +27,20 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_NETWORKEDITOROBSERVER_H
-#define IVW_NETWORKEDITOROBSERVER_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/observer.h>
+
+#include <string>
 
 namespace inviwo {
 
 class IVW_QTEDITOR_API NetworkEditorObserver : public Observer {
 public:
-    virtual void onNetworkEditorFileChanged(const std::string& /*newFilename*/){};
-    virtual void onModifiedStatusChanged(const bool& /*newStatus*/){};
+    virtual void onNetworkEditorFileChanged([[maybe_unused]] const std::string& newFilename){};
+    virtual void onModifiedStatusChanged([[maybe_unused]] const bool& newStatus){};
     virtual void onSceneSizeChanged(){};
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_NETWORKEDITOROBSERVER_H

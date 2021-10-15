@@ -95,6 +95,7 @@ public:
     };
 
     using Callback = std::function<void(ShaderObject*)>;
+    using ShaderDefines = std::map<std::string, std::string, std::less<>>;
 
     ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderResource> resource);
     ShaderObject(std::shared_ptr<const ShaderResource> resource);
@@ -133,6 +134,10 @@ public:
      * Remove a previously added define
      */
     void removeShaderDefine(std::string_view name);
+    /*
+     * Get list of shader defines
+     */
+    ShaderDefines getShaderDefines() const { return shaderDefines_; }
 
     /**
      * Adds or removed a define with name 'name'
@@ -142,6 +147,9 @@ public:
      * @param value Value of definition.
      */
     void setShaderDefine(std::string_view name, bool shouldAdd, std::string_view value = "");
+    void setShaderDefines(ShaderDefines shaderDefines) {
+        shaderDefines_ = std::move(shaderDefines);
+    }
     bool hasShaderDefine(std::string_view name) const;
     void clearShaderDefines();
 
@@ -244,7 +252,6 @@ private:
     std::vector<InDeclaration> inDeclarations_;
     std::vector<OutDeclaration> outDeclarations_;
 
-    using ShaderDefines = std::map<std::string, std::string, std::less<>>;
     ShaderDefines shaderDefines_;
 
     using ShaderExtensions =

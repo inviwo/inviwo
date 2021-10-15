@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEINFORMATIONPROPERTY_H
-#define IVW_VOLUMEINFORMATIONPROPERTY_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/datastructures/volume/volume.h>
@@ -75,5 +73,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEINFORMATIONPROPERTY_H

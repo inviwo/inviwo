@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GLUITOOLBUTTON_H
-#define IVW_GLUITOOLBUTTON_H
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/userinterfacegl/glui/widgets/abstractbutton.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
@@ -80,5 +78,3 @@ private:
 }  // namespace glui
 
 }  // namespace inviwo
-
-#endif  // IVW_GLUITOOLBUTTON_H

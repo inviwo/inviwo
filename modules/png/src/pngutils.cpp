@@ -31,6 +31,8 @@
 
 #include <png.h>
 
+#include <sstream>
+
 namespace inviwo {
 
 namespace pngutil {

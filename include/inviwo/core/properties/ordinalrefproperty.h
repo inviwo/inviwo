@@ -54,9 +54,9 @@ struct OrdinalRefPropertyState {
         std::pair{Defaultvalues<T>::getMax(), ConstraintBehavior::Editable};
     T increment = Defaultvalues<T>::getInc();
     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput;
-    PropertySemantics semantics = defaltSemantics();
+    PropertySemantics semantics = defaultSemantics();
 
-    static PropertySemantics defaltSemantics() {
+    static PropertySemantics defaultSemantics() {
         if constexpr (util::extent<T, 1>::value > 1) {
             return PropertySemantics::Text;
         } else {
@@ -86,7 +86,7 @@ public:
                                                                      ConstraintBehavior::Editable},
         const T& increment = Defaultvalues<T>::getInc(),
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = OrdinalRefPropertyState<T>::defaltSemantics());
+        PropertySemantics semantics = OrdinalRefPropertyState<T>::defaultSemantics());
 
     OrdinalRefProperty(const std::string& identifier, const std::string& displayName,
                        std::function<const T&()> get, std::function<void(const T&)> set,

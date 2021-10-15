@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_NUMPYMESHCREATETEST_H
-#define IVW_NUMPYMESHCREATETEST_H
+#pragma once
 
 #include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>
@@ -70,5 +68,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_NUMPYMESHCREATETEST_H

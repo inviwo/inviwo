@@ -231,7 +231,7 @@ public:
     void deserialize(std::string_view key, Mat& data);
 
     // bitsets
-    template <unsigned N>
+    template <size_t N>
     void deserialize(std::string_view key, std::bitset<N>& bits);
 
     /**
@@ -784,7 +784,7 @@ void Deserializer::deserialize(std::string_view key, Mat& data) {
     }
 }
 
-template <unsigned N>
+template <size_t N>
 void Deserializer::deserialize(std::string_view key, std::bitset<N>& bits) {
     std::string value = bits.to_string();
     deserialize(key, value);

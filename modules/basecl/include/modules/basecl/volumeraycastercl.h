@@ -27,13 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUME_RAYCASTER_CL_H
-#define IVW_VOLUME_RAYCASTER_CL_H
+#pragma once
 
 #include <modules/basecl/baseclmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/datastructures/light/lightingstate.h>
 
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/buffer/buffercl.h>
@@ -85,10 +84,9 @@ public:
 
     const CameraProperty* getCamera() const { return camera_; }
     void setCamera(CameraProperty* camera) { camera_ = camera; }
+    void setLightingProperties(const utilcl::LightParameters& params);
     void setLightingProperties(const SimpleLightingProperty& light);
-    void setLightingProperties(ShadingMode::Modes mode, const vec3& lightPosition,
-                               const vec3& ambientColor, const vec3& diffuseColor,
-                               const vec3& specularColor, float specularExponent);
+    void setLightingProperties(const LightingState& state);
 
     const Layer* getBackground() const {
         if (background_)
@@ -148,5 +146,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUME_RAYCASTER_CL_H

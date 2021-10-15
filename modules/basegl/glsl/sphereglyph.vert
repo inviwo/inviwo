@@ -41,34 +41,34 @@ uniform float selectionMix = 0.0;
 uniform float selectionScaleFactor = 1.0;
 uniform vec4 selectionColor = vec4(1.0, 0.769, 0.247, 1.0);
 
-out vec4 worldPosition_;
-out vec4 sphereColor_;
-flat out float sphereRadius_;
-flat out uint pickID_;
+out vec4 worldPosition;
+out vec4 sphereColor;
+flat out float sphereRadius;
+flat out uint pickID;
 
 void main(void) {
 #if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR) && !defined(FORCE_COLOR)
-    sphereColor_ = texture(metaColor, vec2(in_ScalarMeta, 0.5));
+    sphereColor = texture(metaColor, vec2(in_ScalarMeta, 0.5));
 #elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
-    sphereColor_ = in_Color;
+    sphereColor = in_Color;
 #else
-    sphereColor_ = defaultColor;
+    sphereColor = defaultColor;
 #endif
-    sphereColor_ = mix(sphereColor_, selectionColor, selectionMix);
+    sphereColor = mix(sphereColor, selectionColor, selectionMix);
 
 #if defined(HAS_RADII) && !defined(FORCE_RADIUS)
-    sphereRadius_ = in_Radii;
+    sphereRadius = in_Radii;
 #else 
-    sphereRadius_ = defaultRadius;
+    sphereRadius = defaultRadius;
 #endif
-    sphereRadius_ = mix(sphereRadius_, sphereRadius_ * selectionScaleFactor, selectionMix);
+    sphereRadius = mix(sphereRadius, sphereRadius * selectionScaleFactor, selectionMix);
 
 #if defined(HAS_PICKING)
-    pickID_ = in_Picking;
+    pickID = in_Picking;
 #else 
-    pickID_ = 0;
+    pickID = 0;
 #endif
 
-    worldPosition_ = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
-    gl_Position = worldPosition_;
+    worldPosition = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
+    gl_Position = worldPosition;
 }

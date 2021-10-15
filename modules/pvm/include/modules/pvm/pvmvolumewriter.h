@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PVMVOLUMEWRITER_H
-#define IVW_PVMVOLUMEWRITER_H
+#pragma once
 
 #include <modules/pvm/pvmmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
@@ -53,5 +51,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PVMVOLUMEWRITER_H

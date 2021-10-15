@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ABUFFERGL_MODULE_H
-#define IVW_ABUFFERGL_MODULE_H
+#pragma once
 
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/abuffergl/abufferglmoduledefine.h>
@@ -55,5 +54,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ABUFFERGL_MODULE_H

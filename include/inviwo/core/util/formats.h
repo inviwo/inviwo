@@ -176,13 +176,12 @@ public:
     //    template <class T>
     //    type dispatch(Args... args);
     template <typename T, typename... Args>
-    [[deprecated("was declared deprecated. Use dispatch in formatdispatch.h")]] 
+    [[deprecated("was declared deprecated. Use dispatch in formatdispatch.h")]]
     auto dispatch(T& obj, Args&&... args) const -> typename T::type;
-    //clang-format on
+    // clang-format on
 
 protected:
     static const DataFormatBase* getPointer(DataFormatId id);
-
 
     DataFormatId formatId_;
     size_t components_;
@@ -257,7 +256,62 @@ DataFormat<T>::DataFormat()
 
 template <typename T>
 constexpr DataFormatId DataFormat<T>::id() {
-    return DataFormatId::NotSpecialized;
+    // clang-format off
+    if constexpr(std::is_same_v<T, half_float::half>) { return DataFormatId::Float16; }
+    else if constexpr(std::is_same_v<T, glm::f32>) { return DataFormatId::Float32; }
+    else if constexpr(std::is_same_v<T, glm::f64>) { return DataFormatId::Float64; }
+    else if constexpr(std::is_same_v<T, glm::i8>)  { return DataFormatId::Int8; }
+    else if constexpr(std::is_same_v<T, glm::i16>) { return DataFormatId::Int16; }
+    else if constexpr(std::is_same_v<T, glm::i32>) { return DataFormatId::Int32; }
+    else if constexpr(std::is_same_v<T, glm::i64>) { return DataFormatId::Int64; }
+    else if constexpr(std::is_same_v<T, glm::u8>)  { return DataFormatId::UInt8; }
+    else if constexpr(std::is_same_v<T, glm::u16>) { return DataFormatId::UInt16; }
+    else if constexpr(std::is_same_v<T, glm::u32>) { return DataFormatId::UInt32; }
+    else if constexpr(std::is_same_v<T, glm::u64>) { return DataFormatId::UInt64; }
+
+    else if constexpr(std::is_same_v<T, glm::tvec2<half_float::half, glm::defaultp>>) {
+        return DataFormatId::Vec2Float16;
+    }
+    else if constexpr(std::is_same_v<T, glm::f32vec2>) { return DataFormatId::Vec2Float32; }
+    else if constexpr(std::is_same_v<T, glm::f64vec2>) { return DataFormatId::Vec2Float64; }
+    else if constexpr(std::is_same_v<T, glm::i8vec2>) { return DataFormatId::Vec2Int8; }
+    else if constexpr(std::is_same_v<T, glm::i16vec2>) { return DataFormatId::Vec2Int16; }
+    else if constexpr(std::is_same_v<T, glm::i32vec2>) { return DataFormatId::Vec2Int32; }
+    else if constexpr(std::is_same_v<T, glm::i64vec2>) { return DataFormatId::Vec2Int64; }
+    else if constexpr(std::is_same_v<T, glm::u8vec2>) { return DataFormatId::Vec2UInt8; }
+    else if constexpr(std::is_same_v<T, glm::u16vec2>) { return DataFormatId::Vec2UInt16; }
+    else if constexpr(std::is_same_v<T, glm::u32vec2>) { return DataFormatId::Vec2UInt32; }
+    else if constexpr(std::is_same_v<T, glm::u64vec2>) { return DataFormatId::Vec2UInt64; }
+
+    else if constexpr(std::is_same_v<T, glm::tvec3<half_float::half, glm::defaultp>>) {
+        return DataFormatId::Vec3Float16;
+    }
+    else if constexpr(std::is_same_v<T, glm::f32vec3>) { return DataFormatId::Vec3Float32; }
+    else if constexpr(std::is_same_v<T, glm::f64vec3>) { return DataFormatId::Vec3Float64; }
+    else if constexpr(std::is_same_v<T, glm::i8vec3>) { return DataFormatId::Vec3Int8; }
+    else if constexpr(std::is_same_v<T, glm::i16vec3>) { return DataFormatId::Vec3Int16; }
+    else if constexpr(std::is_same_v<T, glm::i32vec3>) { return DataFormatId::Vec3Int32; }
+    else if constexpr(std::is_same_v<T, glm::i64vec3>) { return DataFormatId::Vec3Int64; }
+    else if constexpr(std::is_same_v<T, glm::u8vec3>) { return DataFormatId::Vec3UInt8; }
+    else if constexpr(std::is_same_v<T, glm::u16vec3>) { return DataFormatId::Vec3UInt16; }
+    else if constexpr(std::is_same_v<T, glm::u32vec3>) { return DataFormatId::Vec3UInt32; }
+    else if constexpr(std::is_same_v<T, glm::u64vec3>) { return DataFormatId::Vec3UInt64; }
+
+    else if constexpr(std::is_same_v<T, glm::tvec4<half_float::half, glm::defaultp>>) {
+        return DataFormatId::Vec4Float16;
+    }
+    else if constexpr(std::is_same_v<T, glm::f32vec4>) { return DataFormatId::Vec4Float32; }
+    else if constexpr(std::is_same_v<T, glm::f64vec4>) { return DataFormatId::Vec4Float64; }
+    else if constexpr(std::is_same_v<T, glm::i8vec4>) { return DataFormatId::Vec4Int8; }
+    else if constexpr(std::is_same_v<T, glm::i16vec4>) { return DataFormatId::Vec4Int16; }
+    else if constexpr(std::is_same_v<T, glm::i32vec4>) { return DataFormatId::Vec4Int32; }
+    else if constexpr(std::is_same_v<T, glm::i64vec4>) { return DataFormatId::Vec4Int64; }
+    else if constexpr(std::is_same_v<T, glm::u8vec4>) { return DataFormatId::Vec4UInt8; }
+    else if constexpr(std::is_same_v<T, glm::u16vec4>) { return DataFormatId::Vec4UInt16; }
+    else if constexpr(std::is_same_v<T, glm::u32vec4>) { return DataFormatId::Vec4UInt32; }
+    else if constexpr(std::is_same_v<T, glm::u64vec4>) { return DataFormatId::Vec4UInt64; }
+    else return DataFormatId::NotSpecialized;
+    // clang-format on
 }
 
 template <typename T>
@@ -458,80 +512,6 @@ using DataVec4UInt8 = DataFormat<glm::u8vec4>;
 using DataVec4UInt16 = DataFormat<glm::u16vec4>;
 using DataVec4UInt32 = DataFormat<glm::u32vec4>;
 using DataVec4UInt64 = DataFormat<glm::u64vec4>;
-
-/*---------------Single Value Formats------------------*/
-// clang-format off
-// Type Function Specializations
-template<> constexpr DataFormatId DataFloat16::id() { return DataFormatId::Float16; }
-template<> constexpr DataFormatId DataFloat32::id() { return DataFormatId::Float32; }
-template<> constexpr DataFormatId DataFloat64::id() { return DataFormatId::Float64; }
-
-template<> constexpr DataFormatId DataInt8::id()  { return DataFormatId::Int8; }
-template<> constexpr DataFormatId DataInt16::id() { return DataFormatId::Int16; }
-template<> constexpr DataFormatId DataInt32::id() { return DataFormatId::Int32; }
-template<> constexpr DataFormatId DataInt64::id() { return DataFormatId::Int64; }
-
-template<> constexpr DataFormatId DataUInt8::id()  { return DataFormatId::UInt8; }
-template<> constexpr DataFormatId DataUInt16::id() { return DataFormatId::UInt16; }
-template<> constexpr DataFormatId DataUInt32::id() { return DataFormatId::UInt32; }
-template<> constexpr DataFormatId DataUInt64::id() { return DataFormatId::UInt64; }
-
-
-/*---------------Vec2 Formats--------------------*/
-
-// Type Function Specializations
-template<> constexpr DataFormatId DataVec2Float16::id() { return DataFormatId::Vec2Float16; }
-template<> constexpr DataFormatId DataVec2Float32::id() { return DataFormatId::Vec2Float32; }
-template<> constexpr DataFormatId DataVec2Float64::id() { return DataFormatId::Vec2Float64; }
-
-template<> constexpr DataFormatId DataVec2Int8::id() { return DataFormatId::Vec2Int8; }
-template<> constexpr DataFormatId DataVec2Int16::id() { return DataFormatId::Vec2Int16; }
-template<> constexpr DataFormatId DataVec2Int32::id() { return DataFormatId::Vec2Int32; }
-template<> constexpr DataFormatId DataVec2Int64::id() { return DataFormatId::Vec2Int64; }
-
-template<> constexpr DataFormatId DataVec2UInt8::id() { return DataFormatId::Vec2UInt8; }
-template<> constexpr DataFormatId DataVec2UInt16::id() { return DataFormatId::Vec2UInt16; }
-template<> constexpr DataFormatId DataVec2UInt32::id() { return DataFormatId::Vec2UInt32; }
-template<> constexpr DataFormatId DataVec2UInt64::id() { return DataFormatId::Vec2UInt64; }
-
-
-/*---------------Vec3 Formats--------------------*/
-
-// Type Function Specializations
-template<> constexpr DataFormatId DataVec3Float16::id() { return DataFormatId::Vec3Float16; }
-template<> constexpr DataFormatId DataVec3Float32::id() { return DataFormatId::Vec3Float32; }
-template<> constexpr DataFormatId DataVec3Float64::id() { return DataFormatId::Vec3Float64; }
-
-template<> constexpr DataFormatId DataVec3Int8::id() { return DataFormatId::Vec3Int8; }
-template<> constexpr DataFormatId DataVec3Int16::id() { return DataFormatId::Vec3Int16; }
-template<> constexpr DataFormatId DataVec3Int32::id() { return DataFormatId::Vec3Int32; }
-template<> constexpr DataFormatId DataVec3Int64::id() { return DataFormatId::Vec3Int64; }
-
-template<> constexpr DataFormatId DataVec3UInt8::id() { return DataFormatId::Vec3UInt8; }
-template<> constexpr DataFormatId DataVec3UInt16::id() { return DataFormatId::Vec3UInt16; }
-template<> constexpr DataFormatId DataVec3UInt32::id() { return DataFormatId::Vec3UInt32; }
-template<> constexpr DataFormatId DataVec3UInt64::id() { return DataFormatId::Vec3UInt64; }
-
-
-
-/*---------------Vec4 Formats--------------------*/
-
-// Type Function Specializations
-template<> constexpr DataFormatId DataVec4Float16::id() { return DataFormatId::Vec4Float16; }
-template<> constexpr DataFormatId DataVec4Float32::id() { return DataFormatId::Vec4Float32; }
-template<> constexpr DataFormatId DataVec4Float64::id() { return DataFormatId::Vec4Float64; }
-
-template<> constexpr DataFormatId DataVec4Int8::id() { return DataFormatId::Vec4Int8; }
-template<> constexpr DataFormatId DataVec4Int16::id() { return DataFormatId::Vec4Int16; }
-template<> constexpr DataFormatId DataVec4Int32::id() { return DataFormatId::Vec4Int32; }
-template<> constexpr DataFormatId DataVec4Int64::id() { return DataFormatId::Vec4Int64; }
-
-template<> constexpr DataFormatId DataVec4UInt8::id() { return DataFormatId::Vec4UInt8; }
-template<> constexpr DataFormatId DataVec4UInt16::id() { return DataFormatId::Vec4UInt16; }
-template<> constexpr DataFormatId DataVec4UInt32::id() { return DataFormatId::Vec4UInt32; }
-template<> constexpr DataFormatId DataVec4UInt64::id() { return DataFormatId::Vec4UInt64; }
-
-// clang-format on
 
 using DefaultDataFormats = std::tuple<
     DataFloat16, DataFloat32, DataFloat64, DataInt8, DataInt16, DataInt32, DataInt64, DataUInt8,

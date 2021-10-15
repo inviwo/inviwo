@@ -257,8 +257,8 @@ std::string getInviwoUserSettingsPath() {
 bool fileExists(std::string_view filePath) {
 // http://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
 #if defined(_WIN32)
-    struct _stat buffer;
-    return (_wstat(util::toWstring(filePath).c_str(), &buffer) == 0);
+    struct _stat64 buffer;
+    return (_wstat64(util::toWstring(filePath).c_str(), &buffer) == 0);
 #else
     struct stat buffer;
     return (stat(SafeCStr<256>{filePath}.c_str(), &buffer) == 0);

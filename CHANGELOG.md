@@ -1,5 +1,31 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2021-09-27
+Fixed some naming inconsistencies regarding texture coordinate vertex attributes and buffers. Renamed `BufferType::TexcoordAttrib` to `BufferType::TexCoordAttrib` (`geometrytypes.h`) and `buffertraits::TexcoordBuffer` to `buffertraits::TexCoordBuffer` (`typedmesh.h`). The buffer name of `TexCoordAttrib` now maps to `TexCoord` (previously `Texture`), which is relevant when using the `MeshShaderCache`.
+
+In case you use the `MeshShaderCache` in connection with `TexCoordAttrib` you may need to adjust your shader. If the attribute is available, `HAS_TEXCOORD` is defined and `in_TexCoord` holds the value (previously `HAS_TEXTURE/in_Texture`).
+
+## 2021-08-31
+Added support for image in the changelog. Add images in the `resources/changelog` folder 
+and enter then in to the resource file `resources/changelog.qrc`. The prefix and alias is 
+need to keep the path consistent so the image also renders on github.
+
+## 2021-08-24 Guard and include cleanup
+We have removed all uses of the `<inviwo/core/common/inviwo.h>` from the core. 
+Rather include the needed headers directly. We have also changed all include guards
+to use `#pragma once` instead of the ifdef dance. There is a helper script in 
+`tools/refactoring/update-inc-guard.py` that can be used on other repos.
+
+## 2021-08-19 Canvas With Properties
+![Canvas With Properties](resources/changelog/canvas-with-properties.png)
+A new canvas processor was added which holds a canvas together with a list of
+configurable properties from the network. Properties are added to the widget by appending the
+property path to the `paths` property in the processor. There is an example workspace in 
+`modules/openglqt/data/workspaces/canvas_with_properties.inv`
+
+## 2021-08-19 Canvas refactoring
+Major cleanup of the canvas system. Mac retina screens should now work as expected.
+
 ## 2021-04-28 Column & Row Layout
 Added two processors for interactive layouting with splitters using the mouse or touch events: `Column Layout` and `Row Layout`. `Column Layout` renders all connected image ports side-by-side whereas `Row Layout` renders them on top of each other. The interaction handles of the splitters are rendered using a `SplitterRenderer` which also handles the interactions.
 
@@ -354,7 +380,7 @@ Column
 
 Also added a reader for JSON-files which outputs a DataFrame.
 
-## 2019-03-06 
+## 2019-03-06
 New processor `Geometry Entry Exit Points` generates entry point and exit point images from any closed mesh to be used in raycasting. The positions of the input mesh are directly mapped to texture coordinates of a volume. This enables volume rendering within arbitrary bounding geometry.
 
 ## 2019-02-24 Unified line rendering
@@ -687,7 +713,7 @@ struct DataTraits<MyDataType> {
 
 Port registration also now gets the port classIdentifier via PortTraits, so no need to specify the class identifier that registering the port.
 
-## 2017-11-07 Breaking changes: Static functioned moved from BasicMesh 
+## 2017-11-07 Breaking changes: Static functioned moved from BasicMesh
 Before this change, BasicMesh had various static functions to create meshes. These methods have been moved to a new file and namespace. They are now located in `<modules/base/algorithm/meshutils.h>` and the namespace meshutil. 
 Hence, where you have used methods like `BasicMesh::sphere(...)`: you have to change to use `meshutil::sphere(...)` and add include `#include <modules/base/algorithm/meshutils.h>`. You also have to add `InviwoBaseModule` to your modules `depends.cmake`
 

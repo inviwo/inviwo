@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOEDITMENU_H
-#define IVW_INVIWOEDITMENU_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <functional>
 #include <unordered_map>
@@ -40,6 +38,8 @@
 #include <warn/ignore/all>
 #include <QMenu>
 #include <warn/pop>
+
+#include <memory>
 
 class QAction;
 class QWidget;
@@ -80,5 +80,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_INVIWOEDITMENU_H

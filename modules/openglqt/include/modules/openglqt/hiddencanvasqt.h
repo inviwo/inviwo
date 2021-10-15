@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/openglqt/openglqtmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/canvas.h>
 
 #include <warn/push>
@@ -59,7 +58,15 @@ class IVW_MODULE_OPENGLQT_API HiddenCanvasQt : public Canvas {
 public:
     /*
      * Must be created in the main thread.
-     * Must call initializeGL before using it for
+     * Must call initializeGL before using it
+     * The default format is usually set globally beforehand, usually directly in the main function.
+     *     // Must be set before constructing QApplication
+     *     QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+     *     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+     *     QSurfaceFormat defaultFormat;
+     *     defaultFormat.setMajorVersion(10);
+     *     defaultFormat.setProfile(QSurfaceFormat::CoreProfile);
+     *     QSurfaceFormat::setDefaultFormat(defaultFormat);
      */
     HiddenCanvasQt(std::string_view name, QSurfaceFormat format = QSurfaceFormat::defaultFormat());
     HiddenCanvasQt(const HiddenCanvasQt&) = delete;
@@ -79,7 +86,6 @@ public:
                         [[maybe_unused]] LayerType layerType = LayerType::Color,
                         [[maybe_unused]] size_t idx = 0) override{};
 
-    virtual size2_t getImageDimensions() const override { return size2_t{0}; }
     virtual void update() override;
     virtual void activate() override;
 
@@ -96,10 +102,6 @@ public:
     QOpenGLContext* getContext() { return context_; };
 
 protected:
-    /**
-     * Derived classes should override to implement actual window state.
-     */
-    virtual void setFullScreenInternal([[maybe_unused]] bool fullscreen) override{};
     QOpenGLContext* context_;
     QOffscreenSurface* offScreenSurface_;
 };

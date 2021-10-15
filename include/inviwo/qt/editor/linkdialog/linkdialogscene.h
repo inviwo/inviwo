@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LINKDIALOG_SCENE_H
-#define IVW_LINKDIALOG_SCENE_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/network/processornetworkobserver.h>
@@ -165,5 +164,3 @@ T* LinkDialogGraphicsScene::getItemAt(const QPointF pos, const Qt::ItemSelection
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_LINKDIALOG_SCENE_H

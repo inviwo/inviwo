@@ -2,6 +2,7 @@
 project(inviwo-core)
 
 set(HEADER_FILES
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/base64.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/boundingbox.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/camerautils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/cubeplaneintersection.h
@@ -19,6 +20,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/runtimemoduleregistration.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/version.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/bitset.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/buffer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/bufferram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/bufferramprecision.h
@@ -67,6 +69,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/baselightsource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/diffuselight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/directionallight.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/lightingstate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/pointlight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/spotlight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationconverter.h
@@ -209,7 +212,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetfactoryobject.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/progressbar.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/progressbarowner.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/advancedmaterialproperty.h
@@ -327,6 +329,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/metadatatoproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/moduleutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/moveonlyvalue.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/networkdebugobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/observer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/ostreamjoiner.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/pathtype.h
@@ -357,6 +360,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tinydirinterface.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/typetraits.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/unindent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeramutils.h
@@ -369,6 +373,7 @@ set(HEADER_FILES
 ivw_group("Header Files" BASE "${IVW_INCLUDE_DIR}/inviwo/core" ${HEADER_FILES})
 
 set(SOURCE_FILES
+    algorithm/base64.cpp
     algorithm/boundingbox.cpp
     algorithm/camerautils.cpp
     algorithm/cubeplaneintersection.cpp
@@ -381,6 +386,7 @@ set(SOURCE_FILES
     common/moduleaction.cpp
     common/modulemanager.cpp
     common/version.cpp
+    datastructures/bitset.cpp
     datastructures/buffer/buffer.cpp
     datastructures/buffer/bufferram.cpp
     datastructures/buffer/bufferrepresentation.cpp
@@ -417,6 +423,7 @@ set(SOURCE_FILES
     datastructures/light/baselightsource.cpp
     datastructures/light/diffuselight.cpp
     datastructures/light/directionallight.cpp
+    datastructures/light/lightingstate.cpp
     datastructures/light/pointlight.cpp
     datastructures/light/spotlight.cpp
     datastructures/representationconvertermetafactory.cpp
@@ -533,7 +540,6 @@ set(SOURCE_FILES
     processors/processorwidget.cpp
     processors/processorwidgetfactory.cpp
     processors/processorwidgetfactoryobject.cpp
-    processors/processorwidgetobserver.cpp
     processors/progressbar.cpp
     processors/progressbarowner.cpp
     properties/advancedmaterialproperty.cpp
@@ -631,6 +637,7 @@ set(SOURCE_FILES
     util/metadatatoproperty.cpp
     util/moduleutils.cpp
     util/moveonlyvalue.cpp
+    util/networkdebugobserver.cpp
     util/observer.cpp
     util/rendercontext.cpp
     util/safecstr.cpp
@@ -654,6 +661,7 @@ set(SOURCE_FILES
     util/timer.cpp
     util/tinydirinterface.cpp
     util/typetraits.cpp
+    util/unindent.cpp
     util/utilities.cpp
     util/volumesampler.cpp
     util/volumesequencesampler.cpp
@@ -677,6 +685,7 @@ else()
 endif()
 
 set(TEST_FILES
+    tests/unittests/bitset-test.cpp
     tests/unittests/brickiterator-test.cpp
     tests/unittests/colorconversion-test.cpp
     tests/unittests/commandlineparser-test.cpp
@@ -757,6 +766,7 @@ target_include_directories(inviwo-core PUBLIC
 find_package(fmt REQUIRED)
 find_package(glm REQUIRED)
 find_package(tclap REQUIRED)
+find_package(roaring REQUIRED)
 if(APPLE)
    find_library(CORESERVICES_LIBRARY CoreServices)
 endif()
@@ -772,7 +782,7 @@ target_compile_definitions(inviwo-core
 target_link_libraries(inviwo-core 
     PUBLIC
         ticpp
-        glm
+        glm::glm
         inviwo::tclap
         inviwo::warn
         inviwo::sml
@@ -787,6 +797,8 @@ target_link_libraries(inviwo-core
         $<$<BOOL:${WIN32}>:inviwo::stackwalker>
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
         inviwo::tinydir
+    PRIVATE
+        roaring::roaring
 )
 
 #Optimize compiliation with PCH etc
@@ -814,6 +826,12 @@ get_property(ext_license_list DIRECTORY ${IVW_ROOT_DIR}/ext PROPERTY IVW_LICENSE
 get_property(meta_license_list DIRECTORY ${IVW_TOOLS_DIR}/meta PROPERTY IVW_LICENSE_LIST)
 list(APPEND core_license_list ${ext_license_list} ${meta_license_list})
 set_property(TARGET inviwo-core PROPERTY IVW_LICENSE_LIST ${core_license_list})
+
+ivw_register_license_file(NAME "base64" VERSION 2.rc.08 MODULE Core
+    URL https://github.com/ReneNyffenegger/cpp-base64
+    TYPE "Copyright (C) 2004-2017, 2020, 2021 René Nyffenegger"
+    FILES ${IVW_ROOT_DIR}/include/inviwo/core/algorithm/base64_license.txt
+)
 
 #----------------------------------------------------------------
 # Generate build info - the build info will be updated during every compilation

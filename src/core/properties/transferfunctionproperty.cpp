@@ -45,6 +45,8 @@ void TFPropertyObserver::onZoomVChange(const dvec2&) {}
 
 void TFPropertyObserver::onHistogramModeChange(HistogramMode) {}
 
+void TFPropertyObserver::onHistogramSelectionChange(HistogramSelection selection) {}
+
 void TFPropertyObservable::notifyMaskChange(const dvec2& mask) {
     forEachObserver([&](TFPropertyObserver* o) { o->onMaskChange(mask); });
 }
@@ -61,6 +63,10 @@ void TFPropertyObservable::notifyHistogramModeChange(HistogramMode mode) {
     forEachObserver([&](TFPropertyObserver* o) { o->onHistogramModeChange(mode); });
 }
 
+void TFPropertyObservable::notifyHistogramSelectionChange(HistogramSelection selection) {
+    forEachObserver([&](TFPropertyObserver* o) { o->onHistogramSelectionChange(selection); });
+}
+
 TransferFunctionProperty::TransferFunctionProperty(
     const std::string& identifier, const std::string& displayName, const TransferFunction& value,
     VolumeInport* volumeInport, InvalidationLevel invalidationLevel, PropertySemantics semantics)
@@ -69,6 +75,7 @@ TransferFunctionProperty::TransferFunctionProperty(
     , zoomH_("zoomH_", dvec2(0.0, 1.0))
     , zoomV_("zoomV_", dvec2(0.0, 1.0))
     , histogramMode_("showHistogram_", HistogramMode::All)
+    , histogramSelection_("histogramSelection", histogramSelectionAll)
     , volumeInport_(volumeInport) {
 
     tf_.value.addObserver(this);
@@ -90,6 +97,7 @@ TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionPropert
     , zoomH_(rhs.zoomH_)
     , zoomV_(rhs.zoomV_)
     , histogramMode_(rhs.histogramMode_)
+    , histogramSelection_(rhs.histogramSelection_)
     , volumeInport_(rhs.volumeInport_) {
 
     tf_.value.addObserver(this);
@@ -113,7 +121,20 @@ TransferFunctionProperty& TransferFunctionProperty::setHistogramMode(HistogramMo
     return *this;
 }
 
-auto TransferFunctionProperty::getHistogramMode() -> HistogramMode { return histogramMode_; }
+auto TransferFunctionProperty::getHistogramMode() const -> HistogramMode { return histogramMode_; }
+
+TransferFunctionProperty& TransferFunctionProperty::setHistogramSelection(
+    HistogramSelection selection) {
+    if (histogramSelection_ != selection) {
+        histogramSelection_ = selection;
+        notifyHistogramSelectionChange(histogramSelection_);
+    }
+    return *this;
+}
+
+auto TransferFunctionProperty::getHistogramSelection() const -> HistogramSelection {
+    return histogramSelection_;
+}
 
 VolumeInport* TransferFunctionProperty::getVolumeInport() { return volumeInport_; }
 
@@ -125,6 +146,7 @@ TransferFunctionProperty& TransferFunctionProperty::resetToDefaultState() {
     modified |= zoomH_.reset();
     modified |= zoomV_.reset();
     modified |= histogramMode_.reset();
+    modified |= histogramSelection_.reset();
     if (modified) this->propertyModified();
     return *this;
 }
@@ -135,6 +157,7 @@ TransferFunctionProperty& TransferFunctionProperty::setCurrentStateAsDefault() {
     zoomH_.setAsDefault();
     zoomV_.setAsDefault();
     histogramMode_.setAsDefault();
+    histogramSelection_.setAsDefault();
     return *this;
 }
 
@@ -145,6 +168,7 @@ void TransferFunctionProperty::serialize(Serializer& s) const {
     zoomH_.serialize(s, this->serializationMode_);
     zoomV_.serialize(s, this->serializationMode_);
     histogramMode_.serialize(s, this->serializationMode_);
+    histogramSelection_.serialize(s, this->serializationMode_);
 }
 
 void TransferFunctionProperty::deserialize(Deserializer& d) {
@@ -155,6 +179,7 @@ void TransferFunctionProperty::deserialize(Deserializer& d) {
     modified |= zoomH_.deserialize(d, this->serializationMode_);
     modified |= zoomV_.deserialize(d, this->serializationMode_);
     modified |= histogramMode_.deserialize(d, this->serializationMode_);
+    modified |= histogramSelection_.deserialize(d, this->serializationMode_);
     if (modified) propertyModified();
 }
 

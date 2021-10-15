@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESLICEVISUALIZER_H
-#define IVW_VOLUMESLICEVISUALIZER_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/rendering/datavisualizer.h>
 
 namespace inviwo {
@@ -61,5 +59,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESLICEVISUALIZER_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEGL_H
-#define IVW_VOLUMEGL_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 #include <modules/opengl/texture/texture3d.h>
 #include <inviwo/core/datastructures/representationtraits.h>
@@ -96,5 +94,3 @@ struct representation_traits<Volume, kind::GL> {
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEGL_H

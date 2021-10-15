@@ -144,6 +144,7 @@ private:
 
     bool ongoingUpdate_ = false;
     Processor::NameDispatcherHandle onNameChange_;
+    std::vector<std::shared_ptr<std::function<void()>>> portCallbacks_;
 };
 
 }  // namespace inviwo

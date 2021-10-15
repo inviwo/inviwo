@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MESHGL_H
-#define IVW_MESHGL_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -78,5 +77,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_MESHGL_H

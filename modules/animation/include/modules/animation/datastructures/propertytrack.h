@@ -29,7 +29,6 @@
 #pragma once
 
 #include <modules/animation/animationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/property.h>

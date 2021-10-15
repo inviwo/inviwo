@@ -29,7 +29,6 @@
 
 #include <inviwo/core/interaction/trackball.h>
 #include <inviwo/core/interaction/events/event.h>
-#include <inviwo/core/interaction/events/gestureevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>

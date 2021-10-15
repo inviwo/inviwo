@@ -27,7 +27,6 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/processors/processorwidgetqt.h>
@@ -42,14 +41,23 @@
 
 namespace inviwo {
 
-ProcessorWidgetQt::ProcessorWidgetQt(Processor* p) : QWidget(nullptr), ProcessorWidget(p) {
-    ivec2 dim = ProcessorWidget::getDimensions();
-    ivec2 pos = ProcessorWidget::getPosition();
+ProcessorWidgetQt::ProcessorWidgetQt(Processor* p)
+    : ProcessorWidget(p)
+    , QWidget(utilqt::getApplicationMainWindow(),
+              ProcessorWidget::isOnTop() ? Qt::Tool : Qt::Window)
+    , nameChange_{p->onDisplayNameChange([this](std::string_view newName, std::string_view) {
+        setWindowTitle(utilqt::toQString(newName));
+    })} {
+
+    setWindowTitle(utilqt::toQString(p->getDisplayName()));
+
+    const ivec2 dim = ProcessorWidget::getDimensions();
+    const ivec2 pos = ProcessorWidget::getPosition();
 
     if (auto mainWindow = utilqt::getApplicationMainWindow()) {
         // Move widget relative to main window to make sure that it is visible on screen.
         QPoint newPos =
-            utilqt::movePointOntoDesktop(QPoint(pos.x, pos.y), QSize(dim.x, dim.y), true);
+            utilqt::movePointOntoDesktop(utilqt::toQPoint(pos), utilqt::toQSize(dim), true);
 
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
             util::KeepTrueWhileInScope ignore(&ignoreEvents_);
@@ -72,14 +80,20 @@ ProcessorWidgetQt::ProcessorWidgetQt(Processor* p) : QWidget(nullptr), Processor
         // to its "initial" size of 160 by 160 at (0, 0) thereby overwriting our values.
         util::KeepTrueWhileInScope ignore(&ignoreEvents_);
         QWidget::setVisible(true);
-        QWidget::resize(QSize(dim.x, dim.y));
+        QWidget::resize(dim.x, dim.y);
         QWidget::setVisible(false);
     }
+    {
+        // ignore internal state updates, i.e. position, when showing the widget
+        // On Windows, the widget hasn't got a decoration yet. So it will be positioned using the
+        // decoration offset, i.e. the "adjusted" position.
+        util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+        QWidget::setVisible(ProcessorWidget::isVisible());
+    }
+
+    utilqt::setFullScreenAndOnTop(this, ProcessorWidget::isFullScreen(),
+                                  ProcessorWidget::isOnTop());
 }
-
-void ProcessorWidgetQt::show() { ProcessorWidgetQt::setVisible(true); }
-
-void ProcessorWidgetQt::hide() { ProcessorWidgetQt::setVisible(false); }
 
 void ProcessorWidgetQt::setPosition(glm::ivec2 pos) {
     if (pos != utilqt::toGLM(QWidget::pos())) {
@@ -87,63 +101,72 @@ void ProcessorWidgetQt::setPosition(glm::ivec2 pos) {
     }
 }
 
-void ProcessorWidgetQt::move(ivec2 pos) { ProcessorWidgetQt::setPosition(pos); }
-
 void ProcessorWidgetQt::setDimensions(ivec2 dimensions) {
-    // ProcessorWidget::setDimensions(dimensions);  Will be called by the Resize event.
-    QWidget::resize(dimensions.x, dimensions.y);
+    QWidget::resize(dimensions.x, dimensions.y);  // This will trigger a resize event.
+}
+
+void ProcessorWidgetQt::setFullScreen(bool fullScreen) {
+    utilqt::setFullScreenAndOnTop(this, fullScreen, ProcessorWidget::isOnTop());
+    ProcessorWidget::setFullScreen(fullScreen);
+}
+
+void ProcessorWidgetQt::setOnTop(bool onTop) {
+    utilqt::setFullScreenAndOnTop(this, ProcessorWidget::isFullScreen(), onTop);
+    ProcessorWidget::setOnTop(onTop);
 }
 
 void ProcessorWidgetQt::resizeEvent(QResizeEvent* event) {
     if (ignoreEvents_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
-    ProcessorWidget::setDimensions(ivec2(event->size().width(), event->size().height()));
+
     QWidget::resizeEvent(event);
+    util::KeepTrueWhileInScope ignore(&resizeOngoing_);
+    ProcessorWidget::setDimensions(utilqt::toGLM(event->size()));
 }
 
 void ProcessorWidgetQt::showEvent(QShowEvent* event) {
     if (ignoreEvents_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
     ProcessorWidget::setVisible(true);
     QWidget::showEvent(event);
 }
 
 void ProcessorWidgetQt::closeEvent(QCloseEvent* event) {
     if (ignoreEvents_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
     ProcessorWidget::setVisible(false);
     QWidget::closeEvent(event);
 }
 
 void ProcessorWidgetQt::hideEvent(QHideEvent* event) {
     if (ignoreEvents_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
-
     ProcessorWidget::setVisible(false);
     QWidget::hideEvent(event);
 }
 
 void ProcessorWidgetQt::moveEvent(QMoveEvent* event) {
     if (ignoreEvents_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
-    ProcessorWidget::setPosition(ivec2(event->pos().x(), event->pos().y()));
+    ProcessorWidget::setPosition(utilqt::toGLM(event->pos()));
     QWidget::moveEvent(event);
 }
 
 void ProcessorWidgetQt::updateVisible(bool visible) {
-    if (ignoreUpdate_) return;
     util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     QWidget::setVisible(visible);
 }
 void ProcessorWidgetQt::updateDimensions(ivec2 dim) {
-    if (ignoreUpdate_) return;
+    if (resizeOngoing_) return;
     util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     QWidget::move(dim.x, dim.y);
 }
 void ProcessorWidgetQt::updatePosition(ivec2 pos) {
-    if (ignoreUpdate_) return;
     util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     QWidget::move(pos.x, pos.y);
+}
+
+void ProcessorWidgetQt::updateFullScreen(bool fullScreen) {
+    utilqt::setFullScreenAndOnTop(this, fullScreen, ProcessorWidget::isOnTop());
+}
+
+void ProcessorWidgetQt::updateOnTop(bool onTop) {
+    utilqt::setFullScreenAndOnTop(this, ProcessorWidget::isFullScreen(), onTop);
 }
 
 }  // namespace inviwo

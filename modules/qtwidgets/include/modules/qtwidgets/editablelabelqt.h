@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef EDITABLELABELQT_H
-#define EDITABLELABELQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/properties/propertyobserver.h>
@@ -89,6 +88,5 @@ private:
 signals:
     void textChanged();
 };
-}  // namespace inviwo
 
-#endif  // EDITABLELABELQT_H
+}  // namespace inviwo

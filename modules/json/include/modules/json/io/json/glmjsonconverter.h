@@ -29,7 +29,8 @@
 
 #pragma once
 
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glm.h>
+
 #include <nlohmann/json.hpp>
 
 namespace glm {

@@ -36,6 +36,7 @@
 #include <modules/meshrenderinggl/processors/calcnormalsprocessor.h>
 #include <modules/meshrenderinggl/ports/rasterizationport.h>
 
+#include <modules/meshrenderinggl/processors/sphererasterizer.h>
 #include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
@@ -52,6 +53,7 @@ MeshRenderingGLModule::MeshRenderingGLModule(InviwoApplication* app)
     registerProcessor<RasterizationRenderer>();
     registerProcessor<TransformRasterization>();
     registerProcessor<CalcNormalsProcessor>();
+    registerProcessor<SphereRasterizer>();
 
     // Ports
     registerPort<RasterizationInport>();

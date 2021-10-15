@@ -82,6 +82,14 @@ VolumeRaycaster::VolumeRaycaster()
 
     channel_.setSerializationMode(PropertySerializationMode::All);
 
+    auto updateTFHistSel = [this]() {
+        HistogramSelection selection{};
+        selection[channel_] = true;
+        isotfComposite_.setHistogramSelection(selection);
+    };
+    updateTFHistSel();
+    channel_.onChange(updateTFHistSel);
+
     volumePort_.onChange([this]() {
         if (volumePort_.hasData()) {
             size_t channels = volumePort_.getData()->getDataFormat()->getComponents();

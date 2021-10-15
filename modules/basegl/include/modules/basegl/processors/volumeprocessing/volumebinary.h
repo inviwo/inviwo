@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEBINARY_H
-#define IVW_VOLUMEBINARY_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -86,5 +84,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEBINARY_H

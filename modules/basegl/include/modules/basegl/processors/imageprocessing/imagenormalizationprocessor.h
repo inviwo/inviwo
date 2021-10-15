@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGENORMALIZATIONPROCESSOR_H
-#define IVW_IMAGENORMALIZATIONPROCESSOR_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
@@ -81,5 +79,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGENORMALIZATIONPROCESSOR_H

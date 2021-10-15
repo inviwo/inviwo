@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ASSIMPREADER_H
-#define IVW_ASSIMPREADER_H
+#pragma once
 
 #include <modules/assimp/assimpmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/util/logcentral.h>
@@ -75,5 +73,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ASSIMPREADER_H

@@ -32,7 +32,6 @@
 #include <modules/animation/demo/democontrollerobserver.h>
 #include <modules/animation/demo/democontroller.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
 

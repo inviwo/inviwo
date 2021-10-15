@@ -236,6 +236,21 @@ if(IVW_USE_SIGAR)
     )
 endif()
 
+# CRoaring
+option(IVW_USE_EXTERNAL_ROARING "CRoaring is provided externaly" OFF)
+if(NOT IVW_USE_EXTERNAL_ROARING)
+    add_subdirectory(CRoaring)
+    ivw_register_license_file(NAME "CRoaring" VERSION 0.3.4 TARGET roaring MODULE Core EXT
+        URL "https://github.com/RoaringBitmap/CRoaring"
+        TYPE "Apache License 2.0"
+        FILES ${IVW_EXTENSIONS_DIR}/CRoaring/CRoaring/LICENSE
+    )
+    ivw_default_install_targets(roaring)
+else()
+    find_package(roaring CONFIG REQUIRED)
+    ivw_vcpkg_install(roaring MODULE Core EXT)
+endif()
+
 if(WIN32) # Stackwalker for windows for stack traces in the log
     add_subdirectory(stackwalker) 
     ivw_register_license_file(NAME "stackwalker" TARGET inviwo::stackwalker MODULE Core EXT

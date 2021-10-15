@@ -31,6 +31,10 @@
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
+#ifdef WIN32
+// For conda workaround
+#include <stdlib.h>
+#endif
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -50,6 +54,11 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
     if (isInit_) {
         throw ModuleInitException("Python already initialized", IVW_CONTEXT);
     }
+#ifdef WIN32
+    // Set environment variable before initializing python to ensure that we do not crash if using
+    // conda. See https://github.com/inviwo/inviwo/issues/1178
+    _putenv_s("CONDA_PY_ALLOW_REG_PATHS", "1");
+#endif
 
     if (!Py_IsInitialized()) {
 

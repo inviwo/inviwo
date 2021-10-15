@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESUBSAMPLE_H
-#define IVW_VOLUMESUBSAMPLE_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -78,5 +76,3 @@ private:
     IntVec3Property subSampleFactors_;
 };
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESUBSAMPLE_H

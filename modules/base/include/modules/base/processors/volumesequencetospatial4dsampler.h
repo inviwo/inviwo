@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESEQUENCETOSPATIAL4DSAMPLER_H
-#define IVW_VOLUMESEQUENCETOSPATIAL4DSAMPLER_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/spatial4dsampler.h>
 #include <inviwo/core/util/volumesampler.h>
@@ -74,5 +72,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESEQUENCETOSPATIAL4DSAMPLER_H

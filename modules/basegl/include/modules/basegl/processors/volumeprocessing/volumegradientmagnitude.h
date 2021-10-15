@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEGRADIENTMAGNITUDEPROCESSOR_H
-#define IVW_VOLUMEGRADIENTMAGNITUDEPROCESSOR_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
@@ -86,5 +84,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEGRADIENTMAGNITUDEPROCESSOR_H

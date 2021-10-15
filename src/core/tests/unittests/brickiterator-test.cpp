@@ -33,10 +33,11 @@
 #include <gmock/gmock.h>
 #include <warn/pop>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/brickiterator.h>
 
 #include <inviwo/core/util/indexmapper.h>
+
+#include <numeric>
 
 using ::testing::ElementsAre;
 

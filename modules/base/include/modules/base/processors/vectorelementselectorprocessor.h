@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VECTORELEMENTSELECTORPROCESSOR_H
-#define IVW_VECTORELEMENTSELECTORPROCESSOR_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/processors/processor.h>
@@ -149,5 +147,3 @@ void VectorElementSelectorProcessor<T, OutportType>::process() {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_VECTORELEMENTSELECTORPROCESSOR_H

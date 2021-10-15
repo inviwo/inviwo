@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUME_MAX_OPERATION_CL_H
-#define IVW_VOLUME_MAX_OPERATION_CL_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
@@ -98,5 +96,3 @@ private:
     cl::Kernel* kernel_;
 };
 }  // namespace inviwo
-
-#endif  // IVW_VOLUME_MAX_OPERATION_CL_H

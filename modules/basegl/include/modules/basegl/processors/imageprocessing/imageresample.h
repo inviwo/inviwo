@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGERESAMPLE_H
-#define IVW_IMAGERESAMPLE_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -84,5 +82,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGERESAMPLE_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PACKEDLIGHTSOURCE_H
-#define IVW_PACKEDLIGHTSOURCE_H
+#pragma once
 
 #include <modules/opencl/openclmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
 
 namespace inviwo {
@@ -76,5 +74,3 @@ IVW_MODULE_OPENCL_API PackedLightSource baseLightToPackedLight(const LightSource
                                                                const mat4& transformLightMat);
 
 }  // namespace inviwo
-
-#endif  // IVW_PACKEDLIGHTSOURCE_H

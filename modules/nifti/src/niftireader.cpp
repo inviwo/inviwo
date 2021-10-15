@@ -137,7 +137,6 @@ const DataFormatBase* niftiDataTypeToInviwoDataFormat(const nifti_image* niftiIm
             type = NumericType::Float;
             precision = 32;
             break;
-            return DataFloat32::get();
         case DT_FLOAT64:    
             type = NumericType::Float;
             precision = 64;

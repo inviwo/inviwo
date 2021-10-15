@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESHADER_H
-#define IVW_VOLUMESHADER_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 #include <inviwo/core/properties/stringproperty.h>
@@ -56,5 +54,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESHADER_H

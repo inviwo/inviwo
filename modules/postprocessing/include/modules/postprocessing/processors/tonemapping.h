@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TONEMAPPING_H
-#define IVW_TONEMAPPING_H
+#pragma once
 
 #include <modules/postprocessing/postprocessingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -78,5 +76,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TONEMAPPING_H

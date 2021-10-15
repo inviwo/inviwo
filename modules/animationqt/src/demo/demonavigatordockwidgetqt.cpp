@@ -106,7 +106,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
 
     {
         auto begin = toolBar->addAction(
-            QIcon(":/animation/icons/arrow_media_next_player_previous_song_icon_32.png"),
+            QIcon(":/animation/icons/arrow_media_next_player_previous_song_icon_128.svg"),
             "To Beginning");
         begin->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         begin->setToolTip("To Beginning");
@@ -117,7 +117,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
 
     {
         auto prev = toolBar->addAction(
-            QIcon(":/animation/icons/arrow_direction_left_next_previous_return_icon_32.png"),
+            QIcon(":/animation/icons/arrow_direction_left_next_previous_return_icon_128.svg"),
             "Prev Key");
         prev->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         prev->setToolTip("Previous Demo");
@@ -128,7 +128,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
 
     {
         auto reset = toolBar->addAction(
-            QIcon(":/animation/icons/arrow_direction_refresh_repeat_restart_icon_32.png"),
+            QIcon(":/animation/icons/arrow_direction_refresh_repeat_restart_icon_128.svg"),
             "Reset Workspace");
         reset->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         reset->setToolTip("Reset");
@@ -138,7 +138,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
     }
     {
         auto next = toolBar->addAction(
-            QIcon(":/animation/icons/arrow_direction_previous_right_icon_32.png"), "Next Demo");
+            QIcon(":/animation/icons/arrow_direction_previous_right_icon_128.svg"), "Next Demo");
         next->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         next->setToolTip("Next Demo");
         toolWidget->addAction(next);
@@ -148,7 +148,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
 
     {
         auto end = toolBar->addAction(
-            QIcon(":/animation/icons/arrow_next_player_previous_icon_32.png"), "To End");
+            QIcon(":/animation/icons/arrow_next_player_previous_icon_128.svg"), "To End");
         end->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         end->setToolTip("To End");
         toolWidget->addAction(end);

@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/qtwidgets/properties/colorlineedit.h>
 
 #include <warn/push>

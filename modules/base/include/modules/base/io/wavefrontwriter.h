@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_WAVEFRONTWRITER_H
-#define IVW_WAVEFRONTWRITER_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 
@@ -56,9 +54,10 @@ public:
         const Mesh* data, const std::string& fileExtension) const override;
 
 private:
+    void writePrimitives(std::ostream& f, const Mesh::MeshInfo& info, const IndexBuffer& ib,
+                         bool hasNormals, bool hasTextures) const;
+
     void writeData(const Mesh* data, std::ostream& os) const;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_WAVEFRONTWRITER_H

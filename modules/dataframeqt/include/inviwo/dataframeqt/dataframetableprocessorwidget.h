@@ -29,7 +29,6 @@
 #pragma once
 
 #include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/qtwidgets/processors/processorwidgetqt.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/dispatcher.h>

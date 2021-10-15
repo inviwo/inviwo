@@ -45,22 +45,22 @@ layout(points) in;
     layout(triangle_strip, max_vertices = 4) out;
 #endif
 
-in vec4 worldPosition_[];
-in vec4 sphereColor_[];
-flat in float sphereRadius_[];
-flat in uint pickID_[];
+in vec4 worldPosition[];
+in vec4 sphereColor[];
+flat in float sphereRadius[];
+flat in uint pickID[];
 
-out float radius_;
-out vec3 camPos_;
-out vec4 center_;
-out vec4 color_;
-flat out vec4 pickColor_;
+out float radius;
+out vec3 camPos;
+out vec4 center;
+out vec4 color;
+flat out vec4 pickColor;
 
 void main(void) {
-    center_ = worldPosition_[0];
-    radius_ = sphereRadius_[0];
+    center = worldPosition[0];
+    radius = sphereRadius[0];
 
-    if (radius_ <= 0 || sphereColor_[0].a <= 0) {
+    if (radius <= 0 || sphereColor[0].a <= 0) {
         EndPrimitive();
         return;
     }
@@ -70,23 +70,23 @@ void main(void) {
     vec3 camDir = normalize((worldToViewMatrixInv[2]).xyz);     
     vec3 camPosModel =  worldToViewMatrixInv[3].xyz;
     // calculate cam position (in model space of the sphere)
-    camPos_ = camPosModel - center_.xyz;
+    camPos = camPosModel - center.xyz;
 
 #ifdef DISCARD_CLIPPED_GLYPHS
-    if (dot(camPos_, camDir) < camera.nearPlane + radius_) {
+    if (dot(camPos, camDir) < camera.nearPlane + radius) {
         // glyph intersects with the near plane of the camera, discard entire glyph, i.e. no output
         EndPrimitive();
         return;
     }
 #endif // DISCARD_CLIPPED_GLYPHS
 
-    vec4 centerMVP = camera.worldToClip * center_;
+    vec4 centerMVP = camera.worldToClip * center;
     float glyphDepth = centerMVP.z / centerMVP.w;
 
     // send color to fragment shader
-    color_ = sphereColor_[0];
+    color = sphereColor[0];
     // set picking color
-    pickColor_ = vec4(pickingIndexToColor(pickID_[0]), pickID_[0] == 0 ? 0.0 : 1.0);
+    pickColor = vec4(pickingIndexToColor(pickID[0]), pickID[0] == 0 ? 0.0 : 1.0);
 
     // camera coordinate system in object space
     vec3 camUp = (worldToViewMatrixInv[1]).xyz;
@@ -94,7 +94,7 @@ void main(void) {
     camUp = normalize(cross(camDir, camRight));
 
 
-    float rad2 = radius_*radius_;
+    float rad2 = radius*radius;
     float depth = 0.0;
 
     vec4 projPos;
@@ -107,44 +107,44 @@ void main(void) {
 
 #ifdef HEXAGON
 
-    float r_hex = 1.15470*radius_; // == 2.0/3.0 * sqrt(3.0)
+    float r_hex = 1.15470*radius; // == 2.0/3.0 * sqrt(3.0)
     float h_hex = r_hex * 0.86602540; // == 1/2 * sqrt(3.0)
 
     camRight *= r_hex;
     vec3 camRight_half = camRight * 0.5;
     camUp *= h_hex;
 
-    testPos = center_.xyz - camRight;
+    testPos = center.xyz - camRight;
     projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
     EmitVertex();
 
-    testPos = center_.xyz - camRight_half - camUp;
+    testPos = center.xyz - camRight_half - camUp;
     projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
     EmitVertex();
 
-    testPos = center_.xyz - camRight_half + camUp;
+    testPos = center.xyz - camRight_half + camUp;
     projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
     EmitVertex();
 
-    testPos = center_.xyz + camRight_half - camUp;
+    testPos = center.xyz + camRight_half - camUp;
     projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
     EmitVertex();
 
-    testPos = center_.xyz + camRight_half + camUp;
+    testPos = center.xyz + camRight_half + camUp;
     projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
     EmitVertex();
 
-    testPos = center_.xyz + camRight;
+    testPos = center.xyz + camRight;
     projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
@@ -152,28 +152,28 @@ void main(void) {
 
 #else // HEXAGON
     // square:
-    camRight *= radius_ * 1.41421356;
-    camUp *= radius_ * 1.41421356;
+    camRight *= radius * 1.41421356;
+    camUp *= radius * 1.41421356;
 
-    testPos = center_.xyz + camRight - camUp;
+    testPos = center.xyz + camRight - camUp;
     projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
     EmitVertex();
 
-    testPos = center_.xyz - camRight - camUp;
+    testPos = center.xyz - camRight - camUp;
     projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
     EmitVertex();
 
-    testPos = center_.xyz + camRight + camUp;
+    testPos = center.xyz + camRight + camUp;
     projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);
     EmitVertex();
 
-    testPos = center_.xyz - camRight + camUp;
+    testPos = center.xyz - camRight + camUp;
     projPos = camera.worldToClip * vec4(testPos, 1.0);
     projPos /= projPos.w;
     gl_Position = vec4(projPos.xy, glyphDepth, 1.0);

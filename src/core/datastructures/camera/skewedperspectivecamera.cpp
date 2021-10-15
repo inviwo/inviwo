@@ -117,10 +117,23 @@ void SkewedPerspectiveCamera::configureProperties(CameraProperty& cp, bool attac
 
     if (attach) {
         util::updateOrCreateCameraFovProperty(
-            cp, [this]() { return getFovy(); }, [this](const float& val) { setFovy(val); });
+            cp, [this]() { return getFovy(); },
+            [this](const float& val) {
+                if (fovy_ != val) {
+                    fovy_ = val;
+                    invalidateProjectionMatrix();
+                }
+            });
 
         util::updateOrCreateCameraEyeOffsetProperty(
-            cp, [this]() { return getOffset(); }, [this](const vec2& val) { setOffset(val); });
+            cp, [this]() { return getOffset(); },
+            [this](const vec2& val) {
+                if (offset_ != val) {
+                    offset_ = val;
+                    invalidateViewMatrix();
+                    invalidateProjectionMatrix();
+                }
+            });
 
     } else {
         if (auto fov = util::getCameraFovProperty(cp)) {

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGEINVERT_H
-#define IVW_IMAGEINVERT_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 
 namespace inviwo {
@@ -70,5 +68,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGEINVERT_H

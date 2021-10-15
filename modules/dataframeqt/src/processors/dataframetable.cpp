@@ -80,7 +80,7 @@ DataFrameTable::DataFrameTable()
 
 DataFrameTable::~DataFrameTable() {
     if (processorWidget_) {
-        processorWidget_->hide();
+        processorWidget_->setVisible(false);
     }
 }
 

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EXAMPLEPROGRESSBAR_H
-#define IVW_EXAMPLEPROGRESSBAR_H
+#pragma once
 
 #include <modules/example/examplemoduledefine.h>
 
@@ -71,5 +70,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EXAMPLEPROGRESSBAR_H

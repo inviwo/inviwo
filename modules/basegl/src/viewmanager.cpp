@@ -35,6 +35,7 @@
 #include <inviwo/core/interaction/events/pickingevent.h>
 
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -61,8 +62,8 @@ bool ViewManager::propagatePickingEvent(PickingEvent* pe, Propagator propagator)
                                pe->getPreviousGlobalPickingId(), pressNDC, previousNDC);
 
             propagator(&newPe, ind);
-            if (newPe.hasBeenUsed()) newEvent->markAsUsed();
-            for (auto p : newPe.getVisitedProcessors()) newEvent->markAsVisited(p);
+            if (newPe.hasBeenUsed()) pe->markAsUsed();
+            for (auto p : newPe.getVisitedProcessors()) pe->markAsVisited(p);
         }
     };
 
@@ -70,28 +71,26 @@ bool ViewManager::propagatePickingEvent(PickingEvent* pe, Propagator propagator)
     bool propagated = false;
     switch (e->hash()) {
         case MouseEvent::chash():
-            propagated = propagateMouseEvent(static_cast<MouseEvent*>(e), prop);
+            propagated = propagateMouseEvent(static_cast<MouseEvent*>(e), prop, true);
             break;
         case WheelEvent::chash():
-            propagated = propagateWheelEvent(static_cast<WheelEvent*>(e), prop);
+            propagated = propagateWheelEvent(static_cast<WheelEvent*>(e), prop, true);
             break;
         case GestureEvent::chash():
-            propagated = propagateGestureEvent(static_cast<GestureEvent*>(e), prop);
+            propagated = propagateGestureEvent(static_cast<GestureEvent*>(e), prop, true);
             break;
         case TouchEvent::chash():
-            propagated = propagateTouchEvent(static_cast<TouchEvent*>(e), prop);
+            propagated = propagateTouchEvent(static_cast<TouchEvent*>(e), prop, true);
             break;
         default:
             propagated = false;
             break;
     }
-    if (e->hasBeenUsed()) pe->markAsUsed();
-    for (auto p : e->getVisitedProcessors()) pe->markAsVisited(p);
 
     return propagated;
 }
 
-bool ViewManager::propagateMouseEvent(MouseEvent* me, Propagator propagator) {
+bool ViewManager::propagateMouseEvent(MouseEvent* me, Propagator propagator, bool isFromPicking) {
     selectedView_ = eventState_.getView(*this, me);
 
     if (selectedView_.first && selectedView_.second < views_.size()) {
@@ -103,7 +102,9 @@ bool ViewManager::propagateMouseEvent(MouseEvent* me, Propagator propagator) {
         newEvent.setPosNormalized(scale * (newEvent.posNormalized() - offset));
         propagator(&newEvent, selectedView_.second);
         if (newEvent.hasBeenUsed()) me->markAsUsed();
-        for (auto p : newEvent.getVisitedProcessors()) me->markAsVisited(p);
+        if (!isFromPicking) {
+            for (auto p : newEvent.getVisitedProcessors()) me->markAsVisited(p);
+        }
 
         return true;
     } else {
@@ -111,7 +112,7 @@ bool ViewManager::propagateMouseEvent(MouseEvent* me, Propagator propagator) {
     }
 }
 
-bool ViewManager::propagateWheelEvent(WheelEvent* we, Propagator propagator) {
+bool ViewManager::propagateWheelEvent(WheelEvent* we, Propagator propagator, bool isFromPicking) {
     selectedView_ = findView(we->pos());
 
     if (selectedView_.first && selectedView_.second < views_.size()) {
@@ -123,15 +124,17 @@ bool ViewManager::propagateWheelEvent(WheelEvent* we, Propagator propagator) {
         newEvent.setPosNormalized(scale * (newEvent.posNormalized() - offset));
         propagator(&newEvent, selectedView_.second);
         if (newEvent.hasBeenUsed()) we->markAsUsed();
-        for (auto p : newEvent.getVisitedProcessors()) we->markAsVisited(p);
-
+        if (!isFromPicking) {
+            for (auto p : newEvent.getVisitedProcessors()) we->markAsVisited(p);
+        }
         return true;
     } else {
         return false;
     }
 }
 
-bool ViewManager::propagateGestureEvent(GestureEvent* ge, Propagator propagator) {
+bool ViewManager::propagateGestureEvent(GestureEvent* ge, Propagator propagator,
+                                        bool isFromPicking) {
     selectedView_ = eventState_.getView(*this, ge);
 
     if (selectedView_.first && selectedView_.second < views_.size()) {
@@ -143,15 +146,16 @@ bool ViewManager::propagateGestureEvent(GestureEvent* ge, Propagator propagator)
         newEvent.setScreenPosNormalized(scale * (newEvent.screenPosNormalized() - offset));
         propagator(&newEvent, selectedView_.second);
         if (newEvent.hasBeenUsed()) ge->markAsUsed();
-        for (auto p : newEvent.getVisitedProcessors()) ge->markAsVisited(p);
-
+        if (!isFromPicking) {
+            for (auto p : newEvent.getVisitedProcessors()) ge->markAsVisited(p);
+        }
         return true;
     } else {
         return false;
     }
 }
 
-bool ViewManager::propagateTouchEvent(TouchEvent* te, Propagator propagator) {
+bool ViewManager::propagateTouchEvent(TouchEvent* te, Propagator propagator, bool isFromPicking) {
     auto& touchPoints = te->touchPoints();
 
     std::unordered_map<size_t, std::vector<TouchPoint>> viewIdToTouchPoints;
@@ -185,7 +189,9 @@ bool ViewManager::propagateTouchEvent(TouchEvent* te, Propagator propagator) {
 
         propagator(&newEvent, viewId);
 
-        for (auto p : newEvent.getVisitedProcessors()) te->markAsVisited(p);
+        if (!isFromPicking) {
+            for (auto p : newEvent.getVisitedProcessors()) te->markAsVisited(p);
+        }
         if (newEvent.hasBeenUsed()) {
             for (const auto& p : points) {
                 usedPointIds.push_back(p.id());
@@ -210,16 +216,16 @@ bool ViewManager::propagateEvent(Event* event, Propagator propagator) {
             return propagatePickingEvent(static_cast<PickingEvent*>(event), propagator);
         }
         case MouseEvent::chash(): {
-            return propagateMouseEvent(static_cast<MouseEvent*>(event), propagator);
+            return propagateMouseEvent(static_cast<MouseEvent*>(event), propagator, false);
         }
         case WheelEvent::chash(): {
-            return propagateWheelEvent(static_cast<WheelEvent*>(event), propagator);
+            return propagateWheelEvent(static_cast<WheelEvent*>(event), propagator, false);
         }
         case GestureEvent::chash(): {
-            return propagateGestureEvent(static_cast<GestureEvent*>(event), propagator);
+            return propagateGestureEvent(static_cast<GestureEvent*>(event), propagator, false);
         }
         case TouchEvent::chash(): {
-            return propagateTouchEvent(static_cast<TouchEvent*>(event), propagator);
+            return propagateTouchEvent(static_cast<TouchEvent*>(event), propagator, false);
         }
         default:
             return false;

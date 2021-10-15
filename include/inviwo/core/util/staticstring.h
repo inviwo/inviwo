@@ -192,6 +192,12 @@ StaticString()->StaticString<0>;
 template <typename... Ts>
 StaticString(Ts&&... strs) -> StaticString<(::inviwo::detail::static_size<Ts> + ...)>;
 
+// Enable the use of StaticStrings as formats strings in fmt
+template <size_t N>
+constexpr std::string_view to_string_view(const StaticString<N>& s) {
+    return s.view();
+}
+
 }  // namespace inviwo
 
 namespace fmt {

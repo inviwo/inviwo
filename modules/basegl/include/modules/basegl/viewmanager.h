@@ -30,10 +30,11 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/util/glmvec.h>
 
 #include <unordered_map>
+#include <functional>
 
 namespace inviwo {
 
@@ -156,10 +157,10 @@ private:
     };
 
     bool propagatePickingEvent(PickingEvent* pe, Propagator propagator);
-    bool propagateMouseEvent(MouseEvent* me, Propagator propagator);
-    bool propagateWheelEvent(WheelEvent* we, Propagator propagator);
-    bool propagateGestureEvent(GestureEvent* ge, Propagator propagator);
-    bool propagateTouchEvent(TouchEvent* te, Propagator propagator);
+    bool propagateMouseEvent(MouseEvent* me, Propagator propagator, bool isFromPicking);
+    bool propagateWheelEvent(WheelEvent* we, Propagator propagator, bool isFromPicking);
+    bool propagateGestureEvent(GestureEvent* ge, Propagator propagator, bool isFromPicking);
+    bool propagateTouchEvent(TouchEvent* te, Propagator propagator, bool isFromPicking);
 
     std::pair<bool, ViewId> findView(ivec2 pos) const;
     static bool inView(const View& view, const ivec2& pos);

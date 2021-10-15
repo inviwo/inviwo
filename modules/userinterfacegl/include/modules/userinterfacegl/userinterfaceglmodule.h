@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_USERINTERFACEGLMODULE_H
-#define IVW_USERINTERFACEGLMODULE_H
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -54,5 +53,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_USERINTERFACEGLMODULE_H

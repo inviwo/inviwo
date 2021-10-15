@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ORIENTATIONINDICATOR_H
-#define IVW_ORIENTATIONINDICATOR_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -99,5 +97,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ORIENTATIONINDICATOR_H

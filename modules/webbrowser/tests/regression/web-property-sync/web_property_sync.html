@@ -62,7 +62,7 @@ function syncString(prop) { inviwo.syncStringInput("stringProperty", prop); }
 
 // Update html inputs when corresponding Inviwo properties change
 // The supplied callbacks must be declared in global scope.
-inviwo.subscribe("LineRenderer.lineWidth", syncOrdinal); 
+inviwo.subscribe("LineRenderer.lineSettings.lineWidth", syncOrdinal); 
 inviwo.subscribe("TextOverlay.enable", syncCheckbox);
 inviwo.subscribe("TextOverlay.text", syncString);
 

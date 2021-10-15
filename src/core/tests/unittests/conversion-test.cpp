@@ -32,7 +32,6 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/glm.h>
 
 #include <limits>

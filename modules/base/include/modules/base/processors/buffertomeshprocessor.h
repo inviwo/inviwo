@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BUFFERTOMESHPROCESSOR_H
-#define IVW_BUFFERTOMESHPROCESSOR_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/bufferport.h>
@@ -93,5 +91,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BUFFERTOMESHPROCESSOR_H

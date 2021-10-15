@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/numberlineedit.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -54,9 +55,9 @@ public:
 
     void clear();
 
-    int getPrecision(int availableWidth, uint fontHash, const QFontMetrics& fm);
+    int getPrecision(int availableWidth, size_t fontHash, const QFontMetrics& fm);
 
-    QString formatAsScientific(double value, int availableWidth, uint fontHash,
+    QString formatAsScientific(double value, int availableWidth, size_t fontHash,
                                const QFontMetrics& fm);
     QString formatAsScientific(double value, int precision);
     QString formatAsNonscientific(double v) const;
@@ -70,14 +71,15 @@ private:
     QLocale locale_;
     // hash map with qHash(QFont) as a key and the value mapping the available width of a QLineEdit
     // to the number of digits fitting inside the widget
-    std::unordered_map<unsigned int, std::array<int, 513>> widthToDigits_;
+    std::unordered_map<size_t, std::array<int, 513>> widthToDigits_;
 };
 
 NumberLineEditPrivate::NumberLineEditPrivate() { updateLocale(); }
 
 void NumberLineEditPrivate::clear() { widthToDigits_.clear(); }
 
-int NumberLineEditPrivate::getPrecision(int availableWidth, uint fontHash, const QFontMetrics& fm) {
+int NumberLineEditPrivate::getPrecision(int availableWidth, size_t fontHash,
+                                        const QFontMetrics& fm) {
     availableWidth = std::min(std::max(availableWidth, 0), 512);
     auto it = widthToDigits_.find(fontHash);
     if (it == widthToDigits_.end()) {
@@ -106,7 +108,7 @@ int NumberLineEditPrivate::getPrecision(int availableWidth, uint fontHash, const
     return precision;
 }
 
-QString NumberLineEditPrivate::formatAsScientific(double value, int availableWidth, uint fontHash,
+QString NumberLineEditPrivate::formatAsScientific(double value, int availableWidth, size_t fontHash,
                                                   const QFontMetrics& fm) {
     return formatAsScientific(value, getPrecision(availableWidth, fontHash, fm));
 }
@@ -158,7 +160,7 @@ std::unique_ptr<NumberLineEditPrivate> NumberLineEdit::nlePrivate_(new NumberLin
 NumberLineEdit::NumberLineEdit(QWidget* parent) : NumberLineEdit(false, parent) {}
 
 NumberLineEdit::NumberLineEdit(bool intMode, QWidget* parent)
-    : QDoubleSpinBox(parent), integerMode_(intMode) {
+    : QDoubleSpinBox(parent), integerMode_(intMode), minimumWidth_{utilqt::emToPx(this, 4)} {
     validator_ = new QDoubleValidator(this);
     validator_->setNotation(QDoubleValidator::ScientificNotation);
     lineEdit()->setValidator(validator_);
@@ -171,27 +173,31 @@ NumberLineEdit::NumberLineEdit(bool intMode, QWidget* parent)
 NumberLineEdit::~NumberLineEdit() = default;
 
 QSize NumberLineEdit::sizeHint() const {
-    QSize hint = QDoubleSpinBox::sizeHint();
-    hint.setWidth(hint.height());
-    return hint;
+    if (cachedMinimumSizeHint_.isEmpty()) {
+        cachedMinimumSizeHint_ = calcMinimumSize();
+    }
+    return cachedMinimumSizeHint_;
 }
 
 QSize NumberLineEdit::minimumSizeHint() const {
     if (cachedMinimumSizeHint_.isEmpty()) {
-        ensurePolished();
-        QSize hint(minimumWidth_, lineEdit()->minimumSizeHint().height());
-        QStyleOptionSpinBox opt;
-        initStyleOption(&opt);
-
-        QSize sizeContents = style()->sizeFromContents(QStyle::CT_SpinBox, &opt, hint, this);
-        // For some odd reason, sizeFromContents always includes the spinbox buttons
-        if (opt.buttonSymbols == QAbstractSpinBox::NoButtons) {
-            sizeContents.setWidth(sizeContents.width() -
-                                  static_cast<int>(sizeContents.height() / 1.2));
-        }
-        cachedMinimumSizeHint_ = sizeContents;
+        cachedMinimumSizeHint_ = calcMinimumSize();
     }
     return cachedMinimumSizeHint_;
+}
+
+QSize NumberLineEdit::calcMinimumSize() const {
+    ensurePolished();
+    QSize hint(minimumWidth_, lineEdit()->minimumSizeHint().height());
+    QStyleOptionSpinBox opt;
+    initStyleOption(&opt);
+
+    QSize sizeContents = style()->sizeFromContents(QStyle::CT_SpinBox, &opt, hint, this);
+    // For some odd reason, sizeFromContents always includes the spinbox buttons
+    if (opt.buttonSymbols == QAbstractSpinBox::NoButtons) {
+        sizeContents.setWidth(sizeContents.width() - static_cast<int>(sizeContents.height() / 1.2));
+    }
+    return sizeContents;
 }
 
 bool NumberLineEdit::isValid() const { return !invalid_; }

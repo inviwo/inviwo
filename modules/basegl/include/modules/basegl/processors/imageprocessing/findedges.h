@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FINDEDGES_H
-#define IVW_FINDEDGES_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
@@ -66,5 +65,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FINDEDGES_H

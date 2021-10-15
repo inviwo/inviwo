@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_FIRSTIVWPROCESSOR_H
-#define IVW_FIRSTIVWPROCESSOR_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
@@ -80,5 +78,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FIRSTIVWPROCESSOR_H

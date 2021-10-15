@@ -53,7 +53,7 @@ enum class BufferType {
     PositionAttrib = 0,
     NormalAttrib,
     ColorAttrib,
-    TexcoordAttrib,
+    TexCoordAttrib,
     CurvatureAttrib,
     IndexAttrib,
     RadiiAttrib,
@@ -145,8 +145,8 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
         case BufferType::ColorAttrib:
             ss << "Color";
             break;
-        case BufferType::TexcoordAttrib:
-            ss << "Texture";
+        case BufferType::TexCoordAttrib:
+            ss << "TexCoord";
             break;
         case BufferType::CurvatureAttrib:
             ss << "Curvature";
@@ -221,8 +221,8 @@ struct formatter<::inviwo::BufferType> : formatter<string_view> {
                     return "Normal"sv;
                 case ::inviwo::BufferType::ColorAttrib:
                     return "Color"sv;
-                case ::inviwo::BufferType::TexcoordAttrib:
-                    return "Texture"sv;
+                case ::inviwo::BufferType::TexCoordAttrib:
+                    return "TexCoord"sv;
                 case ::inviwo::BufferType::CurvatureAttrib:
                     return "Curvature"sv;
                 case ::inviwo::BufferType::IndexAttrib:

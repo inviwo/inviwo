@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
@@ -158,9 +157,8 @@ template <typename Callback>
 void forEachTriangle(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback callback) {
     auto& ram = ib.getRAMRepresentation()->getDataContainer();
     if (info.dt != DrawType::Triangles) {
-        std::ostringstream errMsg;
-        errMsg << "Only works for triangles, got " << info.dt;
-        throw inviwo::Exception(errMsg.str(), IVW_CONTEXT_CUSTOM("meshutil::forEachTriangle"));
+        throw Exception(fmt::format("Only works for triangles, got {}", info.dt),
+                        IVW_CONTEXT_CUSTOM("meshutil::forEachTriangle"));
     }
 
     if (ram.size() < 3) {
@@ -210,19 +208,17 @@ void forEachTriangle(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback
     }
 
     else {
-        std::ostringstream errMsg;
-        errMsg << "ConnectivityType " << info.ct << " not supported";
-        throw inviwo::Exception(errMsg.str(), IVW_CONTEXT_CUSTOM("meshutil::forEachTriangle"));
+        throw Exception(fmt::format("ConnectivityType {} not supported", info.ct),
+                        IVW_CONTEXT_CUSTOM("meshutil::forEachTriangle"));
     }
 }
 
 template <typename Callback>
-void forEachLineSegment(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback callback) {
+void forEachLineSegment(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback&& callback) {
     auto& ram = ib.getRAMRepresentation()->getDataContainer();
     if (info.dt != DrawType::Lines) {
-        std::ostringstream errMsg;
-        errMsg << "Only works for lines, got " << info.dt;
-        throw inviwo::Exception(errMsg.str(), IVW_CONTEXT_CUSTOM("meshutil::forEachLineSegment"));
+        throw Exception(fmt::format("Only works for lines, got {}", info.dt),
+                        IVW_CONTEXT_CUSTOM("meshutil::forEachLineSegment"));
     }
 
     if (ram.size() < 2) {
@@ -263,9 +259,75 @@ void forEachLineSegment(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callb
     }
 
     else {
-        std::ostringstream errMsg;
-        errMsg << "ConnectivityType " << info.ct << " not supported";
-        throw inviwo::Exception(errMsg.str(), IVW_CONTEXT_CUSTOM("meshutil::forEachLineSegment"));
+        throw Exception(fmt::format("ConnectivityType {} not supported", info.ct),
+                        IVW_CONTEXT_CUSTOM("meshutil::forEachLineSegment"));
+    }
+}
+
+template <typename LineStartCallback, typename LinePointCallback, typename LineEndCallback>
+void forEachLine(const Mesh::MeshInfo& info, const IndexBuffer& ib,
+                 LineStartCallback&& lineStartCallback, LinePointCallback&& linePointCallback,
+                 LineEndCallback&& lineEndCallback) {
+    auto& ram = ib.getRAMRepresentation()->getDataContainer();
+    if (info.dt != DrawType::Lines) {
+        throw Exception(fmt::format("Only works for lines, got {}", info.dt),
+                        IVW_CONTEXT_CUSTOM("meshutil::forEachLine"));
+    }
+
+    if (ram.size() < 2) {
+        return;
+    }
+
+    if (info.ct == ConnectivityType::None) {
+        for (size_t i = 0; i < ram.size(); i += 2) {
+            std::invoke(lineStartCallback);
+            std::invoke(linePointCallback, ram[i]);
+            std::invoke(linePointCallback, ram[i + 1]);
+            std::invoke(lineEndCallback);
+        }
+    }
+
+    else if (info.ct == ConnectivityType::Strip) {
+        std::invoke(lineStartCallback);
+        for (size_t i = 0; i < ram.size(); ++i) {
+            std::invoke(linePointCallback, ram[i]);
+        }
+        std::invoke(lineEndCallback);
+    }
+
+    else if (info.ct == ConnectivityType::Loop) {
+        std::invoke(lineStartCallback);
+        for (size_t i = 0; i < ram.size(); ++i) {
+            std::invoke(linePointCallback, ram[i]);
+        }
+        std::invoke(linePointCallback, ram.front());
+        std::invoke(lineEndCallback);
+    }
+
+    if (info.ct == ConnectivityType::Adjacency) {
+        if (ram.size() < 4) return;
+
+        for (size_t i = 0; i < ram.size(); i += 4) {
+            std::invoke(lineStartCallback);
+            std::invoke(linePointCallback, ram[i + 1]);
+            std::invoke(linePointCallback, ram[i + 2]);
+            std::invoke(lineEndCallback);
+        }
+    }
+
+    if (info.ct == ConnectivityType::StripAdjacency) {
+        if (ram.size() < 4) return;
+        std::invoke(lineStartCallback);
+        for (size_t i = 1; i < ram.size() - 2; ++i) {
+            std::invoke(linePointCallback, ram[i]);
+            std::invoke(linePointCallback, ram[i + 1]);
+        }
+        std::invoke(lineEndCallback);
+    }
+
+    else {
+        throw Exception(fmt::format("ConnectivityType {} not supported", info.ct),
+                        IVW_CONTEXT_CUSTOM("meshutil::forEachLine"));
     }
 }
 

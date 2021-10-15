@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MESHCONVERTER_H
-#define IVW_MESHCONVERTER_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
 
@@ -56,5 +54,3 @@ std::unique_ptr<Mesh> toLineMesh(const Mesh& mesh);
 }  // namespace meshutil
 
 }  // namespace inviwo
-
-#endif  // IVW_MESHCONVERTER_H

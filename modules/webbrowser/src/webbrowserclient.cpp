@@ -86,7 +86,7 @@ void WebBrowserClient::setBrowserParent(CefRefPtr<CefBrowser> browser, Processor
     CEF_REQUIRE_UI_THREAD();
     BrowserData bd{parent, new ProcessorCefSynchronizer(parent)};
     browserParents_[browser->GetIdentifier()] = bd;
-    addLoadHandler(bd.processorCefSynchronizer);
+    addLoadHandler(bd.processorCefSynchronizer.get());
     messageRouter_->AddHandler(bd.processorCefSynchronizer.get(), false);
 }
 
@@ -94,7 +94,7 @@ void WebBrowserClient::removeBrowserParent(CefRefPtr<CefBrowser> browser) {
     auto bdIt = browserParents_.find(browser->GetIdentifier());
     if (bdIt != browserParents_.end()) {
         messageRouter_->RemoveHandler(bdIt->second.processorCefSynchronizer.get());
-        removeLoadHandler(bdIt->second.processorCefSynchronizer);
+        removeLoadHandler(bdIt->second.processorCefSynchronizer.get());
         browserParents_.erase(bdIt);
     }
 }
@@ -129,12 +129,13 @@ void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
         // Create the browser-side router for query handling.
         CefMessageRouterConfig config;
         messageRouter_ = CefMessageRouterBrowserSide::Create(config);
-
-        // Register handlers with the router
-        propertyCefSynchronizer_ = new PropertyCefSynchronizer(widgetFactory_);
-        addLoadHandler(propertyCefSynchronizer_);
-        messageRouter_->AddHandler(propertyCefSynchronizer_.get(), false);
     }
+    // Create a Property synchronizer for the browser
+    propertyCefSynchronizers_[browser->GetIdentifier()] =
+        std::make_unique<PropertyCefSynchronizer>(browser, widgetFactory_);
+    auto synchronizer = propertyCefSynchronizers_[browser->GetIdentifier()].get();
+    addLoadHandler(synchronizer);
+    messageRouter_->AddHandler(synchronizer, false);
 
     browserCount_++;
 
@@ -150,14 +151,13 @@ bool WebBrowserClient::DoClose(CefRefPtr<CefBrowser> browser) {
 void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     CEF_REQUIRE_UI_THREAD();
     removeBrowserParent(browser);
-
+    // Remove associated Property synchronizer
+    messageRouter_->RemoveHandler(propertyCefSynchronizers_[browser->GetIdentifier()].get());
+    removeLoadHandler(propertyCefSynchronizers_[browser->GetIdentifier()].get());
+    propertyCefSynchronizers_.erase(browser->GetIdentifier());
     if (--browserCount_ == 0) {
         // Free the router when the last browser is closed.
-        messageRouter_->RemoveHandler(propertyCefSynchronizer_.get());
-        removeLoadHandler(propertyCefSynchronizer_);
-        propertyCefSynchronizer_ = nullptr;
-
-        messageRouter_ = NULL;
+        messageRouter_.reset();
     }
 
     // Call the default shared implementation.
@@ -221,6 +221,13 @@ void WebBrowserClient::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool 
                                             bool canGoBack, bool canGoForward) {
     for (const auto& loadHandler : loadHandlers_) {
         loadHandler->OnLoadingStateChange(browser, isLoading, canGoBack, canGoForward);
+    }
+}
+
+void WebBrowserClient::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                   TransitionType transition_type) {
+    for (const auto& loadHandler : loadHandlers_) {
+        loadHandler->OnLoadStart(browser, frame, transition_type);
     }
 }
 

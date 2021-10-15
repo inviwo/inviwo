@@ -31,7 +31,6 @@
 #define IVW_PROCESSORMIMEDATA_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 
 #include <warn/push>

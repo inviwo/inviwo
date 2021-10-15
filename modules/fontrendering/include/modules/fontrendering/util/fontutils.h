@@ -29,9 +29,9 @@
 #pragma once
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <vector>
+#include <string>
 
 namespace inviwo {
 

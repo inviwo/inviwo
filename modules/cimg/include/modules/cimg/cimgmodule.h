@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CIMGMODULE_H
-#define IVW_CIMGMODULE_H
+#pragma once
 
 #include <modules/cimg/cimgmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -41,5 +40,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CIMGMODULE_H

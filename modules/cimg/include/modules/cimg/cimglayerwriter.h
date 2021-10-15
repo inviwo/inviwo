@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CIMGLAYERWRITER_H
-#define IVW_CIMGLAYERWRITER_H
+#pragma once
 
 #include <modules/cimg/cimgmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/datastructures/image/layer.h>
 
@@ -56,5 +54,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CIMGLAYERWRITER_H

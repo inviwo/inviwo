@@ -29,7 +29,6 @@
 #pragma once
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/rendering/datavisualizer.h>
 
 namespace inviwo {

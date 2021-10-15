@@ -30,6 +30,7 @@
 #include <modules/webbrowser/webbrowsermodule.h>
 #include <modules/webbrowser/processors/webbrowserprocessor.h>
 #include <modules/webbrowser/webbrowserapp.h>
+#include <modules/webbrowser/webbrowsersettings.h>
 
 #include <modules/json/io/json/boolpropertyjsonconverter.h>
 #include <modules/json/io/json/buttonpropertyjsonconverter.h>
@@ -42,6 +43,7 @@
 #include <modules/json/io/json/templatepropertyjsonconverter.h>
 
 #include <inviwo/dataframe/io/json/dataframepropertyjsonconverter.h>
+#include <inviwo/dataframe/properties/dataframeproperty.h>
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>
@@ -93,10 +95,31 @@ struct OptionCEFWidgetReghelper {
     }
 };
 
+struct OptionEnumCEFWidgetReghelper {
+    template <typename T>
+    auto operator()(WebBrowserModule& m) {
+        enum class e : T;
+        using PropertyType = TemplateOptionProperty<e>;
+        m.registerPropertyWidgetCEF<PropertyWidgetCEF, PropertyType>();
+
+        enum class eU : std::make_unsigned_t<T>;
+        using PropertyTypeU = TemplateOptionProperty<eU>;
+        m.registerPropertyWidgetCEF<PropertyWidgetCEF, PropertyTypeU>();
+    }
+};
+
 WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     : InviwoModule(app, "WebBrowser")
-    // Call 60 times per second
-    , doChromiumWork_(Timer::Milliseconds(1000 / 60), []() { CefDoMessageLoopWork(); }) {
+    , doChromiumWork_(Timer::Milliseconds(16), []() { CefDoMessageLoopWork(); }) {
+
+    auto moduleSettings = std::make_unique<WebBrowserSettings>();
+
+    moduleSettings->refreshRate_.onChange([this, ptr = moduleSettings.get()]() {
+        doChromiumWork_.setInterval(Timer::Milliseconds(1000 / ptr->refreshRate_));
+    });
+    doChromiumWork_.setInterval(Timer::Milliseconds(1000 / moduleSettings->refreshRate_));
+
+    registerSettings(std::move(moduleSettings));
 
     // Register widgets
     registerPropertyWidgetCEF<PropertyWidgetCEF, BoolProperty>();
@@ -123,6 +146,10 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     // Register option property widgets
     using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
     util::for_each_type<OptionTypes>{}(OptionCEFWidgetReghelper{}, *this);
+
+    // Register option property widgets for enums, commented types not yet supported by Inviwo
+    using OptionEnumTypes = std::tuple<char, int /*short, long, long long*/>;
+    util::for_each_type<OptionEnumTypes>{}(OptionEnumCEFWidgetReghelper{}, *this);
 
     if (!app->getSystemSettings().enablePickingProperty_) {
         LogInfo(

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GRADIENTVOLUMEPROCESSOR_H
-#define IVW_GRADIENTVOLUMEPROCESSOR_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
@@ -81,5 +79,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_GRADIENTVOLUMEPROCESSOR_H

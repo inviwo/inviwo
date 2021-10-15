@@ -26,6 +26,26 @@
 </style>
 </head>
 <body>
+<h2>2021-09-27</h2>
+<p>Fixed some naming inconsistencies regarding texture coordinate vertex attributes and buffers. Renamed <code>BufferType::TexcoordAttrib</code> to <code>BufferType::TexCoordAttrib</code> (<code>geometrytypes.h</code>) and <code>buffertraits::TexcoordBuffer</code> to <code>buffertraits::TexCoordBuffer</code> (<code>typedmesh.h</code>). The buffer name of <code>TexCoordAttrib</code> now maps to <code>TexCoord</code> (previously <code>Texture</code>), which is relevant when using the <code>MeshShaderCache</code>.</p>
+<p>In case you use the <code>MeshShaderCache</code> in connection with <code>TexCoordAttrib</code> you may need to adjust your shader. If the attribute is available, <code>HAS_TEXCOORD</code> is defined and <code>in_TexCoord</code> holds the value (previously <code>HAS_TEXTURE/in_Texture</code>).</p>
+<h2>2021-08-31</h2>
+<p>Added support for image in the changelog. Add images in the <code>resources/changelog</code> folder<br>
+and enter then in to the resource file <code>resources/changelog.qrc</code>. The prefix and alias is<br>
+need to keep the path consistent so the image also renders on github.</p>
+<h2>2021-08-24 Guard and include cleanup</h2>
+<p>We have removed all uses of the <code>&lt;inviwo/core/common/inviwo.h&gt;</code> from the core.<br>
+Rather include the needed headers directly. We have also changed all include guards<br>
+to use <code>#pragma once</code> instead of the ifdef dance. There is a helper script in<br>
+<code>tools/refactoring/update-inc-guard.py</code> that can be used on other repos.</p>
+<h2>2021-08-19 Canvas With Properties</h2>
+<p><a target="_blank" rel="noopener noreferrer" href="resources/changelog/canvas-with-properties.png"><img src="resources/changelog/canvas-with-properties.png" alt="Canvas With Properties" style="max-width: 100%;"></a><br>
+A new canvas processor was added which holds a canvas together with a list of<br>
+configurable properties from the network. Properties are added to the widget by appending the<br>
+property path to the <code>paths</code> property in the processor. There is an example workspace in<br>
+<code>modules/openglqt/data/workspaces/canvas_with_properties.inv</code></p>
+<h2>2021-08-19 Canvas refactoring</h2>
+<p>Major cleanup of the canvas system. Mac retina screens should now work as expected.</p>
 <h2>2021-04-28 Column &amp; Row Layout</h2>
 <p>Added two processors for interactive layouting with splitters using the mouse or touch events: <code>Column Layout</code> and <code>Row Layout</code>. <code>Column Layout</code> renders all connected image ports side-by-side whereas <code>Row Layout</code> renders them on top of each other. The interaction handles of the splitters are rendered using a <code>SplitterRenderer</code> which also handles the interactions.</p>
 <h2>2021-04-19 Font changes</h2>

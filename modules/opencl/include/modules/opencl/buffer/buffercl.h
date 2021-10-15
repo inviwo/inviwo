@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BUFFERCL_H
-#define IVW_BUFFERCL_H
+#pragma once
 
 #include <modules/opencl/buffer/bufferclbase.h>
 #include <modules/opencl/openclmoduledefine.h>
@@ -115,5 +114,3 @@ IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::BufferB
 #include <inviwo/core/util/formatsdefinefunc.h>
 
 }  // namespace cl
-
-#endif  // IVW_BUFFERCL_H

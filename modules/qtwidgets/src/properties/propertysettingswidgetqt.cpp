@@ -29,6 +29,8 @@
 
 #include <modules/qtwidgets/properties/propertysettingswidgetqt.h>
 
+#include <inviwo/core/util/formats.h>
+
 namespace inviwo {
 
 SinglePropertySetting::SinglePropertySetting(QWidget* widget, std::string label)

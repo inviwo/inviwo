@@ -71,6 +71,7 @@ protected:
     virtual void onZoomHChange(const dvec2& zoomH) override;
     virtual void onZoomVChange(const dvec2& zoomV) override;
     virtual void onHistogramModeChange(HistogramMode mode) override;
+    virtual void onHistogramSelectionChange(HistogramSelection selection) override;
 
     virtual void wheelEvent(QWheelEvent* event) override;
 
@@ -78,6 +79,7 @@ private:
     util::TFPropertyConcept* tfPropertyPtr_;
     VolumeInport* volumeInport_;
     HistogramMode histogramMode_;
+    HistogramSelection histogramSelection_;
 
     std::vector<QPolygonF> histograms_;
 

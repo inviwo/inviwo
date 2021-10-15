@@ -25,6 +25,7 @@
         "nifticlib",
         "openexr",
         "pybind11",
+        "roaring",
         "tclap",
         "tiff",
         "tinydir",

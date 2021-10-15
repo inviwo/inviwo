@@ -43,20 +43,28 @@ public:
     virtual ~CanvasProcessorWidgetGLFW();
 
     virtual void setVisible(bool visible) override;
-    virtual void show() override;
-    virtual void hide() override;
     virtual void setDimensions(ivec2) override;
     virtual void setPosition(ivec2) override;
+    virtual void setFullScreen(bool fullScreen) override;
+    virtual void setOnTop(bool onTop) override;
 
     virtual Canvas* getCanvas() const override;
 
+protected:
+    // CanvasProcessorWidget overrides
+    virtual void propagateResizeEvent() override;
+
 private:
+    // ProcessorWidget overrides
     virtual void updateVisible(bool visible) override;
     virtual void updateDimensions(ivec2) override;
     virtual void updatePosition(ivec2) override;
+    virtual void updateFullScreen(bool) override;
+    virtual void updateOnTop(bool) override;
 
     using canvas_ptr = std::unique_ptr<CanvasGLFW, std::function<void(CanvasGLFW*)>>;
     canvas_ptr canvas_;
+    ivec2 screenDimensions_;
 };
 
 }  // namespace inviwo

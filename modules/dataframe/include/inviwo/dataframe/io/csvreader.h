@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CSVREADER_H
-#define IVW_CSVREADER_H
+#pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderexception.h>
@@ -111,5 +109,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CSVREADER_H

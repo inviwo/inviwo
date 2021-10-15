@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TFSELECTOR_H
-#define IVW_TFSELECTOR_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -102,5 +100,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TFSELECTOR_H

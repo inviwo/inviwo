@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VECTORMAGNITUDEPROCESSOR_H
-#define IVW_VECTORMAGNITUDEPROCESSOR_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
 namespace inviwo {
@@ -66,5 +64,3 @@ protected:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VECTORMAGNITUDEPROCESSOR_H

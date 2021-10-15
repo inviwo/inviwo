@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SPOT_LIGHT_SOURCE_PROCESSOR_H
-#define IVW_SPOT_LIGHT_SOURCE_PROCESSOR_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/ports/dataoutport.h>
@@ -99,5 +97,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SPOT_LIGHT_SOURCE_PROCESSOR_H

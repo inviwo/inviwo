@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_JSONMODULE_H
-#define IVW_JSONMODULE_H
+#pragma once
 
 #include <modules/json/jsonmoduledefine.h>
 #include <modules/json/io/json/propertyjsonconverterfactory.h>
@@ -64,5 +63,3 @@ void JSONModule::registerPropertyJSONConverter() {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_JSONMODULE_H

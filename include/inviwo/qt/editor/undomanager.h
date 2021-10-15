@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_UNDOMANAGER_H
-#define IVW_UNDOMANAGER_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
+
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/network/workspacemanager.h>
 
@@ -106,5 +105,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_UNDOMANAGER_H

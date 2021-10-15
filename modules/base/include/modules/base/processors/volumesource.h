@@ -27,14 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESOURCE_H
-#define IVW_VOLUMESOURCE_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
 #include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
 #include <modules/base/properties/sequencetimerproperty.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
@@ -90,5 +88,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMESOURCE_H

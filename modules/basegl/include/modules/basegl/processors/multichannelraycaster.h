@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MULTICHANNELRAYCASTER_H
-#define IVW_MULTICHANNELRAYCASTER_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
@@ -89,6 +87,7 @@ private:
     ImageOutport outport_;
 
     CompositeProperty transferFunctions_;
+    std::array<TransferFunctionProperty, 4> tfs_;
 
     SimpleRaycastingProperty raycasting_;
     CameraProperty camera_;
@@ -97,5 +96,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_MULTICHANNELRAYCASTER_H

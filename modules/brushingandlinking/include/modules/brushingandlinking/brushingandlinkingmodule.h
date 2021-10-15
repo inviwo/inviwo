@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGANDLINKINGMODULE_H
-#define IVW_BRUSHINGANDLINKINGMODULE_H
+#pragma once
 
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -41,5 +40,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BRUSHINGANDLINKINGMODULE_H

@@ -348,8 +348,9 @@ public:
      */
     template <typename P, typename DecisionFunc>
     Property& readonlyDependsOn(P& prop, DecisionFunc callback) {
-        static_assert(std::is_invocable_r_v<bool, DecisionFunc, P&>,
-                      "The readonly callback must return a boolean!");
+        static_assert(
+            std::is_invocable_r_v<bool, DecisionFunc, P&>,
+            "The readonly callback must return a boolean and accept a property as argument!");
         static_assert(std::is_base_of_v<Property, P>, "P must be a Property!");
         this->setReadOnly(callback(prop));
         prop.onChange([callback, &prop, this]() {

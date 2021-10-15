@@ -31,8 +31,9 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/tfhelpwindow.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwomodule.h>
+
+#include <memory>
 
 namespace inviwo {
 

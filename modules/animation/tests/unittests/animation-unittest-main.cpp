@@ -34,7 +34,6 @@
 #endif
 #endif
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/consolelogger.h>
 

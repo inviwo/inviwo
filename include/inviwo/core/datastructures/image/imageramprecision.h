@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGERAMPRECISION_H
-#define IVW_IMAGERAMPRECISION_H
+#pragma once
 
 #include <inviwo/core/datastructures/image/imageram.h>
 
@@ -238,5 +237,3 @@ void ImageRAMPrecision<T>::allocatePickingData() {
 #include <inviwo/core/util/formatsdefinefunc.h>
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGERAMPRECISION_H

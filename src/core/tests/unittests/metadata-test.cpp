@@ -30,9 +30,10 @@
 #include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/io/serialization/serializable.h>
-#include <string.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
+
+#include <string>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -45,30 +46,53 @@ template <typename T, typename M>
 void testserialization(T def, T in) {
     T indata = in;
     T outdata1 = def;
+
     std::string filename = filesystem::findBasePath();
-    MetaDataOwner* mdo1;
-    MetaDataOwner* mdo2;
-    mdo1 = new MetaDataOwner();
-    mdo2 = new MetaDataOwner();
-    mdo1->setMetaData<M>("data", indata);
-    outdata1 = mdo1->getMetaData<M>("data", outdata1);
+    MetaDataOwner mdo1;
+    mdo1.setMetaData<M>("data", indata);
+    EXPECT_TRUE(mdo1.hasMetaData<M>("data"));
+    outdata1 = mdo1.getMetaData<M>("data", outdata1);
     EXPECT_EQ(indata, outdata1);
 
-    std::stringstream ss;
-
     Serializer serializer(filename);
-    mdo1->getMetaDataMap()->serialize(serializer);
+    mdo1.getMetaDataMap()->serialize(serializer);
+    std::stringstream ss;
     serializer.writeFile(ss);
-    Deserializer deserializer(ss, filename);
-    mdo2->getMetaDataMap()->deserialize(deserializer);
+    auto wm = InviwoApplication::getPtr()->getWorkspaceManager();
+    auto deserializer = wm->createWorkspaceDeserializer(ss, filename);
+    MetaDataOwner mdo2;
+    mdo2.getMetaDataMap()->deserialize(deserializer);
+    EXPECT_TRUE(mdo2.hasMetaData<M>("data"));
+
     T outdata2 = def;
-    outdata2 = mdo2->getMetaData<M>("data", outdata2);
+    outdata2 = mdo2.getMetaData<M>("data", outdata2);
     EXPECT_EQ(indata, outdata2);
-    delete mdo1;
-    delete mdo2;
 }
 
 #define MetaDataMacro(n, t, d, v) \
     TEST(MetaDataTest, n##SerializationTest) { testserialization<t, n##MetaData>(d, v); }
-#include <inviwo/core/metadata/metadatadefinefunc.h>
+// clang-format off
+MetaDataMacro(Bool, bool, false, true)
+MetaDataMacro(Int, int, 0, 1)
+MetaDataMacro(Float, float, 0.0f, 1.0f)
+MetaDataMacro(Double, double, 0.0f, 1.0f)
+MetaDataMacro(String, std::string, "", "test")
+MetaDataMacro(IntVec2, ivec2, ivec2(0), ivec2(1, 2))
+MetaDataMacro(IntVec3, ivec3, ivec3(0), ivec3(1, 2, 3))
+MetaDataMacro(IntVec4, ivec4, ivec4(0), ivec4(1, 2, 3, 4))
+MetaDataMacro(FloatVec2, vec2, vec2(0), vec2(0.0f, 1.0f))
+MetaDataMacro(FloatVec3, vec3, vec3(0), vec3(0.0f, 1.0f, 2.0f))
+MetaDataMacro(FloatVec4, vec4, vec4(0), vec4(0.0f, 1.0f, 2.0f, 3.0f))
+MetaDataMacro(DoubleVec2, dvec2, dvec2(0), dvec2(0.0, 1.0)) 
+MetaDataMacro(DoubleVec3, dvec3, dvec3(0), dvec3(0.0, 1.0, 2.0))
+MetaDataMacro(DoubleVec4, dvec4, dvec4(0), dvec4(0.0, 1.0, 2.0, 3.0))
+MetaDataMacro(UIntVec2, uvec2, uvec2(0), uvec2(1, 2))
+MetaDataMacro(UIntVec3, uvec3, uvec3(0), uvec3(1, 2, 3))
+MetaDataMacro(UIntVec4, uvec4, uvec4(0), uvec4(1, 2, 3, 4))
+MetaDataMacro(FloatMat2, mat2, mat2(0), mat2(1.0))
+MetaDataMacro(FloatMat3, mat3, mat3(0), mat3(1.0))
+MetaDataMacro(FloatMat4, mat4, mat4(0), mat4(1.0))
+// clang-format on
+#undef MetaDataMacro
+
 }  // namespace inviwo

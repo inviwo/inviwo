@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/raycastingproperty.h>
+#include <inviwo/core/datastructures/light/lightingstate.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/util/glm.h>
 #include <modules/opengl/volume/volumeutils.h>
@@ -70,8 +71,11 @@ void setShaderUniforms(Shader& shader, const TemplateProperty<T>& property) {
 
 // SimpleLightingProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const SimpleLightingProperty& property);
-IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const ShadingMode::Modes& mode);
+IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const LightingState& state);
+IVW_MODULE_OPENGL_API void addShaderDefines(Shader& shader, const ShadingMode& mode);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property,
+                                             std::string_view name);
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const LightingState& state,
                                              std::string_view name);
 
 // CameraProperty

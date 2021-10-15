@@ -27,12 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CLFORMATS_H
-#define IVW_CLFORMATS_H
+#pragma once
 
 #include <modules/opencl/openclmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/opencl/inviwoopencl.h>
+
+#include <inviwo/core/util/formats.h>
 
 namespace inviwo {
 
@@ -89,5 +89,3 @@ IVW_MODULE_OPENCL_API bool operator==(const CLFormats::CLFormat& a, const CLForm
 IVW_MODULE_OPENCL_API bool operator!=(const CLFormats::CLFormat& a, const CLFormats::CLFormat& b);
 
 }  // namespace inviwo
-
-#endif  // IVW_CLFORMATS_H

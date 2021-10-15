@@ -30,7 +30,6 @@
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/io/serialization/serializable.h>

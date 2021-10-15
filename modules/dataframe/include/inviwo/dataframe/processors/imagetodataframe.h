@@ -27,13 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGETODATAFRAME_H
-#define IVW_IMAGETODATAFRAME_H
+#pragma once
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -85,5 +83,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGETODATAFRAME_H

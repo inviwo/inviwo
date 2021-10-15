@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGEHIGHPASS_H
-#define IVW_IMAGEHIGHPASS_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -75,5 +73,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGEHIGHPASS_H

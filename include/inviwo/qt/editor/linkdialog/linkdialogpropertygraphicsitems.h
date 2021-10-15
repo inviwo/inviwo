@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LINKDIALOG_PROPERTYGRAPHICSITEMS_H
-#define IVW_LINKDIALOG_PROPERTYGRAPHICSITEMS_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
 #include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
 
@@ -92,5 +90,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LINKDIALOG_PROPERTYGRAPHICSITEMS_H

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_AXISRENDERER_H
-#define IVW_AXISRENDERER_H
+#pragma once
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/properties/optionproperty.h>
 
@@ -326,5 +324,3 @@ private:
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_AXISRENDERER_H

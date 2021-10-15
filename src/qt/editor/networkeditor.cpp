@@ -390,12 +390,9 @@ void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 
 void NetworkEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
     if (auto p = getProcessorGraphicsItemAt(e->scenePos())) {
-        Processor* processor = p->getProcessor();
-        if (processor && processor->hasProcessorWidget()) {
-            if (processor->getProcessorWidget()->isVisible()) {
-                processor->getProcessorWidget()->hide();
-            } else {
-                processor->getProcessorWidget()->show();
+        if (auto processor = p->getProcessor()) {
+            if (auto widget = processor->getProcessorWidget()) {
+                widget->setVisible(!widget->isVisible());
             }
         }
         e->accept();
@@ -516,19 +513,12 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         } else if (auto processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             clickedProcessor = processor;
 
-            if (processor->getProcessor()->hasProcessorWidget()) {
+            if (auto widget = processor->getProcessor()->getProcessorWidget()) {
                 QAction* showAction = menu.addAction(tr("&Show Widget"));
                 showAction->setCheckable(true);
-                if (auto processorWidget = processor->getProcessor()->getProcessorWidget()) {
-                    showAction->setChecked(processorWidget->isVisible());
-                }
-                connect(showAction, &QAction::triggered, [processor]() {
-                    if (processor->getProcessor()->getProcessorWidget()->isVisible()) {
-                        processor->getProcessor()->getProcessorWidget()->hide();
-                    } else {
-                        processor->getProcessor()->getProcessorWidget()->show();
-                    }
-                });
+                showAction->setChecked(widget->isVisible());
+                connect(showAction, &QAction::triggered,
+                        [widget]() { widget->setVisible(!widget->isVisible()); });
             }
 
             auto editName = menu.addAction(tr("Edit Name"));
@@ -972,8 +962,8 @@ void NetworkEditor::drawBackground(QPainter* painter, const QRectF& rect) {
     for (qreal y = top; y < rect.bottom(); y += gridSpacing_)
         linesY.append(QLineF(rect.left(), y, rect.right(), y));
 
-    painter->drawLines(linesX.data(), linesX.size());
-    painter->drawLines(linesY.data(), linesY.size());
+    painter->drawLines(linesX.data(), static_cast<int>(linesX.size()));
+    painter->drawLines(linesY.data(), static_cast<int>(linesY.size()));
     painter->restore();
 }
 

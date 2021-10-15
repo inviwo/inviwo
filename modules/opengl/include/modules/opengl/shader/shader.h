@@ -35,7 +35,6 @@
 #include <modules/opengl/shader/shaderobject.h>
 #include <modules/opengl/shader/shadertype.h>
 #include <modules/opengl/shader/uniformutils.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/callback.h>
 #include <inviwo/core/util/stdextensions.h>
 
@@ -136,10 +135,16 @@ public:
     const ShaderObject* getVertexShaderObject() const;
     const ShaderObject* getGeometryShaderObject() const;
     const ShaderObject* getFragmentShaderObject() const;
+    const ShaderObject* getComputeShaderObject() const;
+    const ShaderObject* getTesselationControlShaderObject() const;
+    const ShaderObject* getTesselationEvaluationShaderObject() const;
 
     ShaderObject* getVertexShaderObject();
     ShaderObject* getGeometryShaderObject();
     ShaderObject* getFragmentShaderObject();
+    ShaderObject* getComputeShaderObject();
+    ShaderObject* getTesselationControlShaderObject();
+    ShaderObject* getTesselationEvaluationShaderObject();
 
     void activate();
     void deactivate();

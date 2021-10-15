@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GEOMETRYSOURCE_H
-#define IVW_GEOMETRYSOURCE_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/ports/meshport.h>
 #include <modules/base/processors/datasource.h>
@@ -58,5 +56,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_GEOMETRYSOURCE_H

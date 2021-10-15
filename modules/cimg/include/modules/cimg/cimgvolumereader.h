@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CIMGVOLUMEREADER_H
-#define IVW_CIMGVOLUMEREADER_H
+#pragma once
 
 #include <modules/cimg/cimgmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
@@ -72,5 +70,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_CIMGVOLUMEREADER_H

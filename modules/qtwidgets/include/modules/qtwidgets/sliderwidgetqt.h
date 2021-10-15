@@ -201,6 +201,7 @@ T SliderWidgetQt<T>::sliderToRepr(int val) const {
 template <typename T>
 int SliderWidgetQt<T>::reprToSlider(T val) const {
     if constexpr (std::is_floating_point_v<T>) {
+        if (this->maxValue_ == this->minValue_) return this->sliderMax_ / 2;
         return static_cast<int>((val - this->minValue_) / (this->maxValue_ - this->minValue_) *
                                 this->sliderMax_);
     } else {

@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/meshrenderinggl/meshrenderingglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/meshport.h>

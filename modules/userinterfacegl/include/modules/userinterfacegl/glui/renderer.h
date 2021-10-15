@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GLUIRENDERER_H
-#define IVW_GLUIRENDERER_H
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/fontrendering/textrenderer.h>
 #include <modules/opengl/shader/shader.h>
@@ -141,5 +139,3 @@ protected:
 }  // namespace glui
 
 }  // namespace inviwo
-
-#endif  // IVW_GLUIRENDERER_H

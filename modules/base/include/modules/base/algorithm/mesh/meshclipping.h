@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MESHCLIPPING_ALGO_H
-#define IVW_MESHCLIPPING_ALGO_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/plane.h>
@@ -93,5 +91,3 @@ IVW_MODULE_BASE_API std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh,
 }  // namespace meshutil
 
 }  // namespace inviwo
-
-#endif  // IVW_MESHCLIPPING_ALGO_H

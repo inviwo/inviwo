@@ -31,7 +31,6 @@
 #include <modules/basegl/baseglmoduledefine.h>
 
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderresource.h>

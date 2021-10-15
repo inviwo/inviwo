@@ -73,6 +73,19 @@ struct OptionReghelper {
     }
 };
 
+struct OptionEnumReghelper {
+    template <typename T>
+    auto operator()(JSONModule& m) {
+        enum class e : T;
+        using PropertyType = TemplateOptionProperty<e>;
+        m.registerPropertyJSONConverter<PropertyType>();
+
+        enum class eU : std::make_unsigned_t<T>;
+        using PropertyTypeU = TemplateOptionProperty<eU>;
+        m.registerPropertyJSONConverter<PropertyTypeU>();
+    }
+};
+
 JSONModule::JSONModule(InviwoApplication* app) : InviwoModule(app, "JSON") {
 
     // Register JSON converters
@@ -100,6 +113,10 @@ JSONModule::JSONModule(InviwoApplication* app) : InviwoModule(app, "JSON") {
     // Register option property widgets
     using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
     util::for_each_type<OptionTypes>{}(OptionReghelper{}, *this);
+
+    // Register option property widgets for enums, commented types not yet supported by Inviwo
+    using OptionEnumTypes = std::tuple<char, int /*short, long, long long*/>;
+    util::for_each_type<OptionEnumTypes>{}(OptionEnumReghelper{}, *this);
 }
 
 void JSONModule::registerPropertyJSONConverter(

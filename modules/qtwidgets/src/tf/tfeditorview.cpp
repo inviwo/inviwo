@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/histogram.h>
+#include <inviwo/core/util/zip.h>
 #include <modules/qtwidgets/tf/tfpropertyconcept.h>
 #include <modules/qtwidgets/tf/tfeditorview.h>
 #include <modules/qtwidgets/tf/tfpropertydialog.h>
@@ -51,10 +52,11 @@ namespace inviwo {
 TFEditorView::TFEditorView(util::TFPropertyConcept* tfProperty, QGraphicsScene* scene,
                            QWidget* parent)
     : QGraphicsView(scene, parent)
-    , tfPropertyPtr_(tfProperty)
-    , volumeInport_(tfProperty->getVolumeInport())
-    , histogramMode_(tfProperty->getHistogramMode())
-    , maskHorizontal_(0.0, 1.0) {
+    , tfPropertyPtr_{tfProperty}
+    , volumeInport_{tfProperty->getVolumeInport()}
+    , histogramMode_{tfProperty->getHistogramMode()}
+    , histogramSelection_{tfProperty->getHistogramSelection()}
+    , maskHorizontal_{0.0, 1.0} {
 
     setMouseTracking(true);
     setRenderHint(QPainter::Antialiasing, true);
@@ -90,6 +92,14 @@ void TFEditorView::onHistogramModeChange(HistogramMode mode) {
     if (histogramMode_ != mode) {
         histogramMode_ = mode;
         updateHistogram();
+    }
+}
+
+void TFEditorView::onHistogramSelectionChange(HistogramSelection selection) {
+    if (histogramSelection_ != selection) {
+        histogramSelection_ = selection;
+        resetCachedContent();
+        update();
     }
 }
 
@@ -345,7 +355,9 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
         painter->restore();
     }
 
-    for (auto& elem : histograms_) {
+    for (auto&& [i, elem] : util::enumerate(histograms_)) {
+        if (!histogramSelection_[i]) continue;
+
         QPen pen;
         pen.setColor(QColor(68, 102, 170, 150));
         pen.setWidthF(2.0f);

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INTMINMAXPROPERTYWIDGET_H
-#define IVW_INTMINMAXPROPERTYWIDGET_H
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/userinterfacegl/glui/widgets/rangeslider.h>
 
@@ -73,5 +71,3 @@ private:
 }  // namespace glui
 
 }  // namespace inviwo
-
-#endif  // IVW_INTMINMAXPROPERTYWIDGET_H

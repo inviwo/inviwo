@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LAYERCLGLCONVERTER_H
-#define IVW_LAYERCLGLCONVERTER_H
+#pragma once
 
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/datastructures/image/layerram.h>
@@ -76,5 +75,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LAYERCLGLCONVERTER_H

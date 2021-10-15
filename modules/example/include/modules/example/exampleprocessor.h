@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EXAMPLEPROCESSOR_H
-#define IVW_EXAMPLEPROCESSOR_H
+#pragma once
 
 #include <modules/example/examplemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -68,5 +67,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EXAMPLEPROCESSOR_H

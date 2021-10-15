@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EIGENMATRIXTOIMAGE_H
-#define IVW_EIGENMATRIXTOIMAGE_H
+#pragma once
 
 #include <modules/eigenutils/eigenutilsmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -57,5 +55,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EIGENMATRIXTOIMAGE_H

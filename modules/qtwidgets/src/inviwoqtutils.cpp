@@ -31,6 +31,7 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/io/imagewriterutil.h>
+#include <inviwo/core/interaction/events/viewevent.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -161,18 +162,13 @@ QMainWindow* getApplicationMainWindow() {
 }
 
 QPixmap toQPixmap(const TransferFunction& tf, const QSize& size) {
-    QVector<QGradientStop> gradientStops;
+    QLinearGradient gradient;
     for (const auto& tfpoint : tf) {
         vec4 curColor = tfpoint.getColor();
         // increase alpha to allow better visibility by 1 - (1 - a)^4
         curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
-
-        gradientStops.append(QGradientStop(tfpoint.getPosition(), utilqt::toQColor(curColor)));
+        gradient.setColorAt(tfpoint.getPosition(), utilqt::toQColor(curColor));
     }
-
-    // set bounds of the gradient
-    QLinearGradient gradient;
-    gradient.setStops(gradientStops);
 
     // gradient should stretch entire pixmap from left to right
     gradient.setStart(QPointF(0.0, 0.0));
@@ -285,18 +281,13 @@ QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept, const QSize& s
     if (propertyConcept.hasTF() && !propertyConcept.getTransferFunction()->empty()) {
         // draw TF gradient on top
 
-        QVector<QGradientStop> gradientStops;
+        QLinearGradient gradient;
         for (const auto& tfpoint : *propertyConcept.getTransferFunction()) {
             vec4 curColor = tfpoint.getColor();
             // increase alpha to allow better visibility by 1 - (1 - a)^4
             curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
-
-            gradientStops.append(QGradientStop(tfpoint.getPosition(), utilqt::toQColor(curColor)));
+            gradient.setColorAt(tfpoint.getPosition(), utilqt::toQColor(curColor));
         }
-
-        // set bounds of the gradient
-        QLinearGradient gradient;
-        gradient.setStops(gradientStops);
 
         // gradient should stretch entire pixmap from left to right
         gradient.setStart(QPointF(0.0, 0.0));
@@ -525,6 +516,31 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
     addAction("Depth Layer", image.getDepthLayer(), visibleLayer == LayerType::Depth);
 }
 
+void addViewActions(QMenu& menu, EventPropagator* ep) {
+    auto prop = [&](auto action) {
+        return [ep, action]() {
+            ViewEvent e{action};
+            ep->propagateEvent(&e, nullptr);
+        };
+    };
+    menu.connect(menu.addAction(QIcon(":svgicons/view-fit-to-data.svg"), "Fit to data"),
+                 &QAction::triggered, prop(ViewEvent::FitData{}));
+    menu.connect(menu.addAction(QIcon(":svgicons/view-x-p.svg"), "View from X+"),
+                 &QAction::triggered, prop(camerautil::Side::XPositive));
+    menu.connect(menu.addAction(QIcon(":svgicons/view-x-m.svg"), "View from X-"),
+                 &QAction::triggered, prop(camerautil::Side::XNegative));
+    menu.connect(menu.addAction(QIcon(":svgicons/view-y-p.svg"), "View from Y+"),
+                 &QAction::triggered, prop(camerautil::Side::YPositive));
+    menu.connect(menu.addAction(QIcon(":svgicons/view-y-m.svg"), "View from Y-"),
+                 &QAction::triggered, prop(camerautil::Side::YNegative));
+    menu.connect(menu.addAction(QIcon(":svgicons/view-z-p.svg"), "View from Z+"),
+                 &QAction::triggered, prop(camerautil::Side::ZPositive));
+    menu.connect(menu.addAction(QIcon(":svgicons/view-z-m.svg"), "View from Z-"),
+                 &QAction::triggered, prop(camerautil::Side::ZNegative));
+    menu.connect(menu.addAction(QIcon(":svgicons/view-flip.svg"), "Flip Up Vector"),
+                 &QAction::triggered, prop(ViewEvent::FlipUp{}));
+}
+
 std::string toBase64(const QImage& image, const std::string& format, int quality) {
     QByteArray byteArray;
     QBuffer buffer{&byteArray};
@@ -574,25 +590,25 @@ QString windowTitleHelper(const QString& title, const QWidget* widget) {
     QString cap = title;
 
     QLatin1String placeHolder("[*]");
-    int index = cap.indexOf(placeHolder);
+    int index = static_cast<int>(cap.indexOf(placeHolder));
 
     // here the magic begins
     while (index != -1) {
-        index += placeHolder.size();
+        index += static_cast<int>(placeHolder.size());
         int count = 1;
         while (cap.indexOf(placeHolder, index) == index) {
             ++count;
-            index += placeHolder.size();
+            index += static_cast<int>(placeHolder.size());
         }
         if (count % 2) {  // odd number of [*] -> replace last one
-            int lastIndex = cap.lastIndexOf(placeHolder, index - 1);
+            int lastIndex = static_cast<int>(cap.lastIndexOf(placeHolder, index - 1));
             if (widget->isWindowModified() &&
                 widget->style()->styleHint(QStyle::SH_TitleBar_ModifyNotification, 0, widget))
                 cap.replace(lastIndex, 3, QWidget::tr("*"));
             else
                 cap.remove(lastIndex, 3);
         }
-        index = cap.indexOf(placeHolder, index);
+        index = static_cast<int>(cap.indexOf(placeHolder, index));
     }
     cap.replace(QLatin1String("[*][*]"), placeHolder);
 
@@ -650,6 +666,61 @@ bool WidgetCloseEventFilter::eventFilter(QObject* obj, QEvent* ev) {
     } else {
         return false;
     }
+}
+
+void setFullScreen(QWidget* widget, bool fullScreen) {
+    if (widget->windowState().testFlag(Qt::WindowFullScreen) == fullScreen) return;
+    const auto visible = widget->isVisible();
+    if (fullScreen) {
+        // Prevent Qt resize event with incorrect size when going full screen.
+        // Reproduce error by loading a workspace with a full screen canvas.
+        // This is equivalent to suggested solution using QTimer
+        // https://stackoverflow.com/questions/19817881/qt-fullscreen-on-startup
+        // No need to process user events, i.e. mouse/keyboard etc.
+        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+        widget->setWindowFlags(
+            widget->windowFlags().setFlag(Qt::Tool, false).setFlag(Qt::Window, true));
+        widget->setWindowState(widget->windowState() | Qt::WindowFullScreen);
+    } else {
+        widget->setWindowState(widget->windowState() & ~Qt::WindowFullScreen);
+        widget->setWindowFlags(widget->windowFlags().setFlag(Qt::Tool, true));
+    }
+    widget->setVisible(visible);
+}
+
+void setFullScreenAndOnTop(QWidget* widget, bool fullScreen, bool onTop) {
+    if (widget->windowFlags().testFlag(Qt::Tool) == onTop &&
+        widget->windowState().testFlag(Qt::WindowFullScreen) == fullScreen) {
+        return;
+    }
+
+    // setWindowFlag will alwyas hide the widget
+    // https://doc.qt.io/qt-5/qwidget.html#windowFlags-prop
+    const auto visible = widget->isVisible();
+
+    // Prevent Qt resize event with incorrect size when going full screen.
+    // Reproduce error by loading a workspace with a full screen canvas.
+    // This is equivalent to suggested solution using QTimer
+    // https://stackoverflow.com/questions/19817881/qt-fullscreen-on-startup
+    // No need to process user events, i.e. mouse/keyboard etc.
+    QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    if (fullScreen) {
+        // Always use window mode for fullscreen
+        widget->setWindowFlags(
+            widget->windowFlags().setFlag(Qt::Tool, false).setFlag(Qt::Window, true));
+        widget->setWindowState(widget->windowState() | Qt::WindowFullScreen);
+    } else {
+        widget->setWindowState(widget->windowState() & ~Qt::WindowFullScreen);
+
+        if (onTop) {
+            widget->setWindowFlags(widget->windowFlags().setFlag(Qt::Tool, true));
+        } else {
+            widget->setWindowFlags(
+                widget->windowFlags().setFlag(Qt::Tool, false).setFlag(Qt::Window, true));
+        }
+    }
+
+    widget->setVisible(visible);
 }
 
 }  // namespace utilqt

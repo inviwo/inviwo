@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_LAYERGLCONVERTER_H
-#define IVW_LAYERGLCONVERTER_H
+#pragma once
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/image/layergl.h>
@@ -55,5 +54,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_LAYERGLCONVERTER_H

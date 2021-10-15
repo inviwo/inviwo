@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DRAWLINES_H
-#define IVW_DRAWLINES_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/ports/imageport.h>
@@ -103,5 +102,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DRAWLINES_H

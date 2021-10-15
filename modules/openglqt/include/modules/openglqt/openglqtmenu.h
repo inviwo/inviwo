@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/openglqt/openglqtmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <modules/opengl/shader/shadermanager.h>
 #include <modules/openglqt/shaderwidget.h>

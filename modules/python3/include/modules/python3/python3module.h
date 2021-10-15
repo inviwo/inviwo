@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYTHON3MODULE_H
-#define IVW_PYTHON3MODULE_H
+#pragma once
 
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -60,5 +59,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PYTHON3MODULE_H

@@ -31,6 +31,7 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/processors/processor.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -39,28 +40,23 @@
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API ProcessorWidgetQt : public QWidget, public ProcessorWidget {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-
+class IVW_MODULE_QTWIDGETS_API ProcessorWidgetQt : public ProcessorWidget, public QWidget {
 public:
     ProcessorWidgetQt(Processor* p);
     virtual ~ProcessorWidgetQt() = default;
 
     using QWidget::setVisible;
-    virtual void show() override;                     // Override ProcessorWidget
-    virtual void hide() override;                     // Override ProcessorWidget
     virtual void setPosition(ivec2 pos) override;     // Override ProcessorWidget
     virtual void setDimensions(ivec2 dime) override;  // Override ProcessorWidget
-
-    virtual void move(ivec2 pos);  // Mirror QWidget::move
+    virtual void setFullScreen(bool fullScreen) override;
+    virtual void setOnTop(bool onTop) override;
 
 protected:
     virtual void updateVisible(bool visible) override;
     virtual void updateDimensions(ivec2) override;
     virtual void updatePosition(ivec2) override;
+    virtual void updateFullScreen(bool) override;
+    virtual void updateOnTop(bool) override;
 
     // Override QWidget events
     virtual void resizeEvent(QResizeEvent*) override;
@@ -70,7 +66,9 @@ protected:
     virtual void moveEvent(QMoveEvent*) override;
 
     bool ignoreEvents_{false};
-    bool ignoreUpdate_{false};
+    bool resizeOngoing_{false};
+
+    Processor::NameDispatcherHandle nameChange_;
 };
 
 }  // namespace inviwo

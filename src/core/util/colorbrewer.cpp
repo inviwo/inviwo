@@ -36,6 +36,15 @@
 namespace inviwo {
 namespace colorbrewer {
 
+std::vector<colorbrewer::Family> getFamilies() {
+    using Index = std::underlying_type_t<Family>;
+    std::vector<Family> res;
+    for (Index i = 0; i < static_cast<Index>(Family::NumberOfColormapFamilies); ++i) {
+        res.push_back(static_cast<Family>(i));
+    }
+    return res;
+}
+
 const std::vector<dvec4>& getColormap(const Family& family, glm::uint8 numberOfColors) {
     const auto minColors = getMinNumberOfColorsForFamily(family);
     const auto maxColors = getMaxNumberOfColorsForFamily(family);

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGEEDGEDARKEN_H
-#define IVW_IMAGEEDGEDARKEN_H
+#pragma once
 
 #include <modules/postprocessing/postprocessingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -73,5 +71,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGEEDGEDARKEN_H

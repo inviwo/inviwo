@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EIGENUTILSMODULE_H
-#define IVW_EIGENUTILSMODULE_H
+#pragma once
 
 #include <modules/eigenutils/eigenutilsmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -41,5 +40,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EIGENUTILSMODULE_H

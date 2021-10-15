@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORGRAPHICSITEM_H
-#define IVW_PROCESSORGRAPHICSITEM_H
+#pragma once
 
 #include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/core/util/clock.h>
@@ -161,5 +160,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORGRAPHICSITEM_H

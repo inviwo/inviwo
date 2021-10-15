@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOMAINWINDOW_H
-#define IVW_INVIWOMAINWINDOW_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/networkeditorobserver.h>
@@ -218,7 +217,7 @@ private:
     ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;
     HelpWidget* helpWidget_;
-    std::unique_ptr<WelcomeWidget> welcomeWidget_;
+    WelcomeWidget* welcomeWidget_;
     std::vector<QDockWidget*> welcomeHidden_;
     AnnotationsWidget* annotationsWidget_ = nullptr;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
@@ -256,5 +255,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_INVIWOMAINWINDOW_H

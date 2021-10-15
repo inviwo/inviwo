@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_UTILCL_H
-#define IVW_UTILCL_H
+#pragma once
 
 #include <modules/opencl/openclmoduledefine.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/datastructures/light/lightingstate.h>
 
 namespace inviwo {
 
@@ -47,12 +46,13 @@ typedef struct LightParameters {
     vec4 diffuseColor;
     vec4 specularColor;
     float specularExponent;
-    ShadingMode::Modes shadingMode;
+    ShadingMode shadingMode;
 
     char padding[56];  // Align to power of two bytes (128)
 } LightParameters;
+
+LightParameters IVW_MODULE_OPENCL_API fromLightingState(const LightingState& state);
+
 }  // namespace utilcl
 
 }  // namespace inviwo
-
-#endif  // IVW_UTILCL_H

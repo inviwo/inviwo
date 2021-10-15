@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMELAPLACIANALGO_H
-#define IVW_VOLUMELAPLACIANALGO_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/util/volumeramutils.h>
 #include <inviwo/core/util/indexmapper.h>
@@ -154,5 +152,3 @@ std::shared_ptr<Volume> VolumeLaplacianDispatcher::operator()(
 }  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMELAPLACIANALGO_H

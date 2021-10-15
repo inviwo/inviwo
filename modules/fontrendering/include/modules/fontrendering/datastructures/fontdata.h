@@ -29,9 +29,12 @@
 #pragma once
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/fontrendering/datastructures/fontsettings.h>
 #include <modules/fontrendering/util/fontutils.h>
+
+#include <inviwo/core/util/glmvec.h>
+
+#include <string>
 
 namespace inviwo {
 

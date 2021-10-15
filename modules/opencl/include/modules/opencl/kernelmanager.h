@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_KERNEL_MANAGER_H
-#define IVW_KERNEL_MANAGER_H
+#pragma once
 
 #include <modules/opencl/openclmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/fileobserver.h>
@@ -128,5 +126,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_KERNEL_MANAGER_H

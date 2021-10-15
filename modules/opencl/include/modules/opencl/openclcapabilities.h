@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENCLCAPABILITIES_H
-#define IVW_OPENCLCAPABILITIES_H
+#pragma once
 
 #include <inviwo/core/util/capabilities.h>
 #include <modules/opencl/openclmoduledefine.h>
@@ -410,5 +409,3 @@ inline std::string deviceInfoToString<cl_sampler>(cl_device_info, const cl_sampl
     } catch (cl::Error&) {                                                                     \
         LogInfoCustom("OpenCLInfo", "Device info missing: " << #param_name);                   \
     }
-
-#endif

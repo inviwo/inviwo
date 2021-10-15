@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HEIGHTFIELDPROCESSOR_H
-#define IVW_HEIGHTFIELDPROCESSOR_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/ports/dataoutport.h>
@@ -118,5 +116,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_HEIGHTFIELDPROCESSOR_H

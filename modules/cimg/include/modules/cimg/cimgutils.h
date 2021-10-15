@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CIMGUTILS_H
-#define IVW_CIMGUTILS_H
+#pragma once
 
 #include <modules/cimg/cimgmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
@@ -134,5 +132,3 @@ IVW_MODULE_CIMG_API std::string getOpenEXRVersion();
 }  // namespace cimgutil
 
 }  // namespace inviwo
-
-#endif  // IVW_CIMGUTILS_H

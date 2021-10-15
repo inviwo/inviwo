@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
@@ -92,7 +91,7 @@ private:
     size2_t rangePressedY_;
 
     Shader shader_;
-    TypedMesh<buffertraits::PositionsBuffer2D, buffertraits::TexcoordBuffer<2>> rect_;
+    TypedMesh<buffertraits::PositionsBuffer2D, buffertraits::TexCoordBuffer<2>> rect_;
     std::shared_ptr<Buffer<vec2>> texCoordsBuffer_;
 };
 

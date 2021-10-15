@@ -27,9 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOOPENCL_H
-#define IVW_INVIWOOPENCL_H
-#include <inviwo/core/common/inviwo.h>
+#pragma once
+
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
@@ -301,5 +300,3 @@ IVW_MODULE_OPENCL_API std::string getCLErrorResolveHint(cl_int err);
 #endif
 
 }  // namespace inviwo
-
-#endif  // IVW_INVIWOOPENGL_H

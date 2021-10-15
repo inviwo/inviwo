@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMECOMBINER_H
-#define IVW_VOLUMECOMBINER_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
@@ -123,5 +121,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMECOMBINER_H

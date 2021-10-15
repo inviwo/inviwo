@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_HELPWIDGET_H
-#define IVW_HELPWIDGET_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
@@ -73,5 +72,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_HELPWIDGET_H

@@ -27,10 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMECL_H
-#define IVW_VOLUMECL_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/openclmoduledefine.h>
@@ -101,5 +99,3 @@ template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::VolumeCL& value);
 
 }  // namespace cl
-
-#endif  // IVW_VOLUMECL_H

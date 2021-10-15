@@ -500,8 +500,8 @@ void FragmentListRenderer::debugFragmentLists(std::ostream& oss) {
         float g = float((c >> 10) & 0x3ff) / 1023.0f;
         float b = float(c & 0x3ff) / 1023.0f;
         oss << fmt::format(
-            "%5d: previous=%5d, depth=%6.3f, alpha=%5.3f, r=%5.3f, g=%5.3f, b=%5.3f\n", i,
-            (int)previous, (float)depth, (float)alpha, r, g, b);
+            "{:5}: previous={:5}, depth={:6.3f}, alpha={:5.3f}, r={:5.3f}, g={:5.3f}, b={:5.3f}\n",
+            i, (int)previous, (float)depth, (float)alpha, r, g, b);
     }
 
     oss << std::endl << "\n==================================================\n";

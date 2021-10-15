@@ -32,7 +32,6 @@
 #endif
 
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/util/utilities.h>
@@ -40,10 +39,10 @@
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
-#include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/moduleregistration.h>
 #include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/util/networkdebugobserver.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -67,6 +66,7 @@ int main(int argc, char** argv) {
     QSurfaceFormat::setDefaultFormat(defaultFormat);
 
     InviwoApplicationQt inviwoApp(argc, argv, "Inviwo-Qt");
+    inviwoApp.setStyleSheetFile(":/stylesheets/inviwo.qss");
     inviwoApp.printApplicationInfo();
     inviwoApp.setProgressCallback([](std::string m) {
         LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0,
@@ -91,22 +91,38 @@ int main(int argc, char** argv) {
         },
         1000);
 
+    TCLAP::SwitchArg debugProcess("d", "debug",
+                                  "Add debug logging for processor evaluation to the log");
+
+    NetworkDebugObserver obs;
+    cmdparser.add(
+        &debugProcess,
+        [&]() {
+            inviwoApp.getProcessorNetwork()->addObserver(&obs);
+            inviwoApp.getProcessorNetworkEvaluator()->addObserver(&obs);
+            inviwoApp.getProcessorNetwork()->forEachProcessor(
+                [&](auto* p) { p->ProcessorObservable::addObserver(&obs); });
+        },
+        200);
+
     TCLAP::SwitchArg fullscreenArg("f", "fullscreen", "Specify fullscreen if only one canvas");
 
     cmdparser.add(&fullscreenArg, [&]() {
-        auto allCanvases = inviwoApp.getProcessorNetwork()->getProcessorsByType<CanvasProcessor>();
-        std::vector<CanvasProcessor*> activeCanvases;
-        std::copy_if(allCanvases.begin(), allCanvases.end(), std::back_inserter(activeCanvases),
-                     [](auto canvas) {
-                         return canvas->isSink() && canvas->getProcessorWidget()->isVisible();
-                     });
+        auto network = inviwoApp.getProcessorNetwork();
 
-        if (activeCanvases.size() == 1) {
-            if (auto canvasWidget =
-                    static_cast<CanvasProcessorWidget*>(activeCanvases[0]->getProcessorWidget())) {
-                Canvas* canvas = canvasWidget->getCanvas();
-                canvas->setFullScreen(true);
+        std::vector<ProcessorWidget*> widgets;
+        network->forEachProcessor([&](Processor* p) {
+            if (p->isSink()) {
+                if (auto widget = p->getProcessorWidget()) {
+                    if (widget->isVisible()) {
+                        widgets.push_back(widget);
+                    }
+                }
             }
+        });
+
+        if (widgets.size() == 1) {
+            widgets[0]->setFullScreen(true);
         }
     });
 

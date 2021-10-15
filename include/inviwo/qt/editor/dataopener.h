@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAOPENER_H
-#define IVW_DATAOPENER_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/common/inviwo.h>
+
+#include <string>
 
 class QWidget;
 
@@ -47,5 +47,3 @@ void IVW_QTEDITOR_API insertNetworkForData(const std::string& dataFile, Processo
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAOPENER_H

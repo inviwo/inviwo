@@ -29,6 +29,8 @@
 
 #include <modules/qtwidgets/tf/tflineedit.h>
 
+#include <inviwo/core/util/glmvec.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QDoubleValidator>

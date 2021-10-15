@@ -29,11 +29,12 @@
 #pragma once
 
 #include <modules/animationqt/animationqtmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <modules/qtwidgets/inviwodockwidget.h>
 
 #include <modules/animation/animationcontrollerobserver.h>
+
+#include <memory>
 
 class QToolButton;
 class QMainWindow;

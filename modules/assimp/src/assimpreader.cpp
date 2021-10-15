@@ -377,8 +377,8 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string& filePath) {
 
     // texture coords
     for (size_t i = 0; i < texture_channels; ++i) {
-        int location = (i == 0 ? static_cast<int>(BufferType::TexcoordAttrib) : auxLocation++);
-        mesh->addBuffer(Mesh::BufferInfo(BufferType::TexcoordAttrib, location), tbuff[i]);
+        int location = (i == 0 ? static_cast<int>(BufferType::TexCoordAttrib) : auxLocation++);
+        mesh->addBuffer(Mesh::BufferInfo(BufferType::TexCoordAttrib, location), tbuff[i]);
     }
 
     mesh->addIndices(Mesh::MeshInfo(dt, ConnectivityType::None), inds);

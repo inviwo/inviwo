@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_RUNNINGIMAGESTANDARDDEVIATIONCL_H
-#define IVW_RUNNINGIMAGESTANDARDDEVIATIONCL_H
+#pragma once
 
 #include <modules/basecl/baseclmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/image/layerclbase.h>
@@ -126,5 +124,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_RUNNINGIMAGESTANDARDDEVIATIONCL_H

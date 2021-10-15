@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef _IVW_QTEDITOR_DEFINE_H_
-#define _IVW_QTEDITOR_DEFINE_H_
+#pragma once
 
 #ifdef INVIWO_ALL_DYN_LINK  // DYNAMIC
 // If we are building DLL files we must declare dllexport/dllimport
@@ -48,5 +47,3 @@
 #else  // STATIC
 #define IVW_QTEDITOR_API
 #endif
-
-#endif /* _IVW_QTEDITOR_DEFINE_H_ */

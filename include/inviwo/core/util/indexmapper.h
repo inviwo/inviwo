@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INDEXMAPPER_H
-#define IVW_INDEXMAPPER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/glm.h>
 
 namespace inviwo {
@@ -87,5 +85,3 @@ auto makeIndexMapper(const Vector<N, IndexType>& dim) {
 
 }  // namespace util
 }  // namespace inviwo
-
-#endif  // IVW_INDEXMAPPER_H

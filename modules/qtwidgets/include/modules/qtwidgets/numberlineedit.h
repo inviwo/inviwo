@@ -29,12 +29,13 @@
 #pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QDoubleSpinBox>
 #include <warn/pop>
+
+#include <memory>
 
 namespace inviwo {
 
@@ -58,6 +59,7 @@ public:
     virtual ~NumberLineEdit() override;
 
     virtual QSize sizeHint() const override;
+
     virtual QSize minimumSizeHint() const override;
 
     // consider the current size of the widget in order to determine the best suitable number
@@ -90,7 +92,8 @@ protected:
 
 private:
     bool integerMode_;
-    int minimumWidth_ = 40;
+    int minimumWidth_;
+    QSize calcMinimumSize() const;
 
     QDoubleValidator* validator_;
     mutable QSize cachedMinimumSizeHint_;

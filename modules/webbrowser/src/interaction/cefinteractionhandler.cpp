@@ -35,6 +35,11 @@
 #include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <include/base/cef_logging.h>
+#include <warn/pop>
+
 #include <iostream>
 #include <string>
 #include <locale>
@@ -122,8 +127,10 @@ void CEFInteractionHandler::handlePickingEvent(PickingEvent* p) {
 
     } else if (auto wheelEvent = p->getEventAs<WheelEvent>()) {
         auto cefMouseEvent = mapMouseEvent(wheelEvent);
-        host_->SendMouseWheelEvent(cefMouseEvent, static_cast<int>(wheelEvent->delta().x),
-                                   static_cast<int>(wheelEvent->delta().y));
+        // cef expects the wheel delta in multiples of 120
+        // see https://magpcss.org/ceforum/viewtopic.php?f=6&t=18203
+        host_->SendMouseWheelEvent(cefMouseEvent, static_cast<int>(wheelEvent->delta().x * 120),
+                                   static_cast<int>(wheelEvent->delta().y * 120));
         p->markAsUsed();
     }
 }
@@ -244,9 +251,9 @@ CefKeyEvent CEFInteractionHandler::mapKeyEvent(const KeyboardEvent* e) {
     cefEvent.is_system_key = false;
 #endif
     if (e->state() & KeyState::Press) {
-        modifiers_ |= cef::keyModifiers(e->modifiers(), e->key());
+        modifiers_ |= utilcef::keyModifiers(e->modifiers(), e->key());
     } else {
-        modifiers_ &= ~cef::keyModifiers(e->modifiers(), e->key());
+        modifiers_ &= ~utilcef::keyModifiers(e->modifiers(), e->key());
     }
     cefEvent.modifiers = modifiers_;
     return cefEvent;

@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYTHONSCRIPT_H
-#define IVW_PYTHONSCRIPT_H
+#pragma once
 
 #include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/fileobserver.h>
 #include <inviwo/core/util/callback.h>
 
@@ -149,5 +147,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PYTHONSCRIPT_H
