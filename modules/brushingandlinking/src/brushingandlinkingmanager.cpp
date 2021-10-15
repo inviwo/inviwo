@@ -500,7 +500,7 @@ void BrushingAndLinkingManager::propagate(BrushingAction action, BrushingTarget 
 }
 
 void BrushingAndLinkingManager::addChild(BrushingAndLinkingManager* child) {
-    auto [[maybe_unused]] it = children_.insert(child);
+    [[maybe_unused]] auto it = children_.insert(child);
     IVW_ASSERT(it.second, "child manager already added");
 }
 
