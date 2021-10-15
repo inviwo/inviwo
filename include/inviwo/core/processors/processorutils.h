@@ -136,7 +136,7 @@ IVW_CORE_API InviwoModule* getProcessorModule(std::string_view classIdentifier,
 /**
  * @brief Tries to set a processor's property to a given value.
  * @tparam T Type of \proc.
- * @tparam V Type of value, deduced.
+ * @tparam V Type of \val, deduced.
  * @param proc Processor that has the target property.
  * @param identifier Identifier of the property to be set.
  * @param val Value to be set.
