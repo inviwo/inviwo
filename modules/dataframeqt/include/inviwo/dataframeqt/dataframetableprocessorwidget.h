@@ -58,7 +58,9 @@ public:
                       bool categoryIndices = false);
     void setIndexColumnVisible(bool visible);
 
-    void updateSelection(const BitSet& columns, const BitSet& rows, const BitSet& highlightedRows);
+    void updateSelection(const BitSet& rows);
+    void updateColumnSelection(const BitSet& columns);
+    void updateHighlight(const BitSet& highlightedRows);
 
     CallbackHandle setColumnSelectionChangedCallback(std::function<SelectionChangedFunc> callback);
     CallbackHandle setRowSelectionChangedCallback(std::function<SelectionChangedFunc> callback);

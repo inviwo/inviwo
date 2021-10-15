@@ -80,10 +80,15 @@ void DataFrameTableProcessorWidget::setIndexColumnVisible(bool visible) {
     tableview_->setIndexColumnVisible(visible);
 }
 
-void DataFrameTableProcessorWidget::updateSelection(const BitSet& columns, const BitSet& rows,
-                                                    const BitSet& highlightedRows) {
-    tableview_->selectColumns(columns);
+void DataFrameTableProcessorWidget::updateSelection(const BitSet& rows) {
     tableview_->selectRows(rows);
+}
+
+void DataFrameTableProcessorWidget::updateColumnSelection(const BitSet& columns) {
+    tableview_->selectColumns(columns);
+}
+
+void DataFrameTableProcessorWidget::updateHighlight(const BitSet& highlightedRows) {
     tableview_->highlightRows(highlightedRows);
 }
 

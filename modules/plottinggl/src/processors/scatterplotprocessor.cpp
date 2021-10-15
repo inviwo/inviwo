@@ -29,8 +29,9 @@
 
 #include <modules/plottinggl/processors/scatterplotprocessor.h>
 #include <inviwo/core/util/zip.h>
-#include <modules/opengl/openglutils.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <modules/opengl/openglutils.h>
 
 #include <inviwo/dataframe/util/dataframeutil.h>
 
@@ -81,7 +82,7 @@ ScatterPlotProcessor::ScatterPlotProcessor()
                 for (auto idx : highlighted) {
                     indices.add(indexCol[idx]);
                 }
-                brushingPort_.sendHighlightEvent(indices);
+                brushingPort_.highlight(indices);
             } else {
                 invalidate(InvalidationLevel::InvalidOutput);
             }
@@ -95,7 +96,7 @@ ScatterPlotProcessor::ScatterPlotProcessor()
                 for (size_t i = 0; i < selected.size(); ++i) {
                     if (selected[i]) selectedIndices.add(indexCol[i]);
                 }
-                brushingPort_.sendSelectionEvent(selectedIndices);
+                brushingPort_.select(selectedIndices);
             } else {
                 invalidate(InvalidationLevel::InvalidOutput);
             }
@@ -109,7 +110,7 @@ ScatterPlotProcessor::ScatterPlotProcessor()
                 for (size_t i = 0; i < filtered.size(); ++i) {
                     if (filtered[i]) filteredIndices.add(indexCol[i]);
                 }
-                brushingPort_.sendFilterEvent(filteredIndices);
+                brushingPort_.filter("scatterplot", filteredIndices);
             } else {
                 invalidate(InvalidationLevel::InvalidOutput);
             }
@@ -145,40 +146,48 @@ void ScatterPlotProcessor::process() {
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     auto dataframe = dataFramePort_.getData();
 
-    if (brushingPort_.isConnected()) {
-        if (brushingPort_.isChanged()) {
-            scatterPlot_.setSelectedIndices(brushingPort_.getSelectedIndices());
-            scatterPlot_.setHighlightedIndices(brushingPort_.getHighlightedIndices());
-        }
-
-        auto dfSize = dataframe->getNumberOfRows();
-
+    auto indexToRowMap = [&]() {
         auto iCol = dataframe->getIndexColumn();
         auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-
-        auto brushedIndicies = brushingPort_.getFilteredIndices();
-        IndexBuffer indicies;
-        auto& vec = indicies.getEditableRAMRepresentation()->getDataContainer();
-        vec.reserve(dfSize - brushedIndicies.size());
-
-        auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
-        std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
-                     [&](const auto& id) { return !brushingPort_.isFiltered(indexCol[id]); });
-
-        if (backgroundPort_.hasData()) {
-            scatterPlot_.plot(*outport_.getEditableData(), *backgroundPort_.getData(), &indicies,
-                              true);
-        } else {
-            scatterPlot_.plot(*outport_.getEditableData(), &indicies, true);
+        std::unordered_map<uint32_t, uint32_t> indexToRow;
+        for (auto&& [row, index] : util::enumerate(indexCol)) {
+            indexToRow.try_emplace(index, static_cast<uint32_t>(row));
         }
+        return indexToRow;
+    }();
 
+    auto transformIdsToRows = [&](const BitSet& b) {
+        BitSet rows;
+        for (const auto& id : b) {
+            auto it = indexToRowMap.find(id);
+            if (it != indexToRowMap.end()) {
+                rows.add(it->second);
+            }
+        }
+        return rows;
+    };
+
+    if (brushingPort_.modifiedSelection()) {
+        scatterPlot_.setSelectedIndices(transformIdsToRows(brushingPort_.getSelectedIndices()));
+    }
+    if (brushingPort_.modifiedHighlight()) {
+        scatterPlot_.setHighlightedIndices(
+            transformIdsToRows(brushingPort_.getHighlightedIndices()));
+    }
+
+    BitSet b(brushingPort_.getFilteredIndices());
+    // invert the bitset to obtain the ids remaining after the filtering
+    b.flipRange(0, static_cast<uint32_t>(dataframe->getNumberOfRows()));
+    b = transformIdsToRows(b);
+
+    IndexBuffer indicies;
+    auto& vec = indicies.getEditableRAMRepresentation()->getDataContainer();
+    vec = b.toVector();
+
+    if (backgroundPort_.isReady()) {
+        scatterPlot_.plot(outport_, backgroundPort_, &indicies, true);
     } else {
-        if (backgroundPort_.hasData()) {
-            scatterPlot_.plot(*outport_.getEditableData(), *backgroundPort_.getData(), nullptr,
-                              true);
-        } else {
-            scatterPlot_.plot(*outport_.getEditableData(), nullptr, true);
-        }
+        scatterPlot_.plot(outport_, &indicies, true);
     }
 }
 
