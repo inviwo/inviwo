@@ -54,6 +54,8 @@ public:
     DataFrameTableProcessorWidget(Processor* p);
     virtual ~DataFrameTableProcessorWidget() = default;
 
+    virtual void setVisible(bool visible) override;
+
     void setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool vectorsIntoColumns = false,
                       bool categoryIndices = false);
     void setIndexColumnVisible(bool visible);

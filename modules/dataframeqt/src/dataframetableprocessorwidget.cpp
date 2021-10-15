@@ -71,6 +71,12 @@ DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
     layout->addWidget(tableview_.get());
 }
 
+void DataFrameTableProcessorWidget::setVisible(bool visible) {
+    if (QWidget::isVisible() != visible) {
+        QWidget::setVisible(visible);  // This will trigger show/hide events.
+    }
+}
+
 void DataFrameTableProcessorWidget::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
                                                  bool vectorsIntoColumns, bool categoryIndices) {
     tableview_->setDataFrame(dataframe, vectorsIntoColumns, categoryIndices);
