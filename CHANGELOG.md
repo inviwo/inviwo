@@ -1,9 +1,36 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
-## 2021-10-06 Updated Brushing & Linking
-Brushing & Linking is now using `BitSet` (see `inviwo/core/datastructures/bitset.h`) to represent selections and filtering. Note that the data type of Brushing & Linking indices was changed to `uint32_t`. There is now also support for serialization and deserialization of Brushing & Linking.
+## 2021-10-15 Updated Brushing & Linking
+![Brushing & Linking](resources/changelog/brushing.jpg)
+Brushing & Linking (B&L) was completely reworked. Now the B&L inports and outports have their own B&L managers. Brushing events were deprecated and replaced with brushing actions in the B&L manager. The manager supports brushing actions for *filtering*, *selecting*, and *highlighting*. 
 
-A new `HighlightEvent` allows to have an additional set of indices for highlighting things besides a regular selection. Simply use `BrushingAndLinkingInport::sendHighlightEvent()` to send your highlighted indices to the Brushing & Linking manager.
++ `BrushingAction::Filter` filters the given indices. The result is the union of all filter actions. 
++ `BrushingAction::Select` replaces the current (global) selection
++ `BrushingAction::Highlight` allows to have an additional set of indices for highlighting things besides a regular selection, for example when hovering items with the mouse. 
+
+To trigger a brushing action call `brush(BrushAction::Select, target, indices)` on either manager or B&L port. The target defines the type of selection. Default targets exist for row selection (default) and column selection with the option to add custom ones if necessary.
+
+In addition, B&L is now using `BitSet` (see `inviwo/core/datastructures/bitset.h`) to represent selections and filtering. Note that the data type of Brushing & Linking indices was changed to `uint32_t`. 
+
+The manager also provides functionality to query the latest updates: `isModified()`, `modifiedActions()`, and `modifiedSelection/Highlight/Filtering()`. For example
+```c++
+void MyProcessor::process() {
+
+    if (brushingPort_.modifiedSelection()) {
+        const BitSet& selected = brushingPort_.getSelectedIndices();
+        ...
+    }
+    if (brushingPort_.modifiedHighlight()) {
+        const BitSet& highlighted = brushingPort_.getHighlightedIndices();
+        ...
+    }
+    // or check for individual modifications
+    if (brushingPort_.modifiedActions() & BrushingModification::Filtered) {
+        ...
+    }
+}
+```
+**Update Note:** In case you are using `port.isChanged()` on a `BrushingAndLinkingInport`, you **must** replace this with one of the calls above. Otherwise your selection might no longer be updated. 
 
 ## 2021-09-27
 Fixed some naming inconsistencies regarding texture coordinate vertex attributes and buffers. Renamed `BufferType::TexcoordAttrib` to `BufferType::TexCoordAttrib` (`geometrytypes.h`) and `buffertraits::TexcoordBuffer` to `buffertraits::TexCoordBuffer` (`typedmesh.h`). The buffer name of `TexCoordAttrib` now maps to `TexCoord` (previously `Texture`), which is relevant when using the `MeshShaderCache`.
